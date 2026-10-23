@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-09-04",
-  "built_at": "2026-09-06T06:40:08Z",
+  "as_of": "2026-10-20",
+  "built_at": "2026-10-21T08:00:27Z",
   "latest_pulse": {
-    "date": "2026-09-04",
+    "date": "2026-10-20",
     "class": "quiet",
-    "market_vol_ratio": 0.934,
-    "up_share": 0.425,
-    "basis": "updown",
+    "market_vol_ratio": 0.892,
+    "up_share": null,
+    "basis": "volume_only",
     "n_megacap_rvol2": 0,
     "megacap_rvol": {
-      "TSLA": 1.94,
-      "AVGO": 1.7,
-      "UNH": 1.51,
-      "NFLX": 1.48,
-      "COST": 1.31,
-      "NVDA": 1.23,
-      "ORCL": 1.21,
-      "XOM": 1.18
+      "NFLX": 1.8,
+      "LLY": 1.38,
+      "UNH": 1.36,
+      "PG": 1.28,
+      "TMUS": 1.28,
+      "BRK-B": 1.26,
+      "BAC": 1.2,
+      "V": 1.18
     },
     "calendar": {
       "is_quarter_end": false,
-      "td_to_quarter_end": 17,
+      "td_to_quarter_end": -14,
       "in_qtr_end_window": false,
       "is_russell_recon_session": false,
       "in_recon_week": false,
@@ -37,25 +37,25 @@
   },
   "upcoming_events": [
     {
-      "date": "2026-09-18",
-      "types": [
-        "sp_rebalance"
-      ],
-      "td_to": 9
-    },
-    {
-      "date": "2026-09-30",
-      "types": [
-        "quarter_end"
-      ],
-      "td_to": 17
-    },
-    {
       "date": "2026-12-18",
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 73
+      "td_to": 42
+    },
+    {
+      "date": "2026-12-31",
+      "types": [
+        "quarter_end"
+      ],
+      "td_to": 50
+    },
+    {
+      "date": "2027-03-19",
+      "types": [
+        "sp_rebalance"
+      ],
+      "td_to": 103
     }
   ],
   "recent_events": [],

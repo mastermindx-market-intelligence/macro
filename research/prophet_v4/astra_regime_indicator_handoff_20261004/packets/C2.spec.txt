@@ -1,0 +1,36 @@
+LANE C2 — Decisive interaction: rotation speed × confirmation cost
+LANE id: C2   RESULTS_DIR = research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C2/
+Gating question (ANSWER FIRST): under the pre-declared rule, is the hypothesis "the cost of waiting for slow confirmation rises as leadership persistence falls" SUPPORTED, NOT SUPPORTED, or INSUFFICIENT SUPPORT? Give the pooled DiD on H10 net with its CI, the era signs, the phase count, and whether the cost curve is monotonic.
+
+MISSION. Join the B1 event panel and confirmation pairs with the C1 rotation-state table and compute the pre-declared difference-in-differences and secondary statistics. Mechanical application of a frozen design; no new choices.
+
+INPUTS (read-only; produced by sibling lanes on this host): research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/events_panel.parquet, .../results/B1/confirmation_pairs.parquet, .../results/B1/result.json (read its verdict and deviations), .../results/C1/rotation_state_daily.parquet, .../results/C1/result.json (if controls.status == "BROKEN", every rotation-conditioned cell is reported INSUFFICIENT SUPPORT and ANSWER FIRST says so). Read their RESULT.md files first. Record their sha256 in hashes.txt. Do not modify them.
+
+JOIN. For each 1D event, state = rotation_state_daily row at the 1D signal date (the C1 table is already shifted by one session, so the row AT the signal date carries information up to the prior session; join on signal_date exactly; if the date is absent, drop the event and count it). Attach rotation_tercile, breadth_tercile, dfii_tercile, LP. For a confirmed entry of variant V (2D.p / 3D.p) attach the SAME state as its 1D parent (the state at the parent's signal date — this is the conditioning variable "known when the first signal fired").
+
+PRIMARY STATISTIC. For each phase p of 3D, and each rotation tercile T ∈ {fast, mid, persistent}:
+  gap(p,T) = mean(excess_h10_net of 3D.p-confirmed entries | T) − mean(excess_h10_net of all 1D events | T)
+  where a "3D.p-confirmed entry" is the 3D.p event's own outcome row from events_panel joined through confirmation_pairs (no_confirmation == False), and "all 1D events" includes unconfirmed ones.
+  DiD(p) = gap(p, fast) − gap(p, persistent). Pooled DiD = mean over phases. Repeat for 2D.p (p = 0,1). Repeat for H21 net.
+Inference: entry-month cluster bootstrap (1,000 draws, default_rng(20261004)); for each draw resample months once and recompute every gap/DiD on the drawn months (the same draw for all cells so differences are paired). CI = 2.5/97.5 percentiles. Era split (2014–2019, 2020–2026) with the same procedure.
+
+SECONDARY (report, pre-declared):
+(a) Confirmation-cost curve: mean mfe21_consumed_frac and mean confirmation_cost_pct at 2D/3D confirmation by rotation tercile (fast, mid, persistent), with CIs. Monotonic = fast > mid > persistent for mean mfe21_consumed_frac on 3D (pooled phases).
+(b) False starts avoided: among 1D events with excess_h10_net < −0.02, the share that received no 3D confirmation (pooled phases), by tercile.
+(c) Large winners excluded: among 1D events with excess_h21_net > +0.10, the share that never received 3D confirmation, by tercile.
+(d) Second axis: the primary DiD by breadth_tercile (narrow vs broad) — report only.
+(e) Cell support table: for every (variant, tercile, era) cell: n_events, n_months, n_names. Floors: ≥ 24 months, ≥ 100 names, ≥ 300 events, both eras present. A cell below floor is marked INSUFFICIENT and excluded from the verdict's "adequate support" test.
+
+VERDICT (pre-declared, compute mechanically; write the rule text into result.json):
+SUPPORTED iff pooled 3D DiD on H10 net < 0 with 95% CI excluding zero, AND the pooled DiD has the same sign in both eras, AND DiD(p) < 0 with CI excluding zero for ≥ 2 of 3 phases, AND the 3D cost curve is monotonic fast > mid > persistent.
+NOT SUPPORTED iff the pooled 3D DiD CI includes zero AND all fast/persistent cells meet the floors.
+INSUFFICIENT SUPPORT otherwise (also whenever C1 controls are BROKEN or B1's verdict is INSUFFICIENT on every 3D phase).
+Also report the 2D verdict with the same rule (≥ 2 of 2 phases).
+
+OUT OF SCOPE. No re-estimation of B1 or C1 quantities; no new thresholds; no regression models; no product recommendation (the seat writes that).
+
+NOT DONE UNLESS: (1) a pytest asserts the join never uses a state row dated after the 1D signal date (construct a synthetic state table, perturb rows dated > signal date, assert unchanged attachments); (2) a pytest asserts the paired bootstrap uses one month draw per replicate for all cells; (3) the cell support table is complete for every (variant, tercile, era); (4) result.json follows the schema; (5) RESULT.md shows the DiD table (per phase, per era, pooled), the cost curve, the false-start and large-winner tables, honest-N everywhere; (6) hashes.txt includes the B1 and C1 input hashes.
+
+result.json schema: {"lane":"C2","status":...,"repo_head":...,"inputs":{"B1_events_panel_sha256":...,"B1_confirmation_pairs_sha256":...,"C1_rotation_state_sha256":...,"C1_controls_status":...,"B1_verdict":...},"n_1d_events_joined":N,"n_1d_events_dropped_no_state":N,"did":{"3D":{"pooled":{"h10":{"delta":x,"ci":[lo,hi]},"h21":{...}},"by_phase":{"p0":{...},"p1":{...},"p2":{...}},"by_era":{era:{...}}},"2D":{...}},"gaps":{"3D":{tercile:{phase:{"gap_h10":x,"ci":[lo,hi],"n_confirmed":N,"n_1d":N}}}},"cost_curve":{"3D":{tercile:{"mean_mfe_consumed":x,"ci":[lo,hi],"mean_cost_pct":x,"n":N}},"2D":{...},"monotonic_3d":bool},"false_starts_avoided":{tercile:{"share_unconfirmed":x,"n":N}},"large_winners_excluded":{tercile:{"share_unconfirmed":x,"n":N}},"breadth_axis":{...},"support":{cell_id:{"n_events":N,"n_months":N,"n_names":N,"meets_floor":bool}},"verdict":{"3D":"SUPPORTED|NOT SUPPORTED|INSUFFICIENT SUPPORT","2D":...,"rule":"<rule text>","reasons":[...]},"tests":"<pytest summary>","gaps":[...],"deviations":[...]}
+
+RETURN: the C2_RETURN packet described in the law.

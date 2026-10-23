@@ -142,6 +142,7 @@ def _make_root(
     validation_defines_spa: bool = False,
     synapse: str | None = _SYNAPSE_V2,
     prophet_first: bool = True,
+    extract_seasonality: bool = False,
     dag_decision_token: bool = False,
     dag_token_in_comment: bool = False,
 ) -> Path:
@@ -188,11 +189,24 @@ def _make_root(
     if synapse is not None:
         _write(root, pw.SYNAPSE_PATH, synapse)
 
-    order = (
-        ["brun prophet scripts.build_prophet", "brun ss scripts.build_stock_seasonality"]
-        if prophet_first
-        else ["brun ss scripts.build_stock_seasonality", "brun prophet scripts.build_prophet"]
-    )
+    if extract_seasonality:
+        extracted_step = f"run: bash {pw.DAILY_BUILDERS_PATH}"
+        order = (
+            ["brun prophet scripts.build_prophet", extracted_step]
+            if prophet_first
+            else [extracted_step, "brun prophet scripts.build_prophet"]
+        )
+        _write(
+            root,
+            pw.DAILY_BUILDERS_PATH,
+            "brun ss scripts.build_stock_seasonality\n",
+        )
+    else:
+        order = (
+            ["brun prophet scripts.build_prophet", "brun ss scripts.build_stock_seasonality"]
+            if prophet_first
+            else ["brun ss scripts.build_stock_seasonality", "brun prophet scripts.build_prophet"]
+        )
     _write(root, pw.DAILY_WORKFLOW_PATH, "steps:\n  " + "\n  ".join(order) + "\n")
 
     # The dag is where the ORDER decision is written down, so the baseline tree
@@ -808,6 +822,45 @@ class TestDeferredFollowups:
         assert sub["state"] == "closed"
         assert pw.DAG_ORDER_DECISION_TOKEN in sub["detail"]
 
+    def test_daily_order_closes_on_documented_decision_when_builder_is_extracted(self, tmp_path):
+        root = _make_root(
+            tmp_path,
+            ledger=[],
+            prophet_first=True,
+            extract_seasonality=True,
+            dag_decision_token=True,
+        )
+        sub = self._sub(root, "daily_workflow")
+        assert sub["state"] == "closed"
+        assert pw.DAILY_BUILDERS_PATH in sub["detail"]
+        assert pw.DAG_ORDER_DECISION_TOKEN in sub["detail"]
+
+    def test_daily_order_open_when_extracted_builder_is_after_prophet_without_decision(self, tmp_path):
+        root = _make_root(
+            tmp_path, ledger=[], prophet_first=True, extract_seasonality=True
+        )
+        sub = self._sub(root, "daily_workflow")
+        assert sub["state"] == "open"
+        assert pw.DAILY_BUILDERS_PATH in sub["detail"]
+
+    def test_daily_order_closed_when_extracted_builder_step_runs_before_prophet(self, tmp_path):
+        root = _make_root(
+            tmp_path, ledger=[], prophet_first=False, extract_seasonality=True
+        )
+        sub = self._sub(root, "daily_workflow")
+        assert sub["state"] == "closed"
+        assert pw.DAILY_BUILDERS_PATH in sub["detail"]
+
+    def test_daily_order_unavailable_when_extracted_builder_file_is_missing(self, tmp_path):
+        root = _make_root(
+            tmp_path, ledger=[], prophet_first=True, extract_seasonality=True
+        )
+        (root / pw.DAILY_BUILDERS_PATH).unlink()
+        sub = self._sub(root, "daily_workflow")
+        assert sub["state"] == "unavailable"
+        assert "workflow_ref found=True" in sub["detail"]
+        assert "build_stock_seasonality found=False" in sub["detail"]
+
     def test_daily_order_stays_open_when_the_token_is_only_a_comment(self, tmp_path):
         """A commented token is prose about a decision, not the decision.
 
@@ -1295,6 +1348,12 @@ class TestAgainstThisRepo:
     def test_registered_in_the_dag(self):
         text = (REPO_ROOT / "config" / "dag.yml").read_text(encoding="utf-8")
         assert "scripts.build_program_watch" in text, "an unregistered builder never runs"
+
+    def test_current_extracted_daily_order_is_readable_and_closed(self):
+        sub = pw._sub_daily_order(REPO_ROOT)
+        assert sub["state"] == "closed", sub["detail"]
+        assert pw.DAILY_BUILDERS_PATH in sub["detail"]
+        assert pw.DAG_ORDER_DECISION_TOKEN in sub["detail"]
 
     def test_contract_id_stem_tracks_the_event_clocks_expectation(self):
         """The content matcher is only as good as the id it looks for.

@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import ast
+import os
+import shlex
 import subprocess
 import urllib.parse
 from collections import deque
@@ -12,6 +14,485 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = ROOT / "app" / "deploy" / "update.sh"
 SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
+
+# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD_REGRESSIONS
+#
+# Executable regressions for the fail-closed Movers guard inside update.sh's
+# Caddy reconciliation block. Every case runs the REAL extracted bash: the
+# guarded block is lifted verbatim out of app/deploy/update.sh (marker scan +
+# if/fi depth walk) and executed under a throwaway APP_DIR with fake
+# caddy/install/systemctl shims that only append to an action log. No case
+# touches a host path — /etc/caddy/Caddyfile is remapped inside the harness.
+
+MOVERS_GUARD_BEGIN = "# BEGIN MOVERS_SEO_REDIRECT_CADDY_GUARD"
+MOVERS_GUARD_END = "# END MOVERS_SEO_REDIRECT_CADDY_GUARD"
+MOVERS_MATCHER_NAME = "@movers_seo_redirect"
+CADDY_DIFF_LINE = 'if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile || [ -n "${CADDY_SOURCE_BASELINE:-}" ] || { { [ -e /var/lib/macro-caddy-publication ] || [ -L /var/lib/macro-caddy-publication ]; } && python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" --pending-check; }; then'
+CADDY_VALIDATE_LINE = 'caddy validate --config "$APP_DIR/app/deploy/Caddyfile"'
+CADDY_INSTALL_LINE = 'install -m 0644 "$APP_DIR/app/deploy/Caddyfile"'
+
+COHERENT_MOVERS_BODY = (
+    "<!doctype html>\n"
+    '<html lang="en" data-mmx-movers-redirect="1">\n'
+    "<body>Movers, coherent generated body.</body>\n"
+    "</html>\n"
+)
+STALE_MOVERS_BODY = (
+    "<!doctype html>\n"
+    '<html lang="en">\n'
+    "<body>Movers — stale Aug 7 body.</body>\n"
+    "</html>\n"
+)
+INSTALLED_BASELINE_CADDY = (
+    "# installed before the Movers cutover\n"
+    "example.com {\n"
+    "\troot * /opt/macro/site.served\n"
+    "\tfile_server\n"
+    "}\n"
+)
+CANDIDATE_CADDY_WITH_MATCHER = (
+    "example.com {\n"
+    "\t@movers_seo_redirect {\n"
+    "\t\tpath /movers\n"
+    "\t}\n"
+    "\tredir @movers_seo_redirect /movers-updates{uri} 301\n"
+    "\troot * /opt/macro/site.served\n"
+    "\tfile_server\n"
+    "}\n"
+)
+CANDIDATE_CADDY_WITHOUT_MATCHER = (
+    "example.com {\n"
+    "\troot * /opt/macro/site.served\n"
+    "\tencode gzip\n"
+    "\tfile_server\n"
+    "}\n"
+)
+CANDIDATE_CADDY_WITH_LONGER_NAME_DECOY = (
+    "example.com {\n"
+    "\t@movers_seo_redirect_v2 {\n"
+    "\t\tpath /movers-v2\n"
+    "\t}\n"
+    "\troot * /opt/macro/site.served\n"
+    "\tfile_server\n"
+    "}\n"
+)
+
+HARNESS_TEMPLATE = """\
+set -u
+APP_DIR=__APP_DIR__
+FAKE_ETC_CADDY=__FAKE_ETC_CADDY__
+FAKE_LOG=__FAKE_LOG__
+caddy() { printf 'caddy %s\\n' "$*" >> "$FAKE_LOG"; }
+install() {
+	local destination="${@: -1}"
+	[ "$destination" = /etc/caddy/Caddyfile ] && destination=$FAKE_ETC_CADDY
+	printf 'install %s\\n' "$destination" >> "$FAKE_LOG"
+	command cp "$APP_DIR/app/deploy/Caddyfile" "$destination"
+}
+systemctl() { printf 'systemctl %s\\n' "$*" >> "$FAKE_LOG"; }
+cmp() {
+	local flag="" left="" right=""
+	while [ "$#" -gt 0 ]; do
+		case $1 in
+			-s) flag=-s ;;
+			/etc/caddy/Caddyfile) right=$FAKE_ETC_CADDY ;;
+			*) if [ -z "$left" ]; then left=$1; else right=$1; fi ;;
+		esac
+		shift
+	done
+	command cmp $flag "$left" "$right"
+}
+__BLOCK__
+printf 'BLOCK_COMPLETED\\n' >> "$FAKE_LOG"
+"""
+
+
+def _script_line_index(needle: str) -> int:
+    for index, line in enumerate(SCRIPT.splitlines()):
+        if line.strip() == needle:
+            return index
+    raise AssertionError(f"update.sh is missing the anchored line: {needle!r}")
+
+
+def _extract_movers_guard_block() -> str:
+    start = SCRIPT.index(MOVERS_GUARD_BEGIN)
+    end = SCRIPT.index(MOVERS_GUARD_END, start)
+    return SCRIPT[start : end + len(MOVERS_GUARD_END)]
+
+
+def _extract_caddy_reconcile_block() -> str:
+    """Lift the whole Caddyfile reconciliation block out of update.sh verbatim."""
+    lines = SCRIPT.splitlines()
+    depth = 0
+    block: list[str] = []
+    for line in lines[_script_line_index(CADDY_DIFF_LINE) :]:
+        stripped = line.strip()
+        block.append(line)
+        if stripped.startswith("if ") and stripped.endswith(" then"):
+            depth += 1
+        elif stripped == "fi":
+            depth -= 1
+            if depth == 0:
+                break
+    assert depth == 0, "if/fi scan did not close the Caddy reconciliation block"
+    return "\n".join(block) + "\n"
+
+
+def _run_caddy_block(
+    tmp_path: Path,
+    block: str,
+    *,
+    candidate: str,
+    installed: str,
+    source_body: str | None,
+    generated_body: str | None,
+    served_body: str | None,
+    symlink_page: str | None = None,
+    autosave_mode: bool = False,
+    fresh_updater: bool = True,
+):
+    app = tmp_path / "opt" / "macro"
+    for relative in ("app/deploy", "templates", "site", "site.served"):
+        (app / relative).mkdir(parents=True, exist_ok=True)
+    (app / "app" / "deploy" / "Caddyfile").write_text(candidate, encoding="utf-8")
+    etc_caddy = tmp_path / "etc" / "caddy" / "Caddyfile"
+    etc_caddy.parent.mkdir(parents=True, exist_ok=True)
+    etc_caddy.write_text(installed, encoding="utf-8")
+    for relative, body in (
+        ("templates/movers.html", source_body),
+        ("site/movers.html", generated_body),
+        ("site.served/movers.html", served_body),
+    ):
+        if body is not None:
+            (app / relative).write_text(body, encoding="utf-8")
+    if symlink_page:
+        page = app / symlink_page
+        retained = tmp_path / "external-body.html"
+        retained.write_text(COHERENT_MOVERS_BODY, encoding="utf-8")
+        page.unlink()
+        page.symlink_to(retained)
+    log = tmp_path / "actions.log"
+    harness = (
+        HARNESS_TEMPLATE.replace("__APP_DIR__", str(app))
+        .replace("__FAKE_ETC_CADDY__", str(etc_caddy))
+        .replace("__FAKE_LOG__", str(log))
+        .replace("__BLOCK__", block.replace("/etc/caddy/Caddyfile", str(etc_caddy)))
+    )
+    harness_path = tmp_path / "caddy_block_harness.sh"
+    if autosave_mode:
+        harness = harness.replace(
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; }',
+            'systemctl() { printf \'systemctl %s\\n\' "$*" >> "$FAKE_LOG"; '
+            'printf "%s\\n" "/usr/bin/caddy reload --config /var/lib/caddy/.config/caddy/autosave.json --force"; }',
+        )
+        # The shell boundary runs verbatim; only native side effects and its
+        # predecessor FD are controlled fixture capabilities.
+        harness = 'CADDY_RECONCILE_ARGS=()\n' + harness
+        harness = harness.replace(
+            'command cmp $flag "$left" "$right"',
+            'case "$left" in /proc/*/fd/255) return '
+            + ('0' if fresh_updater else '1') + ' ;; esac\n'
+            '\tcommand cmp $flag "$left" "$right"',
+        )
+        harness = harness.replace('caddy() {',
+            'python3() { printf \'API_PUBLICATION %s\\n\' "$*" >> "$FAKE_LOG"; }\ncaddy() {', 1)
+    harness_path.write_text(harness, encoding="utf-8")
+    completed = subprocess.run(
+        ["bash", str(harness_path)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    return completed, app, etc_caddy, log
+
+
+@pytest.mark.parametrize("fresh_updater", [True, False])
+def test_autosave_caddy_uses_publication_only_from_fresh_updater(tmp_path, fresh_updater):
+    completed, _, etc_caddy, log = _run_caddy_block(
+        tmp_path, _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY,
+        generated_body=COHERENT_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+        autosave_mode=True, fresh_updater=fresh_updater,
+    )
+    actions = _action_lines(log)
+    assert completed.returncode == (0 if fresh_updater else 1), completed.stderr
+    assert sum(line.startswith("API_PUBLICATION ") for line in actions) == int(fresh_updater)
+    assert not any(line.startswith(("caddy ", "install ", "systemctl reload", "systemctl restart"))
+                   for line in actions)
+    assert etc_caddy.read_text() == INSTALLED_BASELINE_CADDY
+    if not fresh_updater:
+        assert "predecessor updater inode" in completed.stderr
+
+
+def _action_lines(log: Path) -> list[str]:
+    if not log.exists():
+        return []
+    return [line for line in log.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def _assert_guard_refused(completed, log) -> None:
+    assert completed.returncode != 0, completed.stdout + completed.stderr
+    assert "refusing Caddyfile update" in completed.stderr
+    # Fail closed BEFORE validate/install/reload: no side effect at all, and the
+    # harness never reaches its post-block completion marker.
+    assert _action_lines(log) == []
+
+
+def test_movers_seo_guard_sits_inside_caddy_diff_path_before_validate_install_reload():
+    """The guard is additive, uniquely marked and ordered ahead of the install."""
+    assert SCRIPT.count(MOVERS_GUARD_BEGIN) == 1
+    assert SCRIPT.count(MOVERS_GUARD_END) == 1
+    guard = _extract_movers_guard_block()
+    block = _extract_caddy_reconcile_block()
+    diff_at = block.index(CADDY_DIFF_LINE)
+    begin_at = block.index(MOVERS_GUARD_BEGIN)
+    end_at = block.index(MOVERS_GUARD_END)
+    validate_at = block.index(CADDY_VALIDATE_LINE)
+    install_at = block.index(CADDY_INSTALL_LINE)
+    assert diff_at < begin_at < end_at < validate_at < install_at
+    # The matcher is activated only by the guard: the rest of the Caddy block
+    # is byte-for-byte the pre-guard reconciliation shell.
+    assert MOVERS_MATCHER_NAME not in block.replace(guard, "")
+    # The guard only reads and refuses — no publishing, repair or permission
+    # side effect in its executable lines.
+    guard_code = "\n".join(
+        line
+        for line in guard.splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    )
+    for forbidden in (
+        "rsync",
+        "mkdir ",
+        "chmod",
+        "chown",
+        "mv ",
+        "cp ",
+        "install ",
+        "systemctl",
+        "caddy validate",
+    ):
+        assert forbidden not in guard_code
+
+
+def test_movers_guard_rollout_preserves_self_update_before_caddy_block():
+    """Approved two-stage delivery: self-install ordering is untouched."""
+    self_update_at = next(
+        index
+        for index, line in enumerate(SCRIPT.splitlines())
+        if line.startswith("# Self-update:")
+    )
+    assert self_update_at < _script_line_index(CADDY_DIFF_LINE)
+    assert "OPTIONS_DEFER_REARM_FOR_SELF_UPDATE=1" in SCRIPT
+
+
+def test_movers_caddy_guard_admits_matching_nonempty_triple_and_keeps_ordering(tmp_path):
+    completed, app, etc_caddy, log = _run_caddy_block(
+        tmp_path,
+        _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY,
+        generated_body=COHERENT_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+    )
+    assert completed.returncode == 0, completed.stderr
+    candidate_path = f"{app}/app/deploy/Caddyfile"
+    assert _action_lines(log) == [
+        "systemctl show caddy -p ExecReload --value",
+        f"caddy validate --config {candidate_path} --adapter caddyfile",
+        f"install {etc_caddy}",
+        "systemctl reload caddy",
+        "BLOCK_COMPLETED",
+    ]
+
+
+@pytest.mark.parametrize("relative", ["templates/movers.html", "site/movers.html", "site.served/movers.html"])
+def test_movers_caddy_guard_refuses_symlinked_page(tmp_path, relative):
+    completed, _, _, log = _run_caddy_block(
+        tmp_path, _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER, installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY, generated_body=COHERENT_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY, symlink_page=relative,
+    )
+    _assert_guard_refused(completed, log)
+
+
+def test_movers_caddy_guard_is_inert_without_the_named_matcher(tmp_path):
+    """No named matcher: exact pre-guard behavior even with absent/stale trees."""
+    for case_index, candidate in enumerate(
+        (
+            CANDIDATE_CADDY_WITHOUT_MATCHER,
+            CANDIDATE_CADDY_WITH_LONGER_NAME_DECOY,
+        )
+    ):
+        completed, app, etc_caddy, log = _run_caddy_block(
+            tmp_path / f"case{case_index}",
+            _extract_caddy_reconcile_block(),
+            candidate=candidate,
+            installed=INSTALLED_BASELINE_CADDY,
+            source_body=None,
+            generated_body=None,
+            served_body=None,
+        )
+        assert completed.returncode == 0, completed.stderr
+        candidate_path = f"{app}/app/deploy/Caddyfile"
+        assert _action_lines(log) == [
+            "systemctl show caddy -p ExecReload --value",
+            f"caddy validate --config {candidate_path} --adapter caddyfile",
+            f"install {etc_caddy}",
+            "systemctl reload caddy",
+            "BLOCK_COMPLETED",
+        ]
+        assert "refusing" not in completed.stderr
+
+
+@pytest.mark.parametrize(
+    ("label", "source_body", "generated_body", "served_body"),
+    [
+        ("missing_source", None, COHERENT_MOVERS_BODY, COHERENT_MOVERS_BODY),
+        ("empty_source", "", COHERENT_MOVERS_BODY, COHERENT_MOVERS_BODY),
+        ("missing_generated", COHERENT_MOVERS_BODY, None, COHERENT_MOVERS_BODY),
+        ("empty_generated", COHERENT_MOVERS_BODY, "", COHERENT_MOVERS_BODY),
+        ("missing_served", COHERENT_MOVERS_BODY, COHERENT_MOVERS_BODY, None),
+        ("empty_served", COHERENT_MOVERS_BODY, COHERENT_MOVERS_BODY, ""),
+        (
+            "stale_served_after_failed_rsync",
+            COHERENT_MOVERS_BODY,
+            COHERENT_MOVERS_BODY,
+            STALE_MOVERS_BODY,
+        ),
+        (
+            "source_generated_mismatch",
+            COHERENT_MOVERS_BODY,
+            "<html>different</html>\n",
+            COHERENT_MOVERS_BODY,
+        ),
+        (
+            "generated_served_mismatch",
+            COHERENT_MOVERS_BODY,
+            COHERENT_MOVERS_BODY,
+            "<html>different</html>\n",
+        ),
+        ("stale_source_missing_marker", STALE_MOVERS_BODY, STALE_MOVERS_BODY, STALE_MOVERS_BODY),
+    ],
+)
+def test_movers_caddy_guard_fails_closed_before_validate_install_reload(
+    tmp_path, label, source_body, generated_body, served_body
+):
+    completed, _, _, log = _run_caddy_block(
+        tmp_path,
+        _extract_caddy_reconcile_block(),
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=source_body,
+        generated_body=generated_body,
+        served_body=served_body,
+    )
+    _assert_guard_refused(completed, log)
+
+
+def test_stale_served_body_from_failed_rsync_still_refuses_caddy_install_on_next_tick(
+    tmp_path,
+):
+    """Tick 1: reset+failed rsync leaves the served body stale. Tick 2: OLD ==
+    NEW takes the cheap no-op repo path, but the Caddy diff STILL exists because
+    the install was refused — so this block runs again and refuses again."""
+    block = _extract_caddy_reconcile_block()
+    for tick in range(2):
+        completed, _, _, log = _run_caddy_block(
+            tmp_path / f"tick{tick}",
+            block,
+            candidate=CANDIDATE_CADDY_WITH_MATCHER,
+            installed=INSTALLED_BASELINE_CADDY,
+            source_body=COHERENT_MOVERS_BODY,
+            generated_body=COHERENT_MOVERS_BODY,
+            served_body=STALE_MOVERS_BODY,
+        )
+        _assert_guard_refused(completed, log)
+
+
+def test_negative_control_pre_guard_caddy_block_installs_stale_movers_redirect(tmp_path):
+    """Strip only the marked guard: the same state reaches validate+install+
+    reload over the stale body — the ordering hazard the guard closes."""
+    block = _extract_caddy_reconcile_block()
+    guard = _extract_movers_guard_block()
+    assert guard in block
+    old_block = block.replace(guard, "")
+    completed, _, _, log = _run_caddy_block(
+        tmp_path,
+        old_block,
+        candidate=CANDIDATE_CADDY_WITH_MATCHER,
+        installed=INSTALLED_BASELINE_CADDY,
+        source_body=COHERENT_MOVERS_BODY,
+        generated_body=COHERENT_MOVERS_BODY,
+        served_body=STALE_MOVERS_BODY,
+    )
+    assert completed.returncode == 0, completed.stderr
+    lines = _action_lines(log)
+    assert lines[-1] == "BLOCK_COMPLETED"
+    assert any(line.startswith("caddy validate ") for line in lines)
+    assert any(line.startswith("install ") for line in lines)
+    assert "systemctl reload caddy" in lines
+
+
+def test_patched_update_script_still_passes_bash_syntax_check(tmp_path):
+    """bash -n over the real guarded script: the guard stays syntax-clean."""
+    script_copy = tmp_path / "update.sh"
+    script_copy.write_text(SCRIPT, encoding="utf-8")
+    completed = subprocess.run(
+        ["bash", "-n", str(script_copy)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+def _movers_before_mirror_block():
+    begin = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
+    end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", begin)
+    return SCRIPT[begin:end] + "\nprintf 'MIRROR_ADMITTED\\n' >> \"$FAKE_LOG\"\n"
+
+
+@pytest.mark.parametrize("candidate_active,installed_active", [(True, True), (True, False), (False, True)])
+def test_movers_stale_generated_pair_cannot_mirror_over_trusted_route(tmp_path, candidate_active, installed_active):
+    # Includes unchanged installed Caddy: its normal diff block would be skipped.
+    candidate = CANDIDATE_CADDY_WITH_MATCHER if candidate_active else CANDIDATE_CADDY_WITHOUT_MATCHER
+    installed = candidate if installed_active and candidate_active else (CANDIDATE_CADDY_WITH_MATCHER if installed_active else INSTALLED_BASELINE_CADDY)
+    result, app, _, log = _run_caddy_block(
+        tmp_path, _movers_before_mirror_block(), candidate=candidate, installed=installed,
+        source_body=COHERENT_MOVERS_BODY, generated_body=STALE_MOVERS_BODY,
+        served_body=COHERENT_MOVERS_BODY,
+    )
+    assert result.returncode != 0
+    assert "refusing site mirror" in result.stderr
+    assert _action_lines(log) == []
+    assert (app / "site.served/movers.html").read_text() == COHERENT_MOVERS_BODY
+
+
+@pytest.mark.parametrize("active", [True, False])
+def test_movers_pre_mirror_pair_admission_preserves_good_and_unrelated_updates(tmp_path, active):
+    candidate = CANDIDATE_CADDY_WITH_MATCHER if active else CANDIDATE_CADDY_WITHOUT_MATCHER
+    body = COHERENT_MOVERS_BODY if active else STALE_MOVERS_BODY
+    result, _, _, log = _run_caddy_block(
+        tmp_path, _movers_before_mirror_block(), candidate=candidate, installed=candidate,
+        source_body=body, generated_body=body, served_body=STALE_MOVERS_BODY,
+    )
+    assert result.returncode == 0, result.stderr
+    assert _action_lines(log) == ["MIRROR_ADMITTED", "BLOCK_COMPLETED"]
+
+
+def test_movers_pre_mirror_guard_precedes_every_site_rsync():
+    start = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
+    end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", start)
+    rsync = SCRIPT.index('rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"')
+    assert start < end < rsync < SCRIPT.index(CADDY_DIFF_LINE)
+
+
+# END MOVERS_SEO_REDIRECT_CADDY_GUARD_REGRESSIONS
 
 
 def test_full_site_builder_guards_help_as_an_additive_public_page() -> None:
@@ -115,7 +596,7 @@ def test_admin_import_closure_generation_forces_same_cycle_restart():
     )
     assert (
         "Environment=MMX_ADMIN_IMPORT_CLOSURE_GENERATION="
-        "2026-08-09-prophet-integrity-v1"
+        "2026-10-11-billing-catalog-v1"
     ) in unit
 
     reconcile = SCRIPT.index('cmp -s "$APP_DIR/admin/deploy/admin.service"')
@@ -171,6 +652,85 @@ def test_api_restart_transaction_precedes_w2c_runtime_attestation():
     assert "API_RESTART_CONFIRMED=1" in transaction
     assert "mm_write_api_fence_marker" in transaction
     assert "w2c_start_owner_chain" not in transaction
+
+
+@pytest.mark.parametrize(
+    ("unit_differs", "changed", "unit_valid", "expected_restart"),
+    [
+        (True, "", True, True),
+        (False, "config/plans.yml", True, True),
+        (False, "app/billing.py", True, True),
+        (False, "site/news.html", True, False),
+        (True, "", False, False),
+    ],
+)
+def test_admin_adopts_before_unrelated_w2c_failure(
+    tmp_path: Path, unit_differs, changed, unit_valid, expected_restart
+):
+    """Run the actual admin transaction and W2C exit in their source order.
+
+    The old updater exits before installing the admin unit, even on a later
+    empty-CHANGED tick. Keep that W2C refusal while allowing admin to adopt.
+    Only systemd is simulated; comparison and unit installation use real files.
+    """
+    app = tmp_path / "app"
+    source = app / "admin/deploy/admin.service"
+    source.parent.mkdir(parents=True)
+    source.write_text("reviewed admin generation\n")
+    installed = tmp_path / "installed-admin.service"
+    installed.write_text("old generation\n" if unit_differs else source.read_text())
+    events = tmp_path / "events"
+    start = SCRIPT.index("ADMIN_UNIT_UPDATED=0")
+    restart = SCRIPT.index("\tsystemctl is-enabled admin ", start)
+    end = SCRIPT.index("\nfi", restart) + len("\nfi")
+    admin = SCRIPT[start:end].replace(
+        "/etc/systemd/system/admin.service", shlex.quote(str(installed))
+    )
+    failure_start = SCRIPT.index('if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then')
+    failure_end = SCRIPT.index("# END W1B5_TIMER_FINALIZATION", failure_start)
+    refusal = SCRIPT[failure_start:failure_end]
+    freeze_start = SCRIPT.index("# BEGIN W2C_LANE_FREEZE\n")
+    freeze = SCRIPT[freeze_start : SCRIPT.index("# END W2C_LANE_FREEZE", freeze_start)]
+    exit_start = SCRIPT.index("# BEGIN DEPLOY_EXIT_STATUS\n")
+    exit_status = SCRIPT[exit_start : SCRIPT.index("# END DEPLOY_EXIT_STATUS", exit_start)]
+    ordered = "\n".join(
+        block
+        for _, block in sorted(
+            [
+                (start, admin),
+                (freeze_start, freeze),
+                (failure_start, refusal),
+                (exit_start, exit_status),
+            ]
+        )
+    )
+    harness = f"""
+set -eu
+APP_DIR={shlex.quote(str(app))}
+RECONCILED=0
+MARKET_MEMORY_EXPERIENCE_ATTESTED=0
+OPTIONS_RECONCILIATION_COMPLETE=0
+trap 'echo "exit-options-complete=$OPTIONS_RECONCILIATION_COMPLETE" >> "$EVENTS"' EXIT
+systemctl() {{ echo "$*" >> "$EVENTS"; }}
+systemd-analyze() {{ [ "$UNIT_VALID" = 1 ]; }}
+{ordered}
+"""
+    result = subprocess.run(
+        ["bash", "-c", harness], text=True, capture_output=True,
+        env={**os.environ, "EVENTS": str(events), "CHANGED": changed,
+             "UNIT_VALID": "1" if unit_valid else "0"},
+    )
+    assert result.returncode == 1
+    assert "W2C installation and terminal state were not authenticated" in result.stderr
+    observed = events.read_text().splitlines()
+    assert observed[-1] == "exit-options-complete=0"
+    assert ("restart admin" in observed) is expected_restart
+    assert not any("market-memory" in event or "timer" in event for event in observed)
+    assert installed.read_text() == (
+        source.read_text() if unit_valid or not unit_differs else "old generation\n"
+    )
+    if unit_differs and unit_valid:
+        assert observed.index("daemon-reload") < observed.index("restart admin")
 
 
 # --------------------------------------------------------------------------
@@ -246,6 +806,8 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Today contract validator caches the source schema across requests.
+    "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
@@ -256,7 +818,12 @@ MUST_RESTART = [
     "app/requirements.txt",
     "app/deploy/macro-api.service",
     "config/site_access.yml",
+    # app.billing holds the issuer's plan/features catalog for the process life.
+    "config/plans.yml",
     "engine/neuralweb/market_memory_playback.py",
+    "engine/neuralweb/market_memory_retained_catalog.py",
+    "engine/neuralweb/market_memory_retained_saved.py",
+    "engine/neuralweb/market_memory_retained_legacy_guard.py",
     # Private Issue Desk router import-caches both its engine and strict schemas.
     "engine/options_issue_desk.py",
     "contracts/options/options.issue_desk.v1.schema.json",
@@ -264,6 +831,7 @@ MUST_RESTART = [
     "contracts/options/options.issue_desk_decision.v1.schema.json",
     "contracts/options/options.issue_receipt.v1.schema.json",
     "lib/nyse_calendar.py",
+    "lib/us_cash_calendar.py",  # Request-time US settle-window import in live_quotes.
     # research vault serving layer — imported at MODULE level by app/research.py.
     # These were the 2026-07-26 gap: download caps / anti-scrape limits / watermark
     # policy deployed to the VPS and stayed dead until an unrelated app/ change.
@@ -289,6 +857,18 @@ MUST_RESTART = [
     "engine/government_revenue/candidates.py",
     "engine/government_revenue/idv_dossiers.py",
     "engine/government_revenue/subaward_dossiers.py",
+    "engine/government_revenue/sbir_progression.py",
+    "engine/government_revenue/defense_economics.py",
+    "engine/government_revenue/defense_interpretation.py",
+    "engine/government_revenue/research_state.py",
+    "engine/government_revenue/candidate_grader.py",
+    "engine/government_revenue/program_theme_publication.py",
+    "engine/government_revenue/program_theme_context.py",
+    "engine/government_revenue/program_theme_disclosure.py",
+    "engine/government_revenue/program_ontology.py",
+    "engine/government_revenue/budget_allocation_context.py",
+    "engine/government_revenue/identity_atlas.py",
+    "contracts/government_revenue/government_revenue_identity_atlas.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_historical_suppressions.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json",
@@ -314,6 +894,8 @@ MUST_RESTART = [
     "engine/neuralweb/ask_brain.py",
     "engine/neuralweb/chat_plain_words.py",
     "engine/neuralweb/brain_gateway.py",
+    "engine/risk_envelope.py",
+    "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
@@ -399,6 +981,7 @@ MUST_RESTART = [
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.
 MUST_NOT_RESTART = [
+    "site/macrodata/workspaces/manifest.json",
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
     # rendered site + data artifacts are read from disk per request
@@ -420,6 +1003,12 @@ MUST_NOT_RESTART = [
     # schemas read WITHOUT lru_cache re-read the file per call and self-heal
     # without a restart; the v1 procurement generation is nightly-only
     "contracts/government_revenue/government_budget_program_graph.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_context.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_public_disclosure.v1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1.schema.json",
+    "contracts/government_revenue/government_budget_program_graph.v1_1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1_1.schema.json",
+    "contracts/government_revenue/defense_economics.v1.schema.json",
     "contracts/government_revenue/government_procurement_event.v1.schema.json",
     # API candidate cache includes this exact path's mtime/size and re-hashes
     # the manifest on every cache miss; config review does not need a restart.
@@ -487,6 +1076,10 @@ ADMIN_MUST_RESTART = [
     "admin/mastermind_logs.py",
     "admin/prophet.py",
     "admin/trade_memory.py",
+    # The authenticated entitlement panel lazily imports the existing billing
+    # writer, including its process-cached catalog; an API restart is separate.
+    "app/billing.py",
+    "config/plans.yml",
     # outbox approve / reject / decide endpoints (admin/marketing.py).  This was
     # the 2026-07-26 gap: an outbox.py fix deployed to the VPS and the running
     # panel kept serving the previous module, with no signal.
@@ -558,6 +1151,10 @@ ADMIN_MUST_NOT_RESTART = [
     "app/research.py",
     "lib/config.py",
     "scripts/build_site.py",
+    "engine/research_codegen/transport.py",
+    "engine/experiments_registry.py",
+    "data/research_factory/review/queue.json",
+    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -807,6 +1404,19 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
     )
 
 
+def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
+    """Only the GMI API's actual import-cached modules need the API restart."""
+    for path in (
+        "engine/market_ontology/__init__.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/bea_gvc_current.py",
+    ):
+        assert _triggers_restart(path), path
+    # Other ontology research modules are not imported by macro-api on startup.
+    # Adding a blanket directory regex would restart on research-only changes.
+    assert not _triggers_restart("engine/market_ontology/mining_theme_research.py")
+
+
 def test_load_time_closure_probe_is_not_vacuous():
     """Guard the guard: an AST/glob regression must not silently pass the above."""
     closure = _api_load_time_closure()
@@ -940,6 +1550,11 @@ def test_admin_closure_probe_is_not_vacuous():
     # __init__ -> state -> the substrate
     assert "engine/marketing/__init__.py" in closure, closure
     assert "engine/marketing/state.py" in closure, closure
+    # Read-only diagnostic validation loads the bridge and its direct contracts.
+    assert "engine/research_codegen/bridge.py" in closure
+    assert "engine/research_codegen/input_contract.py" in closure
+    assert "engine/research_codegen/evaluation.py" in closure
+    assert "engine/research_codegen/transport.py" not in closure
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure

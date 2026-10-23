@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-08-30T18:25:47Z",
+  "as_of": "2026-10-18T17:51:09Z",
   "orders": [
     {
       "id": "missing_description",
@@ -13,14 +13,14 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add meta description to all core pages",
       "falsifiable_check": "grep 'name=.description' in page source — should be present"
     },
@@ -34,15 +34,15 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
         "status.html",
-        "stock.html",
-        "tech_lab.html"
+        "stock.html"
       ],
-      "pages_count": 26,
+      "pages_count": 27,
       "suggested_fix": "Add rel=canonical to all public pages",
       "falsifiable_check": "Check page in browser: view-source should show rel=canonical in <head>"
     },
@@ -69,8 +69,21 @@
       "falsifiable_check": "Load page; canonical URL in <head> should match page URL"
     },
     {
-      "id": "missing_title",
+      "id": "duplicate_title",
       "priority": 4,
+      "title": "Make titles unique across pages",
+      "class": "duplicate_title",
+      "severity": "high",
+      "pages": [
+        "capital_structure.html"
+      ],
+      "pages_count": 1,
+      "suggested_fix": "Make titles unique across pages",
+      "falsifiable_check": "Run duplicate-title check: zero duplicates expected"
+    },
+    {
+      "id": "missing_title",
+      "priority": 5,
       "title": "Add <title> element to pages",
       "class": "missing_title",
       "severity": "high",
@@ -83,7 +96,7 @@
     },
     {
       "id": "missing_og",
-      "priority": 5,
+      "priority": 6,
       "title": "Add og:title, og:description, og:image to all pages",
       "class": "missing_og",
       "severity": "medium",
@@ -92,30 +105,16 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add og:title, og:description, og:image to all pages",
       "falsifiable_check": "Open Graph debugger or grep meta property=og: — all three present"
-    },
-    {
-      "id": "title_length",
-      "priority": 6,
-      "title": "Adjust title length to 15-70 chars",
-      "class": "title_length",
-      "severity": "medium",
-      "pages": [
-        "stock_seasonality.html",
-        "watchlist.html"
-      ],
-      "pages_count": 2,
-      "suggested_fix": "Adjust title length to 15-70 chars",
-      "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
     },
     {
       "id": "desc_length",
@@ -124,15 +123,35 @@
       "class": "desc_length",
       "severity": "medium",
       "pages": [
+        "crypto.html",
+        "macro_capital_structure.html",
+        "macro_consumer_payments.html",
+        "macro_monetary.html",
+        "sanctions_map.html",
         "stock_seasonality.html"
       ],
-      "pages_count": 1,
+      "pages_count": 6,
       "suggested_fix": "Adjust description length to 50-170 chars",
       "falsifiable_check": "Measure len(desc) for each page; assert 50 <= len <= 170"
     },
     {
-      "id": "duplicate_description",
+      "id": "title_length",
       "priority": 8,
+      "title": "Adjust title length to 15-70 chars",
+      "class": "title_length",
+      "severity": "medium",
+      "pages": [
+        "consumer_cyclical_plnt.html",
+        "stock_seasonality.html",
+        "watchlist.html"
+      ],
+      "pages_count": 3,
+      "suggested_fix": "Adjust title length to 15-70 chars",
+      "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
+    },
+    {
+      "id": "duplicate_description",
+      "priority": 9,
       "title": "Make meta descriptions unique across pages",
       "class": "duplicate_description",
       "severity": "medium",
@@ -145,7 +164,7 @@
     },
     {
       "id": "missing_lang",
-      "priority": 9,
+      "priority": 10,
       "title": "Add lang attribute to <html> element",
       "class": "missing_lang",
       "severity": "medium",
@@ -155,6 +174,19 @@
       "pages_count": 1,
       "suggested_fix": "Add lang attribute to <html> element",
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
+    },
+    {
+      "id": "page_weight",
+      "priority": 11,
+      "title": "Reduce HTML page weight to <2.5 MB",
+      "class": "page_weight",
+      "severity": "low",
+      "pages": [
+        "intl.html"
+      ],
+      "pages_count": 1,
+      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
+      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
     }
   ]
 }

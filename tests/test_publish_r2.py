@@ -10,6 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from scripts.publish_r2 import _data_dir_syncable, _manifest_doc, _manifest_ok, main
 
 
@@ -527,17 +529,18 @@ def test_index_gex_history_in_data_dirs_not_default():
 
 
 def test_index_gex_history_uses_a_store_sized_min_files_floor():
-    """The 100-file default would refuse this store forever — it is exactly 4 root
-    parquets plus a manifest. The floor is 5, i.e. ALL FOUR ROOTS AND the manifest: a
-    floor of 4 would have passed a three-roots-plus-manifest tree, which is exactly the
-    partial rebuild this guard exists to refuse."""
+    """The 100-file default would refuse this store forever. _uploadable drops
+    _manifest.json before the floor, so the count is uploadable parquets: the four
+    roots SPY, QQQ, IWM, and DIA. The floor is 4. Three uploadable parquets is the
+    partial rebuild this guard refuses. Five counted the manifest that is already
+    excluded."""
     from scripts.publish_r2 import _DATA_DIR_MIN_FILES, _DATA_DIR_MIN_FILES_OVERRIDE
-    assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] == 5
+    assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] == 4
     assert _DATA_DIR_MIN_FILES_OVERRIDE["index_gex_history"] < _DATA_DIR_MIN_FILES
-    # a real store (4 roots + manifest) syncs
-    assert _data_dir_syncable("index_gex_history", 5, total_bytes=846_000)[0]
-    # three roots + manifest is a PARTIAL rebuild and must not
-    ok, why = _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)
+    # four uploadable root parquets (manifest already excluded) sync
+    assert _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)[0]
+    # three uploadable parquets is a PARTIAL rebuild and must not
+    ok, why = _data_dir_syncable("index_gex_history", 3, total_bytes=846_000)
     assert not ok and "partial checkout" in why
     ok, why = _data_dir_syncable("index_gex_history", 2, total_bytes=846_000)
     assert not ok and "partial checkout" in why
@@ -551,11 +554,11 @@ def test_index_gex_history_has_the_deep_history_fences():
                                     _append_only_guarded)
     assert "index_gex_history" in _APPEND_ONLY_DIRS
     assert _DATA_DIR_MIN_BYTES["index_gex_history"] == 600_000
-    # a one-root rebuild (~210 KB + manifest) is under the floor even with 5 files
-    ok, why = _data_dir_syncable("index_gex_history", 5, total_bytes=220_000)
+    # under the byte floor even when all four uploadable parquets are present
+    ok, why = _data_dir_syncable("index_gex_history", 4, total_bytes=220_000)
     assert not ok and "shallow rebuild" in why
-    # the real store clears it
-    assert _data_dir_syncable("index_gex_history", 5, total_bytes=846_000)[0]
+    # the real four-parquet store clears it; the manifest is not in this total
+    assert _data_dir_syncable("index_gex_history", 4, total_bytes=846_000)[0]
     # per-file: a shorter local parquet must never clobber the R2 object
     assert _append_only_guarded("index_gex_history", 60_000, 210_000)
     assert not _append_only_guarded("index_gex_history", 212_000, 210_000)
@@ -570,9 +573,224 @@ def test_min_files_override_does_not_loosen_the_other_data_dirs():
     hollowed out for a store that should have kept it).
     """
     from scripts.publish_r2 import _DATA_DIR_MIN_FILES_OVERRIDE
-    assert set(_DATA_DIR_MIN_FILES_OVERRIDE) == {"index_gex_history", "price_pressure"}
+    assert set(_DATA_DIR_MIN_FILES_OVERRIDE) == {
+        "index_gex_history",
+        "options_payoff_lab",
+        "options_skew",
+        "price_pressure",
+    }
     assert not _data_dir_syncable("massive_stock_day", 5)[0]
     assert not _data_dir_syncable("thetadata_eod", 5)[0]
+
+
+def _index_history_files(directory: Path, n_files: int, each: int) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    for i in range(n_files):
+        (directory / f"R{i}.parquet").write_bytes(b"x" * each)
+    (directory / "_manifest.json").write_text("{}", encoding="utf-8")
+
+
+def _write_index_root_parquets(directory: Path, names: tuple[str, ...], each: int) -> None:
+    """Exact root parquets plus the collector manifest. The manifest is on disk
+    and excluded from the uploadable set before the file and byte floors."""
+    directory.mkdir(parents=True, exist_ok=True)
+    for name in names:
+        (directory / f"{name}.parquet").write_bytes(b"x" * each)
+    (directory / "_manifest.json").write_text("{}", encoding="utf-8")
+
+
+_INDEX_HISTORY_ROOTS = ("SPY", "QQQ", "IWM", "DIA")
+
+
+def _patch_publish_roots(monkeypatch, tmp_path: Path):
+    import lib.config as config
+    import scripts.publish_r2 as pr2
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        config,
+        "load",
+        lambda: {"storage": {"site_dir": "site", "data_dir": "data"}},
+    )
+    monkeypatch.setenv("R2_BUCKET", "test-bucket")
+    return pr2
+
+
+def _publish_index_roots(tmp_path, monkeypatch, names: tuple[str, ...], each: int):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    store = tmp_path / "data" / "index_gex_history"
+    _write_index_root_parquets(store, names, each)
+    s3 = _FakeS3()
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.delenv("INDEX_GEX_HISTORY_STORE", raising=False)
+    return pr2, s3
+
+
+def test_index_gex_history_four_root_parquets_upload_and_do_not_skip(tmp_path, monkeypatch, caplog):
+    """SPY, QQQ, IWM, DIA plus _manifest.json, each parquet large enough that the
+    four uploadable files clear 600 KB. The manifest stays out of the delta pass.
+    All four keys upload and none are content-hash skipped."""
+    pr2, s3 = _publish_index_roots(tmp_path, monkeypatch, _INDEX_HISTORY_ROOTS, 200_000)
+    with caplog.at_level("INFO", logger="publish_r2"):
+        assert pr2.publish(["index_gex_history"]) == 0
+    assert sorted(s3.uploaded) == [
+        "index_gex_history/DIA.parquet",
+        "index_gex_history/IWM.parquet",
+        "index_gex_history/QQQ.parquet",
+        "index_gex_history/SPY.parquet",
+    ]
+    assert not any(key.endswith("_manifest.json") for key in s3.uploaded)
+    assert "dir skipped" not in caplog.text
+    assert "4 uploaded, 0 unchanged, 0 failed" in caplog.text
+    doc = json.loads(s3.put_bodies[0])
+    assert doc["count"] == 4
+    assert doc["files"] == ["DIA.parquet", "IWM.parquet", "QQQ.parquet", "SPY.parquet"]
+
+
+def test_index_gex_history_three_roots_plus_manifest_skips_with_zero_uploads(
+        tmp_path, monkeypatch, capsys):
+    """Exactly three root parquets plus the manifest is under the uploadable floor.
+    The directory is skipped and nothing is uploaded, including the manifest."""
+    pr2, s3 = _publish_index_roots(
+        tmp_path, monkeypatch, ("SPY", "QQQ", "IWM"), 200_000)
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+    err = capsys.readouterr().out
+    assert "dir skipped" in err
+    assert "partial checkout" in err
+
+
+def test_index_gex_history_four_roots_under_byte_floor_still_refuses(
+        tmp_path, monkeypatch, capsys):
+    """The file floor is not a substitute for the 600 KB floor. Four roots plus
+    the manifest still refuse when the uploadable bytes are short."""
+    pr2, s3 = _publish_index_roots(tmp_path, monkeypatch, _INDEX_HISTORY_ROOTS, 100_000)
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+    err = capsys.readouterr().out
+    assert "dir skipped" in err
+    assert "shallow rebuild" in err
+
+
+def test_index_gex_history_store_override_is_selected_dir_only(tmp_path, monkeypatch):
+    """A set INDEX_GEX_HISTORY_STORE replaces only that directory's local source."""
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    default = tmp_path / "data" / "index_gex_history"
+    _index_history_files(default, 5, 150_000)
+    (default / "FROM_DEFAULT.parquet").write_bytes(b"d" * 150_000)
+    override = tmp_path / "physical-index"
+    _index_history_files(override, 5, 150_000)
+    s3 = _FakeS3()
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", str(override))
+    assert pr2.publish(["index_gex_history"], manifest=False) == 0
+    uploaded = sorted(s3.uploaded)
+    assert uploaded == [f"index_gex_history/R{i}.parquet" for i in range(5)]
+    assert not any("FROM_DEFAULT" in key for key in uploaded)
+    assert s3.manifest_puts == []
+
+
+def test_index_gex_history_store_unset_keeps_the_repo_data_dir(tmp_path, monkeypatch):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    default = tmp_path / "data" / "index_gex_history"
+    _index_history_files(default, 5, 150_000)
+    other = tmp_path / "ignored-physical"
+    _index_history_files(other, 5, 150_000)
+    s3 = _FakeS3()
+    seen = []
+
+    def _spy(*a, **k):
+        seen.append(True)
+        return s3
+
+    monkeypatch.setattr(pr2, "_client", _spy)
+    monkeypatch.delenv("INDEX_GEX_HISTORY_STORE", raising=False)
+    assert pr2.publish(["index_gex_history"], manifest=False) == 0
+    assert seen == [True]
+    assert sorted(s3.uploaded) == [f"index_gex_history/R{i}.parquet" for i in range(5)]
+
+
+@pytest.mark.parametrize(
+    "raw",
+    ["", "   ", "\t", "relative/index", "data/index_gex_history"],
+)
+def test_index_gex_history_store_invalid_fails_before_client(tmp_path, monkeypatch, raw):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    if raw == "data/index_gex_history":
+        _index_history_files(tmp_path / raw, 5, 150_000)
+    seen = []
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: seen.append(True))
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", raw)
+    with pytest.raises(SystemExit, match="absolute existing directory"):
+        pr2.publish(["index_gex_history"])
+    assert seen == []
+
+
+def test_index_gex_history_store_missing_or_file_fails_before_client(tmp_path, monkeypatch):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    missing = tmp_path / "missing-store"
+    marker = tmp_path / "not-a-directory"
+    marker.write_text("x", encoding="utf-8")
+    seen = []
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: seen.append(True))
+    for raw in (str(missing), str(marker)):
+        seen.clear()
+        monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", raw)
+        with pytest.raises(SystemExit, match="absolute existing directory"):
+            pr2.publish(["index_gex_history"])
+        assert seen == []
+    assert not missing.exists()
+
+
+def test_index_gex_history_store_is_ignored_when_the_dir_is_not_selected(tmp_path, monkeypatch):
+    s3 = _FakeS3()
+    pr2 = _wire_fake_tree(tmp_path, monkeypatch, s3, ["A.json"])
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", "")
+    assert pr2.publish(["stockdata"]) == 0
+    assert s3.uploaded == ["stockdata/A.json"]
+
+
+def test_index_gex_history_store_keeps_the_file_and_byte_floors(tmp_path, monkeypatch):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    short = tmp_path / "short-files"
+    _index_history_files(short, 2, 200_000)
+    shallow = tmp_path / "shallow-bytes"
+    _index_history_files(shallow, 5, 1_000)
+    s3 = _FakeS3()
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", str(short))
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", str(shallow))
+    assert pr2.publish(["index_gex_history"]) == 0
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_index_gex_history_store_keeps_the_append_only_guard(tmp_path, monkeypatch):
+    pr2 = _patch_publish_roots(monkeypatch, tmp_path)
+    store = tmp_path / "physical-index"
+    _index_history_files(store, 5, 150_000)
+
+    class _Remote(_FakeS3):
+        def list_objects_v2(self, **kw):
+            return {
+                "Contents": [{
+                    "Key": "index_gex_history/R0.parquet",
+                    "ETag": '"not-the-local-md5"',
+                    "Size": 10_000_000,
+                }],
+                "IsTruncated": False,
+            }
+
+    s3 = _Remote()
+    monkeypatch.setattr(pr2, "_client", lambda *a, **k: s3)
+    monkeypatch.setenv("INDEX_GEX_HISTORY_STORE", str(store))
+    assert pr2.publish(["index_gex_history"], manifest=False) == 0
+    assert "index_gex_history/R0.parquet" not in s3.uploaded
+    assert sorted(s3.uploaded) == [f"index_gex_history/R{i}.parquet" for i in range(1, 5)]
 
 
 def test_price_pressure_floors_separate_a_restored_store_from_a_bare_checkout():
@@ -854,3 +1072,181 @@ def test_symlinked_store_under_the_min_files_floor_is_still_refused(tmp_path, mo
     assert pr2.publish(["thetadata_eod"]) == 0
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+# Explicit single-record stock-library publication uses the incumbent path.
+from scripts import publish_r2 as p
+
+@pytest.mark.parametrize('dirs,manifest,force,ticker',[
+ (['stockdata'],True,False,'MU'),(['ohlc'],False,False,'MU'),
+ (['stockdata','ohlc'],False,False,'MU'),(['stockdata'],False,True,'MU'),
+ (['stockdata'],False,False,'../MU'),(['stockdata'],False,False,''),
+ (['stockdata'],False,False,'MU/OTHER'),(['stockdata'],False,False,True),
+])
+def test_invalid_scope_refused_before_client(monkeypatch,dirs,manifest,force,ticker):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError): p.publish(dirs,manifest=manifest,force_manifest=force,stock_ticker=ticker)
+
+def test_selected_stock_only_uses_native_upload_and_never_manifest(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (root/'MU.json').write_text('{"ticker":"MU"}')
+ (root/'OTHER.json').write_text('{"ticker":"OTHER"}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a,kw))
+  def put_object(self,*a,**kw):pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU')==0
+ assert len(calls)==1 and calls[0][0][2]=='stockdata/MU.json'
+ assert (root/'OTHER.json').read_text()=='{"ticker":"OTHER"}'
+
+def test_missing_or_symlink_record_is_not_noop(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no client'))
+ with pytest.raises(ValueError): p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (tmp_path/'real.json').write_text('{}');(root/'MU.json').symlink_to(tmp_path/'real.json')
+ with pytest.raises(ValueError):p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+
+
+def test_explicit_cli_selection_reaches_existing_publisher(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest','--stock-ticker','MU'])
+ assert p.main()==0
+ assert seen['stock_ticker']=='MU' and seen['manifest'] is False and seen['dirs']==['stockdata']
+
+
+# --- optional explicit input path: publish(..., stock_source_file=...) / --stock-source-file ---
+
+def test_explicit_source_uploads_exact_bytes_and_touches_nothing_else(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ site=tmp_path/'site'/'stockdata';site.mkdir(parents=True)
+ (site/'MU.json').write_text('{"ticker":"MU","configured":true}')
+ (site/'OTHER.json').write_text('{"ticker":"OTHER"}')
+ feed=tmp_path/'feed';feed.mkdir()
+ src=feed/'MU.json';src.write_text('{"ticker":"MU","canonical":"fresh"}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a,kw))
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ assert len(calls)==1 and calls[0][0][2]=='stockdata/MU.json' and calls[0][0][0]==str(src)
+ assert src.read_text()=='{"ticker":"MU","canonical":"fresh"}'
+ assert (site/'MU.json').read_text()=='{"ticker":"MU","configured":true}'
+ assert (site/'OTHER.json').read_text()=='{"ticker":"OTHER"}'
+
+def test_explicit_source_needs_no_configured_site_tree(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append(a[2])
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ assert calls==['stockdata/MU.json'] and not (tmp_path/'site').exists()
+
+def test_relative_source_path_keeps_path_text_out_of_object_key(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a[0],a[2]))
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ monkeypatch.chdir(tmp_path)
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file='feed/MU.json')==0
+ assert calls==[('feed/MU.json','stockdata/MU.json')]
+
+def test_explicit_source_still_requires_narrow_scope(tmp_path,monkeypatch):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ feed=tmp_path/'feed';feed.mkdir();(feed/'MU.json').write_text('{}')
+ with pytest.raises(ValueError):
+  p.publish(['ohlc'],manifest=False,stock_ticker='MU',stock_source_file=feed/'MU.json')
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=True,stock_ticker='MU',stock_source_file=feed/'MU.json')
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,force_manifest=True,stock_ticker='MU',stock_source_file=feed/'MU.json')
+
+def test_explicit_source_without_selector_refused(tmp_path,monkeypatch):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,stock_source_file=tmp_path/'MU.json')
+
+@pytest.mark.parametrize('mutation',['wrongname','missing','directory','selfsymlink','parentsymlink'])
+def test_bad_explicit_source_refused_before_client(tmp_path,monkeypatch,mutation):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json'
+ if mutation=='wrongname': src=feed/'NOPE.json';src.write_text('{}')
+ elif mutation=='missing': pass
+ elif mutation=='directory': src.mkdir()
+ elif mutation=='selfsymlink':
+  (tmp_path/'real.json').write_text('{}');src.symlink_to(tmp_path/'real.json')
+ elif mutation=='parentsymlink':
+  src.write_text('{}');(tmp_path/'link').symlink_to(feed);src=tmp_path/'link'/'MU.json'
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError):
+  p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)
+
+def test_explicit_source_hash_delta_skip_and_failure_exit(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ feed=tmp_path/'feed';feed.mkdir();src=feed/'MU.json';src.write_text('{"ticker":"MU"}')
+ sleeps=[];monkeypatch.setattr(p.time,'sleep',lambda s: sleeps.append(s))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ class SkipClient:
+  def upload_file(self,*a,**kw): pytest.fail('unchanged record must not re-upload')
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:SkipClient())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{'stockdata/MU.json':(p._md5(src),src.stat().st_size)})
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==0
+ class FailClient:
+  def upload_file(self,*a,**kw): raise OSError('synthetic transient')
+  def put_object(self,*a,**kw): pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:FailClient())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU',stock_source_file=src)==1
+ assert sleeps==[5,15]
+
+def test_cli_omits_stock_source_file_when_not_given(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest','--stock-ticker','MU'])
+ assert p.main()==0
+ assert 'stock_source_file' not in seen
+
+def test_cli_passes_stock_source_file_only_when_given(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest',
+                                 '--stock-ticker','MU','--stock-source-file','/tmp/feed/MU.json'])
+ assert p.main()==0
+ assert seen['stock_ticker']=='MU' and seen['stock_source_file']=='/tmp/feed/MU.json'

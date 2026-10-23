@@ -22,7 +22,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from engine.research_vault.sidecar import clean_title
+from engine.research_vault.sidecar import (
+    canon_institution,
+    clean_summary_points,
+    clean_title,
+    institution_is_desk,
+)
 
 log = logging.getLogger("research_vault.catalog")
 
@@ -316,7 +321,7 @@ def load(store) -> dict:
         if not isinstance(obj, dict) or not isinstance(obj.get("items"), list):
             log.warning("catalog malformed — starting fresh")
             return empty()
-        heal_titles(obj)
+        heal_display(obj)
         return obj
     except Exception as e:  # noqa: BLE001 — corrupt catalog: rebuild from empty
         log.warning("catalog parse failed (%s) — starting fresh", e)
@@ -349,12 +354,57 @@ def heal_titles(catalog: dict) -> int:
     return n
 
 
+def heal_summaries(catalog: dict) -> int:
+    """Strip markdown + rejoin split bullets on already-published rows."""
+    n = 0
+    for it in catalog.get("items") or []:
+        if not isinstance(it, dict):
+            continue
+        old = it.get("summary_points")
+        if not isinstance(old, list) or not old:
+            continue
+        new = clean_summary_points(old)
+        if new != old:
+            it["summary_points"] = new
+            n += 1
+    if n:
+        log.info("catalog: repaired %d summary_points list(s)", n)
+    return n
+
+
+def heal_institutions(catalog: dict) -> int:
+    """Canonicalize institution spellings on already-published rows. Never touches id."""
+    n = 0
+    for it in catalog.get("items") or []:
+        if not isinstance(it, dict):
+            continue
+        old = it.get("institution")
+        if not isinstance(old, str) or not old:
+            continue
+        new = canon_institution(old)
+        if new and new != old:
+            it["institution"] = new
+            n += 1
+    if n:
+        log.info("catalog: canonicalized %d institution name(s)", n)
+    return n
+
+
+def heal_display(catalog: dict) -> int:
+    """All public-surface heals for a catalog already on disk. Does not touch id."""
+    return heal_titles(catalog) + heal_summaries(catalog) + heal_institutions(catalog)
+
+
 def _public_item(item: dict) -> dict:
     """Project a normalized sidecar item to the public-safe catalog subset."""
     pub = {k: item.get(k) for k in _ITEM_FIELDS}
     # Belt-and-braces: normalize() already cleans, but the catalog is the last
     # stop before a title becomes public (page <title>, og:title, the crawl hub).
     pub["title"] = clean_title(pub.get("title")) or (pub.get("title") or "")
+    pub["summary_points"] = clean_summary_points(pub.get("summary_points") or [])
+    inst = canon_institution(str(pub.get("institution") or "").strip())
+    if inst:
+        pub["institution"] = inst
     return pub
 
 
@@ -385,6 +435,49 @@ def coverage(catalog: dict) -> dict[str, dict]:
     return out
 
 
+# A raw aggregate only: publication health remains owned by health(), and the
+# source-freshness policy stays in the existing source guard. No clock is stored.
+SOURCE_CLOCK_SCHEMA = "research_vault.source_clock.v1"
+
+
+def source_clock_summary(catalog: dict) -> dict[str, Any]:
+    """Project complete-source clocks without exposing IDs, text or object keys.
+
+    Call on the full catalog before preview truncation. Missing/malformed rows
+    count as invalid, not as zero-aged research. Dates without offsets preserve
+    the existing UTC interpretation. This function does not mutate the catalog,
+    apply age policy, read a store, or change Wave-4 validation/publication rules.
+    """
+    rows = catalog.get("items")
+    complete = isinstance(rows, list) and catalog.get("preview") is not True
+    if not isinstance(rows, list):
+        rows = []
+    latest = None
+    valid = 0
+    for row in rows:
+        value = row.get("published_at") if isinstance(row, dict) else None
+        if not isinstance(value, str) or not value.strip():
+            continue
+        try:
+            stamp = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+            if stamp.tzinfo is None:
+                stamp = stamp.replace(tzinfo=timezone.utc)
+            stamp = stamp.astimezone(timezone.utc)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        valid += 1
+        if latest is None or stamp > latest:
+            latest = stamp
+    return {
+        "schema": SOURCE_CLOCK_SCHEMA,
+        "complete": complete,
+        "report_count": len(rows),
+        "valid_clock_count": valid,
+        "invalid_clock_count": len(rows) - valid,
+        "latest_report_published_at": latest.isoformat() if latest is not None else None,
+    }
+
+
 def public_summary(catalog: dict, now: datetime | None = None) -> dict[str, Any]:
     """Return public-safe whole-vault aggregates for preview and full clients.
 
@@ -406,14 +499,14 @@ def public_summary(catalog: dict, now: datetime | None = None) -> dict[str, Any]
     ]
 
     week_desks = {
-        str(item.get("institution") or "").strip()
+        canon_institution(str(item.get("institution") or "").strip())
         for item in week
-        if str(item.get("institution") or "").strip() not in ("", "Unknown")
+        if institution_is_desk(canon_institution(str(item.get("institution") or "").strip()))
     }
     institution_counts: dict[str, int] = {}
     for item in items:
-        name = str(item.get("institution") or "").strip()
-        if name and name != "Unknown":
+        name = canon_institution(str(item.get("institution") or "").strip())
+        if institution_is_desk(name):
             institution_counts[name] = institution_counts.get(name, 0) + 1
 
     theme_pool = week if week else items
@@ -437,6 +530,7 @@ def public_summary(catalog: dict, now: datetime | None = None) -> dict[str, Any]
         )
     ]
     return {
+        "source_clock": source_clock_summary(catalog),
         "total": len(items),
         "new_this_week": len(week),
         "desks_this_week": len(week_desks),
@@ -484,8 +578,11 @@ def _reindex(catalog: dict) -> None:
     items.sort(key=lambda it: (it.get("published_at") or ""), reverse=True)
     catalog["schema"] = SCHEMA
     catalog["count"] = len(items)
-    insts = sorted({(it.get("institution") or "").strip()
-                    for it in items if (it.get("institution") or "").strip()})
+    insts = sorted({
+        canon_institution((it.get("institution") or "").strip())
+        for it in items
+        if institution_is_desk(canon_institution((it.get("institution") or "").strip()))
+    })
     catalog["institutions"] = insts
 
 
@@ -508,8 +605,40 @@ class CatalogPublishResult:
     error: str = ""
 
 
-def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublishResult:
-    """Stamp ``generated_at``, serialize, and atomically put to the store.
+def ensure_generation_write_allowed(store) -> None:
+    """Protect existing generation even when a caller omits it from its input.
+
+    A session guard checks current catalog before this producer's write. This
+    check is not a fence against unadopted concurrent or delayed object writers;
+    those must still settle before protocol qualification.
+    """
+    session = getattr(store, "generation_session", None)
+    if session is not None:
+        session.assert_current()
+        return
+    reader = getattr(store, "get_bytes_strict_bounded", None)
+    if not callable(reader):
+        raise RuntimeError("canonical write requires strict current catalog read")
+    existing = reader(CATALOG_KEY, 16 * 1024 * 1024)
+    if existing is None:
+        return
+    if type(existing) is not bytes:
+        raise RuntimeError("current catalog read unavailable")
+    document = json.loads(existing.decode("utf-8"))
+    if not isinstance(document, dict):
+        raise RuntimeError("current catalog unavailable")
+    if "producer_generation" in document:
+        raise RuntimeError("generation-bearing catalog requires adopted writer session")
+
+
+def prepare_publication(catalog: dict, now: datetime | None = None) -> bytes:
+    """Freeze the ordinary publication fields before a generation's batch starts."""
+    return serialize(catalog, now=now)
+
+
+def publish(store, catalog: dict, now: datetime | None = None, *,
+            prepared_bytes: bytes | None = None) -> CatalogPublishResult:
+    """Publish a normal stamped catalog, or preserve an already captured stamp.
 
     Serialization mirrors the atomic-JSON idiom (indent=2, ensure_ascii=False,
     trailing newline) and happens whether or not the put succeeds, so a caller can
@@ -521,10 +650,24 @@ def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublish
     Never raises: a store that throws is reported as a failed publish, because the
     caller's correct response is identical either way (do not advance anything).
     """
-    _reindex(catalog)
-    catalog["generated_at"] = _now_iso(now)
-    data = (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    session = getattr(store, "generation_session", None)
+    # A captured generation batch already froze its stamp and normalized body.
+    # Preserve it across corpus publication; never invent a later visibility cut.
+    data = (prepare_publication(catalog, now) if prepared_bytes is None else
+            prepared_bytes if type(prepared_bytes) is bytes else b"")
     try:
+        ensure_generation_write_allowed(store)
+        if prepared_bytes is not None:
+            if session is None:
+                raise RuntimeError("prepared catalog requires an adopted writer session")
+            if type(prepared_bytes) is not bytes:
+                raise RuntimeError("prepared catalog must be bytes")
+            if session.prepare_catalog(catalog) != prepared_bytes:
+                raise RuntimeError("prepared catalog changed before publication")
+        elif session is not None:
+            data = session.prepare_catalog(catalog)
+        elif "producer_generation" in catalog:
+            raise RuntimeError("generation-bearing catalog requires adopted writer session")
         ok = bool(store.put_bytes(CATALOG_KEY, data, "application/json"))
         detail = getattr(store, "last_put_error", None)
         error = "" if ok else f"store rejected the catalog put ({detail or 'no detail'})"
@@ -547,3 +690,36 @@ def serialize(catalog: dict, now: datetime | None = None) -> bytes:
     _reindex(catalog)
     catalog["generated_at"] = _now_iso(now)
     return (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+# Dedicated-read preview matches the historical public app rule. Ordinary app
+# delegation remains in the held full F11 consumer slice.
+PUBLIC_PREVIEW_COUNT = 3
+
+
+def preview_items(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list:
+    """Item slice of the public preview. Same rule as the historical app helper.
+
+    Summary-ready rows come first, in catalog order. When fewer than ``limit``
+    are ready, the rest of the catalog fills the slice, including duplicate ids,
+    blank ids and None items, and is not deduped. A non-dict item still raises,
+    matching the previous helper.
+    """
+    items = list(catalog.get("items") or [])
+    ready = [
+        item for item in items
+        if any(str(point or "").strip() for point in ((item or {}).get("summary_points") or []))
+    ]
+    preview = ready[:limit]
+    selected = {str((item or {}).get("id") or "") for item in preview}
+    if len(preview) < limit:
+        preview.extend(
+            item for item in items
+            if str((item or {}).get("id") or "") not in selected
+        )
+    return preview[:limit]
+
+
+def preview_ids(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list[str]:
+    """Ids of :func:`preview_items`, in the same order. Blank ids stay blank."""
+    return [str((item or {}).get("id") or "") for item in preview_items(catalog, limit)]

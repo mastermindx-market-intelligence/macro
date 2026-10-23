@@ -1,0 +1,38 @@
+# NOT IMPLEMENTED / NOT CLAIMED PASS. The comparator writer was platform-blocked before execution.
+# Preserved proposed regression cases for the next lawful same-project continuation.
+
+def _comparison_entry(f1, digest='a' * 64, events=4, n=10):
+    return {'f1': f1, 'n_days': n, 'evaluation': {
+        'definition': 'risk_radar_state_replay.v2', 'horizon_observations': 21,
+        'loss_threshold': .05, 'alert_from': 'elevated',
+        'outcomes_sha256': digest, 'n_events': events, 'n_nonevents': n - events}}
+
+def _comparability_comparison(results):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    with patch.object(bt, 'state_accuracy', side_effect=results), \
+         patch.object(bt, 'detect_events', return_value=[]), \
+         patch.object(bt, 'gate_report', return_value={}):
+        return bt.compare_calib({'legs': {}}, base={'legs': {}})
+
+def test_replay_comparability_different_dates_cannot_win():
+    results = [_comparison_entry(v) for v in (.2, .3, .4, .5)]
+    results[2]['evaluation']['outcomes_sha256'] = 'b' * 64
+    out = _comparability_comparison(results)
+    assert not out['improves'] and not out['comparison_ready']
+    assert 'full:population_mismatch' in out['comparison_reasons']
+
+def test_replay_comparability_no_event_contrast_cannot_win():
+    out = _comparability_comparison([_comparison_entry(v, events=0) for v in (.2, .3, .4, .5)])
+    assert not out['improves'] and not out['comparison_ready']
+
+def test_replay_comparability_missing_population_metadata_is_unknown():
+    out = _comparability_comparison([{'f1': v} for v in (.2, .3, .4, .5)])
+    assert not out['improves'] and not out['comparison_ready']
+
+def test_replay_comparability_complete_matching_population_keeps_rule():
+    for vals, expected in [((.2, .3, .4, .5), True), ((.2, .3, .2, .3), False),
+                            ((.2, .3, .1, .5), False)]:
+        out = _comparability_comparison([_comparison_entry(v) for v in vals])
+        assert out['comparison_ready'] and out['improves'] is expected
+        assert out['comparison_reasons'] == []

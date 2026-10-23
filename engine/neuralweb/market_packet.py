@@ -23,9 +23,9 @@ This module AGGREGATES.  It ORIGINATES nothing.
   moved together, here are the exact numbers") — they are display tier, they
   never gate anything, and each one carries the figures that fired it so the
   reader can check the claim.
-* No network.  No writes.  No clock in any payload: ``datetime`` is used only to
-  compare an artifact's own as-of stamp against now for staleness and event age,
-  never hashed, stored, or rendered as a fact.
+* No network.  No writes.  ``datetime`` is used for quote/event staleness and for
+  deterministic exchange-session clocks from the canonical calendars. ``build_packet``
+  accepts an injected ``now`` so historical tests never depend on the wall clock.
 * Honesty is the product.  Every rendered section starts with its own as-of
   stamp, and the header states whether the tape is live, delayed, or last
   session's close.  A block whose source is missing or corrupt is silently
@@ -62,13 +62,14 @@ source plus the budget, with a 60 s ceiling — the same mtime-cache idiom as
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import os
 import re
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -422,6 +423,17 @@ def _stamp(raw: object) -> str:
     return dt.strftime("%m-%d %H:%MZ")
 
 
+def _iso_date(raw: object) -> str | None:
+    """Validated YYYY-MM-DD prefix for artifact/session clocks, else None."""
+    text = str(raw or "").strip()
+    if len(text) < 10:
+        return None
+    try:
+        return datetime.strptime(text[:10], "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return None
+
+
 def _read_json(path: Path, gaps: list[str], tag: str) -> object | None:
     """Read + parse one artifact. Missing or corrupt -> None + an internal gap
     note. Never raises, never warns at INFO+ (this runs on every brain turn)."""
@@ -682,7 +694,84 @@ def _breadth_block(raw: object, gaps: list[str]) -> dict | None:
             "delay_min": _f(raw.get("delay_min")), "asof": raw.get("asof")}
 
 
-def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
+def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> dict | None:
+    """Read the existing pulse producer's measured interval; invent no detector."""
+    if (not isinstance(raw, dict) or raw.get("schema") != "basket_intraday_comparison.v1"
+            or raw.get("status") != "observed" or raw.get("benchmark") != "SPY"
+            or raw.get("method") != "matched_member_equal_weight"):
+        return None
+    count, total = raw.get("matched_members"), raw.get("total_members")
+    if type(count) is not int or type(total) is not int or not 0 < count <= total:
+        return None
+    fields = ("relative_change_pct", "absolute_change_pct", "benchmark_change_pct",
+              "coverage_pct", "elapsed_minutes")
+    try:
+        values = {key: _f(raw.get(key)) for key in fields}
+    except (OverflowError, ValueError):
+        return None
+    if any(value is None for value in values.values()):
+        return None
+    if any(abs(values[key]) > LEADERS_MAX_ABS_PCT for key in fields[:3]):
+        return None
+    if abs(values["coverage_pct"] - 100 * count / total) > 0.001:
+        return None
+    try:
+        start = datetime.fromisoformat(raw["reference_asof"])
+        end = datetime.fromisoformat(raw["source_asof"])
+        if start.tzinfo is None or end.tzinfo is None or end <= start:
+            return None
+        evaluated = now or datetime.now(timezone.utc)
+        if evaluated.tzinfo is None or evaluated.utcoffset() is None:
+            return None
+        age_minutes = (evaluated - end).total_seconds() / 60
+        if not 0 <= age_minutes <= QUOTES_STALE_MIN:
+            return None
+        elapsed = (end - start).total_seconds()
+        if abs(values["elapsed_minutes"] - elapsed / 60) > 1e-6:
+            return None
+        # Reuse the same session owner as the producer. Calendar date strings
+        # and a current build stamp cannot validate an overnight or holiday path.
+        from engine.session_digest import session_window_et
+        from lib.nyse_calendar import is_session
+        from zoneinfo import ZoneInfo
+        day = end.astimezone(ZoneInfo("America/New_York")).date()
+        if raw.get("session_date") != day.isoformat() or not is_session(day):
+            return None
+        opened, closed = session_window_et(day)
+        kind = raw.get("observation_kind", "regular")
+        if kind == "settled_regular":
+            # v1 settlement envelope: the existing producer's 90-second
+            # settlement tolerance, explicitly declared, never an AH session.
+            grace = _f(raw.get("settlement_tolerance_seconds"))
+            if (grace != 90 or evaluated < closed or end < closed - timedelta(minutes=1)
+                    or not opened <= start < end <= closed + timedelta(seconds=grace)):
+                return None
+        elif kind != "regular" or not opened <= start < end <= closed:
+            return None
+        skew = _f(raw.get("max_clock_skew_seconds"))
+        if skew is None or not 0 <= skew <= min(60, elapsed / 10):
+            return None
+        expected_relative = 100 * ((1 + values["absolute_change_pct"] / 100)
+                                   / (1 + values["benchmark_change_pct"] / 100) - 1)
+        # Producer rounds each return to 6 decimals; allow rounding, not a
+        # separately authored relative-performance value.
+        if abs(values["relative_change_pct"] - expected_relative) > 3e-6:
+            return None
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None
+    delivery = {}
+    if "delivery_state" in raw or "is_new_observation" in raw:
+        state, fresh = raw.get("delivery_state"), raw.get("is_new_observation")
+        if state not in ("new", "retained") or type(fresh) is not bool or fresh != (state == "new"):
+            return None
+        delivery = {"delivery_state": state, "is_new_observation": fresh}
+    # Explicit allowlist: scores, trade directions, confidence and targets never ride.
+    return {**values, **delivery, "matched_members": count, "total_members": total,
+            "observation_kind": kind, "max_clock_skew_seconds": skew,
+            "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
+
+
+def _leaders_block(raw: object, gaps: list[str], *, now: datetime | None = None) -> dict | None:
     """Today's strongest / weakest groups off the intraday basket pulse.
 
     SOURCE CHOICE — the intraday basket pulse (basket_pulse.v1, ~14 KB), the
@@ -726,10 +815,15 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
         gaps.append("leaders: no baskets")
         return None
     rows: list[dict] = []
+    intraday: list[dict] = []
     for b in rows_raw:
         if not isinstance(b, dict):
             continue
         bid = str(b.get("id") or "").strip()
+        comparison = _intraday_comparison_block(b.get("intraday_comparison"), now=now)
+        if bid and comparison is not None:
+            intraday.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
+                             **comparison})
         chg = _f(b.get("live_ew_chg_pct"))
         if not bid or chg is None:
             continue
@@ -738,7 +832,7 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
             continue
         rows.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
                      "change_pct": chg})
-    if not rows:
+    if not rows and not intraday:
         gaps.append("leaders: no group with a usable move")
         return None
 
@@ -746,12 +840,14 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
                 key=lambda r: -r["change_pct"])[:LEADERS_PER_SIDE]
     down = sorted((r for r in rows if r["change_pct"] < 0),
                   key=lambda r: r["change_pct"])[:LEADERS_PER_SIDE]
-    if not up and not down:
+    if not up and not down and not intraday:
         gaps.append("leaders: every group flat")
         return None
 
+    intraday = sorted(intraday, key=lambda r: -abs(r["relative_change_pct"]))[:2 * LEADERS_PER_SIDE]
     mode = str(raw.get("mode") or "").strip()
     return {"up": up, "down": down, "mode": mode,
+            **({"intraday": intraday} if intraday else {}),
             "mode_note": _LEADERS_MODE_NOTE.get(mode, ""),
             # as_of_quotes is the tape the moves were measured on; as_of_utc is
             # the build. The quote stamp is the one that says when the numbers
@@ -893,6 +989,25 @@ def _rates_block(raw: object) -> dict | None:
     }
     if not any(v not in (None, "") for k, v in block.items() if k != "asof"):
         return None
+    ro = raw.get("regime_outlook")
+    if isinstance(ro, dict) and ro.get("schema_version") == "regime_outlook.v1":
+        # E3: verbatim subset of the projection; family readings are deep-copied, never re-derived.
+        block["regime_outlook"] = {
+            "analysis_cutoff": ro.get("analysis_cutoff"),
+            "mapping_version": ro.get("mapping_version"),
+            "scope": ro.get("scope"),
+            "evidence_clock_range": copy.deepcopy(ro.get("evidence_clock_range")),
+            "paths": [
+                {
+                    "path_id": p.get("path_id"),
+                    "family": p.get("family"),
+                    "family_readings": copy.deepcopy(p.get("family_readings") or []),
+                }
+                for p in (ro.get("conditional_paths") or [])
+                if isinstance(p, dict)
+            ],
+            "source": "data/rates_command/latest.json#regime_outlook",
+        }
     return block
 
 
@@ -1132,7 +1247,7 @@ def _events_block(raw: object, now: datetime, gaps: list[str]) -> dict | None:
 # build_packet
 # ---------------------------------------------------------------------------
 
-def build_packet(root: Path) -> dict:
+def build_packet(root: Path, *, now: datetime | None = None) -> dict:
     """Assemble the packet from whatever is on disk. Never raises.
 
     Every block is independent: a missing or corrupt source removes THAT block
@@ -1143,7 +1258,11 @@ def build_packet(root: Path) -> dict:
     gaps: list[str] = packet["gaps"]
     try:
         live = _live_dir(root)
-        now = datetime.now(timezone.utc)
+        now = now or datetime.now(timezone.utc)
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=timezone.utc)
+        else:
+            now = now.astimezone(timezone.utc)
 
         quotes = _read_json(live / "quotes.json", gaps, "quotes")
         tape = curve = None
@@ -1201,7 +1320,7 @@ def build_packet(root: Path) -> dict:
 
         for key, path, builder in (
             ("breadth", live / "breadth.json", lambda r: _breadth_block(r, gaps)),
-            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps)),
+            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps, now=now)),
             ("drivers", live / "market_drivers.json", _drivers_block),
             ("shock", live / "shock_state.json", _shock_block),
             ("rates", root / "data" / "rates_command" / "latest.json", _rates_block),
@@ -1233,7 +1352,7 @@ def build_packet(root: Path) -> dict:
             gaps.append(f"events: build failed ({type(exc).__name__})")
 
         try:
-            regional = _regional_block(root, gaps)
+            regional = _regional_block(root, gaps, now=now)
             if regional:
                 packet["regional"] = regional
         except Exception as exc:  # noqa: BLE001
@@ -1269,27 +1388,42 @@ def build_packet(root: Path) -> dict:
 # Section renderers
 # ---------------------------------------------------------------------------
 
-def _regional_block(root: Path, gaps: list[str]) -> list[dict]:
-    """One entry per regional board that has a readable artifact. Never raises.
+def _regional_block(root: Path, gaps: list[str], *, now: datetime | None = None) -> list[dict]:
+    """One entry per regional board that has useful readable content. Never raises.
 
-    Reads back, unchanged: the board's own benchmark LABEL and rebased benchmark
-    series (site/<region>basketdata/baskets.json) and the nightly regime read
-    (data/<region>_regime/latest.json). The single piece of arithmetic is the
-    benchmark's last session change from two adjacent points of the SAME series the
-    region's own page plots — the presentational class this module already allows.
-
-    The regime files carry a float ``confidence``; it is deliberately DROPPED, per
-    the module rule that no numeric confidence reaches the prompt. The qualitative
-    fields (quad name, cycle tag, liquidity overlay, risk/peg words) pass through.
+    Dates have typed meanings: ``component_as_of`` belongs to the basket input,
+    ``state_as_of`` belongs to the regime/cycle read, and only a canonical
+    exchange calendar may populate ``expected_session``.
     """
     out: list[dict] = []
+    display_keys = (
+        "bench_label", "bench_change_pct", "leaders", "quad", "quad_name",
+        "cycle", "liquidity", "risk_state", "peg_state",
+    )
     for region in _REGIONS:
         entry: dict = {"code": region.code, "label": region.label}
         basket = _read_json(root / region.basket_rel, [], f"{region.code}_basket")
         if isinstance(basket, dict):
             as_of = str(basket.get("as_of") or "").strip()
             if as_of:
-                entry["as_of"] = as_of
+                # The basket clock is typed at the key level. Do not retain a
+                # generic ``as_of`` alias that a later consumer could misread as
+                # an exchange-session date.
+                component_as_of = _iso_date(as_of)
+                if component_as_of:
+                    entry["component_as_of"] = component_as_of
+                else:
+                    gaps.append(f"regional {region.code}: bad component date {as_of!r}")
+            cycle_context = basket.get("cycle_context")
+            if isinstance(cycle_context, dict):
+                raw_cycle_date = cycle_context.get("asOf") or cycle_context.get("as_of")
+                if raw_cycle_date:
+                    cycle_as_of = _iso_date(raw_cycle_date)
+                    if cycle_as_of:
+                        entry["cycle_state_as_of"] = cycle_as_of
+                    else:
+                        gaps.append(
+                            f"regional {region.code}: bad cycle-state date {raw_cycle_date!r}")
             bench_label = str(basket.get("benchmark_label") or "").strip()
             if bench_label:
                 entry["bench_label"] = bench_label
@@ -1311,26 +1445,63 @@ def _regional_block(root: Path, gaps: list[str]) -> list[dict]:
                     ]
                     if leaders:
                         entry["leaders"] = leaders
+
         regime = _read_json(root / region.regime_rel, [], f"{region.code}_regime")
         if isinstance(regime, dict):
-            # The regime file has its own date. It can legitimately differ from the
-            # basket file's as_of, so it is stamped separately rather than merged.
-            for src, dst in (("date", "regime_as_of"), ("quad", "quad"),
-                             ("quad_name", "quad_name"), ("cycle_tag", "cycle"),
+            raw_regime_date = regime.get("date")
+            if raw_regime_date:
+                regime_as_of = _iso_date(raw_regime_date)
+                if regime_as_of:
+                    entry["regime_as_of"] = regime_as_of
+                else:
+                    gaps.append(
+                        f"regional {region.code}: bad regime date {raw_regime_date!r}")
+            for src, dst in (("quad", "quad"), ("quad_name", "quad_name"),
+                             ("cycle_tag", "cycle"),
                              ("liquidity_overlay", "liquidity"),
                              ("risk_state", "risk_state"), ("peg_state", "peg_state")):
                 val = str(regime.get(src) or "").strip()
                 if val:
                     entry[dst] = val
-        if len(entry) > 2:
-            out.append(entry)
-        else:
+
+        # A calendar stamp alone is not market content. Keep absence explicit.
+        if not any(entry.get(key) not in (None, "", [], {}) for key in display_keys):
             gaps.append(f"regional {region.code}: absent")
+            continue
+
+        if region.code == "CN":
+            state_dates = [
+                entry[key] for key in ("regime_as_of", "cycle_state_as_of")
+                if entry.get(key)
+            ]
+            if state_dates:
+                entry["state_as_of"] = max(state_dates)
+            try:
+                from lib import cn_calendar  # noqa: PLC0415 — pure deterministic calendar
+
+                expected = cn_calendar.expected_last_session(now)
+                entry["expected_session"] = expected.isoformat()
+                component = entry.get("component_as_of")
+                if component:
+                    component_date = datetime.strptime(component, "%Y-%m-%d").date()
+                    if component_date > expected:
+                        entry["component_session_relation"] = "ahead"
+                        entry["component_sessions_behind"] = 0
+                    elif component_date == expected:
+                        entry["component_session_relation"] = "current"
+                        entry["component_sessions_behind"] = 0
+                    else:
+                        entry["component_session_relation"] = "behind"
+                        entry["component_sessions_behind"] = cn_calendar.sessions_between(
+                            component_date, expected)
+            except Exception as exc:  # noqa: BLE001 — preserve typed dates, never bare-stamp
+                gaps.append(f"regional CN clock: build failed ({type(exc).__name__})")
+        out.append(entry)
     return out
 
 
 def _render_regional(p: dict) -> str:
-    """'REGIONAL — HK (2026-08-04): HSI −0.6% · Goldilocks (Q1), mid-cycle · …'"""
+    """Render regional reads with exchange, state, and component clocks labeled."""
     lines: list[str] = []
     for entry in p.get("regional") or []:
         parts: list[str] = []
@@ -1355,12 +1526,36 @@ def _render_regional(p: dict) -> str:
             parts.append("leading " + ", ".join(entry["leaders"]))
         if not parts:
             continue
-        stamp = _stamp(entry.get("as_of") or entry.get("regime_as_of"))
+
+        clocks: list[str] = []
+        if entry.get("expected_session"):
+            clocks.append(f"latest completed session {entry['expected_session']}")
+            if not (entry.get("state_as_of") or entry.get("regime_as_of")
+                    or entry.get("component_as_of")):
+                clocks.append("content vintage unknown")
+        if entry.get("state_as_of") or entry.get("regime_as_of"):
+            clocks.append(
+                f"state through {entry.get('state_as_of') or entry.get('regime_as_of')}")
+        if entry.get("component_as_of"):
+            component = f"basket inputs through {entry['component_as_of']}"
+            relation = entry.get("component_session_relation")
+            behind = entry.get("component_sessions_behind")
+            if relation == "behind" and isinstance(behind, int) and behind > 0:
+                component += f", {behind} session{'s' if behind != 1 else ''} behind"
+            elif relation == "current":
+                component += ", current"
+            elif relation == "ahead":
+                component += ", ahead of exchange clock"
+            clocks.append(component)
+        if entry.get("code") == "CN" and not entry.get("expected_session"):
+            clocks.append("exchange session unavailable")
+        stamp = "; ".join(clocks) if clocks else "date unavailable"
         lines.append(f"{entry['code']} ({stamp}): " + _SEP.join(parts))
     if not lines:
         return ""
-    return ("REGIONAL BOARDS — each stamped with its OWN session; these close at "
-            "different times and a board can be a session behind: " + " | ".join(lines))
+    return ("REGIONAL BOARDS — exchange sessions, state dates, and component vintages "
+            "are separate clocks; a component date is not the market's last trading day: "
+            + " | ".join(lines))
 
 
 def _row_text(r: dict) -> str:
@@ -1601,7 +1796,68 @@ def _render_rates(p: dict) -> str:
         parts.append(f"term premium {r['term_premium_dir']}")
     if not parts:
         return ""
-    return f"RATES DESK ({_stamp(r.get('asof'))}): " + _SEP.join(parts)
+    line = f"RATES DESK ({_stamp(r.get('asof'))}): " + _SEP.join(parts)
+    ro = r.get("regime_outlook")
+    if isinstance(ro, dict):
+        extra = _render_regime_outlook(ro)
+        if extra:
+            line = line + "\n" + extra
+    return line
+
+
+OUTLOOK_LINE_BUDGET = 380
+_OUTLOOK_SRC = "world_state.rates_command.regime_outlook"
+_OUTLOOK_GLYPH = {"fits": "+", "does_not_fit": "-", "mixed": "~"}
+_OUTLOOK_ORDER = ("fits", "does_not_fit", "mixed")
+
+
+def _outlook_entries(ro: dict, *, fits_only: bool = False) -> list[str]:
+    """One entry per path: `<path_id> +fam -fam ~fam` (fits, then does_not_fit, then mixed; unknown and not_discriminating omitted)."""
+    entries: list[str] = []
+    for row in ro.get("paths") or []:
+        if not isinstance(row, dict):
+            continue
+        pid = row.get("path_id")
+        if not pid:
+            continue
+        toks: list[str] = []
+        for reading in _OUTLOOK_ORDER:
+            if fits_only and reading != "fits":
+                break
+            for fr in row.get("family_readings") or []:
+                if isinstance(fr, dict) and fr.get("reading") == reading and fr.get("evidence_family_id"):
+                    toks.append(_OUTLOOK_GLYPH[reading] + str(fr["evidence_family_id"]))
+        if toks:
+            entries.append(f"{pid} " + " ".join(toks))
+    return entries
+
+
+def _render_regime_outlook(ro: dict, budget: int = OUTLOOK_LINE_BUDGET) -> str:
+    """E3 OUTLOOK line: the projection's own family readings, stamped with its analysis_cutoff.
+
+    Overlapping hypotheses, unordered, never normalised; no numbers after the header.
+    Tier 1 = every reading; tier 2 = fits only; tier 3 = as many fits-only paths as fit; else ''.
+    Language-invariant (the same line in zh).
+    """
+    head = (f"OUTLOOK (read prepared {_stamp(ro.get('analysis_cutoff'))}; "
+            "overlapping paths, unordered; +fits -does-not-fit ~mixed): ")
+    full = _outlook_entries(ro)
+    if not full:
+        return ""
+    line = head + " | ".join(full) + f"; full readings: {_OUTLOOK_SRC}"
+    if len(line) <= budget:
+        return line
+    fits = _outlook_entries(ro, fits_only=True)
+    line = head + " | ".join(fits) + f"; fits only; full readings: {_OUTLOOK_SRC}"
+    if fits and len(line) <= budget:
+        return line
+    tail3 = f"; partial; full readings: {_OUTLOOK_SRC}"
+    kept: list[str] = []
+    for e in fits:
+        if len(head + " | ".join(kept + [e]) + tail3) > budget:
+            break
+        kept.append(e)
+    return (head + " | ".join(kept) + tail3) if kept else ""
 
 
 def _render_vol(p: dict) -> str:
@@ -1673,6 +1929,28 @@ def _render_leaders(p: dict) -> str:
     halves = [f"{word} — {body}" for word, body in
               (("up", half(ld.get("up") or [])), ("down", half(ld.get("down") or [])))
               if body]
+    comparisons = []
+    for row in ld.get("intraday") or []:
+        value = _signed(row.get("relative_change_pct"), 2, "%")
+        # These are source intervals, not a display-only minute stamp. Retain
+        # seconds/fractions so a 40-second observation never looks zero-length.
+        def source_stamp(key: str) -> str:
+            return (datetime.fromisoformat(row[key]).astimezone(timezone.utc)
+                    .isoformat(sep=" ").replace("+00:00", "Z"))
+        window = (f"SPY window {source_stamp('reference_asof')} to {source_stamp('source_asof')}; "
+                  f"{row['elapsed_minutes'] * 60:g}s")
+        absolute = _signed(row.get("absolute_change_pct"), 2, "%")
+        benchmark = _signed(row.get("benchmark_change_pct"), 2, "%")
+        closing_note = "regular-session close; " if row.get("observation_kind") == "settled_regular" else ""
+        if row.get("is_new_observation") is False:
+            closing_note += "retained observation; "
+        # A matched member may differ from the SPY clock within the producer's
+        # disclosed tolerance at EACH endpoint; never imply exact synchrony.
+        tolerance = f"member clocks within {row['max_clock_skew_seconds']:g}s/endpoint"
+        comparisons.append(f"{row['label']} {absolute} price, SPY {benchmark}, {value} vs SPY ({window}; "
+                           f"{tolerance}; {closing_note}{row['matched_members']}/{row['total_members']} matched)")
+    if comparisons:
+        halves.append("since prior observation vs SPY (not fund flows) - " + _SEP.join(comparisons))
     if not halves:
         return ""
     bits = ", ".join(x for x in (_stamp(ld.get("asof")), ld.get("mode_note") or "") if x)

@@ -96,6 +96,8 @@ def test_a_same_line_rule_would_have_missed_it():
     'D = {"detail_en": "validated edge" if hot else "no read"}',   # ternary branch
     'obj.headline_en = "A validated cross-sectional alpha."',      # attribute assign
     'd["blurb_zh"] = "已验证的方向性优势"',                          # subscript assign
+    'label_en, label_zh = "A validated edge.", "边际"',            # tuple unpack, EN half
+    '[head_en, head_zh] = ["Breadth.", "已验证的宽度信号"]',       # list unpack, zh half
 ])
 def test_display_copy_shapes_are_scanned(src):
     assert _fires(src), f"display copy went ungated: {src}"
@@ -110,6 +112,8 @@ def test_display_copy_shapes_are_scanned(src):
     'TOOL = {"description": "Read the validated mechanism-pathways artifact."}',  # LLM schema
     'CLS = "chip validated"',                                      # css token
     '# the parabolic flag (ext_z>2, validated -94% DD) blocks independently',  # comment
+    'tier, label_en = "validated", "Scored tier"',                 # pairwise: the token is `tier`'s
+    'label_en, *rest = "Plain.", "validated", "x"',                # starred: no pairing is guessed
 ])
 def test_engine_internals_are_out_of_scope(src):
     """BC-2 targets DISPLAYED CLAIMS. Whole-file scanning engine/ surfaces 509 findings,

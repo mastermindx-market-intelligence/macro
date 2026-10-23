@@ -1415,6 +1415,24 @@ _OVERVIEW_COLS = [
 ]
 
 
+def _publish_screener_ec_tone(value, *, native: str):
+    """Published EC Tone 0–100 for screener.json / board rows. Fail-open → None."""
+    try:
+        from engine.earnings_qual import publish_ec_tone  # noqa: PLC0415
+        return publish_ec_tone(value, native=native)
+    except Exception:  # noqa: BLE001 — display join must never break the screener
+        return None
+
+
+def _publish_screener_ec_result(value, *, native: str):
+    """Published EC Result 0–10 for screener.json / board rows. Fail-open → None."""
+    try:
+        from engine.earnings_qual import publish_ec_result  # noqa: PLC0415
+        return publish_ec_result(value, native=native)
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _num(v):
     """Coerce a possibly-NaN/None seed cell to a float, else None."""
     try:
@@ -1517,8 +1535,8 @@ def _seed_screener_rows(root: Path | None = None) -> tuple[list[dict], dict]:
                 "atr_ext": round(_num(r.get("atr_ext")), 3) if _num(r.get("atr_ext")) is not None else None,
                 "atr_pct_price": round(atr_pct, 5) if atr_pct is not None else None,
                 "mansfield_rs": round(_num(r.get("mansfield_rs")), 2) if _num(r.get("mansfield_rs")) is not None else None,
-                "ec_sent": _num(r.get("earnings_call_sent")),
-                "ec_perf": _num(r.get("earnings_call_perf")),
+                "ec_sent": _publish_screener_ec_tone(_num(r.get("earnings_call_sent")), native="desk30"),
+                "ec_perf": _publish_screener_ec_result(_num(r.get("earnings_call_perf")), native="signed12"),
                 "rating": int(rating) if rating is not None else None,
                 "gate_tier": None,     # our confluence gate is US-only
                 "event": None,
@@ -1642,8 +1660,8 @@ def _screener_row(r: dict) -> dict:
         "atr_ext": r.get("atr_ext"),
         "atr_pct_price": r.get("atr_pct_price"),
         "mansfield_rs": r.get("mansfield_rs"),
-        "ec_sent": earn.get("sentiment"),
-        "ec_perf": earn.get("performance"),
+        "ec_sent": _publish_screener_ec_tone(earn.get("sentiment"), native="signed1"),
+        "ec_perf": _publish_screener_ec_result(earn.get("performance"), native="ten"),
         "rating": r.get("sga_score"),          # our 0..100 combined-rating analogue
         "gate_tier": r.get("gate_tier"),
         "event": r.get("event"),

@@ -28,8 +28,8 @@ window.__THEME_IDS={{ theme_ids | default([]) | tojson }};
 function themeById(id){return (window.__THEME_IDS||[]).indexOf(id)<0?null:id}
 function resolveThemeHash(){
 var id=themeById(location.hash.slice(7));
-if(id){window.__THEME_RESOLVED=1;location.replace('basket/'+id+'.html');return}
-location.replace("sector_central.html#actnow-section");
+if(id){window.__THEME_RESOLVED=1;var _d='basket/'+id+'.html';var _ss=window.MMXSharedShell;if(_ss){_ss.navigate(_d,'replace');return}location.replace(_d);return}
+var _d2="sector_central.html#actnow-section";var _ss2=window.MMXSharedShell;if(_ss2){_ss2.navigate(_d2,"replace");return}location.replace(_d2);
 }
 if(location.hash.startsWith('#theme-'))resolveThemeHash();
 /* FORMING-NARRATIVE deep links (#ne-<signature>). The Alert Command Center now points
@@ -38,9 +38,9 @@ if(location.hash.startsWith('#theme-'))resolveThemeHash();
    branch only rescues links minted BEFORE that fix — bookmarks and already-sent pushes —
    which would otherwise fall through to the generic #actnow-section below and lose the
    exact card the alert was about. Carry the hash across instead of eating it. */
-else if(location.hash.startsWith('#ne-'))location.replace('sector_central.html'+location.hash);
+else if(location.hash.startsWith('#ne-')){var _d3='sector_central.html'+location.hash;var _ss3=window.MMXSharedShell;if(_ss3){_ss3.navigate(_d3,'replace')}else{location.replace(_d3)}}
 </script>
-<meta http-equiv="refresh" content="0;url=sector_central.html#actnow-section">
+<noscript><meta http-equiv="refresh" content="0;url=sector_central.html#actnow-section"></noscript>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c0f16;color:#edf0f7;font:15px/1.5 system-ui,sans-serif}main{width:min(560px,calc(100% - 40px));padding:32px;border:1px solid #2a3040;border-radius:14px}h1{margin:0 0 10px;font-size:25px}p{color:#aab1c1}a{color:#a895ff}</style>
 {% include "_state_inks.html.j2" %}
 </head>
@@ -51,8 +51,8 @@ else if(location.hash.startsWith('#ne-'))location.replace('sector_central.html'+
 <p><a href="sector_central.html#actnow-section">Open Sector Intelligence →</a></p>
 </main>
 <script>
-if(location.hash&&(location.hash.startsWith('#theme-')||location.hash.startsWith('#ne-'))){location.replace('sector_central.html'+location.hash)}
-else{location.replace("sector_central.html#actnow-section")}
+if(location.hash&&(location.hash.startsWith('#theme-')||location.hash.startsWith('#ne-'))){var _d4='sector_central.html'+location.hash;var _ss4=window.MMXSharedShell;if(_ss4){_ss4.navigate(_d4,'replace')}else{location.replace(_d4)}}
+else{var _d5="sector_central.html#actnow-section";var _ss5=window.MMXSharedShell;if(_ss5){_ss5.navigate(_d5,"replace")}else{location.replace(_d5)}}
 </script>
 </body>
 </html>

@@ -287,6 +287,7 @@
 
     // step 4 — billing
     billTitle:    ["Add your card", "添加银行卡"],
+    ecbSourceNotice: ["ECB deposit-rate data shown in International is also available free from the <a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>European Central Bank</a>.", "国际市场页面中的欧洲央行存款利率数据也可在<a href='https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' target='_blank' rel='noopener'>欧洲央行网站</a>免费获取。"],
     billSub:      ["Your 7-day trial starts now. Cancel any time before it ends and you pay nothing.", "7 天试用现在开始。在结束前随时取消，分文不收。"],
     billSubNoTrial:["Your plan starts as soon as you confirm. Cancel any time from your account.", "确认后方案立即生效。可随时在账户中取消。"],
     billPerMo:    ["/mo", "/月"],
@@ -403,7 +404,7 @@
       { l: ["Advanced indicator modules", "高级指标模块"], v: [0, "some", 1] },
       { l: ["Intraday options flow", "日内期权流"],        v: [0, 1, 1] }
     ] },
-    { g: ["MASTERMIND AI", "MASTERMIND AI"], rows: [
+    { g: ["MASTERMIND AI", "操盘大脑 AI"], rows: [
       { l: ["Flash AI", "Flash AI"], v: [["5 / wk", "5 次/周"], ["300 / mo", "300 次/月"], ["Unlimited", "无限量"]] },
       { l: ["Pro AI", "Pro AI"],     v: [0, ["10 / mo", "10 次/月"], ["150 / mo", "150 次/月"]] },
       { l: ["Drives Terminal charts", "操控 Terminal 图表"], v: [0, 1, 1] }
@@ -422,6 +423,22 @@
   // not (it is light-only), so its html[data-theme] — which the Preferences step
   // writes — must never darken the sheet there.
   function hostThemed() { try { return !!document.querySelector('link[href*="theme.css"]'); } catch (e) { return false; } }
+  // The public landing is intentionally one light art direction. Signed-in auth
+  // still lazy-loads theme.js below, but that shared broker also applies the
+  // dashboard's saved theme + soft-contrast class. Keep those preferences stored
+  // for the product while refusing to let them repaint this fixed-light surface.
+  function lightOnlyHost() {
+    try { return !hostThemed() && !!document.querySelector('link[href*="landing.css"]'); }
+    catch (e) { return false; }
+  }
+  function restoreLightOnlyHostTheme() {
+    if (!lightOnlyHost()) return;
+    var root = document.documentElement;
+    root.classList.remove("soft-contrast");
+    if (root.getAttribute("data-theme") !== "light") root.setAttribute("data-theme", "light");
+  }
+  document.addEventListener("themechange", restoreLightOnlyHostTheme);
+  restoreLightOnlyHostTheme();
   // What the page ACTUALLY looks like, not what it says it is: html[data-theme]
   // is the fast path, but a dark-by-default page carries no attribute until
   // theme.js boots (and the render lane can rename stylesheets out from under a
@@ -503,7 +520,10 @@
     _themeLoad = new Promise(function (resolve) {
       var s = document.createElement("script");
       s.src = "theme.js"; s.defer = true;
-      s.onload = function () { resolve(window.MDXAuth || null); };
+      s.onload = function () {
+        restoreLightOnlyHostTheme();
+        resolve(window.MDXAuth || null);
+      };
       s.onerror = function () { resolve(null); };
       (document.head || document.documentElement).appendChild(s);
     });
@@ -1203,7 +1223,7 @@
     stashSave();
     sbClient().then(function (sb) {
       if (!sb) { showErr(tx("billNotConfigured")); return; }
-      var redirectTo = location.origin + location.pathname + "?onboard=resume";
+      var redirectTo = oauthRedirect();
       sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirectTo } })
         .then(function (r) { if (r && r.error) showErr(r.error.message); });
     });
@@ -1556,6 +1576,8 @@
         document.documentElement.setAttribute("data-theme", pref);
       }
     } catch (e) {}
+    // The preference belongs to the dashboard; the landing itself stays light.
+    restoreLightOnlyHostTheme();
   }
   function onPrefsContinue() {
     persistPrefs();
@@ -2175,7 +2197,9 @@
     var note = T("p", "obm-up-note", trialing ? "upConfirmTrial" : "upConfirmProrate");
     var goBtn = T("button", "obm-btn", "upConfirmGo", { type: "button" });
     var msg = h("div", "obm-err obm-up-msg"); msg.style.display = "none";
-    confirm.appendChild(note); confirm.appendChild(goBtn); confirm.appendChild(msg);
+    confirm.appendChild(note);
+    confirm.appendChild(T("p", "obm-up-note", "ecbSourceNotice"));
+    confirm.appendChild(goBtn); confirm.appendChild(msg);
     card.appendChild(confirm);
 
     card.addEventListener("click", function (e) {
@@ -2314,6 +2338,7 @@
     root.appendChild(T("p", "obm-sub", planHasTrial(S.plan) ? "billSub" : "billSubNoTrial"));
     if (S.mode === "upgrade") root.appendChild(upgradeRail("billing"));
     root.appendChild(orderCard());
+    root.appendChild(T("p", "obm-caption", "ecbSourceNotice"));
     var host = h("div", "", { "data-obm-billhost": "" });
     root.appendChild(host);
     footNav({ back: true, onBack: backFromBilling, dots: S.mode !== "upgrade" });
@@ -2579,6 +2604,18 @@
   }
   var _lastFocus = null;
   function openSheet(mode, opts) {
+    // Shared Shell: ONE central guard covers every sheet opener in this file —
+    // the delegated CTA-capture listener, the gear/nav/pricing wirings
+    // (bindChromeCta, bindPlanCta, wireGearAccount), window.MMOnboard.open for
+    // hosts/tests, and bootDeepLinks (?upgrade=1, ?signup/?signin/?plan intents,
+    // the OAuth-resume stash, and the mid-flow reload restore). Claiming on
+    // candidate existence — including pre-INIT, where openAuth queues — means
+    // boot-time deep links hand off instead of building an in-frame sheet, and
+    // exactly one bridge intent crosses per user action. Only fixed tokens
+    // map; `opts` (plan target, period, resume flags, opts.me) never cross.
+    // Standalone (no candidate): zero delta, the legacy sheet opens with the
+    // caller's opts untouched.
+    if (_mmShellHandoff(mode)) return;
     if (mode === "upgrade") { openUpgrade(opts || {}); return; }
     ensureAssets();
     // Warm the Supabase broker + SDK the instant the sheet opens, so the first
@@ -2629,6 +2666,29 @@
     return "";
   }
   function loginDest() { return retTarget() || "/start.html"; }
+  function oauthRedirect() {
+    var target = new URL(location.pathname, location.origin);
+    target.searchParams.set("onboard", "resume");
+    var ret = retTarget();
+    try {
+      var checked = new URL(ret, location.origin);
+      if (ret && ret.length <= 4096 && checked.origin === location.origin) {
+        target.searchParams.set("ret", checked.pathname + checked.search + checked.hash);
+      }
+    } catch (e) { /* An invalid return cannot replace the ordinary landing. */ }
+    return target.href;
+  }
+  function resumeSignin() {
+    // Let the incumbent SDK finish the one-time code exchange before navigation.
+    // Navigating first drops the code and can strand a fresh Google sign-in.
+    return sbClient().then(function (sb) {
+      if (!sb) throw new Error("auth-client-unavailable");
+      return sb.auth.getSession();
+    }).then(function (r) {
+      if (r && !r.error && r.data && r.data.session) { location.href = loginDest(); return; }
+      openSheet("signin", {});
+    }).catch(function () { openSheet("signin", {}); });
+  }
   // ── Silent wall-resume (sticky login) ───────────────────────────────────────
   // The registration wall (app/regwall.py) verifies the ~1-hour ACCESS token
   // server-side, but the ~390-day session cookie also carries a REFRESH token the
@@ -2729,6 +2789,8 @@
   }
   // delegated listener: intercept CTA <a> to app.mastermind-x.com/terminal?sign…
   document.addEventListener("click", function (e) {
+    // Another capture listener may already own this CTA; keep modified clicks native.
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target.closest ? e.target.closest('a[href*="app.mastermind-x.com/terminal?sign"]') : null;
     if (!a) return;
     var href = a.getAttribute("href") || "";
@@ -2871,6 +2933,28 @@
     el.setAttribute("data-zh", zh);
     el.__en = en;
     el.innerHTML = (lang() === "zh") ? zh : en;
+  }
+  // Shared Shell bridge: when a qualified candidate exists — its installation
+  // already passed the parent/frame-generation/referrer guards, and it is
+  // deleted on teardown — the parent owns the auth UI, so this frame never
+  // builds a duplicate sheet. The handoff claims BEFORE and after the first
+  // context apply, because bridge.openAuth is queue-safe pre-INIT and the
+  // bridge drains queued intents right after INIT. Only the fixed intent
+  // tokens cross: "signup" stays "signup", "upgrade" maps to "billing"; every other real sheet mode
+  // this file carries ("signin", and the password-recovery "recover"/"reset"
+  // legs) maps to "signin" — the parent's sign-in panel owns recovery UX, so
+  // no credential surface is ever re-rendered inside the frame. Stash
+  // contents, plan targets, credentials, and any other parameters never cross
+  // the bridge. No candidate => false => the legacy sheet opens exactly as
+  // before (standalone landing behavior is untouched).
+  function _mmShellHandoff(mode) {
+    try {
+      var s = window.MMXSharedShell;
+      if (!s || typeof s.openAuth !== 'function') return false;
+      var intent = (mode === 'signup') ? 'signup' : (mode === 'upgrade' ? 'billing' : 'signin');
+      try { s.openAuth(intent); } catch (e) {}
+      return true;
+    } catch (e) { return false; }
   }
   function setChromeLabel(el, key) { paintBilingual(el, UPCHROME[key][0], UPCHROME[key][1]); }
   function bindChromeCta(cta) {
@@ -3056,7 +3140,7 @@
       // not back in the sheet; a pending-upgrade round-trip resumes the upgrade panel.
       if (intent.resume && resumeStash) {
         if (resumeStash.pendingUpgrade) { stripOnboardParams(); openSheet("upgrade", resumeStash.upgradeOpts || {}); return; }
-        if (resumeStash.mode === "signin") { stripOnboardParams(); location.href = loginDest(); return; }
+        if (resumeStash.mode === "signin") { stripOnboardParams(); resumeSignin(); return; }
       }
       // STICKY LOGIN: a regwall bounce (?signin=1[&ret=…]) with a session cookie
       // present is a returning SIGNED-IN visitor whose access token expired —

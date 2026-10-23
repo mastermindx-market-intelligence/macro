@@ -1,0 +1,1295 @@
+{
+  "schema": "risk_radar_gate_latency_study.v1",
+  "protocol_commit": "5c40f881e1e3195b9dd171e078d3d1f211da4015",
+  "source_base": "4273786fa0c3a84efed2a793584f740fe110265a",
+  "target": {
+    "depth": 0.05,
+    "horizon_observations": 21
+  },
+  "calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
+  "source_hashes": {
+    "engine/risk_radar.py": "a2c347cd726646896c48ed7a4437ae64e371e1efc689fd176998f3d2d88158e1",
+    "engine/risk_radar_backtest.py": "77c2a5b7a4547ea96fd02e8be804e4f448facdeb42b707e63478836ff3d3c46a",
+    "scripts/research/risk_radar_gate_latency.py": "a26e2c835a75e12b93e02a6ce9634b01452bdc3253a4aa0d166aade6ca25a28b",
+    "research/grey_deer/RISK_RADAR_GATE_LATENCY_PREREG_2026-09-21.md": "69759142ec66e45ee25ebcd4d243867625dbbf38b6a7a7ed7ddc3a01822020c1"
+  },
+  "input_hashes": {
+    "data/yahoo/SPY.parquet": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "data/fred/BAMLH0A0HYM2.parquet": "dd60951fe1ef3e88b9202e4a0bef7c4a56d96382d6e2b28056fdf615786e4690",
+    "data/yahoo/HYG.parquet": "b89d528b2c8d7e3d3c2fa8f64b2b6992e95ca0f8b0d58933876730a4a9c1c8da",
+    "data/yahoo/TLT.parquet": "3d09f656e49ba4d3ee5f205fcd8a7c650c36e3f46d98295d2b29b9e3256bccd5",
+    "data/yahoo/_MOVE.parquet": "03bd5adfbf7c4ca75bed2584159621a3d20ed62387365c8a92ab745831dff125",
+    "data/fred/DFII10.parquet": "99984d0539e17de3e07aac6b7db7b80913ca43352084cfb701ff6ad9d2c7e2c2",
+    "data/yahoo/SMH.parquet": "d9b0aa2d02b4a480876002fbb640384ce49c00a0093488b4259bf09abeaff81b",
+    "data/yahoo/XLU.parquet": "60ba05b2d9b202e21eaaa788aba8540c46cabcd0f2b4d3b32e6ca40263aed2be",
+    "data/yahoo/XLP.parquet": "bcbe35e985ce39b120b9a93d9a26432c7aced21cb7d9b46315278049091a610c",
+    "data/yahoo/XLY.parquet": "48ba37b15e76c8a20c1bcb64350c72c86a852a1f0d24e18ad4190178dfbc3b27",
+    "data/yahoo/_VIX.parquet": "7899aa84d8b4cb5de1845df541f552dce2096af0b981fc91b2e655095b987b6c",
+    "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
+    "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07",
+    "data/cboe/putcall.parquet": "a53c2342ce72f7ff580213318ca307df7d753e70d7a97eee8defa1c6d9788e61",
+    "data/cboe/gex.parquet": "0bfb04b88db610c14b7fcbd74d0dfbbcb5ac4fa5509758ed1b12dd242a0b8c94",
+    "data/fred/DEXJPUS.parquet": "79704861e8c851c81b4bb1b35a0d849e2dbfb063ff92d47c02f4581411563003",
+    "data/breadth/breadth.parquet": "9abc810d386888665697bce850a4d05498dbad61658a076bceea328174d55855"
+  },
+  "missing_optional_inputs": [
+    "data/risk_radar/calibration.json"
+  ],
+  "coverage": {
+    "signals_from": "1993-01-29T00:00:00",
+    "signals_through": "2026-09-18T00:00:00",
+    "signal_rows": 8467,
+    "signal_columns": [
+      "credit_oas_roc",
+      "credit_hyg_tlt",
+      "rates_move",
+      "rates_realrate",
+      "bubble_ext",
+      "bubble_leadership",
+      "growth_defensives",
+      "growth_cyc_def",
+      "vol_term",
+      "jpy_carry",
+      "nh_contraction",
+      "corr_floor_break",
+      "ai_breadth_divergence"
+    ],
+    "subscore_columns": [
+      "credit",
+      "rates",
+      "bubble",
+      "growth",
+      "vol",
+      "global",
+      "internals"
+    ]
+  },
+  "daily": {
+    "full": {
+      "from": "1994-01-26T00:00:00",
+      "through": "2026-08-19T00:00:00",
+      "population_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c",
+      "raw": {
+        "n": 8195,
+        "precision": 0.210335,
+        "recall": 0.681189,
+        "f1": 0.321423,
+        "fire_rate": 0.571446,
+        "confusion": {
+          "tp": 985,
+          "fp": 3698,
+          "fn": 461,
+          "tn": 3051
+        }
+      },
+      "gated": {
+        "n": 8195,
+        "precision": 0.419487,
+        "recall": 0.282849,
+        "f1": 0.337877,
+        "fire_rate": 0.118975,
+        "confusion": {
+          "tp": 409,
+          "fp": 566,
+          "fn": 1037,
+          "tn": 6183
+        }
+      },
+      "FP_removed": 3132,
+      "TP_lost": 576,
+      "FP_removed_per_TP_lost": 5.4375
+    },
+    "since_2020": {
+      "from": "2020-01-02T00:00:00",
+      "through": "2026-08-19T00:00:00",
+      "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+      "raw": {
+        "n": 1666,
+        "precision": 0.245265,
+        "recall": 0.880952,
+        "f1": 0.383704,
+        "fire_rate": 0.633854,
+        "confusion": {
+          "tp": 259,
+          "fp": 797,
+          "fn": 35,
+          "tn": 575
+        }
+      },
+      "gated": {
+        "n": 1666,
+        "precision": 0.420233,
+        "recall": 0.367347,
+        "f1": 0.392015,
+        "fire_rate": 0.154262,
+        "confusion": {
+          "tp": 108,
+          "fp": 149,
+          "fn": 186,
+          "tn": 1223
+        }
+      },
+      "FP_removed": 648,
+      "TP_lost": 151,
+      "FP_removed_per_TP_lost": 4.291391
+    }
+  },
+  "canonical_gated_crosscheck": {
+    "full": {
+      "n_days": 8195,
+      "confusion": {
+        "tp": 409,
+        "fp": 566,
+        "fn": 1037,
+        "tn": 6183
+      },
+      "outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c"
+    },
+    "since_2020": {
+      "n_days": 1666,
+      "confusion": {
+        "tp": 108,
+        "fp": 149,
+        "fn": 186,
+        "tn": 1223
+      },
+      "outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
+    }
+  },
+  "suppression_attribution": {
+    "price_only": 964,
+    "breadth_only": 177,
+    "both_closed": 2569,
+    "unknown_gate_on_raw_loud": 0,
+    "suppressed_known_total": 3710
+  },
+  "event_latency": {
+    "definition": "risk_radar_gate_event_latency.v1",
+    "event_params": {
+      "fwd": 21,
+      "depth": 0.05,
+      "min_gap": 21
+    },
+    "n_events": 110,
+    "n_raw_pre_t0": 103,
+    "raw_event_recall": 0.936364,
+    "gated_event_recall_by_t0": 0.372727,
+    "timing_counts_among_raw_pre_t0": {
+      "by_t0": 41,
+      "after_t0_before_breach": 9,
+      "after_breach": 12,
+      "never_through_t21": 41
+    },
+    "latency_median_sessions": 3.0,
+    "latency_p75_sessions": 23.0,
+    "rows": [
+      {
+        "anchor": "1994-03-16T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "1994-03-30T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "1994-10-28T00:00:00",
+        "raw_first": "1994-10-28T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1994-11-22T00:00:00",
+        "raw_offset": 0,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1996-07-01T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "1996-07-15T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "1997-03-10T00:00:00",
+        "raw_first": "1997-02-06T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1997-03-27T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1997-08-06T00:00:00",
+        "raw_first": "1997-07-08T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1997-08-15T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1997-10-07T00:00:00",
+        "raw_first": "1997-09-16T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1997-10-27T00:00:00",
+        "raw_offset": -15,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1997-12-05T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "1997-12-24T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "1998-07-17T00:00:00",
+        "raw_first": "1998-06-17T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1998-07-29T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1998-08-18T00:00:00",
+        "raw_first": "1998-07-20T00:00:00",
+        "gated_first": "1998-08-27T00:00:00",
+        "breach_5pct": "1998-08-27T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 7,
+        "latency": 28,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "1998-09-23T00:00:00",
+        "raw_first": "1998-08-24T00:00:00",
+        "gated_first": "1998-08-27T00:00:00",
+        "breach_5pct": "1998-10-01T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -18,
+        "latency": 3,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "1999-01-08T00:00:00",
+        "raw_first": "1998-12-18T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1999-01-14T00:00:00",
+        "raw_offset": -13,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1999-05-13T00:00:00",
+        "raw_first": "1999-04-14T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1999-05-25T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1999-07-16T00:00:00",
+        "raw_first": "1999-06-30T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "1999-07-29T00:00:00",
+        "raw_offset": -11,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "1999-08-25T00:00:00",
+        "raw_first": "1999-07-27T00:00:00",
+        "gated_first": "1999-09-24T00:00:00",
+        "breach_5pct": "1999-09-21T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 21,
+        "latency": 42,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "1999-10-08T00:00:00",
+        "raw_first": "1999-09-09T00:00:00",
+        "gated_first": "1999-09-24T00:00:00",
+        "breach_5pct": "1999-10-15T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -10,
+        "latency": 11,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2000-01-19T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "2000-01-28T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "2000-03-24T00:00:00",
+        "raw_first": "2000-02-24T00:00:00",
+        "gated_first": "2000-02-24T00:00:00",
+        "breach_5pct": "2000-04-13T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2000-04-25T00:00:00",
+        "raw_first": "2000-03-24T00:00:00",
+        "gated_first": "2000-04-14T00:00:00",
+        "breach_5pct": "2000-05-10T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -6,
+        "latency": 15,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2000-07-14T00:00:00",
+        "raw_first": "2000-06-14T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2000-07-28T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2000-09-01T00:00:00",
+        "raw_first": "2000-08-11T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2000-09-21T00:00:00",
+        "raw_offset": -15,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2000-10-05T00:00:00",
+        "raw_first": "2000-09-06T00:00:00",
+        "gated_first": "2000-10-18T00:00:00",
+        "breach_5pct": "2000-10-11T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 9,
+        "latency": 30,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2000-11-06T00:00:00",
+        "raw_first": "2000-10-06T00:00:00",
+        "gated_first": "2000-10-18T00:00:00",
+        "breach_5pct": "2000-11-13T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -13,
+        "latency": 8,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2000-12-11T00:00:00",
+        "raw_first": "2000-11-09T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2000-12-15T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2001-02-01T00:00:00",
+        "raw_first": "2001-01-02T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2001-02-16T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2001-03-08T00:00:00",
+        "raw_first": "2001-02-09T00:00:00",
+        "gated_first": "2001-03-15T00:00:00",
+        "breach_5pct": "2001-03-12T00:00:00",
+        "raw_offset": -18,
+        "gated_offset": 5,
+        "latency": 23,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2001-05-21T00:00:00",
+        "raw_first": "2001-04-23T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2001-06-13T00:00:00",
+        "raw_offset": -20,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2001-07-02T00:00:00",
+        "raw_first": "2001-06-14T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2001-07-24T00:00:00",
+        "raw_offset": -12,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2001-08-02T00:00:00",
+        "raw_first": null,
+        "gated_first": "2001-08-17T00:00:00",
+        "breach_5pct": "2001-08-21T00:00:00",
+        "raw_offset": null,
+        "gated_offset": 11,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "2001-08-31T00:00:00",
+        "raw_first": "2001-08-17T00:00:00",
+        "gated_first": "2001-08-17T00:00:00",
+        "breach_5pct": "2001-09-17T00:00:00",
+        "raw_offset": -10,
+        "gated_offset": -10,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2002-01-04T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "2002-01-29T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "2002-03-19T00:00:00",
+        "raw_first": "2002-03-04T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2002-04-11T00:00:00",
+        "raw_offset": -11,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2002-04-19T00:00:00",
+        "raw_first": "2002-04-08T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2002-04-29T00:00:00",
+        "raw_offset": -9,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2002-05-23T00:00:00",
+        "raw_first": "2002-05-17T00:00:00",
+        "gated_first": "2002-06-06T00:00:00",
+        "breach_5pct": "2002-06-03T00:00:00",
+        "raw_offset": -4,
+        "gated_offset": 9,
+        "latency": 13,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2002-06-24T00:00:00",
+        "raw_first": "2002-05-23T00:00:00",
+        "gated_first": "2002-06-06T00:00:00",
+        "breach_5pct": "2002-07-10T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -12,
+        "latency": 9,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2002-08-22T00:00:00",
+        "raw_first": "2002-07-24T00:00:00",
+        "gated_first": "2002-07-24T00:00:00",
+        "breach_5pct": "2002-08-30T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2002-09-26T00:00:00",
+        "raw_first": "2002-08-27T00:00:00",
+        "gated_first": "2002-08-27T00:00:00",
+        "breach_5pct": "2002-10-04T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2002-11-27T00:00:00",
+        "raw_first": "2002-11-19T00:00:00",
+        "gated_first": "2002-11-19T00:00:00",
+        "breach_5pct": "2002-12-09T00:00:00",
+        "raw_offset": -6,
+        "gated_offset": -6,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2003-01-14T00:00:00",
+        "raw_first": "2002-12-12T00:00:00",
+        "gated_first": "2002-12-12T00:00:00",
+        "breach_5pct": "2003-01-22T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2003-02-18T00:00:00",
+        "raw_first": "2003-01-16T00:00:00",
+        "gated_first": "2003-01-16T00:00:00",
+        "breach_5pct": "2003-03-10T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2003-03-21T00:00:00",
+        "raw_first": "2003-03-18T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2003-03-31T00:00:00",
+        "raw_offset": -3,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2004-03-05T00:00:00",
+        "raw_first": "2004-02-04T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2004-03-22T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2004-04-12T00:00:00",
+        "raw_first": "2004-03-11T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2004-05-10T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2004-06-23T00:00:00",
+        "raw_first": "2004-05-21T00:00:00",
+        "gated_first": "2004-07-21T00:00:00",
+        "breach_5pct": "2004-07-23T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 19,
+        "latency": 40,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2006-05-09T00:00:00",
+        "raw_first": "2006-04-20T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2006-05-23T00:00:00",
+        "raw_offset": -13,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2007-02-20T00:00:00",
+        "raw_first": "2007-01-19T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2007-03-02T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2007-07-19T00:00:00",
+        "raw_first": "2007-06-19T00:00:00",
+        "gated_first": "2007-08-03T00:00:00",
+        "breach_5pct": "2007-07-27T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 11,
+        "latency": 32,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2007-10-09T00:00:00",
+        "raw_first": "2007-09-10T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2007-11-07T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2007-12-10T00:00:00",
+        "raw_first": "2007-11-08T00:00:00",
+        "gated_first": "2007-11-08T00:00:00",
+        "breach_5pct": "2008-01-04T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-01-10T00:00:00",
+        "raw_first": "2007-12-10T00:00:00",
+        "gated_first": "2007-12-14T00:00:00",
+        "breach_5pct": "2008-01-17T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -17,
+        "latency": 4,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-02-26T00:00:00",
+        "raw_first": "2008-01-25T00:00:00",
+        "gated_first": "2008-01-25T00:00:00",
+        "breach_5pct": "2008-03-06T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-05-19T00:00:00",
+        "raw_first": "2008-04-18T00:00:00",
+        "gated_first": "2008-04-18T00:00:00",
+        "breach_5pct": "2008-06-11T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-06-19T00:00:00",
+        "raw_first": "2008-05-27T00:00:00",
+        "gated_first": "2008-05-27T00:00:00",
+        "breach_5pct": "2008-07-02T00:00:00",
+        "raw_offset": -17,
+        "gated_offset": -17,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-08-11T00:00:00",
+        "raw_first": "2008-07-11T00:00:00",
+        "gated_first": "2008-07-11T00:00:00",
+        "breach_5pct": "2008-09-04T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-09-12T00:00:00",
+        "raw_first": "2008-08-19T00:00:00",
+        "gated_first": "2008-08-19T00:00:00",
+        "breach_5pct": "2008-09-17T00:00:00",
+        "raw_offset": -17,
+        "gated_offset": -17,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-10-13T00:00:00",
+        "raw_first": "2008-09-12T00:00:00",
+        "gated_first": "2008-09-12T00:00:00",
+        "breach_5pct": "2008-10-15T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2008-11-13T00:00:00",
+        "raw_first": "2008-10-15T00:00:00",
+        "gated_first": "2008-10-15T00:00:00",
+        "breach_5pct": "2008-11-17T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2009-01-06T00:00:00",
+        "raw_first": "2008-12-04T00:00:00",
+        "gated_first": "2008-12-04T00:00:00",
+        "breach_5pct": "2009-01-12T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2009-02-09T00:00:00",
+        "raw_first": "2009-01-15T00:00:00",
+        "gated_first": "2009-01-15T00:00:00",
+        "breach_5pct": "2009-02-17T00:00:00",
+        "raw_offset": -16,
+        "gated_offset": -16,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2009-03-26T00:00:00",
+        "raw_first": "2009-02-25T00:00:00",
+        "gated_first": "2009-02-25T00:00:00",
+        "breach_5pct": "2009-03-30T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2009-06-12T00:00:00",
+        "raw_first": "2009-05-22T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2009-06-22T00:00:00",
+        "raw_offset": -14,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2009-10-19T00:00:00",
+        "raw_first": "2009-09-18T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2009-10-30T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2010-01-19T00:00:00",
+        "raw_first": "2009-12-16T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2010-01-22T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2010-04-23T00:00:00",
+        "raw_first": null,
+        "gated_first": null,
+        "breach_5pct": "2010-05-06T00:00:00",
+        "raw_offset": null,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "no_raw_pre"
+      },
+      {
+        "anchor": "2010-06-18T00:00:00",
+        "raw_first": "2010-05-19T00:00:00",
+        "gated_first": "2010-06-29T00:00:00",
+        "breach_5pct": "2010-06-29T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 7,
+        "latency": 28,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2010-08-09T00:00:00",
+        "raw_first": "2010-07-09T00:00:00",
+        "gated_first": "2010-08-24T00:00:00",
+        "breach_5pct": "2010-08-23T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 11,
+        "latency": 32,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2011-02-18T00:00:00",
+        "raw_first": "2011-01-26T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2011-03-16T00:00:00",
+        "raw_offset": -17,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2011-05-10T00:00:00",
+        "raw_first": "2011-04-18T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2011-06-06T00:00:00",
+        "raw_offset": -15,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2011-07-07T00:00:00",
+        "raw_first": "2011-06-07T00:00:00",
+        "gated_first": "2011-08-02T00:00:00",
+        "breach_5pct": "2011-08-02T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 18,
+        "latency": 39,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2011-08-31T00:00:00",
+        "raw_first": "2011-08-02T00:00:00",
+        "gated_first": "2011-08-02T00:00:00",
+        "breach_5pct": "2011-09-09T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2011-10-27T00:00:00",
+        "raw_first": "2011-09-28T00:00:00",
+        "gated_first": "2011-09-28T00:00:00",
+        "breach_5pct": "2011-11-01T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2012-05-01T00:00:00",
+        "raw_first": "2012-03-30T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2012-05-15T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2012-10-17T00:00:00",
+        "raw_first": "2012-10-10T00:00:00",
+        "gated_first": "2012-11-14T00:00:00",
+        "breach_5pct": "2012-11-08T00:00:00",
+        "raw_offset": -5,
+        "gated_offset": 18,
+        "latency": 23,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2013-05-28T00:00:00",
+        "raw_first": "2013-04-26T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2013-06-24T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2014-01-15T00:00:00",
+        "raw_first": "2013-12-26T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2014-02-03T00:00:00",
+        "raw_offset": -13,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2014-09-18T00:00:00",
+        "raw_first": "2014-09-16T00:00:00",
+        "gated_first": "2014-10-13T00:00:00",
+        "breach_5pct": "2014-10-10T00:00:00",
+        "raw_offset": -2,
+        "gated_offset": 17,
+        "latency": 19,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2015-07-30T00:00:00",
+        "raw_first": "2015-06-30T00:00:00",
+        "gated_first": "2015-08-20T00:00:00",
+        "breach_5pct": "2015-08-21T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 15,
+        "latency": 36,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2015-09-16T00:00:00",
+        "raw_first": "2015-08-17T00:00:00",
+        "gated_first": "2015-08-20T00:00:00",
+        "breach_5pct": "2015-09-28T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -18,
+        "latency": 3,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2015-12-29T00:00:00",
+        "raw_first": "2015-11-27T00:00:00",
+        "gated_first": "2015-12-11T00:00:00",
+        "breach_5pct": "2016-01-07T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -11,
+        "latency": 10,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2016-01-29T00:00:00",
+        "raw_first": "2015-12-29T00:00:00",
+        "gated_first": "2015-12-31T00:00:00",
+        "breach_5pct": "2016-02-11T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -19,
+        "latency": 2,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2016-06-08T00:00:00",
+        "raw_first": "2016-05-11T00:00:00",
+        "gated_first": "2016-06-27T00:00:00",
+        "breach_5pct": "2016-06-27T00:00:00",
+        "raw_offset": -19,
+        "gated_offset": 13,
+        "latency": 32,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2018-01-26T00:00:00",
+        "raw_first": "2017-12-26T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2018-02-05T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2018-03-09T00:00:00",
+        "raw_first": "2018-02-09T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2018-03-22T00:00:00",
+        "raw_offset": -19,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2018-09-20T00:00:00",
+        "raw_first": "2018-08-21T00:00:00",
+        "gated_first": "2018-10-11T00:00:00",
+        "breach_5pct": "2018-10-11T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 15,
+        "latency": 36,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2018-11-07T00:00:00",
+        "raw_first": "2018-10-09T00:00:00",
+        "gated_first": "2018-10-11T00:00:00",
+        "breach_5pct": "2018-11-20T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -19,
+        "latency": 2,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2018-12-12T00:00:00",
+        "raw_first": "2018-11-09T00:00:00",
+        "gated_first": "2018-11-12T00:00:00",
+        "breach_5pct": "2018-12-19T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -20,
+        "latency": 1,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2019-05-03T00:00:00",
+        "raw_first": "2019-05-03T00:00:00",
+        "gated_first": "2019-05-31T00:00:00",
+        "breach_5pct": "2019-05-29T00:00:00",
+        "raw_offset": 0,
+        "gated_offset": 19,
+        "latency": 19,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2019-07-26T00:00:00",
+        "raw_first": "2019-06-26T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2019-08-05T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2020-02-19T00:00:00",
+        "raw_first": "2020-01-17T00:00:00",
+        "gated_first": "2020-02-27T00:00:00",
+        "breach_5pct": "2020-02-25T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 6,
+        "latency": 27,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2020-03-30T00:00:00",
+        "raw_first": "2020-02-28T00:00:00",
+        "gated_first": "2020-02-28T00:00:00",
+        "breach_5pct": "2020-04-01T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2020-06-08T00:00:00",
+        "raw_first": "2020-06-08T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2020-06-11T00:00:00",
+        "raw_offset": 0,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2020-09-02T00:00:00",
+        "raw_first": "2020-08-04T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2020-09-08T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2020-10-12T00:00:00",
+        "raw_first": "2020-09-11T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2020-10-28T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2021-09-02T00:00:00",
+        "raw_first": "2021-08-04T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2021-09-30T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2022-01-03T00:00:00",
+        "raw_first": "2021-12-02T00:00:00",
+        "gated_first": "2022-01-21T00:00:00",
+        "breach_5pct": "2022-01-19T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 13,
+        "latency": 34,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2022-02-09T00:00:00",
+        "raw_first": "2022-01-10T00:00:00",
+        "gated_first": "2022-01-21T00:00:00",
+        "breach_5pct": "2022-02-18T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -13,
+        "latency": 8,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-03-29T00:00:00",
+        "raw_first": "2022-02-28T00:00:00",
+        "gated_first": "2022-02-28T00:00:00",
+        "breach_5pct": "2022-04-12T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-05-04T00:00:00",
+        "raw_first": "2022-04-04T00:00:00",
+        "gated_first": "2022-04-11T00:00:00",
+        "breach_5pct": "2022-05-09T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -16,
+        "latency": 5,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-06-07T00:00:00",
+        "raw_first": "2022-05-06T00:00:00",
+        "gated_first": "2022-05-06T00:00:00",
+        "breach_5pct": "2022-06-10T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-08-16T00:00:00",
+        "raw_first": "2022-07-18T00:00:00",
+        "gated_first": "2022-07-18T00:00:00",
+        "breach_5pct": "2022-08-26T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-09-19T00:00:00",
+        "raw_first": "2022-08-19T00:00:00",
+        "gated_first": "2022-08-19T00:00:00",
+        "breach_5pct": "2022-09-23T00:00:00",
+        "raw_offset": -20,
+        "gated_offset": -20,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2022-11-30T00:00:00",
+        "raw_first": "2022-10-31T00:00:00",
+        "gated_first": "2022-10-31T00:00:00",
+        "breach_5pct": "2022-12-16T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2023-02-02T00:00:00",
+        "raw_first": "2023-01-03T00:00:00",
+        "gated_first": "2023-01-03T00:00:00",
+        "breach_5pct": "2023-03-01T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -21,
+        "latency": 0,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2023-09-01T00:00:00",
+        "raw_first": "2023-08-03T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2023-09-26T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2023-10-11T00:00:00",
+        "raw_first": "2023-10-03T00:00:00",
+        "gated_first": "2023-10-26T00:00:00",
+        "breach_5pct": "2023-10-26T00:00:00",
+        "raw_offset": -6,
+        "gated_offset": 11,
+        "latency": 17,
+        "timing": "after_t0_before_breach"
+      },
+      {
+        "anchor": "2024-03-27T00:00:00",
+        "raw_first": "2024-02-27T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2024-04-19T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2024-07-16T00:00:00",
+        "raw_first": "2024-06-13T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2024-08-02T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2025-02-19T00:00:00",
+        "raw_first": "2025-01-27T00:00:00",
+        "gated_first": "2025-03-10T00:00:00",
+        "breach_5pct": "2025-03-04T00:00:00",
+        "raw_offset": -16,
+        "gated_offset": 13,
+        "latency": 29,
+        "timing": "after_breach"
+      },
+      {
+        "anchor": "2025-03-25T00:00:00",
+        "raw_first": "2025-02-24T00:00:00",
+        "gated_first": "2025-03-10T00:00:00",
+        "breach_5pct": "2025-04-03T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": -11,
+        "latency": 10,
+        "timing": "by_t0"
+      },
+      {
+        "anchor": "2025-10-29T00:00:00",
+        "raw_first": "2025-09-30T00:00:00",
+        "gated_first": null,
+        "breach_5pct": "2025-11-20T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": null,
+        "latency": null,
+        "timing": "never_through_t21"
+      },
+      {
+        "anchor": "2026-02-25T00:00:00",
+        "raw_first": "2026-01-26T00:00:00",
+        "gated_first": "2026-03-20T00:00:00",
+        "breach_5pct": "2026-03-20T00:00:00",
+        "raw_offset": -21,
+        "gated_offset": 17,
+        "latency": 38,
+        "timing": "after_t0_before_breach"
+      }
+    ]
+  },
+  "authority": {
+    "status": "descriptive_only",
+    "live_model_changed": false,
+    "gate_changed": false,
+    "probability_changed": false,
+    "policy_changed": false
+  }
+}

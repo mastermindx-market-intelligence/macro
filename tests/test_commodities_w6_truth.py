@@ -1,0 +1,914 @@
+"""W6 round 1 — commodities.html P0 truth blockers + lexicon slug guard.
+
+Pins:
+  P0#1  heat-grid shock outranks momentum; blow-off never paints as trending-up;
+        every legend word is reachable from a real _heat_cell branch.
+  P0#2  one change helper, one 1-month window; live tiles SSR a day change.
+  P0#3  one dispersion truth; hero cannot outrank take-profits rows; calm words
+        are scoped (index vs members).
+  P0#4  every detail entry carries dollar_* keys; template truthiness so a
+        missing key never emits "Dollar: ·".
+  P1#5  confluence lane labels are plain words; _lbl never emits a raw slug.
+
+Run: python -m pytest tests/test_commodities_w6_truth.py tests/test_commodities_ignition_copy.py tests/test_commodity_confluence.py -q
+"""
+from __future__ import annotations
+
+import inspect
+import sys
+from pathlib import Path
+
+import pandas as pd
+import pytest
+from jinja2 import Environment
+
+_REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO))
+
+from engine.commodity_confluence import (  # noqa: E402
+    _EXPLAIN,
+    _LABELS,
+    _TIPS,
+    _UNLABELLED,
+    _lbl,
+)
+from engine.commodity_index import _chg_1m  # noqa: E402
+from scripts.build_commodities import (  # noqa: E402
+    BOARD_TOP_STATES,
+    CATALYST_LABEL_ZH,
+    CHG_1D_BARS,
+    CHG_1M_BARS,
+    FRAC_TOP_PROTECT,
+    HEAT_LEGEND,
+    MEMBER_LABELS,
+    _UNLABELLED_STATE,
+    _build_sector_vm_inner,
+    _chg_pct,
+    _chg_tone,
+    _heat_cell,
+    _plain_mom_state,
+    _plain_shock,
+    _stretched_name_list,
+    _sync_read,
+    asset_vm,
+    is_board_stretched,
+    resolve_catalyst_row,
+    sector_stance,
+    stretched_members,
+)
+
+# Real 17-member complex order (engine/commodity_confluence + _GRID_GROUPS).
+_COMPLEX_NAMES = [
+    "oil", "natgas", "gasoline", "heating_oil",
+    "gold", "silver", "platinum", "palladium", "copper",
+    "corn", "wheat", "soybeans", "live_cattle", "coffee", "sugar", "cocoa", "cotton",
+]
+_TOP_STATES = (
+    "Blowing off — extended",
+    "Extended — late cycle",
+    "Euphoric top — rolling over",
+)
+
+_TPL = _REPO / "templates" / "commodities.html.j2"
+_BUILDER = _REPO / "scripts" / "build_commodities.py"
+
+
+def _tpl() -> str:
+    return _TPL.read_text()
+
+
+def _legend_block() -> str:
+    src = _tpl()
+    start = src.index('<div class="legend">')
+    end = src.index("</div>", start)
+    return src[start:end]
+
+
+def _dollar_block() -> str:
+    src = _tpl()
+    start = src.index("{# M6: B3 USD-sensitivity")
+    end = src.index("<!-- right: MTF", start)
+    return src[start:end]
+
+
+def _render_dollar(d: dict) -> str:
+    env = Environment()
+    snippet = '{% macro t(en, zh="") %}{{ en }}{% endmacro %}\n' + _dollar_block()
+    return env.from_string(snippet).render(d=d)
+
+
+# --------------------------------------------------------------------------- #
+# P0#1 — shock outranks momentum
+# --------------------------------------------------------------------------- #
+def test_blowoff_plus_bull_is_blowoff_not_trending_up() -> None:
+    tone, en, zh = _heat_cell("blowoff", "bull")
+    assert tone == "c-blowoff"
+    assert en == "Blow-off"
+    assert zh == "喷发"
+    assert "trend" not in en.lower()
+    assert en != "Momentum up"
+    assert "Trending up" not in en
+
+
+def test_washout_plus_bull_is_washout_not_green() -> None:
+    tone, en, _zh = _heat_cell("washout", "bull")
+    assert tone == "c-washout"
+    assert tone != "c-up"
+    assert en == "Washing out"
+
+
+def test_heat_cell_branch_order_shock_before_momentum() -> None:
+    """The if-chain itself, not just the outputs — all four shock tests precede bull."""
+    src = inspect.getsource(_heat_cell)
+    blow = src.find('shock_st == "blowoff"')
+    wash = src.find('shock_st == "washout"')
+    exo_bid = src.find('shock_st == "exogenous_bid"')
+    exo_prs = src.find('shock_st == "exogenous_pressure"')
+    stretched = src.find("is_board_stretched")
+    bull = src.find('mom_state == "bull"')
+    bear = src.find('mom_state == "bear"')
+    assert blow != -1 and wash != -1 and exo_bid != -1 and exo_prs != -1
+    assert bull != -1 and bear != -1
+    assert blow < bull, "blowoff must be evaluated before bull momentum"
+    assert wash < bull, "washout must be evaluated before bull momentum"
+    assert exo_bid < bull, "exogenous_bid must be evaluated before bull momentum"
+    assert exo_prs < bull, "exogenous_pressure must be evaluated before bull momentum"
+    assert stretched != -1 and exo_prs < stretched < bull
+    assert bull < bear
+
+
+@pytest.mark.parametrize(
+    "shock,mom,tone,en",
+    [
+        ("blowoff", "bull", "c-blowoff", "Blow-off"),
+        ("blowoff", "bear", "c-blowoff", "Blow-off"),
+        ("blowoff", "neutral", "c-blowoff", "Blow-off"),
+        ("washout", "bull", "c-washout", "Washing out"),
+        ("washout", "bear", "c-washout", "Washing out"),
+        ("normal", "bull", "c-up", "Momentum up"),
+        ("", "bull", "c-up", "Momentum up"),
+        ("normal", "bear", "c-dn", "Momentum down"),
+        ("normal", "neutral", "c-flat", "Mixed"),
+        ("", "", "c-flat", "Mixed"),
+        ("exogenous_bid", "bull", "c-blowoff", "Unexplained bid"),
+        ("exogenous_pressure", "bull", "c-washout", "Unexplained selling"),
+    ],
+)
+def test_heat_cell_matrix(shock, mom, tone, en) -> None:
+    got_tone, got_en, _zh = _heat_cell(shock, mom)
+    assert got_tone == tone
+    assert got_en == en
+
+
+def test_every_legend_word_is_reachable_from_a_real_branch() -> None:
+    legend = _legend_block()
+    reachable_en = set()
+    reachable_tones = set()
+    probes = [
+        ("blowoff", "bull", None),
+        ("washout", "bear", None),
+        ("normal", "bull", None),
+        ("normal", "bear", None),
+        ("normal", "neutral", None),
+        ("normal", "bull", "Extended — late cycle"),
+    ]
+    for shock, mom, board in probes:
+        tone, en, zh = _heat_cell(shock, mom, board)
+        reachable_en.add(en)
+        reachable_tones.add(tone)
+        assert en in legend, f"legend missing reachable word {en!r}"
+        assert zh in legend, f"legend missing ZH twin {zh!r}"
+
+    css = _tpl()
+    for tone, token, en, zh in HEAT_LEGEND:
+        assert en in legend, f"HEAT_LEGEND EN {en!r} not in template legend"
+        assert zh in legend, f"HEAT_LEGEND ZH {zh!r} not in template legend"
+        if tone == "c-blowoff":
+            assert "sw-blowoff" in legend
+            assert f"var({token})" in css
+        elif tone == "c-extended":
+            assert "sw-extended" in legend
+            assert f"var({token})" in css
+        else:
+            assert f"var({token})" in legend, f"legend swatch missing var({token})"
+        assert tone in reachable_tones, f"legend tone {tone} has no producing branch"
+        assert en in reachable_en, f"legend word {en!r} has no producing branch"
+
+    assert "Trending up" not in legend
+    assert "Euphoric / falling" not in legend
+
+
+def test_producer_no_longer_emits_c_wash() -> None:
+    src = inspect.getsource(_heat_cell)
+    assert '"c-wash"' not in src
+    assert '"c-blowoff"' in src and '"c-washout"' in src
+    assert '"c-extended"' in src
+
+
+def test_page_css_splits_blowoff_and_washout() -> None:
+    src = _tpl()
+    assert "/* post-stack: consolidate */" in src
+    assert ".cell.c-blowoff" in src
+    assert ".cell.c-washout" in src
+    assert ".cell.c-extended" in src
+    blow_rule = src[src.index(".cell.c-blowoff {"): src.index(".cell.c-extended")]
+    assert "color-mix(in srgb, var(--amb)" in blow_rule
+    ext_rule = src[src.index(".cell.c-extended {"):
+                   src.index(".cell.c-washout {")]
+    assert "border-left-color: var(--amb)" in ext_rule
+    assert "color-mix" not in ext_rule
+    assert "background:" not in ext_rule
+    assert ".sw-blowoff" in src and ".sw-extended" in src
+    assert "[data-theme='light'] .cell.c-blowoff" in src
+    assert "[data-theme='light'] .cell.c-extended" in src
+    # n5: producer cannot emit c-wash; don't keep a dead back-compat selector.
+    assert ".cell.c-wash," not in src
+    assert ".cell.c-wash " not in src
+    assert ".cell.c-wash{" not in src
+    # r4 R-m2: chg_sign is gone; .c-flat.pos/.neg are dead.
+    assert ".cell.c-flat.pos" not in src
+    assert ".cell.c-flat.neg" not in src
+
+
+def test_unknown_mom_and_shock_never_echo_the_slug() -> None:
+    en, zh = _plain_mom_state("not_a_real_mom")
+    assert en == _UNLABELLED_STATE[0]
+    assert zh == _UNLABELLED_STATE[1]
+    assert en != "not_a_real_mom"
+    sen, szh = _plain_shock("not_a_real_shock")
+    assert sen == _UNLABELLED_STATE[0]
+    assert szh == _UNLABELLED_STATE[1]
+
+
+def test_empty_heat_cell_word_matches_mixed_legend() -> None:
+    tone, en, zh = _heat_cell("", "")
+    assert tone == "c-flat"
+    assert en == "Mixed"
+    assert zh == "中性"
+
+
+# --------------------------------------------------------------------------- #
+# P0#2 — one helper, one window; live tile is day-change
+# --------------------------------------------------------------------------- #
+def test_chg_helper_window_is_22_sessions() -> None:
+    assert CHG_1M_BARS == 22
+    assert CHG_1D_BARS == 1
+    close = pd.Series([100.0] * 23 + [105.0, 110.0])
+    # 1-month: last vs 22 sessions earlier (iloc[-23] == 100) → +10.0
+    assert _chg_pct(close, CHG_1M_BARS) == 10.0
+    # 1-day: 110 / 105 − 1 → +4.8
+    assert _chg_pct(close, CHG_1D_BARS) == 4.8
+
+
+def test_cited_surfaces_call_the_same_helper() -> None:
+    a_src = inspect.getsource(asset_vm)
+    i_src = inspect.getsource(_build_sector_vm_inner)
+    assert a_src.count("_chg_pct(") >= 2  # 1m + 1d
+    assert i_src.count("_chg_pct(") >= 2  # grid + detail
+    assert "iloc[-22]" not in a_src
+    assert "iloc[-23]" not in i_src
+    assert "chg_1d" in a_src
+    # n2: the grid loop must call _heat_cell, not re-inline a momentum-first block.
+    assert "_heat_cell(" in i_src
+    assert "_chg_tone(" in i_src
+
+
+def test_live_strip_ssrs_day_change_not_monthly() -> None:
+    src = _tpl()
+    start = src.index("LIVE PRICE STRIP")
+    end = src.index("SECTION 2", start)
+    live = src[start:end]
+    assert "a.chg_1d" in live
+    assert "a.chg}" not in live
+    assert "GC=F_chg': a.chg}" not in live
+
+
+def test_same_window_cannot_ship_two_values() -> None:
+    """Grid and asset_vm 1-month both go through _chg_pct(close, CHG_1M_BARS)."""
+    close = pd.Series([float(i) for i in range(50, 80)])
+    via_helper = _chg_pct(close, CHG_1M_BARS)
+    # reconstruct what the old two sites would have disagreed on
+    old_asset = round(100 * (close.iloc[-1] / close.iloc[-22] - 1), 1)
+    old_grid = round(100 * (close.iloc[-1] / close.iloc[-23] - 1), 1)
+    assert old_asset != old_grid, "precondition: the two old windows differed"
+    assert via_helper == old_grid  # canonical = the 17-member grid window
+    # n1: index KPI helper is the same window, not a second implementation that can drift.
+    assert _chg_1m(close) == via_helper
+
+
+# --------------------------------------------------------------------------- #
+# P0#3 — one dispersion truth; three-way hero stance (W6 r2)
+# --------------------------------------------------------------------------- #
+def _breadth(n_up=12, n_bull=10, n_members=17, diversity=0.2) -> dict:
+    return {
+        "n_members": n_members,
+        "n_up_trend": n_up,
+        "n_bull_momentum": n_bull,
+        "trend_diversity": diversity,
+    }
+
+
+def _member(name: str, state: str, **extra) -> dict:
+    """Shape a real members_conf row (name + confluence state vocabulary)."""
+    row = {
+        "name": name,
+        "state": state,
+        "top_score": 40.0 if state in _TOP_STATES else 0.0,
+        "bottom_score": 0.0,
+        "bottom_fired": [],
+        "top_fired": [],
+    }
+    row.update(extra)
+    return row
+
+
+def _board(states: list[str] | dict[str, str]) -> list[dict]:
+    if isinstance(states, dict):
+        mapping = {n: "Neutral" for n in _COMPLEX_NAMES}
+        mapping.update(states)
+        return [_member(n, mapping[n]) for n in _COMPLEX_NAMES]
+    assert len(states) == len(_COMPLEX_NAMES)
+    return [_member(n, s) for n, s in zip(_COMPLEX_NAMES, states)]
+
+
+def test_sync_read_is_the_one_dispersion_truth() -> None:
+    one = _sync_read(0.2)
+    many = _sync_read(0.8)
+    assert one["in_sync"] is True and one["sync_en"] == "one trend"
+    assert many["in_sync"] is False and many["sync_en"] == "many trends"
+    assert _sync_read(None)["in_sync"] is None
+
+
+def test_hero_act_uses_the_same_sync_truth() -> None:
+    conf = {"members": _board(["Neutral"] * 17)}
+    st_sync = sector_stance(conf, _breadth(diversity=0.2))
+    st_many = sector_stance(conf, _breadth(diversity=0.8))
+    assert st_sync["tone"] == "act"
+    assert st_sync["word_en"] == "Act"
+    assert "in sync" in st_sync["sub_en"]
+    assert st_many["tone"] == "act"
+    assert "in sync" not in st_many["sub_en"]
+    assert "different stories" in st_many["sub_en"]
+
+
+def test_take_profits_row_blocks_act_hero() -> None:
+    """One stretched member: never Act / in sync. Scoped middle, not complex Protect."""
+    members = _board({"corn": "Blowing off — extended"})
+    st = sector_stance({"members": members}, _breadth(diversity=0.2))
+    assert st["tone"] == "selective"
+    assert st["word_en"] == "In favour"
+    assert "in sync" not in st["sub_en"].lower()
+    assert "Act" not in st["word_en"]
+    assert st["tone"] != "protect"
+    assert "1 of 17 stretched" in st["sub_en"]
+    assert "are stretched" not in st["sub_en"]
+
+
+def test_template_chip_reads_producer_sync_not_a_second_threshold() -> None:
+    src = _tpl()
+    chip_start = src.index("One story or many?")
+    chip = src[chip_start - 400: chip_start + 250]
+    assert "br.sync_en" in chip
+    assert "trend_diversity or 0) > 0.4" not in src
+
+
+def test_calm_words_are_scoped_index_vs_members() -> None:
+    src = _tpl()
+    assert "No shock at the index level" in src
+    assert "指数层面无冲击" in src
+    assert "Members calm" in src
+    assert "品种平稳" in src
+    assert "market calm = no shock" not in src
+
+
+def test_hero_three_way_act_zero_stretched() -> None:
+    """Branch 1: all Neutral, in-sync, broad+mom → Act."""
+    st = sector_stance({"members": _board(["Neutral"] * 17)}, _breadth(diversity=0.2))
+    assert st["tone"] == "act"
+    assert st["word_en"] == "Act"
+    assert "in sync" in st["sub_en"]
+
+
+def test_hero_three_way_selective_one_and_four() -> None:
+    """Branch 2: 1 and 4 of 17 stretched (below 0.25) → In favour, never Protect."""
+    one = sector_stance(
+        {"members": _board({"corn": "Blowing off — extended"})},
+        _breadth(diversity=0.2),
+    )
+    assert one["tone"] == "selective"
+    assert one["word_en"] == "In favour"
+    assert one["word_zh"] == "倾向做多"
+    assert "1 of 17 stretched" in one["sub_en"]
+    assert "trim that" in one["sub_en"]
+    assert "in sync" not in one["sub_en"]
+    assert "are " not in one["sub_en"]
+
+    four = sector_stance(
+        {"members": _board({
+            "corn": "Blowing off — extended",
+            "soybeans": "Blowing off — extended",
+            "heating_oil": "Extended — late cycle",
+            "sugar": "Euphoric top — rolling over",
+        })},
+        _breadth(diversity=0.2),
+    )
+    assert four["tone"] == "selective"
+    assert "4 of 17 stretched" in four["sub_en"]
+    assert "trim those" in four["sub_en"]
+    assert four["tone"] != "protect"
+    assert 4 / 17 < FRAC_TOP_PROTECT <= 5 / 17
+
+
+def test_hero_three_way_protect_five_of_seventeen() -> None:
+    """Branch 3: 5 of 17 = 29% ≥ 0.25 → complex-level Protect."""
+    names = ["corn", "soybeans", "heating_oil", "sugar", "wheat"]
+    states = {n: "Blowing off — extended" for n in names}
+    st = sector_stance({"members": _board(states)}, _breadth(diversity=0.2))
+    assert st["tone"] == "protect"
+    assert st["word_en"] == "Protect gains"
+    assert "5 of 17 commodities are stretched" in st["sub_en"]
+    assert "in sync" not in st["sub_en"]
+
+
+def test_hero_protect_index_plus_one_uses_singular() -> None:
+    """M-A1: index shock can pull n_top==1 into Protect — must not say '1 … are'."""
+    st = sector_stance(
+        {"members": _board({"corn": "Blowing off — extended"})},
+        _breadth(diversity=0.2),
+        index_shock="blowoff",
+    )
+    assert st["tone"] == "protect"
+    assert "1 of 17 commodities is stretched" in st["sub_en"]
+    assert "are stretched" not in st["sub_en"]
+
+
+def test_hero_protect_on_index_blowoff_even_with_zero_stretched() -> None:
+    st = sector_stance(
+        {"members": _board(["Neutral"] * 17),
+         "index": {"state": "Neutral"}},
+        _breadth(diversity=0.2),
+        index_shock="blowoff",
+    )
+    assert st["tone"] == "protect"
+    assert "index itself is blowing off" in st["sub_en"].lower()
+    assert "in sync" not in st["sub_en"]
+
+
+def test_hero_protect_on_index_confluence_top_state() -> None:
+    st = sector_stance(
+        {"members": _board(["Neutral"] * 17),
+         "index": {"state": "Blowing off — extended"}},
+        _breadth(diversity=0.2),
+        index_shock="normal",
+    )
+    assert st["tone"] == "protect"
+
+
+def test_hero_current_shaped_board_is_selective() -> None:
+    """origin/main latest.json shape: 3 stretched of 17, index Neutral/normal.
+
+    3/17 ≈ 0.176 < 0.25 → In favour, not Act, not Protect.
+    Glance sub is count+stance; names live on the LENS tip (Tier 2).
+    """
+    st = sector_stance(
+        {"members": _board({
+            "heating_oil": "Extended — late cycle",
+            "corn": "Blowing off — extended",
+            "soybeans": "Blowing off — extended",
+        }),
+         "index": {"state": "Neutral"}},
+        _breadth(n_up=11, n_bull=7, n_members=17, diversity=0.304),
+        index_shock="normal",
+    )
+    assert st["tone"] == "selective"
+    assert st["word_en"] == "In favour"
+    assert "3 of 17 stretched" in st["sub_en"]
+    assert "Heating Oil" not in st["sub_en"]
+    assert "Corn" not in st["sub_en"]
+    assert "Soybeans" not in st["sub_en"]
+    assert "取暖油" not in st["sub_zh"]
+    assert "玉米" not in st["sub_zh"]
+    assert "大豆" not in st["sub_zh"]
+    assert "Heating Oil" in st["tip_en"]
+    assert "Corn" in st["tip_en"]
+    assert "Soybeans" in st["tip_en"]
+    assert "取暖油" in st["tip_zh"]
+    assert "玉米" in st["tip_zh"]
+    assert "大豆" in st["tip_zh"]
+    assert "in sync" not in st["sub_en"]
+    assert st["word_en"] != "Act"
+    assert st["tone"] != "protect"
+
+
+# --------------------------------------------------------------------------- #
+# P0#4 — Dollar: · never renders
+# --------------------------------------------------------------------------- #
+def test_dollar_block_uses_truthiness_not_is_not_none() -> None:
+    block = _dollar_block()
+    assert "d.get(" in block
+    # The live condition must not use Jinja `is not none` (true for a missing key).
+    assert "dollar_usd_dir is not none" not in block
+    assert "dollar_effect is not none" not in block
+
+
+def test_missing_dollar_keys_emit_no_row() -> None:
+    html = _render_dollar({})
+    assert "Dollar" not in html
+    assert "·" not in html
+
+
+def test_none_dollar_fields_emit_no_row() -> None:
+    html = _render_dollar({"dollar_usd_dir": None, "dollar_effect": None})
+    assert "Dollar" not in html
+    assert "·" not in html
+
+
+def test_neutral_effect_alone_emits_no_row() -> None:
+    html = _render_dollar({"dollar_usd_dir": None, "dollar_effect": "neutral"})
+    assert "Dollar" not in html
+
+
+def test_mixed_effect_alone_emits_no_bare_dollar_label() -> None:
+    """m7: unconstrained effect 'mixed' with no dir must not print 'Dollar:'."""
+    html = _render_dollar({"dollar_usd_dir": None, "dollar_effect": "mixed"})
+    assert "Dollar" not in html
+    assert "·" not in html
+
+
+def test_unknown_dir_alone_emits_no_row() -> None:
+    html = _render_dollar({"dollar_usd_dir": "sideways", "dollar_effect": None})
+    assert "Dollar" not in html
+
+
+def test_dollar_row_renders_real_values() -> None:
+    html = _render_dollar({"dollar_usd_dir": "up", "dollar_effect": "headwind"})
+    assert "Dollar" in html
+    assert "rising" in html
+    assert "headwind for this commodity" in html
+    assert "Dollar: ·" not in html
+
+
+def test_dollar_falling_tailwind_branch() -> None:
+    html = _render_dollar({"dollar_usd_dir": "down", "dollar_effect": "tailwind"})
+    assert "falling" in html
+    assert "tailwind for this commodity" in html
+
+
+def test_detail_entries_always_carry_dollar_keys() -> None:
+    """Unavailable rows also get the keys (default None) so Jinja never sees a hole."""
+    src = _BUILDER.read_text()
+    assert '"dollar_usd_dir": None, "dollar_effect": None' in src
+    assert '"dollar_usd_dir": (a_vm or {}).get("dollar_usd_dir")' in src
+
+
+# --------------------------------------------------------------------------- #
+# P1#5 — lexicon + slug guard
+# --------------------------------------------------------------------------- #
+def test_cot_and_exogenous_are_plain_words_on_the_lane() -> None:
+    assert _LABELS["cot_long"][0] == "Big speculators are crowded long"
+    assert _LABELS["cot_short"][0] == "Big speculators are crowded short"
+    assert "大型投机者" in _LABELS["cot_long"][1]
+    assert "大型投机者" in _LABELS["cot_short"][1]
+    assert _LABELS["shock_bottom"][0] == "Washout from a shock outside this market"
+    assert _LABELS["shock_top"][0] == "Blow-off from a shock outside this market"
+    assert "outside selling" not in _LABELS["shock_bottom"][0]
+    assert "outside buying" not in _LABELS["shock_top"][0]
+    assert _LABELS["shock_bottom"][1] == "外部抛压砸出的洗盘"
+    assert _LABELS["shock_top"][1] == "外部买盘推动价格喷发"
+    for _code, (en, zh) in _LABELS.items():
+        assert "COT" not in en, f"machine term on the lane: {en!r}"
+        assert "Exogenous" not in en, f"machine term on the lane: {en!r}"
+        assert en and zh and en != zh
+
+
+def test_machine_terms_live_on_data_tip_rc() -> None:
+    assert "exogenous" in _TIPS["shock_top"][0].lower()
+    assert "exogenous" in _TIPS["shock_bottom"][0].lower()
+    assert "COT" in _TIPS["cot_long"][0]
+    assert "COT" in _TIPS["cot_short"][0]
+    src = _tpl()
+    assert "data-tip-rc-en" in src
+    assert "rc.tip_en" in src
+
+
+def test_lbl_never_emits_a_raw_slug() -> None:
+    out = _lbl("not_a_real_condition_xyz")
+    assert out["code"] == "not_a_real_condition_xyz"
+    assert out["label_en"] == _UNLABELLED[0]
+    assert out["label_zh"] == _UNLABELLED[1]
+    assert out["label_en"] != out["code"]
+    assert out["label_zh"] != out["code"]
+    assert " " in out["label_en"]
+
+
+def test_lbl_known_code_carries_tip_when_catalogued() -> None:
+    out = _lbl("cot_long")
+    assert out["label_en"] == "Big speculators are crowded long"
+    assert out["tip_en"] == "COT crowded long"
+    assert "tip_en" in _lbl("shock_top")
+    assert "tip_en" not in _lbl("curl")
+
+
+def test_lbl_explain_is_not_the_chip_label() -> None:
+    """m5: Lens body is a real one-line explanation, not a copy of the chip."""
+    for code in _LABELS:
+        out = _lbl(code)
+        assert out["explain_en"]
+        assert out["explain_en"] != out["label_en"]
+        assert out["explain_zh"] != out["label_zh"]
+        assert code in _EXPLAIN
+    src = _tpl()
+    assert 'data-tip-en="{{ rc.label_en }}"' not in src
+    assert 'data-tip-en="{{ rc.explain_en }}"' in src
+    assert "rc.explain_en" in src
+    assert "rc.tip_en" in src  # machine term stays on data-tip-rc
+
+
+def test_shared_predicate_is_the_one_counted_set() -> None:
+    """R-M1: hero count, board.tops, and heat-grid non-green share one predicate."""
+    assert BOARD_TOP_STATES == set(_TOP_STATES)
+    members = _board({
+        "heating_oil": "Extended — late cycle",
+        "corn": "Blowing off — extended",
+        "soybeans": "Blowing off — extended",
+        "sugar": "Neutral",
+    })
+    counted = [m["name"] for m in stretched_members(members)]
+    assert counted == ["heating_oil", "corn", "soybeans"]
+    assert "sugar" not in counted
+    st = sector_stance({"members": members}, _breadth(diversity=0.2))
+    assert st["tone"] == "selective"
+    assert "3 of 17 stretched" in st["sub_en"]
+    for name in counted:
+        assert is_board_stretched(next(m["state"] for m in members if m["name"] == name))
+
+
+def test_counted_set_equals_grid_nongreen_for_board_stretched() -> None:
+    """A board-stretched member can never paint c-up, even on (normal, bull)."""
+    heat = {
+        "heating_oil": ("normal", "bull", "Extended — late cycle"),
+        "corn": ("blowoff", "bull", "Blowing off — extended"),
+        "soybeans": ("blowoff", "bull", "Blowing off — extended"),
+    }
+    for name, (shock, mom, state) in heat.items():
+        tone, en, _zh = _heat_cell(shock, mom, state)
+        assert tone != "c-up", name
+        assert _chg_tone(tone, 5.5) != "up", name
+        assert is_board_stretched(state)
+
+
+def test_fixture_heating_oil_and_sugar_rendering() -> None:
+    """Capture fixture's two divergence cases: heating_oil Extended, sugar Blow-off."""
+    ho_tone, ho_en, ho_zh = _heat_cell("normal", "bull", "Extended — late cycle")
+    assert ho_tone == "c-extended"
+    assert ho_en == "Extended"
+    assert ho_zh == "超涨延伸"
+    assert _chg_tone(ho_tone, 5.5) == "amb"
+
+    su_tone, su_en, su_zh = _heat_cell("blowoff", "bull", "Neutral")
+    assert su_tone == "c-blowoff"
+    assert su_en == "Blow-off"
+    assert su_zh == "喷发"
+    assert not is_board_stretched("Neutral")
+    assert _chg_tone(su_tone, 11.0) == "amb"
+
+    # Uncounted + normal + bull still greens — sugar is the shock case, oil isn't stretched.
+    oil_tone, oil_en, _ = _heat_cell("normal", "bull", "Neutral")
+    assert oil_tone == "c-up"
+    assert oil_en == "Momentum up"
+
+
+def test_blowoff_positive_chg_digit_is_amber_not_green() -> None:
+    """M-A3: blowoff + bull + +14.2% must not paint a .up green digit."""
+    tone, _en, _zh = _heat_cell("blowoff", "bull")
+    assert tone == "c-blowoff"
+    assert _chg_tone(tone, 14.2) == "amb"
+    assert _chg_tone(tone, 14.2) != "up"
+    assert _chg_tone("c-washout", -8.0) == "blue"
+    assert _chg_tone("c-up", 14.2) == "up"
+    assert _chg_tone("c-dn", -1.0) == "dn"
+    assert _chg_tone("c-flat", None) == "mut"
+
+    env = Environment()
+    snippet = (
+        "{% set m = cell %}"
+        '<div class="cell {{ m.tone or \'c-flat\' }}">'
+        "{% if m.chg_1m_pct is not none %}"
+        '<span class="cpc {{ m.chg_tone or \'mut\' }}">'
+        "{{ '%+.1f'|format(m.chg_1m_pct) }}%</span>"
+        "{% else %}<span class=\"cpc mut\">—</span>{% endif %}"
+        "</div>"
+    )
+    html = env.from_string(snippet).render(cell={
+        "tone": "c-blowoff", "chg_tone": "amb", "chg_1m_pct": 14.2,
+    })
+    assert 'class="cpc amb"' in html
+    assert 'class="cpc up"' not in html
+    assert ".up" not in html
+    assert "+14.2%" in html
+    # The cell itself must not carry a sign class that would inherit green.
+    assert "cell c-blowoff" in html
+    assert "c-blowoff up" not in html
+
+
+def test_heat_grid_template_uses_chg_tone_not_sign() -> None:
+    src = _tpl()
+    start = src.index("SECTION 4 — HEAT GRID")
+    grid = src[start: start + 2500]
+    assert "m.chg_tone" in grid
+    assert "'up' if (m.chg_1m_pct or 0) >= 0 else 'dn'" not in grid
+    assert "m.chg_sign" not in grid
+
+
+def test_live_tile_emdash_is_not_green() -> None:
+    """n4: missing day-change must not class the placeholder em-dash as .up."""
+    src = _tpl()
+    start = src.index("LIVE PRICE STRIP")
+    live = src[start: src.index("SECTION 2", start)]
+    assert "'up' if (_chg or 0) >= 0 else 'dn'" not in live
+    assert "_chg is not none" in live
+    env = Environment()
+    snippet = (
+        "{% set _chg = chg %}"
+        '<div class="lt-chg nb-chg {% if _chg is not none %}'
+        "{{ 'up' if _chg >= 0 else 'dn' }}{% else %}mut{% endif %}\">—</div>"
+    )
+    html = env.from_string(snippet).render(chg=None)
+    assert "up" not in html
+    assert "mut" in html
+    html_up = env.from_string(snippet).render(chg=1.2)
+    assert "up" in html_up
+
+
+# --------------------------------------------------------------------------- #
+# W6 r4 — canonical LENS + ZH catalysts (release repairs)
+# --------------------------------------------------------------------------- #
+def test_early_warning_lens_is_canonical_lens_q() -> None:
+    """Packet (g) + R-M2: dedicated `?` button on the site LENS, not a page popover."""
+    src = _tpl()
+    start = src.index("Early warnings forming")
+    block = src[start: start + 1100]
+    assert 'class="q lens-q"' in block
+    assert 'data-tip-en="Early-warning list' in block
+    assert "<button type=\"button\"" in block
+    assert "data-cmdty-tip-en=" not in src
+    assert "cmdty-tip-open" not in src
+    assert "cmdty-lens" not in src
+    assert "data-aria-en=" in block
+    assert "data-aria-zh=" in block
+
+
+def test_receipt_chips_use_canonical_lens_q() -> None:
+    src = _tpl()
+    assert src.count("lens-q") >= 4
+    assert 'data-tip-en="{{ rc.explain_en }}"' in src
+    assert 'data-tip-rc-en="{{ rc.tip_en }}"' in src
+    assert "rcpt-item" in src
+    assert '{% if not loop.last %} · {% endif %}' not in src
+
+
+def test_catalyst_label_uses_t_not_td() -> None:
+    src = _tpl()
+    start = src.index("Upcoming events")
+    block = src[start: src.index("ALERT TIMELINE", start)]
+    assert "{{ t(c.label, c.label_zh) }}" in block
+    assert "{{ td(c.label) }}" not in block
+
+
+def test_disclaimer_is_the_one_true_sentence() -> None:
+    src = _tpl()
+    assert "Scheduled dates, not forecasts." in src
+    assert "{{ news_disclaimer }}" not in src
+    builder = _BUILDER.read_text()
+    assert "news_disclaimer" not in builder
+
+
+def test_catalyst_zh_is_emitted_by_producer() -> None:
+    """R-M3: production-shaped catalyst carries label_zh from the LEX / fallback."""
+    from datetime import date as _date
+    row = resolve_catalyst_row(
+        {"date": "2026-09-16", "type": "FOMC", "label": "FOMC decision",
+         "assets": ["gold", "oil"]},
+        _date(2026, 9, 11),
+    )
+    assert row["label_zh"] == CATALYST_LABEL_ZH["FOMC decision"]
+    assert row["label_zh"] == "美联储议息决议"
+    assert row["type_en"] == "Fed meeting"
+    assert row["type_zh"] == "美联储会议"
+    assert row["days_out"] == 5
+
+    eia = resolve_catalyst_row(
+        {"date": "2026-09-17", "type": "EIA_WPSR",
+         "label": "EIA crude/petroleum inventories", "assets": ["oil"]},
+        _date(2026, 9, 11),
+    )
+    assert eia["label_zh"] == "EIA 原油库存周报"
+
+    unknown = resolve_catalyst_row(
+        {"date": "2026-09-20", "type": "WEIRD_EVENT", "label": "weird_event_name"},
+        _date(2026, 9, 11),
+    )
+    assert unknown["label_zh"] == "weird event name"  # prettified, never blank
+
+    env = Environment()
+    html = env.from_string(
+        '{% macro t(en, zh="") %}{{ zh or en }}{% endmacro %}'
+        "{{ t(c.label, c.label_zh) }}"
+    ).render(c=row)
+    assert html == "美联储议息决议"
+    assert "{{ t(c.label, c.label_zh) }}" in _tpl()
+
+
+def test_timeline_asset_uses_zh_twin() -> None:
+    src = _tpl()
+    assert "{{ t(e.asset_label, e.asset_label_zh) }}" in src
+    builder = _BUILDER.read_text()
+    assert '"asset_label_zh"' in builder
+
+
+def test_heat_grid_empty_cycle_is_not_an_emdash() -> None:
+    src = _tpl()
+    start = src.index("SECTION 4 — HEAT GRID")
+    grid = src[start: src.index("SECTION 5", start)]
+    assert "m.cycle_phase_en or '—'" not in grid
+    assert "no cycle" in grid
+    assert "无周期" in grid
+
+
+def test_capture_fixture_matches_production_shape() -> None:
+    """heating_oil Extended / sugar Blow-off; catalysts get label_zh from the resolver."""
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+
+    cap = (_REPO / "scripts" / "capture_commodities_w6_evidence.py").read_text()
+    assert "周度石油库存" not in cap  # no invented ZH
+    assert "resolve_catalyst_row" in cap
+
+    vm = fixture_vm()["vm"]
+    cells = [c for g in vm["grid"] for c in g["members"]]
+    ho = next(c for c in cells if c["name"] == "heating_oil")
+    su = next(c for c in cells if c["name"] == "sugar")
+    assert ho["tone"] == "c-extended"
+    assert ho["state_short_en"] == "Extended"
+    assert ho["state_short_zh"] == "超涨延伸"
+    assert ho["chg_tone"] == "amb"
+    assert su["tone"] == "c-blowoff"
+    assert su["state_short_en"] == "Blow-off"
+    assert "Heating Oil" not in vm["stance"]["sub_en"]
+    assert "Corn" not in vm["stance"]["sub_en"]
+    assert "Soybeans" not in vm["stance"]["sub_en"]
+    assert "Heating Oil" in vm["stance"]["tip_en"]
+    assert "Corn" in vm["stance"]["tip_en"]
+    assert "Soybeans" in vm["stance"]["tip_en"]
+
+    cats = fixture_vm()["catalysts"]
+    assert all("label_zh" in c and c["label_zh"] for c in cats)
+    assert cats[0]["label_zh"] == "美联储议息决议"
+    assert cats[1]["label"] == "EIA crude/petroleum inventories"
+    assert cats[1]["label_zh"] == "EIA 原油库存周报"
+
+
+# --------------------------------------------------------------------------- #
+# W6 r5 — glance names → LENS tip; legend discriminates; ZH state word
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("n_top", [3, 9, 17])
+def test_hero_glance_sub_has_no_member_names(n_top: int) -> None:
+    """R4-M1: glance sub is count+stance; tip lists the exact counted set."""
+    states = {n: "Blowing off — extended" for n in _COMPLEX_NAMES[:n_top]}
+    members = _board(states)
+    st = sector_stance({"members": members}, _breadth(diversity=0.2))
+    counted = stretched_members(members)
+    assert [m["name"] for m in counted] == _COMPLEX_NAMES[:n_top]
+    names_en, names_zh = _stretched_name_list(counted)
+    for _slug, (en, zh) in MEMBER_LABELS.items():
+        assert en not in st["sub_en"], n_top
+        assert zh not in st["sub_zh"], n_top
+    assert st["tip_en"] == names_en
+    assert st["tip_zh"] == names_zh
+    assert [p.strip() for p in st["tip_en"].split(",")] == [
+        MEMBER_LABELS[n][0] for n in _COMPLEX_NAMES[:n_top]
+    ]
+    assert st["tip_zh"].split("、") == [
+        MEMBER_LABELS[n][1] for n in _COMPLEX_NAMES[:n_top]
+    ]
+
+
+def test_hero_sub_lens_hosts_counted_names() -> None:
+    src = _tpl()
+    start = src.index('<div class="stance-sub">')
+    block = src[start: start + 900]
+    assert "st.tip_en" in block
+    assert "st.tip_zh" in block
+    assert "lens-q" in block
+    assert 'data-aria-en="Which members"' in block
+    assert 'data-aria-zh="哪些品种"' in block
+    assert "data-cmdty-tip" not in src
+
+
+def test_extended_zh_state_word_is_unified() -> None:
+    """R4-n1: badge / legend / grid name the state 超涨延伸. Prose may keep 超涨."""
+    src = _tpl()
+    assert "t('Extended','超涨延伸')" in src
+    assert "t('Extended','超涨')" not in src
+    legend = _legend_block()
+    assert "超涨延伸" in legend
+    assert _heat_cell("normal", "bull", "Extended — late cycle")[2] == "超涨延伸"

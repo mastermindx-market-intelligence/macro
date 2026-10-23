@@ -1,0 +1,33 @@
+--- pre-native/tests/test_deploy_provenance.py
++++ candidate/tests/test_deploy_provenance.py
+@@ -100,6 +100,9 @@
+         pytest.skip("local rsync is required to verify deletion/filter semantics")
+     fake_bin = tmp_path / "bin"
+     fake_bin.mkdir()
++    rsync_peer_bin = tmp_path / "rsync-peer-bin"
++    rsync_peer_bin.mkdir()
++    (rsync_peer_bin / "rsync").symlink_to(Path(real_rsync).resolve())
+     remote, source, live_data = (tmp_path / name for name in ("remote", "source", "live-data"))
+     for root in (remote, source):
+         (root / "app").mkdir(parents=True)
+@@ -168,7 +171,11 @@
+         (root / "snapshot_failed").touch(); sys.exit(18)
+     if kind == "restore" and flag("FAKE_FAIL_RESTORE") and not dry:
+         (remote / "app/old.py").write_text("partial-restore\n"); sys.exit(18)
+-    result = subprocess.call([os.environ["FAKE_REAL_RSYNC"], *clean[:-2], str(src_path) + "/", str(dst_path) + "/"])
++    # Apple rsync finds its local peer on PATH. Only this already-confined
++    # transfer bypasses the rsync shim; SSH and every other shim stay in place.
++    peer_bin = inside(os.environ["FAKE_RSYNC_PEER_BIN"])
++    rsync_env = dict(os.environ, PATH=str(peer_bin) + os.pathsep + os.environ["PATH"])
++    result = subprocess.call([os.environ["FAKE_REAL_RSYNC"], *clean[:-2], str(src_path) + "/", str(dst_path) + "/"], env=rsync_env)
+     if result: sys.exit(result)
+     if kind == "forward" and not dry and flag("FAKE_REMOVE_ACTIVE_ON_FORWARD"):
+         marker.unlink()
+@@ -289,6 +296,7 @@
+         "FAKE_REMOTE": str(remote), "FAKE_LIVE_DATA": str(live_data), "FAKE_EVENTS": str(events),
+         "FAKE_GATE_EVENTS": str(tmp_path / "activation_events"), "FAKE_EXPECTED": new_sha,
+         "FAKE_REAL_RSYNC": real_rsync, "FAKE_REAL_CP": shutil.which("cp") or "/bin/cp",
++        "FAKE_RSYNC_PEER_BIN": str(rsync_peer_bin),
+         "FAKE_REAL_FIND": shutil.which("find") or "/usr/bin/find",
+         "FAKE_FAIL_NEW": "1" if fail_new_release else "0",
+     })

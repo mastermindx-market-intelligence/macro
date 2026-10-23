@@ -1,0 +1,26 @@
+{
+  "schema": "forex_r26.focused_source_validation.v1",
+  "started_at": "2026-10-22T03:15:33.481879+00:00",
+  "completed_at": "2026-10-22T03:15:41.925218+00:00",
+  "exit_code": 0,
+  "duration_seconds": 8.443,
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_tiingo_forex_source.py",
+    "tests/test_tiingo_reader.py",
+    "tests/test_tiingo_additional_history.py",
+    "-q"
+  ],
+  "before_sha256": {
+    "lib/dataos/tiingo_forex.py": "7d30b518225222eac431877bb9f71e5e78454cb5056dfd7f44fe24aace171796",
+    "tests/test_tiingo_forex_source.py": "d90967b778b0ee05b40b1f1476dd5df69d2dfa8c8431defc9fb72308b2737dd1"
+  },
+  "after_sha256": {
+    "lib/dataos/tiingo_forex.py": "7d30b518225222eac431877bb9f71e5e78454cb5056dfd7f44fe24aace171796",
+    "tests/test_tiingo_forex_source.py": "d90967b778b0ee05b40b1f1476dd5df69d2dfa8c8431defc9fb72308b2737dd1"
+  },
+  "log": "interval-reconciliation-tests-qualified.log",
+  "delta": "Exact ordinal budget includes early-invalid windows; comma fractions refused, valid dot nanoseconds preserved"
+}

@@ -31,6 +31,9 @@ from __future__ import annotations
 import collections
 import json
 import logging
+from math import isfinite
+from statistics import median
+from typing import Any, Mapping
 
 import numpy as np
 import pandas as pd
@@ -39,6 +42,8 @@ from engine.baskets import _basket_extras, _ew_level, _membership
 from engine.equity_factors import _closes, _names_sectors
 from engine.indicators import pct_rank_window
 from lib import config, store
+from lib.closes_panel import (align_latest_common_observation, population_observation,
+                              resolve_thematic_close_panel)
 
 log = logging.getLogger(__name__)
 
@@ -135,6 +140,325 @@ def sign_agreement(member_rets: pd.Series) -> dict:
     net = n_up - n_down
     return {"agreement_pct": float(abs(net) / n), "net": int(net), "n": n,
             "n_up": n_up, "n_down": n_down, "n_flat": int(n - n_up - n_down)}
+
+
+
+PEER_CONTEXT_SCHEMA = "prophet.peer_context/v1"
+
+_PEER_AUTHORITY = {
+    "rank_authority": False,
+    "entry_authority": False,
+    "policy_authority": False,
+    "sizing_authority": False,
+    "trade_authority": False,
+}
+
+
+def _peer_number(value: Any) -> float | None:
+    """Finite numeric peer observation; bool and missing remain unavailable."""
+    if value is None or isinstance(value, (bool, np.bool_)):
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return out if isfinite(out) else None
+
+
+def _independent_peer_roster(
+    tickers: set[str],
+    *,
+    focal_ticker: str,
+    issuer_by_ticker: Mapping[str, str | None],
+) -> dict[str, Any]:
+    """Resolve a fixed leave-issuer-out roster without shrinking on missing identity.
+
+    Known alternate listings of the focal issuer are excluded with the focal ticker.
+    Members whose issuer is unknown remain in the denominator but are not allowed to
+    create independent support. This is conservative by construction: missing identity
+    can widen uncertainty, never improve the lower bound.
+    """
+    focal = str(focal_ticker or "").strip()
+    if not focal:
+        raise ValueError("focal_ticker_required")
+    if not isinstance(issuer_by_ticker, Mapping):
+        raise ValueError("issuer_mapping_required")
+    focal_issuer_raw = issuer_by_ticker.get(focal)
+    focal_issuer = (
+        str(focal_issuer_raw).strip()
+        if isinstance(focal_issuer_raw, str) and focal_issuer_raw.strip()
+        else None
+    )
+
+    peers: list[str] = []
+    excluded_same_issuer: list[str] = []
+    unknown_identity: list[str] = []
+    for raw in sorted(tickers):
+        ticker = str(raw or "").strip()
+        if not ticker:
+            raise ValueError("empty_peer_ticker")
+        if ticker == focal:
+            excluded_same_issuer.append(ticker)
+            continue
+        issuer_raw = issuer_by_ticker.get(ticker)
+        issuer = (
+            str(issuer_raw).strip()
+            if isinstance(issuer_raw, str) and issuer_raw.strip()
+            else None
+        )
+        if focal_issuer is not None and issuer == focal_issuer:
+            excluded_same_issuer.append(ticker)
+            continue
+        peers.append(ticker)
+        if focal_issuer is None or issuer is None:
+            unknown_identity.append(ticker)
+
+    return {
+        "focal_ticker": focal,
+        "focal_issuer": focal_issuer,
+        "peers": peers,
+        "excluded_same_issuer": excluded_same_issuer,
+        "unknown_identity": unknown_identity,
+        "independence_status": (
+            "AVAILABLE"
+            if focal_issuer is not None and not unknown_identity and peers
+            else "UNAVAILABLE"
+        ),
+    }
+
+
+def independent_peer_observation(
+    member_values: Mapping[str, Any],
+    *,
+    focal_ticker: str,
+    issuer_by_ticker: Mapping[str, str | None],
+) -> dict[str, Any]:
+    """Bounded cross-sectional peer support, excluding the focal issuer.
+
+    The full eligible roster is the denominator. Missing market observations and
+    unknown issuer identities are not dropped. They widen lower/upper bounds instead
+    of creating survivor-renormalized confirmation. No threshold or directional
+    prediction is attached; this is an observation for later B09/B10 research.
+    """
+    if not isinstance(member_values, Mapping) or not member_values:
+        raise ValueError("member_values_required")
+    roster = _independent_peer_roster(
+        {str(key) for key in member_values},
+        focal_ticker=focal_ticker,
+        issuer_by_ticker=issuer_by_ticker,
+    )
+    peers = roster["peers"]
+    denominator = len(peers)
+    unknown_identity = set(roster["unknown_identity"])
+
+    observed: list[float] = []
+    positive = negative = flat = 0
+    missing_market: list[str] = []
+    for ticker in peers:
+        if ticker in unknown_identity:
+            continue
+        value = _peer_number(member_values.get(ticker))
+        if value is None:
+            missing_market.append(ticker)
+            continue
+        observed.append(value)
+        if value > 0:
+            positive += 1
+        elif value < 0:
+            negative += 1
+        else:
+            flat += 1
+
+    unresolved = len(unknown_identity) + len(missing_market)
+    lower_positive = (positive / denominator) if denominator else None
+    upper_positive = ((positive + unresolved) / denominator) if denominator else None
+    lower_negative = (negative / denominator) if denominator else None
+    upper_negative = ((negative + unresolved) / denominator) if denominator else None
+    focal_value = _peer_number(member_values.get(roster["focal_ticker"]))
+    peer_median = median(observed) if observed else None
+
+    return {
+        "schema": PEER_CONTEXT_SCHEMA,
+        "kind": "INDEPENDENT_PEER_OBSERVATION",
+        "state": "AVAILABLE" if denominator else "UNAVAILABLE",
+        "independence_status": roster["independence_status"],
+        "focal_ticker": roster["focal_ticker"],
+        "focal_issuer": roster["focal_issuer"],
+        "peer_denominator": denominator,
+        "observed_independent_peers": len(observed),
+        "missing_market_observation": sorted(missing_market),
+        "unknown_peer_identity": sorted(unknown_identity),
+        "excluded_same_issuer": list(roster["excluded_same_issuer"]),
+        "n_positive": positive,
+        "n_negative": negative,
+        "n_flat": flat,
+        "positive_breadth_lower": lower_positive,
+        "positive_breadth_upper": upper_positive,
+        "negative_breadth_lower": lower_negative,
+        "negative_breadth_upper": upper_negative,
+        "peer_median": peer_median,
+        "focal_value": focal_value,
+        "focal_minus_peer_median": (
+            focal_value - peer_median
+            if focal_value is not None
+            and peer_median is not None
+            and roster["independence_status"] == "AVAILABLE"
+            else None
+        ),
+        "interpretation": (
+            "descriptive leave-issuer-out peer observation; not fund-flow, "
+            "accumulation, forecast, or buy evidence"
+        ),
+        **_PEER_AUTHORITY,
+    }
+
+
+def independent_peer_continuity(
+    prior_states: Mapping[str, bool | None],
+    current_states: Mapping[str, bool | None],
+    *,
+    focal_ticker: str,
+    issuer_by_ticker: Mapping[str, str | None],
+) -> dict[str, Any]:
+    """Joint leader continuity beyond prior/current marginal breadth.
+
+    A state is an upstream owner's already-defined leader/condition Boolean. This
+    function does not choose that definition. It only preserves who remained,
+    entered, exited, or was unknowable on a fixed roster. It is deliberately not the
+    killed PSS-SR2/SR3 relief-breadth construction: there is no systemic-low anchor,
+    rebound gate, 0.50 threshold, or directional call.
+    """
+    if not isinstance(prior_states, Mapping) or not isinstance(current_states, Mapping):
+        raise ValueError("peer_state_mappings_required")
+    prior_keys = {str(key) for key in prior_states}
+    current_keys = {str(key) for key in current_states}
+    if prior_keys != current_keys or not prior_keys:
+        raise ValueError("peer_roster_changed_between_observations")
+
+    roster = _independent_peer_roster(
+        prior_keys,
+        focal_ticker=focal_ticker,
+        issuer_by_ticker=issuer_by_ticker,
+    )
+    peers = roster["peers"]
+    denominator = len(peers)
+    unknown_identity = set(roster["unknown_identity"])
+
+    retained: list[str] = []
+    entered: list[str] = []
+    exited: list[str] = []
+    stable_nonleader: list[str] = []
+    unknown_transition: list[str] = []
+    possible_retained: list[str] = []
+    unresolved_prior_leader_current: list[str] = []
+    prior_positive = current_positive = 0
+    prior_unknown = current_unknown = 0
+
+    def state(mapping: Mapping[str, bool | None], ticker: str) -> bool | None:
+        value = mapping.get(ticker)
+        if value is None:
+            return None
+        if not isinstance(value, (bool, np.bool_)):
+            raise ValueError("peer_state_must_be_bool_or_none")
+        return bool(value)
+
+    for ticker in peers:
+        if ticker in unknown_identity:
+            prior_unknown += 1
+            current_unknown += 1
+            unknown_transition.append(ticker)
+            possible_retained.append(ticker)
+            continue
+        before = state(prior_states, ticker)
+        now = state(current_states, ticker)
+        if before is True:
+            prior_positive += 1
+        elif before is None:
+            prior_unknown += 1
+        if now is True:
+            current_positive += 1
+        elif now is None:
+            current_unknown += 1
+
+        if before is True and now is True:
+            retained.append(ticker)
+        elif before is False and now is True:
+            entered.append(ticker)
+        elif before is True and now is False:
+            exited.append(ticker)
+        elif before is False and now is False:
+            stable_nonleader.append(ticker)
+        else:
+            unknown_transition.append(ticker)
+            # A retained leader is still possible iff neither observed state is False.
+            if before is not False and now is not False:
+                possible_retained.append(ticker)
+            # The exact retention rate is defined over known prior leaders.  If one
+            # of those leaders has no current observation, dropping it from the
+            # denominator would mechanically improve the scalar.  Keep the full-roster
+            # bounds, but withhold the exact conditional rate until its transition is known.
+            if before is True and now is None:
+                unresolved_prior_leader_current.append(ticker)
+
+    known_prior_leaders = len(retained) + len(exited)
+    known_transitions = len(retained) + len(entered) + len(exited) + len(stable_nonleader)
+    if roster["independence_status"] != "AVAILABLE":
+        retention = None
+        retention_state = "UNAVAILABLE_IDENTITY"
+    elif unresolved_prior_leader_current:
+        retention = None
+        retention_state = "UNAVAILABLE_PRIOR_LEADER_TRANSITION"
+    elif known_prior_leaders:
+        retention = len(retained) / known_prior_leaders
+        retention_state = "EXACT"
+    else:
+        retention = None
+        retention_state = "NO_KNOWN_PRIOR_LEADERS"
+    return {
+        "schema": PEER_CONTEXT_SCHEMA,
+        "kind": "INDEPENDENT_PEER_CONTINUITY",
+        "state": "AVAILABLE" if denominator and known_transitions else "UNAVAILABLE",
+        "independence_status": roster["independence_status"],
+        "focal_ticker": roster["focal_ticker"],
+        "focal_issuer": roster["focal_issuer"],
+        "peer_denominator": denominator,
+        "excluded_same_issuer": list(roster["excluded_same_issuer"]),
+        "unknown_peer_identity": sorted(unknown_identity),
+        "prior_positive_count": prior_positive,
+        "current_positive_count": current_positive,
+        "prior_positive_breadth_lower": (
+            prior_positive / denominator if denominator else None
+        ),
+        "prior_positive_breadth_upper": (
+            (prior_positive + prior_unknown) / denominator if denominator else None
+        ),
+        "current_positive_breadth_lower": (
+            current_positive / denominator if denominator else None
+        ),
+        "current_positive_breadth_upper": (
+            (current_positive + current_unknown) / denominator if denominator else None
+        ),
+        "retained": retained,
+        "entered": entered,
+        "exited": exited,
+        "stable_nonleader": stable_nonleader,
+        "unknown_transition": sorted(set(unknown_transition)),
+        "unresolved_prior_leader_current": sorted(unresolved_prior_leader_current),
+        "retained_full_roster_lower": (
+            len(retained) / denominator if denominator else None
+        ),
+        "retained_full_roster_upper": (
+            (len(retained) + len(set(possible_retained))) / denominator
+            if denominator else None
+        ),
+        "known_prior_leader_retention": retention,
+        "retention_measurement_state": retention_state,
+        "interpretation": (
+            "joint membership continuity on a fixed leave-issuer-out roster; "
+            "not capital flow, accumulation, forecast, or buy evidence"
+        ),
+        **_PEER_AUTHORITY,
+    }
 
 
 def prep_group(members_closes: pd.DataFrame, lvl: pd.Series, bench: pd.Series,
@@ -247,8 +571,9 @@ def _region_plane(region: str):
 def _setup(region: str = "us"):
     """Shared close matrix + benchmark LEVEL for a region's thematic baskets.
 
-    region='us' (default) is byte-identical to before: the S&P-1500 close cache unioned with
-    baskets/extras, benchmarked to SPY. 'cn'/'hk'/'ca' swap in that region's baskets
+    region='us' (default) uses the S&P-1500 close cache on its latest exact common
+    session with SPY, then unions baskets/extras on that fixed calendar. 'cn'/'hk'/'ca'
+    swap in that region's baskets
     membership + search-cache closes + index benchmark (e.g. CSI 300 / HSI / TSX). The US-only
     PIT GICS sector frames are NOT built for non-US regions (no PIT membership), so non-US
     callers operate on the thematic baskets only."""
@@ -260,12 +585,32 @@ def _setup(region: str = "us"):
         closes = _closes()
         if closes is None or closes.empty:
             return None
+        bench_df = store.read("yahoo", "SPY")
+        if bench_df is None or "close" not in bench_df.columns:
+            return None
+        # Freeze the market calendar on a real breadth+SPY observation BEFORE extras
+        # join. Extras may widen the population on that session; they may not advance
+        # the whole US theme plane to a date on which the broad universe was unobserved.
+        closes, bench_close, observation = align_latest_common_observation(
+            closes, bench_df["close"])
+        if closes.empty or observation.get("effective_as_of") is None:
+            return None
+        primary_closes = closes.copy()
         extras = _basket_extras()
+        bdict = mem["baskets"]
+        items = bdict.values() if isinstance(bdict, dict) else bdict
+        theme_tickers = [m.get("ticker") for b in items for m in b.get("members", []) if m.get("ticker")]
+        theme_closes, theme_price_resolution = resolve_thematic_close_panel(
+            primary_closes, extras, theme_tickers)
+        # Preserve the incumbent broad/sector plane: extras-only names remain additive
+        # here, while overlapping names keep primary breadth values. The thematic
+        # consumer gets its separate whole-column projection above.
         if extras is not None and not extras.empty:
+            extras = extras.copy()
+            extras.index = pd.to_datetime(extras.index)
             add = [c for c in extras.columns if c not in closes.columns]
             if add:
                 closes = closes.join(extras[add], how="left")
-        bench_df = store.read("yahoo", "SPY")
     else:
         plane = _region_plane(region)
         if plane is None:
@@ -278,18 +623,28 @@ def _setup(region: str = "us"):
         if closes is None or closes.empty:
             return None
         bench_df = store.read(bench_group, mem.get("benchmark", bench_default))
-    if bench_df is None or "close" not in bench_df.columns:
-        return None
+        if bench_df is None or "close" not in bench_df.columns:
+            return None
+        closes, bench_close, observation = align_latest_common_observation(
+            closes, bench_df["close"])
+        if closes.empty or observation.get("effective_as_of") is None:
+            return None
     rets = closes.pct_change(fill_method=None)
     idx = rets.index
-    bench_ret = bench_df["close"].reindex(idx).ffill().pct_change(fill_method=None)
+    if region != "us":
+        theme_closes = closes
+        theme_price_resolution = None
+    theme_rets = theme_closes.pct_change(fill_method=None)
+    bench_ret = bench_close.reindex(idx).ffill().pct_change(fill_method=None)
     bench = pd.Series(np.nan, index=idx)
     bf = bench_ret.first_valid_index()
     if bf is None:
         return None
     bench.loc[bf:] = (1.0 + bench_ret.loc[bf:].fillna(0.0)).cumprod()
-    return {"mem": mem, "closes": closes, "rets": rets, "idx": idx, "bench": bench,
-            "region": region}
+    return {"mem": mem, "closes": closes, "rets": rets,
+            "theme_closes": theme_closes, "theme_rets": theme_rets,
+            "theme_price_resolution": theme_price_resolution,
+            "idx": idx, "bench": bench, "region": region, "observation": observation}
 
 
 def _pit_sector_frames(closes: pd.DataFrame, rets: pd.DataFrame,
@@ -530,12 +885,27 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
     # excludes departed members.
     bdict = s["mem"]["baskets"]
     items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
+    theme_closes = s.get("theme_closes", s["closes"])
+    theme_rets = s.get("theme_rets", s["rets"])
+    observation_refusals: list[dict] = []
     for bid, b in items:
         members = b.get("members", [])
-        present = [m["ticker"] for m in members if m["ticker"] in s["rets"].columns]
+        theme_observation = population_observation(theme_closes, members, s["idx"].max())
+        if not theme_observation["aggregate_eligible"]:
+            observation_refusals.append({"basket_id": bid, "observation": theme_observation})
+            print(
+                "::warning title=group-flow-observation-coverage::"
+                f"{bid} refused aggregate read at {theme_observation['effective_as_of']}: "
+                f"observed {theme_observation['observed_n']}/{theme_observation['configured_n']} "
+                f"live members; minimum {theme_observation['min_members']} and "
+                f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
+                flush=True,
+            )
+            continue
+        present = [m["ticker"] for m in members if m["ticker"] in theme_rets.columns]
         if len(present) < 3:
             continue
-        lvl = _ew_level(s["rets"], members, s["idx"])
+        lvl = _ew_level(theme_rets, members, s["idx"])
         if lvl.dropna().empty:
             continue
         mask = pd.DataFrame(False, index=s["idx"], columns=present)
@@ -551,9 +921,10 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
         if n_live < 3:
             continue
         fp = _emit(bid, b.get("name", bid), b.get("name_zh", b.get("name", bid)),
-                   b.get("category", "Other"), "basket", s["closes"][present].where(mask),
+                   b.get("category", "Other"), "basket", theme_closes[present].where(mask),
                    lvl, bias_cap, n_live)
         if fp:
+            fp["observation"] = theme_observation
             groups.append(fp)
 
     if not groups:
@@ -582,4 +953,7 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
         "cooling": {"sectors": _stage_of(sectors, "cooling"),
                     "baskets": _stage_of(baskets, "cooling")},
         "ai_handoff": _ai_handoff(meta, vix),
+        "observation_refusals": observation_refusals,
+        **({"price_resolution": s["theme_price_resolution"]}
+           if s.get("theme_price_resolution") is not None else {}),
     }

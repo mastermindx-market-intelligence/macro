@@ -157,3 +157,290 @@ def test_compute_json_serialisable():
         pytest.skip("no sector data")
     js = json.dumps(data)            # must not raise (no numpy/Timestamp leakage)
     assert "NaN" not in js and "Infinity" not in js
+
+
+# ── semantic session anchoring ───────────────────────────────────────────────
+
+def test_latest_cycle_session_ignores_raw_calendar_tail_without_benchmark_price():
+    idx = pd.to_datetime(["2026-09-14", "2026-09-15", "2026-09-16"])
+    closes = pd.DataFrame(
+        {
+            "SPY": [760.0, np.nan, np.nan],
+            "XLK": [184.0, 185.0, 186.0],
+        },
+        index=idx,
+    )
+    assert sc._latest_cycle_session(closes, "SPY") == pd.Timestamp("2026-09-14")
+
+
+def test_latest_cycle_session_returns_none_without_benchmark_observation():
+    closes = pd.DataFrame(
+        {"SPY": [np.nan, np.nan], "XLK": [184.0, 185.0]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+    )
+    assert sc._latest_cycle_session(closes, "SPY") is None
+
+
+def _minimal_cycle_record(ticker: str) -> dict:
+    return {
+        "id": ticker.lower(),
+        "kind": "sector",
+        "name": ticker,
+        "now": {"rs_63d": 1.0, "rs_21d": 1.0},
+    }
+
+
+def test_compute_clips_every_sector_to_observed_benchmark_session(monkeypatch):
+    idx = pd.to_datetime(["2026-09-12", "2026-09-14", "2026-09-15"])
+    closes = pd.DataFrame(
+        {
+            "SPY": [755.0, 760.0, np.nan],
+            "XLK": [183.0, 184.0, 185.0],
+        },
+        index=idx,
+    )
+    seen_tips: list[pd.Timestamp] = []
+
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis=None: closes.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+    monkeypatch.setattr(sc, "_load_baskets", lambda: {})
+    monkeypatch.setattr(sc, "build_amalgam_family", lambda *args, **kwargs: [])
+
+    def fake_build_sector(ticker, _meta, panel, _win_start, *, closes_px=None):
+        seen_tips.append(pd.Timestamp(panel.index.max()))
+        assert closes_px is not None
+        assert pd.Timestamp(closes_px.index.max()) == pd.Timestamp("2026-09-14")
+        return _minimal_cycle_record(ticker)
+
+    monkeypatch.setattr(sc, "build_sector", fake_build_sector)
+    data = sc.compute()
+
+    assert data is not None
+    assert data["meta"]["asOf"] == "2026-09-14"
+    assert seen_tips
+    assert set(seen_tips) == {pd.Timestamp("2026-09-14")}
+
+
+def test_compute_refuses_to_fabricate_session_without_benchmark(monkeypatch):
+    closes = pd.DataFrame(
+        {"SPY": [np.nan, np.nan], "XLK": [184.0, 185.0]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+    )
+    called = False
+
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis=None: closes.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+
+    def should_not_build(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("sector construction must not run without a benchmark session")
+
+    monkeypatch.setattr(sc, "build_sector", should_not_build)
+    assert sc.compute() is None
+    assert called is False
+
+
+def test_broad_sector_cycles_builder_keeps_last_good_when_engine_has_no_session(
+    monkeypatch, tmp_path,
+):
+    from scripts import build_sector_cycles
+
+    site = tmp_path / "site"
+    site.mkdir()
+    last_good = site / "sector_cycles_data.js"
+    last_good.write_text("window.SECTOR_CYCLES={old:true};\n")
+
+    monkeypatch.setattr(build_sector_cycles.config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        build_sector_cycles.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+    monkeypatch.setattr(sc, "compute", lambda: None)
+
+    assert build_sector_cycles.main() == 0
+    assert last_good.read_text() == "window.SECTOR_CYCLES={old:true};\n"
+
+
+
+# ── Leadership Migration W3A: truthful reconstructed daily RS history ────────
+
+def _rs_history_panel(n: int = 520) -> pd.DataFrame:
+    idx = pd.bdate_range("2024-01-02", periods=n)
+    # A non-linear benchmark plus a smoothly accelerating sector-relative ratio
+    # makes both 21d and 63d legs non-zero and mutation-discriminating.
+    spy = pd.Series(100.0 * np.exp(np.linspace(0.0, 0.24, n)), index=idx)
+    rel = pd.Series(np.exp(np.linspace(-0.12, 0.31, n) ** 3), index=idx)
+    xlk = spy * rel
+    return pd.DataFrame({"SPY": spy, "XLK": xlk}, index=idx)
+
+
+def test_leadership_history_endpoint_matches_live_leadership_formula():
+    panel = _rs_history_panel()
+    live = sc._leadership(panel, "XLK")
+    history = sc._leadership_history(panel, "XLK")
+
+    assert history
+    assert history[-1]["date"] == panel.index[-1].date().isoformat()
+    assert history[-1]["rs_21d"] == live["rs_21d"]
+    assert history[-1]["rs_63d"] == live["rs_63d"]
+
+
+def test_leadership_history_is_bounded_ordered_and_requires_live_eligibility():
+    panel = _rs_history_panel(700)
+    history = sc._leadership_history(panel, "XLK")
+
+    assert len(history) == sc.RS_HISTORY_MAX_POINTS == 252
+    assert [row["date"] for row in history] == sorted(row["date"] for row in history)
+    assert all(set(row) == {"date", "rs_21d", "rs_63d"} for row in history)
+
+    thin = _rs_history_panel(209)
+    assert sc._leadership_history(thin, "XLK") == []
+
+
+def test_leadership_history_asof_does_not_use_future_prices():
+    panel = _rs_history_panel(520)
+    cutoff = panel.index[399]
+    expected = sc._leadership_history(panel, "XLK", asof=cutoff)
+
+    mutated = panel.copy()
+    mutated.loc[mutated.index > cutoff, "XLK"] *= 25.0
+    mutated.loc[mutated.index > cutoff, "SPY"] *= 0.1
+    observed = sc._leadership_history(mutated, "XLK", asof=cutoff)
+
+    assert observed == expected
+    assert observed[-1]["date"] == cutoff.date().isoformat()
+    assert all(row["date"] <= cutoff.date().isoformat() for row in observed)
+
+
+def _panel_with_zero_benchmark(n: int = 520, before_end: int = 10) -> pd.DataFrame:
+    """`_rs_history_panel(n)` with the benchmark close forced to 0.0 on one session.
+
+    A zero close is the degenerate owner case: the ratio blows up to +inf, which
+    `json.dumps` would serialise as the non-standard `Infinity` token.
+    """
+    panel = _rs_history_panel(n)
+    panel.loc[panel.index[-1 - before_end], "SPY"] = 0.0
+    return panel
+
+
+def test_rs_history_zero_benchmark_close_cannot_emit_infinity():
+    # MUTATION A: drop the ratio filter in _relative_strength_series_counted
+    #   (`rs = ratio[ratio.notna()]`) -> the zero-benchmark session survives as +inf,
+    #   so the RS-series "all finite / zeroed date absent" assertions fail.
+    # MUTATION B: drop BOTH that filter and the inf_rows filter in
+    #   _leadership_history_counted -> a history row carries inf and
+    #   json.dumps(..., allow_nan=False) raises ValueError.
+    import json
+
+    clean = _rs_history_panel(520)
+    zeroed = _panel_with_zero_benchmark(520, 10)
+    zero_date = zeroed.index[-11].date().isoformat()
+
+    rs = sc._relative_strength_series(zeroed, "XLK")
+    assert len(rs) > 0
+    assert np.isfinite(rs.to_numpy()).all(), "RS series carries a non-finite ratio"
+    assert zero_date not in [ts.date().isoformat() for ts in rs.index]
+
+    live = sc._leadership(zeroed, "XLK")
+    assert live.get("thin_history") is False
+    for key in ("rs_21d", "rs_63d", "rs_126d"):
+        assert np.isfinite(live[key]), f"_leadership {key} is not finite"
+
+    rows, n_excluded = sc._leadership_history_counted(zeroed, "XLK")
+    assert n_excluded >= 1, "the zero-close ratio row was not counted as excluded"
+    assert rows == sc._leadership_history(zeroed, "XLK")
+    json.dumps(rows, allow_nan=False)          # must not raise
+    assert all(np.isfinite(row["rs_21d"]) and np.isfinite(row["rs_63d"]) for row in rows)
+    assert all(row["date"] != zero_date for row in rows)
+
+    clean_rows, clean_excluded = sc._leadership_history_counted(clean, "XLK")
+    assert clean_excluded == 0
+    assert clean_rows == sc._leadership_history(clean, "XLK")
+    json.dumps(clean_rows, allow_nan=False)    # must not raise
+
+
+def test_rs_benchmark_ffill_is_bounded():
+    # MUTATION: `.ffill()` without `limit=RS_BENCH_FFILL_LIMIT` -> the benchmark gap is
+    # carried forever, so the last 3 stale dates reappear in the RS series.
+    n = 300
+    idx = pd.bdate_range("2024-01-02", periods=n)
+    spy = pd.Series(100.0 * np.exp(np.linspace(0.0, 0.2, n)), index=idx)
+    gap_start = n - 30
+    gap = idx[gap_start:gap_start + 8]
+    spy.loc[gap] = np.nan
+    panel = pd.DataFrame({"SPY": spy, "XLK": spy.ffill() * 1.05}, index=idx)
+
+    rs = sc._relative_strength_series(panel, "XLK")
+    dates = {ts.date().isoformat() for ts in rs.index}
+    carried = [ts.date().isoformat() for ts in gap[:5]]
+    stale = [ts.date().isoformat() for ts in gap[5:]]
+
+    assert all(d in dates for d in carried), "bounded ffill dropped an in-limit session"
+    assert not any(d in dates for d in stale), "benchmark ffill is unbounded"
+    assert sc.RS_BENCH_FFILL_LIMIT == 5
+
+
+def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
+    panel = _rs_history_panel(520)
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis="tr": panel.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+
+    def fake_build_sector(ticker, meta, closes, win_start, closes_px=None):
+        if ticker != "XLK":
+            return None
+        live = sc._leadership(closes, ticker)
+        return {
+            "id": "xlk",
+            "ticker": "XLK",
+            "kind": "sector",
+            "name": "Technology",
+            "price": [{"x": 2026.0, "v": 100.0}],
+            "osc": [{"x": 2026.0, "v": 50.0}],
+            "turns": [],
+            "proj": None,
+            "now": {
+                "phase": "Expansion",
+                "pos": 50,
+                "rs_21d": live["rs_21d"],
+                "rs_63d": live["rs_63d"],
+            },
+            "rs_history": sc._leadership_history(closes, ticker),
+        }
+
+    monkeypatch.setattr(sc, "build_sector", fake_build_sector)
+    monkeypatch.setattr(sc, "_load_baskets", lambda: {})
+    monkeypatch.setattr(sc, "build_amalgam_family", lambda *args, **kwargs: [])
+
+    data = sc.compute()
+    assert data is not None
+    assert data["meta"]["rs_history"] == {
+        "schema": "sector_cycles.rs_history.v1",
+        "mode": "reconstructed_price_history",
+        "naturally_observed": False,
+        "basis": "tr",
+        "benchmark": "SPY",
+        "horizons_sessions": [21, 63],
+        "max_points_per_sector": 252,
+        "as_of": str(panel.index[-1].date()),
+        "min_history_sessions": 210,
+        "rows_excluded_nonfinite": 0,
+        "benchmark_ffill_limit_sessions": 5,
+        "source_cohort": {"registry": "engine.sector_cycles.SECTORS", "tickers": ["XLK"]},
+    }
+    assert data["sectors"][0]["rs_history"]
+    assert data["sectors"][0]["rs_history"][-1]["rs_21d"] == data["sectors"][0]["now"]["rs_21d"]
+    assert data["sectors"][0]["rs_history"][-1]["rs_63d"] == data["sectors"][0]["now"]["rs_63d"]

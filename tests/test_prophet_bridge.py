@@ -41,8 +41,11 @@ Coverage:
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import math
+import os
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -345,6 +348,87 @@ def test_weekend_recovery_keeps_publication_and_price_clocks_separate(tmp_path):
     assert plan["price_basis_date"] == plan["entry_date"] == "2026-08-07"
     assert plan["asof"] == plan["recorded_at"] == "2026-08-08"
     assert plan_clock_date(plan) == "2026-08-07"
+
+
+def test_preclose_board_uses_its_observation_clock_for_origination(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15T15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["recorded_at"] == "2026-09-15"
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
+def test_lowercase_iso_time_separator_uses_timestamp_semantics(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15t15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
+def test_origination_uses_supplied_frozen_board_without_rereading_path(tmp_path):
+    frozen = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-07-02"
+        )],
+    )
+    path = tmp_path / "mutable-us-standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "MSFT", score=70, act_level=3, spot=410.0, anchor="2026-07-02"
+        )],
+    )), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        standouts_doc=frozen,
+        asof="2026-07-02",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert [plan["asset"] for plan in plans] == ["AAPL"]
 
 
 def test_tier_native_signal_dates_do_not_rekey_plan_identity(tmp_path):
@@ -861,6 +945,178 @@ def test_validate_trade_plan_invalid_direction():
 
 
 # ---------------------------------------------------------------------------
+# 18b. Prospective Plan source_origin validation (validator-side contract)
+# ---------------------------------------------------------------------------
+
+def _source_origin_fixture(index: int = 0, rows: int = 3) -> dict:
+    """A well-formed source_origin over synthetic original material.
+
+    Receipts mirror the frozen producer exactly (canonical_json hashing); the
+    plan-level row receipt is COPIED from the binding's ordered row, exactly as
+    origination does.
+    """
+    from engine.us_candidate_episode import canonical_json  # noqa: PLC0415
+
+    ordered = [
+        {"selection_index": i,
+         "row_receipt": "sha256:" + hashlib.sha256(
+             canonical_json({"ticker": ticker, "i": i}).encode()).hexdigest()}
+        for i, ticker in enumerate(["AAA", "BBB", "CCC"][:rows])
+    ]
+    material = {
+        "source_sha256": "sha256:" + "a" * 64,
+        "pair_id": "0123456789abcdef0123456789abcdef",
+        "market_session": "2026-07-02",
+        "ordered_rows": ordered,
+    }
+    binding = {
+        **material,
+        "selection_receipt": "sha256:" + hashlib.sha256(
+            canonical_json(material).encode()).hexdigest(),
+        "schema": "prophet.today_selection_source_binding/v1",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    }
+    return {
+        "schema": "prophet.plan_source_origin/v1",
+        "owner_ref": "scripts/build_stock_library.py::main",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+        "source_binding": binding,
+        "selection_index": index,
+        "row_receipt": ordered[index]["row_receipt"],
+    }
+
+
+def _origin_plan(origin: Any) -> dict:
+    return {
+        "schema": "prophet.trade_plan/v1",
+        "id": "TEST-BULL-20260702",
+        "asof": "2026-07-02",
+        "asset": "TEST",
+        "direction": "BULL",
+        "source_engines": ["us_standouts_buy_lane"],
+        "source_origin": origin,
+    }
+
+
+def test_validate_trade_plan_without_source_origin_is_unchanged():
+    """Absent origin: EXACT legacy behavior — no new errors, no invented field."""
+    assert validate_trade_plan({
+        "schema": "prophet.trade_plan/v1",
+        "id": "TEST-BULL-20260702",
+        "asof": "2026-07-02",
+        "asset": "TEST",
+        "direction": "BULL",
+        "source_engines": ["us_standouts_buy_lane"],
+    }) == []
+
+
+def test_validate_trade_plan_accepts_a_consistent_source_origin():
+    assert validate_trade_plan(_origin_plan(_source_origin_fixture())) == []
+
+
+def test_validate_trade_plan_accepts_every_referenced_position():
+    for index in range(3):
+        assert validate_trade_plan(
+            _origin_plan(_source_origin_fixture(index=index))) == []
+
+
+def test_validate_trade_plan_rejects_malformed_source_origin_pins():
+    for mutation, needle in [
+        ({"schema": "prophet.plan_source_origin/v2"}, "schema"),
+        ({"receipt_kind": "W3C_CAPTURE"}, "receipt_kind"),
+        ({"owner_ref": "someone/else.py::main"}, "owner_ref"),
+        ({"source_binding": None}, "source_binding"),
+    ]:
+        origin = _source_origin_fixture()
+        origin.update(mutation)
+        errs = validate_trade_plan(_origin_plan(origin))
+        assert errs and any(needle in e for e in errs), mutation
+    assert validate_trade_plan(_origin_plan(["not", "an", "object"])) == [
+        "source_origin must be an object"]
+
+
+def test_validate_trade_plan_rejects_wrong_source_binding_schema_or_kind():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["schema"] = "prophet.today_selection_source_binding/v2"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("source_binding.schema" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["receipt_kind"] = "SOMETHING_ELSE"
+    assert any(
+        "source_binding.receipt_kind" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_bad_selection_indexes():
+    origin = _source_origin_fixture()
+    origin["selection_index"] = True  # a bool is not an integer here
+    assert any(
+        "selection_index must be an integer" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = "0"
+    assert any(
+        "selection_index must be an integer" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = -1
+    assert any(
+        "out of bounds" in e for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["selection_index"] = 3
+    assert any(
+        "out of bounds" in e for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_row_receipt_mismatch():
+    origin = _source_origin_fixture(index=1)
+    origin["row_receipt"] = "sha256:" + "b" * 64
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("row_receipt does not match" in e for e in errs)
+
+
+def test_validate_trade_plan_rejects_noncontiguous_or_invalid_ordered_rows():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][1]["selection_index"] = 5
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("contiguous" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][2]["row_receipt"] = "sha256:ZZ"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("row_receipt" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"] = []
+    assert any(
+        "non-empty list" in e for e in validate_trade_plan(_origin_plan(origin)))
+    origin = _source_origin_fixture()
+    origin["source_binding"]["ordered_rows"][0] = "not-an-object"
+    assert any(
+        "must be an object" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_inconsistent_selection_receipt():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["pair_id"] = "f" * 32  # material tampered, receipt kept
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("selection_receipt does not match" in e for e in errs)
+    origin = _source_origin_fixture()
+    origin["source_binding"]["selection_receipt"] = "sha256:" + "c" * 64
+    assert any(
+        "selection_receipt does not match" in e
+        for e in validate_trade_plan(_origin_plan(origin)))
+
+
+def test_validate_trade_plan_rejects_malformed_binding_scalar_pins():
+    origin = _source_origin_fixture()
+    origin["source_binding"]["source_sha256"] = "SHA256:" + "a" * 64
+    origin["source_binding"]["market_session"] = "2026-07-02T00:00:00Z"
+    errs = validate_trade_plan(_origin_plan(origin))
+    assert any("source_sha256" in e for e in errs)
+    assert any("market_session" in e for e in errs)
+
+
+# ---------------------------------------------------------------------------
 # 21. Validator round-trip
 # ---------------------------------------------------------------------------
 
@@ -1096,6 +1352,13 @@ def test_index_json_has_required_keys(tmp_path):
         assert idx["source_unknown"] is False
         assert idx["source_basis"] == "panel_majority"
         assert idx["source_mixed_vintage"] is False
+        source_bytes = standouts_path.read_bytes()
+        source_sha = hashlib.sha256(source_bytes).hexdigest()
+        source_rel = f"data/prophet/origination_sources/{source_sha}.json.gz"
+        assert idx["source_board_sha256"] == source_sha
+        assert idx["source_board_snapshot_path"] == source_rel
+        assert idx["source_board_snapshot_encoding"] == "gzip"
+        assert gzip.decompress((tmp_path / source_rel).read_bytes()) == source_bytes
     finally:
         bp.STANDOUTS_PATH = orig_standouts
         bp.SITE_PROPHET = orig_site
@@ -1105,6 +1368,81 @@ def test_index_json_has_required_keys(tmp_path):
         bp.LEDGER_PATH = orig_ledger_path
         bp.LEDGER_DIR = orig_ledger_dir
         bp.write_showcase = orig_write_showcase
+
+
+def test_source_snapshot_is_idempotent_and_collision_safe(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(b'{"as_of":"2026-09-14","buy":[]}\n')
+    monkeypatch.setattr(bp, "STANDOUTS_PATH", board)
+    monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "data/prophet")
+
+    first_doc, first_sha, first_rel = bp._freeze_origination_source_board()
+    second_doc, second_sha, second_rel = bp._freeze_origination_source_board()
+    assert first_doc == second_doc == {"as_of": "2026-09-14", "buy": []}
+    assert (first_sha, first_rel) == (second_sha, second_rel)
+
+    snapshot = tmp_path / first_rel
+    snapshot.write_bytes(gzip.compress(b'{"collision":true}\n', compresslevel=9, mtime=0))
+    with pytest.raises(RuntimeError, match="snapshot collision"):
+        bp._freeze_origination_source_board()
+
+
+def test_source_snapshot_missing_or_malformed_board_fails_closed(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    ledger_dir = tmp_path / "data/prophet"
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+
+    missing = tmp_path / "site/factordata/missing.json"
+    with pytest.raises(RuntimeError, match="source board missing"):
+        bp._freeze_origination_source_board(missing)
+
+    malformed = tmp_path / "site/factordata/malformed.json"
+    malformed.parent.mkdir(parents=True, exist_ok=True)
+    malformed.write_bytes(b'{"as_of":"2026-09-14"')
+    with pytest.raises(RuntimeError, match="source board is not valid JSON"):
+        bp._freeze_origination_source_board(malformed)
+
+    assert not (ledger_dir / "origination_sources").exists()
+
+
+def test_source_snapshot_stale_pid_temp_cannot_block_publication(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    raw = b'{"as_of":"2026-09-14","buy":[]}\n'
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(raw)
+    ledger_dir = tmp_path / "data/prophet"
+    source_dir = ledger_dir / "origination_sources"
+    source_dir.mkdir(parents=True)
+    sha = hashlib.sha256(raw).hexdigest()
+    stale = source_dir / f".{sha}.{os.getpid()}.tmp"
+    stale.write_bytes(b"orphaned prior-run temp")
+
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+    _, got_sha, rel = bp._freeze_origination_source_board(board)
+
+    assert got_sha == sha
+    assert gzip.decompress((tmp_path / rel).read_bytes()) == raw
+    assert stale.read_bytes() == b"orphaned prior-run temp"
+
+
+def test_build_prophet_reuses_one_frozen_board_after_source_freeze():
+    import inspect
+    import scripts.build_prophet as bp
+
+    source = inspect.getsource(bp.main)
+    after_freeze = source[source.index("_freeze_origination_source_board"):]
+
+    assert "STANDOUTS_PATH.open" not in after_freeze
+    assert "standouts_doc=_standouts_doc" in after_freeze
+    assert "run_arena(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert "legacy_shadow_rows(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert '"gate_go": _read_standouts_gate_go(_standouts_doc)' in after_freeze
 
 
 def test_stale_frame_row_pauses_instructions_fresh_row_unchanged(tmp_path):
@@ -2147,3 +2485,56 @@ class TestPriceFrameFreshness:
         fr = self._frame("2026-02-16", 11)
         out = price_frame_freshness(fr, "2026-03-06")
         assert out["max_lag"] == STALE_BASIS_MAX_SESSIONS == 3
+
+
+class TestPlanSourceOriginCodec:
+    """Actual producer receipts verify without a candidate-ledger dependency."""
+
+    @staticmethod
+    def _fixture(tmp_path, payload):
+        from scripts.build_stock_library import today_selection_source_binding
+
+        doc = _make_standouts(buys=[_make_buy("AAA")])
+        doc["emit"] = {"pair_id": "1" * 32, "at_utc": "2026-07-02T21:00:00Z"}
+        doc["board_definition"] = "us_prophet_v3"
+        doc["buy"][0]["receipt_probe"] = payload
+        path = tmp_path / "codec-board.json"
+        raw = json.dumps(doc, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        path.write_bytes(raw)
+        return path, json.loads(raw), today_selection_source_binding(raw)
+
+    @pytest.mark.parametrize("payload", [
+        {"unicode": "研究é🙂", "escapes": "line\n\t\\\""},
+        {"z": [None, True, False], "a": {"nested": [1, -2, 0]}},
+        {"negative_zero": -0.0, "fraction": 0.125, "exponent": 1e20},
+        ["array", {}, [], 123456789012345678901234567890],
+    ], ids=["unicode-escapes", "nested-order-scalars", "floats", "array-large-int"])
+    def test_producer_receipts_survive_without_ledger_import(
+            self, tmp_path, monkeypatch, payload):
+        import builtins
+
+        path, doc, binding = self._fixture(tmp_path, payload)
+        original_import = builtins.__import__
+
+        def reject_ledger(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "engine.us_candidate_episode" or (
+                    name == "engine" and "us_candidate_episode" in (fromlist or ())):
+                raise AssertionError("Plan consumer imported the candidate ledger")
+            return original_import(name, globals, locals, fromlist, level)
+
+        monkeypatch.setattr(builtins, "__import__", reject_ledger)
+        plans = originate_plans(path, "2026-07-02", set(), None,
+                                standouts_doc=doc, source_binding=binding)
+        assert len(plans) == 1
+        assert plans[0]["source_origin"]["source_binding"] == binding
+        assert plans[0]["source_origin"]["row_receipt"] == binding["ordered_rows"][0]["row_receipt"]
+        assert validate_trade_plan(plans[0]) == []
+
+    @pytest.mark.parametrize("payload", [float("nan"), float("inf"), -float("inf"), {1, 2}, object()],
+                             ids=["nan", "inf", "negative-inf", "set", "object"])
+    def test_non_json_row_is_rejected_before_origination(self, tmp_path, payload):
+        path, doc, binding = self._fixture(tmp_path, "valid")
+        doc["buy"][0]["receipt_probe"] = payload
+        with pytest.raises(ValueError, match="value is not canonical JSON"):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=binding)

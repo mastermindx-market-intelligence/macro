@@ -72,8 +72,10 @@ from __future__ import annotations
 import json
 import os
 import re
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import quote, urlencode
 
 # --------------------------------------------------------------------------- #
 # Output contract (TI-R5 whitelist)
@@ -689,46 +691,100 @@ def get_market_events(
 # --------------------------------------------------------------------------- #
 _CATALOG_REL = ("data", "research_vault", "catalog.json")
 
-# Alnum word tokens, ≥2 chars. Applied to the lowercased query and to the
-# lowercased haystack so both sides tokenise identically.
+# Plain ASCII word atoms, ≥2 chars. Qualified identifiers and Han spans use
+# their own rules below so exact symbols never fall back to substring matching
+# and Chinese queries are not erased before scoring.
 _WORD_RE = re.compile(r"[a-z0-9]{2,}")
-# A raw whitespace token containing a dot or a digit is kept AS-IS as well:
-# splitting on non-alnum would shred exchange-qualified tickers (600036.SH →
-# "600036" + "sh") and lose the qualified form the catalog may carry verbatim.
-_QUALIFIED_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.\-]*[A-Za-z0-9]$")
+_HAN_RANGE = r"\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U0002fa1f"
+_HAN_RE = re.compile("[" + _HAN_RANGE + "]+")
+_RAW_SEARCH_ATOM_RE = re.compile(
+    r"[A-Za-z0-9]+(?:[.\-][A-Za-z0-9]+)*|[" + _HAN_RANGE + "]+"
+)
+
+
+def _search_normalize(text: str) -> str:
+    """NFKC + casefold for matching only; returned query text stays original.
+
+    Most catalog fields are already ASCII. Preserve that hot path without a
+    Unicode normalization pass while still normalizing full-width/mixed-script
+    text whenever it is present.
+    """
+    value = str(text or "")
+    if value.isascii():
+        return value.casefold()
+    return unicodedata.normalize("NFKC", value).casefold()
+
+
+def _is_qualified_identifier(raw: str) -> bool:
+    """Whether a punctuated ASCII atom should stay exact instead of splitting.
+
+    Dotted exchange-qualified symbols are exact. Hyphenated atoms stay exact
+    only for the ordinary one-letter share-class form (BRK-B, BF-A), including
+    lowercase user input. Numeric ranges and research prose such as 10-yr,
+    risk-off and AI-driven retain their previous word-search behaviour.
+    """
+    if "." in raw:
+        return True
+    parts = raw.split("-")
+    return (
+        len(parts) == 2
+        and 1 <= len(parts[0]) <= 5
+        and len(parts[1]) == 1
+        and parts[0].isalnum()
+        and parts[1].isalpha()
+    )
 
 
 def _tokenize(query: str) -> tuple[str, ...]:
-    """Query → ordered, de-duplicated lowercase match tokens.
+    """Query → ordered, de-duplicated meaningful lexical atoms.
 
-    De-duplicated because the score counts DISTINCT token hits per field: a
-    query that repeats a word must not buy that word a double weight.
+    The internal normalization is width/case only: it does not translate or
+    equate Simplified and Traditional Chinese. Repeated atoms never buy extra
+    weight because scoring counts distinct hits per field.
     """
-    text = str(query or "")
+    text = _search_normalize(query)
     tokens: list[str] = []
-    for raw in text.split():
-        stripped = raw.strip().strip(",;:!?\"'()[]")
-        if ("." in stripped or any(ch.isdigit() for ch in stripped)) and _QUALIFIED_RE.match(stripped):
-            lowered = stripped.lower()
-            if len(lowered) >= 2 and lowered not in tokens:
-                tokens.append(lowered)
-    for word in _WORD_RE.findall(text.lower()):
-        if word not in tokens:
-            tokens.append(word)
+
+    def add(token: str) -> None:
+        if len(token) >= 2 and token not in tokens:
+            tokens.append(token)
+
+    for raw in _RAW_SEARCH_ATOM_RE.findall(text):
+        if _HAN_RE.fullmatch(raw):
+            add(raw)
+        elif _is_qualified_identifier(raw):
+            add(raw)
+        else:
+            for word in _WORD_RE.findall(raw):
+                add(word)
     return tuple(tokens)
 
 
 def _hits(tokens: tuple[str, ...], haystack: str) -> int:
-    """Count DISTINCT tokens appearing as words in `haystack` (already lowercased)."""
-    if not haystack:
+    """Count DISTINCT normalized atoms supported by `haystack`.
+
+    Build only the index family the query needs. Plain catalog searches stay on
+    the existing word-set hot path; exact-atom extraction is paid only for an
+    exchange/share-class identifier, and a Han-only query needs neither set.
+    """
+    text = _search_normalize(haystack)
+    if not text:
         return 0
-    words = set(_WORD_RE.findall(haystack))
+    needs_words = any(
+        not _HAN_RE.fullmatch(token) and "." not in token and "-" not in token
+        for token in tokens
+    )
+    needs_atoms = any("." in token or "-" in token for token in tokens)
+    words = set(_WORD_RE.findall(text)) if needs_words else set()
+    atoms = set(_RAW_SEARCH_ATOM_RE.findall(text)) if needs_atoms else set()
     count = 0
     for token in tokens:
-        # A qualified token ("600036.sh") survives tokenisation of the haystack
-        # only as fragments, so fall back to a substring test for those.
-        if token in words or ("." in token and token in haystack):
-            count += 1
+        if _HAN_RE.fullmatch(token):
+            count += int(token in text)
+        elif "." in token or "-" in token:
+            count += int(token in atoms)
+        else:
+            count += int(token in words)
     return count
 
 
@@ -1089,7 +1145,23 @@ def _cluster_projection(terms: list[str], members: list[dict],
 _EXCERPTS_REL = ("data", "research_vault", "excerpts.json")
 
 _REPORT_SCHEMA = "brain.research_report.v1"
+_EVIDENCE_SCHEMA = "brain.research_evidence.v1"
+_RESEARCH_VAULT_URL = "https://mastermind-x.com/research_vault.html"
 REPORT_BODY_MAX_CHARS = 12_000
+_EVIDENCE_QUERY_MAX_CHARS = 512
+_EVIDENCE_TERM_MAX_CHARS = 120
+_EVIDENCE_TERM_LIMIT = 12
+_REPORT_META_MAX_CHARS = 512
+_REPORT_TEXT_LAYER_MAX_CHARS = 80
+# Defense in depth only — the corpus owner already bounds a passage window
+# independent of match length (EVIDENCE_WINDOW_CHARS). This is a second, cheap
+# ceiling here so a corrupted/mocked upstream selector still cannot smuggle an
+# unbounded string through the projector.
+_EVIDENCE_PASSAGE_TEXT_MAX_CHARS = 1_200
+# Bounds the link's PERCENT-ENCODED `q=` fragment, not the raw query — a CJK
+# character can encode to 9 chars (%XX%XX%XX), so bounding only the raw text
+# (_EVIDENCE_QUERY_MAX_CHARS) would let the encoded URL balloon regardless.
+_EVIDENCE_LINK_Q_MAX_ENCODED_CHARS = 200
 # Named so the model can tell the user where the rest of the report lives. The
 # budget COVERS this marker (the _truncate idiom) — a "12,000 + marker" result
 # would break any caller sizing a context window off the documented number.
@@ -1128,6 +1200,32 @@ _REPORT_SCAN_ONLY = (
     " This report is a scanned/image-only PDF — the vault holds no machine-readable "
     "text for it, so the public excerpt and summary above are all the text there "
     "is. Say that plainly; do not imply a temporary failure."
+)
+_REPORT_EVIDENCE_NOTE = (
+    " The body_text above contains query-centered supporting passage(s), not the "
+    "whole note. Ground the answer only in evidence.passages, preserve the "
+    "publisher's meaning, and include evidence.open_url as an 'Open source' link."
+)
+_REPORT_NO_EVIDENCE = (
+    " No matching passage for the exact question was found in the stored research "
+    "text. No full-text view was served; it was not charged. Say that plainly; do "
+    "not infer an answer from absence. Brain may re-call this same report with an "
+    "empty query to read it generically, or offer the source-opening link for "
+    "manual review."
+)
+_REPORT_NO_USABLE_PASSAGE = (
+    " Matching terms were found, but no usable passage text was available. No "
+    "full-text view was served or charged; do not describe this as a scan or "
+    "extraction failure."
+)
+# Distinct from _REPORT_SCAN_ONLY: an image-only PDF has no text at all, but an
+# identity-unverified row may well have readable text — it just cannot be bound
+# to a canonical source-PDF fingerprint, so nothing sourced from it is served.
+_REPORT_SOURCE_UNVERIFIED = (
+    " This report's stored text carries no verified source-PDF fingerprint, so "
+    "no full-text view was served or charged. This is a source-identity gap, "
+    "not a scan or extraction failure — say that plainly; do not describe the "
+    "document as unreadable or image-only."
 )
 
 # view_ratelimit.allow() keys a SECOND ledger on sha256(ip)[:16], and maps an
@@ -1196,12 +1294,135 @@ def _load_corpus_document(doc_id: str):
         return None
 
 
+def _load_evidence_document(doc_id: str):
+    """The same corpus row plus source-binding metadata for R1B, or None."""
+    try:
+        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
+        return corpus_mod.get_evidence_document(doc_id)
+    except Exception:  # noqa: BLE001 — no corpus → disclosed evidence shortfall
+        return None
+
+
+def _select_evidence(document, query: str) -> dict:
+    """Run the corpus owner's deterministic selector; fail to body_unavailable."""
+    try:
+        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
+        return corpus_mod.find_evidence_passages(document or {}, query)
+    except Exception:  # noqa: BLE001 — retrieval must not take the chat turn down
+        return {
+            "status": "body_unavailable", "query": str(query or ""),
+            "passages": [], "source_binding": {},
+        }
+
+
+def _evidence_requested(query: str) -> bool:
+    """Classify report intent, then use the corpus owner's one atom admission law."""
+    try:
+        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
+        if _is_generic_report_intent(query, corpus_mod):
+            return False
+        return corpus_mod.evidence_query_is_meaningful(query)
+    except Exception:  # noqa: BLE001 — preserve the generic report path on failure
+        return False
+
+
+# Self-sufficient generic-summary triggers: a single occurrence classifies as
+# generic INTENT on its own (no co-occurring document word required) — the real
+# safety gate is the residual-emptiness check below, not this vocabulary. A
+# genuine specific-topic question using one of these words (e.g. "Explain the
+# Fed's rate decision") still leaves a non-empty residual and stays evidence.
+_GENERIC_EN_INTENT_WORDS = frozenset({
+    "argument", "arguments", "argue", "overview", "summarise", "summarize",
+    "summary", "gist", "thesis", "takeaway", "takeaways", "explain", "tell",
+    "walk", "break",
+})
+_GENERIC_EN_DOCUMENT_WORDS = frozenset({
+    "document", "documents", "note", "notes", "paper", "papers", "report",
+    "reports", "research", "study", "studies",
+})
+# Structural scaffolding: politeness, question form, pronouns, and output-format
+# cues that carry no market/document content of their own. None of these is a
+# real topic word, so stripping them cannot hide a genuine residual question.
+_GENERIC_EN_SCAFFOLDING_WORDS = frozenset({
+    "can", "could", "does", "give", "is", "it", "main", "please", "the",
+    "this", "what", "you", "your", "provide", "down", "key", "bullet",
+    "bullets", "point", "points", "format", "say", "says", "said", "me",
+})
+_TLDR_RE = re.compile(r"\btl\s*;?\s*dr\b")
+# A 1-3 word Titlecase run immediately before a document word ("the Goldman
+# report", "this Example Bank note") is a document-TARGET modifier, not a
+# residual topic — this is a structural (position + capitalization) rule, never
+# an institution allowlist: any capitalized word in that slot qualifies.
+_EN_TARGET_MODIFIER_RE = re.compile(
+    r"(?:\b[A-Z][A-Za-z]*\b\s+){1,3}(?=(?:"
+    + "|".join(sorted(_GENERIC_EN_DOCUMENT_WORDS, reverse=True))
+    + r")\b)"
+)
+_GENERIC_ZH_INTENT_PHRASES = (
+    "总结", "概括", "摘要", "主要观点", "论点", "分析",
+    "讲了什么", "说了什么", "说的是什么",
+)
+_GENERIC_ZH_DOCUMENT_PHRASES = ("报告", "研究", "论文", "文件", "文档", "笔记")
+_GENERIC_ZH_SCAFFOLDING_PHRASES = ("请", "这份", "这篇", "一下", "帮我", "是什么")
+
+
+def _is_generic_report_intent(query, corpus_mod) -> bool:
+    """True when named summary/argument intent leaves no corpus content atom.
+
+    This deliberately classifies chat CATEGORY/STRUCTURE in Brain, never a
+    sentence table: an intent trigger (EN word, ZH phrase, or a TL;DR spelling)
+    must be present, and — after removing that trigger plus document-target and
+    politeness/question/format scaffolding — the corpus owner must find no
+    meaningful content atom left in the residual. A real topic (a ticker, a
+    theme, a Chinese key phrase) always survives this strip and keeps the query
+    on the evidence path; the selector stays the sole atom/stopword owner.
+    """
+    nfkc = unicodedata.normalize("NFKC", str(query or ""))
+    # Strip document-target modifiers (institution/proper-noun before a document
+    # word) BEFORE casefolding — capitalization is what identifies the slot.
+    nfkc = _EN_TARGET_MODIFIER_RE.sub(" ", nfkc)
+    normalized = nfkc.casefold()
+
+    en_words = re.findall(r"[a-z]+", normalized)
+    has_en_intent = bool(set(en_words) & _GENERIC_EN_INTENT_WORDS)
+    has_zh_intent = any(term in normalized for term in _GENERIC_ZH_INTENT_PHRASES)
+    has_tldr = bool(_TLDR_RE.search(normalized))
+    if not (has_en_intent or has_zh_intent or has_tldr):
+        return False
+
+    residual = _TLDR_RE.sub(" ", normalized)
+    for word in (_GENERIC_EN_INTENT_WORDS | _GENERIC_EN_DOCUMENT_WORDS
+                 | _GENERIC_EN_SCAFFOLDING_WORDS):
+        residual = re.sub(rf"\b{re.escape(word)}\b", " ", residual)
+    for phrase in (_GENERIC_ZH_INTENT_PHRASES + _GENERIC_ZH_DOCUMENT_PHRASES
+                   + _GENERIC_ZH_SCAFFOLDING_PHRASES):
+        residual = residual.replace(phrase, " ")
+    return not corpus_mod.evidence_query_is_meaningful(residual)
+
+
+def _peek_report_view(user_id: str, now: datetime) -> dict | None:
+    """Read the canonical report-view limiter without debiting it; fail open."""
+    try:
+        from engine.research_vault import view_ratelimit  # noqa: PLC0415
+        info = view_ratelimit.peek(
+            user_id, _BRAIN_VIEW_IP_PREFIX + user_id, now=now)
+        return info if isinstance(info, dict) else None
+    except Exception:  # noqa: BLE001 — same availability rule as allow()
+        return None
+
+
 def _charge_report_view(user_id: str, now: datetime) -> tuple[bool, dict]:
     """Debit ONE hourly view for this user. Returns (allowed, {remaining, limit}).
 
     Called exactly once per served BODY and never for the excerpt-only fallback —
     the excerpt is already public, and metering a public read would deny a member
-    material he can see on the website.
+    material he can see on the website. The report-mode PREFLIGHT (peeked before
+    this function ever runs) is a separate, uniform gate applied before either the
+    generic or evidence reader — it may withhold even the public excerpt from an
+    exhausted caller, because letting an exhausted request through to a cheaper
+    fallback while a servable one is denied would itself be a paid-body-presence
+    oracle. That preflight does not change the quota owner or its state; this
+    function still debits only an actually-served paid body.
 
     Fails OPEN on an unusable limiter (import/IO error), mirroring
     view_ratelimit's own documented rule: a broken ledger must not lock a paying
@@ -1242,6 +1463,265 @@ def _meta_field(item: dict, document, key: str) -> str:
             or "")
 
 
+def _positive_int(value) -> int | None:
+    """A literal positive JSON/Python integer, never a coercible lookalike."""
+    return value if type(value) is int and value > 0 else None
+
+
+def _partial_evidence_search_note(evidence) -> str:
+    """Distinguish complete, partial, and unverified search coverage."""
+    binding = (evidence or {}).get("source_binding") if isinstance(evidence, dict) else None
+    binding = binding if isinstance(binding, dict) else {}
+    stored = _positive_int(binding.get("stored_char_count"))
+    source = _positive_int(binding.get("source_char_count"))
+    if binding.get("coverage") == "prefix_partial" and stored and source and source > stored:
+        return (
+            f" Only the stored prefix ({stored} of {source} source characters) was "
+            "searched; absence does not prove the omitted tail lacks the topic."
+        )
+    if binding.get("coverage") == "unknown":
+        return (
+            " Coverage could not be verified; absence is not evidence that the "
+            "source lacks the topic."
+        )
+    return ""
+
+
+def _nonnegative_int(value) -> int | None:
+    """A literal nonnegative JSON/Python integer, never a coercible lookalike."""
+    return value if type(value) is int and value >= 0 else None
+
+
+def _sha256_or_empty(value) -> str:
+    """Return only an already-canonical lowercase SHA-256 fingerprint.
+
+    Source identity is not a user convenience field: case-folding or trimming a
+    malformed upstream value would silently manufacture a different canonical
+    claim. Reject any non-string, padded, uppercase, or otherwise noncanonical
+    representation instead.
+    """
+    return value if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) else ""
+
+
+def _bounded_report_text(value, limit: int = _REPORT_META_MAX_CHARS) -> str:
+    """Bound one display-only metadata string without coercing arbitrary objects."""
+    if not isinstance(value, str):
+        return ""
+    text = value.strip()
+    if len(text) <= limit:
+        return text
+    return text[:max(0, limit - 1)] + ("…" if limit else "")
+
+
+def _bounded_evidence_query(query) -> str:
+    text = str(query or "")
+    if len(text) <= _EVIDENCE_QUERY_MAX_CHARS:
+        return text
+    return text[:_EVIDENCE_QUERY_MAX_CHARS - 1] + "…"
+
+
+def _evidence_link_query(query) -> str:
+    """NFKC-normalized, bounded, user-authored text for the link's ``q`` — never
+    publisher/passage text. Blank/whitespace-only input omits ``q`` entirely."""
+    text = str(query or "").strip()
+    if not text:
+        return ""
+    return _bounded_evidence_query(unicodedata.normalize("NFKC", text)).strip()
+
+
+def _evidence_open_url(report_id: str, *, page=None, q: str = "") -> str:
+    """Public, rights-safe Research Vault URL — never publisher/passage text or
+    an internal path.
+
+    ``doc`` is the only query-string param. An optional fragment carries a
+    positive ``page`` and/or the bounded user-authored ``q`` — never publisher
+    match text, source spans/hashes, or internal paths. Passage-level callers
+    pass only ``page``; the top-level evidence link may add ``q`` once.
+    """
+    url = f"{_RESEARCH_VAULT_URL}?{urlencode([('doc', str(report_id or ''))])}"
+    fragment: list[str] = []
+    page_number = _positive_int(page)
+    if page_number is not None:
+        fragment.append(f"page={page_number}")
+    q_text = _evidence_link_query(q)
+    if q_text:
+        # Percent-encoding inflates non-ASCII (a CJK char can become 9 chars,
+        # %XX%XX%XX) — bound the ENCODED form, not just the raw text, so a long
+        # Chinese query cannot balloon the response-string budget through the URL.
+        encoded = quote(q_text, safe="")
+        while encoded and len(encoded) > _EVIDENCE_LINK_Q_MAX_ENCODED_CHARS:
+            q_text = q_text[:-1]
+            encoded = quote(q_text, safe="")
+        if encoded:
+            fragment.append(f"q={encoded}")
+    if fragment:
+        url += "#" + "&".join(fragment)
+    return url
+
+
+def _project_evidence_passage(raw, report_id: str) -> dict | None:
+    """Literal R1B passage projection; no upstream dict passthrough.
+
+    Fails CLOSED (omits the whole passage) rather than raising or coercing on
+    a malformed upstream shape: non-integer/negative/bool locator offsets, an
+    incoherent span (not start <= match_start < match_end <= end), or non-string
+    text/match_text. A non-string field is never rendered as a Python repr.
+    """
+    if not isinstance(raw, dict):
+        return None
+    locator_raw = raw.get("locator") if isinstance(raw.get("locator"), dict) else {}
+    kind = str(locator_raw.get("kind") or "text_span")
+    if kind not in {"text_span", "page_text_span"}:
+        kind = "text_span"
+    start_char = _nonnegative_int(locator_raw.get("start_char"))
+    end_char = _nonnegative_int(locator_raw.get("end_char"))
+    match_start_char = _nonnegative_int(locator_raw.get("match_start_char"))
+    match_end_char = _nonnegative_int(locator_raw.get("match_end_char"))
+    if None in (start_char, end_char, match_start_char, match_end_char):
+        return None
+    if not (start_char <= match_start_char < match_end_char <= end_char):
+        return None
+    text = raw.get("text")
+    match_text = raw.get("match_text")
+    if not isinstance(text, str) or not isinstance(match_text, str):
+        return None
+
+    # A source locator is a claim about the emitted literal slice, not decorative
+    # metadata. Reject mismatched upstream text before any defensive clipping.
+    span_chars = end_char - start_char
+    relative_match_start = match_start_char - start_char
+    relative_match_end = match_end_char - start_char
+    if len(text) != span_chars:
+        return None
+    if text[relative_match_start:relative_match_end] != match_text:
+        return None
+
+    # Keep a bounded source window around the match and rewrite every absolute
+    # offset to the exact emitted slice. If the match itself exceeds the cap, the
+    # bounded prefix remains a truthful literal subspan with coherent locators.
+    clip_start = 0
+    clip_end = len(text)
+    if len(text) > _EVIDENCE_PASSAGE_TEXT_MAX_CHARS:
+        cap = _EVIDENCE_PASSAGE_TEXT_MAX_CHARS
+        match_chars = relative_match_end - relative_match_start
+        if match_chars >= cap:
+            clip_start = relative_match_start
+            clip_end = min(len(text), clip_start + cap)
+        else:
+            room = cap - match_chars
+            clip_start = max(0, relative_match_start - (room // 2))
+            clip_end = min(len(text), clip_start + cap)
+            if clip_end - clip_start < cap:
+                clip_start = max(0, clip_end - cap)
+
+    clipped_match_start = max(relative_match_start, clip_start)
+    clipped_match_end = min(relative_match_end, clip_end)
+    if clipped_match_start >= clipped_match_end:
+        return None
+    source_text = text
+    text = source_text[clip_start:clip_end]
+    match_text = source_text[clipped_match_start:clipped_match_end]
+    start_char += clip_start
+    end_char = start_char + len(text)
+    match_start_char = start_char + (clipped_match_start - clip_start)
+    match_end_char = start_char + (clipped_match_end - clip_start)
+
+    page = _positive_int(locator_raw.get("page")) if kind == "page_text_span" else None
+    if kind == "page_text_span" and page is None:
+        return None
+    locator = {
+        "kind": kind,
+        "start_char": start_char,
+        "end_char": end_char,
+        "match_start_char": match_start_char,
+        "match_end_char": match_end_char,
+    }
+    if page is not None:
+        locator["page"] = page
+    terms = raw.get("matched_terms")
+    terms = [term[:_EVIDENCE_TERM_MAX_CHARS] for term in terms if isinstance(term, str)] \
+        if isinstance(terms, list) else []
+    terms = terms[:_EVIDENCE_TERM_LIMIT]
+    return {
+        "text": text,
+        "match_text": match_text,
+        "matched_terms": terms,
+        "locator": locator,
+        "open_url": _evidence_open_url(report_id, page=page),
+    }
+
+
+def _project_evidence(raw, *, report_id: str, published_at: str,
+                      query: str, allowed: bool) -> dict:
+    """Whitelisted evidence envelope bound to one report and one access decision."""
+    payload = raw if isinstance(raw, dict) else {}
+    status = str(payload.get("status") or "body_unavailable")
+    if status not in {"matched", "no_matching_passage", "body_unavailable"}:
+        status = "body_unavailable"
+    binding_raw = payload.get("source_binding") \
+        if isinstance(payload.get("source_binding"), dict) else {}
+    coverage = str(binding_raw.get("coverage") or "unknown")
+    coverage = coverage if coverage in {"complete", "prefix_partial", "unknown"} else "unknown"
+    stored = _nonnegative_int(binding_raw.get("stored_char_count"))
+    source = _nonnegative_int(binding_raw.get("source_char_count"))
+    tail_raw = binding_raw.get("tail_omitted")
+    tail_is_valid = tail_raw is None or isinstance(tail_raw, bool)
+    tail = tail_raw if isinstance(tail_raw, bool) else None
+    if not tail_is_valid:
+        coverage = "unknown"
+    elif coverage == "complete" and (stored is None or source != stored):
+        coverage = "unknown"
+    elif coverage == "prefix_partial" and (stored is None or source is None or source <= stored):
+        coverage = "unknown"
+    if coverage == "unknown":
+        source, tail = None, None
+    elif coverage == "complete":
+        tail = False
+    else:
+        tail = True
+    binding = {
+        "report_id": report_id,
+        "published_at": _bounded_report_text(published_at),
+        "content_sha256": _sha256_or_empty(binding_raw.get("content_sha256")),
+        "stored_body_sha256": _sha256_or_empty(binding_raw.get("stored_body_sha256")),
+        "coverage": coverage,
+        "source_char_count": source,
+        "stored_char_count": stored,
+        "tail_omitted": tail,
+        "text_layer": _bounded_report_text(
+            binding_raw.get("text_layer"), _REPORT_TEXT_LAYER_MAX_CHARS),
+        "page_count": _positive_int(binding_raw.get("page_count")),
+    }
+    passages_raw = payload.get("passages") if status == "matched" else []
+    passages_raw = passages_raw if isinstance(passages_raw, list) else []
+    projected = []
+    for passage in passages_raw:
+        item = _project_evidence_passage(passage, report_id)
+        if item is not None:
+            projected.append(item)
+    # Top-level open_url may carry the bounded user query once (fragment `q=`)
+    # to avoid repeated inflation across passages; passage-level open_url stays
+    # doc+page only (see _project_evidence_passage).
+    top_page = None
+    if projected:
+        first_locator = projected[0].get("locator") or {}
+        if first_locator.get("kind") == "page_text_span":
+            top_page = first_locator.get("page")
+    open_url = _evidence_open_url(report_id, page=top_page, q=query)
+    return {
+        "schema": _EVIDENCE_SCHEMA,
+        "status": status,
+        "query": _bounded_evidence_query(query),
+        "report_id": report_id,
+        "published_at": _bounded_report_text(published_at),
+        "passages": projected,
+        "source_binding": binding,
+        "access": {"decision": "allowed" if allowed else "not_served",
+                   "metered": bool(allowed)},
+        "open_url": open_url,
+    }
+
+
 def _project_report(
     *,
     report_id: str,
@@ -1262,10 +1742,10 @@ def _project_report(
     """
     return {
         "id": report_id,
-        "title": title,
-        "institution": institution,
-        "side": side,
-        "published_at": published_at,
+        "title": _bounded_report_text(title),
+        "institution": _bounded_report_text(institution),
+        "side": _bounded_report_text(side),
+        "published_at": _bounded_report_text(published_at),
         "summary_points": summary_points,
         "excerpt_paragraphs": excerpt_paragraphs,
         "body_text": body_text,
@@ -1273,13 +1753,160 @@ def _project_report(
     }
 
 
+def _response_string_total(value) -> int:
+    """Recursive character count for every string value in one tool response."""
+    if isinstance(value, str):
+        return len(value)
+    if isinstance(value, dict):
+        return sum(_response_string_total(item) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return sum(_response_string_total(item) for item in value)
+    return 0
+
+
+def _trim_string_list(values, overflow: int) -> int:
+    """Remove/truncate list tail strings until ``overflow`` characters are gone."""
+    if not isinstance(values, list):
+        return overflow
+    while values and overflow > 0:
+        last = values[-1]
+        if not isinstance(last, str):
+            values.pop()
+            continue
+        if len(last) <= overflow:
+            overflow -= len(last)
+            values.pop()
+            continue
+        values[-1] = last[:len(last) - overflow].rstrip()
+        overflow = 0
+        if not values[-1]:
+            values.pop()
+    return overflow
+
+
+def _fit_evidence_response_budget(response: dict) -> bool:
+    """Fit an evidence response under the shared 12k string ceiling in place.
+
+    Public excerpts and summaries yield first. The legacy ``body_text`` duplicate
+    may collapse to the first literal match while the authoritative evidence
+    passage remains intact. Only then are optional matched-term labels and extra
+    passages removed. Identity, hashes, rights note, and one usable passage are
+    never silently truncated.
+    """
+    report = response.get("report") if isinstance(response, dict) else None
+    evidence = response.get("evidence") if isinstance(response, dict) else None
+    if not isinstance(report, dict) or not isinstance(evidence, dict):
+        return False
+
+    def overflow() -> int:
+        return max(0, _response_string_total(response) - REPORT_BODY_MAX_CHARS)
+
+    over = overflow()
+    over = _trim_string_list(report.get("excerpt_paragraphs"), over)
+    if over:
+        over = _trim_string_list(report.get("summary_points"), overflow())
+
+    passages = evidence.get("passages")
+    passages = passages if isinstance(passages, list) else []
+    matched = evidence.get("status") == "matched"
+    if overflow() and matched and passages:
+        first = passages[0] if isinstance(passages[0], dict) else {}
+        support = first.get("match_text") or first.get("text") or ""
+        if isinstance(support, str) and support:
+            report["body_text"] = support
+            report["body_truncated"] = True
+
+    for passage in reversed(passages):
+        if not overflow():
+            break
+        if isinstance(passage, dict):
+            _trim_string_list(passage.get("matched_terms"), overflow())
+
+    while overflow() and len(passages) > 1:
+        passages.pop()
+        if matched:
+            first = passages[0] if isinstance(passages[0], dict) else {}
+            support = first.get("match_text") or first.get("text") or ""
+            if isinstance(support, str) and support:
+                report["body_text"] = support
+                report["body_truncated"] = True
+
+    # The bounded query is useful but not source identity; yield its tail only if
+    # all public/redundant fields above were insufficient.
+    over = overflow()
+    query = evidence.get("query")
+    if over and isinstance(query, str):
+        evidence["query"] = query[:max(0, len(query) - over)]
+
+    return _response_string_total(response) <= REPORT_BODY_MAX_CHARS
+
+
 def _report_error(code: str, note: str, **extra) -> dict:
-    """One honest error envelope. The model explains the gate; it never invents."""
-    return {"schema": _REPORT_SCHEMA, "error": code, "note": note, **extra}
+    """One bounded honest error envelope; caller text never escapes the ceiling."""
+    projected = dict(extra)
+    if "report_id" in projected:
+        projected["report_id"] = _bounded_report_text(projected.get("report_id"))
+    for key in ("remaining", "limit"):
+        if key in projected:
+            projected[key] = _nonnegative_int(projected.get(key))
+    return {"schema": _REPORT_SCHEMA, "error": code, "note": note, **projected}
 
 
-def _research_report(root: Path, report_id, *, user_ctx, now: datetime) -> dict:
-    """One report's fuller content for a PRO member. Never raises.
+def _evidence_body(selection) -> tuple[str, bool]:
+    """Project selected passages and disclose whether source text was omitted.
+
+    The corpus selector owns the exact source slices. This helper only joins
+    those slices for the frozen ``report.body_text`` consumer and derives its
+    legacy ``body_truncated`` fact from the bound source spans. The evidence
+    envelope remains authoritative for exact text and locators.
+    """
+    payload = selection if isinstance(selection, dict) else {}
+    passages = payload.get("passages")
+    passages = passages if isinstance(passages, list) else []
+
+    texts: list[str] = []
+    ranges: list[tuple[int, int]] = []
+    for passage in passages:
+        if not isinstance(passage, dict):
+            continue
+        text = str(passage.get("text") or "")
+        if text.strip():
+            texts.append(text)
+        locator = passage.get("locator")
+        if not isinstance(locator, dict):
+            continue
+        try:
+            start = int(locator.get("start_char"))
+            end = int(locator.get("end_char"))
+        except (TypeError, ValueError):
+            continue
+        if 0 <= start < end:
+            ranges.append((start, end))
+
+    body_text = "\n\n".join(texts)
+    if not body_text:
+        return "", False
+    body_text, cap_truncated = _slice_report_body(body_text)
+
+    binding = payload.get("source_binding")
+    binding = binding if isinstance(binding, dict) else {}
+    stored_chars = _positive_int(binding.get("stored_char_count"))
+    fully_covered = False
+    if binding.get("coverage") == "complete" and stored_chars is not None and ranges:
+        cursor = 0
+        for start, end in sorted(ranges):
+            if start > cursor:
+                break
+            cursor = max(cursor, end)
+            if cursor >= stored_chars:
+                fully_covered = True
+                break
+    return body_text, cap_truncated or not fully_covered
+
+
+def _research_report(root: Path, report_id, *, query="", user_ctx,
+                     now: datetime) -> dict:
+    """One report's generic body or exact-question evidence for a PRO member.
 
     Order is deliberate and each step is its own gate:
       1. identity — no `user_ctx`/user_id → pro_required (fail CLOSED; an
@@ -1287,8 +1914,11 @@ def _research_report(root: Path, report_id, *, user_ctx, now: datetime) -> dict:
       2. EXISTENCE in the committed catalog — an id the catalog does not carry
          never reaches the corpus, so a hallucinated id cannot probe the store;
       3. public layers — catalog metadata + the committed excerpt;
-      4. the corpus body, and ONLY if one comes back, one debit of the hourly cap;
-      5. the cap slice + the rights note.
+      4. the corpus selector's admission rule chooses deterministic, source-bound
+         passages or the existing generic note path;
+      5. an exhausted evidence request is denied before selection; ONLY text that
+         will actually be served debits one hourly view;
+      6. the whitelisted report/evidence projections + the rights note.
     """
     uid = str((user_ctx or {}).get("user_id") or "").strip()
     if not uid:
@@ -1316,26 +1946,94 @@ def _research_report(root: Path, report_id, *, user_ctx, now: datetime) -> dict:
     points = [p for p in points if isinstance(p, str)] if isinstance(points, list) else []
     paragraphs = _excerpt_paragraphs(root, rid)
 
-    document = _load_corpus_document(rid)
-    body_raw = str((document or {}).get("body") or "")
+    evidence_query = str(query or "")
+    evidence_requested = _evidence_requested(evidence_query)
+    preflight = _peek_report_view(uid, now)
+    if (isinstance(preflight, dict)
+            and preflight.get("remaining") == 0):
+        return _report_error(
+            "view_limit_reached", _REPORT_ERR_LIMIT,
+            report_id=rid, remaining=0, limit=preflight.get("limit"))
+    document = (
+        _load_evidence_document(rid)
+        if evidence_requested
+        else _load_corpus_document(rid)
+    )
+    # Independent re-check (defense in depth alongside the corpus owner's own
+    # fail-closed gate) so the note can distinguish an identity gap from a scan.
+    identity_ok = bool(_sha256_or_empty((document or {}).get("content_sha256"))) \
+        if isinstance(document, dict) else False
 
     quota: dict | None = None
-    if body_raw.strip():
-        allowed, info = _charge_report_view(uid, now)
-        if not allowed:
-            return _report_error(
-                "view_limit_reached", _REPORT_ERR_LIMIT,
-                report_id=rid, remaining=0, limit=(info or {}).get("limit"))
-        quota = {"remaining": (info or {}).get("remaining"),
-                 "limit": (info or {}).get("limit")}
-        body_text, truncated = _slice_report_body(body_raw)
-    else:
-        body_text, truncated = "", False
+    evidence: dict | None = None
+    pending_evidence_charge = False
+    matched_without_usable_text = False
+    if evidence_requested:
+        selection = _select_evidence(document, evidence_query)
+        # Projection is the final trust boundary. Validate/clip every passage and
+        # canonical binding before body assembly or quota mutation; a raw selector
+        # status is never sufficient debit authority.
+        evidence = _project_evidence(
+            selection,
+            report_id=rid,
+            published_at=_meta_field(item, document, "published_at"),
+            query=evidence_query,
+            allowed=False,
+        )
+        status = str(evidence.get("status") or "body_unavailable")
+        binding = evidence.get("source_binding") or {}
+        binding_ok = bool(
+            binding.get("content_sha256") and binding.get("stored_body_sha256"))
+        candidate_body, candidate_truncated = _evidence_body(evidence)
+        if status == "matched" and (not binding_ok or not candidate_body):
+            evidence["status"] = "body_unavailable"
+            evidence["passages"] = []
+            status = "body_unavailable"
+            candidate_body, candidate_truncated = "", False
+            raw_passages = selection.get("passages") if isinstance(selection, dict) else None
+            matched_without_usable_text = binding_ok or not raw_passages
 
-    institution = _meta_field(item, document, "institution")
-    note = _REPORT_NOTE.format(
+        if status == "matched":
+            # A matched projection is only a draft until the COMPLETE response
+            # fits the shared context ceiling. Quota mutation happens after that
+            # final invariant, never on selector status or a partial envelope.
+            pending_evidence_charge = True
+            body_text, truncated = candidate_body, candidate_truncated
+        else:
+            body_text, truncated = "", False
+    else:
+        body_raw = str((document or {}).get("body") or "")
+        if body_raw.strip():
+            allowed, info = _charge_report_view(uid, now)
+            if not allowed:
+                return _report_error(
+                    "view_limit_reached", _REPORT_ERR_LIMIT,
+                    report_id=rid, remaining=0, limit=(info or {}).get("limit"))
+            quota = {"remaining": (info or {}).get("remaining"),
+                     "limit": (info or {}).get("limit")}
+            body_text, truncated = _slice_report_body(body_raw)
+        else:
+            body_text, truncated = "", False
+
+    institution = _bounded_report_text(_meta_field(item, document, "institution"))
+    rights_note = _REPORT_NOTE.format(
         institution=institution or _REPORT_NOTE_FALLBACK_INSTITUTION)
-    if quota is None:
+    note = rights_note
+    if evidence_requested:
+        status = str((evidence or {}).get("status") or "body_unavailable")
+        if status == "matched":
+            note += _REPORT_EVIDENCE_NOTE
+        elif status == "no_matching_passage":
+            note += _REPORT_NO_EVIDENCE + _partial_evidence_search_note(evidence)
+        elif matched_without_usable_text:
+            note += _REPORT_NO_USABLE_PASSAGE
+        elif not identity_ok:
+            note += _REPORT_SOURCE_UNVERIFIED
+        else:
+            layer = str((document or {}).get("text_layer") or "") \
+                if isinstance(document, dict) else ""
+            note += _REPORT_SCAN_ONLY if layer == "none" else _REPORT_EXCERPT_ONLY
+    elif quota is None:
         # No body was served. WHY there is none decides which sentence is honest:
         # a measured 'none' is a scan (nothing more will ever exist), everything
         # else — no corpus row at all, an unmeasured row, a host-fault
@@ -1344,7 +2042,7 @@ def _research_report(root: Path, report_id, *, user_ctx, now: datetime) -> dict:
             if isinstance(document, dict) else ""
         note += _REPORT_SCAN_ONLY if layer == "none" else _REPORT_EXCERPT_ONLY
 
-    return {
+    response = {
         "schema": _REPORT_SCHEMA,
         "asof": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "report": _project_report(
@@ -1359,8 +2057,79 @@ def _research_report(root: Path, report_id, *, user_ctx, now: datetime) -> dict:
             body_truncated=truncated,
         ),
         "quota": quota,
+        "evidence": evidence,
         "note": note,
     }
+
+    if evidence_requested:
+        # This is the last pure transformation before a paid-view mutation. It
+        # counts EVERY response string—including public excerpts, metadata, URLs,
+        # duplicated passage text, terms, and notes—not merely report.body_text.
+        budget_ok = _fit_evidence_response_budget(response)
+        projected = response.get("evidence")
+        projected = projected if isinstance(projected, dict) else {}
+        final_passages = projected.get("passages")
+        final_passages = final_passages if isinstance(final_passages, list) else []
+        final_body = response["report"].get("body_text")
+        final_match_is_servable = bool(
+            budget_ok
+            and projected.get("status") == "matched"
+            and final_passages
+            and isinstance(final_body, str)
+            and final_body.strip()
+        )
+
+        if not budget_ok and not pending_evidence_charge:
+            # Even an unmetered no-match/body-unavailable envelope must honor the
+            # same caller context ceiling. Public/contextual fields yield first;
+            # the honest retrieval status and source identity remain intact.
+            response["report"]["summary_points"] = []
+            response["report"]["excerpt_paragraphs"] = []
+            projected["query"] = ""
+            if not _fit_evidence_response_budget(response):
+                return _report_error(
+                    "body_unavailable",
+                    "This report could not be represented within the response "
+                    "safety ceiling. No full-text view was served or charged.",
+                    report_id=rid,
+                )
+
+        if pending_evidence_charge and not final_match_is_servable:
+            # Fail closed before touching quota. Keep public identity only and
+            # state the shortfall honestly; never charge a projection that could
+            # not survive validation or the complete response budget.
+            pending_evidence_charge = False
+            projected["status"] = "body_unavailable"
+            projected["passages"] = []
+            projected["query"] = ""
+            projected["access"] = {"decision": "not_served", "metered": False}
+            response["report"]["summary_points"] = []
+            response["report"]["excerpt_paragraphs"] = []
+            response["report"]["body_text"] = ""
+            response["report"]["body_truncated"] = False
+            response["quota"] = None
+            response["note"] = rights_note + _REPORT_NO_USABLE_PASSAGE
+            if not _fit_evidence_response_budget(response):
+                return _report_error(
+                    "body_unavailable",
+                    "This report could not be served within the response safety "
+                    "ceiling. No full-text view was served or charged.",
+                    report_id=rid,
+                )
+
+        if pending_evidence_charge:
+            allowed, info = _charge_report_view(uid, now)
+            if not allowed:
+                return _report_error(
+                    "view_limit_reached", _REPORT_ERR_LIMIT,
+                    report_id=rid, remaining=0, limit=(info or {}).get("limit"))
+            response["quota"] = {
+                "remaining": _nonnegative_int((info or {}).get("remaining")),
+                "limit": _nonnegative_int((info or {}).get("limit")),
+            }
+            projected["access"] = {"decision": "allowed", "metered": True}
+
+    return response
 
 
 def search_research(
@@ -1387,10 +2156,10 @@ def search_research(
     set. `tags`/`tickers` are empty across the committed catalog today, so they
     are deliberately not scored; title, summary_points, and institution are.
 
-    A query of fewer than 2 tokens returns no results ("query too short"): one
-    bare word against 346 institutional notes ranks essentially by recency and
-    would read as a search that worked. A missing or corrupt catalog returns
-    "research vault unavailable". Never raises.
+    A meaningful single atom is searchable, including an English topic, ticker,
+    qualified identifier, or Chinese phrase. Input with no meaningful atom
+    (empty/noise or a one-character atom) returns "query too short". A missing
+    or corrupt catalog returns "research vault unavailable". Never raises.
 
     mode="clusters" answers a different question over the same catalog — which
     themes several houses are all writing about right now — and returns the
@@ -1398,11 +2167,12 @@ def search_research(
     are not read in that mode (see the clusters block above).
 
     mode="report" reads ONE report named by `report_id` and returns the
-    brain.research_report.v1 envelope: catalog metadata, the public excerpt, and
-    a capped slice of the stored body. It is PRO-only and METERED — `user_ctx`
-    ({"user_id": …}) must be present or the call fails closed with pro_required
-    (the gateway owns the tier decision; this is the fail-safe under it).
-    `query` and `limit` are not read in that mode.
+    brain.research_report.v1 envelope. A meaningful `query` asks for deterministic
+    source-bound passages supporting that exact question; a blank/noise query
+    preserves the generic capped-body reader. It is PRO-only and METERED —
+    `user_ctx` ({"user_id": …}) must be present or the call fails closed with
+    pro_required (the gateway owns the tier decision; this is the fail-safe under
+    it). `limit` is not read in that mode.
 
     Any other mode value, including a typo, searches.
     """
@@ -1411,13 +2181,14 @@ def search_research(
         reference = reference.replace(tzinfo=timezone.utc)
     reference = reference.astimezone(timezone.utc)
 
-    # --- report mode (W4) --------------------------------------------------- #
-    # First, because it reads neither `query` nor `limit`: a Pro member asking for
-    # one note's argument is not searching. The whole body is wrapped so a corpus
-    # or ledger surprise degrades to an honest error instead of killing the turn.
+    # --- report mode (W4 + R1B evidence) ----------------------------------- #
+    # First because it does not use the catalog search ranking. `query` is passed
+    # only to the deterministic corpus passage selector; `limit` remains ignored.
+    # The whole path is wrapped so a corpus or ledger surprise degrades to an
+    # honest error instead of killing the turn.
     if _is_report_mode(mode):
         try:
-            return _research_report(root, report_id, user_ctx=user_ctx,
+            return _research_report(root, report_id, query=query, user_ctx=user_ctx,
                                     now=reference)
         except Exception:  # noqa: BLE001 — retrieval must not take the turn down
             return _report_error("vault_unavailable", _REPORT_ERR_VAULT,
@@ -1453,7 +2224,7 @@ def search_research(
                     "note": "street clusters unavailable"}
 
     tokens = _tokenize(query)
-    if len(tokens) < 2:
+    if not tokens:
         return {"query": str(query or ""), "results": [], "count_scanned": 0,
                 "note": "query too short"}
 
@@ -1472,9 +2243,9 @@ def search_research(
         points = [str(p) for p in points if isinstance(p, str)] if isinstance(points, list) else []
         institution = str(item.get("institution") or "")
 
-        title_hits = _hits(tokens, title.lower())
-        summary_hits = _hits(tokens, " ".join(points).lower())
-        institution_hits = _hits(tokens, institution.lower())
+        title_hits = _hits(tokens, title)
+        summary_hits = _hits(tokens, " ".join(points))
+        institution_hits = _hits(tokens, institution)
         if not (title_hits or summary_hits or institution_hits):
             continue  # no textual relevance — top_pick alone never admits an item
 
@@ -1588,10 +2359,15 @@ RESEARCH_TOOL_SCHEMA: dict = {
         "Set mode='report' with report_id to open ONE note in depth once a "
         "search or clusters result has named it — when the user asks what a "
         "specific report actually argues, or you need its reasoning rather than "
-        "its headline. That returns the fuller text for PRO members and is "
-        "metered hourly, so call it for the one report that matters, not for "
-        "every hit; attribute it to its institution, quote sparingly, and "
-        "synthesize in your own words rather than reproducing pages."
+        "its headline. For generic requests such as 'summarize this report' or "
+        "'what does this note argue?', pass an empty query to open the note "
+        "generically. Pass the exact question only for a specific factual "
+        "request, to return a query-centered supporting passage with a source "
+        "fingerprint and an 'Open source' link. "
+        "Text actually served is metered hourly for PRO members, so call it for "
+        "the one report that matters, not for every hit; no matching passage or "
+        "unavailable body is not charged. Attribute it to its institution, quote "
+        "sparingly, and synthesize in your own words rather than reproducing pages."
     ),
     "input_schema": {
         "type": "object",
@@ -1599,9 +2375,18 @@ RESEARCH_TOOL_SCHEMA: dict = {
             "query": {
                 "type": "string",
                 "description": (
-                    "Search terms — theme, ticker, or institution (needs at "
-                    "least 2 words, e.g. 'hedge fund momentum', 'NVDA capex'). "
-                    "Ignored when mode='clusters' or mode='report'; pass '' there."
+                    "Search terms — a theme, ticker, institution, or Chinese "
+                    "phrase. One meaningful term is accepted (e.g. "
+                    "'semiconductors', 'AAPL', '中国流动性'); add focused terms "
+                    "when the first result set is broad. With mode='report', pass "
+                    "an empty query for generic requests such as 'summarize this "
+                    "report' or 'what does this note argue?'; pass the user's exact "
+                    "question only for a specific factual request in English so "
+                    "Brain can return source-bound supporting passages. For "
+                    "Chinese, matching is literal (no sentence segmentation), so "
+                    "pass 1-3 literal key terms or phrases (e.g. '通胀预期', "
+                    "'美联储 利率') rather than a full unsegmented sentence. Not "
+                    "read when mode='clusters'."
                 ),
             },
             "limit": {
@@ -1615,8 +2400,8 @@ RESEARCH_TOOL_SCHEMA: dict = {
                     "'search' (default) ranks individual notes against the "
                     "query; 'clusters' ignores the query and returns the themes "
                     "3+ notes from 2+ institutions share right now; 'report' "
-                    "ignores the query and opens the single note named by "
-                    "report_id."
+                    "opens the single note named by report_id and uses query for "
+                    "query-centered, source-bound evidence."
                 ),
             },
             "report_id": {

@@ -15,6 +15,7 @@
  *   linkPattern: 'china_lookup.html#{ticker}', // row link template
  *   columns:    [...],                // column schema array (see below)
  *   stageFilter: true,                // show stage filter row
+ *   searchTicker: false,              // opt in to symbol matching as well as name/theme
  *   searchPlaceholder: ['Search…','搜索…'], // override search input placeholder
  *   optionLabels: { filterName: { VALUE: [en, zh] } }, // display labels for filter values
  * }
@@ -598,7 +599,9 @@
           var themeVal = ((r.narrative && r.narrative.theme) || '').toLowerCase();
           var themeZh  = ((r.narrative && r.narrative.theme_zh) || '').toLowerCase();
           var nm = (r.name || '').toLowerCase();
-          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1) return false;
+          // US opts into native ticker search; other market callers retain name/theme behavior.
+          var tk = cfg.searchTicker === true ? String(r.ticker || '').toLowerCase() : '';
+          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1 && tk.indexOf(th) === -1) return false;
         }
         return true;
       });
@@ -683,12 +686,39 @@
             tr.addEventListener('click', function(e) {
               // Feature 2: let .stf-tkr anchor and modified clicks pass through
               // to the browser / theme.js Terminal intercept naturally.
-              if (e.target.closest('a')) return;
+              if (e.target.closest('a,button,input,select,textarea,summary,details,[role="button"]')) return;
               var T = window.MDXTerminal;
               if (T && T.on && T.on() && T.open) {
                 T.open(row.ticker || '', tr);
+              } else if (window.MMXSharedShell) {
+                /* Shared Shell candidate (defect B): the incumbent fallback handed the
+                   absolute app /terminal URL to the bridge, which can never admit it -
+                   and admitting it would nest native Terminal inside the shell. Route
+                   the launch through the same centralized candidate handoff as the
+                   overlay, to the admitted relative /terminal destination, and never
+                   raw-write Location once a candidate owns this document. */
+                var _ss = window.MMXSharedShell;
+                if (T && T.on && T.on()) {
+                  var _O = window.MDXTerminalOverlay;
+                  if (_O && typeof _O.terminalHandoff === 'function') {
+                    _O.terminalHandoff({ url: T.url(row.ticker || ''), symbol: row.ticker || '' });
+                  } else {
+                    // The overlay controller is not loaded in this build; the admitted
+                    // relative native route is still the only destination we may offer.
+                    var _params = new URLSearchParams();
+                    var _sym = String(row.ticker || '').slice(0, 64);
+                    if (_sym) _params.set('symbol', _sym);
+                    _params.set('from', 'macro');
+                    if (location.origin === 'https://www.mastermind-x.com' ||
+                        location.origin === 'https://mastermind-x.com') _params.set('ret', location.origin + location.pathname);
+                    _ss.navigate('/terminal?' + _params.toString(), 'push');
+                  }
+                } else {
+                  _ss.navigate(link, 'push');
+                }
               } else {
-                window.location.href = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                var _d = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                window.location.href = _d;
               }
             });
           }

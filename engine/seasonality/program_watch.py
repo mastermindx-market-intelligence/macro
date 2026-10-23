@@ -55,6 +55,7 @@ FOUNDATION_PATH = "engine/seasonality/foundation.py"
 VALIDATION_PATH = "engine/validation.py"
 SYNAPSE_PATH = "config/synapse.yml"
 DAILY_WORKFLOW_PATH = ".github/workflows/daily.yml"
+DAILY_BUILDERS_PATH = "scripts/ci/daily_engine_regional_desk_builders.sh"
 
 #: Where the nightly ORDER is described in prose rather than executed.  The
 #: daily-order follow-up has two acceptable outcomes — reorder, or decide the lag
@@ -804,53 +805,102 @@ def _sub_daily_order(root: Path) -> dict[str, Any]:
     raw, err = _read_text(root / DAILY_WORKFLOW_PATH)
     if raw is None:
         return {"key": key, "state": "unavailable", "detail": f"{DAILY_WORKFLOW_PATH}: {err}", "prompt": prompt}
+
     # COMMENTS ARE NOT STEPS. The real workflow's first textual ``build_prophet``
-    # is the line "# R2 creds: … build_prophet skips upload gracefully …" — prose,
-    # not an invocation. Reading it made the verdict accidental: adding a comment
-    # naming build_stock_seasonality above it would flip this sub-check to
-    # ``closed`` with nothing about the nightly having changed.
+    # is prose in a comment, not an invocation. Keep line positions while stripping
+    # comments so the evidence below remains operator-readable.
     text = _strip_comments_keep_lines(raw)
     prophet = re.search(r"\bbuild_prophet\b", text)
     seasonality = re.search(r"\bbuild_stock_seasonality\b", text)
-    if prophet is None or seasonality is None:
+    if prophet is None:
         return {
             "key": key,
             "state": "unavailable",
-            "detail": (
-                f"{DAILY_WORKFLOW_PATH}: build_prophet found={prophet is not None}, "
-                f"build_stock_seasonality found={seasonality is not None}"
-            ),
+            "detail": f"{DAILY_WORKFLOW_PATH}: build_prophet found=False",
             "prompt": prompt,
         }
     p_line = text[: prophet.start()].count("\n") + 1
-    s_line = text[: seasonality.start()].count("\n") + 1
-    if p_line >= s_line:
+
+    # The workflow was split in 2026-08 to stay below GitHub's workflow file-size
+    # ceiling. ``build_stock_seasonality`` now lives in the extracted regional/desk
+    # shell step, so a direct daily.yml grep is no longer a complete checkout read.
+    # Resolve that one known extraction rather than treating the missing token as
+    # unavailable. The shell step is sequential: if its workflow anchor is after
+    # Prophet, every command inside it (including seasonality) is after Prophet.
+    seasonality_source = DAILY_WORKFLOW_PATH
+    seasonality_line = None
+    workflow_anchor_line = None
+    if seasonality is not None:
+        seasonality_line = text[: seasonality.start()].count("\n") + 1
+        workflow_anchor_line = seasonality_line
+    else:
+        builder_ref = re.search(re.escape(DAILY_BUILDERS_PATH), text)
+        builder_raw, builder_err = _read_text(root / DAILY_BUILDERS_PATH)
+        builder_text = (
+            _strip_comments_keep_lines(builder_raw) if builder_raw is not None else None
+        )
+        builder_seasonality = (
+            re.search(r"\bbuild_stock_seasonality\b", builder_text)
+            if builder_text is not None
+            else None
+        )
+        if builder_ref is None or builder_seasonality is None:
+            return {
+                "key": key,
+                "state": "unavailable",
+                "detail": (
+                    f"{DAILY_WORKFLOW_PATH}: build_prophet found=True, "
+                    "build_stock_seasonality found=False; "
+                    f"{DAILY_BUILDERS_PATH}: workflow_ref found={builder_ref is not None}, "
+                    f"build_stock_seasonality found={builder_seasonality is not None}"
+                    + (f" ({builder_err})" if builder_raw is None else "")
+                ),
+                "prompt": prompt,
+            }
+        seasonality_source = DAILY_BUILDERS_PATH
+        seasonality_line = builder_text[: builder_seasonality.start()].count("\n") + 1
+        workflow_anchor_line = text[: builder_ref.start()].count("\n") + 1
+
+    assert seasonality_line is not None and workflow_anchor_line is not None
+    if p_line >= workflow_anchor_line:
+        detail = (
+            f"{DAILY_WORKFLOW_PATH}: build_prophet first invoked at line {p_line}, "
+        )
+        if seasonality_source == DAILY_WORKFLOW_PATH:
+            detail += f"build_stock_seasonality first invoked at line {seasonality_line}"
+        else:
+            detail += (
+                f"{DAILY_BUILDERS_PATH} invoked at line {workflow_anchor_line}; "
+                f"build_stock_seasonality is line {seasonality_line} inside that sequential step"
+            )
         return {
             "key": key,
             "state": "closed",
-            "detail": (
-                f"{DAILY_WORKFLOW_PATH}: build_prophet first invoked at line {p_line}, "
-                f"build_stock_seasonality first invoked at line {s_line} (comments excluded; "
-                "line order, which is only an ordering guarantee inside one sequential job)"
-            ),
+            "detail": detail + " (comments excluded)",
             "prompt": prompt,
         }
+
     # Prophet-first. The follow-up asked for a DECISION, not for one particular
     # order, so a documented "the lag is fine" closes it just as a reorder would.
-    # The decision record is the token in config/dag.yml — and it is read through
-    # the same comment strip as the workflow scan, for the same reason: a token
-    # sitting in a ``#`` comment is prose about the decision, not the decision.
     dag_raw, dag_err = _read_text(root / DAG_PATH)
     decided = dag_raw is not None and DAG_ORDER_DECISION_TOKEN in _strip_comments_keep_lines(dag_raw)
+    source_detail = (
+        f"{DAILY_WORKFLOW_PATH}: build_stock_seasonality at line {seasonality_line}"
+        if seasonality_source == DAILY_WORKFLOW_PATH
+        else (
+            f"{DAILY_BUILDERS_PATH}: build_stock_seasonality at line {seasonality_line}, "
+            f"inside the workflow step anchored at {DAILY_WORKFLOW_PATH}:{workflow_anchor_line}"
+        )
+    )
     if decided:
         return {
             "key": key,
             "state": "closed",
             "detail": (
-                f"{DAILY_WORKFLOW_PATH}: build_prophet first at line {p_line}, "
-                f"build_stock_seasonality at line {s_line} — prophet-first is a documented "
-                f"decision: {DAG_PATH} carries {DAG_ORDER_DECISION_TOKEN} (one-night lag "
-                "accepted; complete-year window family changes only at rollover)"
+                f"{DAILY_WORKFLOW_PATH}: build_prophet first at line {p_line}; "
+                f"{source_detail} — prophet-first is a documented decision: "
+                f"{DAG_PATH} carries {DAG_ORDER_DECISION_TOKEN} (one-night lag accepted; "
+                "complete-year window family changes only at rollover)"
             ),
             "prompt": prompt,
         }
@@ -858,9 +908,9 @@ def _sub_daily_order(root: Path) -> dict[str, Any]:
         "key": key,
         "state": "open",
         "detail": (
-            f"{DAILY_WORKFLOW_PATH}: build_prophet first invoked at line {p_line}, "
-            f"build_stock_seasonality first invoked at line {s_line} (comments excluded; "
-            "line order, which is only an ordering guarantee inside one sequential job); "
+            f"{DAILY_WORKFLOW_PATH}: build_prophet first invoked at line {p_line}; "
+            f"{source_detail} (comments excluded; extracted shell commands inherit the "
+            "workflow step's sequential order); "
             f"{DAG_PATH} carries no {DAG_ORDER_DECISION_TOKEN} decision record"
             + (f" ({dag_err})" if dag_raw is None else "")
         ),

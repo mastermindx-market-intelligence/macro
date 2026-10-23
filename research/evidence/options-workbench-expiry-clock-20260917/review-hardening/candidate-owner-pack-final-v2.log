@@ -1,0 +1,48 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 57%]
+..s..................................................................... [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+......................................................                   [100%]
+=============================== warnings summary ===============================
+tests/test_live_flow.py::TestAPIRoutes::test_fresh_fetch_returns_200
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_live_flow.py::TestAPIRoutes::test_fresh_fetch_returns_200
+  /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/options-workbench-r0-expiry-clock-20260917-sol-001/app/tape.py:434: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+tests/test_live_flow.py::TestAPIRoutes::test_fresh_fetch_returns_200
+tests/test_live_flow.py::TestAPIRoutes::test_fresh_fetch_returns_200
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/applications.py:4681: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_live_flow.py::TestAPIRoutes::test_fresh_fetch_returns_200
+  /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/options-workbench-r0-expiry-clock-20260917-sol-001/app/tape.py:438: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("shutdown")
+
+tests/test_live_flow.py::TestMicrostructureStrictJsonSafety::test_coverage_can_never_exceed_one_when_premium_overflows
+  /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/options-workbench-r0-expiry-clock-20260917-sol-001/engine/live_flow.py:404: RuntimeWarning: overflow encountered in multiply
+    premium = price * size * 100.0
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+629 passed, 1 skipped, 6 warnings in 61.85s (0:01:01)

@@ -1,0 +1,352 @@
+{
+  "application_commit": "280fd2a3bb31eb03b776ea4055d25c7cf42ca543",
+  "defect": "Repeated draft quantities could spend different unused source values within the rounding window. Anchor selection now precedes deduplication and prefers the nearest value independently of pool order.",
+  "parser_changed": false,
+  "receipt_floor_changed": false,
+  "tests": {
+    "initial_meaningful_red": 3,
+    "new_controls": 4,
+    "validator_writer_planner_pass": 255,
+    "runner_triage_pass": 243,
+    "unchanged_real_data_assertion_reused": 1,
+    "total_affected_pass": 499,
+    "existing_sparse_skip": 1,
+    "portable_groups_all_executed": 40
+  },
+  "actual_lead_after_fix": {
+    "POWI": [
+      13.6,
+      14.0,
+      13.55
+    ],
+    "VNO": [
+      4.3,
+      4.35
+    ]
+  },
+  "remaining_semantic_limit": "Different rounded spellings of one measurement can still be separate numeric anchors. Editorial review must not count them as independent observations. No source-identity or semantic claim acceptance is inferred from the numeric check.",
+  "fabric": {
+    "run_id": "mmx-press-prophet-receipt-audit-20261015-001",
+    "state": "TERMINAL",
+    "rc": 0,
+    "result_consumed": true,
+    "acceptance": "PARTIAL_NOT_ACCEPTED",
+    "result_sha256": "ef214f9d4f9a5aa8a133cd25868eff54c87d65d243e86f44dc946482b5bec682",
+    "packet_sha256": "1a00ecce938cee238bae4f3342a0b2c53abf8bc993b3b1d95c432d7b362ffd50",
+    "corrections": [
+      "Closure quantities are not excluded from the receipt floor; the worker invented that rule.",
+      "Each packet does contain one issuer-specific closure fact.",
+      "Sector-specific claims were not in the supplied packet; they were not adopted."
+    ],
+    "useful_scope": "Separates broad background from issuer causality; points out missing plan definitions. This is not an accepted editorial verdict.",
+    "retry": false
+  },
+  "native_plan_census": {
+    "at": "2026-10-15T09:34:04.166064+00:00",
+    "installed_head": "774dd525e0bd79123e73e1021390e740d3f9a5be",
+    "inputs_unchanged": true,
+    "files_read": 654,
+    "selected": [
+      {
+        "id": "POWI-BULL-20260930",
+        "plan": {
+          "id": "POWI-BULL-20260930",
+          "schema": "prophet.trade_plan/v1",
+          "asset": "POWI",
+          "direction": "BULL",
+          "entry": 51.8,
+          "invalidation": 46.22,
+          "targets": [
+            60.17,
+            68.54
+          ],
+          "trigger": 51.8,
+          "formation_date": "2026-09-30",
+          "signal_date": "2026-09-30",
+          "entry_date": "2026-09-30",
+          "price_basis_date": "2026-09-30",
+          "recorded_at": "2026-10-01",
+          "asof": "2026-10-01",
+          "signal_tier": "T1",
+          "signal_provisional": true,
+          "confirmed_date": null,
+          "signal_date_basis": "tier_event_date",
+          "source_marker_date": "2026-09-30",
+          "origination_mode": null,
+          "entry_status": "bounce_wait",
+          "admission_class": "patience",
+          "authority_tier": "display",
+          "reliability": {
+            "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+            "option_premium": "null \u2014 symbol not in ThetaData store"
+          }
+        },
+        "ledger": {
+          "schema": "prophet.ledger/v1",
+          "id": "POWI-BULL-20260930",
+          "asset": "POWI",
+          "direction": "BULL",
+          "formation_date": "2026-09-30",
+          "signal_date": "2026-09-30",
+          "confirmed_date": null,
+          "observed_date": "2026-09-30",
+          "signal_tier": "T1",
+          "signal_date_basis": "tier_event_date",
+          "signal_provisional": true,
+          "source_marker_date": "2026-09-30",
+          "price_basis_date": "2026-09-30",
+          "entry_date": "2026-09-30",
+          "recorded_at": "2026-10-01",
+          "close_date": "2026-10-14",
+          "outcome": "INVALIDATED",
+          "stock_result_pct": -13.5521,
+          "option_result_pct": null,
+          "days_held": 14,
+          "plan_adherence": "nightly-auto: outcome=INVALIDATED asset=POWI entry=51.8 inval=46.22 T1=60.17",
+          "asof": "2026-10-15"
+        },
+        "plan_corrections": [],
+        "ledger_corrections": [],
+        "quarantined": false,
+        "identity_and_clock_match": true
+      },
+      {
+        "id": "VNO-BULL-20261008",
+        "plan": {
+          "id": "VNO-BULL-20261008",
+          "schema": "prophet.trade_plan/v1",
+          "asset": "VNO",
+          "direction": "BULL",
+          "entry": 33.81,
+          "invalidation": 33.21,
+          "targets": [
+            34.71,
+            35.61
+          ],
+          "trigger": 33.81,
+          "formation_date": "2026-10-08",
+          "signal_date": "2026-10-08",
+          "entry_date": "2026-10-08",
+          "price_basis_date": "2026-10-08",
+          "recorded_at": "2026-10-09",
+          "asof": "2026-10-09",
+          "signal_tier": null,
+          "signal_provisional": false,
+          "confirmed_date": null,
+          "signal_date_basis": "legacy_formation_alias",
+          "source_marker_date": "2026-07-10",
+          "origination_mode": null,
+          "entry_status": "bounce_wait",
+          "admission_class": "patience",
+          "authority_tier": "display",
+          "reliability": {
+            "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+            "option_premium": "null \u2014 symbol not in ThetaData store"
+          }
+        },
+        "ledger": {
+          "schema": "prophet.ledger/v1",
+          "id": "VNO-BULL-20261008",
+          "asset": "VNO",
+          "direction": "BULL",
+          "formation_date": "2026-10-08",
+          "signal_date": "2026-10-08",
+          "confirmed_date": null,
+          "observed_date": "2026-10-08",
+          "signal_tier": null,
+          "signal_date_basis": "legacy_formation_alias",
+          "signal_provisional": false,
+          "source_marker_date": "2026-07-10",
+          "price_basis_date": "2026-10-08",
+          "entry_date": "2026-10-08",
+          "recorded_at": "2026-10-09",
+          "close_date": "2026-10-14",
+          "outcome": "INVALIDATED",
+          "stock_result_pct": -4.3478,
+          "option_result_pct": null,
+          "days_held": 6,
+          "plan_adherence": "nightly-auto: outcome=INVALIDATED asset=VNO entry=33.81 inval=33.21 T1=34.71",
+          "asof": "2026-10-15"
+        },
+        "plan_corrections": [],
+        "ledger_corrections": [],
+        "quarantined": false,
+        "identity_and_clock_match": true
+      }
+    ],
+    "source_hashes": {
+      "engine/prophet_integrity.py": null,
+      "data/prophet/ledger.jsonl": "2cb0f33fda83016d55638a6bde4d552364ca60e935ff0ea22d1b7595ff830fb5",
+      "data/prophet/ledger_corrections.jsonl": "2b51e2306d5dc8acc0e80722dcdde3ca369e32774dc415b6d53409cd296cf410",
+      "data/prophet/ledger_quarantine.json": "953012c11e75889a34031e1c81fa5ec89e0202a7dff4e0a9f49ba2a64c7ba40c",
+      "data/prophet/plan_corrections.jsonl": "4b260c6d233d3ef98cf52d7df9944c3e46e6383ef0708c79a78fdf612cb45023",
+      "site/prophet/plans/POWI-BULL-20260930.json": "5518bc0bdd6f3a47090b75c8b2a7a3fea61ab32b40e2c232177465c34283d907",
+      "site/prophet/plans/VNO-BULL-20261008.json": "415f19b5c68aaa363b04ff341a0994c0b3fdfdddb55ec39ddff71e322f9f31ce"
+    },
+    "meaning": "Corrected native plans and ledger identities/clocks agree, unquarantined. Both display-only bounce_wait with no recorded confirmation. Exact historical parameters exist but are not added to the Press slot or approved as market/performance claims.",
+    "next": "If pursuing this lane, consume native corrected plan fields with exact clocks, waiting/display status and threshold-versus-outcome limits; no parsing of free-form adherence text, producer rewrite or invented execution."
+  },
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10",
+  "retained_source_readiness_20261015_1218": {
+    "at": "2026-10-15T12:18:10.091766+00:00",
+    "scope": "Local numeric readiness analysis using retained native records requalified at 11:30; not installed packet, authoring, editorial acceptance or current live selection",
+    "results": [
+      {
+        "id": "POWI-BULL-20260930",
+        "source_observed_at": "2026-10-15T11:30:36.986963+00:00",
+        "event_date": "2026-10-14",
+        "recorded_at": "2026-10-01",
+        "price_basis_date": "2026-09-30",
+        "parameters": [
+          51.8,
+          46.22,
+          60.17,
+          68.54
+        ],
+        "single_closure_result_display": "-13.55%",
+        "qualified_numeric_receipts": 5,
+        "control_results": [
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "5 distinct anchored receipt(s) (>= minimum 5)",
+            "metrics": {
+              "receipts": 5,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17,
+                68.54
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17
+              ]
+            }
+          }
+        ],
+        "context_limit_preserved_in_prompt": true,
+        "excluded_fact_count": 21,
+        "excluded_aliases": [
+          "rounded duplicate closure percentage",
+          "activation trigger equal to entry",
+          "dates",
+          "duration",
+          "unrelated broad market/mover facts"
+        ],
+        "semantic_limit": "Four historical hypothetical plan levels and one simulated closure result; not five independent market observations, executed trades, investor returns or issuer-event causality."
+      },
+      {
+        "id": "VNO-BULL-20261008",
+        "source_observed_at": "2026-10-15T11:30:36.986963+00:00",
+        "event_date": "2026-10-14",
+        "recorded_at": "2026-10-09",
+        "price_basis_date": "2026-10-08",
+        "parameters": [
+          33.81,
+          33.21,
+          34.71,
+          35.61
+        ],
+        "single_closure_result_display": "-4.35%",
+        "qualified_numeric_receipts": 5,
+        "control_results": [
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "5 distinct anchored receipt(s) (>= minimum 5)",
+            "metrics": {
+              "receipts": 5,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71,
+                35.61
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71
+              ]
+            }
+          }
+        ],
+        "context_limit_preserved_in_prompt": true,
+        "excluded_fact_count": 21,
+        "excluded_aliases": [
+          "rounded duplicate closure percentage",
+          "activation trigger equal to entry",
+          "dates",
+          "duration",
+          "unrelated broad market/mover facts"
+        ],
+        "semantic_limit": "Four historical hypothetical plan levels and one simulated closure result; not five independent market observations, executed trades, investor returns or issuer-event causality."
+      }
+    ],
+    "controls_passed": 8,
+    "provider_calls": 0,
+    "staging_writes": 0,
+    "production_writes": 0,
+    "publication": false,
+    "next": "After protected follow-on installation, requalify actual selected guarded packet and unchanged native identity/clocks; then consider one immutable writer attempt through the existing staging path. Do not substitute this analysis fixture for that packet."
+  }
+}

@@ -704,3 +704,56 @@ class TestInvariantDSortContracts:
                {"ticker": "POS", "lane": "continuation", "alpha": 2.0,
                 "stage": "blocked", "prophet": {"score": 10.0}}]
         assert self._d(_check(self._write(tmp_path, buy))) == []
+
+
+class TestAbsentArtifactIsNotAPass:
+    """The guard must never say an artifact it did not read passed its invariants.
+
+    `_check` returns `[]` for an absent artifact deliberately — a first run, or a nightly
+    that has not emitted yet, is not a violation — and that tolerance is correct and stays.
+    What was wrong for as long as this guard existed is that `main` read an empty violation
+    list as COMPLIANCE and printed "<path> passes all 5 board invariants" about a file that
+    does not exist. The absent case and the clean case were one indistinguishable sentence.
+
+    Every other test in this file writes a `tmp_path` artifact FIRST, which is exactly why
+    60+ of them never noticed. These two pin the SENTENCE, not the exit code: the sparse
+    refusal suite (`tests/test_sparse_guard_refusals.py`) already pins the codes, and a
+    mutation that restored the false claim kept every one of those green.
+    """
+
+    def _run(self, capsys, artifact):
+        from scripts.check_board_contradictions import main
+        rc = main([str(artifact)])
+        cap = capsys.readouterr()
+        return rc, cap.out + cap.err
+
+    def test_absent_artifact_does_not_claim_the_invariants_passed(self, tmp_path, capsys):
+        missing = tmp_path / "us_standouts.json"
+        assert not missing.exists(), "precondition: the artifact really is absent"
+
+        rc, blob = self._run(capsys, missing)
+
+        assert rc == 0, f"an unemitted artifact is not a violation; rc={rc}\n{blob}"
+        assert "passes all 5 board invariants" not in blob, (
+            f"claimed an ABSENT artifact passed its invariants:\n{blob}")
+        assert "checked 0 of 1" in blob, f"verdict states no reach:\n{blob}"
+        assert "not a pass" in blob, f"a skip must not read as a pass:\n{blob}"
+
+    def test_present_artifact_states_its_reach_beside_its_verdict(self, tmp_path, capsys):
+        """The pass path owes the same number, or the two outcomes are still not
+        distinguishable by a reader — only by a grep for the word SKIPPED."""
+        import json as _json
+
+        artifact = tmp_path / "us_standouts.json"
+        artifact.write_text(_json.dumps({"buy": [
+            {"ticker": "AAA", "stage": "live", "prophet": {"score": 88.0},
+             "lane": "continuation"},
+            {"ticker": "BBB", "stage": "blocked", "prophet": {"score": 90.0},
+             "lane": "continuation"},
+        ]}))
+
+        rc, blob = self._run(capsys, artifact)
+
+        assert rc == 0, f"a legal board should be clean:\n{blob}"
+        assert "checked 1 of 1" in blob, f"pass verdict omits its reach:\n{blob}"
+        assert "passes all 5 board invariants" in blob, blob

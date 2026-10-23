@@ -84,6 +84,70 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_help_build_clock_is_one_exact_public_ui_asset():
+    """Public Help must load its local clock; nearby resources stay gated."""
+    asset = "/help_refresh.js"
+    assert asset in POLICY["public"]["exact"]
+    assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+    adjacent = {"/help_refresh.json", "/help_refresh.js.map", "/help_refresh_private.js",
+                "/api/help_refresh", "/help_refresh.js/private"}
+    assert not adjacent.intersection(POLICY["public"]["exact"])
+    for matcher in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert asset in paths, matcher
+        assert not adjacent.intersection(paths), matcher
+        assert not any(p.startswith("/help_refresh") and p != asset for p in paths), matcher
+
+
+def test_market_memory_callback_assets_load_before_session_exchange():
+    """OAuth returns before its code becomes a session; UI-only assets must load."""
+    assets = {"/market_memory_intent.js", "/market_memory_retained.js",
+              "/market_memory_retained.css"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+    for matcher in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, matcher
+        # Never make evidence responses public or cache them as UI assets.
+        assert not any(p.startswith("/api/market-memory") for p in paths)
+    for asset in assets:
+        assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+
+
+
+def test_macro_risk_overlay_script_public_but_signal_payload_remains_gated():
+    """The public macro shell cannot parser-block on a registration-gated JS asset."""
+    asset = "/risk_envelope_live.js"
+    feed = "/live/risk_envelope.json"
+    public = POLICY["public"]
+    assert asset in public["exact"]
+    assert asset in _caddy_public_exclusions()
+    assert feed not in public["exact"]
+    assert not any(feed.startswith(p.rstrip("/") + "/") for p in public["prefixes"])
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = [p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())]
+        assert asset in paths, name
+        assert feed not in paths, name
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    assert '<script async src="risk_envelope_live.js"></script>' in template
+    assert '<script async src="release_publications_live.js"></script>' in template
+
+
 def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     shell_paths = {"/biocatalyst.html", "/biocatalyst.css", "/biocatalyst.js"}
     assert shell_paths <= set(POLICY["public"]["exact"])
@@ -112,15 +176,59 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     assert "enforce_site_full" in api_source
 
 
+def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
+    """F04-X1: the shell's CSS/JS are reachable anonymously; every current value is not.
+
+    The page is a public-safe shell whose only endpoint reference is the
+    authenticated snapshot API, so its presentation assets must be anonymously
+    reachable or the shell renders unstyled and inert for logged-out visitors.
+    The asset route is default-deny and compared byte-for-byte against this
+    policy, so an omission here is invisible until someone opens the page.
+    """
+    assets = {"/ontology.css", "/ontology.js"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy matcher @reg_asset_err missing"
+    assert assets <= set(shlex.split(error_matcher.group(1)))
+
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, f"Caddy matcher @{matcher} missing"
+        paths = {
+            token
+            for path_line in re.findall(r"^\s*path\s+([^\n]+)", block.group(1), flags=re.M)
+            for token in shlex.split(path_line)
+        }
+        assert assets <= paths
+
+    # The snapshot itself is never public: no payload path is whitelisted, and
+    # the router resolves the shared authority rather than declaring a second one.
+    public_exact = set(POLICY["public"]["exact"])
+    assert not any(path.startswith("/api/ontology") for path in public_exact)
+    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()
+    assert "from app.main import require_user" in api_source
+    assert "enforce_site_full" in api_source
+    assert "always=True" in api_source
+
+
 def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -507,6 +615,32 @@ def test_no_source_maps_secrets_or_server_source_in_site_tree():
     assert bad == []
 
 
+def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
+    # The moved stub must run its bridge.navigate before the parent commits a
+    # successor generation. Query-preserving HTTP redirects still fail READY.
+    match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /baskets_china.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
+    assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
+        not {
+            query mmx_shell=1
+            header Referer https://beta.mastermind-x.com/*
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
+
+
 def test_fail_closed_and_browser_hardening_are_present():
     assert 'rewrite /api/regwall/check' in CADDY
     assert 'rewrite /api/paywall/check' in CADDY
@@ -666,3 +800,46 @@ def test_no_broad_assets_or_signal_data_prefix_was_opened_for_ihmp():
     assert "/assets/" not in prefixes
     for p in prefixes:
         assert not p.startswith("/live/"), "a live/signal-data prefix must never be public"
+
+
+def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
+    """The three presentation assets, and nothing that carries a reading.
+
+    Production served the suite's HTML at 200 while these three answered 401,
+    so every anonymous reader got an unstyled, themeless skeleton: the pages
+    were public and their presentation was not. These are promoted as one unit
+    for that reason -- and only these. The snapshot JSON under /macrodata/ is
+    the actual product and stays gated; a prefix or wildcard promoted here
+    would take it public with them.
+    """
+    shell_paths = {"/macro_suite.css", "/macro_suite_boot.js", "/macro_suite.js"}
+    assert shell_paths <= set(POLICY["public"]["exact"])
+    assert shell_paths.isdisjoint(POLICY["free_registered"]["exact"])
+    assert shell_paths <= _caddy_public_exclusions()
+
+    # The error path excludes them too, or an anonymous 401 page renders bare.
+    error_matcher = re.search(r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S)
+    assert error_matcher, "@reg_asset_err matcher missing"
+    assert shell_paths <= set(shlex.split(error_matcher.group(1)))
+
+    # Cacheable as public, both plain and ?v= stamped, exactly like /markets.css.
+    for block in ("@public_static", "@public_versioned"):
+        matcher = re.search(rf"{block}\s*\{{\s*path ([^\n]+)", CADDY, flags=re.S)
+        assert matcher, f"{block} matcher missing"
+        assert shell_paths <= set(shlex.split(matcher.group(1))), block
+
+    # No widening: the reading itself is not public by any route.
+    public_prefixes = set(POLICY["public"]["prefixes"])
+    assert not any(p.startswith("/macrodata") for p in public_prefixes)
+    assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
+    assert not any(p.startswith("/macro_suite") and p.endswith("*")
+                   for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_internal_document_denials_match_the_canonical_policy():
+    """A Caddy-only denial must never be advertised by the route registry."""
+    matcher = re.search(r"@never_site\s*\{\s*path ([^\n]+)", CADDY)
+    assert matcher, "internal-document serving denial missing"
+    declared = set(POLICY["deny"]["exact"])
+    declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
+    assert set(shlex.split(matcher.group(1))) == declared

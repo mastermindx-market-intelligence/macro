@@ -581,7 +581,7 @@ def test_app_js_copy_button_carries_the_nested_open_prompts():
 def test_app_js_states_the_missing_key_case_instead_of_vanishing():
     src = APP_JS.read_text(encoding="utf-8")
     block = src.split("function renderProgramWatch(", 1)[1].split("\nfunction wireProgramWatch", 1)[0]
-    assert "did not send it" in block
+    assert "Program-watch data was not returned. This is not an all-clear." in block
     assert "return \"\"" not in block, "a silently empty panel is the failure this rail exists to prevent"
 
 

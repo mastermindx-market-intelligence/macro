@@ -1,0 +1,31 @@
+{
+  "archive_partition": "boats-firehose only",
+  "batch_messages": 1000,
+  "complete_session_coverage": false,
+  "flush_seconds": 5,
+  "free_reserve_gib": 35,
+  "independent_intraday_partition_preserved": true,
+  "loaded_source_sha256": {
+    "collectors/tiingo_archive.py": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6",
+    "scripts/tiingo_ingest.py": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6"
+  },
+  "max_messages": 20000,
+  "max_seconds": 120,
+  "no_conflicting_boats_owner_identified": true,
+  "owner_thread": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "persistent_runtime_change": false,
+  "preflight_free_gib": 264.0632972717285,
+  "prior_boats_receipts": {
+    "receipts/boats-firehose/2026-10-11/59daa9f68cb060343ac3d54afd6f5456f46f115e9f2dd72958e3bfaf32047b4d.json": "9ee186aaad2416a75df7fb3e90154dae0bc9ce2d533b129437182f9a46ec6d57",
+    "receipts/boats-firehose/2026-10-11/8e997c0248260c2df0db25d372a0f30a728c523edd95042acb930f8a02dd8495.json": "1d7c79ef164b3db3917a53d9e12090025514e744124b9599d0a3ac03bd13d859"
+  },
+  "production_consumer_acceptance": false,
+  "provider_connection_not_yet_proven": true,
+  "r2_publication": false,
+  "run_id": "tiingo-boats-raw-20261012-01a12ab6",
+  "schema": "tiingo_attended_raw_boats_scope.v1",
+  "source_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "stable_ancestors_required": true,
+  "started_at_utc": "2026-10-12T00:00:09.608290+00:00",
+  "universal_process_absence_proven": false
+}

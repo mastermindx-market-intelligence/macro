@@ -681,10 +681,18 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
 
     Fail-open-LOUD: any failure yields a visible health row rather than a silent pass —
     the board's scoreboard must never fail invisibly."""
-    rows = (setups or {}).get("buy") or []
-    if not rows:
-        return [{"en": "Board ledger (no ranked names to log)", "zh": "榜单账本（无可记录个股）",
-                 "status": "SKIP", "rows": 0, "last": "—"}]
+    # Zero-official-buy liveness (masterplan §10.4): a MISSING board object keeps
+    # today's SKIP return, but a real board whose official buy subset is empty must
+    # NOT bail out here — only the ledger append is withheld below (zero official
+    # buys stay append-free); the scorecard attach, grade, track_ledger emit and
+    # zero-authority shadow write all still run, so full-pool research capture and
+    # the honestly-empty track panel survive a zero-buy session.
+    _skip_row = {"en": "Board ledger (no ranked names to log)",
+                 "zh": "榜单账本（无可记录个股）",
+                 "status": "SKIP", "rows": 0, "last": "—"}
+    if setups is None or not isinstance(setups, dict):
+        return [_skip_row]
+    rows = setups.get("buy") or []
     asof = _board_asof(latest)
     from scripts.build_canada_library import _ENTRY_STATE, CA_BOARD_DEFINITION
     calls = []
@@ -745,19 +753,27 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
             "knife_demoted": (w.get("watch_reason") == "knife"),
             "board_definition": CA_BOARD_DEFINITION,
         })
-    health: list[dict] = []
+    health: list[dict] = [] if rows else [_skip_row]
     try:
         from engine import board_ledger
-        n = board_ledger.append_board(calls, market="CA", asof=asof)
-        if n <= 0:
-            health.append({"en": "Board ledger (append wrote 0 rows — see build log)",
-                           "zh": "榜单账本（写入 0 行 — 查看构建日志）",
-                           "status": "ERROR", "rows": 0, "last": asof})
-            log.error("CA board ledger: append_board wrote 0 rows for %s (%d calls)",
-                      asof, len(calls))
+        if not rows:
+            log.info("CA board ledger: zero official buys for %s — append skipped "
+                     "(%d watch calls); scorecard/grade/track/shadow still run",
+                     asof, len(calls))
+        elif _ledger_advance_enabled():
+            n = board_ledger.append_board(calls, market="CA", asof=asof)
+            if n <= 0:
+                health.append({"en": "Board ledger (append wrote 0 rows — see build log)",
+                               "zh": "榜单账本（写入 0 行 — 查看构建日志）",
+                               "status": "ERROR", "rows": 0, "last": asof})
+                log.error("CA board ledger: append_board wrote 0 rows for %s (%d calls)",
+                          asof, len(calls))
+            else:
+                log.info("CA board ledger: logged %d ranked names for %s (ledger=%d)",
+                         len(calls), asof, n)
         else:
-            log.info("CA board ledger: logged %d ranked names for %s (ledger=%d)",
-                     len(calls), asof, n)
+            log.info("CA board ledger: off-nightly render — append skipped for %s "
+                     "(%d calls); read projections remain available", asof, len(calls))
         # nightly grade of matured calls — 'accruing' until forward returns exist. The
         # track-record PANEL (W6, §7.4) ships in 'accruing' state from day one, so ALWAYS
         # attach the scorecard (it self-reports status='accruing' with first_read_est until
@@ -832,9 +848,8 @@ def _tailwind_freshness_gate(setups: dict | None, latest: dict) -> dict | None:
     except Exception as e:  # noqa: BLE001
         log.warning("CA tailwind freshness: panel unreadable (%s)", e)
         return None
-    # trading-day staleness ≈ business days between the two dates (calendar-day / weekend
-    # aware; holidays make this a slight over-count, which fails SAFE — suppress sooner).
-    stale_td = int(pd.bdate_range(tw_date, board_date).size - 1) if tw_date < board_date else 0
+    from lib.market_session import missed_sessions
+    stale_td = missed_sessions("CA", tw_date.date(), board_date.date())
     setups["tailwind_stale_days"] = stale_td
     if stale_td > 3:
         setups["tailwind_suppressed"] = True

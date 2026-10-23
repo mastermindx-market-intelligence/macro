@@ -900,6 +900,7 @@ def _prior(method=cp.METHOD_VERSION, retail_level=700000.0,
            gen="consumer_payments-US-deadbeefdeadbeef") -> dict:
     prior = _compose()
     prior["headline"]["method_version"] = method
+    prior["headline"]["effective_date"] = "2026-06-01"
     prior["generation"]["generation_id"] = gen
     for m in prior["metrics"]["items"]:
         if m["metric_id"] == "retail_sales_level":

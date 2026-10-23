@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
+import pytest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -197,6 +198,125 @@ def test_inject_no_body_appends() -> None:
     assert inj._MARKER in out
 
 
+# --- who wrote each read, and the Treasury numbers the panel dropped ------------------
+def _served(rid, reason, pub_days_ago=0):
+    r = _rec(rid, pub_days_ago, 5, 80)
+    r["degraded_reason"] = reason
+    return r
+
+
+def _cards(html):
+    import re
+    return dict(re.findall(r'<section class="wh-card[^"]*" id="([^"]+)">(.*?)</section>',
+                           html, re.S))
+
+
+def test_card_names_the_fallback_model_that_wrote_the_read() -> None:
+    # evaluate() stamps the FIRST configured model in `model` before the call; only
+    # degraded_reason "served_by:<provider>" records that a fallback wrote the read.
+    import re
+    rows = [_served("wh-ds", "served_by:deepseek"), _served("wh-cx", "served_by:codex"),
+            _served("wh-none", None), _served("wh-odd", "served_by:mystery"),
+            _served("wh-trunc", "truncated")]
+    cards = _cards(bw._render_page(config.ROOT, rows))
+    assert re.search(r"read by fallback.*?: DeepSeek</span>", cards["wh-ds"], re.S)
+    assert re.search(r"read by fallback.*?: Codex</span>", cards["wh-cx"], re.S)
+    # a None reason does not prove the first model wrote it (cached replies carry no
+    # reason), so no card makes a provider claim it cannot back
+    for rid in ("wh-none", "wh-odd", "wh-trunc"):
+        assert "read by fallback" not in cards[rid]
+
+
+def test_hero_and_footer_do_not_credit_claude_with_fallback_reads() -> None:
+    rows = [_served("wh-ds", "served_by:deepseek"), _served("wh-none", None)]
+    html = bw._render_page(config.ROOT, rows)
+    assert "Claude Opus writes the read below" not in html
+    assert "1 of the 2 reads below were written by a fallback model" in html
+    assert "(or by the fallback model named on a card)" in html
+    clean = bw._render_page(config.ROOT, [_served("wh-none", None)])
+    assert "reads below were written by a fallback model" not in clean
+    assert "(or by the fallback model named on a card)" not in clean
+
+
+def test_committed_ledger_fallback_reads_are_each_named() -> None:
+    if not bw._ledger_path(config.ROOT).exists():
+        pytest.skip("data/whitehouse/alerts.jsonl not in this checkout")
+    rows = bw._load_ledger(config.ROOT)
+    assert {"deepseek", "codex"} <= set(bw._SERVED_BY)
+    fell_back = [r for r in rows
+                 if str(r.get("degraded_reason") or "").startswith("served_by:")
+                 and str(r["degraded_reason"]).split(":", 1)[1] in bw._SERVED_BY]
+    assert fell_back, "the committed ledger records fallback-served reads"
+    html = bw._render_page(config.ROOT, rows)
+    cards = _cards(html)
+    assert sum("read by fallback" in c for c in cards.values()) == len(fell_back)
+    for r in fell_back:
+        assert "read by fallback" in cards[r["id"]], r["id"]
+    assert f"{len(fell_back)} of the {len(rows)} reads below" in html
+
+
+def test_live_card_says_until_when_and_late_read_is_dated() -> None:
+    now = datetime.now(timezone.utc)
+    late = _rec("wh-late", 3, 5, 80)
+    late["generated_at"] = (now - timedelta(days=1)).isoformat()   # read 2 days after publish
+    same = _rec("wh-same", 0, 5, 80)
+    old = _rec("wh-old", 30, 3, 80)
+    cards = _cards(bw._render_page(config.ROOT, [late, same, old]))
+    exp = bw._expires_at(late)
+    assert f"live until</span>" in cards["wh-late"]
+    assert bw._date_display(exp.isoformat()) in cards["wh-late"]
+    assert "read written" in cards["wh-late"]
+    assert bw._date_display(late["generated_at"]) in cards["wh-late"]
+    assert "read written" not in cards["wh-same"]
+    assert "live until" not in cards["wh-old"]
+
+
+def _treasury():
+    return {
+        "tga": {"level_bn": 948.492, "asof": "2026-10-16", "chg_1d_bn": 13.802,
+                "chg_5d_bn": 61.023, "chg_20d_bn": -24.183},
+        "net_liquidity": {"netliq_bn": 5827.145, "chg_20d_bn": 78.783,
+                          "pctile_expanding": 0.777, "rrp_bn": 0.201},
+        "plumbing": {"headline_state": "neutral_hollow", "rrp_buffer_state": "exhausted",
+                     "reserve_scarcity_state": "tightening",
+                     "headline_summary_en": "RRP buffer is empty — drains hit reserves.",
+                     "headline_summary_zh": None},
+    }
+
+
+def test_treasury_panel_shows_plumbing_read_rrp_balance_and_tga_20d() -> None:
+    import re
+    html = bw._render_page(config.ROOT, [], _treasury())
+    assert '<span class="l-en">RRP buffer is empty — drains hit reserves.</span>' in html
+    assert '<span class="l-zh">RRP buffer is empty — drains hit reserves.</span>' in html
+    assert re.search(r"RRP buffer</span>.{0,80}?\$0\.2bn", html, re.S)
+    assert re.search(r'-24\s*<span class="l-en">20d', html)
+    assert re.search(r'\+79\s*<span class="l-en">20d', html)   # net liquidity unchanged
+
+
+def test_committed_treasury_watch_numbers_reach_the_panel() -> None:
+    import re
+    from markupsafe import escape
+    tw = bw._load_treasury_watch(config.ROOT / "site")
+    if tw is None:
+        pytest.skip("site/whdata/treasury_watch.json not in this checkout")
+    html = bw._render_page(config.ROOT, [], tw)
+    pl, nl, tg = tw.get("plumbing") or {}, tw.get("net_liquidity") or {}, tw.get("tga") or {}
+    shown = 0
+    if pl.get("headline_summary_en"):
+        assert str(escape(pl["headline_summary_en"])) in html
+        shown += 1
+    if pl.get("rrp_buffer_state") and isinstance(nl.get("rrp_bn"), (int, float)):
+        assert re.search(r"RRP buffer</span>.{0,80}?\$" + re.escape("%.1f" % nl["rrp_bn"])
+                         + "bn", html, re.S)
+        shown += 1
+    if isinstance(tg.get("chg_20d_bn"), (int, float)):
+        assert re.search(re.escape("%+.0f" % tg["chg_20d_bn"]) + r'\s*<span class="l-en">20d',
+                         html)
+        shown += 1
+    assert shown, "the committed treasury_watch.json carries none of the three reads"
+
+
 def _run() -> None:
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
@@ -207,3 +327,240 @@ def _run() -> None:
 if __name__ == "__main__":
     _run()
     print("all whitehouse_build tests passed")
+
+
+# Source retention is host-local evidence, outside the public repository.
+@pytest.fixture(autouse=True)
+def isolated_source_store(tmp_path, monkeypatch):
+    from engine import whitehouse_feed as wf
+    directory = tmp_path.parent / (tmp_path.name + '-sources')
+    monkeypatch.setattr(wf, 'SOURCE_DOCUMENT_ROOT', directory)
+    return directory
+
+def _source_item(body='Original government source text.'):
+    from engine import whitehouse_feed as wf
+    xml = (f'<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><item>'
+           f'<title>Science announcement</title><link>https://www.whitehouse.gov/fact-sheets/2026/10/science/</link>'
+           f'<guid>science-1</guid><pubDate>Thu, 08 Oct 2026 15:05:06 +0000</pubDate>'
+           f'<content:encoded><![CDATA[<p>{body}</p>]]></content:encoded></item></channel></rss>')
+    return wf._parse(xml.encode(), 'fact-sheets')[0]
+
+
+def test_source_capture_is_immutable_and_private(tmp_path):
+    import hashlib
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    ref = wf.retain_source_document(tmp_path, item)
+    path = tmp_path / ref['path']
+    raw = path.read_bytes()
+    obj = json.loads(raw)
+    assert hashlib.sha256(raw).hexdigest() == ref['sha256']
+    assert obj['body'] == item['body']
+    assert obj['body_sha256'] == hashlib.sha256(item['body'].encode()).hexdigest()
+    assert obj['body_origin'] == 'content_encoded'
+    assert obj['body_truncated'] is False
+    assert obj['rights_status'] == 'unqualified'
+    assert obj['allow_stage'] is False and obj['allow_emit'] is False
+    before = path.stat().st_mtime_ns
+    assert wf.retain_source_document(tmp_path, item) == ref
+    assert path.stat().st_mtime_ns == before
+    assert not (tmp_path / 'site').exists()
+    assert not (tmp_path / 'data/whitehouse/processed.json').exists()
+
+
+def test_source_correction_keeps_both_versions(tmp_path):
+    from engine import whitehouse_feed as wf
+    old = wf.retain_source_document(tmp_path, _source_item())
+    new = wf.retain_source_document(tmp_path, _source_item('Corrected source text.'))
+    assert old['path'] != new['path']
+    assert (tmp_path / old['path']).exists() and (tmp_path / new['path']).exists()
+
+
+def test_source_capture_refuses_to_replace_corruption(tmp_path):
+    import pytest
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    ref = wf.retain_source_document(tmp_path, item)
+    path = tmp_path / ref['path']
+    path.write_text('damaged retained evidence')
+    with pytest.raises(ValueError, match='existing source document'):
+        wf.retain_source_document(tmp_path, item)
+    assert path.read_text() == 'damaged retained evidence'
+
+
+def test_source_capture_does_not_promote_excerpt_or_truncated_text(tmp_path):
+    from engine import whitehouse_feed as wf
+    long = _source_item('x' * 12001)
+    assert len(long['body']) == 12000 and long['body_truncated'] is True
+    doc = json.loads((tmp_path / wf.retain_source_document(tmp_path, long)['path']).read_text())
+    assert doc['body_truncated'] is True and doc['allow_stage'] is False
+    xml = b'<rss><channel><item><title>Excerpt</title><link>https://www.whitehouse.gov/news/x/</link><pubDate>Thu, 08 Oct 2026 15:05:06 +0000</pubDate><description>Summary only.</description></item></channel></rss>'
+    excerpt = wf._parse(xml, 'news')[0]
+    assert excerpt['body_origin'] == 'description'
+    doc = json.loads((tmp_path / wf.retain_source_document(tmp_path, excerpt)['path']).read_text())
+    assert doc['body_origin'] == 'description' and doc['allow_emit'] is False
+
+
+def test_source_capture_rejects_unknown_provenance_and_foreign_origin(tmp_path):
+    import pytest
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    for bad in ({**item, 'url': 'https://whitehouse.gov.attacker.invalid/story'},
+                {**item, 'url': 'https://user@www.whitehouse.gov/story'},
+                {**item, 'published': ''},
+                {k:v for k,v in item.items() if k != 'body_origin'}):
+        with pytest.raises(ValueError):
+            wf.retain_source_document(tmp_path, bad)
+    assert not (tmp_path / 'data').exists()
+
+
+def test_source_capture_publish_failure_leaves_no_partial_document(tmp_path, monkeypatch):
+    import pytest
+    from engine import whitehouse_feed as wf
+    def failed_link(*args, **kwargs):
+        raise OSError('simulated atomic-link failure')
+    monkeypatch.setattr(wf.os, 'link', failed_link)
+    with pytest.raises(OSError, match='atomic-link failure'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert not list(bw.wf.SOURCE_DOCUMENT_ROOT.iterdir())
+
+
+def _stub_source_build(monkeypatch, tmp_path, item):
+    from engine import whitehouse_feed as wf
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {})
+    monkeypatch.setattr(bw.wb, '_cfg', lambda: {})
+    monkeypatch.setattr(wf, 'collect', lambda: [item])
+    monkeypatch.setattr(bw, '_refresh_tga', lambda *_: None)
+    from engine import treasury_watch
+    monkeypatch.setattr(treasury_watch, 'detect_events', lambda *_: [])
+    monkeypatch.setattr(bw, '_write_treasury_watch', lambda *_: None)
+    monkeypatch.setattr(bw, '_rebuild_artifacts', lambda *_: 0)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: '')
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: False)
+    monkeypatch.setattr(bw.wb, 'evaluate', lambda *_: (_ for _ in ()).throw(AssertionError('unexpected provider call')))
+
+
+def test_sentinel_retains_sources_without_enabling_brain(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    assert bw.build() == 0
+    files = list(bw.wf.SOURCE_DOCUMENT_ROOT.glob('*.json'))
+    assert len(files) == 1
+    assert json.loads(files[0].read_text())['body'] == item['body']
+    assert not (tmp_path / 'data/whitehouse/alerts.jsonl').exists()
+    assert not (tmp_path / 'site').exists()
+
+
+def test_page_only_never_collects_or_retains_sources(tmp_path, monkeypatch):
+    _stub_source_build(monkeypatch, tmp_path, _source_item())
+    monkeypatch.setattr(bw.wf, 'collect', lambda: (_ for _ in ()).throw(AssertionError('unexpected poll')))
+    assert bw.build(page_only=True) == 0
+    assert not (tmp_path / 'data').exists()
+
+
+def test_capture_failure_does_not_replay_or_change_desk_decisions(tmp_path, monkeypatch):
+    _stub_source_build(monkeypatch, tmp_path, _source_item())
+    monkeypatch.setattr(bw.wf, 'retain_source_document', lambda *_: (_ for _ in ()).throw(OSError('disk refusal')))
+    assert bw.build() == 0
+    assert not (tmp_path / 'data/whitehouse/alerts.jsonl').exists()
+
+
+def test_concurrent_source_capture_publishes_one_complete_document(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        refs = list(pool.map(lambda _: wf.retain_source_document(tmp_path, item), range(8)))
+    assert all(ref == refs[0] for ref in refs)
+    files = list(bw.wf.SOURCE_DOCUMENT_ROOT.iterdir())
+    assert len(files) == 1 and files[0].suffix == '.json'
+    assert json.loads(files[0].read_text())['body'] == item['body']
+
+
+def test_seen_source_is_retained_without_replaying_brain(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    state = {'seen': {}}
+    bw.wf.mark_seen(state, item, activated=False, importance=1)
+    bw.wf.save_processed(tmp_path, state)
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: True)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: 'test-provider')
+    assert bw.build() == 0
+    assert len(list(bw.wf.SOURCE_DOCUMENT_ROOT.glob('*.json'))) == 1
+    assert bw.wf.load_processed(tmp_path) == state
+
+
+def test_capture_failure_keeps_single_existing_brain_evaluation(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    monkeypatch.setattr(bw.wf, 'retain_source_document', lambda *_: (_ for _ in ()).throw(OSError('disk refusal')))
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: True)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: 'test-provider')
+    calls = []
+    def evaluate(item, *_):
+        calls.append(item['id'])
+        return {'id': item['id'], 'activated': False, 'importance': 1}
+    monkeypatch.setattr(bw.wb, 'evaluate', evaluate)
+    assert bw.build() == 0
+    assert calls == [item['id']]
+    assert item['guid'] in bw.wf.load_processed(tmp_path)['seen']
+
+
+def test_source_capture_never_enters_sentinel_git_publication(tmp_path):
+    import subprocess
+    from engine import whitehouse_feed as wf
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    ledger = tmp_path / 'data/whitehouse/processed.json'
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text('{}')
+    ref = wf.retain_source_document(tmp_path, _source_item())
+    subprocess.run(['git', '-C', str(tmp_path), 'add', 'data/whitehouse'], check=True)
+    staged = subprocess.check_output(['git', '-C', str(tmp_path), 'diff', '--cached', '--name-only'], text=True)
+    assert staged.splitlines() == ['data/whitehouse/processed.json']
+    assert not Path(ref['path']).is_relative_to(tmp_path)
+    assert Path(ref['path']).stat().st_mode & 0o777 == 0o600
+    assert Path(ref['path']).parent.stat().st_mode & 0o777 == 0o700
+    assert not (tmp_path / 'data/whitehouse/source_documents').exists()
+
+
+def test_source_capture_refuses_repository_local_and_symlinked_output(tmp_path):
+    from engine import whitehouse_feed as wf
+    public = tmp_path / 'site'
+    public.mkdir()
+    alias = tmp_path.parent / (tmp_path.name + '-alias')
+    alias.symlink_to(public, target_is_directory=True)
+    for directory in (public, alias):
+        with pytest.raises(ValueError, match='outside all Git checkouts'):
+            wf.retain_source_document(tmp_path, _source_item(), capture_dir=directory)
+    assert not list(public.iterdir())
+
+
+def test_source_capture_refuses_other_git_checkout(tmp_path):
+    from engine import whitehouse_feed as wf
+    other = tmp_path.parent / (tmp_path.name + '-other-repo')
+    other.mkdir()
+    (other / '.git').write_text('gitdir: /unrelated/shared/store')
+    with pytest.raises(ValueError, match='outside all Git checkouts'):
+        wf.retain_source_document(tmp_path, _source_item(), capture_dir=other / 'data')
+    assert not (other / 'data').exists()
+
+
+def test_source_capture_refuses_permissive_existing_directory(tmp_path):
+    from engine import whitehouse_feed as wf
+    directory = wf.SOURCE_DOCUMENT_ROOT
+    directory.mkdir(mode=0o755)
+    with pytest.raises(ValueError, match='mode 0700'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert not list(directory.iterdir())
+    assert directory.stat().st_mode & 0o777 == 0o755
+
+
+def test_source_capture_refuses_publicly_readable_existing_document(tmp_path):
+    from engine import whitehouse_feed as wf
+    ref = wf.retain_source_document(tmp_path, _source_item())
+    path = Path(ref['path'])
+    path.chmod(0o644)
+    with pytest.raises(ValueError, match='existing source document'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert path.stat().st_mode & 0o777 == 0o644

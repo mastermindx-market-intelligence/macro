@@ -70,6 +70,13 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "financial_conditions.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.financial_conditions"
@@ -437,8 +444,10 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
     if contradiction["present"]:
         reasons.append(f"contradiction={contradiction['kind']}")
 
+    publication_prior = resolve_publication_prior(prior_snapshot, asof)
     headline = _headline(level_value, level_status, level_null, impulse_value, impulse_status,
-                         impulse_null, asof, prior_snapshot, contradiction)
+                         impulse_null, asof, publication_prior, contradiction)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
     changes = _changes(headline, level_value, impulse_value, prior_snapshot)
 
     axes_items = [
@@ -521,7 +530,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -661,6 +670,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "financial_conditions_level"
+    vec["y_axis_id"] = "financial_conditions_impulse"
 
     if not applied:
         note = "no comparable prior print; raw threshold classification, hysteresis not applied"
@@ -701,6 +712,9 @@ def _changes(headline, x_value, y_value, prior_snapshot) -> dict:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, _get(headline, "effective_date"))
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")
@@ -992,12 +1006,24 @@ def _implications(headline, level_value, impulse_value, contradiction, worst_fre
     if state_id is not None:
         label_en = _QUADRANTS[state_id]["en"]
         label_zh = _QUADRANTS[state_id]["zh"]
+        def _plain_num(v) -> tuple[str, str]:
+            # C-n3: never raise on None/non-numeric; print plain-word null.
+            if v is None:
+                return "unavailable", "暂无"
+            try:
+                s = f"{float(v):.1f}"
+                return s, s
+            except (TypeError, ValueError):
+                return "unavailable", "暂无"
+        level_s, level_zh = _plain_num(level_value)
+        impulse_s, impulse_zh = _plain_num(impulse_value)
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US financial conditions read {state_id} - {label_en} (level x={level_value}, "
-                f"impulse y={impulse_value}, boundary 50).",
-                f"美国金融条件读数为 {state_id} - {label_zh}（水平 x={level_value}，边际冲量 y={impulse_value}，分界 50）。"),
+                f"US financial conditions read {state_id} - {label_en} "
+                f"(level {level_s}, impulse {impulse_s}, boundary 50).",
+                f"美国金融条件读数为 {state_id} - {label_zh}"
+                f"（水平 {level_zh}，边际冲量 {impulse_zh}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

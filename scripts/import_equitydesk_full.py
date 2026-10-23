@@ -11,6 +11,11 @@ Design rules:
   selecting only the required columns immediately and not holding the full dict.
 - Total committed footprint: earnings_calls_text.parquet (summary + unified_analysis)
   is written but listed in .gitignore; the numeric/tag seed stays committed.
+- The numeric earnings frame is ALSO staged at data/earnings_calls/history.parquet, the
+  address the existing earnings R2 plane publishes and restores. Without that staging the
+  import is workstation-only and every CI/deploy consumer sees no earnings-call source —
+  which is exactly how the Prophet hold-tilt stayed inert from the day it shipped.
+  Publishing stays a separate, explicit act: `python -m scripts.publish_earnings_r2`.
 - Display-tier epistemics: is_context_only flag on manifest (never gates/sizing).
 """
 
@@ -41,6 +46,25 @@ BACKFILL_SRC = Path(os.environ.get(
 ))
 SEED_DIR = _REPO_ROOT / "data" / "stage_analysis" / "backfill"
 MANIFEST_PATH = SEED_DIR / "_manifest.json"
+def transport_earnings_history_path() -> Path:
+    """The TRANSPORT address of the same numeric archive.
+
+    SEED_DIR holds the workstation copy: gitignored, no publisher, therefore absent on
+    every CI and deploy host. ``data/earnings_calls/history.parquet`` is the address the
+    EXISTING earnings R2 plane already owns — ``scripts/publish_earnings_r2.py``
+    publishes it as an immutable generation, ``scripts/fetch_earnings_scores.py``
+    restores and validates it, and ``engine/earnings_qual.py`` +
+    ``engine/prophet_stage_inputs.py`` read it at tier ``r2_history``. Writing the
+    identical frame to both closes the fetch/publish pair this import never had; it is
+    the same evidence in its publishable form, not a second source of truth (the
+    transported copy is rebuilt from this import, never edited).
+
+    Resolved at CALL time, not import time. ``_REPO_ROOT`` is what callers and tests
+    redirect; a module-level constant frozen at import would keep pointing at the real
+    checkout and write a fixture-sized parquet into it — invisibly, because the
+    directory is gitignored.
+    """
+    return _REPO_ROOT / "data" / "earnings_calls" / "history.parquet"
 EARNINGS_RECONCILIATION_PATH = (
     _REPO_ROOT / "data" / "quality" / "earnings_import_reconciliation.json"
 )
@@ -722,6 +746,23 @@ def write_earnings_calls(manifest: dict) -> None:
     dest_txt = SEED_DIR / "earnings_calls_text.parquet"
 
     _atomic_write(df_num, dest_num)
+    # Stage the identical frame at the transport address so the existing publisher can
+    # ship it. Fail-open: the seed above is the authoritative local artifact, and a
+    # staging failure must not lose a 10-minute 623MB parse — it only means this host
+    # has nothing new to publish.
+    transport_dest = transport_earnings_history_path()
+    try:
+        _atomic_write(df_num, transport_dest)
+        log.info(
+            "STAGE %s (%.1fMB) — publish with `python -m scripts.publish_earnings_r2`",
+            transport_dest, transport_dest.stat().st_size / 1024 / 1024,
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning(
+            "could not stage %s for R2 transport (%s) — the local seed is unaffected, "
+            "but CI/deploy hosts will keep seeing no earnings-call source",
+            transport_dest, exc,
+        )
     _record(manifest, "earnings_calls", df_num, src.name)
     manifest["earnings_calls"]["reconciliation"] = {
         "schema": reconciliation["schema"],

@@ -37,6 +37,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from engine.ledger_clock import ClockContractError, to_ledger_date, to_ledger_date_index
+
 # --- frozen study constants (bottom_ruler_study.py lines 45-48) --------------- #
 H = 60        # maturity window (trading days)
 PRE = 10      # trough search may start this many days before the signal
@@ -63,6 +65,25 @@ def _undercut_class(undercut: float) -> str:
     if undercut <= UNDERCUT_DEEP:
         return "deep"
     return "broke"
+
+
+def _align_to_ledger_index(series: Any, di: pd.DatetimeIndex) -> pd.Series | None:
+    """Re-key an aligned high/low series onto the contract-normalized close index.
+
+    ``high``/``low`` are documented as "aligned to ``close``'s index", so they are re-keyed
+    positionally when lengths match (the normal case) and reindexed by ledger date otherwise.
+    Returns None when the series is absent — the close_only basis path.
+    """
+    if series is None:
+        return None
+    s = pd.Series(series)
+    if len(s) == len(di):
+        return pd.Series(s.to_numpy(), index=di)
+    try:
+        s = pd.Series(s.to_numpy(), index=to_ledger_date_index(s.index, field="price index"))
+    except ClockContractError:
+        return None
+    return s.reindex(di)
 
 
 def grade_call(
@@ -109,22 +130,23 @@ def grade_call(
     c = pd.Series(close).dropna()
     if len(c) == 0:
         return None
-    di = c.index
-    # Resolve the integer position of the signal bar.
-    ts = pd.Timestamp(flag_date)
-    # normalize to date-granularity match (index may carry a time component of 00:00)
-    if ts not in di:
-        ts_norm = ts.normalize()
-        # match on calendar date (index is daily)
-        hits = np.where(di.normalize() == ts_norm)[0]
-        if len(hits) == 0:
-            return None
-        i = int(hits[-1])
-    else:
-        i = int(di.get_loc(ts))
-        # get_loc may return a slice/array for a duplicated index; take the last scalar
-        if not np.isscalar(i):
-            i = int(np.atleast_1d(i)[-1])
+    # CLOCK CONTRACT (engine/ledger_clock.py): the signal bar is located by CIVIL DATE, so both
+    # sides are coerced to the one ledger-date representation before they ever meet. Without
+    # this, a tz-aware price index (or a tz-aware flag_date) matched nothing and this function
+    # returned None *silently* — a row would then accrue forever and never mature, with no
+    # error anywhere. Coercion is date resolution only: not one line of the grading arithmetic
+    # below depends on it, so the frozen yardstick is unchanged.
+    try:
+        di = to_ledger_date_index(c.index, field="price index")
+        ts = to_ledger_date(flag_date, field="flag_date")
+    except ClockContractError:
+        return None
+    c = pd.Series(c.to_numpy(), index=di)
+    hits = np.where(di == ts)[0]
+    if len(hits) == 0:
+        return None
+    # a duplicated index keeps the last bar for that date (prior get_loc behaviour)
+    i = int(hits[-1])
 
     n = len(c)
     # matured-only: need `pre` bars before and `h` bars after, or the window is partial.
@@ -133,8 +155,10 @@ def grade_call(
         return None
 
     # basis: real OHLC when both present with signal over the window, else close_only.
-    hi = pd.Series(high).reindex(di) if high is not None else None
-    lo = pd.Series(low).reindex(di) if low is not None else None
+    # high/low arrive keyed by the ORIGINAL index; re-key them to the contract dates so the
+    # reindex below aligns (same rule, same order — positional identity is preserved).
+    hi = _align_to_ledger_index(high, di)
+    lo = _align_to_ledger_index(low, di)
     win_slice = slice(i - pre, i + h + 1)
     has_ohlc = (
         hi is not None
