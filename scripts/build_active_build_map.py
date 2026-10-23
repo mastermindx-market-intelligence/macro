@@ -224,10 +224,29 @@ def render_markdown(payload: dict) -> str:
     lines.append("## File Collisions")
     lines.append("")
     if collisions:
+        # Raw active_builds.v1 retains every pair; cap only the human-facing
+        # Markdown table and prioritize protected files over volume-only pairs.
+        prioritized = sorted(
+            collisions,
+            key=lambda col: (
+                not col.get("any_protected", False),
+                -col["shared_count"],
+                col["pr_a"],
+                col["pr_b"],
+            ),
+        )
+        displayed = prioritized[:_MAX_MARKDOWN_COLLISION_ROWS]
+        if len(collisions) > len(displayed):
+            lines.append(
+                f"> Showing {len(displayed)} highest-risk collision pairs "
+                f"of {len(collisions)} total; the complete inventory remains in "
+                "`data/governance/active_builds.json`."
+            )
+            lines.append("")
         lines.append("| PR A | PR B | Shared files | Files |")
         lines.append("|------|------|-------------|-------|")
         _MAX_SHOWN = 8
-        for col in collisions:
+        for col in displayed:
             pr_a = col["pr_a"]
             pr_b = col["pr_b"]
             count = col["shared_count"]
@@ -312,6 +331,7 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
 
 _OPEN_PR_PAGE_SIZE = 100
 _OPEN_PR_ENRICH_CONCURRENCY = 4
+_MAX_MARKDOWN_COLLISION_ROWS = 250
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
@@ -324,40 +344,47 @@ def _collect_open_prs() -> tuple[list[dict] | None, bool]:
     historical ``open_prs_truncated`` field; a successful paginated fetch is complete
     and therefore returns ``False`` for that flag.
     """
-    pages = _run_gh([
+    # Plain --paginate works on the retained gh CLI versions without depending
+    # on --slurp (unavailable in older installations). Modern gh flattens REST
+    # pages to one list; injected/older clients may return one list per page.
+    result = _run_gh([
         "api",
         "--method", "GET",
         "--paginate",
-        "--slurp",
         "-f", "state=open",
         "-f", f"per_page={_OPEN_PR_PAGE_SIZE}",
         "repos/{owner}/{repo}/pulls",
     ], timeout=60)
-    if pages is None:
+    if result is None:
         return None, False
-    if not isinstance(pages, list) or any(not isinstance(page, list) for page in pages):
-        log.warning("paginated open-PR response has an unexpected shape")
+    if not isinstance(result, list):
+        log.warning("paginated open-PR response is not a list")
+        return None, False
+    if not result or all(isinstance(item, dict) for item in result):
+        rows = result
+    elif all(isinstance(page, list) for page in result):
+        rows = [item for page in result for item in page]
+    else:
+        log.warning("paginated open-PR response mixes page and row shapes")
         return None, False
 
     prs: list[dict] = []
-    for page in pages:
-        for item in page:
-            if not isinstance(item, dict):
-                log.warning("paginated open-PR response contains a non-object row")
-                return None, False
-            head = item.get("head")
-            head_ref = head.get("ref", "") if isinstance(head, dict) else ""
-            prs.append({
-                "number": item.get("number"),
-                "title": item.get("title", ""),
-                "head_ref": head_ref,
-                "updated_at": item.get("updated_at", ""),
-                "is_draft": bool(item.get("draft", False)),
-                # REST list metadata does not carry GitHub's GraphQL merge-state
-                # status.  The existing per-PR view below remains the authority and
-                # fills this field during enrichment.
-                "merge_state": "",
-            })
+    for item in rows:
+        if not isinstance(item, dict):
+            log.warning("paginated open-PR response contains a non-object row")
+            return None, False
+        head = item.get("head")
+        head_ref = head.get("ref", "") if isinstance(head, dict) else ""
+        prs.append({
+            "number": item.get("number"),
+            "title": item.get("title", ""),
+            "head_ref": head_ref,
+            "updated_at": item.get("updated_at", ""),
+            "is_draft": bool(item.get("draft", False)),
+            # REST list metadata does not carry GraphQL merge-state status.
+            # The existing per-PR view below remains its sole authority.
+            "merge_state": "",
+        })
     return prs, False
 
 
