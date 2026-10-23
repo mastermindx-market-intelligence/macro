@@ -1,0 +1,68 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t, ic, arrow_long, mark, asof, chain with context %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Data states{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Data states | Mastermind' %}{% set seo_desc = 'How each explorer surface reads when data is late, missing or held: what failed, what still works, and one next step.' %}{% set seo_path = 'gmi-states.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{#- S5 data states — port of mockups/refs/gmi_explorer s5_states() + state().
+    Noindex reference sheet for the page-wide state enum (SPECS §10); the
+    .gmi-state-k keys are this page's documented exception to "no codes on
+    Tier 1". Example dates inside cards stay as the specimen types them; the
+    one "last read" date comes from the model. -#}
+{% macro state_card(icon, ink, key_, t_en, t_zh, body, ok_en='', ok_zh='', actions='') -%}
+<article class="gmi-state"><div class="gmi-state-h"><span class="{{ ink }} gmi-state-ic">{{ ic(icon) }}</span><span class="gmi-state-t">{{ t(t_en, t_zh) }}</span><span class="gmi-state-k">{{ key_ }}</span></div>{{ body }}{% if ok_en %}<p class="gmi-state-ok">{{ t(ok_en, ok_zh) }}</p>{% endif %}{% if actions %}<div class="gmi-state-a">{{ actions }}</div>{% endif %}</article>
+{%- endmacro %}
+{% set side_block %}{{ asof(model.asof) }}{% endset %}
+{{ head([('Research', '研究'), ('Theme map', '主题地图')], 'Data states', '数据状态',
+        'How each surface reads when data is late, missing or held.',
+        '数据延迟、缺失或暂缓时，各页面如何呈现。', side=side_block) }}
+<p class="gmi-note">{{ t("Every state says what failed, what still works, and one next step. Keys in the corner are for builders and are not shown in the product.", "每种状态都说明：哪里失败、哪些仍可用、下一步做什么。右上角的键名供开发参考，不在产品中显示。") }}</p>
+{% set ff_body %}<p>{{ t("The latest read did not arrive.", "最新一次读取未能送达。") }}</p>{% endset %}
+{% set ff_actions %}<button class="gmi-btn" type="button">{{ ic("refresh", 16) }}{{ t("Retry", "重试") }}</button><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi-index.html">{{ t("Open index", "打开索引") }}</a>{% endset %}
+{% set mini_census %}<div class="gmi-mini">{% for c in model.cats[:3] %}<div class="gmi-mini-row"><span class="gmi-mini-lab">{{ t(c.en, c.zh) }}</span><span class="gmi-cells--mini">{% for m in c.micros | ordered %}{{ mark(model.micros[m].kind) }}{% endfor %}</span></div>
+{% endfor %}</div>{% endset %}
+{% set stale_body %}<div><span class="gmi-chip gmi-chip--upd">{{ ic("refresh", 14) }}{{ t("Read being updated", "读取结果更新中") }}</span></div><div class="gmi-degraded"><div class="gmi-degraded-body">{{ mini_census }}</div></div>{% endset %}
+{% set rw_body %}<div class="gmi-mini"><div class="gmi-rel-head"><b>{{ t("Skyworks", "Skyworks") }}</b><span class="gmi-arrow">{{ arrow_long() }}</span><b>{{ t("Apple", "Apple") }}</b></div>
+<div class="gmi-state-mag"><span class="gmi-mag-num gmi-mag-num--lg">—</span><span class="gmi-muted">{{ t("Size withheld", "规模暂不显示") }}</span></div></div>
+<p>{{ t("Display rights for this figure are still being confirmed. The source filing is linked.", "该数值的展示权限仍在确认中。已附来源披露文件链接。") }}</p>{% endset %}
+{% set rw_actions %}<a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi-relationships.html#excerpt">{{ t("Open the filing", "打开披露文件") }}{{ ic("ext", 16) }}</a>{% endset %}
+{% set pd_body %}<p>{{ t("This detail is limited to research use.", "此详情仅限研究用途。") }}</p>{% endset %}
+{% set pd_actions %}<a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi.html">{{ t("Open the theme map", "打开主题地图") }}{{ ic("arrow", 16) }}</a>{% endset %}
+{% set sp_body %}<p>{{ t("A source file did not match its record, so this view is paused rather than shown wrong.", "某来源文件与其记录不一致，因此暂停显示，而不是显示错误内容。") }}</p>{% endset %}
+{% set sp_actions %}<button class="gmi-btn" type="button">{{ t("Show last verified read · 21 Oct 2026", "显示上次核实的读取结果 · 2026年10月21日") }}</button>{% endset %}
+{% set un_body %}<dl class="gmi-dl"><div><dt>{{ t("Deal size", "规模") }}</dt><dd>{{ t("Not disclosed", "未披露") }}</dd></div>
+<div><dt>{{ t("Value-chain position", "价值链位置") }}</dt><dd>{{ t("Not set yet", "尚未设定") }}</dd></div></dl>
+<p>{{ t("“Not disclosed” means the company did not publish it. “Not set yet” means we have not recorded it.", "“未披露”表示公司未公布；“尚未设定”表示我们尚未记录。") }}</p>{% endset %}
+{% set ld_body %}<div class="gmi-skel-stack"><span class="skel gmi-skel-line gmi-skel-line--m"></span><span class="skel gmi-skel-line"></span><span class="skel gmi-skel-line gmi-skel-line--s"></span></div>{% endset %}
+{% set em_body %}<div class="mx-empty gmi-empty-inline"><div class="mx-empty-why">{{ t("Zero means none documented yet, not none exist.", "为零表示尚未记录，而非不存在。") }}</div></div>{% endset %}
+{% if model.theme_links %}
+{% set em_actions %}<a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}{{ model.theme_links[0].href }}">{{ t("Open the company", "打开公司页") }}{{ ic("arrow", 16) }}</a>{% endset %}
+{% endif %}
+{% set ru_body %}<div><span class="gmi-chip gmi-chip--upd">{{ ic("refresh", 14) }}{{ t("Read updated · 30 Jan 2026", "读取已更新 · 2026年1月30日") }}</span></div>
+<p>{{ t("A later filing touched this figure. Open it to see what changed and what did not.", "后续披露文件涉及该数值。打开即可查看变更与未变更之处。") }}</p>{% endset %}
+{% set ru_actions %}<a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi-relationships.html">{{ t("See what changed", "查看变更") }}{{ ic("arrow", 16) }}</a>{% endset %}
+{% if model.deck %}
+{% set pt_edge_en = model.deck.premises.concentration_risk.en | fill(counterparty='Apple') %}
+{% set pt_edge_zh = model.deck.premises.concentration_risk.zh | fill(counterparty='苹果') %}
+{% else %}
+{% set pt_edge_en = 'Condition as stated in the filing' %}
+{% set pt_edge_zh = '披露文件所述条件' %}
+{% endif %}
+{% set pt_body %}<p class="gmi-muted">{{ t("No documented conditioned path exists yet. This shows where a stated condition would sit.", "目前尚无已记录的附条件路径。此处仅示意所述条件的位置。") }}</p>
+{% set pt_p1 %}{{ t("Skyworks", "Skyworks") }}{% endset %}
+{% set pt_e %}{{ t(pt_edge_en, pt_edge_zh) }}{% endset %}
+{% set pt_p2 %}{{ t("Effect stated in the filing", "披露文件所述影响") }}{% endset %}
+{% set pt_n2 %}{{ t("quoted text appears here", "此处显示引文") }}{% endset %}
+{{ chain([dict(cls=['wide', 'to-none'], pip='doc', name=pt_p1, edge=pt_e), dict(cls=['none'], pip='none', name=pt_p2, note=pt_n2)], kind='edges') }}
+{% if model.deck %}<p class="gmi-foot">{{ t(model.deck.lead_in.en, model.deck.lead_in.zh) }} …</p>{% endif %}{% endset %}
+<div class="gmi-states">{{ state_card('alert', 'gmi-ink-warn', 'fetch_failed', 'Couldn’t load the theme map', '主题地图加载失败', ff_body,
+        'Search and the full index still work from the last read (' ~ (model.asof|de) ~ ').',
+        '搜索与完整索引仍可使用上次读取结果（' ~ (model.asof|dz) ~ '）。', ff_actions) }}{{ state_card('clock', 'gmi-muted', 'stale', 'Showing the 19 Oct read', '显示10月19日的读取结果', stale_body,
+        'Counts and links are as of 19 Oct 2026 until the new read lands.', '新读取结果送达前，计数与关联以2026年10月19日为准。') }}{{ state_card('info', 'gmi-ink-info', 'rights_withheld', 'Size withheld', '规模暂不显示', rw_body,
+        'The relationship, its dates and the source stay visible.', '关系本身、日期与来源仍然可见。', rw_actions) }}{{ state_card('eyeoff', 'gmi-muted', 'purpose_denied', 'Limited to research use', '仅限研究用途', pd_body,
+        'The theme map and coverage still work.', '主题地图与覆盖率仍可使用。', pd_actions) }}{{ state_card('pause', 'gmi-ink-warn', 'source_paused', 'Paused: source check failed', '已暂停：来源校验未通过', sp_body,
+        'Everything else on the page still works.', '页面其余部分仍可正常使用。', sp_actions) }}{{ state_card('question', 'gmi-muted', 'unknown', 'Not disclosed · Not set yet', '未披露 · 尚未设定', un_body) }}{{ state_card('clock', 'gmi-muted', 'loading', 'Loading', '加载中', ld_body,
+        'The page frame and navigation are usable while rows load.', '行数据加载期间，页面框架与导航可正常使用。') }}{{ state_card('file', 'gmi-muted', 'empty', 'No documented relationships yet', '尚无已记录的关系', em_body,
+        'The company’s themes and filings still show.', '该公司的主题与披露文件仍可查看。', em_actions | default('')) }}{{ state_card('refresh', 'gmi-ink-info', 'read_updated', 'Read updated', '读取已更新', ru_body, '', '', ru_actions) }}{{ state_card('list', 'gmi-muted', 'path_template', 'Conditioned path · layout only', '附条件路径 · 仅版式', pt_body) }}</div>
+{% endblock %}

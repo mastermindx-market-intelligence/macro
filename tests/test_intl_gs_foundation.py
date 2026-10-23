@@ -751,7 +751,31 @@ def test_frozen_files_unchanged_vs_origin_main(path):
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
+    if result.returncode == 1 and path in _APPEND_ONLY_FROZEN:
+        # theme.css is the ONE shared token file every program extends (design
+        # constitution: "tokens extend theme.css only"). The freeze protects the
+        # bytes the INTL surfaces read; a pure END-OF-FILE append cannot alter
+        # them, so it passes. Any removed or rewritten line, or an insertion
+        # anywhere but the tail, still fails closed.
+        _assert_pure_tail_append(base, path)
+        return
     assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
+
+
+# Narrowed 2026-10-22 (GMI explorer, ORCH-UI G-UI-17): append-only, never edit-in-place.
+_APPEND_ONLY_FROZEN = frozenset({"templates/theme.css"})
+
+
+def _assert_pure_tail_append(base, path):
+    shown = subprocess.run(["git", "show", f"{base}:{path}"], cwd=REPO,
+                           capture_output=True, text=True)
+    if shown.returncode != 0:
+        pytest.fail(f"FAIL CLOSED: git show {base}:{path} errored: {shown.stderr.strip()}")
+    before = shown.stdout
+    after = (REPO / path).read_text(encoding="utf-8")
+    assert after.startswith(before), (
+        f"{path} changed vs merge-base(origin/main, HEAD) {base}: only a pure end-of-file "
+        "append is permitted; an existing byte was removed, rewritten or displaced")
 
 
 # ---------------------------------------------------------------- 2.14 JS

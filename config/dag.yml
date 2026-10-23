@@ -3004,6 +3004,15 @@ lanes:
           ontology.css/js copies). A nav-only static shell with zero current
           values; it sits in the render lane so a shared-nav change re-bakes it
           with every other committed page. Not in daily.yml: no data input.
+      - id: build_gmi_explorer
+        module: scripts.build_gmi_explorer
+        note: >
+          GMI explorer static surfaces (site/gmi*.html, siblings of ontology.html):
+          map + index, issuer, theme, path, states. Reads the committed theme-graph
+          store + crosswalk and the gmi_coverage_proof report in-process; writes
+          site pages only. Display-tier; no producer, no ledger advance. The model
+          is built before any page is written, so a proof/model failure leaves the
+          committed pages in place (resilient run_py step).
       - id: build_research_screener
         module: scripts.build_research_screener
         note: >

@@ -1,0 +1,93 @@
+{#- GMI explorer shared macros — the template twin of the specimen helpers in
+    mockups/refs/gmi_explorer/build_specimens.py (t, tip, ic, mark, d, asof,
+    sec, search_box, key, chain, TIP_*). Import WITH CONTEXT: the tip_* macros
+    read `model`. Text for Tier-2 tips lives in data-tip-* attributes, NEVER
+    in title= (doctrine §13); theme.js owns the .lens-q popover. Every number a
+    tip quotes comes from the model — nothing here is hand-typed. -#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+
+{% macro tip(en, zh, rc_en=none, rc_zh=none) -%}
+<button class="lens-q gmi-tip" type="button" data-tip-en="{{ en }}" data-tip-zh="{{ zh }}"{% if rc_en %} data-tip-rc-en="{{ rc_en }}" data-tip-rc-zh="{{ rc_zh if rc_zh else rc_en }}"{% endif %}><span aria-hidden="true">?</span><span class="gmi-vh">{{ t("More detail", "更多说明") }}</span></button>
+{%- endmacro %}
+
+{% macro ic(name, size=24) -%}
+<svg viewBox="0 0 24 24" width="{{ size }}" height="{{ size }}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ gmi_icons[name] }}</svg>
+{%- endmacro %}
+
+{% macro arrow_long() -%}
+{{ gmi_arrow_long }}
+{%- endmacro %}
+
+{% macro mark(kind, xl=false) -%}
+<span class="gmi-sm gmi-sm--{{ kind }}{% if xl %} gmi-sm--xl{% endif %}" aria-hidden="true"></span>
+{%- endmacro %}
+
+{% macro d(iso) -%}
+{{ t(iso|de, iso|dz) }}
+{%- endmacro %}
+
+{% macro asof(iso) -%}
+<span class="gmi-asof">{{ t("Read as of " ~ (iso|de), "数据截至" ~ (iso|dz)) }}</span>
+{%- endmacro %}
+
+{% macro sec(h_en, h_zh, level=2, right="", tipx="") -%}
+<div class="mx-sec"><h{{ level }}>{{ t(h_en, h_zh) }}</h{{ level }}>{{ tipx }}{% if right %}<span class="mx-asof">{{ right }}</span>{% endif %}</div>
+{%- endmacro %}
+
+{#- search_box: a REAL input (the specimen drew a fake span.gmi-search-ph).
+    gmi.js filters the page's [data-gmi-q] elements for this scope, swaps the
+    placeholder/aria-label on language change, and un-hides the no-match line. -#}
+{% macro search_box(en, zh, scope) -%}
+<div class="gmi-search" role="search">{{ ic("search", 18) }}<input class="gmi-search-in" type="search" data-gmi-filter="{{ scope }}" placeholder="{{ en }}" aria-label="{{ en }}" data-ph-en="{{ en }}" data-ph-zh="{{ zh }}" data-aria-en="{{ en }}" data-aria-zh="{{ zh }}" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
+<p class="mx-empty gmi-empty-inline" data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</p>
+{%- endmacro %}
+
+{% macro key() -%}
+<div class="gmi-key"><span>{{ mark("acc") }}{{ t("Core set", "核心集") }}</span><span>{{ mark("disp") }}{{ t("Extended · not counted", "扩展 · 不计入") }}</span><span>{{ mark("adm") }}{{ t("Admitted", "已纳入") }}</span><span>{{ mark("held") }}{{ t("Held for review", "待审核") }}</span></div>
+{%- endmacro %}
+
+{% set KIND_TAG = {"held": ("Held", "待审核"), "adm": ("Admitted", "已纳入"), "acc": ("Core", "核心"), "disp": ("Extended", "扩展")} %}
+{% macro kind_tag(kind) -%}
+{{ t(KIND_TAG[kind][0], KIND_TAG[kind][1]) }}
+{%- endmacro %}
+
+{#- chain: one node grammar (specimen chain(), round 2 D4). steps = list of
+    dicts {cls: [..], pip: doc|held|none, lvl, name, note, edge}; the HTML
+    strings come from {% set x %}..{% endset %} blocks. -#}
+{% macro chain(steps, kind="ladder") -%}
+<ol class="gmi-chain gmi-chain--{{ kind }}">{% for st in steps %}<li class="gmi-chain-step{% for c in st.get('cls', []) %} gmi-chain-step--{{ c }}{% endfor %}"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--{{ st.pip }}"></span></span><div class="gmi-chain-body">{% if st.get('lvl') %}<span class="gmi-chain-lvl">{{ st.lvl }}</span>{% endif %}<span class="gmi-chain-name">{{ st.name }}</span>{% if st.get('note') %}<span class="gmi-chain-note">{{ st.note }}</span>{% endif %}</div>{% if st.get('edge') %}<span class="gmi-chain-edge">{{ st.edge }}</span>{% endif %}</li>{% endfor %}</ol>
+{%- endmacro %}
+
+{#- The four Tier-2 tips, data-branched from the model (specimen TIP_*). -#}
+{% macro tip_core() -%}
+{{ tip("The original " ~ model.totals.core ~ " micro-themes. Coverage and accuracy are measured on this set only.",
+       "最初的" ~ model.totals.core ~ "个细分主题。覆盖率与准确性仅在此集合上衡量。") }}
+{%- endmacro %}
+
+{% macro tip_ext() -%}
+{{ tip(model.totals.extended ~ " micro-themes added on " ~ (model.extended_on|de) ~ " to help you find your way around. They are shown but not counted in coverage.",
+       (model.extended_on|dz) ~ "新增的" ~ model.totals.extended ~ "个细分主题，用于帮助浏览。予以显示，但不计入覆盖率。") }}
+{%- endmacro %}
+
+{% macro tip_adm() -%}
+{%- set none_en = " None has been admitted yet." if model.totals.admitted_micros == 0 else "" -%}
+{%- set none_zh = "目前尚无公司获准纳入。" if model.totals.admitted_micros == 0 else "" -%}
+{{ tip("A company joins a micro-theme only after a curator admits it from its own filings." ~ none_en,
+       "公司须经审核员依据其自身披露文件批准后才纳入细分主题。" ~ none_zh) }}
+{%- endmacro %}
+
+{% macro tip_held() -%}
+{%- set held = model.theme_links | selectattr("kind", "equalto", "held") | list -%}
+{%- if held -%}
+{%- set h = held[0] -%}
+{{ tip("A proposed link waiting for a curator. Held links are not members and are left out of every count.",
+       "等待审核员处理的拟议关联。待审核关联不是成员，不计入任何统计。",
+       h.name ~ " → " ~ h.micro_en ~ " · first seen " ~ (h.first_seen|de),
+       h.name ~ " → " ~ h.micro_zh ~ " · 首次收录" ~ (h.first_seen|dz)) }}
+{%- else -%}
+{{ tip("A proposed link waiting for a curator. Held links are not members and are left out of every count.",
+       "等待审核员处理的拟议关联。待审核关联不是成员，不计入任何统计。") }}
+{%- endif -%}
+{%- endmacro %}

@@ -13270,6 +13270,85 @@ jobs:
       - name: ontology explorer — real browser, selected context, responsive and failure states
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py -q
 
+  gmi-explorer:
+    if: ${{ false }}
+    gate: code
+    # GMI explorer static surfaces (site/gmi*.html — map + index, issuer, theme,
+    # path, states), the siblings of ontology.html. The builder
+    # (scripts/build_gmi_explorer.py + scripts/gmi_explorer/) reads the committed
+    # theme-graph store and runs scripts/gmi_coverage_proof.py in-process, so the
+    # suites below prove the model, the rendered pages, the shared assets and the
+    # reason-code vocabulary pin against the live committed data. `gate: code`
+    # keeps them on the merge gate: they are this feature's entire proof.
+    # CURATED SCOPE (2026-10-22). Inference widened this job to whole scan
+    # roots (the identity reader names scripts/build_security_master.py by
+    # path, pulling its subprocess call and parquet traversal into the
+    # closure), which selected it on the templates/index.html,
+    # scripts/build_free_content.py and engine/prophet/plan_book.py
+    # PACKING_PROBES in tests/test_ci_pack.py. `scope: exclusive` makes the
+    # paths below REPLACE inference: the exact static closure of the suites,
+    # measured with run_ci_pack.inferred_as_if_not_exclusive, plus program
+    # globs so new GMI templates, builder modules and suites keep selecting it.
+    # A suite that imports a new tree must widen this list;
+    # test_curated_exclusive_scopes_cover_their_own_import_closure fails until
+    # it does.
+    scope: exclusive
+    paths:
+      - "scripts/__init__.py"
+      - "engine/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/research_vault/__init__.py"
+      - "tests/__init__.py"
+      - "scripts/build_gmi_explorer.py"
+      - "scripts/gmi_explorer/**"
+      - "scripts/gmi_coverage_proof.py"
+      - "scripts/check_design_system.py"
+      - "scripts/build_security_master.py"
+      - "scripts/publish_company_disclosure.py"
+      - "config/gmi_reason_codes.yml"
+      - "config/dataset_registry.yml"
+      - "config/delisted_symbols.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "contracts/theme_graph/**"
+      - "engine/theme_graph/**"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/delisted_symbols.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json"
+      - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
+      - "templates/gmi*"
+      - "templates/theme.css"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "tests/test_gmi_explorer_*.py"
+      - "tests/test_gmi_reason_codes.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+      - name: gmi explorer — model, shared assets, reason-code pin, S1-S5 pages
+        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py -q
+
   research-factory-authority:
     if: ${{ false }}
     gate: code
