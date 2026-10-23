@@ -1,0 +1,360 @@
+{
+  "source_commit": "9579caf3f950f1a2e7b959a9b3b68d26e42e5d06",
+  "authority": "research_only",
+  "pit_certified": false,
+  "note": "Same pinned inputs and 22 filed constructions per isolated trial family. Not a new holdout, promotion or production result.",
+  "candidate_source_sha256": "75e527b078aaacd2eb9798a30163c7cb9aedd980a632152f5315a70955ca175c",
+  "input_hashes": {
+    "data/fred/AMTMUO.parquet": "793dbaf03db97c5d29a067cb8663f7df671bd68c1866029dc95f291527d8fb3e",
+    "data/fred/AMTMVS.parquet": "246e61f31e2aec65f8694347eb8d30d305cf214596300db3d8bc41d68dcb00b7",
+    "data/fred/CES0500000003.parquet": "fa673e3f477ff4355217c8543409f938dbddc561ae026c9611f70418e6f0b09f",
+    "data/fred/CPILFESL.parquet": "238994be8ad4a260f5bc169da276f1210d62160c9d670054eb7340d480b7b82f",
+    "data/fred/DTCISA156MSFRBPHI.parquet": "7ac2fd0027a4e33fc9f667a989bb1cfba9e712828efdcc781f2130390404c076",
+    "data/fred/EXPINF1YR.parquet": "c6a48d37e2e741e7904bbbcb40982fe6751093405174166dd564a69d1143e1cc",
+    "data/fred/HOUST.parquet": "096d374a208f57fad28c5c20397455781a43d231c776b4c438bfa465dae39c5a",
+    "data/fred/MICH.parquet": "7c0101c304f3be76d05478e437f125767be91c4681e46b611064d8ec4560499a",
+    "data/fred/PERMIT.parquet": "f0af8e87a594f6d6cda4fa7813f5cd873d5187e355707597d825b8e65af4d128",
+    "data/yahoo/SPY.parquet": "f2b28111f3bcb4e8ad0db767493735f0a3646a303b0ce2aa520bb5ae8dc8ebed"
+  },
+  "results": [
+    {
+      "evaluator": "original",
+      "id": "SF-0013",
+      "battery": "sf-battery-1",
+      "n_obs": 253,
+      "hac": {
+        "mean": null,
+        "se": null,
+        "t": null,
+        "p": null,
+        "n": 5,
+        "lags": null,
+        "lags_requested": 4
+      },
+      "sampling": null,
+      "full_ic": 0.0037,
+      "verdict": "insufficient_power",
+      "reasons": [
+        "n_obs=253 < 25 or HAC t unavailable"
+      ],
+      "backtest": {
+        "net_sharpe": 3.943,
+        "gross_sharpe": 4.029,
+        "hold_sharpe": 4.422,
+        "cagr_net": 7.5947,
+        "cagr_gross": 8.0279,
+        "max_dd": -0.3154,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 32.75
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "original",
+      "id": "SF-0014",
+      "battery": "sf-battery-1",
+      "n_obs": 138,
+      "hac": {
+        "mean": null,
+        "se": null,
+        "t": null,
+        "p": null,
+        "n": 3,
+        "lags": null,
+        "lags_requested": 2
+      },
+      "sampling": null,
+      "full_ic": 0.2175,
+      "verdict": "insufficient_power",
+      "reasons": [
+        "n_obs=138 < 25 or HAC t unavailable"
+      ],
+      "backtest": {
+        "net_sharpe": 3.073,
+        "gross_sharpe": 3.119,
+        "hold_sharpe": 4.781,
+        "cagr_net": 5.7513,
+        "cagr_gross": 5.9642,
+        "max_dd": -0.2933,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 17.92
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "original",
+      "id": "SF-0020",
+      "battery": "sf-battery-1",
+      "n_obs": 258,
+      "hac": {
+        "mean": null,
+        "se": null,
+        "t": null,
+        "p": null,
+        "n": 5,
+        "lags": null,
+        "lags_requested": 4
+      },
+      "sampling": null,
+      "full_ic": -0.047,
+      "verdict": "insufficient_power",
+      "reasons": [
+        "n_obs=258 < 25 or HAC t unavailable"
+      ],
+      "backtest": {},
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "original",
+      "id": "SF-0021",
+      "battery": "sf-battery-1",
+      "n_obs": 255,
+      "hac": {
+        "mean": null,
+        "se": null,
+        "t": null,
+        "p": null,
+        "n": 3,
+        "lags": null,
+        "lags_requested": 2
+      },
+      "sampling": null,
+      "full_ic": 0.0246,
+      "verdict": "insufficient_power",
+      "reasons": [
+        "n_obs=255 < 25 or HAC t unavailable"
+      ],
+      "backtest": {
+        "net_sharpe": 2.471,
+        "gross_sharpe": 2.588,
+        "hold_sharpe": 4.367,
+        "cagr_net": 3.099,
+        "cagr_gross": 3.4285,
+        "max_dd": -0.3755,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 32.83
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "original",
+      "id": "SF-0022",
+      "battery": "sf-battery-1",
+      "n_obs": 258,
+      "hac": {
+        "mean": null,
+        "se": null,
+        "t": null,
+        "p": null,
+        "n": 5,
+        "lags": null,
+        "lags_requested": 4
+      },
+      "sampling": null,
+      "full_ic": 0.0589,
+      "verdict": "insufficient_power",
+      "reasons": [
+        "n_obs=258 < 25 or HAC t unavailable"
+      ],
+      "backtest": {},
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "clock_repair",
+      "id": "SF-0013",
+      "battery": "sf-battery-2-clock",
+      "n_obs": 253,
+      "hac": {
+        "mean": -0.0005,
+        "se": 0.0789,
+        "t": -0.006,
+        "p": 0.9949,
+        "n": 106,
+        "lags": 4,
+        "lags_requested": 4
+      },
+      "sampling": {
+        "clock": "target_price_bars",
+        "horizon_bars": 63,
+        "n_nonoverlap": 106,
+        "dependence_radius_rows": 4,
+        "selector": "earliest_nonoverlap",
+        "hac_lags": 4,
+        "independence_claimed": false
+      },
+      "full_ic": 0.0037,
+      "verdict": "era_specific",
+      "reasons": [
+        "era split sign flip: pre_2010 IC=-0.0497, post_2010 IC=0.1159 (DT-R16)"
+      ],
+      "backtest": {
+        "net_sharpe": 0.6,
+        "gross_sharpe": 0.613,
+        "hold_sharpe": 0.645,
+        "cagr_net": 0.0682,
+        "cagr_gross": 0.0698,
+        "max_dd": -0.4427,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 32.7474,
+        "clock": "target_price_bars",
+        "return_bars": 8241,
+        "periods_per_year": 251.6533
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "clock_repair",
+      "id": "SF-0014",
+      "battery": "sf-battery-2-clock",
+      "n_obs": 138,
+      "hac": {
+        "mean": 0.15026,
+        "se": 0.10957,
+        "t": 1.371,
+        "p": 0.1703,
+        "n": 58,
+        "lags": 4,
+        "lags_requested": 4
+      },
+      "sampling": {
+        "clock": "target_price_bars",
+        "horizon_bars": 63,
+        "n_nonoverlap": 58,
+        "dependence_radius_rows": 4,
+        "selector": "earliest_nonoverlap",
+        "hac_lags": 4,
+        "independence_claimed": false
+      },
+      "full_ic": 0.2175,
+      "verdict": "null",
+      "reasons": [
+        "|t_HAC|=1.37 < gate 2.0 (pre-registered)"
+      ],
+      "backtest": {
+        "net_sharpe": 0.454,
+        "gross_sharpe": 0.46,
+        "hold_sharpe": 0.691,
+        "cagr_net": 0.0601,
+        "cagr_gross": 0.0611,
+        "max_dd": -0.4089,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 17.9165,
+        "clock": "target_price_bars",
+        "return_bars": 4506,
+        "periods_per_year": 251.5001
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "clock_repair",
+      "id": "SF-0020",
+      "battery": "sf-battery-2-clock",
+      "n_obs": 258,
+      "hac": {
+        "mean": -0.10982,
+        "se": 0.08475,
+        "t": -1.296,
+        "p": 0.1951,
+        "n": 108,
+        "lags": 4,
+        "lags_requested": 4
+      },
+      "sampling": {
+        "clock": "target_price_bars",
+        "horizon_bars": 63,
+        "n_nonoverlap": 108,
+        "dependence_radius_rows": 4,
+        "selector": "earliest_nonoverlap",
+        "hac_lags": 4,
+        "independence_claimed": false
+      },
+      "full_ic": -0.047,
+      "verdict": "era_specific",
+      "reasons": [
+        "era split sign flip: pre_2010 IC=0.0113, post_2010 IC=-0.1005 (DT-R16)"
+      ],
+      "backtest": {},
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "clock_repair",
+      "id": "SF-0021",
+      "battery": "sf-battery-2-clock",
+      "n_obs": 255,
+      "hac": {
+        "mean": 0.04061,
+        "se": 0.15201,
+        "t": 0.267,
+        "p": 0.7894,
+        "n": 58,
+        "lags": 4,
+        "lags_requested": 4
+      },
+      "sampling": {
+        "clock": "target_price_bars",
+        "horizon_bars": 126,
+        "n_nonoverlap": 58,
+        "dependence_radius_rows": 6,
+        "selector": "earliest_nonoverlap",
+        "hac_lags": 4,
+        "independence_claimed": false
+      },
+      "full_ic": 0.0246,
+      "verdict": "era_specific",
+      "reasons": [
+        "era split sign flip: pre_2010 IC=0.0999, post_2010 IC=-0.0573 (DT-R16)"
+      ],
+      "backtest": {
+        "net_sharpe": 0.376,
+        "gross_sharpe": 0.393,
+        "hold_sharpe": 0.637,
+        "cagr_net": 0.0444,
+        "cagr_gross": 0.0469,
+        "max_dd": -0.4403,
+        "cost_bps": 8.0,
+        "baseline": "buy_and_hold",
+        "years": 32.8296,
+        "clock": "target_price_bars",
+        "return_bars": 8265,
+        "periods_per_year": 251.7548
+      },
+      "ledger_n": 22
+    },
+    {
+      "evaluator": "clock_repair",
+      "id": "SF-0022",
+      "battery": "sf-battery-2-clock",
+      "n_obs": 258,
+      "hac": {
+        "mean": 0.20577,
+        "se": 0.21334,
+        "t": 0.965,
+        "p": 0.3348,
+        "n": 108,
+        "lags": 4,
+        "lags_requested": 4
+      },
+      "sampling": {
+        "clock": "target_price_bars",
+        "horizon_bars": 63,
+        "n_nonoverlap": 108,
+        "dependence_radius_rows": 4,
+        "selector": "earliest_nonoverlap",
+        "hac_lags": 4,
+        "independence_claimed": false
+      },
+      "full_ic": 0.0589,
+      "verdict": "era_specific",
+      "reasons": [
+        "era split sign flip: pre_2010 IC=-0.202, post_2010 IC=0.2491 (DT-R16)"
+      ],
+      "backtest": {},
+      "ledger_n": 22
+    }
+  ]
+}
