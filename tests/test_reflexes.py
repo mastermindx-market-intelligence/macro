@@ -263,6 +263,70 @@ class TestRecordFiring:
         assert (tmp_path / "data" / "reflexes" / "fresh_reflex" / "firings.jsonl").exists()
 
 
+    @pytest.mark.parametrize("key,value", [
+        ("claim_id", "caller_invented"), ("reflex", "different_reflex"),
+        ("claim_family", "claimed.alpha"), ("desk", "execution"),
+        ("is_context_only", False), ("is_context_only", None),
+        ("is_context_only", 0), ("is_context_only", "false"),
+    ])
+    def test_producer_owned_fields_cannot_be_overridden(self, tmp_path, key, value):
+        from engine.neuralweb.reflexes import record_firing, load_firings
+        import hashlib
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "synthetic-only",
+                   "trigger_type": "test", "action_taken": "NONE", key: value}
+        before = json.dumps(payload, sort_keys=True)
+        rec = record_firing("test_reflex", payload, root=tmp_path)
+        expected_id = hashlib.sha256(b"test_reflex:2026-09-28T17:30:00Z:synthetic-only").hexdigest()[:16]
+        owned = {"claim_id": expected_id, "reflex": "test_reflex",
+                 "claim_family": "reflex.test_reflex", "desk": "reflex", "is_context_only": True}
+        for field, expected in owned.items():
+            assert rec[field] == expected
+            assert type(rec[field]) is type(expected)
+        assert load_firings("test_reflex", root=tmp_path) == [rec]
+        assert json.dumps(payload, sort_keys=True) == before
+
+    def test_all_reserved_overrides_preserve_identity_and_context(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k", "extra": {"observation": 0}}
+        ordinary = record_firing("test_reflex", payload, root=tmp_path)
+        conflicting = dict(payload, claim_id="wrong", reflex="wrong", claim_family="wrong",
+                           desk="wrong", is_context_only=False)
+        repaired = record_firing("test_reflex", conflicting, root=tmp_path)
+        assert repaired == ordinary
+        assert repaired["is_context_only"] is True
+
+    def test_ordinary_payload_serialization_is_byte_preserved(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        import hashlib
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k",
+                   "scope_type": "entity", "scope_key": "SYNTHETIC", "direction": -1,
+                   "horizon_d": 5, "extra": {"zero": 0, "missing": None}}
+        expected = {"claim_id": hashlib.sha256(b"test_reflex:2026-09-28T17:30:00Z:k").hexdigest()[:16],
+                    "reflex": "test_reflex", "claim_family": "reflex.test_reflex",
+                    "desk": "reflex", "is_context_only": True, **payload}
+        expected.setdefault("asof", "2026-09-28")
+        rec = record_firing("test_reflex", payload, root=tmp_path)
+        assert rec == expected
+        path = tmp_path / "data/reflexes/test_reflex/firings.jsonl"
+        assert path.read_bytes() == (json.dumps(expected, default=str) + "\n").encode()
+
+    def test_matching_owner_metadata_is_compatible(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k", "is_context_only": True}
+        first = record_firing("test_reflex", payload, root=tmp_path)
+        second = record_firing("test_reflex", dict(first), root=tmp_path)
+        assert first == second
+
+    def test_write_failure_still_returns_canonical_metadata(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        with mock.patch("builtins.open", side_effect=OSError("synthetic write failure")):
+            rec = record_firing("test_reflex", {"ts": "2026-09-28T17:30:00Z",
+                "trigger_key": "k", "is_context_only": False, "reflex": "wrong"}, root=tmp_path)
+        assert rec["reflex"] == "test_reflex"
+        assert rec["is_context_only"] is True
+        assert "_write_error" in rec
+
+
 # ---------------------------------------------------------------------------
 # 3. load_firings: round-trip
 # ---------------------------------------------------------------------------
@@ -654,3 +718,117 @@ class TestStagingGlobs:
         assert "data/commodity" in staged_all, (
             "commodity-sentinel.yml must still stage data/commodity"
         )
+
+
+class TestRegistryRootIsolation:
+    """The existing one-entry cache must be bound to its actual registry path."""
+
+    @pytest.fixture(autouse=True)
+    def clear_registry_cache(self):
+        from engine.neuralweb import reflexes
+        reflexes.invalidate_cache()
+        yield
+        reflexes.invalidate_cache()
+
+    @staticmethod
+    def registry(root, name):
+        directory = root / "config"
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / "reflexes.yml"
+        path.write_text("reflexes:\n  " + name + ":\n    claim_family: reflex." + name + "\n")
+        return path
+
+    def test_second_root_does_not_receive_first_roots_rules(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a, b = tmp_path / "a", tmp_path / "b"
+        self.registry(a, "rule_a"); self.registry(b, "rule_b")
+        assert set(load_registry(a)) == {"rule_a"}
+        assert set(load_registry(b)) == {"rule_b"}
+        assert set(load_registry(a)) == {"rule_a"}
+
+    def test_missing_second_registry_is_not_hidden_by_cache(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a, missing = tmp_path / "a", tmp_path / "missing"
+        self.registry(a, "rule_a"); load_registry(a)
+        with pytest.raises(FileNotFoundError):
+            load_registry(missing)
+        assert set(load_registry(a)) == {"rule_a"}
+
+    def test_invalid_second_registry_is_not_hidden_by_cache(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a, b = tmp_path / "a", tmp_path / "b"
+        self.registry(a, "rule_a")
+        path = self.registry(b, "rule_b")
+        path.write_text("reflexes:\n  rule_b:\n    claim_family: not_a_reflex\n")
+        load_registry(a)
+        with pytest.raises(ValueError, match="claim_family"):
+            load_registry(b)
+        assert set(load_registry(a)) == {"rule_a"}
+
+    def test_force_refresh_still_refreshes_only_requested_root(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a, b = tmp_path / "a", tmp_path / "b"
+        self.registry(a, "rule_a"); self.registry(b, "rule_b")
+        load_registry(a)
+        assert set(load_registry(b, force=True)) == {"rule_b"}
+        assert set(load_registry(a)) == {"rule_a"}
+
+    def test_same_root_preserves_existing_explicit_refresh_contract(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a = tmp_path / "a"; self.registry(a, "old_rule")
+        load_registry(a); self.registry(a, "new_rule")
+        assert set(load_registry(a)) == {"old_rule"}
+        assert set(load_registry(a, force=True)) == {"new_rule"}
+
+    def test_invalidate_clears_cache_identity_and_data(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry, invalidate_cache
+        a = tmp_path / "a"; self.registry(a, "old_rule")
+        load_registry(a); self.registry(a, "new_rule"); invalidate_cache()
+        assert set(load_registry(a)) == {"new_rule"}
+
+    def test_relative_path_follows_current_root_not_previous_cwd(self, tmp_path, monkeypatch):
+        from engine.neuralweb.reflexes import load_registry
+        a, b = tmp_path / "a", tmp_path / "b"
+        self.registry(a, "rule_a"); self.registry(b, "rule_b")
+        monkeypatch.chdir(a); assert set(load_registry(Path("."))) == {"rule_a"}
+        monkeypatch.chdir(b); assert set(load_registry(Path("."))) == {"rule_b"}
+
+    def test_default_and_explicit_root_use_the_same_identity_rule(self, tmp_path, monkeypatch):
+        from engine.neuralweb import reflexes
+        a, b = tmp_path / "a", tmp_path / "b"
+        pa = self.registry(a, "rule_a"); self.registry(b, "rule_b")
+        resolver = reflexes._registry_path
+        monkeypatch.setattr(reflexes, "_registry_path", lambda root=None: pa if root is None else resolver(root))
+        assert set(reflexes.load_registry()) == {"rule_a"}
+        assert set(reflexes.load_registry(b)) == {"rule_b"}
+        assert set(reflexes.load_registry()) == {"rule_a"}
+
+    def test_symlink_retarget_changes_registry_identity(self, tmp_path):
+        from engine.neuralweb.reflexes import load_registry
+        a, b = tmp_path / "a", tmp_path / "b"
+        self.registry(a, "rule_a"); self.registry(b, "rule_b")
+        alias = tmp_path / "alias"; alias.symlink_to(a, target_is_directory=True)
+        assert set(load_registry(alias)) == {"rule_a"}
+        alias.unlink(); alias.symlink_to(b, target_is_directory=True)
+        assert set(load_registry(alias)) == {"rule_b"}
+
+    def test_canonical_alias_reuses_same_cache_without_extra_file_read(self, tmp_path, monkeypatch):
+        from engine.neuralweb import reflexes
+        a = tmp_path / "a"; self.registry(a, "rule_a")
+        alias = tmp_path / "alias"; alias.symlink_to(a, target_is_directory=True)
+        first = reflexes.load_registry(a)
+        with mock.patch.object(Path, "read_text", side_effect=AssertionError("unnecessary reread")):
+            assert reflexes.load_registry(alias) == first
+
+    def test_concurrent_distinct_roots_keep_their_own_rules(self, tmp_path):
+        from concurrent.futures import ThreadPoolExecutor
+        from engine.neuralweb.reflexes import load_registry
+        roots = [tmp_path / ("root_" + str(i)) for i in range(4)]
+        for i, root in enumerate(roots):
+            self.registry(root, "rule_" + str(i))
+        def read_one(i):
+            return i, set(load_registry(roots[i]))
+        schedule = [i % len(roots) for i in range(160)]
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            for i, rules in pool.map(read_one, schedule):
+                assert rules == {"rule_" + str(i)}
