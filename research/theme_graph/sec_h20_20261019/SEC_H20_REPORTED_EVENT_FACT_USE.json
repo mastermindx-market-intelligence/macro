@@ -1,0 +1,58 @@
+{
+  "schema": "company_intelligence.source_purpose_basis/v1",
+  "basis_id": "SEC-PUBLIC-H20-REPORTED-EVENT-FACT-USE",
+  "recorded_at": "2026-10-19T16:35:00.123390+00:00",
+  "reviewer": "MarketOntology A native integration 01a153d0-e457-7772-873e-053697b8f231; root 01a128b5-e26b-7b12-94b5-231bfe0b8036",
+  "evidence_kind": "published_source_reuse_policy",
+  "decision": "covered_for_described_use",
+  "rights_family": "sec_public_filing_facts",
+  "source_policy_evidence": [
+    {
+      "url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+      "section": "General Questions: Is content on sec.gov free? Do I need permission to reuse EDGAR content?",
+      "finding": "The SEC expressly includes EDGAR public filing content in content free to access and reuse.",
+      "verification": "Official page opened and read on 2026-10-19; not inferred from public accessibility."
+    },
+    {
+      "url": "https://www.sec.gov/about/privacy-information#dissemination",
+      "section": "Website Dissemination",
+      "finding": "The SEC permits copying and distribution of information on its site without separate SEC permission, with appropriate source citation; logos, artwork and trademarks have separate restrictions.",
+      "verification": "Official page opened and read on 2026-10-19."
+    }
+  ],
+  "source": {
+    "accession": "0001045810-26-000021",
+    "reporting_cik": "0001045810",
+    "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+    "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "byte_start": 258290,
+    "byte_end": 258509,
+    "span_sha256": "5eb432e03c7e95667e7356e5adc3b4c0ae8f80919d34cba5e6a33b64f85a296c"
+  },
+  "permitted_use": {
+    "purpose": "private_company_intelligence_context",
+    "audience": "company_intelligence_entitled",
+    "paid_product_display": true,
+    "fact_retention": true,
+    "source_attribution_required": true,
+    "kind": "reported_h20_demand_loss",
+    "lifecycle": "reported_event",
+    "subject": "NVIDIA",
+    "object": null,
+    "direction": null,
+    "product_scope": "H20",
+    "amount": null,
+    "economic_share": null,
+    "source_quotation": false,
+    "source_body_export": false,
+    "reviewer_text": false
+  },
+  "scope_limits": [
+    "Exact reported NVIDIA demand-loss fact only, not independently verified underlying market truth.",
+    "Conditional supplier research may use this report as an initiating observation; TSMC procurement applicability and actual transfer remain unestablished.",
+    "No financial magnitude, confidence, lag, forecast result, trade, ranking, gating, sizing, training, body or quotation export.",
+    "Occurrence fiscal period is reported; no exact occurrence instant or historical system/identity availability is inferred.",
+    "Existing SEC public-filing reuse findings are reused with attribution; no C01 grant or blanket origin allowance.",
+    "Source-only native semantic adoption; no publication, installation, served selection or live proof."
+  ]
+}

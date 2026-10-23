@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 51,
+          "n_baseline": 48,
           "n_recent": 1,
-          "reason": "recent n=1, baseline n=51 — need 5 of each",
+          "reason": "recent n=1, baseline n=48 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -121,8 +121,8 @@
         "engagement_trend": {
           "metric": "engagement_trend",
           "n_baseline": 11,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=11 — need 5 of each",
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -170,9 +170,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 10,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=10 — need 5 of each",
+          "n_baseline": 11,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -220,7 +220,7 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 56,
+          "n_baseline": 53,
           "n_recent": 5,
           "reason": "baseline median is zero — a ratio against zero engagement is undefined, not infinite",
           "value": null,
@@ -274,9 +274,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 12,
+          "n_baseline": 11,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=12 — need 5 of each",
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -372,7 +372,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-10-22T20:51:11Z",
+  "as_of": "2026-10-23T09:17:20Z",
   "halted": [],
   "metrics": [
     "approval_rate",

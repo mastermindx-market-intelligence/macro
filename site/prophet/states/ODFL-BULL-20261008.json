@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ODFL-BULL-20261008",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 71.4,
-  "raw_confidence": 73.9,
-  "delta_vs_base": 11.4,
+  "management_confidence": 60.6,
+  "raw_confidence": 48.1,
+  "delta_vs_base": 0.6,
   "recommended_action": "hold",
-  "human_state": "On Track",
+  "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 38.4,
-    "pace": 94.7,
+    "validity": 92.2,
+    "progress": 0.0,
+    "pace": 46.9,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.701,
-    "dist_to_t1_r": 0.799,
-    "dist_to_t2_r": 2.299,
-    "horizon_pct_used": 31.1,
-    "p1": 0.4672,
-    "p2": 0.2336,
+    "dist_to_stop_r": 0.941,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 33.3,
+    "p1": -0.0392,
+    "p2": -0.0196,
     "p3": null,
-    "move_r": 0.701,
+    "move_r": -0.059,
     "mfe_r": 0.701,
-    "mae_r": 0.0
+    "mae_r": -0.059
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 9.664999389648443,
-  "_mae": 0.0,
+  "_mae": -0.8100067138671818,
   "_max_p1": 0.4672467676890714,
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 15,
+  "tau": 0.3333
 }
