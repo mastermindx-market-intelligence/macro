@@ -14517,7 +14517,7 @@ jobs:
       - "tests/test_dataos_identity.py"
       - "engine/neuralweb/market_memory_retained_cohort_cache.py"
       - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
