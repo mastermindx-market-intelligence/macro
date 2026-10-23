@@ -954,9 +954,6 @@ class ProphetTradePlan:
     horizon_days: int | None = None
     min_hold_days: int | None = None
     tranche: int = 1                    # 1 or 2
-    # Optional prospective management base (0..100, not a probability).
-    # Legacy published plans omit it and retain the nightly default of 60.
-    confidence: float | None = None
     option_contract: dict | None = None  # right (C/P), strike, expiry, entry_premium
     management_ref: str = ""            # "prophet/state/<id>.json"
     authority_tier: str = AUTHORITY_DISPLAY
@@ -964,6 +961,9 @@ class ProphetTradePlan:
         "plan": "display — NW-originated; Prophet manages; LLM narrates only",
         "option_premium": "display — EOD/delayed, not NBBO-live",
     })
+    # Append-only optional management base; preserve legacy positional args.
+    # It is ordinal/display-only, not a calibrated win probability.
+    confidence: float | None = None
 
 
 def _plan_source_receipt(value: Any) -> str | None:
