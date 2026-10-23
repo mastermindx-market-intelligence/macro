@@ -16159,6 +16159,9 @@ jobs:
       - "site/neuralwebdata/theme_state.json"
       - "tests/test_oracle_ratio_lens.py"
       - "tests/test_rotation_early_context.py"
+      - "tests/test_rotation_observation_state.py"
+      - "tests/test_rotation_observation_builder.py"
+      - "scripts/build_rotation_events.py"
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_events_v2.py"
       - "tests/test_rotation_flow_pit.py"
@@ -16176,7 +16179,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_observation_state.py tests/test_rotation_observation_builder.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
 
   leadership-rotation-contract:
     if: ${{ false }}

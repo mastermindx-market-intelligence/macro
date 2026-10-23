@@ -1158,6 +1158,7 @@ def _history_invalid(
 ) -> dict:
     coverage = {
         "selected_rows": 0,
+        "excluded_observation_receipts": 0,
         "event_counts": {"created": 0, "closed": 0},
         "mode_counts": {
             "RECONSTRUCTED_REPLAY": 0,
@@ -1292,6 +1293,10 @@ def read_ledger_history(
     against the cohort surfaces, not a claim this reader makes.
     ``repeated_lifecycle_event_rows`` is not a deduplicated lifecycle count and
     the reader never deduplicates.
+
+    Valid early_observation receipts in the same owner ledger are counted
+    separately in excluded_observation_receipts; they are not confirmed created
+    or closed lifecycle events. Malformed receipts still fail closed.
     """
     import pathlib
 
@@ -1310,6 +1315,7 @@ def read_ledger_history(
     path = pathlib.Path(ledger_path)
     base_coverage = {
         "selected_rows": 0,
+        "excluded_observation_receipts": 0,
         "event_counts": {"created": 0, "closed": 0},
         "mode_counts": {
             "RECONSTRUCTED_REPLAY": 0,
@@ -1385,6 +1391,7 @@ def read_ledger_history(
         "RETAINED_LEDGER_UNMARKED": 0,
     }
     inspected = 0
+    excluded_observation_receipts = 0
     stopped_by = None
     first_uninspected_line = None
 
@@ -1416,6 +1423,17 @@ def read_ledger_history(
             )
 
         event = row.get("event")
+        if event == "early_observation":
+            try:
+                _validate_early_observation_receipt(row)
+            except (ValueError, TypeError, KeyError, OverflowError):
+                return _history_invalid(
+                    source_sha256=source_sha256, mode=mode, through=through, limit=limit,
+                    line=line_no, code="INVALID_OBSERVATION_RECEIPT",
+                    inspected_nonblank_lines=inspected)
+            # Explicitly accounted for, never counted as a confirmed lifecycle.
+            excluded_observation_receipts += 1
+            continue
         if event not in {"created", "closed"}:
             return _history_invalid(
                 source_sha256=source_sha256,
@@ -1562,6 +1580,7 @@ def read_ledger_history(
     observations = [entry["observation_date"] for entry in selected]
     ok_coverage = {
         "selected_rows": len(selected),
+        "excluded_observation_receipts": excluded_observation_receipts,
         "event_counts": event_counts,
         "mode_counts": mode_counts,
         "invalid_rows": 0,
@@ -2055,6 +2074,10 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
         if replay_created or replay_closed:
             _append_coldstart_seed(seed_p, replay_created, replay_closed, now, p)
 
+    # Retain source-observation continuity owned by this same state file.
+    # Off-lane or disabled notification builds do not advance it.
+    if "early_observations" in state:
+        new_state["early_observations"] = state["early_observations"]
     state_p.write_text(json.dumps(new_state, ensure_ascii=False, indent=1))
 
     as_of = max((e["asof"] for e in active), default=None)
@@ -2207,6 +2230,392 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
 
 
 # ------------------------------------------------------------------ coldstart seed helpers ----
+
+# ------------------------------------------------------------------ early observation receipts ----
+
+def advance_early_observation_history(previous, context, *, observed_at):
+    """Pure projection into the EXISTING rotation owner's observation history.
+
+    This is notification continuity, not a new market detector. It records the
+    registered producer's two-session measurement, never a forecast or sizing.
+    First observations seed history without notices. Equal inputs are idempotent;
+    source revisions keep explicit predecessor identity. Caller owns persistence.
+    """
+    import copy
+    import math
+    import re
+    from datetime import timedelta
+    from lib.us_cash_calendar import expected_last_session, last_session_on_or_before
+
+    if not isinstance(observed_at, datetime) or observed_at.tzinfo is None or observed_at.utcoffset() is None:
+        raise ValueError("observation clock must be timezone-aware")
+    observed_at = observed_at.astimezone(timezone.utc)
+    session = expected_last_session(observed_at)
+    if not isinstance(session, date):
+        raise ValueError("observation calendar unavailable")
+    event_date = session.isoformat()
+    previous_session = last_session_on_or_before(session - timedelta(days=1)).isoformat()
+    two_session_start = last_session_on_or_before(date.fromisoformat(previous_session) - timedelta(days=1))
+    stamp = observed_at.isoformat()
+    if previous is not None and not isinstance(previous, dict):
+        raise ValueError("invalid observation history type")
+    prior = copy.deepcopy(previous or {})
+    if prior and prior.get("schema") != "rotation_early_observation_history/v1":
+        raise ValueError("unknown observation history schema")
+    old_pairs = prior.get("pairs", {})
+    if not isinstance(old_pairs, dict) or len(old_pairs) > 64:
+        raise ValueError("invalid observation history")
+    last = prior.get("last_observed_at")
+    if last is not None:
+        try:
+            last_time = datetime.fromisoformat(last)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("invalid observation history clock") from exc
+        if last_time.tzinfo is None or last_time.utcoffset() is None:
+            raise ValueError("invalid observation history clock")
+        if observed_at < last_time:
+            return {"state": prior, "records": [], "status": "out_of_order"}
+
+    def strict_date(value):
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            return None
+        try:
+            parsed = date.fromisoformat(value)
+            return parsed if parsed.isoformat() == value else None
+        except ValueError:
+            return None
+
+    def digest(value):
+        raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    def sign(value):
+        return 1 if value > 0 else (-1 if value < 0 else 0)
+
+    symbol = re.compile(r"[A-Z0-9][A-Z0-9.^=-]{0,19}\Z")
+    ctx = context if isinstance(context, dict) else {}
+    source_date = strict_date(ctx.get("as_of"))
+    envelope_ok = (ctx.get("schema") == "rotation_early_context/v1"
+                   and ctx.get("definition_id") == "rotation_early_context/1"
+                   and ctx.get("display_only") is True
+                   and isinstance(ctx.get("pairs"), list) and len(ctx["pairs"]) <= 64)
+    # A future source is never allowed to overwrite accepted history or fabricate
+    # a current receipt. Missing/old source, unlike a future clock, can withdraw it.
+    if source_date is not None and source_date > session:
+        return {"state": prior, "records": [], "status": "future_source"}
+    candidates, aliases, pair_ids = {}, {}, {}
+    for row in ctx.get("pairs", []) if envelope_ok else []:
+        if not isinstance(row, dict) or row.get("context_group") != "defensive_sector":
+            continue
+        num, den, pair_id = row.get("num"), row.get("den"), row.get("pair_id")
+        if not all(isinstance(v, str) and symbol.fullmatch(v) for v in (num, den)) or num == den:
+            continue
+        key = num + "/" + den
+        aliases[key] = aliases.get(key, 0) + 1
+        if isinstance(pair_id, str):
+            pair_ids[pair_id] = pair_ids.get(pair_id, 0) + 1
+        if not isinstance(pair_id, str) or not pair_id.strip() or len(pair_id) > 128:
+            continue
+        hz = row.get("horizons")
+        win = hz.get("2s") if isinstance(hz, dict) else None
+        if not isinstance(win, dict):
+            continue
+        start = strict_date(win.get("start"))
+        values = [win.get(k) for k in ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")]
+        try:
+            numeric = all(type(v) in (int, float) and math.isfinite(v) for v in values)
+        except (OverflowError, ValueError):
+            numeric = False
+        if not numeric:
+            continue
+        n, d, r = map(float, values)
+        if not (n > -100 and d > -100):
+            continue
+        try:
+            ratio = ((1 + n / 100) / (1 + d / 100) - 1) * 100
+        except (ZeroDivisionError, OverflowError):
+            continue
+        if not math.isfinite(ratio) or abs(ratio - r) > 1e-6:
+            continue
+        if not (source_date == session and row.get("schema") == "ratio_lens.short_horizon.v1"
+                and row.get("eligible_2s") is True and win.get("eligible") is True
+                and type(win.get("sessions")) is int and win["sessions"] == 2
+                and row.get("requested_as_of") == event_date and row.get("value_as_of") == event_date
+                and win.get("end") == event_date and start == two_session_start):
+            continue
+        candidates[key] = {
+            "pair_id": pair_id, "num": num, "den": den, "source_as_of": event_date,
+            "values": dict(zip(("numerator_return_pct", "denominator_return_pct", "ratio_return_pct"),
+                               [0.0 if v == 0 else v for v in (n, d, r)]), sessions=2),
+            "direction": [sign(n), sign(d), sign(r)], "available": True,
+        }
+    # Duplicate aliases abstain as a group, even when just one row was invalid.
+    candidates = {k: v for k, v in candidates.items()
+                  if aliases[k] == 1 and pair_ids[v["pair_id"]] == 1}
+    keys = list(candidates) + [k for k in old_pairs if k not in candidates]
+    if len(keys) > 64:
+        raise ValueError("observation roster exceeds bound")
+    records, new_pairs = [], {}
+    for key in keys:
+        old = old_pairs.get(key)
+        if old is not None and (not isinstance(old, dict) or not isinstance(old.get("observation_id"), str)
+                                or not isinstance(old.get("fingerprint"), str)):
+            raise ValueError("invalid prior observation")
+        current = candidates.get(key)
+        if current is None:
+            if old is None:
+                continue
+            current = {"pair_id": old["pair_id"], "num": old["num"], "den": old["den"],
+                       "source_as_of": old.get("source_as_of"), "values": None,
+                       "direction": None, "available": False}
+        basis = {**current, "event_as_of": event_date}
+        fingerprint = digest(basis)
+        if old and old["fingerprint"] == fingerprint:
+            new_pairs[key] = old
+            continue
+        previous_id = old["observation_id"] if old else None
+        kind = None
+        if old:
+            if not current["available"] and old.get("available"):
+                kind = "data_withdrawal"
+            elif current["available"] and not old.get("available"):
+                kind = None  # restored evidence seeds continuity, not a claimed market turn
+            elif current["available"] and old.get("event_as_of") in (event_date, previous_session):
+                if old.get("source_as_of") == current["source_as_of"]:
+                    kind = "correction" if old.get("kind") is not None else None
+                elif old.get("direction") != current["direction"]:
+                    before, after = old.get("direction"), current["direction"]
+                    if not isinstance(before, list) or len(before) != 3:
+                        raise ValueError("invalid prior direction")
+                    kind = "reversal" if (before[2] > 0 and after[2] <= 0) or (before[0] > 0 and after[0] <= 0) else "observed_change"
+        identity = {"fingerprint": fingerprint, "previous_observation_id": previous_id}
+        obs_id = "rotobs_" + digest(identity)[:40]
+        receipt = {"event": "early_observation", "observation_id": obs_id,
+                   "previous_observation_id": previous_id, "fingerprint": fingerprint,
+                   "observed_at": stamp, "kind": kind, **basis}
+        if kind is not None:
+            receipt["notification"] = {
+                "source": "macro.rotation_observation.v1", "category": "sector_rotation_relative",
+                "authority": "notification_only", "kind": kind, "observation_id": obs_id,
+                "previous_observation_id": previous_id, "pair_id": current["pair_id"],
+                "num": current["num"], "den": current["den"], "event_as_of": event_date,
+                "source_as_of": current["source_as_of"], "observed_at": stamp,
+                "not_after": (observed_at + timedelta(hours=24)).isoformat(), "values": current["values"],
+            }
+        records.append(receipt)
+        new_pairs[key] = {**basis, "fingerprint": fingerprint, "observation_id": obs_id, "kind": kind}
+    return {"state": {"schema": "rotation_early_observation_history/v1", "last_observed_at": stamp,
+                      "pairs": new_pairs}, "records": records, "status": "observed"}
+
+
+def _validate_early_observation_receipt(row):
+    """Validate this owner's immutable receipt before recovery or delivery reads."""
+    import re
+    from datetime import timedelta
+    from lib.us_cash_calendar import expected_last_session
+
+    if not isinstance(row, dict) or row.get("event") != "early_observation":
+        raise ValueError("invalid observation receipt")
+    fields = ("pair_id", "num", "den", "source_as_of", "values", "direction", "available", "event_as_of")
+    if any(k not in row for k in fields):
+        raise ValueError("incomplete observation receipt")
+    basis = {k: row[k] for k in fields}
+    raw = json.dumps(basis, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    fingerprint = hashlib.sha256(raw.encode()).hexdigest()
+    if fingerprint != row.get("fingerprint"):
+        raise ValueError("canonical observation identity conflict")
+    previous = row.get("previous_observation_id")
+    if previous is not None and (not isinstance(previous, str) or not re.fullmatch(r"rotobs_[0-9a-f]{40}", previous)):
+        raise ValueError("invalid predecessor identity")
+    identity = json.dumps({"fingerprint": fingerprint, "previous_observation_id": previous},
+                          sort_keys=True, separators=(",", ":"))
+    if row.get("observation_id") != "rotobs_" + hashlib.sha256(identity.encode()).hexdigest()[:40]:
+        raise ValueError("canonical observation identity conflict")
+    for key in ("num", "den"):
+        if not isinstance(row[key], str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.^=-]{0,19}", row[key]):
+            raise ValueError("invalid observation instrument")
+    if row["num"] == row["den"]:
+        raise ValueError("identical observation instruments")
+    if not isinstance(row["pair_id"], str) or not row["pair_id"].strip() or len(row["pair_id"]) > 128:
+        raise ValueError("invalid observation pair identity")
+    def strict_day(value):
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            raise ValueError("invalid receipt source date")
+        return date.fromisoformat(value)
+    event_day = strict_day(row["event_as_of"])
+    source_day = strict_day(row["source_as_of"]) if row["source_as_of"] is not None else None
+    if type(row["available"]) is not bool:
+        raise ValueError("invalid observation availability")
+    if row["available"]:
+        import math
+        values, direction = row["values"], row["direction"]
+        fields = {"sessions", "numerator_return_pct", "denominator_return_pct", "ratio_return_pct"}
+        if not isinstance(values, dict) or set(values) != fields or type(values["sessions"]) is not int or values["sessions"] != 2:
+            raise ValueError("invalid receipt measurement shape")
+        nums = [values[k] for k in ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")]
+        try:
+            finite = all(type(v) in (int, float) and math.isfinite(v) for v in nums)
+        except (OverflowError, ValueError):
+            finite = False
+        if not finite or not (nums[0] > -100 and nums[1] > -100):
+            raise ValueError("invalid receipt measurement values")
+        ratio = ((1 + nums[0] / 100) / (1 + nums[1] / 100) - 1) * 100
+        if not math.isfinite(ratio) or abs(ratio - nums[2]) > 1e-6:
+            raise ValueError("invalid receipt relative wealth")
+        expected_direction = [1 if v > 0 else (-1 if v < 0 else 0) for v in nums]
+        if not isinstance(direction, list) or not all(type(v) is int for v in direction) or direction != expected_direction:
+            raise ValueError("invalid receipt measured direction")
+        if source_day != event_day:
+            raise ValueError("receipt source session mismatch")
+    elif row["values"] is not None or row["direction"] is not None or (source_day is not None and source_day > event_day):
+        raise ValueError("unavailable receipt must not carry measurements")
+    try:
+        stamp = datetime.fromisoformat(row["observed_at"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("invalid canonical observation clock") from exc
+    if stamp.tzinfo is None or stamp.utcoffset() is None:
+        raise ValueError("invalid canonical observation clock")
+    if row["event_as_of"] != expected_last_session(stamp).isoformat():
+        raise ValueError("canonical observation session mismatch")
+    kind = row.get("kind")
+    if kind not in (None, "observed_change", "reversal", "correction", "data_withdrawal"):
+        raise ValueError("invalid canonical observation kind")
+    if kind is not None and ((kind == "data_withdrawal") == row["available"]):
+        raise ValueError("receipt kind disagrees with availability")
+    if kind is None:
+        if "notification" in row:
+            raise ValueError("baseline cannot carry a notification")
+    else:
+        notice = row.get("notification")
+        expected = {"source": "macro.rotation_observation.v1", "category": "sector_rotation_relative",
+                    "authority": "notification_only", "kind": kind,
+                    "observation_id": row["observation_id"], "previous_observation_id": previous,
+                    "pair_id": row["pair_id"], "num": row["num"], "den": row["den"],
+                    "event_as_of": row["event_as_of"], "source_as_of": row["source_as_of"],
+                    "observed_at": row["observed_at"], "not_after": (stamp + timedelta(hours=24)).isoformat(),
+                    "values": row["values"]}
+        if notice != expected or previous is None:
+            raise ValueError("canonical notification content conflict")
+    return row["num"] + "/" + row["den"], basis, stamp
+
+
+def record_early_observation_history(payload, data_dir, *, observed_at):
+    """Use the EXISTING nightly state/ledger; recover append-before-checkpoint.
+
+    The established single-writer rotation lane remains mandatory. Preimage guards
+    detect observed drift but are NOT a cross-process lock. This function performs
+    no user lookup, outbox write, notification send or new scheduling.
+    """
+    import tempfile
+    from pathlib import Path
+
+    if not _ledger_lane_armed():
+        return {"status": "off_lane", "records": []}
+    if not isinstance(payload, dict):
+        raise ValueError("rotation payload unavailable")
+    root = Path(data_dir) / "rotation_events"
+    state_path, ledger_path = root / "state.json", root / "events.jsonl"
+    state_raw = state_path.read_bytes()
+    state = json.loads(state_raw)
+    if not isinstance(state, dict):
+        raise ValueError("rotation state unavailable")
+    prior = state.get("early_observations", {})
+    if not isinstance(prior, dict):
+        raise ValueError("invalid observation checkpoint type")
+    # Validate checkpoint shape/clock before considering recovery. An invalid
+    # checkpoint is not silently treated as an empty successful first run.
+    advance_early_observation_history(prior, None, observed_at=observed_at)
+    old_pairs = prior.get("pairs", {})
+    known, tips, receipt_times = {}, {}, []
+    ledger_preimage = ledger_path.stat() if ledger_path.exists() else None
+    if ledger_preimage is not None:
+        with ledger_path.open() as ledger:
+            for line in ledger:
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                if not isinstance(row, dict):
+                    raise ValueError("malformed rotation ledger row")
+                if row.get("event") != "early_observation":
+                    continue
+                pair, basis, stamp = _validate_early_observation_receipt(row)
+                identity = row["observation_id"]
+                if identity in known:
+                    if known[identity] != row:
+                        raise ValueError("conflicting canonical observation identity")
+                    continue
+                previous = tips.get(pair)
+                if row["previous_observation_id"] != (previous["observation_id"] if previous else None):
+                    raise ValueError("observation ledger contains a fork or missing predecessor")
+                if previous is not None and stamp < datetime.fromisoformat(previous["observed_at"]):
+                    raise ValueError("observation ledger clock moved backward")
+                known[identity] = row
+                tips[pair] = row
+                receipt_times.append(stamp)
+    for pair, checkpoint in old_pairs.items():
+        if not isinstance(checkpoint, dict):
+            raise ValueError("invalid prior observation")
+        receipt = known.get(checkpoint.get("observation_id"))
+        if receipt is None:
+            raise ValueError("prior observation is not backed by canonical history")
+        actual_pair, basis, _ = _validate_early_observation_receipt(receipt)
+        expected = {**basis, "fingerprint": receipt["fingerprint"],
+                    "observation_id": receipt["observation_id"], "kind": receipt["kind"]}
+        if pair != actual_pair or checkpoint != expected:
+            raise ValueError("checkpoint and canonical observation disagree")
+    # Fold the existing ledger into its checkpoint BEFORE observing new data.
+    # This prevents a crash followed by changed input from creating sibling
+    # receipts with the same predecessor or restamping the original observation.
+    recovered = dict(prior)
+    recovered_records = []
+    if tips:
+        restored_pairs = {}
+        for pair, row in tips.items():
+            _, basis, _ = _validate_early_observation_receipt(row)
+            restored_pairs[pair] = {**basis, "fingerprint": row["fingerprint"],
+                                   "observation_id": row["observation_id"], "kind": row["kind"]}
+            if old_pairs.get(pair, {}).get("observation_id") != row["observation_id"]:
+                recovered_records.append(row)
+        previous_time = datetime.fromisoformat(prior["last_observed_at"]) if prior.get("last_observed_at") else min(receipt_times)
+        recovered = {"schema": "rotation_early_observation_history/v1", "pairs": restored_pairs,
+                     "last_observed_at": max([previous_time, *receipt_times]).isoformat()}
+    plan = advance_early_observation_history(recovered, payload.get("early_context"), observed_at=observed_at)
+    if plan["status"] != "observed":
+        return plan
+    additions = plan["records"]
+    for row in additions:
+        _validate_early_observation_receipt(row)
+        if row["observation_id"] in known:
+            raise ValueError("unexpected canonical observation replay identity")
+    if state_path.read_bytes() != state_raw:
+        raise ValueError("rotation state changed before observation append")
+    actual_stat = ledger_path.stat() if ledger_path.exists() else None
+    before = None if ledger_preimage is None else (ledger_preimage.st_ino, ledger_preimage.st_size, ledger_preimage.st_mtime_ns)
+    after = None if actual_stat is None else (actual_stat.st_ino, actual_stat.st_size, actual_stat.st_mtime_ns)
+    if before != after:
+        raise ValueError("rotation ledger changed before observation append")
+    if additions:
+        with ledger_path.open("a") as out:
+            for row in additions:
+                out.write(json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+            out.flush()
+            os.fsync(out.fileno())
+    state["early_observations"] = plan["state"]
+    if state_path.read_bytes() != state_raw:
+        raise ValueError("rotation state changed after observation append; reconcile original receipts")
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", dir=root, prefix=".state-", delete=False) as out:
+            tmp = Path(out.name)
+            out.write(json.dumps(state, ensure_ascii=False, indent=1, allow_nan=False))
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(tmp, state_path)
+    finally:
+        if tmp is not None and tmp.exists():
+            tmp.unlink()
+    return {"status": "recorded", "records": [*recovered_records, *additions]}
+
 
 def _coldstart_fingerprint(sectors: dict, p: dict) -> str:
     """SHA1 fingerprint for coldstart dedup: based on the pair calendar tail
