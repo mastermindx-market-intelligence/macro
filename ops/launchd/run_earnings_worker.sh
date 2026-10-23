@@ -4,8 +4,9 @@
 # The code clone is immutable appliance code. Mutable cursor/parquet state lives
 # under its already-gitignored data/earnings_calls/ directory and is transported
 # through R2 by tools/earnings_worker/run_worker.py. Secrets are deliberately not
-# read here: the LaunchAgent invokes this through run_with_env.sh and points that
-# wrapper at the durable /Users/chriswong/hub-ops-wt/.env secret source.
+# read here: the installed LaunchAgent invokes this through run_with_env.sh and
+# points that wrapper at the explicit EARNINGS_ENV_FILE bound by the bootstrap.
+# The worker never borrows a credential file from another workload by default.
 set -euo pipefail
 
 OPS_ROOT="${EARNINGS_OPS_ROOT:-/Users/chriswong/earnings-ops-wt}"
