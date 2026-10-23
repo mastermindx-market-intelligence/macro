@@ -1,0 +1,145 @@
+{
+  "artifact_type": "authored_research_notebook_not_production_schema",
+  "title": "Energy R5B historical expectations-event case: Equinor Q4 2024",
+  "research_cutoff": "2026-09-23",
+  "operation_key": "gmi-energy-sector-research-20260923-sol-001",
+  "carrier": "macro PR #7791",
+  "authority": {
+    "native_ingestion": false,
+    "change_theme_state": false,
+    "change_baskets": false,
+    "rank": false,
+    "entry": false,
+    "size": false,
+    "trade": false,
+    "fable_handoff": false
+  },
+  "case": {
+    "issuer": "Equinor ASA",
+    "reporting_period": "2024-Q4",
+    "result_date": "2025-02-05",
+    "historical_vintage_state": "PRE_EVENT_AGGREGATE_SUPPORTED_EXACT_BYTE_AT_PUBLICATION_NOT_ARCHIVED",
+    "why": "Issuer invitation stated consensus would be published one week before the 5 Feb result; independent 29 Jan article records company-collected values from 24 analysts; current issuer archive reproduces the same core values.",
+    "confounder": "Q4 results were released with the 2025 Capital Markets Update, including strategy/capex/free-cash-flow/capital-distribution information, so event price movement cannot be attributed to earnings surprise alone."
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "kind": "issuer_invitation",
+      "date": "2025-01-13",
+      "url": "https://www.equinor.com/news/20250113-invitation-estimates-4q2024-results",
+      "used_for": "result date and issuer statement that consensus is published a week before actual release"
+    },
+    {
+      "id": "S02",
+      "kind": "independent_pre_event_news",
+      "date": "2025-01-29",
+      "time_local": "08:07",
+      "url": "https://www.finansavisen.no/tdn/2025/01/29/06430685/eqnr-justert-driftsresultat-ventes-til-usd-7.709m-i-4.kv-2024",
+      "used_for": "pre-event company-collected consensus values and 24-analyst count"
+    },
+    {
+      "id": "S03",
+      "kind": "issuer_historical_consensus_archive",
+      "date": null,
+      "url": "https://www.equinor.com/investors/consensus",
+      "archive_pdf_locator": "Equinor Historical consensus (2010-)",
+      "used_for": "Q4 2024 collected January 2025 values, EPS, method and contributor count",
+      "limitation": "current archive compilation; exact historical byte/version publication timestamp not independently archived"
+    },
+    {
+      "id": "S04",
+      "kind": "issuer_result",
+      "date": "2025-02-05",
+      "url": "https://www.equinor.com/news/equinor-fourth-quarter-and-full-year-2024-results",
+      "used_for": "actual adjusted operating income, adjusted EPS, production, result context and simultaneous CMU"
+    },
+    {
+      "id": "S05",
+      "kind": "issuer_financial_statement",
+      "date": "2025-02-05",
+      "url": "https://cdn.equinor.com/files/h61q9gi9/global/0e669ef01e45012c8392d33c792da2ba6c27a60b.pdf",
+      "used_for": "exact actual adjusted operating income after tax and adjusted net income distinction"
+    },
+    {
+      "id": "S06",
+      "kind": "exchange_research",
+      "date": "2025-04-03",
+      "url": "https://www.nasdaq.com/docs/2025/04/03/NordicDerviativesReport_Feb2025_v2.pdf",
+      "used_for": "Nasdaq-reported EQNR NO earnings-related implied move and actual earnings move",
+      "limitation": "external event-move context; not a Mastermind-reproduced return window"
+    },
+    {
+      "id": "S07",
+      "kind": "independent_result_news",
+      "date": "2025-02-05",
+      "time_local": "09:18",
+      "url": "https://www.finansavisen.no/tdn/2025/02/05/06433741/eqnr-justert-driftsresultat-usd-7.896m-i-4.kv-2024-ventet-7.709",
+      "used_for": "data-quality conflict example; article maps USD1.733bn to after-tax adjusted operating result, while issuer statements distinguish USD2.292bn adjusted operating income after tax and USD1.733bn adjusted net income",
+      "limitation": "do not promote third-party mislabeled metric over issuer definitions"
+    }
+  ],
+  "consensus": {
+    "collected_period": "2025-01",
+    "analyst_count": 24,
+    "pre_tax_adjusted_operating_income_usd_m": 7709,
+    "after_tax_adjusted_operating_income_usd_m": 2061,
+    "adjusted_eps_usd_per_share": 0.68,
+    "equity_production_mboe_per_day": 2093,
+    "pre_event_independent_timestamp_support": {
+      "pre_tax": true,
+      "after_tax": true,
+      "production": true,
+      "eps": false
+    }
+  },
+  "actual": {
+    "pre_tax_adjusted_operating_income_usd_m": 7896,
+    "after_tax_adjusted_operating_income_usd_m": 2292,
+    "adjusted_net_income_usd_m": 1733,
+    "adjusted_eps_usd_per_share": 0.63,
+    "equity_production_mboe_per_day": 2072
+  },
+  "derived_surprises_pct": {
+    "pre_tax_adjusted_operating_income": 2.4257361525489687,
+    "after_tax_adjusted_operating_income": 11.208151382823871,
+    "adjusted_eps": -7.352941176470588,
+    "equity_production": -1.0033444816053512
+  },
+  "market_context": {
+    "nasdaq_reported_earnings_related_implied_move_pct_abs": 4.5,
+    "nasdaq_reported_actual_earnings_move_pct": -4.1,
+    "return_classification": "EXTERNAL_REPORTED_EVENT_MOVE_NOT_REPRODUCED_RETURN",
+    "causal_attribution_allowed": false
+  },
+  "acceptance_cases": [
+    "Require evidence the estimate existed before the result before labelling it pre-event consensus.",
+    "A current historical archive is not by itself an exact historical-byte publication receipt.",
+    "Independent pre-event reporting can strengthen first-known evidence without becoming the canonical metric owner.",
+    "Preserve contributor count and aggregation method with every consensus observation.",
+    "Compare only definition-matched consensus and actual metrics.",
+    "Do not map adjusted net income to adjusted operating income after tax.",
+    "Do not infer the sign of a stock move from one surprise metric when other matched metrics differ.",
+    "Do not attribute event return to earnings surprise when a capital-markets update is released concurrently.",
+    "Keep issuer-reported actuals above third-party relabeling when definitions conflict.",
+    "Issuer historical archive values may be used as archival context even when exact historical byte timestamp is unknown, but the evidence grade must say so.",
+    "An exchange-reported earnings move is contextual evidence, not a Mastermind-reproduced return series.",
+    "Do not transform implied move into expected direction; implied move is magnitude.",
+    "Keep event date, estimate publication date, archive retrieval date, result date and market-return window distinct.",
+    "Do not backfill later restatements or later classifications into the pre-event information set without explicit versioning.",
+    "A historical expectations-event case does not create ranking, entry, sizing, trade or predictive authority.",
+    "Historical surprise labels remain descriptive until repeated, predeclared out-of-sample evaluation establishes decision value."
+  ],
+  "next_case_requirements": {
+    "goal": "cleaner ordinary-quarter case without simultaneous capital-markets update",
+    "candidate": "Equinor Q1 or Q2 2025, or Fortum Q2 2026 where first-known evidence can be proven",
+    "required": [
+      "pre-event first-known estimate evidence",
+      "definition-matched actual",
+      "predeclared market-return window",
+      "benchmark and commodity controls",
+      "corporate-action checks",
+      "event-confound inventory"
+    ]
+  }
+}

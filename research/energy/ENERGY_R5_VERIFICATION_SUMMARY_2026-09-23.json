@@ -1,0 +1,45 @@
+{
+  "artifact_type": "research_integrity_and_arithmetic_receipt",
+  "input_artifacts": [
+    {
+      "file": "ENERGY_R5_EXPECTATIONS_GLOBAL_MODEL_2026-09-23.json",
+      "bytes": 17893,
+      "sha256": "9c50d92be751ddca37c7342080b0a451ddf0f054d2b05273617b3a19164d449d",
+      "git_blob": "1a3798629e9bd36f257dbe1d554b566706989147"
+    },
+    {
+      "file": "ENERGY_R5_EXPECTATIONS_GLOBAL_RESEARCH_2026-09-23.md",
+      "bytes": 29265,
+      "sha256": "37f0ec2180442eda036de5ad08a30d71e6736e6dd1232b921058f04a1c15c22d",
+      "git_blob": "75300886ec37102cd4a34131c326916a5d13d07b"
+    },
+    {
+      "file": "verify_energy_r5.py",
+      "bytes": 16455,
+      "sha256": "2ada2e82f8754d2250c92d4d18dff12ce3f96dd31a8634f10fc282b48d6a3553",
+      "git_blob": "2d04cdcca7fe530a62136723b76229fefbaab6fe"
+    }
+  ],
+  "counts": {
+    "integrity": 7,
+    "source_arithmetic": 38,
+    "hypothetical_arithmetic": 14,
+    "negative_control": 16
+  },
+  "passed": 75,
+  "failed": 0,
+  "application_tests_run": 0,
+  "predictive_backtests_run": 0,
+  "full_source_link_test": false,
+  "scope_correction": "Before publication, two Orsted adjusted-debt component labels were corrected to the visually inspected note; source numbers unchanged.",
+  "claim_limit": "Selected notebook checks only; not source-truth, license, complete contract/valuation, production behavior, PIT admission or investment merit.",
+  "full_result_file": "ENERGY_R5_VERIFICATION_2026-09-23.json",
+  "full_result_sha256": "43cf30bc13e1bb66113d411ceae7484071087b91d724a9f666bff7ac11883b28",
+  "full_result_git_blob": "36d24c3cb8ea6b24923ca824cb498a42b6ad578f",
+  "reproduce_command": "python research/energy/verify_energy_r5.py",
+  "canonical_readbacks": {
+    "model_commit": "1b3140d4ba61f940bca3d637a2e5349fa70437d4",
+    "dossier_commit": "70cfdc039dc37a501db72b2a0d70ce76e06dbebc",
+    "verifier_commit": "657a3ec7b081a8726591408f99708d1e0bd7a529"
+  }
+}
