@@ -1,0 +1,136 @@
+{
+  "schema": "ror1.issued_source_alert_episode_census.v1",
+  "pin": "9b255a5377385a6b0dab23850e6a6ff67714a5f1",
+  "population": "Recorded source ledger rows only, not all exchange sessions",
+  "forecast_skill": "UNASSESSED",
+  "notification_delivery": "UNASSESSED",
+  "episode_model": "none; report only consecutive observed rows, not a new Chronicle episode",
+  "markets": {
+    "cn": {
+      "source_path": "data/risk_radar_intl/cn_forward_log.jsonl",
+      "git_blob": "facaaeb830b2e7fb4139e10a2e998408f72de44a",
+      "total_recorded": 42,
+      "source_sessions": [
+        "2026-06-26",
+        "2026-10-15"
+      ],
+      "graded_nonnull": 24,
+      "state_histogram": {
+        "caution": 12,
+        "elevated": 5,
+        "risk-off": 21,
+        "watch": 4
+      },
+      "alert_true_rows": 26,
+      "alert_fraction_recorded": 0.619048,
+      "observed_alert_runs": [
+        {
+          "first": "2026-07-10",
+          "last": "2026-07-16",
+          "records": 5
+        },
+        {
+          "first": "2026-09-03",
+          "last": "2026-09-07",
+          "records": 3
+        },
+        {
+          "first": "2026-09-09",
+          "last": "2026-10-15",
+          "records": 18
+        }
+      ],
+      "latest_period": {
+        "start": "2026-09-23",
+        "observed_rows": 9,
+        "alert_true_rows": 9
+      },
+      "caveat": "runs count contiguous ledger rows, not sessions between rows; alert=true is native model-level flag, not a delivery receipt"
+    },
+    "hk": {
+      "source_path": "data/risk_radar_intl/hk_forward_log.jsonl",
+      "git_blob": "6ce8ea457097265b5f559cdf38aa0562a128a427",
+      "total_recorded": 47,
+      "source_sessions": [
+        "2026-06-26",
+        "2026-10-15"
+      ],
+      "graded_nonnull": 29,
+      "state_histogram": {
+        "caution": 13,
+        "watch": 7,
+        "risk-off": 7,
+        "elevated": 7,
+        "calm": 13
+      },
+      "alert_true_rows": 14,
+      "alert_fraction_recorded": 0.297872,
+      "observed_alert_runs": [
+        {
+          "first": "2026-07-14",
+          "last": "2026-07-16",
+          "records": 3
+        },
+        {
+          "first": "2026-09-24",
+          "last": "2026-10-13",
+          "records": 11
+        }
+      ],
+      "latest_period": {
+        "start": "2026-09-23",
+        "observed_rows": 14,
+        "alert_true_rows": 11
+      },
+      "caveat": "runs count contiguous ledger rows, not sessions between rows; alert=true is native model-level flag, not a delivery receipt"
+    },
+    "ca": {
+      "source_path": "data/risk_radar_intl/ca_forward_log.jsonl",
+      "git_blob": "045a9b352ccc4cc35c9d9c21299771ec4926de31",
+      "total_recorded": 51,
+      "source_sessions": [
+        "2026-06-26",
+        "2026-10-08"
+      ],
+      "graded_nonnull": 37,
+      "state_histogram": {
+        "caution": 31,
+        "calm": 11,
+        "watch": 9
+      },
+      "alert_true_rows": 0,
+      "alert_fraction_recorded": 0,
+      "observed_alert_runs": [],
+      "latest_period": {
+        "start": "2026-09-23",
+        "observed_rows": 8,
+        "alert_true_rows": 0
+      },
+      "caveat": "runs count contiguous ledger rows, not sessions between rows; alert=true is native model-level flag, not a delivery receipt"
+    },
+    "us": {
+      "source_path": "data/risk_radar/forward_log.jsonl",
+      "git_blob": "67332ea3cf70841f0e8398fa8da2054587a2f029",
+      "total_recorded": 67,
+      "source_sessions": [
+        "2026-06-23",
+        "2026-10-14"
+      ],
+      "graded_nonnull": 49,
+      "state_histogram": {
+        "caution": 42,
+        "watch": 15,
+        "calm": 10
+      },
+      "alert_true_rows": 0,
+      "alert_fraction_recorded": 0,
+      "observed_alert_runs": [],
+      "latest_period": {
+        "start": "2026-09-23",
+        "observed_rows": 15,
+        "alert_true_rows": 0
+      },
+      "caveat": "runs count contiguous ledger rows, not sessions between rows; alert=true is native model-level flag, not a delivery receipt"
+    }
+  }
+}

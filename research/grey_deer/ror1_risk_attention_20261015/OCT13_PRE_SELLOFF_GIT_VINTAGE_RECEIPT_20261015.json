@@ -1,0 +1,127 @@
+{
+  "schema": "ror1.as_issued_git_vintage_checkpoint.v1",
+  "published_source_commit": "c49e4410492e8d2a0a16d00eca5edb3b45d66bc7",
+  "source_commit_parent": "a6f7b49003d1ffd7e68e07d98e068d864f6f4867",
+  "commit_time_utc": "2026-10-13T16:32:31Z",
+  "source_commit_message": "engine: asia dashboards 2026-10-13",
+  "evidence_type": "IMMUTABLE_GIT_VINTAGE_NOT_DEPLOYMENT_OR_NOTIFICATION",
+  "pinned_comparison_main": "9b255a5377385a6b0dab23850e6a6ff67714a5f1",
+  "source_files": {
+    "cn": {
+      "path": "data/risk_radar_intl/cn_forward_log.jsonl",
+      "parent_blob": "d12cb5f4d93d71b8ef986dfb17a67b73433938d7",
+      "head_blob": "71ccc7687fb3d7dcaab531f3929cbda24ac1c387",
+      "parent_source_asof": "2026-10-09",
+      "parent_source_state": "risk-off",
+      "parent_source_score": 97,
+      "parent_source_alert": true,
+      "head_source_asof": "2026-10-13",
+      "head_source_state": "risk-off",
+      "head_source_score": 98,
+      "head_source_alert": true,
+      "original_asof_record": {
+        "asof": "2026-10-13",
+        "state": "risk-off",
+        "alert": true,
+        "top_score": 98,
+        "logged_at": "2026-10-13T15:53:13+00:00",
+        "ungated_state": null,
+        "graded": false
+      },
+      "recorded_by_commit": true,
+      "recorded_to_git_lag_seconds": 2358,
+      "same_original_row_at_later_pin": true
+    },
+    "hk": {
+      "path": "data/risk_radar_intl/hk_forward_log.jsonl",
+      "parent_blob": "5bb91773e41ef9b93b30fa8613ef66a04b8fe5d5",
+      "head_blob": "55c9425c8ba1628b5af43ad002c7b913ef3389f3",
+      "parent_source_asof": "2026-10-09",
+      "parent_source_state": "elevated",
+      "parent_source_score": 88,
+      "parent_source_alert": true,
+      "head_source_asof": "2026-10-13",
+      "head_source_state": "elevated",
+      "head_source_score": 90,
+      "head_source_alert": true,
+      "original_asof_record": {
+        "asof": "2026-10-13",
+        "state": "elevated",
+        "alert": true,
+        "top_score": 90,
+        "logged_at": "2026-10-13T16:23:07+00:00",
+        "ungated_state": null,
+        "graded": false
+      },
+      "recorded_by_commit": true,
+      "recorded_to_git_lag_seconds": 564,
+      "same_original_row_at_later_pin": true
+    },
+    "us": {
+      "path": "data/risk_radar/forward_log.jsonl",
+      "parent_blob": "e113542dceab721d6ecc9de09bafd21c112bbae6",
+      "head_blob": "e113542dceab721d6ecc9de09bafd21c112bbae6",
+      "parent_source_asof": "2026-10-12",
+      "parent_source_state": "caution",
+      "parent_source_score": 70.3,
+      "parent_source_alert": false,
+      "head_source_asof": "2026-10-12",
+      "head_source_state": "caution",
+      "head_source_score": 70.3,
+      "head_source_alert": false,
+      "original_asof_record": {
+        "asof": "2026-10-12",
+        "state": "caution",
+        "alert": false,
+        "top_score": 70.3,
+        "logged_at": "2026-10-13T06:38:33+00:00",
+        "ungated_state": "risk-off",
+        "graded": false
+      },
+      "recorded_by_commit": true,
+      "recorded_to_git_lag_seconds": 35638,
+      "same_original_row_at_later_pin": true
+    },
+    "cnMarket": {
+      "path": "data/china_market_state/latest.json",
+      "parent_blob": "e10de980516c50bdbc8883926d1a51c9d712e83d",
+      "head_blob": "decb3ab41b1c57e41583989a57dc932e38f1b0b7",
+      "parent_source_asof": "2026-10-09",
+      "parent_source_state": "RISK_OFF",
+      "parent_source_score": 37,
+      "parent_source_alert": null,
+      "head_source_asof": "2026-10-13",
+      "head_source_state": "RISK_OFF",
+      "head_source_score": 34,
+      "head_source_alert": null
+    },
+    "hkMarket": {
+      "path": "data/hk_market_state/latest.json",
+      "parent_blob": "25829e04bebb011a472dcf820b8ad62d672a15a0",
+      "head_blob": "7eb8858d94a599c42bbf6899e9a31e4f1f419f21",
+      "parent_source_asof": "2026-10-09",
+      "parent_source_state": "RISK_OFF",
+      "parent_source_score": 34,
+      "parent_source_alert": null,
+      "head_source_asof": "2026-10-13",
+      "head_source_state": "RISK_OFF",
+      "head_source_score": 33,
+      "head_source_alert": null
+    }
+  },
+  "qualified_inferences": [
+    "By 2026-10-13T16:32:31Z, the canonical Macro Git tree contained China native risk-off and Hong Kong native elevated warnings plus both distinct Risk-off country Market States, with US latest Radar caution dated October 12.",
+    "The China and Hong Kong model alert states in this Git vintage were identical field-for-field to their later October 15 archived rows.",
+    "The source issue-to-Git-commit time gaps are NOT source-to-entitled-user delivery times. This is not a producer-activation or network/browser proof.",
+    "The Oct 13 state had persisted from earlier country warning observations; do not call this an independent Oct 14 forecast or identify a fresh onset."
+  ],
+  "not_proven": [
+    "actual deployed website server origin content",
+    "edge/CDN bytes and timestamps",
+    "authenticated browser visible warning",
+    "notification delivered/acknowledged",
+    "prospective drawdown skill",
+    "transmission from China/HK into U.S. names",
+    "trade sizing or risk policy"
+  ]
+}

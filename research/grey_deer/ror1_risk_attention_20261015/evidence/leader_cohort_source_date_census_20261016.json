@@ -1,0 +1,366 @@
+{
+  "authority": "offline fixed-git-object price source dates only, not native model execution or accepted risk hazard",
+  "cohort_keys": [
+    "ai_semiconductors",
+    "ai_infra",
+    "memory_storage",
+    "semicap_equipment"
+  ],
+  "expected_unique_members": 42,
+  "failures": {},
+  "last_valid_close_dates": {
+    "2026-10-14": 42
+  },
+  "macro_git_source": "4ae7f2ac4c58e6e93945a6f09313bcaadba5709e",
+  "measured_market_state_asof": "2026-10-15",
+  "members": {
+    "ACLS": {
+      "git_blob_sha1": "b8f8a3ed362cc60e1d348ca86b8d772f29a1e4ec",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 118930,
+      "source_file": "data/baskets/ohlcv/ACLS.parquet",
+      "valid_n": 3215
+    },
+    "AEIS": {
+      "git_blob_sha1": "0474b592467de6651001058879b3f5f28a5f9cda",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 158957,
+      "source_file": "data/baskets/ohlcv/AEIS.parquet",
+      "valid_n": 3215
+    },
+    "ALAB": {
+      "git_blob_sha1": "8784163ca06955a9c2b04f8d44f4d3357ac7b813",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 31279,
+      "source_file": "data/baskets/ohlcv/ALAB.parquet",
+      "valid_n": 645
+    },
+    "AMAT": {
+      "git_blob_sha1": "40057c818a0d960facfa2fc0e6b5f4269e4866bb",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 164995,
+      "source_file": "data/baskets/ohlcv/AMAT.parquet",
+      "valid_n": 3215
+    },
+    "AMD": {
+      "git_blob_sha1": "4ed9043302dc4e26f73a8d92cbf05f1c102c61e3",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 131415,
+      "source_file": "data/baskets/ohlcv/AMD.parquet",
+      "valid_n": 3215
+    },
+    "ANET": {
+      "git_blob_sha1": "cf56d954227d1e3df64dc311e332ff847818bf12",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 134406,
+      "source_file": "data/baskets/ohlcv/ANET.parquet",
+      "valid_n": 3108
+    },
+    "APH": {
+      "git_blob_sha1": "12caba03148168c3e8935fcfaec212c2ffe36ff7",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 163365,
+      "source_file": "data/baskets/ohlcv/APH.parquet",
+      "valid_n": 3215
+    },
+    "ARM": {
+      "git_blob_sha1": "e0e3a72de79439281a3000f298def9532c15e00a",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 36144,
+      "source_file": "data/baskets/ohlcv/ARM.parquet",
+      "valid_n": 774
+    },
+    "AVGO": {
+      "git_blob_sha1": "033b6d5e1eabe992166488d225ffcc0b2b9d8162",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 165871,
+      "source_file": "data/baskets/ohlcv/AVGO.parquet",
+      "valid_n": 3215
+    },
+    "CAMT": {
+      "git_blob_sha1": "b317404df169d9b710170eff8206e77f066210ac",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 151787,
+      "source_file": "data/baskets/ohlcv/CAMT.parquet",
+      "valid_n": 3215
+    },
+    "CBRS": {
+      "git_blob_sha1": "eb27d05aef84306a6cea262c59607c17fd26658e",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 8558,
+      "source_file": "data/baskets/ohlcv/CBRS.parquet",
+      "valid_n": 106
+    },
+    "CIEN": {
+      "git_blob_sha1": "748e373db325bf0fb1d5ea84360eaf16679ab162",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 124234,
+      "source_file": "data/baskets/ohlcv/CIEN.parquet",
+      "valid_n": 3215
+    },
+    "COHR": {
+      "git_blob_sha1": "280492737683bf4ca1a9e6af4f13f6f1ba445c7c",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 125481,
+      "source_file": "data/baskets/ohlcv/COHR.parquet",
+      "valid_n": 3215
+    },
+    "COHU": {
+      "git_blob_sha1": "7fa2a36c6499c8a5222c99db40b7e25c1d1f420e",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 145708,
+      "source_file": "data/baskets/ohlcv/COHU.parquet",
+      "valid_n": 3215
+    },
+    "CRDO": {
+      "git_blob_sha1": "08da6763e17fecd582c755a17b41ba2376ed8b86",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 52384,
+      "source_file": "data/baskets/ohlcv/CRDO.parquet",
+      "valid_n": 1183
+    },
+    "CRWV": {
+      "git_blob_sha1": "225ca4c82c606e925bbc14a54d937ae7339cd179",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 20500,
+      "source_file": "data/baskets/ohlcv/CRWV.parquet",
+      "valid_n": 389
+    },
+    "DELL": {
+      "git_blob_sha1": "d2f041be4656127c79e1155f62918add3cb69dc0",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 132493,
+      "source_file": "data/baskets/ohlcv/DELL.parquet",
+      "valid_n": 2554
+    },
+    "ENTG": {
+      "git_blob_sha1": "0b0573d508f72d9bdaa9a185eed25f637f9ff8ff",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 160020,
+      "source_file": "data/baskets/ohlcv/ENTG.parquet",
+      "valid_n": 3215
+    },
+    "FORM": {
+      "git_blob_sha1": "697896c49ded7a1b8e44d06036a341de4588fec6",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 115958,
+      "source_file": "data/baskets/ohlcv/FORM.parquet",
+      "valid_n": 3215
+    },
+    "GLW": {
+      "git_blob_sha1": "6db03e80eef69450369cdd7922beb8fb97f21653",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 163668,
+      "source_file": "data/baskets/ohlcv/GLW.parquet",
+      "valid_n": 3215
+    },
+    "ICHR": {
+      "git_blob_sha1": "8f2bda4310966dbaf42b96dd10e78fc4d19d6485",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 95091,
+      "source_file": "data/baskets/ohlcv/ICHR.parquet",
+      "valid_n": 2474
+    },
+    "KLAC": {
+      "git_blob_sha1": "2b500087164a1f8ddda1524a18148c9d4ceb964e",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 163722,
+      "source_file": "data/baskets/ohlcv/KLAC.parquet",
+      "valid_n": 3215
+    },
+    "KLIC": {
+      "git_blob_sha1": "c2bacce8cfa72d47ef9af33840274fbe709e5407",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 158981,
+      "source_file": "data/baskets/ohlcv/KLIC.parquet",
+      "valid_n": 3215
+    },
+    "LITE": {
+      "git_blob_sha1": "e0860dcf7f30829d41736a8057dfd54c70d44c75",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 114564,
+      "source_file": "data/baskets/ohlcv/LITE.parquet",
+      "valid_n": 2824
+    },
+    "LRCX": {
+      "git_blob_sha1": "cc803bd58a0dbb4a65e3fe6ffedd373032ddda37",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 165117,
+      "source_file": "data/baskets/ohlcv/LRCX.parquet",
+      "valid_n": 3215
+    },
+    "MKSI": {
+      "git_blob_sha1": "e946ed6bd4efe8677e41218eab5f7c9622d4a1d0",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 161422,
+      "source_file": "data/baskets/ohlcv/MKSI.parquet",
+      "valid_n": 3215
+    },
+    "MPWR": {
+      "git_blob_sha1": "032755b164f2fc48c73c1eb663c2de2c7e5642e7",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 160904,
+      "source_file": "data/baskets/ohlcv/MPWR.parquet",
+      "valid_n": 3215
+    },
+    "MRVL": {
+      "git_blob_sha1": "730a00e861fd4e9cd53dd90c09401fc938e57986",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 164121,
+      "source_file": "data/baskets/ohlcv/MRVL.parquet",
+      "valid_n": 3215
+    },
+    "MU": {
+      "git_blob_sha1": "eee69e1c4320f201435844ee1c1651d629e6a181",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 164431,
+      "source_file": "data/baskets/ohlcv/MU.parquet",
+      "valid_n": 3215
+    },
+    "NBIS": {
+      "git_blob_sha1": "5dac9ca9c766dc859e780e8c6b2a4ab75cd5413b",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 25086,
+      "source_file": "data/baskets/ohlcv/NBIS.parquet",
+      "valid_n": 497
+    },
+    "NVDA": {
+      "git_blob_sha1": "fb640faee8a611475753fbc65d76bcf411db2290",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 167225,
+      "source_file": "data/baskets/ohlcv/NVDA.parquet",
+      "valid_n": 3215
+    },
+    "NVMI": {
+      "git_blob_sha1": "d6b7298af37fb9ae074b780e338dd6e76d4971dc",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 120892,
+      "source_file": "data/baskets/ohlcv/NVMI.parquet",
+      "valid_n": 3215
+    },
+    "ONTO": {
+      "git_blob_sha1": "de2443c7ea001b35d8ad32b06ca92654f706a535",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 76181,
+      "source_file": "data/baskets/ohlcv/ONTO.parquet",
+      "valid_n": 1750
+    },
+    "QCOM": {
+      "git_blob_sha1": "60069f2bd4e2acfe57d89608072cd2327c1a9a43",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 165297,
+      "source_file": "data/baskets/ohlcv/QCOM.parquet",
+      "valid_n": 3215
+    },
+    "SMCI": {
+      "git_blob_sha1": "ffe97ce747ae56eae9a0c8dd400ea34933bfe2f3",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 122784,
+      "source_file": "data/baskets/ohlcv/SMCI.parquet",
+      "valid_n": 3215
+    },
+    "SNDK": {
+      "git_blob_sha1": "f473c2ef882c65e10a19534a3daa3729b599a467",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 21858,
+      "source_file": "data/baskets/ohlcv/SNDK.parquet",
+      "valid_n": 419
+    },
+    "STX": {
+      "git_blob_sha1": "86972e8a0182d13b338f8ee0166e15766f4a3dd1",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 163910,
+      "source_file": "data/baskets/ohlcv/STX.parquet",
+      "valid_n": 3215
+    },
+    "TER": {
+      "git_blob_sha1": "04885cff21f054837c838db1c9e5efc0e825af52",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 163138,
+      "source_file": "data/baskets/ohlcv/TER.parquet",
+      "valid_n": 3215
+    },
+    "UCTT": {
+      "git_blob_sha1": "8065ad64ee793ef9e0cbdef32ebaf5f181143242",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 120205,
+      "source_file": "data/baskets/ohlcv/UCTT.parquet",
+      "valid_n": 3215
+    },
+    "VECO": {
+      "git_blob_sha1": "102081c72cbb12522810449d6b6a93e94d3aee0a",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 110201,
+      "source_file": "data/baskets/ohlcv/VECO.parquet",
+      "valid_n": 3215
+    },
+    "VRT": {
+      "git_blob_sha1": "10774d660fcf230654f52adce6e9a03c7bda0596",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 99380,
+      "source_file": "data/baskets/ohlcv/VRT.parquet",
+      "valid_n": 2061
+    },
+    "WDC": {
+      "git_blob_sha1": "d057e79148a1202bf769127baeeaa92328894881",
+      "last_index": "2026-10-14",
+      "last_valid_close_session": "2026-10-14",
+      "source_bytes": 165694,
+      "source_file": "data/baskets/ohlcv/WDC.parquet",
+      "valid_n": 3215
+    }
+  },
+  "membership_git_blob": "42149e59b72987f8510df149322c41b266aa6f92",
+  "read_success": 42,
+  "schema": "ror1.leadership_cohort_source_vintage_census.v1",
+  "source_artifact_asof": "2026-10-14",
+  "spy": {
+    "git_blob_sha1": "1cc69757d6b13e03c0b5e9a641a92408ee18a7d7",
+    "last_index": "2026-10-15",
+    "last_valid_close_session": "2026-10-15",
+    "source_bytes": 244617,
+    "source_file": "data/yahoo/SPY.parquet",
+    "valid_n": 8486
+  }
+}
