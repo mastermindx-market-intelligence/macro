@@ -77,5 +77,75 @@
     "All prior held facts, original refusal and unknown-effect custody remain.",
     "October 22 native evidence retains its original execution date; this is a separate October 23 artifact correction."
   ],
-  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated."
+  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated.",
+  "subsequent_qualifications": [
+    {
+      "observed_date": "2026-10-23",
+      "scope": "Distinct afc native artifact literal-asset closure; old 7f artifact and correction remain unchanged.",
+      "source_identity": {
+        "head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+        "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e"
+      },
+      "native_report_sha256": "5ab5945c557f0effeff7480a4f262cd7c8ba6472fba016ba107704d9c0539cd8",
+      "artifact_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+      "artifact_bytes": 728494,
+      "site_files": 30,
+      "literal_asset_references": 27,
+      "fonts": 6,
+      "css_files": 11,
+      "nonpage_files_matching_current_index": 29,
+      "missing_assets": [],
+      "literal_receipt_path": ".cdi-proof/integration-20261022/w4-afc-literal-asset-closure-20261023.json",
+      "literal_receipt_sha256": "6ba02d76581c382d35586ea765a869336c5e7a5dfcb267bd4715e0060b8abc73",
+      "theme_js": {
+        "bytes": 275110,
+        "sha256": "25617108b24d273d63f5be0c7b5516f316a34d2201a54e0ac3012bf2fdf1da46"
+      },
+      "mm_brain_js": {
+        "bytes": 290712,
+        "sha256": "e7dce73797a01db5d115eaef6c19e24fa866b0f95206f7d36444252cc2c1511c"
+      },
+      "acceptance": {
+        "literal_assets": true,
+        "current_market_page": false,
+        "browser": false,
+        "release": false
+      },
+      "browser_result": {
+        "at": "2026-10-23T06:36:50.758380+00:00",
+        "selected_browser": "Chrome extension id0",
+        "tab_id": "1065717964",
+        "url": "http://127.0.0.1:53861/bonds.html",
+        "outcome": "TECHNICAL_ROUTE_FAILURE",
+        "browser_error": "net::ERR_SOCKET_NOT_CONNECTED",
+        "platform_safety_refusal_observed": false,
+        "candidate_screenshot_or_interaction_proven": false,
+        "alternate_host_browser_tunnel_file_url_or_publication_attempted": false,
+        "studio_http_status": 200,
+        "studio_http_page_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "receipt_sha256": "df2b93a31368461eea720a1f78c167a7e09278e0636a47ec0fc433415fbfd84d",
+        "owned_preview_closed_at_utc": "2026-10-23T06:36:51.191032Z",
+        "closure_receipt_sha256": "e61cd92f6d615ec84fba26d7f303e2f6bfd4c82c778c046963ac5e26e1cbd282",
+        "error_tab_closed": true,
+        "visual_acceptance": false
+      }
+    }
+  ],
+  "upstream_page_source_binding": {
+    "pid": 75578,
+    "completed_at_utc": "2026-10-23T07:16:26.802939Z",
+    "original_upstream_sha256": "0df12cb81abf9e112a84997953d31c5dadd127241f626075c1e7ea46fc4b2450",
+    "page_sha256": "77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065",
+    "page_bytes": 254664,
+    "changes": [
+      "Canonical existing native/index CSS reference ebe31e14->a29822ca",
+      "Matching current template/native Lens handler; existing shared theme remains renderer/activation/dismissal owner"
+    ],
+    "market_copy_and_data_unchanged": true,
+    "old_upstream_and_native_candidates_preserved": true,
+    "qualification_passed": 2,
+    "qualification_seconds": 2.06,
+    "qualification_completed_at_utc": "2026-10-23T07:16:30.220464Z",
+    "qualification_log_sha256": "62abdf0d57d6f0ab2c46d9343d7a93fb2c04b4f4e7172710c218150663775672"
+  }
 }

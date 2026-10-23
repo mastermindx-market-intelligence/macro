@@ -1,3 +1,22 @@
+## Current integration status — 23 October 2026, 07:16 UTC
+
+See the [current master-plan checkpoint](MASTERPLAN.md#owner-integration-checkpoint--23-october-2026) for exact inputs, hashes and continuation; all older entries below remain historical.
+
+| Boundary | Actual status |
+| --- | --- |
+| Fixed7f source composition | Committed as `3f79c79b92ee0c4c788caf9e8ffe60601b6615d1`; normal afc merge being finalized through existing #9590. |
+| Sponsor-date repair |142 unique tests across separate133-pass and11-pass phases with two overlapping tests; original RED/setup errors preserved. |
+| afc native qualification |14/14, no guard denial, original inputs/source unchanged; report SHA256 `5ab5945c557f0effeff7480a4f262cd7c8ba6472fba016ba107704d9c0539cd8`. |
+| Literal assets |30files/27refs/6fonts/11CSS;29nonpage assets equal index; none missing. |
+| Upstream CI ownership/packing |Three W4 dependency paths added; one measured Prophet ceiling5628→5634; both earlier failing curation checks passed at07:09:53. All suites and other limits retained. |
+| Committed-page source binding |Two existing page contracts passed at07:16:30,2.06s, after exact CSS and matching Lens handler binding. Market copy/data unchanged; page SHA256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`. |
+| Current-input/native feature page |HOLD: retained SPY endsOctober21, so the new feature candidate predates the preservedOctober22 market page. No invented freshness/history. |
+| Genuine browser/interaction |HOLD: selected Chrome failed the private route with `net::ERR_SOCKET_NOT_CONNECTED`; no capture; owned preview closed. R11 owning duration receipt absent and admission gate retained. |
+| Final composed head, contract and hostedCI |Record exact commit and consumed results in the existing canonical owner checkpoint; local source phases are not hostedCI or release acceptance. |
+| Review/release |Draft/HOLD; no new render, migration, provider/review replay or deployment workaround. |
+
+---
+
 ## Owner update — 23 October 2026, 05:57 UTC
 
 [Theme binding evidence](evidence/theme_asset_binding_20261023.json) records the root-verified diagnosis and artifact-only correction. The original finished `theme.js` was the pinned raw template admitted by the fixed input manifest as a site asset. Canonical `lib.site_assets.emit_theme_js` with pinned `rjsmin==1.2.5` produced exactly the existing 271,335-byte index asset, SHA-256 `a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6`, with no remaining Supabase/brain placeholders. PID10615 completed at 05:57:36.555074 UTC: the existing optimizer changed exactly one `theme.js?v=4403e51f` to `theme.js?v=a46f6677`. Corrected HTML remains 727,897 bytes, SHA-256 `77ce3a305172dae6f034694db38e9f0785320b01b326c40863841a54e354f54f`. All 28 nonpage assets now match the fixed merged index; the page is still unresolved. The original 29-file artifact remains bytewise preserved. No producer/CDI/native or CSS/JS externalization rerun, browser, review or release proof follows.

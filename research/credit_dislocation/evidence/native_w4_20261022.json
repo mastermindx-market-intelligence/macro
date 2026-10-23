@@ -175,5 +175,131 @@
   },
   "documentation_reconciled_date": "2026-10-23",
   "later_artifact_correction": "theme_asset_binding_20261023.json; original final_artifact identity above remains preserved historical evidence.",
-  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated."
+  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated.",
+  "subsequent_qualifications": [
+    {
+      "observed_date": "2026-10-23",
+      "scope": "Distinct afc retained-input qualification; preserves all earlier reports and artifacts",
+      "source_identity": {
+        "head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+        "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+        "remote_head": "cf9ac2b2c03f3f4f7be429f87483c1281ba784ba"
+      },
+      "input_image": {
+        "files": 562,
+        "bytes": 58466498,
+        "immutable_afc_inputs": 537,
+        "retained_original_holdings_and_sample": 6,
+        "site_assets": 19,
+        "changed_data_files_from_prior_image": 232,
+        "manifest_path": ".cdi-proof/integration-20261022/w4-afc-fixed-input-manifest-20261023.json",
+        "sha256": "bcd08969106d6c0ad2f6296393c955a28f2fc2905f0e3404be8f7d6b3fae31c3"
+      },
+      "execution": {
+        "pid": 1188,
+        "started_at_utc": "2026-10-23T06:23:11.925143Z",
+        "completed_at_utc": "2026-10-23T06:23:47.030682Z",
+        "exit_code": 0,
+        "report_path": ".cdi-proof/w4-afc-retained-native-20261023/qualification_result.json",
+        "report_sha256": "5ab5945c557f0effeff7480a4f262cd7c8ba6472fba016ba107704d9c0539cd8",
+        "wrapper_receipt_sha256": "02c6a8226ea74ac0ff2b16b8abd91d5f70b7d6f65b4330c00e6f8df48758f7c0",
+        "native_checks_true": 14,
+        "native_checks_total": 14,
+        "guard_denials": [],
+        "original_private_inputs_and_source_unchanged": true,
+        "actual_clocks": true,
+        "validation_overall": "PASS",
+        "cdi_asof": "2026-10-23",
+        "holdings_source_date": "2026-10-15",
+        "cdi_age_sessions": 6,
+        "canonical_bond_rows": 10376,
+        "mapped_one_date_history_rows": 311,
+        "eligible_five_or_twenty_one_session_history": 0,
+        "hyg_sample": "absent, explicitly reported, nongating",
+        "observer_copy_correction": "Only class-selector predicate corrected to actual #bonds-source-dialog ID selector; original observer and all older reports preserved"
+      },
+      "artifact": {
+        "bytes": 728494,
+        "sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "site_files": 30,
+        "literal_asset_references": 27,
+        "fonts": 6,
+        "total_css": 11,
+        "nonpage_files_matching_current_index": 29,
+        "literal_asset_receipt_sha256": "6ba02d76581c382d35586ea765a869336c5e7a5dfcb267bd4715e0060b8abc73",
+        "missing_assets": []
+      },
+      "current_market_acceptance": {
+        "accepted": false,
+        "reason": "Candidate remains October21/MOVE96, while afc page is October22/MOVE107. engine.inputs bounds the feature frame at SPY's last valid close.",
+        "spy_commits_checked": [
+          "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+          "3b5058cf10a6791d5e8097e514af0c8ff15b9b59"
+        ],
+        "spy_path": "data/yahoo/SPY.parquet",
+        "spy_blob": "c84b37ba34104ec453806983b859d01dd9f6c51c",
+        "spy_sha256": "90ca58537e5b5afe3981d34e83e4ac3246397eb91e715bb39c22088ba0c3222d",
+        "last_valid_close_date": "2026-10-21",
+        "production_source_route": "Existing closing-bell price-store freshness prefetch can heal Yahoo ephemerally, then commit site and provisional snapshot pointers without those price files. No replacement dates or prices were supplied.",
+        "global_input_absence_claim": false
+      },
+      "browser_restart_recovery": {
+        "at": "2026-10-23T06:36:50.758380+00:00",
+        "selected_browser": "Chrome extension id0",
+        "tab_id": "1065717964",
+        "url": "http://127.0.0.1:53861/bonds.html",
+        "outcome": "TECHNICAL_ROUTE_FAILURE",
+        "browser_error": "net::ERR_SOCKET_NOT_CONNECTED",
+        "platform_safety_refusal_observed": false,
+        "candidate_screenshot_or_interaction_proven": false,
+        "alternate_host_browser_tunnel_file_url_or_publication_attempted": false,
+        "studio_http_status": 200,
+        "studio_http_page_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "receipt_sha256": "df2b93a31368461eea720a1f78c167a7e09278e0636a47ec0fc433415fbfd84d",
+        "owned_preview_closed_at_utc": "2026-10-23T06:36:51.191032Z",
+        "closure_receipt_sha256": "e61cd92f6d615ec84fba26d7f303e2f6bfd4c82c778c046963ac5e26e1cbd282",
+        "error_tab_closed": true,
+        "visual_acceptance": false
+      }
+    }
+  ],
+  "source_integration_followup_20261023": {
+    "local_head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+    "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+    "prior_curation": {
+      "pid": 51330,
+      "passed": 2,
+      "failed": 2,
+      "receipt_sha256": "8f97cfaea40fa00d5e370bd7893174519b6c9aa200e2416e0c4e45eb65cb560a"
+    },
+    "corrected_curation_and_page": {
+      "pid": 48525,
+      "passed": 3,
+      "failed": 1,
+      "completed_at_utc": "2026-10-23T07:09:53.313725Z",
+      "log_sha256": "a46459d37f0b1f13dfe7e478378edb9d920d3d74c4a05bd62b83a24774c1db43",
+      "remaining_failure": "Canonical current-template stylesheet a29822ca absent from preserved upstream page.",
+      "both_curation_checks_passed": true
+    },
+    "page_binding": {
+      "pid": 75578,
+      "completed_at_utc": "2026-10-23T07:16:26.802939Z",
+      "original_upstream_sha256": "0df12cb81abf9e112a84997953d31c5dadd127241f626075c1e7ea46fc4b2450",
+      "page_sha256": "77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065",
+      "page_bytes": 254664,
+      "changes": [
+        "Canonical existing native/index CSS reference ebe31e14->a29822ca",
+        "Matching current template/native Lens handler; existing shared theme remains renderer/activation/dismissal owner"
+      ],
+      "market_copy_and_data_unchanged": true,
+      "old_upstream_and_native_candidates_preserved": true,
+      "qualification_passed": 2,
+      "qualification_seconds": 2.06,
+      "qualification_completed_at_utc": "2026-10-23T07:16:30.220464Z",
+      "qualification_log_sha256": "62abdf0d57d6f0ab2c46d9343d7a93fb2c04b4f4e7172710c218150663775672"
+    },
+    "final_committed_head_or_hosted_ci_proven": false,
+    "current_feature_or_browser_or_release_accepted": false,
+    "current_checkpoint": "https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277"
+  }
 }

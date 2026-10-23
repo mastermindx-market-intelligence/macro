@@ -1,3 +1,17 @@
+## Existing-owner continuation — 23 October 2026, 07:16 UTC
+
+The [current master-plan checkpoint](MASTERPLAN.md#owner-integration-checkpoint--23-october-2026) records the full afc source composition, three qualification phases, asset binding and release limits. Historical instructions below remain point-in-time records.
+
+The fixed7f merge is committed as `3f79c79b92ee0c4c788caf9e8ffe60601b6615d1`; the normal afc merge is now source-qualified for the bounded changes. PID48525 passed the two repaired CI curation checks and page content contract, with one stylesheet failure. PID75578 then passed both page contracts in2.06s after canonical CSS/Lens-handler binding. The preserved October22 market copy/data is unchanged; final page SHA256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`. All prior candidates and exact upstream bytes remain retained.
+
+1. Commit the explicit owned documentation/CI/page changes with the existing normal merge index; run `scripts/check_contract_delta.py --base afcedb87dd6c6ccaccf53ed14261c69d9333a89e` on the exact committed head with `CONTRACT_DELTA_NO_REAP=1`. Record the resulting head and contract receipt in [the existing owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277).
+2. Push normally to existing #9590 branch `claude/ssd-ccw-dislocation-v1-cc87720e59421398`; preserve Draft/HOLD and consume its ordinary exact-head CI. No force push, arm or merge.
+3. Current-feature publication still needs a qualified current SPY input and genuinely bound browser evidence. The retained native candidate isOctober21; the newer upstream market page isOctober22. Bulk `--heal` is not an isolated SPY-only proof operation. Preserve source clocks and basis; no guessed date/history or vendor substitution.
+4. Browser restart recovery served the exact private candidate on Studio but Chrome returned `net::ERR_SOCKET_NOT_CONNECTED`; the owned preview/tab were closed. Do not retry that unchanged route or evade the earlier browser-admission denials. R11 requires its genuine current duration capture and owning receipt.
+5. Preserve all separate incumbent reviews and final release gates, accepted Forex inactiveCRUD, immutable Macro#9996/render39688064251, once-applied0038, original Terminal#1106 Fabric/HOLD and deployment refusal. Licensing is Chairman-COMPLETE; no support/Tiingo outreach.
+
+---
+
 ## Owner update — 23 October 2026, 05:57 UTC
 
 [Theme binding evidence](evidence/theme_asset_binding_20261023.json) records the root-verified diagnosis and artifact-only correction. The original finished `theme.js` was the pinned raw template admitted by the fixed input manifest as a site asset. Canonical `lib.site_assets.emit_theme_js` with pinned `rjsmin==1.2.5` produced exactly the existing 271,335-byte index asset, SHA-256 `a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6`, with no remaining Supabase/brain placeholders. PID10615 completed at 05:57:36.555074 UTC: the existing optimizer changed exactly one `theme.js?v=4403e51f` to `theme.js?v=a46f6677`. Corrected HTML remains 727,897 bytes, SHA-256 `77ce3a305172dae6f034694db38e9f0785320b01b326c40863841a54e354f54f`. All 28 nonpage assets now match the fixed merged index; the page is still unresolved. The original 29-file artifact remains bytewise preserved. No producer/CDI/native or CSS/JS externalization rerun, browser, review or release proof follows.
