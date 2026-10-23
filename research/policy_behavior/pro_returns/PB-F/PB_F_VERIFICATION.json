@@ -1,0 +1,2583 @@
+{
+  "schema": "mastermind.pb_f_verification.v1",
+  "scope": "Bounded independent audit; no rebuilt studies or production tests.",
+  "PB_A_B": {
+    "review_receipt": {
+      "schema": "pb_f_bounded_a_b_review_receipt.v1",
+      "status": "COMPLETE_FOR_PARENT_ADJUDICATION",
+      "scope": "PB-A/PB-B frozen returns only; no GitHub mutation, no external dispatch, no source branch edits.",
+      "source_identity": {
+        "PB_A": {
+          "pr": 8568,
+          "head": "a60c620b2761db74070929068c969aac8c2cee57",
+          "protocol_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+          "protocol_declared_freeze_utc": "2026-10-07T02:50:36Z",
+          "protocol_commit_utc": "2026-10-07T02:51:15Z",
+          "decision_coding_frozen_utc": "2026-10-07T03:05:11Z",
+          "forecast_commit": "8799d065178b7637bc91a0e69696df8b9ef763f6",
+          "forecast_commit_utc": "2026-10-07T03:07:17Z",
+          "analysis_commit": "a447d120ed9528ae0639b195ec4bc290ef7fd78b",
+          "analysis_commit_utc": "2026-10-07T03:24:25Z",
+          "final_commit_utc": "2026-10-07T03:26:37Z",
+          "source_clock_counts": {
+            "minute_headlines": 17,
+            "date_only_headlines": 7,
+            "intraday_cuts": 15,
+            "next_local_midnight_cuts": 9
+          }
+        },
+        "PB_B": {
+          "pr": 8573,
+          "head": "1604552006b7a91ed5d0fa89c785a983478866ea",
+          "casebook_created_at_utc": "2026-10-07T03:09:16Z",
+          "first_snapshot_cut_utc": "2024-07-31T03:55:59Z",
+          "last_snapshot_cut_utc": "2026-09-18T02:53:59Z",
+          "prospective_forecasts": 0,
+          "forecast_objects": 45,
+          "abstentions": 45,
+          "unique_boj_targets": 10
+        },
+        "commission_head": "7abc3dc596c5a6463effb37422bf9bd34bbdf1ba",
+        "original_parent_research_head": "ee86db2c832c73a36837c1240df871700340d6da"
+      },
+      "clock_spotchecks": [
+        {
+          "source": "BOJ_2026_04",
+          "release_utc": "2026-04-28T03:04:00Z",
+          "precision": "minute",
+          "notes": "Official PDF states 12:04 JST; majority held 0.75%, three members proposed 1.0%.",
+          "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260428a.pdf",
+          "web_ref": "turn4view6"
+        },
+        {
+          "source": "TREASURY_2026_08_READOUT",
+          "meeting_date": "2026-08-30",
+          "packet_public_by_utc": "2026-09-01T16:18:00Z",
+          "notes": "Primary page verifies meeting and policy preferences; actual initial posting time not independently certified.",
+          "url": "https://home.treasury.gov/news/press-releases/sb0619",
+          "web_ref": "turn4view3"
+        },
+        {
+          "source": "RX_2026_09_PRIVATE",
+          "packet_original_header_utc": "2026-09-17T23:04:00Z",
+          "packet_latest_edition_date": "2026-09-18",
+          "notes": "Search retrieval gives original timestamp seconds 23:04:49, but minute normalization is adequate. Later body unavailable at earlier cuts; author excludes it from all decision inputs. Direct open returned Internal Error; stronger search retrieved material account.",
+          "url": "https://www.reuters.com/world/asia-pacific/how-bessent-americas-bond-salesman-cornered-japan-big-spending-2026-09-17/",
+          "web_ref": "turn5search0"
+        },
+        {
+          "source": "MOF_2026_08_STATEMENT",
+          "document_date": "2026-08-03",
+          "operation_date": "2026-07-31 U.S. Eastern",
+          "notes": "Full primary page now opened by reviewer, whereas packet had indexed-only access. Confirms joint action; FIMA wording is prospective.",
+          "url": "https://www.mof.go.jp/english/public_relations/statement/others/20260803073000.html",
+          "web_ref": "turn20view0"
+        }
+      ],
+      "checks_executed": [
+        "23 selected local source files checked against exact Git blob identities, with connector-added terminal newline corrected only after a matching expected blob was demonstrated.",
+        "Five PB-A design/forecast files compared through immutable GitHub directory metadata at forecast and final heads; identities match.",
+        "Recreated all 25 PB-A forecast payload rows with the original pure predictor and checked exact equality plus four input hashes and freeze digest.",
+        "Independently recomputed own and matched correct counts at 1m/3m/6m from supplied labels; no discrepancies.",
+        "Traversed decision_time source_ids for every PB-A row; no references outside each row's admitted source set.",
+        "PB-A original 15 synthetic self-checks passed.",
+        "PB-B original validator and four adversarial mutation checks passed; 45 actual null/abstaining forecasts counted; policy-target clusters reproduced.",
+        "Decisive primary-source spot-checks of BOJ domestic normalization, April dissents, MOF joint action and Q2 unilateral action, NY Fed Q1/Q2 accounts, Fed FIMA rule and H41, and selected PB-A instrument/stage examples."
+      ],
+      "not_tested": [
+        "Full PB-A 34-file reproduction or independent reconstruction of every FRED endpoint; outcome labels were supplied inputs for the arithmetic audit.",
+        "Every original news/data edition or all 89 PB-B source records.",
+        "Any new causal estimator, forecast model, market panel, live integration or production path."
+      ],
+      "material_findings": [
+        {
+          "id": "AB-F01",
+          "severity": "MATERIAL_INTERPRETATION",
+          "claim_ids": [
+            "B03",
+            "B04"
+          ],
+          "location": "PB_B_CONSTRAINT_ASSESSMENT.md:14–15 and strongest-external-constraint section",
+          "reproduction": "Read the affirmative influenced-access/moderate-causal-confidence judgment, then compare the explicit missing accepted terms, pre-May BOJ plan and otherwise-refused assistance counterfactual.",
+          "consequence": "Conditionality is credible reporting and a plausible mechanism; actual changed feasible set or rate timing is not demonstrated.",
+          "smallest_repair": "PB-G should use reported conditionality/plausible assisted-option leverage, with incremental timing unresolved."
+        },
+        {
+          "id": "AB-F02",
+          "severity": "MATERIAL_INTEGRATION_RISK",
+          "claim_ids": [
+            "B16"
+          ],
+          "location": "PB_B_CONSTRAINT_ASSESSMENT.md:76–85",
+          "reproduction": "Compare overall H1≈H2 ranking with endpoint-specific leaders. No common outcome scale or endpoint weights are defined.",
+          "consequence": "An overall order can silently become a causal-confidence score despite incompatible endpoints and nonexclusive hypotheses.",
+          "smallest_repair": "Carry endpoint-specific hypotheses and qualifiers; omit aggregate causal ranking from machine consumers."
+        }
+      ],
+      "no_new_mechanical_defect_found": "No material numerical or admitted-source-reference defect was found in the bounded checks. Interpretive downgrades do not invalidate the documented observations.",
+      "handoff_boundary": "Parent adjudicates final dispositions and publication. Native helper is bounded research support, not Executive lifecycle dispatch."
+    },
+    "checks": {
+      "scope": "Reproduces frozen forecasts and recomputes reported accuracy arithmetic against supplied outcome labels; checks chronology, source admission and structural guards. Does not establish historical outcome blindness, exhaustive primary-source accuracy, a causal coefficient, or prospective validation.",
+      "PB_A": {
+        "primary_n": 24,
+        "challenge_n": 1,
+        "forecast_reproduced_from_decision_inputs_only": true,
+        "all_four_input_hashes_match_freeze": true,
+        "forecasts_content_digest_matches": true,
+        "summary": {
+          "primary_episodes": 24,
+          "separate_adversarial_challenge_episodes": 1,
+          "selection_tags_primary": {
+            "rhetoric_action_alignment": 17,
+            "rhetoric_action_divergence_or_tension": 10,
+            "intent_unresolved": 24,
+            "strong_institutional_explanation": 24
+          },
+          "first_public_clock_primary": {
+            "MINUTE": 17,
+            "DATE_ONLY": 7
+          },
+          "cut_policy_primary": {
+            "INTRADAY_DOCUMENTARY_BOUND": 15,
+            "NEXT_LOCAL_MIDNIGHT_DATE_BOUND": 9
+          },
+          "registered_source_records": 84,
+          "unique_url_documents": 84,
+          "source_families": [
+            "FDIC",
+            "FEDERAL_RESERVE_SYSTEM",
+            "US_TREASURY"
+          ],
+          "admitted_source_records_primary": 56
+        },
+        "metrics": {
+          "1": {
+            "own": {
+              "M0": {
+                "n": 9,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 8,
+                  "UP": 1
+                },
+                "correct": {
+                  "M0": 5
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 4,
+                  "UP": 1
+                },
+                "correct": {
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M2": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 10,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "M2": 6
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "C0": {
+                "n": 24,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20191011_RESERVE_MANAGEMENT",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_20200323_FACILITIES_AND_PURCHASES",
+                  "US_FED_TREASURY_20200409_FACILITIES",
+                  "FED_20200827_AIT_STRATEGY",
+                  "US_TREASURY_20201119_FACILITY_EXPIRY_LETTER",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_TREASURY_2023_03_12_BTFP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "US_TREASURY_20230503_BUYBACK_PLAN",
+                  "US_TREASURY_20230802_COUPON_INCREASES",
+                  "US_TREASURY_20231101_SLOWER_LONG_COUPON_INCREASES",
+                  "US_TREASURY_20240131_COUPON_PLATEAU_GUIDANCE",
+                  "FED_2024_05_01_QT_TAPER",
+                  "US_TREASURY_20240501_BUYBACK_LAUNCH_PLAN",
+                  "US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS"
+                ],
+                "truth_counts": {
+                  "HOLD": 20,
+                  "DOWN": 2,
+                  "UP": 2
+                },
+                "correct": {
+                  "C0": 20
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 4,
+                  "2020_PANDEMIC": 6,
+                  "2021_2022_INFLATION": 5,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 9
+                }
+              },
+              "C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 10,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "C1": 5
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              }
+            },
+            "matched": {
+              "M0__M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 4,
+                  "UP": 1
+                },
+                "correct": {
+                  "M0": 1,
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M0__M2": {
+                "n": 8,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 8
+                },
+                "correct": {
+                  "M0": 4,
+                  "M2": 4
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C0": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 10,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "M2": 6,
+                  "C0": 10
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 10,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "M2": 6,
+                  "C1": 5
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M0__M1__M2": {
+                "n": 4,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 4
+                },
+                "correct": {
+                  "M0": 0,
+                  "M1": 0,
+                  "M2": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 2,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              }
+            },
+            "challenge": {
+              "n": 1,
+              "episode_ids": [
+                "CHALLENGE_FED_2023_06_14_PAUSE"
+              ],
+              "truth_counts": {
+                "HOLD": 1
+              },
+              "correct": {
+                "M0": 0,
+                "M1": 0,
+                "M2": 1,
+                "C0": 1,
+                "C1": 1
+              },
+              "regime_counts": {
+                "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+              }
+            }
+          },
+          "3": {
+            "own": {
+              "M0": {
+                "n": 9,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 5,
+                  "UP": 4
+                },
+                "correct": {
+                  "M0": 8
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 4
+                },
+                "correct": {
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M2": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 6,
+                  "DOWN": 2,
+                  "UP": 3
+                },
+                "correct": {
+                  "M2": 10
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "C0": {
+                "n": 24,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20191011_RESERVE_MANAGEMENT",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_20200323_FACILITIES_AND_PURCHASES",
+                  "US_FED_TREASURY_20200409_FACILITIES",
+                  "FED_20200827_AIT_STRATEGY",
+                  "US_TREASURY_20201119_FACILITY_EXPIRY_LETTER",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_TREASURY_2023_03_12_BTFP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "US_TREASURY_20230503_BUYBACK_PLAN",
+                  "US_TREASURY_20230802_COUPON_INCREASES",
+                  "US_TREASURY_20231101_SLOWER_LONG_COUPON_INCREASES",
+                  "US_TREASURY_20240131_COUPON_PLATEAU_GUIDANCE",
+                  "FED_2024_05_01_QT_TAPER",
+                  "US_TREASURY_20240501_BUYBACK_LAUNCH_PLAN",
+                  "US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS"
+                ],
+                "truth_counts": {
+                  "HOLD": 15,
+                  "DOWN": 3,
+                  "UP": 6
+                },
+                "correct": {
+                  "C0": 15
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 4,
+                  "2020_PANDEMIC": 6,
+                  "2021_2022_INFLATION": 5,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 9
+                }
+              },
+              "C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 6,
+                  "DOWN": 2,
+                  "UP": 3
+                },
+                "correct": {
+                  "C1": 9
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              }
+            },
+            "matched": {
+              "M0__M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 4
+                },
+                "correct": {
+                  "M0": 4,
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M0__M2": {
+                "n": 8,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 5,
+                  "UP": 3
+                },
+                "correct": {
+                  "M0": 7,
+                  "M2": 7
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C0": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 6,
+                  "DOWN": 2,
+                  "UP": 3
+                },
+                "correct": {
+                  "M2": 10,
+                  "C0": 6
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 6,
+                  "DOWN": 2,
+                  "UP": 3
+                },
+                "correct": {
+                  "M2": 10,
+                  "C1": 9
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M0__M1__M2": {
+                "n": 4,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 3
+                },
+                "correct": {
+                  "M0": 3,
+                  "M1": 0,
+                  "M2": 3
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 2,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              }
+            },
+            "challenge": {
+              "n": 1,
+              "episode_ids": [
+                "CHALLENGE_FED_2023_06_14_PAUSE"
+              ],
+              "truth_counts": {
+                "UP": 1
+              },
+              "correct": {
+                "M0": 1,
+                "M1": 0,
+                "M2": 0,
+                "C0": 0,
+                "C1": 0
+              },
+              "regime_counts": {
+                "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+              }
+            }
+          },
+          "6": {
+            "own": {
+              "M0": {
+                "n": 9,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "UP": 5,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "M0": 6
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 4
+                },
+                "correct": {
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M2": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "DOWN": 3,
+                  "UP": 5
+                },
+                "correct": {
+                  "M2": 7
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "C0": {
+                "n": 24,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20191011_RESERVE_MANAGEMENT",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_20200323_FACILITIES_AND_PURCHASES",
+                  "US_FED_TREASURY_20200409_FACILITIES",
+                  "FED_20200827_AIT_STRATEGY",
+                  "US_TREASURY_20201119_FACILITY_EXPIRY_LETTER",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_TREASURY_2023_03_12_BTFP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "US_TREASURY_20230503_BUYBACK_PLAN",
+                  "US_TREASURY_20230802_COUPON_INCREASES",
+                  "US_TREASURY_20231101_SLOWER_LONG_COUPON_INCREASES",
+                  "US_TREASURY_20240131_COUPON_PLATEAU_GUIDANCE",
+                  "FED_2024_05_01_QT_TAPER",
+                  "US_TREASURY_20240501_BUYBACK_LAUNCH_PLAN",
+                  "US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS"
+                ],
+                "truth_counts": {
+                  "HOLD": 10,
+                  "DOWN": 6,
+                  "UP": 8
+                },
+                "correct": {
+                  "C0": 10
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 4,
+                  "2020_PANDEMIC": 6,
+                  "2021_2022_INFLATION": 5,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 9
+                }
+              },
+              "C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "DOWN": 3,
+                  "UP": 5
+                },
+                "correct": {
+                  "C1": 6
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              }
+            },
+            "matched": {
+              "M0__M1": {
+                "n": 5,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2022_08_26_JACKSON_HOLE",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 4
+                },
+                "correct": {
+                  "M0": 4,
+                  "M1": 0
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              },
+              "M0__M2": {
+                "n": 8,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "UP": 4,
+                  "DOWN": 1
+                },
+                "correct": {
+                  "M0": 5,
+                  "M2": 5
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 2,
+                  "2020_PANDEMIC": 1,
+                  "2021_2022_INFLATION": 3,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C0": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "DOWN": 3,
+                  "UP": 5
+                },
+                "correct": {
+                  "M2": 7,
+                  "C0": 3
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M2__C1": {
+                "n": 11,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_20190130_FOMC",
+                  "FED_20190731_FOMC",
+                  "FED_20200303_EMERGENCY_CUT",
+                  "FED_20200315_EMERGENCY_EASING",
+                  "FED_2021_11_03_TAPER",
+                  "FED_2021_12_15_ACCELERATED_TAPER",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE",
+                  "FED_2024_05_01_QT_TAPER"
+                ],
+                "truth_counts": {
+                  "HOLD": 3,
+                  "DOWN": 3,
+                  "UP": 5
+                },
+                "correct": {
+                  "M2": 7,
+                  "C1": 6
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 3,
+                  "2020_PANDEMIC": 2,
+                  "2021_2022_INFLATION": 4,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 2
+                }
+              },
+              "M0__M1__M2": {
+                "n": 4,
+                "episode_ids": [
+                  "FED_20181219_FOMC",
+                  "FED_2022_03_16_LIFTOFF",
+                  "FED_2022_06_15_75BP",
+                  "FED_2023_03_22_BANK_STRESS_HIKE"
+                ],
+                "truth_counts": {
+                  "HOLD": 1,
+                  "UP": 3
+                },
+                "correct": {
+                  "M0": 3,
+                  "M1": 0,
+                  "M2": 3
+                },
+                "regime_counts": {
+                  "2018_2019_NORMALIZATION": 1,
+                  "2021_2022_INFLATION": 2,
+                  "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+                }
+              }
+            },
+            "challenge": {
+              "n": 1,
+              "episode_ids": [
+                "CHALLENGE_FED_2023_06_14_PAUSE"
+              ],
+              "truth_counts": {
+                "UP": 1
+              },
+              "correct": {
+                "M0": 1,
+                "M1": 0,
+                "M2": 0,
+                "C0": 0,
+                "C1": 0
+              },
+              "regime_counts": {
+                "2023_2024_RESTRICTIVE_LIQUIDITY": 1
+              }
+            }
+          }
+        },
+        "shared_M0_M2_sign_disagreements": 0,
+        "M1_covered_rhetoric_counts": {
+          "UP": 5
+        },
+        "M2_C1_disagreement_episodes": [
+          "FED_20200315_EMERGENCY_EASING"
+        ],
+        "first_vs_net_target_disagreements": 0,
+        "nonadmitted_source_refs_in_decision_time": []
+      },
+      "PB_B": {
+        "validator_errors": [],
+        "author_adversarial_mutations": {
+          "future_fact": true,
+          "invented_retrospective_probability": true,
+          "planned_size_promoted_to_execution": true,
+          "facility_proposal_promoted_to_execution": true
+        },
+        "counts": {
+          "episodes": 15,
+          "pit_input_snapshots": 15,
+          "locked_forecasts": 0,
+          "accuracy_comparison_eligible": 0,
+          "unique_boj_target_decisions": 10,
+          "sources": 89,
+          "descriptive_event_windows": 13
+        },
+        "actual_forecast_objects": 45,
+        "abstentions": 45,
+        "forecast_values_present": 0,
+        "source_families": {
+          "statistics_bureau_cpi": 3,
+          "mhlw_monthly_labour": 5,
+          "cabinet_office_gdp": 3,
+          "rengo_wage_agreements": 4,
+          "boj_policy": 24,
+          "reuters_rx_2024_07_pre": 1,
+          "reuters_rx_2024_07_post": 1,
+          "reuters_rx_2025_01_pre": 1,
+          "reuters_rx_2025_01_post": 1,
+          "reuters_rx_2025_05_post": 1,
+          "reuters_rx_2025_07_pre": 1,
+          "reuters_rx_2025_08_pressure": 1,
+          "reuters_rx_2025_08_jgb": 1,
+          "mufg_research": 1,
+          "reuters_rx_2025_10_pre": 1,
+          "reuters_rx_2025_10_pressure": 1,
+          "reuters_rx_2025_10_post": 1,
+          "reuters_rx_2025_12_pre": 1,
+          "reuters_rx_2025_12_post": 1,
+          "reuters_rx_2026_01_check": 1,
+          "reuters_rx_2026_01_fx": 1,
+          "reuters_rx_2026_01_hurdle": 1,
+          "nikkei_january_ratecheck": 1,
+          "reuters_rx_2026_04_action": 1,
+          "reuters_rx_2026_04_warning": 1,
+          "reuters_rx_2026_08_joint": 1,
+          "reuters_rx_2026_08_origin": 1,
+          "reuters_rx_2026_08_fima_first": 1,
+          "reuters_rx_2026_08_fima_repeat": 1,
+          "reuters_rx_2026_08_support": 1,
+          "reuters_rx_2026_08_pricing": 1,
+          "reuters_rx_2026_08_letter": 1,
+          "reuters_rx_2026_08_31": 1,
+          "reuters_rx_2026_09_readout": 1,
+          "reuters_rx_2026_09_bonds": 1,
+          "reuters_rx_2026_09_private": 1,
+          "reuters_rx_2026_09_market": 1,
+          "us_treasury_fx": 1,
+          "us_japan_joint_fx": 1,
+          "us_treasury_bilateral": 1,
+          "japan_mof_fx": 5,
+          "nyfed_fx_operations": 3,
+          "fed_fima_rules": 2,
+          "fed_balance_sheet": 3,
+          "reuters_rx_2026_04_poll": 1,
+          "reuters_rx_2026_04_boj": 1
+        },
+        "target_cluster_sizes": {
+          "BOJ_2024_07": 1,
+          "BOJ_2025_01": 1,
+          "BOJ_2025_05": 1,
+          "BOJ_2025_06": 1,
+          "BOJ_2025_09": 3,
+          "BOJ_2025_10": 1,
+          "BOJ_2025_12": 1,
+          "BOJ_2026_03": 1,
+          "BOJ_2026_06": 1,
+          "BOJ_2026_09": 4
+        },
+        "private_reconstruction_in_any_decision_input": false,
+        "later_domestic_inputs": [
+          {
+            "episode_id": "PB-B-14",
+            "cut": "2026-09-02T00:00:00Z",
+            "input_ids": [
+              "BOJ_2026_07",
+              "CPI_2026_07",
+              "GDP_2026_Q2_1",
+              "RX_2026_08_31",
+              "RX_2026_08_PRICING",
+              "TREASURY_2026_08_READOUT",
+              "WAGES_2026_06_R"
+            ]
+          },
+          {
+            "episode_id": "PB-B-15",
+            "cut": "2026-09-18T02:53:59Z",
+            "input_ids": [
+              "BOJ_2026_07",
+              "CPI_2026_08",
+              "GDP_2026_Q2_2",
+              "OUTLOOK_2026_07",
+              "RX_2026_08_31",
+              "TREASURY_2026_08_READOUT",
+              "WAGES_2026_07_P"
+            ]
+          }
+        ],
+        "operational_reconciliation": {
+          "january_2026": {
+            "japan_amount_in_mof_dec29_jan28_period_jpy_billion": 0,
+            "us_q1_intervention": false,
+            "source_ids": [
+              "MOF_2026_01",
+              "NYFED_2026_Q1"
+            ],
+            "rate_check_is_intervention": false
+          },
+          "q2_2026": {
+            "japan_daily_jpy_billion": {
+              "2026-04-30": 6278.7,
+              "2026-05-04": 780.2,
+              "2026-05-06": 4675.9
+            },
+            "japan_official_total_jpy_billion": 11734.9,
+            "sum_rounded_daily_jpy_billion": 11734.8,
+            "rounding_difference_jpy_billion": 0.1,
+            "us_intervention": false,
+            "daily_amounts_first_public_date": "2026-08-07",
+            "source_ids": [
+              "MOF_2026_Q2",
+              "NYFED_2026_Q2"
+            ]
+          },
+          "july_2026": {
+            "joint_operation_date": "2026-07-31",
+            "execution_date_timezone": "U.S. Eastern, indexed MOF primary; full access unavailable",
+            "us_executed_amount_usd_equivalent": null,
+            "japan_july31_amount_jpy": null,
+            "japan_reporting_period": [
+              "2026-07-30",
+              "2026-08-26"
+            ],
+            "japan_reporting_period_total_jpy_billion": 15399.3,
+            "us_asset_sold": "Euros, attributed Reuters reporting; later reported ESF letter supports foreign-currency assets",
+            "us_asset_bought": "JPY",
+            "source_ids": [
+              "RX_2026_08_JOINT",
+              "MOF_2026_08_STATEMENT",
+              "MOF_2026_08",
+              "RX_2026_08_LETTER"
+            ],
+            "photographed_5_to_10_billion_note_is_execution_receipt": false
+          },
+          "fima": {
+            "verified_enlargement": null,
+            "verified_japan_draw_exact_usd": null,
+            "reported_foreign_official_asset_repo_usd_million": {
+              "week_ending_2026-07-29": {
+                "daily_average": 0,
+                "wednesday": 0
+              },
+              "week_ending_2026-08-05": {
+                "daily_average": 0,
+                "wednesday": 0
+              },
+              "week_ending_2026-08-12": {
+                "daily_average": 0,
+                "wednesday": 0
+              }
+            },
+            "rounding_unit": "USD million",
+            "baseline_counterparty_limit_usd_billion": 60,
+            "limit_basis": "total outstanding at any given time; not per day",
+            "delegated_limit_change_authority": "FOMC Foreign Currency Subcommittee, keeping FOMC informed",
+            "directive_role": "as-of mechanism audit; publication clock not sufficient for certified earlier input",
+            "source_ids": [
+              "H41_2026_07_30",
+              "H41_2026_08_06",
+              "H41_2026_08_13",
+              "FOMC_2026_DIRECTIVE",
+              "FIMA_FAQ"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "PB_C": {
+    "independent_reproduction": {
+      "scope": "PB-F independent helper offline rerun; original frozen inputs and code, all 23 cases at 10000 draws; no market-data downloads; numerical reproduction only",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "numpy": "2.3.5",
+      "commands": [
+        {
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "reproduce_pilot.py",
+            "--directory",
+            ".",
+            "--simulations",
+            "10000"
+          ],
+          "returncode": 0,
+          "stdout": "{\n  \"counts\": {\n    \"unique_root_events\": 94,\n    \"issuers_represented\": 36,\n    \"primary_species_mutually_exclusive\": {\n      \"CAPEX_CAPACITY\": 11,\n      \"EARNINGS_CALENDAR\": 37,\n      \"STRATEGIC_PARTNERSHIP\": 16,\n      \"AI_COMMITMENT\": 6,\n      \"ADVERSE_LEGAL_ACTION\": 2,\n      \"ACQUISITION\": 2,\n      \"SAFETY_RECALL\": 1,\n      \"ADVERSE_PROCUREMENT_DECISION\": 1,\n      \"BUYBACK\": 2,\n      \"ATTENTION_MARKETING\": 2,\n      \"DIVESTITURE\": 3,\n      \"ADVERSE_EXPORT_RESTRICTION\": 2,\n      \"UNRESOLVED_STRATEGIC_COMMITMENT\": 1,\n      \"REGULATORY_APPROVAL\": 1,\n      \"SUBSIDY_FLOOR_OFFTAKE\": 1,\n      \"FINANCING\": 3,\n      \"OFFICIAL_GOVERNMENT_AGREEMENT\": 1,\n      \"GOVERNMENT_CONTRACT\": 1,\n      \"BUSINESS_EXIT\": 1\n    },\n    \"scheduling\": {\n      \"UNKNOWN\": 58,\n      \"SCHEDULED\": 36\n    },\n    \"direction_content_only\": {\n      \"MIXED\": 55,\n      \"POSITIVE\": 27,\n      \"NEGATIVE\": 8,\n      \"ATTENTION\": 2,\n      \"UNKNOWN\": 2\n    },\n    \"sampling_arm\": {\n      \"material_event_pilot\": 54,\n      \"calendar_audit\": 36,\n      \"calendar_comparator\": 1,\n      \"negative_window_census\": 3\n    },\n    \"first_results_audit_members\": 36,\n    \"source_urls\": 108,\n    \"earliest_public_certified\": 0,\n    \"exact_source_clock\": 6\n  },\n  \"cases\": 23,\n  \"checks\": {\n    \"unique_roots\": 94,\n    \"source_open_flags_checked\": true,\n    \"calendar_2025_sessions\": 250,\n    \"lag_invariants_checked\": true,\n    \"semantic_source_truth_proved_by_these_checks\": false\n  }\n}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "reproduce_descriptive_audit.py"
+          ],
+          "returncode": 0,
+          "stdout": "{\n  \"material_timing_eligible_roots\": 52,\n  \"broad_timing_eligible_roots\": 46,\n  \"broad_distinct_issuers\": 25,\n  \"negative_exposed_roots\": {\n    \"nominal2y_prior5\": [\n      \"PBC-TECH-NVDA-H20-EXPORT-20250415\",\n      \"PBC-TECH-AMD-MI308-EXPORT-20250416\",\n      \"PBC-TECH-GOOG-ADTECH-RULING-20250417\"\n    ],\n    \"nominal2y_prior10\": [\n      \"PBC-TECH-NVDA-H20-EXPORT-20250415\",\n      \"PBC-TECH-AMD-MI308-EXPORT-20250416\",\n      \"PBC-TECH-GOOG-ADTECH-RULING-20250417\"\n    ],\n    \"real10y_prior5\": [\n      \"PBC-TECH-NVDA-H20-EXPORT-20250415\",\n      \"PBC-TECH-AMD-MI308-EXPORT-20250416\",\n      \"PBC-TECH-GOOG-ADTECH-RULING-20250417\"\n    ],\n    \"real10y_prior10\": [\n      \"PBC-TECH-NVDA-H20-EXPORT-20250415\",\n      \"PBC-TECH-AMD-MI308-EXPORT-20250416\",\n      \"PBC-TECH-GOOG-ADTECH-RULING-20250417\"\n    ]\n  }\n}\n",
+          "stderr": ""
+        }
+      ],
+      "outputs": [
+        {
+          "file": "PB_C_ANALYSIS_RESULTS.json",
+          "byte_identical": true,
+          "source_sha256": "ac336dda9fea2fce4b0291835c97b2276beba730e87a72d7b2b4c35d3aefea07",
+          "reproduced_sha256": "ac336dda9fea2fce4b0291835c97b2276beba730e87a72d7b2b4c35d3aefea07"
+        },
+        {
+          "file": "PB_C_DESCRIPTIVE_AUDIT.json",
+          "byte_identical": true,
+          "source_sha256": "4db210311a902a43e8151006a2c0b202e7f24c498ddabb201edda6f6547628d3",
+          "reproduced_sha256": "4db210311a902a43e8151006a2c0b202e7f24c498ddabb201edda6f6547628d3"
+        }
+      ]
+    },
+    "input_integrity": [
+      {
+        "path": "GITHUB_PUBLICATION_RECEIPT.json",
+        "canonical_git_sha_verified": "556fe9f552964ca04e9d24847f9406d2af949859",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PACKAGE_SHA256.json",
+        "canonical_git_sha_verified": "c4b121d27518eda259953fcc66e779492247e0f5",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_ACCEPTANCE_CHECKLIST.md",
+        "canonical_git_sha_verified": "1f00a20ba75ff9a408ef6cda1341a5934fbc8a65",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_ANALYSIS_RESULTS.json",
+        "canonical_git_sha_verified": "8fef417b93921ffb262441988b6a7bcbbdaddb0a",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_ANNOUNCEMENT_STUDY_PREREG.md",
+        "canonical_git_sha_verified": "d0b4dd5da49684f13bed8e96feaed434d958df15",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_CLAIM_EVIDENCE_LEDGER.json",
+        "canonical_git_sha_verified": "16247bb9f69f9fe20e6bc4a00b1c3c04ed2f9523",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_DESCRIPTIVE_AUDIT.json",
+        "canonical_git_sha_verified": "5cde9b3a749ba37a93f38cb34e70cc6b14c60b7a",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_EVENT_INDEX.md",
+        "canonical_git_sha_verified": "8c8ca7fed77e87d2bf63d70061c72f9d6395a906",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_EVENT_PANEL.json",
+        "canonical_git_sha_verified": "da862967ff7aace0b059ed84f9632ff6f6efc58f",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_EXECUTION_CHECKPOINT.md",
+        "canonical_git_sha_verified": "1ebaeafcdde3a8621803e64d2c9651c7c696bd29",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_INTERNAL_CODE_REVIEW.md",
+        "canonical_git_sha_verified": "5613d8d7048a19a9572dfcb6dc9a9d1d447c4b23",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_METHODS_AND_DATA_REVIEW.md",
+        "canonical_git_sha_verified": "645cdf8c72883a370a9782e738c378dbe6ea3f20",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_NEGATIVE_WINDOW_AUDIT.json",
+        "canonical_git_sha_verified": "d817b968a1485ec786e45740174041fe7f8c4705",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_NULL_TESTS.md",
+        "canonical_git_sha_verified": "7c5e1531343d697d82aaf790827e6551fe846a0c",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_NUMERICAL_INTERPRETATION_REVIEW.md",
+        "canonical_git_sha_verified": "13707a137cda30d40acaa643c7f541cc1cd9581c",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_PANEL_FREEZE.md",
+        "canonical_git_sha_verified": "eb9d4ad32cdab534c89e2e89e549b21bd28e0314",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_PROSPECTIVE_ACCEPTANCE_CONTRACT.md",
+        "canonical_git_sha_verified": "9b007c088ee644154c6d484cb4a0ba1710bf7863",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_PROTOCOL_AMENDMENTS.md",
+        "canonical_git_sha_verified": "c7bd15400a2f401dd8ab2cab92051400b3ce99e8",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_PUBLICATION_CORRECTIONS.md",
+        "canonical_git_sha_verified": "5628abc1afdf2852fcce2a15eb841a7db758c689",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_REPRODUCTION_RECEIPT.json",
+        "canonical_git_sha_verified": "6b5b5921a313c1ee2bd2f2a278e56015bef2a67b",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_RESULTS.md",
+        "canonical_git_sha_verified": "30fb8e889de8087e91a6821013e33d566cc361a8",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_ROOT_AND_PROGRAM_REVIEW.md",
+        "canonical_git_sha_verified": "fd92d3ee28d4a9c9ff45ccf7e9a9ac37a8a231be",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_ROOT_RESOLUTION.json",
+        "canonical_git_sha_verified": "4eff4b0c2cfdced646ebf6217d6f99b2f6bb52a5",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_SOURCE_AND_COVERAGE_MANIFEST.json",
+        "canonical_git_sha_verified": "2ac226d6d59f4b36fb1dcfe1666f66de99ab8d09",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_C_STRESS_WINDOWS.json",
+        "canonical_git_sha_verified": "a342cc9bf799c922cec62a2fe31eaecdacd1602d",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "PB_G_HANDOFF.md",
+        "canonical_git_sha_verified": "a9b1ee977c4809be492d3237686b01a703a7b54d",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "README.md",
+        "canonical_git_sha_verified": "5f3fe94cda4b4d21f9f2b8dfeb9f011aba2a9bdf",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "derive_treasury_stress.py",
+        "canonical_git_sha_verified": "6e4fe23409f65eb78b6f1b5343304d44aeaa794a",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "nyse_calendar_2025.csv",
+        "canonical_git_sha_verified": "638a8647a9abe8fe321f1baece090aca84b774ca",
+        "retrieval_normalization": "one_terminal_LF_removed_and_CRLF"
+      },
+      {
+        "path": "package_stress_windows.py",
+        "canonical_git_sha_verified": "17dde28bae94e86e3e40a28a7fd39ce9a68cd53a",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "rates_sensitivity_stress_calendar.json",
+        "canonical_git_sha_verified": "a3b9a745a42937d2a0c3c27a7dddc5290ab91500",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "reproduce_descriptive_audit.py",
+        "canonical_git_sha_verified": "e42fe211c882960f30a7a6c2ae8d2ba56dfdbd02",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "reproduce_pilot.py",
+        "canonical_git_sha_verified": "e9201c4eea8b790ab2dc848a6ee2d4b8d12b6cb0",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "requirements.txt",
+        "canonical_git_sha_verified": "d59d856f1cc6c05962ca6bd4f14dd3315acd207c",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "treasury_derivation_checks.json",
+        "canonical_git_sha_verified": "2f5e599a1fbba2f91ce85c2eda9ade8342f7f8b7",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "treasury_stress_manifest.json",
+        "canonical_git_sha_verified": "6d6aa53fc80aa0da5c22945122ae961d5feb64ab",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "treasury_stress_spec.json",
+        "canonical_git_sha_verified": "b98ae1dbdeb6a013e4559b6091c74e64f7b20fc1",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      },
+      {
+        "path": "verify_package.py",
+        "canonical_git_sha_verified": "032b85efba14e4d2bc5f12bce95902c5995691ec",
+        "retrieval_normalization": "one_terminal_LF_removed"
+      }
+    ]
+  },
+  "PB_D": {
+    "record_audit": {
+      "scope": "COMMITTED_RECORD_AND_AGGREGATE_ARITHMETIC_ONLY_NOT_RAW_PARQUET_REPRODUCTION",
+      "return_commit": "df2091915159dab94f316718caa9b2662098eae4",
+      "record_input_blob": "fd5cf89c99e68c0188d2f82f6f409be5d92c8847",
+      "manifest_checks": [
+        {
+          "path": "PB_D_ACCEPTANCE.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_EVENT_QUALITY_LABEL_SPEC.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_PB_G_HANDOFF.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_PINNED_SOURCES.json",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_POWER_AND_LIMITATIONS.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_PROSPECTIVE_PREREG.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_REPRODUCTION.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_REPRODUCTION_RESULTS.json",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "PB_D_SOURCE_AUDIT.json",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "README.md",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "audit_archived_sources.py",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "fetch_inputs.py",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "reproduce_pb_d.py",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        },
+        {
+          "path": "requirements.txt",
+          "sha256_ok": true,
+          "git_blob_ok": true,
+          "bytes_ok": true
+        }
+      ],
+      "checks": [
+        {
+          "id": "news_h5_spy",
+          "observed": [
+            10,
+            11
+          ],
+          "expected": [
+            10,
+            11
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_h5_absolute",
+          "observed": [
+            8,
+            11
+          ],
+          "expected": [
+            8,
+            11
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_first_qualifying_spy",
+          "observed": [
+            6,
+            7
+          ],
+          "expected": [
+            6,
+            7
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_first_qualifying_absolute",
+          "observed": [
+            4,
+            7
+          ],
+          "expected": [
+            4,
+            7
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "multi_h5_spy",
+          "observed": [
+            10,
+            12
+          ],
+          "expected": [
+            10,
+            12
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "multi_first_t2_spy",
+          "observed": [
+            5,
+            5
+          ],
+          "expected": [
+            5,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "multi_first_t2_sector",
+          "observed": [
+            5,
+            5
+          ],
+          "expected": [
+            5,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "multi_first_t2_absolute",
+          "observed": [
+            4,
+            5
+          ],
+          "expected": [
+            4,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "positive_date_gaps",
+          "observed": [
+            7,
+            7
+          ],
+          "expected": [
+            7,
+            7
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "equal_date_gap_pp",
+          "observed": 4.187942921385718,
+          "expected": 4.1879429,
+          "tolerance": 1e-07,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-08-21",
+          "observed": 0.0497599202,
+          "expected": 0.04975992020532338,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-03",
+          "observed": 0.02115563655,
+          "expected": 0.02115563654395486,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-04",
+          "observed": 0.0361590045,
+          "expected": 0.03615900448132592,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-08",
+          "observed": 0.022918737449999997,
+          "expected": 0.022918737430306313,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-09",
+          "observed": 0.025299037200000003,
+          "expected": 0.02529903716038706,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-10",
+          "observed": 0.02106500173333333,
+          "expected": 0.021065001744993223,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "treated_date_mean_2026-09-14",
+          "observed": 0.0344049099,
+          "expected": 0.034404909857465915,
+          "tolerance": 1e-09,
+          "pass": true
+        },
+        {
+          "id": "actual_first_t2_bins",
+          "observed": [
+            118,
+            20,
+            5
+          ],
+          "expected": [
+            118,
+            20,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "first_any_then_t2_bins",
+          "observed": [
+            89,
+            17,
+            5
+          ],
+          "expected": [
+            89,
+            17,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "strict_date_sector_entry_support",
+          "observed": 2,
+          "expected": 2,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "ADM_PRIM_rows",
+          "observed": 9,
+          "expected": 9,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "five_unique_multi_issuers",
+          "observed": 5,
+          "expected": 5,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "remaining_without_ADM_PRIM",
+          "observed": [
+            3,
+            3
+          ],
+          "expected": [
+            3,
+            3
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_multi_shared_rows",
+          "observed": 7,
+          "expected": 7,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_multi_first_t2_shared_rows",
+          "observed": 3,
+          "expected": 3,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "h10_multi_spy",
+          "observed": [
+            4,
+            11
+          ],
+          "expected": [
+            4,
+            11
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "h10_multi_no_intc_mean_pp",
+          "observed": -2.419642185,
+          "expected": -2.4196,
+          "tolerance": 5e-05,
+          "pass": true
+        },
+        {
+          "id": "h21_multi_observed",
+          "observed": 1,
+          "expected": 1,
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "news_paired_horizons",
+          "observed": [
+            10,
+            9,
+            5
+          ],
+          "expected": [
+            10,
+            9,
+            5
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "multi_paired_horizons",
+          "observed": [
+            11,
+            9,
+            4
+          ],
+          "expected": [
+            11,
+            9,
+            4
+          ],
+          "tolerance": 0,
+          "pass": true
+        },
+        {
+          "id": "fixed_rule_iid_fisher_arithmetic",
+          "observed": 0.012812964292236374,
+          "expected": 0.012812964292236375,
+          "tolerance": 1e-14,
+          "pass": true
+        },
+        {
+          "id": "selection_order_counterexample",
+          "observed": [
+            1,
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ],
+          "tolerance": 0,
+          "pass": true
+        }
+      ],
+      "headline_news": {
+        "n": 11,
+        "issuers": 7,
+        "dates": 7,
+        "ret": {
+          "wins": 8,
+          "mean": 0.030819660445454547
+        },
+        "excess_spy": {
+          "wins": 10,
+          "mean": 0.03581286907272727
+        },
+        "excess_sector": {
+          "wins": 9,
+          "mean": 0.042466927254545456
+        }
+      },
+      "first_qualifying_news": {
+        "n": 7,
+        "issuers": 7,
+        "dates": 5,
+        "ret": {
+          "wins": 4,
+          "mean": 0.0329210457
+        },
+        "excess_spy": {
+          "wins": 6,
+          "mean": 0.03818782212857143
+        },
+        "excess_sector": {
+          "wins": 5,
+          "mean": 0.044094910142857144
+        }
+      },
+      "headline_multi": {
+        "n": 12,
+        "issuers": 5,
+        "dates": 7,
+        "ret": {
+          "wins": 9,
+          "mean": 0.02495391965
+        },
+        "excess_spy": {
+          "wins": 10,
+          "mean": 0.02685547185
+        },
+        "excess_sector": {
+          "wins": 10,
+          "mean": 0.031055921683333335
+        }
+      },
+      "first_t2_multi": {
+        "n": 5,
+        "issuers": 5,
+        "dates": 4,
+        "ret": {
+          "wins": 4,
+          "mean": 0.03704899406
+        },
+        "excess_spy": {
+          "wins": 5,
+          "mean": 0.03662729198
+        },
+        "excess_sector": {
+          "wins": 5,
+          "mean": 0.04361418064
+        }
+      },
+      "overlap_news_multi_rows": [
+        [
+          "2026-08-21",
+          "TSLA"
+        ],
+        [
+          "2026-09-03",
+          "PRIM"
+        ],
+        [
+          "2026-09-04",
+          "ADM"
+        ],
+        [
+          "2026-09-08",
+          "PRIM"
+        ],
+        [
+          "2026-09-09",
+          "PRIM"
+        ],
+        [
+          "2026-09-10",
+          "INTC"
+        ],
+        [
+          "2026-09-10",
+          "PRIM"
+        ]
+      ],
+      "overlap_news_multi_first_t2": [
+        [
+          "2026-08-21",
+          "TSLA"
+        ],
+        [
+          "2026-09-03",
+          "PRIM"
+        ],
+        [
+          "2026-09-10",
+          "INTC"
+        ]
+      ],
+      "issuer_counts": {
+        "TSLA": 1,
+        "ADM": 5,
+        "PRIM": 4,
+        "INTC": 1,
+        "ISRG": 1
+      },
+      "without_ADM_PRIM": {
+        "n": 3,
+        "issuers": 3,
+        "dates": 3,
+        "ret": {
+          "wins": 3,
+          "mean": 0.055703181166666664
+        },
+        "excess_spy": {
+          "wins": 3,
+          "mean": 0.046941728933333336
+        },
+        "excess_sector": {
+          "wins": 3,
+          "mean": 0.05585879616666667
+        }
+      },
+      "equal_date_gap_pp": 4.187942921385718,
+      "row_weighted_gap_pp": 4.163677194393026,
+      "horizons": {
+        "5": {
+          "news": {
+            "all": {
+              "n": 11,
+              "issuers": 7,
+              "dates": 7,
+              "ret": {
+                "wins": 8,
+                "mean": 0.030819660445454547
+              },
+              "excess_spy": {
+                "wins": 10,
+                "mean": 0.03581286907272727
+              },
+              "excess_sector": {
+                "wins": 9,
+                "mean": 0.042466927254545456
+              }
+            },
+            "without_INTC": {
+              "n": 10,
+              "issuers": 6,
+              "dates": 7,
+              "ret": {
+                "wins": 7,
+                "mean": 0.0284567114
+              },
+              "excess_spy": {
+                "wins": 9,
+                "mean": 0.03372812031
+              },
+              "excess_sector": {
+                "wins": 8,
+                "mean": 0.041476516149999997
+              }
+            }
+          },
+          "multi": {
+            "all": {
+              "n": 12,
+              "issuers": 5,
+              "dates": 7,
+              "ret": {
+                "wins": 9,
+                "mean": 0.02495391965
+              },
+              "excess_spy": {
+                "wins": 10,
+                "mean": 0.02685547185
+              },
+              "excess_sector": {
+                "wins": 10,
+                "mean": 0.031055921683333335
+              }
+            },
+            "without_INTC": {
+              "n": 11,
+              "issuers": 4,
+              "dates": 7,
+              "ret": {
+                "wins": 8,
+                "mean": 0.02227253499090909
+              },
+              "excess_spy": {
+                "wins": 9,
+                "mean": 0.024145936863636364
+              },
+              "excess_sector": {
+                "wins": 9,
+                "mean": 0.029118183809090908
+              }
+            }
+          }
+        },
+        "10": {
+          "news": {
+            "all": {
+              "n": 10,
+              "issuers": 6,
+              "dates": 6,
+              "ret": {
+                "wins": 5,
+                "mean": 0.0174810382
+              },
+              "excess_spy": {
+                "wins": 5,
+                "mean": 0.008439510039999999
+              },
+              "excess_sector": {
+                "wins": 7,
+                "mean": 0.03050509673
+              }
+            },
+            "without_INTC": {
+              "n": 9,
+              "issuers": 5,
+              "dates": 6,
+              "ret": {
+                "wins": 4,
+                "mean": -0.0034270415777777783
+              },
+              "excess_spy": {
+                "wins": 4,
+                "mean": -0.012776083700000001
+              },
+              "excess_sector": {
+                "wins": 6,
+                "mean": 0.015346739822222222
+              }
+            }
+          },
+          "multi": {
+            "all": {
+              "n": 11,
+              "issuers": 4,
+              "dates": 6,
+              "ret": {
+                "wins": 4,
+                "mean": 0.004851851390909092
+              },
+              "excess_spy": {
+                "wins": 4,
+                "mean": -0.003871305890909091
+              },
+              "excess_sector": {
+                "wins": 6,
+                "mean": 0.016109781545454546
+              }
+            },
+            "without_INTC": {
+              "n": 10,
+              "issuers": 3,
+              "dates": 6,
+              "ret": {
+                "wins": 3,
+                "mean": -0.01522833909
+              },
+              "excess_spy": {
+                "wins": 3,
+                "mean": -0.02419642185
+              },
+              "excess_sector": {
+                "wins": 5,
+                "mean": 0.0010277288100000001
+              }
+            }
+          }
+        },
+        "21": {
+          "news": {
+            "all": {
+              "n": 1,
+              "issuers": 1,
+              "dates": 1,
+              "ret": {
+                "wins": 1,
+                "mean": 0.0905573133
+              },
+              "excess_spy": {
+                "wins": 1,
+                "mean": 0.082854616
+              },
+              "excess_sector": {
+                "wins": 1,
+                "mean": 0.1532904561
+              }
+            },
+            "without_INTC": {
+              "n": 1,
+              "issuers": 1,
+              "dates": 1,
+              "ret": {
+                "wins": 1,
+                "mean": 0.0905573133
+              },
+              "excess_spy": {
+                "wins": 1,
+                "mean": 0.082854616
+              },
+              "excess_sector": {
+                "wins": 1,
+                "mean": 0.1532904561
+              }
+            }
+          },
+          "multi": {
+            "all": {
+              "n": 1,
+              "issuers": 1,
+              "dates": 1,
+              "ret": {
+                "wins": 1,
+                "mean": 0.0905573133
+              },
+              "excess_spy": {
+                "wins": 1,
+                "mean": 0.082854616
+              },
+              "excess_sector": {
+                "wins": 1,
+                "mean": 0.1532904561
+              }
+            },
+            "without_INTC": {
+              "n": 1,
+              "issuers": 1,
+              "dates": 1,
+              "ret": {
+                "wins": 1,
+                "mean": 0.0905573133
+              },
+              "excess_spy": {
+                "wins": 1,
+                "mean": 0.082854616
+              },
+              "excess_sector": {
+                "wins": 1,
+                "mean": 0.1532904561
+              }
+            }
+          }
+        }
+      },
+      "paired_h5_h10": {
+        "news": {
+          "n": 10,
+          "h5_mean": 0.02632460949,
+          "h10_mean": 0.008439510039999999,
+          "h5_responders": 9,
+          "responders_still_positive": 5
+        },
+        "multi": {
+          "n": 11,
+          "h5_mean": 0.0261691593,
+          "h10_mean": -0.003871305890909091,
+          "h5_responders": 9,
+          "responders_still_positive": 4
+        }
+      },
+      "limits": [
+        "Raw Parquet unavailable through exposed text GitHub tools; reader library also absent.",
+        "Control means, bin population counts, and first-T2 selected rows remain dependent on the committed PB-D transformation.",
+        "Record decimals are rounded at 10 places, so derived means use stated tolerances.",
+        "Hash verification proves returned-file identity, not source-price or economic-event truth.",
+        "No historical or prospective predictive validation is established."
+      ]
+    },
+    "NVDA_raw_archive_audit": {
+      "scope": "RAW_TEXT_BLOBS_VERIFIED",
+      "files": [
+        {
+          "path": "/workspace/scratch/c2013a166e9d/pb_f_review/audit_t2_d/archive/nvda_compact.json",
+          "git_blob": "02e103c00ed04da1a7d91980147e9d07efc528e2",
+          "bytes": 1051489,
+          "sha256": "b26601fa69a0b2b331f964373d9813c40d787b1b9de53daf0b5dfc5d9261da84"
+        },
+        {
+          "path": "/workspace/scratch/c2013a166e9d/pb_f_review/audit_t2_d/archive/nvda_news.json",
+          "git_blob": "224444b75cf08b24445d5ded3de881bae7836d23",
+          "bytes": 1619636,
+          "sha256": "e990fe347375181b32e3efa7a36386ad91a69977905a41ae18d29e753070809e"
+        }
+      ],
+      "nvda_compact": {
+        "asof": "2026-09-26",
+        "n_recent": 6,
+        "n_pos": 0,
+        "n_neg": 0,
+        "sentiment_lean": "neutral",
+        "sentiment_strength": 0.0
+      },
+      "nvda_news": {
+        "asof": "2026-09-25",
+        "fetched_at": "2026-09-26T05:36:12.339572+00:00",
+        "n": 6,
+        "null_sentiment": 6,
+        "empty_summary": 6,
+        "items": [
+          {
+            "source": "Barron's",
+            "seendate": "2026-09-25T18:26:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          },
+          {
+            "source": "Investor's Business Daily",
+            "seendate": "2026-09-25T20:00:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          },
+          {
+            "source": "Barron's",
+            "seendate": "2026-09-24T18:32:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          },
+          {
+            "source": "Investor's Business Daily",
+            "seendate": "2026-09-25T16:58:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          },
+          {
+            "source": "Investor's Business Daily",
+            "seendate": "2026-09-25T12:55:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          },
+          {
+            "source": "Investor's Business Daily",
+            "seendate": "2026-09-25T12:23:00+00:00",
+            "sentiment": null,
+            "issuer_sentiment": null,
+            "centrality": "incidental",
+            "event": null
+          }
+        ]
+      }
+    },
+    "raw_parquet_end_to_end": "NOT_EXECUTED: exposed GitHub routes rejected binary/returned empty content; compatible readers were absent. Committed rows/aggregates were independently checked, not the full source pipeline."
+  },
+  "PB_E": {
+    "validator_reproduction": {
+      "returncode": 0,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"scope\": \"Offline research artifact integrity and arithmetic; no production execution, live integration, legal completeness or independent audit of issuer claims.\",\n  \"counts\": {\n    \"cases\": 15,\n    \"edges\": 112,\n    \"source_records\": 102,\n    \"unique_source_urls\": 100,\n    \"source_lineage_groups\": 84,\n    \"research_display_nodes\": 85,\n    \"computed_metrics\": 17\n  },\n  \"checks_passed\": 92,\n  \"checks_total\": 92\n}\n",
+      "stderr": "",
+      "exact_receipt_match": true,
+      "checks_passed": 92,
+      "checks_total": 92,
+      "counts": {
+        "cases": 15,
+        "edges": 112,
+        "source_records": 102,
+        "unique_source_urls": 100,
+        "source_lineage_groups": 84,
+        "research_display_nodes": 85,
+        "computed_metrics": 17
+      }
+    },
+    "root_input_identities": [
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/POLICY_BEHAVIOR_REVEALED_PREFERENCE_MASTERPLAN_2026-10-07.md",
+        "git_blob_sha": "f391b263e88b3be525dcdba659cbf0047651d79c"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/POLICY_BEHAVIOR_CASEBOOK_PREREG_2026-10-07.md",
+        "git_blob_sha": "da6bbb45db92d25580c61f16eb3bc77f9664e603"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/handoffs/PB_E_CIRCULAR_FINANCING_SELECTIVE_PROTECTION_PRO.md",
+        "git_blob_sha": "2ac2a6092a158d0c581f5d2ff94f8fa341dd3390"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_EXTERNAL_CASH_ANALYSIS.md",
+        "git_blob_sha": "524cd112234e005c132124bb7400dc765035a187"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_FAILURE_MODES.md",
+        "git_blob_sha": "983ab775ddac4eeec07d63db79a049a90970a81c"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_INTEGRATION_HANDOFF.md",
+        "git_blob_sha": "c3adc899718b1caaf49af19614d949fca3f2f05d"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_NETWORK_CASEBOOK.md",
+        "git_blob_sha": "693f9b1b49b98ea8f2ee3d36f559d5d68536d08d"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_NETWORK_EDGES.json",
+        "git_blob_sha": "411a528b8a78db6525cafce0e5bc22a9fea593b9"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_REVIEW_LOG.md",
+        "git_blob_sha": "40290dc93220da09d4d0975dc367532b02493188"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_SELECTIVE_PROTECTION.md",
+        "git_blob_sha": "cdd218051b8fb00cd4c52cc700dc341eb5ed1c6a"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_SOURCE_REGISTER.md",
+        "git_blob_sha": "9cbf6ef7fd8b74e7d87220de87a824c42b8755d4"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/PB_E_VALIDATION.json",
+        "git_blob_sha": "f1a3cba1c40612667beb62791497cec695112ba5"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/README.md",
+        "git_blob_sha": "5a85248d033d48008251fddc06f2736008ee8eb8"
+      },
+      {
+        "path": "/workspace/scratch/c2013a166e9d/pb_f_review/inputs/research/policy_behavior/pro_returns/PB-E/validate_pb_e.py",
+        "git_blob_sha": "c0bc42d5680e80de79ecd03116cd24c2912e2702"
+      }
+    ],
+    "independent_external_spot_checks": [
+      {
+        "source_ids": [
+          "R-S08"
+        ],
+        "checked": "NVIDIA August17 8-K guarantee scope, $105bn cap, 4.25GW, timing, contingencies/remedies and optional expansion"
+      },
+      {
+        "source_ids": [
+          "R-S23",
+          "AI_A03"
+        ],
+        "checked": "Amazon June2026 filing: funded and subsequent OpenAI investment; Anthropic invested capital and delivery-dependent remaining facility"
+      },
+      {
+        "source_ids": [
+          "R-S24"
+        ],
+        "checked": "SoftBank October1 completed final tranche/follow-on, cumulative distinction and bridge repayment"
+      },
+      {
+        "source_ids": [
+          "R-S04"
+        ],
+        "checked": "Microsoft December2025 commercial RPO amount and approximate OpenAI share"
+      },
+      {
+        "source_ids": [
+          "R-S21"
+        ],
+        "checked": "CoreWeave Q2 original release date August11; H1 OCF/cash PP&E and balance table"
+      },
+      {
+        "source_ids": [
+          "R-S22"
+        ],
+        "checked": "ASML 2012 annual-filing customer co-investment, credits, accounting and equity distribution"
+      },
+      {
+        "source_ids": [
+          "SEL-S12"
+        ],
+        "checked": "Intel original transaction filing: dilution, surrendered grant benefits and foundry ownership warrant condition"
+      },
+      {
+        "source_ids": [
+          "SEL-S21"
+        ],
+        "checked": "LAC June2026 filing: coupons/effective rates, financing cost and transaction scope"
+      },
+      {
+        "source_ids": [
+          "SEL-S10"
+        ],
+        "checked": "MP June2026 filing: PPA classifications, cash received for prior support and product-sales distinction"
+      },
+      {
+        "source_ids": [
+          "SEL-S28"
+        ],
+        "checked": "Ford May20 disposition filing: historical advances, note assumption and sponsor guarantee release"
+      },
+      {
+        "source_ids": [
+          "R-S11"
+        ],
+        "checked": "AMD original October2025 8-K opened for definitive contract/warrant terms"
+      }
+    ],
+    "limits": "Targeted decisive originals, not all 102 source records, complete SEC exhibits, private contracts, cash tracing or current live state. The 92-check validator verifies structure/arithmetic rather than source-input binding or legal completeness."
+  },
+  "cross_program": {
+    "exact_public_url_join": "Four shared C/E URLs, lower bound only; D excluded from comparable-root census.",
+    "D_repeated_outcomes": "Seven issuer-date rows in news/multi; three in first-T2 subsets.",
+    "C_D_literal_outcome_dates": "No overlap of reported 2025 C panel and August17–September17 2026 D graded window."
+  },
+  "source_clock_finding": {
+    "id": "G-E02",
+    "record": "R-S21",
+    "declared_date": "2026-08-12",
+    "opened_press_release_face_date": "2026-08-11",
+    "affected_edges": [
+      "R-E22",
+      "R-E23",
+      "X-E09"
+    ],
+    "leakage_established": false,
+    "reason": "Observation first-public fields remain null and PIT admission is false; distinguish release date and filing label before future admission."
+  },
+  "production_tests_executed": false,
+  "external_messages_sent": false,
+  "source_returns_modified": false
+}
