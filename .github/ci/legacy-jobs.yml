@@ -13265,6 +13265,12 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/china_heatmap_observations.py"
+      - "engine/market_heatmap.py"
+      - "engine/marketing/market_clock.py"
+      - "engine/marketing/movers_source.py"
+      - "engine/sp500_heatmap.py"
+      - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
       - "app/treasury_history.py"
