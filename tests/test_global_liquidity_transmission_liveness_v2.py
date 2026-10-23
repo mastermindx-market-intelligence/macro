@@ -209,7 +209,9 @@ def test_nightly_engine_job_runs_the_producer_after_its_inputs_non_fatally() -> 
     assert len(glt) == 1, "exactly one nightly invocation of the GLT producer"
     i = glt[0]
     step = steps[i]
-    assert "if" not in step, "the producer step must not be gated off"
+    # Preserve implicit success(): valid candidates and validated committed fallbacks
+    # both admit this producer; its own failure remains non-fatal below.
+    assert step.get("if") == "steps.signal_gate.outputs.accepted == 'true'"
     assert re.search(
         r"python -m scripts\.build_global_liquidity_transmission \|\| echo \"::warning::", runs[i]
     ), "non-fatal sibling idiom: last committed artifact stands on failure"

@@ -530,7 +530,10 @@ def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
     assert regional_index < checkpoint_index < membership_index < tail_index
 
     checkpoint = steps[checkpoint_index]
-    assert checkpoint["if"] == "always()"
+    assert checkpoint["if"] == (
+        "always() && steps.signal_gate.outcome == 'success' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
     assert checkpoint["timeout-minutes"] == 25
     assert checkpoint["continue-on-error"] is True
     assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
@@ -549,7 +552,10 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
         "commit engine outputs",
     ]
     assert publisher_steps[0]["continue-on-error"] is True
-    assert publisher_steps[1]["if"] == "always()"
+    assert publisher_steps[1]["if"] == (
+        "always() && steps.signal_gate.outcome == 'success' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
 
 
 def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
@@ -672,7 +678,17 @@ def test_daily_engine_push_loss_is_red_without_suppressing_delivery_tail():
     steps = doc["jobs"]["engine"]["steps"]
     commit_index = steps.index(step)
     for delivery_step in steps[commit_index + 1 :]:
-        assert delivery_step.get("if") == "always()", delivery_step.get("name")
+        # A later push loss keeps accepted delivery alive; rejected signals cannot ship.
+        diagnostic = delivery_step.get("name") in {
+            "verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)",
+            "OIP PIT — fail closed after unrelated rendering completes",
+            "timings ledger + 85% budget tripwire (W2)",
+        }
+        expected = "always()" if diagnostic else (
+            "always() && steps.signal_gate.outcome == 'success' "
+            "&& steps.signal_gate.outputs.accepted == 'true'"
+        )
+        assert delivery_step.get("if") == expected, delivery_step.get("name")
 
     for job_name, job in doc["jobs"].items():
         needs = job.get("needs", [])

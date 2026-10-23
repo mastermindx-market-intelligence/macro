@@ -237,24 +237,28 @@ jobs:
       # Mirrors earlyclose.yml's "recompute signals + regime" step exactly.
       - name: recompute signals + regime from committed data (no collect / no LLM / no network)
         if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        id: signal_gate
+        shell: bash
+        # Only an affirmative completed gate admits candidate consumers below.
         run: |
-          set +e
+          echo "accepted=false" >> "$GITHUB_OUTPUT"
           run_py() {
             local label="$1"; local mod="$2"; shift 2
             echo "::group::$label"
-            python -m "$mod" "$@" > "$RUNNER_TEMP/e.log" 2>&1; local rc=$?
+            local rc=0
+            python -m "$mod" "$@" > "$RUNNER_TEMP/e.log" 2>&1 || rc=$?
             cat "$RUNNER_TEMP/e.log"
             echo "::endgroup::"
             if [ "$rc" -ne 0 ]; then
               echo "::error title=$label failed (rc=$rc)::$(tail -n 2 "$RUNNER_TEMP/e.log" | tr '\n' ' ' | tail -c 600)"
               { echo "### ❌ $label failed (rc=$rc)"; echo '<details><summary>traceback</summary>'; echo; echo '```'; tail -n 60 "$RUNNER_TEMP/e.log"; echo '```'; echo '</details>'; } >> "$GITHUB_STEP_SUMMARY"
             fi
+            return "$rc"
           }
-          run_py "MTF signal-quality leaf (build_signal_quality)" scripts.build_signal_quality
-          run_py "§7 signal contract gate (validate_signals)"     scripts.validate_signals
-          run_py "regime engine (engine.run)"                     engine.run
-          exit 0
-
+          run_py "MTF signal-quality leaf (build_signal_quality)" scripts.build_signal_quality || exit "$?"
+          run_py "§7 signal contract gate (validate_signals)"     scripts.validate_signals || exit "$?"
+          run_py "regime engine (engine.run)"                     engine.run || exit "$?"
+          echo "accepted=true" >> "$GITHUB_OUTPUT"
       # ── (e) SPINE CLUSTER + BASKETS CLUSTER + HUB ────────────────────────────────────
       # scope=close: spine (same as earlyclose scope=fast spine) + baskets cluster
       # (same as earlyclose scope=fast baskets) + cl_markets + cl_gex (parallel band,
@@ -262,7 +266,7 @@ jobs:
       # Verbatim copies of the same run_py invocations from earlyclose.yml + daily.yml.
       # EXCLUDES: build_world_state, build_nw_mastermind_context (NW/LLM-adjacent).
       - name: spine — build_site + supporting builders (no LLM, no EDGAR, no collect)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         env:
           LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
           RENDER_NO_DRIP: "1"
@@ -308,7 +312,7 @@ jobs:
           exit 0
 
       - name: restore options_skew ledger from R2 (W2-2 store-host accrual)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         # The store host publishes the skew ledger to R2. This step copies it down
         # before emit. If the copy fails, emit still renders the committed ledger
         # and reports that ledger's as-of time. The failure is a warning, not a crash.
@@ -326,7 +330,7 @@ jobs:
       #   and ledger steps), build_sector_central, build_basket_turn_grading, and all
       #   post-band ledger/scorer/NW/kernel steps.
       - name: regional + desk builders — cl_markets + cl_gex (parallel band)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         env:
           POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
@@ -420,7 +424,7 @@ jobs:
       # builder catches its own render failures, so the last committed options.html
       # stands and the deploy is never broken.
       - name: OEU M-CMD — the Options workspace (build_options_command)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: python -m scripts.build_options_command || echo "::warning::build_options_command non-fatal failure"
 
       # ── (g) HUB + FEEDS ─────────────────────────────────────────────────────────────
@@ -429,28 +433,28 @@ jobs:
       # build_feeds: assembles site/feeds/ from all available latest.json sources.
       #   Run AFTER build_vector so the hub's outputs are included.  Non-fatal.
       - name: build bitcoin vector + landing hub (build_vector)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: python -m scripts.build_vector
 
       - name: assemble machine-consumable feeds (site/feeds -> R2)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: python -m scripts.build_feeds || echo "::warning::build_feeds failed (non-fatal)"
 
       # ── guards (mirrors earlyclose.yml) ─────────────────────────────────────────────
       - name: guard — inline JS must parse
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: python3 scripts/check_inline_js.py site
       - name: guard — no dead site references
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: python3 scripts/check_site_asset_refs.py site
       - name: guard — market-state board coherence
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           python3 scripts/check_ms_board_coherence.py && exit 0
           python3 scripts/check_ms_board_coherence.py --heal-from HEAD || true
           exit 1
       - name: inject data-base shim
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           python -m scripts.inject_data_base || echo "data-base shim inject skipped (additive)"
           python -m scripts.externalize_css || echo "css externalize skipped (additive)"
@@ -463,7 +467,7 @@ jobs:
       # ── (h) PROVISIONAL STAMP ARTIFACT ──────────────────────────────────────────────
       # Write site/live/closingbell_stamp.json: {as_of, provisional: true, lane: "closingbell"}.
       - name: write provisional closingbell stamp (site/live/closingbell_stamp.json)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           python3 - <<'PYEOF'
           import json, datetime, pathlib, sys
@@ -509,7 +513,7 @@ jobs:
       #   massive_stock_day, stock_personality, oddsmatrix, odds_ohlcv — nightly-only.
       #   gex, flow — served via git Pages (not R2), so no R2 publish needed.
       - name: publish stockdata + feeds to R2 (provisional EOD reaches the data plane)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -532,7 +536,7 @@ jobs:
       # revert tracked site/ pages back to HEAD, committing only the stamp — wrong.
       # The nightly daily pipeline remains the sole advancer of every data/ forward ledger.
       - name: commit rendered site + provisional snapshot pointers (ledgers discarded)
-        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
+        if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true' && steps.signal_gate.outputs.accepted == 'true'
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"

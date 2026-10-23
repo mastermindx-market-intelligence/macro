@@ -194,9 +194,12 @@ def test_exactly_one_daily_step_runs_the_module():
 def test_daily_step_shape_is_non_fatal_and_bounded():
     _, step = _fif_step(_daily_engine_steps())
     # Delivery-tail law (tests/test_push_retry.py) + bounded post-cancel
-    # grace use: always(), and a 3-minute cap so a wedged enabled run can
+    # grace use: always() after signal acceptance, and a 3-minute cap so a wedged run can
     # never starve the W2 finish step that follows it.
-    assert step.get("if") == "always()"
+    assert step.get("if") == (
+        "always() && steps.signal_gate.outcome == 'success' "
+        "&& steps.signal_gate.outputs.accepted == 'true'"
+    )
     assert step.get("timeout-minutes") == 3
     assert step.get("continue-on-error") is True
     run = step["run"]

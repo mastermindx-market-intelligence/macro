@@ -1,0 +1,206 @@
+{
+  "schema": "mas258.publication_integrity.ci_followup.v1",
+  "recorded_at_utc": "2026-10-22T10:37:39.549326+00:00",
+  "root_id": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+  "parent_source_operation": "census-signal-publication-gate-20261021",
+  "procedure_pin": "c9cbee5569ba50e30e28715d930809061a169517",
+  "branch": "sol/web-census-signal-publication-gate-20261021",
+  "pr": 10067,
+  "source_parent": "76bbc3dfbdca0c65721198e2328ad14646c5313a",
+  "recorded_base": "c70d4735b0002099a57b8dffe1796fa8be8efe00",
+  "observed_main": "83d97bc02124b5535d6897a83dc03eeb2c2146f5",
+  "mission_complete": false,
+  "disposition": "LOCAL_TEST_REPAIR_VERIFIED_HOSTED_CI_AND_INDEPENDENT_REVIEW_OUTSTANDING",
+  "hosted_failure": {
+    "run_id": 39758763749,
+    "run_attempt": 1,
+    "job_id": 119757921629,
+    "head_sha": "76bbc3dfbdca0c65721198e2328ad14646c5313a",
+    "tested_base": "45bd9708b33806ff5d1afce4fa59ce474e384440",
+    "runner": "GitHub hosted Ubuntu 24.04; Python 3.12.13",
+    "tests": [
+      "tests/test_us_leader_pullback_coverage.py::TestNightlyDurability::test_refused_checkpoint_cannot_feed_runner_local_leader_bytes_downstream",
+      "tests/test_render_dead_asset_gate.py::test_engine_render_never_commits_after_a_failed_guard"
+    ],
+    "classification": "Candidate-caused stale exact-condition assertions; both reproduced locally. Not an inherited/flaky/infrastructure classification.",
+    "cause": "Signal acceptance was added as a conjunction. The old leader predicate required an exact shorter string; the render check required exact success-only spelling within a 260-character window.",
+    "remaining_packs_at_recording": [
+      3,
+      9
+    ],
+    "no_rerun_or_cancel": true
+  },
+  "repair": {
+    "modified_tests": [
+      "tests/test_render_dead_asset_gate.py",
+      "tests/test_us_leader_pullback_coverage.py",
+      "tests/test_validate_signals.py"
+    ],
+    "production_workflow_bytes_unchanged_from_parent": true,
+    "leader": "Require original leader-ready predicate AND signal acceptance. Preserve accepted-main restore ordering and custody assertions.",
+    "render": "Parse the complete YAML commit step, require exactly one matching step and original success() AND gate outcome success AND accepted. The final guard must not continue on error; original ordering and post-rebase guard checks remain.",
+    "falsifiers": "Nine leader-ready/acceptance combinations across the three independently named consumers; two later-job-failure render commit cases. Empty outputs are covered.",
+    "ci_triggers_packing_timeouts_skips_unchanged": true
+  },
+  "local_verification": {
+    "logs": {
+      "reproducer": {
+        "result": "2 failed in 3.20s",
+        "sha256": "676575bb91938fc060bb1ef851c1a30a4ec125244117cc9c67a7e5c6af2461af",
+        "bytes": 2138
+      },
+      "focused_repair": {
+        "result": "13 passed in 3.07s",
+        "sha256": "9b8ca9c9f7e6cf7269c6e193868a7a178af6f05c8be62a7f8a9d07e648c32704",
+        "bytes": 99
+      },
+      "followup_verification": {
+        "result": "128 passed, 1 deselected in 19.71s",
+        "sha256": "06974e6d8697f2ba2ff45584afbffa28f72b1749a9607b6f407dbb70ecfba85b",
+        "bytes": 195
+      }
+    },
+    "process_pid": 85319,
+    "exit_code": 0,
+    "selection": "104 signal validator/gate cases; 3 workflow size cases; 4 leader durability cases; 6 render code fences; 11 selected existing checkpoint/delivery/ownership cases.",
+    "data_test_exclusion": "Existing data_gate marker excluded the generated site/crypto.html test; its code and CI ownership remain unchanged.",
+    "execution_boundary": "Only workflow source assertions and inert/synthetic fixtures. No producer, market data, ledger synchronization, fit/backfill, historical repair, production dispatch, or release.",
+    "diff_check_exit_code": 0
+  },
+  "source_manifest": {
+    ".github/workflows/closing-bell.yml": {
+      "sha256": "8cf4ee63f45c4c1d4a51adb56ea32152bb1a9c2b120d35990e7229f3175e1f7b",
+      "bytes": 45738,
+      "unchanged_from_parent": true
+    },
+    ".github/workflows/daily.yml": {
+      "sha256": "50390df5419f3944fd4715d717e421f5627ae0941c09126c33accba8f30a0047",
+      "bytes": 485807,
+      "unchanged_from_parent": true
+    },
+    ".github/workflows/earlyclose.yml": {
+      "sha256": "abde5b2f99c2130dd566f48d45574f1b07530091410f4e42234b8b62dc95277d",
+      "bytes": 31439,
+      "unchanged_from_parent": true
+    },
+    ".github/workflows/engine-render.yml": {
+      "sha256": "6bf870d8b8b1392d4fb7bc70425d27b3df0673d236403084990d94e85ca60428",
+      "bytes": 77401,
+      "unchanged_from_parent": true
+    },
+    "tests/test_fif_x2_ownership_guards.py": {
+      "sha256": "8002760dd60ce91153ee58b90ca74721d42a00ba5caf2ba0543653ab12de0b59",
+      "bytes": 16225,
+      "unchanged_from_parent": true
+    },
+    "tests/test_prophet_durable_checkpoint.py": {
+      "sha256": "74423f2af3102dd471d5e50f576f85b5f5bcbaa47c563567dbf37ddf32dc03a1",
+      "bytes": 39590,
+      "unchanged_from_parent": true
+    },
+    "tests/test_push_retry.py": {
+      "sha256": "5215e2e4e7cbead20c53095c73c6511a490b5872fea59f97798d8d4cc62cd6e6",
+      "bytes": 121893,
+      "unchanged_from_parent": true
+    },
+    "tests/test_render_dead_asset_gate.py": {
+      "sha256": "3e9b0648722d3006e1ac938ff391a65c8848b57be36736b4b54ccecc73b52b8a",
+      "bytes": 8087,
+      "unchanged_from_parent": false
+    },
+    "tests/test_us_leader_pullback_coverage.py": {
+      "sha256": "2803ebbe26f6309bba9c45296d846993919846915e3570af34c9411850587a15",
+      "bytes": 38466,
+      "unchanged_from_parent": false
+    },
+    "tests/test_validate_signals.py": {
+      "sha256": "d9b4dc3ef111dd2572edd8beac08349ac9958bff57e73accf538ca779297c3ab",
+      "bytes": 33302,
+      "unchanged_from_parent": false
+    }
+  },
+  "main_composition": {
+    ".github/workflows/closing-bell.yml": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 45738,
+      "integrated_sha256": "8cf4ee63f45c4c1d4a51adb56ea32152bb1a9c2b120d35990e7229f3175e1f7b"
+    },
+    ".github/workflows/daily.yml": {
+      "main_unchanged_from_recorded_base": false,
+      "clean_three_way": true,
+      "integrated_bytes": 486291,
+      "integrated_sha256": "a8ffacd3e4a65365e07a0e28f9e303b9043ee12dd5a46b9560c9166a1a1b07a4",
+      "unchanged_size_budget_bytes": 487000
+    },
+    ".github/workflows/earlyclose.yml": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 31439,
+      "integrated_sha256": "abde5b2f99c2130dd566f48d45574f1b07530091410f4e42234b8b62dc95277d"
+    },
+    ".github/workflows/engine-render.yml": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 77401,
+      "integrated_sha256": "6bf870d8b8b1392d4fb7bc70425d27b3df0673d236403084990d94e85ca60428"
+    },
+    "tests/test_fif_x2_ownership_guards.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 16225,
+      "integrated_sha256": "8002760dd60ce91153ee58b90ca74721d42a00ba5caf2ba0543653ab12de0b59"
+    },
+    "tests/test_prophet_durable_checkpoint.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 39590,
+      "integrated_sha256": "74423f2af3102dd471d5e50f576f85b5f5bcbaa47c563567dbf37ddf32dc03a1"
+    },
+    "tests/test_push_retry.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 121893,
+      "integrated_sha256": "5215e2e4e7cbead20c53095c73c6511a490b5872fea59f97798d8d4cc62cd6e6"
+    },
+    "tests/test_render_dead_asset_gate.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 8087,
+      "integrated_sha256": "3e9b0648722d3006e1ac938ff391a65c8848b57be36736b4b54ccecc73b52b8a"
+    },
+    "tests/test_us_leader_pullback_coverage.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 38466,
+      "integrated_sha256": "2803ebbe26f6309bba9c45296d846993919846915e3570af34c9411850587a15"
+    },
+    "tests/test_validate_signals.py": {
+      "main_unchanged_from_recorded_base": true,
+      "integrated_bytes": 33302,
+      "integrated_sha256": "d9b4dc3ef111dd2572edd8beac08349ac9958bff57e73accf538ca779297c3ab"
+    }
+  },
+  "independent_review": {
+    "run_id": "mas258-publication-integrity-review-20261022-01",
+    "controller_pid": 36850,
+    "reviewed_candidate": "76bbc3dfbdca0c65721198e2328ad14646c5313a",
+    "state": "TERMINAL",
+    "rc": 1,
+    "root_verified": true,
+    "controller_return": "RECORDED",
+    "response_bytes": 690,
+    "response_sha256": "f011a35f6338c7d4a0689e0556b5a0576536edda1471c1ea33a7239b243e51b1",
+    "provider_failure": "429; QWEN_FINAL_RESPONSE_UNCONFIRMED",
+    "controller_reason": "continuation_evidence_unqualified",
+    "execution_absence_proven": false,
+    "retry_allowed": false,
+    "accepted": false,
+    "verdict": "No substantive independent review. Result consumed; no retry, route change, alternate provider, or native-review substitution. No verdict transfers to a changed candidate."
+  },
+  "custody": {
+    "hold_prs": {
+      "9957": "26f60b69a5c929f2a5a4316add623d01ccbc7eac",
+      "9980": "03080d24a2ea3723386959bb0e6343eccbd56784"
+    },
+    "fits": "532 B0/B1 NOT_ADMITTED; zero executed",
+    "nightly_data_and_ledger_custody": "unchanged",
+    "release_authority": "existing separate release owner",
+    "blocked_writes": "Prior Linear comment and GitHub checkpoint-edit remain blocked; neither replayed nor routed around.",
+    "merged_9932": "Prior accepted landing preserved; no admission redo or merged-branch reuse",
+    "source_pr": "Draft/HOLD; no arming, auto-merge, merge, release, or deployment",
+    "native_adviser": "Judgment on test scope only; not an independent-review verdict"
+  }
+}

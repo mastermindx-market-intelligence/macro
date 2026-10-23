@@ -1,0 +1,205 @@
+{
+  "source_base": "c70d4735b0002099a57b8dffe1796fa8be8efe00",
+  "observed_at_utc": "2026-10-21T22:40:36.432509+00:00",
+  "scope": "actual YAML signal run blocks; fault-injected inert Python/Git commands only; no real workflow or market execution",
+  "source_sha256": {
+    ".github/workflows/engine-render.yml": "41fa350aa79c9375d3a17e1da9783a77e74c79a18b6e8c16461829d52f4a7775",
+    ".github/workflows/earlyclose.yml": "0d38b547cc06d65e7ddd40b6e5a0b6f89b1345a4fbf6c872a224a4d03c797087",
+    ".github/workflows/closing-bell.yml": "8dfd739f60fb0ce73db6b556a0aaf280cc44ea9b457baa8a12ab4db7ebac7476",
+    ".github/workflows/daily.yml": "6f2bc6cf5180f422960b05c9672ae62b12d4dfef6f9d02562186074767fc367d"
+  },
+  "cases": [
+    {
+      "workflow": "engine-render",
+      "case": "success",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 0
+    },
+    {
+      "workflow": "engine-render",
+      "case": "builder_failed_otherwise_valid",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 127
+    },
+    {
+      "workflow": "engine-render",
+      "case": "validator_failed",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 124
+    },
+    {
+      "workflow": "earlyclose",
+      "case": "success",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 0
+    },
+    {
+      "workflow": "earlyclose",
+      "case": "builder_failed_otherwise_valid",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 127
+    },
+    {
+      "workflow": "earlyclose",
+      "case": "validator_failed",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 124
+    },
+    {
+      "workflow": "closing-bell",
+      "case": "success",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 0
+    },
+    {
+      "workflow": "closing-bell",
+      "case": "builder_failed_otherwise_valid",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 127
+    },
+    {
+      "workflow": "closing-bell",
+      "case": "validator_failed",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "python -m engine.run"
+      ],
+      "engine_called": true,
+      "validator_calls": 1,
+      "summary_bytes": 124
+    },
+    {
+      "workflow": "daily",
+      "case": "success",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals"
+      ],
+      "engine_called": false,
+      "validator_calls": 1,
+      "summary_bytes": 0
+    },
+    {
+      "workflow": "daily",
+      "case": "builder_failed_otherwise_valid",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals"
+      ],
+      "engine_called": false,
+      "validator_calls": 1,
+      "summary_bytes": 0
+    },
+    {
+      "workflow": "daily",
+      "case": "validator_failed",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "git checkout -- data/signal_archive/mtf_signals_latest.json",
+        "git checkout -- site/signals/",
+        "git clean -fq -- site/signals/"
+      ],
+      "engine_called": false,
+      "validator_calls": 1,
+      "summary_bytes": 129
+    },
+    {
+      "workflow": "daily",
+      "case": "restore_failed",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "git checkout -- data/signal_archive/mtf_signals_latest.json",
+        "git checkout -- site/signals/",
+        "git clean -fq -- site/signals/"
+      ],
+      "engine_called": false,
+      "validator_calls": 1,
+      "summary_bytes": 129
+    },
+    {
+      "workflow": "daily",
+      "case": "invalid_fallback",
+      "step_rc": 0,
+      "calls": [
+        "python -m scripts.build_signal_quality",
+        "python -m scripts.validate_signals",
+        "git checkout -- data/signal_archive/mtf_signals_latest.json",
+        "git checkout -- site/signals/",
+        "git clean -fq -- site/signals/"
+      ],
+      "engine_called": false,
+      "validator_calls": 1,
+      "summary_bytes": 129
+    }
+  ],
+  "result": "BASELINE_DEFECT_REPRODUCED: every injected signal failure returned zero; express lanes still called engine; daily never revalidated fallback",
+  "limits": [
+    "GitHub runner orchestration not executed",
+    "Faults are synthetic stub returns, not reproduced live filesystem failures",
+    "Independent implementation acceptance not supplied"
+  ]
+}

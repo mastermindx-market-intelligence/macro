@@ -1,0 +1,117 @@
+{
+  "schema": "mas258.publication_integrity.glt_ci_followup.v1",
+  "recorded_at_utc": "2026-10-22T10:54:27.716830+00:00",
+  "root_id": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+  "parent_source_operation": "census-signal-publication-gate-20261021",
+  "procedure_pin": "c9cbee5569ba50e30e28715d930809061a169517",
+  "branch": "sol/web-census-signal-publication-gate-20261021",
+  "pr": 10067,
+  "source_parent": "6364c9bd1cc5602c825273e6b975e4204ff6b91d",
+  "mission_complete": false,
+  "disposition": "LOCAL_SOURCE_TEST_REPAIR_VERIFIED_HOSTED_CI_AND_INDEPENDENT_REVIEW_OUTSTANDING",
+  "previous_receipt": {
+    "path": "research/grey_deer/publication_gate_20261021/CI_FOLLOWUP_VERIFICATION.json",
+    "sha256": "119fdb0878f63087dce14a16889607f878d25234abb84a9dc773b0b4f57bdf0f"
+  },
+  "hosted_finding": {
+    "source_head": "76bbc3dfbdca0c65721198e2328ad14646c5313a",
+    "run_id": 39758763749,
+    "run_attempt": 1,
+    "job_id": 119757921775,
+    "pack": 9,
+    "failure_time_utc": "2026-10-22T10:23:50Z",
+    "test": "tests/test_global_liquidity_transmission_liveness_v2.py::test_nightly_engine_job_runs_the_producer_after_its_inputs_non_fatally",
+    "result": "1 failed, 38 passed in 8.31s",
+    "scope": "Failure found in completed log after normal source-push supersession cancelled the unfinished pack; its semantic fragment was missing, so no final pack verdict is claimed.",
+    "earlier_semantic_gate": {
+      "status": "failure",
+      "passed_proofs": 440,
+      "pr_regressions": 2,
+      "unknown_proofs": 153,
+      "missing_pack_fragments": [
+        3,
+        9
+      ],
+      "evidence_sha256": "bf3e872276fc33958dd8167303331337f9392cdf1466c85a80acb8d7f1c25512"
+    },
+    "cause": "Legacy liveness assertion prohibited any if field, while candidate adds affirmative signal acceptance and retains Actions implicit success.",
+    "classification": "Reproduced candidate assertion regression against exact tested base 45bd9708b33806ff5d1afce4fa59ce474e384440. No flaky/inherited-failure claim."
+  },
+  "repair": {
+    "production_changes": false,
+    "test_contract": "Require exact accepted == true predicate; retain single invocation, preceding liquidity_plumbing input, original nonfatal command, existing output staging and no-removal checks.",
+    "valid_paths": "Actual daily gate Bash in inert fixtures proves the GLT step eligible after successful candidate validation and after builder-failure or validator-failure committed fallbacks.",
+    "no_skipped_gate_path": "The actual nightly gate has no if override and no continue-on-error. Ordinary producer steps retain implicit success. False or missing acceptance remains covered by the existing all-consumer rejection cases.",
+    "custody": "Existing producer and reader behavior, data paths, clocks, staging, ownership, and last committed outputs are unchanged. A held failed attempt is not described as a fresh liquidity publication.",
+    "existing_module_marker": "needs_full_checkout(site) unchanged; no checkout expansion or marker weakening"
+  },
+  "verification": {
+    "process_pid": 43859,
+    "exit_code": 0,
+    "logs": {
+      "pytest_reproducer_sparse_skip": {
+        "summary": "1 skipped in 1.85s",
+        "sha256": "d9fd94f92c0ff7c5026e7ee912b032cd2ce57d76f32453268fede814bbd54594",
+        "bytes": 99
+      },
+      "exact_source_base_and_candidate": {
+        "summary": "Exact tested base: 2 workflow-only source assertions passed",
+        "sha256": "b1b4e9b1c8f713ae528ad5452af60de673a9a3b8a4c91874628cb9cdd487b1db",
+        "bytes": 499
+      },
+      "followup_pytest": {
+        "summary": "131 passed, 1 deselected in 19.90s",
+        "sha256": "35811091e0660d1086f2866fea36e1bb52c1399a780861020efcfb5abc4b078c",
+        "bytes": 195
+      },
+      "workflow_only_assertions": {
+        "summary": "2 workflow-only source assertions passed",
+        "sha256": "0d070d8d0c56081b1c776d6c11e77e4af960f221c52f654489dc10b33f233267",
+        "bytes": 83
+      }
+    },
+    "pytest": "131 passed, 1 pre-existing data_gate case deselected",
+    "direct_source_assertions": "The unchanged source-only test functions were invoked directly because the module-level full-checkout marker skips pytest locally. Neither tracked-artifact fixture nor producer nor reader compose was executed; this does not substitute for full hosted module verification.",
+    "baseline": "Identical test file at exact tested base; both workflow-only assertions passed on that base, then the same liveness assertion failed on current candidate before repair.",
+    "diff_check_exit_code": 0
+  },
+  "modified_test_manifest": {
+    "tests/test_global_liquidity_transmission_liveness_v2.py": {
+      "sha256": "52af5d65120024c71173bdf042c0c55bc2a7d0f25742c2a2d36a8362258017b1",
+      "bytes": 9890
+    },
+    "tests/test_validate_signals.py": {
+      "sha256": "bd092de69e70bb1fb357d02baa8a81a6319cf63986193d044a31bbed790aea78",
+      "bytes": 34262
+    }
+  },
+  "unchanged_workflow_sha256": {
+    ".github/workflows/closing-bell.yml": "8cf4ee63f45c4c1d4a51adb56ea32152bb1a9c2b120d35990e7229f3175e1f7b",
+    ".github/workflows/daily.yml": "50390df5419f3944fd4715d717e421f5627ae0941c09126c33accba8f30a0047",
+    ".github/workflows/earlyclose.yml": "abde5b2f99c2130dd566f48d45574f1b07530091410f4e42234b8b62dc95277d",
+    ".github/workflows/engine-render.yml": "6bf870d8b8b1392d4fb7bc70425d27b3df0673d236403084990d94e85ca60428"
+  },
+  "new_test_main_composition": {
+    "observed_main": "83d97bc02124b5535d6897a83dc03eeb2c2146f5",
+    "glt_test_unchanged_on_main_from_parent": true
+  },
+  "independent_review": {
+    "run_id": "mas258-publication-integrity-review-20261022-01",
+    "controller_pid": 36850,
+    "reviewed_candidate": "76bbc3dfbdca0c65721198e2328ad14646c5313a",
+    "disposition": "TERMINAL rc1; result consumed; no substantive verdict; continuation_evidence_unqualified; retry_allowed=false; not accepted",
+    "receipt": "CI_FOLLOWUP_VERIFICATION.json:independent_review",
+    "continuation": "Original identity retained; no retry, alternate route, or native-review substitution."
+  },
+  "custody": {
+    "holds": {
+      "9957": "26f60b69a5c929f2a5a4316add623d01ccbc7eac",
+      "9980": "03080d24a2ea3723386959bb0e6343eccbd56784"
+    },
+    "fits": "532 B0/B1 NOT_ADMITTED; zero executed",
+    "release_owner": "existing separate owner",
+    "restrictions": "No real producer, production workflow dispatch, data/ledger repair or synchronization, fit/backfill, numerical policy change, merge, release or deployment.",
+    "blocked_writes": "Prior Linear comment and GitHub checkpoint-edit remain blocked and were neither replayed nor routed around.",
+    "source_pr": "Draft/HOLD; no arming or auto-merge"
+  }
+}
