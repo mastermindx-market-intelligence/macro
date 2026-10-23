@@ -201,8 +201,10 @@ def compute_management_state(
     if trigger_price is not None:
         trigger_price = float(trigger_price)
 
-    # Base confidence: stored plan confidence or 60 if absent
-    base_conf = float(plan.get("confidence") or 60.0)
+    # Base confidence: explicit zero is a legitimate prospective score, not
+    # the same as an absent legacy field (which keeps the 60.0 default).
+    _plan_confidence = plan.get("confidence")
+    base_conf = float(60.0 if _plan_confidence is None else _plan_confidence)
 
     # ── 0c. Unpack prev_state accumulator fields ──────────────────────────────
     prev: dict[str, Any] = prev_state or {}
