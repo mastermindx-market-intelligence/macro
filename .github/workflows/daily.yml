@@ -2163,7 +2163,10 @@ jobs:
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+              # Bind the actual post-rebase source; never infer Git push defaults.
+              push_on_main_ok || exit 1
+              qledger_tail_push_candidate=$(git rev-parse --verify 'HEAD^{commit}') || exit 1
+              if push_do origin "$qledger_tail_push_candidate:refs/heads/main"; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi
             push_abort_rebase
             push_backoff
