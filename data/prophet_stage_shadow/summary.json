@@ -3,8 +3,8 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-10-22",
-  "generated_utc": "2026-10-22T19:12:03.205697+00:00",
+  "generated_asof": "2026-10-23",
+  "generated_utc": "2026-10-23T07:25:20.324784+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
   "n_entries": 713,
@@ -33,8 +33,8 @@
     "path": "data/earnings_calls/history.parquet",
     "tier": "r2_history",
     "generation": {
-      "generation_id": "e46cb47528dc72127ea0b50c",
-      "published_at": "2026-10-22T06:46:46.702819+00:00",
+      "generation_id": "90f7fc48ca22a49c0ae25f5c",
+      "published_at": "2026-10-23T06:46:20.274020+00:00",
       "rows": 50982
     },
     "reason": null

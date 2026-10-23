@@ -167,3 +167,10 @@ Keep the current recording flag absent and no live sends. Before activation, pro
 ## Current integration findings
 
 CI narrow-job repair now passes the full local contract-delta with0introduced/0inherited and unchanged packing budgets;208 consumer tests pass. Details and the independently reproduced existing preference stale-write/opt-out race are in research/DEFENSIVE_ROTATION_BRIDGE_INTEGRATION_2026-10-23.md. Original bridge worker remains the only scratch builder. A production SSH read was explicitly safety-blocked; do not retry/rephrase or move that effect to another carrier. No production verification is claimed.
+
+
+## Actual main conflict integration
+
+After publishing CI repair ecec018ea6fc601019584cab070c7c5988414b92, GitHub reported PR10104 mergeable=false and started only authority checks, not semantic CI. The observed main c9608be2efd2f0e56cfb1630b6afe6a3124a6144 was therefore composed on the same carrier, not for ancestry-only churn. Exactly one conflict occurred: the curated CI set added both rotation-observation-delivery and catalyst-opportunity at the same location. Both are preserved; manifest auto-merge is retained. No worker-owned production-code preimage changed.
+
+Integrated local checks:209 focused consumer/CI-set tests pass;872 full composite tests pass with2existingxfail/4warnings (the additional case is the now-merged display wrapper). An unbounded git diff --cached --check was still lazily reading unrelated newly merged data blobs; the exact read-only git process96515 was stopped, with no branch/publication operation in it. The bounded checks on actual edited CI/test paths passed. The full contract-delta did not start in that interrupted wrapper and is not claimed passed at the integrated head; it will run separately on the committed frozen candidate.

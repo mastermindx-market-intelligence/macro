@@ -1,10 +1,10 @@
 {
  "schema": "washout_counterread.v1",
- "as_of": "2026-10-21",
- "show": false,
- "growth_score": 76.4,
- "growth_band": "caution",
- "growth_extreme": false,
+ "as_of": "2026-10-22",
+ "show": true,
+ "growth_score": 91.6,
+ "growth_band": "risk-off",
+ "growth_extreme": true,
  "price_depths": [
   {
    "index": "SPY",
@@ -45,8 +45,8 @@
  "ihm_hits": [
   "IWM"
  ],
- "message_en": null,
- "message_zh": null,
+ "message_en": "Capitulation-zone reading — historically two-sided. Growth scare 92 (extreme) alongside a depth extreme: IWM washout-turn (IHM). A washout can precede a bounce about as often as a further leg down.",
+ "message_zh": "资本投降区读数——历史上双向。成长恐慌 92（极端），同时出现深度极值：IWM 动量拐点洗盘（IHM）。洗盘之后反弹与再下跌概率相当。",
  "authority": {
   "tier": "display",
   "horizon_role": "context",
