@@ -1,0 +1,139 @@
+{
+  "kind": "Local uncommitted source fingerprint, not publication or acceptance",
+  "workspaces": [
+    {
+      "code_and_config": [
+        {
+          "bytes": 1697913,
+          "path": ".github/ci/legacy-jobs.yml",
+          "sha256": "8951d2b1339443fd7a177d3586906b4827642bee79a2632e8e441631119be878"
+        },
+        {
+          "bytes": 140660,
+          "path": "app/deploy/update.sh",
+          "sha256": "49dd539b4e772a3dd308fd4bd2e5b6167c99bfd7666c54927f704cd895246424"
+        },
+        {
+          "bytes": 13320,
+          "path": "engine/catalyst_opportunity/projection.py",
+          "sha256": "48182efa3c481b916e29df040b8d163a1dc9a215cff294fd08fb16d8108eb713"
+        },
+        {
+          "bytes": 9334,
+          "path": "tests/test_catalyst_opportunity_projection.py",
+          "sha256": "6637af229fc451d3cba8d8ce7b21239821e54c8dda8046c65dfa682be154c12b"
+        }
+      ],
+      "head": "f2b6f633f371c5191567dff434b913c0461f20bd",
+      "repository": "mastermindx-market-intelligence/macro",
+      "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/catalyst-opportunity-macro-e2e-20261017"
+    },
+    {
+      "code_and_config": [
+        {
+          "bytes": 308,
+          "path": "terminal/app/api/catalyst-opportunities/defense/route.ts",
+          "sha256": "e626ee6c550eeae004499168c14b104ee01dd366b3d1a318ff44df9a63a60561"
+        },
+        {
+          "bytes": 11656,
+          "path": "terminal/components/catalyst-opportunity/CatalystOpportunity.module.css",
+          "sha256": "8970cdf2831a47ef537d685df864ca86d96713fc58f75ad259fa104a91efe9ac"
+        },
+        {
+          "bytes": 11631,
+          "path": "terminal/components/catalyst-opportunity/CatalystOpportunityView.tsx",
+          "sha256": "aeeeccb443d34cd1ce162a5cdc1f79f2bde18a9f3481a1a3ae85a8ad87927371"
+        },
+        {
+          "bytes": 2835,
+          "path": "terminal/components/catalyst-opportunity/CatalystOpportunityWorkspace.tsx",
+          "sha256": "03cec00f700af69d1c5cc0905ad3a3cbaeeb84d77b95defc44a4d698567392c8"
+        },
+        {
+          "bytes": 2157,
+          "path": "terminal/components/catalyst-opportunity/DefenseContextWorkspace.tsx",
+          "sha256": "9ed79f943fce4b2786a77f02f3d136828bd1c47f38e0b2c933342a4347877ad7"
+        },
+        {
+          "bytes": 6130,
+          "path": "terminal/components/catalyst-opportunity/DefenseResearchPanel.tsx",
+          "sha256": "99ccdef7c6f5cca303e65296ec7532f6cfd4b40521634774f6d9f3f16b57fcbb"
+        },
+        {
+          "bytes": 9542,
+          "path": "terminal/e2e/catalyst-opportunity.spec.ts",
+          "sha256": "09b760f19f2c2423b41e5f69e1b47232e651acddba82ab05b30f58e0f13b3f93"
+        },
+        {
+          "bytes": 3328,
+          "path": "terminal/lib/__tests__/catalystDefense.test.ts",
+          "sha256": "afb029ab3398d7e9feae5f6a5f29c0c8759799c0e9d31ce9e7708caf9d5a7170"
+        },
+        {
+          "bytes": 6259,
+          "path": "terminal/lib/__tests__/catalystDefenseView.test.tsx",
+          "sha256": "6ba6495ae6935e05131797760e04790dc6af880a91bc1262294df747b1844a6e"
+        },
+        {
+          "bytes": 4955,
+          "path": "terminal/lib/__tests__/catalystOpportunity.test.ts",
+          "sha256": "c65d3de9cab671a6b70544d0f9e48acfb8b00a9ed4b362393ea0b6aeaeec0d69"
+        },
+        {
+          "bytes": 9128,
+          "path": "terminal/lib/__tests__/catalystOpportunityGateway.test.ts",
+          "sha256": "8210c0129c36b615029c1e2e2d0a7dc06d8dfe4b64ae1d89e5d93832d1596551"
+        },
+        {
+          "bytes": 9654,
+          "path": "terminal/lib/__tests__/catalystOpportunityView.test.tsx",
+          "sha256": "f96c9ab2d19c35197d0ea4f2f0c935b58c65b9543b7e0120308cb1ab143082c2"
+        },
+        {
+          "bytes": 154345,
+          "path": "terminal/lib/__tests__/fixtures/catalystDefenseOwner.json",
+          "sha256": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072"
+        },
+        {
+          "bytes": 1198,
+          "path": "terminal/lib/__tests__/fixtures/catalystEvidence.provenance.json",
+          "sha256": "362cef85f3da916799a03b0343c92cdaf22aae52bf9aa4748b7d7c58413edd18"
+        },
+        {
+          "bytes": 32622,
+          "path": "terminal/lib/__tests__/fixtures/catalystOpportunityDatedSource.json",
+          "sha256": "733a7c2f93d0f8379f7943cc5af6792958c7e739cd976fdc13d17eefca43cea9"
+        },
+        {
+          "bytes": 10742,
+          "path": "terminal/lib/catalystDefense.ts",
+          "sha256": "c9c23b44511219ee9cd0714467d1d05b9f652d8a85a5f4efa2dcd6616f406750"
+        },
+        {
+          "bytes": 4692,
+          "path": "terminal/lib/catalystDefenseLex.ts",
+          "sha256": "53b87f11eb22f9b1ed3a23d43b885cf9dda5b6f65e6156a56a68a7d1c0762b32"
+        },
+        {
+          "bytes": 11615,
+          "path": "terminal/lib/catalystOpportunity.ts",
+          "sha256": "58f4bb6851ed48bbecf117957cfcfa8725b07b493ffcf16a25910f8f885470ad"
+        },
+        {
+          "bytes": 6500,
+          "path": "terminal/lib/catalystOpportunityLex.ts",
+          "sha256": "8ff80e3bad8db5389c4e108b288bbca197a9250ed984389225f149c111cf367c"
+        },
+        {
+          "bytes": 5607,
+          "path": "terminal/lib/catalystOpportunityServer.ts",
+          "sha256": "f9dab62cd8b9291e43757d9ee7b8c04059375d17ed4816bd7d4f0d7070c9c3b1"
+        }
+      ],
+      "head": "16ccd341691817f8668705fa496efccbd53b39a1",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "workspace": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/catalyst-opportunity-terminal-e2e-20261017"
+    }
+  ]
+}

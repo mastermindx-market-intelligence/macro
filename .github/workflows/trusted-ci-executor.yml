@@ -184,6 +184,13 @@ jobs:
             scripts/__init__.py
             scripts/run_ci_pack.py
             scripts/ci_semantic_proof.py
+            scripts/ci_browser_dependency_inputs.py
+            scripts/ci_browser_dependency_capture.py
+            scripts/ci_apt_cold_acquisition.py
+            scripts/ci_apt_native_plan.py
+            scripts/ci_apt_native_stage.py
+            scripts/ci_apt_transaction_contract.py
+            scripts/ci_browser_native_setup.py
             scripts/ci_authority_paths.py
             scripts/ci_scope_dependencies.py
             scripts/audit_unrun_tests.py
@@ -205,6 +212,13 @@ jobs:
           cp scripts/__init__.py \
              scripts/run_ci_pack.py \
              scripts/ci_semantic_proof.py \
+             scripts/ci_browser_dependency_inputs.py \
+             scripts/ci_browser_dependency_capture.py \
+             scripts/ci_apt_cold_acquisition.py \
+             scripts/ci_apt_native_plan.py \
+             scripts/ci_apt_native_stage.py \
+             scripts/ci_apt_transaction_contract.py \
+             scripts/ci_browser_native_setup.py \
              scripts/ci_authority_paths.py \
              scripts/ci_scope_dependencies.py \
              scripts/audit_unrun_tests.py \

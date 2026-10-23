@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ETR-BULL-20260623",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.6,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 85.9,
-    "progress": 0.0,
-    "pace": 26.0,
-    "retention": 0.0,
-    "overlay": 59.0
+    "validity": 100.0,
+    "progress": 7.4,
+    "pace": 24.7,
+    "retention": 72.4,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.894,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 106.7,
-    "p1": -0.0708,
-    "p2": -0.0354,
+    "dist_to_stop_r": 1.077,
+    "dist_to_t1_r": 1.423,
+    "dist_to_t2_r": 2.923,
+    "horizon_pct_used": 108.9,
+    "p1": 0.0516,
+    "p2": 0.0258,
     "p3": null,
-    "move_r": -0.106,
+    "move_r": 0.077,
     "mfe_r": 0.107,
     "mae_r": -0.872
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667
+  "days_elapsed": 49,
+  "tau": 1.0889
 }

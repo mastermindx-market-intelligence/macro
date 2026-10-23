@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SIG-BULL-20260909",
-  "asof": "2026-10-22",
+  "asof": "2026-10-23",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 56.2,
-  "raw_confidence": 57.0,
-  "delta_vs_base": -3.8,
+  "management_confidence": 58.0,
+  "raw_confidence": 59.3,
+  "delta_vs_base": -2.0,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 30.1,
-    "pace": 30.4,
+    "progress": 33.4,
+    "pace": 34.9,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.506,
-    "dist_to_t1_r": 0.994,
-    "dist_to_t2_r": 2.494,
-    "horizon_pct_used": 91.1,
-    "p1": 0.3375,
-    "p2": 0.1688,
+    "dist_to_stop_r": 1.582,
+    "dist_to_t1_r": 0.918,
+    "dist_to_t2_r": 2.418,
+    "horizon_pct_used": 93.3,
+    "p1": 0.3882,
+    "p2": 0.1941,
     "p3": null,
-    "move_r": 0.506,
-    "mfe_r": 0.572,
+    "move_r": 0.582,
+    "mfe_r": 0.582,
     "mae_r": -0.058
   },
   "rr_ratio": 1.5,
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 16.360003662109378,
+  "_mfe": 16.640002441406253,
   "_mae": -1.6700027465820284,
-  "_max_p1": 0.38161893310262146,
+  "_max_p1": 0.3881502785492479,
   "_first_trigger_ts": "2026-09-16",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 41,
-  "tau": 0.9111
+  "days_elapsed": 42,
+  "tau": 0.9333
 }
