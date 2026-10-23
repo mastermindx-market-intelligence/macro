@@ -954,6 +954,9 @@ class ProphetTradePlan:
     horizon_days: int | None = None
     min_hold_days: int | None = None
     tranche: int = 1                    # 1 or 2
+    # Optional prospective management base (0..100, not a probability).
+    # Legacy published plans omit it and retain the nightly default of 60.
+    confidence: float | None = None
     option_contract: dict | None = None  # right (C/P), strike, expiry, entry_premium
     management_ref: str = ""            # "prophet/state/<id>.json"
     authority_tier: str = AUTHORITY_DISPLAY
@@ -1126,6 +1129,16 @@ def validate_trade_plan(d: dict) -> list[str]:
         errors.append(f"tranche {tranche!r} must be 1 or 2")
     if "targets" in d and not isinstance(d["targets"], list):
         errors.append("targets must be a list")
+    # WP04: a prospective explicit confidence is a bounded descriptive input,
+    # never a calibrated likelihood. Absence/None remains valid for legacy plans.
+    conf = d.get("confidence")
+    if conf is not None and (
+        isinstance(conf, bool)
+        or not isinstance(conf, (int, float))
+        or not math.isfinite(conf)
+        or not 0.0 <= conf <= 100.0
+    ):
+        errors.append("confidence must be a finite descriptive score in [0, 100]")
     # Verify LLM-origination guard: source_engines must contain at least one entry
     sources = d.get("source_engines", [])
     if not sources:
