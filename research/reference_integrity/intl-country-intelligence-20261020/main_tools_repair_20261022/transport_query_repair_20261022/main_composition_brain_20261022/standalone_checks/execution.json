@@ -1,0 +1,36 @@
+{
+  "schema": "intl.standalone_composition_execution.v1",
+  "source_commit": "f1fafde0bbf95550ed964de3a60920a2619778e4",
+  "build_receipt_sha256": "e407f6056e2117b06e971e7394e04af5c45bbc0d988e7d7ff02f6cbdd9b3bfed",
+  "started_at": "2026-10-23T06:09:37.988622+00:00",
+  "executions": [
+    {
+      "name": "landings",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/standalone_checks/verify_standalone_toolbar_landings.py",
+        "--label",
+        "braincomposition20261022"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 38.84,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/standalone_checks/landings.log",
+      "log_sha256": "70a0eb3516126d1836a1a320aef2a4dafff42a0fb2258aa7d1d14fe33394a124"
+    },
+    {
+      "name": "country_history",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/standalone_checks/verify_standalone_country_history.py",
+        "--label",
+        "braincomposition20261022"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 14.62,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/standalone_checks/country_history.log",
+      "log_sha256": "15dd1e2909a60848f8da4b8e0680c448a524593480f77a4ea1ab9b3ce33ae8ab"
+    }
+  ],
+  "state": "PASS",
+  "completed_at": "2026-10-23T06:10:31.442126+00:00"
+}
