@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-10-22",
-  "scored_total": 461,
-  "open": 240,
+  "as_of": "2026-10-23",
+  "scored_total": 462,
+  "open": 238,
   "unscored_soft": 0,
-  "expired": 17,
+  "expired": 18,
   "overall": {
-    "n": 461,
+    "n": 462,
     "hits": 244,
-    "misses": 217,
-    "hit_rate": 0.529,
-    "dir_accuracy": 0.395
+    "misses": 218,
+    "hit_rate": 0.528,
+    "dir_accuracy": 0.394
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 461,
+      "n": 462,
       "hits": 244,
-      "misses": 217,
-      "hit_rate": 0.529,
-      "dir_accuracy": 0.395
+      "misses": 218,
+      "hit_rate": 0.528,
+      "dir_accuracy": 0.394
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 461,
+      "n": 462,
       "hits": 244,
-      "misses": 217,
-      "hit_rate": 0.529,
-      "dir_accuracy": 0.395
+      "misses": 218,
+      "hit_rate": 0.528,
+      "dir_accuracy": 0.394
     },
     "level": {
       "n": 0,
@@ -52,7 +52,7 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "461 scored, hit-rate 0.529 (directional accuracy 0.395).",
+  "calibration_note": "462 scored, hit-rate 0.528 (directional accuracy 0.394).",
   "recent": [
     {
       "id": "2026-09-22-USAR-altconv",
@@ -145,6 +145,6 @@
       "check_by": "2026-10-21"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 461 \u6761\uff0c\u547d\u4e2d\u7387 0.529\uff08\u65b9\u5411\u51c6\u786e\u7387 0.395\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 462 \u6761\uff0c\u547d\u4e2d\u7387 0.528\uff08\u65b9\u5411\u51c6\u786e\u7387 0.394\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }

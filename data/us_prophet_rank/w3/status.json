@@ -84,7 +84,7 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-21",
+    "board_as_of": "2026-10-22",
     "coverage": {
       "identical": 0,
       "matured": 0,
@@ -94,7 +94,7 @@
     },
     "dry_run": false,
     "failures": [
-      "expected candidate stamp 2026-10-21 absent from the durable store \u2014 session_missing; refusing Pages backfill"
+      "expected candidate stamp 2026-10-22 absent from the durable store \u2014 session_missing; refusing Pages backfill"
     ],
     "family": {
       "identical": 0,
@@ -107,11 +107,11 @@
     "n_family_rows": 0,
     "n_paired_rows": 1931,
     "paired": {
-      "identical": 1887,
-      "matured": 1,
+      "identical": 1888,
+      "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 1
+      "stamps": 0,
+      "written": 0
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -132,9 +132,10 @@
       "2026-10-15",
       "2026-10-16",
       "2026-10-19",
-      "2026-10-20"
+      "2026-10-20",
+      "2026-10-21"
     ],
-    "require_stamp": "2026-10-21",
+    "require_stamp": "2026-10-22",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 30,
@@ -146,17 +147,21 @@
   "latest_session": {
     "liveness": "session_missing",
     "reason": "candidate session missing from the durable store; not pulled from Pages",
-    "stamp_date": "2026-10-21"
+    "stamp_date": "2026-10-22"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
     {
       "reason": "candidate session missing from the durable store; not pulled from Pages",
       "stamp_date": "2026-10-21"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-10-22"
     }
   ],
   "n_degraded_or_unpaired": 19,
-  "n_missing": 1,
+  "n_missing": 2,
   "paired_sessions_accrued": 30,
   "same_stamp_revisions_refused": [
     {
