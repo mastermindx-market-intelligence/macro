@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/catalyst_partner.html.j2
+manifest: mockups/evidence/catalyst-partner-private-20261009/manifest.json
