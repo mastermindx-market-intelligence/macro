@@ -2070,7 +2070,7 @@
       if (disposed || !box.isConnected) return;
       if (!bars) { fallback(); return; }
       bars = chartResolution(bars, tf);
-      var built = null, src = null;
+      var built = null, src = null, renderedWidth = 0;
       var ranges = el('div', 'mmb-cx-ranges'); ranges.setAttribute('role', 'group');
       ['1M', '3M', '6M', 'YTD', '1Y', 'MAX'].forEach(function (value) {
         var button = el('button'); button.type = 'button'; button.textContent = value;
@@ -2092,6 +2092,7 @@
         ranges.setAttribute('aria-label', L('Chart date range', '图表日期范围'));
         ranges.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.range === range)); });
         built = drawChart(body, ticker, tf, bars, range);
+        renderedWidth = body.clientWidth;
         box.classList.toggle('narrow', built.W < 470);
         body.appendChild(built.svg);
         paintRead(null);
@@ -2170,7 +2171,11 @@
       var rt = 0;
       function relayout() { if (rt) clearTimeout(rt); rt = setTimeout(function () { if (box.isConnected) render(); }, 120); }
       if (typeof ResizeObserver === 'function') {
-        var ro = new ResizeObserver(relayout);
+        var ro = new ResizeObserver(function () {
+          // Initial and height-only notifications do not change drawing geometry.
+          // Replacing the SVG here would clear a live hover without a pointer exit.
+          if (body.clientWidth !== renderedWidth) relayout();
+        });
         ro.observe(box);
       }
       DOC.addEventListener('themechange', relayout);
