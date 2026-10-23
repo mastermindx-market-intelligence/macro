@@ -1112,6 +1112,37 @@ def _load_closed_outcomes() -> dict[str, str]:
     return outcomes
 
 
+def _reconcile_same_build_closures(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Align same-build index rows with the newly advanced canonical ledger.
+
+    This is a display-only, in-memory projection; it does not advance the
+    ledger, edit immutable plans, or reinterpret a close. The prior index-row
+    assembly may have generated live instructions before today's close existed.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if not plan_id or plan_id not in closed_outcomes or entry.get("closed"):
+            continue
+        outcome = closed_outcomes[plan_id]
+        entry["closed"] = True
+        entry["pulse"], entry["pulse_zh"] = _plan_pulse(
+            entry.get("clock_age_days"), entry.get("phase"), None,
+            closed=True, outcome=outcome,
+        )
+        entry["what_to_do_now"], entry["what_to_do_now_zh"] = (
+            _closed_state_lines(outcome)
+        )
+        # A plan closed by the canonical ledger must not leave a stale active
+        # management action in the same published index row. Retain historical
+        # phase/confidence for evidence, but explicitly withhold active guidance.
+        entry["recommended_action"] = None
+        state = entry.get("state")
+        if isinstance(state, dict):
+            state["recommended_action"] = None
+
+
 def _load_closed_ids() -> set[str]:
     """Return plan IDs that already have a ledger row (idempotency guard)."""
     return set(_load_closed_outcomes())
@@ -2914,6 +2945,14 @@ def main() -> None:
     # plans/index after a partial or failed ledger advance would split the system's
     # clocks; let the build fail so the guarded checkpoint withholds the whole delta.
     advance_ledger(actionable_plans, asof)
+
+    # This run may have closed plans AFTER the index rows were assembled from the
+    # pre-advance ledger. Re-read the same canonical ledger (never infer closures
+    # from management phase), then project its new closes onto those in-memory
+    # publication rows before computing lifecycle counts and writing index.json.
+    # Only a newly-closed row changes; all previously-closed/open rows retain
+    # their existing representation. The forward ledger remains the sole owner.
+    _reconcile_same_build_closures(active_entries, _load_closed_outcomes())
 
     # ── 3c. Forward-ledger quarantine (derived, then disclosed) ──────────────────
     # Runs AFTER advance_ledger so tonight's closes are judged by the same rule as
