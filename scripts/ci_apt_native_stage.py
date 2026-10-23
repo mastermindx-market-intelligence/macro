@@ -334,7 +334,7 @@ def sync_directory(root: Path) -> None:
 @contextmanager
 def acquisition_admission(root: Path, mode: str):
     """Job-local fence only; never hostwide or a restart/retry authority."""
-    if mode not in {"download", "complete"}:
+    if mode not in {"download", "complete", "install"}:
         yield
         return
     fd = os.open(root / "acquisition.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
@@ -342,8 +342,10 @@ def acquisition_admission(root: Path, mode: str):
         info = os.fstat(fd)
         if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.geteuid() or info.st_mode & 0o077):
             raise AcquisitionRefused("ACQUISITION_LOCK_UNQUALIFIED")
-        fcntl.flock(fd, (fcntl.LOCK_EX if mode == "complete" else fcntl.LOCK_SH) | fcntl.LOCK_NB)
-        if (root / "completion-attempt").exists():
+        fcntl.flock(fd, (fcntl.LOCK_SH if mode == "download" else fcntl.LOCK_EX) | fcntl.LOCK_NB)
+        # Installation validates completed members and creates install-attempt
+        # inside this same exclusive interval; a verified completion may enter.
+        if mode != "install" and (root / "completion-attempt").exists():
             raise AcquisitionRefused("COMPLETION_ALREADY_ATTEMPTED")
         yield
     finally:

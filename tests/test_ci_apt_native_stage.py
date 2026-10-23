@@ -429,10 +429,12 @@ def test_existing_no_download_install_requires_exact_completed_members(tmp_path,
     monkeypatch.setattr(STAGE,'observe_command',native)
     monkeypatch.setattr(STAGE,'validate_actions',lambda frozen,actions,inventory,path,**kw:None)
     if tampered:
-        with pytest.raises(STAGE.AcquisitionRefused,match='COMPLETION_ARCHIVES_UNPROVEN'):STAGE.run_stage(tmp_path,'install',None,600)
+        with pytest.raises(STAGE.AcquisitionRefused,match='COMPLETION_ARCHIVES_UNPROVEN'):
+            with STAGE.acquisition_admission(tmp_path,'install'):STAGE.run_stage(tmp_path,'install',None,600)
         assert not calls
     else:
-        assert STAGE.run_stage(tmp_path,'install',None,600)['outcome']=='passed' and len(calls)==1
+        with STAGE.acquisition_admission(tmp_path,'install'):
+            assert STAGE.run_stage(tmp_path,'install',None,600)['outcome']=='passed' and len(calls)==1
     assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'
 
 
@@ -444,3 +446,30 @@ def test_native_completion_privileged_stage_refuses_existing_install_attempt(tmp
         with STAGE.acquisition_admission(tmp_path,'complete'):STAGE.run_stage(tmp_path,'complete',None,600)
     assert (tmp_path/'install-attempt').is_dir() and not (tmp_path/'completion-attempt').exists()
     assert STAGE.read_json(tmp_path/'download-result-1.json')['outcome']=='failed'
+
+
+@pytest.mark.parametrize('first,second',[('complete','install'),('install','complete')])
+def test_completion_install_forced_interleaving_excludes_other_phase_before_marker(tmp_path,first,second):
+    import threading
+    entered=threading.Event();release=threading.Event();holder_errors=[];second_effects=[]
+    def holder():
+        try:
+            with STAGE.acquisition_admission(tmp_path,first):
+                # Pause after admission/check and BEFORE the phase marker.
+                entered.set()
+                if not release.wait(5):raise AssertionError('test release missing')
+                (tmp_path/('completion-attempt' if first=='complete' else 'install-attempt')).mkdir()
+        except BaseException as error:holder_errors.append(error)
+    thread=threading.Thread(target=holder);thread.start()
+    try:
+        assert entered.wait(5) and not holder_errors
+        assert not (tmp_path/'completion-attempt').exists() and not (tmp_path/'install-attempt').exists()
+        with pytest.raises(BlockingIOError):
+            with STAGE.acquisition_admission(tmp_path,second):
+                second_effects.append(second)
+                (tmp_path/('completion-attempt' if second=='complete' else 'install-attempt')).mkdir()
+    finally:
+        release.set();thread.join(5)
+    assert not thread.is_alive() and not holder_errors and not second_effects
+    assert (tmp_path/('completion-attempt' if first=='complete' else 'install-attempt')).is_dir()
+    assert not (tmp_path/('completion-attempt' if second=='complete' else 'install-attempt')).exists()
