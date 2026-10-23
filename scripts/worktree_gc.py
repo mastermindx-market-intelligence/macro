@@ -157,6 +157,70 @@ def _git(repo: Path, *args: str, timeout: int = 30) -> tuple[int, str, str]:
     return _run(["git", "-C", str(repo), *args], timeout=timeout)
 
 
+def _tracefs_exemption_for_lsof(path: Path, target_dev: int, mountinfo: str) -> list[str] | None:
+    """Exclude only an unrelated, proven tracefs mount that lsof cannot stat.
+
+    Linux lsof scans all mountpoints even for '+D <one ext4 directory>'.
+    Ubuntu1/2 fail its empty-directory probe on inaccessible tracefs, while
+    excluding that *exact unrelated mount* leaves target FD checks intact.
+    Invalid, ambiguous, aliased or target-contained exemptions must HOLD.
+    """
+    mountpoint = Path("/sys/kernel/debug/tracing")
+    if len(mountinfo) > 1_048_576:
+        return None
+    observed = []
+    for line in mountinfo.splitlines():
+        blocks = line.split(" - ", 1)
+        if len(blocks) != 2:
+            return None
+        lhs, rhs = blocks[0].split(), blocks[1].split()
+        if len(lhs) < 5 or len(rhs) < 1:
+            return None
+        if lhs[4] == str(mountpoint):
+            if rhs[0] != "tracefs":
+                return None
+            observed.append(lhs[2])
+    if not observed:
+        return []
+    if len(observed) != 1:
+        return None
+    if path == mountpoint or mountpoint in path.parents:
+        return None
+    if observed[0] == f"{os.major(target_dev)}:{os.minor(target_dev)}":
+        return None
+    return ["-e", str(mountpoint)]
+
+
+def exact_target_open_handles(path: Path) -> bool | None:
+    """Bounded exact-directory open-FD scan, fail-closed on unknown visibility.
+
+    With a mounted but unstatable tracefs on Ubuntu1/2, lsof emits an
+    unrelated warning and would forever refuse GC. On Linux, consult the
+    kernel mount table; exempt only the proven tracefs mount, never the
+    target device or a target nested beneath that mount. All other stderr,
+    timeouts, missing tools, or inconsistent statuses remain UNKNOWN.
+    macOS and Linux hosts without that mount retain the original command.
+    """
+    args = ["lsof", "-nP", "-Fpcn"]
+    if sys.platform.startswith("linux"):
+        try:
+            resolved = path.resolve(strict=True)
+            info = resolved.stat()
+            mounted = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
+        except (OSError, UnicodeError, RuntimeError):
+            return None
+        extra = _tracefs_exemption_for_lsof(resolved, info.st_dev, mounted)
+        if extra is None:
+            return None
+        args.extend(extra)
+    rc, out, err = _run(args + ["+D", str(path)], timeout=45)
+    if out.strip():
+        return True
+    if rc == 1 and not err.strip():
+        return False
+    return None
+
+
 # ── discovery ────────────────────────────────────────────────────────────────
 
 @dataclass
@@ -715,6 +779,7 @@ def apply_deletions(
     dry_run: bool = False,
     hosts: list[Path] | None = None,
     protected: list[Path] | None = None,
+    exact_single: bool = False,
 ) -> dict:
     summary = {"deleted": [], "pruned": False, "branches_deleted": [], "errors": [], "skipped_cap": 0}
     now_iso = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -763,7 +828,50 @@ def apply_deletions(
             except OSError as exc:
                 ok, err = False, str(exc)
         else:
-            rc, _, err = _git(primary, "worktree", "remove", "--force", str(wt.path), timeout=600)
+            if exact_single:
+                # The earlier broad cwd scan is insufficient for a detached
+                # process with an open file under this tree. Refuse both busy
+                # and unknown observations; never trust a partial lsof result.
+                occupied = exact_target_open_handles(wt.path)
+                if occupied is not False:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - open handles or handle scan unverified")
+                    continue
+                # Re-read the original Git registration, branch, HEAD and
+                # cleanliness after the potentially long lsof probe. A raced
+                # checkout or a newly written file must never be removed.
+                rc_reg, out_reg, _ = _git(
+                    primary, "worktree", "list", "--porcelain", timeout=60)
+                if rc_reg != 0:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - worktree registration unreadable")
+                    continue
+                current = [
+                    other for other in parse_worktree_list(out_reg)
+                    if other.path.resolve() == wt.path.resolve()]
+                if (len(current) != 1 or current[0].head != wt.head
+                        or current[0].branch != wt.branch or current[0].locked
+                        or wt.path.is_symlink() or not wt.path.is_dir()
+                        or status_clean(wt) is not True):
+                    summary["errors"].append(
+                        f"{wt.path}: refused - worktree changed since classification")
+                    continue
+                # Git worktree remove (even without --force) destroys ignored
+                # artifacts. Do this check LAST, after the potentially 45s
+                # lsof probe and Git registration/cleanliness recheck. The
+                # earlier status_clean() cannot see ignored worker outputs.
+                # Refuse unknown/unreadable findings and never infer exclusive
+                # original-worker custody from this filesystem snapshot.
+                rc_ignored, ignored, _ = _git(
+                    wt.path, "ls-files", "--others", "--ignored",
+                    "--exclude-standard", "--directory", "-z", timeout=90)
+                if rc_ignored != 0 or ignored:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - ignored content or final ignore probe unavailable")
+                    continue
+            argv = (("worktree", "remove", str(wt.path)) if exact_single else
+                    ("worktree", "remove", "--force", str(wt.path)))
+            rc, _, err = _git(primary, *argv, timeout=600)
             ok = rc == 0
 
         _ledger_write({
@@ -793,7 +901,8 @@ def apply_deletions(
                 else:
                     log.info("branch -D %s refused: %s", wt.branch, err2.strip()[:120])
 
-    if not dry_run:
+    if not dry_run and not exact_single:
+        # Prune is repo-wide; an exact owner must not touch sibling metadata.
         rc, _, err = _git(primary, "worktree", "prune", timeout=120)
         summary["pruned"] = rc == 0
         if rc != 0:
@@ -817,14 +926,29 @@ def display_name(w: Worktree) -> str:
 def summarize(worktrees: list[Worktree]) -> dict:
     by: dict[str, dict] = {}
     for w in worktrees:
-        b = by.setdefault(w.verdict or "?", {"count": 0, "kb": 0})
+        # Keep numeric "kb" for existing JSON consumers, but explicitly
+        # report incomplete sizing. Unknown size is NEVER the same as 0 bytes.
+        b = by.setdefault(w.verdict or "?", {"count": 0, "kb": 0, "size_unknown": 0})
         b["count"] += 1
-        b["kb"] += w.size_kb or 0
+        if w.size_kb is None:
+            b["size_unknown"] += 1
+        else:
+            b["kb"] += w.size_kb
     return by
 
 
 def _gib(kb: int | None) -> str:
-    return f"{(kb or 0) / 1024 / 1024:.1f}"
+    return "not measured" if kb is None else f"{kb / 1024 / 1024:.1f}"
+
+
+def _size_phrase(kb: int | None) -> str:
+    return "not measured" if kb is None else f"{_gib(kb)} GiB"
+
+
+def _group_size(group: dict | None) -> int | None:
+    if not group:
+        return 0
+    return None if group["size_unknown"] else group["kb"]
 
 
 def reach_line(meta: dict) -> str | None:
@@ -936,21 +1060,30 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
     protection = protection_line(meta)
     if protection:
         lines += [protection, ""]
+    if meta.get("sizes_measured") is False:
+        lines += ["size measurement: **disabled** (`--no-sizes`); unmeasured space is not zero.", ""]
     lines += [
         "| verdict | count | GiB |",
         "|---|---:|---:|",
     ]
     for v in sorted(by, key=lambda k: -by[k]["kb"]):
-        lines.append(f"| {v} | {by[v]['count']} | {_gib(by[v]['kb'])} |")
+        lines.append(f"| {v} | {by[v]['count']} | {_gib(_group_size(by[v]))} |")
     safe_kb = sum(by.get(v, {}).get("kb", 0) for v in SAFE_VERDICTS)
-    orphan_kb = by.get("ORPHAN", {}).get("kb", 0)
+    safe_unknown = sum(by.get(v, {}).get("size_unknown", 0) for v in SAFE_VERDICTS)
+    orphan_size = _group_size(by.get("ORPHAN"))
+    kept_unsized = any(
+        w.size_kb is None and w.verdict in KEEP_VERDICTS
+        for w in worktrees
+    )
     lines += [
         "",
-        f"**Reclaimable now (SAFE_MERGED + SAFE_REMOTE): {_gib(safe_kb)} GiB "
+        f"**Reclaimable now (SAFE_MERGED + SAFE_REMOTE): "
+        f"{_size_phrase(None if safe_unknown else safe_kb)} "
         f"across {sum(by.get(v, {}).get('count', 0) for v in SAFE_VERDICTS)} worktrees.**",
-        f"ORPHAN (needs include_orphans ratification): {_gib(orphan_kb)} GiB.",
+        f"ORPHAN (needs include_orphans ratification): {_size_phrase(orphan_size)}.",
         "",
-        "## Largest kept worktrees",
+        ("## Kept worktree sample (sizes not measured)" if kept_unsized
+         else "## Largest kept worktrees"),
         "",
         "| worktree | verdict | GiB | age d | detail |",
         "|---|---|---:|---:|---|",
@@ -964,7 +1097,7 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
         lines.append(f"| {display_name(w)} | {w.verdict} | {_gib(w.size_kb)} | {age} | {detail[:100]} |")
     lines += ["", "## Sample of safe deletions", ""]
     for w in [w for w in worktrees if w.verdict in SAFE_VERDICTS][:20]:
-        lines.append(f"- `{display_name(w)}` {_gib(w.size_kb)} GiB — {w.proof} (branch {w.branch or '—'})")
+        lines.append(f"- `{display_name(w)}` {_size_phrase(w.size_kb)} — {w.proof} (branch {w.branch or '—'})")
     return "\n".join(lines) + "\n"
 
 
@@ -999,6 +1132,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--repo-root", default=None, help="primary checkout (default: resolve from cwd)")
     ap.add_argument("--config", default=None, help=f"config path (default: <repo>/{DEFAULT_CONFIG_REL})")
     ap.add_argument("--min-age-days", type=float, default=None, help="override config min_age_days")
+    ap.add_argument("--only-worktree", default=None,
+                    help="one exact registered immediate-child worktree under a configured root; no force or prune")
     ap.add_argument("--pr-limit", type=int, default=None, help="gh pr list page depth per state")
     ap.add_argument("--pr-states-file", default=None, help="use this JSON map instead of gh")
     ap.add_argument("--emit-pr-states", default=None, help="write the fetched PR-state map here")
@@ -1033,6 +1168,25 @@ def main(argv: list[str] | None = None) -> int:
     roots = expand_roots(hosts, list(cfg["roots"]))
     protected = human_driven_protection(hosts, cfg)
 
+    only: Path | None = None
+    if args.only_worktree is not None:
+        raw = Path(args.only_worktree)
+        if not raw.is_absolute() or raw.is_symlink():
+            raise SystemExit("only-worktree refused: absolute nonsymlink directory required")
+        try:
+            only = raw.resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise SystemExit("only-worktree refused: target unavailable")
+        if not only.is_dir() or only == primary or not any(
+                only.parent == root.resolve() for root in roots):
+            raise SystemExit("only-worktree refused: not an immediate child of configured root")
+        # This narrows scope only; original Fabric acceptance is a separate
+        # required proof. Never infer acceptance from a safe Git verdict.
+        cfg["include_orphans"] = False
+        cfg["include_open_pr"] = False
+        cfg["delete_local_branches"] = False
+        cfg["max_delete_per_run"] = 1
+
     in_scope: list[Worktree] = []
     for w in registered:
         for r in roots:
@@ -1040,7 +1194,18 @@ def main(argv: list[str] | None = None) -> int:
                 w.root = str(r)
                 in_scope.append(w)
                 break
-    orphans = scan_orphans(hosts, roots, registered)
+    if only is not None:
+        in_scope = [w for w in in_scope if w.path.resolve() == only]
+        if len(in_scope) != 1:
+            raise SystemExit("only-worktree refused: exact Git registration missing")
+        if in_scope[0].branch != "lane/" + only.name or in_scope[0].detached:
+            raise SystemExit("only-worktree refused: original Fabric lane branch required")
+        # Absolute, one-run GC roots have no repo-relative session-root
+        # suffixes. The generic host census then classifies EVERY registered
+        # worktree as a host. Exclude ONLY the exact lane we just checked;
+        # preserve every other host, including the primary checkout.
+        hosts = [host for host in hosts if host.resolve() != only]
+    orphans = [] if only is not None else scan_orphans(hosts, roots, registered)
 
     fetch_ok = False if args.no_fetch else fetch_origin(primary)
     pr_states: dict[str, dict] | None = None
@@ -1065,8 +1230,10 @@ def main(argv: list[str] | None = None) -> int:
         "host": socket.gethostname(),
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "apply" if do_apply else "report",
+        **({"only_worktree": str(only)} if only is not None else {}),
         "fetch_ok": fetch_ok,
         "proc_scan": procs is not None,
+        "sizes_measured": not args.no_sizes,
         "pr_states": "file" if args.pr_states_file else ("none" if pr_states is None else f"gh:{len(pr_states)}"),
         "primary": str(primary),
         "config_path": str(cfg_path),
@@ -1092,7 +1259,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             apply_summary = apply_deletions(primary, candidates, cfg, roots,
                                             dry_run=args.dry_run, hosts=hosts,
-                                            protected=protected)
+                                            protected=protected, exact_single=only is not None)
 
     payload = {
         "meta": meta,
@@ -1131,6 +1298,9 @@ def main(argv: list[str] | None = None) -> int:
             for row in group_refusals(apply_summary["errors"]):
                 print(row)
             return 1
+        if only is not None and not apply_summary["deleted"]:
+            print(f"exact worktree retained: {only} ({candidates[0].verdict})")
+            return 3
     return 0
 
 
