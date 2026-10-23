@@ -154,6 +154,7 @@ def estimate(cfg: dict | None = None) -> dict:
             "disclaimer": "Estimate only — no token usage is logged; based on call counts × config rates.",
         },
         "unified": unified(),
+        "configuration_adoption": _configuration_adoption(),
     }
 
 
@@ -358,4 +359,27 @@ def unified() -> dict | None:
         }
     except Exception as exc:  # noqa: BLE001
         _log.warning("ai_cost.unified: %s", exc)
+        return None
+
+
+def _configuration_adoption() -> dict | None:
+    """Observe only an already-imported local config owner, never another service.
+
+    Null means this admin process cannot supply the observation. It is not
+    provider failure, available quota or permission to restart/reload anything.
+    Importing lib.config solely for a diagnostic would run its dotenv bootstrap;
+    deliberately do not do that here.
+    """
+    import sys
+    from pathlib import Path
+
+    module = sys.modules.get("lib.config")
+    if module is None:
+        return None
+    try:
+        if Path(module.ROOT).resolve() != Path(ROOT).resolve():
+            return None
+        observer = getattr(module, "configuration_adoption", None)
+        return observer() if callable(observer) else None
+    except Exception:
         return None
