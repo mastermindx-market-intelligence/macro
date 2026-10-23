@@ -179,7 +179,8 @@ def test_owner_summary_is_bounded_and_cannot_expose_foreign_index_or_unsettled_r
 
 
 @pytest.mark.parametrize('maximal', [False, True])
-def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_raw_body(monkeypatch,maximal):
+@pytest.mark.parametrize('job_id', ['ontology-explorer', 'unrun-brain-gateway'])
+def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_raw_body(monkeypatch,maximal,job_id):
     from scripts import run_ci_pack as PACK
     events=runtime(monkeypatch)
     reported = list(SETUP.sanitize_reported_errors(['PERMISSION','SELECTION','AUTH','MIRROR_LIST','HASH','FETCH','METHOD'])) if maximal else ['PERMISSION','FETCH']
@@ -196,8 +197,8 @@ def test_fixed_download_summary_reaches_bounded_semantic_infrastructure_without_
     monkeypatch.setattr(PACK,'_prepare_provided_actions',lambda *a,**k:None)
     monkeypatch.setattr(PACK,'_browser_dependency_diagnostic_commands',lambda:())
     monkeypatch.setattr(PACK,'_stream_command',lambda *a,**k:pytest.fail('no semantic assertion after dependency failure'))
-    # Exercise the admitted owner; other job IDs must fail before execution.
-    job=PACK.LegacyJob('ontology-explorer',{'if':PACK.DISABLED_IF,'runs-on':'ubuntu-latest','timeout-minutes':10,'steps':[
+    # Both explicitly admitted owners preserve the same bounded failure evidence.
+    job=PACK.LegacyJob(job_id,{'if':PACK.DISABLED_IF,'runs-on':'ubuntu-latest','timeout-minutes':15 if job_id=='unrun-brain-gateway' else 10,'steps':[
         {'name':'browser','phase':'browser_setup','acquisition':'native_parallel','timeout-minutes':10,'run':'python -m playwright install --with-deps chromium'},
         {'name':'assertion','run':'must not execute'}]},0,1)
     result=PACK._run_job(job,base_ref='main',head_ref='',command_env={})

@@ -28,6 +28,21 @@ fi
 # rename. Skipping is free: the next cron tick picks up whatever this run got.
 exec 9>/var/lock/macro-update.lock
 flock -n 9 || exit 0
+# BEGIN OHLC_DELIVERY_RECONCILE
+# OHLC generations live outside both rsync trees. The helper borrows this
+# process's existing lock; it must never unlock or reacquire that shared fd.
+# Carry a refusal to the final status while unrelated deployment work proceeds.
+OHLC_DELIVERY_EXIT_STATUS=0
+reconcile_ohlc_delivery() {
+	if /usr/bin/python3 "$APP_DIR/scripts/publish_ohlc.py" reconcile --lock-fd 9; then
+		return 0
+	else
+		OHLC_DELIVERY_EXIT_STATUS=$?
+		echo "macro-update: OHLC reconciliation refused (status $OHLC_DELIVERY_EXIT_STATUS); preserving the selected generation" >&2
+	fi
+}
+# END OHLC_DELIVERY_RECONCILE
+
 source "$APP_DIR/app/deploy/market-memory-options-unit-boundary.sh"
 source "$APP_DIR/app/deploy/market-memory-options-runtime-fence.sh"
 source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"
@@ -332,7 +347,9 @@ if [ "$OLD" != "$NEW" ]; then
 	# changed files IN PLACE, so Caddy serves a separate rsync target whose
 	# per-file temp-write + rename keeps every visible file whole.
 	mkdir -p "$APP_DIR/site.served"
-	rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"
+	reconcile_ohlc_delivery
+	# Exclusion also protects a refused/foreign OHLC path from --delete.
+	rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"
 
 	# Press properties (D14 W1.5) — same atomic-publish contract as site.served,
 	# and for the same reason: `git reset --hard` above rewrites changed files IN
@@ -359,6 +376,10 @@ if [ "$OLD" != "$NEW" ]; then
 		rsync -a --delete --min-size=1 "$APP_DIR/properties/research/" "$APP_DIR/press_research.served/"
 	fi
 fi
+
+# Reconcile artifact selection even when the repository did not change.
+# A successful later check does not erase an earlier refusal in this run.
+reconcile_ohlc_delivery
 
 # Runtime-only company-logo configuration. The committed file is deliberately
 # empty; the browser-safe Logo.dev publishable token lives in the root-readable
@@ -2675,6 +2696,14 @@ fi
 if [ "$REPO_UPDATED" -eq 1 ] || [ "$RECONCILED" -eq 1 ]; then
 	echo "macro-update $(date -u +%FT%TZ) ${OLD:0:8}..$(git -C "$APP_DIR" rev-parse --short HEAD)"
 fi
+# BEGIN OHLC_DELIVERY_EXIT_STATUS
+if [ "$OHLC_DELIVERY_EXIT_STATUS" -ne 0 ]; then
+	echo "macro-update: deploy finished with OHLC status $OHLC_DELIVERY_EXIT_STATUS" >&2
+	if [ "${DEPLOY_EXIT_STATUS:-0}" -eq 0 ]; then
+		DEPLOY_EXIT_STATUS=$OHLC_DELIVERY_EXIT_STATUS
+	fi
+fi
+# END OHLC_DELIVERY_EXIT_STATUS
 # BEGIN DEPLOY_EXIT_STATUS
 if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2
