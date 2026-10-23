@@ -3494,3 +3494,62 @@ def test_native_brain_postsetup_assertions_stop_at_original900(monkeypatch):
     assert [s["outcome"] for s in result.steps]==["passed","passed","timed_out","not_run_prior_failure"]
     assert "after 15 minutes" in result.failure
     assert result.timeout_settlement is None
+
+
+@pytest.mark.parametrize("mode", ["timeout_unknown", "response_loss", "settled_failure"])
+def test_native_brain_owner_result_controls_pack_reuse(tmp_path, monkeypatch, mode):
+    from scripts import ci_browser_native_setup as native
+
+    jobs = [
+        _job("unrun-brain-gateway", [
+            {"run": "pip install pytest"},
+            {**_browser_setup_step(), "acquisition": "native_parallel"},
+            {"name": "financial assertion", "run": "must-not-run"},
+        ], timeout=15),
+        _job("later", [{"run": "pip install pytest pyyaml"}, {"name": "later assertion", "run": "later-command"}], ordinal=1),
+    ]
+    calls = {"native": [], "deps": [], "restore": [], "heal": [], "replay": [], "commands": []}
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_a, **_k: None)
+    monkeypatch.setattr(PACK.time, "monotonic", lambda: 0.0)
+    monkeypatch.setattr(PACK, "_browser_dependency_diagnostic_commands", lambda: ())
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: calls["deps"].append(dep) or {})
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: calls["restore"].append(True))
+    monkeypatch.setattr(PACK, "_ensure_pack_git_usable", lambda *_a: calls["heal"].append(True) or False)
+    monkeypatch.setattr(PACK, "_assert_no_git_rewrites", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: calls["replay"].append(True))
+    monkeypatch.setattr(PACK, "_stream_command", lambda command, **_k:
+                        calls["commands"].append(command) or PACK.CommandObservation(outcome="passed", returncode=0))
+
+    def setup(**kwargs):
+        calls["native"].append(True)
+        assert len(calls["restore"]) == 1
+        assert kwargs["deadline"] == 600
+        if mode == "response_loss":
+            raise OSError("original native response lost")
+        return dict(outcome="timed_out" if mode == "timeout_unknown" else "failed",
+                    returncode=None if mode == "timeout_unknown" else 1,
+                    failure_signature=None,
+                    timeout_settlement="unknown" if mode == "timeout_unknown" else None,
+                    detail="original native result")
+
+    monkeypatch.setattr(native, "run_native_setup", setup)
+    plan = _plan(jobs, changed=[], pack_count=1)
+    fragment = tmp_path / "fragment.json"
+    assert PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=fragment) == 1
+    doc = json.loads(fragment.read_text())
+    assert calls["native"] == [True]
+    assert doc["jobs"][0]["steps"][0]["outcome"] == "infrastructure_blocked"
+    if mode == "settled_failure":
+        assert calls["deps"] == ["pip install pytest", "pip install pytest pyyaml"]
+        assert calls["commands"] == ["later-command"]
+        assert doc["jobs"][0]["infrastructure"]["outcome"] == "dependency_failed"
+        assert doc["jobs"][1]["steps"][0]["outcome"] == "passed"
+    else:
+        assert calls["deps"] == ["pip install pytest"]
+        assert calls["commands"] == []
+        assert calls["restore"] == [True] and calls["heal"] == [] and calls["replay"] == []
+        assert doc["jobs"][0]["infrastructure"]["outcome"] == "unknown"
+        assert doc["jobs"][1]["steps"][0]["outcome"] == "infrastructure_blocked"
+    assert not SEMANTIC.semantic_gate_verdict(SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])).clear
