@@ -478,25 +478,24 @@ def get_reaction_sensitivity(
     playbook_path: Path,
     current_regime: str | None = None,
 ) -> dict | None:
-    """Return h1 reaction-sensitivity chip from playbook_v1 for a release type.
+    """Return h1 reaction-sensitivity means plus source-bound descriptive evidence.
 
-    Looks up 2021plus era, h1 horizon, hot and cold buckets, and returns mean
-    values for dgs10_bp and spy_pct. Prefers a regime-conditioned cell if the
-    current_regime matches an available cell with n >= 8; otherwise uses the
-    era-level (regime=null) cell.
+    The four legacy compact mean fields remain unchanged for existing clients. The
+    additive evidence block is built from the same selected cells so sample size,
+    interval, regime, target and horizon metadata cannot drift from displayed means.
 
-    Pure lookup — no regression, no positioning inputs (MRI-R17).
+    h1 is the next trading-session close versus the pre-event prior close. It is not
+    a one-hour horizon. CPI playbook surprises retain the frozen v1 legacy CPIAUCSL
+    initial-print index-point-change construction; they are not relabelled as official
+    MoM percentage surprises.
 
-    Returns:
-        {
-            dgs10_h1_hot_bp, dgs10_h1_cold_bp,
-            spy_h1_hot_pct, spy_h1_cold_pct,
-            era_basis, regime_cells_used, note
-        }
-        or None if playbook file is missing or release family not found.
+    Pure lookup -- no regression, no positioning inputs, no forecast/trade authority.
     """
     try:
-        # Map release_type → playbook release family
+        import hashlib
+        import json
+        import math
+
         release_family_map = {
             "cpi_headline": "cpi",
             "cpi_core": "cpi",
@@ -510,76 +509,229 @@ def get_reaction_sensitivity(
             log.debug("get_reaction_sensitivity: playbook not found at %s", playbook_path)
             return None
 
-        with open(playbook_path, encoding="utf-8") as fh:
-            import json
-            cells: list[dict] = json.load(fh)
-
+        raw_bytes = playbook_path.read_bytes()
+        source_digest = hashlib.sha256(raw_bytes).hexdigest()
+        cells: list[dict] = json.loads(raw_bytes.decode("utf-8"))
         if not isinstance(cells, list):
             return None
 
+        def _finite_number(value: object) -> bool:
+            return (
+                isinstance(value, (int, float))
+                and not isinstance(value, bool)
+                and math.isfinite(float(value))
+            )
+
+        def _valid_regime_n(value: object) -> bool:
+            return (
+                isinstance(value, int)
+                and not isinstance(value, bool)
+                and value >= _REGIME_MIN_N
+            )
+
+        def _unique_candidate(candidates: list[dict]) -> dict | None:
+            # Duplicate cells are ambiguous evidence. Refuse the candidate
+            # rather than selecting by file order.
+            return candidates[0] if len(candidates) == 1 else None
+
         def _pick_cell(
-            cells: list[dict],
+            source_cells: list[dict],
             release: str,
             bucket: str,
             outcome: str,
             era: str,
             regime: str | None,
         ) -> dict | None:
-            """Return the best matching cell: regime-conditioned (n>=8) else era-only."""
-            # Regime-conditioned cell
+            """Return one source cell; ambiguous/invalid candidates fail safely."""
             if regime is not None:
-                rc = [
-                    c for c in cells
+                conditioned = [
+                    c for c in source_cells
                     if c.get("release") == release
                     and c.get("bucket") == bucket
                     and c.get("outcome") == outcome
                     and c.get("horizon") == "h1"
                     and c.get("era") == era
                     and c.get("regime") == regime
-                    and (c.get("n") or 0) >= _REGIME_MIN_N
+                    and _valid_regime_n(c.get("n"))
+                    and _finite_number(c.get("mean"))
                 ]
-                if rc:
-                    return rc[0]
-            # Fall back to era-level (regime=null)
-            base = [
-                c for c in cells
+                selected = _unique_candidate(conditioned)
+                if selected is not None:
+                    return selected
+
+            era_level = [
+                c for c in source_cells
                 if c.get("release") == release
                 and c.get("bucket") == bucket
                 and c.get("outcome") == outcome
                 and c.get("horizon") == "h1"
                 and c.get("era") == era
                 and c.get("regime") is None
+                and _finite_number(c.get("mean"))
             ]
-            return base[0] if base else None
+            return _unique_candidate(era_level)
+
+        if release_family == "cpi":
+            target = {
+                "release": "cpi",
+                "observed_value": "cpi_initial_print_index_point_mom_change",
+                "reference_benchmark": "prior_period_initial_print_index_point_mom_change",
+                "standardization": "realized_surprise_divided_by_trailing_24_event_sigma",
+                "bucket_definition": {
+                    "hot": "standardized_surprise_gt_0.5",
+                    "cold": "standardized_surprise_lt_-0.5",
+                },
+                "knowledge_basis": "initial_vintage_prints_prior_only",
+            }
+        else:
+            target = {
+                "release": "nfp",
+                "observed_value": "nfp_initial_print_thousands_change",
+                "reference_benchmark": "prior_period_initial_print_thousands_change",
+                "standardization": "realized_surprise_divided_by_trailing_24_event_sigma",
+                "bucket_definition": {
+                    "hot": "standardized_surprise_gt_0.5",
+                    "cold": "standardized_surprise_lt_-0.5",
+                },
+                "knowledge_basis": "initial_vintage_prints_prior_only",
+            }
+
+        source = {
+            "version": "playbook_v1",
+            "artifact": "research/release_playbook/results/playbook_v1.json",
+            "sha256": source_digest,
+        }
+        outcome_metadata = {
+            "dgs10_bp": {
+                "unit": "basis_points",
+                "reference_basis": "next_trading_session_close_vs_pre_event_prior_close",
+            },
+            "spy_pct": {
+                "unit": "percent_return",
+                "reference_basis": "next_trading_session_close_vs_pre_event_prior_close",
+            },
+        }
 
         regime_cells_used = False
         fields: dict[str, float | None] = {}
+        evidence_cells: dict[str, dict] = {}
 
         for bucket in ("hot", "cold"):
             for outcome_key, field_prefix in [
                 ("dgs10_bp", f"dgs10_h1_{bucket}"),
                 ("spy_pct", f"spy_h1_{bucket}"),
             ]:
+                legacy_field = (
+                    f"{field_prefix}_bp"
+                    if outcome_key == "dgs10_bp"
+                    else f"{field_prefix}_pct"
+                )
                 cell = _pick_cell(
-                    cells, release_family, bucket, outcome_key,
-                    _ERA_LABEL, current_regime,
+                    cells, release_family, bucket, outcome_key, _ERA_LABEL, current_regime
                 )
                 if cell is None:
                     fields[field_prefix] = None
                     continue
 
-                # Check if we're using a regime-conditioned cell
-                if cell.get("regime") is not None:
+                cell_regime = cell.get("regime")
+                if cell_regime is not None:
                     regime_cells_used = True
 
-                mean_val = cell.get("mean")
-                fields[field_prefix] = round(float(mean_val), 4) if mean_val is not None else None
+                # Mean and metadata intentionally come from this same selected cell.
+                mean_value = round(float(cell["mean"]), 4)
+                fields[field_prefix] = mean_value
+
+                meta = outcome_metadata[outcome_key]
+                cell_limitations = [
+                    "descriptive_historical_context_only_no_forecast_or_trade_authority",
+                    "effective_n_sample_span_and_cell_specific_exclusions_unknown",
+                ]
+                if release_family == "cpi":
+                    cell_limitations.append(
+                        "cpi_surprise_basis_is_legacy_index_point_difference_not_official_mom_percentage"
+                    )
+                if cell_regime is not None:
+                    cell_limitations.append(
+                        "regime_label_is_latest_revised_not_as_observed"
+                    )
+
+                detail: dict = {
+                    "release": release_family,
+                    "outcome": outcome_key,
+                    "bucket": bucket,
+                    "era": _ERA_LABEL,
+                    "regime": cell_regime,
+                    "horizon": "h1",
+                    "mean": mean_value,
+                    "unit": meta["unit"],
+                    "reference_basis": meta["reference_basis"],
+                    "selection_basis": (
+                        "current_regime_conditioned_cell"
+                        if cell_regime is not None
+                        else "era_level_cell"
+                    ),
+                    "knowledge_status": {
+                        "release_prints": "initial_vintage_as_observed",
+                        "surprise_inputs": "point_in_time_prior_only",
+                        "regime_labels": (
+                            "latest_revised_not_as_observed"
+                            if cell_regime is not None
+                            else "not_used_for_this_cell"
+                        ),
+                    },
+                    "source": dict(source),
+                    "limitations": cell_limitations,
+                    "unknowns": [
+                        "effective_n",
+                        "sample_span",
+                        "cell_specific_exclusions",
+                    ],
+                }
+
+                n_value = cell.get("n")
+                if (
+                    isinstance(n_value, int)
+                    and not isinstance(n_value, bool)
+                    and n_value >= 0
+                ):
+                    detail["n"] = n_value
+
+                ci_lo = cell.get("ci_lo")
+                ci_hi = cell.get("ci_hi")
+                if (
+                    _finite_number(ci_lo)
+                    and _finite_number(ci_hi)
+                    and float(ci_lo) <= float(ci_hi)
+                ):
+                    detail["interval"] = {
+                        "kind": "event_level_bootstrap_95pct",
+                        "draws": 800,
+                        "seed": 7,
+                        "lo": float(ci_lo),
+                        "hi": float(ci_hi),
+                    }
+
+                evidence_cells[legacy_field] = detail
 
         note = (
             "Historical means from playbook_v1 2021plus era; regime-conditioned cells used."
             if regime_cells_used
             else "Historical means from playbook_v1 2021plus era; regime=null cells."
         )
+
+        limitations = [
+            "descriptive_historical_context_only_no_forecast_or_trade_authority",
+            "h1_is_next_trading_session_close_vs_pre_event_prior_close",
+            "effective_n_sample_span_and_cell_specific_exclusions_not_in_v1_cell_schema",
+        ]
+        if release_family == "cpi":
+            limitations.append(
+                "cpi_surprise_basis_is_legacy_index_point_difference_not_official_mom_percentage"
+            )
+        if regime_cells_used:
+            limitations.append(
+                "regime_conditioned_cells_use_latest_revised_labels_not_as_observed"
+            )
 
         return {
             "dgs10_h1_hot_bp": fields.get("dgs10_h1_hot"),
@@ -589,6 +741,14 @@ def get_reaction_sensitivity(
             "era_basis": _ERA_LABEL,
             "regime_cells_used": regime_cells_used,
             "note": note,
+            "evidence": {
+                "schema": "reaction_evidence.v1",
+                "display_only": True,
+                "authority": False,
+                "target": target,
+                "cells": evidence_cells,
+                "limitations": limitations,
+            },
         }
 
     except Exception as exc:
