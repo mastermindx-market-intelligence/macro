@@ -1152,6 +1152,45 @@ def _reconcile_same_build_closures(
             entry["profit_plan_zh"] = []
 
 
+
+def _reconcile_closed_state_sidecars(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Withhold stale live actions in state sidecars after nightly ledger close.
+
+    The management engine wrote these mutable state/v1 projections before the
+    canonical ledger's final advancement. Keep historical geometry/accumulators
+    intact, but let no on-disk sidecar claim the plan is still actionable once
+    the ledger has closed it. No plan or ledger is written here.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if (not plan_id or not entry.get("closed")
+                or plan_id not in closed_outcomes
+                or "/" in plan_id or "\\" in plan_id):
+            continue
+        path = STATES_DIR / f"{plan_id}.json"
+        state = _read_json(path)
+        if (not isinstance(state, dict)
+                or state.get("schema") != "prophet.management_state/v1"
+                or str(state.get("id") or "") != plan_id):
+            continue
+        projected = dict(state)
+        projected["closed"] = True
+        projected["outcome"] = closed_outcomes[plan_id]
+        projected["recommended_action"] = None
+        projected["human_state"] = "Closed"
+        if isinstance(state.get("reliability"), dict):
+            projected["reliability"] = {
+                **state["reliability"],
+                "recommended_action": (
+                    "withheld — canonical forward ledger has closed this plan"
+                ),
+            }
+        if projected != state:
+            _write_json(path, projected)
+
+
 def _load_closed_ids() -> set[str]:
     """Return plan IDs that already have a ledger row (idempotency guard)."""
     return set(_load_closed_outcomes())
@@ -2961,7 +3000,12 @@ def main() -> None:
     # publication rows before computing lifecycle counts and writing index.json.
     # Only a newly-closed row changes; all previously-closed/open rows retain
     # their existing representation. The forward ledger remains the sole owner.
-    _reconcile_same_build_closures(active_entries, _load_closed_outcomes())
+    closed_outcomes_after_advance = _load_closed_outcomes()
+    _reconcile_same_build_closures(active_entries, closed_outcomes_after_advance)
+    # State sidecars were written before ledger advancement. They are mutable
+    # projections too: a newly closed plan must not publish a contradictory
+    # per-plan live recommendation after index.json is marked closed.
+    _reconcile_closed_state_sidecars(active_entries, closed_outcomes_after_advance)
 
     # ── 3c. Forward-ledger quarantine (derived, then disclosed) ──────────────────
     # Runs AFTER advance_ledger so tonight's closes are judged by the same rule as
