@@ -260,14 +260,14 @@ _QUADS = ("Q1", "Q2", "Q3", "Q4")
 
 def _causal_filtered_pquad(scores: pd.DataFrame, min_per_quad: int = 60,
                            min_covar: float = 1e-3) -> dict | None:
-    """FILTERED (causal) P(Quad) for the latest day — the forward (alpha) recursion
-    of a supervised Gaussian HMM using ONLY data up to each t. This is the HONEST
-    live probability: unlike engine.regime_hmm.fit_regime_hmm's predict_proba (full-
-    sample forward-BACKWARD smoothing, which uses future data at every historical
-    point — fine for a hindsight chart, a lie as live history), the filtered posterior
-    at t conditions on observations 1..t only. Emissions/transitions are estimated
-    supervised from the legacy quad labels (same as regime_hmm — EM collapses on
-    market-proxy scores). Returns the current filtered P(Quad) + a filtered history."""
+    """Forward-filtered current P(Quad) plus explicitly reconstructed history.
+
+    The forward recursion does not smooth observations, but its parameters
+    are fitted on the entire supplied frame. Historical points therefore are
+    NOT as-issued evidence. Only the latest endpoint uses no later fitting
+    rows; its source-vintage eligibility still requires a separate audit.
+    Emissions/transitions use the existing legacy quad labels (no EM).
+    """
     try:
         from hmmlearn.hmm import GaussianHMM
     except Exception as e:  # noqa: BLE001
@@ -332,10 +332,13 @@ def _causal_filtered_pquad(scores: pd.DataFrame, min_per_quad: int = 60,
         "modal_quad": modal,
         "quads_present": present,
         "n_obs": int(T),
-        "smoothed_hindsight": False,   # this is the causal live read
-        "history_filtered": hist,
-        "note": "FILTERED (causal, forward-alpha) P(Quad): each point conditions on data "
-                "up to that day only. Not the smoothed hindsight chart.",
+        "smoothed_hindsight": False,   # forward recursion, not a historical PIT certificate
+        "history_filtered": hist,  # compatibility name, not as-issued evidence
+        "history_basis": "reconstructed_with_current_fit",
+        "history_replay_eligible": False,
+        "model_fit_asof": str(df.index[-1].date()),
+        "note": "Forward-alpha filtering with parameters fitted through model_fit_asof. "
+                "Historical rows are reconstructions, not previously issued beliefs.",
     }
 
 
@@ -389,6 +392,9 @@ def _forward_read(full_regime: pd.DataFrame, base_effect: dict | None,
                                              "expected_cadence": "D", "state": "fresh"},
                                   n=(pquad or {}).get("n_obs", 0)),
             "history_filtered": (pquad or {}).get("history_filtered"),
+            "history_basis": (pquad or {}).get("history_basis"),
+            "history_replay_eligible": False,
+            "model_fit_asof": (pquad or {}).get("model_fit_asof"),
         },
         "base_effect": {
             "growth_q1": (be.get("growth") or {}).get("q1"),
@@ -906,21 +912,201 @@ def refuse(regime_one_out: dict, risk_state: dict | None) -> dict:
     return regime_one_out
 
 
-def accrue_hmm_row(data_dir=None) -> bool:
-    """Append today's causal-filtered modal-quad forward call to
-    data/regime/regime_fwd_hmm.jsonl (idempotent per session). The call is graded at
-    +21bd by scripts/validate_regime_fwd.py. Lives here (not in the script) so the
-    engine never imports the scripts package. Returns True if a row was appended."""
+def _hmm_date(value: object) -> bool:
+    """Require the ledger's exact YYYY-MM-DD identity, not a date approximation."""
+    from datetime import date
+    if not isinstance(value, str):
+        return False
+    try:
+        return date.fromisoformat(value).isoformat() == value
+    except ValueError:
+        return False
+
+
+def _read_hmm_ledger_rows(path) -> list[dict]:
+    """Read the existing owner ledger without repairing malformed JSON or dates."""
     import json
-    if data_dir is None:
-        data_dir = config.data_dir()
+    def unique(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate JSON member")
+            out[key] = value
+        return out
+    def nonfinite(value):
+        raise ValueError("nonfinite JSON value")
+    rows = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line, object_pairs_hook=unique, parse_constant=nonfinite)
+        if not isinstance(row, dict) or not _hmm_date(row.get("asof")):
+            raise ValueError("invalid ledger row/date")
+        rows.append(row)
+    return rows
+
+
+def _valid_hmm_prediction(row: dict) -> bool:
+    """Accept the unchanged four-decimal simplex, including its rounding error."""
+    import math
+    p = row.get("p_quad_filtered")
+    if not isinstance(p, dict) or set(p) != set(_QUADS):
+        return False
+    # Range-check integers before float conversion: oversized JSON ints must refuse.
+    if any(type(v) not in (int, float) or not 0 <= v <= 1 or not math.isfinite(v)
+           for v in p.values()):
+        return False
+    modal = row.get("pred_modal_quad")
+    return (isinstance(modal, str) and modal in p and p[modal] == max(p.values())
+            and math.isclose(sum(p.values()), 1.0, rel_tol=0, abs_tol=0.00021))
+
+
+def _hmm_utc_now():
+    """Observe the existing UTC wall clock; this is not a durability receipt."""
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc)
+
+
+def _valid_hmm_input_evidence(row: dict) -> bool:
+    """Validate an optional recorded input receipt, never authenticate vintages.
+
+    Metadata-light rows remain readable. Once any receipt field exists, the
+    complete same-byte/fit/assembly receipt must be internally consistent.
+    """
+    from datetime import datetime, timedelta
+    import re
+    if not any(key in row for key in ("input_evidence", "fit", "record_assembled_at")):
+        return True
+    try:
+        evidence, fit = row["input_evidence"], row["fit"]
+        if not isinstance(evidence, dict) or not isinstance(fit, dict):
+            return False
+        if (evidence["schema"] != "regime_hmm_input_evidence.v1"
+                or evidence["source_path"] != "regime/regime_history.parquet"
+                or not isinstance(evidence["content_sha256"], str)
+                or re.fullmatch(r"[0-9a-f]{64}", evidence["content_sha256"]) is None
+                or evidence["source_vintages_verified"] is not False):
+            return False
+        if any(type(evidence[key]) is not int or evidence[key] <= 0
+               for key in ("byte_count", "decoded_row_count")):
+            return False
+        first, last = evidence["decoded_first_asof"], evidence["decoded_last_asof"]
+        if (not _hmm_date(first) or not _hmm_date(last) or first > last
+                or last != row["asof"] or last != row["model_fit_asof"]
+                or last != fit["model_fit_asof"]
+                or fit["model_method"] != row["model_method"]
+                or row["model_method"] != "quad_supervised_gaussian_hmm.v1"
+                or row["source_basis"] != "regime_history_vintages_unverified"):
+            return False
+        times = [datetime.fromisoformat(value) for value in (
+            evidence["read_started_at"], evidence["read_completed_at"],
+            fit["started_at"], fit["completed_at"],
+            row["record_assembled_at"], row["issued_at"])]
+        return (all(t.utcoffset() == timedelta(0) for t in times)
+                and all(a <= b for a, b in zip(times, times[1:]))
+                and last <= times[-1].date().isoformat())
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        return False
+
+
+def read_hmm_issuance(asof: str, data_dir=None) -> dict:
+    """Inspect a saved prediction, never substitute a newly fitted reconstruction.
+
+    Recorded metadata is not source-vintage authentication. Historical replay
+    remains ineligible, including for new rows carrying issuance timestamps.
+    """
+    from datetime import datetime, timedelta
+    from pathlib import Path
+    out = {"asof": asof, "source": "regime_fwd_hmm.jsonl",
+           "status": "missing_record", "recorded_prediction": None,
+           "pred_modal_quad": None, "issued_at": None, "model_fit_asof": None,
+           "model_method": None, "source_basis": None,
+           "historical_replay_eligible": False, "source_vintages_verified": False,
+           "input_evidence_status": "not_recorded", "input_evidence": None,
+           "fit": None, "record_assembled_at": None,
+           "reason": "No recorded prediction for this exact date; reconstruction is not a substitute."}
+    if not _hmm_date(asof):
+        return {**out, "status": "invalid_date", "reason": "Use an exact YYYY-MM-DD date."}
+    root = config.data_dir() if data_dir is None else Path(data_dir)
+    try:
+        rows = _read_hmm_ledger_rows(root / "regime" / "regime_fwd_hmm.jsonl")
+    except FileNotFoundError:
+        return {**out, "status": "missing_ledger", "reason": "The existing prediction ledger is unavailable."}
+    except (OSError, ValueError):
+        return {**out, "status": "invalid_ledger", "reason": "The prediction ledger cannot be read unambiguously."}
+    matches = [row for row in rows if row["asof"] == asof]
+    if not matches:
+        return out
+    if len(matches) != 1:
+        return {**out, "status": "ambiguous_record", "reason": "Multiple records share the requested date."}
+    row = matches[0]
+    if not _valid_hmm_prediction(row):
+        return {**out, "status": "invalid_record", "reason": "The saved probability or modal label is invalid."}
+    if not _valid_hmm_input_evidence(row):
+        return {**out, "status": "invalid_record", "input_evidence_status": "invalid",
+                "reason": "The recorded input/fit evidence is incomplete or inconsistent."}
+    has_evidence = "input_evidence" in row
+    keys = ("issued_at", "model_fit_asof", "model_method", "source_basis")
+    legacy = not any(key in row for key in keys)
+    if not legacy:
+        try:
+            issued = datetime.fromisoformat(row["issued_at"])
+            valid = (issued.utcoffset() == timedelta(0)
+                     and row["model_fit_asof"] == asof
+                     and issued.date().isoformat() >= asof
+                     and row["model_method"] == "quad_supervised_gaussian_hmm.v1"
+                     and row["source_basis"] == "regime_history_vintages_unverified")
+        except (KeyError, TypeError, ValueError):
+            valid = False
+        if not valid:
+            return {**out, "status": "invalid_record", "reason": "Issuance/model metadata is incomplete or inconsistent."}
+    return {**out, "status": "legacy_record" if legacy else "recorded",
+            "recorded_prediction": dict(row["p_quad_filtered"]),
+            "pred_modal_quad": row["pred_modal_quad"],
+            **{key: row.get(key) for key in keys},
+            "input_evidence_status": "recorded" if has_evidence else "not_recorded",
+            "input_evidence": dict(row["input_evidence"]) if has_evidence else None,
+            "fit": dict(row["fit"]) if has_evidence else None,
+            "record_assembled_at": row.get("record_assembled_at"),
+            "reason": ("Legacy saved prediction; issuance/model metadata was not recorded. " if legacy
+                       else "Saved prediction with recorded issuance/model metadata. ")
+                      + "Source vintages and point-in-time replay eligibility are not certified."}
+
+
+def accrue_hmm_row(data_dir=None) -> bool:
+    """Append a current-state filtered estimate to the existing HMM ledger.
+
+    New rows record the exact bytes decoded and ordered UTC observations, not
+    input-vintage or durable-publication certification. The legacy +21 grader
+    remains a persistence probe, not an HMM horizon-forecast admission gate.
+    The sole nightly writer never reissues or repairs historical rows.
+    """
+    import hashlib
+    import io
+    import json
+    from pathlib import Path
+    data_dir = config.data_dir() if data_dir is None else Path(data_dir)
     hist_p = data_dir / "regime" / "regime_history.parquet"
     if not hist_p.exists():
         return False
     try:
-        hist = pd.read_parquet(hist_p)
+        read_started = _hmm_utc_now()
+        input_bytes = hist_p.read_bytes()
+        read_completed = _hmm_utc_now()
+        # One owner read: hashing and native decoding consume the same buffer.
+        content_sha256 = hashlib.sha256(input_bytes).hexdigest()
+        hist = pd.read_parquet(io.BytesIO(input_bytes))
         hist.index = pd.to_datetime(hist.index)
-        pq = _causal_filtered_pquad(hist.sort_index())
+        if hist.empty and len(hist.index) == 0:
+            return False
+        if hist.index.hasnans or not hist.index.is_unique:
+            return False
+        decoded_first = str(hist.index.min().date())
+        decoded_last = str(hist.index.max().date())
+        fit_frame = hist.sort_index()
+        fit_started = _hmm_utc_now()
+        pq = _causal_filtered_pquad(fit_frame)
+        fit_completed = _hmm_utc_now()
     except Exception as e:  # noqa: BLE001
         log.warning("regime_one: HMM accrual fit failed: %s", e)
         return False
@@ -928,20 +1114,57 @@ def accrue_hmm_row(data_dir=None) -> bool:
         return False
     p = data_dir / "regime" / "regime_fwd_hmm.jsonl"
     today = pq["asof"]
-    last = None
-    if p.exists():
-        lines = p.read_text().splitlines()
-        if lines:
-            try:
-                last = json.loads(lines[-1]).get("asof")
-            except Exception:  # noqa: BLE001
-                last = None
-    if last == today:
+    row = {"asof": today, "pred_modal_quad": pq["modal_quad"],
+           "p_quad_filtered": pq["regime_probs_filtered"], "realized_quad_at_21d": None}
+    if not _hmm_date(today) or not _valid_hmm_prediction(row):
+        log.warning("regime_one: refused invalid HMM prediction before accrual")
         return False
-    with open(p, "a") as fh:
-        fh.write(json.dumps({"asof": today, "pred_modal_quad": pq["modal_quad"],
-                             "p_quad_filtered": pq["regime_probs_filtered"],
-                             "realized_quad_at_21d": None}, default=str) + "\n")
+    try:
+        rows = _read_hmm_ledger_rows(p) if p.exists() else []
+        dates = [r["asof"] for r in rows]
+        if (len(dates) != len(set(dates))
+                or any(not _valid_hmm_prediction(r) or not _valid_hmm_input_evidence(r)
+                       for r in rows)
+                or (p.exists() and p.stat().st_size and not p.read_bytes().endswith(b"\n"))):
+            log.warning("regime_one: refused ambiguous or damaged HMM ledger")
+            return False
+    except (OSError, ValueError) as exc:
+        log.warning("regime_one: HMM ledger unreadable; no append (%s)", type(exc).__name__)
+        return False
+    if today in dates:
+        return False
+    if dates and today < max(dates):
+        log.warning("regime_one: refused a regressed HMM source date")
+        return False
+    if pq.get("model_fit_asof") != today or decoded_last != today:
+        log.warning("regime_one: refused inconsistent HMM model/source cutoff")
+        return False
+    row.update(
+        model_fit_asof=today,
+        model_method="quad_supervised_gaussian_hmm.v1",
+        source_basis="regime_history_vintages_unverified",
+        input_evidence={
+            "schema": "regime_hmm_input_evidence.v1",
+            "source_path": "regime/regime_history.parquet",
+            "content_sha256": content_sha256, "byte_count": len(input_bytes),
+            "read_started_at": read_started.isoformat(),
+            "read_completed_at": read_completed.isoformat(),
+            "decoded_row_count": len(hist.index),
+            "decoded_first_asof": decoded_first, "decoded_last_asof": decoded_last,
+            "source_vintages_verified": False,
+        },
+        fit={"started_at": fit_started.isoformat(), "completed_at": fit_completed.isoformat(),
+             "model_fit_asof": today, "model_method": "quad_supervised_gaussian_hmm.v1"},
+    )
+    row["record_assembled_at"] = _hmm_utc_now().isoformat()
+    row["issued_at"] = _hmm_utc_now().isoformat()
+    # Share the reader's contract: never append a receipt it would refuse.
+    if not _valid_hmm_input_evidence(row):
+        log.warning("regime_one: refused inconsistent HMM input/fit/issuance observations")
+        return False
+    # Existing single nightly writer only: no new ledger, lock, or retrospective repair.
+    with open(p, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row, allow_nan=False) + "\n")
     return True
 
 

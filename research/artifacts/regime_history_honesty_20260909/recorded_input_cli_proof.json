@@ -1,0 +1,74 @@
+{
+  "source_pin": "477b9c3f449e451063634f1078fc6ce47e209648",
+  "source_path": "data/regime/regime_fwd_hmm.jsonl",
+  "scope": "real committed input; actual CLI main/parser; isolated temporary data mount; not production adoption",
+  "source_rows": 40,
+  "sha256_before": "0e539e599c37779ddf27d73cc8a952e32ac40be78baab95b62e5c1bd2d5b9019",
+  "sha256_after": "0e539e599c37779ddf27d73cc8a952e32ac40be78baab95b62e5c1bd2d5b9019",
+  "created_output_files": [],
+  "results": [
+    {
+      "exit_code": 0,
+      "output": {
+        "asof": "2026-06-30",
+        "source": "regime_fwd_hmm.jsonl",
+        "status": "legacy_record",
+        "recorded_prediction": {
+          "Q1": 0.9917,
+          "Q2": 0.0006,
+          "Q3": 0.0001,
+          "Q4": 0.0076
+        },
+        "pred_modal_quad": "Q1",
+        "issued_at": null,
+        "model_fit_asof": null,
+        "model_method": null,
+        "source_basis": null,
+        "historical_replay_eligible": false,
+        "reason": "Legacy saved prediction; issuance/model metadata was not recorded. Source vintages and point-in-time replay eligibility are not certified."
+      }
+    },
+    {
+      "exit_code": 0,
+      "output": {
+        "asof": "2026-09-08",
+        "source": "regime_fwd_hmm.jsonl",
+        "status": "legacy_record",
+        "recorded_prediction": {
+          "Q1": 0.0,
+          "Q2": 0.0203,
+          "Q3": 0.9789,
+          "Q4": 0.0007
+        },
+        "pred_modal_quad": "Q3",
+        "issued_at": null,
+        "model_fit_asof": null,
+        "model_method": null,
+        "source_basis": null,
+        "historical_replay_eligible": false,
+        "reason": "Legacy saved prediction; issuance/model metadata was not recorded. Source vintages and point-in-time replay eligibility are not certified."
+      }
+    },
+    {
+      "exit_code": 1,
+      "output": {
+        "asof": "2000-01-01",
+        "source": "regime_fwd_hmm.jsonl",
+        "status": "missing_record",
+        "recorded_prediction": null,
+        "pred_modal_quad": null,
+        "issued_at": null,
+        "model_fit_asof": null,
+        "model_method": null,
+        "source_basis": null,
+        "historical_replay_eligible": false,
+        "reason": "No recorded prediction for this exact date; reconstruction is not a substitute."
+      }
+    }
+  ],
+  "candidate_source_sha256": {
+    "engine/regime_one.py": "b36e1c10da7db6a4a120a85fceae056f9e7272214fe25bb6be9de85b06f1ced2",
+    "engine/quad_vector.py": "8c9468ab5b9fc385855e03392508aced7c38eb9eb28b62278cce4f038028f59e",
+    "scripts/validate_regime_fwd.py": "967737c5bf6b2ee29bdd7a5a7c796bd311633e3da1f33bc466754297a607e60c"
+  }
+}

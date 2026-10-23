@@ -1,0 +1,154 @@
+{
+  "source_pin": "477b9c3f449e451063634f1078fc6ce47e209648",
+  "saved_calls": 40,
+  "matured_same_basis_calls": 24,
+  "hmm_hits": 12,
+  "persistence_hits": 10,
+  "rows": [
+    {
+      "asof": "2026-06-30",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-01",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-02",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-06",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-07",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-08",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-09",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-10",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-13",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-15",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-16",
+      "saved_hmm_modal": "Q1",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-17",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-20",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-21",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q1",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-24",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-27",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-28",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-29",
+      "saved_hmm_modal": "Q3",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-30",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-07-31",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-08-03",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-08-04",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-08-05",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    },
+    {
+      "asof": "2026-08-07",
+      "saved_hmm_modal": "Q2",
+      "legacy_at_origin": "Q2",
+      "legacy_target_21_frame_rows": "Q2"
+    }
+  ],
+  "scope": "exploratory comparison using the existing horizon resolver and currently committed legacy frame; targets and origin labels not authenticated as-issued; overlapping outcomes; no out-of-sample skill, independent-N, or trading claim"
+}

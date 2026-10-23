@@ -1,0 +1,35 @@
+{
+  "prior_head_reviewed": "1269b923e92590e87ad9f4b3ecba3b9a472f9efe",
+  "review_operation": "regime-hmm-w0-ci-delta-review-terra-r3-20260909-sol-001",
+  "review_model": "gpt-5.6-terra",
+  "review_exit_code": 0,
+  "review_elapsed_seconds": 174.1,
+  "review_verdict": "PASS with data-health versus code-gate scope clarification",
+  "review_tests_run": false,
+  "review_result_source_sha256": "29e7bea1350795e5d9925354382aa5e582a40e70dac453970a40846f41390192",
+  "sol_disposition": "Accept static review, then strengthen delivery: move the same four regression suites to existing code-gated unrun-scoring-engine job; restore data job unchanged. No new job or duplicate execution.",
+  "code_gate_red": {
+    "failed": 1,
+    "seconds": 2.02,
+    "reason": "gate=code loader returns no owner for test_regime_one.py"
+  },
+  "focused_green": {
+    "passed": 88,
+    "seconds": 6.94
+  },
+  "actual_amended_step_green": {
+    "passed": 105,
+    "seconds": 7.1,
+    "command": "python -m pytest tests/test_spotlight.py tests/test_regime_one.py tests/test_regime_hmm.py tests/test_validate_regime_fwd.py tests/test_perception_contracts.py -q",
+    "full_job_executed": false
+  },
+  "code_manifest_validation": {
+    "existing_jobs": 137,
+    "exit_code": 0,
+    "execution": false
+  },
+  "model_and_policy_source_unchanged_from": "e4d6bf36da7a8960ea46010a085fc46db854bdc1",
+  "natural_production_proven": false,
+  "new_delta_review": "owed",
+  "current_protected_procedure": "63e3ddec6d8819dffe6509f3d13d41f2e94b9709"
+}
