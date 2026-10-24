@@ -336,12 +336,17 @@ def project_extended_quote(
         return None
     if row.get("extRegularSource") != "daily_file":
         return None
-    price = finite_number(row.get("extPrice"))
-    reference = finite_number(row.get("extRegularClose"))
-    observed_ms = finite_number(row.get("extAsOfMs"))
-    stamped = finite_number(row.get("extTs"))
-    checked_now = finite_number(now)
-    bound = finite_number(max_age_seconds)
+    try:
+        price = finite_number(row.get("extPrice"))
+        reference = finite_number(row.get("extRegularClose"))
+        observed_ms = finite_number(row.get("extAsOfMs"))
+        stamped = finite_number(row.get("extTs"))
+        checked_now = finite_number(now)
+        bound = finite_number(max_age_seconds)
+    except OverflowError:
+        # JSON integers can exceed float range. Invalid extended input must
+        # leave the regular tuple available rather than fail its whole route.
+        return None
     if (price is None or price <= 0 or reference is None or reference <= 0
             or observed_ms is None or observed_ms <= 0 or stamped is None
             or checked_now is None or bound is None or bound < 0

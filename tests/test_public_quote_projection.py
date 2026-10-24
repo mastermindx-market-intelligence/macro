@@ -59,7 +59,7 @@ def test_extended_tuple_preserves_regular_sign_clock_and_debranding():
 
 
 @pytest.mark.parametrize("changes", [
-    {"extPrice": 0}, {"extPrice": True}, {"extAsOfMs": None},
+    {"extPrice": 0}, {"extPrice": True}, {"extPrice": 10**1000}, {"extAsOfMs": None},
     {"extAsOfMs": float("inf")}, {"extTs": None}, {"extTs": 1},
     {"extRegularClose": 0}, {"extRegularSessionDate": "2026-10-23"},
     {"extRegularSource": "manifest"}, {"extSession": "post"},
