@@ -5733,6 +5733,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -13110,6 +13112,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -13316,6 +13320,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "templates/ticker_index.html.j2"
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
@@ -17412,6 +17417,15 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -21279,6 +21293,15 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -21532,6 +21555,14 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -24585,6 +24616,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/theme_graph/theme_state_gap.py"
       - "engine/theme_graph/theme_state_w2_qualification.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -41516,6 +41548,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - lib/symbol_directory_receipts.py
