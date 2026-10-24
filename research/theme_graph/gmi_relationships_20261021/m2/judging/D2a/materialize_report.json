@@ -1,0 +1,185 @@
+{
+ "assessments": 10,
+ "candidates_total": 120,
+ "codes": {
+  "MAGNITUDE_XBRL_AVAILABLE": 4
+ },
+ "counters": {
+  "duplicate_span_bytes": 0,
+  "excerpt_self_check_failed": 0,
+  "sources_reused": 52,
+  "sources_written": 0,
+  "subject_name_from_sec_name": 0
+ },
+ "coverage_by_state": {
+  "assessed": 14,
+  "no_supported_result": 51
+ },
+ "dirname": "D2a",
+ "edges": [
+  {
+   "object_issuer_id": "ISS:US-XNYS-CCJ",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XASE-UEC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-FLR",
+   "species": "component_dependency",
+   "subject_issuer_id": "ISS:US-XASE-UEC"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-CNX",
+   "species": "licensing",
+   "subject_issuer_id": "ISS:US-XNYS-CNR"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-WPM",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XASE-BTG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-PSX",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-CHRD"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-SHEL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-FANG"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-FNV",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-CDE"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-COP",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-CRGY"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-EPD",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-CRGY"
+  }
+ ],
+ "inputs": {
+  "D2a/candidates.jsonl": "e23bf2e64df656e2367c71267e0a1df29afa32b000ca6f06c1ec5a69da6e2dca",
+  "D2a/fetch_ledger.jsonl": "31b21ca523f769eeda7775410c7ff12eec711b9b87e16cf0bfcde6afd666e3bd",
+  "D2a/harvest_report.json": "1dbe5881724c3e955aa67c8ad3a15abf70d8c33f884e18e963b33570b9df7e7e",
+  "D2a/packs/index.json": "d2830212d6afaef825aad2d45541eb2c5a85f92c870606bff2712527f87f831e",
+  "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json": "5977c20a3bfde6280f9835d403579469d2c1252c5deb341f419c89125ca5fbd4",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
+ },
+ "judged": 120,
+ "leaf": "D2a",
+ "non_edge_reason": {
+  "ANONYMOUS_ALIAS": 13,
+  "OUT_OF_CORE_MARKET": 1,
+  "UNRESOLVED_COUNTERPARTY": 33
+ },
+ "observations": 60,
+ "outcomes": {
+  "admitted": 52,
+  "no_relationship": 68
+ },
+ "rows_by_species": {
+  "component_dependency": 5,
+  "licensing": 2,
+  "supplier_customer": 53
+ },
+ "schema": "gmi_rel_m2.materialize_report/v1",
+ "unresolved_names": [
+  {
+   "count": 3,
+   "name": "Citadel Energy Marketing LLC"
+  },
+  {
+   "count": 3,
+   "name": "Diamondback"
+  },
+  {
+   "count": 3,
+   "name": "NRG Business Marketing LLC"
+  },
+  {
+   "count": 2,
+   "name": "DK Trading & Supply LLC"
+  },
+  {
+   "count": 2,
+   "name": "EGPC"
+  },
+  {
+   "count": 2,
+   "name": "Enterprise Crude Oil LLC"
+  },
+  {
+   "count": 2,
+   "name": "ExxonMobil Corporation"
+  },
+  {
+   "count": 2,
+   "name": "Gunvor USA LLC"
+  },
+  {
+   "count": 2,
+   "name": "Marathon Petroleum Supply & Trading LLC"
+  },
+  {
+   "count": 2,
+   "name": "Pioneer Natural Resources"
+  },
+  {
+   "count": 2,
+   "name": "Shell Trading (USA) Company"
+  },
+  {
+   "count": 2,
+   "name": "Vitol Inc."
+  },
+  {
+   "count": 1,
+   "name": "ConverDyn"
+  },
+  {
+   "count": 1,
+   "name": "DTE Energy Trading, Inc"
+  },
+  {
+   "count": 1,
+   "name": "Enterprise"
+  },
+  {
+   "count": 1,
+   "name": "Fluor Enterprises, Inc."
+  },
+  {
+   "count": 1,
+   "name": "Glencore plc"
+  },
+  {
+   "count": 1,
+   "name": "MarkWest"
+  },
+  {
+   "count": 1,
+   "name": "Medallion Midstream"
+  },
+  {
+   "count": 1,
+   "name": "Shell Trading US Company"
+  },
+  {
+   "count": 1,
+   "name": "Vitol"
+  },
+  {
+   "count": 1,
+   "name": "Wheaton Precious Metals International Ltd."
+  }
+ ]
+}

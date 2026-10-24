@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2025-11-14T13:13:12Z",
+ "accession": "0000785786-25-000064",
+ "cik": "0000785786",
+ "doc_byte_length": 1840627,
+ "doc_sha256": "350c5a7f0c0c34ae303f3d058e490a306a0d221e32ded6a1e0bbbd61753a1d8c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-14",
+ "form": "10-K",
+ "period_of_report": "2025-09-27",
+ "primary_document": "plxs-20250927.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1541132,
+  "byte_start": 1540692,
+  "normalized": "As a percentage of consolidated net sales, there were no customers representing 10.0% or more of consolidated net sales for fiscal 2025 or 2024. As a percentage of consolidated net sales, GE Healthcare Technologies, Inc. (\"GEHC\") represented 10.3% of consolidated net sales for fiscal 2023.",
+  "normalized_sha256": "6d6c60b902887956684df5f3cb1bbc8035476190d7eb4efd296e44848e20b655",
+  "raw": "As a percentage of consolidated net sales, there were no customers representing 10.0% or more of consolidated net sales for fiscal 2025 or 2024. As a percentage of consolidated net sales, GE Healthcare Technologies, Inc. (\"GEHC\") represented <ix:nonFraction unitRef=\"number\" contextRef=\"c-226\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1063\">10.3</ix:nonFraction>% of consolidated net sales for fiscal 2023. ",
+  "raw_sha256": "1de61d956bc043838b6f0fceb58dea5a51bbbca8e0a85840940d3a6d099f2a3d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/785786/000078578625000064/plxs-20250927.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 107553,
+   "byte_start": 106897,
+   "context_ref": "c-226",
+   "raw": "<xbrli:context id=\"c-226\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000785786</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">plxs:GEHCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-10-02</xbrli:startDate><xbrli:endDate>2023-09-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ed997667ee9529579b97c3fdf55e63b62a2e5a1ced9aae842bc5c3a96c49a9e7"
+  }
+ ]
+}

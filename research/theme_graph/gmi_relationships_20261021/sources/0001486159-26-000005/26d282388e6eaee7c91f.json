@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-26T22:02:25Z",
+ "accession": "0001486159-26-000005",
+ "cik": "0001486159",
+ "doc_byte_length": 2869109,
+ "doc_sha256": "4bc53a8216a3428249387b48c14022f456594fb6d67b335d661ba3cec0760182",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "chrd-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2504851,
+  "byte_start": 2503820,
+  "normalized": "For the year ended December 31, 2024, sales to Phillips 66 Company accounted for approximately 19% of the Company’s total product sales. For the year ended December 31, 2023, sales to Phillips 66 Company and Gunvor USA LLC accounted for approximately 20% and 14%, respectively, of the Company’s total product sales. No other purchasers accounted for more than 10% of the Company’s total sales for the years ended December 31, 2025, 2024 or 2023.",
+  "normalized_sha256": "1f69880b06eb883789e451e43b67c37caecd37c78e8c0dc9db4bd426e08f9c74",
+  "raw": " </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">For the year ended December 31, 2024, sales to Phillips 66 Company accounted for approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-317\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1388\">19</ix:nonFraction>% of the Company&#8217;s total product sales. For the year ended December 31, 2023, sales to Phillips 66 Company and Gunvor USA LLC accounted for approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-318\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1389\">20</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-319\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1390\">14</ix:nonFraction>%, respectively, of the Company&#8217;s total product sales. No other purchasers accounted for more than 10% of the Company&#8217;s total sales for the years ended December 31, 2025, 2024 or 2023. ",
+  "raw_sha256": "26d282388e6eaee7c91f4ebd3506dd542b78d032ba257c43e4faca8976283d0a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1486159/000148615926000005/chrd-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 149740,
+   "byte_start": 149081,
+   "context_ref": "c-318",
+   "raw": "<xbrli:context id=\"c-318\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001486159</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">chrd:Phillips66CompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4c92a405ac0be803f11cd4dd02bbef149285410b70a63923f967eede423f376e"
+  },
+  {
+   "byte_end": 150394,
+   "byte_start": 149740,
+   "context_ref": "c-319",
+   "raw": "<xbrli:context id=\"c-319\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001486159</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">chrd:GunvorUSALLCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "907c8b4ab6ae01b4a43cc20e9bc6eefb1069b4f0e98d11d8b276d69a09bbffa5"
+  }
+ ]
+}

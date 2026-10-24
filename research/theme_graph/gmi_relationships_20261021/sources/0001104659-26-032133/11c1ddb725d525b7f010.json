@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 3481073,
+ "doc_sha256": "1efa13dbf4b36b88a0623401536fa0ed165807b8b83518d91cc07c12745d3cb0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 983653,
+  "byte_start": 982276,
+  "normalized": "On March 27, 2024, the Company amended its precious metal stream agreement with reference to the gold and silver production from the Condestable mine in Peru by advancing, through its wholly-owned subsidiary, FNBC, an additional up-front deposit of $10.0 million to Southern Peaks Mining Limited (a private company prior to its subsequent acquisition by Rio2 Limited) for a total combined deposit of $175.0 million.",
+  "normalized_sha256": "4a791840c3f4934fc57f9aa54cc60495a2c575d1d896154ba1c7c66324145a79",
+  "raw": "On March 27, 2024, the Company amended its precious metal stream agreement with reference to the gold and silver production from the Condestable mine in Peru by advancing, through its wholly-owned subsidiary, FNBC, an additional up-front deposit of </span><span style=\"color:#000000;font-style:normal;\">$<ix:nonFraction unitRef=\"Unit_Standard_USD_jUFdv3AaQUCYj0BNOkbJBw\" contextRef=\"As_Of_3_27_2024_ifrs-full_BusinessCombinationsAxis_fnv_CondestableGoldAndSilverStreamAcquisitionPeruMember_Lq4PYvFz5EmIXU6zC-i7OQ\" decimals=\"-5\" format=\"ixt:num-dot-decimal\" name=\"fnv:AdditionalUpFrontDepositForGoldAndSilverProduction\" scale=\"6\" id=\"Narr_5rbzwcweE021C1L8nEB18Q\">10.0</ix:nonFraction></span><span style=\"color:#000000;font-style:normal;\"> million to Southern Peaks Mining Limited (a private company prior to its subsequent acquisition by Rio2 Limited) for a total combined deposit of </span><span style=\"color:#000000;font-style:normal;\">$<ix:nonFraction unitRef=\"Unit_Standard_USD_jUFdv3AaQUCYj0BNOkbJBw\" contextRef=\"As_Of_3_27_2024_ifrs-full_BusinessCombinationsAxis_fnv_CondestableGoldAndSilverStreamAcquisitionPeruMember_Lq4PYvFz5EmIXU6zC-i7OQ\" decimals=\"-5\" format=\"ixt:num-dot-decimal\" name=\"fnv:TotalCombinedDepositForGoldAndSilverProduction\" scale=\"6\" id=\"Narr_ffrOFyQzT0qMNXDfV2IDBg\">175.0</ix:nonFraction></span><span style=\"color:#000000;font-style:normal;\"> million.",
+  "raw_sha256": "11c1ddb725d525b7f0100dd69094f8f0f655a78f695f4a66cc4cca8b2772853f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d3.htm",
+ "xbrl_contexts": []
+}

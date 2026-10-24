@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1744540,
+  "byte_start": 1743107,
+  "normalized": "For the year ended December 31, 2025, Customers A and B in the Materials segment accounted for 30% and 23% of the Company’s total revenue, respectively; Customer C, primarily in the Magnetics segment, accounted for 31% of the Company’s total revenue. For the year ended December 31, 2024, Customers B and A in the Materials segment accounted for 78% and 20% of the Company’s total revenue, respectively. For the year ended December 31, 2023, Customer B in the Materials segment accounted for 96% of the Company’s total revenue.",
+  "normalized_sha256": "c8614e062d29485c3f392639d7b9405e36475aab04b9654c37ab5798d673ecaa",
+  "raw": "For the year ended December 31, 2025, Customers A and B in the Materials segment accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-53\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-484\">30</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-54\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-485\">23</ix:nonFraction>% of the Company&#8217;s total revenue, respectively; Customer C, primarily in the Magnetics segment, accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-55\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-486\">31</ix:nonFraction>% of the Company&#8217;s total revenue. For the year ended December 31, 2024, Customers B and A in the Materials segment accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-56\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-487\">78</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-57\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-488\">20</ix:nonFraction>% of the Company&#8217;s total revenue, respectively. For the year ended December 31, 2023, Customer B in the Materials segment accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-58\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-489\">96</ix:nonFraction>% of the Company&#8217;s total revenue.",
+  "raw_sha256": "5cd30724e2e960bd34bd4556e967c5ebef786b3916766b1b0423d2be786c2e3c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 30704,
+   "byte_start": 30046,
+   "context_ref": "c-56",
+   "raw": "<xbrli:context id=\"c-56\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001801368</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mp:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0e1e93edbc7e1ce760e922606c4c0f977c963c029bc6cd0cf8bd021db8dbc1a1"
+  },
+  {
+   "byte_end": 31362,
+   "byte_start": 30704,
+   "context_ref": "c-57",
+   "raw": "<xbrli:context id=\"c-57\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001801368</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">mp:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "5ebc383d4eef3f6e9ea4fb51c02b68075e8a72d0e7f38ac39e3a46bc6524308c"
+  }
+ ]
+}
