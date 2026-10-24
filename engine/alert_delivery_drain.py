@@ -513,11 +513,33 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if ent.state == READ_UNAVAILABLE:
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     requires_tier = payload.get("requires_tier")
+    if category == "options_exposure_node":
+        # Category policy is server-owned. A missing/free payload cannot lower
+        # the native Options plan minimum; a legitimate stricter tier survives.
+        rank = tier_rank()
+        if rank is None or "essential" not in rank:
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        if requires_tier is not None and not isinstance(requires_tier, str):
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        requested = normalize_tier(requires_tier)
+        # Unknown nonempty requirements retain the incumbent fail-closed
+        # entitlement decision; never downgrade a future tier to essential.
+        if not requested or (requested in rank
+                             and rank.index(requested) < rank.index("essential")):
+            requires_tier = "essential"
+        else:
+            requires_tier = requested
     ent_decision = entitlement_decision(ent, now_utc, requires_tier=requires_tier)
     if ent_decision == "unavailable":
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     if ent_decision == "suppress":
         return Decision(action="suppress", reason="entitlement_lapsed", to_email=to_email, lang=prefs.lang)
+    if category == "options_exposure_node":
+        # Preparatory preference only: the exact source/action and independently
+        # trusted arming/prior-state reader is not connected. Neither opt-in,
+        # plan access nor serialized row grant fields can substitute for it.
+        return Decision(action="unevaluable", reason="options_exposure_node_admission_unavailable",
+                        to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
         # surface it as unevaluable (typed, counted, visible in the run receipt).
