@@ -64,7 +64,7 @@ unresolved:
   - PR 1790 c4d2868 removes the prior review blocker files but has no exact changed-head independent PASS.
   - HC-P3.T1 installed inputs remain unqualified; the original dirty review carrier contains an unpublished projection/materializer candidate that overlaps T1a and requires custody/source reconciliation.
 next_actions:
-  - Consume the same Cursor child's actual scope-ruling acknowledgment and source/result on its existing thread.
+  - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Obtain incumbent original-run effect reconciliation and qualified independent review without duplicating held attempts.
   - Reconcile T1a's unpublished overlap in original review operation deepseek-current-bridge-acp-review-20261022-sol-001; no new implementation was placed.
@@ -234,3 +234,24 @@ CI 40116278162 SUCCESS, with 11 synthetic subprocess fixtures and real donor NOT
 Its plain-root 200-HTML requirement does not supersede the retained same-pin 401 auth gate;
 its default urllib redirect handling also leaves the claimed loopback-only boundary unproven.
 Do not repeat unchanged startup or the refused token exchange to manufacture new acceptance.
+
+
+#### Fleet-return consumption checkpoint
+
+Rakazo RESULT 1792871008.734709 is bound to original child and replacement
+bc-3aad7289-82db-5570-aef5-9bf911172fd3, Draft #1852,
+b7b98450b4cb887c2e9097c47378624e157ed562. Root read all 12 changed paths and
+verified CI 40123982918 SUCCESS. Ten native pure-module cases are reported; no
+root rerun or full product journey occurred. Parent disposition is REQUEST_REPAIR:
+pre-import source integrity, owned temporary cleanup, ambient execution inputs and
+accurate projection/transition proof labels. HC-P1B.T1.R1 is pinned before ruling;
+the same source carrier stays owned, with independent review still owed.
+
+New preparation review HC-P7.T0.R1 was delivered on thread 1792870956.550899;
+reviewer identity/START/result remain pending. #1853 CI 40126167301 was IN_PROGRESS
+at the latest read. ACP read-only custody reconciliation was requested in the original
+commission at 1792870984.522399; no new ACP child was placed.
+
+Secretary PICKUP 1792870556.368209 accepts the read-only original-run Fabric
+reconciliation role on m2studio for the three retained runs. This establishes accountable
+pickup, not execution absence, retry eligibility or a semantic verdict. All holds remain.

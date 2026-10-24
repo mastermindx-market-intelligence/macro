@@ -136,10 +136,10 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Consume the same child's actual source/result on C0CBC6AEAQZ/1792865049.365069.
-      Secretary receipt 1792868663.648029 reports the old carrier finished/archived,
-      no published source effect, and replacement bc-3aad7289-82db-5570-aef5-9bf911172fd3
-      running on Mastermind. Require actual branch/SHA, path proof, CI and independent review.
+      Issue and consume same-child repair HC-P1B.T1.R1 for returned Draft #1852 at
+      b7b98450b4cb887c2e9097c47378624e157ed562 (CI 40123982918 SUCCESS).
+      Repair pre-import pin integrity, owned cleanup, ambient environment and proof
+      labels; then obtain independent review. Full reference-app journey remains open.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
@@ -823,7 +823,7 @@ The detailed task states below are also editorial; START requires an actual flee
 | HC-P0 | — | Exact source and donor pins, custody/effect recovery, accepted startup receipts preserved | Assigned Meta-CEO | accepted recovery |
 | HC-P1A.T1 | HC-P0 | Real DSH modules run the deterministic send/stream/cancel/resume/schedule/restart reference journey | Admitted Fabric implementation worker; independent reviewer separate | original run terminal/unverified; paths held |
 | HC-P1A.T2 | HC-P1A.T1 | Authenticated full-app UI proof through a permitted interaction | Qualified UI executor after exact authentication boundary is resolved | blocked for the historical refused token-exchange action |
-| HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Cursor cloud implementation worker via existing admitted placement | replacement running; source/result pending |
+| HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Original Cursor child, same #1852 branch; independent reviewer separate | source returned/CI green; bounded R1 repair required |
 | HC-P2 | HC-P1A | One admitted route with actual identity/meter and failure evidence | Existing provider/Capacity domain + bounded adapter worker | T0 source published/CI green; independent review and live phase pending |
 | HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | T1a unpublished overlap found; original-carrier reconciliation; installed execution held |
 | HC-P4 | HC-P3 | Existing Wake/Dialogue continuity and actual 24-hour canary | Continuity domain | proposed |
@@ -890,12 +890,62 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **DONE_WHEN:** actual runnable observations or a precise reproducible platform blocker;
   independent source review; comparison identifies integration burden and missing proof.
 - **Risk / rollback:** disposable local fixture state, no account secrets or production writes.
-- **State:** Secretary receipt 1792868663.648029 reports the original carrier finished
-  and archived, both publication attempts denied by 403, and no PR/handoff. Replacement
-  bc-3aad7289-82db-5570-aef5-9bf911172fd3 is running on Mastermind from pre-start public
-  HEAD f93a807e278dd333650f02701318a5fc827c3b64. Original root/parent and admission are
-  preserved; actual branch/source/result and independent review remain pending in the
-  same C0CBC6AEAQZ/1792865049.365069 thread.
+- **State:** replacement bc-3aad7289-82db-5570-aef5-9bf911172fd3 returned Draft #1852
+  at b7b98450b4cb887c2e9097c47378624e157ed562, via 1792871008.734709. Actual source
+  branch is cursor/rakazo-hc-p1b-qualification-2fd3; exact-head CI 40123982918 SUCCESS.
+  Original root/parent are preserved. Parent source consumption found four bounded
+  repair requirements below; no independent acceptance or full app journey is claimed.
+
+### HC-P1B.T1.R1 — Repair the returned Rakazo qualification
+
+- **Original child/source:** meta-ceo-harness-rakazo-cursor-20261024-01,
+  Cursor bc-3aad7289-82db-5570-aef5-9bf911172fd3; original thread
+  C0CBC6AEAQZ/1792865049.365069. Returned Draft Mastermind #1852 at
+  b7b98450b4cb887c2e9097c47378624e157ed562, branch
+  cursor/rakazo-hc-p1b-qualification-2fd3. Root verified CI 40123982918 SUCCESS.
+  Actual scope is 12 files: ten integration files, tests/test_rakazo_qualification.py
+  and one scoped .gitignore entry. The Secretary's all-under-integrations shorthand
+  is not the changed-file census.
+- **Ruling:** REQUEST_REPAIR, source qualification only. Actual donor pure functions are
+  imported, with explicit Prisma/row-security load stubs; this is useful native-module
+  evidence but is not the full reference app journey, live effect enforcement or restart.
+- **F1 — immutable input before execution:** ensurePinCheckout accepts matching HEAD
+  without rejecting tracked/index/untracked source drift. observePinnedRakazo(root)
+  imports modules before its direct-root identity check. Function substring markers
+  do not establish immutable source. Qualify actual canonical root and loaded source
+  before any donor import; reject modified/mismatched roots and relevant shadow files.
+  Add a sentinel mutation test proving refusal before import/observation.
+- **F2 — owned source/cleanup:** ensurePinCheckout uses a predictable shared
+  tmpdir/rakazo-pin-<sha> and rmSync(recursive,force) on mismatch. Replace destructive
+  shared-cache behavior with an attempt-owned disposable directory or existing
+  source-qualified read-only checkout. Never remove or repair a caller-provided or
+  unowned path; make cleanup/timeout effects bounded and observable. Prove another
+  invocation's/unowned sentinel directory survives a rejected lookup.
+- **F3 — ambient execution:** git/npm and the test child inherit process.env, including
+  NODE_OPTIONS and ambient user/tool configuration. Use an explicit minimal test/
+  acquisition environment with owned empty homes/config where required, preserving
+  only reviewed inputs. No credential values may be read or moved. Use synthetic
+  canaries to prove ambient provider-key, proxy/config and NODE_OPTIONS injection
+  cannot widen or alter the execution.
+- **F4 — proof ceiling:** restart_persistence only checks transitions and repeats a
+  path function; disconnect/cancel/approval cases use fabricated events and pure
+  decisions/keys. Rename claims to their actual projection/transition/key behavior.
+  Record process restart/persistence, real disconnect/stream/cancel and committed-effect
+  deduplication as NOT_RUN until actually observed. Distinguish an absent Cordis host
+  from a database-backed product journey whose prerequisites have not been qualified.
+  One harmless prerequisite census may identify the exact next disposable testkit
+  requirement; this repair does not install/start a database, API or service.
+- **Allowed repair scope:** the same #1852 qualification package, related test and
+  scoped ignore entry. Preserve #1850, #1853, P1A held paths and ACP dirty source.
+  No new PR/child/carrier, no alternate account, formal approval, merge, purchase,
+  credential move, policy change or live provider call.
+- **DONE_WHEN:** discriminating new source/env/ownership guards and existing native
+  module cases pass; exact new head, changed paths, commands/results and hosted CI
+  return on the original thread. Independent non-author fleet review remains owed
+  after repair; no HC-P1B/full mission acceptance from this source-only result.
+- **State:** READY_FOR_SAME_CHILD_REPAIR; pinned before sending the explicit ruling.
+  The existing builder retains source custody pending that continuation or a concrete
+  same-carrier blocker. No terminal source-writer release has been inferred.
 
 ### HC-P2.T0 — DSH sealed-analysis source boundary
 
@@ -1080,8 +1130,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   original root/parent, existing Mastermind admission only. This is a new T0 subject,
   not a replay or replacement for any held Fabric/P2 review. Require actual agent ID,
   START, independent reviewer provenance and result on its original placement thread.
-- **State:** READY_FOR_PLACEMENT; source frozen, author will consume the result.
-  HC-P7 and the original mission stay incomplete regardless of this source verdict.
+- **State:** DELIVERY_SENT on C0CBC6AEAQZ/1792870956.550899; actual independent
+  reviewer identity/START/result remain pending. Source is frozen. HC-P7 and the
+  original mission stay incomplete regardless of this source verdict.
 
 ### Accepted progress and outstanding gates
 
@@ -1266,3 +1317,24 @@ CI 40116278162 SUCCESS, with 11 synthetic subprocess fixtures and real donor NOT
 Its plain-root 200-HTML requirement does not supersede the retained same-pin 401 auth gate;
 its default urllib redirect handling also leaves the claimed loopback-only boundary unproven.
 Do not repeat unchanged startup or the refused token exchange to manufacture new acceptance.
+
+
+#### Fleet-return consumption checkpoint
+
+Rakazo RESULT 1792871008.734709 is bound to original child and replacement
+bc-3aad7289-82db-5570-aef5-9bf911172fd3, Draft #1852,
+b7b98450b4cb887c2e9097c47378624e157ed562. Root read all 12 changed paths and
+verified CI 40123982918 SUCCESS. Ten native pure-module cases are reported; no
+root rerun or full product journey occurred. Parent disposition is REQUEST_REPAIR:
+pre-import source integrity, owned temporary cleanup, ambient execution inputs and
+accurate projection/transition proof labels. HC-P1B.T1.R1 is pinned before ruling;
+the same source carrier stays owned, with independent review still owed.
+
+New preparation review HC-P7.T0.R1 was delivered on thread 1792870956.550899;
+reviewer identity/START/result remain pending. #1853 CI 40126167301 was IN_PROGRESS
+at the latest read. ACP read-only custody reconciliation was requested in the original
+commission at 1792870984.522399; no new ACP child was placed.
+
+Secretary PICKUP 1792870556.368209 accepts the read-only original-run Fabric
+reconciliation role on m2studio for the three retained runs. This establishes accountable
+pickup, not execution absence, retry eligibility or a semantic verdict. All holds remain.
