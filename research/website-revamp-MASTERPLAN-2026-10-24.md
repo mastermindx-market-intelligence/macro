@@ -4,7 +4,9 @@
 
 ## 1. Decision and scope
 
-The project has substantial implementation, including source already present on Macro main, a retained International integration candidate, and three merged commercial repairs. Its remaining problem is delivery and acceptance across those pieces. The original International release is still held. The commercial preferences consumer is installed, while its Macro producer is still an Operations-owned Draft. No reviewed evidence closes the complete commercial or International user journey.
+The project has substantial implementation, including source already present on Macro main, a retained International integration candidate, and three merged commercial repairs. Its remaining problem is delivery and acceptance across those pieces. The original International release is still held. At the census cut, the commercial preferences consumer was installed and its Macro producer was an Operations-owned Draft; the later release-state change is recorded immediately below. No reviewed evidence closes the complete commercial or International user journey.
+
+**Execution update after the census cut:** the requested file, Draft docs PR [#10163][PLANPR] and [channel summary][SLPOST] were published, then P0-1 began. The producer subsequently became ready with its original CI green, but the normal controller requires fresh proof for changed main check definitions and deferred under the global capacity limit. Independent source qualification found two concrete remaining preference-retention gaps, R1/R2 in §12. These now precede a clean P0-1 acceptance; Operations and the existing consumer owner retain adjudication and repair custody.
 
 Keep two explicit tracks under the existing Website Revamp charter:
 
@@ -13,7 +15,7 @@ Keep two explicit tracks under the existing Website Revamp charter:
 
 The broad 78-page Paper census, Options Research Lab, other project masterplans, unrelated shared-shell implementation, and historical pricing/product experiments do not become new Website Revamp work. Adjacent code may require coordination, but its ownership remains where it is. The named Codex thread's October 20 scope clarification and the recovered October 24 charter establish this boundary. [^S1][^S2]
 
-**First priority:** independently qualify Macro #10147's account-safe preferences producer against the consumer already installed by Terminal #1170, then let Operations finish its existing release. Begin that qualification after publishing this plan and the requested Slack summary. Do not create a competing source writer, CI observer, release process or queue.
+**First priority:** close the R1/R2 preference-retention findings discovered by the independent Macro #10147 / installed Terminal #1170 qualification, then finish Operations' existing producer release and actual user acceptance. The review began after this plan and the requested Slack summary were published. Existing source/release owners retain the work; no competing source writer, CI observer, release process or queue is needed.
 
 ## 2. Bootstrap, evidence standard and continuity
 
@@ -277,7 +279,7 @@ Owners below are existing accountable roles. A role name does not claim a new wo
 
 | Priority / existing task | Owner and next concrete action | Dependencies and acceptance checks |
 | --- | --- | --- |
-| **P0-1 / T004: close account-safe preferences delivery** | Operations `01a118ef…` retains #10147 writer/CI/release. This Pro session independently reviews exact producer `febba618…` against installed consumer `ec881d5e…`, reads retained test/pair evidence and records source compatibility/findings. Compatibility retains Terminal runtime ownership. | Consumer installed: satisfied narrowly. Preserve one `mm.pendingPrefs` outbox; errors/rejections retain intent; owner checked against fresh auth; A cannot replay to B; stale ACK cannot clear newer intent; legacy guest behavior preserved; production Shared Shell stays OFF. Required exact-head CI/review, ordinary merge/install and publicly referenced producer bytes must pass before release acceptance. |
+| **P0-1 / T004: close account-safe preferences delivery** | Operations `01a118ef…` retains #10147 writer/CI/release. This Pro session has reviewed exact producer `febba618…` against installed consumer `ec881d5e…`; existing source owners now adjudicate/repair R1/R2 in §12, then Operations completes its ordinary release. Compatibility retains Terminal runtime ownership. | Consumer installed: satisfied narrowly. Preserve one `mm.pendingPrefs` outbox; errors/rejections retain intent; owner checked against fresh auth; A cannot replay to B; stale ACK cannot clear newer intent; legacy guest behavior preserved; production Shared Shell stays OFF. Required exact-head CI/review, ordinary merge/install and publicly referenced producer bytes must pass before release acceptance. |
 | **P0-2 / T005: prove the actual commercial journey** | Original Website root coordinates current commercial/billing/growth owners. Use existing authorized account/provider test facilities and existing reporting pipeline. | After producer install: landing→signup/email verification→preferences→first useful sourced intelligence→existing trial/checkout/entitlement→fresh supported return. Bind identity, opaque attribution, canonical server events, durable entitlement and reporting Ns/cohort windows. Isolated fixtures remain a separate evidence class. |
 | **P0-3 / T006, parallel where lawful: recover the International release path** | Original root owns #8754; existing integration/release owner retains controls. First disposition the four local commits and current-main/adjacent-source differences. | Read/source comparison can proceed without denied artifacts. Cause-based CI repair requires admitted diagnostic evidence or a genuinely applicable restoration edge. Required checks/reviews must then pass at the chosen exact integration head; no bypass/replacement carrier. |
 | **P1-1 / T007: qualify useful positive data paths** | Root assigns bounded source/data reviewers through existing owners; no new market-data authority. | Overview/Compare/Macro/Risk/History must have useful qualified observations or honest explained gaps, not a passing all-null shell. Bind source, rights, observation/publication/ingestion dates, PIT status, adjustment basis, calendars, common windows and coverage. The qualifier EFFECT_UNKNOWN/frozen T03k fences in §8 remain controlling; this priority is not permission to replay them. Manual Scenario works during data outage. |
@@ -332,9 +334,64 @@ This census is complete when the requested file and Draft PR are verifiably publ
 
 Independent plan review checked scope, owner custody and item counts before Draft publication. Its two material corrections—explicit qualifier/T03k preservation and moving-head/test-receipt revision binding—are incorporated above.
 
-## 12. Execution receipt — to be appended after publication
+## 12. P0-1 execution receipt — independent source qualification started
 
-At the census cut, no new producer review result, new source deployment or new full-user acceptance is claimed. The first execution receipt will identify the exact inspected producer/consumer revisions, behavior decisions, retained test/runtime evidence, any defects and remaining release gates. It will be appended to this same document and the census checkpoint after the requested Slack summary.
+**Assessment:** the wire format and observed single-context guards are compatible; a complete newer-intent/durability acceptance is **not established**. Two source-level findings require owner disposition. This review changes no PR controls, starts no new CI observer and claims no production incident or actual authenticated acceptance.
+
+### Revision, test and installation binding
+
+At review start, 17:40:58 UTC, #10147 was open/ready at the same producer `febba6187407219d9e902194120c02589a4b0975`. Operations' new [canonical receipt][OPSRETURN] supersedes the earlier in-progress CI observation: run `40112832585` completed all 12 packs/final gate (103 jobs/322 proof steps), observer `18754` exited 0 and was consumed. The ordinary controller `40115879484` then deferred refresh because main `11f88c73…` changed check definitions and all eight indexed-proof capacity slots were occupied. Earlier green is stale for those changed definitions; source is not merged or installed by this receipt.
+
+The same Operations receipt binds 59 local account-preference cases, 156 template/site pairs, syntax and diff checks to `febba618…`. This review independently compared **all 22 candidate paths** against previously reviewed `c340849c1498af4953eb459e411c11b7ed38d7d8`: every Git blob matches. This preserves the applicability of unchanged-code review; it does not replace the required new check-definition proof. The retained counts were not rerun or added to other suites.
+
+| Inspected source | Bound Git blob / receipt |
+| --- | --- |
+| Macro `templates/onboard.js` and `site/onboard.js` | Both `8d8ee6bab6db5471fc9604fe0ba8003a2f6b78f2` at producer `febba618…`. [PRODUCERONBOARD] |
+| Macro `templates/theme.js` | `01b32fa8864f8e2af425675013464601b7e4f24b`; generated `site/theme.js` is separately `2bef2fbe406b4c6bba6847e8e1b79fa881b065d7`, with pair normalization covered by the retained receipt. [PRODUCERTHEME] |
+| Macro pending-preference test | `2dfabf47fe5907492e458745613fdbb9b2dceb73`; existing tests cover SDK result errors/rejections, owner switches, newer values already visible at settlement, malformed records and one-instance delivery sharing. [PRODUCERTEST] |
+| Installed consumer outbox | `be80ece33ce849059ea080cb8c3b0675d650cb3f` at Terminal `ec881d5ee991fa6a600adf22b26664066e052e5f`. [CONSUMEROUTBOX] |
+| Installed consumer provider/sheet | Provider `50a9b302de7350d8a57f131f3c10dda679e57692`; Sheet `e4c1249d4c8e7e451f2640df1ceed08575669725`. [CONSUMERPROVIDER][CONSUMERSHEET] |
+| Retained production-OFF runtime record | Independently read and hashed `combined1170-off-runtime.json`: SHA-256 `cb6e948122a51fa5e352c9f5d332838bf78ea656d60d275ea0a3f118109e3dec`, matching the original release-summary reference. This revalidates the retained record, not a new live deployment probe. |
+
+### Compatible behavior credited
+
+Both sides use the existing `mm.pendingPrefs` key. Authenticated records use a one-element root array `[{prefs, attempts, owner_user_id}]`; the old readers reject or ignore that root shape. Canonical owners are validated, unknown authority fields are excluded from outgoing metadata, and a different account cannot deliberately replace or replay an existing owned record. The Macro writer captures the actor and queues before client/auth awaits, then compares fresh `getUser()` and current shell identity at dispatch/settlement. Terminal supplies its own fresh subject callback and keeps authenticated unknown-ID intent in the existing per-tab wizard until an actual user ID can bind it.
+
+Resolved SDK errors and rejected promises retain the pending record. Each implementation shares an in-flight delivery within its module instance; Terminal's bounded retry budget is per pass, not a lifetime abandonment counter. Guest/unowned legacy shapes intentionally remain unbound for later authenticated delivery. They must not be described as already account-bound. The provider contains no Shared Shell activation gate for this recovery work; the installed-OFF receipt is consistent with that code, while a real authenticated production path remains untested here.
+
+### R1 — read/check/write is not atomic across storage contexts
+
+**Owner:** Operations coordinates with the current Macro and Terminal preferences owners. **Location:** Macro `_pendingCAS` and `_deliverPendingPrefs`; Terminal `replaceSnapshot` and `deliverOnePass`. **Disposition:** an unconditional cross-context “a stale ACK/retry cannot lose newer intent” guarantee fails the controlled source counterexample.
+
+Both helpers read current bytes and then separately call `removeItem` or `setItem`. The Web Storage standard explicitly supplies no assumed locking across agent clusters. A later writer can therefore change shared storage after the checked value was captured. This is a model of two same-origin writers sharing one storage key. [WEBSTORAGE]
+
+A fresh Node harness executed the exact Macro delivery/helper functions with synthetic `account-a` identity and a mock provider. It injected a newer same-owner HK choice after a particular storage read while the older US choice was being acknowledged. No credentials, browser, network or provider writes were involved. The independently reviewed consumer helper exhibited the same limitation.
+
+| Controlled case | Actual outcome | Newer choice |
+| --- | --- | --- |
+| Newer value written after the settlement snapshot read, before the final helper check | `held` | Preserved; existing fencing works for an already-visible change. |
+| Newer value written after the helper's final `getItem` captured old bytes, before ACK deletion | `delivered` with old US patch | Deleted. |
+| Same final-read interleaving on a failed provider response, before retry-count rewrite | `pending` | Overwritten by old US patch with attempts 1. |
+
+**Reproduction contract:** initialize the owned US record; make both `getUser()` calls return account A; let `updateUser` resolve either success or error; in the storage adapter count `getItem` calls. In a fresh `_deliverPendingPrefs()` pass, inject the owned HK record immediately after capturing the return value of read 3 for the control, and read 4 for the failing cases. Return the captured old value from that read. Inspect the delivery result and retained raw storage. This distinguishes the already-covered newer-before-check case from the uncovered final-check-to-write interval.
+
+**Acceptance before claiming the complete guarantee:** the existing owners must demonstrate the supported writer/serialization model and retain newer intent through ACK deletion, retry rewrite and queue merge under overlapping contexts. Any repair must account for supported old/new writers and keep account binding, failure retention and the single existing outbox contract. A repeated unit pass that only changes storage before the final check does not close R1. A production-loss incident was not observed, and this evidence does not establish A→B metadata corruption.
+
+### R2 — a rejected guest enqueue can be followed by clearing its only recovery stash
+
+**Owner:** current Terminal preferences source owner, coordinated by Website root and Operations. **Location:** `OnboardingSheet.persistPrefs`, `handleClose`, `OnboardingProvider` and `writePendingPrefs`. **Disposition:** deterministic source-path gap requiring repair/qualification before the full guest recovery guarantee is accepted.
+
+Start with a retained bound account-A outbox. A later signup awaiting email confirmation chooses preferences. The Sheet's `confirmPending || !effEmail` branch calls `writePendingPrefs(payload)` and ignores its Boolean result. The helper correctly returns false when an unowned guest tries to replace A's owned record. That branch does not set `prefsPending` or `prefsActorEmail`. The wizard may advance through Free to Done; Done-close clears `SS_WIZARD` when `prefsActorEmail` is empty. The guest choice then has neither an outbox entry nor its wizard recovery copy. A narrowly extracted execution of the actual consumer decoder/writer and Sheet callbacks confirmed false enqueue, zero pending/actor flag updates, zero SDK calls, unchanged A bytes and removal of the guest wizard on Done-close. The old A record remains protected, so this is loss of the new guest's intent rather than an unauthorized write to another account. [CONSUMERSHEET][CONSUMEROUTBOX]
+
+The provider cannot recover that missing choice later: it prefers any existing outbox, and its wizard fallback requires both `prefsPending` and matching `prefsActorEmail`. A retained foreign-owned outbox does not satisfy those conditions for the guest. This differs from the authenticated unknown-ID branch, which explicitly records recoverable pending intent before awaiting identity. [CONSUMERPROVIDER]
+
+**Acceptance:** reject the enqueue safely while preserving truthful pending status and recoverable guest intent in the existing permitted state; do not overwrite A or invent a guest user ID. Cover confirmation-pending signup with a foreign-owned/malformed/full unavailable outbox, Continue→Free→Done→close→same-tab restore, later genuine identity binding and the eventual acknowledged write. Explicitly state per-tab durability limits; closing the entire tab is not equivalent to a same-tab remount. This review did not exercise a real signup/email provider.
+
+### Updated next action
+
+P0-1 is now **source qualification with R1/R2 open**, with wire-shape/guard compatibility credited. Operations retains its ordinary controller continuation; no duplicate observer, manual refresh, capacity change, merge or install was launched here. The current owners should consume these findings on their existing carriers before treating the complete retention contract as accepted. P0-2's authenticated journey and the independent International work remain open in the sequence above.
+
+The original census state is preserved as a dated snapshot; this receipt supersedes its #10147 Draft/in-progress-observer projection. An ending GitHub check at **17:47:22 UTC** found producer head still `febba6187407219d9e902194120c02589a4b0975`, open/ready/unmerged, with the existing `merge-on-green` label and native auto-merge null. No source-head delta invalidated this review. The docs PR was still Draft, unmerged and unarmed before its execution-receipt update. No source/release control was altered.
 
 ## Sources and retained evidence
 
@@ -370,5 +427,15 @@ Remote paths below belong to the verified M2 host. They are evidence locators, n
 [SL1]: https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792799203942879
 [SL2]: https://mastermindxgroup.slack.com/archives/C0BRFC9JXK8/p1792824805231569
 [SL3]: https://mastermindxgroup.slack.com/archives/C0BRFC9JXK8/p1792488367470349
+[PLANPR]: https://github.com/mastermindx-market-intelligence/macro/pull/10163
+[SLPOST]: https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792863620955109
+[OPSRETURN]: https://github.com/mastermindx-market-intelligence/macro/pull/10147#issuecomment-6387309492
+[PRODUCERONBOARD]: https://github.com/mastermindx-market-intelligence/macro/blob/febba6187407219d9e902194120c02589a4b0975/templates/onboard.js
+[PRODUCERTHEME]: https://github.com/mastermindx-market-intelligence/macro/blob/febba6187407219d9e902194120c02589a4b0975/templates/theme.js
+[PRODUCERTEST]: https://github.com/mastermindx-market-intelligence/macro/blob/febba6187407219d9e902194120c02589a4b0975/tests/js/onboarding_pending_prefs.test.cjs
+[CONSUMEROUTBOX]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec881d5ee991fa6a600adf22b26664066e052e5f/terminal/lib/onboardingPrefsOutbox.ts
+[CONSUMERPROVIDER]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec881d5ee991fa6a600adf22b26664066e052e5f/terminal/components/onboarding/OnboardingProvider.tsx
+[CONSUMERSHEET]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec881d5ee991fa6a600adf22b26664066e052e5f/terminal/components/onboarding/OnboardingSheet.tsx
+[WEBSTORAGE]: https://html.spec.whatwg.org/multipage/webstorage.html
 
 Additional retained receipt: `combined1170-off-runtime.json` under the same Compatibility evidence directory, expected SHA-256 `cb6e948122a51fa5e352c9f5d332838bf78ea656d60d275ea0a3f118109e3dec`. Original packet files, acceptance matrices and local-only commits remain in their existing custody; this docs plan neither republishes denied artifacts nor alters their admission status.
