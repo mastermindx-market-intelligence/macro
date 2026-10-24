@@ -716,3 +716,35 @@ OS40134195121 SUCCESS, separately from already-consumed independent review564013
 pinned but not yet requested. T2 UI remains gated on producer review/source custody.
 MISSION_COMPLETE=false; no final RESULT. Actual implementation continues here;
 the existing scheduled task remains a completion notifier only.
+
+### Fleet and UI custody checkpoint
+
+Task publicationcc159635 preceded FIX1 delivery1792882937.627179; same-child relay
+1792883042.424209 reports idle/no-in-flight writer and run-09dc3b8a on original
+bc-263fbf9e/#1859. Nineteen paths, source repair/CI/independent review still open.
+FIX1.A1 now pins actual mounted CONTENT_OVER_BUDGET export/consumer proof before
+the T2 handoff; no extra committed path or fabricated fallback.
+
+Rakazo author freeze consumed/STOP1792882953.033159. Independent reviewer
+bc-5990d16e-c1bf-5c0f-a7c9-f84ec52816b6 START1792883050.322879 follows placement
+1792882960.991679 and immutable#1852/372a5500. Separate topology source/readiness
+placement1792883195.455409 has no actual START yet, no topology execution authority.
+
+One #1790/c4d Fabric review request ended with "aborted by user after148.1s";
+no request/controller/launch receipt returned. Same-run status at23:05UTC is
+NOT_FOUND/root-unverified/absence-false/retry-false. No replay or substitute.
+HC-P3.DSH.R5.RECON pins only a bounded original-owner record inquiry before asking
+Secretary; do not turn the canceled transport into absence or a review verdict.
+
+HC-P6.T2.CUSTODY command exited0. Six named carriers are clean on12UI paths.
+Five have no target commits absent from protected3095. The remaining4c2b4f0
+carrier is already-published Draft#1473 (not unpublished), with only Executive
+READ-only scope/SEND guards+tests among these paths. Its MANAGED_ACTIVE/locked
+registry state is preserved, not a termination/transfer receipt. T2.A1 resolves
+separate acquisition responsibility by forbidding Token/exchange/executivePost/
+Executive capability/test-block changes, without adopting or mutating#1473.
+It also pins actual App request-owner races, atomic hook refs/revisions, conditional
+host capability and legacy ResultCard compatibility. T2 implementation remains
+blocked on final T1 proof/review and exact source base; no child placed.
+
+No approvals/merges/purchases/credentials/account changes; MISSION_COMPLETE=false.
