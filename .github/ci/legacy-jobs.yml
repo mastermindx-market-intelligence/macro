@@ -36832,7 +36832,7 @@ jobs:
       - "engine/tiingo_news.py"
       - "scripts/build_news.py"
       - "tests/test_tiingo_news.py"
-      - "tests/test_tiingo_sqlite_bridge.py"  # Tiingo publisher identity, rights and SQLite read-only proof
+      - "tests/test_tiingo_sqlite_bridge.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
       - "engine/press/adjusted_baseline.py"
       - "templates/press/press_news.css"
