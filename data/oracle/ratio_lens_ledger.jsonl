@@ -978,3 +978,4 @@
 {"date": "2026-10-24", "pair_id": "memory_vs_equipment", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.006589, "leg_den_ret_1w": -0.074408, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-10-24", "pair_id": "ailogic_vs_legacy", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.044003, "leg_den_ret_1w": 0.00168, "state": "TRENDING", "kind": "basket"}
 {"date": "2026-10-24", "pair_id": "software_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.099701, "leg_den_ret_1w": -0.044003, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-10-24", "pair_id": "sox_vs_qqq", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.032656, "leg_den_ret_1w": -0.007637, "state": "NO_ANCHOR", "kind": "etf"}
