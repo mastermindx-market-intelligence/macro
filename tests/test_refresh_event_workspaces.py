@@ -445,6 +445,72 @@ def test_p1_body_failure_keeps_stage_through_phase1_without_any_publication(monk
     assert '"request_stage":"immutable_workspace_body"' in rendered
 
 
+@pytest.mark.parametrize("site", ["chain", "current_marker"])
+@pytest.mark.parametrize("category", ["timeout", "http_error"])
+def test_p1_chain_and_current_marker_failures_are_closed(monkeypatch, tmp_path, capsys, caplog, site, category):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    secret = "SYNTHETIC_SECRET https://private.invalid/?signed=SYNTHETIC_SECRET"
+    if category == "http_error":
+        response = requests.Response()
+        response.status_code = 503
+        original = requests.HTTPError(secret, response=response)
+    else:
+        original = TimeoutError(secret)
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    fake = _FakeR2()
+    if site == "chain":
+        monkeypatch.setattr(owner.ci_reader, "read_event_source_revisions", fail)
+        with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+            owner._event_known_revisions(FLAGSHIP_EVENT_ID)
+    else:
+        with pytest.raises(RefreshError) as caught:
+            _refresh(tmp_path, fake, current_marker_loader=fail)
+    assert caught.value.__cause__ is original
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    expected = {"request_stage": None, "exception_category": category,
+                "http_status": 503 if category == "http_error" else None}
+    assert reader.read_failure_diagnostics(caught.value) == expected
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SYNTHETIC_SECRET" not in rendered and "private.invalid" not in rendered
+    assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in str(caught.value)
+    if site == "chain":
+        assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in output.out
+
+
+@pytest.mark.parametrize("already_current", [True, False])
+def test_p1_sibling_publish_noop_never_claims_new_promotion(tmp_path, monkeypatch, capsys, already_current):
+    import socket
+    from scripts import publish_company_intelligence_r2 as publisher
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    def no_write_publish(path, **kwargs):
+        kwargs.pop("s3")
+        kwargs.pop("bucket")
+        class CurrentStore:
+            def get_object(self, *, Bucket, Key):
+                assert Key == WS_MARKER
+                return {"Body": io.BytesIO((path / "event_workspaces" / "manifest.json").read_bytes()), "ETag": "fixture"}
+            def put_object(self, **kwargs):
+                pytest.fail("already-current generation must not CREATE or promote anything")
+        return publisher.publish_event_workspaces(path, s3=CurrentStore() if already_current else None,
+                                                  bucket="fixture", **kwargs)
+    monkeypatch.setitem(globals(), "publish_event_workspaces", no_write_publish)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    assert fake.puts == []
+    output = capsys.readouterr().out
+    assert "immutable generation published" not in output
+    assert "sibling marker promoted" not in output
+    assert "event workspaces: generation validated; publish step returned success" in output
+
+
 class _FakeRequestsResponse:
     def __init__(self, *, status_code: int, payload: object = None):
         self.status_code = status_code
