@@ -2136,3 +2136,57 @@ def test_d_observation_probe_scope_refused_before_actual_attempt(observation_cas
     out=_run_observation(c,config=replace(c.config,transport=Probe()))
     assert out['state']=='STOPPED' and out['attempts']==0 and not c.calls
     assert json.loads(c.receipt.read_text())['requests'][0]['state']=='NOT_ATTEMPTED'
+
+
+def test_d_observation_wrong_return_dates_never_stamped_as_target(observation_case):
+    c=observation_case;c.mode['kind']='date'
+    assert _run_observation(c)['state']=='WITHHELD'
+    record=json.loads(c.receipt.read_text())
+    for request in record['requests']:
+        assert request['parameters']['start_date']==20260819
+        assert request['returned_frame_dates']==['2026-08-18T00:00:00']
+        assert 'source_date' not in request
+    assert record['requested_greek_version']=='1' and record['model_scope'] is None
+    assert record['requests'][1]['response_model_metadata'] is None
+    assert record['requests'][1]['frame_request_version_provenance'] is None
+
+
+@pytest.mark.parametrize('kind',['missing_expiry','timezone_expiry','intraday_expiry','expired_report',
+    'intraday_report_date','live_baseline_mismatch'])
+def test_d_observation_known_invalid_local_baseline_precedes_claim(observation_case,kind):
+    c=observation_case;p=c.store/'oi/SPY/2026.parquet';frame=pd.read_parquet(p)
+    d=frame.date.eq(pd.Timestamp(D_MID));s=frame.date.eq(pd.Timestamp(S_MID))
+    if kind=='missing_expiry':frame.loc[d,'expiration']=pd.NaT
+    elif kind=='timezone_expiry':frame['expiration']=frame.expiration.dt.tz_localize('America/New_York')
+    elif kind=='intraday_expiry':frame.loc[d,'expiration']=pd.Timestamp('2027-02-19T12:00:00')
+    elif kind=='expired_report':frame.loc[d,'expiration']=pd.Timestamp(S_MID)
+    elif kind=='intraday_report_date':frame.loc[d,'date']=pd.Timestamp(D_MID)+pd.Timedelta(hours=12)
+    else:frame.loc[s & frame.strike.eq(745.),'strike']=746.
+    frame.to_parquet(p,index=False)
+    out=_run_observation(c)
+    assert out['state']=='WITHHELD' and out['attempts']==0
+    assert not c.calls and not c.receipt.exists()
+
+
+def test_d_observation_expired_baseline_retained_and_explicitly_excluded(observation_case):
+    c=observation_case;p=c.store/'oi/SPY/2026.parquet';frame=pd.read_parquet(p)
+    old=_observation_frame(S_MID,oi=True).iloc[:1].copy()
+    old['expiration']=pd.Timestamp(S_MID);old['strike']=700.
+    pd.concat([frame,old]).to_parquet(p,index=False)
+    out=_run_observation(c)
+    assert out['state']=='OBSERVED_COMPLETE'
+    coverage=out['coverage']
+    assert coverage['counts']['oi_S']==3
+    assert coverage['excluded_before_D']=={'eod_D':0,'greeks_D':0,'oi_D':0,'oi_S':1}
+    assert coverage['observed_contracts']==2 and all(v==0 for v in coverage['missing_by_input'].values())
+    retained=pd.read_csv(c.receipt.parent/'oi_S.csv')
+    assert len(retained)==3 and '2026-08-18' in set(retained.expiration)
+    record=json.loads(c.receipt.read_text())
+    assert record['local_report_copies'][1]['rows']==3
+    assert record['local_report_copies'][1]['excluded_expiry_before_D']==1
+    # A live extra/missing member is never converted into the expiry exclusion.
+    a=_observation_frame(D_MID);g=a.iloc[:1].copy()
+    d=_observation_frame(D_MID,oi=True);s=pd.concat([_observation_frame(S_MID,oi=True),old])
+    value=topup._d_session_coverage(a,g,d,s,D=D_MID,S=S_MID,requested_version='1')
+    assert not value['ready'] and value['missing_by_input']['greeks_D']==1
+    assert value['excluded_before_D']['oi_S']==1 and value['observed_contracts']==2

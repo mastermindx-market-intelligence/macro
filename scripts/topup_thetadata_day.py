@@ -689,7 +689,8 @@ def _d_session_coverage(eod, greeks, oi_d, oi_s, *, D, S, requested_version):
     counts = {name: len(frame) if isinstance(frame, pd.DataFrame) else 0
               for name, frame in frames.items()}
     result = dict(ready=False, reason='missing_input', counts=counts,
-                  D=D.isoformat(), S=S.isoformat(), observed_contracts=None)
+                  D=D.isoformat(), S=S.isoformat(), observed_contracts=None,
+                  population='reported_live_contracts_expiry_gte_D', excluded_before_D={})
     if requested_version != '1':
         return dict(result, reason='greek_version_unestablished')
     populations = []
@@ -720,13 +721,17 @@ def _d_session_coverage(eod, greeks, oi_d, oi_s, *, D, S, requested_version):
         keys = list(zip(expiry, values['strike'], frame['right']))
         if len(set(keys)) != len(keys):
             return dict(result, reason='ambiguous_membership')
-        populations.append(set(keys))
+        live_keys = {key for key in keys if key[0] >= pd.Timestamp(D)}
+        result['excluded_before_D'][name] = len(keys)-len(live_keys)
+        populations.append(live_keys)
     union = set.union(*populations)
     result['observed_contracts'] = len(union)
     result['missing_by_input'] = {name: len(union-population)
         for name, population in zip(frames, populations)}
     result['matched_contracts'] = len(set.intersection(*populations))
     result['market_universe_complete'] = None
+    if not union:
+        return dict(result, reason='empty_live_observed_population')
     if any(population != union for population in populations):
         return dict(result, reason='incomplete_observed_membership')
     return dict(result, ready=True, reason='complete_observed_inputs')
@@ -737,13 +742,16 @@ def _d_session_local_oi(store, D, S):
     import hashlib
     import numpy as np
     import pyarrow.parquet as pq
-    columns = ['root', 'expiration', 'strike', 'right', 'date', 'open_interest']
+    required = {'root', 'expiration', 'strike', 'right', 'date', 'open_interest'}
     parts, references = [], []
     for year in sorted({D.year, S.year}):
         path = store / 'oi' / 'SPY' / f'{year}.parquet'
         if not path.is_file() or path.is_symlink() or path.stat().st_size > 256*1024*1024:
             raise ValueError('local_oi_unavailable')
         parquet = pq.ParquetFile(path)
+        columns = parquet.schema.names
+        if len(columns) > 64 or not required <= set(columns):
+            raise ValueError('local_oi_schema')
         indices = [parquet.schema.names.index(col) for col in columns]
         decoded = sum(parquet.metadata.row_group(i).column(j).total_uncompressed_size
                       for i in range(parquet.metadata.num_row_groups) for j in indices)
@@ -753,8 +761,9 @@ def _d_session_local_oi(store, D, S):
         with path.open('rb') as stream:
             for chunk in iter(lambda: stream.read(1024*1024), b''):
                 digest.update(chunk)
-        frame = pd.read_parquet(path, columns=columns,
-            filters=[('date', '>=', pd.Timestamp(S)), ('date', '<=', pd.Timestamp(D))])
+        frame = pd.read_parquet(path, columns=columns, filters=[
+            [('date', '>=', pd.Timestamp(day)),
+             ('date', '<', pd.Timestamp(day)+pd.Timedelta(days=1))] for day in [S, D]])
         if len(frame) > 200000:
             raise ValueError('local_oi_row_bound')
         parts.append(frame)
@@ -763,18 +772,28 @@ def _d_session_local_oi(store, D, S):
             first_availability=None))
     frame = pd.concat(parts, ignore_index=True)
     dates = pd.to_datetime(frame['date'], errors='coerce')
+    if (dates.isna().any() or dates.dt.tz is not None
+            or not dates.isin([pd.Timestamp(D), pd.Timestamp(S)]).all()):
+        raise ValueError('invalid_local_oi_report_dates')
     reports = [frame[dates.eq(pd.Timestamp(day))].copy() for day in [D, S]]
     if any(f.empty or len(f) > 100000 for f in reports):
         raise ValueError('missing_local_oi_or_baseline')
+    live_populations = []
     for report, day in zip(reports, [D, S]):
         strike = pd.to_numeric(report['strike'], errors='coerce')
         interest = pd.to_numeric(report['open_interest'], errors='coerce')
         expiry = pd.to_datetime(report['expiration'], errors='coerce')
         if (not report['root'].eq('SPY').all() or not report['right'].isin(['C', 'P']).all()
-                or expiry.isna().any() or not np.isfinite(strike).all() or (strike <= 0).any()
+                or expiry.isna().any() or expiry.dt.tz is not None
+                or not expiry.eq(expiry.dt.normalize()).all() or (expiry < pd.Timestamp(day)).any()
+                or not np.isfinite(strike).all() or (strike <= 0).any()
                 or not np.isfinite(interest).all() or (interest < 0).any()
                 or report.duplicated(['expiration', 'strike', 'right', 'date']).any()):
             raise ValueError('ambiguous_or_invalid_local_oi')
+        live_populations.append({key for key in zip(expiry, strike, report['right'])
+                                 if key[0] >= pd.Timestamp(D)})
+    if not live_populations[0] or live_populations[0] != live_populations[1]:
+        raise ValueError('incompatible_live_local_oi_baseline')
     return *reports, references
 
 
@@ -823,11 +842,26 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
     record = dict(outcome, schema='options.d_session_observation/v1', state='PREPARED',
         reason=None, original_root=config.original_root, assigning_parent=config.assigning_parent,
         entered_at=entered_at.isoformat(), started_at=datetime.now(timezone.utc).isoformat(),
-        first_availability=None, market_universe_complete=None, model_scope='requested_version_1_only',
+        first_availability=None, market_universe_complete=None, model_scope=None,
+        requested_greek_version='1',
         local_inputs=local_refs, max_gets=2, requests=[], economic_expiry=None,
         model_details=None, topup_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
     def save():
         _eod_retain(directory/'receipt.json', json.dumps(record, allow_nan=False, sort_keys=True).encode())
+    save()
+    # Full normalized local reports, before the declared expiry exclusion, stay
+    # in this private observation evidence. These are not original vendor CSVs.
+    record['local_report_copies'] = []
+    for name, report in [('oi_D', oi_d), ('oi_S', oi_s)]:
+        body = report.to_csv(index=False).encode()
+        if len(body) > 32*1024*1024:
+            raise ValueError('Private local-report copy byte bound')
+        _eod_retain(directory/(name+'.csv'), body)
+        expiry = pd.to_datetime(report['expiration'])
+        record['local_report_copies'].append(dict(name=name, rows=len(report),
+            bytes=len(body), sha256=hashlib.sha256(body).hexdigest(),
+            excluded_expiry_before_D=int((expiry < pd.Timestamp(ctx.D)).sum()),
+            representation='normalized_local_report_before_live_population_exclusion'))
     save()
     class Budget(BoundedRequestBudget):
         def begin(self, session, url):
@@ -893,11 +927,20 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
             raw_rows = frame.attrs.get('_bounded_raw_rows')
             if type(raw_rows) is not int or not 0 < raw_rows <= 100000:
                 raise ValueError('Missing/out-of-bound actual raw row count')
-            if kind=='greeks' and frame.attrs.get('requested_version', '1') != '1':
-                raise ValueError('Conflicting Greek model/version scope')
+            if kind=='greeks':
+                request_provenance = frame.attrs.get('requested_version')
+                entry['frame_request_version_provenance'] = request_provenance
+                entry['response_model_metadata'] = None
+                if request_provenance is not None and request_provenance != '1':
+                    raise ValueError('Conflicting Greek request-version provenance')
             entry.update(state='PARSED', parsed_at=datetime.now(timezone.utc).isoformat(),
                          raw_rows=raw_rows, normalized_rows=len(frame))
-            entry['source_date'] = ctx.D.isoformat()
+            returned_dates = pd.to_datetime(frame['date'], errors='coerce') if 'date' in frame else None
+            entry['returned_frame_dates'] = None
+            if returned_dates is not None and not returned_dates.isna().any():
+                unique_dates = list(pd.unique(returned_dates))
+                if len(unique_dates) <= 8:
+                    entry['returned_frame_dates'] = sorted(pd.Timestamp(value).isoformat() for value in unique_dates)
             frames[kind] = frame
             save()
         if _time.monotonic() >= deadline_at:

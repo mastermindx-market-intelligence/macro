@@ -793,9 +793,16 @@ An existing private retention parent is required outside the canonical store.
 The exact SPY/date/17:30 claim is exclusive and fsynced. It reserves each attempt
 before GET. Refusal, uncertain return, incomplete capture and existing claims
 never become retries at 19:00/21:00. Raw observations/receipts stay private; no raw
-licensed payload is committed. Complete normalized observed membership across
-EOD[D], Greeks[D], OI[D] and OI[S] is reported separately from missing/ambiguous
-membership. Zero OI is valid; missing is not zero. Requested version is not an
+licensed payload is committed. The declared observation population is contracts with expiration >= D. Full
+local reports and canonical file hashes are retained before exclusions; valid
+S-expiring baseline rows are explicitly counted as expiry-before-D exclusions.
+Invalid/missing/non-normalized expiration is never an exclusion. Eligible local
+OI[D]/OI[S] membership must agree before a pilot request. Coverage uses the union
+of eligible reported contracts across EOD[D], Greeks[D], OI[D] and OI[S], with
+per-input missing counts; it never silently intersects away a missing live member.
+Returned frame dates are derived from actual frame values (or unknown), separate
+from request/target D. Version1 is request provenance; absent response-model
+metadata remains unknown. Zero OI is valid; missing is not zero. Requested version is not an
 invented model/tenor/Greek-unit certificate. `OBSERVED_COMPLETE` means this strict
 observed four-input composition only: market completeness, economic expiry,
 model details, earliest availability, PIT and instantaneous/pricing capabilities

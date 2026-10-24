@@ -411,7 +411,10 @@ must not request another license approval or invent a vendor contract.
 After a separately qualified source/install/access/capacity boundary, a distinct
 natural 17:30 ET SPY session could be admitted with two total physical attempts,
 including any probe/retry/redirect (those are forbidden rather than extra calls).
-It reads existing OI[D]/OI[S], exclusively claims its exact date/rung under the
+It validates existing OI[D]/OI[S] and their eligible live-contract membership,
+retaining full local report copies/hashes and explicit S-expiry exclusions. Missing
+expiration is not an exclusion, and a missing nonexpired member is not zero. It
+exclusively claims its exact date/rung under the
 existing canonical lock, reserves before GET, retains private raw bytes before
 parse, and preserves refusal/unknown/no-replay. Missing local reports or wrong
 rung/forced/nonsession/lock refusal mean no pilot calls. There is no automatic
