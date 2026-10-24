@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AVGO-BULL-20260731",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 20.6,
-  "raw_confidence": 20.1,
-  "delta_vs_base": -39.4,
+  "management_confidence": 20.3,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -39.7,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 17.6,
+    "validity": 16.3,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 49.9
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.276,
+    "dist_to_stop_r": 0.261,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -0.4827,
-    "p2": -0.2413,
+    "horizon_pct_used": 173.3,
+    "p1": -0.4925,
+    "p2": -0.2463,
     "p3": null,
-    "move_r": -0.724,
+    "move_r": -0.739,
     "mfe_r": 0.0,
-    "mae_r": -0.728
+    "mae_r": -0.739
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -104.56000976562501,
+  "_mae": -106.12000732421876,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
+  "days_elapsed": 78,
+  "tau": 1.7333,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

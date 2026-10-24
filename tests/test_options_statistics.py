@@ -1,7 +1,7 @@
 """Synthetic contract tests; no provider or production acceptance implied."""
 
 from copy import deepcopy
-from decimal import localcontext
+from decimal import Inexact, Rounded, ROUND_DOWN, Subnormal, Underflow, localcontext
 import json
 
 import pytest
@@ -127,3 +127,28 @@ def test_underflow_is_missing_premium_not_known_zero():
 @pytest.mark.parametrize("root", ["BRK-B", "^SPX", "ABC=", "123", "SPXW"])
 def test_incumbent_root_alphabet_is_preserved(root):
     assert measure_observed_prints([row(root=root)])["totals"]["print_count"] == 1
+
+
+@pytest.mark.parametrize("sample", [
+    row(price=1e100, size=1, premium_multiplier=100),
+    row(price=1e-100, size=1, premium_multiplier=1),
+    row(price=1e-310, size=1, premium_multiplier=1),
+    row(price=1.2345, size=1, premium_multiplier=100),
+])
+def test_arithmetic_is_independent_of_caller_decimal_context(sample):
+    expected = measure_observed_prints([sample])
+    with localcontext() as caller:
+        caller.prec = 2
+        caller.Emax = 99
+        caller.Emin = -99
+        caller.rounding = ROUND_DOWN
+        caller.clamp = 1
+        caller.traps[Inexact] = True
+        caller.traps[Rounded] = True
+        caller.traps[Subnormal] = True
+        caller.traps[Underflow] = True
+        caller.flags[Inexact] = True
+        before = repr(caller)
+        assert measure_observed_prints([sample]) == expected
+        assert repr(caller) == before
+        json.dumps(expected, allow_nan=False)
