@@ -267,14 +267,15 @@ _MM_MAX_BATCH = 40
 # review) lives on the registry entries themselves. tests/test_growth_events_registry.py
 # pins the derivation: reintroducing a hardcoded set literal here turns its
 # registry-authority guard red.
-_MM_EVENT_TYPES = growth_registry.accepted_wires()
+# Server-only live wires have an internal producer and never enter this public set.
+_MM_EVENT_TYPES = growth_registry.accepted_wires(source="client")
 # Envelope-v1 wires (CA1A): these additionally require a stable UUID `eid` (seated in
 # the analytics_events.eid unique column, so an exact replay is ONE row), the frozen
 # `schema` tag, and a closed, typed `meta` validated against the registry — invalid
 # events are dropped with a bounded diagnostic, never coerced. The handoff decision
 # DEC:ANALYTICS-EID-USES-EXISTING-EVENT-PRIMARY-KEY assumed a UUID id primary key; the
 # live table's id is a bigint identity, so the §16 canary moved eid to its own column.
-_MM_V1_WIRES = growth_registry.envelope_v1_wires()
+_MM_V1_WIRES = growth_registry.envelope_v1_wires(source="client")
 
 _MM_V1_DROP_COUNTS: dict[str, int] = {}
 
@@ -447,14 +448,21 @@ def _mm_int(v: Any, lo: int, hi: int):
     return max(lo, min(hi, x))
 
 
-def _mm_analytics_insert(rows: list, access_token: str | None = None) -> None:
-    """Best-effort PostgREST insert into analytics_events. Never raises (runs as a background task).
+def _mm_analytics_insert(rows: list, access_token: str | None = None, *, strict: bool = False) -> None:
+    """PostgREST analytics insert. Legacy callers remain best-effort/non-raising.
+
+    strict=True is reserved for an internal server fact requiring synchronous ACK;
+    a missing configuration or failed/ambiguous write then raises for same-eid retry.
 
     When a Supabase access token is present, verify it (cached) and stamp the resulting
     user UUID on every row so authenticated visitors are attributed to their account.
     user_id is a uuid FK to auth.users, so only a VERIFIED id is ever written.
     """
-    if not rows or not SUPABASE_SERVICE_ROLE_KEY:
+    if not rows:
+        return
+    if not SUPABASE_SERVICE_ROLE_KEY:
+        if strict:
+            raise RuntimeError("server analytics persistence not configured")
         return
     if access_token:
         uid = _mm_verify_uid_cached(access_token)
@@ -479,8 +487,54 @@ def _mm_analytics_insert(rows: list, access_token: str | None = None) -> None:
             },
         )
         urllib.request.urlopen(req, timeout=5).read()
+        if strict:
+            # ignore-duplicates also ACKs an eid occupied by a different fact. The
+            # unique column is shared with client events, so an ACK alone cannot
+            # establish that this server conversion exists. Verify the retained
+            # first fact through the same table/identity before settling Stripe.
+            for row in rows:
+                eid = urllib.parse.quote(str(row["eid"]))
+                verify = urllib.request.Request(
+                    f"{SUPABASE_URL}/rest/v1/analytics_events?eid=eq.{eid}"
+                    "&select=eid,type,site,user_id,client_ts,meta",
+                    headers={"apikey": SUPABASE_SERVICE_ROLE_KEY,
+                             "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}"},
+                )
+                retained = json.loads(urllib.request.urlopen(verify, timeout=5).read())
+                if not isinstance(retained, list) or len(retained) != 1:
+                    raise RuntimeError("server analytics acknowledgement unavailable")
+                actual = retained[0]
+                same_fields = all(actual.get(k) == row.get(k) for k in ("eid", "type", "site", "user_id"))
+                same_meta = json.dumps(actual.get("meta"), sort_keys=True) == json.dumps(row.get("meta"), sort_keys=True)
+                actual_time = datetime.fromisoformat(actual["client_ts"].replace("Z", "+00:00"))
+                expected_time = datetime.fromisoformat(row["client_ts"])
+                if not same_fields or not same_meta or actual_time != expected_time:
+                    raise RuntimeError("server analytics identity conflict")
     except Exception:
-        pass  # analytics ingest is best-effort; never surface to the caller
+        if strict:
+            raise  # Server facts cannot settle their originating event without an ACK.
+        pass  # legacy/client analytics remains best-effort
+
+
+def _mm_server_growth_insert(wire: str, eid: str, user_id: str, event_created: int, meta: dict) -> None:
+    """Internal server producer; never exposed as a route or client-source override.
+
+    Stripe's verified event clock uses the existing event-time column client_ts;
+    created_at remains the DB observation clock. Lost ACKs retry the same eid with
+    ignore-duplicates: first accepted facts are immutable. No cross-table transaction
+    or eventual delivery is claimed by this synchronous acknowledgement boundary.
+    """
+    if (wire not in growth_registry.accepted_wires(source="server")
+            or wire not in growth_registry.envelope_v1_wires(source="server")):
+        raise ValueError("server growth wire not live")
+    canonical, reason = growth_registry.validate_v1_event(
+        wire, eid, growth_registry.SCHEMA_VERSION, meta)
+    if reason or not isinstance(user_id, str) or not user_id.strip():
+        raise ValueError("invalid server growth event")
+    row = {"eid": canonical, "type": wire, "site": "macro", "user_id": user_id,
+           "client_ts": datetime.fromtimestamp(event_created, tz=timezone.utc).isoformat(),
+           "meta": meta}
+    _mm_analytics_insert([row], strict=True)
 
 
 # Per-IP burst throttle for the anonymous analytics beacon. An in-memory sliding
