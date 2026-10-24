@@ -26,20 +26,29 @@ not an output publication or durability clock. A rerun has a new receipt while
 same-asof ledger deduplication and native transition calculations remain unchanged.
 
 `verify_prospective_input_capture(root, state)` is a read-only integration surface.
-It requires the receipt digest, clocks, causal output and retained input lengths and
-hashes to agree. It resolves files from one existing publication, including the
+It checks the receipt self-hash, declared clocks, causal output structure and listed
+input lengths and hashes. It resolves files from one existing publication, including the
 retained producer source and definition population. For the append-only ledger it
 checks the exact captured predecessor byte prefix; it does not authenticate later
 appends, prove that proposed transitions were committed, or relabel older rows.
-Missing input bytes (including a never-created predecessor ledger), unresolved LFS
-pointers, and an absent, malformed, stale, oversized or mismatched receipt are
+A listed input whose bytes are missing (including a never-created predecessor
+ledger), an unresolved LFS pointer in a listed input, and an absent, malformed,
+stale, oversized or mismatched receipt are
 unavailable. A later normal run can bind an actually retained ledger, including an
-existing empty ledger; no cold-start bytes are invented. A match
-means only `retained_input_bytes_match`. It supplies no publication receipt or
-provider authentication. A normal Git publication must retain the same input bytes;
+existing empty ledger; no cold-start bytes are invented. A match means only
+`listed_input_bytes_match`, with `verification_scope` limited to listed bytes and the
+declared definition population. The generation id is a self-hash, not a signature.
+Deleting a causal data read and recomputing that hash can still produce a listed-byte
+match. The verifier cannot establish producer execution authenticity or causal-read
+completeness; both remain explicitly unqualified, loaded-code authentication stays
+unavailable, and `causal_lineage_acceptance` is always false. A receipt claiming an
+upgrade is refused. This result must not be used as full causal lineage, scientific,
+publication or provider-authentication acceptance. It supplies no publication receipt.
+A normal Git publication must retain the same listed input bytes;
 a later path that has changed is not a substitute for that publication.
 
-Coverage is limited to causal detectors, chain definitions and predecessor state.
+The declared producer capture scope is causal detectors, chain definitions and
+predecessor state. The verifier does not independently prove that scope complete.
 Company substrate and weekly calibration are display enrichments and are excluded
 from the causal output digest. Upstream forex/transmission JSON is an immediate
 input: this receipt does not recursively prove the acquisition clocks of its own
@@ -50,7 +59,10 @@ state limit, the optional block is omitted. Missing metadata never confers eligi
 A future real-path acceptance needs an ordinary later producer result, its normal
 Git publication retaining every referenced input (including producer source and
 ledger prefix), a genuine publishing receipt, and consumer access to that exact
-generation. The current Explorer manifest and `gap_state` behavior are unchanged;
+generation. Full lineage acceptance additionally needs evidence of genuine producer
+execution and complete causal read coverage; this self-hashed receipt and checker
+cannot provide that evidence. The current Explorer manifest and `gap_state` behavior
+are unchanged;
 `owner_transition_unsettled` stays a refusal. Older episodes remain historically
 unqualified. No old daily/graph effect is replayed by this change.
 

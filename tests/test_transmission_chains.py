@@ -1193,7 +1193,7 @@ def test_prospective_receipt_binds_actual_reads_and_keeps_native_observation_dat
     row = next(r for r in receipt["reads"] if r["path"] == "data/yahoo/CL_F.parquet")
     raw = (tmp_path / row["path"]).read_bytes()
     assert row["sha256"] == hashlib.sha256(raw).hexdigest() and row["bytes"] == len(raw)
-    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "retained_input_bytes_match"
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "listed_input_bytes_match"
     # The append remains the incumbent transition vocabulary/key and has no invented clock.
     ledger = tc._read_ledger(tmp_path / "data/transmission/chain_episodes.jsonl")
     assert ledger and all("input_capture" not in r and "known_at" not in r for r in ledger)
@@ -1254,7 +1254,7 @@ def test_prospective_receipt_does_not_qualify_mutable_display_enrichments(tmp_pa
         row.update(blast={"changed": True}, base_rates={"changed": True}, tier="calibrated_context")
         for hop in row["hops"]:
             hop["base_rate"] = {"changed": True}
-    assert tc.verify_prospective_input_capture(tmp_path, changed)["status"] == "retained_input_bytes_match"
+    assert tc.verify_prospective_input_capture(tmp_path, changed)["status"] == "listed_input_bytes_match"
     assert state["input_capture"]["excluded"] == ["company_substrate", "weekly_calibration", "provider_release_history"]
 
 
@@ -1262,7 +1262,7 @@ def test_prospective_receipt_verifies_existing_ledger_prefix_after_append(tmp_pa
     first = _captured_synthetic_run(tmp_path)
     second = tc.run(root=tmp_path, write=True, resolve_blast_radius=False)
     assert first["input_capture"]["generation_id"] != second["input_capture"]["generation_id"]
-    assert tc.verify_prospective_input_capture(tmp_path, second)["status"] == "retained_input_bytes_match"
+    assert tc.verify_prospective_input_capture(tmp_path, second)["status"] == "listed_input_bytes_match"
     ledger = tmp_path / "data/transmission/chain_episodes.jsonl"
     ledger.write_text("{}\n" + ledger.read_text())
     assert tc.verify_prospective_input_capture(tmp_path, second)["status"] == "unavailable"
@@ -1312,3 +1312,31 @@ def test_prospective_capture_retargeted_input_symlink_is_an_incompatible_read(tm
     assert capture.read(link) == b"second"
     assert capture.reason == "input_changed_during_evaluation"
     assert set(capture.reads) == {"data/input"}
+
+
+def test_prospective_self_hash_cannot_authenticate_complete_causal_read_coverage(tmp_path):
+    import copy
+    import hashlib
+    state = _captured_synthetic_run(tmp_path)
+    changed = copy.deepcopy(state)
+    receipt = changed["input_capture"]
+    assert any(r["path"] == "data/yahoo/CL_F.parquet" for r in receipt["reads"])
+    receipt["reads"] = [r for r in receipt["reads"] if r["path"] != "data/yahoo/CL_F.parquet"]
+    # Deliberately omit a real causal read and recompute the public content checksum.
+    payload = {k: v for k, v in receipt.items() if k != "generation_id"}
+    receipt["generation_id"] = "sha256:" + hashlib.sha256(tc._capture_json(payload)).hexdigest()
+    result = tc.verify_prospective_input_capture(tmp_path, changed)
+    assert result["status"] == "listed_input_bytes_match"
+    assert result["verification_scope"] == "listed_bytes_and_declared_definition_population"
+    assert result["producer_execution_authenticity"] == "unqualified"
+    assert result["causal_read_completeness"] == "unqualified"
+    assert result["loaded_code_authentication"] == "unavailable"
+    assert result["causal_lineage_acceptance"] is False
+    assert result["scientific_acceptance"] is False and result["publication_receipt"] is None
+    # Even a recomputed receipt may not upgrade these unsupported claims.
+    receipt["causal_lineage_acceptance"] = True
+    payload = {k: v for k, v in receipt.items() if k != "generation_id"}
+    receipt["generation_id"] = "sha256:" + hashlib.sha256(tc._capture_json(payload)).hexdigest()
+    rejected = tc.verify_prospective_input_capture(tmp_path, changed)
+    assert rejected["status"] == "unavailable"
+    assert rejected["causal_lineage_acceptance"] is False

@@ -445,6 +445,9 @@ class _InputReadCapture:
                    "excluded": ["company_substrate", "weekly_calibration", "provider_release_history"],
                    "producer_source_sha256": self.producer_sha256,
                    "loaded_code_authentication": "unavailable",
+                   "producer_execution_authenticity": "unqualified",
+                   "causal_read_completeness": "unqualified",
+                   "causal_lineage_acceptance": False,
                    "reads": sorted(self.reads.values(), key=lambda row: row["path"]),
                    "definition_directories": self.directories,
                    "causal_state_sha256": hashlib.sha256(_capture_json(_causal_projection(state))).hexdigest(),
@@ -459,12 +462,20 @@ class _InputReadCapture:
 
 
 def verify_prospective_input_capture(root: Path, state: dict) -> dict:
-    """Resolve a receipt against existing retained files; never qualify PIT or transitions.
+    """Check LISTED bytes, declared definitions and output structure, not lineage.
 
-    Call on a single normal Git publication to establish retention. A request-time
-    manifest alone is insufficient. The forward ledger preserves the captured BEFORE
-    prefix; no rows are relabelled with a new clock, and no writer is called here.
+    The generation id is a self-hash, not an execution signature. This reader cannot
+    detect every causal read omitted from a recomputed receipt, authenticate which
+    code executed, or establish the list's completeness. Its result always leaves
+    those facts unqualified and causal-lineage acceptance false. Call on one normal
+    Git publication to resolve the listed bytes; that still supplies no publication
+    receipt. Ledger checking covers only the recorded BEFORE prefix, without writes.
     """
+    limits = {"verification_scope": "listed_bytes_and_declared_definition_population",
+              "producer_execution_authenticity": "unqualified",
+              "causal_read_completeness": "unqualified",
+              "loaded_code_authentication": "unavailable",
+              "causal_lineage_acceptance": False}
     try:
         receipt = state["input_capture"]
         if receipt["schema"] != "txi.prospective_input_read.v1" or receipt["status"] != "observed_input_bytes":
@@ -479,7 +490,11 @@ def verify_prospective_input_capture(root: Path, state: dict) -> dict:
             raise ValueError("capture_clock_unavailable")
         if (receipt["source_available_at"] is not None or receipt["first_ingested_at"] is not None
                 or receipt["scientific_acceptance"] is not False
-                or receipt["observation_asof"] != state["asof"]):
+                or receipt["observation_asof"] != state["asof"]
+                or receipt["producer_execution_authenticity"] != "unqualified"
+                or receipt["causal_read_completeness"] != "unqualified"
+                or receipt["loaded_code_authentication"] != "unavailable"
+                or receipt["causal_lineage_acceptance"] is not False):
             raise ValueError("capture_claim_mismatch")
         if receipt["causal_state_sha256"] != hashlib.sha256(_capture_json(_causal_projection(state))).hexdigest():
             raise ValueError("causal_state_mismatch")
@@ -526,11 +541,11 @@ def verify_prospective_input_capture(root: Path, state: dict) -> dict:
             if (not isinstance(expected, list) or any(f"{rel}/{name}" not in seen for name in expected)
                     or sorted(p.name for p in (base / rel).glob("*.yaml")) != expected):
                 raise ValueError("retained_definition_set_mismatch")
-        return {"status": "retained_input_bytes_match", "generation_id": receipt["generation_id"],
+        return {**limits, "status": "listed_input_bytes_match", "generation_id": receipt["generation_id"],
                 "historical_knowledge": "unavailable", "scientific_acceptance": False,
                 "publication_receipt": None}
     except (KeyError, TypeError, ValueError, OSError, OverflowError, AttributeError):
-        return {"status": "unavailable", "reason": "prospective_capture_unqualified"}
+        return {**limits, "status": "unavailable", "reason": "prospective_capture_unqualified"}
 
 
 # --------------------------------------------------------------------------- #
