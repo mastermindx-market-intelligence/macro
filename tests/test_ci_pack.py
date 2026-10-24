@@ -5306,13 +5306,15 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
-# Protected dfb1cfc7 registers the GovRev memo test: its already-selected job
-# weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
-# probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
+# Preserve protected GovRev memo coverage (+2 in its existing selected job).
+# App-parent bridge coverage retains its existing Node command in data-base-shim.
+# Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
+# all ten packs. Protected ceilings already cover this tree: no extra funding.
+# Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_905),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_659),
+    ("templates/index.html", 138, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_666),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5320,6 +5322,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 normal composition with frozen main8c48e5c8:
+    canonical selected sets remain137/137/130, no additions/removals and
+    ten packs. Exact weights5909/5905/5659 ->5916/5912/5666 are +7 each:
+    existing QLedger regression76->80 (+4 for the causal+clock test files),
+    protected billing-emails23->25 (+2 frozen-options account suite), and
+    protected data-base-shim22->23 (+1 Shared Shell Node handshake).
+    Only these measured planning-weight literals move; job ceilings138/137/130,
+    ten packs, commands, selectors, estimator, timeouts and96/64MiB stay fixed.
+    Literal import/ancestor closure additions match none of these probes.
 
     2026-10-24 normal composition with frozen main74aa06c9:
     exact canonical memberships remain137/137/130, with no job added or
@@ -5405,6 +5417,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     coverage; fund only the measured breached job/weight bounds. Prophet's
     existing130-job ceiling and the ten-pack bound stay fixed. No selector,
     test assertion, execution timeout or suite is weakened.
+    2026-10-24 frozen-node canonical account reader (#10145): enroll the
+    two-test suite once in incumbent CODE billing-emails/account-preferences,
+    not DATA support-email-spine. Hosted 40073480536 measured base 5,875
+    against the stale 5,873 free-content ceiling, then head 5,877 (+2).
+    After moving to the proper owner and composing main 153fb1e318c7,
+    native measurements remain index 135/5,881, free-content 135/5,877,
+    plan-book 128/5,631, all ten packs, no new selected job. Fund the exact
+    four-unit excess (two inherited, two new); other ceilings stay unchanged.
+    Fresh main 9227e34f3a62 now owns the inherited GovRev baseline 5,875;
+    this composition retains only the two reader-test units above it: 5,877.
 
     2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
     ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.

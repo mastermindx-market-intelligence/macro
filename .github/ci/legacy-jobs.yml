@@ -262,6 +262,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -2217,6 +2218,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -3223,6 +3225,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -5781,6 +5784,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -6989,6 +6993,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       # Actual composed QLedger owner import closure; no command change.
       - "engine/qledger_original_conversion.py"
       - "engine/qledger_original_result.py"
@@ -8045,6 +8050,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -9246,6 +9252,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -9591,6 +9598,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -10522,6 +10530,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -13975,6 +13984,97 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "engine/codex_lane/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/passport.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/regime_vector.py"
+      - "engine/session_anchor.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/dataos/identity.py"
+      - "lib/filing_value_units.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -14344,6 +14444,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       - "engine/qledger_original_result.py"
@@ -17818,6 +17919,8 @@ jobs:
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
         run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py -q
+      - name: Shared Shell exact first-party parent handshake
+        run: node --test tests/js/shared_shell_bridge.test.cjs
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -19176,6 +19279,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"
@@ -19436,6 +19540,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -19778,6 +19883,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -21651,7 +21757,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: account actions (app/account_actions.py)
@@ -22630,6 +22736,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -23271,6 +23378,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -24049,6 +24157,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -25724,6 +25833,25 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/codex_lane/__init__.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "scripts/ci/qledger_conversion_candidate.py"
@@ -26250,6 +26378,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -27255,6 +27384,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -28839,6 +28969,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -34435,6 +34566,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -34947,6 +35079,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -38123,6 +38256,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
@@ -41461,6 +41595,7 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"
@@ -41736,6 +41871,7 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "engine/qledger_evidence_clock.py"
       - "engine/qledger_original_conversion.py"
       - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"

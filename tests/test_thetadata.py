@@ -1766,3 +1766,35 @@ def test_wildcard_greeks_forwards_only_explicit_version(monkeypatch,version):
  monkeypatch.setattr(td,'_concurrent_windows',windows)
  td.bulk_greeks('SPY',0,'2026-10-16','2026-10-16',order=3,version=version)
  assert calls==[dict(symbol='SPY',expiration='*',**({} if version is None else {'version':'1'}))]
+
+
+@pytest.mark.parametrize('root,exp,start,end', [
+    ('SPY',0,'2020-10-19','2020-10-22'),('GLD',20201120,'2020-10-19','2020-10-22'),
+    ('GLD',0,'2020-10-19','2020-10-25'),('GLD',0,'2099-10-19','2099-10-22'),
+    ('GLD',0,'2020-10-22','2020-10-19')])
+def test_bounded_eod_invalid_scope_makes_no_source_call(monkeypatch,root,exp,start,end):
+    from collectors import thetadata as td
+    from lib.options_source_receipts import BoundedRequestBudget
+    monkeypatch.setattr(td,'_session',lambda:pytest.fail('invalid scope reached session'))
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('invalid scope probed'))
+    with pytest.raises(ValueError):td.bulk_eod(root,exp,start,end,
+        request_budget=BoundedRequestBudget(1),max_bytes=16384,max_rows=100)
+
+
+@pytest.mark.parametrize('byte_cap,row_cap',[(True,100),(16384,False),(0,100),(16384,100001)])
+def test_bounded_eod_invalid_caps_do_not_reserve_or_get(monkeypatch,byte_cap,row_cap):
+    from collectors import thetadata as td
+    from lib.options_source_receipts import BoundedRequestBudget
+    from types import SimpleNamespace
+    budget=BoundedRequestBudget(1)
+    monkeypatch.setattr(td,'_session',lambda:SimpleNamespace(get=lambda **kw:pytest.fail('invalid cap GET')))
+    with pytest.raises(ValueError):td.bulk_eod('GLD',0,'2020-10-19','2020-10-22',
+        request_budget=budget,max_bytes=byte_cap,max_rows=row_cap)
+    assert budget.attempts==0
+
+
+def test_eod_retention_callbacks_require_explicit_budget(monkeypatch):
+    from collectors import thetadata as td
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('unexpected probe'))
+    with pytest.raises(ValueError):td.bulk_eod('GLD',0,'2020-10-19','2020-10-22',
+        raw_response_handler=lambda b:None)
