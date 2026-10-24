@@ -603,7 +603,10 @@ def test_checkout_failure_emits_commercial_path_event(monkeypatch, tmp_path):
     ("customer.subscription.deleted", "canceled"),
     ("invoice.payment_failed", "past_due"),
 ])
-@pytest.mark.parametrize("failure", ["timeout", "http_503", "invalid_json"])
+@pytest.mark.parametrize("failure", [
+    "timeout", "http_503", "invalid_json", "empty_body", "object", "missing_user",
+    "blank_user", "nonstring_user", "invalid_row",
+])
 def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
     monkeypatch, etype, status, failure,
 ):
@@ -631,6 +634,12 @@ def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
         "invalid_json": json.JSONDecodeError("invalid mapping response", "!", 0),
     }
 
+    malformed = {
+        "empty_body": None, "object": {}, "missing_user": [{}],
+        "blank_user": [{"user_id": "  "}], "nonstring_user": [{"user_id": 123}],
+        "invalid_row": [None],
+    }
+
     def fake_pg(method, path, **kwargs):
         if path.startswith("stripe_events?"):
             if method == "GET":
@@ -642,6 +651,8 @@ def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
         if method == "GET":
             if "stripe_customer_id=eq." in path:
                 if not mapping_available:
+                    if failure in malformed:
+                        return malformed[failure]
                     raise errors[failure]
                 return [{"user_id": row["user_id"]}]
             assert "user_id=eq.user_retry_test" in path
@@ -668,7 +679,8 @@ def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
     assert "terminal_live_options" in _get_api_me(main.app)[1]["features"]
     payload = _event(etype, {"customer": "cus_retry_test"}, "evt_retry_test")
     request = _FakeRequest(payload, {"stripe-signature": _sign(payload)})
-    with pytest.raises(type(errors[failure])):
+    error_type = type(errors[failure]) if failure in errors else ValueError
+    with pytest.raises(error_type):
         asyncio.run(billing.webhook(request))
     assert not recorded and not writes and not invalidated
     assert emitted == ["webhook.error"]

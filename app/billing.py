@@ -635,9 +635,15 @@ def _user_for_customer(customer_id: str) -> str | None:
     # must reach the webhook's failure path so Stripe retries the original event;
     # otherwise it records a skipped revocation as processed and strands paid access.
     rows = _pg("GET", f"user_entitlements?stripe_customer_id=eq.{urllib.parse.quote(customer_id)}&select=user_id")
-    if rows:
-        return rows[0].get("user_id")
-    return None
+    if not isinstance(rows, list):
+        raise ValueError("invalid customer mapping response")
+    if not rows:
+        return None
+    row = rows[0]
+    user_id = row.get("user_id") if isinstance(row, dict) else None
+    if not isinstance(user_id, str) or not user_id.strip():
+        raise ValueError("invalid customer mapping user id")
+    return user_id
 
 
 def read_entitlement(user_id: str) -> dict:
