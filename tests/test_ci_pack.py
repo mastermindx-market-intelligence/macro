@@ -5308,7 +5308,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_873),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5317,6 +5317,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 frozen-node canonical account reader (#10145): enroll the
+    two-test suite once in incumbent CODE billing-emails/account-preferences,
+    not DATA support-email-spine. Hosted 40073480536 measured base 5,875
+    against the stale 5,873 free-content ceiling, then head 5,877 (+2).
+    After moving to the proper owner and composing main 153fb1e318c7,
+    native measurements remain index 135/5,881, free-content 135/5,877,
+    plan-book 128/5,631, all ten packs, no new selected job. Fund the exact
+    four-unit excess (two inherited, two new); other ceilings stay unchanged.
 
     2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
     ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.

@@ -20401,7 +20401,7 @@ jobs:
       - name: pinned alert email message type (app/mailer.py alert template)
         run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
-        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py tests/test_frozen_options_account.py -v
+        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
@@ -20539,7 +20539,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: account actions (app/account_actions.py)
