@@ -167,17 +167,12 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Old939b CI38773271071 passed; its127jobs/351semanticsteps do not qualify the new b4ff source.
-  Current original CI38801265500/attempt1 passed; original final artifact validates127jobs/351semantic steps.
-  Canonical binding gate is INCOMPLETE due original cancelled ci-authority job. Incumbent freshness/merge and production remain open.
+- A1 PR6651 landed4579 and bounded installation/API/DOM/eight-state proof is retained. Original authority rerun remained unused and native supersession resolved that historical gate. Full performance, independent comprehension and natural owner acceptance remain open.
+- Follow-on PR10130 original82c1 CI40058907449 has a manifest path-parity failure; exact local source normalization5c3c17 repairs the reproduced cause. Hosted base replay timed out with descendant settlement unknown; no replay or base-pass claim.
 next_actions:
-- Await Chris answer to the one-time original authority-workflow rerun exception; no repeated question.
-  If approved, fresh-check exact A1 head and original cancelled workflow before only that rerun; otherwise retain the hold.
-  Incumbent alone owns base refresh and final merge; no whole-CI rerun or check waiver.
-- After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
-  natural owner progression.
-- Reconcile actual qualified landing and newest continuity; newer main668 has a separately prepared A1 conflict repair, so old preparedcb274/main9db composition is historical only;
-  integrate the same follow-on, open its single PR and prove actual consumer adoption.
+- Consume original PR10130 CI40058907449 terminal result, then fresh canonical admission and current source/custody before ordinary same-branch publication of the qualified descendant. Preserve all binding checks and incumbent merge ownership.
+- Use accepted e09 A28 streaming correction plus5c3c17 source-only manifest normalization; retain203 unique affected runtime cases and42fragment plus4control passes without repeating unchanged proof.
+- After qualified follow-on landing verify twelve files, installed updater and API/admin processes, numeric request/log correlation, existing CLI and rights-qualified Discovery adoption. A28 production performance, independent comprehension and natural QLedger owner progression remain unproved.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -189,15 +184,14 @@ danger_areas:
   model-performance acceptance.
 prs:
 - 6651
+- 10130
 ---
 
-## Current checkpoint — 2026-10-16 conflict preparation
+## Current checkpoint — 2026-10-24 A28 correction and exact hosted repair
 
-PR6651 remains OPEN at b4ff0d721ab8 as observed03:22Z. New protected main668374308a3298a68541e253573fafa16b4f9818 creates four actual conflicts: CI input lists, admin styles, updater and admin server tests. Prepared local preview6ac4f94366a4 resolves them and fixes one additional semantic test mismatch; no A1 carrier/ref/remote or controller changed. The unreferenced preview commits MUST NEVER be pushed. Its reproducible conflict-tree patch and qualification are retained in research/evidence/eval-os-tier-query-20261014/a1-668-conflict-preparation-20261016.json and the adjacent resolved-preview.patch.
+PR10130 is the single follow-on carrier; remote82c1 remains under originalCI40058907449. A1 has landed and its bounded installed/browser proof remains accepted. The local ordinary chain82c1 -> e09d782 ->5c3c17 contains the reviewed complete T1 stream, bounded T4 prewarm and representation-only manifest repair. No manual main integration or synthetic ancestry was added. Publication is still pending terminal originalCI and ordinary admission.
 
-All320 composed job definitions/limits and both parents' path memberships are retained, including previously accepted A1 additive tests. A real new39-input A1 closure gap was repaired with exact paths. The combined affected suite initially had357passed/one failed: theme.css was in both restart expectation lists. A1 caches its derived token response; preserving its positive restart case and adding a disjointness regression corrects the incoming negative case. The regression failed before repair, then61affected checks passed (overlapping the earlier357). The three focused CI controls pass; full curated closure has zero misses, and strict probes select136/135/129jobs at5752/5560/5503weight in10packs each, with no ceiling changes or breaches. Original Fabric eval-a1-668-updater-01a1333d-c1 was consumed and deterministically accepted with prose qualifiers: the parent proved exact restart-language union (91/86 finite inputs ->99, shared admin wildcard unchanged) and shell syntax. This is implementation assistance, not independent review.
-
-The existing one-time request to rerun only cancelled authority workflow38801258721 remains unanswered. No rerun or source/control bypass occurred. Original b4 CI38801265500 passed127jobs/351semantic steps; the canonical authority gate remains unresolved on its last observation. This preparation does not grant another manual base integration or qualify deployment. Reconcile actual source/custody/capacity before an ordinary same-carrier correction; incumbent alone refreshes and merges. Follow-on runtime3528080/updater9cb/probe2edbb/source7f1dc are unchanged. Final17-file/asset bindings, deployment, authenticated API/DOM, eight visual states, natural owner progression and follow-on adoption remain owed; all completion flags are false.
+Source receipts: research/evidence/eval-os-tier-query-20261014/release-probe/a28-20261024/. Runtime union203 unique cases includes composed178 and retained26 with one overlap. Fragment42 and relevantCI4 pass; all355parsed job definitions/ordered paths/commands/limits remain unchanged. The original hosted failure remains visible; timed-out base replay is not rerun or reclassified. No production performance, whole-process memory bound, new QLedger cutover, owner action or empirical/scientific adoption is claimed. Original Fabric C0429/unknown usage, C1prelaunch refusal, experience/lostCLI and browser effects remain intact.
 
 ## 2026-10-15 A1 repair published
 
