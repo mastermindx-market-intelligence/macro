@@ -5,10 +5,7 @@ question: >
   ("Market Intelligence Productization", 2026-08-23 packet) live — a new third
   workstream, or the existing canonical owners?
 answer: >
-  October 24, 2026 amendment: WS:MARKETONTOLOGY is permitted solely as the
-  Chairman-requested project continuity record. No new product, semantic or
-  runtime authority is created; all remaining obligations in this decision stand.
-  WS:MARKET-OS owns the user-facing product execution
+  No new workstream. WS:MARKET-OS owns the user-facing product execution
   (security_state.v1 / B1A golden AAPL vertical and everything after);
   WS:ALPHA-INTELLIGENCE-INTEGRATION owns the semantic contracts (K1 Evidence
   Foundation, K3 Opportunity Semantics, K5 OpportunityCase). security_state.v1 is
@@ -49,7 +46,6 @@ evidence:
   - research/market_intelligence_productization/MASTERMIND_MARKET_INTELLIGENCE_PRODUCTIZATION_PACKET_MANIFEST_2026-08-23.json
   - "packet integrity: all 9 manifest-listed files byte-verified against manifest sha256/bytes on 2026-08-23 (ALL_VERIFIED; the manifest itself is the 10th file and is not self-hashed)"
 affects:
-  - "WS:MARKETONTOLOGY"
   - WS:MARKET-OS
   - WS:ALPHA-INTELLIGENCE-INTEGRATION
 confidence: high
@@ -57,14 +53,6 @@ reversibility: easy
 decided_by: chairman-packet-2026-08-23
 decided_at: 2026-08-23
 ---
-
-> **Narrow amendment, October 24, 2026:** the current Chairman request permits
-> the dedicated `WS:MARKETONTOLOGY` project continuity record. Only this record's
-> no-separate-project-record clause changes. This decision remains active for
-> every other scope, parity, canonical-owner, scientific, source-custody and
-> acceptance obligation. No whole-record supersession edge is used.
-> [DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024](DEC-MARKETONTOLOGY-PROJECT-CONTINUITY-20261024.md)
-> records the dated exception and preserves the original architecture.
 
 The 2026-08-23 Market Intelligence Productization packet (recorded in full at
 `research/market_intelligence_productization/`) converts the authenticated
