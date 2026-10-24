@@ -37815,6 +37815,8 @@ jobs:
       - "engine/press/desk_planner.py"
       - "engine/press/native_plan_scope.py"
       - "engine/press/issuer_release_candidate.py"
+      - "engine/press/market_snapshot_candidate.py"
+      - "scripts/stage_market_snapshot_press.py"
       - "engine/press/official_feed_candidate.py"
       - "engine/press/fda_document.py"
       - "engine/marketing/breaking_feed.py"
