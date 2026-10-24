@@ -229,3 +229,34 @@ See `DEC:AGENTOS-W4-CAPTURE-BOUNDARY` and the handoff protocol for boundaries an
 | Account-local Claude memory | how *you* work | stays local; cross-session facts graduate to `DSC-*` |
 | Mastermind `brain/improvement_agenda.py` | **the** ranked "what should we do next?" queue | **canonical for priority** — Agent OS feeds it the non-ranked `agentos.readiness.v1` envelope; the human brief renders no competing list (`DEC:AGENTOS-READINESS-FEEDS-THE-AGENDA`) |
 | Mastermind `control_plane/` | live worker/job state, leases, heartbeats | **canonical for liveness** — display it, never re-derive it (`DEC:AGENTOS-CLAIMS-ARE-NOT-LIVE-ACTIVITY`) |
+
+## Optional native harness experience projection
+
+`compile-context --harness-experience` includes complete structured lesson fields
+on already-selected discoveries that explicitly carry `harness_experience`.
+The default bundle stays unchanged. This is a read-only opt-in consumer seam,
+not a separate memory, scheduler, model policy, activation or promotion system.
+
+An existing DSC may add one closed metadata object with `domain`,
+`harness_artifact: {artifact_ref, digest}`, two or more unique native EVAL
+`source_run_ids`, and an immutable Git `method_source_ref`. The ordinary DSC
+claim, falsifier, so_what, verification provenance, confidence and scope still
+apply. `draft-discovery` preserves and validates this optional object.
+Matching hashes establish a byte identity, not an authenticated issuer or a
+validated improvement. Normal authored/reviewed record admission remains required.
+
+The opt-in discovery item adds `agentos.harness_experience.v1` containing that
+metadata plus the complete claim, falsifier, so_what, verified_by, verified_at
+and confidence. It does not reconstruct them from the clipped human excerpt.
+The existing packer charges the whole structured payload; a lesson that does not
+fit is named in `omitted_due_to_budget`, never silently clipped or falsely empty.
+Malformed, superseded and expired discoveries retain their normal exclusions.
+Citation protects a discovery from the default uncited-age rule, but never from
+an explicit expiry. Higher law and the workstream block retain their budget priority.
+
+Consumers must retain the complete bundle and its excluded/omitted/degraded tails,
+resolve artifact bytes only through existing authorized owners, preserve the exact
+source generation, and keep `verified`, `probable` and `suspected` distinct.
+An experience projection never grants permission to run a model, edit a harness,
+change a capability, deploy code or promote a policy. Agent OS fetches no artifact,
+observes no provider and automatically writes no discovery through this option.

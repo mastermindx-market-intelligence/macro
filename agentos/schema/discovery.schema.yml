@@ -21,3 +21,16 @@ optional:
   cited_by:      {type: list, note: auto-maintained by the generator; drives GC}
   superseded_by: {type: string}
   expires:       {type: date, note: default verified_at + 90d if never cited; FLAGGED, never auto-deleted}
+  harness_experience:
+    type: object
+    note: Optional closed evidence association; no runtime, execution or promotion authority.
+    required:
+      domain: {type: string, max_length: 128}
+      harness_artifact:
+        type: object
+        required:
+          artifact_ref: {type: string, max_length: 2048, note: opaque reference; never fetched by Agent OS}
+          digest: {type: string, pattern: 'sha256:[0-9a-f]{64}'}
+      source_run_ids: {type: list, min_items: 2, max_items: 128, unique: true, note: native run UUID4 references}
+      method_source_ref: {type: string, note: exact git repository and 40-hex commit}
+    additional_fields: false
