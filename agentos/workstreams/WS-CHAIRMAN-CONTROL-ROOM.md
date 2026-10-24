@@ -141,11 +141,12 @@ waves:
       Direct Cursor browser access currently requires human sign-in.
   - id: HC-P2
     title: Existing admitted model-route parity
-    status: todo
+    status: in_progress
     depends_on: [HC-P1A]
     next_action: >
-      Connect one currently admitted existing provider route; prove model identity, metering,
-      cancellation and pre-effect failure behavior without moving credentials or changing account policy.
+      Implement the pinned HC-P2.T0 path-disjoint, offline sealed-analysis boundary.
+      Live route admission, identity/metering and actual provider failures remain gated
+      on HC-P1A and the incumbent contract; no new tool authority or credentials.
   - id: HC-P3
     title: Existing Executive and Fabric contract integration
     status: todo
@@ -885,6 +886,41 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **State:** placement request delivered for meta-ceo-harness-rakazo-cursor-20261024-01
   on C0CBC6AEAQZ/1792865049.365069. No ACK, agent ID, START or result at bounded readback.
   Direct Cursor cloud-agent UI is at sign-in; no login or account change was performed.
+
+### HC-P2.T0 — DSH sealed-analysis source boundary
+
+- **Objective / why now:** implement the compatible subset of the existing sealed-analysis
+  model contract and prove that unsupported DSH requests fail before any callback.
+  This is source preparation; it does not satisfy HC-P2 live admission or bypass HC-P1A.
+- **Inputs:** Mastermind e00e97b81a5d41cb8a570ad080316279a0f3853f;
+  DSH 687f282e8625c6b8d11ff58211a90524be2e4317. Reuse the actual Python
+  control_plane.paid_model_execution_contract compiler/descriptor and actual donor
+  LlmAdapter/LlmRuntime/BlockAssembler interfaces; never invent a parallel authority check.
+- **Allowed paths:** integrations/deepseek_harness/provider_qualification/** and
+  tests/test_meta_ceo_dsh_provider_contract.py in the registered implementation carrier.
+  These paths are disjoint from both outstanding P1 children.
+- **Excluded:** live provider/network transport, credentials or ambient discovery, capsule
+  issuance, lease/account acquisition, service registration/install, model-only contract
+  widening, company Job/effect acceptance, automatic retry/reroute and held P1 files.
+- **Implementation:** exact one-user text input with canonical model/body binding; reject
+  tools/history/system/multimodal/auxiliary calls; map one complete supplied result to
+  native text chunks; retain unknown usage/served-model identity; explicitly zero retries.
+  No default plugin registration or production loader.
+- **Proof:** run actual pinned donor fixture through native runtime/assembler; canonical
+  Python vectors are the compiler oracle. Reject mismatch before callback; callback at
+  most once for provider errors; pre-abort, cancellation, incomplete/tool-shaped result
+  and native prepared-call reuse/configuration mutation cannot produce successful finish.
+  Existing sealed-contract tests are regression dependencies; no provider calls.
+- **Ownership:** assigned Meta-CEO retains this narrow source task as
+  NO_ELIGIBLE_PRE_EFFECT_WORKER: both attempted paid runs returned unverified failures
+  with replay forbidden, Cursor placement is unconsumed and direct UI requires sign-in.
+  This is not a replacement run or shadow implementation of either assigned P1 task.
+  Reassess at the first routine repair loop. Independent fleet semantic review remains owed.
+- **DONE_WHEN:** source and exact commands/results published in a separate Draft Mastermind
+  PR; independent reviewer disposition consumed. Maximum claim before live owner integration
+  is SOURCE_CONTRACT_QUALIFIED / FIXTURE_ONLY. No complete HC-P2/mission claim.
+- **Rollback:** remove this isolated optional source module; no runtime state is changed.
+- **State:** planned; execution may begin after this record validates and is committed.
 
 ### Accepted progress and outstanding gates
 
