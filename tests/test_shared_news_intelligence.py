@@ -656,7 +656,7 @@ def _editorial_report(source, item, title, minute=1, *, url=None):
         rev = normalize_news({'id': item, 'title': title, 'url': url or 'https://benzinga.com/news/' + item, 'teaser': 'Fictional test summary.', 'created': _EDITORIAL_T0.isoformat(), 'updated': clock.isoformat(), 'stocks': ['NVDA']}, transport='benzinga_rest', received_at=clock)
     else:
         domain = source.removeprefix('massive:')
-        rev = normalize_massive_news({'id': item, 'title': title, 'article_url': 'https://' + domain + '/news/' + item, 'description': 'Fictional test summary.', 'published_utc': clock.isoformat(), 'tickers': ['NVDA'], 'publisher': {'name': 'Fixture', 'homepage_url': 'https://' + domain}}, received_at=clock)
+        rev = normalize_massive_news({'id': item, 'title': title, 'article_url': url or 'https://' + domain + '/news/' + item, 'description': 'Fictional test summary.', 'published_utc': clock.isoformat(), 'tickers': ['NVDA'], 'publisher': {'name': 'Fixture', 'homepage_url': 'https://' + domain}}, received_at=clock)
     return RoutedRevision(rev, (_EDITORIAL_SECURITY,), 'fixture-universe')
 
 def _editorial_commit(store, rows):
@@ -1134,3 +1134,113 @@ def test_company_view_group_members_details_changes_and_flow_share_one_projectio
         flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)
         assert flow["reports_24h"] == flow["stories_24h"] == 1
         assert flow["provenance"]["editorial_view"] == _company_view().metadata()
+
+
+_PORTFOLIO_TITLE = "Nvidia gives the AI trade a shot in the arm. What it means for our stocks"
+_PORTFOLIO_URL = "https://www.cnbc.com/investingclub/2026/10/21/portfolio.html"
+
+
+@pytest.mark.parametrize("url", [
+    _PORTFOLIO_URL,
+    "https://cnbc.com/InvestingClub/2026/10/21/portfolio.html",
+    "https://www.cnbc.com/%69nvestingclub/2026/10/21/portfolio.html",
+])
+def test_portfolio_commentary_requires_explicit_publisher_section_and_frame(url):
+    assert article_format(_PORTFOLIO_TITLE, "massive:cnbc.com", url) == (
+        "commentary", "publisher_portfolio_commentary",
+    )
+    assert company_reference(_PORTFOLIO_TITLE, "", _company_view().company) == "headline"
+    for mode in ("news", "company"):
+        assert not _company_view(mode).allows("massive:cnbc.com", _PORTFOLIO_TITLE, url)
+    assert _company_view("all").allows("massive:cnbc.com", _PORTFOLIO_TITLE, url)
+
+
+@pytest.mark.parametrize("source,url", [
+    ("benzinga", _PORTFOLIO_URL),
+    ("massive:reuters.com", _PORTFOLIO_URL),
+    ("tiingo", _PORTFOLIO_URL),
+    ("massive:cnbc.com", "https://reuters.com/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://notcnbc.com/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://cnbc.com.evil.test/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://cnbc.com@evil.test/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://cnbc.com/news/portfolio.html?section=investingclub"),
+    ("massive:cnbc.com", "https://cnbc.com/news/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://cnbc.com/investingclub-extra/portfolio.html"),
+    ("massive:cnbc.com", "https://cnbc.com/%2569nvestingclub/portfolio.html"),
+    ("massive:cnbc.com", "ftp://cnbc.com/investingclub/portfolio.html"),
+    ("massive:cnbc.com", "https://[invalid/investingclub/portfolio.html"),
+    ("massive:cnbc.com", ""),
+])
+def test_portfolio_commentary_does_not_infer_withheld_or_other_section_evidence(source, url):
+    assert article_format(_PORTFOLIO_TITLE, source, url) == ("unclassified", None)
+
+
+@pytest.mark.parametrize("title", [
+    "SpaceX gives the AI trade a shot in the arm. What it means for our stocks",
+    "Nvidia AI spending: What it means for our stocks.",
+])
+def test_portfolio_commentary_observed_frame_is_recognized(title):
+    assert article_format(title, "massive:cnbc.com", _PORTFOLIO_URL)[0] == "commentary"
+
+
+@pytest.mark.parametrize("title", [
+    "Nvidia announces preview of a new enterprise AI agent",
+    "Nvidia increases its quarterly dividend",
+    "Nvidia launches a feature called What it means for our stocks",
+])
+def test_portfolio_section_keeps_factual_announcements_unclassified(title):
+    assert article_format(title, "massive:cnbc.com", _PORTFOLIO_URL) == ("unclassified", None)
+    assert _company_view("news").allows("massive:cnbc.com", title, _PORTFOLIO_URL)
+
+
+@pytest.mark.parametrize("mode", ["all", "news", "company"])
+@pytest.mark.parametrize("global_url,source_url", [
+    (True, None), (False, None), (False, True), (True, False),
+])
+def test_portfolio_corrections_use_permitted_url_across_every_read(
+    tmp_path, mode, global_url, source_url,
+):
+    db = tmp_path / "portfolio.sqlite3"
+    source = "massive:cnbc.com"
+    fields = () if source_url is None else (SourceReadRights(source, True, source_url, True),)
+    grant = NewsReadRights(frozenset({source}), allow_url=global_url, source_fields=fields)
+    can_read_url = grant.allows(source, "url")
+    excluded = mode != "all" and can_read_url
+    with NewsStore(db, source_key="test") as writer, _view_reader(db, mode) as reader:
+        _editorial_commit(writer, [_editorial_report(
+            source, "portfolio-correction", _EDITORIAL_GOOD, url=_PORTFOLIO_URL,
+        )])
+        before = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=grant)
+        assert len(before.rows) == 1
+        story_id = before.rows[0].story_id
+        _editorial_commit(writer, [_editorial_report(
+            source, "portfolio-correction", _PORTFOLIO_TITLE, 2, url=_PORTFOLIO_URL,
+        )])
+        current = reader.snapshot(_EDITORIAL_SECURITY, limit=1, cursor=None, rights=grant)
+        detail = reader.story(story_id, rights=grant)
+        changes = reader.projected_changes_for_security(
+            _EDITORIAL_SECURITY, after_sequence=before.change_sequence, limit=20, rights=grant,
+        )
+        flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant)
+        assert len(current.rows) == flow["reports_24h"] == flow["stories_24h"] == int(not excluded)
+        assert (detail is None) == excluded
+        assert len(changes.rows) == 1
+        assert changes.rows[0].kind == ("remove" if excluded else "upsert")
+        assert changes.next_sequence > before.change_sequence
+        if excluded:
+            assert changes.rows[0].title == changes.rows[0].teaser == changes.rows[0].url == ""
+        if detail is not None:
+            assert detail.members[0].url == (_PORTFOLIO_URL if can_read_url else "")
+        assert writer.counts()["revisions"] == 2
+        _editorial_commit(writer, [_editorial_report(
+            source, "portfolio-correction", _EDITORIAL_GOOD, 3, url=_PORTFOLIO_URL,
+        )])
+        restored = reader.projected_changes_for_security(
+            _EDITORIAL_SECURITY, after_sequence=changes.next_sequence, limit=20, rights=grant,
+        )
+        assert len(restored.rows) == 1 and restored.rows[0].kind == "upsert"
+        assert reader.story(story_id, rights=grant).item_count == 1
+        assert reader.news_flow(
+            _EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=grant,
+        )["reports_24h"] == 1
+        assert writer.counts()["revisions"] == 3

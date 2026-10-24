@@ -477,7 +477,7 @@ def test_editorial_views_filter_rows_groups_details_changes_and_flow(monkeypatch
         body = bodies[mode] = response.json()
         assert len(body["rows"]) == count
         assert body["editorial_view"]["mode"] == mode
-        assert body["editorial_view"]["rules"] == "ticker_news.editorial_rules.v1"
+        assert body["editorial_view"]["rules"] == "ticker_news.editorial_rules.v2"
         assert body["editorial_view"]["name_coverage"] == "names_and_symbols"
         assert body["flow"]["reports_24h"] == count
         assert body["flow"]["provenance"]["editorial_view"] == body["editorial_view"]
@@ -680,3 +680,34 @@ def test_editorial_admission_and_detail_use_once_decoded_permitted_summary(
     if admitted:
         assert admitted[0]["editorial"]["eligible"] is True
         assert admitted[0]["editorial"]["company_reference"] == "summary"
+
+
+def test_editorial_rule_version_change_rejects_old_continuations_and_resets_stream(monkeypatch, tmp_path):
+    from engine import qbus_news_editorial as editorial
+    monkeypatch.setattr(editorial, "EDITORIAL_RULES_VERSION", "ticker_news.editorial_rules.v1")
+    api, client, _db, _names = _editorial_app(monkeypatch, tmp_path)
+    first = client.get("/api/ticker-news/NVDA?view=news&limit=1").json()
+    old_revision = first["editorial_view"]["revision"]
+    cursor = first["next_cursor"]
+    assert cursor is not None
+    monkeypatch.setattr(editorial, "EDITORIAL_RULES_VERSION", "ticker_news.editorial_rules.v2")
+    current = client.get("/api/ticker-news/NVDA?view=news&limit=1").json()
+    assert current["editorial_view"]["rules"] == "ticker_news.editorial_rules.v2"
+    assert current["editorial_view"]["revision"] != old_revision
+    for path in (
+        f"/api/ticker-news/NVDA?view=news&cursor={cursor}",
+        "/api/ticker-news/NVDA/changes?view=news&after_sequence=1",
+        f"/api/ticker-news/stories/{first['rows'][0]['story_id']}?ticker=NVDA&view=news",
+    ):
+        response = client.get(path + "&view_revision=" + old_revision)
+        assert response.status_code == 409
+        assert response.headers["cache-control"] == "private, no-store"
+
+    async def collect():
+        return [chunk async for chunk in api._sse_events(
+            ticker="NVDA", user={"id": "u"}, after_sequence=1,
+            view="news", view_revision=old_revision, poll_seconds=0, max_cycles=1,
+        )]
+    chunks = asyncio.run(collect())
+    assert len(chunks) == 1 and chunks[0].startswith("event: reset")
+    assert "Nvidia launches" not in chunks[0]
