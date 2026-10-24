@@ -197,14 +197,24 @@ class _Node:
     children: list["_Node"] = field(default_factory=list)
     end_tag_start: int | None = None
     end: int | None = None
+    _name_parts: tuple[str, str | None, str] | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
+
+    def _expanded_name(self) -> tuple[str, str | None, str]:
+        parts = self._name_parts
+        if parts is None or parts[0] != self.qname:
+            namespace, local = _split_qname(self.qname)
+            parts = self._name_parts = (self.qname, namespace, local)
+        return parts
 
     @property
     def namespace(self) -> str | None:
-        return _split_qname(self.qname)[0]
+        return self._expanded_name()[1]
 
     @property
     def local(self) -> str:
-        return _split_qname(self.qname)[1]
+        return self._expanded_name()[2]
 
 
 def _tag_end(content: bytes, start: int) -> int:

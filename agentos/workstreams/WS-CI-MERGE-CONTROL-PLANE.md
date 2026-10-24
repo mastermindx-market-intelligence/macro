@@ -330,6 +330,15 @@ waves:
       Python labels agree among treatments but physical performance is uncontrolled.
       Retain12packs/two weights/parser source. Next source slice requires qualified
       residual profiling and current FIF carrier custody; no speculative shards.
+      Report9857 merged4290a79a222da944dbee0b438474029d67d0c4b2 with75selected jobs,
+      active gates and5blobs verified. New exact-input residual profile finds687371
+      qualified-name splits in two documents. Fifth candidate retains name parts
+      per node, invalidating on name mutation; no global cache or proof change.
+      Before-regression fails1200splits vs6; after215parser tests and one offline
+      publisher-lineage round-trip pass. Complete output hashes unchanged.
+      Five alternating local parse CPU samples0.749179→0.655287sec; traced allocation
+      peaks increase3.25/5.49percent. Both are local diagnostics, not fleet/cost proof.
+      Candidate requires normal hosted proof/merge before release; keep12packs.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

@@ -93,6 +93,35 @@ def test_indexed_direct_text_preserves_owner_and_mixed_content_without_full_scan
     assert parser_module._direct_text(a, indexed) == "Café&rawtailafterend"
 
 
+def test_node_name_parts_reuse_work_and_follow_qname_changes(monkeypatch):
+    node = parser_module._Node(
+        qname="plain", lexical_name="plain", attrs={}, namespaces={},
+        start=0, start_tag_end=0, self_closing=True, parent=None,
+    )
+    original = parser_module._split_qname
+    split_calls = []
+
+    def counted(name):
+        split_calls.append(name)
+        return original(name)
+
+    monkeypatch.setattr(parser_module, "_split_qname", counted)
+    names = [
+        ("plain", None, "plain"),
+        ("{urn:example}fact", "urn:example", "fact"),
+        ("{urn:例}值", "urn:例", "值"),
+        ("{}empty_namespace", "", "empty_namespace"),
+        ("{unclosed", None, "{unclosed"),
+        ("plain", None, "plain"),
+    ]
+    for name, namespace, local in names:
+        node.qname = name
+        for _ in range(100):
+            assert node.namespace == namespace
+            assert node.local == local
+    assert split_calls == [name for name, _, _ in names]
+
+
 def test_pure_instance_context_units_dimensions_and_exact_multibyte_spans():
     content = (FIXTURES / "minimal_instance.xml").read_bytes()
     result = parse_sec_filing_document(content, document_name="minimal_instance.xml")
