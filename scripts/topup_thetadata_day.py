@@ -3,9 +3,10 @@
 
 WHY THIS EXISTS (R0.2, Options Superintelligence masterplan 2026-07-31)
 ─────────────────────────────────────────────────────────────────────────────
-ThetaData's EOD report for session T is not available on T's evening — measured
-2026-07-31 20:42 ET: greeks/oi/eod for that day's session all returned 0 rows.
-The report lands overnight (OPRA OI ~03:30 PT / 06:30 ET). The nightly backfill
+Historical observation: on 2026-07-31 20:42 ET, same-day greeks/oi/eod
+returned zero rows. This is not a permanent provider availability rule. Current
+EOD documentation names 17:15 ET report generation; actual availability remains
+a separately retained observation. OI reports have their own overnight clock. The nightly backfill
 refresh pass runs at ~16:10 ET and therefore only ever captures T-1. This
 script started as a bounded pre-open top-up (N roots x 1 day) and is extended
 here (AD-1T1, `research/AD1T1_INCREMENTAL_CADENCE_SPEC_2026-08-22.md`, R2) into
@@ -661,6 +662,314 @@ def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
     return record
 
 
+# Source preparation only: CLI, wrapper and environment do not enable this seam.
+# The incumbent collector owner must supply/qualify a two-attempt transport that
+# budgets EVERY physical request (including probes/retries/redirects), retains raw
+# bytes before parsing and honors the shared deadline. Current transport is None.
+@dataclass(frozen=True)
+class _DSessionObservation:
+    retention_parent: Path
+    original_root: str
+    assigning_parent: str
+    transport: Callable | None = None
+    session_day: _date | None = None  # one prospective operation, never a daily allowance
+
+
+def _d_session_coverage(eod, greeks, oi_d, oi_s, *, D, S, requested_version):
+    """Complete observed membership only; never a market/model/PIT certificate."""
+    import numpy as np
+    frames = {'eod_D': eod, 'greeks_D': greeks, 'oi_D': oi_d, 'oi_S': oi_s}
+    counts = {name: len(frame) if isinstance(frame, pd.DataFrame) else 0
+              for name, frame in frames.items()}
+    result = dict(ready=False, reason='missing_input', counts=counts,
+                  D=D.isoformat(), S=S.isoformat(), observed_contracts=None,
+                  population='reported_live_contracts_expiry_gte_D', excluded_before_D={})
+    if requested_version != '1':
+        return dict(result, reason='greek_version_unestablished')
+    populations = []
+    common = {'root', 'expiration', 'strike', 'right', 'date'}
+    for name, frame in frames.items():
+        required = common | ({'close', 'volume'} if name == 'eod_D' else
+                    {'gamma', 'underlying_price'} if name == 'greeks_D' else {'open_interest'})
+        if not isinstance(frame, pd.DataFrame) or frame.empty or not required <= set(frame):
+            return result
+        day = S if name == 'oi_S' else D
+        dates = pd.to_datetime(frame['date'], errors='coerce')
+        expiry = pd.to_datetime(frame['expiration'], errors='coerce')
+        if (dates.isna().any() or dates.dt.tz is not None
+                or not dates.eq(pd.Timestamp(day)).all() or expiry.isna().any()
+                or expiry.dt.tz is not None or (expiry < pd.Timestamp(day)).any()
+                or not expiry.eq(expiry.dt.normalize()).all()
+                or not frame['root'].eq('SPY').all() or not frame['right'].isin(['C', 'P']).all()):
+            return dict(result, reason='source_scope_or_date_mismatch')
+        numeric = {'strike'} | (required - common)
+        values = {}
+        for col in numeric:
+            value = pd.to_numeric(frame[col], errors='coerce')
+            if (not np.isfinite(value).all()
+                    or (col in {'strike', 'close', 'underlying_price'} and (value <= 0).any())
+                    or (col in {'volume', 'open_interest'} and (value < 0).any())):
+                return dict(result, reason='invalid_source_numbers')
+            values[col] = value
+        keys = list(zip(expiry, values['strike'], frame['right']))
+        if len(set(keys)) != len(keys):
+            return dict(result, reason='ambiguous_membership')
+        live_keys = {key for key in keys if key[0] >= pd.Timestamp(D)}
+        result['excluded_before_D'][name] = len(keys)-len(live_keys)
+        populations.append(live_keys)
+    union = set.union(*populations)
+    result['observed_contracts'] = len(union)
+    result['missing_by_input'] = {name: len(union-population)
+        for name, population in zip(frames, populations)}
+    result['matched_contracts'] = len(set.intersection(*populations))
+    result['market_universe_complete'] = None
+    if not union:
+        return dict(result, reason='empty_live_observed_population')
+    if any(population != union for population in populations):
+        return dict(result, reason='incomplete_observed_membership')
+    return dict(result, ready=True, reason='complete_observed_inputs')
+
+
+def _d_session_local_oi(store, D, S):
+    """Read exact retained reports under the caller's canonical writer lock."""
+    import hashlib
+    import numpy as np
+    import pyarrow.parquet as pq
+    required = {'root', 'expiration', 'strike', 'right', 'date', 'open_interest'}
+    parts, references = [], []
+    for year in sorted({D.year, S.year}):
+        path = store / 'oi' / 'SPY' / f'{year}.parquet'
+        if not path.is_file() or path.is_symlink() or path.stat().st_size > 256*1024*1024:
+            raise ValueError('local_oi_unavailable')
+        parquet = pq.ParquetFile(path)
+        columns = parquet.schema.names
+        if len(columns) > 64 or not required <= set(columns):
+            raise ValueError('local_oi_schema')
+        indices = [parquet.schema.names.index(col) for col in columns]
+        decoded = sum(parquet.metadata.row_group(i).column(j).total_uncompressed_size
+                      for i in range(parquet.metadata.num_row_groups) for j in indices)
+        if decoded > 256*1024*1024:
+            raise ValueError('local_oi_decoded_bound')
+        digest = hashlib.sha256()
+        with path.open('rb') as stream:
+            for chunk in iter(lambda: stream.read(1024*1024), b''):
+                digest.update(chunk)
+        frame = pd.read_parquet(path, columns=columns, filters=[
+            [('date', '>=', pd.Timestamp(day)),
+             ('date', '<', pd.Timestamp(day)+pd.Timedelta(days=1))] for day in [S, D]])
+        if len(frame) > 200000:
+            raise ValueError('local_oi_row_bound')
+        parts.append(frame)
+        references.append(dict(path=str(path), sha256=digest.hexdigest(),
+            bytes=path.stat().st_size, read_at=datetime.now(timezone.utc).isoformat(),
+            first_availability=None))
+    frame = pd.concat(parts, ignore_index=True)
+    dates = pd.to_datetime(frame['date'], errors='coerce')
+    if (dates.isna().any() or dates.dt.tz is not None
+            or not dates.isin([pd.Timestamp(D), pd.Timestamp(S)]).all()):
+        raise ValueError('invalid_local_oi_report_dates')
+    reports = [frame[dates.eq(pd.Timestamp(day))].copy() for day in [D, S]]
+    if any(f.empty or len(f) > 100000 for f in reports):
+        raise ValueError('missing_local_oi_or_baseline')
+    live_populations = []
+    for report, day in zip(reports, [D, S]):
+        strike = pd.to_numeric(report['strike'], errors='coerce')
+        interest = pd.to_numeric(report['open_interest'], errors='coerce')
+        expiry = pd.to_datetime(report['expiration'], errors='coerce')
+        if (not report['root'].eq('SPY').all() or not report['right'].isin(['C', 'P']).all()
+                or expiry.isna().any() or expiry.dt.tz is not None
+                or not expiry.eq(expiry.dt.normalize()).all() or (expiry < pd.Timestamp(day)).any()
+                or not np.isfinite(strike).all() or (strike <= 0).any()
+                or not np.isfinite(interest).all() or (interest < 0).any()
+                or report.duplicated(['expiration', 'strike', 'right', 'date']).any()):
+            raise ValueError('ambiguous_or_invalid_local_oi')
+        live_populations.append({key for key in zip(expiry, strike, report['right'])
+                                 if key[0] >= pd.Timestamp(D)})
+    if not live_populations[0] or live_populations[0] != live_populations[1]:
+        raise ValueError('incompatible_live_local_oi_baseline')
+    return *reports, references
+
+
+def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, request_options):
+    """Inert until an incumbent bounded transport is supplied after qualification.
+
+    The callable seam is used by hermetic tests. No CLI/env/plist supplies one.
+    Its budget must wrap actual transport, not merely count bulk API calls.
+    Pilot payloads never enter _ensure_one_cell/_merge_day/canonical parquet.
+    """
+    import hashlib
+    import uuid
+    from lib.options_source_receipts import BoundedRequestBudget
+    outcome = dict(state='WITHHELD', reason='not_selected_natural_rung', attempts=0,
+        root='SPY', D=ctx.D.isoformat(), S=ctx.S.isoformat(), canonical_writes=0,
+        hub_promotion=False, instantaneous=False, historical_pit=False)
+    entered_et = entered_at.astimezone(nyse_calendar.ET)
+    if (ctx.forced or not nyse_calendar.is_session(ctx.D)
+            or ctx.S != nyse_calendar.session_n_back(ctx.D, 1)
+            or entered_et.date() != ctx.D
+            or entered_et.time().replace(second=0, microsecond=0) != _time_of_day(17, 30)):
+        return outcome
+    if type(config.session_day) is not _date or config.session_day != ctx.D:
+        return dict(outcome, reason='observation_session_not_bound')
+    if request_options != {'version': '1'}:
+        return dict(outcome, reason='greek_request_policy_unestablished')
+    if _time.monotonic() >= deadline_at:
+        return dict(outcome, reason='shared_deadline_exhausted')
+    try:
+        oi_d, oi_s, local_refs = _d_session_local_oi(store, ctx.D, ctx.S)
+    except Exception as exc:
+        return dict(outcome, reason='local_oi_or_baseline_unavailable', error_type=type(exc).__name__)
+    if config.transport is None:
+        return dict(outcome, reason='bounded_transport_not_bound', local_inputs=local_refs)
+    for identity in [config.original_root, config.assigning_parent]:
+        if str(uuid.UUID(identity)) != identity:
+            raise ValueError('Exact source custody identities required')
+    parent = config.retention_parent
+    if (not parent.is_dir() or parent.is_symlink()
+            or parent.resolve().is_relative_to(store.resolve())):
+        return dict(outcome, reason='private_retention_parent_unqualified')
+    directory = parent / f'spy-{ctx.D.isoformat()}-1730-observation-v1'
+    try:
+        directory.mkdir()  # exclusive, never reuse a refused/unknown/complete claim
+    except FileExistsError:
+        return dict(outcome, reason='existing_observation_claim')
+    _eod_sync_directory(parent)
+    record = dict(outcome, schema='options.d_session_observation/v1', state='PREPARED',
+        operation_ref=directory.name, bound_session=config.session_day.isoformat(),
+        reason=None, original_root=config.original_root, assigning_parent=config.assigning_parent,
+        entered_at=entered_at.isoformat(), started_at=datetime.now(timezone.utc).isoformat(),
+        first_availability=None, market_universe_complete=None, model_scope=None,
+        requested_greek_version='1',
+        local_inputs=local_refs, max_gets=2, requests=[], economic_expiry=None,
+        model_details=None, topup_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    def save():
+        _eod_retain(directory/'receipt.json', json.dumps(record, allow_nan=False, sort_keys=True).encode())
+    save()
+    # Full normalized local reports, before the declared expiry exclusion, stay
+    # in this private observation evidence. These are not original vendor CSVs.
+    record['local_report_copies'] = []
+    for name, report in [('oi_D', oi_d), ('oi_S', oi_s)]:
+        body = report.to_csv(index=False).encode()
+        if len(body) > 32*1024*1024:
+            raise ValueError('Private local-report copy byte bound')
+        _eod_retain(directory/(name+'.csv'), body)
+        expiry = pd.to_datetime(report['expiration'])
+        record['local_report_copies'].append(dict(name=name, rows=len(report),
+            bytes=len(body), sha256=hashlib.sha256(body).hexdigest(),
+            excluded_expiry_before_D=int((expiry < pd.Timestamp(ctx.D)).sum()),
+            representation='normalized_local_report_before_live_population_exclusion'))
+    save()
+    class Budget(BoundedRequestBudget):
+        def begin(self, session, url):
+            if entry['state'] != 'RESERVED' or url != entry['origin'] + entry['endpoint']:
+                if entry['state'] == 'RESERVED':
+                    entry.update(state='NOT_ATTEMPTED', reason='request_scope_refused')
+                save()
+                raise RuntimeError('Pilot retries/redirects/probes are not admitted')
+            if _time.monotonic() >= deadline_at:
+                entry.update(state='NOT_ATTEMPTED', reason='shared_deadline_exhausted')
+                save()
+                raise RuntimeError('Shared deadline exhausted before request')
+            try:
+                super().begin(session, url)
+            except Exception:
+                entry.update(state='NOT_ATTEMPTED', reason='request_budget_refused')
+                save()
+                raise
+            record['attempts'] = self.attempts
+            entry.update(state='REQUEST_STARTED', started_at=datetime.now(timezone.utc).isoformat())
+            save()  # durability BEFORE the adapter may perform a physical GET
+    budget = Budget(2)
+    frames = {}
+    try:
+        for kind, endpoint in [('eod', '/v3/option/history/eod'), ('greeks', '/v3/option/history/greeks/eod')]:
+            if budget.stopped or _time.monotonic() >= deadline_at:
+                raise RuntimeError('Pilot stopped/shared deadline exhausted')
+            entry = dict(kind=kind, state='RESERVED', origin=config.transport.origin,
+                endpoint=endpoint, parameters=dict(symbol='SPY', expiration='*',
+                start_date=int(ctx.D.strftime('%Y%m%d')), end_date=int(ctx.D.strftime('%Y%m%d')),
+                format='csv', **({'version': '1', 'right': 'both'} if kind == 'greeks' else {})),
+                requested_order=3 if kind == 'greeks' else None, raw_rows=None, normalized_rows=None)
+            record['requests'].append(entry)
+            save()
+            def response(status):
+                if entry['state'] != 'REQUEST_STARTED':
+                    raise RuntimeError('Unreserved response')
+                entry.update(state='HEADERS' if status == 200 else 'REFUSED', http_status=status,
+                             response_at=datetime.now(timezone.utc).isoformat())
+                save()
+                if status != 200:
+                    budget.stop()
+                    raise ValueError('Pilot source refusal')
+            def raw(body):
+                if entry['state'] != 'HEADERS' or not isinstance(body, bytes) or len(body) > 16*1024*1024:
+                    raise ValueError('Pilot raw-response contract/bound')
+                _eod_retain(directory/(kind+'.csv'), body)
+                entry.update(state='RAW_CAPTURED', bytes=len(body), sha256=hashlib.sha256(body).hexdigest(),
+                             received_at=datetime.now(timezone.utc).isoformat())
+                save()
+                if not body.strip():
+                    raise ValueError('Empty observed source response')
+            entry['adapter_entered_at'] = datetime.now(timezone.utc).isoformat()
+            save()
+            frame = config.transport(kind, root='SPY', day=ctx.D, order=3 if kind=='greeks' else None,
+                request_options={'version':'1'} if kind=='greeks' else {}, request_budget=budget,
+                max_bytes=16*1024*1024, max_rows=100000, deadline_at=deadline_at,
+                response_handler=response, raw_response_handler=raw)
+            if entry['state'] != 'RAW_CAPTURED' or entry.get('http_status') != 200:
+                raise ValueError('Missing actual acquisition receipt')
+            if not isinstance(frame, pd.DataFrame) or frame.empty or len(frame) > 100000:
+                raise ValueError('Missing/malformed/oversized pilot frame')
+            raw_rows = frame.attrs.get('_bounded_raw_rows')
+            if type(raw_rows) is not int or not 0 < raw_rows <= 100000:
+                raise ValueError('Missing/out-of-bound actual raw row count')
+            expected_binding = dict(origin=entry['origin'], endpoint=entry['endpoint'],
+                parameters=entry['parameters'], raw_rows=raw_rows,
+                payload_sha256=entry['sha256'], payload_bytes=entry['bytes'])
+            if frame.attrs.get('_d_session_binding') != expected_binding:
+                raise ValueError('Unbound/mismatched actual request and raw-to-parser evidence')
+            if kind=='greeks':
+                request_provenance = frame.attrs.get('requested_version')
+                entry['frame_request_version_provenance'] = request_provenance
+                entry['response_model_metadata'] = None
+                if request_provenance is not None and request_provenance != '1':
+                    raise ValueError('Conflicting Greek request-version provenance')
+            entry.update(state='PARSED', parsed_at=datetime.now(timezone.utc).isoformat(),
+                         raw_rows=raw_rows, normalized_rows=len(frame))
+            returned_dates = pd.to_datetime(frame['date'], errors='coerce') if 'date' in frame else None
+            entry['returned_frame_dates'] = None
+            if returned_dates is not None and not returned_dates.isna().any():
+                unique_dates = list(pd.unique(returned_dates))
+                if len(unique_dates) <= 8:
+                    entry['returned_frame_dates'] = sorted(pd.Timestamp(value).isoformat() for value in unique_dates)
+            frames[kind] = frame
+            save()
+        if _time.monotonic() >= deadline_at:
+            raise RuntimeError('Shared deadline exhausted during observation')
+        coverage = _d_session_coverage(frames['eod'], frames['greeks'], oi_d, oi_s,
+            D=ctx.D, S=ctx.S, requested_version='1')
+        record.update(state='OBSERVED_COMPLETE' if coverage['ready'] else 'WITHHELD',
+                      reason=coverage['reason'], coverage=coverage)
+    except BaseException as exc:
+        budget.stop()
+        if (record['requests'] and record['requests'][-1]['state'] == 'RESERVED'
+                and getattr(exc, 'request_started', None) is False):
+            record['requests'][-1].update(state='NOT_ATTEMPTED', reason='source_pre_get_refusal')
+        if record['requests'] and (record['requests'][-1]['state'] in ('REQUEST_STARTED', 'HEADERS')
+                or (record['requests'][-1]['state'] == 'RESERVED'
+                    and 'adapter_entered_at' in record['requests'][-1])):
+            record['requests'][-1]['state'] = 'EFFECT_UNKNOWN'
+        record.update(state='EFFECT_UNKNOWN' if any(r['state']=='EFFECT_UNKNOWN' for r in record['requests'])
+                      else 'STOPPED', reason=type(exc).__name__)
+        if not isinstance(exc, Exception):
+            raise
+    finally:
+        record['completed_at'] = datetime.now(timezone.utc).isoformat()
+        save()
+    return dict(outcome, state=record['state'], reason=record['reason'], attempts=record['attempts'],
+                receipt=str(directory/'receipt.json'), coverage=record.get('coverage'))
+
+
 def _snapshot_oi_frame(td, root: str) -> pd.DataFrame | None:
     """(K2, Sol B1b) OI[D] frontier via `collectors.thetadata.snapshot_open_interest`
     — replaces the current-day-unavailable `bulk_open_interest(root, 0, D, D)`
@@ -1065,15 +1374,20 @@ def _refresh_live_flow_baselines(runtime: Path, store: Path, source_session: _da
 
 def _daily_main(*, workers: int, deadline_min: float, forced: bool,
                 now_fn: Callable[[], datetime] | None = None,
-                baseline_runtime: Path | None = None) -> int:
+                baseline_runtime: Path | None = None,
+                d_session_observation: _DSessionObservation | None = None) -> int:
     now_fn = now_fn or (lambda: datetime.now(timezone.utc))
     started_at = datetime.now(timezone.utc)
 
-    ctx = _resolve_daily_context(now_fn(), forced=forced)
+    entered_at = now_fn()
+    ctx = _resolve_daily_context(entered_at, forced=forced)
     if ctx is None:
         log.info("topup daily: gate closed (non-session day or before 16:10 ET) "
                  "— clean no-op, no receipt")
         return 0
+
+    shared_deadline_at = (_time.monotonic() + max(0., deadline_min)*60
+                          if d_session_observation is not None else None)
 
     try:
         store = Path(resolve_thetadata_store(
@@ -1101,6 +1415,8 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
             log.warning("topup daily: writer lock held by another process — "
                        "refusing (no mutation, no receipt)")
             return 0   # F14
+
+        observation = None
 
         def _finish(status: str, **extra) -> dict:
             finished_at = datetime.now(timezone.utc)
@@ -1135,6 +1451,8 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
                 "terminal_health": None,
                 "oi_D_source": None,
             }
+            if observation is not None:
+                receipt['d_session_observation'] = observation
             receipt.update(extra)
             _write_daily_receipt(store, receipt)
             return receipt
@@ -1146,6 +1464,18 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
                                      "reason": "session_resolution_failed"}])
             log.error("topup daily: session_n_back(%s, 1) returned None — aborting", ctx.D)
             return 1
+
+        if d_session_observation is not None:
+            try:
+                observation = _observe_spy_d_session(store, ctx, entered_at, shared_deadline_at,
+                    d_session_observation, request_options=_dated_greek_request_options('SPY'))
+            except Exception as exc:
+                # A failed return/durability write cannot certify attempt absence.
+                # Preserve the private claim and isolate the optional lane from
+                # the existing four-cell maintenance and its health calculation.
+                observation = dict(state='EFFECT_UNKNOWN', attempts=None,
+                    reason='observation_return_unavailable', error_type=type(exc).__name__,
+                    canonical_writes=0, hub_promotion=False)
 
         stale_tmp_swept = _sweep_stale_tmp(store)
 
@@ -1176,9 +1506,11 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
             log.error("topup daily: universe resolution failed: %s", e)
             return 1
 
+        remaining_deadline_min = (deadline_min if shared_deadline_at is None else
+                                 max(0., (shared_deadline_at-_time.monotonic())/60))
         results, deadline_exceeded, terminal_lost = _run_daily_pool(
             store, t1_universe, td, workers=workers,
-            deadline_min=deadline_min, ctx=ctx)
+            deadline_min=remaining_deadline_min, ctx=ctx)
 
         agg = _aggregate_daily(results, t1_universe, ad_universe)
 
