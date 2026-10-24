@@ -385,6 +385,11 @@ def project_extended_quote(
                 expected -= timedelta(days=1)
         if expected < date(2016, 1, 1) or row.get("extRegularSessionDate") != expected.isoformat():
             return None
+        phase_end = opened if session == "pre" else current.replace(
+            hour=post_end_hour, minute=0, second=0, microsecond=0)
+        valid_until_ms = min(observed_ms + bound * 1000, phase_end.timestamp() * 1000)
+        if checked_now * 1000 >= valid_until_ms:
+            return None
         observed_at = datetime.fromtimestamp(observed_ms / 1000, timezone.utc).isoformat(
             timespec="milliseconds").replace("+00:00", "Z")
     except (OverflowError, OSError, ValueError):
@@ -402,5 +407,6 @@ def project_extended_quote(
         "completed_regular_reference": {"price": reference, "session_date": expected.isoformat()},
         "change_abs": change_abs, "change_pct": change_pct,
         "as_of_ms": observed_ms, "observed_at": observed_at,
+        "valid_until_ms": valid_until_ms,
         "freshness": "live" if basis == "REALTIME" else "delayed",
     }

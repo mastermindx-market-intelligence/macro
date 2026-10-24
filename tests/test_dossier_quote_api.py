@@ -603,7 +603,7 @@ def test_additive_extended_tuple_through_dossier_http(client, monkeypatch):
     assert stale["extended_quote"] is None and stale["price"] == 227.98
 
 
-def test_dossier_keeps_existing_full_view_hub_request(monkeypatch):
+def test_dossier_requests_primary_snapshot_isolation_in_existing_full_view(monkeypatch):
     # Inspect the existing request with an offline opener, never contact loopback.
     seen = []
     class Reply:
@@ -616,5 +616,5 @@ def test_dossier_keeps_existing_full_view_hub_request(monkeypatch):
             return Reply()
     monkeypatch.setattr(dossier_quote_api, "_NO_REDIRECT_OPENER", Opener())
     dossier_quote_api._read_hub_quotes("NVDA")
-    assert seen[0].endswith("/quotes?syms=NVDA")
+    assert seen[0].endswith("/quotes?syms=NVDA&extSource=primary_snapshot")
     assert "view=regular" not in seen[0]

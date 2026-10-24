@@ -115,6 +115,20 @@ def test_extended_old_session_print_and_ns_masquerading_as_ms_rejected():
     row.update(extAsOfMs=row["extAsOfMs"] * 1e6, extTs=math.floor(row["extAsOfMs"] * 1000))
     assert project_extended_quote(row, now=now) is None
 
+
+def test_extended_deadline_is_own_age_or_actual_phase_end():
+    row, now = _extended_row()
+    assert project_extended_quote(row, now=now, max_age_seconds=120)["valid_until_ms"] == row["extAsOfMs"] + 120000
+    row, now = _extended_row("2026-10-23T13:29:59+00:00")
+    assert project_extended_quote(row, now=now)["valid_until_ms"] == (now + 1) * 1000
+    assert project_extended_quote(row, now=now + 1) is None
+    row, now = _extended_row("2026-11-27T21:59:59+00:00", extRegularSessionDate="2026-11-27",
+                             extSession="post", extMarketSession="post")
+    assert project_extended_quote(row, now=now)["valid_until_ms"] == (now + 1) * 1000
+    assert project_extended_quote(row, now=now + 1) is None
+    row, now = _extended_row()
+    assert project_extended_quote(row, now=row["extAsOfMs"] / 1000 + 120, max_age_seconds=120) is None
+
 NOW = 1787871758.0 + 5
 CLOSED_NOW = 1787871758.0 + 5 * 3600
 PUBLISHED = "2026-08-31T14:31:10.214Z"

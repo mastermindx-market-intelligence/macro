@@ -2,9 +2,9 @@
 
 This source-only P1 composes the existing Terminal Quote Plane into the dossier
 API. It preserves `project_regular_quote`, the public regular keys, and the
-regular-only batch consumer. `extended_quote` is additive and nullable. Existing
-page JavaScript still renders the regular quote; no new page display, provider
-collection, runtime activation, deployment or live proof is included.
+regular-only batch consumer. `extended_quote` is additive and nullable. The primary hero/sticky price stays regular. A separately labeled pre/post
+reading is composed by the existing controller; no provider collection, runtime
+activation, deployment or live proof is included.
 
 The Terminal producer is `hub/lib/snapshot.js` plus `hub/lib/store.js`.
 The snapshot cache retains price/clock candidates even when zero/missing day
@@ -32,8 +32,17 @@ The Store composes only `ext*` fields from that reference and the qualified
 snapshot print. A pre/post print cannot replace regular `last`, `chg`, OHLC or
 session date. Existing closed-session day-price fallback remains usable.
 `/quotes` defaults to the existing full view used by the dossier's existing
-loopback URL. The existing final `view=regular` projection strips every `ext*`
-key. No hub wiring, new publisher, timer, socket or demand pass is added.
+loopback URL, now with the existing singleton selector
+`extSource=primary_snapshot`. The request suppresses ExtFeed demand and read
+before effects, retains the primary snapshot/Polygon/anchor demand, strips all
+cached ext fields, and requalifies the tuple through the accepted snapshot and
+actual anchor owner at the same request clock. No provider substitution occurs
+when primary data is unavailable. Other full/regular/tiingo_boats clients keep
+their existing behavior; this is request-local isolation, not global quiescence.
+The inherited default/full demand graph can still involve independent legacy
+providers for other clients. Filtering public values alone never proved demand
+isolation or legacy-provider rights. The existing final `view=regular` projection
+strips every `ext*` key. No hub wiring, publisher, socket or demand pass is added.
 
 `extSession` identifies the print; additive `extMarketSession` identifies the
 current calendar phase. Their actual windows must agree. Legacy regular
@@ -81,3 +90,49 @@ effect. The Macro PR must remain draft with an explicit no-merge hold. Terminal
 and restarts quote-hub when hub bytes change; no build/install is authorized by
 this source commission. Neither CI nor offline acceptance proves deployment or
 an untouched real premarket observation.
+
+## Source-only presentation packet
+
+Job/archetype: Instrument Analyzer (C), existing dossier decision header. The
+reader distinguishes the regular move from a named pre/post observation and
+its completed-close reference, then sees if that observation remains usable.
+Primary hero/sticky prices, regular move, range and regular freshness owner
+remain together. The separate reading names session, price and signed move,
+completed regular reference price/date and observation age. EN/ZH spans update
+together. Direction retains signs and existing locale-specific ink, with no
+new live pulse or color-only meaning.
+
+DARK TREATMENT: existing graphite hero/canvas and luminance hierarchy, neutral
+heading/reference, contrast-adjusted direction ink and quiet age. No new card,
+glow, accent border or material system.
+
+LIGHT TREATMENT: existing cool research canvas, light material hierarchy and
+stronger contrast ink. The added typographic reading has no independent
+background/elevation requiring inversion; it inherits the existing light art
+direction. The intentional theme difference remains the governed material/ink
+system; geometry and meaning are shared.
+
+Mobile uses the existing single-column hero reduction and wrapping heading;
+reference and age occupy their own lines. Desktop retains right alignment.
+The reference remains visible at390px. No new interactive controls or hover-only
+receipts are added.
+
+The server adds `valid_until_ms=min(as_of_ms+max_age, actual phase end)`. This is
+a policy deadline, never an observation/freshness clock. The client validates
+the tuple atomically, advances age from `as_of_ms`, and clears at
+`now >= valid_until_ms`, including exact09:30, failed polling and tab reveal.
+Unavailable, stale, malformed or future data clears the extended values and
+names the regular fallback; missing is never zero.
+
+Evidence: real Chromium source-fixture captures cover dark/light x EN/ZH x
+1440px/390px; synthetic data and frozen source clock are explicit. CSP denies
+connections; the controller fetch receives an in-memory reply. No live/provider
+snapshot or production journey is claimed. Negative-state DOM cases and local
+screenshots separately cover unavailable/expired/recovery states. Receipt:
+mockups/evidence/dossier-premarket-20261023/EVIDENCE.yml.
+
+The historical entitlement record covers snapshot/trade/aggregate display and
+derived use subject to dataset-specific written conditions. It grants no legacy
+provider rights and proves no current credential/feed access. Macro template
+merge also triggers render publication, in addition to the API restart boundary;
+both source PRs retain root-controlled draft/no-merge holds.
