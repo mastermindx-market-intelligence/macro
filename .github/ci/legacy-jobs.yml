@@ -8526,6 +8526,7 @@ jobs:
       - "scripts/chain_snapshot_poller.py"
       - "scripts/ci/options_signal_nightly.sh"
       - "scripts/ci/options_index_lock_identity.py"
+      - "scripts/launchd/theta_daily_refresh.sh"
       - "scripts/launchd/theta_staleness_sentinel.sh"
       - "scripts/live_flow_poller.py"
       - "scripts/mirror_flow_idx.py"
@@ -37489,7 +37490,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema==4.26.0
       - name: EDGAR filing identity join + release binding (Wave 1B)
         run: >-
           python -m pytest
@@ -40292,6 +40293,8 @@ jobs:
       - "engine/press/desk_planner.py"
       - "engine/press/native_plan_scope.py"
       - "engine/press/issuer_release_candidate.py"
+      - "engine/press/market_snapshot_candidate.py"
+      - "scripts/stage_market_snapshot_press.py"
       - "engine/press/official_feed_candidate.py"
       - "engine/press/fda_document.py"
       - "engine/marketing/breaking_feed.py"
