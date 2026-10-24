@@ -1903,3 +1903,158 @@ def test_prewarm_stream_io_failure_leaves_cache_and_reaps_started_child(monkeypa
     if failure_at != "launch":
         assert process.stdin.closed and process.stdout.closed
         assert process.terminated and process.returncode is not None
+
+
+class _ContentBoundedText(io.StringIO):
+    def __init__(self, text, *, failure=None, close_failure=False):
+        super().__init__(text)
+        self.failure = failure
+        self.close_failure = close_failure
+        self.read_sizes = []
+        self.consumed = 0
+
+    def read(self, size=-1):
+        assert 0 < size <= min(CLI.CONTENT_READ_CAP + 1, 64 * 1024), "unbounded artifact capture"
+        self.read_sizes.append(size)
+        if self.failure is not None and self.consumed:
+            raise self.failure
+        result = super().read(min(size, 3))  # short reads must not become EOF
+        self.consumed += len(result)
+        return result
+
+    def close(self):
+        super().close()
+        if self.close_failure:
+            self.close_failure = False
+            raise OSError("fixture close")
+
+
+def _install_content_process(monkeypatch, process):
+    def popen(command, **kwargs):
+        assert command == ["git", "show", "HEAD:data/target.json"]
+        assert kwargs["stdout"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.DEVNULL
+        assert kwargs["text"] is True
+        return process
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    monkeypatch.setattr(CLI.subprocess, "run", lambda *a, **k: pytest.fail("whole artifact capture"))
+    CLI.reset_caches()
+
+
+def test_content_fallback_sparse_oversize_stops_before_retaining_whole_body(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    process = _PrewarmGitProcess(b"", ignore_terminate=True)
+    process.stdout = _ContentBoundedText("x" * 100)
+    _install_content_process(monkeypatch, process)
+    result, error = CLI._content_text(tmp_path, "data/target.json")
+    assert result is None and "cap" in error
+    assert process.stdout.consumed == 9
+    assert process.stdout.closed and process.terminated and process.killed
+    assert process.returncode == 0 and not CLI._READ_CACHE
+
+
+def test_content_fallback_post_stat_growth_is_bounded_in_bytes(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"x")
+    original = Path.open
+    opened = []
+    class Limited(io.BytesIO):
+        def read(self, size=-1):
+            assert 0 < size <= 9, "unbounded post-stat growth read"
+            return super().read(size)
+    def grow(candidate, mode="r", *args, **kwargs):
+        if candidate == path and "r" in mode:
+            stream = Limited(b"x" * 100)
+            opened.append(stream)
+            return stream
+        return original(candidate, mode, *args, **kwargs)
+    monkeypatch.setattr(Path, "open", grow)
+    monkeypatch.setattr(CLI.subprocess, "Popen", lambda *a, **k: pytest.fail("oversize disk must not fall back"))
+    CLI.reset_caches()
+    result, error = CLI._content_text(tmp_path, "data/target.json")
+    assert result is None and "bytes" in error and "cap" in error
+    assert len(opened) == 1 and opened[0].closed and not CLI._READ_CACHE
+
+
+def test_content_fallback_real_git_keeps_character_newline_and_missing_policies(monkeypatch, tmp_path):
+    root = _git_fixture_root(tmp_path)
+    raw = {"multibyte": ("é" * 8).encode(), "newlines": b"a\r\n" * 4,
+           "exact": b"x" * 8, "oversize": b"x" * 9, "empty": b"", "decode": b"\xff"}
+    for key, value in raw.items():
+        (root / "data" / (key + ".json")).write_bytes(value)
+    subprocess.run(["git", "add", "data"], cwd=root, check=True)
+    subprocess.run(["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "bounded artifact inputs"], cwd=root, check=True, capture_output=True)
+    for key in raw:
+        (root / "data" / (key + ".json")).unlink()
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    CLI.reset_caches()
+    for key in raw:
+        text, error = CLI._content_text(root, "data/" + key + ".json")
+        if key == "oversize":
+            assert text is None and "chars" in error and "cap" in error
+        elif key in {"empty", "decode"}:
+            assert (text, error) == (None, None)
+        else:
+            assert error is None
+            assert text == raw[key].decode().replace("\r\n", "\n").replace("\r", "\n")
+        assert not CLI._READ_CACHE
+    assert CLI._content_text(root, "data/absent.json") == (None, None)
+    # Ordinary configuration transport keeps its original eager, uncapped contract.
+    assert CLI.read_tracked(root, Path("data/oversize.json")) == ("x" * 9, "git")
+
+
+@pytest.mark.parametrize("failure", ["read", "decode", "nonzero", "launch", "close"])
+def test_content_fallback_failed_git_discards_prefix_and_reaps(monkeypatch, tmp_path, failure):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    process = _PrewarmGitProcess(b"", code=1 if failure == "nonzero" else 0)
+    error = OSError("fixture read") if failure in {"read", "close"} else (UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture") if failure == "decode" else None)
+    process.stdout = _ContentBoundedText("valid", failure=error, close_failure=failure == "close")
+    _install_content_process(monkeypatch, process)
+    if failure == "launch":
+        def fail(*a, **k): raise OSError("fixture launch")
+        monkeypatch.setattr(CLI.subprocess, "Popen", fail)
+    assert CLI._content_text(tmp_path, "data/target.json") == (None, None)
+    assert not CLI._READ_CACHE
+    if failure != "launch": assert process.stdout.closed and process.returncode is not None
+    if failure in {"read", "decode", "close"}: assert process.terminated
+
+
+def test_content_fallback_worktree_and_warmed_cache_keep_preference_and_cleanup(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes("é\r\na\r".encode())
+    monkeypatch.setattr(CLI.subprocess, "Popen", lambda *a, **k: pytest.fail("worktree/cache preference"))
+    CLI.reset_caches()
+    assert CLI._content_text(tmp_path, "data/target.json") == ("é\na\n", None)
+    path.write_bytes(("é" * 4).encode())  # exact8 disk bytes, only4 chars
+    assert CLI._content_text(tmp_path, "data/target.json") == ("é" * 4, None)
+    path.write_bytes(("é" * 4 + "a").encode())  #9 disk bytes is refused
+    key = (str(tmp_path), "data/target.json")
+    CLI._READ_CACHE[key] = ("cached", "git")
+    text, error = CLI._content_text(tmp_path, "data/target.json")
+    assert text is None and "bytes" in error and "cap" in error
+    assert key not in CLI._READ_CACHE
+    path.write_bytes(b"")
+    assert CLI._content_text(tmp_path, "data/target.json") == ("", None)
+    path.unlink()
+    for value in [("cached", "git"), (None, "absent")]:
+        key = (str(tmp_path), "data/target.json")
+        CLI._READ_CACHE[key] = value
+        assert CLI._content_text(tmp_path, "data/target.json") == (value[0], None)
+        assert key not in CLI._READ_CACHE
+
+
+def test_content_fallback_bad_worktree_still_uses_complete_head(monkeypatch, tmp_path):
+    monkeypatch.setattr(CLI, "CONTENT_READ_CAP", 8)
+    path = tmp_path / "data/target.json"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"\xff")
+    process = _PrewarmGitProcess(b"")
+    process.stdout = _ContentBoundedText("head\n")
+    _install_content_process(monkeypatch, process)
+    assert CLI._content_text(tmp_path, "data/target.json") == ("head\n", None)
+    assert process.stdout.closed and process.returncode == 0
+    assert not CLI._READ_CACHE

@@ -319,33 +319,87 @@ def _load_json(root: Path, rel: Path) -> tuple[Any, str]:
         return None, "unparseable"
 
 
-def _content_text(root: Path, rel: str) -> tuple[str | None, str | None]:
-    """Artifact content through the same ladder, size-capped. Returns (text, parse_error).
+def _content_git_text(root: Path, path: Path) -> tuple[str | None, str | None]:
+    """Bound decoded HEAD text before retention; preserve the character cap."""
+    proc = None
+    try:
+        proc = subprocess.Popen(
+            ["git", "show", f"HEAD:{path.as_posix()}"], cwd=root,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        )
+        assert proc.stdout is not None
+        chunks: list[str] = []
+        size = 0
+        while True:
+            chunk = proc.stdout.read(min(CONTENT_READ_CAP + 1 - size, 64 * 1024))
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > CONTENT_READ_CAP:
+                return None, f"content exceeds cap {CONTENT_READ_CAP} chars — not read"
+            chunks.append(chunk)
+        if proc.wait() == 0 and size:
+            return "".join(chunks), None
+    except (OSError, subprocess.SubprocessError, UnicodeError):
+        pass
+    finally:
+        if proc is not None:
+            if proc.stdout is not None:
+                try:
+                    proc.stdout.close()
+                except OSError:
+                    pass  # A pipe close failure must not skip owned-child reap.
+            if proc.poll() is None:
+                # Reap our read-only child on cap/decode/I/O failure. The cleanup
+                # grace is not a deadline for the composed derive.
+                proc.terminate()
+                try:
+                    proc.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+    return None, None
 
-    The read_tracked cache is dropped for artifact content: it exists so ONE build is a
-    function of one snapshot of its CONFIG inputs, and holding several hundred artifact
-    bodies for the life of the process is not what it is for.
+
+def _content_text(root: Path, rel: str) -> tuple[str | None, str | None]:
+    """Bounded artifact ladder; ordinary configuration read_tracked is unchanged.
+
+    Keep the incumbent disk-byte versus decoded-Git-character caps. A prior
+    prewarm value remains the invocation snapshot; remove its cache entry on
+    every exit. An over-limit body is unreadable, never a successful prefix.
     """
     path = Path(rel)
+    key = (str(root), path.as_posix())
     try:
         on_disk = root / path
-        if on_disk.is_file() and on_disk.stat().st_size > CONTENT_READ_CAP:
-            size = on_disk.stat().st_size
-            return None, f"content is {size} bytes (cap {CONTENT_READ_CAP}) — not read"
-    except OSError:
-        pass
-    text, _ = read_tracked(root, path)
-    _READ_CACHE.pop((str(root), path.as_posix()), None)
-    if text is None:
-        return None, None
-    if len(text) > CONTENT_READ_CAP:
-        return None, f"content is {len(text)} chars (cap {CONTENT_READ_CAP}) — not read"
-    return text, None
+        disk_file = False
+        try:
+            disk_file = on_disk.is_file()
+            if disk_file:
+                size = on_disk.stat().st_size
+                if size > CONTENT_READ_CAP:
+                    return None, f"content is {size} bytes (cap {CONTENT_READ_CAP}) — not read"
+        except OSError:
+            pass
+        if key in _READ_CACHE:
+            text, _source = _READ_CACHE[key]
+            if text is not None and len(text) > CONTENT_READ_CAP:
+                return None, f"content is {len(text)} chars (cap {CONTENT_READ_CAP}) — not read"
+            return text, None
+        if disk_file:
+            try:
+                with on_disk.open("rb") as handle:
+                    raw = handle.read(CONTENT_READ_CAP + 1)
+                if len(raw) > CONTENT_READ_CAP:
+                    return None, f"content exceeds cap {CONTENT_READ_CAP} bytes — not read"
+                text = raw.decode("utf-8")
+                return text.replace("\r\n", "\n").replace("\r", "\n"), None
+            except (OSError, UnicodeError):
+                pass  # Same unreadable/undecodable-worktree to HEAD fallback.
+        return _content_git_text(root, path)
+    finally:
+        _READ_CACHE.pop(key, None)
 
-
-# ---------------------------------------------------------------------------
-# Observation per artifact
-# ---------------------------------------------------------------------------
 
 def _watermark_from_json(payload: Any, field: str) -> tuple[bool, Any]:
     """(field_present, raw_value) for a top-level key, else ``meta.<field>`` one level."""
