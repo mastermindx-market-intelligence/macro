@@ -20,7 +20,7 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "KWEB": {
+    "BIDU": {
       "asof": "2026-10-22",
       "lag_days": 1,
       "state": "fresh"
@@ -30,7 +30,7 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "BIDU": {
+    "KWEB": {
       "asof": "2026-10-22",
       "lag_days": 1,
       "state": "fresh"
