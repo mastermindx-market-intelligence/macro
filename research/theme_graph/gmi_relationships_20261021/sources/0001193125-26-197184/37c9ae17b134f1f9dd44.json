@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-04-30T20:06:29Z",
+ "accession": "0001193125-26-197184",
+ "cik": "0001329394",
+ "doc_byte_length": 1847893,
+ "doc_sha256": "c644d1945ac159c271ddc2cfd8a33e67865af891cd41991430291b389552f880",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-30",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d17718d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1845933,
+  "byte_start": 1844807,
+  "normalized": "SK Hynix 75,836 12",
+  "normalized_sha256": "a918f9f669763951273d92cac7e193d22bcdcb4fc24364e3f852289018a217ca",
+  "raw": "SK Hynix</div></td>\n<td style=\"vertical-align:bottom\">&#160;&#160;</td>\n<td style=\"vertical-align:bottom\">&#160;</td>\n<td style=\"vertical-align:bottom;text-align:right\"><ix:nonFraction name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" contextRef=\"P01_01_2023To12_31_2023_CustomerConcentrationRiskMemberusgaapConcentrationRiskByTypeAxis_SalesRevenueNetMemberusgaapConcentrationRiskByBenchmarkAxis_SkHynixMembersrtMajorCustomersAxis\" unitRef=\"Unit_USD\" decimals=\"-3\" scale=\"3\" format=\"ixt:num-dot-decimal\" id=\"ixv-20113\">75,836</ix:nonFraction></td>\n<td style=\"white-space:nowrap;vertical-align:bottom\">&#160;</td>\n<td style=\"vertical-align:bottom\">&#160;&#160;</td>\n<td style=\"vertical-align:bottom\">&#160;</td>\n<td style=\"vertical-align:bottom;text-align:right\"><ix:nonFraction name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"P01_01_2023To12_31_2023_CustomerConcentrationRiskMemberusgaapConcentrationRiskByTypeAxis_SalesRevenueNetMemberusgaapConcentrationRiskByBenchmarkAxis_SkHynixMembersrtMajorCustomersAxis\" unitRef=\"Unit_pure\" decimals=\"2\" scale=\"-2\" format=\"ixt:num-dot-decimal\" id=\"ixv-20114\">12",
+  "raw_sha256": "37c9ae17b134f1f9dd4469cd0bba75d38edd24fbd9603361bf6a310d68a08d1f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1329394/000119312526197184/d17718d20f.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 47083,
+   "byte_start": 46233,
+   "context_ref": "P01_01_2023To12_31_2023_CustomerConcentrationRiskMemberusgaapConcentrationRiskByTypeAxis_SalesRevenueNetMemberusgaapConcentrationRiskByBenchmarkAxis_SkHynixMembersrtMajorCustomersAxis",
+   "raw": "<xbrli:context id=\"P01_01_2023To12_31_2023_CustomerConcentrationRiskMemberusgaapConcentrationRiskByTypeAxis_SalesRevenueNetMemberusgaapConcentrationRiskByBenchmarkAxis_SkHynixMembersrtMajorCustomersAxis\"> <xbrli:entity> <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001329394</xbrli:identifier> <xbrli:segment> <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember> <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember> <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">simo:SkHynixMember</xbrldi:explicitMember> </xbrli:segment> </xbrli:entity> <xbrli:period> <xbrli:startDate>2023-01-01</xbrli:startDate> <xbrli:endDate>2023-12-31</xbrli:endDate> </xbrli:period> </xbrli:context>",
+   "raw_sha256": "dfc803f1fac701f558a251b7d596d3a342d9eea308d59f832cdced333bd7aa45"
+  }
+ ]
+}
