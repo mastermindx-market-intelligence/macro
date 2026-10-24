@@ -127,3 +127,53 @@ def test_real_parquet_store_via_actual_cli_offline_only(monkeypatch, tmp_path):
     assert result["family_source"]["complete_chain_receipt"] is False
     assert result["family_source"]["redistribution_grant"] is None
     assert [p.name for p in stage.rglob("*.json")] == ["NDX.json"]
+
+
+def test_offline_writer_rejects_a_gex_parent_symlink_before_any_escape(monkeypatch, tmp_path):
+    """Regression: the old write_text followed candidate/gex -> outside."""
+    target = tmp_path / "candidate"
+    outside = tmp_path / "outside"
+    target.mkdir(mode=0o700)
+    outside.mkdir(mode=0o700)
+    (target / "gex").symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store: _frames(root)[0])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
+    with pytest.raises(FileExistsError):
+        hub.build_ndx_family_offline(ASOF, tmp_path, target)
+    assert not (outside / "NDX.json").exists()
+
+
+def test_offline_writer_rejects_output_directory_symlink(monkeypatch, tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir(mode=0o700)
+    target = tmp_path / "candidate"
+    target.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store: _frames(root)[0])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
+    with pytest.raises((FileExistsError, ValueError)):
+        hub.build_ndx_family_offline(ASOF, tmp_path, target)
+    assert list(outside.iterdir()) == []
+
+
+def test_offline_writer_exclusive_new_private_tree(monkeypatch, tmp_path):
+    import stat
+
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store: _frames(root)[0])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
+    target = tmp_path / "candidate"
+    written = hub.build_ndx_family_offline(ASOF, tmp_path, target)
+    assert written == target / "gex" / "NDX.json"
+    assert written.is_file()
+    assert stat.S_IMODE(target.stat().st_mode) == 0o700
+    assert stat.S_IMODE((target / "gex").stat().st_mode) == 0o700
+    assert stat.S_IMODE(written.stat().st_mode) == 0o600
+    first_bytes = written.read_bytes()
+    with pytest.raises(FileExistsError):
+        hub.build_ndx_family_offline(ASOF, tmp_path, target)
+    assert written.read_bytes() == first_bytes

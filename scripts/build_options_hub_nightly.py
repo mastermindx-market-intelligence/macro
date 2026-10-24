@@ -1207,11 +1207,56 @@ def build_ndx_family_offline(
         frames[root] = (greeks, oi)
     result = build_ndx_family_gex(frames, asof)
     output = out_dir / "gex" / "NDX.json"
-    # Local-only and opt-in: never replace an existing holder of an output.
-    if output.is_symlink() or output.exists():
-        raise FileExistsError(f"refusing to overwrite existing family candidate: {output}")
-    output.parent.mkdir(parents=True, exist_ok=True)
-    _write_json(output, result)
+    # A preview is NEVER an existing live/published tree. Accept only a NEW
+    # staging directory under the resolved host scratch root; require its
+    # existing parent before acquiring any destination directory handle.
+    scratch = Path(tempfile.gettempdir()).resolve()
+    if not out_dir.is_absolute() or not out_dir.name:
+        raise ValueError("NDX family candidate requires a new absolute staging directory")
+    real_parent = out_dir.parent.resolve(strict=True)
+    if real_parent != scratch and scratch not in real_parent.parents:
+        raise ValueError("NDX family candidate must stay within host scratch")
+    if out_dir.is_symlink() or out_dir.exists():
+        raise FileExistsError(f"refusing to reuse existing family candidate: {out_dir}")
+
+    # Serialize BEFORE creating the output tree. New dirs are 0700; O_EXCL
+    # plus dirfd+O_NOFOLLOW prevent replacing a public file or writing through
+    # a pre-existing/raced-in gex-directory symlink. Keep this path independent
+    # of the incumbent live/R2 publisher.
+    counter = [0]
+    clean = _nulled_nonfinite(result, counter)
+    payload = json.dumps(clean, allow_nan=False, default=str).encode("utf-8")
+    nofollow_dir = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    parent_fd = os.open(out_dir.parent, nofollow_dir)
+    try:
+        expected_parent = os.stat(real_parent)
+        actual_parent = os.fstat(parent_fd)
+        if (actual_parent.st_dev, actual_parent.st_ino) != (
+                expected_parent.st_dev, expected_parent.st_ino):
+            raise ValueError("NDX family candidate scratch parent identity changed")
+        os.mkdir(out_dir.name, 0o700, dir_fd=parent_fd)
+        stage_fd = os.open(out_dir.name, nofollow_dir, dir_fd=parent_fd)
+        try:
+            os.mkdir("gex", 0o700, dir_fd=stage_fd)
+            gex_fd = os.open("gex", nofollow_dir, dir_fd=stage_fd)
+            try:
+                leaf_fd = os.open(
+                    "NDX.json",
+                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                    0o600, dir_fd=gex_fd,
+                )
+                with os.fdopen(leaf_fd, "wb") as handle:
+                    handle.write(payload)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            finally:
+                os.close(gex_fd)
+        finally:
+            os.close(stage_fd)
+    finally:
+        os.close(parent_fd)
+    if counter[0]:
+        log.warning("NDX family offline preview contains %d non-finite null fields", counter[0])
     return output
 
 
