@@ -181,7 +181,9 @@ waves:
       Consume same-child HC-P6.T0.FIX1 repair for Draft #1854 at ffe70d75, then obtain
       independent source review. Real producer bytes decode but their distinct Runtime
       identities prevent a qualified Office Result join; do not force association.
-      Full signed-in office, native chat and original P6 product acceptance remain open.
+      Place the separately pinned HC-P6.T1 associated-read source slice after the
+      bounded current-custody check. Full signed-in office, native chat and original
+      P6 product acceptance remain open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
     status: in_progress
@@ -288,6 +290,7 @@ next_action: >
   For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
   same-child repairs of #1854 and #1852 (R2). Draft #1856 at a9601a9c publishes the
   tested ACP canonical gate; reconcile its original review refusal/root gap without replay.
+  Place the separately pinned HC-P6.T1 bounded Office associated-read source slice.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1876,8 +1879,8 @@ general CI 40132237175 remains in progress. Neither result is semantic acceptanc
   refusal and root-verification gap, with an actual root-qualified disposition or the
   precise missing evidence. Read-only metadata only; no worker launch, fresh ID,
   route/pool switch, credential/account/config change, policy repair or fabricated receipt.
-- **State:** PLANNED_BEFORE_RECONCILIATION_REQUEST. The new review remains unverified
-  with retry forbidden; #1856 source stays frozen. The original three older Fabric
+- **State:** RECONCILIATION_REQUEST_DELIVERED at 1792876715.738069. The new review
+  remains unverified with retry forbidden; #1856 source stays frozen. The original three older Fabric
   terminal/EFFECT_UNKNOWN holds remain separate and unchanged.
 
 
@@ -1929,8 +1932,199 @@ general CI 40132237175 remains in progress. Neither result is semantic acceptanc
   shared observation plus wrong tuple/digest/root, separate observation, mid-read
   Control Room/Runtime/permission drift, second selection, budget, close/custody and
   explicit missing-input refusals. Independent observations must still differ.
-- **Placement state:** SOURCE_GAP_CHARACTERIZED; current semantic overlap/custody check
-  and exact writable-path/transport/budget packet are in preparation. No implementation
-  child or source carrier has been placed for this slice. Known #1854 fixture repairs,
+- **Placement state:** VERTICAL_SOURCE_TASK_PINNED under HC-P6.T1 after the bounded
+  relevant-carrier read. Its exact writable paths, transport and budget contract are
+  recorded below. No implementation child or source carrier has been placed yet. Known #1854 fixture repairs,
   ACP #1856, old R2 App/auth edits and original Fabric holds remain fenced.
   Source acceptance, signed-in UI use, installed custody and full P6 remain open.
+
+
+#### P6 current bounded source-custody read
+
+Root reused the retained census and directly read the six relevant R2 carriers with
+Git optional locks/replacement objects/fsmonitor disabled. Targeted paths were Runtime,
+Fabric view, workspace service, Executive service, common workspace contract and App
+app/contract/installed. No carrier/index/config/lock was modified.
+
+| Carrier | Current HEAD | Targeted dirty delta / new runtime test |
+| --- | --- | --- |
+| r2-1313-criteria-qualify-222f69def58f35ea | 28e3c692b3d9736885a096f171e52995686d8cc1 | none / absent |
+| r2-review-drain-294c1a48bc639ab4 | 98f07d2bcf7f778766fc264c594e72913c3e9857 | none / absent |
+| r2-secretary-regression-8c00f67164330e76 | 7e3407222442e0477fa0a744181486f890e88ed8 | none / absent |
+| r2-stage4-observe-20b55a2cbe733b74 | 9c716147d6eec7ce8011873413484a2749f2c4da | none / absent |
+| mmx-r2-loopback-acceptance-20261015-ceo | f4663e8caefcfd3189492d1a3bc367a87179974a | none / absent |
+| mmx-r2-read-continuity-20261013 | 4c2b4f0933dddadc6da1f2413ac7004585a58832 | none / absent |
+
+The read-continuity carrier has unpublished bounded original-session request/reply/
+live-writer/reference methods in executive_runtime.py; no associated Mission/Result
+candidate was observed in the named source-symbol/definition checks. Preserve that
+independent native-READ work. The old dual-pr temporary directory could not be read as
+a Git repository and remains preserved. This is a bounded placement check, not a
+universal absence or active-writer/lifecycle proof.
+
+A native advisory attempt to parse only the retained census earlier returned "aborted
+by user after 594.6s" with no output/PID/handle; its start/termination is unconfirmed.
+No Git reads or writes ran in that advisory. Root then used the existing file-read
+interface to read the already retained JSON and completed the bounded Git checks above;
+the ambiguous shell call was not replayed and no source state was changed.
+
+
+### HC-P6.T1 — Associated Mission/Result read through the existing owners
+
+- **Mission and current responsibility:** implement the smallest useful source slice
+  from HC-P6.T1.DESIGN: a genuine same-observation Mission plus one selected role Result,
+  acquired by the existing Runtime and WorkspaceReadService, transported through the
+  existing authenticated App/Unix client, and consumed unchanged by the actual Office
+  decoders/projector. The current parent under commission 1792861454.777859 owns this
+  new source responsibility. This does not transfer old R2 or #1854 source custody.
+- **Fleet placement:** one new Cursor cloud implementation child
+  meta-ceo-harness-office-join-cursor-20261024-01, root
+  meta-ceo-open-harness-convergence-20261024-sol-001, parent
+  meta-ceo-harness-implementation-20261024-web-001, Mastermind repository.
+  Consequential bounded cross-owner implementation; use existing qualified admission
+  and an isolated registered source carrier. No substitution for an uncertain child.
+  Initial source pin is protected 3095d09f1789a5b8002503beae872774c297b1a5; verify any
+  newer protected source for material changes before placement/editing.
+- **Custody evidence:** the retained 353-worktree inventory was reused, not regenerated.
+  Current read-only checks of the six relevant named R2 carriers found no dirty delta
+  on the eight inspected Runtime/Fabric/service/transport paths and no proposed new
+  runtime test or associated-read symbol. Five have no unpublished commits on those
+  paths. The read-continuity carrier 4c2b4f0933dddadc6da1f2413ac7004585a58832 retains
+  unpublished original-session/reply evidence methods, not a Mission/Result compound
+  read; it remains unchanged and unadopted. The old /private/tmp/mmx-r2-dual-pr-a530-20261015
+  directory is not currently a readable Git carrier and is preserved. This bounded
+  check does not establish global exclusivity or release any other workspace.
+  #1854 repairs only its existing result-producer test/README; #1856 is frozen separately.
+
+#### Exact writable source ceiling
+
+| Path | Purpose |
+| --- | --- |
+| control_plane/executive_runtime.py | One explicit bounded root-and-role-result selection and typed owner material; necessary private budget plumbing only |
+| control_plane/fabric_job_view.py | Reuse current provenance and v3 composition on the retained joint material, without a second observation |
+| control_plane/workspace_read_service.py | One Control Room bracket and compound composition through existing owners |
+| control_plane/executive_service.py | Admit only the new closed read frame through existing App-peer dispatch and byte ceiling |
+| common/executive_workspace_mission_result_contract.py | New closed compound read contract, reusing incumbent selector/principal grammar |
+| integrations/mastermind_workspace_app/app.py | One fixed authenticated compound GET route and existing refusal/permission behavior |
+| integrations/mastermind_workspace_app/installed.py | Existing Unix client validation and bounded response for that frame |
+| integrations/mastermind_workspace_app/contract.py | Thin re-exports only if necessary; no account/grant rule changes |
+| tests/test_executive_runtime_bounded_read.py | Only legitimate public-surface expectation for the single new bounded method; retain every current guard |
+| tests/test_executive_runtime_mission_result_read.py | New actual Runtime selection, budget, custody, failure and close proof |
+| tests/test_workspace_mission_result_contract.py | New closed grammar, shape, size and compatibility proof |
+| tests/test_workspace_mission_result_service.py | New actual source composition and Control Room bracket proof |
+| tests/test_workspace_mission_result_http.py | New real signed test HTTP/Unix export and permission proof |
+| app/mastermind_os/src/meta-ceo/mission-result-producer.test.ts | New actual decoded compound-response consumption and Office association proof |
+| app/mastermind_os/src/meta-ceo/fixtures/mission-result-producer/actual-pair.json | Unchanged actual compound HTTP response bytes |
+| app/mastermind_os/src/meta-ceo/fixtures/mission-result-producer/fixture-provenance.json | Actual exporter identity/hash/byte receipts; no secrets |
+| app/mastermind_os/src/meta-ceo/fixtures/mission-result-producer/README.md | Reproducible fresh consumption and precise source-proof limits |
+
+Any genuinely necessary additional writable path requires a bounded parent amendment
+before editing. Do not alter existing #1854 files, production App/MetaCeoOffice/hooks,
+web auth, package/dependency locks, capability policy, routing, provider adapters or
+other assigned P1/P2/P3/P7 source. Existing pure mission_workspace, fabric_result_projection
+and Office decode/projection laws are read-only inputs, not targets for weakened joins.
+
+#### Contract and owner invariants
+
+1. Add one explicit closed Runtime operation, proposed name
+   read_root_role_result_bounded, taking the existing exact root/job/Attempt/envelope-
+   digest tuple. It consumes the current one-selection allowance exactly once and
+   returns Runtime-owned typed root and selected role-result material. A second
+   selection still poisons the observation. No caller SQL, cursors, paths, connection,
+   callback, arbitrary result list or lifecycle/effect authority.
+2. All material and required provenance must come from the retained observation's
+   same connection. Preserve canonical completion, root membership, current Attempt,
+   envelope digest, recursive closure and creation-event validation. Share finite
+   selection statement/returned-row/raw-cell/raw-total-byte/completed-node/VM accounting;
+   do not reset it between root, result and provenance phases. Keep current role-result
+   ceilings (256 statements, 512 rows, 8388608 bytes/cell, 33554432 total bytes, six
+   completed nodes, 200000 VM steps) and root ceilings (17 Jobs, 20 Attempts per Job,
+   340 total Attempts); do not raise or bypass them to pass a fixture. Fixed owner
+   observation setup/teardown metadata stays separately bounded as today.
+3. Runtime alone mints the request-scoped identity. Expose a receipt only after actual
+   physical close/namespace validation; require SAME for both projections. Preserve
+   failure poisoning and uncertainty. Independent reads still produce different IDs.
+   Do not substitute a loader for the owner's retained connection or expose budget
+   controls to a caller. If these invariants require an unresolved design change,
+   return the concrete source question instead of relaxing them.
+4. Factor/reuse the existing Fabric/Mission and role-result projection rules. The
+   selected result must be present in the actual complete root/index scope under the
+   same finalized receipt. Do not reopen Runtime, fabricate a callback result, copy an
+   ID between unrelated documents, trust equal counters, or bypass provenance checks.
+5. WorkspaceReadService brackets this one acquisition with its actual Control Room
+   snapshots. Before/after selection/currentness and all existing principal/permission
+   generation checks remain authoritative. A source, permission, close, budget or
+   identity failure discards the pair; neither half is returned as a successful pair.
+6. Add a distinct closed frame, schema
+   mastermind.executive_workspace_mission_result_read.v1, operation mission_result;
+   keys remain schema/operation/selection/principal. Selection is exactly the existing
+   five-field Result selector. Reuse its canonical validator and current resource/scope.
+   Keep frozen v1/v2/v3 operation grammars unchanged.
+7. Fixed GET /workspace/mission-result/current uses that selector and the existing
+   authentication, raw-path/query/body fences, current binding, App-peer Unix dispatch,
+   no-store response and pre/post permission checks. No new service, auth registration,
+   account policy, client grant, persistent cache or state owner.
+8. Compound BODY schema mastermind.workspace_mission_result.v1 has a closed top-level
+   shape: schema, selection, availability, reason_codes, mission, role_result.
+   AVAILABLE means both actual documents are qualified and associated; reason_codes=[]
+   and both documents are present. UNAVAILABLE has both documents null and one or more
+   closed reasons SOURCE_UNAVAILABLE, SOURCE_CHANGED, OVER_BUDGET, RESPONSE_OVER_BUDGET
+   as actually evidenced. Do not mislabel an unrelated acquisition failure as change.
+   Existing permission/input/not-found errors retain their existing HTTP semantics.
+   Enforce the incumbent 2000000-byte whole outer transport ceiling, including socket LF,
+   and the unchanged 16384-byte whole Result-envelope ceiling. No partial success,
+   inferred receipt or truncated successful document. Existing standalone routes retain
+   their behavior and shapes.
+
+#### Ordered execution and discriminating evidence
+
+| Stage | Work | Exit / status |
+| --- | --- | --- |
+| T1.1 | Verify current source/custody and implement the one bounded Runtime selection | Real test-owned root/result, authentic finalized receipt, combined budgets and refusal cases; PLANNED |
+| T1.2 | Consume it through existing provenance/projection and service owners | One actual observation and Control Room bracket, no private source reopen or fake positive acquisition; PLANNED |
+| T1.3 | Wire the closed App/Unix read contract | Actual signed test route, no-store bytes, denied input/permission before source and revocation before response; PLANNED |
+| T1.4 | Export and consume actual bytes in TypeScript | Existing decoders and projectOffice accept the genuinely associated pair; distinct-state and negative cases hold; PLANNED |
+| T1.5 | Freeze source, CI and independent review | Draft exact head, path/hash/command receipts, parent STOP, separate non-author review; PLANNED |
+
+- Runtime tests must discriminate a true cumulative budget from a per-phase reset:
+  inputs fitting each phase independently but exceeding the combined allowance refuse.
+  Challenge wrong tuple/root/digest, stale Attempt, second selection, namespace invalidation,
+  changed source, error/uncertain close and refused final receipt; no writes or broad
+  registry fallback. Preserve existing standalone bounded read/result/Runtime tests.
+- Use real test-owned records, namespace and authentication through the existing
+  App -> Unix client -> WorkspaceReadService -> Runtime path, as the prior exporter
+  does. No installed UID458 or actual Auth0 registration is proven by that fixture.
+  Trace actual namespace entries/exits and observation samples; no positive fixture
+  callback can stand in for the new production path.
+- Preserve actual-pair.json byte-for-byte from the HTTP response. The TS test reads
+  those bytes, decodes the nested documents with existing decoders, and calls the
+  actual projectOffice. Record the whole HTTP byte/hash receipt; do not label a
+  reserialized nested object as raw HTTP bytes. A fresh-input mode must derive actual
+  current identities/hashes, distinguish committed replay, and refuse explicit empty,
+  missing or bad input without fallback. Clean only attempt-owned temporary data.
+- Positive evidence must show the selected associated Result without overwriting
+  review reject, completed work, returned transport, unknown binding or acceptance
+  state. Separate actual observations, crossed tuples/digests and changed Control Room,
+  Runtime or permission generations must still refuse. Preserve the older independent-
+  response negative proof; do not edit #1854's bytes to manufacture a positive.
+- Run focused new and relevant incumbent tests, TS typecheck and actual consumer tests.
+  Report exact commands/results/skips and source hashes; do not repeat unrelated
+  accepted DSH/P2 fixtures. Hosted CI is separate from semantic review.
+
+#### Return, safety and continuation
+
+Return actual child/branch/head, precise changed paths, completed stages, real exporter
+and fresh consumer receipts, meaningful negative tests, CI, remaining limitations and
+a Draft Mastermind PR on the original child thread. Freeze source on return. No author
+approval/merge, installation, live provider/computer action, purchase, credentials or
+account-policy change. No database mutation outside test-owned fixtures and no old
+carrier/index/lock changes. Independent review is a separate fleet task after return.
+
+DONE_WHEN for this task is SOURCE_ASSOCIATED_READ_QUALIFIED through the real source
+consumer path and independent exact-head review. This does not complete signed-in UI
+integration, installed custody, native chat, P4/P5, real observation campaigns or P6/R2.
+After this source slice, the parent must still pin the actual UI consumption and
+installed proof steps. Rollback is withdrawal/revision of the unmerged candidate;
+there is no production rollout or persistent migration in this task.
+
+- **State:** PLANNED_BEFORE_PLACEMENT. No new child or source carrier is claimed yet.

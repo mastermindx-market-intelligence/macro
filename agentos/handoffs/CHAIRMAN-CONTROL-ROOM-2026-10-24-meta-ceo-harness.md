@@ -70,6 +70,7 @@ next_actions:
   - Reconcile the original HC-P3.T1a.PORT1.R1 Fabric request refusal/root-verification gap without retry or replacement. Draft 1856/a9601a9c stays frozen; semantic review, materialization/native consumption and installed acceptance remain open.
   - Reconcile HC-P7.T0.R2 same-carrier continuation delivery and obtain the independent verdict for Draft 1853/0f433e8; author checks and exact-head hosted CI40129725707 passed.
   - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
+  - Place pinned HC-P6.T1 as one new isolated Cursor source child for the bounded associated-read vertical slice; preserve old R2 carriers and the separate 1854 repair.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
   - PR 1717 accepted build/startup/401 cleanup and 43 native tests on unchanged source.
@@ -449,3 +450,41 @@ general CI 40132237175 remains in progress. Neither result is semantic acceptanc
 P6 source diagnosis is now pinned in HC-P6.T1.DESIGN: real request-scoped Runtime
 identities explain the correctly withheld independent exports. A bounded same-observation
 vertical read is being prepared; no identity rewrite, UI guard weakening or new writer.
+
+
+#### P6 current bounded source-custody read
+
+Root reused the retained census and directly read the six relevant R2 carriers with
+Git optional locks/replacement objects/fsmonitor disabled. Targeted paths were Runtime,
+Fabric view, workspace service, Executive service, common workspace contract and App
+app/contract/installed. No carrier/index/config/lock was modified.
+
+| Carrier | Current HEAD | Targeted dirty delta / new runtime test |
+| --- | --- | --- |
+| r2-1313-criteria-qualify-222f69def58f35ea | 28e3c692b3d9736885a096f171e52995686d8cc1 | none / absent |
+| r2-review-drain-294c1a48bc639ab4 | 98f07d2bcf7f778766fc264c594e72913c3e9857 | none / absent |
+| r2-secretary-regression-8c00f67164330e76 | 7e3407222442e0477fa0a744181486f890e88ed8 | none / absent |
+| r2-stage4-observe-20b55a2cbe733b74 | 9c716147d6eec7ce8011873413484a2749f2c4da | none / absent |
+| mmx-r2-loopback-acceptance-20261015-ceo | f4663e8caefcfd3189492d1a3bc367a87179974a | none / absent |
+| mmx-r2-read-continuity-20261013 | 4c2b4f0933dddadc6da1f2413ac7004585a58832 | none / absent |
+
+The read-continuity carrier has unpublished bounded original-session request/reply/
+live-writer/reference methods in executive_runtime.py; no associated Mission/Result
+candidate was observed in the named source-symbol/definition checks. Preserve that
+independent native-READ work. The old dual-pr temporary directory could not be read as
+a Git repository and remains preserved. This is a bounded placement check, not a
+universal absence or active-writer/lifecycle proof.
+
+A native advisory attempt to parse only the retained census earlier returned "aborted
+by user after 594.6s" with no output/PID/handle; its start/termination is unconfirmed.
+No Git reads or writes ran in that advisory. Root then used the existing file-read
+interface to read the already retained JSON and completed the bounded Git checks above;
+the ambiguous shell call was not replayed and no source state was changed.
+
+HC-P6.T1 now pins the complete bounded associated-read source slice before a new
+Cursor placement: one authentic Runtime observation through existing service/HTTP/Unix
+owners to the existing TS decoders and Office projector. Exact seventeen-path ceiling,
+closed additional frame/endpoint, existing budgets and identity laws, real fresh-byte
+proof and independent review are specified in the workstream. PLANNED_BEFORE_PLACEMENT;
+no actual new child/carrier exists yet. #1854's separate repair stays with its owner.
+ACP review-refusal reconciliation was delivered at 1792876715.738069; no retry/reroute.
