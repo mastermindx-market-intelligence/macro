@@ -11470,3 +11470,4 @@
 {"id":"ob-2026-10-23-a0d2fdfb75","from":"queued","to":"quarantined","at":"2026-10-24T04:23:05Z","actor":"press_wire_reap","note":"expired_session_language: copy's day words are no longer true: today_word_off_session:today's","receipt":null}
 {"id":"ob-2026-10-23-f95fc5a3fb","from":"queued","to":"quarantined","at":"2026-10-24T04:23:05Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Saturday; 2026-10-24 is not a trading day","receipt":null}
 {"id":"ob-2026-10-22-450deaf170","from":"queued","to":"quarantined","at":"2026-10-24T08:59:10Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-22-450deaf170","from":"queued","to":"quarantined","at":"2026-10-24T09:15:31Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
