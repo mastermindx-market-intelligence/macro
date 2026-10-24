@@ -1,0 +1,249 @@
+{
+  "schema": "bonds.current_main_source_page_adoption.v1",
+  "status": "ADOPTED_IN_HELD_SOURCE_INTEGRATION",
+  "intended_merge_parents": [
+    "2e05fe3a3ce5b6d0112d9ba4b05eacdc0fdc6774",
+    "41ec70c23561bbd845a67f0586c3bc75b40e7b05"
+  ],
+  "page": {
+    "path": "site/bonds.html",
+    "bytes": 728615,
+    "sha256": "a4cbb8d4722f1b9fcd52c7729ce0792d5e03e2f81cfad24e7c3822e053538952"
+  },
+  "prior_completed_child": {
+    "head": "2e05fe3a3ce5b6d0112d9ba4b05eacdc0fdc6774",
+    "official_contract": "PASS_0_INTRODUCED_0_INHERITED",
+    "contract_result_sha256": "a9b8b70ae0f85e9340255497549df4abe2f1f54a03fab68daa469195d1102d6e",
+    "normal_push_result_sha256": "fa03564ec61671eef555f8a032116c07b38f4ea4da5964c3ab1c0dfda1b30e49"
+  },
+  "material_invalidator": {
+    "changed_generation_inputs": [
+      "data/regime/latest.json"
+    ],
+    "prior_blob": "5eca31ce8377dd149c593784f519c0ebb84a1c1a",
+    "new_blob": "4f42e3317f6f572d63a3f8afcd4c81ad961ed9fd",
+    "source_pins_changed": 0,
+    "nonpage_assets_changed": 0,
+    "private_inputs_changed": 0
+  },
+  "native": {
+    "completed_at_utc": "2026-10-24T01:23:57.225056+00:00",
+    "returncode": 0,
+    "manifest_sha256": "a0d78c627e1db2c7b209305c414b31c45bb11cbc6529c1981f3ea9bb15a9c24a",
+    "source_pins_sha256": "abe0fbab6b007cc846f65d8d164d74ac1680c0df0a57128f52f574515d7a51e7",
+    "qualification_report_sha256": "16fed2275c1927e382b4ca718cf16beeea28b8546601fd731ca7102f589f467e",
+    "log_sha256": "2c4b18174f19407ebd638faf8e776da4766faf4f2faee363545cfdfbfd0c3b35",
+    "native_check_count": 14,
+    "native_failed_checks": [],
+    "effect_guard_denial_count": 0,
+    "original_inputs_and_pinned_source_unchanged": true,
+    "private_manifest_inputs_unchanged": true
+  },
+  "native_result_sha256": "d51efccc07a60fab268ef7da121d1e04aea9990b880d420ef6c1dfa5e2836265",
+  "input_count": 562,
+  "input_bytes": 58482765,
+  "source_pin_count": 56,
+  "private_input_count": 6,
+  "adoption": {
+    "completed_at_utc": "2026-10-24T01:32:07.065077+00:00",
+    "receipt_sha256": "624fc7105de6b4b8acc7f5565e8432e5397f3ebb1647622bf2327de6a78f25ed",
+    "stage_preimage_sha256": {
+      "1": "5745c50390839fdb6c300fbd693f193c9ca1478877c1c7915fc46fba0e9e5e66",
+      "2": "b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e",
+      "3": "6a44990195ae813157c9dc166fffd3f7146a3066b0de7ea94590d9af63902504"
+    },
+    "nonpage_asset_count": 29,
+    "all_assets_equal_merged_index": true,
+    "page_index_matches_native": true
+  },
+  "page_contracts": {
+    "passed": 2,
+    "returncode": 0,
+    "log_sha256": "210332fbc62b97ec74ab260eaad299f1a06e4f373446059be08555b35fed64bc",
+    "subprocess_seconds": 3.3,
+    "pytest_seconds": 2.44,
+    "warnings": 152,
+    "warning_scope": "existing pytest temporary-directory cleanup warnings; no cleanup action added"
+  },
+  "ci_manifest": {
+    ".github/ci/legacy-jobs.yml": {
+      "unchanged_from_published_child": false,
+      "sha256": "0d518ec6a83bfe8cfcdf8e050050dcde54ce6cadb527e6675885a2a9e39b4f0a"
+    },
+    "tests/test_ci_pack.py": {
+      "unchanged_from_published_child": true,
+      "sha256": "87ecc0b6cd7763d92c6501c3846f963a2de8b94bf76911631965b4db85353c56"
+    },
+    "main_change": {
+      "job": "ontology-explorer",
+      "added_path": "templates/ticker_index.html.j2",
+      "w4_repaired_job_semantics_unchanged": true,
+      "all_other_manifest_semantics_unchanged": true
+    }
+  },
+  "pre_effect_precondition_failure": {
+    "process": 60539,
+    "preserved": true,
+    "no_page_or_asset_writes_reached": true,
+    "reason": "whole-manifest comparison found one unrelated main job path addition"
+  },
+  "native_contracts": {
+    "scope": "Actual function/render calls; no values replaced, no browser, no source-test rerun.",
+    "observed": {
+      "explanation_calls": 1,
+      "page_render_calls": 1,
+      "yield_calls": 1,
+      "page_explanation_is_native_object": true,
+      "machine_explanation_is_native_object": true,
+      "canonical_yield_identity_preserved": true
+    },
+    "surface_facts": {
+      "id_counts": {
+        "bond-explanations": 1,
+        "bonds-duration-dialog": 1,
+        "credit-dislocation": 1,
+        "bonds-source-dialog": 1,
+        "bonds-source-open": 1
+      },
+      "duration_triggers": 1,
+      "duration_illustrative": true,
+      "duration_initially_unavailable": true,
+      "duration_module_present": true,
+      "duration_bilingual_scope": true,
+      "r33_adapter_before_inspector": true,
+      "r33_protected_payload_path": true,
+      "r33_inspector_css_present": true,
+      "cdi_roots": 1,
+      "issuer_details": 18,
+      "bond_templates": 18,
+      "inert_bond_rows": 311,
+      "paired_yes": 0,
+      "observed_time_dates": [
+        "2026-10-15"
+      ],
+      "cdi_border_token": true,
+      "cdi_radius_token": true,
+      "host_line_token": true,
+      "host_panel2_token": true,
+      "host_radius_token": true,
+      "host_warning_ink_token": true,
+      "history_heading_bilingual": true
+    },
+    "checks": {
+      "all_four_surfaces_once": true,
+      "duration_native_module_and_scope": true,
+      "r33_adapter_and_inspector_present": true,
+      "one_native_explanation_object": true,
+      "canonical_yield_object_preserved": true,
+      "current_credit_machine_matches": true,
+      "current_credit_withheld_when_unconfirmed": true,
+      "same_generated_cdi_view": true,
+      "actual_cdi_population": true,
+      "actual_source_date_displayed": true,
+      "authority_and_unavailable_cds": true,
+      "host_and_cdi_tokens_present": true,
+      "history_present_when_bonds_present": true,
+      "actual_stale_copy": true
+    },
+    "failed_checks": [],
+    "cdi_view_facts": {
+      "available": true,
+      "status": "stale",
+      "as_of": null,
+      "source_as_of": "2026-10-15",
+      "age_sessions": 6,
+      "observation_id": "cdi:29093bbe09011dc68d206b96",
+      "pricing_qualified": true,
+      "bond_count": 311,
+      "paired_count": 0
+    },
+    "credit_currentness_facts": {
+      "source_available": true,
+      "producer_current": false,
+      "as_of": "2026-09-10",
+      "currentness": {
+        "verdict": "blind",
+        "decided_by": null,
+        "reasons": [
+          "date_only_calendar_unknown"
+        ],
+        "evidence": [
+          {
+            "plane": "producer",
+            "source": "watermark",
+            "detail": "date-only 2026-09-10: minimum age 1033.397h read at end of content date"
+          }
+        ],
+        "age_hours": 1033.397,
+        "source_asof": "2026-09-10",
+        "field": "as_of"
+      },
+      "currentness_error": null,
+      "withheld": true
+    },
+    "optional_explanation_inputs_absent": []
+  },
+  "cdi": {
+    "status": "stale",
+    "as_of": "2026-10-24",
+    "source_as_of": "2026-10-15",
+    "age_sessions": 6,
+    "observation_id": "cdi:29093bbe09011dc68d206b96",
+    "coverage": {
+      "bond_rows": 10376,
+      "issuers": 18,
+      "issuers_with_5_sessions": 0,
+      "paired_comparisons": 0,
+      "identified_bond_rows": 311,
+      "invalid_identifiers": 0
+    },
+    "history_coverage": {
+      "population": "current_registry_mapped_instruments",
+      "instrument_rows": 311,
+      "observation_rows": 311,
+      "invalid_instrument_rows": 0
+    },
+    "pricing_validation": {
+      "status": "passed",
+      "reason": null,
+      "source_binding_verified": true,
+      "observation_as_of": "2026-10-15",
+      "instrument_history_verified": true,
+      "price_convention": "clean",
+      "validation_overall": "PASS",
+      "sample_as_of": "2026-10-15",
+      "lqd_median_error_bp": 2.4
+    },
+    "history5_available": 0,
+    "history21_available": 0
+  },
+  "visual": {
+    "status": "UNQUALIFIED",
+    "actual_gate": "FAIL_MISSING_OWNING_EVIDENCE_RECEIPTS",
+    "paths": [
+      "templates/_bonds_duration.html.j2",
+      "templates/_credit_dislocation.html.j2"
+    ],
+    "last_browser_attempt_head": "2e05fe3a3ce5b6d0112d9ba4b05eacdc0fdc6774",
+    "last_browser_result": "originating_browser_context_required",
+    "last_browser_receipt_sha256": "393e4bd308978739ef272255e6cddce3da44a5fa673fd24496207e18a2149567",
+    "new_page_capture_attempted": false
+  },
+  "acceptance": {
+    "source_artifact_adopted": true,
+    "browser": false,
+    "owning_visual_receipts": false,
+    "independent_release_review": false,
+    "current_production": false
+  },
+  "effects": {
+    "native_regeneration": true,
+    "provider_acquisition": false,
+    "browser_retry": false,
+    "worker_replay": false,
+    "deployment": false,
+    "migration": false,
+    "render_dispatch": false
+  },
+  "current_commit_and_ci": "Canonical PR9590 comment6337092277 records post-commit contract, publication and hosted CI; earlier results remain separate."
+}

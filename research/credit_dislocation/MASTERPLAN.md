@@ -1,3 +1,23 @@
+## Current main41e integration — 24 October 2026
+
+The exact 62-input W4 repair is complete in published child `2e05fe3a3ce5b6d0112d9ba4b05eacdc0fdc6774`. Its official contract against 93f passed **zero introduced / zero inherited** at 01:01:14 UTC, preserving all 906 baseline worktree registrations and existing directories. Normal publication completed at 01:03:19 UTC. Preserve the earlier b702 contract failure and its subsequent repair as separate evidence; neither is pending work.
+
+Protected main then advanced to `41ec70c23561bbd845a67f0586c3bc75b40e7b05`, producing one conflict in `site/bonds.html`. All 56 pinned producer/template sources and all 29 nonpage assets are unchanged. The sole changed generation input is the exact Git version of `data/regime/latest.json`, advancing from October 22 to October 23 with changed regime values. This is the material invalidator for one new retained-input generation; no provider acquisition or historical vendor-availability claim follows.
+
+The unchanged guarded native runner completed at 01:23:57 UTC: **14 of 14 native checks passed**, zero effect-guard denials, all original/pinned/private inputs preserved. Its 562-input image contains six unchanged private holdings/sample inputs. The generated page is **728,615 bytes**, SHA-256 `a4cbb8d4722f1b9fcd52c7729ce0792d5e03e2f81cfad24e7c3822e053538952`. The exact page was adopted into the merge index at 01:32:07 UTC; both existing committed-page tests passed. All 29 supporting files equal the merged index. See [the new compact page receipt](evidence/page_adoption_main41e_20261024.json).
+
+Main also adds `templates/ticker_index.html.j2` to the unrelated `ontology-explorer` CI job. A semantic comparison verified that this is the only manifest change since 2e05: the repaired W4 job and all other job fields are unchanged, as is `tests/test_ci_pack.py`. The initial conservative unchanged-manifest precondition stopped before any page/asset write; it is preserved separately. The official exact-merge contract, against 41e with `CONTRACT_DELTA_NO_REAP=1`, supplies the final source qualification.
+
+CDI remains **October 15, stale six sessions**, with 18 issuers, 311 one-date instrument histories and zero eligible five-/21-session comparisons. September 10 credit is withheld; rank, size, gate and escalation authority remain false. All earlier generated pages and receipts remain preserved. The actual visual gate still lacks owning `EVIDENCE.yml` receipts for the duration and CDI templates. The last attempted browser observation was for 2e05 and returned an originating-browser-context prerequisite error; this new page has no browser acceptance. No alternate browser, carrier, worker, deployment, migration or render dispatch was used.
+
+### Remaining ordered work
+
+Commit this normal integration with parents 2e05 and 41e, consume its official exact-head contract, and reconcile/push to the original PR branch normally. The [canonical PR checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) records the resulting commit, publication and hosted checks; do not replay completed operations from older prospective wording. Current owning visual evidence and qualified independent review remain release gates. **Draft/HOLD and auto-merge off remain in force.**
+
+The older checkpoints below are retained evidence and are superseded by this section and the canonical checkpoint where they describe pending actions.
+
+---
+
 ## Current integration and exact W4 closure repair — 24 October 2026
 
 The normal merge is `b702303b6fa866566400975b8e12b3d24c9657f3` (parents `66b5c90b3369c89c693b94b0a4f531b570f5fb8e` and protected-main pin `93f844e9fff86c11565884f1edd5eb92d1152452`). Its official exact-head contract **failed** at 00:41:26 UTC: **62 introduced, zero inherited** findings, all missing literal inputs for `ccw-w4-credit-desk`. Preserve that failed result; the earlier packing tests were not import-closure acceptance.

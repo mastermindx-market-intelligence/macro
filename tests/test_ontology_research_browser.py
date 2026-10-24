@@ -201,3 +201,49 @@ def test_research_final_session_switch_cannot_render(browser, status, final_call
         assert not page.locator('[data-research-result] dl').count()
         assert len(seen)==1 and not errors
     finally: context.close()
+
+
+@pytest.mark.parametrize('width', [390, 1440])
+@pytest.mark.parametrize('theme', ['dark', 'light'])
+@pytest.mark.parametrize('language', ['en', 'zh'])
+def test_pressure_watch_research_action_uses_full_row_measure(browser, width, theme, language):
+    """The continuation must not inherit the ticker's 56px grid track."""
+    import re
+    from jinja2 import Environment
+
+    template = (ROOT/'templates/ticker_index.html.j2').read_text()
+    macro = template[:template.index('{% set nav_prefix')]
+    section = template[template.index('{%- if P.open %}'):template.index('{#- One footnote')]
+    pressure = Environment(autoescape=True).from_string(macro + section).render(P={
+        'open': [{'href': 'CZR.html', 't': 'CZR', 'move_en': 'fell 0.2%',
+                  'move_zh': '下跌 0.2%', 'cmp_en': '', 'fam_en': '', 'state_en': '',
+                  'research_href': '../ontology.html?research_date=2026-10-15&research_ticker=CZR&research_side=down#ox-research'}],
+        'count_en': 'one event', 'count_zh': '一个事件', 'demoted': False,
+    })
+    css = re.search(r'<style>(.*?)</style>', template, re.S).group(1)
+    context = browser.new_context(viewport={'width': width, 'height': 900})
+    page = context.new_page()
+    requests = []
+    page.route('**/*', lambda route: (requests.append(route.request.url), route.abort()))
+    try:
+        page.set_content(f'<html data-theme="{theme}" data-lang="{language}"><head><style>'
+                         + (ROOT/'templates/theme.css').read_text() + css
+                         + '</style></head><body><section class="pw">' + pressure + '</section></body></html>')
+        geometry = page.locator('.pw-research-action').evaluate('''note => {
+          const row = note.previousElementSibling, grid = note.parentElement;
+          const n = note.getBoundingClientRect(), r = row.getBoundingClientRect();
+          const a = note.querySelector('a'), label = a.querySelector(document.documentElement.dataset.lang === 'zh' ? '.l-zh' : '.l-en');
+          const rects = [...label.getClientRects()].filter(x => x.width && x.height);
+          return {width:n.width, gridWidth:grid.getBoundingClientRect().width,
+            below:n.top >= r.bottom, overflow:document.documentElement.scrollWidth > innerWidth,
+            spans:getComputedStyle(note).gridColumn, dossier:row.getAttribute('href'),
+            href:a.getAttribute('href'), nested:!!a.parentElement.closest('a'),
+            fragments:rects.length, hit:rects.every(x => a.contains(document.elementFromPoint(x.x+x.width/2,x.y+x.height/2)))};
+        }''')
+        assert geometry['width'] > 112 and geometry['below'] and not geometry['overflow']
+        assert geometry['spans'] == '1 / -1' and geometry['fragments'] <= 2 and geometry['hit']
+        assert geometry['dossier'] == 'CZR.html' and not geometry['nested']
+        assert geometry['href'] == '../ontology.html?research_date=2026-10-15&research_ticker=CZR&research_side=down#ox-research'
+        assert all('/api/' not in url for url in requests)
+    finally:
+        context.close()
