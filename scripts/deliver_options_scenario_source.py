@@ -20,6 +20,9 @@ import stat
 import subprocess
 import sys
 
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine import options_hub_retention as retention
 from engine import options_scenario_source_arrival as arrival
 from engine.intelligence_workspace import scenario_source_resolution as source
