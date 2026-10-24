@@ -16,7 +16,7 @@ from ..earnings_release.filing_key import (
     FilingKey as ReleaseFilingKey,
     filing_key_from_8k_row,
 )
-from ..earnings_release.receipts import replay_receipt
+from ..earnings_release.receipts import ReceiptError, replay_receipt, validate_sec_acquisition_receipt
 from .documents import text_span
 from .event_id_adapter import aliases_for
 from .qa_exchange import accepted_qa_exchanges_for_transcript
@@ -187,6 +187,18 @@ def build_event_workspace(
         report_date=filing.get("report_date") or "",
         exhibit_url=str(filing.get("exhibit_url") or "") or None,
     )
+
+    acquisition_receipt = None
+    if "acquisition_receipt" in filing:
+        try:
+            acquisition_receipt = validate_sec_acquisition_receipt(
+                filing["acquisition_receipt"], cik=cik, accession=accession,
+                source_url=filing.get("exhibit_url"), source_text=exhibit_body,
+            )
+        except ReceiptError as exc:
+            raise WorkspaceError(f"issuer release acquisition receipt is invalid: {exc}") from exc
+        if acquisition_receipt["source_sha256"] != bound.revision.source_sha256:
+            raise WorkspaceError("issuer release acquisition receipt does not bind the source body")
 
     if (
         prior_source_sha256
@@ -435,6 +447,7 @@ def build_event_workspace(
             "form": (str(filing.get("form")) if filing.get("form") else None),
             "url": filing.get("exhibit_url"),
             "receipt_state": "byte_replayed",
+            **({"acquisition_receipt": acquisition_receipt} if acquisition_receipt is not None else {}),
         },
         {
             "kind": "transcript",
