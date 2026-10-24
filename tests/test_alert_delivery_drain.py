@@ -1175,3 +1175,118 @@ def test_docstring_declares_trigger_cadence_and_latency_budget():
     assert "5 minutes" in doc
     assert "15 minutes" in doc
     assert "off the render path" in doc.lower() or "off-render" in doc.lower()
+
+@pytest.fixture
+def node_decisions(monkeypatch):
+    """Capture the real decision while exercising the complete incumbent drain."""
+    decisions = []
+    original = drain.decide_row
+
+    def capture(*args, **kwargs):
+        decision = original(*args, **kwargs)
+        decisions.append(decision)
+        return decision
+
+    monkeypatch.setattr(drain, "decide_row", capture)
+    return decisions
+
+
+# P09 category source preparation: consent/paid access never stand in for the
+# still-unconnected exact source/action and trusted lifecycle reader.
+@pytest.mark.parametrize("claimed_tier,account_tier,expected", [
+    (None, "free", "entitlement_lapsed"),
+    ("free", "free", "entitlement_lapsed"),
+    (None, "essential", "options_exposure_node_admission_unavailable"),
+    ("free", "essential", "options_exposure_node_admission_unavailable"),
+    ("pro", "essential", "entitlement_lapsed"),
+    ("pro", "pro", "options_exposure_node_admission_unavailable"),
+])
+def test_node_category_has_server_owned_minimum_and_never_sends_without_admission(
+        monkeypatch, node_decisions, claimed_tier, account_tier, expected):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": claimed_tier,
+                        "rights": {"allowed": True}, "admission": {"allowed": True},
+                        "armingEpoch": "2026-09-05T14:00:00Z"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": account_tier, "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert sends == []
+    assert node_decisions[-1].reason == expected
+    assert row["status"] != "sent"
+
+
+@pytest.mark.parametrize("optin,categories,reason", [
+    (False, ["options_exposure_node"], "not_opted_in"),
+    (True, [], "no_alert_categories_selected"),
+    (True, ["thesis_window"], "category_filtered"),
+    (True, ["options_exposure_node", "unknown_future_category"], "alert_categories_unparsed"),
+    (True, ["options_exposure_node", None], "alert_categories_unparsed"),
+])
+def test_node_category_requires_explicit_current_consent(monkeypatch, node_decisions, optin, categories, reason):
+    row = _row(payload={"category": "options_exposure_node"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": optin, "alert_categories": categories}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == reason
+    assert row["status"] != "sent"
+
+
+@pytest.mark.parametrize("claimed_rights", [None, False, "allowed", [], {"allowed": True}, {"allowed": "true"}])
+def test_node_category_row_rights_are_never_current_authority(monkeypatch, node_decisions, claimed_rights):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": "essential",
+                        "rights": claimed_rights})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == "options_exposure_node_admission_unavailable"
+    assert row["status"] == "pending"
+    assert "last_error" not in row
+
+
+@pytest.mark.parametrize("category", ["holdings_material_change", "thesis_window", "fif_saved_issuer"])
+def test_existing_category_delivery_remains_available(monkeypatch, category):
+    row = _row(payload={"category": category, "subject": "Existing category notification",
+                        "ticker": "AAPL", "summary_plain": "Existing category evidence"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": [category]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert len(sends) == 1
+    assert row["status"] == "sent"
+
+
+@pytest.mark.parametrize("requirement,reason", [
+    ("future_enterprise", "entitlement_lapsed"),
+    ({"tier": "free"}, "entitlement_unavailable"),
+    ([], "entitlement_unavailable"),
+    (False, "entitlement_unavailable"),
+])
+def test_node_category_unknown_or_malformed_requirement_cannot_be_downgraded(
+        monkeypatch, node_decisions, requirement, reason):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": requirement})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "pro", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == reason
+    assert row["status"] != "sent"

@@ -1134,6 +1134,8 @@ def test_non_api_path_does_not_trigger_api_restart(path):
 ADMIN_MUST_RESTART = [
     # panel code (all import-cached by the running process)
     "admin/server.py",
+    "templates/theme.css",  # derived token response is process-pinned
+    "engine/qledger_store.py",  # A1 selected request scope is import-cached
     "admin/marketing.py",
     "admin/metabolism_panel.py",
     "admin/neural_web.py",
@@ -1220,7 +1222,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/research_codegen/transport.py",
     "engine/experiments_registry.py",
     "data/research_factory/review/queue.json",
-    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -1771,3 +1772,7 @@ def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
     assert changed < before_copy < copy < noop < after_copy
     assert SCRIPT[noop - 4:noop] == "fi\n\n"
     assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]
+
+
+def test_admin_restart_expectations_are_disjoint():
+    assert not (set(ADMIN_MUST_RESTART) & set(ADMIN_MUST_NOT_RESTART))
