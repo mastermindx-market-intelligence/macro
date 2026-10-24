@@ -1650,13 +1650,20 @@
     }
     var auth = window.MDXAuth, source = auth && auth.user && auth.user();
     var sourceId = source && source.id, sourceEmail = source && source.email || S.email;
+    // The broker already knows this actor. Retain their bound choice BEFORE
+    // any client/identity lookup can fail; a later lookup cannot recast it.
+    var queuedForSource = false;
+    if (sourceId && auth && auth.queueOnboardingPrefs) {
+      queuedForSource = auth.queueOnboardingPrefs(payload, sourceId);
+      if (!queuedForSource) return Promise.resolve({ status: 'pending' });
+    }
     return sbClient().then(function (sb) {
       auth = window.MDXAuth;
       if (!sb || !auth || !auth.queueOnboardingPrefs || !auth.deliverOnboardingPrefs) return { status: 'pending' };
       return sb.auth.getUser().then(function (r) {
         var user = r && !r.error && r.data && r.data.user;
         if (!user || !user.id || (sourceId ? sourceId !== user.id : !sourceEmail || sourceEmail !== user.email)) return { status: 'held' };
-        if (!auth.queueOnboardingPrefs(payload, user.id)) return { status: 'pending' };
+        if (!queuedForSource && !auth.queueOnboardingPrefs(payload, user.id)) return { status: 'pending' };
         return auth.deliverOnboardingPrefs().then(function (result) {
           var current = auth.user && auth.user();
           if (!current || current.id !== user.id) return { status: 'held' };

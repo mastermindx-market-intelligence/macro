@@ -3369,9 +3369,9 @@
     return typeof v === 'string' && v.length > 0 && v.length <= 128 && /^[A-Za-z0-9]/.test(v) && !/[^A-Za-z0-9_.:-]/.test(v);
   }
   function _pendingObject(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
-  function _readPendingPrefsRecord() {
-    var raw, value;
-    try { raw = localStorage.getItem(LS_PENDING_PREFS); if (!raw) return null; value = JSON.parse(raw); } catch (e) { return null; }
+  function _readPendingPrefsRecord(raw) {
+    var value;
+    try { if (!arguments.length) raw = localStorage.getItem(LS_PENDING_PREFS); if (!raw) return null; value = JSON.parse(raw); } catch (e) { return null; }
     if (Array.isArray(value)) {
       if (value.length !== 1 || !_pendingObject(value[0]) || !Object.prototype.hasOwnProperty.call(value[0], 'owner_user_id')) return null;
       value = value[0];
@@ -3404,7 +3404,7 @@
       var v = value[spec[0]];
       if (Array.isArray(v) && v.length <= spec[1].length && v.every(function (x) { return spec[1].indexOf(x) !== -1; })) out[spec[0]] = v.slice();
     });
-    if (value.theme_pref === 'light' || value.theme_pref === 'dark') out.theme_pref = value.theme_pref;
+    if (value.theme_pref === 'light' || value.theme_pref === 'dark' || value.theme_pref === 'auto') out.theme_pref = value.theme_pref;
     if (typeof value.onboarded_at === 'string' && value.onboarded_at.length <= 40 && isFinite(Date.parse(value.onboarded_at))) out.onboarded_at = value.onboarded_at;
     var markets = value.markets, all = ['us', 'cn', 'hk', 'ca', 'intl', 'crypto'];
     if (_pendingObject(markets) && (markets.home === null || all.indexOf(markets.home) !== -1) && Array.isArray(markets.enabled)
@@ -3415,8 +3415,9 @@
   }
   function _queuePendingPrefs(payload, owner) {
     if (owner !== null && owner !== undefined && !_pendingOwner(owner)) return false;
-    var previous = _readPendingPrefsRecord(), raw;
+    var raw;
     try { raw = localStorage.getItem(LS_PENDING_PREFS); } catch (e) { return false; }
+    var previous = _readPendingPrefsRecord(raw);
     if (raw && !previous) return false;
     if (previous && previous.owner_user_id && previous.owner_user_id !== owner) return false;
     var patch = _pendingPatch(payload);

@@ -9,8 +9,8 @@ const owned=(prefs=A,owner='account-a')=>JSON.stringify([{prefs,attempts:0,owner
 const tick=()=>new Promise(r=>setImmediate(r));
 function setup(source=current,raw=null) {
  const store=new Map(raw===null?[]:[[KEY,raw]]),timers=[],messages=[],writes=[];
- const state={subject:'account-a',response:{error:null},update:null,client:null};
- const client={auth:{getUser:async()=>({data:{user:state.subject?{id:state.subject,email:state.subject+'@example.com'}:null},error:null}),
+ const state={subject:'account-a',response:{error:null},update:null,client:null,lookup:null};
+ const client={auth:{getUser:async()=>state.lookup?state.lookup():({data:{user:state.subject?{id:state.subject,email:state.subject+'@example.com'}:null},error:null}),
  updateUser:async data=>{writes.push({subject:state.subject,...data});return state.update?state.update(data):state.response;}}};
  const ctx={console,Promise,Date,JSON,isFinite,localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
  _curUser:{id:'account-a',email:'account-a@example.com',user_metadata:{}},_authEnabled:true,
@@ -87,4 +87,28 @@ test('concurrent auth triggers share one delivery, and a later real trigger retr
  const x=setup(current,owned());x.state.response={error:{message:'offline'}};
  await Promise.all([x.ctx._deliverPendingPrefs(),x.ctx._deliverPendingPrefs()]);assert.equal(x.writes.length,1);assert.ok(x.store.has(KEY));
  x.state.response={error:null};await x.ctx._deliverPendingPrefs();assert.equal(x.writes.length,2);assert.equal(x.store.has(KEY),false);
+});
+
+test('captured Macro actor retains choices before client and identity lookup failure',async()=>{
+ for(const failure of ['client','error','null','reject']){
+  const x=setup(),save=actualOnboard(x);
+  if(failure==='client')x.ctx.sbClient=()=>Promise.reject(Error('synthetic client unavailable'));
+  else x.state.lookup=async()=>{if(failure==='reject')throw Error('synthetic offline');return {data:{user:null},error:failure==='error'?{message:'synthetic offline'}:null};};
+  await save();const record=JSON.parse(x.store.get(KEY))[0];
+  assert.equal(record.owner_user_id,'account-a');assert.deepEqual(record.prefs.market_focus,['us']);
+  assert.equal(x.writes.length,0);assert.equal(x.ctx.S.prefsPending,true);
+ }
+});
+test('canonical Auto survives pending failure and the later successful retry',async()=>{
+ const x=setup(),save=actualOnboard(x);x.ctx._curUser.user_metadata.theme_pref='dark';
+ x.ctx.S.prefs={...A,theme_pref:'auto'};x.state.response={error:{message:'synthetic offline'}};
+ await save();assert.equal(JSON.parse(x.store.get(KEY))[0].prefs.theme_pref,'auto');
+ x.state.response={error:null};await x.ctx._deliverPendingPrefs();assert.equal(x.writes.at(-1).data.theme_pref,'auto');
+});
+test('queue decodes and compares the same storage snapshot during an interleaved account write',()=>{
+ const rawA=owned(),rawB=owned({market_focus:['hk'],trade_types:['stocks']},'account-b'),x=setup(current,rawA);
+ const get=x.ctx.localStorage.getItem;let first=true;
+ x.ctx.localStorage.getItem=k=>{const value=get(k);if(first&&k===KEY){first=false;x.store.set(KEY,rawB);}return value;};
+ assert.equal(x.ctx._queuePendingPrefs({trade_types:['crypto']},'account-a'),false);
+ assert.equal(x.store.get(KEY),rawB);
 });
