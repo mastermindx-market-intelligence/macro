@@ -738,3 +738,72 @@ none authorized).
   live `timestamp` ever parses tz-aware/unparseable, oi_D degrades to
   `date_unresolved` → lane `partial` → sentinel pages: fail-visible, never
   fabricated.
+
+## October 24 amendment — default-off SPY D-session observation (source preparation)
+
+The four §A4 cells, universe, source-health threshold, canonical writer lock,
+worker ceiling, 65-minute daily budget and nonsession/pre-gate no-op remain the
+production contract. Historical July 31 empty responses do not establish a
+permanent same-day availability rule. Current provider documentation names
+17:15 ET EOD generation; that nominal time is neither current-account access nor
+first availability. OI report dates and their prior-position roles remain separate.
+
+The existing `_daily_main` now has a private optional `d_session_observation`
+argument, default `None`. No CLI flag, environment parser, plist or wrapper
+supplies it. `_DSessionObservation.transport` also defaults to `None`: the current
+incumbent collector does **not** yet provide the qualified physical-attempt,
+raw-retention and shared-deadline contract below. An explicit preparation with
+that missing seam returns `incumbent_bounded_transport_unimplemented`, with zero
+pilot requests and no operation claim. This is an engineering seam, not a rights
+question or an enabled production feature.
+
+The sole proposed rung is a natural session invocation entering at 17:30 ET,
+using the canonical calendar and frozen D/S. Forced, nonsession, pre-gate, other
+rung and lock-refused invocations make zero pilot requests. Exact local SPY OI[D]
+and declared prior-session OI[S] must already exist and validate before a claim.
+Their actual dates, file hashes/lengths and read clocks are retained; a read clock
+is not vendor first availability. A future separately admitted transport gets at
+most two physical attempts TOTAL: EOD[D], then full-order Greeks[D], SPY only,
+with the existing explicit requested-version-1 policy. Probes, retries, redirects,
+pagination, extra OI and fallback are not an additional allowance.
+
+Future enabling contract (currently unimplemented in the incumbent collector):
+
+```
+transport.origin
+transport(kind, *, root, day, order, request_options, request_budget,
+          max_bytes, max_rows, deadline_at,
+          response_handler, raw_response_handler) -> normalized DataFrame
+```
+
+The owner must compose this through the existing bulk EOD/Greek normalizers and
+budgeted native transport, not a parallel collector or raw HTTP path. Every
+physical attempt must call `request_budget.begin(session, exact_url)` BEFORE GET;
+the existing budget rejects retry-enabled adapters, and this observation refuses
+second attempts for the same endpoint. Status must be reported, complete bounded
+raw bytes durably retained before parsing, and the shared monotonic deadline
+honored during transport/streaming. The current wrappers' probes/retries and
+missing bounded Greek raw hooks are why source preparation leaves this seam None.
+One call to each bulk method does not prove two physical attempts.
+
+An existing private retention parent is required outside the canonical store.
+The exact SPY/date/17:30 claim is exclusive and fsynced. It reserves each attempt
+before GET. Refusal, uncertain return, incomplete capture and existing claims
+never become retries at 19:00/21:00. Raw observations/receipts stay private; no raw
+licensed payload is committed. Complete normalized observed membership across
+EOD[D], Greeks[D], OI[D] and OI[S] is reported separately from missing/ambiguous
+membership. Zero OI is valid; missing is not zero. Requested version is not an
+invented model/tenor/Greek-unit certificate. `OBSERVED_COMPLETE` means this strict
+observed four-input composition only: market completeness, economic expiry,
+model details, earliest availability, PIT and instantaneous/pricing capabilities
+remain unknown/false as recorded.
+
+Pilot responses never call `_ensure_one_cell`, `_merge_day`, write canonical
+EOD/Greek Parquet or advance Hub's latest-SPY selector. The existing four-cell
+maintenance and health still run; pilot outcome is a separate optional receipt
+field. Its elapsed work is subtracted from the same daily deadline, with no extra
+pool/concurrency allowance. Activation, one exact natural session budget/journal,
+installed source/access and host capacity remain separately held. Mock proofs are
+synthetic structural checks only, not observed vendor availability or product
+acceptance. No retired whole-year writer, new timer, collector, queue or store is
+introduced.
