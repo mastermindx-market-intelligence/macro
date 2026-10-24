@@ -154,9 +154,10 @@ waves:
     status: todo
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Resolve HC-P3.T1's exact governed artifact, installed payload/manifest producer and
-      authentic current host binding in the existing ACP owner. #1196 is merged; do not
-      rebuild its receiver or duplicate #1790's fixture. Then qualify the actual installed join.
+      Commission READY_SOURCE HC-P3.T1a to derive the existing installed ACP packet from
+      the canonical grant projection. Keep HC-P3.T1 installed execution gated on its exact
+      governed artifact, payload/currentness producer and real original-parent proof.
+      #1196 is merged; preserve its receiver and #1790's separate fixture identity.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -183,8 +184,10 @@ waves:
     status: todo
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
-      Use the existing Agent Evaluation owner for preregistered tasks, sealed holdout and
-      seven-day observation; require zero duplicate, unapproved or falsely accepted effects.
+      Author READY_PREPARATION HC-P7.T0: 32 public cases, eight unfilled private slots
+      and prospective measurement protocol through the existing Agent Evaluation owner.
+      Executable preregistration, holdout custody and actual seven-day observation remain
+      gated; require zero duplicate, unapproved or falsely accepted effects.
   - id: HC-P8
     title: Optional model and local-inference evaluation
     status: todo
@@ -278,10 +281,11 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, consume the original Cursor child return and its repository-scope
-  ruling; preserve successful exact-head CI for source PR #1850. Retain all three terminal/unverified
-  Fabric identities; reconcile effects before any replay. The new source fixture is built
-  and locally qualified, with independent semantic review still missing. Preserve R2.
+  For Mastermind #1841, advance the pinned HC-P3.T1a canonical ACP packet source join
+  through one fresh Cursor child and author HC-P7.T0 evaluation preparation. Consume the
+  existing Rakazo child return; preserve successful exact-head CI for source PR #1850.
+  Retain all three terminal/unverified Fabric identities and reconcile effects before any
+  replay. Independent review, installed/live proof and full R2 acceptance remain open.
   Source release requires independent action: this receiver must not approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
@@ -821,11 +825,11 @@ The detailed task states below are also editorial; START requires an actual flee
 | HC-P1A.T2 | HC-P1A.T1 | Authenticated full-app UI proof through a permitted interaction | Qualified UI executor after exact authentication boundary is resolved | blocked for the historical refused token-exchange action |
 | HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Cursor cloud implementation worker via existing admitted placement | replacement running; source/result pending |
 | HC-P2 | HC-P1A | One admitted route with actual identity/meter and failure evidence | Existing provider/Capacity domain + bounded adapter worker | T0 source published/CI green; independent review and live phase pending |
-| HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | conditional T1 not ready; authentic installed inputs pending |
+| HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | T1a source join ready; T1 installed execution held |
 | HC-P4 | HC-P3 | Existing Wake/Dialogue continuity and actual 24-hour canary | Continuity domain | proposed |
 | HC-P5 | HC-P4 | Granted isolated computer/app task and negative controls | Existing computer/app domain | proposed |
 | HC-P6 | HC-P4 | Actual signed-in R2 office journey and responsive proof | Existing Mastermind OS domain | proposed |
-| HC-P7 | HC-P1B, HC-P5, HC-P6 | Preregistered comparison and actual seven-day reliability | Existing Agent Evaluation + independent acceptance | proposed |
+| HC-P7 | HC-P1B, HC-P5, HC-P6 | Preregistered comparison and actual seven-day reliability | Existing Agent Evaluation + independent acceptance | T0 preparation ready; execution and observation pending |
 | HC-P8 | HC-P7 | Optional justified model evaluation within existing capacity | Existing model owner; procurement excluded | proposed |
 
 The Meta-CEO owns architecture, dependency arbitration, review consumption and the original
@@ -957,8 +961,94 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   its real inputs are pinned; prove discovery/revocation, exact WorkerResult and original
   parent consumption, with independent review and applicable confinement proof. No new
   bridge service, queue, grant issuer, fixture-only substitute or catalogue flip.
-- **State:** NOT READY. This is a conditional task; no new execution or source owner is
-  claimed, and HC-P3 remains todo.
+- **State:** INSTALLED_EXECUTION_NOT_READY. The source-only producer gap is split into
+  ready HC-P3.T1a below. No installed execution or new runtime owner is claimed; the
+  full HC-P3 acceptance dependencies remain unchanged.
+
+### HC-P3.T1a — Canonical provider-free DSH host-packet source join
+
+- **Objective:** close the real source gap between the existing canonical capability/grant
+  projection and AcpInstalledHostPacket/AcpNativeToolGate construction. This is a source
+  prerequisite to HC-P3.T1; live installed execution remains gated separately.
+- **Inputs:** Mastermind f93a807e278dd333650f02701318a5fc827c3b64;
+  integrations/acp_worker/installed.py and tool_admission.py;
+  control_plane/dsh_mcp_client_projection.py; the existing ExecutionCapabilityRegistry,
+  workspace_read_mcp.py and workspace_read_server.py; merged #1196.
+- **Canonical selection:** worker.acp.providerfree.readonly.v1 and grant
+  mastermind-acp-workspace-read-v1, namespace mastermindAcpWorkspaceRead, server
+  mastermind-acp-workspace-read/1.0.0, tools read_file and search_text.
+  The source schema digest is 76bc2f621a26a36cae7a1e90edab3af113cdc6924a662fa83004f6b56babd18d;
+  rederive from the actual source catalog, do not trust this string as authority.
+  The older #1790 fixture's granted/search_files names are not this grant.
+- **Scope:** integrations/acp_worker/installed.py and tests/test_acp_installed_factory.py;
+  one tightly scoped helper under integrations/acp_worker/ only if consumed by that
+  existing installed construction path. Preserve other workers' assigned paths.
+- **Implementation:** consume the actual typed canonical DshMcpToolProjection and complete
+  source-approved catalog at the trusted host-construction boundary; derive the gate's
+  projection digest and admitted names/contracts using incumbent digest semantics.
+  Bind capability generation, fixed target, grant/server/schema and artifact closure
+  coherently in the packet actually consumed by InstalledAcpWorkerAdapter. Reject a
+  separately supplied valid-looking gate or mismatched source generation before spawn.
+- **Frozen boundaries:** no new issuer, queue, schema registry, service, installer or
+  model/Job-controlled manifest. Keep implemented=false and production_armed=false,
+  existing UID/Seatbelt/empty-home checks, bounded artifact checks and currentness
+  requirements. File/hash equality is not independent artifact admission.
+  No source change to P1A qualification, provider_qualification, Rakazo, #1790's carrier,
+  capability policy, router catalogue, installed configuration or current host state.
+- **DONE_WHEN:** exact real canonical profile/catalog construction reaches the incumbent
+  packet/adapter; wrong profile/realm/server/grant/schema, stale policy, altered projection,
+  wrong tool contract and artifact substitution fail before native spawn; existing factory
+  and overlay regressions pass; exact source, commands/results and CI are returned in a
+  Draft Mastermind PR, with separate independent review. No fixture callback is live proof.
+- **Ownership:** one Cursor implementation child
+  meta-ceo-harness-acp-packet-cursor-20261024-01 under original root
+  meta-ceo-open-harness-convergence-20261024-sol-001 and parent
+  meta-ceo-harness-implementation-20261024-web-001; source custody verified before writes.
+  Use a fresh admitted Mastermind carrier and retain actual agent ID, START, base/head
+  and return/CI owner. No author approval or merge.
+- **Risk / rollback:** source-only candidate; remove/revise the unmerged change through
+  normal review. Never install or turn on a route as part of this task.
+- **State:** READY_SOURCE after the bounded source-writer/effect check. This plan is pinned
+  before placement; delivery alone is not START. Actual installed payload/currentness/
+  governed-artifact selection and original-parent proof remain HC-P3.T1 dependencies.
+
+### HC-P7.T0 — Prospective evaluation preparation
+
+- **Objective:** supply the existing Agent Evaluation owner with a concrete Meta-CEO
+  development cohort and prospective comparison/observation protocol, without creating
+  an executable experiment or changing historical E1.
+- **Output:** research/META_CEO_HARNESS_EVALUATION_PREPARATION_2026-10-24.json
+  on a separate Mastermind source carrier. No changes to scripts/agent_eval/**,
+  corpus/agent_eval/**, its owner workstream, existing scorer/runtime schemas or E1.
+- **Inputs:** #1841 at dc0016ec6f27a5e45014917adb3c8a4043ff46ab; R2 contract;
+  protected 24-task leader protocol and generic Agent Evaluation/convergence contracts
+  at f93a807e278dd333650f02701318a5fc827c3b64; public #687 registry and controlling
+  holdout amendment at 26f9d97bdb479f0567a2f527006ae89963472950 as proposal references,
+  not adopted protected law. Credit reused public development concepts explicitly.
+- **Deliverable:** 32 fully specified public development cases, four each in coordination,
+  source research, coding, incident triage, strategic brainstorming, legitimate marketing,
+  false refusal and computer operations. Include actual task briefs and input bundles,
+  immutable source refs/cutoff, useful outputs, observable success/failure discriminators,
+  capability/effect requirements, deterministic assertions where suitable and judgment rubric.
+  State every case NOT_RUN/PUBLIC_DEVELOPMENT with unresolved real execution bindings.
+- **Holdouts:** reserve eight unfilled private slots, one per category, for a future cohort
+  of 40. Author no confirmation content or fake seal/commitment here. The old exposed
+  #687 holdout concepts remain burned for confirmation; secrecy needs independent custody.
+- **Protocol:** define same-model/across-shell and same-shell/across-model comparison edges,
+  separately labeled whole-system arms; first-pass and bounded-repair outcomes; started,
+  technically valid, independently accepted and original-parent-consumed denominators.
+  Preserve invalid/degraded/unknown cases. Retain the proposed 85% eligible-mission target
+  and separate zero-violation gates. Define latency/uptime/intervention/quota/cost fields
+  with UNKNOWN preserved, plus future real 24-hour and seven-day start/end/restart protocols.
+- **Ownership:** assigned Meta-CEO owns this scientific design/judgment artifact; the existing
+  Agent Evaluation owner retains executable preregistration, independent grader provenance,
+  holdout custody, runs and acceptance. Separate independent review is owed.
+- **DONE_WHEN:** 32 actionable source-grounded briefs, eight unfilled holdout slots and
+  consistent IDs/counts/obligation mapping; JSON/reference/consistency checks pass; source
+  and proof limits published in a Draft PR. No run result, fabricated identity, approval,
+  duration proof, scorer service or new execution path is introduced.
+- **State:** READY_PREPARATION, pinned before authoring. HC-P7 remains todo until its
+  actual predecessor/arm/host/provider/grader/authentication/admission bindings are ready.
 
 ### Accepted progress and outstanding gates
 
@@ -1102,10 +1192,31 @@ It posts once to C0CCNK7JFAL referencing commission 1792861454.777859 only after
 evidence gates are proven, reconciles a prior matching send, then disables itself. It is
 not an implementation worker, retry owner, company lifecycle owner or native wake proof.
 
-Next: consume the same Cursor child's custody/source return, preserve #1850's successful
-exact-head CI, and obtain original-run effect reconciliation/qualified independent review
-without replay. HC-P3's exact artifact and authentic installed inputs must become ready
-in their existing owner before a new implementation packet is issued. Full R2,
+Next: advance the pinned HC-P3.T1a source join and HC-P7.T0 evaluation preparation;
+consume the same Rakazo child's source return and preserve #1850's successful CI.
+Obtain original-run effect reconciliation/qualified independent review without replay.
+HC-P3.T1 installed execution still requires its exact governed artifact and authentic
+host inputs in the incumbent owner. Full R2,
 authenticated office/tool-loop, live route, independent release, real 24-hour continuity
 and seven-day evaluation obligations remain open. No approval, merge, purchase,
 credential move or account-policy change has been performed.
+
+
+#### Newly ready source/preparation frontier
+
+The prior broad HC-P3 hold is narrowed: HC-P3.T1a can construct the canonical
+capability/grant projection into the incumbent installed ACP packet without any live
+launch. HC-P3.T1 still requires governed artifact selection, authentic revocable binding,
+installation/admission and original-parent proof. HC-P7.T0 can author 32 public development
+cases and reserve eight unfilled private holdout slots; it is not an executable preregistration.
+Both tasks are pinned in the workstream before execution; no new owner or state plane.
+
+Original-run Fabric reconciliation was requested through the Secretary in the original
+commission thread at 1792869083.927039. This is DELIVERY_SENT, not an operator START
+or a cleared replay hold. Preserve all three original run identities and retry_allowed=false.
+
+Optional Chairman input #1845 is open at 4f45abd0aef46af1ddb160ce50a4fbd0b1b8e492,
+CI 40116278162 SUCCESS, with 11 synthetic subprocess fixtures and real donor NOT RUN.
+Its plain-root 200-HTML requirement does not supersede the retained same-pin 401 auth gate;
+its default urllib redirect handling also leaves the claimed loopback-only boundary unproven.
+Do not repeat unchanged startup or the refused token exchange to manufacture new acceptance.

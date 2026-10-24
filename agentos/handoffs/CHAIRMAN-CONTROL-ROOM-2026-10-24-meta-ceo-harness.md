@@ -61,7 +61,8 @@ next_actions:
   - Consume the same Cursor child's actual scope-ruling acknowledgment and source/result on its existing thread.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Obtain incumbent original-run effect reconciliation and qualified independent review without duplicating held attempts.
-  - Make HC-P3.T1 ready in the existing installed ACP owner before issuing its implementation packet.
+  - Advance pinned source-only HC-P3.T1a through one fresh admitted Cursor child; retain installed HC-P3.T1 gates.
+  - Author pinned HC-P7.T0 evaluation preparation in a separate source carrier; no executable preregistration or holdout content.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
   - PR 1717 accepted build/startup/401 cleanup and 43 native tests on unchanged source.
@@ -186,10 +187,31 @@ It posts once to C0CCNK7JFAL referencing commission 1792861454.777859 only after
 evidence gates are proven, reconciles a prior matching send, then disables itself. It is
 not an implementation worker, retry owner, company lifecycle owner or native wake proof.
 
-Next: consume the same Cursor child's custody/source return, preserve #1850's successful
-exact-head CI, and obtain original-run effect reconciliation/qualified independent review
-without replay. HC-P3's exact artifact and authentic installed inputs must become ready
-in their existing owner before a new implementation packet is issued. Full R2,
+Next: advance the pinned HC-P3.T1a source join and HC-P7.T0 evaluation preparation;
+consume the same Rakazo child's source return and preserve #1850's successful CI.
+Obtain original-run effect reconciliation/qualified independent review without replay.
+HC-P3.T1 installed execution still requires its exact governed artifact and authentic
+host inputs in the incumbent owner. Full R2,
 authenticated office/tool-loop, live route, independent release, real 24-hour continuity
 and seven-day evaluation obligations remain open. No approval, merge, purchase,
 credential move or account-policy change has been performed.
+
+
+#### Newly ready source/preparation frontier
+
+The prior broad HC-P3 hold is narrowed: HC-P3.T1a can construct the canonical
+capability/grant projection into the incumbent installed ACP packet without any live
+launch. HC-P3.T1 still requires governed artifact selection, authentic revocable binding,
+installation/admission and original-parent proof. HC-P7.T0 can author 32 public development
+cases and reserve eight unfilled private holdout slots; it is not an executable preregistration.
+Both tasks are pinned in the workstream before execution; no new owner or state plane.
+
+Original-run Fabric reconciliation was requested through the Secretary in the original
+commission thread at 1792869083.927039. This is DELIVERY_SENT, not an operator START
+or a cleared replay hold. Preserve all three original run identities and retry_allowed=false.
+
+Optional Chairman input #1845 is open at 4f45abd0aef46af1ddb160ce50a4fbd0b1b8e492,
+CI 40116278162 SUCCESS, with 11 synthetic subprocess fixtures and real donor NOT RUN.
+Its plain-root 200-HTML requirement does not supersede the retained same-pin 401 auth gate;
+its default urllib redirect handling also leaves the claimed loopback-only boundary unproven.
+Do not repeat unchanged startup or the refused token exchange to manufacture new acceptance.
