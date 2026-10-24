@@ -28,6 +28,7 @@ from .event_workspace import (
     WORKSPACE_WARNINGS,
     WorkspaceError,
     _absence,
+    _ceil_second,
     _iso,
     _lifecycle_payload,
     _utc,
@@ -230,6 +231,13 @@ def build_event_workspace(
         clock = requested_clock
     if clock < available:
         raise WorkspaceError("observed_at precedes source_available_at")
+    # Provisional cutoff mirrors the immutable writer. It is the conservative
+    # whole-second observation maximum, not measured wall-clock emission time.
+    generation_cutoff = clock
+    if acquisition_receipt is not None:
+        generation_cutoff = _ceil_second(max(
+            clock, _utc(acquisition_receipt["acquired_at"], field_name="acquired_at")
+        ))
 
     aliases = aliases_for(issuer.company_id, fiscal_period, issuer.tickers_at(asof))
     event_id = aliases.canonical_event_id
@@ -580,7 +588,7 @@ def build_event_workspace(
         "sources": sources,
         "warnings": warnings,
         "generation_id": "",
-        "generated_at": _iso(clock),
+        "generated_at": _iso(generation_cutoff),
         "authority": AUTHORITY,
         "prophet_flags": dict(PROPHET_FLAGS),
         "claim_citations_pending": claim_pending,

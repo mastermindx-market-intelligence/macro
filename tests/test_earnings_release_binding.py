@@ -685,3 +685,42 @@ def test_sec_acquisition_schema_and_runtime_agree_on_synthetic_example():
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
     assert set(schema["required"]) == set(receipt)
     assert _validate_synthetic_acquisition(receipt) == receipt
+
+
+@pytest.mark.parametrize("name", ["index.htm", "index.html", "index.txt", "index-headers.html", "filing-index.htm", "filing-index.html", "filing-index-headers.html", "filing-index-headers.txt", "INDEX-HEADERS.html"])
+def test_sec_index_document_exclusion_in_urls_receipts_and_schema(name):
+    import json
+    from copy import deepcopy
+    from jsonschema import Draft202012Validator
+    schema = json.loads((Path(__file__).resolve().parents[1] / "contracts/earnings_release/sec_acquisition.v1.schema.json").read_text())
+    original = _synthetic_acquisition()["acquisition_receipt"]
+    excluded = original["requested_url"].rsplit("/", 1)[0] + "/" + name
+    with pytest.raises(rcp.ReceiptError):
+        rcp.validate_sec_acquisition_url(excluded, **original["filing_key"])
+    for field in ("requested_url", "final_url"):
+        receipt = deepcopy(original)
+        receipt[field] = excluded
+        assert not Draft202012Validator(schema).is_valid(receipt)
+        with pytest.raises(rcp.ReceiptError):
+            _validate_synthetic_acquisition(receipt)
+
+
+@pytest.mark.parametrize("location", ["./canonical.htm", "a/../canonical.htm", "%63anonical.htm", "a\\canonical.htm", "canonical.htm?", "canonical.htm#", "https:canonical.htm", "https:/canonical.htm"])
+def test_sec_stored_redirect_raw_location_cannot_be_normalized_into_admission(location):
+    from urllib.parse import urljoin
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    first = receipt["requested_url"]
+    final = urljoin(first, location)
+    receipt["redirects"] = [{"url": first, "status": 302, "location": location, "next_url": final}]
+    receipt["final_url"] = final
+    with pytest.raises(rcp.ReceiptError):
+        _validate_synthetic_acquisition(receipt)
+
+
+def test_sec_safe_relative_basename_redirect_remains_supported():
+    receipt = _synthetic_acquisition()["acquisition_receipt"]
+    first = receipt["requested_url"]
+    final = first.rsplit("/", 1)[0] + "/canonical.htm"
+    receipt["redirects"] = [{"url": first, "status": 302, "location": "canonical.htm", "next_url": final}]
+    receipt["final_url"] = final
+    assert _validate_synthetic_acquisition(receipt) == receipt

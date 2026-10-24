@@ -71,7 +71,7 @@ from engine.company_intelligence.issuer_profiles import (
 from engine.earnings_release.binding import submissions_rows
 from engine.earnings_release.receipts import (
     ReceiptError, SEC_ACQUISITION_SCHEMA, SEC_REDIRECT_POLICY, sec_declared_charset,
-    validate_sec_acquisition_receipt, validate_sec_acquisition_url,
+    resolve_sec_acquisition_location, validate_sec_acquisition_receipt, validate_sec_acquisition_url,
 )
 from engine.earnings_transcript_intake import (
     TranscriptRef,
@@ -179,10 +179,7 @@ def _http_get_sec_exhibit(url: str, *, cik: object, accession: object) -> _SecHt
                     status = response.status_code
                     if status in {301, 302, 303, 307, 308}:
                         location = response.headers.get("Location")
-                        if (not isinstance(location, str) or not 0 < len(location) <= 8192
-                                or any(ord(c) <= 32 or ord(c) > 126 for c in location)):
-                            raise RefreshError("selected SEC redirect has no eligible Location")
-                        next_url = validate_sec_acquisition_url(urljoin(current, location), **key)
+                        next_url = resolve_sec_acquisition_location(current, location, **key)
                         if len(hops) >= 5 or next_url in visited:
                             raise RefreshError("selected SEC redirect limit or cycle")
                         hops.append({"url": current, "status": status, "location": location, "next_url": next_url})

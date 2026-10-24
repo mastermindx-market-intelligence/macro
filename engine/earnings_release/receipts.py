@@ -352,7 +352,26 @@ def validate_sec_acquisition_url(url: object, *, cik: object, accession: object)
     filename = parsed.path[len(prefix):]
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*\.(?:htm|html|txt)", filename):
         raise ReceiptError("SEC acquisition filename is not canonical")
+    if re.search(r"(?:^index(?:-headers)?\.|-index(?:-headers)?\.(?:htm|html|txt)$)", filename, re.IGNORECASE):
+        raise ReceiptError("SEC acquisition index documents are not eligible exhibits")
     return url
+
+
+def resolve_sec_acquisition_location(current: str, location: object, *, cik: object, accession: object) -> str:
+    """Reject unsafe raw Location syntax BEFORE URL normalization or follow."""
+    from urllib.parse import urljoin
+
+    if (not isinstance(location, str) or not 0 < len(location) <= 8192
+            or any(ord(c) <= 32 or ord(c) > 126 for c in location)
+            or any(c in location for c in "%\\?#")
+            or any(segment in {".", ".."} for segment in location.split("/"))):
+        raise ReceiptError("SEC acquisition redirect Location is not canonical")
+    validate_sec_acquisition_url(current, cik=cik, accession=accession)
+    if location.startswith("//"):
+        validate_sec_acquisition_url("https:" + location, cik=cik, accession=accession)
+    elif re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", location):
+        validate_sec_acquisition_url(location, cik=cik, accession=accession)
+    return validate_sec_acquisition_url(urljoin(current, location), cik=cik, accession=accession)
 
 
 def sec_declared_charset(content_type: str | None) -> str | None:
@@ -380,7 +399,6 @@ def validate_sec_acquisition_receipt(
     """
     from copy import deepcopy
     from datetime import datetime
-    from urllib.parse import urljoin
 
     def fail(message: str) -> None:
         raise ReceiptError(f"invalid SEC acquisition receipt: {message}")
@@ -408,10 +426,7 @@ def validate_sec_acquisition_receipt(
         if hop["url"] != current or type(hop["status"]) is not int or hop["status"] not in {301, 302, 303, 307, 308}:
             fail("redirect chain or status")
         location = hop["location"]
-        if (not isinstance(location, str) or not 0 < len(location) <= 8192
-                or any(ord(c) <= 32 or ord(c) > 126 for c in location)):
-            fail("redirect Location")
-        next_url = validate_sec_acquisition_url(urljoin(current, location), **key)
+        next_url = resolve_sec_acquisition_location(current, location, **key)
         if next_url != hop["next_url"] or next_url in visited:
             fail("redirect target or cycle")
         visited.add(next_url)

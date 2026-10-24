@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:mastermind:earnings_release:sec_acquisition:v1",
   "title": "Selected SEC issuer release acquisition provenance (not a source-use grant)",
-  "$comment": "Optional acquisition_receipt on issuer_release source rows. Absence or invalidity must not authorize selected document display. Only the real HTTP acquisition path emits it. Every requested/redirect/final URL must match the exact canonical filing CIK and accession (unhyphenated path), with no query/fragment/userinfo/port/percent/backslash/dot-segment. Validate Location and next_url before each hop, and chain continuity, before network follow. Status200, response.content body digest, exact recorded decoder+strict policy and UTF8 reencode must bind to retained source_sha256. Content-Type/charset/Content-Encoding are declared response metadata; entity bytes are requests.content after HTTP Content-Encoding handling, never raw wire. acquired_at is actual response acquisition completion time, never offline reconstruction. No principal/purpose/action/rights policy decision is implied. Existing event/document/selection identities and source clocks are unchanged. An already valid first acquisition fact may be retained on an unchanged body/transport so a repeated identical fetch is not a new source generation; acquired_at still names that original actual event, not the latest attempt or a current rights decision.",
+  "$comment": "Optional acquisition_receipt on issuer_release source rows. Absence or invalidity must not authorize selected document display. Only the real HTTP acquisition path emits it. Every requested/redirect/final URL must match the exact canonical filing CIK and accession (unhyphenated path), with no query/fragment/userinfo/port/percent/backslash/dot-segment. Validate Location and next_url before each hop, and chain continuity, before network follow. Status200, response.content body digest, exact recorded decoder+strict policy and UTF8 reencode must bind to retained source_sha256. Content-Type/charset/Content-Encoding are declared response metadata; entity bytes are requests.content after HTTP Content-Encoding handling, never raw wire. acquired_at is actual response acquisition completion time, never offline reconstruction. No principal/purpose/action/rights policy decision is implied. Existing event/document/selection identities and source clocks are unchanged. An already valid first acquisition fact may be retained on an unchanged body/transport so a repeated identical fetch is not a new source generation; acquired_at still names that original actual event, not the latest attempt or a current rights decision. Index documents (index or index-headers basenames and *-index/*-index-headers suffixes, with htm/html/txt extensions, case insensitive) are excluded. Raw Location rejects percent, backslash, query, fragment and dot-segments before resolution. generated_at is the canonical conservative whole-second observation cutoff, at least the exact bound acquired_at; it is not a direct wall-clock emission measurement. Source first-observation/source-availability clocks and the acquisition timestamp itself are not changed.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -51,12 +51,18 @@
     "requested_url": {
       "type": "string",
       "maxLength": 8192,
-      "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$"
+      "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$",
+      "not": {
+        "pattern": "/(?:[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?|[^/]*-[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?)\\.(?:[hH][tT][mM][lL]?|[tT][xX][tT])$"
+      }
     },
     "final_url": {
       "type": "string",
       "maxLength": 8192,
-      "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$"
+      "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$",
+      "not": {
+        "pattern": "/(?:[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?|[^/]*-[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?)\\.(?:[hH][tT][mM][lL]?|[tT][xX][tT])$"
+      }
     },
     "redirect_policy": {
       "const": "sec_https_same_filing_max5.v1"
@@ -77,7 +83,10 @@
           "url": {
             "type": "string",
             "maxLength": 8192,
-            "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$"
+            "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$",
+            "not": {
+              "pattern": "/(?:[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?|[^/]*-[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?)\\.(?:[hH][tT][mM][lL]?|[tT][xX][tT])$"
+            }
           },
           "status": {
             "enum": [
@@ -92,12 +101,18 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 8192,
-            "pattern": "^[^\\r\\n]+$"
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))[\\x21-\\x7e]+$",
+            "not": {
+              "pattern": "[%\\\\?#]"
+            }
           },
           "next_url": {
             "type": "string",
             "maxLength": 8192,
-            "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$"
+            "pattern": "^https://(?:www\\.)?sec\\.gov/Archives/edgar/data/[1-9][0-9]*/[0-9]{18}/[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:htm|html|txt)$",
+            "not": {
+              "pattern": "/(?:[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?|[^/]*-[iI][nN][dD][eE][xX](?:-[hH][eE][aA][dD][eE][rR][sS])?)\\.(?:[hH][tT][mM][lL]?|[tT][xX][tT])$"
+            }
           }
         }
       }
