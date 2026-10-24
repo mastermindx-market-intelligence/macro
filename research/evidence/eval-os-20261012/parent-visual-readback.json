@@ -1,0 +1,21 @@
+{
+  "schema": "eval_os_parent_visual_readback.v1",
+  "observed_at": "2026-10-13T07:56:50.448946+00:00",
+  "reviewer": "original-root 01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "scope": "Actual pixel readback of representative final synthetic fixture captures; supplements specialist matrix review",
+  "files": {
+    "5ae0114484d58ad2.png": "5ae0114484d58ad21146be1f4e360f2eb8d8b1fa62168acd202e30bd80636b6d",
+    "745a220db8f756a9--findings-default.png": "745a220db8f756a9184338f2a7de3f83dd9e6e54576ce0c1a37bdd6edffb6641",
+    "3df20604f27ea731--measurements.png": "3df20604f27ea7315bbefe54cf6b4b9fd7aa6051074fe18fd945721676eed43f"
+  },
+  "findings": [],
+  "observations": [
+    "Dark English desktop preserves five-band hierarchy, empty Validated, seven engine rows and separate recorded-findings context.",
+    "Light Chinese mobile source-open card shows complete 64-character digest across wrapped lines with readable bilingual synthetic source context.",
+    "Light Chinese mobile measured-evidence viewport distinguishes recorded historical date, unknown evaluation date, unconfirmed source qualification,63-day owner window and10/0/refused10 cohort counts."
+  ],
+  "limitations": [
+    "Synthetic renderer evidence only; no authenticated production or independent operator comprehension.",
+    "Parent authored the narrow final CSS wrap fix; specialist experience review remains the independent review for that fix."
+  ]
+}

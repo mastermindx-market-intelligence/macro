@@ -1,5 +1,5 @@
 {
- "asof": "2026-10-23",
+ "asof": "2026-10-24",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,7 +22,7 @@
  "n": 3068,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 145,
+ "n_flags": 142,
  "universes": [
   {
    "name": "stocks",
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1795d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1796d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -46,7 +46,7 @@
    "n": 2815,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 144,
+   "n_flags": 141,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -55,11 +55,6 @@
      "name": "AAOI",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "ACVA",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-16) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "ADTN",
@@ -105,11 +100,6 @@
      "name": "ASIX",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "ATKR",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-16) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "ATNI",
@@ -344,7 +334,7 @@
     {
      "name": "GETY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-22) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-23) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "GPRE",
@@ -572,11 +562,6 @@
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
     },
     {
-     "name": "PSKY",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-16) but no current NASDAQ/NYSE listing"
-    },
-    {
      "name": "PUMP",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
@@ -789,7 +774,7 @@
   "zombie": 5,
   "rebirth": 3,
   "registry_mismatch": 128,
-  "delisted_printing": 9,
+  "delisted_printing": 6,
   "member_identity": 0
  },
  "stores": [
@@ -800,8 +785,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-10-22",
-     "days_past_death": 1795,
+     "store_tip": "2026-10-23",
+     "days_past_death": 1796,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1046,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-10-22",
-     "days_past_death": 1252,
+     "store_tip": "2026-10-23",
+     "days_past_death": 1253,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -2567,19 +2552,9 @@
    ],
    "delisted_printing": [
     {
-     "ticker": "ACVA",
-     "store_tip": "2026-10-16",
-     "acked": false
-    },
-    {
      "ticker": "ANGPY",
      "store_tip": "2026-10-23",
      "acked": true
-    },
-    {
-     "ticker": "ATKR",
-     "store_tip": "2026-10-16",
-     "acked": false
     },
     {
      "ticker": "BZH",
@@ -2588,18 +2563,13 @@
     },
     {
      "ticker": "GETY",
-     "store_tip": "2026-10-22",
+     "store_tip": "2026-10-23",
      "acked": false
     },
     {
      "ticker": "IMPUY",
      "store_tip": "2026-10-23",
      "acked": true
-    },
-    {
-     "ticker": "PSKY",
-     "store_tip": "2026-10-16",
-     "acked": false
     },
     {
      "ticker": "RHHBY",
@@ -2633,11 +2603,8 @@
  "member_identity_acks": {},
  "unacked_zombies": [],
  "unacked_delisted_printing": [
-  "baskets/ohlcv/ACVA",
-  "baskets/ohlcv/ATKR",
   "baskets/ohlcv/BZH",
-  "baskets/ohlcv/GETY",
-  "baskets/ohlcv/PSKY"
+  "baskets/ohlcv/GETY"
  ],
  "unacked_member_identity": [],
  "undeclared_ledger_identities": []
