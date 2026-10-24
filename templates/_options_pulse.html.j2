@@ -1,0 +1,266 @@
+{# ── Options Pulse — include-only SSR section (options_pulse/v1) ──────────────
+     Rendered inside the EXISTING Macro lens panel of aibrief.html. No new page,
+     no new tab, no runtime fetch, no third-party script, no storage, no auth.
+
+     ESCAPING: this page's Jinja env is built with autoescape=False, so every
+     externally derived string below is passed through |e explicitly. Literals go
+     through the i18n `t()` global (which returns Markup and must NOT be re-escaped). #}
+{% set p = options_pulse %}
+{% if p is defined and p %}
+{% set _sym = p.symbol|e %}
+{% set _g = p.gamma %}
+{% set _h = p.hedge %}
+{% set _c = p.concentrations %}
+{% set _ch = p.chart %}
+{% set _src = p.source %}
+
+<section class="opulse" aria-labelledby="opulse-h-{{ _sym }}">
+  <div class="opulse-head">
+    <span class="opulse-eyebrow">{{ t('Options pulse', '期权脉搏') }}</span>
+    <h3 class="opulse-title" id="opulse-h-{{ _sym }}">
+      <span class="l-en">{{ _sym }} {{ t('options context', '期权背景') }}{% if p.identity.name_en %} · {{ p.identity.name_en|e }}{% endif %}</span>
+      <span class="l-zh">{{ _sym }} {{ t('options context', '期权背景') }}{% if p.identity.name_zh %} · {{ p.identity.name_zh|e }}{% endif %}</span>
+    </h3>
+    {% if _src.context_label_en %}
+    <span class="opulse-meta">
+      <span class="l-en">{{ _src.context_label_en|e }}</span>
+      <span class="l-zh">{{ _src.context_label_zh|e }}</span>
+    </span>
+    {% endif %}
+  </div>
+
+{% if not p.available %}
+
+  {# ── honest absent state: the section still renders, still useful ── #}
+  <div class="opulse-empty">
+    <div><span class="l-en">{{ t('Options context is unavailable for this symbol right now. The rest of this brief is unaffected.', '该标的的期权背景当前不可用。本简报的其余部分不受影响。') }}</span>
+         <span class="l-zh">{{ t('Options context is unavailable for this symbol right now. The rest of this brief is unaffected.', '该标的的期权背景当前不可用。本简报的其余部分不受影响。') }}</span></div>
+    {% if p.unavailable_reasons %}
+    <ul class="opulse-why">
+      {% for r in p.unavailable_reasons %}
+      <li>{{ r|e }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+
+{% else %}
+
+  {% set _v = _g.net_gamma_bn_per_1pct %}
+  {% set _cls = 'opulse-val-flat' %}
+  {% if _v is not none %}
+    {% if _v > 0 %}{% set _cls = 'opulse-val-pos' %}
+    {% elif _v < 0 %}{% set _cls = 'opulse-val-neg' %}{% endif %}
+  {% endif %}
+
+  <p class="opulse-lede">
+    <span class="l-en">{{ p.narrative.en[0]|e }}{% if p.narrative.en[1] %} {{ p.narrative.en[1]|e }}{% endif %}</span>
+    <span class="l-zh">{{ p.narrative.zh[0]|e }}{% if p.narrative.zh[1] %} {{ p.narrative.zh[1]|e }}{% endif %}</span>
+  </p>
+
+  <dl class="opulse-facts">
+    <div class="opulse-fact">
+      <dt>{{ t('Spot', '现价') }}</dt>
+      <dd>
+        {% if _g.spot is not none %}{{ '%.2f'|format(_g.spot) }}
+        {% else %}{{ t('unavailable', '不可用') }}{% endif %}
+        <span class="opulse-unit">{{ t('reference session close', '参考交易日收盘') }}</span>
+      </dd>
+    </div>
+    <div class="opulse-fact">
+      <dt>{{ t('Net gamma', '净 Gamma') }}</dt>
+      <dd class="{{ _cls }}">
+        {% if _v is not none %}{{ '%+.2f'|format(_v) }}
+        {% else %}{{ t('unavailable', '不可用') }}{% endif %}
+        <span class="opulse-unit">{{ t('$bn per 1% move', '十亿美元／每 1% 变动') }}</span>
+      </dd>
+    </div>
+    <div class="opulse-fact">
+      <dt>{{ t('Gamma regime', 'Gamma 状态') }}</dt>
+      <dd>
+        {% if _g.regime == 'positive' %}{{ t('positive', '正向') }}
+        {% elif _g.regime == 'negative' %}{{ t('negative', '负向') }}
+        {% elif _g.regime == 'zero' %}{{ t('flat', '持平') }}
+        {% else %}{{ t('unavailable', '不可用') }}{% endif %}
+        <span class="opulse-unit">{{ t('assumption-signed', '基于符号假设') }}</span>
+      </dd>
+    </div>
+    <div class="opulse-fact">
+      <dt>{{ t('Zero crossing', '零轴交叉') }}</dt>
+      <dd>
+        {% if _g.crossing.available %}{{ '%.2f'|format(_g.crossing.spot) }}
+        {% else %}{{ t('none on this curve', '该曲线无') }}{% endif %}
+        <span class="opulse-unit">
+          {% if _g.crossing.available %}
+            {{ '%+.2f'|format(_g.crossing.dist_pct) }}% {{ t('from spot', '距现价') }}
+          {% else %}{{ t('curve does not change sign', '曲线符号未变') }}{% endif %}
+        </span>
+      </dd>
+    </div>
+  </dl>
+
+  {% if _g.crossing.disagreement.present %}
+  <div class="opulse-withheld" style="margin-top:10px">
+    <dl style="margin:0">
+      <dt>{{ t('Two owners disagree on the crossing', '两个来源对交叉点不一致') }}</dt>
+      <dd>
+        <span class="l-en">{{ _g.crossing.disagreement.note_en|e }}</span>
+        <span class="l-zh">{{ _g.crossing.disagreement.note_zh|e }}</span>
+      </dd>
+    </dl>
+  </div>
+  {% endif %}
+
+  {# ── ±1% local sensitivity — explicitly LINEAR and assumption-based ── #}
+  <div class="opulse-withheld">
+    <dl style="margin:0">
+      <dt>{{ t('Local sensitivity at ±1% move — linear, assumption-based', '±1% 变动下的局部敏感度 — 线性、基于假设') }}</dt>
+      {% if _h.available %}
+      <dd>
+        <strong>{{ t('up', '上涨') }} {{ '%+.2f'|format(_h.up_1pct_bn) }}</strong>
+        &nbsp;·&nbsp;
+        <strong>{{ t('down', '下跌') }} {{ '%+.2f'|format(_h.down_1pct_bn) }}</strong>
+        <span class="opulse-unit">
+          <span class="l-en">{{ t('$bn per 1% move · reference notional', '十亿美元／每 1% 变动 · 参考名义') }} ${{ '%.2f'|format(_h.reference_notional_usd_per_1pct) }}</span>
+          <span class="l-zh">{{ t('$bn per 1% move · reference notional', '十亿美元／每 1% 变动 · 参考名义') }} ${{ '%.2f'|format(_h.reference_notional_usd_per_1pct) }}</span>
+        </span>
+        <ul class="opulse-why">
+          {% for a in _h.assumptions_en %}<li>{{ t(a, _h.assumptions_zh[loop.index0]) }}</li>{% endfor %}
+        </ul>
+      </dd>
+      {% else %}
+      <dd>
+        <span class="l-en">{{ _h.withheld_reasons_en[0]|e if _h.withheld_reasons_en else '' }}</span>
+        <span class="l-zh">{{ _h.withheld_reasons_zh[0]|e if _h.withheld_reasons_zh else '' }}</span>
+      </dd>
+      {% endif %}
+    </dl>
+  </div>
+
+  {# ── the profile curve: an SSR SVG built ONLY from numbers the projector already
+       checked (finite, ordered, spot-consistent) — no template-side maths ── #}
+  {% if _ch %}
+  <div class="opulse-chartwrap">
+    <svg class="opulse-chart" viewBox="0 0 {{ _ch.width }} {{ _ch.height }}"
+         preserveAspectRatio="none" role="img"
+         aria-label="{{ t('Estimated net dealer gamma across spot, $bn per 1% move', '跨现价的估计净做市商 gamma，十亿美元／每 1% 变动')|e }}">
+      <line class="opulse-axis" x1="0" y1="{{ _ch.height }}" x2="{{ _ch.width }}" y2="{{ _ch.height }}"></line>
+      {% if _ch.y_zero is not none %}
+      <line class="opulse-zero" x1="0" y1="{{ _ch.y_zero }}" x2="{{ _ch.width }}" y2="{{ _ch.y_zero }}"></line>
+      {% endif %}
+      {% if _ch.spot_x is not none %}
+      <line class="opulse-spotline" x1="{{ _ch.spot_x }}" y1="0" x2="{{ _ch.spot_x }}" y2="{{ _ch.height }}"></line>
+      {% endif %}
+      <path class="opulse-curve{% if _g.regime == 'negative' %} opulse-curve-neg{% endif %}"
+            d="{{ _ch.path }}"></path>
+      {% if _ch.flip_x is not none %}
+      <line class="opulse-flipmark" x1="{{ _ch.flip_x }}" y1="0" x2="{{ _ch.flip_x }}" y2="{{ _ch.height }}"></line>
+      {% endif %}
+    </svg>
+    <p class="opulse-chartcap">
+      <span class="l-en">{{ t('Estimated dealer-gamma profile — an exposure curve as a function of spot, NOT a closing-price density.', '估计的做市商 gamma 曲线 — 是随现价变化的敞口曲线，并非收盘价密度。') }}</span>
+      <span class="l-zh">{{ t('Estimated dealer-gamma profile — an exposure curve as a function of spot, NOT a closing-price density.', '估计的做市商 gamma 曲线 — 是随现价变化的敞口曲线，并非收盘价密度。') }}</span>
+      {% if _ch.flip_x is not none %}
+      · <span class="l-en">{{ t('dashed amber line marks this curve\'s own zero crossing', '琥珀色虚线标示该曲线自身的零轴交叉') }}</span>
+      <span class="l-zh">{{ t('dashed amber line marks this curve\'s own zero crossing', '琥珀色虚线标示该曲线自身的零轴交叉') }}</span>
+      {% endif %}
+    </p>
+  </div>
+  {% endif %}
+
+  {# ── strike concentrations (deterministic table; the chart's text fallback) ── #}
+  {% if _c.available %}
+  <div class="opulse-scroll">
+    <table class="opulse-table">
+      <caption>
+        <span class="l-en">{{ t('Where dealer hedging is largest — concentration levels, never a floor, cap or target', '做市商对冲最集中的位置 — 集中度水平，绝非支撑、下跌上限或目标价') }}</span>
+        <span class="l-zh">{{ t('Where dealer hedging is largest — concentration levels, never a floor, cap or target', '做市商对冲最集中的位置 — 集中度水平，绝非支撑、下跌上限或目标价') }}</span>
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('Strike', '行权价') }}</th>
+          <th scope="col">{{ t('Side', '方位') }}</th>
+          <th scope="col">{{ t('Net gamma', '净 Gamma') }} ($mn)</th>
+          <th scope="col">{{ t('Share of peak', '占峰值比') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in _c.rows %}
+        <tr>
+          <th scope="row">{{ '%.2f'|format(r.strike) }}</th>
+          <td>
+            {% if r.side == 'above' %}<span class="l-en">above spot</span><span class="l-zh">现价上方</span>
+            {% elif r.side == 'below' %}<span class="l-en">below spot</span><span class="l-zh">现价下方</span>
+            {% else %}<span class="l-en">at spot</span><span class="l-zh">现价处</span>{% endif %}
+          </td>
+          <td class="{% if r.net_mn > 0 %}opulse-val-pos{% elif r.net_mn < 0 %}opulse-val-neg{% else %}opulse-val-flat{% endif %}">{{ '%+.2f'|format(r.net_mn) }}</td>
+          <td>{% if r.share_pct is not none %}{{ '%.1f'|format(r.share_pct) }}%{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {# ── probability: withheld with the exact qualification ── #}
+  <div class="opulse-withheld">
+    <dl style="margin:0">
+      <dt>{{ t('Closing probability — unavailable', '收盘概率 — 不可用') }}</dt>
+      <dd>
+        <span class="l-en">{{ p.probability.withheld_note_en|e }}</span>
+        <span class="l-zh">{{ p.probability.withheld_note_zh|e }}</span>
+        <ul class="opulse-why">
+          {% for a in p.probability.alternatives_offered %}
+          <li><span class="l-en">{{ a|e }}</span><span class="l-zh">{{ p.probability.alternatives_offered_zh[loop.index0]|e }}</span></li>
+          {% endfor %}
+        </ul>
+      </dd>
+    </dl>
+  </div>
+
+  {# ── flow: withheld while direction is unreliable ── #}
+  <div class="opulse-withheld">
+    <dl style="margin:0">
+      <dt>{{ t('Signed flow & bullish expiry share — unavailable', '带符号资金流与看涨到期占比 — 不可用') }}</dt>
+      <dd>
+        <span class="l-en">{{ p.flow.withheld_note_en|e }}</span>
+        <span class="l-zh">{{ p.flow.withheld_note_zh|e }}</span>
+        <ul class="opulse-why">
+          {% for r in p.flow.reasons %}<li>{{ r|e }}</li>{% endfor %}
+          {% if p.flow.intel_as_of_session %}
+          <li>
+            <span class="l-en">{{ t('Brief provenance', '简报来源') }}: {{ p.flow.intel_schema|e }} / {{ p.flow.intel_model|e }} · {{ p.flow.intel_as_of_session|e }} · {{ p.flow.intel_board_state|e }}</span>
+            <span class="l-zh">{{ t('Brief provenance', '简报来源') }}: {{ p.flow.intel_schema|e }} / {{ p.flow.intel_model|e }} · {{ p.flow.intel_as_of_session|e }} · {{ p.flow.intel_board_state|e }}</span>
+          </li>
+          {% endif %}
+          <li><span class="l-en">{{ p.flow.unsigned_activity_note_en|e }}</span><span class="l-zh">{{ p.flow.unsigned_activity_note_zh|e }}</span></li>
+        </ul>
+      </dd>
+    </dl>
+  </div>
+
+  {# ── deterministic narrative (EN/ZH) ── #}
+  <ul class="opulse-notes">
+    {% for line in p.narrative.en %}
+    <li><span class="l-en">{{ line|e }}</span><span class="l-zh">{{ p.narrative.zh[loop.index0]|e }}</span></li>
+    {% endfor %}
+  </ul>
+
+  {% if _src.detail_href %}
+  <p class="opulse-meta" style="margin-top:10px">
+    <a class="opulse-link" href="{{ _src.detail_href|e }}{{ _src.detail_anchor|e }}">
+      <span class="l-en">{{ t('Open the full options detail →', '打开完整期权详情 →') }}</span>
+      <span class="l-zh">{{ t('Open the full options detail →', '打开完整期权详情 →') }}</span>
+    </a>
+    {% if p.authority.display_only %}
+    · <span class="l-en">{{ t('Display-only — no trade, rank, size or alert authority', '仅供展示 — 无交易、排序、仓位或提醒权限') }}</span>
+    <span class="l-zh">{{ t('Display-only — no trade, rank, size or alert authority', '仅供展示 — 无交易、排序、仓位或提醒权限') }}</span>
+    {% endif %}
+    · <span class="l-en">{{ t('content', '内容指纹') }} <code>{{ p.content_hash|e }}</code></span>
+    <span class="l-zh">{{ t('content', '内容指纹') }} <code>{{ p.content_hash|e }}</code></span>
+  </p>
+  {% endif %}
+
+{% endif %}
+</section>
+{% endif %}

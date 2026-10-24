@@ -24,6 +24,7 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine import options_pulse  # noqa: E402
 from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -497,6 +498,64 @@ def _gather_record_panel(data_dir: Path) -> dict:
     return out
 
 
+def _read_capped_json(path: Path) -> tuple[object | None, str | None]:
+    """Read an ALREADY-PUBLISHED artifact: bytes + its own digest, size-capped.
+
+    Reading is the builder's job, never the projector's: this is the only place
+    that touches the filesystem, and it never refreshes or re-derives anything —
+    a build reads what an input owner already wrote and says so. Returns
+    ``(payload_or_None, "sha256:..." or None)``; any failure degrades to None.
+    """
+    try:
+        if not path.exists():
+            return None, None
+        raw = path.read_bytes()
+    except Exception as exc:  # noqa: BLE001
+        log.debug("aibrief: options pulse could not read %s (%s)", path, exc)
+        return None, None
+    if len(raw) > options_pulse.MAX_SOURCE_BYTES:
+        log.info("aibrief: options pulse skipped oversized %s (%d bytes)", path, len(raw))
+        return None, None
+    try:
+        return json.loads(raw), options_pulse.digest_bytes(raw)
+    except Exception as exc:  # noqa: BLE001
+        log.debug("aibrief: options pulse could not parse %s (%s)", path, exc)
+        return None, None
+
+
+def _gather_options_pulse(site_dir: Path, data_dir: Path,
+                           symbol: str = "QQQ") -> dict | None:
+    """Options Pulse card for the Macro lens — a PURE projection of already-published
+    artifacts (site/gex/<KEY>.json, site/options_intel_brief.json,
+    data/options_flow/signing_gate.json). Fully fail-open: a missing or malformed
+    source renders an explicit unavailable section instead of breaking the build.
+
+    The projector owns NO clock: `now` here is the page build time, passed in
+    explicitly so the card's determinism is testable and so the SAME projector
+    serves both the display and the master-brain context. Nothing here fetches,
+    refreshes, or re-derives source data.
+    """
+    try:
+        now = datetime.now(timezone.utc)
+        gex_rel = f"site/gex/{symbol}.json"
+        intel_rel = "site/options_intel_brief.json"
+        gate_rel = "data/options_flow/signing_gate.json"
+        gex, gex_digest = _read_capped_json(site_dir / f"gex/{symbol}.json")
+        intel, intel_digest = _read_capped_json(site_dir / "options_intel_brief.json")
+        gate, gate_digest = _read_capped_json(data_dir / "options_flow" / "signing_gate.json")
+        return options_pulse.build_pulse(
+            symbol=symbol,
+            gex=gex, gex_file=gex_rel, gex_digest=gex_digest,
+            intel=intel, intel_file=intel_rel, intel_digest=intel_digest,
+            gate=gate, gate_file=gate_rel, gate_digest=gate_digest,
+            now=now,
+            detail_href="gex.html",
+        )
+    except Exception as exc:  # noqa: BLE001 — additive, must never break the build
+        log.warning("aibrief: options pulse gather failed (%s)", exc)
+        return None
+
+
 def _gather_panels(data_dir: Path) -> dict:
     """Gather all server-side panel data; fully fail-open."""
     try:
@@ -545,6 +604,10 @@ def main() -> int:
         # MOR-2b Lane C: load site/am_edition.json for the Morning Orientation band
         # under the page h1. Fail-open — the band renders .mx-empty when absent.
         panels["am_edition"] = _load_am_edition_panel(site, data_dir)
+        # Options Pulse (options_pulse/v1): deterministic, source-labelled options
+        # card for the Macro lens. None renders nothing; an absent source renders
+        # the projector's explicit unavailable state.
+        panels["options_pulse"] = _gather_options_pulse(site, data_dir)
         html = env.get_template("aibrief.html.j2").render(as_of=as_of, **panels, **briefs)
         write_page(site / "aibrief.html", html)
 

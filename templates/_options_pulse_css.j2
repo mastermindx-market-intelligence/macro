@@ -1,0 +1,90 @@
+{# ── Options Pulse (options_pulse/v1) — include-only style block ───────────────
+     Token-only. Dark and light are BOTH art directions here: dark leans on the
+     command-center luminance depth already carried by --panel/--panel2, light on
+     the cool canvas + hairline discipline of the research workspace. Nothing
+     here hardcodes a hex or invents a palette, and — per the standing Chairman
+     design rule — no container carries a coloured edge or accent stripe:
+     hierarchy is surface + even borders + typography + labelled semantic ink. #}
+<style>
+  /* ── layout ── */
+  .opulse { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+  .opulse:first-child { margin-top:4px; padding-top:0; border-top:none; }
+  .opulse-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px; margin-bottom:2px; }
+  .opulse-eyebrow { color:var(--muted); font-size:11px; font-weight:600;
+                    text-transform:uppercase; letter-spacing:.05em; }
+  .opulse-title { font-size:15px; font-weight:600; margin:0; }
+  .opulse-meta { color:var(--muted); font-size:11px; margin:2px 0 10px; }
+  .opulse-lede { font-size:13px; line-height:1.5; margin:0 0 12px; color:var(--text); }
+
+  /* ── fact grid ── */
+  .opulse-facts { display:grid; gap:10px 14px;
+                  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
+  .opulse-fact { background:var(--panel2); border:1px solid var(--line);
+                 border-radius:var(--r-card,12px); padding:8px 10px; min-width:0; }
+  .opulse-fact dt { color:var(--muted); font-size:10px; font-weight:600;
+                    text-transform:uppercase; letter-spacing:.05em; margin:0 0 3px; }
+  .opulse-fact dd { margin:0; font-size:15px; font-weight:600;
+                    font-variant-numeric:tabular-nums; line-height:1.25; word-break:break-word; }
+  .opulse-fact .opulse-unit { display:block; font-size:10px; font-weight:400;
+                              color:var(--muted); margin-top:2px; }
+  .opulse-val-pos { color:var(--up); }
+  .opulse-val-neg { color:var(--down); }
+  .opulse-val-flat { color:var(--muted); }
+
+  /* ── chart ── */
+  .opulse-chartwrap { background:var(--panel2); border:1px solid var(--line);
+                      border-radius:var(--r-card,12px); padding:10px 12px 6px; margin:12px 0 0; }
+  .opulse-chart { display:block; width:100%; height:auto; overflow:visible; }
+  .opulse-axis { stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .opulse-zero { stroke:var(--muted); stroke-width:1; stroke-dasharray:3 3;
+                 vector-effect:non-scaling-stroke; }
+  .opulse-curve { fill:none; stroke:var(--link); stroke-width:2;
+                  vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .opulse-curve-neg { stroke:var(--down); }
+  .opulse-spotline { stroke:var(--muted); stroke-width:1; stroke-dasharray:2 2;
+                     vector-effect:non-scaling-stroke; }
+  .opulse-flipmark { stroke:var(--warn); stroke-width:2; vector-effect:non-scaling-stroke; }
+  .opulse-chartcap { color:var(--muted); font-size:11px; margin:6px 0 2px; }
+  /* the sha256 content receipt is one unbreakable ~71-char token; without this it
+     forces horizontal page scroll at 390px */
+  .opulse-meta code { overflow-wrap:anywhere; word-break:break-all; }
+
+  /* ── table (the deterministic fallback for the chart) ── */
+  .opulse-scroll { overflow-x:auto; max-width:100%; margin-top:12px; }
+  .opulse-table { border-collapse:collapse; width:100%; font-size:12px;
+                  font-variant-numeric:tabular-nums; }
+  .opulse-table caption { text-align:left; color:var(--muted); font-size:11px;
+                          white-space:normal; padding-bottom:5px; }
+  .opulse-table th, .opulse-table td { text-align:right; padding:4px 8px;
+                                       border-bottom:1px solid var(--line); white-space:nowrap; }
+  .opulse-table th:first-child, .opulse-table td:first-child { text-align:left; }
+  .opulse-table thead th { color:var(--muted); font-size:10px; font-weight:600;
+                           text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ── withheld / unavailable ── */
+  .opulse-withheld { background:var(--panel2); border:1px solid var(--line);
+                     border-radius:var(--r-card,12px); padding:9px 11px; margin-top:12px; }
+  .opulse-withheld dt { color:var(--muted); font-size:10px; font-weight:600;
+                        text-transform:uppercase; letter-spacing:.05em; margin:0 0 3px; }
+  .opulse-withheld dd { margin:0 0 8px; font-size:12px; line-height:1.5; }
+  .opulse-withheld dd:last-child { margin-bottom:0; }
+  .opulse-why { margin:2px 0 0; padding-left:16px; font-size:11px;
+                color:var(--muted); line-height:1.45; }
+  .opulse-empty { background:var(--panel2); border:1px solid var(--line);
+                  border-radius:var(--r-card,12px); padding:12px; font-size:13px; line-height:1.5; }
+
+  /* ── narrative ── */
+  .opulse-notes { margin:12px 0 0; padding:0; list-style:none; }
+  .opulse-notes li { font-size:12.5px; line-height:1.55; color:var(--text);
+                     padding:5px 0; border-bottom:1px solid var(--line); }
+  .opulse-notes li:last-child { border-bottom:none; }
+  .opulse-link { color:var(--link); font-weight:600; }
+
+  /* ── responsive: 390px phone ── */
+  @media (max-width:480px) {
+    .opulse-facts { grid-template-columns:repeat(auto-fit, minmax(132px, 1fr)); gap:8px 10px; }
+    .opulse-fact dd { font-size:14px; }
+    .opulse-table { font-size:11px; }
+    .opulse-table th, .opulse-table td { padding:3px 6px; }
+  }
+</style>
