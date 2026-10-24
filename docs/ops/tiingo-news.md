@@ -26,15 +26,15 @@ are **context only**, not a licensed alpha score or entry instruction.
 ### Rights / activation
 
 The Chairman confirmed commercial business/public-display/redistribution permission
-on 2026-10-12; that decision is accepted. A working token still does not fill the
-field, audience, effective/expiry and runtime receipt values needed by this consumer.
-The owning commercial document/order and current valid product schedule must
-explicitly establish *Tiingo News*, licensed audience(s), retention duration,
-historical downloads, publisher content/source-link/description display,
-derivative processing (quality/entity tagging/cluster formation), and whether
-redistribution sublicenses the original publisher's content. Provider terms
-and underlying publisher rights can differ. An account-level "full redistribution"
-description cannot by itself prove each of these news-specific rights.
+on 2026-10-12 and explicitly ruled the Tiingo News commercial-rights issue
+**finalized on 2026-10-24**. The leadership decision is accepted: no license
+renegotiation or second commercial approval is required for technical work.
+The existing source-rights owner still maps the finalized agreement to an actual
+private qbus.news_rights_receipt.v1 with truthful product, licensed publisher
+domains, audience, field-level capabilities, and effective/expiry values.
+A model/operator must not fabricate those typed values from a vendor token,
+ChatGPT memory or a generic entitlement statement. The feature stays OFF
+until the source-rights owner supplies its ordinary machine-readable receipt.
 
 The provider branch reuses the incumbent
 `engine/qbus_news_receipts.py` format. It requires a receipt from the
@@ -240,9 +240,52 @@ news, a market preview or portfolio commentary. Public publisher pages were
 inaccessible, so zero original reports were independently verified. This
 small recency-biased selection is not a provider precision estimate.
 
-This draft still targets legacy Macro financial_news/qbus-v1. Terminal's
-existing single writer and curated transport admission do not yet implement
-Tiingo. Repairing this draft does not deliver premium Terminal reporting.
-Runtime-qualified rights, dated canonical identity, direct company relevance
-and the existing Terminal writer/read-path integration remain release gates.
-The draft stays held and production activation remains off.
+The original #8697 draft targeted legacy Macro financial_news/qbus-v1. Its
+published successor #10136 adds Tiingo's publisher-scoped SQLite contract and
+rights-gated authenticated API. The single writer's actual Tiingo acquisition
+is implemented separately in the held successor's next engineering slice below;
+it is not yet accepted, released or activated. The draft stays held until
+hosted CI, independent review and real signed-in user-path proof complete.
+
+
+### Existing canonical SQLite writer — source-only implementation (2026-10-24)
+
+The existing engine/qbus_news_intake.py now exposes a bounded
+TiingoSupplementalIntake alongside the pre-existing Massive supplement.
+Its only background future performs one Tiingo REST request (max 250 tagged
+articles, min interval 60 seconds). The **existing** NewsIngestRunner thread
+does rights revalidation, original-publisher editorial admission, dated ticker
+routing, and the durable NewsStore.commit_observations transaction. No second
+SQLite writer, daemon, release service, feed database, or scheduler was added.
+The separate, previously refused engine/qbus_news_tiingo_intake.py file was
+not created. The BOATS historical archive remains separately scoped; a single
+bounded REST sample does **not** establish historical completeness.
+
+The source is OFF by default. To qualify the **private preflight only**, the
+installed runtime owner provides the existing primary Benzinga/Alpaca
+prerequisites and sets TIINGO_NEWS_ENABLED=1, TIINGO_API_KEY and
+TIINGO_NEWS_RIGHTS_FILE through its authorized host secret/receipt mechanism,
+then runs the existing scripts/run_qbus_news.py --check-activation --tiingo-news
+with its normal universe, primary rights and health inputs.
+--tiingo-news is an explicit opt-in, not a new background worker. Missing
+token, feature flag, private owner receipt, derivative grant, or at least one
+exact licensed original-publisher domain yields
+activation_tiingo_rights_unqualified *before network use or state writes*.
+--run --tiingo-news is **not** approved by this source note alone.
+
+Each completed HTTP response is untrusted until the source owner grants the
+same current rights again; revocation before SQLite commit denies the batch.
+Current rights are checked again on every authenticated API read, including
+pagination/cluster/detail projection. Retained first-observation journal
+history is never reinterpreted as a currently displayable entitlement.
+The incumbent primary delta cursor remains untouched by a supplemental Tiingo
+observation. A disabled, denied or broken Tiingo feed leaves the primary
+Benzinga/Alpaca/Massive user paths operational.
+
+Verification before acceptance: run the network-dark
+tests/test_qbus_news_intake.py and tests/test_tiingo_sqlite_bridge.py,
+the corresponding primary provider/health tests and full CI-pack/contract
+gates on the published current head. Then obtain an independent reviewer,
+deployed service/feature identity, and **real authenticated** Terminal
+News/Company/Broader/detail/flow plus revocation readbacks. All source-only
+unit tests can pass while production remains DARK/Built-not-Proven.

@@ -159,3 +159,146 @@ class SupplementalNewsIntake:
         if self._pending is not None:
             self._pending.cancel()
         self._pool.shutdown(wait=False, cancel_futures=True)
+
+class TiingoSupplementalIntake:
+    """Bounded Tiingo acquisition, drained by the incumbent serialized writer.
+
+    Neither HTTP futures nor this object own durable state. All publisher
+    admission, issuer rights, universe routing and SQLite commits happen
+    synchronously inside the existing runner's pump on its writer thread.
+    """
+
+    def __init__(
+        self, *, token, store, rights_provider, universe_provider, enabled,
+        clock=lambda: datetime.now(timezone.utc), monotonic=time.monotonic,
+        fetch=None, interval_seconds=60.0, limit=250,
+    ):
+        from engine.tiingo_news import fetch_articles
+        if (not isinstance(limit, int) or isinstance(limit, bool)
+                or not 1 <= limit <= 250 or interval_seconds < 1):
+            raise ValueError("invalid_tiingo_intake_bounds")
+        self.token, self.store = token, store
+        self.rights_provider, self.universe_provider = rights_provider, universe_provider
+        self.enabled, self.clock, self.monotonic = enabled, clock, monotonic
+        self.fetch = fetch if fetch is not None else fetch_articles
+        self.limit, self.interval_seconds = limit, interval_seconds
+        self._pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="news-acquisition")
+        self._pending = None
+        self._next_poll = 0.0
+        self._closed = False
+        self.state = "waiting"
+        self.last_error = None
+        self.accepted_reports = 0
+        self.last_successful_poll = None
+
+    def _current_grant(self):
+        if self._closed or not self.enabled() or not self.token:
+            return None
+        grant = self.rights_provider()
+        if (grant is None or grant.source != "tiingo"
+                or not grant.derivative_processing
+                or not grant.rights.allows("tiingo", "title")
+                or not any(src.startswith("tiingo:") for src in grant.rights.allowed_sources)):
+            return None
+        return grant
+
+    def _restricted(self):
+        self.state, self.last_error = "restricted", "rights_unavailable"
+        self._next_poll = self.monotonic() + self.interval_seconds
+
+    def pump(self):
+        """Run exclusively on the primary NewsIngestRunner serialized thread."""
+        if self._closed:
+            return
+        if self._pending is not None and self._pending[0].done():
+            future, source_grant = self._pending
+            self._pending = None
+            try:
+                rows, status = future.result()
+                active_grant = self._current_grant()
+                if active_grant is None or active_grant != source_grant:
+                    self._restricted()
+                    return
+                if status not in ("ok", "no_rows") or not isinstance(rows, list):
+                    self.state, self.last_error = "degraded", "acquisition_unavailable"
+                else:
+                    from engine import tiingo_news
+                    from engine.qbus_news_contract import NewsContractError, normalize_tiingo_news
+                    from engine.qbus_news_quality import curated_report
+                    universe = self.universe_provider()
+                    if universe.status != "qualified":
+                        self.state, self.last_error = "degraded", "universe_unqualified"
+                    else:
+                        routed = []
+                        for raw in rows[:self.limit]:
+                            try:
+                                observed = tiingo_news.normalize_article(
+                                    raw, received_at=self.clock(),
+                                )
+                                revision = normalize_tiingo_news(
+                                    observed, received_at=datetime.fromisoformat(observed["received_at"]),
+                                )
+                            except (tiingo_news.TiingoArticleError, NewsContractError):
+                                continue
+                            source = revision.source
+                            rights = active_grant.rights
+                            if not rights.allows(source, "title"):
+                                continue
+                            url = revision.url if rights.allows(source, "url") else ""
+                            if not curated_report(source, revision.title, url):
+                                continue
+                            routed_item = route_revision(revision, universe)
+                            if routed_item.security_ids:
+                                routed.append(routed_item)
+                        if self._current_grant() != source_grant:
+                            self._restricted()
+                            return
+                        if routed:
+                            result = self.store.commit_observations(routed)
+                            self.accepted_reports += result.applied_states
+                        # Read rights are checked again at every API read;
+                        # an owner withdrawal never deletes source history.
+                        if self._current_grant() != source_grant:
+                            self._restricted()
+                            return
+                        self.state = "available" if routed else "quiet"
+                        self.last_error = None
+                        self.last_successful_poll = self.clock()
+            except Exception:
+                # Never log exception messages: HTTP/header errors may contain
+                # credential material. All failures are source-local.
+                self.state, self.last_error = "degraded", "tiingo_acquisition_failed"
+            self._next_poll = self.monotonic() + self.interval_seconds
+        if self._pending is not None or self.monotonic() < self._next_poll:
+            return
+        try:
+            grant = self._current_grant()
+        except Exception:
+            self._restricted()
+            return
+        if grant is None:
+            self._restricted()
+            return
+        self._pending = (
+            self._pool.submit(self.fetch, token=self.token, limit=self.limit),
+            grant,
+        )
+        self.state, self.last_error = "catching_up", None
+
+    def health(self):
+        last = self.last_successful_poll
+        return {
+            "provider": "tiingo",
+            "state": self.state,
+            "last_successful_poll": last.isoformat() if last else None,
+            "accepted_reports": self.accepted_reports,
+            "last_error": self.last_error,
+            "delivery": "polled_bounded_snapshot_not_complete_history",
+        }
+
+    def close(self):
+        self._closed = True
+        self.state = "unavailable"
+        if self._pending is not None:
+            self._pending[0].cancel()
+        self._pool.shutdown(wait=False, cancel_futures=True)

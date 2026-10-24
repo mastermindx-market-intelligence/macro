@@ -193,6 +193,15 @@ class NewsIngestRunner:
         self._last_catchup_error: str | None = None
         self._last_stream_error: str | None = None
 
+    def _supplementals(self):
+        # Multiple bounded source acquisitions share this ONE runner-thread
+        # write path. Preserve the existing single-supplement API for callers.
+        if self.supplemental is None:
+            return ()
+        if isinstance(self.supplemental, tuple):
+            return self.supplemental
+        return (self.supplemental,)
+
     def _health_payload(self, state: str) -> dict:
         observed = self.clock()
         return {
@@ -217,7 +226,8 @@ class NewsIngestRunner:
             "catchups_failed": self.stats.catchups_failed,
             "last_catchup_error": self._last_catchup_error,
             "last_stream_error": self._last_stream_error,
-            **({"additional_sources": [self.supplemental.health()]} if self.supplemental else {}),
+            **({"additional_sources": [item.health() for item in self._supplementals()]}
+               if self.supplemental is not None else {}),
         }
 
     def _publish_health(self, state: str) -> None:
@@ -378,8 +388,8 @@ class NewsIngestRunner:
                 ):
                     break
 
-                if self.supplemental is not None:
-                    self.supplemental.pump()
+                for intake in self._supplementals():
+                    intake.pump()
                 self._catch_up()
                 if self.stop.is_set():
                     break
@@ -408,8 +418,8 @@ class NewsIngestRunner:
                             if not self._admitted():
                                 self.stop.set()
                                 break
-                            if self.supplemental is not None:
-                                self.supplemental.pump()
+                            for intake in self._supplementals():
+                                intake.pump()
                             self._drain_catchup()
                             if self.monotonic() >= next_catchup:
                                 self._start_periodic_catchup()
@@ -448,8 +458,8 @@ class NewsIngestRunner:
             if self._catchup_future is not None:
                 self._catchup_future.cancel()
             self._catchup_pool.shutdown(wait=False, cancel_futures=True)
-            if self.supplemental is not None:
-                self.supplemental.close()
+            for intake in self._supplementals():
+                intake.close()
             self._publish_health("unavailable")
 
         return self.stats
@@ -483,6 +493,10 @@ def build_parser() -> argparse.ArgumentParser:
                    default=os.environ.get("MM_TICKER_NEWS_MASSIVE_ENABLED") == "1",
                    help="enable rights-qualified additional publishers in the existing runner")
     p.add_argument("--massive-token-env", default="POLYGON_API_KEY")
+    p.add_argument("--tiingo-news", action="store_true",
+                   help="opt in to the separately rights-qualified Tiingo bounded supplement")
+    p.add_argument("--tiingo-token-env", default="TIINGO_API_KEY")
+    p.add_argument("--tiingo-rights-file", type=Path)
     p.add_argument(
         "--provider",
         default=os.environ.get("QBUS_NEWS_PROVIDER") or "benzinga",
@@ -649,12 +663,48 @@ def main(argv=None) -> int:
         }, sort_keys=True))
         return 2
 
+    # This add-on never borrows the primary Benzinga/Alpaca entitlement.
+    # An explicit runner flag, existing per-source enablement, owner-issued
+    # receipt, actual publisher subset, and API token are all independent.
+    tiingo_key = os.environ.get(args.tiingo_token_env, "") if args.tiingo_news else ""
+    tiingo_receipt_path = args.tiingo_rights_file
+    if tiingo_receipt_path is None:
+        raw_tiingo_rights = os.environ.get("TIINGO_NEWS_RIGHTS_FILE", "").strip()
+        tiingo_receipt_path = Path(raw_tiingo_rights) if raw_tiingo_rights else None
+
+    def current_tiingo_grant():
+        if tiingo_receipt_path is None or os.environ.get("TIINGO_NEWS_ENABLED") != "1":
+            return None
+        grant = load_rights_receipt(
+            tiingo_receipt_path, now=_utc_now(), audience="site_full", source="tiingo",
+        )
+        if (grant is None or not grant.derivative_processing
+                or not grant.rights.allows("tiingo", "title")
+                or not any(s.startswith("tiingo:") for s in grant.rights.allowed_sources)):
+            return None
+        return grant
+
+    initial_tiingo_grant = current_tiingo_grant() if args.tiingo_news else None
+    if args.tiingo_news and (not tiingo_key or initial_tiingo_grant is None):
+        print(json.dumps({
+            **report, "activation_qualified": False,
+            "error": "activation_tiingo_rights_unqualified",
+            "tiingo_token_present": bool(tiingo_key),
+            "tiingo_publisher_rights_present": initial_tiingo_grant is not None,
+        }, sort_keys=True))
+        return 2
+
     qualified_report = {
         **report,
         "activation_qualified": True,
         "universe_count": universe.count,
         "universe_revision": universe.revision,
         "additional_sources_enabled": bool(args.massive_news),
+        "tiingo_news_qualified": bool(args.tiingo_news and initial_tiingo_grant),
+        "tiingo_publisher_count": (
+            len([s for s in initial_tiingo_grant.rights.allowed_sources if s.startswith("tiingo:")])
+            if initial_tiingo_grant else 0
+        ),
         "additional_sources_qualified": len(supplemental_rights.allowed_sources) if args.massive_news else 0,
     }
     if args.check_activation:
@@ -674,7 +724,11 @@ def main(argv=None) -> int:
         signal.signal(sig, lambda *_args: stop.set())
 
     with ExitStack() as resources:
-        supplemental = None
+        # One canonical SQLite writer for Benzinga/Alpaca + Tiingo. Massive's
+        # existing separate cursor namespace stays on the SAME runner thread.
+        source_key = "alpaca-rest" if provider == "alpaca" else "benzinga-rest"
+        store = resources.enter_context(NewsStore(args.database, source_key=source_key))
+        supplementals = []
         if args.massive_news:
             from engine.massive_news import MassiveNewsClient
             from engine.qbus_news_intake import SupplementalNewsIntake
@@ -682,16 +736,26 @@ def main(argv=None) -> int:
             extra_store = resources.enter_context(NewsStore(
                 args.database, source_key="massive-reference-news",
             ))
-            supplemental = SupplementalNewsIntake(
+            supplementals.append(SupplementalNewsIntake(
                 client=MassiveNewsClient(massive_token),
                 store=extra_store,
                 rights_provider=lambda: load_rights_set(
                     additional_rights_paths(), now=_utc_now(),
                 ),
                 universe_provider=lambda: universe,
-            )
-        source_key = "alpaca-rest" if provider == "alpaca" else "benzinga-rest"
-        store = resources.enter_context(NewsStore(args.database, source_key=source_key))
+            ))
+        if args.tiingo_news:
+            from engine.qbus_news_intake import TiingoSupplementalIntake
+
+            supplementals.append(TiingoSupplementalIntake(
+                token=tiingo_key, store=store,
+                rights_provider=current_tiingo_grant,
+                enabled=lambda: os.environ.get("TIINGO_NEWS_ENABLED") == "1",
+                universe_provider=lambda: universe,
+            ))
+        supplemental = tuple(supplementals) if len(supplementals) > 1 else (
+            supplementals[0] if supplementals else None
+        )
         kwargs = {}
         if provider == "alpaca":
             client = alpaca_news.AlpacaNewsClient(key_id=key_id, secret_key=secret_key)
