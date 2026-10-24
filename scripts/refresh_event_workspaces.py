@@ -1195,12 +1195,12 @@ def _event_known_revisions(
     except Exception as exc:  # noqa: BLE001 - chain-state ambiguity must never read as "nothing represented"
         print(
             "::warning title=event-workspace-chain-read-failed::"
-            f"{event_id}: source-revision chain read failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: source-revision chain read failed {_read_failure_context(exc)} — "
             "refusing to treat this as no-prior-revision-represented",
             flush=True,
         )
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: chain read failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: chain read failed {_read_failure_context(exc)}"
         ) from exc
 
 
@@ -1763,7 +1763,9 @@ def refresh(
     try:
         current_marker_raw = current_marker_loader()
     except Exception as exc:  # noqa: BLE001 - a genuine failure to read the current marker must abort
-        raise RefreshError(f"failed to read the current event workspace marker: {exc}") from exc
+        raise RefreshError(
+            f"failed to read the current event workspace marker {_read_failure_context(exc)}"
+        ) from exc
     if current_marker_raw is not None:
         current_marker_bytes, current_marker = current_marker_raw
     else:
@@ -1987,7 +1989,7 @@ def refresh(
     elif dry_run:
         print("event workspaces: dry-run validated; sibling marker not promoted")
     else:
-        print("event workspaces: immutable generation published and sibling marker promoted")
+        print("event workspaces: generation validated; publish step returned success")
     return publish_rc
 
 
