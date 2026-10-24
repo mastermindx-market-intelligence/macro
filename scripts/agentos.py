@@ -1977,6 +1977,11 @@ def draft_handoff(payload: dict[str, Any]) -> str:
         "STARTed operation or EFFECT_UNKNOWN stays fenced on the same original carrier.",
         "An exact-session proof target remains exact; advance only disjoint work.",
         "If no valid receiver has been assigned, name the real assignment gate.",
+        "Ownership is a role, not a session: never wait on an absent/orphaned owner",
+        "or ask the Chairman to find old chats. The current session assumes leadership,",
+        "records the takeover in the source-linked handoff, and proceeds. Independent",
+        "review is still required; never self-merge or approve. HANDOFF_SOURCE_LINK_V1:",
+        "GitHub holds the full task; Slack carries the assignment and the link.",
         "",
     ]
     if pins:

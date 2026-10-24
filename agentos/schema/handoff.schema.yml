@@ -20,7 +20,7 @@ required:
   unverified:    {type: list, items: {claim: string, what_would_verify: string},
                   note: an EMPTY list is a valid answer; an ABSENT key means nobody asked}
   unresolved:    {type: list}
-  next_actions:  {type: list, note: "ordered; current assigned receiver owns recovery; historical author names are not a current live session; real STARTed/EFFECT_UNKNOWN custody must be reconciled; actionable quality is reviewer judgment, not a new admission gate"}
+  next_actions:  {type: list, note: "ordered; current assigned receiver owns recovery; historical author names are not a current live session; real STARTed/EFFECT_UNKNOWN custody must be reconciled; actionable quality is reviewer judgment, not a new admission gate. Ownership is a role, not a session: never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. HANDOFF_SOURCE_LINK_V1: GitHub holds the full task; Slack carries the assignment and the link."}
   do_not_redo:   {type: list, note: highest-leverage field - 55-80% of proposals duplicate settled work}
   danger_areas:  {type: list, note: what breaks easily here}
 optional:

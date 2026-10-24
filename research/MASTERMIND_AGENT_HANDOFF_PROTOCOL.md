@@ -181,17 +181,19 @@ surprised you and are marked as reviewer judgment rather than dressed up as chec
 | 6 | `do_not_redo` omits an investigation that consumed real time | reviewer | The single highest-value field: the org's own measure is that 55–80% of proposals duplicate settled work. Presence is required; completeness is a human call. |
 | 7 | `changed` lists paths with no `what` | ✅ `bad-changed-entry` | A diff is already in git; the handoff exists to say *why* each path moved. |
 
-**Historical writer references are not current liveness.** A handoff whose sole
-next action is to ask an old original parent/writer to finish is not actionable
-merely because that actor authored a PR. Under a current valid assignment, the
-currently assigned receiver inspects the exact PR/workspace, real source-writer
-custody, live lease, and pending effects, then advances permitted work without
-waiting for an archived chat. Actual STARTed or EFFECT_UNKNOWN work stays
-on its original carrier until lawful reconciliation; exact-session proof targets
-remain exact and may hold only dependent effects. Without a present assignment,
-identify the real delivery/admission gate rather than self-assigning a writer.
-Judging the reachability and adequacy of next_actions remains reviewer judgment,
-not a new schema hard-fail, lease authority, retry control, or background executor.
+**Ownership is a role, not a session:** never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. Historical writer references are not current liveness. A handoff whose sole next action is to ask an old original parent/writer
+to finish is not actionable merely because that actor authored a PR. Under a current
+valid assignment, the current session inspects the exact PR/workspace, real
+source-writer custody, live lease, and pending effects, then advances permitted work.
+Actual STARTed or EFFECT_UNKNOWN work stays on its original carrier until lawful
+reconciliation; exact-session proof targets remain exact and may hold only dependent
+effects. Without a present assignment, identify the real delivery/admission gate
+rather than self-assigning a writer. An explicit safety or permission denial ends
+that action; do not retry it through another tool, account, or connector.
+`HANDOFF_SOURCE_LINK_V1`: GitHub holds the full task; Slack carries the assignment
+and the link. Judging the reachability and adequacy of next_actions remains reviewer
+judgment, not a new schema hard-fail, lease authority, retry control, or background
+executor.
 
 **Who reviews.** The reviewer of items 3, 4 and 6 is the next session to claim the
 workstream — it is the only reader whose interest is aligned, and it finds out

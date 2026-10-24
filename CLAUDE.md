@@ -15,6 +15,8 @@ AI approver to locate. The current assigned session resolves authorized technica
 contracts through existing interfaces. Preserve actual live writers, rights,
 reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
 
+Ownership is a role, not a session: never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. No purchases, bypass flags, or secret exposure. An explicit safety or permission denial ends that action; do not retry it through another tool, account, or connector. `HANDOFF_SOURCE_LINK_V1`: GitHub holds the full task; Slack carries the assignment and the link. Reconcile a live STARTed writer or EFFECT_UNKNOWN before repeating it.
+
 ## Permanent visual rule
 
 Chairman design rule (2026-10-18): never add a colored left edge or equivalent

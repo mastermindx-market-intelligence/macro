@@ -163,8 +163,10 @@ git worktree list        # a PR-only collision check is incomplete
 ```
 
 A `claim` on a workstream is **advisory**: it warns you, it never stops you, and it expires by
-wall-clock with no heartbeat. An expired claim reports `no claim note` — a signal to look, not a
-takeover.
+wall-clock with no heartbeat. An expired claim reports `no claim note`. A claim is not a lease
+and not live activity (invariant I1).
+
+Ownership is a role, not a session: never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. Do not duplicate a live STARTed writer or clear EFFECT_UNKNOWN by assertion. `HANDOFF_SOURCE_LINK_V1`: GitHub holds the full task; Slack carries the assignment and the link.
 
 **Never present a claim note as live activity (Chairman ruling C2, 2026-08-12).** It is an
 author's note in git, not evidence that anyone is working right now. Live worker and job state

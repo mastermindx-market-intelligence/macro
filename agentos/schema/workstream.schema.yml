@@ -10,7 +10,7 @@ required:
   status:       {enum: [proposed, active, blocked, awaiting_ci, awaiting_review, done, parked, killed]}
   program:      {type: string, note: key from config/mastermind_programs.yml (validated)}
   repos:        {type: list, items: {enum: [macro, terminal, mastermind]}}
-  owner:        {type: string, note: accountable seat, not a session id}
+  owner:        {type: string, note: "accountable seat, not a session id. Ownership is a role, not a session: never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. HANDOFF_SOURCE_LINK_V1: GitHub holds the full task; Slack carries the assignment and the link."}
   class:        {enum: [research, build, design, adjudication, mechanical]}
   blast_radius: {enum: [reversible, user_facing, irreversible]}
   ambiguity:    {enum: [specified, scoped, open]}

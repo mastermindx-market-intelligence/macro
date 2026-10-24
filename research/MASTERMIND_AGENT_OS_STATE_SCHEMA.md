@@ -57,7 +57,7 @@ action. Target cardinality **20–40 live**. This is the join key that makes eve
 | `program` | ✅ | string | Key from `config/mastermind_programs.yml`. Validated to exist. |
 | `p0` | ◻ | string | P0 id from Mastermind `config/strategic_state.yml`. Joined by `status` when that sibling checkout is present: an unknown id warns, an absent checkout populates `degraded` and leaves `p0_active` unknown (fail-open, I4). `validate` does not touch it — a record's validity must not depend on which checkouts exist on the machine. |
 | `repos` | ✅ | list | Any of `macro` · `terminal` · `mastermind`. |
-| `owner` | ✅ | string | Accountable seat/human — `chairman`, `coo-fable`, `codex`, `claude-fleet`. Not a session id. |
+| `owner` | ✅ | string | Accountable seat/human — `chairman`, `coo-fable`, `codex`, `claude-fleet`. Not a session id. Ownership is a role, not a session: never wait on an absent/orphaned owner or ask the Chairman to find old chats. The current session assumes leadership, records the takeover in the source-linked handoff, and proceeds. Independent review is still required; never self-merge or approve. HANDOFF_SOURCE_LINK_V1: GitHub holds the full task; Slack carries the assignment and the link. |
 | `class` | ✅ | enum | `research` · `build` · `design` · `adjudication` · `mechanical`. Routing input (§10 architecture). |
 | `blast_radius` | ✅ | enum | `reversible` · `user_facing` · `irreversible`. Sets verification budget. |
 | `ambiguity` | ✅ | enum | `specified` · `scoped` · `open`. Routing input. |
