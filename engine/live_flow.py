@@ -687,6 +687,7 @@ def process_batch(
     names_sectors: dict[str, tuple[str, str]] | None = None,
     prev_close: float | None = None,
     oi_vintage: str | None = None,
+    statistics_root: str | None = None,
 ) -> dict:
     """Process one poll batch → events, unusual_names, heat, updated state.
 
@@ -744,6 +745,7 @@ def process_batch(
     root_gross_today: dict[str, float] = dict(ps.get("root_gross_today", {}))
     # FIX 2 — per-contract max sequence seen (row-level dedup for overlapping windows)
     seen_sequences: dict             = dict(ps.get("seen_sequences", {}))
+    options_statistics = ps.get("options_statistics")
 
     # ── Tide accumulator state (persisted across cycles for day-cumulative values) ──
     # market_tide_minutes: {HH:MM → {ncp, npp, gross, vol}}
@@ -848,6 +850,12 @@ def process_batch(
         frames.append(dfc)
 
     if not frames:
+        if statistics_root is not None:
+            from engine.options_statistics_state import advance_statistics
+            options_statistics = advance_statistics(
+                options_statistics, [], session_date=session_date,
+                root=statistics_root, observed_at=batch_ts,
+            )
         return {
             "events": [],
             "unusual_names": [],
@@ -858,6 +866,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -921,6 +930,22 @@ def process_batch(
     # every print that has no usable NBBO and report a false 100% coverage.
     microstructure_by_contract = _coalesce_nbbo_microstructure(combined)
 
+    if statistics_root is not None:
+        from engine.options_statistics_state import advance_statistics
+        statistics_frame = combined.copy()
+        # Use the incumbent Theta-local/aware timestamp normalization. No new
+        # timezone assumption, multiplier or exchange-name mapping is introduced.
+        for column in ("trade_timestamp", "quote_timestamp"):
+            if column in statistics_frame:
+                clocks = _source_times_et(statistics_frame[column])
+                statistics_frame[column] = clocks.map(
+                    lambda value: value.isoformat() if pd.notna(value) else None
+                )
+        options_statistics = advance_statistics(
+            options_statistics, statistics_frame.to_dict("records"),
+            session_date=session_date, root=statistics_root, observed_at=batch_ts,
+        )
+
     combined = _sign_batch(combined)
     if combined.empty:
         return {
@@ -933,6 +958,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -990,6 +1016,7 @@ def process_batch(
                 "notability_history": notability_hist,
                 "root_gross_today": root_gross_today,
                 "seen_sequences": seen_sequences,
+                **({"options_statistics": options_statistics} if options_statistics is not None else {}),
                 "market_tide_minutes": market_tide_minutes,
                 "sector_tide": sector_tide,
                 "dte_tide": dte_tide,
@@ -1158,6 +1185,7 @@ def process_batch(
             "notability_history": notability_hist,
             "root_gross_today": root_gross_today,
             "seen_sequences": seen_sequences,
+            **({"options_statistics": options_statistics} if options_statistics is not None else {}),
             "market_tide_minutes": market_tide_minutes,
             "sector_tide": sector_tide,
             "dte_tide": dte_tide,
