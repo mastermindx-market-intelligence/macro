@@ -1,0 +1,27 @@
+{
+  "schema": "paid024.local_visual_fixture/v1",
+  "source_head": "1d0a412c95b0fc8c857b90607ce9f526b83c0371",
+  "source_paths": [
+    "site/stocks/index.html",
+    "site/assets/css/a64bfe42.css",
+    "templates/theme.css"
+  ],
+  "source_hashes": {
+    "site/stocks/index.html": "4bef803669c571e88f96e8dedf02462ab939cb79bd413ac964bed98338eb01db",
+    "site/assets/css/a64bfe42.css": "a64bfe42e118b5c0dbcd8576f11df09687fa5c2fe9e948572ad05683f0cac427",
+    "templates/theme.css": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e"
+  },
+  "fixture_html_sha256": "153f6d5143958edd15d95f6e9c87a6687426dfc8521bbd150555ed8ee277aa5a",
+  "transformation": "Select exact public rendered #pressure section with BeautifulSoup; embed unchanged production theme and page CSS; no script included, local fonts only. Public retained render, not current market feed, authenticated API, or live site.",
+  "events": {
+    "API": false,
+    "provider": false,
+    "private": false,
+    "live_browser": false
+  },
+  "local_theme_import": {
+    "path": "site/product-nav-icons.css",
+    "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "disposition": "Copied unchanged to the local fixture after the initial capture disclosed missing fixture-only import; final capture preserves no missing responses."
+  }
+}
