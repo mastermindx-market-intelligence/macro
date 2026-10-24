@@ -1,12 +1,99 @@
-## Exact observation-identity design — 23 October 2026
+## Selected source-fence and lifecycle protocol — 24 October 2026
 
-The assigned source owner has completed the name/encoding/local-revision design in [BATCH_CANDIDATE_CONTRACT.md](BATCH_CANDIDATE_CONTRACT.md#owner-selected-observation-identity-for-qualified-review--23-october-2026). The selected future feed literal remains `tiingo.fx.USDJPY.reported-close.utc4h.local/v1`. Logical IDs use the exact six-string contract/pair/interval/calendar/UTC-start/UTC-end array, compact ASCII JSON and lowercase SHA-256 encoding; the document includes two 125-byte conformance vectors.
+**Owner design proposal; not installed or adopted.** The incumbent recovery/source owner selects the following bounded protocol for coordinated Macro/Terminal acceptance and qualified review. No source is admitted, saved condition activated, migration applied, outbox row created or delivery enabled by this document. Preserve `CANDIDATE_NOT_ADOPTED`, empty eligibility and false admission flags. The feed, observation-ID encoding, local revision 1 and conflict-withholding decisions in [BATCH_CANDIDATE_CONTRACT.md](BATCH_CANDIDATE_CONTRACT.md) remain unchanged.
 
-Validate full timestamp precision and aligned 240-minute membership before serialization. Local revision is positive non-boolean integer 1, separate from rule revision and Terminal condition version. Equal qualified witnesses project one logical observation per slot while preserving proof receipts; relevant closed conflicts withhold rather than minting a new ID/revision. The unchanged evaluator rejects duplicate IDs/ends and does not independently verify this encoding or source eligibility.
+### Current source and custody
 
-This completes owner design preparation, not policy adoption. The existing original Forex policy review is separately unqualified/retry-disallowed; native advice and the owner's decision do not replace it. Keep the qualified-review-before-adoption sequence below. No projection adapter, feed registry, evaluator, account activation, outbox integration or delivery vintage is implemented by these documents. The full Terminal vintage and atomic owned-revision/source/expiry/enqueue boundary remain separate future qualification work.
+| Surface | Inspected source / actual custody |
+| --- | --- |
+| Macro candidate | Published `a9bf4861ac9135cad158a3ccdf6ce264b8e8c9aa`, CI39935082910 and fences39935083130 succeeded. This documentation continuation uses its existing candidate-policy carrier. |
+| Macro current source | Inspected main `1d1f10d51d9d7d8a877af396c6383d8076fcb0b1`; the Forex evaluator and client remain unchanged from a9. |
+| Terminal current source | Inspected master `ec1e45ec29ced091b3721da77702d57e720ae588`; current Forex SQL/validators remain inactive/null-feed and the alert runner has no Forex dispatch. |
+| Previous Macro integration operation | `forex-r26-owner-adoption-20261020-sol-001` ended in merged [#9866](https://github.com/mastermindx-market-intelligence/macro/pull/9866), head57bb2f29, squashb5daf09b. Preserve its worktree; do not reuse the squash-merged branch. |
+| Previous Terminal account operation | `forex-r26-account-owner-20261021-sol-002` ended in merged [#1100](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1100), head838ef571, squash5f14b35c. Preserve its worktree. This is distinct from held ledger-doc PR#1106. |
+| Shared delivery paths | MarketOntology CEO B owns F08. [#9774](https://github.com/mastermindx-market-intelligence/macro/pull/9774), head52bc6e72, carries preference/category changes; [#10062](https://github.com/mastermindx-market-intelligence/macro/pull/10062), headaf255c2f, carries the drain `not_after` guard. Do not create competing edits in those owned paths. |
 
-The parent 227735 exact green CI/fences and all source evidence remain preserved. The documentation child requires its own ordinary exact-head contract and published checks; actual identities/results are maintained in [the existing lane checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10052#issuecomment-6337323600). No market acquisition or existing operation is replayed.
+A completed predecessor operation is neither a live writer nor permission to reuse its merged carrier. Future coordinated implementation must obtain an admitted source workspace from the then-current default revision under the existing program, without altering an occupied primary checkout. The current source-policy carrier remains the place for this reviewable contract.
+
+Primary seams: [Macro evaluator](https://github.com/mastermindx-market-intelligence/macro/blob/1d1f10d51d9d7d8a877af396c6383d8076fcb0b1/engine/forex_alerts.py), [Terminal runner](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec1e45ec29ced091b3721da77702d57e720ae588/ingest/alerts_engine.py), [0038 SQL](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec1e45ec29ced091b3721da77702d57e720ae588/supabase/migrations/0038_forex_inactive_conditions.sql), [shared validator](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ec1e45ec29ced091b3721da77702d57e720ae588/terminal/lib/forexWatches.ts), and [preferences owner](https://github.com/mastermindx-market-intelligence/macro/blob/1d1f10d51d9d7d8a877af396c6383d8076fcb0b1/lib/user_prefs.py).
+
+### Separate stable identity from current permission to enqueue
+
+| Identity | Selected meaning and change rule |
+| --- | --- |
+| Observation ID / revision | Already-selected logical UTC4H slot identity and integer1. Equal witnesses retain both; a relevant closed conflict withholds rather than minting revision2. |
+| Evaluation vintage | Exact feed and ordered, contiguous observation-ID/revision window actually evaluated. Excludes eligibility generation, receipt order, manifest digest, readback clocks, publication time and evaluation digest. |
+| Eligibility generation | Monotonically advancing source-owner fence for a bounded admitted source snapshot. Advances on invalidation and subsequent accepted publication. It is not a delivery identity. |
+| Saved-rule revision / condition version | Existing owned-account compare-and-set revision is the user-intent fence. Every accepted edit, arm, pause or re-arm that changes intent advances it; it participates in the existing condition-version hash. |
+| Evaluation digest | Evidence of one evaluation and its actual provenance/clocks. It may differ across equivalent rereads and must not replace stable vintage. |
+
+Keep Terminal's existing `mint_fire_event_id(alert_id, condition_version, vintage)` triple. An equal source refresh does not create a new event just because evidence or eligibility generation changed. Explicit re-arm creates new user intent through a new saved-rule revision.
+
+#### Exact selected vintage encoding
+
+After qualification, serialize this three-element array as compact ASCII JSON, no spaces/BOM/newline, literal unescaped slash, with numeric positive non-boolean integer revisions:
+
+`["forex-price-close-window/v1", exactFeed, [[observationId, revision], ...]]`
+
+The array includes exactly the observations used by the predicate, in ascending contiguous slot order; no duplicate IDs/ends, omitted interior slot, extra observation or incidental sort of receipts. The source owner verifies each identity and its relationship to the admitted manifest. Vintage is `forex-4h/v1:sha256:` followed by lowercase SHA-256 of those bytes. The fixed domain string and feed literal are exact, without trimming or aliases.
+
+Consuming the two existing ID examples from the batch contract gives this **238-byte** offline preimage:
+
+```json
+["forex-price-close-window/v1","tiingo.fx.USDJPY.reported-close.utc4h.local/v1",[["sha256:11bd014973059403cf8a8d8b6fa8b617ce1b9270979431398d5f1190de313e57",1],["sha256:52df079d29892cec2ca624d44bf32ae4bfd5dd994ba8fc6adf26b5451887433e",1]]]
+```
+
+Selected example vintage: `forex-4h/v1:sha256:efc8b496369b6aa9faa5a13637df9af548ddf4bbd8e57676247eb8cb576cb155`. This calculation is a documentation conformance vector, not new acquired or admitted data. Terminal's owner must accept the encoding before installation; the current runner does not implement it.
+
+### Selected source publication boundary
+
+Select one conservative eligibility fence for the exact USDJPY/feed/4H/calendar/quote-basis scope, controlled by the incumbent source owner and projected into the same transactional store as the Terminal enqueue. Its logical fields are scope, adopted policy, generation, withheld/eligible state, immutable durable manifest reference/digest, authoritative ordered observation descriptors and the applicable expiry/invalidation evidence. The actual relation/RPC/grant mapping remains for coordinated owner acceptance.
+
+This is the source owner's publication into the existing effect boundary, not a second source authority, registry, evaluator or lifecycle. An application-supplied boolean, filename, digest or expiry cannot establish eligibility.
+
+1. **Invalidate first:** before an owner-controlled mutation becomes visible as a possible replacement for the admitted snapshot, lock the scope fence, advance its generation and commit withheld. Retain that token for the candidate publication.
+2. **Prepare while withheld:** build the complete pinned local census and immutable qualification manifest; make its content-addressed bytes durable before publishing eligibility.
+3. **Serialize the scope:** a relevant arrival during preparation must enter the pinned census or invalidate its token. No later publisher may restore eligibility while an earlier relevant mutation remains unresolved.
+4. **Publish by compare-and-set:** lock the fence, require the exact current invalidation token and adopted policy with no unresolved mutation, then advance the generation and bind the eligible manifest and authoritative expiry.
+5. **Reject stale publishers:** an obsolete clean scan cannot overwrite a later invalidation. A crash after invalidation leaves withheld; an unreferenced durable manifest has no admission authority. Reconcile uncertain acknowledgements against the original publication rather than minting another generation gratuitously.
+
+**Selected promise: a bounded, owner-qualified local publication.** Once invalidation commits, an enqueue checking the same fence cannot commit against the old generation. Immutable bytes do not prove global vendor completeness. An unfenced writer adding relevant admitted inventory defeats this protocol; a later-discovered external conflict cannot retroactively prevent an earlier event. All relevant local admission paths must therefore be controlled by the incumbent owner before enabling the protocol. A file scan followed by SQL is not an atomic archive/SQL transaction.
+
+Equal rereads keep observation identity, vintage and the adopted fixed expiry. A fresh readback or generation does not renew the observation's lifetime. Enqueue qualification alone does not revoke a previously committed event after a later invalidation; stronger pre-send invalidation semantics require the existing delivery owner's explicit contract and qualification.
+
+### Selected atomic enqueue and account lifecycle
+
+The existing Macro evaluator computes the predicate on the immutable admitted snapshot outside the transaction. Its typed proposal binds owner, alert ID, expected saved-rule revision/condition version, source scope/generation/manifest, the ordered window, vintage, result and evidence digest. SQL does not implement a second price predicate.
+
+The proposed Forex-specific Terminal boundary must:
+
+1. Use one coordinated lock order: any required incumbent owner advisory lock, then source fence, then alert row. No participating path may acquire the source fence after holding the alert row. Use supported fresh-read transaction semantics; preserve the existing refusal of incompatible retained snapshots.
+2. Revalidate the actual stored owner, alert identity, exact intent revision/condition version, active state, rule/feed binding, eligible source generation/manifest and window membership.
+3. Sample database wall time **after blocking locks** (`clock_timestamp()`, not transaction-start time). Require rule expiry and the current selected observation's adopted source expiry to be strictly future, plus any earlier authoritative eligibility deadline. Equality is expired.
+4. Insert the incumbent outbox event and automatically disarm the matching alert in the **same transaction**. No Forex fallback may disarm without the accepted outbox event. Restrict caller privileges and all admitted Forex write routes so direct inserts cannot bypass this boundary.
+5. Return typed accepted, replayed, withheld or revision/owner-conflict outcomes. Concurrent attempts converge on the existing unique event. Lost acknowledgement reconciles the exact original event and receipt; it does not mint a new identity or overwrite first evidence. A readback of a committed event is historical outcome recovery, not a new freshness assertion or permission to disarm a later revision.
+
+Use the existing rule revision as the intent fence. Editing saves a new inactive revision. Explicit arm, pause and re-arm advance revision when they change intent; pause must remain possible after expiry. A stale pre-pause evaluation cannot survive pause/re-arm because its expected revision differs. Repeated requests reconcile an already accepted result; they do not blindly replay a revision-changing mutation. Automatic disarm is a system result, not a new user rule revision. Source invalidation changes source eligibility, not the user's stored rule revision.
+
+**Selected re-arm behavior:** a fresh evaluation under the new revision may fire against the same still-valid observation window if the condition remains met. The UI must explain this behavior. A wait-for-next-close policy would require an explicitly accepted observation floor, not an incidental implementation choice.
+
+Keep canonical Forex condition JSON strict. Put fire evidence in the existing outbox and expose a separately typed authenticated status projection. An event may label a condition fired only when owner, alert and revision match; an old event cannot label an edited rule. Do not inject generic `condition.triggered` into the strict Forex rule. Coordinate SQL, Terminal validator/API and direct Macro RPC client/UI together. The accepted 0038 remains applied once; changes require a forward migration, never reapplication.
+
+### Shared delivery dependency and remaining acceptance
+
+The inspected preference allowlist contains only `holdings_material_change`, `thesis_window` and `fif_saved_issuer`. Select a proposed explicit `forex_price_close` category, default off for existing users, with meaningful user opt-in. Do not relabel Forex events under another category. Category/payload changes belong with the current F08/preferences owner and overlapping #9774/#10062 work.
+
+The proposed payload carries the accepted event identity, exact source/observation and rule evidence, and `not_after` no later than the minimum applicable rule/source/eligibility deadline. #10062 proposes expiry suppression; its existence does not prove that guard is merged, deployed or accepted for Forex. Whether a post-enqueue source invalidation must additionally suppress an unsent event is an explicit delivery-owner decision, not an implied guarantee.
+
+The shared delivery acceptance remains unrecovered: source-level default-off declarations do not prove today's host flag. Existing privacy/risk, consented QA recipient, entitlement, category/timezone, native event, installed runtime/SMTP/Supabase and mailbox/duplicate canary requirements remain. `ALERT_DRAIN_ENABLE=1` is operator/human-only under the existing shared delivery contract. No send, flag change, preference mutation or cross-owner message occurred here.
+
+Before coordinated closed-default implementation, incumbent source/Terminal owners must accept the bounded publication surface and writer inventory, actual SQL mapping and privileges, evaluator packaging/handoff, vintage/lifecycle/status contract, and shared F08 category/payload boundary. These are ordinary technical decisions within the mission; no new Chairman naming round is inferred. Qualified source adoption, independent review, real activation/consent and end-to-end proof remain separate gates.
+
+### Required qualification for the selected protocol
+
+Extend the existing acceptance cases with real PostgreSQL and original source-owner paths: invalidation racing enqueue; stale publisher after newer invalidation; relevant receipt arrival during census; equal reread preserving identity/vintage/expiry; both expiry boundaries after lock waits; edit/delete/owner-change and pause/re-arm ABA; simultaneous attempts/rollback/lost acknowledgement; strict SQL/API/direct-client/status parity; wrong source/window/revision and unadopted-candidate rejection; and default-off behavior plus installed-source/account/delivery proof. Fixtures alone cannot establish the transactional or production boundaries.
+
+The original policy review remains terminal429/no verdict/retry=false. The materially new a9 review `forex-r26-a9bf-current-policy-review-20261024-sol-001` stopped before launch at `TRANSPORT_READBACK_REFUSED` / `directory_owner_or_mode`; it has no verdict and is not replayed or replaced by this design work. The October22 observation expired at20:00 UTC and cannot qualify current activation.
 
 ---
 

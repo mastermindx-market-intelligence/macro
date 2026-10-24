@@ -1,3 +1,7 @@
+## Follow-on enqueue design — 24 October 2026
+
+The selected full delivery-vintage encoding, source eligibility-generation fence, invalidate-first publication, atomic enqueue and account lifecycle proposal is now specified in [OWNER_INTEGRATION.md](OWNER_INTEGRATION.md#selected-source-fence-and-lifecycle-protocol--24-october-2026). The observation identity and revision decisions below are unchanged. That follow-on owner design remains uninstalled and subject to incumbent acceptance and qualified review; it does not adopt this candidate policy or renew the expired October22 evidence.
+
 # Owner-selected observation identity for qualified review — 23 October 2026
 
 The assigned recovery/source owner has completed the remaining name, byte encoding and local-revision design decisions below. They are submitted for the existing qualified source review. **The /2 candidate policy remains unadopted:** no feed is registered, observation admitted, account activated, or evaluator/queue added. The original Forex policy-review operation remains unqualified; this owner decision and native advisory analysis do not replace its verdict.
