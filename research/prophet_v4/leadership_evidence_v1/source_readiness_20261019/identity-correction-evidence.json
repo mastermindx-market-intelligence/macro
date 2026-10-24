@@ -1,0 +1,71 @@
+{
+  "candidates": [
+    {
+      "documented_event_date": "2025-05-09",
+      "evidence": "Barrick Mining began NYSE B trading on 2025-05-09; new CUSIP06849F108. Prior NYSE symbol GOLD.",
+      "native_disposition": "DEFERRED_IDENTITY_KEY: deliberate owner refusal, not plain missing alias.",
+      "remaining": "Respect accepted B/GOLD reuse refusal. The original identity owner must qualify issuer-scoped continuation and the Barnes/Barrick/Gold.com reuse breaks; no global GOLD->B pair or open historical B row.",
+      "sources": [
+        "https://www.barrick.com/English/news/news-details/2025/barrick-Is-now-B-on-the-NYSE/default.aspx",
+        "https://www.barrick.com/English/news/news-details/2025/barrick-announces-name-change-to-barrick-mining-corporation-and-election-of-directors/default.aspx",
+        "https://ir.gold.com/news-events/press-releases/detail/211/a-mark-precious-metals-to-become-gold-com-and-transfer-to-the-new-york-stock-exchange"
+      ],
+      "symbol": "B"
+    },
+    {
+      "current_primary_evidence": "Issuer and SEC 2026-10-06 release confirm Class B begins NYSE SKYD trading after WBD acquisition. The2025 successor accounting evidence is historical, not a claim PSKY remains the current exchange ticker.",
+      "documented_event_date": "2025-08-07",
+      "evidence": "Paramount/Skydance merger completed 2025-08-07; Nasdaq Class B began PSKY trading. Issuer Q1 2026 filing separates predecessor/successor accounting and says results/cash flows are not comparable.",
+      "native_disposition": "EXPIRED_MEMBERSHIP_ALIAS_WITH_RETAINED_STORE_KEY; #8828 already installed dated membership/yahoo PSKY->SKYD on2026-10-06, stable native security.",
+      "remaining": "Reconcile the basket source that still supplies PSKY after the accepted membership cut. Preserve original PSKY store/yahoo_fetch key and #9571/#4622 storage-migration boundary; do not re-merge #8828 or allocate a second security.",
+      "sources": [
+        "https://ir.paramount.com/news-releases/news-release-details/skydance-media-and-paramount-global-complete-merger-creating",
+        "https://ir.paramount.com/node/72956/html",
+        "https://ir.skydance.com/news-releases/news-release-details/paramount-completes-acquisition-warner-bros-discovery-creating",
+        "https://www.sec.gov/Archives/edgar/data/2041610/000110465926113913/tm2626659d7_ex99-1.htm"
+      ],
+      "symbol": "PSKY"
+    },
+    {
+      "evidence": "Roche identifies OTCQX RHHBY, ADR CUSIP771195104, eight ADRs per ROP participation certificate. Its FAQ records the March2026 participation-certificate exchange.",
+      "remaining": "Qualify ADR versus underlying security, currency/ratio and effective-dated corporate-action history through existing identity and price-basis owners.",
+      "sources": [
+        "https://www.roche.com/investors/us-investors",
+        "https://www.roche.com/investors/faq_investors"
+      ],
+      "symbol": "RHHBY"
+    },
+    {
+      "evidence": "Implats identifies sponsored Level I OTCQX ADR IMPUY, CUSIP452553308, ISINUS4525533083, ordinary:ADR1:1.",
+      "remaining": "Confirm admitted canonical foreign issuer/security and alias interval; source identity evidence does not itself grant provider rights or trading admission.",
+      "sources": [
+        "https://www.implats.co.za/adr-holders.php"
+      ],
+      "symbol": "IMPUY"
+    },
+    {
+      "evidence": "Valterra shareholder page names ANGPY and six ADRs per ordinary share, but also mixes sponsored/unsponsored language and legacy AngloPlat/AMS labels.",
+      "remaining": "PARTIAL_EVIDENCE: obtain a dated depositary/corporate-action confirmation before assigning active instrument identifiers or sponsorship. Preserve uncertainty.",
+      "sources": [
+        "https://www.valterraplatinum.com/investor-centre/shareholder-information/"
+      ],
+      "symbol": "ANGPY"
+    }
+  ],
+  "canonical_aliases_changed": false,
+  "historical_replay_admitted": false,
+  "native_snapshot": "3091c8895028db57c06809593079896f85e3efc1",
+  "native_unresolved_symbols": [
+    "ANGPY",
+    "B",
+    "IMPUY",
+    "PSKY",
+    "RHHBY"
+  ],
+  "owner_reconciliation": "namespace-reconciliation.json; five unknowns have different causes, not five absent rows",
+  "scope": "First-party evidence for existing Data OS owner; no native IDs allocated, aliases installed, prices fetched or historical stitching authorized.",
+  "source_rights_granted": false,
+  "sources_checked_on": "2026-10-20 UTC (2026-10-19 America/New_York)",
+  "status": "SOURCE_RECONCILIATION_CANDIDATES_NOT_ADOPTED",
+  "trade_authority": false
+}

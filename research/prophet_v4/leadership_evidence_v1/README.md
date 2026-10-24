@@ -94,3 +94,40 @@ Bind one dated source roster plus existing identity mapping and group observatio
 Keep eligible population, clocks, entry policy and evaluation endpoint identical. The group-only comparator is mandatory so sector timing cannot be misreported as stock-selection skill.
 
 Macro regime remains a permission / interaction axis, not an additive constant family. Entry geometry remains a separate B12 decision.
+
+
+## Source-key integrity repair — 19 October 2026
+
+The two existing peer functions now refuse a non-string, empty, or surrounding-
+whitespace ticker key before building a roster. The focal key is also exact. They
+never trim, case-fold, or string-coerce source identity. Clean market-native symbols,
+including dotted/dashed share classes and regional suffixes, retain their meanings.
+Source owners must resolve aliases before calling this descriptive measurement.
+
+Before the repair, a roster containing `B` and ` B ` could count B twice and retrieve
+B's positive value for both entries, hiding the second entry's missing observation.
+Integer `1` and string `"1"` could also collapse into one peer. Continuity inherited
+the same lossy transformation before comparing its two roster key sets. These are
+reproduced synthetic input failures, not observed production market incidents.
+
+All valid-input formulas, fixed denominators, missing-value bounds, focal-issuer
+exclusion, state vocabulary and five false authority flags are unchanged. This
+repair does not create an issuer resolver, change listing versus issuer weighting,
+wire a held compiler, or admit a predictive study.
+
+Executed verification on base `5913c2303416fa21d4520a27f15323135a37a02a`:
+
+- Existing peer module before repair: 61 passed, 2 skipped.
+- New red-first cases on old source: 29 failed, 6 passed; failures were asserted
+  refusal mismatches, not collection errors.
+- Corrected complete peer module: 96 passed, 2 skipped.
+- Group/region/pulse/Smart Money/catalyst consumers together: 279 passed, 8 skipped.
+- 200 seeded valid synthetic scenarios: exact equality of both complete observation
+  and continuity outputs before/after (400 comparisons). No financial outcomes read.
+
+The skips require absent equity/basket caches, generated validation metadata or live
+source inputs in the sparse checkout; they are not counted as passes. Existing code
+CI owner `conviction-profile` already executes this module and names its dependency;
+the separate data-gated owner remains unchanged. Hosted checks, independent review
+and any source release remain separate. Exact receipts are in
+`roster_integrity_20261019/verification.json`.
