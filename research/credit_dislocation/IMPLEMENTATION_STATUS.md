@@ -1,3 +1,17 @@
+## Main94d native qualification after nightly data changes — 23 October 2026 (CDT)
+
+The nightly main94d snapshot changed 218 of 556 Git-bound inputs. The new finite source image contains 562 actual retained inputs (58,493,472 bytes): 537 exact market-data files, 19 assets, and six unchanged October15 holdings/sample inputs. All 56 producer/template pins and 29 supporting assets remain unchanged. Exact needed Git objects were fetched together while the original image preparation continued; no provider acquisition occurred.
+
+The existing guarded native runner completed once at 2026-10-24T04:32:54Z: all 14 real-path checks passed, with zero blocked effects and unchanged original/private inputs and pinned source. Its 728,415-byte page, SHA256 1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8, resolves the sole main94d page conflict. Every staged source/input/asset binding matches that generation.
+
+The committed page contract passed. The fingerprint contract initially found the CSS absent from this sparse working tree; materializing the exact already-committed a29822ca stylesheet made that one check pass. The index, CSS bytes, sparse profile and test were unchanged.
+
+CDI remains stale at source date2026-10-15, six sessions old: 18 issuers, 311 one-date instrument histories, zero 5/21-session comparisons. Same-date pricing validation passes with 2.4bp LQD median error. The HYG sample remains absent. Credit currentness is still blind for the September10 date-only producer, and authority remains withheld. Updated market inputs do not establish fresh holdings, vendor first availability, visual acceptance or production currentness.
+
+Evidence: evidence/page_adoption_main94d_20261024.json. The earlier main41e and main-dfb qualifications remain separately retained. Subsequent main advances require a material comparison before using this generation. Final-head contract/publication and real visual/independent-review gates are recorded in the canonical PR9590 checkpoint.
+
+---
+
 ## Main-dfb import-closure follow-up — 23 October 2026 (CDT)
 
 The normal merge c9286df8 passed all four focused source checks. Its official contract preserved all 909 baseline worktree registrations and existing directories, but identified three newly reached W4 import paths. This follow-up declares exactly engine/k3e_eval1_forward.py, engine/pick_forward_dist.py and engine/seasonality/multiplicity.py; W4 now has 1,014 paths. All other manifest semantics and packing/census ceilings are unchanged.
