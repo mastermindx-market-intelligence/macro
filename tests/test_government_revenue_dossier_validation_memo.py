@@ -329,3 +329,62 @@ def test_unique_cheap_primitives_keep_native_errors_without_memo_churn(payload, 
     assert not primitive_key_calls
     assert caches[-1].evictions == 0
     assert len(caches[-1]) < 4096
+
+
+def test_cheap_text_refs_do_not_displace_reusable_date_memo(monkeypatch):
+    import collections
+
+    caches, text_key_calls = [], []
+    original_lru = collections.OrderedDict
+    original_key = dossiers._dossier_ref_memo_key
+
+    class ObservedLRU(original_lru):
+        def __init__(self):
+            super().__init__()
+            caches.append(self)
+
+    def key(ref, value):
+        if ref == "#/$defs/nullableText":
+            text_key_calls.append(value)
+        return original_key(ref, value)
+
+    monkeypatch.setattr(collections, "OrderedDict", ObservedLRU)
+    monkeypatch.setattr(dossiers, "_dossier_ref_memo_key", key)
+    validator = dossiers._dossier_validation_validator()
+    cls = type(validator)
+    original_descend = cls.descend
+    date_schema = validator.schema["$defs"]["nullableDate"]
+    date_descents = 0
+
+    def descend(self, instance, schema, *args, **kwargs):
+        nonlocal date_descents
+        if schema is date_schema:
+            date_descents += 1
+        yield from original_descend(self, instance, schema, *args, **kwargs)
+
+    monkeypatch.setattr(cls, "descend", descend)
+    cached = validator.VALIDATORS["$ref"]
+    date_ref = "#/$defs/nullableDate"
+    text_ref = "#/$defs/nullableText"
+    assert not list(cached(validator, date_ref, "2026-01-02", {"$ref": date_ref}))
+    # Exercise the actual fixed bound. Cheap successes must not evict the date
+    # and force its oneOf/format validation to run a second time.
+    for index in range(4096):
+        assert not list(cached(validator, text_ref, f"unique text {index}", {"$ref": text_ref}))
+    assert not list(cached(validator, date_ref, "2026-01-02", {"$ref": date_ref}))
+    assert date_descents == 1, "cheap text admissions displaced the reusable date"
+    assert not text_key_calls
+    assert all(entry[0] != text_ref for entry in caches[-1])
+    assert len(caches[-1]) == 1
+
+
+@pytest.mark.parametrize("invalid", ["x" * 4001, True, 17, [], {}])
+def test_cheap_text_ref_errors_after_success_match_native(payload, invalid):
+    value = deepcopy(payload)
+    value["awards"][0]["description"] = "preceding valid text"
+    value["awards"][1]["description"] = invalid
+    expected = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert expected
+    assert ["awards", 1, "description"] in [list(e.absolute_path) for e in expected]
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in expected]
