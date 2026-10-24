@@ -35,6 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: A current-main updater conflict is resolved by preserving both independent restart additions.
+  command: Entire updater compared to main74aa plus only response_eval; bash syntax, existing updater suite and positive/negative trigger checks.
+  result: Added incoming options_hub_retention/options_scenario_capture names to the existing API regex. Entire script equals observed main plus only the accepted response_eval trigger.376testsPASS; threepositive/twonegative checksPASS; no service change/base integration. Original8d1 final12557250227 consumed135jobs391semanticPASS/1knownclosureFAIL/14blocked; exact replayUNKNOWN remains. Fresh source/capacity/admission/CI still required.
 - claim: The two-input repair clears the canonical full curated closure on the exact original hosted source composition.
   command: Original a69e97ea tested source plus only bbbca two-path diff; canonical tracked-tree curated_exclusive_closure_findings.
   result: Zero findings across all355 job definitions; candidatebbbca restored clean after qualification. Originalpack1 artifact12556058771 digest/canonical consumed; closure assertion failed, one semantic step passed and14blocked; exact-base replay timeout and descendantUNKNOWN remain, no replay/reclassification. Source repair accepted locally; hosted terminal and new admitted revision remain required.
