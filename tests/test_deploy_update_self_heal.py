@@ -488,7 +488,7 @@ def test_movers_pre_mirror_pair_admission_preserves_good_and_unrelated_updates(t
 def test_movers_pre_mirror_guard_precedes_every_site_rsync():
     start = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
     end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", start)
-    rsync = SCRIPT.index('rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"')
+    rsync = SCRIPT.index('rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"')
     assert start < end < rsync < SCRIPT.index(CADDY_DIFF_LINE)
 
 
@@ -1661,3 +1661,113 @@ def test_dotted_import_still_reaches_the_package_init():
         "engine", "engine.marketing",
     }
     assert _ancestor_packages("lib") == set()
+
+
+@pytest.mark.parametrize(
+    ("helper_status", "prior_status", "expected_status"),
+    [(0, 0, 0), (37, 0, 37), (37, 19, 19)],
+)
+def test_ohlc_delivery_refusal_is_deferred_without_erasing_other_failures(
+    tmp_path, helper_status, prior_status, expected_status
+):
+    """Execute the real shell wrapper; a later success cannot erase a refusal."""
+    app = tmp_path / "app"
+    scripts = app / "scripts"
+    scripts.mkdir(parents=True)
+    helper = scripts / "publish_ohlc.py"
+    helper.write_text(
+        "import pathlib, sys\n"
+        "assert sys.argv[1:] == ['reconcile', '--lock-fd', '9']\n"
+        "root = pathlib.Path(__file__).parent\n"
+        "calls = root / 'calls'\n"
+        "number = int(calls.read_text()) if calls.exists() else 0\n"
+        "calls.write_text(str(number + 1))\n"
+        f"sys.exit({helper_status} if number == 0 else 0)\n"
+    )
+    wrapper = SCRIPT.split("# BEGIN OHLC_DELIVERY_RECONCILE\n", 1)[1].split(
+        "# END OHLC_DELIVERY_RECONCILE", 1
+    )[0]
+    final_status = SCRIPT.split("# BEGIN OHLC_DELIVERY_EXIT_STATUS\n", 1)[1].split(
+        "# END OHLC_DELIVERY_EXIT_STATUS", 1
+    )[0]
+    completed = tmp_path / "unrelated-completed"
+    command = (
+        "set -euo pipefail\n"
+        f"APP_DIR={shlex.quote(str(app))}\n"
+        f"DEPLOY_EXIT_STATUS={prior_status}\n"
+        + wrapper
+        + "\nreconcile_ohlc_delivery\n"
+        + f"printf completed > {shlex.quote(str(completed))}\n"
+        + "reconcile_ohlc_delivery\n"
+        + final_status
+        + '\nexit "${DEPLOY_EXIT_STATUS:-0}"\n'
+    )
+    result = subprocess.run(
+        ["bash", "-c", command], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == expected_status, result.stderr
+    assert completed.read_text() == "completed"
+    assert (scripts / "calls").read_text() == "2"
+    if helper_status:
+        assert "OHLC reconciliation refused (status 37)" in result.stderr
+
+
+@pytest.mark.parametrize("held_path", ["managed_link", "foreign_directory", "foreign_link"])
+def test_ohlc_delivery_rsync_preserves_selected_or_refused_paths(tmp_path, held_path):
+    """Run the production rsync command against disposable trees."""
+    import shutil
+
+    if shutil.which("rsync") is None:
+        pytest.skip("rsync is unavailable")
+    app = tmp_path / "app"
+    source = app / "site"
+    served = app / "site.served"
+    source.mkdir(parents=True)
+    served.mkdir()
+    (source / "index.html").write_text("new rendered page")
+    (served / "index.html").write_text("old")
+    (served / "unrelated-stale.txt").write_text("delete me")
+    target = app / "held"
+    target.mkdir()
+    (target / "SPY.json").write_text("retained bytes")
+    if held_path == "foreign_directory":
+        (served / "ohlc").mkdir()
+        (served / "ohlc" / "SPY.json").write_text("retained bytes")
+    elif held_path == "foreign_link":
+        (served / "ohlc").symlink_to("../held", target_is_directory=True)
+    else:
+        generations = app / "ohlc.served"
+        generations.mkdir()
+        (generations / "current").symlink_to("../held", target_is_directory=True)
+        (source / "ohlc").symlink_to("../ohlc.served/current", target_is_directory=True)
+        (served / "ohlc").symlink_to("../ohlc.served/current", target_is_directory=True)
+    rsync_line = next(
+        line.strip() for line in SCRIPT.splitlines()
+        if line.strip().startswith("rsync ")
+        and '"$APP_DIR/site/" "$APP_DIR/site.served/"' in line
+    )
+    result = subprocess.run(
+        ["bash", "-e", "-c", f"APP_DIR={shlex.quote(str(app))}\n{rsync_line}"],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert (served / "index.html").read_text() == "new rendered page"
+    assert not (served / "unrelated-stale.txt").exists()
+    assert (served / "ohlc" / "SPY.json").read_text() == "retained bytes"
+    if held_path == "foreign_link":
+        assert os.readlink(served / "ohlc") == "../held"
+    elif held_path == "managed_link":
+        assert os.readlink(served / "ohlc") == "../ohlc.served/current"
+
+
+def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
+    changed = SCRIPT.index('if [ "$OLD" != "$NEW" ]; then')
+    copy = SCRIPT.index('rsync -a --delete --min-size=1 --exclude=/ohlc ')
+    before_copy = SCRIPT.index("\treconcile_ohlc_delivery\n", changed)
+    noop = SCRIPT.index(
+        "# Reconcile artifact selection even when the repository did not change."
+    )
+    after_copy = SCRIPT.index("\nreconcile_ohlc_delivery\n", noop)
+    assert changed < before_copy < copy < noop < after_copy
+    assert SCRIPT[noop - 4:noop] == "fi\n\n"
+    assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]

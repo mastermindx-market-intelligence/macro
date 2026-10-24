@@ -1858,6 +1858,10 @@ lanes:
       - id: publish_r2
         module: scripts.publish_r2
         note: non-fatal; uploads OHLC + stockdata stores to Cloudflare R2
+      - id: publish_ohlc
+        module: scripts.publish_ohlc
+        args: [publish]
+        note: fail-closed; delivers only the completed main daily US OHLC generation to the existing VPS origin
       - id: audit_r2
         module: scripts.audit_r2
         note: non-fatal; data-plane freshness check
@@ -4749,6 +4753,17 @@ modules:
       - site/feeds/
     impure: false
     needs_secrets: false
+    event_driven: false
+
+  - module: scripts.publish_ohlc
+    reads:
+      - site/ohlc/
+      - site/_tmp/ohlc-complete.json
+      - app/deploy/ohlc_origin_known_hosts
+    writes:
+      - Existing VPS OHLC generation store (no git writes)
+    impure: true
+    needs_secrets: true
     event_driven: false
 
   - module: scripts.publish_r2

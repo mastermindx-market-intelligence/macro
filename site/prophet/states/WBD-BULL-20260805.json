@@ -8,7 +8,7 @@
   "raw_confidence": 81.6,
   "delta_vs_base": 21.5,
   "recommended_action": null,
-  "human_state": "Advancing to T2",
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
     "progress": 68.9,
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-06; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.080000762939452,
@@ -54,5 +54,7 @@
     "lag": 13,
     "lag_basis": "business_days",
     "max_lag": 3
-  }
+  },
+  "closed": true,
+  "outcome": "T1_HIT"
 }

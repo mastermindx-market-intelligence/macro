@@ -1,12 +1,16 @@
 {
   "as_of": "2026-10-23",
   "coverage": {
-    "end": "2026-10-22",
-    "note": "daily rollup covers 10 session-date(s) from 2026-10-12 to 2026-10-22; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-10-12"
+    "end": "2026-10-23",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-13 to 2026-10-23; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-13"
   },
   "schema": "chronicle.rollup.daily/v1",
   "sessions": [
+    {
+      "date": "2026-10-23",
+      "events": []
+    },
     {
       "date": "2026-10-22",
       "events": []
@@ -163,80 +167,75 @@
           "tickers": [],
           "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
           "weight_hint": 3
-        }
-      ]
-    },
-    {
-      "date": "2026-10-12",
-      "events": [
-        {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-92ee430321ca",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-arbvfsvswas-96701d",
-          "tickers": [],
-          "title": "BlackRock: Weekly investment commentary en us 20261012 upgrading us treasuries to lock in income",
-          "weight_hint": 3
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-db2194a832f8",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-c56bbf4d46e7",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-cucjl2nrsal-fbd798",
+          "source_ref": "marketdesk-oaxnrqnwjao-dd397c",
           "tickers": [],
-          "title": "UBS: Equities Tactical Top Picks",
+          "title": "Goldman Sachs: Orsted A S (ORSTED.CO) Downgrading to Neutral",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-de5f5de087ff",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-c63413667f54",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-ldkix3lyxvh-f204cd",
+          "source_ref": "marketdesk-pxoz8rr2riq-42043b",
           "tickers": [],
-          "title": "Ashmore: Theme Commentary CORP DEBT 2026 09 30",
+          "title": "Goldman Sachs: Entain MGM BetMGM 3Q26 Reiterating FY guidance after solid 3Q",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-f0a1fbe30b61",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-d8acfde3be52",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-9f7b08hhppb-f1ab7a",
+          "source_ref": "marketdesk-yzhyfari9wt-013b93",
           "tickers": [],
-          "title": "Goldman Sachs: Americas Business & Information Services 3Q debt issuance moderates, but key growth drivers remain intact",
+          "title": "Goldman Sachs: Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-f1c57134564e",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-e1a79f61cc59",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-vwu0m6jvedw-616840",
+          "source_ref": "marketdesk-vfx9yqvup2d-c6c621",
           "tickers": [],
-          "title": "Ashmore: weekly 12oct26",
+          "title": "Bank Earnings Previews: Americas Capital Markets Round tripped",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-f42adefbadb2",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-eb4cdb444aa9",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-mub8by2pkvk-0c5c41",
+          "source_ref": "marketdesk-qgjrwbf6wj6-d7588d",
           "tickers": [],
-          "title": "American Century: Institutional investors insights us policy watch",
+          "title": "Deutsche Bank: Microsoft Oct 13",
           "weight_hint": 2
         },
         {
-          "date": "2026-10-12",
-          "id": "cev-research_vault-fb737d1dabd4",
+          "date": "2026-10-13",
+          "id": "cev-research_vault-ec4758260739",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-4sbw9xdvesv-09647d",
+          "source_ref": "marketdesk-na3aw28nwyx-8f1249",
           "tickers": [],
-          "title": "Goldman Sachs: Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
+          "title": "Goldman Sachs: GCC Energy Mapping export strength into year end earnings delivery",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-fc0d9ec4297d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-kgp1ynl3erk-e4be8a",
+          "tickers": [],
+          "title": "Deutsche Bank: AI boom or doom: what will superintelligence feel like and when will we get there?",
           "weight_hint": 2
         }
       ]

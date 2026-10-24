@@ -4,27 +4,27 @@
   "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 28.3,
-  "raw_confidence": 28.2,
-  "delta_vs_base": -31.7,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "management_confidence": 27.8,
+  "raw_confidence": 27.3,
+  "delta_vs_base": -32.2,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
-    "validity": 37.3,
+    "validity": 35.4,
     "progress": 0.0,
     "pace": 2.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.482,
+    "dist_to_stop_r": 0.464,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 146.7,
-    "p1": -0.3455,
-    "p2": -0.1727,
+    "p1": -0.3577,
+    "p2": -0.1788,
     "p3": null,
-    "move_r": -0.518,
+    "move_r": -0.536,
     "mfe_r": 0.236,
     "mae_r": -0.573
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.5200003814697265,
@@ -46,5 +46,7 @@
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 66,
-  "tau": 1.4667
+  "tau": 1.4667,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

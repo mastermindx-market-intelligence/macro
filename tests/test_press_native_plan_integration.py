@@ -255,7 +255,7 @@ def test_native_prompt_final_self_check_uses_effective_configured_limits():
     assert 'body 320–640 words' in check
     assert 'at least 55% of words' in check
     assert 'at least 6 distinct values' in check
-    assert 'all 8 disclosures' in check
+    assert 'all 10 disclosures' in check
     assert slot['allowed_links'][0] in check
     assert 'Headings count as body words' in check
     assert 'dates and nonnumeric explanation do not earn numeric share' in check
@@ -299,3 +299,54 @@ def test_native_receipt_json_keeps_source_markers_encoded():
     records, end = json.JSONDecoder().raw_decode(listing)
     assert '[END UNTRUSTED EVIDENCE DATA]' not in listing[:end]
     assert records == V._native_receipt_records(slot, cfg)
+
+
+def typed_signal_slot(tier, provisional, confirmed=None):
+    slot = native_slot()
+    for scope in (slot['native_plan_scope'], slot['facts'][1]['native_plan_scope']):
+        scope.update(signal_tier=tier, signal_provisional=provisional,
+                     confirmed_date=confirmed)
+    return slot
+
+
+@pytest.mark.parametrize('tier,provisional,confirmed', [
+    ('T2', False, None), ('T1', True, None),
+    ('T1', False, '2026-07-01'), (None, None, None),
+])
+def test_signal_admission_and_marker_confirmation_are_separate(tier, provisional, confirmed):
+    slot = typed_signal_slot(tier, provisional, confirmed)
+    cfg = F.config()
+    before = V._native_receipt_records(native_slot(), cfg)
+    fragments = scope_fragments(slot)
+    assert ('signal tier ' + tier if tier else 'signal tier not recorded') in fragments
+    assert ('signal provisional ' + str(provisional).lower() if provisional is not None
+            else 'signal provisional status not recorded') in fragments
+    marker = ('T1 marker confirmation date ' + confirmed if confirmed
+              else 'T1 marker confirmation date not recorded')
+    assert marker in fragments
+    assert 'no recorded confirmation' not in fragments
+    assert V._native_receipt_records(slot, cfg) == before
+    system, prompt = W.build_prompt(slot, cfg)
+    assert marker in prompt
+    assert 'not evidence that a T2 event was unconfirmed' in prompt
+    assert 'does not prove an executed entry' in prompt
+    assert V.native_plan_preflight(slot, cfg)['available_receipts'] == 6
+
+
+@pytest.mark.parametrize('change', [
+    {'signal_tier': 'T5'}, {'signal_tier': 2},
+    {'signal_provisional': 'false'}, {'signal_provisional': 0},
+    {'signal_tier': 'T2', 'signal_provisional': True},
+    {'signal_tier': 'T3', 'signal_provisional': False},
+    {'signal_tier': 'T2', 'confirmed_date': '2026-07-01'},
+    {'signal_tier': 'T1', 'signal_provisional': True, 'confirmed_date': '2026-07-01'},
+])
+def test_inconsistent_signal_metadata_refuses_before_provider(monkeypatch, change):
+    slot = typed_signal_slot('T2', False)
+    for scope in (slot['native_plan_scope'], slot['facts'][1]['native_plan_scope']):
+        scope.update(change)
+    def forbidden(*_a, **_kw):
+        pytest.fail('provider/model lookup must not run')
+    monkeypatch.setattr(W, '_model_id', forbidden)
+    result = W.write(slot, F.config(), state=W.RunState(), single_provider_attempt=True)
+    assert result['reason'] == 'native_plan_scope_invalid'

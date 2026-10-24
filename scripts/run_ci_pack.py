@@ -599,10 +599,14 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     return capture_commands()
 
 
-# Native cold acquisition retains its original TOTAL grant even when a
-# broader owner manifest later increases that job's declared timeout.
+# Native activation is closed to these existing owners and their original
+# TOTAL grants. Each setup still shares that total and its finite setup bound.
 NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 
 
 def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
@@ -639,8 +643,6 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         **incumbent,
         "acquisition": "native_parallel",
         "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
-        "logical_job_timeout_minutes": NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
-        "activation_job_id": NATIVE_BROWSER_LOGICAL_JOB_ID,
         "native_source_sha256": {
             name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
         },
@@ -655,7 +657,7 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
 def _run_native_browser_setup(
     setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
 ) -> CommandObservation:
-    """Ontology-only capture/acquisition consumes one original logical deadline."""
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
     commands = (*setup["diagnostics"], setup["command"])
     setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
     for command_index, command in enumerate(commands):
@@ -695,8 +697,20 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
-    if any(spec.get("acquisition") == "native_parallel" for spec in contract) and job.job_id != NATIVE_BROWSER_LOGICAL_JOB_ID:
-        raise ManifestError("native browser acquisition is restricted to ontology-explorer")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
     return contract
 
 
@@ -3690,8 +3704,10 @@ def _run_job(
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
-    if any(spec.get("acquisition") == "native_parallel" for spec in setups.values()):
-        timeout_minutes = min(timeout_minutes, NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES)
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
         timeout_seconds = int(timeout_minutes) * 60
         job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []

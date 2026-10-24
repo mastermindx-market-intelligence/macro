@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 271,
+    "opportunity_queue_depth": 287,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,30 +1690,30 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 271,
-      "scored": 388,
+      "open": 287,
+      "scored": 404,
       "newest": [
         {
-          "id": "radar-confluence-AMCR-2026-10-22",
+          "id": "radar-confluence-AMCR-2026-10-23",
           "problem_or_desire": "$AMCR: confluence combo Weekly 21/100 golden cross + 7/35 golden cross + reclaims 100-day line + cloud breakout firing, test WR 83%",
           "expected_value": 0.55,
-          "score": 0.47943,
+          "score": 0.504641,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-confluence-APH-2026-10-22",
+          "id": "radar-confluence-AMD-2026-10-23",
+          "problem_or_desire": "$AMD: confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+          "expected_value": 0.55,
+          "score": 0.504641,
+          "half_life_class": "weekly_signal",
+          "status": "open"
+        },
+        {
+          "id": "radar-confluence-APH-2026-10-23",
           "problem_or_desire": "$APH: confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
           "expected_value": 0.55,
-          "score": 0.47943,
-          "half_life_class": "weekly_signal",
-          "status": "open"
-        },
-        {
-          "id": "radar-confluence-CAT-2026-10-22",
-          "problem_or_desire": "$CAT: confluence combo Weekly short-term uptrend + weekly RSI-14 washed out + lower-band reclaim firing, test WR 67%",
-          "expected_value": 0.55,
-          "score": 0.47943,
+          "score": 0.504641,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 2036,
-      "receipts": 2036,
+      "total": 2049,
+      "receipts": 2049,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-22-3119a36d59",
+          "id": "pub-ob-2026-10-22-6577530d69",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-23T01:51:12Z"
+          "published_at": "2026-10-23T19:54:44Z"
         },
         {
-          "id": "pub-ob-2026-10-22-f5a0a6285c",
+          "id": "pub-ob-2026-10-23-faa9e6a344",
           "channel": "x",
-          "account": "founder",
+          "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-10-23T01:51:12Z"
+          "published_at": "2026-10-23T18:29:42Z"
         },
         {
-          "id": "pub-ob-2026-10-22-7eb32473b8",
+          "id": "pub-ob-2026-10-23-5b0df38374",
           "channel": "x",
-          "account": "meagan",
+          "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-10-23T01:51:12Z"
+          "published_at": "2026-10-23T18:24:13Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 20,
-    "signal_posts": 1,
-    "charts": 204,
+    "total_posts": 30,
+    "signal_posts": 5,
+    "charts": 193,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-23"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-23T09:16:58Z",
-  "inputs_hash": "sha256:217a1e36bf9b9f82841489c5e4f1eee875369441135a61690b70265de070ec1b",
+  "produced_at": "2026-10-23T20:51:40Z",
+  "inputs_hash": "sha256:1981cb3953baa84433611c6cca3cadfaa263a165e936198e73ee80a38e086760",
   "tier": "display"
 }
