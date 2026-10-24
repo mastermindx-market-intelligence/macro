@@ -137,8 +137,8 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Deliver and consume same-child HC-P1B.T1.R2 for Draft #1852 at 7c80eb33.
-      R1 source was published, but local Git behavior, the outer npm environment and
+      Consume same-child HC-P1B.T1.R2 after START 1792877026.469489 on the retained
+      #1852 carrier at 7c80eb33. R1 is frozen and CI passed; local Git behavior, the outer npm environment and
       canonical-root/loader association still require bounded repair. Preserve the
       same carrier, independent review and full reference-app acceptance gates.
   - id: HC-P2
@@ -178,22 +178,22 @@ waves:
     status: in_progress
     depends_on: [HC-P4]
     next_action: >
-      Consume same-child HC-P6.T0.FIX1 repair for Draft #1854 at ffe70d75, then obtain
-      independent source review. Real producer bytes decode but their distinct Runtime
+      Obtain HC-P6.T0.R1 independent review of repaired Draft #1854 at 3be06cec,
+      frozen after FIX1 return and parent STOP. Real producer bytes decode but their distinct Runtime
       identities prevent a qualified Office Result join; do not force association.
-      Place the separately pinned HC-P6.T1 associated-read source slice after the
-      bounded current-custody check. Full signed-in office, native chat and original
+      Obtain the actual carrier/START receipt for separately pinned HC-P6.T1 after
+      placement request 1792877325.877669. Full signed-in office, native chat and original
       P6 product acceptance remain open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
     status: in_progress
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
-      Obtain same-carrier HC-P7.T0.R2 review of repaired Draft #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc.
-      FIX1 passed author source checks, exact remote readback and hosted CI 40129725707.
-      Same-reviewer continuation delivery is being reconciled. Preserve 32 public cases,
-      eight empty holdouts and all R2
-      obligations. No evaluation campaign or full acceptance has occurred.
+      Preserve #1853/0f433e8 as SOURCE_PREPARATION_REVIEWED after independent
+      COMMENT review 5640093915 PASS and parent consumption/STOP 1792877436.912779.
+      CI 40129725707 passed separately. Preparation is not E1 preregistration or a run;
+      retain 32 public cases, eight empty holdouts, unfrozen eligible manifest and all
+      R2 obligations. Actual owner-bound evaluation and real duration gates remain.
   - id: HC-P8
     title: Optional model and local-inference evaluation
     status: todo
@@ -287,10 +287,11 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
-  same-child repairs of #1854 and #1852 (R2). Draft #1856 at a9601a9c publishes the
+  For Mastermind #1841, preserve #1853/0f433e8 independent source PASS; obtain
+  #1854/3be06cec non-author review and consume #1852 R2. Draft #1856 at a9601a9c publishes the
   tested ACP canonical gate; reconcile its original review refusal/root gap without replay.
-  Place the separately pinned HC-P6.T1 bounded Office associated-read source slice.
+  Consume actual placement and START for HC-P6.T1 requested at 1792877325.877669;
+  Rakazo R2 started on its same carrier at 1792877026.469489.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1141,9 +1142,14 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   usage README within the already allowed five-file scope. No production changes,
   producer-test rewrites, new authority, dependency locks, installation, real credentials
   or live provider calls. Independent non-author review follows the repaired frozen head.
-- **State:** REQUEST_REPAIR_DELIVERED at 1792874038.333279 on the original child
-  thread; actual forward/START/new head remain pending. No full P6, installed/native
-  or mission acceptance, approval or merge is inferred.
+- **State:** SOURCE_REPAIR_RETURNED_FROZEN at 3be06ceccd2c82b603ccb834cd036b56cd88b862.
+  Forward 1792877034.855109 used the same child, run-94e40e0a-84f4-4680-a8ea-13de0268973b;
+  RESULT 1792877224.092779 reports only the permitted test/README repair, original
+  three JSON bytes unchanged, one fresh exporter pass, typecheck pass, replay
+  11 passed/6 skipped and fresh 6 passed/11 skipped. Parent read actual changed
+  source and sent STOP 1792877437.447199. New-head CI 40134195073 and OS 40134195121
+  are running; old-head success is not new-head evidence. Independent review is next.
+  No full P6, installed/native or mission acceptance, approval or merge is inferred.
 
 ### HC-P6.T0 — Qualify the existing Office Mission/Result producer-to-consumer join
 
@@ -1314,10 +1320,14 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   Reconfirm 32 public cases, eight empty holdouts, all 48 exact R2 outcomes/six criteria
   and non-execution/owner boundaries. Source remains frozen until this return.
 - **Done:** exact-head PASS / REQUEST_CHANGES / HOLD with concrete evidence and
-  independent provenance; CI 40129725707 is separate and currently in progress.
+  independent provenance; CI 40129725707 is separate and SUCCESS.
   Review only; no source repair, formal approval/merge or campaign/holdout execution.
-- **State:** CONTINUE_DELIVERED at 1792874037.908939 on the original review thread;
-  actual forward/START/result remain pending. No replacement child or held-task replay.
+- **State:** SOURCE_PREPARATION_REVIEWED / bounded R2 task DONE. Forward
+  1792877030.376629 used the same reviewer, run-dc3e9056-d9ed-44fb-8321-3556921177c6.
+  RESULT 1792877252.904029 and GitHub COMMENT review 5640093915 at 21:27:06 UTC
+  record PASS on the exact head/blob above. Parent read both and sent CONSUMED/STOP
+  1792877436.912779; reviewer terminal/retained. Frozen JSON still says pending review
+  because no post-review source mutation was made; this owner records the actual verdict.
   Full HC-P7/R2/mission acceptance remains open.
 
 ### HC-P7.T0.R1 — Independent preparation review
@@ -1798,9 +1808,11 @@ consumption, independent release and full T1a/T1/P3 remain open.
 
 - **Input/custody:** Draft Mastermind #1852 advanced on its existing branch/child to
   7c80eb3313303f6f4233758538d5e0ca0757ab1d. The PR author reports 15 Node cases and the
-  pytest entry passing; CI 40129509142 remains in progress at the latest read.
-  Parent source-freeze/STOP 1792875048.525709 preserves the carrier. No actual terminal
-  Slack repair receipt has been observed; no new placement is authorized.
+  pytest entry passing; CI 40129509142 is SUCCESS. R1 terminal/custody receipt
+  1792875918.195799 confirms exact remote head, clean tree, no later commit/in-flight
+  write and retained carrier. R2 START 1792877026.469489 forwards the already-pinned
+  request 1792875816.586879 to the same bc-3aad7289-82db-5570-aef5-9bf911172fd3,
+  run-051e13f5-96e0-4992-b285-0eda42ec9742. No new placement was made.
 - **Finding 1, source identity:** qualify.mjs disables global/system Git configuration
   but allows replacement refs when deriving the claimed pinned tree. Its hash-object
   call permits filters, and index/status commands can invoke repository-local fsmonitor.
@@ -2127,4 +2139,167 @@ After this source slice, the parent must still pin the actual UI consumption and
 installed proof steps. Rollback is withdrawal/revision of the unmerged candidate;
 there is no production rollout or persistent migration in this task.
 
-- **State:** PLANNED_BEFORE_PLACEMENT. No new child or source carrier is claimed yet.
+- **State:** PLACEMENT_REQUESTED after publication of the complete task at Macro
+  51b5f6bdd8744e9e94b40618a31f2595e1c14e7b. Secretary request 1792877325.877669
+  names exactly the planned child. Actual Cursor identity, carrier, admission and START
+  remain unobserved; request delivery is not worker execution.
+
+
+### Placement and retained-carrier checkpoint — HC-P6.T1 / Rakazo R2
+
+- Macro task pin 51b5f6bdd8744e9e94b40618a31f2595e1c14e7b was committed, pushed and
+  read back as the exact Draft #10167 head before new source placement. The workstream
+  blob b46c7675fcb6d91884856a2fcc6f9f315566efb5 contains the full HC-P6.T1 task.
+- New Cursor placement request 1792877325.877669 in C0CBC6AEAQZ names only
+  meta-ceo-harness-office-join-cursor-20261024-01 and links that exact pin. It asks for
+  current source/custody qualification, actual admission/identity/carrier/START, the
+  existing-owner associated read and unchanged-byte consumer proof. Delivery is
+  confirmed; actual execution, source changes and acceptance are not yet claimed.
+- Rakazo R1 receipt 1792875918.195799 confirms #1852 frozen at 7c80eb33, exact remote
+  branch, clean tree, no later/in-flight source write, retained carrier and CI
+  40129509142 SUCCESS. Its 15 Node cases and pytest entry are source proof only; DB,
+  real restart/disconnect/cancel/effect dedup, signed-in UI/live provider and 24h/7d
+  journeys remain NOT_RUN, Cordis ABSENT.
+- R2 PICKUP/START 1792877026.469489 forwards the existing three-finding repair task
+  to the SAME Cursor bc-3aad7289-82db-5570-aef5-9bf911172fd3 as
+  run-051e13f5-96e0-4992-b285-0eda42ec9742, starting from 7c80eb33. No new child,
+  replacement, archive or duplicate continuation was requested. Await repaired head,
+  exact commands, custody return and freeze before independent review.
+- No mission completion, approval, merge, installation, purchase, credential move,
+  account-policy change or final RESULT is implied by this checkpoint.
+
+
+### HC-P6.T0.R1 — Independent review of the repaired standalone producer proof
+
+- **Subject:** Draft Mastermind #1854, exact frozen head
+  3be06ceccd2c82b603ccb834cd036b56cd88b862, original head
+  ffe70d75ad7fd85a3f38605547553ee262807213. The PR has five additive paths:
+  app/mastermind_os/src/meta-ceo/result-producer.test.ts and
+  app/mastermind_os/src/meta-ceo/fixtures/result-producer/{actual-result.json,
+  actual-mission-v3.json,fixture-provenance.json,README.md}. FIX1 changes only the
+  test and README. Current test blob is 5c0560992ed09a0a0174589e19b09354f082027f;
+  README blob 58353e338b909ec649db8723ed48fd147884b3f2.
+- **Independent placement:** one new Cursor review child
+  meta-ceo-harness-office-result-review-cursor-20261024-01; root
+  meta-ceo-open-harness-convergence-20261024-sol-001; parent
+  meta-ceo-harness-implementation-20261024-web-001. Use a separate non-author carrier
+  through existing fleet admission. The author is bc-68bbcc42-a211-58a8-b502-9f02f65320e0
+  and must not review its own work. This review is distinct from HC-P6.T1 implementation
+  and every held Fabric run; no replacement or replay is authorized.
+- **Custody:** author RESULT 1792877224.092779 froze this head on the original branch;
+  parent STOP 1792877437.447199 consumed the return. Original author thread
+  1792872108.375879 retains exporter/consumer logs. No production write is outstanding
+  under this review task.
+- **Read-only scope:** inspect the five changed files and the existing actual exporter
+  tests/test_workspace_result_http.py::test_signed_result_and_mission_join_real_owners,
+  Office result/Mission decoders, meta-ceo/projection.ts and mission-adapter.ts as needed.
+  Do not edit source, dependency locks, fixtures, producer tests, policies or any other
+  carrier. A GitHub COMMENT may record the semantic verdict; never APPROVE or merge.
+- **Review questions:** independently check that the test reads the actual filesystem
+  bytes and invokes the existing decoders/projectOffice; the original three JSON
+  bodies are byte-identical to ffe70d75 and their recorded SHA256/byte counts; no positive
+  observation is fabricated; replay pins apply only to replay; fresh identities/hashes/
+  Control Room report fields derive from the consumed documents and remain distinct.
+  Explicit empty/missing/unreadable/malformed fresh input must fail without fallback.
+  Cleanup must affect only the exact mkdtemp root created by the negative test,
+  including exceptional paths, never supplied/shared directories.
+- **Discrimination:** confirm tuple/digest, Runtime/Control Room generation mismatches
+  and private presentation/context boundaries remain conservative; review rejection,
+  completed work, returned transport, unknown binding and acceptance remain distinct.
+  Both standalone reads legitimately mint different request-scoped Runtime identities;
+  the qualified join remains UNKNOWN / RESULT_OBSERVATION_UNQUALIFIED. This is a
+  producer/consumer negative proof, not an identity-generation defect or a positive
+  same-observation join.
+- **Evidence:** inspect actual retained complete exporter/fresh-consumer receipts,
+  including full fresh IDs/hashes rather than Slack prefixes. The author reports one
+  fresh exporter test passed, typecheck passed, replay 11 passed/6 skipped, fresh
+  6 passed/11 skipped and FRESH_CONSUMED. If a material source/proof uncertainty
+  remains, run only a bounded relevant existing test or one actual test-owned exporter
+  plus fresh consumer; do not rerun broad accepted fixtures. Any run must preserve
+  actual whole bytes, report exact command/results/skips and distinguish replay.
+  No installed UID458/Auth0, real provider or credential action is permitted.
+- **Independent acceptance:** PASS / REQUEST_CHANGES / HOLD bound to exact head,
+  full source/provenance evidence and any concrete finding/location/impact. CI is
+  separate: new-head general 40134195073 and OS 40134195121 were running at receipt;
+  earlier green runs cannot qualify this head. Return actual reviewer identity, carrier,
+  no-source-write/terminal custody receipt and GitHub COMMENT link on this child thread.
+  Parent will consume the verdict and explicitly STOP or REQUEST_REPAIR.
+- **Proof ceiling / exclusions:** SOURCE_PRODUCER_CONSUMER_QUALIFICATION only. No
+  full P6/R2, signed-in UI, installed/native, live provider, real 24h/7d, campaign,
+  approval/merge, purchase, credential move or account-policy change.
+- **State:** PLANNED_BEFORE_PLACEMENT. No review child/START/verdict is claimed yet.
+
+
+### Source-return checkpoint — P7 R2 PASS / P6 FIX1 frozen
+
+- P7 forward 1792877030.376629 and RESULT 1792877252.904029 stayed on the same
+  bc-e894c9b4 reviewer. Parent retrieved GitHub COMMENT review 5640093915 and read
+  its complete exact-head PASS: actual Slack/app overlap and subscription expiry,
+  corrected case/protocol crosswalks, grader-only oracles and prospective eligible
+  denominator all qualify as source preparation. All 48 outcomes/six criteria and
+  32 public/eight empty holdout slots remain unchanged; no case was executed.
+  Parent consumption/STOP is 1792877436.912779. General CI 40129725707 SUCCESS is
+  separate. Keep #1853 source frozen; full P7/R2 and mission remain open.
+- P6 FIX1 forward 1792877034.855109, RESULT 1792877224.092779 and parent STOP
+  1792877437.447199 retain original builder/branch at 3be06cec. Parent read actual
+  test/README and pinned separate HC-P6.T0.R1 review before placement. Reported new
+  export has fresh identities 7388a571... / 8ce20213..., different from committed
+  21e17d36... / 371a2ea6...; abbreviated Slack values are not full provenance.
+  The independent reviewer must inspect the actual complete source/receipts.
+- ACP refusal reconciliation PICKUP 1792877040.548979 is limited to retained
+  request/controller/refusal metadata for original run/controller 73605. No RESULT
+  or root-qualified disposition has arrived; no retry or alternative placement.
+  #1856 CI 40132237175 has shard2 SUCCESS at 21:26:01 UTC and two still-running
+  shards; no failed/queued job was observed. Source remains frozen.
+
+
+### HC-P6.T1.A1 — Clarify final compound availability and nested content limits
+
+This parent clarification preserves the same child, 17-path ceiling, owners and ordered
+stages. It resolves consumer-contract ambiguity before qualification, without relaxing
+any source, receipt, budget or association guard.
+
+1. The compound `role_result` is the unchanged complete Workspace Result BODY with
+   schema `mastermind.workspace_role_result.v1`, including its selection,
+   source_observation and nested projection. It is neither the bare Fabric view nor
+   the Unix `{ok:true,result:BODY}` wrapper. The compound `mission` is the unchanged
+   final `mastermind.mission_workspace.v3` BODY from the incumbent composer.
+2. Preserve the incumbent nested Result budget ladder: complete projection, then its
+   own qualified CONTENT_OVER_BUDGET document, then refusal. A genuinely associated
+   qualified CONTENT_OVER_BUDGET Result may be inside compound AVAILABLE, with its
+   nested availability/reason and incomplete coverage truth preserved. Both documents
+   are present and structurally complete. The ban on partial success means no missing
+   half or retained success after source/permission/acquisition/close failure; it does
+   not erase the incumbent explicit content-omission state. Add a discriminating
+   actual-consumer case for this nested fallback.
+3. Independently enforce the complete canonical nested Result socket envelope plus LF
+   at 16384 bytes, and the entire compound socket envelope plus LF at 2000000 bytes.
+   The larger compound limit cannot admit an oversized nested Result. If neither
+   Result representation fits, discard both documents under RESPONSE_OVER_BUDGET.
+4. Decide AVAILABLE only after final Mission composition and Result projection.
+   Require final Mission CURRENT and qualified owner observation; the exact selected
+   tuple must remain in its final result_refs index, with qualified SAME generation
+   and matching Runtime identity/samples and Control Room observations. Do not infer
+   this from raw joint Runtime material or a pre-downgrade index. A valid Runtime SAME
+   read with a partial/noncurrent final Mission must refuse the pair; use actual
+   source evidence to distinguish SOURCE_UNAVAILABLE from SOURCE_CHANGED.
+5. Fabric creation-event provenance is charged selection work. The incumbent
+   get_creation_event_by_command_id point read may share the retained connection
+   but bypass the role-result loader's accounting; the compound must acquire that
+   material through shared accounting or consume already-accounted retained material.
+   Size-check statements/aggregate rows remain charged. These reads are not exempt
+   setup/teardown metadata.
+
+Source basis personally read at protected 3095d09f:
+- app/mastermind_os/src/result.ts, blob c1f6e201435503e5b4fd063c51b79fde586e0c73:
+  closed Workspace Result BODY and hypothetical whole socket-envelope size check.
+- control_plane/workspace_read_service.py, blob c4102f1978a0d59d66aa62420e0ae96313819c09:
+  existing complete -> CONTENT_OVER_BUDGET -> refusal ladder.
+- app/mastermind_os/src/meta-ceo/projection.ts, blob 7b1014184186a0ed304a0d695d1e699e4840e49b:
+  final Mission currentness, exact tuple, observation association and incomplete content.
+- control_plane/mission_workspace.py, blob 23c402ab8818722911c6867476bfb3e977a44fed:
+  noncurrent composed Mission downgrades its Result index.
+
+Read-only native design advice found no contradictory owner/selection/budget requirement;
+it is advisory, not independent acceptance of any implementation. Original HC-P6.T1
+placement remains the only authorized new implementation child.

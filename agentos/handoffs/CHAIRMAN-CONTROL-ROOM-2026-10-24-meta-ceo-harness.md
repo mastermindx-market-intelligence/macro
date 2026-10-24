@@ -488,3 +488,58 @@ closed additional frame/endpoint, existing budgets and identity laws, real fresh
 proof and independent review are specified in the workstream. PLANNED_BEFORE_PLACEMENT;
 no actual new child/carrier exists yet. #1854's separate repair stays with its owner.
 ACP review-refusal reconciliation was delivered at 1792876715.738069; no retry/reroute.
+
+
+### Placement and retained-carrier checkpoint — HC-P6.T1 / Rakazo R2
+
+- Macro task pin 51b5f6bdd8744e9e94b40618a31f2595e1c14e7b was committed, pushed and
+  read back as the exact Draft #10167 head before new source placement. The workstream
+  blob b46c7675fcb6d91884856a2fcc6f9f315566efb5 contains the full HC-P6.T1 task.
+- New Cursor placement request 1792877325.877669 in C0CBC6AEAQZ names only
+  meta-ceo-harness-office-join-cursor-20261024-01 and links that exact pin. It asks for
+  current source/custody qualification, actual admission/identity/carrier/START, the
+  existing-owner associated read and unchanged-byte consumer proof. Delivery is
+  confirmed; actual execution, source changes and acceptance are not yet claimed.
+- Rakazo R1 receipt 1792875918.195799 confirms #1852 frozen at 7c80eb33, exact remote
+  branch, clean tree, no later/in-flight source write, retained carrier and CI
+  40129509142 SUCCESS. Its 15 Node cases and pytest entry are source proof only; DB,
+  real restart/disconnect/cancel/effect dedup, signed-in UI/live provider and 24h/7d
+  journeys remain NOT_RUN, Cordis ABSENT.
+- R2 PICKUP/START 1792877026.469489 forwards the existing three-finding repair task
+  to the SAME Cursor bc-3aad7289-82db-5570-aef5-9bf911172fd3 as
+  run-051e13f5-96e0-4992-b285-0eda42ec9742, starting from 7c80eb33. No new child,
+  replacement, archive or duplicate continuation was requested. Await repaired head,
+  exact commands, custody return and freeze before independent review.
+- No mission completion, approval, merge, installation, purchase, credential move,
+  account-policy change or final RESULT is implied by this checkpoint.
+
+
+### Source-return checkpoint — P7 R2 PASS / P6 FIX1 frozen
+
+- P7 forward 1792877030.376629 and RESULT 1792877252.904029 stayed on the same
+  bc-e894c9b4 reviewer. Parent retrieved GitHub COMMENT review 5640093915 and read
+  its complete exact-head PASS: actual Slack/app overlap and subscription expiry,
+  corrected case/protocol crosswalks, grader-only oracles and prospective eligible
+  denominator all qualify as source preparation. All 48 outcomes/six criteria and
+  32 public/eight empty holdout slots remain unchanged; no case was executed.
+  Parent consumption/STOP is 1792877436.912779. General CI 40129725707 SUCCESS is
+  separate. Keep #1853 source frozen; full P7/R2 and mission remain open.
+- P6 FIX1 forward 1792877034.855109, RESULT 1792877224.092779 and parent STOP
+  1792877437.447199 retain original builder/branch at 3be06cec. Parent read actual
+  test/README and pinned separate HC-P6.T0.R1 review before placement. Reported new
+  export has fresh identities 7388a571... / 8ce20213..., different from committed
+  21e17d36... / 371a2ea6...; abbreviated Slack values are not full provenance.
+  The independent reviewer must inspect the actual complete source/receipts.
+- ACP refusal reconciliation PICKUP 1792877040.548979 is limited to retained
+  request/controller/refusal metadata for original run/controller 73605. No RESULT
+  or root-qualified disposition has arrived; no retry or alternative placement.
+  #1856 CI 40132237175 has shard2 SUCCESS at 21:26:01 UTC and two still-running
+  shards; no failed/queued job was observed. Source remains frozen.
+
+HC-P6.T0.R1 is pinned in the workstream before any independent review placement.
+
+
+HC-P6.T1.A1 clarifies the unchanged nested Workspace Result BODY, preserves the qualified
+CONTENT_OVER_BUDGET fallback under compound AVAILABLE, requires final composed Mission
+currentness/index association, and charges creation-event provenance cumulatively.
+Same child/17 paths/owners; no implementation acceptance or widened authority.
