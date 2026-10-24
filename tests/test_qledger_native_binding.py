@@ -698,3 +698,18 @@ def test_unsettled_at_attempt_limit_only_permits_verified_no_effect_reconciliati
             q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
         assert binding.attempts == (original_attempt,)
         assert (root / p.ROOT_PATH).read_bytes() == before and not registrar
+
+
+def test_caught_clock_input_serialization_failure_remains_visible_before_attempt(tmp_path,limits,registrar):
+    with owner(tmp_path,limits,native=True) as (root,binding):
+        before=(root/p.ROOT_PATH).read_bytes()
+        cycle={};cycle['cycle']=cycle
+        with s._claims_mutation(binding.claims_path,native_intent=explicit_intent('fixture-caught-input')) as writer:
+            with pytest.raises(n.ClaimsStorageError) as caught:
+                writer.bind_registration_clocks([{'claim_id':'bad-clock-input','cycle':cycle}],today=None)
+        assert caught.value.outcome.status=='failed_before_root'
+        assert caught.value.outcome.root_visibility=='unchanged'
+        assert caught.value.outcome.clock_status=='not_attempted'
+        assert binding.pre_attempt_failure.stage=='registration-clock-input'
+        assert not binding.attempts and not registrar
+        assert (root/p.ROOT_PATH).read_bytes()==before

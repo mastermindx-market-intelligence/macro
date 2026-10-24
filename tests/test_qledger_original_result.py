@@ -532,8 +532,13 @@ def test_thematic_owner_propagates_retention_refusal_and_uncertain_root(original
     assert isinstance(failure.value.__cause__, adapter.NativeProspectiveFailure)
     assert value.attempts == binding.attempts and len(value.attempts) == 1
     assert value.original_results == binding.prepared_original_results
-    assert value.family_clock_status == 'not_attempted' and not clocks
+    # The original whole-clock obligation was prebound before storage. A
+    # failed/uncertain native attempt cannot discharge it, even though no
+    # actual family-clock hook was called. Never downgrade this to no-write.
+    assert value.family_clock_status == 'uncertain' and not clocks
     assert value.claims_status == ('root_effect_uncertain' if uncertain else 'unproven')
+    assert (value.attempts[-1].outcome.clock_status == 'uncertain' if uncertain
+            else value.attempts[-1].outcome is None)
     if not uncertain:
         assert (binding.repo_root / p.ROOT_PATH).read_bytes() == before
     assert prepared == ['domain']
@@ -564,7 +569,9 @@ def test_thematic_owner_dedupe_is_verified_no_write_not_accepted_count(original,
         import json
         row = json.loads(raw.readline())
     assert row.get('claim_id')
-    monkeypatch.setattr(adapter, 'translate_row', lambda *a, **k: row)
+    # Supply a valid prospective INPUT; dedupe still returns the exact old row
+    # and performs no write or clock. translate_row's real contract supplies H.
+    monkeypatch.setattr(adapter, 'translate_row', lambda *a, **k: {**row, 'horizon_d': 5})
     value = invoke()['us']
     assert value.registration['n_accepted'] == 1
     assert value.claims_status == 'no_write' and value.attempts == () and value.original_results == ()
@@ -592,9 +599,16 @@ def test_thematic_owner_real_clock_swallowed_failure_is_not_success(original, mo
     td, _, _, binding, _, root, _, _, invoke = thematic_owner(original, monkeypatch)
     monkeypatch.setattr(clock, "record_start", actual_record_start)
     actual_link = clock.os.link
+    refused_links = []
     def refused(source, destination, *a, **k):
-        if Path(destination) == clock._clock_path("thematic_desk", binding.repo_root):
-            raise OSError("fixture clock persistence refused")
+        expected = clock._clock_path("thematic_desk", binding.repo_root)
+        # The strict installer deliberately uses basename + pinned dir_fd.
+        if Path(destination).name == expected.name and 'dst_dir_fd' in k:
+            parent = expected.parent.stat()
+            directory = __import__('os').fstat(k['dst_dir_fd'])
+            if (directory.st_dev, directory.st_ino) == (parent.st_dev, parent.st_ino):
+                refused_links.append((str(destination), directory.st_ino))
+                raise OSError("fixture clock persistence refused")
         return actual_link(source, destination, *a, **k)
     monkeypatch.setattr(clock.os, "link", refused)
     with pytest.raises(td.NativeThematicFailure) as failure:
@@ -604,6 +618,7 @@ def test_thematic_owner_real_clock_swallowed_failure_is_not_success(original, mo
     assert failure.value.result.attempts == binding.attempts
     assert (root / "bridge" / "manifest.json").exists()
     assert clock.read_start("thematic_desk", binding.repo_root) is None
+    assert len(refused_links) == 1  # prove the fault hit the actual strict hook
 
 
 @thematic_source

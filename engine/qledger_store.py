@@ -647,14 +647,21 @@ class _NativeClaimsWriter:
             raise ValueError("original clock inputs must precede native apply")
         # Freeze the exact same serialization used by the registrar's append.
         from engine.qledger import _json_default
-        serialized, total = [], 0
-        for row in rows:
-            raw = (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
-            total += len(raw)
-            if (len(serialized) >= self.binding.limits.input_rows
-                    or total > min(self.binding.limits.logical_bytes, self.binding.limits.snapshot_bytes)):
-                raise ValueError("original clock row inputs exceed existing limits")
-            serialized.append(raw)
+        with self.binding._observe_pre_attempt_failure("registration-clock-input"):
+            try:
+                serialized, total = [], 0
+                for row in rows:
+                    raw = (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                    total += len(raw)
+                    if (len(serialized) >= self.binding.limits.input_rows
+                            or total > min(self.binding.limits.logical_bytes, self.binding.limits.snapshot_bytes)):
+                        raise ValueError("original clock row inputs exceed existing limits")
+                    serialized.append(raw)
+            except Exception as exc:
+                # Clock prebinding freezes the SAME native append serialization.
+                # Preserve its incumbent structured before-root failure rather
+                # than leaking a raw encoder exception before append planning.
+                raise self.session._planning_error(self.session.read_snapshot(), exc) from exc
         self._registration_rows = (tuple(serialized), today)
 
 
