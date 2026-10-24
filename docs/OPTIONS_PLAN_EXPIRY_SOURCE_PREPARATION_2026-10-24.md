@@ -64,7 +64,7 @@ last_trade, midpoint or FMV fallback. Delayed stays delayed after fresh retrieva
 One-sided, zero price/size, missing size, locked and crossed states are explicit.
 Source authentication, clock, session, firm conditions and current access are not
 established by this decoder. `current_quote_eligible` therefore remains false.
-It does not prevent authored-entry expiry payoff when actual terms/fixing qualify.
+It does not prevent authored-entry expiry payoff when actual terms qualify.
 
 The official [Massive exact snapshot documentation](https://massive.com/docs/rest/options/snapshots/option-contract-snapshot)
 documents optional quote access and delayed/realtime plan recency; that does not
@@ -129,7 +129,7 @@ The returned result exposes the actual supplied `known_by`, contract expiration
 list and New York calendar-date relation. A date before the known-by date is
 explicitly `EXPIRY_DATE_BEFORE_KNOWN_BY_DATE`; same-day data does not imply an exact
 expiry instant. Historical first availability is not established by this bridge.
-After adding this provenance,42 expiry tests passed in1.63s; unchanged quote tests
+After adding this provenance, 42 expiry tests passed in 1.63s; unchanged quote tests
 retain their accepted run above. A root-provided retained reference also composed
 locally with an after-capture cutoff, while a prior historical cutoff withheld math.
 Only compact provenance/result is retained outside Git; no paid payload is committed.
