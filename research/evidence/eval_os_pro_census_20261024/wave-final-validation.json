@@ -1,0 +1,62 @@
+{
+  "schema": "eval_os.wave_source_validation.v1",
+  "at": "2026-10-24T20:58:09.207622+00:00",
+  "packet_sha256": "1522f890385cec2e4a3a0d4c64817e6f1cd49c25f5e393bd3eb6175ca710ce40",
+  "file_count": 26,
+  "files": {
+    "agentos/decisions/DEC-EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024.md": "32b7cc5de12af8e5d6ee295421f8805d69b250567dee16f6707b68a6ed785682",
+    "agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md": "deabb24182aa53c232e9d461b36882126771ddfd530384cc61b5e5cd6eeff6ad",
+    "agentos/handoffs/EVAL-OS-RELIABILITY-EXTENSIONS-2026-10-24-PRO.md": "40dac4d1528e0dd533efd12dbe60f28ecbfbf037e04ac66d6e7d7b92ffbc31c4",
+    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md": "b3008d1dfd14e3b82cdbb29f6b23468db2dec282f000c48cc4e9c27d6fc9b31f",
+    "agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md": "2a539e3b2881782cf882f27e4d53f487613f3abf9576c9f735b82a15311d9643",
+    "agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md": "b32b01dc5ad1e1db125f8ed602a5ae00f82d06e75cce8121c5b55aacbfa00912",
+    "agentos/workstreams/WS-EVAL-OS-RELIABILITY-EXTENSIONS.md": "03c207379db4878a3e5efc1ac165c161293f9417b5a8e7062e8287056a6fc43c",
+    "agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md": "eff6d1b5e0d882b6d4208e6c39dc74e6c123cf59ebe49aefd274bc38fa7a39c4",
+    "research/EVAL_OS_RECOVERY_ARCHITECTURE_FREEZE_2026-08-27.md": "b06d0ce1596f3690dbdd48dfb469d0bb4c4a79c4677f9767f7e41de063d374cc",
+    "research/EVAL_OS_WAVE_AUDIT_2026-10-24.md": "f453804eea1c01c1d734ac563a39c9a323e785b8d95d6fce20220fde7c171770",
+    "research/evidence/eval_os_pro_census_20261024/a1-filter-counts.patch": "22043bc118cff3942a28238d99d5b0817a7c208b88314b561607cf93905cf2d7",
+    "research/evidence/eval_os_pro_census_20261024/a1-filter-independent-review.json": "c1fdfc69f6beb9977d58959e19e527d4c65a20c9058dd2b3a49a125409f35710",
+    "research/evidence/eval_os_pro_census_20261024/a1-filter-run_focused.py": "f95aefc24b2630928f6052baa0a0b2544b3b230044e7fd734a5d62ee1d4b0910",
+    "research/evidence/eval_os_pro_census_20261024/a1-filter-source-manifest.json": "6ad74d4a9d41e84584466853994d734b7c63fcf686a8157f913a0acf4968501c",
+    "research/evidence/eval_os_pro_census_20261024/a1-filter-validation.json": "046daa0de4dfcdc80d706ab137cf4ee8c4a5e7dc09fdcd65129baf96a5493f33",
+    "research/evidence/eval_os_pro_census_20261024/a1-installed-reader-evidence.json": "0dfed1ea1c5eae66cf295e64fad24ea867a4c8c9efcca8234e13d7526f9c1694",
+    "research/evidence/eval_os_pro_census_20261024/a1-installed-reader-observer.py": "fb6ae5050e11421706c4903405d584baf27b8b22a66887023013831a6a39aebd",
+    "research/evidence/eval_os_pro_census_20261024/a1-readiness-generation-diff.json": "6b2a732596877daea50b9ae7f86f72baaaaec8740af56c912ec58001e60d70ac",
+    "research/evidence/eval_os_pro_census_20261024/a1-readiness-generation-diff.py": "32d250d5168c6d65c0675f0c2cf9994d9cd8af49c79827e1e7b4c5010daf424b",
+    "research/evidence/eval_os_pro_census_20261024/independent-review-31c4ece.json": "28702c61d5cc1d5eabfd569993c8ec0b7b87b7f3bd8c1a58767cab85886835f0",
+    "research/evidence/eval_os_pro_census_20261024/numeric-consumer-source-map.md": "4403e9488b6bf580c76428231fd035354110e0ccdad445185335e92ae77d3726",
+    "research/evidence/eval_os_pro_census_20261024/observer-preflight-reviews.json": "d08dea8f55796038980f4c0cfecf532e8895db6189baf9ada4c29971f4aeb459",
+    "research/evidence/eval_os_pro_census_20261024/restored-root-reader-timeout-excerpt.json": "66435a0b02db47f6dfa195870aa5bcb449dda120f60f6d70c40611fc888452f5",
+    "research/evidence/eval_os_pro_census_20261024/retained-comprehension-review.json": "cc7d62318a8a66efa661aae7b539f4f4acd2b7a0fc0912a8d825b43d36f3fc1c",
+    "research/evidence/eval_os_pro_census_20261024/task-filter-repair-record.json": "4f28791fb8d7a543a6e1776ccec1e9f3329dd28785f4b2511e9e5a748a39439f",
+    "research/evidence/eval_os_pro_census_20261024/task-role-continuity.json": "af2af80314c06e1bc46209ad08902eaebf46fb31d552f67c65638d907595ac72"
+  },
+  "original_workstreams": 4,
+  "current_workstreams": 5,
+  "wave_counts": {
+    "in_progress": 3,
+    "done": 9,
+    "todo": 2
+  },
+  "original_objectives_and_do_not_redo_preserved": true,
+  "all_original_wave_statuses_preserved": true,
+  "nine_complete_wave_entries_identical": true,
+  "local_wave_dependencies_resolve_and_acyclic": true,
+  "validator_exit": 0,
+  "validator_summary": "agentos: 1966 records (109 workstreams, 523 decisions, 562 discoveries, 772 handoffs) — 0 error(s), 1099 warning(s)\n",
+  "scope": "Isolated existing Agent OS validation store with this candidate overlay; no merge or production acceptance.",
+  "manifest_rebound_at": "2026-10-24T21:00:16.252352+00:00",
+  "unchanged_agentos_bytes_since_validation": true,
+  "artifact_identity_correction": "Restored the two observer artifact byte copies to their exact accepted hashes; no observer execution or tests repeated.",
+  "changed_paths_validation": {
+    "records": 8,
+    "errors": 0,
+    "warnings": 47,
+    "warning_kinds": [
+      "phantom-artifact",
+      "phantom-owns-path"
+    ],
+    "scope": "Isolated store has no macro repository path map; these checks cannot attest repo existence. Exact source file readbacks and candidate paths are separate evidence.",
+    "path_invocation_note": "First diagnostic used relative --paths from the wrong cwd and reported missing files; corrected absolute paths returned0errors."
+  }
+}

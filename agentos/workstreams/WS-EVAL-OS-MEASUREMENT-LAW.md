@@ -83,7 +83,7 @@ next_action: >
   Prepare W6 on the released #6651/#10130 source using accepted evidence, then W7 under
   its declared prerequisites. The top product continuation is the independently executable
   WS:EVAL-OS-EVIDENCE-VIEW A1; W4 natural-time completion is not an A1 dependency.
-  Use the wave records as the execution authority and the dated audit only as evidence.
+  Use the wave records as the canonical planning/execution state and the dated audit only as evidence.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -132,13 +132,17 @@ The existing objective and wave identities are the source of execution state. Th
 | W6 | todo; added with rationale | Original P1/T17 composed acceptance was already reserved in W3 but absent from waves[]. It depends on accepted W2/W3/W5 and does not reopen them. Pass requires the released authority-consumer path, adversarial proof and independent acceptance. |
 | W7 | todo; added with rationale | Original T0/T3/G1 strict-hardening residue was already reserved in W1. It depends on W1/W6. Pass requires affected-emitter qualification and an explicit governed enforcement disposition, not an automatic strict flip. |
 
-W4 depends on W2/W5 because clock/cohort legality uses the accepted market and control contracts; both are already done. W6 and W7 expose previously declared obligations rather than enlarging the programme. No accepted wave is superseded or reopened, and no new programme/workstream is created.
+W4 depends on W2/W5 because clock/cohort legality uses the accepted market and control contracts; both are already done. W6 and W7 expose previously declared obligations rather than enlarging the programme. No accepted wave is superseded or reopened. W6/W7 remain within this existing workstream; the separately registered R1 sibling below retains an already frozen programme obligation.
 
 ### Programme boundaries retained
 
 The August recovery decision still owns the original T0–T12 obligations. T2 benchmark/MFE/MAE, outcome-dependent T5 taxonomy, original T6 historical PIT/adjudication, broader T9 adoption and T10–T12 consumer/adoption residue remain explicitly assessed in the dated audit. They are not silently counted complete by these bounded wave states. The programme-lead role owns their reconciliation through existing source owners; a later separately specified empirical build belongs in an explicit bounded canonical wave, not a second plan or automatic cross-project commission.
 
 A1 can complete its honest read-only product objective while W4 accrual remains incomplete. There is no A1 dependency on W4, QLedger #10079 activation, every empirical legacy objective, or the October commission's global T22–T24 closure chain. Programme completion remains false.
+
+### Separate existing R1 obligation
+
+[WS:EVAL-OS-RELIABILITY-EXTENSIONS](WS-EVAL-OS-RELIABILITY-EXTENSIONS.md) registers the recovery freeze's existing R1 wave with its original objective. Native Brain numeric/log acceptance belongs there, separately from this qledger measurement-law objective and A1's admin answer layer. This is a sibling programme obligation, not a W4/W6/W7 or A1 dependency.
 
 ### Source-linked continuation
 
@@ -189,3 +193,4 @@ remaining thematic + cohort proof rather than silently moving the old worker/ses
 ## Current consumer qualification — 2026-10-13
 
 The internal existing response-eval owner now has accepted finite synthetic seven-class/overlap/trial/look/contamination contracts and136 affected controls. This is deterministic internal QA, not empirical class qualification or protected study access. The evidence consumer preserves recorded cohorts, control and whole-family baseline populations, clock partitions and explicit zero/null; current/all-input qualification remains unavailable even when named local generations match. No registration event, control origin or grade horizon changed. Natural owner progression and original excluded study/producer obligations remain open.
+

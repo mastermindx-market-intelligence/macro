@@ -1,0 +1,21 @@
+{
+  "base": "b6312b05adf956d4803de9d364a679be1a1a91c7",
+  "files": [
+    {
+      "path": "admin/static/app.js",
+      "base_git_blob": "4a8e15ae6644e684f6dc38b4cffdae373e9e8ef3",
+      "base_sha256": "49a5431df90ea372fa32b5df5c44135c3118d0769613579028cecaed3911ff1d",
+      "patched_git_blob": "81d9322fc466e94aa0109d2ae54a94976007b859",
+      "patched_sha256": "5beb905b38ed2c7d0d75619164255a8849122869f3103445249849f9a77233d6"
+    },
+    {
+      "path": "tests/test_admin_intelligence_os_ui.py",
+      "base_git_blob": "7b608e1b1b0fa031d9926e6d62bd3b533c792f30",
+      "base_sha256": "3b46980645abc39f10c7db7f8b93676c7cc6829c3e952e87aaf8dd2048dc06a3",
+      "patched_git_blob": "1358c91f609478a68b169448f3fac2fddf396bd4",
+      "patched_sha256": "29049fff3bf92b4691cb83a7d542ff381c6da71f104b103c52afa5aacc7e73c8"
+    }
+  ],
+  "patch_sha256": "22043bc118cff3942a28238d99d5b0817a7c208b88314b561607cf93905cf2d7",
+  "patch_path": "/workspace/scratch/505631acc0b2/a1-filter-counts/a1-filter-counts.patch"
+}

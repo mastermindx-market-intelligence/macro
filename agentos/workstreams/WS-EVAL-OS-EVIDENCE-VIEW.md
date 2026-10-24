@@ -27,23 +27,27 @@ waves:
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
     depends_on: []
+    pr: 10171
     next_action: >
-      The current programme lead continues A1 acceptance of merged #6651/4579f45 and
-      #10130/5aae3c5. First qualify the actual released selected-store read path with
-      bounded production population/coherence/latency/memory evidence and truthful
-      engine/output denominators; reuse accepted unchanged source and visual proof.
-      Then bind permitted real authenticated requests to numeric/internal-log evidence
-      and obtain independent operator comprehension. Preserve the existing SecurityAgent
-      consent and exact unknown effects; do not retry a denied action. A1 does not wait
-      for W4 natural-time completion, a historical owner session or #10079 activation.
+      Carry the independently accepted two-file engine/group filter repair through normal
+      CI and delivery from Draft #10171 at 95e8dadd. The author and publishing principal
+      do not approve or merge it. After actual delivery, bind the changed class/authority
+      chip behavior to served assets and a focused admin readback; reuse unchanged accepted
+      visual and journey evidence. Protect the live T08.S1 reader-presence repair and
+      reconcile its independent review without duplicating its source work or production
+      probe. Preserve unavailable numeric attribution. A1 does not depend on R1 native
+      request/log proof, W4 natural-time completion or #10079 activation.
 next_action: >
-  Execute A1's bounded released-reader qualification now under the current programme-lead
-  role, recording exact source, population, coherence and resource limits in this record.
-  Continue other safe A1 acceptance slices while the original authenticated action is held.
-  Record actual live-writer/effect boundaries narrowly; do not wait for an absent owner or
-  archived chat. Obtain fresh non-authoring review of changed source and remaining proof;
-  no author self-approval or self-merge. The wave table, not a separate masterplan, owns
-  current status, prerequisites and next action.
+  Complete the next normal-delivery disposition for #10171, then return affected-source,
+  served-asset and focused chip-count/readback evidence to this A1 record. Source repair,
+  focused negative-control regression and fresh non-author exact-head review are complete;
+  CI and deployed behavior remain separate. The retained journey, successful panel receipt
+  and separate restored-root wrapper timeout must all retain their scopes. Do not infer
+  reliable latency from one success. Extra admin evidence is required only for a concrete
+  uncovered render/update or comprehension boundary; no automatic full journey replay.
+  Preserve actual consent, denied/UNKNOWN effects and live writers for their exact actions.
+  Native numeric/internal-log acceptance belongs to existing R1.
+
 owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
@@ -69,6 +73,10 @@ artifacts:
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
   - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
   - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
+  - research/evidence/eval_os_pro_census_20261024/a1-installed-reader-evidence.json
+  - research/evidence/eval_os_pro_census_20261024/a1-readiness-generation-diff.json
+  - research/evidence/eval_os_pro_census_20261024/a1-filter-independent-review.json
+  - research/evidence/eval_os_pro_census_20261024/restored-root-reader-timeout-excerpt.json
 ---
 
 ## A1 audited frontier and executable acceptance — 2026-10-24
@@ -78,21 +86,62 @@ artifacts:
 | Acceptance slice | Existing evidence | Next observable result / responsible role |
 |---|---|---|
 | Source, integration and installation | #6651 merged 4579f45; #10130 merged 5aae3c5; retained source CI and 15 affected installed-file checks | Programme lead preserves accepted bytes; qualify only a material changed source/dependency or missing consumer boundary. |
-| Canonical identity and disposition | Retained authenticated A1 observation: 385 canonical engines + one gap; 650 outputs; 301 assessed; 455 null classes; zero Validated | Product/measurement role verifies the actual selected provider and distinguishes engine counts, output counts, missing, zero, ungraded and degraded states. Historical 107/109 curation is a different population. |
-| Selected-store coherence and production resource use | Bounded local A28 probe: 647 artifacts / about 446 MiB, hit 1.293s, forced 12.810s; local 1 GiB/60s probe limits | Storage/performance role observes the installed bounded reader on the real estate: source/process epoch, population, cold/hit/refresh duration and process RSS; honest coherent/fail-closed status. No live mutation, cutover, stress load or production SLO is inferred from local limits. |
-| Authenticated panel/detail and numeric/log correlation | Accepted A1 eight-cell journey and exact-asset reuse; follow-on code installed; current follow-on request not proved | Product/integration role correlates one permitted real request, selected evidence, numeric result and internal log. Original OS consent remains held; the rubric is internal and absent from user/admin response fields. |
-| Operator comprehension and independent acceptance | Bounded source/visual reviews retained within their exact scopes | A fresh non-authoring reviewer identifies measured horizon/cohort, missing evidence, health/support distinction and permitted next action from the qualified journey. Unknown old review effects remain separately reconciled. |
+| Canonical identity and disposition | Earlier authenticated observation: 385 canonical + one gap, 650 outputs, 301 assessed. Fresh 20:11Z backend observation: same engine/output populations, 299 assessed, 455 null classes, zero Validated | Product/measurement role verifies the actual selected provider and distinguishes engine counts, output counts, missing, zero, ungraded and degraded states. Historical 107/109 curation is a different population. |
+| Selected-store coherence and production resource use | Completed 20:11Z fresh-process backend read: 22.182338s, 180,996 KiB child high-water RSS, 650 outputs, 18 named source files matched; 11 accounting/coherence checks passed; stable observed source/service epoch | Storage/performance role reuses this exact receipt. Resident HTTP cache, repeated distribution and an operating SLO remain unproved; this observation does not replace those checks if required by the final product acceptance. A separate restored-root wrapper observation timed out at 45.239522s; reliable latency remains unresolved and its source diagnosis is active. No live mutation, cutover or stress load occurred. |
+| Authenticated admin panel/detail and delivery identity | Retained authenticated A1 overview/detail and eight-cell receipt; five served static files have exact follow-on reuse evidence; fresh backend read qualified separately | Product/integration role reconciles relevant A1 source/dependencies to that journey and dispositions actual remaining source→served→paint/update/reconnect gaps. Reuse unchanged proof; additional admin evidence is required only for an identified uncovered boundary. |
+| Operator comprehension and independent acceptance | Fresh retained-journey review is PARTIAL: top-level populations, health/evidence distinction, explicit zero/null and authority limits are understood; an engine-filter denominator defect was identified | Count-source repair #10171 is independently accepted at 95e8dadd; product/integration role verifies affected served behavior after normal delivery and obtains comprehension within the actually inspected journey scope. Lower-detail horizon/cohort and update/disclosure gaps are dispositioned from retained evidence before requesting any new live action. |
 | Natural evidence and scientific limits | Three general clocks and historical scheduled observations exist; W4 current progression remains partial | Display incomplete accrual honestly. Do not make A1 depend on W4 completion, new market outcomes or every original programme obligation. No promotion or financial authority is introduced. |
 
-### Immediate bounded action
+### Executed A1 slice — 2026-10-24 20:11–20:17 UTC
 
-Use the actual installed A1 reader and an explicitly read-only, bounded observation to resolve the missing production population/coherence/resource slice. Preserve actual live writers. If access is refused, terminate that exact action and continue a different permitted acceptance slice; do not reword or switch carriers to repeat the denial. No browser authentication workaround, credentials, data mutation, service restart, cache purge or QLedger activation is part of this action. Record the measured scope and remaining limits here.
+The programme lead reused original local task **T08**, rebound it to this existing A1 wave, and recorded role takeover without changing its T01/T03 dependencies or claiming whole-task acceptance. A fresh non-authoring reviewer accepted the exact observer scripts after bounded-read and timeout-cleanup repairs. The production actions were one panel derivation and one separate named-metadata comparison; neither changed application data or services.
 
-The local October T01–T24 task graph remains historical commission/acceptance evidence. It is not a second wave authority and its all-programme T21/T22/T23 closure edges do not create a new dependency on this bounded A1 objective. Ordinary work is assigned to roles under current leadership; the exact SecurityAgent consent and actual STARTed/UNKNOWN effects retain their own carriers.
+| Observation | Result and boundary |
+|---|---|
+| Installed source | Checkout `d73ae874899240c583e5745be4784baf6b237d97`; 18 named reader/owner files matched qualified `5aae3c5` before and after. These are named source checks, not the complete transitive closure or resident loaded-byte attestation. |
+| Runtime readback | `macro-api.service` and `admin.service` were active; observed start identities, installed head and named file bytes stayed stable. No restart was requested; this is before/after epoch readback. |
+| Resource observation | One fresh-process backend call with an in-memory cache miss (OS page cache uncontrolled); wall **22.182338s**, internal compute **19.79s**, child `RUSAGE_CHILDREN.ru_maxrss` **180,996 KiB (176.75 MiB)**, observer high-water **17,792 KiB**; serialized panel **556,422 bytes**. Child high-water is not simultaneous aggregate process-tree memory. |
+| Existing safety envelope | 1 GiB address space, 45s execution deadline, 16 MiB frame and 2s cleanup grace. These are safety bounds, not an operating SLO. |
+| Engine/output accounting | **386 groups = 385 canonical + 1 noncanonical; 650 outputs = 155 complete + 144 partial + 351 could_not_look; 299 assessed.** Eleven accounting/coherence checks passed. The earlier 301-assessed authenticated snapshot is a different observation time. |
+| Evidence and missingness | Canonical bands: **36 Accruing, 339 Degraded, 10 Ungraded by design, 0 Validated, 0 Disproven**. Output classes: **455 null**. Health: 84 healthy, 76 stale, 2 degraded, 62 unavailable, **426 null**. Null health and could_not_look are different partitions. |
+| Selected source/coherence | Legacy binding; named dependency-key status `coherent`; `trust_mtime=false`. Legacy claims metadata reports 104,857,394 bytes. This is neither a corpus digest nor an atomic snapshot of every output; the staleness reader retains the existing TTL exclusion. |
+| Recorded-owner diagnostic | One internally valid owner receipt, recorded **14:21:01Z**, evaluated for **2026-10-24**, **24 families**; compared at **20:17Z** in **3.344520s**. Owner artifact content, named generation and five named source checks remained stable. |
+| Exact mismatch scope | Host/root binding, claims/grades metadata, qualification-file metadata, clock metadata and owner-code metadata differ. Qualification and owner-code content-hash fields match. Demand-chain and stock-desk first-registration hash fields match while host metadata differs. Control-policy/family/date/duel-baseline/scope components match; no missing/extra generation keys. This identifies differing components, not the cause of transport or a claim about prices/calculation validity. Equal absent clock components do not prove a clock exists. |
+| Intentional unavailable states | `current_source_qualification` and `all_inputs_qualification` remain unavailable by source contract, even if named metadata were equal. Four recorded-provenance projection occurrences can share one owner receipt; the counter spans engine projections and findings context, rather than five distinct owners. Numeric attribution remains unavailable and typed findings partial. |
 
-### Handoff contract
+Receipts: [installed reader](../../research/evidence/eval_os_pro_census_20261024/a1-installed-reader-evidence.json) and [named-generation comparison](../../research/evidence/eval_os_pro_census_20261024/a1-readiness-generation-diff.json). Reproduction observers and independent preflight records are retained with them. The exact underlying runtime identity receipt remains in the private local evidence directory; published evidence contains bounded source/count/status fields.
 
-Recipient: A1 storage/performance acceptance role, currently carried by the assigned programme lead. One action: return the bounded released-reader observation specified above. Source: this workstream's A1 wave and acceptance table at the reviewed candidate revision. Return location: this record's dated evidence section, with the receipt linked from Draft #10168. A returned result is reviewed independently before any stronger completion claim. The author does not self-approve or self-merge.
+### Independent retained-journey review and concrete repair
+
+A fresh non-authoring reviewer inspected the retained desktop dark EN overview, mobile light EN CEO bands, and one mobile symbol-directory drilldown, together with their structured journey and exact-asset reuse receipts. The disposition is **PARTIAL**, not full operator acceptance or a fresh authenticated journey. The sample supports 385-canonical/one-gap versus 650-artifact accounting, separate healthy/Accruing states, explicit zero/null/ungraded meanings, and no trading/promotion authority. It does not independently cover every visual cell or the lower-detail horizon/cohort, ruler/basis, coverage and engine-specific next-action presentation. One additional auth-detail text extraction returned no content before interruption; no hash or completion was obtained and no further attempt was made. This is an evidence gap, not an authentication or absent-owner gate. [Bounded comprehension receipt](../../research/evidence/eval_os_pro_census_20261024/retained-comprehension-review.json).
+
+The review exposed a concrete count mismatch: the engine section has **386 rows**, while its output-class chip says **Not determined (455)**. Source investigation at qualified `5aae3c5` and current main `b6312b0` found identical `admin/static/app.js` blob `4a8e15ae6644e684f6dc38b4cffdae373e9e8ef3`. Class and authority chips use artifact-census counts while their handlers filter `IOS.rows` engine/group rows. State chips already count those rows. The bounded A1 repair derives both chip counts from the actual row population; API artifact totals, classification authority, evidence bands and global-facet behavior remain unchanged. No class is inferred and no new score is introduced.
+
+### Bounded repair implemented and independently accepted — 2026-10-24
+
+[Draft #10171](https://github.com/mastermindx-market-intelligence/macro/pull/10171), exact head `95e8daddc71a4d72eba5748a499ff279d356d388`, changes only `admin/static/app.js` and its UI regression test. Class and authority facets now count the same engine/group rows they filter, including null/missing values, noncanonical rows and zero-output engines. Existing global facet behavior, API artifact census, canonical-only evidence bands and classification/authority semantics are preserved.
+
+Three actual Python/Node test functions and JavaScript syntax checking passed. The new behavioral regression covers EN/ZH, multiple/zero outputs, missing/null values, combined filters and handler-driven returned row identities; it fails at the chip-count assertion against the original source. A fresh non-author reviewer independently ran the focused controls and negative control, accepted the patch, and read back both exact published blobs. This is bounded source acceptance, not deployed product or full A1 acceptance. Pytest was unavailable; one installation attempt was explicitly denied and ended without a retry. Full pytest-suite and all-green hosted CI are not claimed. [Validation](../../research/evidence/eval_os_pro_census_20261024/a1-filter-validation.json); [independent exact-head receipt](../../research/evidence/eval_os_pro_census_20261024/a1-filter-independent-review.json).
+
+Local `T15.S1` records this completed source implementation under A1 and parent T15. All 28 pre-existing records and their protected fields were preserved when the 29th record was added; T08, T15 and A1 are not accepted by that subtask completion. [Task receipt](../../research/evidence/eval_os_pro_census_20261024/task-filter-repair-record.json).
+
+### Concurrent restored-root evidence and protected source work
+
+A final task readback found a separate original-root observation at **20:18Z**: one isolated installed HTTP-miss wrapper invocation returned **`evidence_deadline_exceeded` after 45.239522s**, with no census/coherence success. Its 16 named sources and observed service epochs were stable on checkout `d35940b`; reader-child counts were zero before/after. Child high-water was 121,668 KiB. The actual HTTP-miss wrapper differs from the principal's direct backend call, so the two observations are not an observed repeat distribution or proof of a specific cause. Both remain valid bounded evidence; overall reliable latency and complete wrapper acceptance remain unresolved. [Bounded adverse receipt](../../research/evidence/eval_os_pro_census_20261024/restored-root-reader-timeout-excerpt.json).
+
+The actual restored-root writer subsequently added **T08.S1**, source commit `bbb95f3609c5`, to remove redundant negative Git-presence probes while preserving complete/partial inventory semantics. Its retained task evidence reports 156 output-health plus 351 consumer tests passing with seven Linux-only skips. Its independent Fabric return was 429 with no confirmed review verdict, so release remains held. This audit does not turn those reported tests into independent acceptance, assert timeout causality or take over that live source work. No further production probe, deadline increase or alternate review-effect retry is commissioned here. The current programme lead reconciles this active slice alongside the independent frontend repair.
+
+### A1 and R1 acceptance remain separate
+
+The accepted A1 findings adapter displays existing source-associated context with dates, gaps and unavailable numeric attribution. The original acceptance record states that A1 has no admitted numeric input. Native `POST /api/brain/chat`, `native_fact_receipt` and same-request internal-log verification belong to [existing R1](WS-EVAL-OS-RELIABILITY-EXTENSIONS.md), original programme T10/T11. Their absence is not an A1 completion prerequisite. The earlier candidate wording that coupled them is superseded by this scope correction.
+
+A1 still owes an independently reviewed disposition of its real admin-path source/install/render/update and comprehension obligations. The retained authenticated journey is reusable where relevant bytes and dependencies still match. The new backend observation alone does not prove authenticated paint, and a new follow-on PR alone does not invalidate unchanged accepted admin evidence.
+
+### Remaining A1 action and handoff
+
+Recipient: current A1 delivery/product-integration role. One action: disposition normal delivery of the independently accepted #10171 repair, then return its affected-source/served-asset and focused readback result. Source: this A1 wave and [exact reviewed repair](https://github.com/mastermindx-market-intelligence/macro/pull/10171/commits/95e8daddc71a4d72eba5748a499ff279d356d388). Return: this dated evidence section and Draft #10168. The author and publishing principal do not self-approve or self-merge; no deployed acceptance is inferred from the source review.
+
+A1 and T08 stay in progress. Reuse the two bounded production observations; do not replay them to manufacture a distribution. Actual consent, explicit denials, UNKNOWN effects and live writes remain protected for their exact operations. The historical October T21–T24 programme closure edges, R1 native-chat acceptance and absent session owners do not create new A1 prerequisites.
 
 
 
@@ -195,3 +244,4 @@ Raw original evidence, exact hashes and source-bound inventory are committed und
 research/evidence/eval-os-20261012/approved-base-repair-20261014/. The containing commit
 adds evidence/continuity only; it does not change the qualified runtime/control bytes.
 Publication still requires fresh same-carrier custody and shared-capacity admission.
+

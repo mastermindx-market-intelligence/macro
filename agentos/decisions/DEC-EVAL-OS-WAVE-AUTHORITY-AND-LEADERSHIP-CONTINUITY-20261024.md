@@ -6,8 +6,10 @@ question: >
 answer: >
   The existing Agent OS workstreams and their waves own objective, status, dependencies
   and next action. The current Chairman-assigned principal carries the programme-lead
-  role now. Retain all nine accepted waves and keep A1/W4 in_progress; add only the
-  composed-acceptance W6 and strict-hardening W7 already reserved by W3/W1.
+  role now. Retain all nine accepted waves and keep A1/W4 in_progress; add to Measurement Law the
+  composed-acceptance W6 and strict-hardening W7 already reserved by W3/W1. Register the
+  already frozen R1 reliability-extension wave in a dedicated sibling record because it
+  does not fit any existing workstream objective; do not make native-chat proof an A1 gate.
   The earlier standalone masterplan becomes a subordinate evidence audit, with its
   P0-P6 sequencing superseded by canonical wave references.
 rationale: >
@@ -17,7 +19,7 @@ rationale: >
   A1 must remain independent of W4 natural-time completion. Historical owners are
   provenance; real live writers, explicit denials and unknown effects remain protected.
 alternatives:
-  - option: retain the standalone P0-P6 plan as the execution authority
+  - option: retain the standalone P0-P6 plan as the canonical planning/execution state
     why_not: Competes with the existing workstream waves and violates the current correction.
   - option: reopen accepted waves to absorb all residual work
     why_not: Discards accepted boundaries and repeats work without a material invalidator.
@@ -37,6 +39,7 @@ affects:
   - WS:EVAL-OS-EVIDENCE-VIEW
   - WS:EVAL-OS-OUTPUT-HEALTH
   - WS:EVAL-OS-T1-ENGINE-REGISTRY
+  - WS:EVAL-OS-RELIABILITY-EXTENSIONS
 confidence: high
 reversibility: easy
 decided_by: chairman
@@ -51,3 +54,14 @@ A1 remains in_progress and is the top product wave. W4 remains independently in_
 Handoffs carry recipient role, one bounded action, the exact reviewed GitHub source and return location. Fresh non-authoring review remains required. The author neither self-approves nor self-merges. An explicit permission/safety denial ends that action; changing words, tools or accounts does not authorize a retry.
 
 This record changes Evaluation OS source only. No ChatGPT Project instructions or per-account fresh-chat rollout was performed. Installation/behavior for unreached rollout targets is UNKNOWN. No purchase, bypass flag or secret is included.
+
+## R1 registration and A1 scope correction
+
+Independent source review found that the candidate A1 next action conflated the admin panel/detail path with original T11's native Brain request/internal-log path. The original acceptance record explicitly leaves A1 numeric attribution unavailable. Remove that invented prerequisite while retaining A1's real source→served→paint/update, disclosure and comprehension obligations.
+
+The existing recovery freeze's R1 objective is registered unchanged in WS:EVAL-OS-RELIABILITY-EXTENSIONS, wave R1, status in_progress, under the current programme-lead role. This adds a machine-readable home for existing authorized work, not another masterplan, new objective, code-owner takeover or an A1 dependency. W7 remains the separate strict-hardening obligation. The resulting registered graph has 14 waves: nine original done, A1/W4/R1 in_progress and W6/W7 todo. Other frozen programme residuals remain explicitly assessed and owned in the audit; no programme-completion claim follows from this count.
+
+Local ownership metadata was reconciled to roles across 27 retained task records, preserving statuses, dependencies, acceptance criteria, evidence and creation provenance. Original-root T20.S1 source preparation remains implementation_complete; current ownership does not claim its authorship or request execution.
+
+
+A later live checkpoint found restored-root T08.S1 source work and an adverse HTTP-miss wrapper receipt. Preserve that actual writer and its unconfirmed review effect. This principal's separate two-file facet repair is independently accepted in Draft #10171; it is recorded as T15.S1 with all 28 prior task records preserved (29 after addition). Role continuity does not erase concurrent progress or claim either repair deployed.

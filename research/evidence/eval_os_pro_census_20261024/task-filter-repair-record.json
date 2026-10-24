@@ -1,0 +1,90 @@
+{
+  "schema": "eval_os.task_execution_record.v1",
+  "at": "2026-10-24T20:54:44.823288+00:00",
+  "before_count": 28,
+  "after_count": 29,
+  "before_sha256": "a6bbd7c59197a911afdc599b91ac1a6a8a5e82d8752a6fbceafb7c68804c6506",
+  "after_sha256": "9580b5647c9bdc99d9c87cd56191957a1934bb780be04ae5511261635664098e",
+  "prior_records_and_protected_fields_preserved": true,
+  "recorded_task": {
+    "id": "T15.S1",
+    "kind": "subtask",
+    "parent": "T15",
+    "title": "Match A1 class and authority chip counts to the engine/group rows they filter",
+    "workstream": "WS:EVAL-OS-EVIDENCE-VIEW",
+    "wave": "A1",
+    "depends_on": [],
+    "status": "implementation_complete",
+    "owner": "Intelligence Evaluation OS programme lead / frontend-product integration role",
+    "acceptance": [
+      "Exact two-file source repair, actual EN/ZH behavioral regression with baseline negative control, fresh non-author exact-head review; normal CI and deployed/admin behavior remain separate."
+    ],
+    "evidence": "Draft https://github.com/mastermindx-market-intelligence/macro/pull/10171 head95e8daddc71a4d72eba5748a499ff279d356d388; independent /root/a1_filter_review ACCEPT and published blob readback;3 focused Python/Node functions PASS,baseline negative control FAIL as expected,node syntax PASS;pytest installation denied once and ended;no full-suite/browser/deployment acceptance.",
+    "superseded_by": [],
+    "reason": null,
+    "notes": [
+      "Retrospective bounded execution record for Draft10171; existing T15 acceptance/dependencies and live T08.S1 source work are preserved. No parent/wave completion or deployed behavior is implied."
+    ],
+    "created": "2026-10-24T20:54:44Z",
+    "created_by": "web:eval-os-pro-census-20261024",
+    "history": [
+      {
+        "at": "2026-10-24T20:54:44Z",
+        "by": "web:eval-os-pro-census-20261024",
+        "event": "add"
+      },
+      {
+        "at": "2026-10-24T20:54:44Z",
+        "by": "web:eval-os-pro-census-20261024",
+        "event": "done",
+        "note": "Draft https://github.com/mastermindx-market-intelligence/macro/pull/10171 head95e8daddc71a4d72eba5748a499ff279d356d388; independent /root/a1_filter_review ACCEPT and published blob readback;3 focused Python/Node functions PASS,baseline negative control FAIL as expected,node syntax PASS;pytest installation denied once and ended;no full-suite/browser/deployment acceptance."
+      }
+    ],
+    "updated": "2026-10-24T20:54:44Z"
+  },
+  "live_writer_task_preserved": {
+    "id": "T08.S1",
+    "kind": "subtask",
+    "parent": "T08",
+    "title": "Remove redundant negative Git presence probes while preserving complete-versus-partial inventory semantics",
+    "workstream": "WS:EVAL-OS-EVIDENCE-VIEW",
+    "wave": "A1",
+    "depends_on": [],
+    "status": "implementation_complete",
+    "owner": null,
+    "acceptance": [
+      "Exact presence/output parity on absent/blob/directory/symlink/noncanonical/unavailable cases; complete inventory avoids per-path Git probes; no production causality/SLO claim or limit change; affected tests and independent review before release."
+    ],
+    "evidence": "bbb95f3609c5; 156 output-health + 351 consumer tests PASS,7 Linux-only skipped; independent Fabric review eval-presence-inventory-review-01a1333d-c2 returned429/no confirmed verdict,release held",
+    "superseded_by": [],
+    "reason": null,
+    "notes": [],
+    "created": "2026-10-24T20:43:13Z",
+    "created_by": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4",
+    "history": [
+      {
+        "at": "2026-10-24T20:43:13Z",
+        "by": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4",
+        "event": "add"
+      },
+      {
+        "at": "2026-10-24T20:43:36Z",
+        "by": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4",
+        "event": "start"
+      },
+      {
+        "at": "2026-10-24T20:50:02Z",
+        "by": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4",
+        "event": "done",
+        "note": "bbb95f3609c5; 156 output-health + 351 consumer tests PASS,7 Linux-only skipped; independent Fabric review eval-presence-inventory-review-01a1333d-c2 returned429/no confirmed verdict,release held"
+      }
+    ],
+    "updated": "2026-10-24T20:50:02Z"
+  },
+  "limits": [
+    "No T08/T15/A1 acceptance",
+    "No change to active restored-root source repair",
+    "No deploy,merge or self-approval"
+  ]
+}
+
