@@ -1,7 +1,7 @@
 {
   "acceptance-summary.json": {
-    "bytes": 2212,
-    "sha256": "88eb830883a9d8d53a23b3b5c0ef1049cd5f07640fbc904daac776ad451c8736",
+    "bytes": 2805,
+    "sha256": "d8e53eaf54a39aee755b8a3d1879e1a239940e69f4f7f02a4284da60e91f68e0",
     "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/acceptance-summary.json"
   },
   "auth-overview.json": {
@@ -40,8 +40,8 @@
     "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/anonymous-api-boundary.json"
   },
   "native-global-custody-note.json": {
-    "bytes": 633,
-    "sha256": "5555072427e37e83647281a998ced8a57ed1382161886c7093a01c1e6e790691",
+    "bytes": 808,
+    "sha256": "681f485052594796755bccb60b361e08febfef913f29eb16b62cc3ae24776966",
     "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/native-global-custody-note.json"
   },
   "screenshots": {
