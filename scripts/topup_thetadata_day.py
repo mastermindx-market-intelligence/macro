@@ -403,6 +403,264 @@ def _ensure_one_cell(store: Path, tier: str, root: str, day: _date,
 _SNAPSHOT_OI_COLUMNS = ["root", "expiration", "strike", "right", "date", "open_interest"]
 
 
+_EOD_CATCHUP_ROOTS = ("GLD", "SLV", "TLT", "HYG")
+
+
+def _eod_capture_scope(start, end, byte_cap, total_bytes, row_cap, total_rows):
+    """A bounded repair scope, not provider permission or an automatic job."""
+    if type(start) is not _date or type(end) is not _date:
+        raise ValueError("EOD catch-up needs exact date objects")
+    if not 0 <= (end - start).days <= 4 or start.year != end.year:
+        raise ValueError("EOD catch-up supports at most5 days in one year")
+    from zoneinfo import ZoneInfo
+    if end >= datetime.now(timezone.utc).astimezone(ZoneInfo('America/New_York')).date():
+        raise ValueError("EOD catch-up requires a completed historical date")
+    for value, ceiling in ((byte_cap, 16*1024*1024), (total_bytes, 64*1024*1024),
+                           (row_cap, 100000), (total_rows, 400000)):
+        if type(value) is not int or not 0 < value <= ceiling:
+            raise ValueError("EOD catch-up needs explicit positive byte/row bounds")
+    days = [start + timedelta(days=i) for i in range((end-start).days+1)]
+    if any(day.weekday() >= 5 for day in days):
+        raise ValueError("EOD catch-up scope must name contiguous weekday sessions")
+    return days
+
+
+def _eod_sync_directory(path):
+    import os
+    fd = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _eod_retain(path, data):
+    """Atomic bytes plus directory durability before their receipt is advanced."""
+    import os
+    temporary = path.with_name(path.name + '.tmp')
+    with temporary.open('xb') as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, path)
+    _eod_sync_directory(path.parent)
+
+
+def _eod_sync_canonical(path, store):
+    """Make canonical bytes and their directory entries durable before receipt."""
+    import os
+    with path.open('rb') as stream:
+        os.fsync(stream.fileno())
+    parent = path.parent
+    while True:
+        _eod_sync_directory(parent)
+        if parent == store:
+            break
+        parent = parent.parent
+
+
+def _validate_eod_capture_frame(frame, root, days):
+    import numpy as np
+    required = {'root', 'expiration', 'strike', 'right', 'date', 'close', 'volume'}
+    if frame is None or frame.empty or not required <= set(frame):
+        raise ValueError("Incomplete EOD capture schema/population")
+    dates = pd.to_datetime(frame['date'], errors='coerce')
+    if (not frame['root'].eq(root).all() or dates.isna().any() or dates.dt.tz is not None
+            or set(dates.dt.date) != set(days)
+            or not dates.eq(dates.dt.normalize()).all()
+            or not frame['right'].isin(['C', 'P']).all()
+            or pd.to_datetime(frame['expiration'], errors='coerce').isna().any()):
+        raise ValueError("EOD response does not match exact root/session scope")
+    for field in ('strike', 'close', 'volume'):
+        values = pd.to_numeric(frame[field], errors='coerce')
+        if not np.isfinite(values).all() or (values < 0).any() or (field == 'strike' and (values == 0).any()):
+            raise ValueError("Invalid EOD source numbers")
+    if frame.duplicated(['root', 'expiration', 'strike', 'right', 'date']).any():
+        raise ValueError("Ambiguous EOD contract/day")
+
+
+def capture_bounded_eod_catchup(store: Path, capture_dir: Path, *, start: _date, end: _date,
+        original_root: str, assigning_parent: str, max_response_bytes: int,
+        max_total_bytes: int, max_response_rows: int, max_total_rows: int) -> dict:
+    """Retain one four-root EOD operation. No store data write, probe or retry.
+
+    Callable only by a separately admitted operator; no CLI/scheduler invokes it.
+    Identity labels record custody, never grant it. Existing claims are final:
+    inspect their original state rather than replaying this function.
+    """
+    import hashlib
+    import uuid
+    from collectors import thetadata as td
+    from lib.options_source_receipts import BoundedRequestBudget
+    days = _eod_capture_scope(start, end, max_response_bytes, max_total_bytes,
+                              max_response_rows, max_total_rows)
+    for identity in (original_root, assigning_parent):
+        if str(uuid.UUID(identity)) != identity:
+            raise ValueError("Exact native custody identity required")
+    if not store.is_dir() or not capture_dir.parent.is_dir():
+        raise ValueError("Existing canonical store and capture parent required")
+    record = dict(schema='options.bounded_eod_catchup/v1', original_root=original_root,
+        assigning_parent=assigning_parent, roots=list(_EOD_CATCHUP_ROOTS),
+        store_ref=str(store.resolve()),
+        collector_sha256=hashlib.sha256(Path(td.__file__).read_bytes()).hexdigest(),
+        start=start.isoformat(), end=end.isoformat(), state='PREPARED', max_gets=4,
+        max_response_bytes=max_response_bytes, max_total_bytes=max_total_bytes,
+        max_response_rows=max_response_rows, max_total_rows=max_total_rows,
+        attempts=0, response_bytes=0, raw_rows=0, requests=[], store_writes=0,
+        publication=False, started_at=datetime.now(timezone.utc).isoformat())
+    def save():
+        _eod_retain(capture_dir/'receipt.json', json.dumps(record, allow_nan=False, sort_keys=True).encode())
+    with _writer_lock(store) as acquired:
+        if not acquired:
+            raise RuntimeError("Canonical store writer is occupied")
+        if any(_tmp_path(store/'eod'/root/f'{start.year}.parquet').exists() for root in _EOD_CATCHUP_ROOTS):
+            raise ValueError("Unreconciled canonical EOD temporary file")
+        if any(_has_day(store, 'eod', root, day) for root in _EOD_CATCHUP_ROOTS for day in days):
+            raise ValueError("Catch-up scope contains an already retained day")
+        capture_dir.mkdir()  # exclusive operation claim; never exist_ok/replacement
+        _eod_sync_directory(capture_dir.parent)
+        save()
+        class Budget(BoundedRequestBudget):
+            def begin(self, session, url):
+                super().begin(session, url)
+                if url != td._base_url()+'/v3/option/history/eod':
+                    raise ValueError("Unexpected EOD endpoint")
+                record['attempts'] = self.attempts
+                entry.update(state='REQUEST_STARTED', started_at=datetime.now(timezone.utc).isoformat())
+                save()  # reserve actual attempt durably BEFORE requests.Session.get
+        budget = Budget(4, profile='eod_catchup')
+        try:
+            for root in _EOD_CATCHUP_ROOTS:
+                byte_bound = min(max_response_bytes, max_total_bytes-record['response_bytes'])
+                row_bound = min(max_response_rows, max_total_rows-record['raw_rows'])
+                if min(byte_bound, row_bound) <= 0:
+                    raise ValueError("Aggregate EOD budget exhausted")
+                params = dict(symbol=root, expiration='*', start_date=int(start.strftime('%Y%m%d')),
+                              end_date=int(end.strftime('%Y%m%d')), format='csv')
+                entry = dict(root=root, parameters=params, endpoint='/v3/option/history/eod',
+                             origin=td._base_url(), state='RESERVED')
+                record['requests'].append(entry)
+                save()
+                def response(status):
+                    entry.update(http_status=status, state='RESPONSE_HEADERS' if status == 200 else 'REFUSED')
+                    save()
+                def retain(raw):
+                    _eod_retain(capture_dir/(root+'.csv'), raw)
+                    record['response_bytes'] += len(raw)
+                    entry.update(state='RAW_CAPTURED', response_bytes=len(raw),
+                        response_sha256=hashlib.sha256(raw).hexdigest(),
+                        received_at=datetime.now(timezone.utc).isoformat())
+                    save()
+                frame = td.bulk_eod(root, 0, start, end, request_budget=budget,
+                    max_bytes=byte_bound, max_rows=row_bound,
+                    response_handler=response, raw_response_handler=retain)
+                if frame is None or frame.empty:
+                    raise ValueError("EOD acquisition returned no complete frame")
+                raw_rows = frame.attrs.get('_bounded_raw_rows')
+                if type(raw_rows) is not int or not 0 < raw_rows <= row_bound:
+                    raise ValueError("Missing actual bounded source row count")
+                record['raw_rows'] += raw_rows
+                entry['raw_rows'] = raw_rows
+                _validate_eod_capture_frame(frame, root, days)
+                entry.update(state='CAPTURED', normalized_rows=len(frame))
+                save()
+            record['state'] = 'CAPTURED'
+        except BaseException as exc:
+            budget.stop()
+            if record['requests'] and record['requests'][-1]['state'] in ('REQUEST_STARTED', 'RESPONSE_HEADERS'):
+                record['requests'][-1]['state'] = 'EFFECT_UNKNOWN'
+            record.update(state='EFFECT_UNKNOWN' if any(r['state']=='EFFECT_UNKNOWN' for r in record['requests'])
+                          else 'STOPPED', error_type=type(exc).__name__)
+            raise
+        finally:
+            record['completed_at'] = datetime.now(timezone.utc).isoformat()
+            save()
+    return record
+
+
+def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
+    """Separate admitted store effect from a completed retained capture; no GET.
+
+    A started/failed merge is never resumed automatically. Its receipt and the
+    original canonical files must be reconciled by the admitted operator.
+    """
+    import hashlib
+    import io
+    from collectors import thetadata as td
+    from lib.options_source_receipts import instant
+    receipt = capture_dir/'receipt.json'
+    if not store.is_dir() or capture_dir.is_symlink() or receipt.is_symlink() or receipt.stat().st_size > 65536:
+        raise ValueError("Oversize EOD receipt")
+    receipt_bytes = receipt.read_bytes()
+    record = json.loads(receipt_bytes)
+    if (record.get('schema') != 'options.bounded_eod_catchup/v1' or record.get('state') != 'CAPTURED'
+            or record.get('roots') != list(_EOD_CATCHUP_ROOTS) or record.get('attempts') != 4
+            or record.get('store_ref') != str(store.resolve())
+            or record.get('collector_sha256') != hashlib.sha256(Path(td.__file__).read_bytes()).hexdigest()
+            or record.get('store_writes') != 0 or len(record.get('requests', [])) != 4):
+        raise ValueError("No complete, unmerged EOD capture")
+    start, end = _date.fromisoformat(record['start']), _date.fromisoformat(record['end'])
+    days = _eod_capture_scope(start, end, record['max_response_bytes'], record['max_total_bytes'],
+                              record['max_response_rows'], record['max_total_rows'])
+    frames = {}
+    total_bytes = total_rows = 0
+    started, completed = instant(record.get('started_at')), instant(record.get('completed_at'))
+    if not started <= completed <= datetime.now(timezone.utc):
+        raise ValueError("Invalid EOD operation clocks")
+    for root, entry in zip(_EOD_CATCHUP_ROOTS, record['requests']):
+        params = dict(symbol=root, expiration='*', start_date=int(start.strftime('%Y%m%d')),
+                      end_date=int(end.strftime('%Y%m%d')), format='csv')
+        raw_path = capture_dir/(root+'.csv')
+        if raw_path.is_symlink() or raw_path.stat().st_size > record['max_response_bytes']:
+            raise ValueError("EOD raw byte bound")
+        raw = raw_path.read_bytes()
+        if (entry.get('root') != root or entry.get('state') != 'CAPTURED'
+                or entry.get('endpoint') != '/v3/option/history/eod' or entry.get('parameters') != params
+                or entry.get('origin') != td._base_url()
+                or not started <= instant(entry.get('started_at')) <= instant(entry.get('received_at')) <= completed
+                or entry.get('http_status') != 200 or entry.get('response_bytes') != len(raw)
+                or entry.get('response_sha256') != hashlib.sha256(raw).hexdigest()):
+            raise ValueError("EOD retained response binding mismatch")
+        frame = pd.read_csv(io.BytesIO(raw), keep_default_na=False, na_values=[''])
+        if not 0 < len(frame) <= record['max_response_rows'] or len(frame) != entry['raw_rows']:
+            raise ValueError("EOD retained row bound")
+        total_bytes += len(raw)
+        total_rows += len(frame)
+        td._validate_bounded_eod_source(frame, start, end)
+        frames[root] = td._normalize_eod_df(frame, root)
+        _validate_eod_capture_frame(frames[root], root, days)
+    if (total_bytes != record['response_bytes'] or total_rows != record['raw_rows']
+            or total_bytes > record['max_total_bytes'] or total_rows > record['max_total_rows']):
+        raise ValueError("EOD aggregate binding mismatch")
+    def save():
+        _eod_retain(receipt, json.dumps(record, allow_nan=False, sort_keys=True).encode())
+    with _writer_lock(store) as acquired:
+        if not acquired:
+            raise RuntimeError("Canonical store writer is occupied")
+        # A competing caller may have started an uncertain merge while these
+        # frames were validated. Zero written days does not make that retryable.
+        if receipt.is_symlink() or receipt.read_bytes() != receipt_bytes:
+            raise ValueError("EOD receipt changed before writer lock")
+        if any(_tmp_path(store/'eod'/root/f'{start.year}.parquet').exists() for root in frames):
+            raise ValueError("Unreconciled canonical EOD temporary file")
+        if any(_has_day(store, 'eod', root, day) for root in frames for day in days):
+            raise ValueError("Canonical EOD scope changed after capture")
+        record['state'] = 'MERGE_STARTED'
+        save()
+        # Any interrupted merge keeps MERGE_STARTED, never a retryable CAPTURED.
+        for root, frame in frames.items():
+            for day in days:
+                written = _merge_day(store, 'eod', root, day, frame)
+                if written != int(frame['date'].eq(pd.Timestamp(day)).sum()):
+                    raise RuntimeError("Canonical EOD merge count differs from retained capture")
+                _eod_sync_canonical(store/'eod'/root/f'{day.year}.parquet', store)
+                record['store_writes'] += 1
+                save()
+        record['state'] = 'MERGED'
+        save()
+    return record
+
+
 def _snapshot_oi_frame(td, root: str) -> pd.DataFrame | None:
     """(K2, Sol B1b) OI[D] frontier via `collectors.thetadata.snapshot_open_interest`
     — replaces the current-day-unavailable `bulk_open_interest(root, 0, D, D)`
