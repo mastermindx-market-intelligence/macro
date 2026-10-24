@@ -6953,6 +6953,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+      - "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md"
+      - "research/SNB_FLOOR_RATE_CASE_2015_01_15.md"
       - "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md"
       - "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md"
       - "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
