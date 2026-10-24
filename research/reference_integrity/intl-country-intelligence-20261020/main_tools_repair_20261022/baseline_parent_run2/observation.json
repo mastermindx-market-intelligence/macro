@@ -1,0 +1,833 @@
+{
+  "schema": "intl.actual_parent_acceptance.v3",
+  "phase": "baseline",
+  "matrix": "smoke",
+  "started_at": "2026-10-22T03:26:04.798Z",
+  "parent_source": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "subject": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "artifact": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/proposed_main25020261022_repair",
+  "expected": {
+    "/intl.html": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+    "/shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+  },
+  "driver_sha256": "5478e445e7ce9c1100da5c2b384cb33c277c0c03ebf544e9e62d43b716b69166",
+  "network_stubs": false,
+  "preference_setup": "Existing parent localStorage keys mm.lang and mmx.shell.theme; child context comes through real parent",
+  "contexts": [
+    {
+      "scope": "1440-en-dark",
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "query": "",
+      "snapshots": [
+        {
+          "label": "entry",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-JP",
+            "history": 2,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30#imc-country-JP",
+            "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-JP"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "country",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 3,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30#imc-country-TW",
+            "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "focusCountry": "imc-country-TW",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_first",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30#intl-analysis-tools",
+            "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_manually_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30#intl-analysis-tools",
+            "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "tools_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30#intl-analysis-tools",
+            "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-JP",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "3c9b98eb-eea4-42ec-a32e-a82289772c30",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "goBack_country",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#imc-country-TW",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=9481cddd-215f-4384-92b0-d905e2f3df11#imc-country-TW",
+            "generation": "9481cddd-215f-4384-92b0-d905e2f3df11",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": false,
+            "legacy": false,
+            "countries": [
+              "imc-country-TW"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9481cddd-215f-4384-92b0-d905e2f3df11",
+                "href": "/intl.html#imc-country-TW",
+                "requestId": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "goForward_tools",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools",
+            "history": 4,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0#intl-analysis-tools",
+            "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BODY",
+            "focusCountry": "",
+            "acks": 0,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null
+              }
+            ]
+          }
+        },
+        {
+          "label": "library_selected",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+            "history": 5,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "BUTTON",
+            "focusCountry": "",
+            "acks": 1,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1"
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_first",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 6,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0#intl-leadership-rotation",
+            "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": true,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-leadership-rotation",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_manually_closed",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 6,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0#intl-leadership-rotation",
+            "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "",
+            "activeTag": "SUMMARY",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        },
+        {
+          "label": "nested_repeated",
+          "parent": {
+            "url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+            "history": 6,
+            "theme": "dark",
+            "lang": "en"
+          },
+          "child": {
+            "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0#intl-leadership-rotation",
+            "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+            "transport": "1",
+            "theme": "dark",
+            "lang": "en",
+            "tools": true,
+            "legacy": false,
+            "countries": [
+              "imc-country-KR"
+            ],
+            "activeId": "",
+            "activeHref": "http://127.0.0.1:3100/intl.html#intl-leadership-rotation",
+            "activeTag": "A",
+            "focusCountry": "",
+            "acks": 2,
+            "events": [
+              {
+                "type": "INIT",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html#intl-analysis-tools",
+                "requestId": null
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+                "requestId": "req-1"
+              },
+              {
+                "type": "LOCATION_ACCEPTED",
+                "origin": "http://127.0.0.1:3100",
+                "generation": "9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+                "href": "/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+                "requestId": "req-2"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "scope": "1440-en-dark",
+      "id": "parent_and_child_context",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nondefault_country_entry",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_selection_and_focus",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "country_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "actual_projected_tools_href",
+      "passed": true,
+      "actualHref": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_opens",
+      "passed": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_first_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_arrival_visible",
+      "passed": true,
+      "visible": true,
+      "child_rect": {
+        "top": 739.078125,
+        "bottom": 803.078125,
+        "left": 24,
+        "right": 1192,
+        "rendered": true,
+        "width": 1168,
+        "height": 64
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_reopens_without_ack",
+      "passed": false,
+      "acks_before": 2,
+      "acks_after": 2
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "tools_repeat_no_history_or_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goBack_country_opens_fresh_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html#imc-country-TW"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "goForward_tools_opens_fresh_generation",
+      "passed": true,
+      "parent_url": "http://127.0.0.1:3100/intl.html#intl-analysis-tools"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "library_selected_through_real_control",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_first_opens_all_ancestors",
+      "passed": true,
+      "ancestors": [
+        {
+          "id": "",
+          "open": true
+        },
+        {
+          "id": "intl-legacy-research",
+          "open": true
+        },
+        {
+          "id": "intl-analysis-tools",
+          "open": true
+        }
+      ],
+      "allOpen": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_first_history_and_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_arrival_visible",
+      "passed": false,
+      "visible": false,
+      "child_rect": {
+        "top": 8766.796875,
+        "bottom": 8786.9375,
+        "left": 49,
+        "right": 318,
+        "rendered": true,
+        "width": 269,
+        "height": 20.140625
+      },
+      "frame": {
+        "x": 224,
+        "y": 64,
+        "width": 1216,
+        "height": 836
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_reopens_without_ack",
+      "passed": false,
+      "ancestors": [
+        {
+          "id": "",
+          "open": false
+        },
+        {
+          "id": "intl-legacy-research",
+          "open": false
+        },
+        {
+          "id": "intl-analysis-tools",
+          "open": true
+        }
+      ],
+      "allOpen": false
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "nested_repeat_no_history_or_generation",
+      "passed": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "journey_completed",
+      "passed": false,
+      "error": "page.waitForURL: Timeout 12000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=\"\n============================================================\n    at run (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_actual_parent.cjs:167:18)\n    at async /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_actual_parent.cjs:179:70"
+    },
+    {
+      "scope": "binding",
+      "id": "actual_child_asset_hashes",
+      "passed": true,
+      "responses": 7
+    },
+    {
+      "scope": "runtime",
+      "id": "no_page_or_console_errors",
+      "passed": true
+    }
+  ],
+  "responses": [
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell.css?v=b1918cca",
+      "status": 200,
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "bytes": 467,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/shared_shell_bridge.js?v=048314d5",
+      "status": 200,
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "bytes": 51246,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=9481cddd-215f-4384-92b0-d905e2f3df11",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=3c9b98eb-eea4-42ec-a32e-a82289772c30",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?mmx_shell=1&mmx_generation=9f80f3d3-8ff6-40a7-ac2b-e1594c1eb6a0",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "bytes": 217,
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "url": "http://127.0.0.1:3102/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=692df8bc-02d3-4d5a-8aff-ea6d05822a21",
+      "status": 200,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8",
+      "bytes": 3061443,
+      "matches": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "1440-en-dark-tools.png",
+      "bytes": 193302,
+      "sha256": "3215def408dc8b5efaa2ec90a87e4850cae1c6fe0e14661e07512f3cbdb4fe1d"
+    },
+    {
+      "path": "1440-en-dark-nested.png",
+      "bytes": 192266,
+      "sha256": "7632060dda5b567841fc5be8b9e1feb107fa19099b92a8564bfb065d17b557f7"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "external_requests_blocked": [],
+  "browser": "155.0.8059.85",
+  "passed": 16,
+  "failed": 5,
+  "status": "reproduced_failure",
+  "finished_at": "2026-10-22T03:26:27.230Z"
+}

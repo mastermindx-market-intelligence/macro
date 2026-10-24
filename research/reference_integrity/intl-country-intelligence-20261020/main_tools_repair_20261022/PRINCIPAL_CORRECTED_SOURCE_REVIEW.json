@@ -1,0 +1,16 @@
+{
+  "recorded_at": "2026-10-22T05:10:17.566321+00:00",
+  "reviewer": "/root/intl_shell_acceptance_review",
+  "verdict": "PASS for exact corrected source; runtime acceptance conditional",
+  "authored_return": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/PRINCIPAL_CORRECTED_SOURCE_REVIEW.md",
+  "authored_return_sha256": "a56c4d3aba20d46b7eb6f95350da75c0e45778fd794b825c0909147b3fadc0f9",
+  "authored_return_bytes": 3347,
+  "delta_sha256": "e169ee1993cd500ea3034d99041cb86839e4023448082e96dada43f08db546d5",
+  "own_execution_claim": false,
+  "original_r3_verdict": "REQUEST_CHANGES / NOT_ACCEPTED",
+  "runtime_boundaries": [
+    "actual-parent saved scroll away from hash heading",
+    "known predecessor parent focus failure remains failed",
+    "later target/bubble cancellation unproved"
+  ]
+}

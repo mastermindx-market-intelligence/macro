@@ -182,3 +182,123 @@ def test_universe_ticker_conversion():
     assert _clean_local("BT.A") == "BT-A"                # class share -> dash
     assert _clean_local("CASH") is None                  # cash row skipped
     assert _EU_SUFFIX["Germany"] == ".DE" and _EU_SUFFIX["France"] == ".PA"
+
+
+def test_country_controller_survives_the_normal_html_publisher(tmp_path, monkeypatch):
+    """Country navigation is delivered inside the public HTML document."""
+    import re
+    from datetime import date
+    from lib.intl_country_assessment import build_country_assessments
+    from lib import pages
+
+    vm = _vm()
+    vm["intl_analysis"] = build_country_assessments(vm["latest"], today=date(2026, 10, 19))
+    html = _env().get_template("intl.html.j2").render(**vm, mode="macro")
+    controller = (ROOT / "templates" / "intl_country_cockpit.js").read_text().strip()
+    monkeypatch.setattr(pages, "_site_root", lambda: tmp_path)
+    monkeypatch.setattr(pages, "_shim_checked", False)
+    output = pages.write_page(tmp_path / "intl.html", html).read_text()
+    # The production post-render sweep externalizes opt-in scripts only.
+    output = pages.externalize_js_text(output, lambda _body, _index: "assets/js/opted-in.js")
+    inline = re.findall(r'<script\b([^>]*)>(.*?)</script>', output, re.S)
+    delivered = [(attrs, body) for attrs, body in inline if body.strip() == controller]
+    assert len(delivered) == 1
+    assert "src=" not in delivered[0][0] and "data-externalize" not in delivered[0][0]
+    assert not re.search(r'<script\b[^>]*\bsrc="[^\"]*intl_country_cockpit\.js', output)
+    assert 'id="imc-country-JP"' in output
+    stocks = _env().get_template("intl.html.j2").render(**vm, mode="stocks")
+    assert controller not in stocks
+
+
+def _isolated_primary_build(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from lib import config, pages
+    from engine import intl_run
+    from scripts import build_international_macro, build_intl_library
+    cfg = deepcopy(config.load())
+    data, site = tmp_path / "data", tmp_path / "site"
+    data.mkdir()
+    cfg["storage"]["site_dir"] = str(site)
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(pages, "_site_root", lambda: site)
+    monkeypatch.setattr(pages, "_shim_checked", False)
+    monkeypatch.setattr(intl_run, "run", lambda: deepcopy(_vm()["latest"]))
+    monkeypatch.setattr(build_international_macro, "build_all", lambda *a, **kw: None)
+    monkeypatch.setattr(build_intl_library, "main", lambda **kw: None)
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    monkeypatch.delenv("US_LANE", raising=False)
+    return data, site
+
+
+def test_primary_country_build_survives_corrupt_optional_stock_cache(tmp_path, monkeypatch):
+    from scripts import build_intl
+    data, site = _isolated_primary_build(tmp_path, monkeypatch)
+    cache = data / "intl_search"
+    cache.mkdir()
+    for name in ("closes.parquet", "members.parquet"):
+        (cache / name).write_bytes(b"deliberately undecodable optional parquet")
+    assert build_intl.main() == 0
+    output = (site / "intl.html").read_text()
+    assert 'id="imc-country-JP"' in output
+    assert "Country assessments" in output
+    assert (cache / "closes.parquet").read_bytes() == b"deliberately undecodable optional parquet"
+
+
+def test_primary_render_failure_is_not_reported_as_success(tmp_path, monkeypatch):
+    from scripts import build_intl
+    _, site = _isolated_primary_build(tmp_path, monkeypatch)
+    def fail(*args, **kwargs):
+        raise RuntimeError("controlled primary render failure")
+    monkeypatch.setattr(build_intl, "render_international_pages", fail)
+    assert build_intl.main() != 0
+    assert not (site / "intl.html").exists()
+
+
+def test_primary_engine_failure_is_not_reported_as_success(monkeypatch):
+    from engine import intl_run
+    from scripts import build_intl
+    def fail():
+        raise RuntimeError("controlled primary engine failure")
+    monkeypatch.setattr(intl_run, "run", fail)
+    assert build_intl.main() != 0
+
+
+def test_primary_builder_passes_explicit_stored_observations_with_one_evaluation_day(tmp_path, monkeypatch):
+    from datetime import date
+    from scripts import build_intl
+    from lib import intl_country_inputs, intl_country_assessment
+    data, site = _isolated_primary_build(tmp_path, monkeypatch)
+    seen = {}
+
+    def reader(data_root, intl_config, *, today):
+        seen.update(data_root=data_root, intl_config=intl_config, today=today)
+        item = intl_country_inputs._stored_observation(
+            "JP", "gdp", [
+                {"date": "2025-04-01", "value": 100}, {"date": "2025-07-01", "value": 101},
+                {"date": "2025-10-01", "value": 102}, {"date": "2026-01-01", "value": 103},
+                {"date": "2026-04-01", "value": 104}],
+            "https://fred.stlouisfed.org/graph/fredgraph.csv?id=JPNRGDPEXP", today=today)
+        return {"JP": {"gdp": item}} if item else {}
+
+    original = intl_country_assessment.build_country_assessments
+
+    def assessment(latest, **kwargs):
+        assert kwargs["today"] == seen["today"] and type(kwargs["today"]) is date
+        assert "stored_observations" in kwargs
+        model = original(latest, **kwargs)
+        seen["model"] = model
+        return model
+
+    monkeypatch.setattr(intl_country_inputs, "load_stored_country_observations", reader)
+    monkeypatch.setattr(intl_country_assessment, "build_country_assessments", assessment)
+    assert build_intl.main() == 0
+    assert seen["data_root"] == data
+    assert seen["intl_config"]["countries"]["JP"]["fred"]["gdp"] == "JPNRGDPEXP"
+    jp = next(country for country in seen["model"]["countries"] if country["cc"] == "JP")
+    gdp = next(metric for metric in jp["metrics"] if metric["key"] == "gdp")
+    if seen["today"] >= date(2026, 6, 30):
+        assert gdp["value"] is not None and gdp["evidence"]["observations"][-1]["value"] == 104
+        assert gdp["source_url"] == "https://fred.stlouisfed.org/series/JPNRGDPEXP"
+    assert (site / "intl.html").exists()

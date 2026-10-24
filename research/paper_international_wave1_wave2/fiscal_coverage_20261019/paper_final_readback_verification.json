@@ -1,0 +1,508 @@
+{
+  "schema": "mastermind.intl_fiscal_paper_readback.v1",
+  "text_checks": [
+    {
+      "board": "DMX-0",
+      "node_id": "DOS-0",
+      "actual": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "E2P-0",
+      "actual": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EBI-0",
+      "actual": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EIK-0",
+      "actual": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "DR9-0",
+      "actual": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "E0Y-0",
+      "actual": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "E9R-0",
+      "actual": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EGT-0",
+      "actual": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "IMF \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EOA-0",
+      "actual": "External & fiscal position",
+      "expected": "External & fiscal position",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EOS-0",
+      "actual": "External & fiscal position",
+      "expected": "External & fiscal position",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EPA-0",
+      "actual": "External & fiscal position",
+      "expected": "External & fiscal position",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EPS-0",
+      "actual": "External & fiscal position",
+      "expected": "External & fiscal position",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EOB-0",
+      "actual": "% GDP \u00b7 FORECAST",
+      "expected": "% GDP \u00b7 FORECAST",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EOT-0",
+      "actual": "% GDP \u00b7 FORECAST",
+      "expected": "% GDP \u00b7 FORECAST",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EPB-0",
+      "actual": "% GDP \u00b7 FORECAST",
+      "expected": "% GDP \u00b7 FORECAST",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EPT-0",
+      "actual": "% GDP \u00b7 FORECAST",
+      "expected": "% GDP \u00b7 FORECAST",
+      "pass": true
+    },
+    {
+      "board": "ER4-0",
+      "node_id": "ESX-0",
+      "actual": "2026 \u2192 2027 \u00b7 % GDP \u00b7 Forecast",
+      "expected": "2026 \u2192 2027 \u00b7 % GDP \u00b7 Forecast",
+      "pass": true
+    },
+    {
+      "board": "ER4-0",
+      "node_id": "ETI-0",
+      "actual": "IMF October outlook \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "expected": "IMF October outlook \u2197 \u00b7 Published 13 Oct 2026 \u00b7 Information through 30 Sep",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EVZ-0",
+      "actual": "Government balance",
+      "expected": "Government balance",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EVY-0",
+      "actual": "The baseline moves from deficit to surplus.",
+      "expected": "The baseline moves from deficit to surplus.",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EVV-0",
+      "actual": "-1.3%",
+      "expected": "-1.3%",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EVR-0",
+      "actual": "1.4%",
+      "expected": "1.4%",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EWB-0",
+      "actual": "Gross government debt",
+      "expected": "Gross government debt",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EWA-0",
+      "actual": "Debt falls relative to GDP in the baseline.",
+      "expected": "Debt falls relative to GDP in the baseline.",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EW7-0",
+      "actual": "47.3%",
+      "expected": "47.3%",
+      "pass": true
+    },
+    {
+      "board": "DMX-0",
+      "node_id": "EW3-0",
+      "actual": "46.2%",
+      "expected": "46.2%",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWN-0",
+      "actual": "Government balance",
+      "expected": "Government balance",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWM-0",
+      "actual": "The baseline moves from deficit to surplus.",
+      "expected": "The baseline moves from deficit to surplus.",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWJ-0",
+      "actual": "-1.3%",
+      "expected": "-1.3%",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWF-0",
+      "actual": "1.4%",
+      "expected": "1.4%",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWZ-0",
+      "actual": "Gross government debt",
+      "expected": "Gross government debt",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWY-0",
+      "actual": "Debt falls relative to GDP in the baseline.",
+      "expected": "Debt falls relative to GDP in the baseline.",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWV-0",
+      "actual": "47.3%",
+      "expected": "47.3%",
+      "pass": true
+    },
+    {
+      "board": "DW7-0",
+      "node_id": "EWR-0",
+      "actual": "46.2%",
+      "expected": "46.2%",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXB-0",
+      "actual": "Government balance",
+      "expected": "Government balance",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXA-0",
+      "actual": "The baseline moves from deficit to surplus.",
+      "expected": "The baseline moves from deficit to surplus.",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EX7-0",
+      "actual": "-1.3%",
+      "expected": "-1.3%",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EX3-0",
+      "actual": "1.4%",
+      "expected": "1.4%",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXN-0",
+      "actual": "Gross government debt",
+      "expected": "Gross government debt",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXM-0",
+      "actual": "Debt falls relative to GDP in the baseline.",
+      "expected": "Debt falls relative to GDP in the baseline.",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXJ-0",
+      "actual": "47.3%",
+      "expected": "47.3%",
+      "pass": true
+    },
+    {
+      "board": "E4D-0",
+      "node_id": "EXF-0",
+      "actual": "46.2%",
+      "expected": "46.2%",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EXZ-0",
+      "actual": "Government balance",
+      "expected": "Government balance",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EXY-0",
+      "actual": "The baseline moves from deficit to surplus.",
+      "expected": "The baseline moves from deficit to surplus.",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EXV-0",
+      "actual": "-1.3%",
+      "expected": "-1.3%",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EXR-0",
+      "actual": "1.4%",
+      "expected": "1.4%",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EYB-0",
+      "actual": "Gross government debt",
+      "expected": "Gross government debt",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EYA-0",
+      "actual": "Debt falls relative to GDP in the baseline.",
+      "expected": "Debt falls relative to GDP in the baseline.",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EY7-0",
+      "actual": "47.3%",
+      "expected": "47.3%",
+      "pass": true
+    },
+    {
+      "board": "EC2-0",
+      "node_id": "EY3-0",
+      "actual": "46.2%",
+      "expected": "46.2%",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYS-0",
+      "actual": "The baseline retains an external surplus. Its composition matters more than the sign alone.",
+      "expected": "The baseline retains an external surplus. Its composition matters more than the sign alone.",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYQ-0",
+      "actual": "22.0% \u2192 23.1%",
+      "expected": "22.0% \u2192 23.1%",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYN-0",
+      "actual": "The projected surplus is broadly unchanged as a share of GDP.",
+      "expected": "The projected surplus is broadly unchanged as a share of GDP.",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYL-0",
+      "actual": "0.3% \u2192 0.3%",
+      "expected": "0.3% \u2192 0.3%",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYI-0",
+      "actual": "Debt falls relative to GDP in the baseline.",
+      "expected": "Debt falls relative to GDP in the baseline.",
+      "pass": true
+    },
+    {
+      "board": "ER5-0",
+      "node_id": "EYG-0",
+      "actual": "21.1% \u2192 20.0%",
+      "expected": "21.1% \u2192 20.0%",
+      "pass": true
+    }
+  ],
+  "text_count": 56,
+  "text_passed": 56,
+  "style_checks": [
+    {
+      "node_id": "EYC-0",
+      "property": "borderTopColor",
+      "expected": "var(--mx-light-line)",
+      "pass": true
+    },
+    {
+      "node_id": "EYW-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYV-0",
+      "property": "color",
+      "expected": "var(--mx-light-muted)",
+      "pass": true
+    },
+    {
+      "node_id": "EYP-0",
+      "property": "borderBottomColor",
+      "expected": "var(--mx-light-line)",
+      "pass": true
+    },
+    {
+      "node_id": "EYT-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYS-0",
+      "property": "color",
+      "expected": "var(--mx-light-muted)",
+      "pass": true
+    },
+    {
+      "node_id": "EYQ-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYK-0",
+      "property": "borderBottomColor",
+      "expected": "var(--mx-light-line)",
+      "pass": true
+    },
+    {
+      "node_id": "EYO-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYN-0",
+      "property": "color",
+      "expected": "var(--mx-light-muted)",
+      "pass": true
+    },
+    {
+      "node_id": "EYL-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYF-0",
+      "property": "borderBottomColor",
+      "expected": "var(--mx-light-line)",
+      "pass": true
+    },
+    {
+      "node_id": "EYJ-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYI-0",
+      "property": "color",
+      "expected": "var(--mx-light-muted)",
+      "pass": true
+    },
+    {
+      "node_id": "EYG-0",
+      "property": "color",
+      "expected": "var(--mx-light-text)",
+      "pass": true
+    },
+    {
+      "node_id": "EYE-0",
+      "property": "color",
+      "expected": "var(--mx-light-muted)",
+      "pass": true
+    }
+  ],
+  "style_count": 16,
+  "style_passed": 16,
+  "old_cutoff_absent": true,
+  "board_text_counts": {
+    "EC2-0": 12,
+    "E4D-0": 12,
+    "DW7-0": 12,
+    "ER5-0": 6,
+    "DMX-0": 12,
+    "ER4-0": 2
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "phase": "final",
+  "started_at": "2026-10-20T10:18:14.599400+00:00",
+  "html_sha256": "bc4fd7f4187610efe9922088a5edb5134bb9b242b42edcc563a5fa6f94c3fa33",
+  "checks": [
+    {
+      "name": "native_summary_updates_url",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "native_summary_back",
+      "actual": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-KR",
+        "open": [
+          "imc-country-KR"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "native_summary_forward",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "native_summary_reload",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "summary_keyboard_Enter",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "summary_keyboard_Space",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "native_summary_can_collapse",
+      "actual": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "partial_coverage_has_no_dead_country_links",
+      "actual": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "stale_anchor_does_not_rewrite_url",
+      "actual": "",
+      "expected": "",
+      "passed": true
+    },
+    {
+      "name": "focus_ring_inside_scrollport_light_en",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "focus_ring_inside_scrollport_light_zh",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "focus_ring_inside_scrollport_dark_en",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "focus_ring_inside_scrollport_dark_zh",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "no_page_exceptions",
+      "actual": [],
+      "expected": [],
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "focus": [
+    {
+      "theme": "light",
+      "lang": "en",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "-3px",
+      "vertical_ring_inside_scrollport": true,
+      "horizontal_ring_inside_scrollport": true
+    },
+    {
+      "theme": "light",
+      "lang": "zh",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "-3px",
+      "vertical_ring_inside_scrollport": true,
+      "horizontal_ring_inside_scrollport": true
+    },
+    {
+      "theme": "dark",
+      "lang": "en",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "-3px",
+      "vertical_ring_inside_scrollport": true,
+      "horizontal_ring_inside_scrollport": true
+    },
+    {
+      "theme": "dark",
+      "lang": "zh",
+      "outline": "solid",
+      "width": "2px",
+      "offset": "-3px",
+      "vertical_ring_inside_scrollport": true,
+      "horizontal_ring_inside_scrollport": true
+    }
+  ],
+  "finished_at": "2026-10-20T10:18:21.679409+00:00",
+  "passed": 14,
+  "total": 14
+}

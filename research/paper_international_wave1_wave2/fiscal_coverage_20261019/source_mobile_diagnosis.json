@@ -1,0 +1,176 @@
+{
+  "width": 320,
+  "documentWidth": 444,
+  "box": {
+    "x": 29,
+    "y": 352.859375,
+    "width": 400.078125,
+    "height": 1385.171875,
+    "top": 352.859375,
+    "right": 429.078125,
+    "bottom": 1738.03125,
+    "left": 29
+  },
+  "text": "Sources, dates & interpretation\n+\n\nThe economic path is an attributed forecast. The near-term paths are conditional interpretations, without assigned probabilities or price targets.\n\nEquity trends use the most recent 50 and 200 observed closes. Currency strength is measured against the US dollar and carries its own observation date.\n\nRecent high reference: 252 observed closes, 2025-10-01 → 2026-10-15. Currency observation: —.\n\nObservation ledger\nMeasure↕\tObservation↕\tPeriod↕\tSource↕\nGDP growth\t0.73 % y/y\t2026-04\tExisting international macro series\nInflation\t1.90 % y/y\t2026-07\tBank for International Settlements ↗\nPolicy rate\t1.25 %\t2026-09\tBank for International Settlements ↗\nUnemployment\t2.40 %\t2026-07\tExisting international macro series\nProjection sources\nMeasure↕\tEdition↕\tReporting period↕\tSource table↕\nReal GDP growth\tIMF · 2026-10-13\t2026 / 2027\tA2 ↗\nAnnual inflation\tIMF · 2026-10-13\t2026 / 2027\tA6 ↗\nCurrent account\tIMF · 2026-10-13\t2026 / 2027\tA11 ↗\nGovernment balance\tIMF · 2026-10-13\t2026 / 2027\tA8 ↗\nGross government debt\tIMF · 2026-10-13\t2026 / 2027\tA8 ↗\n\nRevision figures compare the same provider, measure and target period across identified editions. A difference between forecasters is a separate published view. Annual inflation uses an annual average; monthly inflation observations use year-over-year rates.\n\nGovernment balance: General government. Sector and instrument coverage can differ across countries; this is not a sovereign-risk ranking.\n\nGross government debt: General government. Sector and instrument coverage can differ across countries; this is not a sovereign-risk ranking. Japan gross debt is reported on a nonconsolidated basis.\n\nBIS statistics are attributed to the Bank for International Settlements. Chinese translations are not official BIS translations. No endorsement is implied.",
+  "links": [
+    "https://data.bis.org/topics/CPI",
+    "https://data.bis.org/topics/CBPOL",
+    "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=3",
+    "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=10",
+    "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=20",
+    "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14",
+    "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf#page=14"
+  ],
+  "overflowing": [
+    {
+      "tag": "A",
+      "class": "",
+      "width": 105.046875,
+      "scrollWidth": 105
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 105.046875,
+      "scrollWidth": 105
+    },
+    {
+      "tag": "A",
+      "class": "imc-tools-link",
+      "width": 85.453125,
+      "scrollWidth": 85
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 66.734375,
+      "scrollWidth": 67
+    },
+    {
+      "tag": "SPAN",
+      "class": "",
+      "width": 8.71875,
+      "scrollWidth": 9
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "width": 70.484375,
+      "scrollWidth": 70
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 24.640625,
+      "scrollWidth": 25
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "width": 94.421875,
+      "scrollWidth": 94
+    },
+    {
+      "tag": "SPAN",
+      "class": "",
+      "width": 14.734375,
+      "scrollWidth": 15
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 44.6875,
+      "scrollWidth": 45
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "width": 130.25,
+      "scrollWidth": 130
+    },
+    {
+      "tag": "SPAN",
+      "class": "",
+      "width": 14.609375,
+      "scrollWidth": 15
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 80.640625,
+      "scrollWidth": 81
+    },
+    {
+      "tag": "A",
+      "class": "",
+      "width": 97.046875,
+      "scrollWidth": 97
+    },
+    {
+      "tag": "SPAN",
+      "class": "",
+      "width": 13.078125,
+      "scrollWidth": 13
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 48.96875,
+      "scrollWidth": 49
+    },
+    {
+      "tag": "DETAILS",
+      "class": "panel imc-country",
+      "width": 430.078125,
+      "scrollWidth": 428
+    },
+    {
+      "tag": "SUMMARY",
+      "class": "",
+      "width": 428.078125,
+      "scrollWidth": 428
+    },
+    {
+      "tag": "SPAN",
+      "class": "imc-country-thesis",
+      "width": 400.078125,
+      "scrollWidth": 400
+    },
+    {
+      "tag": "SPAN",
+      "class": "imc-row-forecast",
+      "width": 120,
+      "scrollWidth": 120
+    },
+    {
+      "tag": "B",
+      "class": "",
+      "width": 120,
+      "scrollWidth": 120
+    },
+    {
+      "tag": "SPAN",
+      "class": "",
+      "width": 10.984375,
+      "scrollWidth": 0
+    },
+    {
+      "tag": "SMALL",
+      "class": "",
+      "width": 120,
+      "scrollWidth": 120
+    },
+    {
+      "tag": "SPAN",
+      "class": "l-en",
+      "width": 95.15625,
+      "scrollWidth": 0
+    },
+    {
+      "tag": "SPAN",
+      "class": "imc-disclosure",
+      "width": 12,
+      "scrollWidth": 13
+    }
+  ]
+}

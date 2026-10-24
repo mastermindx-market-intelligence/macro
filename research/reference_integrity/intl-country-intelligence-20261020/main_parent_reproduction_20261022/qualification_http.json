@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-10-22T02:22:50.662383+00:00",
+  "registry_file_sha256": "cdf744b60adb4c6c88c859389657640984238ff4f9b515443d5c6a78468924f9",
+  "projection_source": {
+    "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023",
+    "macro": "d1e7e5559114f3b1e39e27a4331cd39f71ccb5db",
+    "terminal": "d6515f47232538161af8d3d4c27064165eda40fe",
+    "mastermind": "c7e47c859eb2925c5626931fd511800773ba09ac"
+  },
+  "intl_entry": [
+    {
+      "id": "macro:intl",
+      "href": "/intl.html",
+      "kind": "legacy",
+      "title": {
+        "en": "International",
+        "zh": "\u56fd\u9645"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload"
+    }
+  ],
+  "http": [
+    {
+      "url": "http://127.0.0.1:3100/api/shared-shell/status",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "b9cbfc24bce6186690029f7a92ad35bba21a2e94c991f2b95fc40227c073e54d",
+      "body": {
+        "enabled": true,
+        "protocol": "mmx.shared-shell.v1",
+        "buildId": "development",
+        "bridgeVersion": "20261018.1",
+        "documentVersion": "20261018.1",
+        "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3100/intl.html",
+      "status": 200,
+      "bytes": 63154,
+      "sha256": "2b218ecaa71a491dd454e15be4974e5a24fb6d8990b719a2e1b40b2a5a41c4c2"
+    },
+    {
+      "url": "http://127.0.0.1:3102/intl.html",
+      "status": 200,
+      "bytes": 3061443,
+      "sha256": "0d8beabc188333c4bb12d420c4de92c4a7ecaa9e52400fcc577067b7f4f41df8"
+    }
+  ]
+}

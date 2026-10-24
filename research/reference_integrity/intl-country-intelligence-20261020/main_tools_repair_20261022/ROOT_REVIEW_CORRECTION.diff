@@ -1,0 +1,425 @@
+--- a/templates/intl_country_cockpit.js
++++ b/templates/intl_country_cockpit.js
+@@ -123,9 +123,8 @@
+     }
+ 
+     function openAncestors(target) {
+-      // Every containing disclosure, including the ones ABOVE Tools: a closed
+-      // ancestor leaves the destination unrendered, so opening only up to Tools'
+-      // own parent is what leaves a nested target invisible.
++      // Open every containing disclosure, including anonymous retained-research
++      // folds. Generic containing disclosures above Tools are handled as well.
+       for (var node = target; node && node !== document.body; node = node.parentElement)
+         if (node.tagName === "DETAILS") node.open = true;
+     }
+@@ -168,16 +167,22 @@
+     }
+ 
+     function revealResearch(fragment) {
++      // Every newer location supersedes pending alignment, including non-research
++      // and invalid fragments. The raw document snapshot is a liveness check only.
++      var mine = ++revealGeneration;
++      var intendedDocument = window.location.pathname + window.location.search;
+       var target = researchTarget(fragment);
+       if (!target) return null;
+       // Synchronous: the disclosures must already be open when the fragment arrives.
+       openAncestors(target);
+-      revealGeneration += 1;
+-      var mine = revealGeneration;
+       var arrival = arrivalFor(target);
+       // Deferred: the arrival alignment runs against the reflowed layout, and a newer
+       // destination cancels whatever this one still had pending.
+-      var run = function () { if (mine === revealGeneration) bringIntoView(arrival); };
++      var run = function () {
++        if (mine === revealGeneration && locationFragment() === fragment &&
++            window.location.pathname + window.location.search === intendedDocument)
++          bringIntoView(arrival);
++      };
+       if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(run);
+       else window.setTimeout(run, 0);
+       return target;
+@@ -189,6 +194,11 @@
+     // fails CLOSED instead of guessing and the accepted-location fallback below stays
+     // the only thing that reacts.
+     function standaloneFragment(anchor) {
++      // An active bridge supplies its own exclusions, including its first-party
++      // role=button exception. Only standalone navigation uses these native guards.
++      if (anchor.hasAttribute("download")) return null;
++      if (String(anchor.getAttribute("target") || "").toLowerCase() === "_blank") return null;
++      if (String(anchor.getAttribute("role") || "").toLowerCase() === "button") return null;
+       var attr = null;
+       try { attr = anchor.getAttribute("href"); } catch (_) { return null; }
+       if (typeof attr !== "string" || attr === "") return null;
+@@ -215,16 +225,13 @@
+      * makes the disclosures open BEFORE the fragment arrives and before its own first
+      * scroll attempt, while still reading the pre-navigation classification. */
+     document.addEventListener("click", function (event) {
+-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
++      if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+       if (typeof event.button === "number" && event.button !== 0) return;
+       var node = event.target;
+       if (!node || typeof node.closest !== "function") return;
+       var anchor = node.closest("a[href]");
+-      // Anchors the bridge leaves native (new tab, download, a link acting as a button)
+-      // keep the current page and its state; they are not an arrival into research.
+-      if (!anchor || anchor.hasAttribute("download")) return;
+-      if (String(anchor.getAttribute("target") || "").toLowerCase() === "_blank") return;
+-      if (String(anchor.getAttribute("role") || "").toLowerCase() === "button") return;
++      if (!anchor) return;
++      // The shared classifier is authoritative for active-bridge exclusions.
+       var fragment = fragmentForAnchor(anchor);
+       if (!fragment) return;
+       revealResearch(fragment);
+@@ -244,7 +251,6 @@
+         select("#" + summary.parentElement.id, false);
+         return;
+       }
+-      if (event.target.closest('a[href="#intl-analysis-tools"]') && tools) tools.open = true;
+     });
+     root.addEventListener("toggle", syncRail, true);
+     function followHash() {
+--- a/tests/intl_country_cockpit_navigation.test.cjs
++++ b/tests/intl_country_cockpit_navigation.test.cjs
+@@ -13,7 +13,9 @@
+  * templates/intl_country_cockpit.js from disk. What it is not: the production
+  * Terminal AppShell. Assertions about parent chrome, the parent's own view
+  * controls and cross-frame occlusion are therefore out of scope here and stay
+- * with the root's actual-parent acceptance run.
++ * with the root's actual-parent acceptance run. The fixture history channel uses
++ * wrapped child navigation; it does not implement fresh frames or INIT.restore
++ * saved-view restoration. Those require the actual-parent driver.
+  *
+  * Run: node --test tests/intl_country_cockpit_navigation.test.cjs
+  * The parent origin must be one the bridge itself allows
+@@ -55,7 +57,8 @@
+ /* The legacy page the country controller enhances. Structure mirrors the real
+  * one as described by the actual-parent evidence: the country section and the
+  * Tools disclosure are SIBLINGS, and a nested research target sits inside
+- * details.ref-fold > #intl-analysis-tools > #intl-legacy-research. Every anchor
++ * #intl-analysis-tools > #intl-legacy-research > anonymous details.ref-fold.
++ * Every anchor
+  * a test clicks is outside those disclosures so it stays reachable once they
+  * have been opened and closed again. */
+ function childHtml() {
+@@ -89,6 +92,7 @@
+       <summary id="jp-summary">Japan</summary>
+       <a id="root-tools-link" href="#intl-analysis-tools">Analysis tools</a>
+       <a id="root-nested-link" href="#intl-legacy-research">Legacy research</a>
++      <a id="root-deep-link" href="#deep-target">Deep research note</a>
+       <a id="root-path-link" href="/intl.html#intl-analysis-tools">Tools as an explicit path</a>
+       <p id="jp-body">Japan body</p>
+     </details>
+@@ -110,13 +114,13 @@
+     <a id="download-link" download href="#intl-analysis-tools">Download</a>
+     <a id="rolebutton-link" role="button" href="#intl-analysis-tools">Acts as a button</a>
+   </nav>
+-  <details class="ref-fold" id="ref-fold">
+-    <summary id="ref-summary">Reference</summary>
+-    <details id="intl-analysis-tools">
+-      <summary id="tools-summary">International analysis tools</summary>
+-      ${filler('tools-filler', 26)}
+-      <details id="intl-legacy-research">
+-        <summary id="legacy-summary">Legacy research</summary>
++  <details id="intl-analysis-tools">
++    <summary id="tools-summary">International analysis tools</summary>
++    ${filler('tools-filler', 26)}
++    <details id="intl-legacy-research">
++      <summary id="legacy-summary">Legacy research</summary>
++      <details class="ref-fold">
++        <summary id="ref-summary">Reference</summary>
+         <p id="deep-target">Deep target</p>
+         <p id="${UNICODE_ID}">Unicode target</p>
+       </details>
+@@ -278,7 +282,7 @@
+ }
+ async function openState(frame) {
+   return frame.evaluate(() => ({
+-    refFold: document.getElementById('ref-fold').open,
++    refFold: document.querySelector('details.ref-fold').open,
+     tools: document.getElementById('intl-analysis-tools').open,
+     legacy: document.getElementById('intl-legacy-research').open,
+     jp: document.getElementById('imc-country-JP').open,
+@@ -290,6 +294,19 @@
+  * queued message land before anything is read. */
+ async function settle(page) {
+   await page.evaluate(() => new Promise((resolve) => setTimeout(() => setTimeout(resolve, 0), 0)));
++}
++async function settleFrame(frame) {
++  await frame.evaluate(() => new Promise(resolve =>
++    requestAnimationFrame(() => requestAnimationFrame(resolve))));
++}
++async function navigationCounts(page, frame, hasParent = true) {
++  const child = await frame.evaluate(() => ({ href: location.href, history: history.length }));
++  if (!hasParent) return { child };
++  const parent = await page.evaluate(() => ({
++    nav: window.__shell.nav, ack: window.__shell.ack, history: history.length,
++    errors: window.__shell.errors.slice(),
++  }));
++  return { child, parent };
+ }
+ async function waitNav(page, count) {
+   await page.waitForFunction((n) => window.__shell && window.__shell.nav >= n, count);
+@@ -316,6 +333,7 @@
+       `${PARENT_ORIGIN}/intl.html#intl-analysis-tools`, 'the anchor really is projected');
+ 
+     await frame.click('#root-tools-link');
++    await waitNav(page, 1);
+     assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
+     await awaitArrival(frame, 'tools-summary');
+ 
+@@ -339,6 +357,7 @@
+   const { context, page, frame } = await createShell();
+   try {
+     await switchToLibrary(frame);
++    await waitNav(page, 1);
+     assert.ok((await locationHref(frame)).includes('view=library'));
+     assert.equal((await shellLog(page)).nav, 1);
+     // Anti-vacuity: the projection still displays the query-less parent href.
+@@ -348,6 +367,7 @@
+     await frame.click('#root-tools-link');
+     assert.equal(await isOpen(frame, 'intl-analysis-tools'), true, 'the query change must not strand Tools');
+     await awaitArrival(frame, 'tools-summary');
++    await waitNav(page, 2);
+     const log = await shellLog(page);
+     assert.equal(log.nav, 2);
+     assert.equal(log.navs[1].sameDocument, true, 'the authored fragment is still this document');
+@@ -370,25 +390,33 @@
+   } finally { await context.close(); }
+ });
+ 
+-test('E a nested research link opens every containing disclosure and arrives visibly', async () => {
+-  const { context, page, frame } = await createShell();
+-  try {
+-    await frame.click('#root-nested-link');
++test('E the same nested destination repeats after Library with every ancestor manually closed', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    await switchToLibrary(frame);
++    await waitNav(page, 1);
++    await frame.click('#root-deep-link');
++    await waitNav(page, 2);
++    await awaitArrival(frame, 'deep-target');
+     assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
+-    await awaitArrival(frame, 'legacy-summary');
+-
+-    // Repeat after a manual collapse: every ancestor must reopen again.
++    assert.equal(await frame.evaluate(() => location.hash), '#deep-target');
++    const first = await navigationCounts(page, frame);
++    assert.equal(first.parent.nav, 2);
++    assert.equal(first.parent.ack, 2);
++
+     await frame.evaluate(() => {
++      document.querySelector('details.ref-fold').open = false;
+       document.getElementById('intl-legacy-research').open = false;
+       document.getElementById('intl-analysis-tools').open = false;
+-      document.getElementById('ref-fold').open = false;
+-    });
++    });
++    await settleFrame(frame);
+     assert.deepEqual(await openState(frame), { refFold: false, tools: false, legacy: false, jp: true });
++    await frame.click('#sibling-deep-link');
++    await awaitArrival(frame, 'deep-target');
+     await settle(page);
+-    await frame.click('#sibling-deep-link');
+     assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
+-    await awaitArrival(frame, 'deep-target');
+-    assert.equal((await shellLog(page)).nav, 1, 'the repeated fragment fabricates nothing');
++    assert.deepEqual(await navigationCounts(page, frame), first,
++      'the same fragment reopens every ancestor without a new NAVIGATE, ACK, URL or history entry');
+   } finally { await context.close(); }
+ });
+ 
+@@ -426,7 +454,7 @@
+     assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
+     await awaitArrival(frame, UNICODE_ID);
+     await frame.evaluate(() => {
+-      document.getElementById('ref-fold').open = false;
++      document.querySelector('details.ref-fold').open = false;
+       document.getElementById('intl-analysis-tools').open = false;
+       document.getElementById('intl-legacy-research').open = false;
+     });
+@@ -570,7 +598,7 @@
+   } finally { await context.close(); }
+ });
+ 
+-test('G parent-owned Back and Forward restore the reader position', async () => {
++test('G modeled history dispatches wrapped child navigation (not saved-view restoration)', async () => {
+   const { context, page, frame } = await createShell();
+   try {
+     await frame.click('#sibling-tools-link');
+@@ -578,7 +606,8 @@
+     const restingY = await scrollY(frame);
+     const restingHref = await locationHref(frame);
+ 
+-    // Two parent-owned entries, each with the reader position that goes with it.
++    // Fixture entries dispatch ordinary wrapped child navigation. They do not model
++    // a fresh parent-owned frame or its INIT.restore contract.
+     await page.evaluate((entry) => window.__pushEntry(entry.href, entry.y), { href: restingHref, y: restingY });
+     await page.evaluate((href) => window.__pushEntry(href, 0),
+       `${CHILD_ORIGIN}/intl.html${LIBRARY}#deep-target`);
+@@ -586,15 +615,16 @@
+     await page.goBack();
+     await page.waitForFunction(() => window.__shell.restored);
+     await frame.waitForFunction((href) => location.href === href, restingHref);
+-    // The restored position already shows the destination, so the controller must
+-    // leave it exactly where the parent put it.
++    // A visible destination requires no additional alignment after this modeled
++    // navigation. Actual saved-view preservation is checked by the actual parent.
+     await awaitArrival(frame, 'tools-summary');
+     assert.ok(Math.abs((await scrollY(frame)) - restingY) <= 2,
+       `restoration moved from ${restingY} to ${await scrollY(frame)}`);
+ 
+     await page.goForward();
+     await frame.waitForFunction((href) => location.hash === '#deep-target');
+-    // A restored location whose destination is not on screen still has to arrive.
++    // This fixture dispatches a new wrapped child navigation to the deep target.
++    // It is not evidence that a real parent's saved position may be overridden.
+     assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
+     await awaitArrival(frame, 'deep-target');
+   } finally { await context.close(); }
+@@ -607,12 +637,12 @@
+     assert.equal(await frame.evaluate(() => typeof window.MMXSharedShell), 'undefined',
+       'a standalone page has no bridge to ask');
+     await frame.click('#root-nested-link');
+-    assert.deepEqual(await openState(frame), { refFold: true, tools: true, legacy: true, jp: true });
++    assert.deepEqual(await openState(frame), { refFold: false, tools: true, legacy: true, jp: true });
+     await awaitArrival(frame, 'legacy-summary');
+ 
+     // Strict local checks: a foreign lookalike still reveals nothing.
+     await frame.evaluate(() => {
+-      document.getElementById('ref-fold').open = false;
++      document.querySelector('details.ref-fold').open = false;
+       document.getElementById('intl-analysis-tools').open = false;
+       document.getElementById('intl-legacy-research').open = false;
+     });
+@@ -678,3 +708,130 @@
+     await awaitArrival(frame, 'tools-summary');
+   } finally { await context.close(); }
+ });
++
++test('F native Tools links remain native in root and sibling positions, embedded and standalone', async () => {
++  for (const parent of [true, false]) {
++    for (const placement of ['imc-country-JP', 'siblings']) {
++      const { context, page, frame } = await createShell({ parent });
++      try {
++        await frame.evaluate((containerId) => {
++          const container = document.getElementById(containerId);
++          for (const kind of ['download', 'blank', 'rolebutton']) {
++            const a = document.createElement('a');
++            a.id = 'native-' + kind;
++            a.href = '#intl-analysis-tools';
++            a.textContent = kind;
++            if (kind === 'download') a.setAttribute('download', '');
++            if (kind === 'blank') a.setAttribute('target', '_blank');
++            if (kind === 'rolebutton') a.setAttribute('role', 'button');
++            container.appendChild(a);
++          }
++        }, placement);
++        await settleFrame(frame);
++        const before = await navigationCounts(page, frame, parent);
++        const beforeOpen = await openState(frame);
++        const beforeY = await scrollY(frame);
++        for (const kind of ['download', 'blank', 'rolebutton']) {
++          // Synthetic default effects are suppressed at window bubble, after both
++          // real handlers. This tests their exclusions without a download or popup.
++          await frame.dispatchEvent('#native-' + kind, 'click', { button: 0 });
++          await settleFrame(frame);
++          await settle(page);
++          const label = `${parent ? 'embedded' : 'standalone'} ${placement} ${kind}`;
++          assert.deepEqual(await openState(frame), beforeOpen, label + ' keeps disclosures unchanged');
++          assert.equal(await scrollY(frame), beforeY, label + ' keeps the reader position');
++          assert.deepEqual(await navigationCounts(page, frame, parent), before,
++            label + ' leaves URL, history and parent messages unchanged');
++        }
++      } finally { await context.close(); }
++    }
++  }
++});
++
++test('F an intercepted parent-origin role=button repeats the current Tools fragment', async () => {
++  for (const placement of ['imc-country-JP', 'siblings']) {
++    const { context, page, frame } = await createShell();
++    try {
++      await frame.click('#root-tools-link');
++      await waitNav(page, 1);
++      await awaitArrival(frame, 'tools-summary');
++      await frame.evaluate(({ placement, href }) => {
++        const a = document.createElement('a');
++        a.id = 'parent-button';
++        a.href = href;
++        a.setAttribute('role', 'button');
++        a.textContent = 'Tools';
++        document.getElementById(placement).appendChild(a);
++        document.getElementById('intl-analysis-tools').open = false;
++      }, { placement, href: `${PARENT_ORIGIN}/intl.html#intl-analysis-tools` });
++      await settleFrame(frame);
++      assert.equal(await isOpen(frame, 'intl-analysis-tools'), false);
++      assert.equal(await frame.evaluate(() =>
++        window.MMXSharedShell.sameDocumentFragment(document.getElementById('parent-button'))),
++      'intl-analysis-tools', 'the bridge explicitly classifies this first-party exception');
++      const before = await navigationCounts(page, frame);
++      await frame.click('#parent-button');
++      await awaitArrival(frame, 'tools-summary');
++      await settle(page);
++      assert.equal(await isOpen(frame, 'intl-analysis-tools'), true);
++      assert.deepEqual(await navigationCounts(page, frame), before,
++        placement + ' reopens without an ACK or another history entry');
++    } finally { await context.close(); }
++  }
++});
++
++test('F an activation canceled at window capture leaves disclosure, position and navigation unchanged', async () => {
++  const { context, page, frame } = await createShell();
++  try {
++    const before = await navigationCounts(page, frame);
++    const beforeOpen = await openState(frame);
++    const beforeY = await scrollY(frame);
++    await frame.evaluate(() => {
++      window.addEventListener('click', event => event.preventDefault(), { capture: true, once: true });
++    });
++    await frame.click('#root-tools-link');
++    await settleFrame(frame);
++    await settle(page);
++    assert.deepEqual(await openState(frame), beforeOpen);
++    assert.equal(await scrollY(frame), beforeY);
++    assert.deepEqual(await navigationCounts(page, frame), before);
++    // Later target/bubble cancellation is not proved by this capture-phase case.
++  } finally { await context.close(); }
++});
++
++test('G newer outside, missing, country and query destinations cancel pending research alignment', async () => {
++  for (const destination of ['outside', 'missing', 'country', 'query']) {
++    const { context, page, frame } = await createShell();
++    try {
++      const newer = await frame.evaluate((destination) => {
++        // Keep both actions in one task: the first research rAF is still pending.
++        document.getElementById('root-deep-link').click();
++        if (destination === 'outside') document.getElementById('outside-link').click();
++        if (destination === 'missing') {
++          document.getElementById('missing-link').click();
++          window.scrollTo(0, 900);
++        }
++        if (destination === 'country') document.getElementById('rail-kr').click();
++        if (destination === 'query') {
++          history.replaceState(history.state, '', '/intl.html?view=history&note=a%20b&note=a+b&&flag&');
++          window.scrollTo(0, 900);
++        }
++        return { href: location.href, y: window.pageYOffset };
++      }, destination);
++      await waitNav(page, 2);
++      await settleFrame(frame);
++      assert.equal(await locationHref(frame), newer.href, destination + ' remains current');
++      if (destination === 'outside') await awaitArrival(frame, 'outside-target');
++      if (destination === 'country') {
++        assert.equal(await isOpen(frame, 'imc-country-KR'), true);
++        assert.equal(await frame.evaluate(() => document.activeElement.id), 'kr-summary');
++        await awaitArrival(frame, 'kr-summary');
++      }
++      if (destination === 'missing' || destination === 'query') {
++        assert.ok(Math.abs((await scrollY(frame)) - newer.y) <= 1,
++          destination + ' retains the position chosen after the newer navigation');
++      }
++      await assertNoArrival(frame, 'deep-target');
++    } finally { await context.close(); }
++  }
++});

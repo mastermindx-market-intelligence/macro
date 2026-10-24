@@ -1,0 +1,306 @@
+{
+  "schema": "intl.integrated_navigation_regressions.v1",
+  "started_at": "2026-10-22T18:54:50.575254+00:00",
+  "subject": "96cf630b9dffec366568216e8d5ef1125e212cbf",
+  "driver_sha256": "17db9f87750285b84a8d5560274913986b0a93ed46f4a60dbc58dce93b8a3bb4",
+  "files": [
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf"
+    },
+    {
+      "path": "templates/intl_country_cockpit.js",
+      "sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042"
+    },
+    {
+      "path": "tests/js/shared_shell_bridge.test.cjs",
+      "sha256": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a"
+    },
+    {
+      "path": "tests/intl_country_cockpit_navigation.test.cjs",
+      "sha256": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72"
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "6a6d47b3b0f4a54df8722a636f18438febecfa5fc626820aadc174d0a102780f"
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d"
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "sha256": "c3fae47aa6c1fb48b20e3823ad7e6ac509d38f3bd5ea6a5c8f2532310b61048d"
+    },
+    {
+      "path": "templates/intl_workspace_state.js",
+      "sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1"
+    },
+    {
+      "path": "tests/intl_workspace_controller.test.cjs",
+      "sha256": "3be38cbf6625b0ecd9c4371f319151b675183a8016a22d838e4a04500152a97e"
+    },
+    {
+      "path": "tests/intl_workspace_state.test.cjs",
+      "sha256": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8"
+    },
+    {
+      "path": "site/intl_workspace_state.js",
+      "sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1"
+    },
+    {
+      "path": "templates/intl.html.j2",
+      "sha256": "6735b1984d0e346ff62ef591810b90da9819e6c25aa47e4fcbb45c12381db03f"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "sha256": "edf479bc1d6630d2eaff2a35df15c4a1e3830a0d303757a17d50670a10983b6f"
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "sha256": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6"
+    },
+    {
+      "path": "tests/test_intl_gs_foundation.py",
+      "sha256": "bce69151444a9d113a6b25d86fc3c68c15028fb42a826fe6ab59d5697e58ad1a"
+    },
+    {
+      "path": "tests/intl_gs_foundation_browser.test.cjs",
+      "sha256": "270387202cc6f29b3dc56c8f08dc838166771840b41393160a9aba74606733f2"
+    },
+    {
+      "path": "tests/intl_gs_fixture_site.py",
+      "sha256": "94e7e009c7d02f07b8649827d6ba29a1facbbd4249251b82d01e904785775a88"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "a527e904ea6973f33dd5bfb06655ddc961f8c8f656f70f928ff66b523c4de925"
+    },
+    {
+      "path": "config/site_access.yml",
+      "sha256": "86f7f206d25c2f5a851e56ac9643de85652e87656512b83f93c20ddc5b2fbf01"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "abf8357c3f8e2ac7193f6d8fb9055cca30180bbc0e71b97a3ae2afd78cd02423"
+    },
+    {
+      "path": "lib/intl_gs_display.py",
+      "sha256": "f8e2dc04b3c55c162c8c173abd0d5193172fe09cbe19bc8ce7ef064816506e1d"
+    },
+    {
+      "path": "lib/intl_gs_observations.py",
+      "sha256": "12d14486312c08f6c40178e051f0b04b83e5578950e21774adbba0d075be29b9"
+    },
+    {
+      "path": "lib/intl_surveillance_mount.py",
+      "sha256": "587679b43e88d3396731079d62c43d4da560969b319009f911f4f78402d1f039"
+    },
+    {
+      "path": "templates/intl_workspace_surveillance.css",
+      "sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b"
+    },
+    {
+      "path": "site/intl_workspace_surveillance.css",
+      "sha256": "8398ff14812c347fc62ea7e98c6d59ff099bcd601e7c09bbbfa503614d34fb1b"
+    },
+    {
+      "path": "site/research_screener.html",
+      "sha256": "64334eca555dd0fd3d98ad8d30ee20e90640a682e8329865d327f86b212cff8f"
+    }
+  ],
+  "environment": {
+    "node": "v26.5.0",
+    "python": "Python 3.12.13",
+    "playwright": "1.61.1",
+    "channel": "chrome",
+    "browser_concurrency": 3
+  },
+  "checks": [
+    {
+      "name": "shared_bridge_and_adapters",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "tests/js/shared_shell_bridge.test.cjs",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs",
+        "tests/js/shared_shell_terminal_handoff.test.cjs"
+      ],
+      "started_at": "2026-10-22T18:54:51.823084+00:00",
+      "completed_at": "2026-10-22T18:54:53.558584+00:00",
+      "duration_seconds": 1.74,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/shared_bridge_and_adapters.log",
+      "log_sha256": "0b754eb1ae214694fa0c26ae73a74512e1957cbeb7e1ef7ef83ee8c47def4401",
+      "error": null,
+      "counts": {
+        "tests": 192,
+        "pass": 192,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "international_browser",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=3",
+        "tests/intl_workspace_generation_controller.test.cjs",
+        "tests/intl_workspace_generation_integration.test.cjs",
+        "tests/intl_workspace_compare_controller.test.cjs",
+        "tests/intl_workspace_controller.test.cjs",
+        "tests/intl_workspace_page.test.cjs",
+        "tests/intl_workspace_legacy_navigation.test.cjs",
+        "tests/intl_country_cockpit_navigation.test.cjs",
+        "tests/intl_workspace_library_controller.test.cjs",
+        "tests/intl_workspace_inspector_integration.test.cjs",
+        "tests/intl_workspace_risk_controller.test.cjs",
+        "tests/intl_workspace_history_controller.test.cjs",
+        "tests/intl_workspace_history_independent.test.cjs",
+        "tests/intl_gs_foundation_browser.test.cjs"
+      ],
+      "started_at": "2026-10-22T18:54:51.823487+00:00",
+      "completed_at": "2026-10-22T19:00:24.155690+00:00",
+      "duration_seconds": 332.38,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/international_browser.log",
+      "log_sha256": "a960dee4bebb908f7ae62db43bc8b2cf5464d53991303b87878b3f821bc5164a",
+      "error": null,
+      "counts": {
+        "tests": 242,
+        "pass": 242,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "workspace_state",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "tests/intl_workspace_state.test.cjs"
+      ],
+      "started_at": "2026-10-22T18:54:53.560229+00:00",
+      "completed_at": "2026-10-22T18:54:53.742747+00:00",
+      "duration_seconds": 0.18,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/workspace_state.log",
+      "log_sha256": "ed2b0432434b177c3024f09c37f5652914a90f484e886a1ec5d1b0eaf21d978f",
+      "error": null,
+      "counts": {
+        "tests": 21,
+        "pass": 21,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "shared_shell_injection",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_shared_shell_injection.py",
+        "-q"
+      ],
+      "started_at": "2026-10-22T18:54:53.743337+00:00",
+      "completed_at": "2026-10-22T18:55:12.547533+00:00",
+      "duration_seconds": 18.8,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/shared_shell_injection.log",
+      "log_sha256": "142c8ee1a166c63d08fdbde5d1a464b296f4a3cacc77ce716e247cb4bdb8e7a6",
+      "error": null
+    },
+    {
+      "name": "template_site_sync",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-22T18:55:12.548757+00:00",
+      "completed_at": "2026-10-22T18:55:15.627375+00:00",
+      "duration_seconds": 3.08,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/template_site_sync.log",
+      "log_sha256": "157666146e0a94829fe95bb502986fbdd8f1f925ea16cd3737be335c5cdfab40",
+      "error": null
+    },
+    {
+      "name": "ci_manifest",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--gate",
+        "code",
+        "--validate-only"
+      ],
+      "started_at": "2026-10-22T18:55:15.638438+00:00",
+      "completed_at": "2026-10-22T18:55:18.770710+00:00",
+      "duration_seconds": 3.13,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/ci_manifest.log",
+      "log_sha256": "d16b0f11e583606146f6cfcdd8ee06cb763faa67180480c3144e7d1d2b3cf49a",
+      "error": null
+    },
+    {
+      "name": "gs_build_and_screener",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_build.py",
+        "tests/test_intl_gs_foundation.py",
+        "tests/test_research_screener.py",
+        "-q"
+      ],
+      "started_at": "2026-10-22T18:55:18.771352+00:00",
+      "completed_at": "2026-10-22T18:56:30.305592+00:00",
+      "duration_seconds": 71.57,
+      "exit_code": 1,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/gs_build_and_screener.log",
+      "log_sha256": "6d5fd98e380f89e6e22d6c6a57bc18fd7667ce746e045f73519a4b19850972dd",
+      "error": null
+    },
+    {
+      "name": "site_access_boundary",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_site_access_boundary.py",
+        "-q"
+      ],
+      "started_at": "2026-10-22T18:56:30.306217+00:00",
+      "completed_at": "2026-10-22T18:59:16.783634+00:00",
+      "duration_seconds": 166.49,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_gs_20261022/regressions_candidate/site_access_boundary.log",
+      "log_sha256": "1806e0287ddffc3e2d4e1196bfa34eaaef0d71899feec436110ad58e34718a61",
+      "error": null
+    }
+  ],
+  "source_acquisition": false,
+  "production_mutation": false,
+  "working_tree_candidate": true,
+  "merge_parent": "2d33475adef502ab6b00b8003356c1b0ad1673c0",
+  "completed_at": "2026-10-22T19:00:24.156545+00:00",
+  "source_bindings_unchanged": true,
+  "pass": false
+}

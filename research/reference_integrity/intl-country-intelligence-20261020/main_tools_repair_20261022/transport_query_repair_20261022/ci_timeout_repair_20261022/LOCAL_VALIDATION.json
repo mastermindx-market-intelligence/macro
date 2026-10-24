@@ -1,0 +1,33 @@
+{
+  "schema": "intl.ci-budget-local-validation.v1",
+  "results": [
+    {
+      "name": "manifest_validate",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/run_ci_pack.py",
+        "--validate-only"
+      ],
+      "returncode": 2,
+      "started_at": "2026-10-22T21:22:28.620317+00:00",
+      "finished_at": "2026-10-22T21:22:28.791523+00:00",
+      "log": "manifest_validate.log"
+    },
+    {
+      "name": "restored_gs_frozen_fixture",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_gs_foundation.py",
+        "-k",
+        "frozen",
+        "-q"
+      ],
+      "returncode": 0,
+      "started_at": "2026-10-22T21:22:28.791858+00:00",
+      "finished_at": "2026-10-22T21:22:34.350171+00:00",
+      "log": "restored_gs_frozen_fixture.log"
+    }
+  ]
+}

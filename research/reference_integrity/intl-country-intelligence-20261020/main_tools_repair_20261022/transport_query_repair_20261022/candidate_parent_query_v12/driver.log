@@ -1,0 +1,6 @@
+{"scope":"1440-en-dark","passed":54,"failed":[]}
+{"scope":"390-zh-dark-ordinary","passed":7,"failed":[]}
+{"scope":"390-zh-dark-valid-nondefault","passed":26,"failed":[]}
+{"scope":"390-zh-dark-invalid-unknown","passed":7,"failed":[]}
+{"scope":"390-zh-dark-invalid-empty","passed":7,"failed":[]}
+{"status":"pass","passed":105,"failed":0,"contexts":5,"report":"/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/candidate_parent_query_v12/observation.json"}

@@ -6,6 +6,7 @@ block, the L1–L12 design laws the reviewer attacks, shell registration of the
 seven surveillance views, the mount/builder contract and the access wiring.
 """
 import ast
+import hashlib
 import importlib.util
 import re
 import subprocess
@@ -738,6 +739,33 @@ def _frozen_base() -> str:
     return sha
 
 
+# This exact, pre-GS country-token composition was independently accepted at
+# 51b217b3 (main_composition_6a4_20261022/theme_composition.json and its principal
+# review). It adds a comment and four declarations; no GS token-root edit is authorized.
+# Keep the directional pair pinned: future shared-theme changes require review.
+_ACCEPTED_COUNTRY_THEME_PAIR = (
+    "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+)
+
+
+def _frozen_source_matches(path: str, baseline: bytes, candidate: bytes) -> bool:
+    if candidate == baseline:
+        return True
+    return path == "templates/theme.css" and (
+        hashlib.sha256(baseline).hexdigest(),
+        hashlib.sha256(candidate).hexdigest(),
+    ) == _ACCEPTED_COUNTRY_THEME_PAIR
+
+
+def _git_frozen_bytes(ref: str, path: str) -> bytes:
+    result = subprocess.run(["git", "show", f"{ref}:{path}"], cwd=REPO, capture_output=True)
+    if result.returncode != 0:
+        pytest.fail(f"FAIL CLOSED: cannot read frozen source {ref}:{path}: "
+                    f"{result.stderr.decode('utf-8', errors='replace').strip()}")
+    return result.stdout
+
+
 @pytest.mark.parametrize("path", [
     "templates/theme.css",
     "templates/_navlinks.html.j2",
@@ -745,13 +773,81 @@ def _frozen_base() -> str:
     "engine/intl_global_observation.py",
     "lib/intl_global_observation_adapter.py",
 ])
-def test_frozen_files_unchanged_vs_origin_main(path):
+def test_frozen_files_match_origin_main_or_exact_accepted_country_theme(path):
     base = _frozen_base()
     result = subprocess.run(["git", "diff", "--quiet", base, "--", path],
                             cwd=REPO, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         pytest.fail(f"FAIL CLOSED: git diff {base} -- {path} errored: {result.stderr.strip()}")
-    assert result.returncode == 0, f"{path} changed vs merge-base(origin/main, HEAD) {base}"
+    if result.returncode == 0:
+        return
+    assert _frozen_source_matches(path, _git_frozen_bytes(base, path), (REPO / path).read_bytes()), \
+        f"{path} changed outside the exact accepted country-theme composition vs {base}"
+
+
+@pytest.fixture(scope="module")
+def reviewed_country_theme_bytes():
+    # Retained reviewed bytes avoid requiring historical Git objects in shallow CI.
+    # Only fixture preparation removes the five known lines (comment + four
+    # declarations); both entire byte sequences must match the reviewed hashes.
+    fixture = REPO / (
+        "research/reference_integrity/intl-country-intelligence-20261020/"
+        "main_tools_repair_20261022/transport_query_repair_20261022/"
+        "main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css"
+    )
+    candidate = fixture.read_bytes()
+    assert hashlib.sha256(candidate).hexdigest() == _ACCEPTED_COUNTRY_THEME_PAIR[1]
+    additions = (
+        b"  /* International country research: existing blends owned by shared theme. */\n",
+        b"  --imc-summary-hover: color-mix(in srgb, var(--panel2) 65%, transparent);\n",
+        b"  --imc-country-line: color-mix(in srgb, var(--line) 58%, var(--link));\n",
+        b"  --imc-context-surface: color-mix(in srgb, var(--panel2) 65%, var(--panel));\n",
+        b"  --imc-country-line: color-mix(in srgb, var(--link) 35%, var(--line));\n",
+    )
+    baseline = candidate
+    for line in additions:
+        assert baseline.count(line) == 1
+        baseline = baseline.replace(line, b"", 1)
+    assert hashlib.sha256(baseline).hexdigest() == _ACCEPTED_COUNTRY_THEME_PAIR[0]
+    return baseline, candidate
+
+
+@pytest.mark.parametrize("case", [
+    "unchanged_base", "accepted_addition", "unchanged_after_adoption",
+    "altered_blend", "removed_line", "duplicated_line", "relocated_line",
+    "unrelated_token", "new_global_token", "reverse_after_adoption",
+    "wrong_path", "changed_baseline",
+])
+def test_frozen_theme_guard_preserves_only_reviewed_bytes(reviewed_country_theme_bytes, case):
+    baseline, candidate = reviewed_country_theme_bytes
+    path = "templates/theme.css"
+    expected = case in {"unchanged_base", "accepted_addition", "unchanged_after_adoption"}
+    line = b"  --imc-summary-hover: color-mix(in srgb, var(--panel2) 65%, transparent);\n"
+    assert candidate.count(line) == 1 and line not in baseline
+    if case == "unchanged_base":
+        candidate = baseline
+    elif case == "unchanged_after_adoption":
+        baseline = candidate
+    elif case == "altered_blend":
+        candidate = candidate.replace(line, line.replace(b"65%", b"66%"), 1)
+    elif case == "removed_line":
+        candidate = candidate.replace(line, b"", 1)
+    elif case == "duplicated_line":
+        candidate = candidate.replace(line, line + line, 1)
+    elif case == "relocated_line":
+        candidate = line + candidate.replace(line, b"", 1)
+    elif case == "unrelated_token":
+        assert b"--esurf-ser1: #2f63c4;" in candidate
+        candidate = candidate.replace(b"--esurf-ser1: #2f63c4;", b"--esurf-ser1: #2f63c5;", 1)
+    elif case == "new_global_token":
+        candidate += b"\n:root { --sp-unauthorized: 1px; }\n"
+    elif case == "reverse_after_adoption":
+        baseline, candidate = candidate, baseline
+    elif case == "wrong_path":
+        path = "templates/_navlinks.html.j2"
+    elif case == "changed_baseline":
+        baseline += b"\n"
+    assert _frozen_source_matches(path, baseline, candidate) is expected
 
 
 # ---------------------------------------------------------------- 2.14 JS

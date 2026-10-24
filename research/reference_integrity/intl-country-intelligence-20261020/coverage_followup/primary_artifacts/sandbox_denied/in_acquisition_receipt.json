@@ -1,0 +1,20 @@
+{
+  "cc": "IN",
+  "requested_url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788172583113_d65a77cf-240e-4491-82ee-59f78618fa41_Press_Note_on_GDP_Estimates_for_Q1_2026-27.pdf",
+  "request_method": "GET",
+  "request_headers": {
+    "Accept-Encoding": "identity",
+    "User-Agent": "InternationalMarketsSourceResearch/1.0"
+  },
+  "started_at": "2026-10-20T21:04:15.788837+00:00",
+  "status": "download_failed",
+  "source_artifact": null,
+  "source_sha256": null,
+  "source_bytes": null,
+  "production_admitted": false,
+  "error_type": "URLError",
+  "error": "<urlopen error [Errno 1] Operation not permitted>",
+  "redirect_chain": [],
+  "completed_at": "2026-10-20T21:04:15.793076+00:00",
+  "elapsed_seconds": 0.004
+}

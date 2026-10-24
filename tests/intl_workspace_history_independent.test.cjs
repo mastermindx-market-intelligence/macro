@@ -210,19 +210,21 @@ test('empty draft invalid popstate preserves committed state and does not adopt 
   assert.equal((await page.evaluate(() => handle.getState())).selected_market, 'JP');
 });
 
-test('invalid popstate during pending confirmation keeps the origin tuple, restores the committed URL, and still requires confirm', async t => {
+test('invalid popstate during pending confirmation keeps the origin tuple and rejected URL, and still requires confirm', async t => {
   const page = await openWorkspace(t);
   await calculate(page);
   await page.locator('[data-im-action="set_horizon"]').selectOption('3m');
   const pending = await snapshot(page);
   assert.equal(pending.confirmHidden, false);
   assert.equal(pending.state.horizon, '1m');
-  const result = await restoreQuery(page, '?view=not-a-view&market=KR&pins=&horizon=12m&basis=local&return_basis=price&group=');
+  const rejected = '?view=not-a-view&market=KR&pins=&horizon=12m&basis=local&return_basis=price&group=';
+  const result = await restoreQuery(page, rejected);
   assert.deepEqual(result.state, pending.state);
   assert.equal(result.confirmHidden, false);
   assert.equal(result.issues, 'Unsupported value');
-  assert.match(result.url, /horizon=1m/);
-  assert.doesNotMatch(result.url, /not-a-view/);
+  assert.equal(result.url, rejected, 'invalid parsed queries must remain unsanitized');
+  assert.equal(result.local, pending.local);
+  assert.equal(result.fx, pending.fx);
   const pin = await page.evaluate(() => handle.dispatch({type: 'pin', market_id: 'KR'}));
   assert.equal(pin.ok, false);
   await page.locator('[data-im-scenario-action="cancel_context"]').click();

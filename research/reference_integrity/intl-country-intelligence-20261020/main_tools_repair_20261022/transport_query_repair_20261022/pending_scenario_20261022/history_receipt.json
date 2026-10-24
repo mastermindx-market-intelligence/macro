@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/intl_workspace_history_independent.test.cjs"
+  ],
+  "head": "9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb",
+  "started_at": "2026-10-22T20:02:58.428145+00:00",
+  "bindings": {
+    "tests/intl_workspace_controller.test.cjs": "d74ddd7d52a947435b72ac4896bd42bbf25331cbecbdf73e709512427e750e59",
+    "templates/intl_workspace.js": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+    "site/intl_workspace.js": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+    "templates/intl_workspace_state.js": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+    "templates/shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+    "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+    "tests/intl_workspace_history_independent.test.cjs": "ec29c9ee555f6619e24d4d824eb5f82a87fbf3e795729413adc9d0c3c491a37b"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-10-22T20:03:11.780607+00:00",
+  "duration_seconds": 13.35,
+  "log_sha256": "d3a3de465190b83fe56c83ed15d243fc85034dc6932fbc261251628382581d1c",
+  "bindings_unchanged": true,
+  "counts": {
+    "tests": 22,
+    "pass": 22,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  }
+}

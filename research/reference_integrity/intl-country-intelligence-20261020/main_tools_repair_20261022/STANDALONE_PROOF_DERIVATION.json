@@ -1,0 +1,20 @@
+{
+  "schema": "intl.standalone_proof_derivation.v1",
+  "source_commit": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "drivers": [
+    {
+      "original": "research/reference_integrity/intl-country-intelligence-20261020/verify_country_history.py",
+      "original_sha256": "745eef1cff2e39be4575faab4bedccb6efb94662c96674a555bea780a8f21845",
+      "derivative": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_standalone_country_history.py",
+      "derivative_sha256": "0620bd06f42f193c834d5022e2f8a9fb44a11e1cde0e648fa93a62fe3cf5303d",
+      "changes": "new evidence/build paths, exact driver hash, two representative standalone contexts; assertions retained"
+    },
+    {
+      "original": "research/reference_integrity/intl-country-intelligence-20261020/verify_toolbar_landings.py",
+      "original_sha256": "dfaac8cf035301af8d56723529301da9a2a8bf68628a0d50d7c11b2a0b0dde79",
+      "derivative": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_standalone_toolbar_landings.py",
+      "derivative_sha256": "489021987f18862c190a2323d7518bc6f02affc865c916cb1518d8ddf9299144",
+      "changes": "new evidence/build paths, exact driver hash, two representative standalone contexts; assertions retained"
+    }
+  ]
+}

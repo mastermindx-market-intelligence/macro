@@ -1,0 +1,15 @@
+{
+  "schema": "intl.predecessor_ci_retry.v1",
+  "head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "run_id": 39712269996,
+  "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39712269996",
+  "attempt": 2,
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-22T02:35:58Z",
+  "started_at": "2026-10-22T03:45:36Z",
+  "updated_at": "2026-10-22T04:07:31Z",
+  "prior_failure": "admin-js-no-undef: eslint did not finish within 180 seconds; no lint violation reported",
+  "action": "One rerun of failed jobs was requested; no further retry",
+  "scope": "Published ae6de4e predecessor only; does not accept the pending R3 patch or current uncommitted changes"
+}

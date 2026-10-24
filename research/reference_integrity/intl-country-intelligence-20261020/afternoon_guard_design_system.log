@@ -1,0 +1,4 @@
+::error title=design-system::R0 enforce-added: 1 blocking finding(s) on line(s) added by this diff (25369 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
+::error title=design-system::templates/intl_country_cockpit.css:332 [radius-literal] border-radius: 8px
+design-system ratchet — mode=enforce-added blocking=1 (estate pre-existing, non-blocking: 25369)
+templates/intl_country_cockpit.css:332: radius-literal: border-radius: 8px

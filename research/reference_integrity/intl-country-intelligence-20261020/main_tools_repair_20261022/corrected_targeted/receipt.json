@@ -1,0 +1,82 @@
+{
+  "completed_at": "2026-10-22T05:04:29.105919+00:00",
+  "source_sha256": {
+    "controller": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+    "test": "e5ce4d082e182986931a3d68a6ca6d49ca4e36227df9d4e21cdbdc2064b37f20"
+  },
+  "negative_control_uses_only_r3_controller_preimage": true,
+  "negative_control_test_sha256": "2c206249328cbfebf9b0143b51bc075d8b2508622ee547565ffe24772deea7e5",
+  "checks": [
+    {
+      "name": "corrected_navigation",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_country_cockpit_navigation.test.cjs"
+      ],
+      "expected": "pass",
+      "exit_code": 0,
+      "expectation_met": true,
+      "counts": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "started_at": "2026-10-22T05:04:12.222561+00:00",
+      "duration_seconds": 16.88,
+      "log_sha256": "d149930912a53776d770b5d3f885a7575882d140eebdf30c713cfa92c96ee32d"
+    },
+    {
+      "name": "unchanged_root_probes",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/ROOT_R3_NAVIGATION_PROBES.cjs"
+      ],
+      "expected": "pass",
+      "exit_code": 0,
+      "expectation_met": true,
+      "counts": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "started_at": "2026-10-22T05:04:12.223091+00:00",
+      "duration_seconds": 5.05,
+      "log_sha256": "7974099348361fb335dde1537f0568879b8bced0da4286bd9ba4aceb425879ea"
+    },
+    {
+      "name": "r3_controller_negative_control",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^F (native Tools|an intercepted|an activation)|^G newer outside",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs"
+      ],
+      "expected": "fail",
+      "exit_code": 1,
+      "expectation_met": true,
+      "counts": {
+        "tests": 4,
+        "pass": 0,
+        "fail": 4,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "started_at": "2026-10-22T05:04:17.273598+00:00",
+      "duration_seconds": 9.61,
+      "log_sha256": "544c19e389b4c6cbfa3297b5f94641aed520143442bcbd47356272bff45d5a49"
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "intl.hosted_ci_acceptance.v1",
+  "subject_head": "df1aa0c587bd1fef7a6b20fb69ca2e22afd423fd",
+  "run_id": 39754420313,
+  "run_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39754420313",
+  "tested_merge": "ca8cf395f1041fbf93c0487505f7fce2491f2a05",
+  "tested_base": "2e73187730af5352543ca23bea40250563f48d6c",
+  "plan_digest": "f9a9f48297700a8a2e0814cd3e72dd9a132a6bcc72caed8013925e4dafc8a38c",
+  "logical_evidence_digest": "2510bde2c2d50b50ab6af54dfa9a336516718503f9e6bb01c2d58c43605e53fa",
+  "logical_jobs": 136,
+  "passed_proofs": 394,
+  "infrastructure_findings": 0,
+  "semantic_result": "clear",
+  "all_12_packs": "success",
+  "contract_delta": "success",
+  "ci_gate": "success",
+  "artifact_id": 12418965891,
+  "artifact_zip_sha256": "c9002e058bc4de8f0e2770290532ef459e4f88000512a19c0f3d77b8bbef0366",
+  "extracted_json_sha256": "e14c4171ec3e6ce43fee63a9485dbf299e8c53fca7ec34a2e85cf5fa07665406",
+  "scope": "Published df1 only. Query repair or GS composition requires a new exact-head run."
+}

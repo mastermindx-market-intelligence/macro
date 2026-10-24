@@ -1,0 +1,134 @@
+✖ Scenario query ordering: invalid-existing before INIT (6941.865459ms)
+✖ Scenario query ordering: valid-existing before INIT (2891.820625ms)
+✖ Scenario query ordering: valid-new before INIT (2899.374167ms)
+✖ Scenario query ordering: invalid-existing after INIT (2817.381958ms)
+✖ Scenario query ordering: valid-existing after INIT (2718.596292ms)
+✖ Scenario query ordering: valid-new after INIT (2745.093708ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21307.664333
+
+✖ failing tests:
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: invalid-existing before INIT (6941.865459ms)
+  AssertionError [ERR_ASSERTION]: invalid destination remains unsanitized
+  + actual - expected
+  
+  + '?view=history&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=query-g1'
+  - '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1'
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2480:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '?view=history&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=query-g1',
+    expected: '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: valid-existing before INIT (2891.820625ms)
+  AssertionError [ERR_ASSERTION]: confirmation refusal performs only its serialized restoration
+  
+  2 !== 1
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2484:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: valid-new before INIT (2899.374167ms)
+  AssertionError [ERR_ASSERTION]: confirmation refusal performs only its serialized restoration
+  
+  2 !== 1
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2484:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: invalid-existing after INIT (2817.381958ms)
+  AssertionError [ERR_ASSERTION]: invalid destination remains unsanitized
+  + actual - expected
+  
+  + '?view=history&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=query-g1'
+  - '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1'
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2480:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '?view=history&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=&mmx_shell=1&mmx_generation=query-g1',
+    expected: '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: valid-existing after INIT (2718.596292ms)
+  AssertionError [ERR_ASSERTION]: confirmation refusal performs only its serialized restoration
+  
+  2 !== 1
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2484:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/intl_workspace_controller.test.cjs:2431:5
+✖ Scenario query ordering: valid-new after INIT (2745.093708ms)
+  AssertionError [ERR_ASSERTION]: confirmation refusal performs only its serialized restoration
+  
+  2 !== 1
+  
+      at withQueryFrames.scenario (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2484:18)
+      at async withQueryFrames (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:1963:9)
+      at async TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/tests/intl_workspace_controller.test.cjs:2435:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

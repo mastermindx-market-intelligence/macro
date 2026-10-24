@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-20T13:02:52.580961+00:00",
+  "scope": "repair_extension links derived from actual successful browser receipts; historical baseline/target untouched",
+  "browser_execution": "p0b_remint_execution.json",
+  "links": [
+    {
+      "market": "hk",
+      "before_sha256": "ac18d84e1215319474db31347fc652d2d318c0601aeaf4e49d2b4e7eeb20bc89",
+      "actual_browser_receipt_sha256": "2f25808158995d99878d20b5c41f73327aac000dc41ec1742a4a416e36025766"
+    },
+    {
+      "market": "ca",
+      "before_sha256": "63d8d81729c74b5581f74ab11e6a3ed730adad3e07a1e07f10b5ccd960cd054b",
+      "actual_browser_receipt_sha256": "6cd51180011c78067b34e8ad383ba9dc2759c5913c3453b2207d42c6420e1193"
+    }
+  ],
+  "verified_actual_screenshots": 16,
+  "manifest_sha256": "4efc954abce961813e4295af1cfacedbf8b70e401ee76079e9db0ecb74c6f301"
+}

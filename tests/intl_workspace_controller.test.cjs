@@ -1911,3 +1911,608 @@ test('Macro v2 refuses non-price return basis even with the correct generation',
   assert.equal(result.state.view,'overview');
   assert.equal(await page.locator('#macro-panel').isHidden(),true);
 }));
+
+
+// A routed cross-origin child runs the real blocking bridge, controller and entry.
+// The modelled parent deliberately withholds INIT until the test asks for it.
+async function withQueryFrames(run, { gs = false, scenario = null } = {}) {
+  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL } : {}) });
+  const bridge = fs.readFileSync(path.join(__dirname, '../templates/shared_shell_bridge.js'), 'utf8');
+  const entry = fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_entry.js'), 'utf8');
+  const css = fs.readFileSync(path.join(__dirname, '../templates/shared_shell.css'), 'utf8');
+  const script = source => '<script>' + source.replace(/<\/script/gi, '<\\/script') + '</script>';
+  const pageConfig = scenario ? scenario.config : config;
+  let markup = scenario ? scenario.html : workspaceMarkup().replace('</select>', option('TW') + '</select>');
+  markup = markup.replace('<p data-im-unavailable>', '<article data-im-panel data-view="library" data-horizon="3m" data-basis="local" data-source="fixture:v1"><input id="query-library-search" type="search"></article><article data-im-panel data-view="history" data-horizon="3m" data-basis="local" data-source="fixture:v1">Taiwan history</article><p data-im-unavailable>');
+  if (gs) markup = markup.replace('<p data-im-unavailable>', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div><div data-gs-market="KR">Korea GS content</div></div><p data-im-unavailable>');
+  markup = markup.replace('<h1', '<script type="application/json" data-im-config>' + JSON.stringify(pageConfig) + '</script><fieldset data-im-controls disabled><h1');
+  markup = markup.replace(/<\/section>\s*$/, '</fieldset><details id="intl-legacy-research" open><summary>Retained research</summary><p>Readable evidence</p></details></section>');
+  async function open(query, beforeEntry = '') {
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    const childUrl = 'http://127.0.0.1:3102/intl.html' + query;
+    await page.route('http://127.0.0.1:3100/query-parent', route => route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><iframe id="child"></iframe>' + script('window.queryMessages=[];addEventListener("message",e=>queryMessages.push(e.data));document.getElementById("child").src=' + JSON.stringify(childUrl) + ';')
+    }));
+    await page.route('http://127.0.0.1:3102/**', route => route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><html lang="en"><head><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><style>' + css + '</style>' + script(bridge) + '</head><body>' + markup + script(reducerSource) + (scenario ? script(fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_scenario.js'), 'utf8')) : '') + script(adapterSource) + script(beforeEntry) + script(
+        'window.queryBoot={href:location.href,length:history.length};window.queryMounts=0;window.queryRootBefore=document.querySelector("[data-im-workspace]").outerHTML;' +
+        'const originalMount=IntlWorkspace.mountIntlWorkspace;IntlWorkspace.mountIntlWorkspace=function(){queryMounts++;const handle=originalMount.apply(this,arguments);window.queryHandle=handle;return handle;};'
+      ) + script(entry) + '</body></html>'
+    }));
+    await page.goto('http://127.0.0.1:3100/query-parent');
+    const frame = page.frames().find(candidate => candidate.url().startsWith('http://127.0.0.1:3102/'));
+    assert.ok(frame, 'real cross-origin child loaded');
+    await frame.waitForFunction(() => document.readyState === 'complete');
+    return {
+      page, frame, errors,
+      async init() {
+        await page.evaluate(() => document.getElementById('child').contentWindow.postMessage({
+          protocol: 'mmx.shared-shell.v1', type: 'INIT', frameGeneration: 'query-g1',
+          theme: 'light', locale: 'en', contextRevision: 1, canonicalPath: '/intl.html',
+          catalog: { legacyPaths: ['/intl.html'], nativePaths: [] }, restore: null
+        }, 'http://127.0.0.1:3102'));
+        await frame.waitForFunction(() => MMXSharedShell.active);
+      },
+      close: () => page.close()
+    };
+  }
+  try { await run(open); } finally { await browser.close(); }
+}
+
+test('query source: real bridge and entry restore actual state before INIT without remount or warning', async () => {
+  await withQueryFrames(async open => {
+    for (const business of ['', 'view=library&market=TW&pins=JP&horizon=3m&basis=local&return_basis=price&group=leaders']) {
+      const child = await open('?' + (business ? business + '&' : '') + 'mmx_shell=1&mmx_generation=query-g1');
+      const before = await child.frame.evaluate(() => ({
+        enhanced: document.querySelector('[data-im-workspace]').getAttribute('data-im-enhanced'),
+        disabled: document.querySelector('[data-im-controls]').disabled,
+        issues: document.querySelector('[data-im-issues]').textContent,
+        state: queryHandle.getState(), active: MMXSharedShell.active,
+        unchanged: location.href === queryBoot.href && history.length === queryBoot.length,
+        marketControl: document.querySelector('[data-im-action="select_market"]').value,
+        libraryVisible: !!document.getElementById('query-library-search').getClientRects().length,
+        libraryEnabled: !document.getElementById('query-library-search').matches(':disabled')
+      }));
+      assert.equal(before.enhanced, 'true');
+      assert.equal(before.disabled, false);
+      assert.equal(before.issues, '');
+      assert.equal(before.active, false, 'pre-INIT projection grants no admission');
+      assert.equal(before.unchanged, true);
+      if (business) {
+        assert.equal(before.state.view, 'library');
+        assert.equal(before.state.selected_market, 'TW');
+        assert.equal(before.state.horizon, '3m');
+        assert.equal(before.state.currency_basis, 'local');
+        assert.equal(before.state.library_group, 'leaders');
+        assert.equal(before.marketControl, 'TW');
+        assert.equal(before.libraryVisible, true);
+        assert.equal(before.libraryEnabled, true);
+      } else {
+        assert.equal(before.state.view, 'overview');
+        assert.equal(before.state.selected_market, null);
+        assert.equal(before.state.horizon, '1m');
+      }
+      await child.init();
+      const after = await child.frame.evaluate(() => ({ state: queryHandle.getState(), mounts: queryMounts, issues: document.querySelector('[data-im-issues]').textContent }));
+      assert.deepEqual(after.state, before.state);
+      assert.equal(after.mounts, 1);
+      assert.equal(after.issues, '');
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  });
+});
+
+test('query source: real native history reads the current projected query before INIT', async () => {
+  await withQueryFrames(async open => {
+    const child = await open('?mmx_shell=1&mmx_generation=query-g1');
+    await child.frame.evaluate(() => {
+      const original = location.href;
+      History.prototype.pushState.call(history, null, '', '?view=history&market=TW&horizon=3m&basis=local&return_basis=price&mmx_shell=1&mmx_generation=query-g1');
+      History.prototype.pushState.call(history, null, '', original);
+      window.queryPopDone = false;
+      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
+      history.back();
+    });
+    await child.frame.waitForFunction(() => queryPopDone);
+    const out = await child.frame.evaluate(() => ({ state: queryHandle.getState(), issues: document.querySelector('[data-im-issues]').textContent, mounts: queryMounts, url: location.search }));
+    assert.equal(out.state.view, 'history');
+    assert.equal(out.state.selected_market, 'TW');
+    assert.equal(out.state.horizon, '3m');
+    assert.equal(out.state.currency_basis, 'local');
+    assert.equal(out.issues, '');
+    assert.equal(out.mounts, 1);
+    assert.match(out.url, /mmx_generation=query-g1/);
+    assert.deepEqual(child.errors, []);
+  });
+});
+
+test('query source: invalid business strings retain standalone issue text, state and untouched URL', async () => {
+  const queries = ['bad=x', 'mmx_feature=x', 'mmx_shell_extra=1', 'MMX_SHELL=1', 'view=%zz', 'view=overview&%76iew=history', 'view=unknown', 'view', 'view=' + 'x'.repeat(2100), 'view=overview&&market=TW', 'view=overview&'];
+  await withQueryFrames(async open => withPage(async page => {
+    for (const business of queries) {
+      const handle = await mount(page, '?' + business);
+      const standalone = await page.evaluate(h => ({ state: h.getState(), issues: document.querySelector('[data-im-issues]').textContent, query: location.search }), handle);
+      assert.notEqual(standalone.issues, '', business);
+      assert.equal(standalone.query, '?' + business);
+      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1');
+      const shell = await child.frame.evaluate(() => ({ state: queryHandle.getState(), issues: document.querySelector('[data-im-issues]').textContent, unchanged: location.href === queryBoot.href }));
+      assert.deepEqual(shell.state, standalone.state, business);
+      assert.equal(shell.issues, standalone.issues, business);
+      assert.equal(shell.unchanged, true);
+      assert.deepEqual(child.errors, []);
+      await page.evaluate(h => h.destroy(), handle);
+      await child.close();
+    }
+  }));
+});
+
+for (const kind of ['installed-deleted', 'installed-null', 'installed-foreign', 'occupied-undefined', 'occupied-null', 'foreign', 'older', 'provider-getter', 'reader-getter']) {
+  test('query source: unavailable mount rolls back ' + kind, async () => {
+    await withPage(async page => {
+      await bootstrapPage(page, workspaceWithInspector());
+      const out = await page.evaluate(kind => {
+        if (kind.startsWith('installed')) window.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
+        if (kind === 'installed-null' || kind === 'occupied-null') window.MMXSharedShell = null;
+        if (kind === 'occupied-undefined') window.MMXSharedShell = undefined;
+        if (kind === 'installed-foreign' || kind === 'foreign') window.MMXSharedShell = { other: true };
+        if (kind === 'older') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1' };
+        if (kind === 'provider-getter') Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider getter'); } });
+        if (kind === 'reader-getter') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', get readPageSearch() { throw new Error('reader getter'); } };
+        const root = document.querySelector('[data-im-workspace]');
+        const article = root.querySelector('[data-im-inspector-payload]');
+        const html = root.outerHTML;
+        let error = null;
+        try { IntlWorkspace.mountIntlWorkspace(root, window.config); } catch (caught) { error = caught.code || caught.message; }
+        return { failed: !!error, html: html === root.outerHTML, same: article === root.querySelector('[data-im-inspector-payload]'), enhanced: root.hasAttribute('data-im-enhanced') };
+      }, kind);
+      assert.equal(out.failed, true, kind);
+      assert.equal(out.html, true, kind);
+      assert.equal(out.same, true, kind);
+      assert.equal(out.enhanced, false, kind);
+    });
+  });
+}
+
+test('query source: actual bridge cleanup before entry leaves the readable fallback', async () => {
+  await withQueryFrames(async open => {
+    const child = await open('?mmx_shell=1&mmx_generation=query-g1', 'window.retiredReader=MMXSharedShell.readPageSearch;dispatchEvent(new PageTransitionEvent("pagehide",{persisted:false}));');
+    const out = await child.frame.evaluate(() => ({
+      installed: __MMX_SHARED_BRIDGE_INSTALLED__, retired: retiredReader ? retiredReader() : null,
+      disabled: document.querySelector('[data-im-controls]').disabled,
+      legacy: document.getElementById('intl-legacy-research').open,
+      enhanced: document.querySelector('[data-im-workspace]').hasAttribute('data-im-enhanced'),
+      restored: document.querySelector('[data-im-workspace]').outerHTML === queryRootBefore
+    }));
+    assert.equal(out.installed, true);
+    assert.equal(out.retired, null);
+    assert.equal(out.disabled, true);
+    assert.equal(out.legacy, true);
+    assert.equal(out.enhanced, false);
+    assert.equal(out.restored, true);
+    assert.deepEqual(child.errors, []);
+  });
+});
+
+for (const fault of ['provider-getter', 'reader-getter', 'replacement', 'deleted', 'method-throw', 'null', 'nonstring']) {
+  test('query source: native popstate refusal is atomic with an open inspector for ' + fault, async () => {
+    await withPage(async page => {
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      await page.evaluate(() => {
+        window.__MMX_SHARED_BRIDGE_INSTALLED__ = true;
+        window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() {
+          if (window.queryFault === 'method-throw') throw new Error('reader call unavailable');
+          if (window.queryFault === 'null') return null;
+          if (window.queryFault === 'nonstring') return {};
+          return location.search;
+        } };
+      });
+      const handle = await mount(page, '', workspaceWithInspector());
+      await page.evaluate(({ h, fault }) => {
+        h.dispatch({ type: 'capture_baseline' });
+        h.dispatch({ type: 'push_return', anchor_id: 'research-origin' });
+        h.openInspector({ market_id: 'JP', expected_source: 'fixture:v1' });
+        document.querySelector('[data-im-inspector-action="evidence"]').click();
+        const article = document.querySelector('[data-im-inspector-payload]');
+        const shell = document.querySelector('[data-im-inspector-shell]');
+        const original = location.href;
+        history.pushState(null, '', '?view=history&market=TW&horizon=3m&basis=local&return_basis=price');
+        const expectedHref = location.href;
+        history.pushState(null, '', original);
+        window.queryBefore = { state: h.getState(), article, shell, parent: article.parentNode, focus: document.activeElement, html: article.outerHTML, length: history.length, expectedHref, modal: shell.matches(':modal'), ledger: !article.querySelector('[data-im-inspector-ledger]').hidden };
+        window.queryHistoryCalls = [];
+        for (const method of ['pushState', 'replaceState']) {
+          const originalMethod = history[method];
+          history[method] = function () { queryHistoryCalls.push(method); return originalMethod.apply(this, arguments); };
+        }
+        if (fault === 'provider-getter') Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider getter unavailable'); } });
+        else if (fault === 'reader-getter') Object.defineProperty(MMXSharedShell, 'readPageSearch', { configurable: true, get() { throw new Error('reader getter unavailable'); } });
+        else if (fault === 'replacement') window.MMXSharedShell = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() { return ''; } };
+        else if (fault === 'deleted') delete window.MMXSharedShell;
+        else window.queryFault = fault;
+        window.queryPopDone = false;
+        addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
+        history.back();
+      }, { h: handle, fault });
+      await page.waitForFunction(() => queryPopDone);
+      const out = await page.evaluate(h => ({
+        state: h.getState(), before: queryBefore.state, beforeModal: queryBefore.modal, beforeLedger: queryBefore.ledger,
+        same: document.querySelector('[data-im-inspector-payload]') === queryBefore.article,
+        attached: queryBefore.article.parentNode === queryBefore.parent,
+        modal: queryBefore.shell.matches(':modal'),
+        html: queryBefore.article.outerHTML === queryBefore.html,
+        focus: document.activeElement === queryBefore.focus,
+        history: history.length === queryBefore.length && location.href === queryBefore.expectedHref,
+        historyCalls: queryHistoryCalls,
+        issues: document.querySelector('[data-im-issues]').textContent
+      }), handle);
+      assert.ok(out.before.baseline);
+      assert.equal(out.beforeModal, true);
+      assert.equal(out.beforeLedger, true);
+      assert.equal(out.before.return_stack.length, 1);
+      assert.deepEqual(out.state, out.before);
+      for (const key of ['same', 'attached', 'modal', 'html', 'focus', 'history']) assert.equal(out[key], true, key);
+      assert.deepEqual(out.historyCalls, []);
+      assert.equal(out.issues, 'Workspace state unavailable');
+      assert.deepEqual(errors, []);
+    });
+  });
+}
+
+test('query source: refused native popstate preserves the pending scenario and its original draft', async () => {
+  const fixture = JSON.parse(require('node:child_process').execFileSync('python3', ['-m', 'tests.history_browser_fixture'], { cwd: path.resolve(__dirname, '..'), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
+  await withPage(async page => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await bootstrapPage(page, fixture.html, '?view=history&market=JP&horizon=1m&basis=usd_unhedged&return_basis=price');
+    await page.addScriptTag({ content: fs.readFileSync(path.join(__dirname, '../templates/intl_workspace_scenario.js'), 'utf8') });
+    await page.addScriptTag({ content: adapterSource });
+    await page.evaluate(c => {
+      window.queryProvider = { __mmxBridge: 'mmx.shared-shell.v1', readPageSearch() { return location.search; } };
+      window.MMXSharedShell = queryProvider;
+      window.scenarioHandle = IntlWorkspace.mountIntlWorkspace(document.querySelector('[data-im-workspace]'), c);
+    }, fixture.config);
+    await page.locator('#im-scenario-local').fill('5');
+    await page.locator('#im-scenario-fx').fill('-3');
+    await page.locator('[data-im-scenario-action="calculate"]').click();
+    await page.locator('[data-im-action="set_horizon"]').selectOption('3m');
+    await page.locator('#im-scenario-local').fill('10');
+    const before = await page.evaluate(() => ({ state: scenarioHandle.getState(), local: document.getElementById('im-scenario-local').value, fx: document.getElementById('im-scenario-fx').value, pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden, focus: document.activeElement.id }));
+    assert.equal(before.pending, true);
+    assert.equal(before.state.horizon, '1m');
+    await page.evaluate(() => {
+      const original = location.href;
+      history.pushState(null, '', '?view=overview');
+      window.queryExpectedHref = location.href;
+      history.pushState(null, '', original);
+      Object.defineProperty(window, 'MMXSharedShell', { configurable: true, get() { throw new Error('provider unavailable'); } });
+      window.queryPopDone = false;
+      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
+      history.back();
+    });
+    await page.waitForFunction(() => queryPopDone);
+    const after = await page.evaluate(() => ({ state: scenarioHandle.getState(), local: document.getElementById('im-scenario-local').value, fx: document.getElementById('im-scenario-fx').value, pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden, focus: document.activeElement.id }));
+    assert.deepEqual(after, before);
+    assert.equal(await page.evaluate(() => location.href === queryExpectedHref), true);
+    assert.equal(await page.locator('[data-im-issues]').textContent(), 'Workspace state unavailable');
+    assert.deepEqual(errors, []);
+    await page.evaluate(() => Object.defineProperty(window, 'MMXSharedShell', { configurable: true, writable: true, value: queryProvider }));
+    await page.locator('[data-im-scenario-action="cancel_context"]').click();
+    assert.equal(await page.locator('#im-scenario-local').inputValue(), '5');
+    assert.equal(await page.locator('#im-scenario-fx').inputValue(), '-3');
+    assert.match(await page.locator('[data-im-scenario-usd]').innerText(), /1\.85/);
+    assert.equal((await page.evaluate(() => scenarioHandle.getState())).horizon, '1m');
+  });
+});
+
+
+test('query source: standalone search getter failure stays inside the live refusal boundary', async () => {
+  await withPage(async page => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await bootstrapPage(page, workspaceMarkup());
+    const handle = await page.evaluateHandle(c => {
+      // The public environment parameter lets this test exercise an otherwise
+      // unforgeable browser Location read without changing production code.
+      const environmentWindow = {
+        document, history, MutationObserver,
+        getComputedStyle: window.getComputedStyle.bind(window),
+        addEventListener: window.addEventListener.bind(window),
+        removeEventListener: window.removeEventListener.bind(window),
+        location: {
+          get search() { if (window.failStandaloneRead) throw new Error('location search unavailable'); return location.search; },
+          get pathname() { return location.pathname; },
+          get hash() { return location.hash; }
+        }
+      };
+      return IntlWorkspace.mountIntlWorkspace(document.querySelector('[data-im-workspace]'), c, { window: environmentWindow });
+    }, config);
+    await page.evaluate(h => {
+      h.dispatch({ type: 'capture_baseline' });
+      h.dispatch({ type: 'push_return', anchor_id: 'research-origin' });
+      document.getElementById('research-origin').focus();
+      const original = location.href;
+      history.pushState(null, '', '?view=history&market=TW&horizon=3m&basis=local');
+      const target = location.href;
+      history.pushState(null, '', original);
+      window.queryBefore = { state: h.getState(), target, focus: document.activeElement, length: history.length };
+      window.failStandaloneRead = true;
+      window.queryPopDone = false;
+      addEventListener('popstate', () => { queryPopDone = true; }, { once: true });
+      history.back();
+    }, handle);
+    await page.waitForFunction(() => queryPopDone);
+    const out = await page.evaluate(h => ({
+      state: h.getState(), before: queryBefore.state,
+      sameFocus: document.activeElement === queryBefore.focus,
+      sameHistory: location.href === queryBefore.target && history.length === queryBefore.length,
+      issues: document.querySelector('[data-im-issues]').textContent
+    }), handle);
+    assert.ok(out.before.baseline);
+    assert.equal(out.before.return_stack.length, 1);
+    assert.deepEqual(out.state, out.before);
+    assert.equal(out.sameFocus, true);
+    assert.equal(out.sameHistory, true);
+    assert.equal(out.issues, 'Workspace state unavailable');
+    assert.deepEqual(errors, []);
+  });
+});
+
+
+const gsQueryHistoryProbe = 'window.gsQueryWrites=[];for(const method of ["pushState","replaceState"]){const original=history[method];history[method]=function(state,title,url){gsQueryWrites.push({method,url:String(url)});return original.apply(this,arguments);};}';
+
+async function gsQuerySnapshot(child) {
+  return child.frame.evaluate(() => ({
+    state: queryHandle.getState(),
+    query: MMXSharedShell.readPageSearch(),
+    raw: location.search,
+    issues: document.querySelector('[data-im-issues]').textContent,
+    writes: gsQueryWrites,
+    length: history.length,
+    initialLength: queryBoot.length,
+    active: MMXSharedShell.active,
+    visibleMarkets: Array.from(document.querySelectorAll('[data-gs-market-scope] > [data-gs-market]'))
+      .filter(node => !node.hidden).map(node => node.getAttribute('data-gs-market'))
+  }));
+}
+
+async function gsNavigationMessages(child) {
+  await child.page.waitForFunction(() => queryMessages.some(message => message.type === 'READY'));
+  await child.page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  return child.page.evaluate(() => queryMessages.filter(message => message.type === 'NAVIGATE'));
+}
+
+test('GS query composition: transport and unchanged business selection cause no history or navigation writes', async () => {
+  const queries = ['', 'view=overview', 'market=', 'market=JP',
+    'view=history&market=KR&pins=JP&horizon=1m&basis=usd_unhedged&return_basis=price',
+    '%6darket=%4aP&view=overview&group=&pins=%4aP,KR'];
+  await withQueryFrames(async open => {
+    for (const business of queries) {
+      const child = await open('?' + (business ? business + '&' : '') + 'mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      const selected = business.includes('KR&') ? 'KR' : business.includes('JP') || business.includes('%4aP') ? 'JP' : null;
+      assert.equal(before.state.selected_market, selected, business);
+      assert.equal(before.query, business ? '?' + business : '', business);
+      assert.equal(before.issues, '', business);
+      assert.equal(before.active, false);
+      assert.equal(before.length, before.initialLength);
+      assert.deepEqual(before.writes, [], business);
+      assert.deepEqual(before.visibleMarkets, [selected || 'JP']);
+      await child.init();
+      const after = await gsQuerySnapshot(child);
+      assert.deepEqual(after.state, before.state);
+      assert.equal(after.raw, before.raw);
+      assert.deepEqual(after.writes, []);
+      assert.deepEqual(await gsNavigationMessages(child), [], business);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: one market-only correction preserves raw business bytes before INIT', async () => {
+  const cases = [
+    ['market=zz', 'market='],
+    ['market=XX', 'market='],
+    ['market=JPN', 'market='],
+    ['market=TW', 'market='],
+    ['group=&pins=%4aP,KR&%6darket=%54W&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price',
+     'group=&pins=%4aP,KR&%6darket=&view=overview&horizon=1m&basis=usd_unhedged&return_basis=price']
+  ];
+  await withQueryFrames(async open => {
+    for (const [business, corrected] of cases) {
+      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      assert.equal(before.state.selected_market, null, business);
+      assert.equal(before.query, '?' + corrected, business);
+      assert.equal(before.issues, '');
+      assert.equal(before.active, false);
+      assert.equal(before.length, before.initialLength);
+      assert.deepEqual(before.writes, [{ method: 'replaceState', url: '/intl.html?' + corrected }], business);
+      assert.deepEqual(before.visibleMarkets, ['JP']);
+      assert.match(before.raw, /mmx_shell=1&mmx_generation=query-g1$/);
+      await child.init();
+      const requests = await gsNavigationMessages(child);
+      assert.equal(requests.length, 1, business);
+      assert.equal(requests[0].mode, 'replace');
+      assert.equal(requests[0].sameDocument, true);
+      assert.equal(new URL(requests[0].href).search, '?' + corrected);
+      await child.frame.evaluate(() => dispatchEvent(new PopStateEvent('popstate')));
+      const after = await gsQuerySnapshot(child);
+      assert.deepEqual(after.state, before.state);
+      assert.deepEqual(after.writes, before.writes, 'corrected query is idempotent');
+      assert.equal(after.length, before.initialLength);
+      assert.equal((await gsNavigationMessages(child)).length, 1);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: rejected business queries are not sanitized by market alignment', async () => {
+  const queries = ['notmarket=JP', 'market=JP&foreign=x', 'market=JP&%6darket=KR',
+    'market=%zz', 'view=unknown&market=JP', 'market=TW&&view=overview',
+    'view=overview&market=TW&', 'market=JP&view=%zz', 'market=TW&pins=JP%2cKR'];
+  await withQueryFrames(async open => {
+    for (const business of queries) {
+      const child = await open('?' + business + '&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      const before = await gsQuerySnapshot(child);
+      assert.equal(before.query, '?' + business, business);
+      assert.equal(before.issues, business === 'view=unknown&market=JP' ? 'Unsupported value' : 'Invalid URL state restored', business);
+      assert.deepEqual(before.writes, [], business);
+      assert.equal(before.length, before.initialLength);
+      await child.init();
+      assert.deepEqual(await gsNavigationMessages(child), [], business);
+      const after = await gsQuerySnapshot(child);
+      assert.equal(after.raw, before.raw);
+      assert.equal(after.issues, before.issues);
+      assert.deepEqual(after.writes, []);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+test('GS query composition: native Back and Forward preserve one intended clamp before and after INIT', async () => {
+  await withQueryFrames(async open => {
+    for (const admitted of [false, true]) {
+      const child = await open('?market=JP&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+      if (admitted) await child.init();
+      await child.frame.evaluate(() => {
+        const original = location.href;
+        History.prototype.pushState.call(history, null, '', '?market=TW&mmx_shell=1&mmx_generation=query-g1');
+        History.prototype.pushState.call(history, null, '', original);
+        window.gsNativeLength = history.length;
+        window.gsPopDone = false;
+        addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
+        history.back();
+      });
+      await child.frame.waitForFunction(() => gsPopDone);
+      let out = await gsQuerySnapshot(child);
+      assert.equal(out.state.selected_market, null);
+      assert.equal(out.query, '?market=');
+      assert.equal(out.issues, '');
+      assert.equal(out.writes.length, 1);
+      assert.deepEqual(out.visibleMarkets, ['JP']);
+      const length = out.length;
+      for (const [method, selected, query] of [['forward', 'JP', '?market=JP'], ['back', null, '?market=']]) {
+        await child.frame.evaluate(method => {
+          window.gsPopDone = false;
+          addEventListener('popstate', () => { gsPopDone = true; }, { once: true });
+          history[method]();
+        }, method);
+        await child.frame.waitForFunction(() => gsPopDone);
+        out = await gsQuerySnapshot(child);
+        assert.equal(out.state.selected_market, selected);
+        assert.equal(out.query, query);
+        assert.equal(out.issues, '');
+        assert.equal(out.writes.length, 1, 'no repeated correction on native history');
+        assert.equal(out.length, length);
+      }
+      if (!admitted) await child.init();
+      const requests = await gsNavigationMessages(child);
+      assert.equal(requests.length, 1);
+      assert.equal(requests[0].mode, 'replace');
+      assert.equal(requests[0].sameDocument, true);
+      assert.deepEqual(child.errors, []);
+      await child.close();
+    }
+  }, { gs: true });
+});
+
+
+for (const admitted of [false, true]) {
+  for (const kind of ['invalid-existing', 'valid-existing', 'valid-new']) {
+    test('Scenario query ordering: ' + kind + (admitted ? ' after INIT' : ' before INIT'), async () => {
+      const fixture = JSON.parse(require('node:child_process').execFileSync('python3', ['-m', 'tests.history_browser_fixture'], { cwd: path.resolve(__dirname, '..'), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
+      // KR is configured by the real Scenario fixture but absent from this GS surface.
+      fixture.html = fixture.html.replace('<h1', '<div data-gs-market-scope><div data-gs-market="JP" data-gs-market-default>Japan GS content</div></div><h1');
+      await withQueryFrames(async open => {
+        const child = await open('?view=history&market=JP&horizon=1m&basis=usd_unhedged&return_basis=price&mmx_shell=1&mmx_generation=query-g1', gsQueryHistoryProbe);
+        if (admitted) await child.init();
+        await child.frame.locator('#im-scenario-local').fill('5');
+        await child.frame.locator('#im-scenario-fx').fill('-3');
+        await child.frame.locator('[data-im-scenario-action="calculate"]').click();
+        if (kind !== 'valid-new') {
+          await child.frame.locator('[data-im-action="set_horizon"]').selectOption('3m');
+          await child.frame.locator('#im-scenario-local').fill('10');
+        }
+        const snapshot = () => child.frame.evaluate(() => ({
+          state: queryHandle.getState(),
+          local: document.getElementById('im-scenario-local').value,
+          fx: document.getElementById('im-scenario-fx').value,
+          pending: !document.querySelector('[data-im-scenario-confirm-context]').hidden,
+          query: MMXSharedShell.readPageSearch(), raw: location.search,
+          writes: gsQueryWrites.slice(), length: history.length,
+          focus: document.activeElement.id
+        }));
+        const before = await snapshot();
+        assert.equal(before.pending, kind !== 'valid-new');
+        assert.equal(before.state.selected_market, 'JP');
+        assert.equal(before.state.horizon, '1m');
+        assert.deepEqual(before.writes, [], 'pending proposal setup does not write history');
+        const serialized = await child.frame.evaluate(c => IntlWorkspaceState.createIntlWorkspaceState(c).serializeQuery(queryHandle.getState()).query, fixture.config);
+        const target = kind === 'invalid-existing'
+          ? '?view=unknown&market=KR&mmx_shell=1&mmx_generation=query-g1'
+          : '?view=history&market=KR&horizon=3m&basis=usd_unhedged&return_basis=price&mmx_shell=1&mmx_generation=query-g1';
+        await child.frame.evaluate(target => {
+          const original = location.href;
+          History.prototype.pushState.call(history, null, '', target);
+          History.prototype.pushState.call(history, null, '', original);
+          window.scenarioNativeLength = history.length;
+          window.scenarioPopDone = false;
+          addEventListener('popstate', () => { scenarioPopDone = true; }, { once: true });
+          history.back();
+        }, target);
+        await child.frame.waitForFunction(() => scenarioPopDone);
+        const after = await snapshot();
+        assert.deepEqual(after.state, before.state, 'refused traversal retains committed research state');
+        assert.equal(after.local, before.local);
+        assert.equal(after.fx, before.fx);
+        assert.equal(after.pending, true);
+        assert.equal(after.length, await child.frame.evaluate(() => scenarioNativeLength));
+        if (kind === 'invalid-existing') {
+          assert.equal(after.raw, target, 'invalid destination remains unsanitized');
+          assert.deepEqual(after.writes, [], 'invalid parse does not restore or align history');
+          assert.equal(after.focus, before.focus);
+        } else {
+          assert.equal(after.writes.length, 1, 'confirmation refusal performs only its serialized restoration');
+          assert.equal(after.writes[0].method, 'replaceState');
+          assert.equal(after.query, '?' + serialized);
+          assert.equal(new URL(after.writes[0].url, 'http://127.0.0.1:3102').search, '?' + serialized);
+        }
+        if (!admitted) await child.init();
+        const requests = await gsNavigationMessages(child);
+        assert.equal(requests.length, kind === 'invalid-existing' ? 0 : 1, 'no extra queued or emitted GS navigation');
+        if (requests.length) {
+          assert.equal(requests[0].mode, 'replace');
+          assert.equal(requests[0].sameDocument, true);
+          assert.equal(new URL(requests[0].href).search, '?' + serialized);
+        }
+        // Exercise both public outcomes. Existing proposals must retain their
+        // original JP/3m target, rather than adopting the refused KR traversal.
+        const action = admitted ? 'confirm_context' : 'cancel_context';
+        await child.frame.locator('[data-im-scenario-action="' + action + '"]').click();
+        const finished = await snapshot();
+        assert.equal(finished.pending, false);
+        if (admitted) {
+          assert.equal(finished.state.horizon, '3m');
+          assert.equal(finished.state.selected_market, kind === 'valid-new' ? null : 'JP');
+        } else {
+          assert.equal(finished.state.horizon, '1m');
+          assert.equal(finished.state.selected_market, 'JP');
+          assert.equal(finished.local, '5');
+          assert.equal(finished.fx, '-3');
+          assert.match(await child.frame.locator('[data-im-scenario-usd]').innerText(), /1\.85/);
+        }
+        assert.deepEqual(child.errors, []);
+        await child.close();
+      }, { scenario: fixture });
+    });
+  }
+}

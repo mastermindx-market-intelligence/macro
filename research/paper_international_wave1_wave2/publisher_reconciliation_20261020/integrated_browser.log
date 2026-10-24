@@ -1,0 +1,1 @@
+{"country_checks": 84, "passed": 84, "ageing_passed": 8, "page_errors": [], "history": [{"action": "back", "cc": "IN", "passed": true}, {"action": "forward", "cc": "KR", "passed": true}], "canonical_manifest": "mockups/evidence/intl-integration-20261020/manifest.json"}

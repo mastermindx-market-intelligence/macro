@@ -1,0 +1,99 @@
+{
+  "purpose": "Close canonical historical-absence observation after exact-workspace process non-liveness check",
+  "original_action_ref": "d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56",
+  "observations": [
+    {
+      "name": "terminal_branch_activity",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/activity?ref=refs%2Fheads%2Fsol%2Fweb-intl-country-cockpit-20261018&per_page=100&direction=desc",
+      "started_at": "2026-10-20T07:26:43.056965+00:00",
+      "completed_at": "2026-10-20T07:26:43.352794+00:00",
+      "exit_code": 0,
+      "http_status_line": "HTTP/2.0 200 OK",
+      "sha256": "747ca3afd6bee413a8dd6469b0fca269b85f481c741f7d1b63bc4a9331751cb7",
+      "bytes": 3998,
+      "server_date": "Tue, 20 Oct 2026 07:26:43 GMT",
+      "request_id": "ACF2:39463D:50BA2:851FF:6AD717B3",
+      "link": null,
+      "body": [
+        {
+          "id": 46952872284,
+          "node_id": "PSH_kwLOS4LjIs8AAAAK7pv5XA",
+          "before": "9eb408279e7ea8de99a667e296c4b0ddebfd799b",
+          "after": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+          "ref": "refs/heads/sol/web-intl-country-cockpit-20261018",
+          "timestamp": "2026-10-19T01:32:48Z",
+          "activity_type": "push",
+          "actor": {
+            "login": "mastermindxryan",
+            "id": 333722846,
+            "node_id": "U_kgDOE-Q03g",
+            "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/mastermindxryan",
+            "html_url": "https://github.com/mastermindxryan",
+            "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+            "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+            "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+            "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+            "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+            "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          }
+        },
+        {
+          "id": 46894447974,
+          "node_id": "PSH_kwLOS4LjIs8AAAAK6yB9Zg",
+          "before": "0000000000000000000000000000000000000000",
+          "after": "9eb408279e7ea8de99a667e296c4b0ddebfd799b",
+          "ref": "refs/heads/sol/web-intl-country-cockpit-20261018",
+          "timestamp": "2026-10-18T10:38:06Z",
+          "activity_type": "branch_creation",
+          "actor": {
+            "login": "mastermindxryan",
+            "id": 333722846,
+            "node_id": "U_kgDOE-Q03g",
+            "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/mastermindxryan",
+            "html_url": "https://github.com/mastermindxryan",
+            "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+            "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+            "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+            "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+            "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+            "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal_expected_commit",
+      "endpoint": "repos/mastermindx-market-intelligence/macro/commits/11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+      "started_at": "2026-10-20T07:26:43.353828+00:00",
+      "completed_at": "2026-10-20T07:26:43.774371+00:00",
+      "exit_code": 1,
+      "http_status_line": "HTTP/2.0 422 Unprocessable Entity",
+      "sha256": "c1db7cdb6a03df925d52c6e7afb351e49517a52c5e1c94ed95850220827aee57",
+      "bytes": 1437,
+      "server_date": "Tue, 20 Oct 2026 07:26:43 GMT",
+      "request_id": "AD02:DD10A:54BC9:89C39:6AD717B3",
+      "link": null,
+      "body": {
+        "message": "No commit found for SHA: 11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+        "documentation_url": "https://docs.github.com/rest/commits/commits#get-a-commit",
+        "status": "422"
+      }
+    }
+  ]
+}

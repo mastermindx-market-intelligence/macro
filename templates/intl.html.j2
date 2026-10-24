@@ -478,13 +478,20 @@
   }
   @keyframes tblGrow { to { transform:scaleX(1); } }
 </style>
+{% if mode != 'stocks' and intl_analysis|default(none) %}<style>{% include 'intl_country_cockpit.css' %}</style>{% endif %}
 </head>
-<body{% if mode != 'stocks' %} class="page-intl"{% endif %}>
+<body{% if mode != 'stocks' %} class="page-intl{% if intl_analysis|default(none) and intl_analysis.count %} imc-page{% endif %}"{% endif %}>
 <div class="intl-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
 
 {% include "_site_nav.html.j2" %}
 
 <main class="intl-flow">
+{% set has_country_analysis = mode != 'stocks' and intl_analysis|default(none) and intl_analysis.count %}
+{% if has_country_analysis %}
+{% include 'intl_country_cockpit.html.j2' %}
+<details id="intl-analysis-tools">
+<summary>{{ t('Data & research tools', '数据与研究工具') }} <span aria-hidden="true">+</span></summary>
+{% endif %}
 {% if mode != 'stocks' and intl_workspace|default(none) %}
 {% include 'intl_workspace/shell.html.j2' %}
 <details id="intl-legacy-research" open>
@@ -1979,6 +1986,8 @@
 
 {% if intl_workspace|default(none) %}</details>{% endif %}
 
+{% if has_country_analysis %}</details>{% endif %}
+
 {% else %}{# ================= STOCK DASHBOARD ================= #}
 
 <!-- ===== What to act on now (sector board) ===== -->
@@ -2227,6 +2236,7 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
   } catch(e){}
 })();
 </script>
+{% if has_country_analysis %}<script>{% include 'intl_country_cockpit.js' %}</script>{% endif %}
 <script src="theme.js"></script>
 <script src="tablesort.js"></script>
 </body>

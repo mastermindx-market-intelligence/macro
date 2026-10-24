@@ -1,0 +1,432 @@
+{
+  "schema": "intl_country_outlook_verification.v1",
+  "revision": "R12",
+  "verified_at": "2026-10-19T01:31:31.761303+00:00",
+  "operation_id": "intl-country-cockpit-20261018",
+  "branch": "sol/web-intl-country-cockpit-20261018",
+  "parent_head_sha": "9eb408279e7ea8de99a667e296c4b0ddebfd799b",
+  "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+  "qualification": "Exact uncommitted source snapshot and isolated local served verification; no hosted CI, formal release approval or production acceptance is asserted.",
+  "python": {
+    "passed": 160,
+    "warnings": 4,
+    "test_files": 9,
+    "run": {
+      "name": "pytest_release",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_intl_forecast_vintages.py",
+        "tests/test_intl_policy_evidence.py",
+        "tests/test_intl_outlook_interpretation.py",
+        "tests/test_intl_country_cockpit.py",
+        "tests/test_intl_equity_risk.py",
+        "tests/test_intl_build.py",
+        "tests/test_intl_library_mount.py",
+        "tests/test_intl_workspace_integration.py",
+        "tests/test_intl_session_asof.py",
+        "-q"
+      ],
+      "started_at": "2026-10-19T01:28:08.601638+00:00",
+      "finished_at": "2026-10-19T01:28:19.656818+00:00",
+      "exit_code": 0,
+      "log": "outlook_pytest_release.txt"
+    },
+    "warning_scope": "Three existing Pandas deprecations; one historical pytest temporary-directory cleanup permission warning."
+  },
+  "render": {
+    "run": {
+      "name": "render_release",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+        "--source-dir",
+        ".",
+        "--output-dir",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+        "--reuse-inputs"
+      ],
+      "started_at": "2026-10-19T01:28:19.657197+00:00",
+      "finished_at": "2026-10-19T01:28:21.116735+00:00",
+      "exit_code": 0,
+      "log": "outlook_render_release.txt"
+    },
+    "rendered_at": "2026-10-19T01:28:19.745317+00:00",
+    "html_sha256": {
+      "intl_country_preview.html": "e4b11651c67ae530c43ff55d32a51527e622d75e5ba31353729e7e64ccd64d9d",
+      "intl_integrated_preview.html": "feaa6017726f1d3e1d95db8df2fac9d0ae03d46da4b0fb71bc37212dc3645f35",
+      "intl_stocks_integrated_preview.html": "0b9544f87af836315bc9f76102197ac3bd54732c44f9f47eab1975606691e9c7"
+    },
+    "countries": 7,
+    "forecast_archive_count": 37,
+    "policy_coverage": {
+      "TW": "verified",
+      "GB": "verified"
+    }
+  },
+  "browser": {
+    "run": {
+      "name": "browser_release",
+      "command": [
+        "node",
+        "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+      ],
+      "started_at": "2026-10-19T01:28:21.117309+00:00",
+      "finished_at": "2026-10-19T01:28:43.863552+00:00",
+      "exit_code": 0,
+      "log": "outlook_browser_release.txt"
+    },
+    "states": 12,
+    "journeys": 10,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "route": "http://intl.test",
+    "runtime": "Installed Chrome via the existing Playwright runtime",
+    "evidence": "country_cockpit_preview/integrated_receipts.json"
+  },
+  "paper": {
+    "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+    "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "page_id": "p-G-0",
+    "boards": [
+      "DMX-0",
+      "DW7-0",
+      "E4D-0",
+      "EC2-0",
+      "ER4-0",
+      "ER5-0"
+    ],
+    "applied_effects": 67,
+    "finish_observed": true,
+    "receipt": "paper_r12_receipt.json",
+    "production_published": false
+  },
+  "principal_review": {
+    "status": "Bounded findings closed",
+    "formal_release_approval": false,
+    "findings_closed": [
+      "World narrative tied to exact reviewed record; corrected values derive new heading",
+      "Market text describes measured levels, not movement or a causal inference",
+      "Verified national policy replaces the generic inflation mechanism",
+      "Fiscal readings describe GDP ratios without nominal borrowing claims",
+      "Country conditions identify and follow their selected thesis and dependencies",
+      "Conflicting national evidence across official URLs and bank display-name aliases withholds the dependent thesis",
+      "Conditional inflation language does not presuppose a restrictive starting stance"
+    ]
+  },
+  "source_limits": [
+    "CBC official-page values were manually verified; host TLS validation failed, so no successful raw CBC download or raw-byte hash is claimed",
+    "Newly typed national decisions cover GB and TW; other eligible dated bank assessments remain explicit",
+    "Fiscal/debt coverage remains missing for KR,TW,IN,AU",
+    "No newer RBI decision admitted without primary evidence",
+    "Forecast vintages and cross-provider alternatives retain separate identity and period conventions",
+    "Anonymous isolated browser fixtures do not prove authenticated served assets or production state"
+  ],
+  "diff_check_exit": 0,
+  "file_fingerprints": [
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "bytes": 19001,
+      "sha256": "d93153d9de02485cea03863fda1caf94f79ce3cd2d9acc6b6c7faa4168bd6f20"
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "bytes": 19050,
+      "sha256": "6f5584e3b111b2c83c3120b37e9c10dc15693b47e388a70b7e2b80a76777c049"
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "bytes": 7326,
+      "sha256": "53e01868b87fd7fffca09ccf520c9e672e24889d545b8391515098c584ff00b6"
+    },
+    {
+      "path": "collectors/intl_weo.py",
+      "bytes": 12768,
+      "sha256": "dbbdba08eded49506282b0a853bd833e58aafdcb404d0d1fff188b53f8cd3803"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 143208,
+      "sha256": "00e01c3bc0b3644a077995d594a9bfdf4fb41e4919dd9aa92edbd20797196b1f"
+    },
+    {
+      "path": "config/intl_country_commentary.json",
+      "bytes": 12760,
+      "sha256": "0a61d228e6ace15523178d2632b18bd5b182a1055e64cd82d8a84efb5c52bc74"
+    },
+    {
+      "path": "config/intl_country_releases.json",
+      "bytes": 715,
+      "sha256": "35a8dae1a5558a34321cc212875c39a0f3ef5b1f485cfeacf056f1dde5fba05f"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "bytes": 27352,
+      "sha256": "ecaae6e8870c1e9efb56ed97f85a281e6b8f2bd8abb0f1ec6d9650928f916dd9"
+    },
+    {
+      "path": "lib/intl_country_outlook.py",
+      "bytes": 18021,
+      "sha256": "62384cddd6bc63d3028fe7c40825b0b537142497dcea4d2e798b8245399c17e5"
+    },
+    {
+      "path": "lib/intl_forecast_vintages.py",
+      "bytes": 21841,
+      "sha256": "a493c38c11288c764c76f439a81e522a14d2796d6c047df894bc1f51e3dafa41"
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "bytes": 9191,
+      "sha256": "7b71875759c7adfd069426c3e59c3cb24520e7ada69db9c0d84222e0243f6bf2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/COUNTRY_OUTLOOK_R12_20261019.md",
+      "bytes": 11216,
+      "sha256": "58ca80138d614f5e722979d15d5245911d17f62a325c7691acd31f261161b3a8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/analysis_320_dark_KR.png",
+      "bytes": 35976,
+      "sha256": "c89dbf30d7b85001a49943c3c33dd8066b5256749f73ba3d242eaa1c97633a43"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/analysis_390_dark_GB.png",
+      "bytes": 28395,
+      "sha256": "8932602aaf7e7da3c77e71c70ab6f7b3eb4be1aaa73c53744ed3ae3dbdc72b4f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/analysis_390_light_TW.png",
+      "bytes": 28130,
+      "sha256": "bc45f67a4887fd91772a7d3aec6da520b6c1edc38c3452e92d3440bef324c592"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/assessment.json",
+      "bytes": 939908,
+      "sha256": "437e20c5767832d94b2c4bd4687caf566b22469c8d1cc89004e0df965027e217"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/country_inputs.json",
+      "bytes": 143268,
+      "sha256": "97d18b4356acb4b1853179f8cff047c8800a225ffd5bf832d9fe7d2c156e9d3c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_en.png",
+      "bytes": 540717,
+      "sha256": "8c52c864e86cb33ed2ddad09e92e9979df5f299a2b59b09b0a913b811bb361c8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_zh.png",
+      "bytes": 540152,
+      "sha256": "869153f84e72fa5f2235229d47d3198103458fed9da92bd978ae78c25a15e5d6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_en.png",
+      "bytes": 569784,
+      "sha256": "154fdb8e9603249be5f1514c40879641836cddefcc339b7a594b9644f3b94204"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_zh.png",
+      "bytes": 569531,
+      "sha256": "ec7d2e88eab0606e95a7c270b9ffe7e305961eacfadf262062e16b5f6b07bde6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_en.png",
+      "bytes": 123713,
+      "sha256": "ddfc7626f50e38782c07c083c590a446b8f87b0d389e9c5ed2a2cb226edb9a98"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_zh.png",
+      "bytes": 122627,
+      "sha256": "c86543eeb0392e063c01c7ec8f2dda84976cb5ff72712ba68253055506d4c7f6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_en.png",
+      "bytes": 125855,
+      "sha256": "d02e8bc3bc662e72caa704f17752476952a7f83f5fc68186b56de9bf250794d2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_zh.png",
+      "bytes": 125394,
+      "sha256": "e4bf91019e4dfa562204010a534062aab7a81687ab980409d5e8388c0f67c8b9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_en.png",
+      "bytes": 134030,
+      "sha256": "39316b31a84f6a00e63ee81d5896951b9c5aca4278a34b95f232aa3bae9febf8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_zh.png",
+      "bytes": 134273,
+      "sha256": "21e4b38f6f620817af118848bd50132645f823d7d4be92d54bb326e053f555dc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_en.png",
+      "bytes": 136374,
+      "sha256": "d4a66206376d24f28d326c12e76d5dd231a0c2e557f2cec7db7cd608fabe78d5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_zh.png",
+      "bytes": 137015,
+      "sha256": "419920d8be1497c37fcce6532bc1d6d54fb863e124d3436e0cbb856b4bc7b6c2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_receipts.json",
+      "bytes": 10873,
+      "sha256": "68f22d27dcd45e0d7bd24779dca1e4fa30963bac64a0fcfc9ce361f7899bab4d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_country_preview.html",
+      "bytes": 228634,
+      "sha256": "e4b11651c67ae530c43ff55d32a51527e622d75e5ba31353729e7e64ccd64d9d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_integrated_preview.html",
+      "bytes": 1651959,
+      "sha256": "feaa6017726f1d3e1d95db8df2fac9d0ae03d46da4b0fb71bc37212dc3645f35"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_stocks_integrated_preview.html",
+      "bytes": 97987,
+      "sha256": "0b9544f87af836315bc9f76102197ac3bd54732c44f9f47eab1975606691e9c7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/manifest.json",
+      "bytes": 5150,
+      "sha256": "ebd810ea81b69e17fdf533908fbae3096f0174bbf3d0f54ceafc03a5d8f01850"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_browser_final.txt",
+      "bytes": 7707,
+      "sha256": "a07dc193e07be3561506870026631e779ea178e54419d2a18fc99c7fe30f68e3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_browser_output.txt",
+      "bytes": 7707,
+      "sha256": "a07dc193e07be3561506870026631e779ea178e54419d2a18fc99c7fe30f68e3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_browser_release.txt",
+      "bytes": 7707,
+      "sha256": "a07dc193e07be3561506870026631e779ea178e54419d2a18fc99c7fe30f68e3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_pytest_output.txt",
+      "bytes": 2365,
+      "sha256": "dce0881d07f3e82199de1f5644470da73cf836ab9926781e474fa9d2ffc7336f"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_pytest_release.txt",
+      "bytes": 2364,
+      "sha256": "61a5569cbd04bad312eb4ae980c6bcd55b92687802fadbe9b564f8cfa18bd349"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_pytest_review.txt",
+      "bytes": 4387,
+      "sha256": "74ef47e2d352244bac45ed7878b0ae2e378ef32fda57ae52eef4327810af6c19"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_render_final.txt",
+      "bytes": 4348,
+      "sha256": "a2ddbe97e38a81a1625800b8c6d5c18b9370fd8337d3aaeffd644921ad31c16a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_render_output.txt",
+      "bytes": 4348,
+      "sha256": "9c726682c87b36d5cc25b9ad00d87953ebbd8ea61984e1f89e06d791a4549e94"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_render_release.txt",
+      "bytes": 4348,
+      "sha256": "baddaa5665ce7bdafa0eb6388d06795daa9c8a315f721afe37c8e96af13d151a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_validation_runs.json",
+      "bytes": 4925,
+      "sha256": "9a23d0f77065171c26e98fd855eb53eccb4be9793a6df7c6b09fbf27556624d4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/policy_390_dark_GB.png",
+      "bytes": 20384,
+      "sha256": "740cc1895a77c28b2e6f99b5dce94ca1692d8c683069978f63fb9cd7fa8119d2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/policy_390_light_TW.png",
+      "bytes": 22720,
+      "sha256": "bf6736e4b8a527c8b8a7dfd0dddf6a5a78f8649677ffb6c5693d5950a01e44bb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/paper_r12_receipt.json",
+      "bytes": 25184,
+      "sha256": "b74bb57b8f724d0d766a88a6a42c61d98329326de9d3fca383691d7785a8e846"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "bytes": 8378,
+      "sha256": "cba8877b5133a12a8e6f10606b134efbedc41afb843031ba5cba477673ecc7aa"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/verify_country_cockpit.cjs",
+      "bytes": 12852,
+      "sha256": "37f2bfc441be9f512dcf87fd24fd1a4270e7a6ada6b1c8967a2f022ed182dfaa"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "bytes": 59819,
+      "sha256": "bad9bcff5421a04ba178fc0c18f539cc7b93cb7c479c09d70fa27859ec59f897"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26170,
+      "sha256": "4f0c6c5acd83003089e3461ac48175ff3004e37c73cb41f13c5ccd9d71d61d80"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 25392,
+      "sha256": "e07bf09a1bb8d3be29d00eab9a398007dbf0b76273ec97ef5cb9c2d643491d8e"
+    },
+    {
+      "path": "tests/fixtures/intl_weo_october_2026_tables.json",
+      "bytes": 35206,
+      "sha256": "b333cd0cf10e3a3616b9d64ef82418c376ef04ded881029febdaa831f3535c67"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "bytes": 13413,
+      "sha256": "388e97838ee35cc5200193fd56ac951c0e6cf5373a368219169b8e7e0b44414f"
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "bytes": 12246,
+      "sha256": "3906a1568bf243d74622c83d7d96280d92feecdd040f7080733b1db1d6ef39d3"
+    },
+    {
+      "path": "tests/test_intl_outlook_interpretation.py",
+      "bytes": 8007,
+      "sha256": "fad34398f1e4273a36460977dd468fe5ec4fbbcc261dc3c7b511982676cfb3ef"
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "bytes": 7726,
+      "sha256": "de2ed65b9ec2962adaa65fd3ad2eff118044f93af1a409ed7c4bb4b303983be4"
+    }
+  ],
+  "self_hash_policy": "This receipt excludes itself to avoid self-reference; the subsequent Git commit binds its exact contents.",
+  "next_gates": [
+    "Typed commit and same-branch push",
+    "Exact-head hosted CI and genuine-failure remediation",
+    "Required formal release/data reviews",
+    "Normal deployment and real served acceptance"
+  ]
+}

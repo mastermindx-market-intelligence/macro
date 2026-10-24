@@ -216,6 +216,33 @@ class IntlMacroAdapter(Adapter):
             + "\n"
         )
 
+    def _refresh_country_inputs(self) -> None:
+        # Same collector, independent dated sources. No network work at render.
+        from collectors.intl_country_sources import collect_country_inputs, merge_country_inputs
+        path = config.data_dir() / self.group / "country_inputs.json"
+        try:
+            previous = json.loads(path.read_text(encoding="utf-8")) if path.exists() and path.stat().st_size <= 1_500_000 else {}
+        except (OSError, ValueError):
+            previous = {}
+        def fetch_bytes(url, *, max_bytes):
+            import time
+            started, size, chunks = time.monotonic(), 0, []
+            with self.http_get(url, retries=1, timeout=20, stream=True) as response:
+                for chunk in response.iter_content(65536):
+                    size += len(chunk)
+                    if size > max_bytes or time.monotonic() - started > 45:
+                        raise ValueError("country_source_budget_exceeded")
+                    chunks.append(chunk)
+            return b"".join(chunks)
+        incoming = collect_country_inputs(fetch_bytes, retrieved_at=datetime.now(timezone.utc).isoformat())
+        merged = merge_country_inputs(previous, incoming)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".json.tmp")
+        temporary.write_text(json.dumps(merged, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(path)
+        for failure in incoming["errors"]:
+            log.warning("intl country source %s unavailable (%s); retaining dated input", failure["source"], failure["error"])
+
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         # No cold-start branch needed: fredgraph.csv returns each series' FULL history
         # every call, so this plane self-seeds on the first run regardless of
@@ -281,6 +308,11 @@ class IntlMacroAdapter(Adapter):
                         "status": "missing",
                         "official_error": f"{type(e).__name__}: {e}",
                     }
+
+        try:
+            self._refresh_country_inputs()
+        except (OSError, ValueError) as exc:
+            log.warning("intl country refresh unavailable (%s); retaining prior input", type(exc).__name__)
 
         if not frames:
             raise RuntimeError(

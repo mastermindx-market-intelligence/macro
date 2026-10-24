@@ -1,0 +1,3087 @@
+{
+  "schema": "intl.production_input_snapshot.v1",
+  "kind": "copy_of_existing_production_store_no_source_reacquisition",
+  "started_at": "2026-10-20T11:40:48.158345+00:00",
+  "code_head": "a1887c0498ddb8ef79bc4a9683942547a689ceb9",
+  "selected_groups": [
+    "intl",
+    "intl_macro",
+    "fred",
+    "yahoo",
+    "forex",
+    "intl_risk",
+    "flow_regime",
+    "intl_regime",
+    "intl_etf"
+  ],
+  "yahoo_selection": "Configured Yahoo ticker groups plus literal ticker dependencies in intl and flow-regime readers; unrelated company store excluded",
+  "files": [
+    {
+      "path": "data/china/000001.SS.parquet",
+      "bytes": 132141,
+      "sha256": "0928d815c647f9d3f3998c1671b8078248fcd9f669482f002e47274956e7b03e",
+      "stored_mtime": "2026-10-16T21:21:49.722905+00:00"
+    },
+    {
+      "path": "data/flow_regime/history.parquet",
+      "bytes": 639139,
+      "sha256": "4b2f6fbf76cd262529b2203872c108e73e740586bdb85e50b38c1c9346d37284",
+      "stored_mtime": "2026-10-17T07:21:12.398559+00:00"
+    },
+    {
+      "path": "data/flow_regime/latest.json",
+      "bytes": 11041,
+      "sha256": "4f6d571412ac8dbbce746710537cf508acca45d35dbbadabf4add7edb3e971a3",
+      "stored_mtime": "2026-10-17T07:21:12.398559+00:00"
+    },
+    {
+      "path": "data/forex/alerts.jsonl",
+      "bytes": 6343101,
+      "sha256": "f45fa7ef212520e97861a4583b85825f53b69849973661162738636c034abd23",
+      "stored_mtime": "2026-10-18T06:33:44.318711+00:00"
+    },
+    {
+      "path": "data/forex/context_forward_log.jsonl",
+      "bytes": 32812,
+      "sha256": "bdb582baf7ca126989d57d65580d518a1155412d1e49b4516c60330e3b7d7a23",
+      "stored_mtime": "2026-10-17T06:27:37.344992+00:00"
+    },
+    {
+      "path": "data/forex/conviction_calibration.json",
+      "bytes": 27870,
+      "sha256": "e7e6b48b0b1045838fe9c55135df8adcaf853eb7f4ea151b5a6a09e0053fa842",
+      "stored_mtime": "2026-06-28T03:51:33.203794+00:00"
+    },
+    {
+      "path": "data/forex/latest.json",
+      "bytes": 47554,
+      "sha256": "8279bc08195d8accb0774b7d4232908800e70be6a6fa79aa4a683708ec69b29c",
+      "stored_mtime": "2026-10-18T06:33:44.319710+00:00"
+    },
+    {
+      "path": "data/forex/state_history.jsonl",
+      "bytes": 17596,
+      "sha256": "306399e3be060a185021882a65ab483b85835065ef625f2dbbc87c24f8c6de83",
+      "stored_mtime": "2026-10-17T06:27:37.345992+00:00"
+    },
+    {
+      "path": "data/forex/trial_log.json",
+      "bytes": 619,
+      "sha256": "d952ab3eb9b8d4ba44391e9c98fa290ba1130e695470e4d124ca3886ab1aa938",
+      "stored_mtime": "2026-06-28T03:51:33.203794+00:00"
+    },
+    {
+      "path": "data/fred/ADPMNUSNERSA.parquet",
+      "bytes": 5330,
+      "sha256": "c50b8f11f612bc03f7fcf9c3bc95b1f8dcb6d2586a7005398d516cf0fc29b76a",
+      "stored_mtime": "2026-10-05T04:31:49.135177+00:00"
+    },
+    {
+      "path": "data/fred/AMTMUO.parquet",
+      "bytes": 8516,
+      "sha256": "c59d28410883043f9fb6ef29fb9836da4720be1ca388459b73cf31c230878409",
+      "stored_mtime": "2026-10-05T04:31:49.135177+00:00"
+    },
+    {
+      "path": "data/fred/AMTMVS.parquet",
+      "bytes": 8493,
+      "sha256": "3a770932c8498aa3ccf26f017bf9c722dac3187f35b5cdd75525f409f1a28fd4",
+      "stored_mtime": "2026-10-05T04:31:49.135177+00:00"
+    },
+    {
+      "path": "data/fred/ANFCI.parquet",
+      "bytes": 38359,
+      "sha256": "7a42034221b24054465dbb4bcc4aa647b3f1539060d9c7df916c537b22cbc85a",
+      "stored_mtime": "2026-10-08T23:29:58.450951+00:00"
+    },
+    {
+      "path": "data/fred/APU000072610.parquet",
+      "bytes": 8716,
+      "sha256": "29a5ba890ed13319518f992282db446cfc4ada9e9737c111c0ebb49902c9db3b",
+      "stored_mtime": "2026-10-15T04:04:35.293828+00:00"
+    },
+    {
+      "path": "data/fred/AWHAETP.parquet",
+      "bytes": 4575,
+      "sha256": "2086cc3832a12d9a6d7d093a6acb0f77140c4d503c1455f440b5eb6155f33379",
+      "stored_mtime": "2026-10-05T04:31:49.136177+00:00"
+    },
+    {
+      "path": "data/fred/AWHMAN.parquet",
+      "bytes": 13167,
+      "sha256": "e6604255dccefeeea889ed6bfe911ef5a4efd41c71a58199e2e80a969693eb83",
+      "stored_mtime": "2026-10-05T04:31:49.136177+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A0CM.parquet",
+      "bytes": 10848,
+      "sha256": "da9c3cd486d818a3c22e5ecdd05e0114e6796c8ed1b7f0d13c3554e4e3ce0fe8",
+      "stored_mtime": "2026-10-15T04:04:35.293828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A0CMEY.parquet",
+      "bytes": 10745,
+      "sha256": "a4c13c545ebe070ce9f6042272dd8b858a474e84c0c35775d0d68c5863ba23d9",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A1CAAA.parquet",
+      "bytes": 9905,
+      "sha256": "6f65c25a0947c20d69eddf1f3d82f092170f71bea9d23ea9065ff7c7bc2df896",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A2CAA.parquet",
+      "bytes": 9906,
+      "sha256": "ca7047f8a82899d04b0b29aad30f0e9785a66e8eeb95ca8761e85d4bf0bd1e93",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A3CA.parquet",
+      "bytes": 10127,
+      "sha256": "478120679c1f60a904a3e5482aa0c1738a48ac56ea82217bbffd6878ed79db64",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLC0A4CBBB.parquet",
+      "bytes": 10284,
+      "sha256": "36151a56ef94d0e97f681193dd4f99c1469c0c48029a367accb7dd82163f8fda",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLCC0A0CMTRIV.parquet",
+      "bytes": 14324,
+      "sha256": "839dc10198bff855e35f79fbaae0667fb2e01367f3ac2acb2b698f595bae7dde",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMCBPIOAS.parquet",
+      "bytes": 10925,
+      "sha256": "ebd611ec2de50689c1790a0592ef79290599933db1941f9728f0626554ea5a50",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMEBCRPIEOAS.parquet",
+      "bytes": 10988,
+      "sha256": "d06a13c10cefb307986ef2517862f7ef62081ab0e0da046b09262b81491a23ee",
+      "stored_mtime": "2026-10-15T04:04:35.295828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMFSFCRPIOAS.parquet",
+      "bytes": 10473,
+      "sha256": "32361b9e9dbce162bed659c5f43bfc1abb54f415b248bc5e0ba0e713038bad13",
+      "stored_mtime": "2026-10-15T04:04:35.296828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMHBHYCRPIOAS.parquet",
+      "bytes": 11263,
+      "sha256": "1e6d27b101dbb4683819cd64c67311aac72b82169269cce450c4f019bf1e496c",
+      "stored_mtime": "2026-10-15T04:04:35.296828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMNSNFCRPIOAS.parquet",
+      "bytes": 10931,
+      "sha256": "c65b84ac5bd69de9c2b542325684c8d824f9511fa79b5e464c30c71a9e53d507",
+      "stored_mtime": "2026-10-15T04:04:35.296828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMRACRPIASIAOAS.parquet",
+      "bytes": 10711,
+      "sha256": "624ffa413ed52d10969e3a81a1464a53af33800dd8a96d892c5858aa8d33cb91",
+      "stored_mtime": "2026-10-15T04:04:35.296828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMRECRPIEMEAOAS.parquet",
+      "bytes": 10807,
+      "sha256": "123a1723590ad4877dfd772a1787996b178c3b9ced2d96c667a264550102ce53",
+      "stored_mtime": "2026-10-15T04:04:35.297828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLEMRLCRPILAOAS.parquet",
+      "bytes": 10989,
+      "sha256": "ea384c2a7c645c323d06d5c5222d75e2cecabd8a6517b427c5b8ff9e17a44085",
+      "stored_mtime": "2026-10-15T04:04:35.297828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLH0A0HYM2.parquet",
+      "bytes": 82792,
+      "sha256": "eafef7bae21880c089d0048d8f56c9b922457acc0692a4845d6c67581021f764",
+      "stored_mtime": "2026-10-15T04:04:35.298828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLH0A0HYM2EY.parquet",
+      "bytes": 11072,
+      "sha256": "55b368fc62ba4f37ccaf83ec75b840bea000ebe89b118949c02906769f60975f",
+      "stored_mtime": "2026-10-15T04:04:35.298828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLH0A1HYBB.parquet",
+      "bytes": 10681,
+      "sha256": "ad612ee0632ba21147bb9809e506f68f7abf0e5e0d8dab04fc8153606157245e",
+      "stored_mtime": "2026-10-15T04:04:35.298828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLH0A2HYB.parquet",
+      "bytes": 10833,
+      "sha256": "5edbfbe0af0d02bf78c84f0c4b6d79b7dc6028d1856045891119ee3f98c5ab35",
+      "stored_mtime": "2026-10-15T04:04:35.298828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLH0A3HYC.parquet",
+      "bytes": 11702,
+      "sha256": "353aab2fb602523a9c28737f03f6ec120647ebc79a6fbbcde183842840965139",
+      "stored_mtime": "2026-10-15T04:04:35.298828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLHE00EHYIOAS.parquet",
+      "bytes": 10985,
+      "sha256": "f49f12c7a6df847f61cd60960f3ffb71f1d555ef27f4294714440f97401545a4",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/BAMLHYH0A0HYM2TRIV.parquet",
+      "bytes": 14197,
+      "sha256": "b11af6d31173e178987215f5316ce458e5ecfa44aabb6841761c8392c8d16aa9",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/BOPGSTB.parquet",
+      "bytes": 8568,
+      "sha256": "60505ed82fbf37852e9984440d5f8d8a47a9b7f7599315a7b0db69cd251b1c67",
+      "stored_mtime": "2026-10-07T04:22:46.845039+00:00"
+    },
+    {
+      "path": "data/fred/BOPTEXP.parquet",
+      "bytes": 8574,
+      "sha256": "4bed8c4d307deed77da38f773f0582c6748f534eada5592e628fc8ea25796232",
+      "stored_mtime": "2026-10-07T04:22:46.846039+00:00"
+    },
+    {
+      "path": "data/fred/BOPTIMP.parquet",
+      "bytes": 8587,
+      "sha256": "c950002e78c9f6fa408c76a53c98d2e82e17c0ff071d680530cf1bdada695e7f",
+      "stored_mtime": "2026-10-07T04:22:46.846039+00:00"
+    },
+    {
+      "path": "data/fred/BUSLOANS.parquet",
+      "bytes": 19195,
+      "sha256": "ba58bf3c5ce4f007cc831ec6327c7dd121d974a98bdb35d0e1358201f37581b8",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/CAPG3344S.parquet",
+      "bytes": 13480,
+      "sha256": "7c4d0245435658a64eebdd52dfb33f92fccd5cc8bd990b1dfb133ccc2d77e605",
+      "stored_mtime": "2026-10-05T04:31:49.143177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG211S.parquet",
+      "bytes": 13513,
+      "sha256": "e3389864f608421e077df4c273fce75e217ec21ea9b82b623babab6d285c562e",
+      "stored_mtime": "2026-10-05T04:31:49.144177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG2211A2S.parquet",
+      "bytes": 15154,
+      "sha256": "960257d4b40f4679c13afb22116a2d89c683c5a9075a942e491d4fd0f859e660",
+      "stored_mtime": "2026-10-05T04:31:49.144177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG2211S.parquet",
+      "bytes": 15403,
+      "sha256": "d36dccbed607a0fde5ef06747cdbba50b15f289dddd0ebba0d1fcedc7aa7df03",
+      "stored_mtime": "2026-10-05T04:31:49.144177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG331S.parquet",
+      "bytes": 15351,
+      "sha256": "81964af808ff7221342375a9e7466d0ce2db0b975f98dc0dbe2b848be85c8b0b",
+      "stored_mtime": "2026-10-05T04:31:49.144177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG3344S.parquet",
+      "bytes": 14248,
+      "sha256": "d5d6b932c9426925cc73eafc407a62eae2c03698ddbe61d9b07821f2bf57a810",
+      "stored_mtime": "2026-10-05T04:31:49.144177+00:00"
+    },
+    {
+      "path": "data/fred/CAPUTLG334S.parquet",
+      "bytes": 14280,
+      "sha256": "69a3949a1ba582ea1fdf1915fe69c1545db176ba0ae6b2bc681cf9122d0f8e3b",
+      "stored_mtime": "2026-10-05T04:31:49.145177+00:00"
+    },
+    {
+      "path": "data/fred/CCSA.parquet",
+      "bytes": 42653,
+      "sha256": "dfe485e336a26ab3ae5e9d5ba96ea8c016f4bd9bba6975c475a1efe795407fcc",
+      "stored_mtime": "2026-10-09T04:52:42.444157+00:00"
+    },
+    {
+      "path": "data/fred/CES0500000003.parquet",
+      "bytes": 5817,
+      "sha256": "9efa58032222ee200c1f65ede795cc856ee153a9e509c7aec10a7addadebb95e",
+      "stored_mtime": "2026-10-05T04:31:49.145177+00:00"
+    },
+    {
+      "path": "data/fred/CMRMTSPL.parquet",
+      "bytes": 14299,
+      "sha256": "520d5c0ede50c54abb0d0de7f3fed020858866f4cbf4a232f5f794732e22487b",
+      "stored_mtime": "2026-10-05T04:31:49.146177+00:00"
+    },
+    {
+      "path": "data/fred/CORESTICKM157SFRBATL.parquet",
+      "bytes": 15392,
+      "sha256": "5f5f7647617eea257b8b88e5ba82eee041850e602c88a38a56e4df5bac6e1144",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/CPIAUCSL.parquet",
+      "bytes": 16419,
+      "sha256": "7d2c513ab6ffba6f9f8fd70417ecade13e4d31d618a3b5a715b356e92be034ed",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/CPILFESL.parquet",
+      "bytes": 14574,
+      "sha256": "34b72f4f7d26524ba1b27280454252b147d16b0700883f474aa1d907a4f89191",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/CSUSHPISA.parquet",
+      "bytes": 9766,
+      "sha256": "05e4b3296fea295ed87efedb9c01e33c1add25868d3e96ff94b923280685211a",
+      "stored_mtime": "2026-10-05T04:31:49.147177+00:00"
+    },
+    {
+      "path": "data/fred/CUSR0000SACL1E.parquet",
+      "bytes": 14184,
+      "sha256": "4ab59132af41584c31c53ad8fb3e3ea61b1aa1707212e239435c2ca932da711c",
+      "stored_mtime": "2026-10-15T04:04:35.299828+00:00"
+    },
+    {
+      "path": "data/fred/CUSR0000SAF11.parquet",
+      "bytes": 14927,
+      "sha256": "1a0232634064eca29039bc6b14e02d427660b53b46fa22cc56ba27d8c8e8a034",
+      "stored_mtime": "2026-10-15T04:04:35.300828+00:00"
+    },
+    {
+      "path": "data/fred/CUSR0000SAH1.parquet",
+      "bytes": 15106,
+      "sha256": "63da8f3de71b6570be0fbb850f0d5231e6d3b17bdbf6a96356ccaae96ac8bec8",
+      "stored_mtime": "2026-10-15T04:04:35.300828+00:00"
+    },
+    {
+      "path": "data/fred/CUSR0000SAS.parquet",
+      "bytes": 14829,
+      "sha256": "a87724dc57ec6989a18133e8d148dfe10562dc7ef40f071a6fb0fd6279340797",
+      "stored_mtime": "2026-10-15T04:04:35.300828+00:00"
+    },
+    {
+      "path": "data/fred/CUSR0000SASLE.parquet",
+      "bytes": 13210,
+      "sha256": "671a1f3d5b8d3c4d00e61cce70e5fc84123634a5bbcaca6bffce99e066763ab1",
+      "stored_mtime": "2026-10-15T04:04:35.300828+00:00"
+    },
+    {
+      "path": "data/fred/CUUR0000SAG1.parquet",
+      "bytes": 15903,
+      "sha256": "df46759be73488ff889c7bb6ac75bcca154ac9ce7d54c11b5721917ad1454327",
+      "stored_mtime": "2026-10-15T04:04:35.300828+00:00"
+    },
+    {
+      "path": "data/fred/DAAA.parquet",
+      "bytes": 117864,
+      "sha256": "9b0b82b0aae847e66829f74d719c0e7ff47c83e7e116c56f443255ddb173d7e0",
+      "stored_mtime": "2026-10-15T04:04:35.301828+00:00"
+    },
+    {
+      "path": "data/fred/DBAA.parquet",
+      "bytes": 108016,
+      "sha256": "a5bdbc46066a17db621a6a031a687cc4f57df0a567d9da6ee4885a5a29803b4e",
+      "stored_mtime": "2026-10-15T04:04:35.302828+00:00"
+    },
+    {
+      "path": "data/fred/DCOILWTICO.parquet",
+      "bytes": 133701,
+      "sha256": "1d67c46695201974e5173bc38ea85ed4b3456fdedb2e3a904d11686ab2de961d",
+      "stored_mtime": "2026-10-08T23:29:58.462951+00:00"
+    },
+    {
+      "path": "data/fred/DEXBZUS.parquet",
+      "bytes": 117078,
+      "sha256": "54452d9f9c4eba6b9308e7dea7dcd57cb73b288a418db0177f2eceb633197088",
+      "stored_mtime": "2026-10-15T04:04:35.303828+00:00"
+    },
+    {
+      "path": "data/fred/DEXCAUS.parquet",
+      "bytes": 172957,
+      "sha256": "c26b279d8cc7598a74d85d5760204ea2025693e83ef35b20c8219580903fa183",
+      "stored_mtime": "2026-10-15T04:04:35.305828+00:00"
+    },
+    {
+      "path": "data/fred/DEXCHUS.parquet",
+      "bytes": 146582,
+      "sha256": "dbf11f4078c365c6ed2e2f6d09192b86491419d1413ff4e820b866c33e558b24",
+      "stored_mtime": "2026-10-15T04:04:35.306828+00:00"
+    },
+    {
+      "path": "data/fred/DEXJPUS.parquet",
+      "bytes": 176857,
+      "sha256": "d47a1f7514578f1c4c9cdca15c43bffaccebf1840ffc2c6d74f3ae6377b719c7",
+      "stored_mtime": "2026-10-15T04:04:35.308828+00:00"
+    },
+    {
+      "path": "data/fred/DEXMXUS.parquet",
+      "bytes": 121569,
+      "sha256": "9fc821ed09534f2e214a1fd03dfe6d674498cc81cd92547d6a27c319dcff92ba",
+      "stored_mtime": "2026-10-15T04:04:35.309828+00:00"
+    },
+    {
+      "path": "data/fred/DEXSZUS.parquet",
+      "bytes": 183971,
+      "sha256": "a03aff49c66532f82dfbbffeaa4266c73521a032a01ae1e59ec517d20cfda5ad",
+      "stored_mtime": "2026-10-15T04:04:35.310828+00:00"
+    },
+    {
+      "path": "data/fred/DEXUSAL.parquet",
+      "bytes": 175028,
+      "sha256": "bf07c57755052388b8e3bc033315e5f81e982a9af7c48c11022f8304b2673cc8",
+      "stored_mtime": "2026-10-15T04:04:35.312828+00:00"
+    },
+    {
+      "path": "data/fred/DEXUSEU.parquet",
+      "bytes": 92360,
+      "sha256": "6be8e3eea39a21eac026a2eec29dc0d211b27aaeec7393762afcaca7c33236d8",
+      "stored_mtime": "2026-10-15T04:04:35.312828+00:00"
+    },
+    {
+      "path": "data/fred/DEXUSUK.parquet",
+      "bytes": 181234,
+      "sha256": "4e98fba0921e8fedb884b667f430aa4a901c87e7c3f331f6d1ff6e171ceaaad2",
+      "stored_mtime": "2026-10-15T04:04:35.314828+00:00"
+    },
+    {
+      "path": "data/fred/DFEDTARL.parquet",
+      "bytes": 58521,
+      "sha256": "766a91c456629a63071a2f0556f7aede0afd7549a82475d098cf4770c503034c",
+      "stored_mtime": "2026-10-15T04:04:35.314828+00:00"
+    },
+    {
+      "path": "data/fred/DFEDTARU.parquet",
+      "bytes": 58525,
+      "sha256": "2ef5797af0637c39118e13c5e5e29c6a383e50b81a8b432cda1a0166eae3c95f",
+      "stored_mtime": "2026-10-15T04:04:35.315828+00:00"
+    },
+    {
+      "path": "data/fred/DFF.parquet",
+      "bytes": 269933,
+      "sha256": "04d80561b96c602fbeb70b5881621f0e91716c17dac9e848bbd797221be55301",
+      "stored_mtime": "2026-10-15T04:04:35.317828+00:00"
+    },
+    {
+      "path": "data/fred/DFII10.parquet",
+      "bytes": 62003,
+      "sha256": "c31d0ccc2ac662e74f0f85ee7ae18d262cd93a28803500ea91960779bbe2bca9",
+      "stored_mtime": "2026-10-15T04:04:35.317828+00:00"
+    },
+    {
+      "path": "data/fred/DFII5.parquet",
+      "bytes": 62271,
+      "sha256": "92474fb7d8cb19a1752f4e513c5f28f4abb878e8988bbcf6977de08438c6443b",
+      "stored_mtime": "2026-10-15T04:04:35.318828+00:00"
+    },
+    {
+      "path": "data/fred/DGORDER.parquet",
+      "bytes": 8502,
+      "sha256": "79e8d701821472504e541ee8958de0f408ae33c951a8ece44a8e4e77981111f2",
+      "stored_mtime": "2026-10-05T04:31:49.171177+00:00"
+    },
+    {
+      "path": "data/fred/DGS1.parquet",
+      "bytes": 172081,
+      "sha256": "15c5816d92913c82caae81c3ab342acab7a8fa241640e23d7188e3c6a21e43af",
+      "stored_mtime": "2026-10-15T04:04:35.319828+00:00"
+    },
+    {
+      "path": "data/fred/DGS10.parquet",
+      "bytes": 171613,
+      "sha256": "b8ddf5dfd2e5cb23bab0763591c9447bdf5a1473a2929034a1dbe8eb2ede4b6d",
+      "stored_mtime": "2026-10-15T04:04:35.320828+00:00"
+    },
+    {
+      "path": "data/fred/DGS2.parquet",
+      "bytes": 135770,
+      "sha256": "3dac4d518c8a7ac247d7ec20aa75327c9e129488a1f448031f936384f120a4b9",
+      "stored_mtime": "2026-10-15T04:04:35.322828+00:00"
+    },
+    {
+      "path": "data/fred/DGS20.parquet",
+      "bytes": 154023,
+      "sha256": "d73ad846b3e3a283222055476b5b3bf8a7ac561ba35f01673d8ff41078e305c3",
+      "stored_mtime": "2026-10-15T04:04:35.323828+00:00"
+    },
+    {
+      "path": "data/fred/DGS3.parquet",
+      "bytes": 171950,
+      "sha256": "df0c212088f063b6c1082a3bfb55a322c3b3b49a472cad057bb065090dfbd739",
+      "stored_mtime": "2026-10-15T04:04:35.324828+00:00"
+    },
+    {
+      "path": "data/fred/DGS30.parquet",
+      "bytes": 133200,
+      "sha256": "266de7cea00498bebaa24307e1ae3b7f50df9c7036c35b292ac4dcec6bf01d64",
+      "stored_mtime": "2026-10-15T04:04:35.326828+00:00"
+    },
+    {
+      "path": "data/fred/DGS3MO.parquet",
+      "bytes": 121212,
+      "sha256": "6de05562c9f1f5be0c2c36096f60ea77abdb90ec9b82208868124c65043544f2",
+      "stored_mtime": "2026-10-15T04:04:35.327828+00:00"
+    },
+    {
+      "path": "data/fred/DGS5.parquet",
+      "bytes": 171875,
+      "sha256": "9845ecc443cdcaf923b2dff0308a92affd9e967a8436d8903f6f08b5b96862aa",
+      "stored_mtime": "2026-10-15T04:04:35.329828+00:00"
+    },
+    {
+      "path": "data/fred/DGS6MO.parquet",
+      "bytes": 121473,
+      "sha256": "95c2ba8935f563214d2bbd0662ad5ac69248a474d22f9d3c4540e30b4bd308b4",
+      "stored_mtime": "2026-10-15T04:04:35.330828+00:00"
+    },
+    {
+      "path": "data/fred/DGS7.parquet",
+      "bytes": 152867,
+      "sha256": "7bd657cb22b82cf453d076197d3319c292b38cd4259e84e4d3ec9829fd2221f3",
+      "stored_mtime": "2026-10-15T04:04:35.331828+00:00"
+    },
+    {
+      "path": "data/fred/DHHNGSP.parquet",
+      "bytes": 79625,
+      "sha256": "0412138c8611320a2de518cd67274d31cafbd6d9d7fa6b920913c6b9010aaf22",
+      "stored_mtime": "2026-10-08T23:29:58.480951+00:00"
+    },
+    {
+      "path": "data/fred/DRCCLACBS.parquet",
+      "bytes": 4125,
+      "sha256": "4a57b5967cfdc2b068f81c52ed5e8fc10ed8de31a5622b5b3e66c140a40f74bd",
+      "stored_mtime": "2026-10-05T04:31:49.185177+00:00"
+    },
+    {
+      "path": "data/fred/DRSFRMACBS.parquet",
+      "bytes": 4205,
+      "sha256": "e6d07bb38224e57c0b3d503e44f206ac1eb0405ce01b4b372167670ab8f41ad3",
+      "stored_mtime": "2026-10-05T04:31:49.186177+00:00"
+    },
+    {
+      "path": "data/fred/DSPIC96.parquet",
+      "bytes": 14655,
+      "sha256": "47237b4b16766b81970e126cda055938f99c285efa91d692df3df2277d752988",
+      "stored_mtime": "2026-10-05T04:31:49.186177+00:00"
+    },
+    {
+      "path": "data/fred/DTB3.parquet",
+      "bytes": 194373,
+      "sha256": "a49aa3c5de072c2d6bbd83a582fa6dcbc8f726365c929ee78f2cba7f05df8ba2",
+      "stored_mtime": "2026-10-15T04:04:35.333828+00:00"
+    },
+    {
+      "path": "data/fred/DTCISA156MSFRBPHI.parquet",
+      "bytes": 10210,
+      "sha256": "010aa43123665405c8f82301738497267fab2248de7a89680ab87eb43a9acc06",
+      "stored_mtime": "2026-10-05T04:31:49.188177+00:00"
+    },
+    {
+      "path": "data/fred/DTMUAMFRBDAL.parquet",
+      "bytes": 5584,
+      "sha256": "47b5e4db7e9d2c01c31c4acd86f99157bdf87d68ad7d522b06d25d497ae321dc",
+      "stored_mtime": "2026-10-05T04:31:49.188177+00:00"
+    },
+    {
+      "path": "data/fred/DTWEXAFEGS.parquet",
+      "bytes": 85080,
+      "sha256": "79ecb19a90a47c22f869e3a646756c0a5cf5f832785ce1f0bde6772251bcbd2d",
+      "stored_mtime": "2026-10-15T04:04:35.335828+00:00"
+    },
+    {
+      "path": "data/fred/DTWEXBGS.parquet",
+      "bytes": 87660,
+      "sha256": "438c23fa40f1420820076cb1a1d98a1611c7fa541c7113b580a8dc3ce57302e0",
+      "stored_mtime": "2026-10-15T04:04:35.336828+00:00"
+    },
+    {
+      "path": "data/fred/DTWEXEMEGS.parquet",
+      "bytes": 87674,
+      "sha256": "709a0093decb52338fc6ad9f0e025b7a907d1ac5dd810468f05ee3be32d764da",
+      "stored_mtime": "2026-10-15T04:04:35.336828+00:00"
+    },
+    {
+      "path": "data/fred/ECBASSETSW.parquet",
+      "bytes": 24773,
+      "sha256": "833e61c28da45c24d4861e1720b47b57a393e100d6ab897fba87556caf9a0402",
+      "stored_mtime": "2026-10-15T04:04:35.337828+00:00"
+    },
+    {
+      "path": "data/fred/ECBDFR.parquet",
+      "bytes": 91299,
+      "sha256": "1e9a74baf2c7c193ccd394707885d9bc73e84fc8d3aac334957c3555c00a2531",
+      "stored_mtime": "2026-10-15T04:04:35.338828+00:00"
+    },
+    {
+      "path": "data/fred/ECBMRRFR.parquet",
+      "bytes": 63744,
+      "sha256": "7ec47c5b8a4afd058266b55925dca1e9420a20b7d3b7cb4cfebd84fa5a4ce0b9",
+      "stored_mtime": "2026-10-15T04:04:35.338828+00:00"
+    },
+    {
+      "path": "data/fred/ECIALLCIV.parquet",
+      "bytes": 3564,
+      "sha256": "2cc27ce6a3e0efacd1b2f404cfd4648faa67427bc0afbdda8c88ce15fab6acc3",
+      "stored_mtime": "2026-10-05T04:31:49.193177+00:00"
+    },
+    {
+      "path": "data/fred/ECIWAG.parquet",
+      "bytes": 3571,
+      "sha256": "a1d3a562bb40b2381e7438172b9a925dcd04aa1df719a1b384e696a1e90f4fac",
+      "stored_mtime": "2026-10-05T04:31:49.193177+00:00"
+    },
+    {
+      "path": "data/fred/EFFR.parquet",
+      "bytes": 66575,
+      "sha256": "6c3dbf6a4f3968625fa356d6af41d26e85943630c3a5d05ca78a987161b4a068",
+      "stored_mtime": "2026-10-15T04:04:35.339828+00:00"
+    },
+    {
+      "path": "data/fred/EXPINF10YR.parquet",
+      "bytes": 12101,
+      "sha256": "9e0b808513b96d7a1c00d84338a9ba1287710a0e5be2450fd8678bda8521c739",
+      "stored_mtime": "2026-10-15T04:04:35.339828+00:00"
+    },
+    {
+      "path": "data/fred/EXPINF1YR.parquet",
+      "bytes": 12085,
+      "sha256": "d33ca110000666f5b7a1f707dc285f1151012d3731656fdbf2dd31fe17df1d6c",
+      "stored_mtime": "2026-10-15T04:04:35.339828+00:00"
+    },
+    {
+      "path": "data/fred/EXPINF5YR.parquet",
+      "bytes": 12083,
+      "sha256": "d067654dc415be936cbff71fa4936394b446e70dc05a1d2f3025eeb328b65139",
+      "stored_mtime": "2026-10-15T04:04:35.339828+00:00"
+    },
+    {
+      "path": "data/fred/FEDTARMD.parquet",
+      "bytes": 2167,
+      "sha256": "ee809f550bda5c7d4fe01b7584e0a1314bab18cffff73e3459fbdca19b77938c",
+      "stored_mtime": "2026-10-05T04:31:49.195177+00:00"
+    },
+    {
+      "path": "data/fred/FLEXCPIM157SFRBATL.parquet",
+      "bytes": 15348,
+      "sha256": "da93f0ae3a3f27404b755a64b695752f0f45af1bf61b460c39b9408e84971918",
+      "stored_mtime": "2026-10-15T04:04:35.339828+00:00"
+    },
+    {
+      "path": "data/fred/GASREGW.parquet",
+      "bytes": 27450,
+      "sha256": "7c7eb916df3b868d0829e8c5e3c0cc60e4d1fd73642bf9be9c8d4a5c18b27947",
+      "stored_mtime": "2026-10-15T04:04:35.340828+00:00"
+    },
+    {
+      "path": "data/fred/GDPNOW.parquet",
+      "bytes": 3128,
+      "sha256": "45433194e76445ce17b9d2e95c38521f8ef679e7ccea37d66cc4f7088097c22c",
+      "stored_mtime": "2026-10-09T04:52:42.470157+00:00"
+    },
+    {
+      "path": "data/fred/HOUST.parquet",
+      "bytes": 13125,
+      "sha256": "f846f3c20208f56f69143290fbfca71dce961f91a11a52920ba8c928fa24e60b",
+      "stored_mtime": "2026-10-05T04:31:49.195177+00:00"
+    },
+    {
+      "path": "data/fred/IC4WSA.parquet",
+      "bytes": 39296,
+      "sha256": "11bb286da58f8a0f4d399979ddc30150d59a2c2c1f9e68c7d8a2a1a16b9d82f4",
+      "stored_mtime": "2026-10-09T04:52:42.471157+00:00"
+    },
+    {
+      "path": "data/fred/ICSA.parquet",
+      "bytes": 34684,
+      "sha256": "dd53055e34f8098b32c5adf570cc34ddb0d9a48146a96153ae877947618c758c",
+      "stored_mtime": "2026-10-09T04:52:42.471157+00:00"
+    },
+    {
+      "path": "data/fred/IHLIDXNEWUS.parquet",
+      "bytes": 46071,
+      "sha256": "43c81790bcb26b994080be07c14c2233ae4ed36e6d3c38f66d466710a6bb235a",
+      "stored_mtime": "2026-10-08T23:29:58.487951+00:00"
+    },
+    {
+      "path": "data/fred/IHLIDXUS.parquet",
+      "bytes": 46043,
+      "sha256": "06ad63cf5b73ffe2f032e1a47924458ee28b474a80fcefb22270846b0e519cc8",
+      "stored_mtime": "2026-10-08T23:29:58.487951+00:00"
+    },
+    {
+      "path": "data/fred/INDPRO.parquet",
+      "bytes": 24867,
+      "sha256": "dec6fc9cb2d2dac708cb4db569b761c36d82b8bd70357146f91e002a3bd062d7",
+      "stored_mtime": "2026-10-05T04:31:49.198177+00:00"
+    },
+    {
+      "path": "data/fred/IORB.parquet",
+      "bytes": 18205,
+      "sha256": "f95ce6961bc155fc2d2f09ead8c6c5c27517eabb29ecec80551c53fa90e3b303",
+      "stored_mtime": "2026-10-15T04:04:35.340828+00:00"
+    },
+    {
+      "path": "data/fred/IPG2211A2N.parquet",
+      "bytes": 20746,
+      "sha256": "5f9c9f87fe3b578f4803203c20f3edd87555f7bb19ea0f152446d8e48679a08a",
+      "stored_mtime": "2026-10-05T04:31:49.198177+00:00"
+    },
+    {
+      "path": "data/fred/IPG2211S.parquet",
+      "bytes": 14296,
+      "sha256": "47b001ed08c850d5ce091ce70495817460f39678dd0c261bb006f75695a00273",
+      "stored_mtime": "2026-10-05T04:31:49.198177+00:00"
+    },
+    {
+      "path": "data/fred/IPG3344S.parquet",
+      "bytes": 13853,
+      "sha256": "5b1c29cd6f75ad6e185d29586c3c16a9b1e70d566730e5b5afaf0d856a4d72d0",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IPUTIL.parquet",
+      "bytes": 20545,
+      "sha256": "e0b482384ee089b756fe134b6073cb5596d3bc1d7be48d3465b90f099e7a11e4",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IQ.parquet",
+      "bytes": 8313,
+      "sha256": "a7ac7cd19e97c5e130e6e7817486f2fbe596421bd5aa675ccba7efda1514c924",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IR.parquet",
+      "bytes": 8313,
+      "sha256": "a8b6973f19e290c291d19744bea83af374e9a796c20e28cd4835312afff64cf5",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IR3TIB01AUM156N.parquet",
+      "bytes": 11581,
+      "sha256": "89f4f0e826312bc832e860ac8ab0614dc89c3ca356a56fc37fe67fc52367b338",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IR3TIB01CAM156N.parquet",
+      "bytes": 14902,
+      "sha256": "111af55ca1bec148359ae954828fb03ffeeadc4c2e9f991cd645e1dc01a2ea09",
+      "stored_mtime": "2026-10-05T04:31:49.199177+00:00"
+    },
+    {
+      "path": "data/fred/IR3TIB01CHM156N.parquet",
+      "bytes": 7961,
+      "sha256": "51bcf935fb311cb9618eef0883d17f91b8b41137c4a8e054ac9760ba98894fd5",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IR3TIB01GBM156N.parquet",
+      "bytes": 15368,
+      "sha256": "35576decff027d47c5b81ce9ad7638f712ef1f4e6f58290de5b6740646cbd591",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01AUM156N.parquet",
+      "bytes": 12557,
+      "sha256": "52493570d38305e6e3031c5d975a8b26ed8f291f142e127b06d5605644405376",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01CAM156N.parquet",
+      "bytes": 15901,
+      "sha256": "cd609c95591ea0ad40e717322c2b7a1ecb993ef66b0ebc6e769558404d0c4cc2",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01CHM156N.parquet",
+      "bytes": 14554,
+      "sha256": "689190a0c6c99c91decb96e3374278c841cde4c33a639c16b7e718540bc99bd0",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01EZM156N.parquet",
+      "bytes": 14544,
+      "sha256": "fcd6143fce7fd907ae934b1d344f33ca1e4f0e0534532d50e434eccda2772a16",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01GBM156N.parquet",
+      "bytes": 14827,
+      "sha256": "becfa86802682784b6f80967f6bd5ff0c1a2f67fa2de8378365d3e3fb6961636",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRLTLT01JPM156N.parquet",
+      "bytes": 8780,
+      "sha256": "53895d0a4b921b4fee3d781485f4ce859a0aed17467ab41571e94eda24d05522",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/IRSTCI01JPM156N.parquet",
+      "bytes": 9446,
+      "sha256": "287d4b4638ebf88244b1ee05b611951d6fef68dfc0d431c10cdc33c792ba518e",
+      "stored_mtime": "2026-10-05T04:31:49.200177+00:00"
+    },
+    {
+      "path": "data/fred/ISRATIO.parquet",
+      "bytes": 6398,
+      "sha256": "597371b465f0bcfe836d8dc83315bc49672b46ca82d2d072d94200e45df17613",
+      "stored_mtime": "2026-10-05T04:31:49.201177+00:00"
+    },
+    {
+      "path": "data/fred/IUDSOIA.parquet",
+      "bytes": 106157,
+      "sha256": "ae901abe656afd7900ea74e8166a999516555bd93135f5cbbce014b45a60f2e7",
+      "stored_mtime": "2026-10-15T04:04:35.342828+00:00"
+    },
+    {
+      "path": "data/fred/JPNASSETS.parquet",
+      "bytes": 7489,
+      "sha256": "181eda62ead4ce3091fc8db2f9a22faf6d654c1689c6861d6ed0c8b76f6d510f",
+      "stored_mtime": "2026-10-08T23:29:58.490951+00:00"
+    },
+    {
+      "path": "data/fred/JTSJOL.parquet",
+      "bytes": 6580,
+      "sha256": "76da6393f4786cedfb0c339b59ceff37bf2cc24085124a212b6966bc158f121f",
+      "stored_mtime": "2026-10-05T04:31:49.203177+00:00"
+    },
+    {
+      "path": "data/fred/JTSQUR.parquet",
+      "bytes": 5262,
+      "sha256": "e63176b02e2a893aa0d6afc1592522142aeef5c8d92c0f48b1b6085cc519dc66",
+      "stored_mtime": "2026-10-05T04:31:49.203177+00:00"
+    },
+    {
+      "path": "data/fred/M2SL.parquet",
+      "bytes": 14469,
+      "sha256": "1bd9d6130eb6ef987ebef0a3c048b9e712e90bddec60b69caab400643ad72242",
+      "stored_mtime": "2026-10-05T04:31:49.203177+00:00"
+    },
+    {
+      "path": "data/fred/MCUMFN.parquet",
+      "bytes": 13665,
+      "sha256": "652707a89302b9776e797e6f99e11875be0a4da72cc58cf81aba87ce80cd8a2f",
+      "stored_mtime": "2026-10-05T04:31:49.203177+00:00"
+    },
+    {
+      "path": "data/fred/MEDCPIM158SFRBCLE.parquet",
+      "bytes": 11791,
+      "sha256": "5b0f7939ae491e15d5f48dd8fb5925b850b3ace2fe05b07c3489341aac96a13f",
+      "stored_mtime": "2026-10-15T04:04:35.342828+00:00"
+    },
+    {
+      "path": "data/fred/MICH.parquet",
+      "bytes": 8352,
+      "sha256": "fcc34de905a08d4b5bdbc376cf31be795e92555b3e2a9ee792a60e155d60525c",
+      "stored_mtime": "2026-10-05T04:31:49.203177+00:00"
+    },
+    {
+      "path": "data/fred/MNFCTRIRSA.parquet",
+      "bytes": 6520,
+      "sha256": "613f0b72084c0ec64210b5bbd8dc5abf79ff6efda9f29754ee8310acc9a4578e",
+      "stored_mtime": "2026-10-05T04:31:49.204177+00:00"
+    },
+    {
+      "path": "data/fred/MORTGAGE30US.parquet",
+      "bytes": 34494,
+      "sha256": "17dc170bd172b4d3e1d7632b38eec456626ffdc93a3b07b001397c0a50e16258",
+      "stored_mtime": "2026-10-09T04:52:42.473157+00:00"
+    },
+    {
+      "path": "data/fred/MPRIME.parquet",
+      "bytes": 12536,
+      "sha256": "866a1b26b512052d8a8b7d017c930a0e9560199fc076a611fcfa4b4f51b62608",
+      "stored_mtime": "2026-10-05T04:31:49.204177+00:00"
+    },
+    {
+      "path": "data/fred/NEWORDER.parquet",
+      "bytes": 8432,
+      "sha256": "db6d738cc0f26785348302cc9c2318bbf3b3f58f62abf3584f02c62231de7c56",
+      "stored_mtime": "2026-10-05T04:31:49.204177+00:00"
+    },
+    {
+      "path": "data/fred/NFCI.parquet",
+      "bytes": 38001,
+      "sha256": "10198601296f8eb1eddd01093f08ac5f4bde6b79e8794f24e1f6cadaec0e74c2",
+      "stored_mtime": "2026-10-08T23:29:58.490951+00:00"
+    },
+    {
+      "path": "data/fred/NFCICREDIT.parquet",
+      "bytes": 37917,
+      "sha256": "8065106c4a1e7205a5b85b56ed72acab53cb8c96ef8ce0746c2b0e3ddc6e67a5",
+      "stored_mtime": "2026-10-08T23:29:58.491951+00:00"
+    },
+    {
+      "path": "data/fred/NFCILEVERAGE.parquet",
+      "bytes": 39511,
+      "sha256": "9c9899ef03f753b84c654f8bb1b32d038a3be629f60af9af0491c1520caa98f4",
+      "stored_mtime": "2026-10-08T23:29:58.491951+00:00"
+    },
+    {
+      "path": "data/fred/NFCIRISK.parquet",
+      "bytes": 37963,
+      "sha256": "0f382bd9ce62217697d25330ec0081b15d50fd0911abbfc196d2b0c9d6ae59cb",
+      "stored_mtime": "2026-10-08T23:29:58.492951+00:00"
+    },
+    {
+      "path": "data/fred/NONREVSL.parquet",
+      "bytes": 19087,
+      "sha256": "3580a32b4e22ecb122d3861ee3047c0f86e2458fcdffe8a4adbefb10a9cdf5ec",
+      "stored_mtime": "2026-10-08T23:29:58.492951+00:00"
+    },
+    {
+      "path": "data/fred/OBFR.parquet",
+      "bytes": 26287,
+      "sha256": "c86986d8313dee2a1608cbb70ba75e43bbae0a7fcd54f9dbaa33801dd7dd6a63",
+      "stored_mtime": "2026-10-15T04:04:35.342828+00:00"
+    },
+    {
+      "path": "data/fred/OVXCLS.parquet",
+      "bytes": 64583,
+      "sha256": "1994cc68fbd938a72cf65b6524f2649e8ec9e537484cb20314c360c43a9b4d02",
+      "stored_mtime": "2026-10-15T04:04:35.343828+00:00"
+    },
+    {
+      "path": "data/fred/PAYEMS.parquet",
+      "bytes": 18026,
+      "sha256": "5d24d4ef24d3b1291ac139c8c0939509a84bf930818300236bcb7546db9e80a2",
+      "stored_mtime": "2026-10-05T04:31:49.207177+00:00"
+    },
+    {
+      "path": "data/fred/PCEPI.parquet",
+      "bytes": 15014,
+      "sha256": "1621fe0cf71bdb565297aea4cfdbc1579dcc7173f8188b80d7dd5e3e3a4b52f5",
+      "stored_mtime": "2026-10-05T04:31:49.207177+00:00"
+    },
+    {
+      "path": "data/fred/PCEPILFE.parquet",
+      "bytes": 15022,
+      "sha256": "1b2a65ca92c7eaa1195823524be62001b431c8fafc7fc77c99d79c9f46386c6e",
+      "stored_mtime": "2026-10-05T04:31:49.207177+00:00"
+    },
+    {
+      "path": "data/fred/PCU221122221122.parquet",
+      "bytes": 6205,
+      "sha256": "7425f725d85d5b8467d059cd992c482b6b65ad68261b688d160ba5a4f2585fb2",
+      "stored_mtime": "2026-10-05T04:31:49.207177+00:00"
+    },
+    {
+      "path": "data/fred/PCU331110331110.parquet",
+      "bytes": 12133,
+      "sha256": "037f9b8c94878a067a4038d5c1fc33e0e13c887303eb9632cebe4e0e6e8f4195",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PCU334413334413.parquet",
+      "bytes": 11683,
+      "sha256": "fb9be3afd2cf5abc52fc1149b7101bb0bab857171f17d5794e0ed6f8b12e90b5",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PERMIT.parquet",
+      "bytes": 12992,
+      "sha256": "f996735003eae7400cbe569fef8510674fe0666bcb2e94fb316d8fdfbbf22287",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PFGIUAMFRBDAL.parquet",
+      "bytes": 5621,
+      "sha256": "14f2bea07bf4c626d531f9a128907c8272137b225e226b090989574abad1e3d5",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PPIFES.parquet",
+      "bytes": 4947,
+      "sha256": "65bdb7bc3213502bc07c345478a6b6167c0bbaf40fd5e95f3148334b02d63fc8",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PPIFIS.parquet",
+      "bytes": 5070,
+      "sha256": "2e91764dd684bec557dec7a8bef7f3012a56f9ced6e36d38bf6924eea5142099",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/PSAVERT.parquet",
+      "bytes": 11034,
+      "sha256": "40a95503ac35956f2f6ba4237639de39a4fbf485593f350f352aee263e6e6fc2",
+      "stored_mtime": "2026-10-05T04:31:49.208177+00:00"
+    },
+    {
+      "path": "data/fred/RBAUBIS.parquet",
+      "bytes": 7836,
+      "sha256": "b3498f67ba5c99fb0431739c4db2caad8ac2690a9d6b2aac64880c623ec43220",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBBRBIS.parquet",
+      "bytes": 7909,
+      "sha256": "4ae7623fdcdaf5500ffa3ff9be397919232542c314efdcdd8757ec773fb71bbc",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBCABIS.parquet",
+      "bytes": 7788,
+      "sha256": "6791d9f7b9248cc3073606d728373420681d84dee2e399e8e94971e9860ac765",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBCHBIS.parquet",
+      "bytes": 7692,
+      "sha256": "b8a9dccbd26a62715f199bde07fa4b72491b0dd002a2f6a50756f0b3e40681d8",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBCNBIS.parquet",
+      "bytes": 7860,
+      "sha256": "17cee300efbd187d9daf3eb2ab9f8546a662eaad03093c91fc3b5dce4e127936",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBGBBIS.parquet",
+      "bytes": 7807,
+      "sha256": "9fd641cdbbccd8e1b56480d9c6dff0aee1e6bd28ccc5a6bd5c3887a6db9b8397",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBJPBIS.parquet",
+      "bytes": 7931,
+      "sha256": "bcb3710d912fa701de8fccbb16d6402c166eb29b86db1f3121e8ca2500ce1b93",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBMXBIS.parquet",
+      "bytes": 7889,
+      "sha256": "d00ddcad739c6358c77ee68209c0ce11333f4c8aacb162e4e32d8a04346e2603",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBUSBIS.parquet",
+      "bytes": 7804,
+      "sha256": "3e30f52d72a266456d7cf8e0c38e53babd8e41cf66b28d115413abe2d8854fa6",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RBXMBIS.parquet",
+      "bytes": 7750,
+      "sha256": "8092b26bb44a01d06339de938739a54582be888188b9ad897e797be0afbd6d6c",
+      "stored_mtime": "2026-10-05T04:31:49.209177+00:00"
+    },
+    {
+      "path": "data/fred/RECPROUSM156N.parquet",
+      "bytes": 10352,
+      "sha256": "9a73a13d110a3cacd944ee5b593d97ae9f5fb99ef31194364328d59fcbddc4e2",
+      "stored_mtime": "2026-10-05T04:31:49.210177+00:00"
+    },
+    {
+      "path": "data/fred/REVOLSL.parquet",
+      "bytes": 13983,
+      "sha256": "9c83e68e8112d47824c72fe2d58218473acbb06f54f62cbe110eef78a30cf521",
+      "stored_mtime": "2026-10-08T23:29:58.494951+00:00"
+    },
+    {
+      "path": "data/fred/RIFSPPNA2P2D90NB.parquet",
+      "bytes": 55300,
+      "sha256": "d137f1a148023c6bfe040d07a8cd86a9f397c9c640a42bb95687d91513162f83",
+      "stored_mtime": "2026-10-15T04:04:35.344828+00:00"
+    },
+    {
+      "path": "data/fred/RIFSPPNAAD90NB.parquet",
+      "bytes": 56992,
+      "sha256": "ad7af9b2ccb28d8752597875b0b0a10d2b9ff421a4e5442fe4f9cc651a98607c",
+      "stored_mtime": "2026-10-15T04:04:35.344828+00:00"
+    },
+    {
+      "path": "data/fred/RRPONTSYD.parquet",
+      "bytes": 51630,
+      "sha256": "5973b141cfd4a352675303f642af6307a39ac6c7ada3e76a7731952189069e9d",
+      "stored_mtime": "2026-10-15T04:04:35.344828+00:00"
+    },
+    {
+      "path": "data/fred/RSAFS.parquet",
+      "bytes": 8496,
+      "sha256": "c269be08d36d3dbbd12c940e0cf6ebd5dfaf44a33fec6971c2f6dc00cd293b1e",
+      "stored_mtime": "2026-10-05T04:31:49.212177+00:00"
+    },
+    {
+      "path": "data/fred/SAHMREALTIME.parquet",
+      "bytes": 10737,
+      "sha256": "989c8b7b374b57389b42b95d40161881023b077fc85bfb97006ae7f0d986b17a",
+      "stored_mtime": "2026-10-05T04:31:49.212177+00:00"
+    },
+    {
+      "path": "data/fred/SOFR.parquet",
+      "bytes": 23468,
+      "sha256": "731c09f56a6ad9192af202b80a2b904228aa51f46daed7dd8ef12770013fd44d",
+      "stored_mtime": "2026-10-15T04:04:35.345828+00:00"
+    },
+    {
+      "path": "data/fred/SOFR99.parquet",
+      "bytes": 23385,
+      "sha256": "2c494e6a1caf0f440642c21ad97d7f424988545a34bbbb3bac70249b843d5104",
+      "stored_mtime": "2026-10-15T04:04:35.345828+00:00"
+    },
+    {
+      "path": "data/fred/STICKCPIM157SFRBATL.parquet",
+      "bytes": 15360,
+      "sha256": "4e52692343224a8c2ea3812798eeb9814f9943be1aa71110cb2a19c658f9fd03",
+      "stored_mtime": "2026-10-15T04:04:35.345828+00:00"
+    },
+    {
+      "path": "data/fred/STLFSI4.parquet",
+      "bytes": 29348,
+      "sha256": "133d6777e7b00e5a8344af81c48b01e6f59cdc042c1701ce5501207b73e6dc16",
+      "stored_mtime": "2026-10-15T04:04:35.346828+00:00"
+    },
+    {
+      "path": "data/fred/SWPT.parquet",
+      "bytes": 16917,
+      "sha256": "2c3f6bd2fbe59a3763078d54241181e5d72e7cda05d2b2f5f50107232a0771c0",
+      "stored_mtime": "2026-10-09T04:52:42.476157+00:00"
+    },
+    {
+      "path": "data/fred/T10Y2Y.parquet",
+      "bytes": 128654,
+      "sha256": "260fff428ad1adafcb96e4e3263233aeade2f5f3a46255b352af1ef2d19c3068",
+      "stored_mtime": "2026-10-15T04:04:35.347828+00:00"
+    },
+    {
+      "path": "data/fred/T10Y3M.parquet",
+      "bytes": 116728,
+      "sha256": "f399ab2d039e8569b508e32ed28397b8b2320771c2b18bab2a2d039be91643b9",
+      "stored_mtime": "2026-10-15T04:04:35.348828+00:00"
+    },
+    {
+      "path": "data/fred/T10YIE.parquet",
+      "bytes": 60607,
+      "sha256": "ba7e2599e16920f2aed4596438f561f561cdcda92b504332ad43a016ff22face",
+      "stored_mtime": "2026-10-15T04:04:35.348828+00:00"
+    },
+    {
+      "path": "data/fred/T5YIE.parquet",
+      "bytes": 61770,
+      "sha256": "6423144d5ca2a059e6477209be07842b2fe2b7d4f46841b6698b0ba28a0b07eb",
+      "stored_mtime": "2026-10-15T04:04:35.349828+00:00"
+    },
+    {
+      "path": "data/fred/T5YIFR.parquet",
+      "bytes": 60398,
+      "sha256": "bca7b658802456ec5809aa463bb2bd735eb2f96b1c8b384bd139762f661d8ea0",
+      "stored_mtime": "2026-10-15T04:04:35.349828+00:00"
+    },
+    {
+      "path": "data/fred/TCU.parquet",
+      "bytes": 14525,
+      "sha256": "88f24a55e6d97eb48ead9331cb62e484b4363ed18b92e196fd42f5c82e5c4457",
+      "stored_mtime": "2026-10-05T04:31:49.217177+00:00"
+    },
+    {
+      "path": "data/fred/THREEFYTP10.parquet",
+      "bytes": 138239,
+      "sha256": "73b03725e5310d5bfb6ff50707a2e471aa38c27d4785e8a00b1d15c2cf7d6657",
+      "stored_mtime": "2026-10-15T04:04:35.351828+00:00"
+    },
+    {
+      "path": "data/fred/TOTALSL.parquet",
+      "bytes": 19104,
+      "sha256": "a189bae04c7d8ce4858341872cdb1734e83c96a3153cf04ac8190a268f08e91b",
+      "stored_mtime": "2026-10-08T23:29:58.504951+00:00"
+    },
+    {
+      "path": "data/fred/TRMMEANCPIM158SFRBCLE.parquet",
+      "bytes": 11787,
+      "sha256": "4dac5d964f76bc203bd3b8964fb20b1ea811d88dd3193b3537582b030ee817d7",
+      "stored_mtime": "2026-10-15T04:04:35.351828+00:00"
+    },
+    {
+      "path": "data/fred/UEMPMEAN.parquet",
+      "bytes": 12774,
+      "sha256": "5e24d4257db73e28c63cc213852f2d9beb4a19f99b5ddf6e87bca91d5e2ee582",
+      "stored_mtime": "2026-10-05T04:31:49.218177+00:00"
+    },
+    {
+      "path": "data/fred/UMCSENT.parquet",
+      "bytes": 10696,
+      "sha256": "5b7a91394340ed952f8de3f322e8a2358364808c4c835707a7e0e6b67bdbed84",
+      "stored_mtime": "2026-10-05T04:31:49.218177+00:00"
+    },
+    {
+      "path": "data/fred/UNRATE.parquet",
+      "bytes": 12041,
+      "sha256": "8963749c286071ad9427f8dbdd27c13d54352109b6fa83be4660d8d87df590ff",
+      "stored_mtime": "2026-10-05T04:31:49.219177+00:00"
+    },
+    {
+      "path": "data/fred/USGOVT.parquet",
+      "bytes": 17379,
+      "sha256": "ab80d45792ee1a5c07a6b18a00f6099d23982eb4f07da57cfeca360c2db69204",
+      "stored_mtime": "2026-10-05T04:31:49.219177+00:00"
+    },
+    {
+      "path": "data/fred/USPRIV.parquet",
+      "bytes": 17986,
+      "sha256": "d8be42afb2af9cc07b3b9723fb69da117ef2549895415120fbfc42c5a8b19299",
+      "stored_mtime": "2026-10-05T04:31:49.219177+00:00"
+    },
+    {
+      "path": "data/fred/USREC.parquet",
+      "bytes": 20111,
+      "sha256": "7cbd6e78794c30b208b3e451964c97e60522e20bbc8d26178baa5d7da73dcb53",
+      "stored_mtime": "2026-10-05T04:31:49.219177+00:00"
+    },
+    {
+      "path": "data/fred/USRECD.parquet",
+      "bytes": 565653,
+      "sha256": "c6b354df4354e13732e1568232ffd7f2cb3a0d107d53c9d71188d6a41a344e60",
+      "stored_mtime": "2026-10-15T04:04:35.357828+00:00"
+    },
+    {
+      "path": "data/fred/VIXCLS.parquet",
+      "bytes": 108434,
+      "sha256": "7c76b05c2e4d15ec6cef6a870c08fd1f255d878a7a87cbf868fba3105140c9cc",
+      "stored_mtime": "2026-10-15T04:04:35.358828+00:00"
+    },
+    {
+      "path": "data/fred/VXEEMCLS.parquet",
+      "bytes": 48393,
+      "sha256": "8b5330bea82b895950d271037fed74c591ffffc37074064455e61692c4f4fb55",
+      "stored_mtime": "2026-10-15T04:04:35.358828+00:00"
+    },
+    {
+      "path": "data/fred/W875RX1.parquet",
+      "bytes": 14631,
+      "sha256": "bf437a110918d2fe27510c43ebeacf1975c15b9ec7f53fd6fb4c74b8446cd421",
+      "stored_mtime": "2026-10-05T04:31:49.225177+00:00"
+    },
+    {
+      "path": "data/fred/WALCL.parquet",
+      "bytes": 21613,
+      "sha256": "5e083e7f9ac3d2c19607ba763a6596549be3518af2489df79aaa2ff1c1836553",
+      "stored_mtime": "2026-10-09T04:52:42.486157+00:00"
+    },
+    {
+      "path": "data/fred/WEI.parquet",
+      "bytes": 13940,
+      "sha256": "beda3706778f6353698ea9602b1ed1ec4775a51d1f26c3723b00335322eec33f",
+      "stored_mtime": "2026-10-09T04:52:42.486157+00:00"
+    },
+    {
+      "path": "data/fred/WLCFLL.parquet",
+      "bytes": 19152,
+      "sha256": "aa14f24003b116a4577bb2e57af83f811bd9404d076c87156ddfea261c27380b",
+      "stored_mtime": "2026-10-09T04:52:42.486157+00:00"
+    },
+    {
+      "path": "data/fred/WPU01.parquet",
+      "bytes": 19944,
+      "sha256": "ee825606f31d4ead3b0202cb42bb0e422a40019fddaa521f1c1e03ba9574a2a2",
+      "stored_mtime": "2026-07-08T13:42:02.980301+00:00"
+    },
+    {
+      "path": "data/fred/WPU012.parquet",
+      "bytes": 18686,
+      "sha256": "7b276258a52effa0465a3bd15c1e1210b34271f98f5871ef6e306d96cc675588",
+      "stored_mtime": "2026-07-08T13:42:02.980301+00:00"
+    },
+    {
+      "path": "data/fred/WPU0543.parquet",
+      "bytes": 13428,
+      "sha256": "8984f004ca9f1c18d739c05037e559da4ab2e2cbd3dde5281be30290c1bd48cf",
+      "stored_mtime": "2026-10-05T04:31:49.225177+00:00"
+    },
+    {
+      "path": "data/fred/WRESBAL.parquet",
+      "bytes": 21300,
+      "sha256": "f39c0dc403e534de391b67850c4ba639f427072d099b80046fc89b959dc57ae8",
+      "stored_mtime": "2026-10-09T04:52:42.487157+00:00"
+    },
+    {
+      "path": "data/hk/_HSI.parquet",
+      "bytes": 194563,
+      "sha256": "2ee6521afaa37616cf9238e8f0e8437c835ccb66e5e35a8888b98438d6dbdf95",
+      "stored_mtime": "2026-10-16T21:22:03.048942+00:00"
+    },
+    {
+      "path": "data/intl/AUDUSD_X.parquet",
+      "bytes": 76840,
+      "sha256": "f877656346aa34ca40ea30669728546e32723a01f248ca89bf305fa02971ceb9",
+      "stored_mtime": "2026-10-15T04:04:35.601827+00:00"
+    },
+    {
+      "path": "data/intl/EURUSD_X.parquet",
+      "bytes": 85065,
+      "sha256": "46a3d5438ac59bd048aef7f236b900dc6a399d7a068787c9c3864c2956f23c93",
+      "stored_mtime": "2026-10-15T04:04:35.603827+00:00"
+    },
+    {
+      "path": "data/intl/GBPUSD_X.parquet",
+      "bytes": 86494,
+      "sha256": "8e5c3b376ad976e4dbac678bc76170db3c5dfab4824658bcfd5fdeb783c76c5d",
+      "stored_mtime": "2026-10-15T04:04:35.604827+00:00"
+    },
+    {
+      "path": "data/intl/USDINR_X.parquet",
+      "bytes": 85466,
+      "sha256": "e49d8de256ac56b75a4403ffd68c0bcfcbc0983218df5746ffd373962694ab33",
+      "stored_mtime": "2026-10-15T04:04:35.605828+00:00"
+    },
+    {
+      "path": "data/intl/USDJPY_X.parquet",
+      "bytes": 109335,
+      "sha256": "8119b2b17e50fa24e9a136936687404fa30fa5b6ae95ec0c912c5020578f9bb2",
+      "stored_mtime": "2026-10-15T04:04:35.607827+00:00"
+    },
+    {
+      "path": "data/intl/USDKRW_X.parquet",
+      "bytes": 83991,
+      "sha256": "1e96c968ef3313b0cfc61ece6c96457d6fd542aa826cbffe7eb57a67ea258258",
+      "stored_mtime": "2026-10-15T04:04:35.607827+00:00"
+    },
+    {
+      "path": "data/intl/USDTWD_X.parquet",
+      "bytes": 71345,
+      "sha256": "aef1807449b2b4305c2d2593663cd97b70e1f43f06027649acdc75c6e5e1fdf5",
+      "stored_mtime": "2026-10-15T04:04:35.609828+00:00"
+    },
+    {
+      "path": "data/intl/_AXJO.parquet",
+      "bytes": 140691,
+      "sha256": "29a90d6bec7d8a363e6ba2bce52151ad382bf6bcccc8429d593d6193a31de855",
+      "stored_mtime": "2026-10-15T04:04:35.610827+00:00"
+    },
+    {
+      "path": "data/intl/_BSESN.parquet",
+      "bytes": 119730,
+      "sha256": "b364ad47dbc7f823906631f3f5f21137278cbd0efbb0d46e61c52dfe74c48432",
+      "stored_mtime": "2026-10-15T04:04:35.612828+00:00"
+    },
+    {
+      "path": "data/intl/_FCHI.parquet",
+      "bytes": 183854,
+      "sha256": "466aacc6ceac10c6a2e9a1e0b9242d76a3d795dde2be8b1b91fdd43c21f1df08",
+      "stored_mtime": "2026-10-15T04:04:35.614827+00:00"
+    },
+    {
+      "path": "data/intl/_FTMC.parquet",
+      "bytes": 195263,
+      "sha256": "5be87eace7d8c7f2e761a6c493c61b42da7f1788f19a412d76852e422ebe13e5",
+      "stored_mtime": "2026-10-15T04:04:35.616827+00:00"
+    },
+    {
+      "path": "data/intl/_FTSE.parquet",
+      "bytes": 213746,
+      "sha256": "1d2df75fad9f319ac0570c710700d9457a8e290b8e132f13b4629690d9209b25",
+      "stored_mtime": "2026-10-15T04:04:35.619828+00:00"
+    },
+    {
+      "path": "data/intl/_GDAXI.parquet",
+      "bytes": 203929,
+      "sha256": "d201eed7ce5f19eadf6545b9773b6b8c0d68ff88a3df20325eb0a2c868c994fa",
+      "stored_mtime": "2026-10-15T04:04:35.621828+00:00"
+    },
+    {
+      "path": "data/intl/_INTLC.parquet",
+      "bytes": 25490,
+      "sha256": "e28668f2347e086717f5f4c039c8d26e368bd772ac1c4c6064cc3fccb66957d5",
+      "stored_mtime": "2026-10-18T07:12:52.140359+00:00"
+    },
+    {
+      "path": "data/intl/_KS11.parquet",
+      "bytes": 146492,
+      "sha256": "446980abd7974aff58b7f9b1f7ed146b97538151baf4e493e769f157f2d9bddb",
+      "stored_mtime": "2026-10-15T04:04:35.623827+00:00"
+    },
+    {
+      "path": "data/intl/_N225.parquet",
+      "bytes": 251032,
+      "sha256": "7508cd8e43d384bfb3aa5e31cff3516dff7cff8c40fdc37010d3bd336ec75347",
+      "stored_mtime": "2026-10-15T04:04:35.626827+00:00"
+    },
+    {
+      "path": "data/intl/_NSEI.parquet",
+      "bytes": 88688,
+      "sha256": "d2b2d6c3e1a3af7b5975b51834ed094239dfbdc6eb177b58f8b228aa5124b85e",
+      "stored_mtime": "2026-10-15T04:04:35.627827+00:00"
+    },
+    {
+      "path": "data/intl/_STOXX.parquet",
+      "bytes": 109038,
+      "sha256": "aedf888f45e6f1fd55e36c63acc85094b87ea0d30754f02f5ace498e8ce4417f",
+      "stored_mtime": "2026-10-15T04:04:35.628828+00:00"
+    },
+    {
+      "path": "data/intl/_STOXX50E.parquet",
+      "bytes": 100027,
+      "sha256": "144c25ff13ff5e37cfa9bf408e645f88b86e7f8423ea12ef2d58b8fd83ba3101",
+      "stored_mtime": "2026-10-15T04:04:35.629827+00:00"
+    },
+    {
+      "path": "data/intl/_TWII.parquet",
+      "bytes": 146923,
+      "sha256": "4a0324cca726c717a648a745b231dc592c22774902992401d9fff458df16c748",
+      "stored_mtime": "2026-10-15T04:04:35.630827+00:00"
+    },
+    {
+      "path": "data/intl/hub.json",
+      "bytes": 154,
+      "sha256": "d317e6493f5d286aa4f1472947095627705446349a0c3eca1282712898b87f99",
+      "stored_mtime": "2026-10-17T07:21:12.652558+00:00"
+    },
+    {
+      "path": "data/intl/latest.json",
+      "bytes": 82232,
+      "sha256": "ea655647448fef8050cec3c73dd946e9d066cb1d06d6a58bb8d935894f673a65",
+      "stored_mtime": "2026-10-18T07:12:52.146359+00:00"
+    },
+    {
+      "path": "data/intl_etf/EIDO.parquet",
+      "bytes": 202994,
+      "sha256": "d2d77b8995f2ca2467774e5a46e91062ace4d11602a04e081ecda122154e5459",
+      "stored_mtime": "2026-10-15T04:04:35.634827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWA.parquet",
+      "bytes": 352645,
+      "sha256": "6181ff67652de79e89fc1fa5d7ab547998230080a90510efb70fdd900e7b08cb",
+      "stored_mtime": "2026-10-15T04:04:35.637827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWC.parquet",
+      "bytes": 355817,
+      "sha256": "2a4b6a5632378dc5f1b7d5346bc908fada7f0221b934ee9f194b1ddc64df0808",
+      "stored_mtime": "2026-10-15T04:04:35.641828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWD.parquet",
+      "bytes": 347645,
+      "sha256": "e492537ac3a663e6ff62db0273a62836766b7a96cab28297f71627bf107452c3",
+      "stored_mtime": "2026-10-15T04:04:35.644827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWG.parquet",
+      "bytes": 364661,
+      "sha256": "becb50ace8fa23bebfafc9b9974c0eb48566144a2fc6fc69ae23c9628588c306",
+      "stored_mtime": "2026-10-15T04:04:35.648828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWH.parquet",
+      "bytes": 364293,
+      "sha256": "5a1a9d033321c871277ca7840cc913741da3e255ff7395a5d59925e4890bf200",
+      "stored_mtime": "2026-10-15T04:04:35.653827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWI.parquet",
+      "bytes": 355314,
+      "sha256": "afac9a530ddbb053c538c7e00c9ede6657943bef11676b211e93d5a9cc5dbd08",
+      "stored_mtime": "2026-10-15T04:04:35.657827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWJ.parquet",
+      "bytes": 361307,
+      "sha256": "4a5a7e8d6d07a718d14f6b9b3f480a350ab43b95e7a77970d926fcebef0c60bb",
+      "stored_mtime": "2026-10-15T04:04:35.661828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWK.parquet",
+      "bytes": 326277,
+      "sha256": "4184aa9259f21d25bb3434a3d6823f0477609dc1225ea24e08d4f4d7415cca35",
+      "stored_mtime": "2026-10-15T04:04:35.668828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWL.parquet",
+      "bytes": 348319,
+      "sha256": "1a017c30189a478283be9e3dfe34000538a3bbee5ca2790e1cb956caafb3814f",
+      "stored_mtime": "2026-10-15T04:04:35.671828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWM.parquet",
+      "bytes": 347698,
+      "sha256": "a70bba4d0ff0a9f6e438772708ea082c33d72ae8ab9a0a255ee27ed873392d30",
+      "stored_mtime": "2026-10-15T04:04:35.674828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWN.parquet",
+      "bytes": 339906,
+      "sha256": "90a3d3f6a971fd9e79f01eb5cbfeffa839d8d6782a20874c5267bbda920864bf",
+      "stored_mtime": "2026-10-15T04:04:35.679827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWO.parquet",
+      "bytes": 323899,
+      "sha256": "8a1c4b183bef3605733b3ce451229a968fc87cbb302e335ea714bc8ea4aaeb42",
+      "stored_mtime": "2026-10-15T04:04:35.682827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWP.parquet",
+      "bytes": 355720,
+      "sha256": "2bd5e43007199100eee3760d7fea9968e375e8bbcb9f9beaacceb071e7d10671",
+      "stored_mtime": "2026-10-15T04:04:35.685827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWQ.parquet",
+      "bytes": 354944,
+      "sha256": "aedf877cc33f0a3a2a48f2d988e3c1d016bf1f25b9528d7aed591979abeb242b",
+      "stored_mtime": "2026-10-15T04:04:35.688828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWS.parquet",
+      "bytes": 350694,
+      "sha256": "6f0989368acd3fdff200e2679c48c854e3e5873b2c124f91b764ce921f9c29b8",
+      "stored_mtime": "2026-10-15T04:04:35.692827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWT.parquet",
+      "bytes": 322886,
+      "sha256": "7a8b8df8eaf2971808dc6f8ef8cd2b8658f2169c994a179671d92c5a6ebd0ff7",
+      "stored_mtime": "2026-10-15T04:04:35.696827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWU.parquet",
+      "bytes": 359623,
+      "sha256": "8defa6a3d9ef57226e84605c7a35bc44d148c173ca55983f32fe37a728213417",
+      "stored_mtime": "2026-10-15T04:04:35.699827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWW.parquet",
+      "bytes": 369836,
+      "sha256": "d82173f1121f9f2585cdfb7f799d40d1fec98036a9ab7bb2bdd2c3013fd3da4a",
+      "stored_mtime": "2026-10-15T04:04:35.704828+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWY.parquet",
+      "bytes": 332140,
+      "sha256": "6d5f7f029533113a5b955375755914f8ceb16d2de689f3f48d87360780670ab8",
+      "stored_mtime": "2026-10-15T04:04:35.707827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EWZ.parquet",
+      "bytes": 334622,
+      "sha256": "2c14d05e1af451a26e2e1e390f2686ae6c6369148cc1e5a184578b8cd2f96544",
+      "stored_mtime": "2026-10-15T04:04:35.709827+00:00"
+    },
+    {
+      "path": "data/intl_etf/EZA.parquet",
+      "bytes": 291281,
+      "sha256": "96f99053031deb68cfb4d6b88f83246561eec3c8e0f2e4ab9190837efbf17cbd",
+      "stored_mtime": "2026-10-15T04:04:35.712827+00:00"
+    },
+    {
+      "path": "data/intl_etf/INDA.parquet",
+      "bytes": 179616,
+      "sha256": "ebf820869bebd1b284a72ca5e5f4a8c2cc42b582932d2518ef7c2313e3dc0e44",
+      "stored_mtime": "2026-10-15T04:04:35.715827+00:00"
+    },
+    {
+      "path": "data/intl_macro/AU_cpi_yoy.parquet",
+      "bytes": 7444,
+      "sha256": "2247d1b036e50713791467ded4938b6c68617130f966f9b33e09a472e0a669d5",
+      "stored_mtime": "2026-10-05T04:31:49.702177+00:00"
+    },
+    {
+      "path": "data/intl_macro/AU_gdp.parquet",
+      "bytes": 6292,
+      "sha256": "186ab0700c6f43fce52db5fa58f108f6c115d20cb68e58670260f8c1c17cca50",
+      "stored_mtime": "2026-10-05T04:31:49.703177+00:00"
+    },
+    {
+      "path": "data/intl_macro/AU_short_3m.parquet",
+      "bytes": 11729,
+      "sha256": "ee39efcb65764410c8ae5e9e129dd7f545ea82fac3c8612c1c4118fcfba299c5",
+      "stored_mtime": "2026-10-05T04:31:49.703177+00:00"
+    },
+    {
+      "path": "data/intl_macro/AU_unemployment.parquet",
+      "bytes": 13048,
+      "sha256": "10b6de374c2d108b4009a56dd30a5eedcc2089c57d312d64674cdfd7258df42d",
+      "stored_mtime": "2026-10-05T04:31:49.703177+00:00"
+    },
+    {
+      "path": "data/intl_macro/AU_yield_10y.parquet",
+      "bytes": 12729,
+      "sha256": "bf58e97833ac9612aa84fca3e6eff79611ec32333bfab9ea5b7508e58249bf26",
+      "stored_mtime": "2026-10-05T04:31:49.703177+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_cpi_yoy.parquet",
+      "bytes": 7518,
+      "sha256": "b4b46a2e201864763e4768fadb0380b1fc763e41dd272dc0e433d8aa134cf752",
+      "stored_mtime": "2026-10-05T04:31:49.704177+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_gdp.parquet",
+      "bytes": 4199,
+      "sha256": "25b5f8a6ab22e8074cccfdda8def788dcfca35d23b170dc73ec6e1d766e2a3c9",
+      "stored_mtime": "2026-10-05T04:31:49.704177+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_m2.parquet",
+      "bytes": 10311,
+      "sha256": "33c8cb01bb21b83e494da4a03a918c1120384323d1bc7b6559fd9e89abd71619",
+      "stored_mtime": "2026-06-28T03:51:33.349794+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_short_3m.parquet",
+      "bytes": 9058,
+      "sha256": "85a2b122a65994f36604d623cb5beec5951816a6fd07c2153ac4f1688e7d8e88",
+      "stored_mtime": "2026-10-05T04:31:49.704177+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_unemployment.parquet",
+      "bytes": 7098,
+      "sha256": "9493337b8a5537965048f8d4aba29a09798706f3861c3c56f8034a29160fa36a",
+      "stored_mtime": "2026-10-05T04:31:49.704177+00:00"
+    },
+    {
+      "path": "data/intl_macro/EZ_yield_10y.parquet",
+      "bytes": 14716,
+      "sha256": "8d080b8ea2a0649ae51a4e3564294bf135e8641d1a52f58b9210b481088c8306",
+      "stored_mtime": "2026-10-05T04:31:49.704177+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_cpi_yoy.parquet",
+      "bytes": 14308,
+      "sha256": "87a5dbfbdb9b84e42b16bba522887d463830d00f51fff416a5e2e88f84119ab6",
+      "stored_mtime": "2026-10-05T04:31:49.705177+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_gdp.parquet",
+      "bytes": 6558,
+      "sha256": "ed6e3a84c298ccd677f5868562ec11ab70625496ad6b88258b17311b3c2f07c6",
+      "stored_mtime": "2026-10-05T04:31:49.705177+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_m2.parquet",
+      "bytes": 10140,
+      "sha256": "334eb24fa65c428730c492a8a71fbdf12b4b4d405b2699a85bf1fe0cb28ff886",
+      "stored_mtime": "2026-06-28T03:51:33.350794+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_short_3m.parquet",
+      "bytes": 15516,
+      "sha256": "11c28816c2f297cace2061a9e9e1771c312175d8f20c74115da29407bc4f029b",
+      "stored_mtime": "2026-10-05T04:31:49.705177+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_unemployment.parquet",
+      "bytes": 7873,
+      "sha256": "07e1101dbcc159615cf8d167e3982b5d41b4af0459e300072020c55d32d2a1e2",
+      "stored_mtime": "2026-10-05T04:31:49.705177+00:00"
+    },
+    {
+      "path": "data/intl_macro/GB_yield_10y.parquet",
+      "bytes": 14999,
+      "sha256": "bc291f021afa607fe50151296fbe05a251b7028bfc4fdb312aac861b685c363b",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/IN_cpi_yoy.parquet",
+      "bytes": 15447,
+      "sha256": "d553366215cfd21f2d5034607b4b10f073f93ef671d577997adbbab65fde43f9",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/IN_yield_10y.parquet",
+      "bytes": 5311,
+      "sha256": "b22f72ab7a76f25d6d209c79076738fe61f5650457e99c04c56fa28979c0f068",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_cpi_yoy.parquet",
+      "bytes": 12366,
+      "sha256": "38e930e96cf1f95f3cac6a221d25011ca88a72ceb587ff558c591d404b39c1d9",
+      "stored_mtime": "2026-06-28T03:51:33.350794+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_gdp.parquet",
+      "bytes": 4208,
+      "sha256": "e59a646fa5d870d6aec0e46a6996b7a071b9e0cb493d7b7c18871089f4437811",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_m2.parquet",
+      "bytes": 15858,
+      "sha256": "6d3ab34d02bbff61c4582a7ba30721483b4e06c563a3891e90a74a663dd32937",
+      "stored_mtime": "2026-06-28T03:51:33.350794+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_short_3m.parquet",
+      "bytes": 6056,
+      "sha256": "a77ab965e360f2e4e0e6348734906d2f8989653a2a2e8fffc3d67468a258318e",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_unemployment.parquet",
+      "bytes": 11076,
+      "sha256": "ccb83b7f53ce17f7d4c75f26f15bcd58d748036de38fd5ccaf25e8c3af2f7346",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/JP_yield_10y.parquet",
+      "bytes": 8952,
+      "sha256": "115dc4d6441571d1c7fd33f0758f432d481a761e7b858ae4490cdad908dbdbe3",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_cpi_yoy.parquet",
+      "bytes": 16284,
+      "sha256": "65b62b1a10597fce6979f1e248d3bc5134f1f7af5623397e1d1aa3b99cdfaace",
+      "stored_mtime": "2026-10-05T04:31:49.706177+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_gdp.parquet",
+      "bytes": 6560,
+      "sha256": "03b28496314d8d975e1c60366abac495bb14237f5ba40c99ddf48a5880a52efc",
+      "stored_mtime": "2026-10-05T04:31:49.707177+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_m2.parquet",
+      "bytes": 12571,
+      "sha256": "05c9ba6c8bc8c86fa482f452459ca80e2a8c403d9684dba1466dbdb75ebc18d3",
+      "stored_mtime": "2026-06-28T03:51:33.351794+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_short_3m.parquet",
+      "bytes": 8024,
+      "sha256": "1ef3d6f7b96d6d7688c0fa2016d6cb972fcd243d12eeea6e19991f47c761bd65",
+      "stored_mtime": "2026-10-05T04:31:49.707177+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_unemployment.parquet",
+      "bytes": 6810,
+      "sha256": "58e21deb8a2f606d7d33ae5cb750bdd99661b10c95cc0f3368a1c909a2f13da0",
+      "stored_mtime": "2026-10-05T04:31:49.707177+00:00"
+    },
+    {
+      "path": "data/intl_macro/KR_yield_10y.parquet",
+      "bytes": 6806,
+      "sha256": "b7496554b53443f0ffb8f7be1ac3547a5cc38b4d55492674aa2f7b6c7600f1a5",
+      "stored_mtime": "2026-10-05T04:31:49.708177+00:00"
+    },
+    {
+      "path": "data/intl_macro/de_10y.parquet",
+      "bytes": 14423,
+      "sha256": "df7aacaa7f3449da14e7d61a35eaa2421310794dad5331e68dbb8a8118d79126",
+      "stored_mtime": "2026-10-05T04:31:49.708177+00:00"
+    },
+    {
+      "path": "data/intl_macro/es_10y.parquet",
+      "bytes": 12055,
+      "sha256": "caa1badfd7b5db725931d4a1c20320fe27582148466b9e150275ec57d072f4d2",
+      "stored_mtime": "2026-10-05T04:31:49.708177+00:00"
+    },
+    {
+      "path": "data/intl_macro/ez_cb_assets.parquet",
+      "bytes": 24917,
+      "sha256": "4b13d91a0354faea74d57bc29279abc4e9198a8518717f788c29c3e4f141da53",
+      "stored_mtime": "2026-10-15T04:04:35.717827+00:00"
+    },
+    {
+      "path": "data/intl_macro/ez_depo_rate.parquet",
+      "bytes": 91413,
+      "sha256": "3f9f81e4a939bf52a264edd161762a60f91220638dab3def3088d52880794c29",
+      "stored_mtime": "2026-10-15T04:04:35.717827+00:00"
+    },
+    {
+      "path": "data/intl_macro/fr_10y.parquet",
+      "bytes": 13069,
+      "sha256": "3247effb534a8b5b259e4a019fcd8814ce3fa20678d129a478aec92f575c0d2d",
+      "stored_mtime": "2026-10-05T04:31:49.712177+00:00"
+    },
+    {
+      "path": "data/intl_macro/it_10y.parquet",
+      "bytes": 9991,
+      "sha256": "9b5b58e0ba778479b6f6ca36a78923b5b60b7229d945fb5b09ac0b5baa9e2f91",
+      "stored_mtime": "2026-10-05T04:31:49.713177+00:00"
+    },
+    {
+      "path": "data/intl_macro/provenance.json",
+      "bytes": 14337,
+      "sha256": "153d2b92cfbac03cc9d15a8c93fce87327ab54225495d6a22fc8f7b1ecb04e16",
+      "stored_mtime": "2026-10-15T04:04:35.717827+00:00"
+    },
+    {
+      "path": "data/intl_regime/AU_history.parquet",
+      "bytes": 133745,
+      "sha256": "a56b7e1a79bf7a37657809f5dc1c5d9394891050abdcb1355c3f491c41a6979f",
+      "stored_mtime": "2026-10-18T07:12:52.157359+00:00"
+    },
+    {
+      "path": "data/intl_regime/EZ_history.parquet",
+      "bytes": 93753,
+      "sha256": "aebc5946bab5f8bdb89988aa6adb42f86ca3a52cb615f3e806e3559e74b01a9a",
+      "stored_mtime": "2026-10-18T07:12:52.160359+00:00"
+    },
+    {
+      "path": "data/intl_regime/GB_history.parquet",
+      "bytes": 162214,
+      "sha256": "d5b64876575118341216f574cab0aa0ee65d95d0f306b298dbd4800c4476837f",
+      "stored_mtime": "2026-10-18T07:12:52.169359+00:00"
+    },
+    {
+      "path": "data/intl_regime/IN_history.parquet",
+      "bytes": 79507,
+      "sha256": "4d836050f43a226af33a11636df1d9919b09cba4b4074e9303d4f93059531b28",
+      "stored_mtime": "2026-10-18T07:12:52.174359+00:00"
+    },
+    {
+      "path": "data/intl_regime/JP_history.parquet",
+      "bytes": 219228,
+      "sha256": "57408c2fd25ebb0ca791c9ed6f644cc37f60423e1ccf7e617dddf3b015f178ba",
+      "stored_mtime": "2026-10-18T07:12:52.182359+00:00"
+    },
+    {
+      "path": "data/intl_regime/KR_history.parquet",
+      "bytes": 118554,
+      "sha256": "cb3fcc9d20d1b3806f656a9e6cd2479342489ac0ad8626bf8cea3f781891eafe",
+      "stored_mtime": "2026-10-18T07:12:52.187359+00:00"
+    },
+    {
+      "path": "data/intl_regime/TW_history.parquet",
+      "bytes": 107011,
+      "sha256": "c95be38af7b3490c2fea4883bcab506dc634f98901acd94d79f8f89c43211b8b",
+      "stored_mtime": "2026-10-18T07:12:52.193359+00:00"
+    },
+    {
+      "path": "data/intl_risk/cb_calendar.yml",
+      "bytes": 5858,
+      "sha256": "f6934d477f615c9ac7c02a9a03a5f7ea6c3ebb5d43c71b3001f9e5672ac40c04",
+      "stored_mtime": "2026-07-31T00:51:02.229221+00:00"
+    },
+    {
+      "path": "data/intl_risk/latest.json",
+      "bytes": 41529,
+      "sha256": "2364626569378f7bb8a70e67482dec065f61ead38004f013698ab25f195ec5b7",
+      "stored_mtime": "2026-10-18T07:12:52.196359+00:00"
+    },
+    {
+      "path": "data/yahoo/A.parquet",
+      "bytes": 186912,
+      "sha256": "9f7e28e45afdc4c5a390e1bd4a667880ee6e0f9d8099e181f969fd991085c783",
+      "stored_mtime": "2026-10-20T07:54:36.141454+00:00"
+    },
+    {
+      "path": "data/yahoo/AAXJ.parquet",
+      "bytes": 121282,
+      "sha256": "b02b5aa6f6acf06422c66bd92abadfd70eb4869a042b1bcce7fc82f000d57196",
+      "stored_mtime": "2026-10-20T07:54:36.149455+00:00"
+    },
+    {
+      "path": "data/yahoo/ALB.parquet",
+      "bytes": 210551,
+      "sha256": "d5cb551ed3233cbfbc9b994a8c133f485532c6d7be0fecb96a8403e67ee50aaa",
+      "stored_mtime": "2026-10-20T07:54:36.186455+00:00"
+    },
+    {
+      "path": "data/yahoo/AS.parquet",
+      "bytes": 21109,
+      "sha256": "dd29bc737b0dda2d9d8b8ab8b6539f184aa2846d48fcbbbf27d3e8e9d4f39715",
+      "stored_mtime": "2026-10-15T04:04:39.149826+00:00"
+    },
+    {
+      "path": "data/yahoo/ASHR.parquet",
+      "bytes": 83346,
+      "sha256": "d3aecc4b6f427f6c85774f396bbaa12c73af44ffba8f6b02c277bd0bf4d60a36",
+      "stored_mtime": "2026-10-20T07:54:36.212455+00:00"
+    },
+    {
+      "path": "data/yahoo/ASML.parquet",
+      "bytes": 218457,
+      "sha256": "9c073799f9609718970884cb5c1008259093e68280984d231eaa3d32ad31ea1c",
+      "stored_mtime": "2026-10-20T07:54:36.214455+00:00"
+    },
+    {
+      "path": "data/yahoo/AU.parquet",
+      "bytes": 181400,
+      "sha256": "131a6cf119266277bb5542a6f4091f40dc20b8fd8a7713f0247fed960cea74a7",
+      "stored_mtime": "2026-10-20T07:54:36.218455+00:00"
+    },
+    {
+      "path": "data/yahoo/AUDUSD_X.parquet",
+      "bytes": 110905,
+      "sha256": "04f833086cb1133b4c3618099285a26c3f8d19a17b76c7fe21db4c2b38b5fbc8",
+      "stored_mtime": "2026-10-20T07:54:36.219455+00:00"
+    },
+    {
+      "path": "data/yahoo/AX.parquet",
+      "bytes": 129018,
+      "sha256": "26709234e5988bff509f88c0153351a0796e669083503d841ee717f33b85f243",
+      "stored_mtime": "2026-10-15T04:04:39.255826+00:00"
+    },
+    {
+      "path": "data/yahoo/BHP.parquet",
+      "bytes": 274226,
+      "sha256": "d9060218bc1e53eb154303cee6aa8c42175361505b406447421eb77baa523857",
+      "stored_mtime": "2026-10-20T07:54:36.251455+00:00"
+    },
+    {
+      "path": "data/yahoo/BR.parquet",
+      "bytes": 132806,
+      "sha256": "f40e868f6d1dae2b3710b9c698573c9ec7772da14ea4c4aa2a717002a0b3e565",
+      "stored_mtime": "2026-10-20T07:54:36.269455+00:00"
+    },
+    {
+      "path": "data/yahoo/BTC-USD.parquet",
+      "bytes": 139632,
+      "sha256": "eeb9e7f2c04711a8facc09e9c9c5cfc40a78a51eeb3b8a221e06d9d61da91815",
+      "stored_mtime": "2026-10-20T07:54:36.276455+00:00"
+    },
+    {
+      "path": "data/yahoo/BTC_F.parquet",
+      "bytes": 96502,
+      "sha256": "ebf7b2175da6c259b99bb60c7670e660e8960f90a376ef0d4febc4be192502a7",
+      "stored_mtime": "2026-10-20T07:54:36.276455+00:00"
+    },
+    {
+      "path": "data/yahoo/BZ_F.parquet",
+      "bytes": 123514,
+      "sha256": "b806dca19655a1fcce2c9aa82729fb6e756e9f97ffca75934212ed49bec212e0",
+      "stored_mtime": "2026-10-20T07:54:36.281455+00:00"
+    },
+    {
+      "path": "data/yahoo/CAN.parquet",
+      "bytes": 43515,
+      "sha256": "3e25fafa39e6c26a7edebaf22ca87b738cc43e4055a1840499de595fd865a738",
+      "stored_mtime": "2026-10-15T04:04:39.674825+00:00"
+    },
+    {
+      "path": "data/yahoo/CC_F.parquet",
+      "bytes": 128187,
+      "sha256": "5d070f7a083148a082fe3e0ca2c2b529a215c14738e234d0127ae2ffba9f0d69",
+      "stored_mtime": "2026-10-20T07:54:36.300455+00:00"
+    },
+    {
+      "path": "data/yahoo/CL_F.parquet",
+      "bytes": 172051,
+      "sha256": "9d92f2c3c00533e38c9503c795286656e9c0fc526290e5848cbc601cb11c3e98",
+      "stored_mtime": "2026-10-20T07:54:36.323456+00:00"
+    },
+    {
+      "path": "data/yahoo/CNH_F.parquet",
+      "bytes": 78405,
+      "sha256": "5e0e2470b72e281c7bf64fda4c9a16b25620260947d9fb0c3fe51cfb777e0e46",
+      "stored_mtime": "2026-10-20T07:54:36.330456+00:00"
+    },
+    {
+      "path": "data/yahoo/CNH_X.parquet",
+      "bytes": 3495,
+      "sha256": "adbca902f9ca862cf2c4e05054a283d992d144a851da4dea4a37523f6579efdc",
+      "stored_mtime": "2026-07-11T08:48:14.375197+00:00"
+    },
+    {
+      "path": "data/yahoo/CQQQ.parquet",
+      "bytes": 104499,
+      "sha256": "e21452ad1db6c0fae89e38a9b48176dd131cf260e9804cad8df84839b7ecbfc3",
+      "stored_mtime": "2026-10-20T07:54:36.352456+00:00"
+    },
+    {
+      "path": "data/yahoo/CT_F.parquet",
+      "bytes": 154432,
+      "sha256": "2d179019361be088f5ffdb23c7e307145957eb19fb451c510f374925c59aef17",
+      "stored_mtime": "2026-10-20T07:54:36.366456+00:00"
+    },
+    {
+      "path": "data/yahoo/DBA.parquet",
+      "bytes": 113199,
+      "sha256": "2e31db16cf6b7673dc9ee6609124bb2efbdcec9ca9b02508c62d693ec4ef328d",
+      "stored_mtime": "2026-10-20T07:54:36.382456+00:00"
+    },
+    {
+      "path": "data/yahoo/DBC.parquet",
+      "bytes": 121397,
+      "sha256": "6c6dfa785e01f89bb1eb1e1680aba96e4c8f3c1ff535d6e1fd448e65d2693fe5",
+      "stored_mtime": "2026-10-20T07:54:36.383456+00:00"
+    },
+    {
+      "path": "data/yahoo/DE.parquet",
+      "bytes": 329357,
+      "sha256": "1c2887edc092479af8051a4c6f94ccbc601acd18dd1895b388cacdbd808b84f7",
+      "stored_mtime": "2026-10-20T07:54:36.388456+00:00"
+    },
+    {
+      "path": "data/yahoo/DIA.parquet",
+      "bytes": 204764,
+      "sha256": "117746c3335ba8dcd4412cbcbfd2f6b2cf9d0f4deacd164032e86e126accbada",
+      "stored_mtime": "2026-10-20T07:54:36.394456+00:00"
+    },
+    {
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "bytes": 214475,
+      "sha256": "19749354c3230a539a22a193965ba1e33c5332fb7afcd76ce53e71c726185314",
+      "stored_mtime": "2026-10-20T07:54:36.410456+00:00"
+    },
+    {
+      "path": "data/yahoo/ECH.parquet",
+      "bytes": 120955,
+      "sha256": "087a81bd07a3527e6914bf51142a74f8126f45b0b1d3503c7fd634371a9e06f6",
+      "stored_mtime": "2026-10-20T07:54:36.412456+00:00"
+    },
+    {
+      "path": "data/yahoo/EEM.parquet",
+      "bytes": 160787,
+      "sha256": "4a82b82d95760119f76e762bd2af83c74829afb14562ece3ec509cf911f6a3e7",
+      "stored_mtime": "2026-10-20T07:54:36.415456+00:00"
+    },
+    {
+      "path": "data/yahoo/EFA.parquet",
+      "bytes": 172519,
+      "sha256": "a3b7e6da8c7b2a193eaadd074be61143cc931a5f460c8a715a03a29a4f8f1749",
+      "stored_mtime": "2026-10-20T07:54:36.416456+00:00"
+    },
+    {
+      "path": "data/yahoo/EIDO.parquet",
+      "bytes": 100508,
+      "sha256": "9947edb2f5408872fe31347330ddd5792eb7d1373ca98f440b0429a279f2c3b3",
+      "stored_mtime": "2026-10-20T07:54:36.420456+00:00"
+    },
+    {
+      "path": "data/yahoo/EMB.parquet",
+      "bytes": 124271,
+      "sha256": "c14d166010aec3136e4ce759f37b802eacb89c646169a6f05db346011ce9b606",
+      "stored_mtime": "2026-10-20T07:54:36.423456+00:00"
+    },
+    {
+      "path": "data/yahoo/EMLC.parquet",
+      "bytes": 100975,
+      "sha256": "f04453a9b5a2846d04010370f1c556dd5adb37e4e5dd1c236ea7e6ed394efc51",
+      "stored_mtime": "2026-10-20T07:54:36.425456+00:00"
+    },
+    {
+      "path": "data/yahoo/EPOL.parquet",
+      "bytes": 99511,
+      "sha256": "ac11705a458c85d7e7c9f1faf0471b05be3e3ead735c4514ebec9ae644e38fea",
+      "stored_mtime": "2026-10-20T07:54:36.432456+00:00"
+    },
+    {
+      "path": "data/yahoo/ETH-USD.parquet",
+      "bytes": 103603,
+      "sha256": "bfb75001f7fc918d9316f26004f78abc6dc7b3f5dd882fb1c9c019a974eb2bea",
+      "stored_mtime": "2026-10-20T07:54:36.438456+00:00"
+    },
+    {
+      "path": "data/yahoo/EU.parquet",
+      "bytes": 58017,
+      "sha256": "096e1f88c41df2380f6323929cf7ea99774d0b25723affd80fe6a556b852175b",
+      "stored_mtime": "2026-10-20T07:54:36.442456+00:00"
+    },
+    {
+      "path": "data/yahoo/EUFN.parquet",
+      "bytes": 5574,
+      "sha256": "7f8bd2fb214e07741cdd6e5ba958e22d5957e487a2bcd59f331caed2d3fe7f80",
+      "stored_mtime": "2026-10-20T07:54:36.442456+00:00"
+    },
+    {
+      "path": "data/yahoo/EURUSD_X.parquet",
+      "bytes": 122739,
+      "sha256": "c8f9029708b9f848fed95872842358e38d8538fa9e068e978347b1abd298a774",
+      "stored_mtime": "2026-10-20T07:54:36.443456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWA.parquet",
+      "bytes": 169769,
+      "sha256": "905edeb3a7fc06dfee85085f260ae8f0406726fd462ad9c529ac57ed27c7e0f0",
+      "stored_mtime": "2026-10-20T07:54:36.445456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWC.parquet",
+      "bytes": 177707,
+      "sha256": "d2feb5c125370db7792b38200ac8a543c73abda94aee087696e2c4ec37a0fe96",
+      "stored_mtime": "2026-10-20T07:54:36.447456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWD.parquet",
+      "bytes": 168489,
+      "sha256": "de8574f9d9a31becf6b00bfafc3f50e0dd030f27a6a2f964be3eeb0bd407c85a",
+      "stored_mtime": "2026-10-20T07:54:36.448456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWG.parquet",
+      "bytes": 179606,
+      "sha256": "a52903acaa5fa1d5dafb0ee170205d8247ef6dc117d4e168194d10c98d314d38",
+      "stored_mtime": "2026-10-20T07:54:36.449456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWH.parquet",
+      "bytes": 175345,
+      "sha256": "1ab51f61c30d4b911b8d3c2e91595b5edfbe83d3d98f6691bdeab64139530cc6",
+      "stored_mtime": "2026-10-20T07:54:36.451456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWI.parquet",
+      "bytes": 172990,
+      "sha256": "93a7ca0ee5c69d88b31b7169ddb2db8d9d024e287a8d17be152ba2e3dd4bfbf1",
+      "stored_mtime": "2026-10-20T07:54:36.452456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWJ.parquet",
+      "bytes": 182513,
+      "sha256": "307c87ddeab8e0bbcc7a610ef7f9e976e472c649a220ef3dfc64e0064e436f92",
+      "stored_mtime": "2026-10-20T07:54:36.453456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWL.parquet",
+      "bytes": 173678,
+      "sha256": "877da295bc17c6d5ddca8731a7685c7b199c697756acc7de729b3409f5db21ed",
+      "stored_mtime": "2026-10-20T07:54:36.455456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWN.parquet",
+      "bytes": 163220,
+      "sha256": "eb8f9cb374d2a2ea8603a0c3bb2ea8be80a13c144890505e9ed43a680372b740",
+      "stored_mtime": "2026-10-20T07:54:36.456456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWP.parquet",
+      "bytes": 175910,
+      "sha256": "f1580f1d7b8fdab55f1280c2d7a079d2d19165e7be1790908758dae53af62a55",
+      "stored_mtime": "2026-10-20T07:54:36.457456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWQ.parquet",
+      "bytes": 171840,
+      "sha256": "a547f0c80c20a5cd387c5b78e60be5d3830d6ba79e1a22f2455a15a51fd72aa6",
+      "stored_mtime": "2026-10-20T07:54:36.459456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWS.parquet",
+      "bytes": 166791,
+      "sha256": "9feab9a2ef9f20eab76d8acaf57cd5f8dfd2894aff1d8de22d51dbde2234d3ed",
+      "stored_mtime": "2026-10-20T07:54:36.460456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWT.parquet",
+      "bytes": 162136,
+      "sha256": "23ba1a9f7494f0e2e354972212f92c81c8e0369cfb6f3d0b4e174734e50ab09a",
+      "stored_mtime": "2026-10-20T07:54:36.461456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWU.parquet",
+      "bytes": 173737,
+      "sha256": "ab45e8a7be2b774c500a495caf6e5890eb8872c7f70ba964d2d05d801f155def",
+      "stored_mtime": "2026-10-20T07:54:36.465456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWW.parquet",
+      "bytes": 189186,
+      "sha256": "cdca91a9db32828e59419a6f2c19837c2e1ffa5db0586fb021c686ecc0d4d3de",
+      "stored_mtime": "2026-10-20T07:54:36.468456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWY.parquet",
+      "bytes": 173682,
+      "sha256": "d89013fb523dce7489f5b39529fb0199354c433d4e5fc35dc569114acfddeac3",
+      "stored_mtime": "2026-10-20T07:54:36.471456+00:00"
+    },
+    {
+      "path": "data/yahoo/EWZ.parquet",
+      "bytes": 178001,
+      "sha256": "28aae567f2e47083de3df44b5873032b73c52f75fd547b22b6947b8d595e1a97",
+      "stored_mtime": "2026-10-20T07:54:36.473456+00:00"
+    },
+    {
+      "path": "data/yahoo/EZA.parquet",
+      "bytes": 150305,
+      "sha256": "62acc3e7e517d627c91b2f66289e0c92087df4333ea01deb3686485a8adf5ad6",
+      "stored_mtime": "2026-10-20T07:54:36.476456+00:00"
+    },
+    {
+      "path": "data/yahoo/FI.parquet",
+      "bytes": 247762,
+      "sha256": "4f3ad9571b5bd6a1943024e6b158aae7f9d77943b0688dd49da81207c5834c58",
+      "stored_mtime": "2026-10-20T07:54:36.495456+00:00"
+    },
+    {
+      "path": "data/yahoo/FPX.parquet",
+      "bytes": 122496,
+      "sha256": "a91051f78db860783eb0158115d3dc21f22f804e4e73424a9c5ed7f22b7ae974",
+      "stored_mtime": "2026-10-20T07:54:36.514456+00:00"
+    },
+    {
+      "path": "data/yahoo/FR.parquet",
+      "bytes": 193274,
+      "sha256": "0f8cec014efcefc8b81444443ec4f42f5fcb4d2e70430a06546d0abdaa7d9f33",
+      "stored_mtime": "2026-10-15T04:04:40.892825+00:00"
+    },
+    {
+      "path": "data/yahoo/FXI.parquet",
+      "bytes": 149493,
+      "sha256": "28b11ff13e72072b309f6ee663e36151ae5d754cb726bf7b80add0d3327f8aa0",
+      "stored_mtime": "2026-10-20T07:54:36.526456+00:00"
+    },
+    {
+      "path": "data/yahoo/GBPUSD_X.parquet",
+      "bytes": 125348,
+      "sha256": "09136de16815ef3b4866b2d1e989aede46d009f32e121509c65c1ec5d197080c",
+      "stored_mtime": "2026-10-20T07:54:36.527457+00:00"
+    },
+    {
+      "path": "data/yahoo/GC_F.parquet",
+      "bytes": 156634,
+      "sha256": "5daa49801611618c2593987419ad7d817939a6e48305a2050ff8bfeacd7170e4",
+      "stored_mtime": "2026-10-20T07:54:36.528456+00:00"
+    },
+    {
+      "path": "data/yahoo/GDX.parquet",
+      "bytes": 141044,
+      "sha256": "59224123325e425eb77aa1d05872da024b5e74b5dbfc61d7149a4a6e86f5d964",
+      "stored_mtime": "2026-10-20T07:54:36.534456+00:00"
+    },
+    {
+      "path": "data/yahoo/GDXJ.parquet",
+      "bytes": 118480,
+      "sha256": "e4d61d3e49efcbd97d99579366ac0efc4f7e2199a99185d74d9901645ab5a334",
+      "stored_mtime": "2026-10-20T07:54:36.535456+00:00"
+    },
+    {
+      "path": "data/yahoo/GLD.parquet",
+      "bytes": 153838,
+      "sha256": "6fb23c42433e8f363c4cbf345f3f7e4c1ea106e08e85ce63908e1f59fce479fb",
+      "stored_mtime": "2026-10-20T07:54:36.547457+00:00"
+    },
+    {
+      "path": "data/yahoo/GSG.parquet",
+      "bytes": 113032,
+      "sha256": "662efe73f4e54e33618a009244a2e8d8f8cc3d50cccdabbee63f78a7d8854f0a",
+      "stored_mtime": "2026-10-20T07:54:36.558457+00:00"
+    },
+    {
+      "path": "data/yahoo/GXC.parquet",
+      "bytes": 120658,
+      "sha256": "2309687a3130253c5b4f5a187e7587e75c3564f6207b36645f9223bc82b8c181",
+      "stored_mtime": "2026-10-20T07:54:36.561457+00:00"
+    },
+    {
+      "path": "data/yahoo/HE.parquet",
+      "bytes": 258246,
+      "sha256": "a220aa1750a6565fa957189b3b3c52dbea6c443c078877aee1bbb3060e447574",
+      "stored_mtime": "2026-10-15T04:04:41.220824+00:00"
+    },
+    {
+      "path": "data/yahoo/HG_F.parquet",
+      "bytes": 142010,
+      "sha256": "38c5ef4711c0645c2c60f30ef914cf5ba72e5cc5964833a286435045ea6d04b5",
+      "stored_mtime": "2026-10-20T07:54:36.569457+00:00"
+    },
+    {
+      "path": "data/yahoo/HO_F.parquet",
+      "bytes": 183838,
+      "sha256": "7aa473d225d0b5e0d6b91f9e247fd4a3fb14e8a89c0a597b24d8d82d5436ea09",
+      "stored_mtime": "2026-10-20T07:54:36.578457+00:00"
+    },
+    {
+      "path": "data/yahoo/HSBC.parquet",
+      "bytes": 179841,
+      "sha256": "6fbc60c7264af5c901d3deb044b671898d585c9640cd17d3552df0d4f3c209f1",
+      "stored_mtime": "2026-10-20T07:54:36.581457+00:00"
+    },
+    {
+      "path": "data/yahoo/HUN.parquet",
+      "bytes": 139539,
+      "sha256": "f3bd0894853d755796e889170cc018f545c1c32f88960bf5d31d78af58e05661",
+      "stored_mtime": "2026-10-15T04:04:41.323824+00:00"
+    },
+    {
+      "path": "data/yahoo/HYG.parquet",
+      "bytes": 128756,
+      "sha256": "d61620a4a88caa11dc03f0a296724cf8274252467dd60d58ebcdbf1e6079a8c7",
+      "stored_mtime": "2026-10-20T07:54:36.589457+00:00"
+    },
+    {
+      "path": "data/yahoo/IBB.parquet",
+      "bytes": 178187,
+      "sha256": "55c05352777fd1ec8debff607fa5fed5dfd15a914608b2b4e561e3003f1dc33e",
+      "stored_mtime": "2026-10-20T07:54:36.592457+00:00"
+    },
+    {
+      "path": "data/yahoo/IDR.parquet",
+      "bytes": 104800,
+      "sha256": "d58461d9917b442e534843e3534ee442bac6be93a26e4884c9b9936252afce00",
+      "stored_mtime": "2026-10-15T04:04:41.382824+00:00"
+    },
+    {
+      "path": "data/yahoo/IEF.parquet",
+      "bytes": 156163,
+      "sha256": "b24cb0c90c16b06a9aa990449bdad817aeac47ed4b3dcd2351dadcdaec202fbd",
+      "stored_mtime": "2026-10-20T07:54:36.601457+00:00"
+    },
+    {
+      "path": "data/yahoo/IGV.parquet",
+      "bytes": 167432,
+      "sha256": "683707511652d5ad464c1e12bb47454456d39aa27c34dd4d3a8e5f4edd6d48b0",
+      "stored_mtime": "2026-10-20T07:54:36.603457+00:00"
+    },
+    {
+      "path": "data/yahoo/IJH.parquet",
+      "bytes": 185167,
+      "sha256": "6f479ec969400a9ec05a678939e522f062d12591eb340b67b7d0d1aad17dfd05",
+      "stored_mtime": "2026-10-20T07:54:36.606457+00:00"
+    },
+    {
+      "path": "data/yahoo/ILF.parquet",
+      "bytes": 161646,
+      "sha256": "d71eb173d00c1958902fd62341316e9865a723217e01806310be292387ad84a8",
+      "stored_mtime": "2026-10-20T07:54:36.607457+00:00"
+    },
+    {
+      "path": "data/yahoo/IND.parquet",
+      "bytes": 7972,
+      "sha256": "d2e3be6d4baa8c114453446a60d55abee1f3f01f476d90fe0e07a02c09e7f048",
+      "stored_mtime": "2026-10-15T04:04:41.470824+00:00"
+    },
+    {
+      "path": "data/yahoo/INDA.parquet",
+      "bytes": 95592,
+      "sha256": "458f647214ccc034c70218b8611e35c22331cdba1daafbd7f8a7aab31521845b",
+      "stored_mtime": "2026-10-20T07:54:36.611457+00:00"
+    },
+    {
+      "path": "data/yahoo/IPO.parquet",
+      "bytes": 77440,
+      "sha256": "c5fd26b8d20a0cf0e2dcdfe1d9a2f36a51cad57c0f20cc740e9014ad6341c81c",
+      "stored_mtime": "2026-10-20T07:54:36.623457+00:00"
+    },
+    {
+      "path": "data/yahoo/IT.parquet",
+      "bytes": 199919,
+      "sha256": "33258d20719b3bf92e44a2264cb8ebd907d30bd137b169d1024a59e3be5c896d",
+      "stored_mtime": "2026-10-20T07:54:36.632457+00:00"
+    },
+    {
+      "path": "data/yahoo/ITA.parquet",
+      "bytes": 135855,
+      "sha256": "d1cd2d98d0f0a2eb1efc77a270fcf2be9af67a46419d49ff44ca1b69caff4fe1",
+      "stored_mtime": "2026-10-15T04:04:41.567824+00:00"
+    },
+    {
+      "path": "data/yahoo/ITB.parquet",
+      "bytes": 140399,
+      "sha256": "0cdcbe68a8e39abb8fe565d6589a5350bb4f4cd9a683ef9de3bb358693ba687c",
+      "stored_mtime": "2026-10-20T07:54:36.633457+00:00"
+    },
+    {
+      "path": "data/yahoo/IWD.parquet",
+      "bytes": 182382,
+      "sha256": "404bfe65e9b31b9c848ff8bd4871528336d99b6f02467b26f3818848d5ffa11b",
+      "stored_mtime": "2026-10-20T07:54:36.639457+00:00"
+    },
+    {
+      "path": "data/yahoo/IWF.parquet",
+      "bytes": 183277,
+      "sha256": "afd6473e5720398bd7dcb64ca7ade044511efef2c6f136da7b791e8749ca7e45",
+      "stored_mtime": "2026-10-20T07:54:36.640457+00:00"
+    },
+    {
+      "path": "data/yahoo/IWM.parquet",
+      "bytes": 192371,
+      "sha256": "e98579cebfdf680b5e6433c96cf47eb5ed36d004ec848024f8e0b7d43b5cab0a",
+      "stored_mtime": "2026-10-20T07:54:36.642457+00:00"
+    },
+    {
+      "path": "data/yahoo/KBE.parquet",
+      "bytes": 140396,
+      "sha256": "50e16c9891202285d6d2940519d04c251a49850789ab60bf5e9ab5eb5ae03868",
+      "stored_mtime": "2026-10-20T07:54:36.653457+00:00"
+    },
+    {
+      "path": "data/yahoo/KBWB.parquet",
+      "bytes": 100593,
+      "sha256": "e8b1f74de330b98941088691a9aef76b4c9ae406ddfb77a68e347332a7b50627",
+      "stored_mtime": "2026-10-20T07:54:36.654457+00:00"
+    },
+    {
+      "path": "data/yahoo/KC_F.parquet",
+      "bytes": 143273,
+      "sha256": "dd7587c3cafd10851017965d2bd6500a7364744e934eff490fb54405162b8506",
+      "stored_mtime": "2026-10-20T07:54:36.655457+00:00"
+    },
+    {
+      "path": "data/yahoo/KR.parquet",
+      "bytes": 344551,
+      "sha256": "2c02a5628a8e02a43c88a9c7680dc7c7e552e12357a9d6c9d270435ae4bda22c",
+      "stored_mtime": "2026-10-20T07:54:36.670457+00:00"
+    },
+    {
+      "path": "data/yahoo/KRE.parquet",
+      "bytes": 140487,
+      "sha256": "82e6a7e57fccd91acf1d19be960d9f0706890fd0c02261d624df8f23a9540a24",
+      "stored_mtime": "2026-10-20T07:54:36.671457+00:00"
+    },
+    {
+      "path": "data/yahoo/KWEB.parquet",
+      "bytes": 90470,
+      "sha256": "38f33a3b0b0bcde961bb90282d61bf9b1e7b98b203b89b4844bfd4361bb8d606",
+      "stored_mtime": "2026-10-20T07:54:36.674457+00:00"
+    },
+    {
+      "path": "data/yahoo/L.parquet",
+      "bytes": 280041,
+      "sha256": "b3e7a4474863b07f5d2b971381bd472e20c06e746c185a8917c963b902cc75be",
+      "stored_mtime": "2026-10-15T04:04:41.815824+00:00"
+    },
+    {
+      "path": "data/yahoo/LE_F.parquet",
+      "bytes": 142720,
+      "sha256": "fd9d0dd15dc2d3a393df78058beeb57c32491cf59ef85fe7ff607184d3f1fea6",
+      "stored_mtime": "2026-10-20T07:54:36.679457+00:00"
+    },
+    {
+      "path": "data/yahoo/LQD.parquet",
+      "bytes": 155815,
+      "sha256": "c544e8873704380d03508fbf5b4b111807e0d34c706a1327edf2be880e02c8b4",
+      "stored_mtime": "2026-10-20T07:54:36.698457+00:00"
+    },
+    {
+      "path": "data/yahoo/LVMUY.parquet",
+      "bytes": 125444,
+      "sha256": "5565da7bf2a8ea501fa98f64a9b337740d583781c060b8afc50e7127149baefa",
+      "stored_mtime": "2026-10-20T07:54:36.707457+00:00"
+    },
+    {
+      "path": "data/yahoo/M.parquet",
+      "bytes": 220164,
+      "sha256": "bd3e6993bff415a7aa033257b4a514ff7975756bce5ba4d478c93886a53fb412",
+      "stored_mtime": "2026-10-15T04:04:41.974824+00:00"
+    },
+    {
+      "path": "data/yahoo/MAGS.parquet",
+      "bytes": 26890,
+      "sha256": "48da3b63ebd58420da851e8ab0b10c210625d57eadc789373bdbc197f60cde32",
+      "stored_mtime": "2026-10-20T07:54:36.709457+00:00"
+    },
+    {
+      "path": "data/yahoo/MCHI.parquet",
+      "bytes": 104076,
+      "sha256": "3081ca5dc9b33c51e20fdf8a00ab0e4d91e33c3d20f7c0f7037d425f41b5cce4",
+      "stored_mtime": "2026-10-20T07:54:36.714457+00:00"
+    },
+    {
+      "path": "data/yahoo/MI.parquet",
+      "bytes": 56972,
+      "sha256": "4453962991cfbfa3e05270197bab9236c8b276dcbe4b52d71fd7fa815273b353",
+      "stored_mtime": "2026-10-15T04:04:42.077824+00:00"
+    },
+    {
+      "path": "data/yahoo/MTUM.parquet",
+      "bytes": 95230,
+      "sha256": "e0b88cc5063211797e97391937fcee98765b3d68e20323605843ca9328179841",
+      "stored_mtime": "2026-10-20T07:54:36.760458+00:00"
+    },
+    {
+      "path": "data/yahoo/MU.parquet",
+      "bytes": 257616,
+      "sha256": "cfdd4e37a2a472214a41d831a1b6192ec157ec4aa26ac080a607967f43b8fb25",
+      "stored_mtime": "2026-10-20T07:54:36.765458+00:00"
+    },
+    {
+      "path": "data/yahoo/NG_F.parquet",
+      "bytes": 162085,
+      "sha256": "5bc6ce91269b3ee4ffb201146fc0c063042cd4a444d57e9d7c1440222a6c3015",
+      "stored_mtime": "2026-10-20T07:54:36.778458+00:00"
+    },
+    {
+      "path": "data/yahoo/NL.parquet",
+      "bytes": 211737,
+      "sha256": "62a68f767cc75fc3947db1217ed2fc7ac6551c9acb13925e5e99ca9d491ff3da",
+      "stored_mtime": "2026-10-15T04:04:42.321824+00:00"
+    },
+    {
+      "path": "data/yahoo/OIH.parquet",
+      "bytes": 181927,
+      "sha256": "ef8e39208bfc58a3cfba6010fc54c466e32240d860dfaabf25c5966688329e60",
+      "stored_mtime": "2026-10-20T07:54:36.810458+00:00"
+    },
+    {
+      "path": "data/yahoo/PA_F.parquet",
+      "bytes": 146355,
+      "sha256": "dcb9271f8928d5697cdf996293957500d0db0bede1b544ea92c88cc111357333",
+      "stored_mtime": "2026-10-20T07:54:36.834458+00:00"
+    },
+    {
+      "path": "data/yahoo/PCY.parquet",
+      "bytes": 113517,
+      "sha256": "c48d8ecfeeeb9f360835994a2a654ffb72f8784bc7c96a17a3bbb893121552d0",
+      "stored_mtime": "2026-10-20T07:54:36.836458+00:00"
+    },
+    {
+      "path": "data/yahoo/PL_F.parquet",
+      "bytes": 143457,
+      "sha256": "2d2021c47d1f5ae6ff295cb51581ad9a4412d5977e2e0f97216af2e23d8865c8",
+      "stored_mtime": "2026-10-20T07:54:36.861458+00:00"
+    },
+    {
+      "path": "data/yahoo/QQQ.parquet",
+      "bytes": 201470,
+      "sha256": "c2f22cc4dd51afaea91f34e11c9fd3b2662d8af61b04876a26943f013ff9793c",
+      "stored_mtime": "2026-10-20T07:54:36.895458+00:00"
+    },
+    {
+      "path": "data/yahoo/QUAL.parquet",
+      "bytes": 93211,
+      "sha256": "11eac643de88e98399e128acf29269f4f317fd1358103bb430d32d2bd26686b2",
+      "stored_mtime": "2026-10-20T07:54:36.896458+00:00"
+    },
+    {
+      "path": "data/yahoo/RB_F.parquet",
+      "bytes": 181980,
+      "sha256": "188d78b01825f9786c2a783a89f2518b654ab364ae9f24e254bc1e617ed6ef2c",
+      "stored_mtime": "2026-10-20T07:54:36.900458+00:00"
+    },
+    {
+      "path": "data/yahoo/RGI.parquet",
+      "bytes": 3930,
+      "sha256": "8a67daac38ca290eba5b9a2635137bab28fb9d756d11f3f3bf4a391b4153f98f",
+      "stored_mtime": "2026-08-14T02:12:56.652670+00:00"
+    },
+    {
+      "path": "data/yahoo/RIO.parquet",
+      "bytes": 223037,
+      "sha256": "10f25f8a72dbc5413bc2da2d8cebec283f055f1fc2733d6c28152fb4fba42111",
+      "stored_mtime": "2026-10-20T07:54:36.907458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSP.parquet",
+      "bytes": 163606,
+      "sha256": "c07b4ba6a45f451fcdf3ba84d2d7e104c65299b9150454090d7e16b5f2311386",
+      "stored_mtime": "2026-10-20T07:54:36.923458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPC.parquet",
+      "bytes": 44618,
+      "sha256": "f01c3e543a73fc8191cfa5f58c87da50ba1bdf12837deb87ea06d57a2c4f96d2",
+      "stored_mtime": "2026-10-20T07:54:36.923458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPD.parquet",
+      "bytes": 120475,
+      "sha256": "07157b8fa0fe124e0217cadad24f1ca3b679431c98020346929b962ea252040b",
+      "stored_mtime": "2026-10-20T07:54:36.924458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPF.parquet",
+      "bytes": 118519,
+      "sha256": "89d61edb343cce1e5d82273913859a5a6d53db50be0049dfa05d5f479b01643e",
+      "stored_mtime": "2026-10-20T07:54:36.926458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPG.parquet",
+      "bytes": 118706,
+      "sha256": "e15bac5176f221eccbd07e7b9019014821208226f9ae429d99b275da17eff211",
+      "stored_mtime": "2026-10-20T07:54:36.927458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPH.parquet",
+      "bytes": 122781,
+      "sha256": "e9cd850909226b642349dc17931ea2cc55e8b82c390c431d3ef09ef57dcbf08f",
+      "stored_mtime": "2026-10-20T07:54:36.928458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPM.parquet",
+      "bytes": 117240,
+      "sha256": "9562db3b62bdedf76e85d60d4c3072a5854bc8142c7366d7d8859c0592e896d6",
+      "stored_mtime": "2026-10-20T07:54:36.929458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPR.parquet",
+      "bytes": 65782,
+      "sha256": "9d217a2898b0856fc7a973ce42fda09724d66c99228c79bc5a23faaec5e9c226",
+      "stored_mtime": "2026-10-20T07:54:36.930458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPS.parquet",
+      "bytes": 117107,
+      "sha256": "22aa6cb4aadb29c600f1c4a82dc0487ca5fa81aa1701e1f08fcfc52d802d2b66",
+      "stored_mtime": "2026-10-20T07:54:36.931458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPT.parquet",
+      "bytes": 127066,
+      "sha256": "b8e754d601125bae9064c5da3bb8404ca089f10b8ee434658729f3cae45c0481",
+      "stored_mtime": "2026-10-20T07:54:36.932458+00:00"
+    },
+    {
+      "path": "data/yahoo/RSPU.parquet",
+      "bytes": 117179,
+      "sha256": "fbec3b61c3e2e893e3eb9d2b523d458a948b974a9c831b587ef161e456074de6",
+      "stored_mtime": "2026-10-20T07:54:36.933458+00:00"
+    },
+    {
+      "path": "data/yahoo/SB_F.parquet",
+      "bytes": 140483,
+      "sha256": "cb46ed611c981acc3e3a94115d6c4ff6fdf13043117bf1818d6107afa49b6309",
+      "stored_mtime": "2026-10-20T07:54:36.944458+00:00"
+    },
+    {
+      "path": "data/yahoo/SE.parquet",
+      "bytes": 66246,
+      "sha256": "699eea3d61e9a4eb7c9b87e19b612106325c15789944f55eb83dce99a497feb3",
+      "stored_mtime": "2026-10-20T07:54:36.947459+00:00"
+    },
+    {
+      "path": "data/yahoo/SG.parquet",
+      "bytes": 34999,
+      "sha256": "332237cb2f24bc9745f82dbfef4079fd5dde306431d3920db49a53b4e8f49f46",
+      "stored_mtime": "2026-10-20T07:54:36.948458+00:00"
+    },
+    {
+      "path": "data/yahoo/SI_F.parquet",
+      "bytes": 154203,
+      "sha256": "b1dc2a8b2b6560062e2b9b48ccba6fe96bf804e24976fdb1b878a407dee49c06",
+      "stored_mtime": "2026-10-20T07:54:36.954458+00:00"
+    },
+    {
+      "path": "data/yahoo/SMH.parquet",
+      "bytes": 179394,
+      "sha256": "d23b98787ab4df386fa59eae2837f5a0f6ad7f9b868495f5343fced20b67c93d",
+      "stored_mtime": "2026-10-20T07:54:36.960459+00:00"
+    },
+    {
+      "path": "data/yahoo/SOL-USD.parquet",
+      "bytes": 76227,
+      "sha256": "433a8ffb1e56297297d91a680360f6aecac4f6ce669ec7dd52d26ca0ff5a746f",
+      "stored_mtime": "2026-10-20T07:54:36.963459+00:00"
+    },
+    {
+      "path": "data/yahoo/SONY.parquet",
+      "bytes": 312497,
+      "sha256": "35ce09a8fa3be80fcd3ed1e7cd80fef939ff1651b4b068df9014add4859d92be",
+      "stored_mtime": "2026-10-20T07:54:36.967458+00:00"
+    },
+    {
+      "path": "data/yahoo/SOXX.parquet",
+      "bytes": 173078,
+      "sha256": "bc8d0bb43ebbb906277188bb835b86e57725889f9e7edfaad98d832ce7624b97",
+      "stored_mtime": "2026-10-20T07:54:36.969459+00:00"
+    },
+    {
+      "path": "data/yahoo/SPHB.parquet",
+      "bytes": 101966,
+      "sha256": "3bfd0fc535b1d8918572e4094bd250f919b322953b2290eeda886929bd80b782",
+      "stored_mtime": "2026-10-20T07:54:36.975459+00:00"
+    },
+    {
+      "path": "data/yahoo/SPLV.parquet",
+      "bytes": 104489,
+      "sha256": "b36a79b2e608b8400fb73906d558a1af174d89bbb4aab2d4d1a7be93f4377504",
+      "stored_mtime": "2026-10-20T07:54:36.976459+00:00"
+    },
+    {
+      "path": "data/yahoo/SPY.parquet",
+      "bytes": 244665,
+      "sha256": "6f3ae71000d450c78ae61649a261ff575bef16aab6e630c99d234f1496b33760",
+      "stored_mtime": "2026-10-20T07:54:36.979459+00:00"
+    },
+    {
+      "path": "data/yahoo/SQM.parquet",
+      "bytes": 207114,
+      "sha256": "64bba217e3e25b47f7dd846593868570f9ed14c1c70453bed62a649628cb097b",
+      "stored_mtime": "2026-10-20T07:54:36.981459+00:00"
+    },
+    {
+      "path": "data/yahoo/ST.parquet",
+      "bytes": 105783,
+      "sha256": "fbc9b254adfbf6bf6f8b0b798a6011e67258d4fccde2e19365486d53a76aad0b",
+      "stored_mtime": "2026-10-20T07:54:36.986459+00:00"
+    },
+    {
+      "path": "data/yahoo/SW.parquet",
+      "bytes": 73013,
+      "sha256": "d011675790ea0d847d60f92b7d1befca9409b799623e9a1a297a01c4eff40593",
+      "stored_mtime": "2026-10-15T04:04:43.726823+00:00"
+    },
+    {
+      "path": "data/yahoo/T.parquet",
+      "bytes": 272031,
+      "sha256": "840269fe727dce562fdb11da8fbd0f9915639703436886dec2c7880885865fcb",
+      "stored_mtime": "2026-10-20T07:54:37.007459+00:00"
+    },
+    {
+      "path": "data/yahoo/TAN.parquet",
+      "bytes": 122460,
+      "sha256": "67c96fe9635a06ce4a5297781a1302459f3bf4a13a62d41dbec6b1d2d620887e",
+      "stored_mtime": "2026-10-20T07:54:37.010459+00:00"
+    },
+    {
+      "path": "data/yahoo/TIP.parquet",
+      "bytes": 143401,
+      "sha256": "44d1fe79f20e9da6562bc3ecd3a6db6667e2e498210d0c17f09760a25d179e03",
+      "stored_mtime": "2026-10-20T07:54:37.039459+00:00"
+    },
+    {
+      "path": "data/yahoo/TLT.parquet",
+      "bytes": 165903,
+      "sha256": "c5ce4c5d41b8cb7128f10f282d1fe6d8805546e4e75db78b1a983838ff89a0d4",
+      "stored_mtime": "2026-10-20T07:54:37.053459+00:00"
+    },
+    {
+      "path": "data/yahoo/TSM.parquet",
+      "bytes": 200318,
+      "sha256": "6cbaa699b48f17f059d75527e3730db26aa65411df526d1f237790e28ad6295a",
+      "stored_mtime": "2026-10-20T07:54:37.067459+00:00"
+    },
+    {
+      "path": "data/yahoo/TUR.parquet",
+      "bytes": 120109,
+      "sha256": "00e026377f11d8cd1bfd90bf9c4e651ba5ecb4b51bc1767780648fc318b8f9cd",
+      "stored_mtime": "2026-10-20T07:54:37.070459+00:00"
+    },
+    {
+      "path": "data/yahoo/TW.parquet",
+      "bytes": 54498,
+      "sha256": "97a1070c9fe50470fd97f1fd6a5918c182f8e2c08f270f76585b7e0b5b9379fd",
+      "stored_mtime": "2026-10-09T05:13:15.306075+00:00"
+    },
+    {
+      "path": "data/yahoo/USA.parquet",
+      "bytes": 188275,
+      "sha256": "708616bad1e3bd175024cd3cb078f8d71c9adf02f1a49016927c02431261886d",
+      "stored_mtime": "2026-10-09T05:13:15.394074+00:00"
+    },
+    {
+      "path": "data/yahoo/USDBRL_X.parquet",
+      "bytes": 119309,
+      "sha256": "86235941a66383736d72243075c34b8a4540468c4d6b7edf6f430185298bd2fe",
+      "stored_mtime": "2026-10-20T07:54:37.091459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDCAD_X.parquet",
+      "bytes": 122655,
+      "sha256": "4945677a6366cd37ba575b954180cf9c1ae6fdf1e150e906308ef6a582aa1f51",
+      "stored_mtime": "2026-10-20T07:54:37.092459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDCHF_X.parquet",
+      "bytes": 121729,
+      "sha256": "975403c32fc90e06f437c8dc518c632a439984d8621a4e560bdfb9a5fa95b28d",
+      "stored_mtime": "2026-10-20T07:54:37.094459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDCLP_X.parquet",
+      "bytes": 121324,
+      "sha256": "f070ca5504f8f26f5fcbca5275ccb7d29aebeac116ccc8b5fb72e40a976ee97d",
+      "stored_mtime": "2026-10-20T07:54:37.095459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDHKD_X.parquet",
+      "bytes": 96791,
+      "sha256": "9a0d79aaa30ba8c9d19519e5de3d1a20b802b0efd19c912f5516eee2c75d2ace",
+      "stored_mtime": "2026-10-20T07:54:37.095459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDIDR_X.parquet",
+      "bytes": 124072,
+      "sha256": "e6a7c3b655041c8462d89f3233623d94dfa682fe5da7e03a1cffbe38c6df24a3",
+      "stored_mtime": "2026-10-20T07:54:37.097459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDJPY_X.parquet",
+      "bytes": 157142,
+      "sha256": "0337cc5aec5dcd86a1aa902957d94a9419eb8689c8196374b781e648e2bcda44",
+      "stored_mtime": "2026-10-20T07:54:37.098459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDMXN_X.parquet",
+      "bytes": 130523,
+      "sha256": "11ca46fbe30ff3ad588aa5f78efabc9d0da9a2988e23761d6d84f2d16e7dd037",
+      "stored_mtime": "2026-10-20T07:54:37.099459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDPLN_X.parquet",
+      "bytes": 131325,
+      "sha256": "440351914e481804dea5d05613a64103c387f29fa5d04f8d974e0a45b00e7672",
+      "stored_mtime": "2026-10-20T07:54:37.100459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDSEK_X.parquet",
+      "bytes": 142979,
+      "sha256": "c1a8bbbdc01491b224338e5b5d57178fd4948ae9565260f9f5d9a8adf1d30471",
+      "stored_mtime": "2026-10-20T07:54:37.102459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDSGD_X.parquet",
+      "bytes": 120064,
+      "sha256": "ba4357706276ff5f60966e1e91562730ae39479cb7e683387b72071e59fe59b9",
+      "stored_mtime": "2026-10-20T07:54:37.103459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDTRY_X.parquet",
+      "bytes": 124517,
+      "sha256": "2bd9ce052a4e3b7dd5fd7744f161e8912be752ee8ae5c1925335634d9fe90ce0",
+      "stored_mtime": "2026-10-20T07:54:37.104459+00:00"
+    },
+    {
+      "path": "data/yahoo/USDZAR_X.parquet",
+      "bytes": 133766,
+      "sha256": "aa2b370e23ffa0143635a6c99102418b173d6c9a571e8e91bd3d489bf2a1734f",
+      "stored_mtime": "2026-10-20T07:54:37.105459+00:00"
+    },
+    {
+      "path": "data/yahoo/USMV.parquet",
+      "bytes": 102103,
+      "sha256": "0a42e4a5623e79e213f8678ca66d5db996188af912e16ba0f223658d3ba74570",
+      "stored_mtime": "2026-10-20T07:54:37.106459+00:00"
+    },
+    {
+      "path": "data/yahoo/V.parquet",
+      "bytes": 137367,
+      "sha256": "c428f86e7cff5105d1086c169f449d89397bfba93e3781ef28fba0bf0f31a23d",
+      "stored_mtime": "2026-10-20T07:54:37.108459+00:00"
+    },
+    {
+      "path": "data/yahoo/VALE.parquet",
+      "bytes": 164373,
+      "sha256": "c0b3543e3da15f4adef341d618a0f089e65cc34b9e971a5afe27d02d7f50d53a",
+      "stored_mtime": "2026-10-20T07:54:37.110459+00:00"
+    },
+    {
+      "path": "data/yahoo/VGK.parquet",
+      "bytes": 143063,
+      "sha256": "9351dce45691e056077a2a645aa73e9819da133fc7d5ff07b19ea9c4472a6184",
+      "stored_mtime": "2026-10-20T07:54:37.113459+00:00"
+    },
+    {
+      "path": "data/yahoo/VPL.parquet",
+      "bytes": 136280,
+      "sha256": "593606f618d6ebc637b20d532128ef449dd9123eabae227e1217d9716e22e799",
+      "stored_mtime": "2026-10-20T07:54:37.122459+00:00"
+    },
+    {
+      "path": "data/yahoo/VWOB.parquet",
+      "bytes": 81492,
+      "sha256": "6c6671206ec5a9b66672598ac9a595a6de1acbe9a3eb4ebd41c8b2cd0b90ef68",
+      "stored_mtime": "2026-10-20T07:54:37.127459+00:00"
+    },
+    {
+      "path": "data/yahoo/VXUS.parquet",
+      "bytes": 103388,
+      "sha256": "ef7e456e7d1c7617827f432f96179cefbc2cf71980871b052c30358551320289",
+      "stored_mtime": "2026-10-20T07:54:37.129459+00:00"
+    },
+    {
+      "path": "data/yahoo/W.parquet",
+      "bytes": 86027,
+      "sha256": "87e27d6b51b55be5201daa5f16f7edab419eef0eed4dd10e656e822be2e0a78d",
+      "stored_mtime": "2026-10-20T07:54:37.133459+00:00"
+    },
+    {
+      "path": "data/yahoo/XBI.parquet",
+      "bytes": 146400,
+      "sha256": "fcaece0a404552aef211177f7949ba720df56cb73f897c5b2658171622297c5c",
+      "stored_mtime": "2026-10-20T07:54:37.161459+00:00"
+    },
+    {
+      "path": "data/yahoo/XHB.parquet",
+      "bytes": 142512,
+      "sha256": "e5c51b9968cfa442e8a10f23619559f38d1c5226f47c587693bf354753b13f92",
+      "stored_mtime": "2026-10-20T07:54:37.162460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLB.parquet",
+      "bytes": 188172,
+      "sha256": "39ca1290061c3268bf38aba511886b7c3a37e49cf6defa905d194ad080a49b75",
+      "stored_mtime": "2026-10-20T07:54:37.164459+00:00"
+    },
+    {
+      "path": "data/yahoo/XLC.parquet",
+      "bytes": 60470,
+      "sha256": "33c28242599d74e99309473180b5a6d6272ae639a8e096190888faaa244bd8f6",
+      "stored_mtime": "2026-10-20T07:54:37.164459+00:00"
+    },
+    {
+      "path": "data/yahoo/XLE.parquet",
+      "bytes": 193694,
+      "sha256": "cac8a12177b6b54472bfb61b63b0534a1ec2790e21b056bbec6850d987e4fa0e",
+      "stored_mtime": "2026-10-20T07:54:37.166460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLF.parquet",
+      "bytes": 189147,
+      "sha256": "1ec7c7ee8d3453b49d9ab330da9e7a03856362d7ff622f34659a83a0d22c9b22",
+      "stored_mtime": "2026-10-20T07:54:37.168460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLI.parquet",
+      "bytes": 189283,
+      "sha256": "1bf63af8bf75ec57fa02693765f826274ecd6ec6814ce3ef3208b03ded277c8e",
+      "stored_mtime": "2026-10-20T07:54:37.170460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLK.parquet",
+      "bytes": 190081,
+      "sha256": "bfe4a802ffc3d24878df9698482996c6da936c432cff203b51d88bb99526e9b6",
+      "stored_mtime": "2026-10-20T07:54:37.172460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLP.parquet",
+      "bytes": 181599,
+      "sha256": "e4de4ec589244187b8663a40650b8f3969b066a1c8f166860cf1ac090a537a7e",
+      "stored_mtime": "2026-10-20T07:54:37.174460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLRE.parquet",
+      "bytes": 72650,
+      "sha256": "4afcff7988218f7b56ac452652b4e84180c4791e9dc1d4cb0514e1e9eeffab7a",
+      "stored_mtime": "2026-10-20T07:54:37.174460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLU.parquet",
+      "bytes": 186487,
+      "sha256": "43faee42d479e2c6be62f55500980696394e9c7a4fdd256cfe4d502e19cf8643",
+      "stored_mtime": "2026-10-20T07:54:37.176460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLV.parquet",
+      "bytes": 184358,
+      "sha256": "3f5570b2b5395cb831bbc248110286745fb825bdbadd941f58b58ffff07e1db8",
+      "stored_mtime": "2026-10-20T07:54:37.179460+00:00"
+    },
+    {
+      "path": "data/yahoo/XLY.parquet",
+      "bytes": 189763,
+      "sha256": "1523f28081dea2adcacdb46a74ecae9363f8b5236078c123b1f7c8a2f5ad4a7b",
+      "stored_mtime": "2026-10-20T07:54:37.181460+00:00"
+    },
+    {
+      "path": "data/yahoo/XME.parquet",
+      "bytes": 140232,
+      "sha256": "d68905f3f2cbe2bbbd3849655df32c78ffa4b5844f059bbcbb0a7d97e2d92652",
+      "stored_mtime": "2026-10-20T07:54:37.182460+00:00"
+    },
+    {
+      "path": "data/yahoo/XOP.parquet",
+      "bytes": 144401,
+      "sha256": "5fff4ccb90de81e9297ef5c65fe695c99ef536716b3171dc7662948925806100",
+      "stored_mtime": "2026-10-20T07:54:37.188460+00:00"
+    },
+    {
+      "path": "data/yahoo/XRT.parquet",
+      "bytes": 142976,
+      "sha256": "90281e5e6fa2059f0cd68a779bf5807ec80f08141221f899c92f0cb7e56fcb66",
+      "stored_mtime": "2026-10-20T07:54:37.190460+00:00"
+    },
+    {
+      "path": "data/yahoo/Z.parquet",
+      "bytes": 77340,
+      "sha256": "52cf872b5a4a4cbe24c3de3aa926b0cfc4e70c580bc9c539a371a77b7decf752",
+      "stored_mtime": "2026-10-09T04:52:52.186152+00:00"
+    },
+    {
+      "path": "data/yahoo/ZC_F.parquet",
+      "bytes": 126256,
+      "sha256": "7afc04c07f03356bbff5f9840a743f9a99726139011632c4921c4f684fac216b",
+      "stored_mtime": "2026-10-20T07:54:37.198460+00:00"
+    },
+    {
+      "path": "data/yahoo/ZQ_F.parquet",
+      "bytes": 107231,
+      "sha256": "914634b7e8bf7641165a657c5b6c45c321973152b67d023cbc35282066a0dcfb",
+      "stored_mtime": "2026-10-20T07:54:37.199460+00:00"
+    },
+    {
+      "path": "data/yahoo/ZS_F.parquet",
+      "bytes": 136068,
+      "sha256": "2163540fe86d9cd4fa8ca2005c6f71fb7a77e5222670d3ea96c7d3d73a2138ad",
+      "stored_mtime": "2026-10-20T07:54:37.201460+00:00"
+    },
+    {
+      "path": "data/yahoo/ZW_F.parquet",
+      "bytes": 127543,
+      "sha256": "6afd18b0fc983055db925884c8e3c38bf950549042d0cd326f0e6f747be2cb04",
+      "stored_mtime": "2026-10-20T07:54:37.203460+00:00"
+    },
+    {
+      "path": "data/yahoo/_DJI.parquet",
+      "bytes": 196512,
+      "sha256": "1a966e2a7a313a0280c0e34d0d244509c450fd886c1ead6b82464adc91a059a8",
+      "stored_mtime": "2026-10-20T07:54:37.205460+00:00"
+    },
+    {
+      "path": "data/yahoo/_GSPC.parquet",
+      "bytes": 598604,
+      "sha256": "6aecfdc87153355d4c50af78bffc4c4a1cf41fcd67f5cff5188518bb120fc8b4",
+      "stored_mtime": "2026-10-20T07:54:37.210460+00:00"
+    },
+    {
+      "path": "data/yahoo/_KS11.parquet",
+      "bytes": 200378,
+      "sha256": "7474a830a2eed1c6286f4dbf7803eae14b5bc8359d6054f3fc18782b734af387",
+      "stored_mtime": "2026-10-20T07:54:37.212460+00:00"
+    },
+    {
+      "path": "data/yahoo/_MOVE.parquet",
+      "bytes": 165999,
+      "sha256": "91e98519e9efcca3ba55bf8dff5e8de28c6786b7bdc37438d566d3e7acd1766f",
+      "stored_mtime": "2026-10-20T07:54:37.213460+00:00"
+    },
+    {
+      "path": "data/yahoo/_RUT.parquet",
+      "bytes": 297182,
+      "sha256": "96256b137c7abb60c68324f63da0b1b9f6c5acde183b66a673b0c7b3558d813b",
+      "stored_mtime": "2026-10-20T07:54:37.215460+00:00"
+    },
+    {
+      "path": "data/yahoo/_SOX.parquet",
+      "bytes": 184997,
+      "sha256": "e934b0bb2faf8fd50d0d93fa7ed375fce2ba923ad00a406c84e8425596f92be7",
+      "stored_mtime": "2026-10-20T07:54:37.217460+00:00"
+    },
+    {
+      "path": "data/yahoo/_VIX.parquet",
+      "bytes": 191415,
+      "sha256": "4c9bccf191ba9f2b58305d0e98df9b1e7deca6de461c42b7a1c78e073e04f4dd",
+      "stored_mtime": "2026-10-20T07:54:37.218460+00:00"
+    },
+    {
+      "path": "data/yahoo/_VIX3M.parquet",
+      "bytes": 119205,
+      "sha256": "9660387de53ef2a13fe340ca7503407c382e6c794eab7a7599cfdcced2ec2045",
+      "stored_mtime": "2026-10-20T07:54:37.219460+00:00"
+    },
+    {
+      "path": "data/yahoo/_VIX9D.parquet",
+      "bytes": 98335,
+      "sha256": "1d735bf2b5448f317c4e1a3cdcb24ec737ffd3322cda22c1c8b396e66f4aa36d",
+      "stored_mtime": "2026-10-20T07:54:37.220460+00:00"
+    },
+    {
+      "path": "data/yahoo/_VVIX.parquet",
+      "bytes": 147399,
+      "sha256": "ca5a88ea9aac8a741b450cdd6241bf63f0bebb2662618457cf2e91b1cfb9afb1",
+      "stored_mtime": "2026-10-20T07:54:37.221460+00:00"
+    },
+    {
+      "path": "site/live_config.js",
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "stored_mtime": "2026-10-20T11:40:40.744043+00:00"
+    },
+    {
+      "path": "site/macrodata/global_regime_fragment.json",
+      "bytes": 49080,
+      "sha256": "0558b39f8fd8aa2e4523eb13505bcf0c0cf075db4e5c3c302e1a202aa8ade0cf",
+      "stored_mtime": "2026-10-20T11:36:25.122919+00:00"
+    }
+  ],
+  "finished_at": "2026-10-20T11:41:10.614193+00:00",
+  "archive": {
+    "path": "research/reference_integrity/intl-country-intelligence-20261020/production_input_snapshot.tar.gz",
+    "bytes": 37694130,
+    "sha256": "87e2fa5bb3363234efcbc7676bd6f014ca8016c4e2b47e027576316502081e43"
+  },
+  "immutable_build_source": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7"
+}

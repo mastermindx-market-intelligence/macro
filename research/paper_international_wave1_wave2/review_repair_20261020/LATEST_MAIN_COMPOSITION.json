@@ -1,0 +1,19 @@
+{
+  "schema": "mastermind.intl_latest_main_composition.v1",
+  "recorded_at": "2026-10-20T10:51:09.697471+00:00",
+  "repaired_parent": "c4e0403c333245ef1065db6969da0f42c36d5d99",
+  "main_parent": "902c107227006802bde8312ffd78b4685d0f7949",
+  "prior_main": "422e121246f956834085853a49dfc6c2250d3dab",
+  "merge_conflicts": [],
+  "source_paths_changed_since_validated_repair": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "changed_ci_job": "fif-kernel-guards",
+  "ci_delta": "Preserve main's single fundamental-forensics mapping-pack test enrollment; all other job objects are exactly unchanged.",
+  "international_foundation_job_exactly_unchanged": true,
+  "all_other_candidate_product_source_and_site_hashes_unchanged": true,
+  "old_ci_sha256": "2688244bbe02b2160ef9a6ea8943361d18002ba5e3588fc6a2877c97e195c10d",
+  "new_ci_sha256": "39edad13f6e76c1473ed8513e2be83605dc0169ebe8e72b0ff749ba3201d224b",
+  "retained_validation": "VALIDATION_BINDING.json",
+  "hosted_current_candidate_checks_required": true
+}

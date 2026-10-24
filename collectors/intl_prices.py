@@ -14,6 +14,7 @@ Unofficial API, replaceable by design.
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 import time
 
 import pandas as pd
@@ -21,6 +22,7 @@ import yfinance as yf
 
 from collectors.base import Adapter
 from lib import config, store
+from lib.intl_currency_observation import FX_CAPTURE_COLUMN, adapter_capture_receipt
 
 log = logging.getLogger(__name__)
 
@@ -115,6 +117,9 @@ class IntlPriceAdapter(Adapter):
         bs = self.ycfg["batch_size"]
         for i in range(0, len(tickers), bs):
             batch = tickers[i:i + bs]
+            # Clear before every call: a failure/override cannot inherit another
+            # invocation's acquisition clock.
+            self._last_download_capture = None
             df = self._download(batch, period)
             if df is None:
                 continue
@@ -128,6 +133,17 @@ class IntlPriceAdapter(Adapter):
                     if rebase is not None and store.basis_shifted(self.group, t, sub, tol=tol):
                         rebase.append(t)  # discard the window; the caller re-pulls period='max'
                         continue
+                    if t in {c["fx"] for c in self.countries.values()}:
+                        # Daily labels are provider calendar dates, never UTC-
+                        # converted local midnights. The ordinary daily download
+                        # already uses this normalization explicitly.
+                        sub.index = pd.to_datetime(sub.index).tz_localize(None).normalize()
+                        capture = self._last_download_capture
+                        if capture:
+                            sub[FX_CAPTURE_COLUMN] = [
+                                adapter_capture_receipt(t, stamp.date(), value,
+                                    started_at=capture[0], returned_at=capture[1])
+                                for stamp, value in sub["close"].items()]
                     frames[t] = sub
                 except KeyError:
                     log.warning("intl_prices: no data for %s", t)
@@ -135,10 +151,13 @@ class IntlPriceAdapter(Adapter):
     def _download(self, batch: list[str], period: str) -> pd.DataFrame | None:
         for attempt in range(self.ycfg["retries"]):
             try:
-                df = yf.download(batch, period=period, auto_adjust=True,
-                                 progress=False, group_by="ticker", threads=True)
+                started = datetime.now(timezone.utc).isoformat()
+                df = yf.download(batch, period=period, interval="1d", ignore_tz=True,
+                                 auto_adjust=True, progress=False, group_by="ticker", threads=True)
+                returned = datetime.now(timezone.utc).isoformat()
                 if df is None or df.empty:
                     raise RuntimeError("empty yfinance response")
+                self._last_download_capture = (started, returned)
                 return df
             except Exception as e:  # noqa: BLE001 — degrade; gate enforces core coverage
                 wait = self.ycfg["backoff_base_s"] * (2 ** attempt)

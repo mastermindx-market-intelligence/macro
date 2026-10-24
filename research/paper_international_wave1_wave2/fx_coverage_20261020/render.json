@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-10-20T04:50:29.655738+00:00",
+  "finished_at": "2026-10-20T04:50:31.602418+00:00",
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/preview_country_cockpit.py",
+    "--source-dir",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fx_coverage_20261020",
+    "--output-dir",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fx_coverage_20261020/preview",
+    "--reuse-inputs"
+  ],
+  "returncode": 0,
+  "log": "render.log",
+  "reason": "Final direct-label caption rules at both desktop and mobile breakpoints."
+}

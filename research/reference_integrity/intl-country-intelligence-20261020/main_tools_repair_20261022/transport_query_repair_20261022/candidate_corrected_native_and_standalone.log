@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: query source: real native history reads the current projected query before INIT
+ok 1 - query source: real native history reads the current projected query before INIT
+  ---
+  duration_ms: 3478.539042
+  type: 'test'
+  ...
+# Subtest: query source: standalone search getter failure stays inside the live refusal boundary
+ok 2 - query source: standalone search getter failure stays inside the live refusal boundary
+  ---
+  duration_ms: 3010.996959
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6737.114625

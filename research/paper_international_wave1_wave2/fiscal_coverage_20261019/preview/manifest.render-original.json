@@ -1,0 +1,271 @@
+{
+  "base": "1ed4b870a426ff3cafb439152072c5bf47858551",
+  "kind": "SOURCE_BACKED_LOCAL_RENDER_NOT_PUBLISHED",
+  "paper_design": {
+    "receipt": "../../paper_r12_receipt.json",
+    "applied": true,
+    "scope": "Only effects bound by the named Paper receipt are asserted; later rendered content is not compared.",
+    "boards": {
+      "DMX-0": {
+        "name": "R12 \u00b7 Country Intelligence \u00b7 Desktop Dark",
+        "width": 1440
+      },
+      "DW7-0": {
+        "name": "R12 \u00b7 Country Intelligence \u00b7 Desktop Light",
+        "width": 1440
+      },
+      "E4D-0": {
+        "name": "R12 \u00b7 Country Intelligence \u00b7 Mobile Dark",
+        "width": 390
+      },
+      "EC2-0": {
+        "name": "R12 \u00b7 Country Intelligence \u00b7 Mobile Light",
+        "width": 390
+      },
+      "ER4-0": {
+        "name": "R12 \u00b7 UK \u00b7 Policy and fiscal detail",
+        "width": 768
+      },
+      "ER5-0": {
+        "name": "R12 \u00b7 Taiwan \u00b7 Policy and forecast detail",
+        "width": 768
+      }
+    }
+  },
+  "html_sha256": {
+    "intl_country_preview.html": "3e62af20ca56918a3c18366da1218effe5a85f919e128288306ea0c06a6f5f9a",
+    "intl_integrated_preview.html": "d0ff3bd36a67377213d353e4d6399a53ae4ab6a27086ce1a31e8e5ac0b11ef32",
+    "intl_stocks_integrated_preview.html": "3230ccec0584627c8d58afff0a175d178c47b582cce4066d95a9f8d7c6381287"
+  },
+  "rendered_at": "2026-10-20T01:50:18.278522+00:00",
+  "countries": 7,
+  "forecasts": 7,
+  "forecast_archive_count": 73,
+  "outlook_coverage": {
+    "JP": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "KR": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "TW": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "IN": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "AU": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "GB": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ],
+    "EZ": [
+      "real_gdp_growth",
+      "inflation_average",
+      "current_account",
+      "fiscal_balance",
+      "government_debt"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+      "sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+      "status": "read"
+    },
+    {
+      "url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
+      "sha256": "f677bf6e4c9e74d0b68b7777342a1461f97ff36266e5acc30cf2e6c1a1d0e0a7",
+      "status": "read"
+    },
+    {
+      "provider": "Bank of England",
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "published": "2026-09-17",
+      "sha256": "c083950372d3fddc124d4089753e4178d32bcfb1f755260e2a1a37ef520ec2c1",
+      "status": "verified",
+      "retrieved_at": "2026-10-18T23:56:41.276358+00:00"
+    },
+    {
+      "provider": "Bank of Japan",
+      "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+      "published": "2026-09-18",
+      "sha256": "36d7aa63ff283e25dcc07bc1f6e0caaad8e6764d30cf22433b5c2dd0b6bda391",
+      "status": "verified",
+      "retrieved_at": "2026-10-19T09:33:51.638773+00:00"
+    },
+    {
+      "provider": "Bank of Japan",
+      "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf",
+      "sha256": "9b2bf863babccf5d17b890274aa207d16ddc5467b5846e9ca85f8ce098c6c313",
+      "status": "verified_support",
+      "roles": [
+        "previous_value"
+      ],
+      "retrieved_at": "2026-10-19T09:33:51.655327+00:00"
+    },
+    {
+      "provider": "Bank of Korea",
+      "url": "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+      "published": "2026-08-27",
+      "sha256": "98e743616f899cda2ffa400d6ec36da21eb5d4d9660cceb3d680894143277e18",
+      "status": "verified",
+      "retrieved_at": "2026-10-19T09:33:52.455787+00:00"
+    },
+    {
+      "provider": "Bank of Korea",
+      "url": "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761",
+      "sha256": "7c696b47e5c765fa747fd89a487f5db42a6bbabd002ddb4470d95068064db9cd",
+      "status": "verified_support",
+      "roles": [
+        "effective_date",
+        "previous_value"
+      ],
+      "retrieved_at": "2026-10-19T09:33:52.472225+00:00"
+    },
+    {
+      "provider": "European Central Bank",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+      "published": "2026-09-10",
+      "sha256": "53e2efdaf0f62afff2fcc552cf60145cbcaac19759240d94efaa433cde6f0000",
+      "status": "verified",
+      "retrieved_at": "2026-10-19T09:33:53.126871+00:00"
+    },
+    {
+      "provider": "European Central Bank",
+      "url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+      "sha256": "2892fdf6903a1685c3f79346d81788b34ee7ff521388cee7724f0935de49aeb5",
+      "status": "verified_support",
+      "roles": [
+        "votes"
+      ],
+      "retrieved_at": "2026-10-19T09:33:57.200400+00:00"
+    },
+    {
+      "provider": "European Central Bank",
+      "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html",
+      "sha256": "93a15f5f35a9e45262c0b203e3ac4e2308047d04b91d13f1588cb6598e609a64",
+      "status": "verified_support",
+      "roles": [
+        "previous_value"
+      ],
+      "retrieved_at": "2026-10-19T09:33:53.146816+00:00"
+    },
+    {
+      "provider": "IMF",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "information_cutoff": "2026-10-01",
+      "url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
+      "status": "verified",
+      "country_series": 27,
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "records": 28,
+      "retrieved_at": "2026-10-18T23:56:41.276358+00:00"
+    },
+    {
+      "provider": "Reserve Bank of Australia",
+      "url": "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+      "published": "2026-09-29",
+      "sha256": "963658a27a9babdf5f8480005902f9a35aa26a6eac3784af2f65390bb7e2a4b3",
+      "status": "verified",
+      "retrieved_at": "2026-10-19T09:33:52.236387+00:00"
+    },
+    {
+      "provider": "Reserve Bank of Australia",
+      "url": "https://www.rba.gov.au/statistics/cash-rate/",
+      "sha256": "88c7e1cef9814b8849af7ab8b25a41e8b99d688e0024884a8761ca4368dc791d",
+      "status": "verified_support",
+      "roles": [
+        "effective_date",
+        "previous_value"
+      ],
+      "retrieved_at": "2026-10-19T09:33:52.259532+00:00"
+    },
+    {
+      "provider": "Reserve Bank of India",
+      "url": "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727",
+      "sha256": "9c7c1500b770c758a885670390f0b84287594485c4665d809c9efb700d325929",
+      "status": "verified_support",
+      "roles": [
+        "effective_date",
+        "previous_value"
+      ],
+      "retrieved_at": "2026-10-19T09:33:55.723781+00:00"
+    },
+    {
+      "provider": "Reserve Bank of India",
+      "url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "published": "2026-10-07",
+      "sha256": "b069fad58ba02ef813a54412b63be509e695b5dc7bc3a995ddb9b6ade289f130",
+      "status": "verified",
+      "retrieved_at": "2026-10-19T09:33:53.821517+00:00"
+    }
+  ],
+  "policy_coverage": {
+    "JP": "verified",
+    "KR": "verified",
+    "TW": "verified",
+    "IN": "verified",
+    "AU": "verified",
+    "GB": "verified",
+    "EZ": "verified"
+  },
+  "world_brief": {
+    "title_en": "Global growth is forecast to strengthen in 2027.",
+    "title_zh": "2027\u5e74\u5168\u7403\u589e\u957f\u9884\u8ba1\u52a0\u5feb\u3002",
+    "read_en": "IMF projects 3.1% growth in 2026 and 3.4% in 2027.",
+    "read_zh": "IMF\u9884\u8ba12026\u5e74\u5168\u7403\u589e\u957f3.1%\uff0c2027\u5e74\u4e3a3.4%\u3002",
+    "mechanism_en": "AI investment supports technology supply chains; expensive energy weighs on purchasing power. Countries can face both forces.",
+    "mechanism_zh": "AI\u6295\u8d44\u652f\u6301\u79d1\u6280\u4f9b\u5e94\u94fe\uff1b\u9ad8\u80fd\u6e90\u6210\u672c\u524a\u5f31\u8d2d\u4e70\u529b\u3002\u540c\u4e00\u7ecf\u6d4e\u4f53\u53ef\u80fd\u540c\u65f6\u53d7\u5230\u4e24\u80a1\u529b\u91cf\u5f71\u54cd\u3002",
+    "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+    "source": "IMF",
+    "published": "2026-10-13",
+    "information_cutoff": "2026-09-30",
+    "record_id": "71d3f4c854d8671a3f19:5cb54ee7064816010341:1",
+    "cc": "WORLD",
+    "year": 2026,
+    "next_year": 2027,
+    "current": 3.1,
+    "next": 3.4
+  },
+  "errors": [
+    {
+      "source": "imf",
+      "error": "HTTPError"
+    },
+    {
+      "source": "taiwan",
+      "error": "URLError"
+    }
+  ],
+  "errors_observed_at": "2026-10-19T09:46:23.031307+00:00",
+  "sha256": "3e62af20ca56918a3c18366da1218effe5a85f919e128288306ea0c06a6f5f9a"
+}

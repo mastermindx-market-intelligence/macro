@@ -1,0 +1,40 @@
+{
+  "source_head": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+  "worktree_overlay": {
+    "templates/intl_country_cockpit.css": "8609d1f0588f6cba3bcaca0589f8fbf7d1d69b92c66d75f8ef57fffa041b9b87"
+  },
+  "checks": [
+    {
+      "name": "radius_design_repair",
+      "command": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-country-cockpit-afternoon-repair.diff"
+      ],
+      "started_at": "2026-10-20T20:47:20.901216+00:00",
+      "finished_at": "2026-10-20T20:47:25.395395+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_radius_design_repair.log",
+      "log_sha256": "089251320e94202a57a7e5a132f52c67957bb844055ede75a39551f1596dd2e4"
+    },
+    {
+      "name": "p0b_receipt_contracts",
+      "command": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_stock_dashboard_first_frame.py",
+        "tests/test_check_p0b_receipt_closure.py",
+        "-q"
+      ],
+      "started_at": "2026-10-20T20:47:25.395904+00:00",
+      "finished_at": "2026-10-20T20:48:40.404490+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/afternoon_p0b_receipt_contracts.log",
+      "log_sha256": "81ba47059ff7ca806022e6e8769a184048e596d5763175137b86bd20f4784a4c"
+    }
+  ]
+}

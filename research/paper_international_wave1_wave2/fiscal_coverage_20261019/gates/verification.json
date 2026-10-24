@@ -1,0 +1,103 @@
+{
+  "schema": "mastermind.intl_fiscal_local_gates.v1",
+  "recorded_at": "2026-10-20T02:50:26.391964+00:00",
+  "head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "scope": "Working-tree UI delta relative to frozen local HEAD; hosted and formal release gates remain outstanding.",
+  "runs": [
+    {
+      "name": "design",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/final_ui_delta.diff"
+      ],
+      "started_at": "2026-10-20T02:50:20.777192+00:00",
+      "finished_at": "2026-10-20T02:50:24.430409+00:00",
+      "exit_code": 0,
+      "log": {
+        "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/design.log",
+        "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5",
+        "bytes": 279
+      }
+    },
+    {
+      "name": "visual",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/final_ui_delta.diff"
+      ],
+      "started_at": "2026-10-20T02:50:24.430638+00:00",
+      "finished_at": "2026-10-20T02:50:25.380823+00:00",
+      "exit_code": 0,
+      "log": {
+        "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/visual.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "tracked_whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at": "2026-10-20T02:50:25.381040+00:00",
+      "finished_at": "2026-10-20T02:50:26.391347+00:00",
+      "exit_code": 0,
+      "log": {
+        "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/tracked_whitespace.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "diff": {
+    "base": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+    "raw_sha256": "5dae1a21a14c4a4059c9cc3e26aa9f23d66c14d9669a642e3405477426196b39",
+    "raw_bytes": 12649,
+    "archive": {
+      "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/gates/final_ui_delta.diff.gz",
+      "sha256": "4ceb4492e7e6e4a11dcdb96cc845efe5953f0864112d2de36e07cd492c60bbec",
+      "bytes": 3997
+    }
+  },
+  "inherited_asset_repair": [
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190",
+      "bytes": 74539,
+      "expected_sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190",
+      "match": true
+    },
+    {
+      "path": "config/site_access.yml",
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9",
+      "bytes": 44189,
+      "expected_sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9",
+      "match": true
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf",
+      "bytes": 41599,
+      "expected_sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf",
+      "match": true
+    }
+  ],
+  "paper_receipt": {
+    "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json",
+    "sha256": "d2ddabaad3798809af2daccf0fc3beffa92422060d3741024dd9e6aa5a496231",
+    "bytes": 7864
+  },
+  "preview_manifest": {
+    "path": "research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview/manifest.json",
+    "sha256": "ea5c63751db5c2170b95a9dc184a02af894661542018ec526faa020409be9c0b",
+    "bytes": 10767
+  }
+}

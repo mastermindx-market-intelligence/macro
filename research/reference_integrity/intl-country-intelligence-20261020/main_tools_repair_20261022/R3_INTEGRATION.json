@@ -1,0 +1,18 @@
+{
+  "schema": "intl.r3_candidate_integration.v1",
+  "integrated_at": "2026-10-22T04:44:36.349077+00:00",
+  "base": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "patch_sha256": "c836819a48b4c6057ce0e2bbeae27686dfe713e4a25db8dc798e25cdf50f8636",
+  "files": {
+    "templates/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "site/shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+    "templates/intl_country_cockpit.js": "0369cf148ef3a3994967945ca1893563d1975a1c8d3a24a08ded3ecd830c0838",
+    "tests/js/shared_shell_bridge.test.cjs": "c6641ae09c5fdf4e131be0c4b2104410d916c70ccc6c75618d53b287c8de7aa3",
+    "tests/intl_country_cockpit_navigation.test.cjs": "0e05b12898c46178daf03375183d112d6d0dd3976a0467b84c6b2fb27a826161"
+  },
+  "paired_bridge_equal": true,
+  "diff_check_exit": 0,
+  "diff_check_output": "",
+  "acceptance": "UNACCEPTED CANDIDATE: independent review and root verification pending",
+  "commit_or_push": false
+}

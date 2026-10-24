@@ -1,0 +1,79 @@
+{
+  "schema": "mastermind.intl_policy_evidence_whitespace.v1",
+  "checked_at": "2026-10-19T11:41:00.636523+00:00",
+  "scope": "New text evidence; tracked source checked separately.",
+  "command_note": "git diff --no-index implies difference exit status 1 for an added file; status 0/1 with no diagnostics is successful. Whitespace failures reported status 3 with diagnostics in the initial check.",
+  "files_checked": 39,
+  "findings": [],
+  "paths": [
+    "mockups/evidence/intl-policy-coverage-20261019/EVIDENCE.yml",
+    "mockups/evidence/intl-policy-coverage-20261019/manifest.json",
+    "mockups/evidence/intl-policy-coverage-20261019/smells.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/POLICY_COVERAGE_20261019.md",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/browser_verification.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/canonical_capture.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/design.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/tracked_whitespace.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/verification.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/visual.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/DRZ-0.jsx",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E0M-0.jsx",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E9F-0.jsx",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/EGH-0.jsx",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/country_copy_readback.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/effects.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/paper_policy_coverage_receipt.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/assessment.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/country_inputs.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_country_preview.html",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/manifest.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/market_replay.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/release_observation.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/render.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/render_v3.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/acquisition.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/admission_attempt.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/baseline_before.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/body_contracts.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/qualified_policy.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/log_custody.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v2.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.json",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/review_regressions_before_fix.log",
+    "research/paper_international_wave1_wave2/policy_coverage_20261019/verify_policy_coverage_browser.py"
+  ],
+  "initial_raw_receipt": {
+    "archive": "gates/new_evidence_whitespace_initial.json.gz",
+    "uncompressed_sha256": "ae97d9c978fa8c26b03a85c76f5d2c861d8b06972b7b528eb9c6f114f9ceb418",
+    "note": "Preserved initial results include the original runner's overly broad exit-status classification; actual diagnostics were confined to two generated HTML snapshots and the old render-log EOF."
+  },
+  "html_archives": {
+    "intl_integrated_preview.html": {
+      "archive": "intl_integrated_preview.html.gz",
+      "archive_sha256": "21546c0e8f5235bbc2a3ff1325901db040606fd50d4afef362c5ec5815b9a154",
+      "uncompressed_sha256": "3c72e6b3f8e01095e5eecafad4ce2ee91fec89d011aca7a3dda21b5256820d74",
+      "uncompressed_bytes": 1653216,
+      "encoding": "gzip",
+      "reason": "Preserve the exact browser-tested generated HTML, including pre-existing legacy whitespace, in a lossless evidence artifact."
+    },
+    "intl_stocks_integrated_preview.html": {
+      "archive": "intl_stocks_integrated_preview.html.gz",
+      "archive_sha256": "d242b5697c120d8fc2aa4769a15d801e06afc3ea46972dc17807b0dbaedaa409",
+      "uncompressed_sha256": "f811c34d59e599ac29919fcba6c88cd6527f479c8c6b1b9f15903eb7f309a3a1",
+      "uncompressed_bytes": 97987,
+      "encoding": "gzip",
+      "reason": "Preserve the exact browser-tested generated HTML, including pre-existing legacy whitespace, in a lossless evidence artifact."
+    }
+  },
+  "render_log_custody": {
+    "original_archive": "render.log.raw.gz",
+    "original_sha256": "7b8343e296344e4f7d975358fb031402a30f6a64d8f58a48b92c7dfcc2f456d5",
+    "normalized_log": "render.log",
+    "normalized_sha256": "26ba05e891673e84845fb2ff95a36fb6ae935d7ee8b6c561bcbeef8a347fff6c",
+    "normalization": "Remove final blank lines only; full original bytes retained losslessly."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "intl.original_integrator_query_negative_controls.v1",
+  "source_files": {
+    "templates/shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+    "site/shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+    "templates/intl_workspace.js": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd",
+    "site/intl_workspace.js": "2a087839c3fbb93d02de2e3c9c2798ffa5727dd1c0d3aff38717aa62b247a8dd",
+    "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+    "tests/js/shared_shell_bridge.test.cjs": "b8a2c6ca0931aa314684ebf3e104b5cc098b4d9e7dad093eb65d08493402186a",
+    "tests/intl_workspace_controller.test.cjs": "f41291389c4d9d0441502ca4fe31bcbf1432071fcc01c964a19bb0876b421a39",
+    "tests/intl_workspace_state.test.cjs": "d87966bde8189161c2d9cdfc79c605bfbd11524f54e7a48fec397906c58293d8",
+    "tests/intl_country_cockpit_navigation.test.cjs": "c78620ad415d2265ac7f6c0faf2d6e247c9b233f0fe6974003194217d17add72"
+  },
+  "controls": [
+    {
+      "name": "candidate_corrected_native_and_standalone",
+      "source_variant": "corrected candidate",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^query source: (real native history|standalone search)",
+        "tests/intl_workspace_controller.test.cjs"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_behavior_observed": true,
+      "counts": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "seconds": 6.8,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/candidate_corrected_native_and_standalone.log",
+      "log_sha256": "237a04257c76de4bc2f584f99360c9c3bed5b4c430227756e842137e9e1deadf"
+    },
+    {
+      "name": "base_semantic_negative",
+      "source_variant": "base",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--require",
+        "/tmp/intl-resume-main-20261022T1252/query_base_preload.cjs",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^query source: (real bridge and entry|real native history)",
+        "tests/intl_workspace_controller.test.cjs"
+      ],
+      "exit_code": 1,
+      "expected_exit": 1,
+      "expected_behavior_observed": true,
+      "counts": {
+        "tests": 2,
+        "pass": 0,
+        "fail": 2,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "seconds": 6.86,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/base_semantic_negative.log",
+      "log_sha256": "b0703225b2a97f995281e4212078d5f79feed7363a8515662c3be5b08d941724",
+      "source_sha256": {
+        "shared_shell_bridge.js": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+        "intl_workspace.js": "d910e296a5d6ea9b58f79ec59ab112b79a58cad21dff96f0a4831204ab06b296"
+      }
+    },
+    {
+      "name": "r1_consumer_negative",
+      "source_variant": "r1",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "--require",
+        "/tmp/intl-resume-main-20261022T1252/query_r1_preload.cjs",
+        "--test",
+        "--test-reporter=tap",
+        "--test-name-pattern=^query source: (unavailable mount rolls back (installed-deleted|installed-null|installed-foreign|occupied-undefined|occupied-null|foreign)$|actual bridge cleanup|native popstate refusal.*(provider-getter|reader-getter)$|refused native popstate|standalone search)",
+        "tests/intl_workspace_controller.test.cjs"
+      ],
+      "exit_code": 1,
+      "expected_exit": 1,
+      "expected_behavior_observed": true,
+      "counts": {
+        "tests": 11,
+        "pass": 0,
+        "fail": 11,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "seconds": 27.36,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/r1_consumer_negative.log",
+      "log_sha256": "a37ae9b55bbd50a84dfb4a21056c7f141430dd4d0802b84a5a2fd2a0451942d5",
+      "source_sha256": {
+        "shared_shell_bridge.js": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+        "intl_workspace.js": "f09421d4dad8dcdb86e5591d63e53836347e54afdcc2a330defa79eb672f96c5"
+      }
+    }
+  ],
+  "source_unchanged_during_verification": true,
+  "all_expected_results": true
+}

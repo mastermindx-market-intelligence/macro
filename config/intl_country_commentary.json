@@ -1,0 +1,244 @@
+{
+  "schema": "intl_country_commentary.v1",
+  "reviewed_at": "2026-10-19",
+  "countries": {
+    "JP": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-18",
+      "provider": "Bank of Japan",
+      "source_url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+      "title": [
+        "Wage inflation keeps normalization in play",
+        "工资通胀推动政策正常化"
+      ],
+      "read": [
+        "Wage and input costs are spreading into prices. AI demand and household income support activity; dearer energy limits the recovery.",
+        "工资与投入成本正向价格传导。AI需求和家庭收入支撑经济活动，能源涨价则制约复苏。"
+      ],
+      "theme": [
+        "Wages, prices and policy",
+        "工资、价格与政策"
+      ],
+      "driver": [
+        "Wage gains support spending and price pass-through.",
+        "工资增长支撑消费，也推动成本向售价传导。"
+      ],
+      "upside": [
+        "Energy relief supports real incomes and margins.",
+        "能源压力缓解将支撑实际收入与利润率。"
+      ],
+      "downside": [
+        "Persistent import costs could require more tightening.",
+        "进口成本持续偏高可能要求进一步收紧政策。"
+      ],
+      "watch": [
+        "Wages, services prices and the yen.",
+        "工资、服务价格与日元汇率。"
+      ]
+    },
+    "KR": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-10",
+      "provider": "Bank of Korea",
+      "source_url": "https://www.bok.or.kr/eng/bbs/E0000628/view.do?depth=400215&menuNo=400215&nttId=11064614&programType=newsDataEng&relate=Y",
+      "title": [
+        "Export strength meets higher rates",
+        "出口强劲，政策利率上升"
+      ],
+      "read": [
+        "The Bank of Korea describes support from exports, investment and recovering consumption. Inflation and housing-related credit pressures keep further rate increases in view.",
+        "韩国央行指出出口、投资与消费复苏支持经济。通胀与住房相关信贷压力，使进一步加息仍在考虑范围内。"
+      ],
+      "theme": [
+        "Export demand and domestic financing",
+        "出口需求与国内融资"
+      ],
+      "driver": [
+        "Exports and investment support activity in the central bank’s assessment. Higher rates can act on housing and financing-sensitive spending through a different channel.",
+        "央行研判认为出口与投资支撑经济。较高利率则可能通过另一渠道影响住房及对融资敏感的支出。"
+      ],
+      "upside": [
+        "If export strength continues and consumption broadens without renewed inflation, growth could spread beyond the external sector.",
+        "若出口保持强势，消费扩张且未重新推高通胀，增长有望扩散至对外部门之外。"
+      ],
+      "downside": [
+        "If inflation persists and further rate increases pass through to borrowing costs, households and financing-sensitive firms could face greater pressure.",
+        "若通胀持续，进一步加息传导至借贷成本，家庭与对融资敏感的企业可能面临更大压力。"
+      ],
+      "watch": [
+        "Exports, consumption, housing and household credit, and subsequent Bank of Korea decisions.",
+        "出口、消费、住房与家庭信贷，以及韩国央行后续决策。"
+      ]
+    },
+    "AU": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-29",
+      "provider": "Reserve Bank of Australia",
+      "source_url": "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+      "title": [
+        "Inflation persists as demand cools",
+        "需求降温，通胀仍在持续"
+      ],
+      "read": [
+        "Energy and capacity pressures keep inflation elevated. Spending and housing are cooling, leaving the RBA balancing price stability against weaker activity.",
+        "能源与产能压力使通胀持续偏高；消费与住房降温，澳储行需在物价稳定和经济走弱之间权衡。"
+      ],
+      "theme": [
+        "Inflation versus domestic demand",
+        "通胀与国内需求"
+      ],
+      "driver": [
+        "Higher input costs spread beyond fuel.",
+        "投入成本上涨正从燃料向其他领域传导。"
+      ],
+      "upside": [
+        "Easing costs allow inflation to fall.",
+        "成本压力缓解将有助通胀回落。"
+      ],
+      "downside": [
+        "A deeper housing downturn weakens consumption.",
+        "房市进一步下行可能削弱消费。"
+      ],
+      "watch": [
+        "Core inflation, household spending and housing.",
+        "核心通胀、家庭消费与住房。"
+      ]
+    },
+    "EZ": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-10",
+      "provider": "European Central Bank",
+      "source_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+      "title": [
+        "Resilient growth faces an energy constraint",
+        "增长有韧性，能源成约束"
+      ],
+      "read": [
+        "Activity proved stronger than expected, but the energy shock prolonged inflation. Policy stays dependent on each meeting’s evidence.",
+        "经济活动强于预期，能源冲击却延长了通胀压力。政策仍取决于每次会议获得的新证据。"
+      ],
+      "theme": [
+        "Energy costs and policy",
+        "能源成本与政策"
+      ],
+      "driver": [
+        "Resilient demand cushions the energy shock.",
+        "需求韧性缓冲能源冲击。"
+      ],
+      "upside": [
+        "Energy relief improves growth and inflation together.",
+        "能源压力缓解有望同时改善增长与通胀。"
+      ],
+      "downside": [
+        "Persistent energy costs squeeze demand and margins.",
+        "能源成本持续偏高将挤压需求与利润率。"
+      ],
+      "watch": [
+        "Energy prices, underlying inflation and credit conditions.",
+        "能源价格、基础通胀与信贷条件。"
+      ]
+    },
+    "GB": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-17",
+      "provider": "Bank of England",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "title": [
+        "Energy-price risks complicate policy as labour softens",
+        "劳动力市场偏软，能源价格风险令政策更复杂"
+      ],
+      "read": [
+        "The MPC held Bank Rate at 3.75%; three members preferred an increase. It sees greater inflation risk from persistent energy costs, while soft labour conditions and higher borrowing costs should restrain prices.",
+        "货币政策委员会维持基准利率3.75%，三名委员倾向加息。能源成本持续偏高增大通胀风险，而劳动力市场偏软及借贷成本上升有望抑制物价。"
+      ],
+      "theme": [
+        "Energy pass-through versus labour demand",
+        "能源价格传导与劳动需求"
+      ],
+      "driver": [
+        "The key tension is whether energy costs spread into wage and service prices before softer employment weakens demand.",
+        "关键在于能源成本是否会在就业走软削弱需求之前，先传导至工资与服务价格。"
+      ],
+      "upside": [
+        "If later MPC evidence finds energy pass-through contained while labour conditions stabilise, the case for further restraint would weaken.",
+        "若后续央行证据显示能源价格传导受控且劳动市场企稳，进一步紧缩的必要性将减弱。"
+      ],
+      "downside": [
+        "If wage and service-price persistence increases while employment weakens, policy would face a more difficult growth–inflation trade-off.",
+        "若工资与服务价格的持续性增强，同时就业走弱，政策将面临更棘手的增长与通胀权衡。"
+      ],
+      "watch": [
+        "Private-sector pay, services prices, employment and the next MPC assessment of second-round effects.",
+        "私营部门工资、服务价格、就业及央行下一次对第二轮效应的评估。"
+      ]
+    },
+    "TW": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-17",
+      "provider": "Central Bank of Taiwan",
+      "source_url": "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html",
+      "title": [
+        "AI demand supports expansion beyond a strong 2026",
+        "AI需求支持强劲2026年之后的持续扩张"
+      ],
+      "read": [
+        "The CBC expects AI exports and investment to sustain growth, with a higher comparison base slowing the annual rate in 2027. It held the discount rate at 2%; market borrowing costs can still rise with funding demand.",
+        "台湾央行预计AI出口与投资持续支持增长，而较高比较基数使2027年全年增速下降。贴现率维持2%，但融资需求增加仍可能推高市场借贷成本。"
+      ],
+      "theme": [
+        "AI demand, investment and financing",
+        "AI需求、投资与融资"
+      ],
+      "driver": [
+        "Export orders and capacity investment support activity. Higher funding demand and energy costs can offset part of that support through borrowing costs and margins.",
+        "出口订单与产能投资支持经济活动；融资需求与能源成本上升可能通过借贷成本及利润率抵消部分支持。"
+      ],
+      "upside": [
+        "If orders remain strong and investment spreads beyond leading exporters, domestic activity could broaden despite slower annual GDP growth.",
+        "若订单持续强劲且投资扩散至龙头出口企业之外，即使全年GDP增速放缓，国内活动仍可能扩大。"
+      ],
+      "downside": [
+        "If a later CBC outlook cuts its own growth forecast because AI orders weaken, the export-support thesis would need revising.",
+        "若后续台湾央行因AI订单走弱而下调自身增长预测，就需修正出口支撑的判断。"
+      ],
+      "watch": [
+        "AI export orders, production, capital spending and subsequent CBC growth revisions.",
+        "AI出口订单、生产、资本支出与台湾央行后续增长预测修订。"
+      ]
+    },
+    "IN": {
+      "kind": "attributed_assessment",
+      "published": "2026-10-07",
+      "provider": "Reserve Bank of India",
+      "source_url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "title": [
+        "Strong demand meets renewed inflation pressure",
+        "需求强劲，通胀压力再起"
+      ],
+      "read": [
+        "Consumption and investment sustain expansion. Food and energy risks complicate disinflation; the RBI has shifted to calibrated tightening.",
+        "消费与投资支撑扩张。食品和能源风险令降通胀更复杂；印度央行已转向审慎收紧。"
+      ],
+      "theme": [
+        "Demand, inflation and policy",
+        "需求、通胀与政策"
+      ],
+      "driver": [
+        "Domestic demand sustains growth.",
+        "国内需求支撑增长。"
+      ],
+      "upside": [
+        "Easing supply pressure protects real purchasing power.",
+        "供给压力缓解将保护实际购买力。"
+      ],
+      "downside": [
+        "Broader price pressures could prolong tightening.",
+        "涨价进一步扩散可能延长收紧周期。"
+      ],
+      "watch": [
+        "Food prices, core inflation and credit.",
+        "食品价格、核心通胀与信贷。"
+      ]
+    }
+  }
+}

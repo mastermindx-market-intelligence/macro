@@ -1,0 +1,176 @@
+[
+  {
+    "name": "pytest",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_intl_forecast_vintages.py",
+      "tests/test_intl_policy_evidence.py",
+      "tests/test_intl_outlook_interpretation.py",
+      "tests/test_intl_country_cockpit.py",
+      "tests/test_intl_equity_risk.py",
+      "tests/test_intl_build.py",
+      "tests/test_intl_library_mount.py",
+      "tests/test_intl_workspace_integration.py",
+      "tests/test_intl_session_asof.py",
+      "-q"
+    ],
+    "started_at": "2026-10-19T01:09:11.485142+00:00",
+    "finished_at": "2026-10-19T01:09:23.277871+00:00",
+    "exit_code": 0,
+    "log": "outlook_pytest_output.txt"
+  },
+  {
+    "name": "render",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "--source-dir",
+      ".",
+      "--output-dir",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+      "--reuse-inputs"
+    ],
+    "started_at": "2026-10-19T01:09:23.278233+00:00",
+    "finished_at": "2026-10-19T01:09:24.914074+00:00",
+    "exit_code": 0,
+    "log": "outlook_render_output.txt"
+  },
+  {
+    "name": "browser",
+    "command": [
+      "node",
+      "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ],
+    "started_at": "2026-10-19T01:09:24.914560+00:00",
+    "finished_at": "2026-10-19T01:09:46.906050+00:00",
+    "exit_code": 0,
+    "log": "outlook_browser_output.txt"
+  },
+  {
+    "name": "render_final",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "--source-dir",
+      ".",
+      "--output-dir",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+      "--reuse-inputs"
+    ],
+    "started_at": "2026-10-19T01:11:23.811293+00:00",
+    "finished_at": "2026-10-19T01:11:25.593429+00:00",
+    "exit_code": 0,
+    "log": "outlook_render_final.txt"
+  },
+  {
+    "name": "browser_final",
+    "command": [
+      "node",
+      "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ],
+    "started_at": "2026-10-19T01:11:25.593742+00:00",
+    "finished_at": "2026-10-19T01:11:47.293577+00:00",
+    "exit_code": 0,
+    "log": "outlook_browser_final.txt"
+  },
+  {
+    "name": "pytest_review",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_intl_forecast_vintages.py",
+      "tests/test_intl_policy_evidence.py",
+      "tests/test_intl_outlook_interpretation.py",
+      "tests/test_intl_country_cockpit.py",
+      "tests/test_intl_equity_risk.py",
+      "tests/test_intl_build.py",
+      "tests/test_intl_library_mount.py",
+      "tests/test_intl_workspace_integration.py",
+      "tests/test_intl_session_asof.py",
+      "-q"
+    ],
+    "started_at": "2026-10-19T01:26:20.859764+00:00",
+    "finished_at": "2026-10-19T01:26:33.702323+00:00",
+    "exit_code": 1,
+    "log": "outlook_pytest_review.txt"
+  },
+  {
+    "name": "pytest_release",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_intl_forecast_vintages.py",
+      "tests/test_intl_policy_evidence.py",
+      "tests/test_intl_outlook_interpretation.py",
+      "tests/test_intl_country_cockpit.py",
+      "tests/test_intl_equity_risk.py",
+      "tests/test_intl_build.py",
+      "tests/test_intl_library_mount.py",
+      "tests/test_intl_workspace_integration.py",
+      "tests/test_intl_session_asof.py",
+      "-q"
+    ],
+    "started_at": "2026-10-19T01:28:08.601638+00:00",
+    "finished_at": "2026-10-19T01:28:19.656818+00:00",
+    "exit_code": 0,
+    "log": "outlook_pytest_release.txt"
+  },
+  {
+    "name": "render_release",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "--source-dir",
+      ".",
+      "--output-dir",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+      "--reuse-inputs"
+    ],
+    "started_at": "2026-10-19T01:28:19.657197+00:00",
+    "finished_at": "2026-10-19T01:28:21.116735+00:00",
+    "exit_code": 0,
+    "log": "outlook_render_release.txt"
+  },
+  {
+    "name": "browser_release",
+    "command": [
+      "node",
+      "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ],
+    "started_at": "2026-10-19T01:28:21.117309+00:00",
+    "finished_at": "2026-10-19T01:28:43.863552+00:00",
+    "exit_code": 0,
+    "log": "outlook_browser_release.txt"
+  },
+  {
+    "name": "render_ci",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "--source-dir",
+      ".",
+      "--output-dir",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+      "--reuse-inputs"
+    ],
+    "started_at": "2026-10-19T04:58:11.471558+00:00",
+    "finished_at": "2026-10-19T04:58:17.440112+00:00",
+    "exit_code": 0,
+    "log": "outlook_render_ci.txt"
+  },
+  {
+    "name": "browser_ci",
+    "command": [
+      "node",
+      "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ],
+    "started_at": "2026-10-19T04:58:17.443301+00:00",
+    "finished_at": "2026-10-19T04:59:02.548896+00:00",
+    "exit_code": 0,
+    "log": "outlook_browser_ci.txt"
+  }
+]

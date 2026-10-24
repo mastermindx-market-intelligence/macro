@@ -1,0 +1,1 @@
+check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] — every affirmative 'validated' claim is backed.

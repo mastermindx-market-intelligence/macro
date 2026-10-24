@@ -1,0 +1,217 @@
+{
+  "recorded_at": "2026-10-22T06:27:22.166780+00:00",
+  "subject": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "build_source": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "html_sha256": "4d72ef803ae4c8a6e729d32df2fd8599fb3d405874079df6f289e5c549bdfa62",
+  "driver_sha256": "3e44887001838518275b5da52a007b4c26a4495832d614c85db8504f3075f403",
+  "observation_sha256": "af6930e50da1f95673414f57fdfa79fcb8839c36837452db1ede68cf9c622d7e",
+  "contexts": 17,
+  "passed": 816,
+  "failed": 1,
+  "overall_status": "failed",
+  "known_baseline_failures": 1,
+  "repair_scope_failures": 0,
+  "driver_exit_code": 1,
+  "shutdown": {
+    "stopped_at": "2026-10-22T06:26:31.429969+00:00",
+    "processes": {
+      "child": {
+        "pid": 63933,
+        "exit_code": -15
+      },
+      "parent": {
+        "pid": 63935,
+        "exit_code": 0
+      }
+    },
+    "parent_tracked_source_clean": true
+  },
+  "selected_checks": [
+    {
+      "scope": "binding",
+      "id": "runtime_and_source_custody",
+      "passed": true,
+      "runtime_path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/candidate_parent_full_v9/runtime.json",
+      "runtime_sha256": "ed0c4cd0181a2eaad896f0e7a8eab2a6ec35951a9f1d6628ce95cd53d0a7e592",
+      "build_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/repair_shelltools20261022_build_receipt.json",
+      "build_receipt_sha256": "f0b987793ea3fd39b5127a359f14713c7a38bd0bfee23691bb7306e4837e47dc",
+      "built_source": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+      "subject_controller_sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "built_controller_sha256": "1ba7eb423077e23142260eb77064afb076f9d8670cdc11d1925b18ebd9323042",
+      "subject_bridge_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "built_bridge_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "paired_bridge_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "delivery": "country controller inlined in hash-bound intl.html; external bridge bytes equal the exact source and paired site asset"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_saved_view_is_discriminating",
+      "passed": true,
+      "seed": {
+        "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+        "entry": "6219ad2d-8b06-4327-bec5-443bc603880a",
+        "history": 7,
+        "generation": "c8af08bd-65d4-41b1-858d-dad0e9cd3fe8",
+        "view": {
+          "x": 0,
+          "y": 3299,
+          "focusId": "im-catalogue-library-search"
+        },
+        "heading": {
+          "y": 12436.796875,
+          "viewport": 836
+        },
+        "observed_at": 1792650270924
+      }
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_entry_and_init_match_saved_view",
+      "passed": true,
+      "seed": {
+        "parent_url": "http://127.0.0.1:3100/intl.html?view=library&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=#intl-leadership-rotation",
+        "entry": "6219ad2d-8b06-4327-bec5-443bc603880a",
+        "history": 7,
+        "generation": "c8af08bd-65d4-41b1-858d-dad0e9cd3fe8",
+        "view": {
+          "x": 0,
+          "y": 3299,
+          "focusId": "im-catalogue-library-search"
+        },
+        "heading": {
+          "y": 12436.796875,
+          "viewport": 836
+        },
+        "observed_at": 1792650270924
+      },
+      "init_restore": {
+        "x": 0,
+        "y": 3299,
+        "focusId": "im-catalogue-library-search"
+      },
+      "entry": "6219ad2d-8b06-4327-bec5-443bc603880a"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_scroll_stays_stable",
+      "passed": true,
+      "expected": {
+        "x": 0,
+        "y": 3299,
+        "focusId": "im-catalogue-library-search"
+      },
+      "samples": [
+        {
+          "x": 0,
+          "y": 3299
+        },
+        {
+          "x": 0,
+          "y": 3299
+        }
+      ]
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_focus_matches_saved_view",
+      "passed": false,
+      "expected_focus": "im-catalogue-library-search",
+      "samples": [
+        {
+          "id": "",
+          "tag": "BODY"
+        },
+        {
+          "id": "",
+          "tag": "BODY"
+        }
+      ],
+      "known_baseline_failure": true,
+      "baseline_evidence": "baseline_parent_restoration_v7/observation.json",
+      "baseline_driver_sha256": "6eb5f118cdd7a64ba00465030b2ef12e04268c01e0af71793570e6f7b320e6c6"
+    },
+    {
+      "scope": "1440-en-dark",
+      "id": "restoration_settled_focus_not_changed_by_controller",
+      "passed": true,
+      "observation_window": "two settled samples after1300ms and another200ms; transient changes are not measured",
+      "samples": [
+        {
+          "id": "",
+          "tag": "BODY"
+        },
+        {
+          "id": "",
+          "tag": "BODY"
+        }
+      ]
+    },
+    {
+      "scope": "binding",
+      "id": "actual_child_asset_hashes",
+      "passed": true,
+      "responses": 153
+    },
+    {
+      "scope": "runtime",
+      "id": "no_page_or_console_errors",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "1440-en-dark-tools.png",
+      "bytes": 223370,
+      "sha256": "637a7135f0dadc7195e950af5bf9a09be225b27a7624b01e0b1abcc38fadada4"
+    },
+    {
+      "path": "1440-en-dark-nested.png",
+      "bytes": 203316,
+      "sha256": "d0f853e89c74890ea51fd83c86a34fa10743beb2309cebe04e44590dfd91eccb"
+    },
+    {
+      "path": "1440-en-light-tools.png",
+      "bytes": 210439,
+      "sha256": "e34b368bc361450300a9f31a46e8666398ea5b99c3bf9cbb8269b7a96dde327d"
+    },
+    {
+      "path": "1440-en-light-nested.png",
+      "bytes": 213665,
+      "sha256": "4e8b5bcda03df6cbcad7c5c9e8aa304a8f10a5f500dce702fdb0e7f280151485"
+    },
+    {
+      "path": "390-zh-dark-tools.png",
+      "bytes": 102512,
+      "sha256": "1c033347e031d50968c3ec9909bcb4cebf332ade2dff2398eaf7ad6c9377a0bb"
+    },
+    {
+      "path": "390-zh-dark-nested.png",
+      "bytes": 109284,
+      "sha256": "3b0667153a6810969e01edd4d0dc5b7743ae97f55856142f8afb5d016bae2b52"
+    },
+    {
+      "path": "390-zh-light-tools.png",
+      "bytes": 100325,
+      "sha256": "5eb7eb8cb97e997b554e7572064bde0fafe99b534c6e293df51a392c63754a61"
+    },
+    {
+      "path": "390-zh-light-nested.png",
+      "bytes": 110382,
+      "sha256": "a5519f0120bf2a3e682444da206bed756104c251fe5bdbcd386efb5f50dc895a"
+    },
+    {
+      "path": "1440-en-dark-query-tools.png",
+      "bytes": 223370,
+      "sha256": "637a7135f0dadc7195e950af5bf9a09be225b27a7624b01e0b1abcc38fadada4"
+    },
+    {
+      "path": "1440-en-dark-query-nested.png",
+      "bytes": 203316,
+      "sha256": "d0f853e89c74890ea51fd83c86a34fa10743beb2309cebe04e44590dfd91eccb"
+    }
+  ],
+  "limits": [
+    "Only the bounded Tools navigation repair is eligible for scope acceptance; full parent focus restoration remains failed.",
+    "Local actual unmodified supported parent with retained production input snapshot; no source reacquisition, production mutation or served adoption."
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "intl.main6a4_final_publication_preparation.v1",
+  "recorded_at": "2026-10-22T09:16:34.583388+00:00",
+  "product_source": "b380435c7d0f6d9bfc117dc7f6424b3309478fb7",
+  "guard_head": "de5e3125484ea20f715e242d73fd53a1164c8860",
+  "guard_receipt_sha256": "bb05b1c94ab0166d45cb9b393941f040d2750e55109221deddee0c1e8126d0db",
+  "all_seven_guards_pass": true,
+  "committed_delta_since_product_source_evidence_only": true,
+  "pending_delta_verification_only": true,
+  "pending_files": [
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/CHECKPOINT.md",
+      "bytes": 9857,
+      "sha256": "4b15b7c331ccf88a1c8b31d609a5ac439edf5e9e5330481150f4cfd5af034284"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/EVIDENCE_COMMIT_RESULT.json",
+      "bytes": 550,
+      "sha256": "258b16701d1348dce805329ad0d0011d968d3cd3d14b13196d17d2f25ed0b213"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/PR_BODY_PUBLICATION_TEMPLATE.md",
+      "bytes": 16214,
+      "sha256": "34fa89dbfd94a98c6963a0b7be743dcfac4fad01f1b2c3e13bc57100864868db"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/agentos.log",
+      "bytes": 33288,
+      "sha256": "ede62d04407ca0c8adf4557ed4eac9c4bd161d3c7cdb705fd0ebab8e942241bd"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/changed_paths.txt",
+      "bytes": 314122,
+      "sha256": "6e2bfae3df845baf4791a6c7e9be57789bc831379bd163348f64b715d4766b3a"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/design_system.log",
+      "bytes": 279,
+      "sha256": "d50f8e858f0082369226b42622bbe81720e77cc2e058aed10d4d89b763a6c5b7"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/frozen_reference_evaluation.log",
+      "bytes": 233,
+      "sha256": "ed2e60d55cac054303fbdaa81f73f2ca3695c7b67c1e003b94444c901c25480f"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/receipt.json",
+      "bytes": 5990,
+      "sha256": "bb05b1c94ab0166d45cb9b393941f040d2750e55109221deddee0c1e8126d0db"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/receipt_closure.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/reference_integrity_registry.log",
+      "bytes": 248,
+      "sha256": "918a7795bf9a334a6c3a4d5bd03f753f169739d65b18ce87aefcc79ea7bd5992"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/runtime_style_injection.log",
+      "bytes": 119,
+      "sha256": "0aa92315dcaf77a019bdb22d6fdd6efccf0e0260cd411b0533d2f84f0e0aa331"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/guards_evidence/visual_evidence.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pending_count": 12,
+  "pending_bytes": 380900,
+  "next": "Typed receipt-only commit, typed expected-head push, exact GitHub readback, actual-head CI. Unknown push effect requires original publication status reconciliation, never blind replay."
+}

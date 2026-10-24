@@ -1,0 +1,19 @@
+31bb447795c28798fd3efbd35d455330e0522351
+100644 e0d3cec509ddcdaf01c3b55dde073a5d7f867003 1	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 af99802ccab8f41be10da2a4d137cce71b3f9261 2	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 c050c2aa6b4b36d009bd459320bf0164106eda69 3	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 2d7cf9172d535c70d314882271837105c7b973ab 1	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 fe43b05855a80ae976c9d3fd810aaa142683ffe6 2	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 04b02b402459d94d8c2042bd1728581c8a8b3c91 3	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 c7121f1a1bfc68cc3edcad36bdb51061edbb31df 1	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+100644 a0cd8b0d1a3f074b7444f9bd0b24783f21b55f4a 2	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+100644 e585ea0ca088bf92286d53e2c7edc7b73ec12e5d 3	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+
+Auto-merging .github/ci/legacy-jobs.yml
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+Auto-merging site/research_screener.html

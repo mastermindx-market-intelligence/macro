@@ -1,0 +1,62 @@
+{
+  "schema": "intl.scenario_local_validation.v1",
+  "recorded_at": "2026-10-22T20:09:27.924988+00:00",
+  "base_head": "9bf7161b6c856a8df5eaa18a0b9ef8fbb1e206bb",
+  "bounded_local_pass": true,
+  "original_full_run": {
+    "passed": 247,
+    "failed": 1,
+    "total": 248,
+    "receipt_sha256": "e635bce4ea08e94830268ed46902fd92b250c00bf5acf8ca1398258580be5b8e",
+    "unchanged_failure_retained": true
+  },
+  "sole_failure": "legacy test explicitly required sanitizing invalid pending Scenario URL; superseded contract oracle corrected, state/pending/cancel assertions preserved and draft equality strengthened",
+  "affected_file_rerun": {
+    "passed": 22,
+    "failed": 0,
+    "receipt_sha256": "eedeb0fb9a7a43d2fdfc0b35924f82efdaa31feb13b69e922619dbc26e4c4554",
+    "test_sha256": "ec29c9ee555f6619e24d4d824eb5f82a87fbf3e795729413adc9d0c3c491a37b"
+  },
+  "focused_cases_passed": 11,
+  "initial_red_cases": 6,
+  "counts_not_added_or_initial_failure_relabelled": true,
+  "source_bindings": [
+    {
+      "path": "tests/intl_workspace_controller.test.cjs",
+      "tested_sha256": "d74ddd7d52a947435b72ac4896bd42bbf25331cbecbdf73e709512427e750e59",
+      "current_sha256": "d74ddd7d52a947435b72ac4896bd42bbf25331cbecbdf73e709512427e750e59",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    },
+    {
+      "path": "templates/intl_workspace.js",
+      "tested_sha256": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+      "current_sha256": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    },
+    {
+      "path": "site/intl_workspace.js",
+      "tested_sha256": "92f8c469c0110afee3417bc06645dc053043a5c757f9c66fcf98641d5e37f1f6",
+      "current_sha256": "bf3b3d81c4a51d1771400d801450620e1e5b538333c5604bcac486080d5bd5ae",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    },
+    {
+      "path": "templates/intl_workspace_state.js",
+      "tested_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "current_sha256": "b02a808380c1a1d2c798f1b827707fa07d23679e15bf01753cffaada55f00fd1",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    },
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "tested_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "current_sha256": "24d7bb10d1c59a2d051b3279c436c3581ced7dfe53da3872d1452a1cde2019bf",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    },
+    {
+      "path": "templates/intl_workspace_scenario.js",
+      "tested_sha256": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "current_sha256": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "same_bytes_or_only_two_reviewed_comment_replacements": true
+    }
+  ],
+  "future_exact_head_whole_hosted_ci_required": true
+}

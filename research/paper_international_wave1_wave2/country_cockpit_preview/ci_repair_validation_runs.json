@@ -1,0 +1,91 @@
+[
+  {
+    "name": "ci_manifest_fragments",
+    "command": [
+      "/private/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/ci_pack_fragments.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "log": "ci_manifest_fragments.txt"
+  },
+  {
+    "name": "ci_design_ratchet",
+    "command": [
+      "/private/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+    ],
+    "exit_code": 0,
+    "log": "ci_design_ratchet.txt"
+  },
+  {
+    "name": "ci_visual_receipt_before",
+    "command": [
+      "/private/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+    ],
+    "exit_code": 1,
+    "log": "ci_visual_receipt_before.txt"
+  },
+  {
+    "name": "ci_visual_receipt_after",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+    ],
+    "exit_code": 0,
+    "log": "ci_visual_receipt_after.txt"
+  },
+  {
+    "name": "ci_template_site_sync",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "-m",
+      "scripts.check_template_site_sync"
+    ],
+    "exit_code": 1,
+    "log": "ci_template_site_sync.txt"
+  },
+  {
+    "name": "ci_design_final",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+    ],
+    "exit_code": 0,
+    "log": "ci_design_final.txt"
+  },
+  {
+    "name": "ci_visual_final",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+    ],
+    "exit_code": 0,
+    "log": "ci_visual_final.txt"
+  },
+  {
+    "name": "ci_template_site_sync_final",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "-m",
+      "scripts.check_template_site_sync"
+    ],
+    "exit_code": 0,
+    "log": "ci_template_site_sync_final.txt"
+  }
+]
