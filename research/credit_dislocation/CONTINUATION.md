@@ -1,10 +1,12 @@
-## Compatible mainc6f integration — 23 October 2026 (CDT)
+## Current mainf3f integration and packing repair — 24 October 2026 (UTC)
 
-The newer main c6f6484ce53b897fbaf35d9727bab0ba90b3561a merges cleanly with the main94d native-qualification commit 0ae44a8a. All 56 producer/template pins, 556 Git-bound inputs and 29 supporting assets still match the completed main94d generation. The native page remains exactly 728,415 bytes with SHA256 1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8. No material invalidator or repeated native build occurred.
+The exact main f3f622a42e002f3cb3503f8ac3fe95485e523129 caused one generated-page collision in site/bonds.html. All 56 producer/template pins, 556 Git-bound inputs and 29 supporting assets match the completed main94d native qualification. The conflict therefore retains that exact 728,415-byte page, SHA256 1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8. No new native generation was needed or claimed.
 
-The new main94d generation already passed all 14 guarded native checks. Its two committed-page contracts are qualified, including the sparse-checkout CSS materialization recorded in the prior receipt. The exact merged-head contract and normal publication are the next gates; their post-commit results belong in the canonical PR9590 checkpoint. Real visual evidence, independent review and production acceptance remain open.
+Child b312ae22e919a220fc3162187bd8a8e6e1e8f92f repairs the inherited packing budget with measured funding only: free-content 5,873 -> 5,875. PR10125 adds two planning-weight units to the existing Government Revenue job; all selected job IDs, suites, scopes and ten-pack bound are retained. The three packing/scope/census checks and 80 contract-owner cases passed. Three cleanup-fixture cases conflict with mandatory CONTRACT_DELTA_NO_REAP=1; the protection remains enabled. The official child contract passed 0 introduced / 0 inherited before this integration; the merged-head contract and publication receipts belong in the canonical PR9590 checkpoint.
 
-Evidence: evidence/main_c6f_compatibility_20261024.json and evidence/page_adoption_main94d_20261024.json.
+The retained native generation passed all 14 guarded checks and both committed-page contracts. Real duration/CDI visual evidence, broader interaction acceptance, independent review and production acceptance remain open. Draft/HOLD; no PR merge, deployment, migration or activation authority is implied.
+
+Evidence: evidence/main_f3f_compatibility_20261024.json, evidence/main_c6f_compatibility_20261024.json and evidence/page_adoption_main94d_20261024.json.
 
 ---
 
