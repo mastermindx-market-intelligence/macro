@@ -17774,6 +17774,8 @@ jobs:
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
         run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py -q
+      - name: Shared Shell exact first-party parent handshake
+        run: node --test tests/js/shared_shell_bridge.test.cjs
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -21585,7 +21587,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: account actions (app/account_actions.py)
