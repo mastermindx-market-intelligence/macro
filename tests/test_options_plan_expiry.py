@@ -193,3 +193,41 @@ def test_actual_plan_assumption_shape_joins_exact_pin_and_preserves_unknown_cloc
 def test_plan_pin_context_conflicts_cannot_rebind_or_overwrite_source(change, code):
     plan = draft(); change(plan)
     assert code in codes(prepare_plan_draft_expiry(plan, [{k: v for k, v in leg().items() if k != "assumptions"}], [100], known_by=KNOWN, payoff_basis=BASIS))
+
+
+def list_reference():
+    obs = deepcopy(leg()["reference_observation"])
+    obs["contracts"] = [obs.pop("contract"), deepcopy(leg(110)["reference_observation"]["contract"])]
+    obs["path"] = "/v3/reference/options/contracts"
+    obs["params"] = dict(underlying_ticker="SPY", expiration_date="2026-10-30", limit=100)
+    obs.pop("field_presence")
+    return obs
+
+
+def test_genuine_list_receipt_selects_exact_legs_and_preserves_endpoint_digest_clock():
+    obs = list_reference(); before = deepcopy(obs)
+    a, b = leg(100, "buy", 7), leg(110, "sell", 2)
+    a["reference_observation"] = obs; b["reference_observation"] = obs
+    out = evaluate([a, b])
+    assert out["curve"]["pnl"] == [-500, -500, 0, 500, 500]
+    assert [c["terms"]["series_id"] for c in out["contexts"]] == [row["ticker"] for row in obs["contracts"]]
+    assert all(c["terms"]["terms_ref"] == "https://api.massive.com/v3/reference/options/contracts#sha256=" + "a" * 64 for c in out["contexts"])
+    assert all(c["terms"]["available_at"] == obs["completed_at"] for c in out["contexts"])
+    assert obs == before
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda x: x["contracts"].append(deepcopy(x["contracts"][0])),
+    lambda x: x["contracts"].pop(0),
+    lambda x: x["contracts"][0].update(strike_price=101),
+    lambda x: x["contracts"][0].update(underlying_ticker="QQQ"),
+    lambda x: x["params"].update(underlying_ticker="QQQ"),
+    lambda x: x["params"].update(expiration_date="2026-11-06"),
+    lambda x: x.update(contracts=[]),
+    lambda x: x.update(contracts=[None]),
+    lambda x: x.update(contracts=x["contracts"] * 51),
+])
+def test_list_reference_absent_ambiguous_foreign_or_out_of_scope_is_unpriced(mutate):
+    source = leg(); source["reference_observation"] = list_reference()
+    mutate(source["reference_observation"])
+    assert "TERMS_UNQUALIFIED" in codes(evaluate([source]))

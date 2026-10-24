@@ -18,6 +18,12 @@ unpriced. Original nullable source clocks and stale state remain visible in
 last, IV and quote context are never an entry assumption.
 
 Each ordered context contains exactly `contract` and `reference_observation`.
+A genuine exact-single receipt or bounded same-root/expiry list receipt is supported.
+The list path selects exactly one matching ticker from at most100 rows and calls
+incumbent `massive_reference_terms(observation,root,contract=selected)`. Missing,
+duplicate, foreign or inconsistent rows stay unpriced. Original list endpoint,
+response digest, selection parameters and capture clock are never rewritten into
+fictitious single-endpoint provenance.
 The explicit top-level `payoff_basis` is exactly
 `{kind:hold_to_expiry_intrinsic, expiration:YYYY-MM-DD}`. Supplied spot values are
 hypothetical underlying prices at that contractual expiry. This is a conditional
@@ -133,3 +139,9 @@ After adding this provenance, 42 expiry tests passed in 1.63s; unchanged quote t
 retain their accepted run above. A root-provided retained reference also composed
 locally with an after-capture cutoff, while a prior historical cutoff withheld math.
 Only compact provenance/result is retained outside Git; no paid payload is committed.
+
+
+Consumer compatibility increment:52 affected expiry tests passed after adding exact
+selection from genuine list receipts, including duplicate/missing/mismatched row,
+foreign scope and oversized-list refusal. No acquisition or reader registration is
+part of the bridge. Consumer API/source-reader owner retains the actual source grant.

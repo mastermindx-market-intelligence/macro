@@ -82,6 +82,22 @@ def _number(value, maximum):
             and math.isfinite(value))
 
 
+def _reference_term(observation, contract):
+    """Select one exact row without rewriting genuine list capture provenance."""
+    root = contract["root"]
+    if isinstance(observation, dict) and observation.get("path") == "/v3/reference/options/contracts":
+        rows = observation.get("contracts")
+        if (not isinstance(rows, list) or not 1 <= len(rows) <= 100
+                or any(not isinstance(row, dict) for row in rows)):
+            raise ValueError("bounded reference rows absent or invalid")
+        ticker = "O:" + contract["occ_symbol"].replace(" ", "")
+        selected = [row for row in rows if row.get("ticker") == ticker]
+        if len(selected) != 1:
+            raise ValueError("exact reference row absent or ambiguous")
+        return massive_reference_terms(observation, root, contract=selected[0])
+    return massive_reference_terms(observation, root)
+
+
 def prepare_expiry_payoff(legs, spots, *, known_by, payoff_basis):
     """Return all-leg expiry math or a typed unpriced result, never partial math.
 
@@ -150,8 +166,8 @@ def prepare_expiry_payoff(legs, spots, *, known_by, payoff_basis):
             refuse("ENTRY_ASSUMPTION_INVALID", index)
             continue
         try:
-            term = ordinary_etf_terms(massive_reference_terms(
-                supplied.get("reference_observation"), root), root=root)
+            term = ordinary_etf_terms(_reference_term(
+                supplied.get("reference_observation"), contract), root=root)
             expected = (root, expiration, contract["strike_millis"], contract["right"])
             actual = (term["root"], term["expiration"], round(term["strike"] * 1000),
                       {"C": "call", "P": "put"}[term["right"]])
