@@ -448,9 +448,9 @@ api.patchProspectiveCopy({
 }, true);
 pair = readPair(label);
 check(pair.en,
-  "Status: GDP release publication detected — verified facts are being extracted.",
+  "Status: GDP release published — verified values are unavailable.",
   "awaiting row copy changed");
-check(pair.zh, "状态：GDP 发布官方发布已检测 — 正在提取核验信息。",
+check(pair.zh, "状态：GDP 发布官方已发布 — 核验数据暂不可用。",
   "awaiting zh row copy changed");
 
 // Verified with no extracted summary must not claim a result and deny it in the
@@ -501,7 +501,7 @@ def test_release_publication_client_patches_all_event_surfaces():
         ".mx5-events-sub",
         '.wnx-card[href="#dlg-events"]',
         "awaiting official source",
-        "Official result · live",
+        "Official result · verified",
         '.ms-sig[data-ms-dlg="dlg-events"]',
         ".mx5-action-label",
         ".aib2-watch-row",
@@ -509,7 +509,7 @@ def test_release_publication_client_patches_all_event_surfaces():
         "Update delayed",
         "published_unparsed",
         "Official publication detected — result verification underway",
-        "publication detected — verified facts are being extracted",
+        "published — verified values are unavailable",
         'data-live-event-id',
         "FOMC (?:decision|statement)",
         "data-live-action-plan",
@@ -564,9 +564,12 @@ def test_new_live_labels_have_bilingual_pairs():
 
 
 def test_release_publication_client_uses_current_immutable_asset_hash():
+    from scripts.optimize_assets import make_optimizer
+
     expected = hashlib.sha256(SITE.read_bytes()).hexdigest()[:8]
+    optimizer = make_optimizer(ROOT / "site")
     for page_name in ("macro.html", "us_stocks.html"):
-        page = (ROOT / "site" / page_name).read_text()
+        page = optimizer((ROOT / "site" / page_name).read_text(), ROOT / "site")
         match = re.search(r"release_publications_live\.js\?v=([0-9a-f]{8})", page)
         assert match, f"{page_name} does not version the live event client"
         assert match.group(1) == expected, (
