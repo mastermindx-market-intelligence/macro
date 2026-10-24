@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-15T18:08:20.162412+00:00",
+  "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+  "verdict": "clean",
+  "binding_problem_names": [],
+  "check_run_count": 26,
+  "status_count": 0,
+  "non_binding": [
+    {
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "conclusion": "failure",
+      "status": "completed"
+    }
+  ]
+}
