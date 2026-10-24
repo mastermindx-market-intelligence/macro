@@ -7282,6 +7282,9 @@ jobs:
       - "engine/options_scenario_surface.py"
       - "engine/options_scenario_admission.py"
       - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "engine/options_plan_quote_context.py"
+      - "engine/options_nbbo_cohort.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -7601,6 +7604,8 @@ jobs:
       - "tests/test_options_scenario_surface.py"
       - "tests/test_options_scenario_admission.py"
       - "tests/test_options_payoff.py"
+      - "tests/test_options_plan_expiry.py"
+      - "tests/test_options_plan_quote_context.py"
       - "tests/test_options_market_memory_local_receipts.py"
       - "tests/test_options_market_memory_local_replica.py"
       - "tests/test_options_signal_campaign.py"
@@ -7764,7 +7769,7 @@ jobs:
       - name: qualified joint exposure and legacy Hub publication compatibility
         run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
-        run: python -m pytest tests/test_options_payoff.py -q
+        run: python -m pytest tests/test_options_payoff.py tests/test_options_plan_expiry.py tests/test_options_plan_quote_context.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
       # cross-repo contracts — an unwired suite here rots silently and the consumer 404s.
       - name: Terminal EOD-context R2 mirror (key map pinned, corrupt-file guard, fail-soft)
