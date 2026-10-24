@@ -823,10 +823,7 @@ def _dossier_has_closed_refs(schema: Any) -> bool:
     return isinstance(schema, dict) and walk(schema, True)
 
 
-def _dossier_ref_memo_key(ref: Any, value: Any) -> tuple[Any, ...] | None:
-    if not isinstance(ref, str) or not ref.startswith("#/$defs/"):
-        return None
-
+def _dossier_memo_value_key(value: Any) -> tuple[Any, ...] | None:
     def atom(item):
         if item is None:
             return ("null", None)
@@ -857,9 +854,16 @@ def _dossier_ref_memo_key(ref: Any, value: Any) -> tuple[Any, ...] | None:
             if chars > 1024:
                 return None
             items.append((name, token))
-        return (ref, "object", tuple(sorted(items)))
+        return ("object", tuple(sorted(items)))
     token = atom(value)
-    return None if token is None else (ref, "atom", token)
+    return None if token is None else ("atom", token)
+
+
+def _dossier_ref_memo_key(ref: Any, value: Any) -> tuple[Any, ...] | None:
+    if not isinstance(ref, str) or not ref.startswith("#/$defs/"):
+        return None
+    token = _dossier_memo_value_key(value)
+    return None if token is None else (ref, *token)
 
 
 def _dossier_validation_validator() -> Any:
@@ -883,10 +887,22 @@ def _dossier_validation_validator() -> Any:
         return original
     memo, resolved_refs = OrderedDict(), {}
 
-    def cached(validator, ref, value, source_schema):
-        key = _dossier_ref_memo_key(ref, value)
+    def hit(key):
         if key is not None and key in memo:
             memo.move_to_end(key)
+            return True
+        return False
+
+    def remember(key):
+        if key is not None:
+            memo[key] = True
+            memo.move_to_end(key)
+            if len(memo) > 4096:
+                memo.popitem(last=False)
+
+    def cached(validator, ref, value, source_schema):
+        key = _dossier_ref_memo_key(ref, value)
+        if hit(key):
             return
         if ref not in resolved_refs:
             resolved_refs[ref] = native._resolver.lookup(ref)
@@ -895,13 +911,30 @@ def _dossier_validation_validator() -> Any:
         for error in validator.descend(value, resolved.contents, resolver=resolved.resolver):
             good = False
             yield error
-        if good and key is not None:
-            memo[key] = True
-            memo.move_to_end(key)
-            if len(memo) > 4096:
-                memo.popitem(last=False)
+        if good:
+            remember(key)
 
-    cls = validators.extend(Draft202012Validator, {"$ref": cached})
+    def properties(validator, properties, value, source_schema):
+        if not validator.is_type(value, "object"):
+            return
+        for name, subschema in properties.items():
+            if name not in value:
+                continue
+            item = value[name]
+            token = _dossier_memo_value_key(item)
+            # Every node stays alive in this call's qualified schema snapshot.
+            # A successful value under a different node proves nothing here.
+            key = None if token is None else ("property", id(subschema), *token)
+            if hit(key):
+                continue
+            good = True
+            for error in validator.descend(item, subschema, path=name, schema_path=name):
+                good = False
+                yield error
+            if good:
+                remember(key)
+
+    cls = validators.extend(Draft202012Validator, {"$ref": cached, "properties": properties})
     return cls(frozen, format_checker=original.format_checker)
 
 
