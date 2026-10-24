@@ -8615,6 +8615,8 @@ jobs:
       - "tests/test_flow_surface.py"
       - "tests/test_intraday_greeks.py"
       - "tests/test_live_flow.py"
+      - "engine/options_statistics.py"
+      - "tests/test_options_statistics.py"
       - "tests/test_mirror_terminal_context.py"
       - "tests/test_momoedge_oracle_history_replay.py"
       - "tests/test_options_catalyst_link.py"
@@ -8790,7 +8792,7 @@ jobs:
       - name: W0b focused vendor-snapshot quote completion and no-repoll proofs
         run: python -m pytest tests/test_options_focused_quote.py -q
       - name: live-flow PIT producer (RTH admission, stable source IDs, root-scoped state, cycle WAL)
-        run: python -m pytest tests/test_live_flow.py -q
+        run: python -m pytest tests/test_live_flow.py tests/test_options_statistics.py -q
       - name: F03 catalyst-linkage read-model (typed unbound/ambiguous/stale states, fail-loud contract key, zero authority)
         run: python -m pytest tests/test_options_catalyst_link.py -q
       - name: flow derivative source clocks (enrich + chain heat, fail-closed provenance)
