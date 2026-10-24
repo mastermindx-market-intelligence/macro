@@ -1,0 +1,208 @@
+{
+  "schema": "bonds.cdi_recovery_reconciliation.v1",
+  "recorded_at_utc": "2026-10-22T09:16:51Z",
+  "scope": "Recovered original effects and bounded source integration; no production/browser acceptance",
+  "source_before": "4074adb0aeb2d5029dbaacdda4de5bf4e81f19ab",
+  "maturity_source": "270380d8aeefc4e5458c6cb74bb84be4c39745aa",
+  "composed_tree_before_documentation": "12b3dad162d1423baff3264a65e58ccb16e09c00",
+  "protected_skillpack": "230e9a301ed774e79410829f1b5c049226fa59f1",
+  "recovered_hydration": {
+    "source_sha": "ddc0cc65c81af9e610d051bb08057b44f435a462",
+    "files": 22,
+    "current_hash_mismatches": 0,
+    "receipt": ".cdi-proof/native-bonds-input-hydration.json"
+  },
+  "recovered_native_build": {
+    "receipt": ".cdi-proof/oct15-native-bonds-build-v3.json",
+    "exit_code": 0,
+    "seconds": 2.96,
+    "bytes": 437877,
+    "sha256": "cbf7836fae70dbf0de0e60c8b3f7ae4e10651d0cf2e459924ae145a508339694",
+    "current_bytes_match": true,
+    "scope": "Original pre-maturity-integration local native route, not current composed source or browser/production proof"
+  },
+  "preservation": {
+    "inventory": ".cdi-proof/recovery-20261022/preserved-workspace-before-maturity-merge.json",
+    "sha256": "92cfaaa4d508438dc9d367a88b952daae7cbbeed01d89f3e8568b5dbdfff105d",
+    "paths": 775,
+    "after_merge_mismatches": 0
+  },
+  "focused_validation": {
+    "receipt": ".cdi-proof/recovery-20261022/maturity-integration-tests.json",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_bonds_corp_credit_vm.py",
+      "tests/test_credit_dislocation_view.py",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "process": 23147,
+    "exit_code": 0,
+    "pytest_result": "119 passed in 2.67s",
+    "source_unchanged_during_tests": true,
+    "log_sha256": "691e1c5db61b4b643301cca6f697d9f9970eca99e75e4b6e95654c540dc5e53e"
+  },
+  "optimization": {
+    "original_receipt": ".cdi-proof/oct15-optimized-rebuild.json",
+    "original_status": "FAILED",
+    "original_seconds": 280.95,
+    "failure": "Exact equality comparison after output generation",
+    "reconciliation": {
+      "source_engine_sha256": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651",
+      "comparisons": [
+        {
+          "table": "bond_panel_latest",
+          "shape_left": [
+            10376,
+            22
+          ],
+          "shape_right": [
+            10376,
+            22
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [],
+          "sha256_left": "d3bb41b6f17a28d55776fc93b2de6807bdecae5b9eaf8b41e34a58204526c209",
+          "sha256_right": "d3bb41b6f17a28d55776fc93b2de6807bdecae5b9eaf8b41e34a58204526c209"
+        },
+        {
+          "table": "issuer_daily",
+          "shape_left": [
+            810,
+            12
+          ],
+          "shape_right": [
+            810,
+            12
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [
+            {
+              "column": "d1_g_spread_bp_matched",
+              "dtype_left": "float64",
+              "dtype_right": "float64",
+              "null_masks_equal": true,
+              "differing_rows": 423,
+              "max_abs": 2.2737367544323206e-13,
+              "max_relative": 6.1830332701921464e-12,
+              "nonfinite_equal": true
+            }
+          ],
+          "sha256_left": "57cd5e1a0d183c91286c3b06741adef4afa60fb405973c4a24be83699b5ff6c0",
+          "sha256_right": "02ae864d62c3400498d8cdc374ce42c91894ba02bd4ed750393fad027f732204"
+        },
+        {
+          "table": "market_daily",
+          "shape_left": [
+            108,
+            11
+          ],
+          "shape_right": [
+            108,
+            11
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [
+            {
+              "column": "d1_g_spread_bp_matched",
+              "dtype_left": "float64",
+              "dtype_right": "float64",
+              "null_masks_equal": true,
+              "differing_rows": 50,
+              "max_abs": 2.2737367544323206e-13,
+              "max_relative": 1.0266715634178922e-12,
+              "nonfinite_equal": true
+            }
+          ],
+          "sha256_left": "4c114a6adb1812403ffa11a9e29556a3820fbe6f64dfdf21fbc0be0cda9d9ed2",
+          "sha256_right": "30dddb639bd8d3710de404e1ffcd39f3204720100ebcaec2b7960b66efbbd6c1"
+        },
+        {
+          "table": "sector_daily",
+          "shape_left": [
+            594,
+            9
+          ],
+          "shape_right": [
+            594,
+            9
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [
+            {
+              "column": "d1_g_spread_bp_matched",
+              "dtype_left": "float64",
+              "dtype_right": "float64",
+              "null_masks_equal": true,
+              "differing_rows": 326,
+              "max_abs": 4.263256414560601e-14,
+              "max_relative": 2.4448130895952902e-12,
+              "nonfinite_equal": true
+            }
+          ],
+          "sha256_left": "47c56ae7223656c5e1869631a057dde91ed2e11afab00257089b2852b9ab6b98",
+          "sha256_right": "2797768911be54c5ab3820719d5bc80828a321229d403c0c93105762280c8623"
+        },
+        {
+          "table": "theme_daily",
+          "shape_left": [
+            378,
+            17
+          ],
+          "shape_right": [
+            378,
+            17
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [
+            {
+              "column": "d1_g_spread_bp_matched",
+              "dtype_left": "float64",
+              "dtype_right": "float64",
+              "null_masks_equal": true,
+              "differing_rows": 180,
+              "max_abs": 2.2737367544323206e-13,
+              "max_relative": 8.334049556986591e-13,
+              "nonfinite_equal": true
+            }
+          ],
+          "sha256_left": "8edef69bb51864d51b40e11cc5e00bf1bf164eb479bb612494c822c03bfa9b7a",
+          "sha256_right": "e52d83a719ad2e743bf0d7baaabd6adce9b5cd373ba570a8a0fb10f24505baf3"
+        },
+        {
+          "table": "maturity_wall",
+          "shape_left": [
+            6750,
+            6
+          ],
+          "shape_right": [
+            6750,
+            6
+          ],
+          "columns_equal": true,
+          "index_equal": true,
+          "differences": [],
+          "sha256_left": "8641bcf50e27854d1e1c734afbba4b9a8fc5bd0692847453ee7e88e70348e2d0",
+          "sha256_right": "8641bcf50e27854d1e1c734afbba4b9a8fc5bd0692847453ee7e88e70348e2d0"
+        }
+      ]
+    },
+    "interpretation": "Only matched spread-change floating values differ; no tolerance waiver, mutation of original receipt, or replacement of hash-bound qualification. Solver/collector not rerun."
+  },
+  "licensing": {
+    "tiingo": "COMPLETE by Chairman attestation",
+    "outreach": false
+  },
+  "production": false,
+  "browser_acceptance": false,
+  "mission_complete": false
+}

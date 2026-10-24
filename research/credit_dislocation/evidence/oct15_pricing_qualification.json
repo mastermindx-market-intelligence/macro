@@ -1,0 +1,640 @@
+{
+  "created_at": "2026-10-18T10:50:57.817324+00:00",
+  "status": "QUALIFIED_DESCRIPTIVE_SOURCE",
+  "source_as_of": "2026-10-15",
+  "pricing_validation": {
+    "status": "passed",
+    "reason": null,
+    "source_binding_verified": true,
+    "observation_as_of": "2026-10-15",
+    "price_convention": "clean",
+    "validation_overall": "PASS",
+    "sample_as_of": "2026-10-15",
+    "lqd_median_error_bp": 2.4
+  },
+  "input_binding": {
+    "schema": "corp_credit.validation_binding.v1",
+    "observation_as_of": "2026-10-15",
+    "calculation_convention": "clean",
+    "convention_verified_rows": 10376,
+    "artifacts": {
+      "bond_panel_latest": "d3bb41b6f17a28d55776fc93b2de6807bdecae5b9eaf8b41e34a58204526c209",
+      "issuer_daily": "57cd5e1a0d183c91286c3b06741adef4afa60fb405973c4a24be83699b5ff6c0"
+    }
+  },
+  "coverage": {
+    "bond_rows": 10376,
+    "issuers": 18,
+    "issuers_with_5_sessions": 0,
+    "paired_comparisons": 0,
+    "identified_bond_rows": 311,
+    "invalid_identifiers": 0
+  },
+  "authority": {
+    "rank": false,
+    "size": false,
+    "gate": false,
+    "escalate": false
+  },
+  "observation_id": "cdi:72f4f12f6031a1b58b0c8621",
+  "view": {
+    "available": true,
+    "pricing_qualified": true,
+    "paired_count": 0,
+    "bond_count": 311,
+    "subtitle_en": "No eligible five-session comparisons yet. Missing observations are not evidence of low risk."
+  },
+  "artifacts": {
+    "corp_bonds/validation.json": "f7b54533e24547a9021485bd37abeb3efa73062400a268262891db56b91e847a",
+    "corp_bonds/credit_dislocation.json": "9565995905ac7d73c93088b0eb2e8f3242f6b0dce0e58cbe51506a00fb4cb264"
+  },
+  "gaps": {
+    "AMZN": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "CEG": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "CRWV": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "DELL": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "DLR": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "EQIX": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "GOOGL": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "HPE": {
+      "credit": null,
+      "equity": null
+    },
+    "META": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "MSFT": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "MU": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "NEE": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "ORCL": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "STX": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "T": {
+      "credit": null,
+      "equity": null
+    },
+    "VST": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "VZ": {
+      "credit": {
+        "value_bp": null,
+        "reason": "missing_session_or_matched_change",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14"
+        ],
+        "expected_sessions": 5
+      },
+      "equity": {
+        "value_pct": null,
+        "reason": "missing_equity_sessions",
+        "basis": "source_close_return_not_certified_total_return",
+        "start": "2026-10-08",
+        "end": "2026-10-15",
+        "missing_sessions": [
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15"
+        ],
+        "expected_sessions": 6
+      }
+    },
+    "WDC": {
+      "credit": null,
+      "equity": null
+    }
+  },
+  "parent_mission_complete": false,
+  "production_delivery": false,
+  "acquisition": {
+    "fund": "LQD",
+    "product_url": "https://www.ishares.com/us/products/239566/ishares-iboxx-investment-grade-corporate-bond-etf",
+    "raw_sha256": "6726d41e62172f7c8c283c0ac9a554eec7b0c9e2bb6c69b33ad5322076dc6e92",
+    "raw_bytes": 8880452,
+    "observation_date": "2026-10-15",
+    "rows": 3171,
+    "started_at": "2026-10-18T10:39:46.365023+00:00",
+    "finished_at": "2026-10-18T10:40:04.176902+00:00"
+  },
+  "corrected_rebuild": {
+    "status": "COMPLETED",
+    "seconds": 517.17,
+    "criteria": {
+      "a": {
+        "status": "PASS",
+        "probe1": {
+          "verdict": "clean",
+          "tiebreak_fired": false,
+          "slope": -0.0079,
+          "hc1_se": 0.0071,
+          "n_joined": 1748,
+          "median_diff": -0.025,
+          "median_accrued": 0.8647,
+          "median_resid": -0.8813,
+          "tiebreak_dirty_median_bp": null,
+          "tiebreak_clean_median_bp": null,
+          "date_gap_days": 0,
+          "note": "verdict keys on slope because level diffs (median_diff) absorb the date-gap market move; median_resid = diff - accrued"
+        },
+        "probe2": {
+          "accrued_coefficient": 0.1177,
+          "hc1_95ci": [
+            0.1008,
+            0.1346
+          ],
+          "n": 451107,
+          "detail": "cross-sectional OLS of price_dirty_raw on [1, coupon, tenor, coupon*tenor, accrued]"
+        }
+      },
+      "b": {
+        "LQD": {
+          "status": "PASS",
+          "n": 20,
+          "n_joined": 1759,
+          "median_bp": 2.4,
+          "p90_bp": 5.0,
+          "share_within_25bp": 1.0,
+          "bins_occupied": 5,
+          "date_gap_days": 0,
+          "gating": true
+        },
+        "HYG": {
+          "status": "PENDING_SAMPLE"
+        },
+        "status": "PASS"
+      },
+      "c": {
+        "status": "PASS",
+        "latest_diff_bp": 19.1,
+        "threshold_bp": 30.0
+      },
+      "d": {
+        "status": "PASS",
+        "naive_delta_bp": 43.0167,
+        "matched_delta_bp": 0.1621,
+        "composition_change_on_injection": true,
+        "injection_date_idx": 8,
+        "boundary_date_idx": 13,
+        "matched_n_pre_boundary": 30,
+        "matched_n_at_boundary": 31,
+        "checks": {
+          "naive_delta_gt_20bp": true,
+          "matched_delta_within_2bp": true,
+          "comp_change_flag_true": true,
+          "tranche_excluded_5bars": true,
+          "tranche_included_at_boundary": true
+        },
+        "seasoning_exclusion_detail": {
+          "k0_matched_delta_within_2bp": true,
+          "k0_matched_n": 30,
+          "k1_matched_delta_within_2bp": true,
+          "k1_matched_n": 30,
+          "k2_matched_delta_within_2bp": true,
+          "k2_matched_n": 30,
+          "k3_matched_delta_within_2bp": true,
+          "k3_matched_n": 30,
+          "k4_matched_delta_within_2bp": true,
+          "k4_matched_n": 30
+        }
+      }
+    }
+  },
+  "local_tests": {
+    "suite": "CDI compiler/view/wiring plus corp_credit",
+    "passed": 148,
+    "seconds": 20.85,
+    "hosted_ci": false,
+    "log_sha256": "19c659c8df49c571d87bf167c5177497702651bbd0ea2cbb587b3e351108296d"
+  },
+  "browser": {
+    "synthetic_state_cases": 32,
+    "matrix": "desktop/mobile x EN/ZH x light/dark",
+    "states": [
+      "qualified_synthetic",
+      "pricing_unqualified",
+      "stale",
+      "missing_source"
+    ],
+    "passed": true,
+    "full_route": false,
+    "native_oct15": false,
+    "receipt_sha256": "dcce2019f589e9ac793f57636edc6d3f860812201ff87fec559938f293f7efb7"
+  },
+  "source_files": {
+    "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651",
+    "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+    "engine/credit_dislocation_view.py": "8577b7cb2445ad4b761f9c072d3f0b049bd5d095876677688921736a1f13915b",
+    "templates/_credit_dislocation.html.j2": "949f59a3279d02519e95ca0c0995b29307b5d1040dbb61f95bae4fcf67510efe",
+    "scripts/verify_credit_dislocation_browser.py": "b71ea806784dbc2cf16121a15d53d9eea36be7304d1a2ab546912527d7c24e67"
+  }
+}

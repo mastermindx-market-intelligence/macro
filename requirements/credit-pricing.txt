@@ -1,0 +1,2 @@
+# Existing iShares collector; same version used for the October 15 recovery.
+playwright==1.62.0

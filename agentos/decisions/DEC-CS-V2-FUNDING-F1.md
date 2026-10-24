@@ -76,6 +76,46 @@ decided_at: 2026-10-14
 review_by: 2026-11-14
 ---
 
+## Current recovery-owner supersession — 2026-10-23, implementation /2
+
+The opening-cash timing rule in the historical answer above is superseded by
+`engine.capital_structure.funding.project_funding/2`. The original author, date,
+rationale and other role restrictions remain historical evidence.
+
+A verified cash observation retains its exact amount, measurement date, actual
+availability and provenance. When its measurement date precedes
+`horizon_start`, unresolved intervening flows prevent that observation from
+becoming a known opening balance. The implementation records
+`unknown:interim_flows`, preserves the dated fact, and withholds the opening
+quantity and arithmetic seed. Opening-dependent closing balances, cash gaps and
+composed shortfalls remain unknown. Known obligations, floors and requested
+financing amounts retain their own declared roles.
+
+The later scenario's burn rate does not estimate the unobserved intervening
+interval. An assumption or `UnknownResolution` cannot manufacture opening cash
+or resolve missing intervening flows. A historical scenario beginning on the
+cash observation date may still calculate the complete exact cash basis, subject
+to existing availability, currency, completeness, contradiction and flow rules.
+The implementation version and rule digest distinguish this calculation.
+
+The optional governed FIF cash receipt adapter re-verifies the retained
+generation bytes and exact unrestricted-USD-cash query, CIK, Decimal value,
+receipt provenance and admission/query/system-ready/availability cutoffs. It
+operates only for already served issuers. Default unavailable inputs and the
+existing query/backend/issuer owners are preserved.
+
+The implementation and fixtures were qualified on October 22: the initial
+affected-owner run recorded 443 passes and 15 failures; corrected complete
+scenario-input, scenario-export and scenario-composition suites then recorded
+106 passes. These are separate observations, not a pooled final-head run.
+Evidence is retained in
+`research/credit_dislocation/evidence/governed_cash_w5_20261022.json`.
+The existing capital-structure CI owner remains data-gated; ordinary PR code CI
+must not be described as executing those four suites.
+
+This is the existing accountable recovery owner's source decision. Independent
+review, source admission, visual and release gates retain their existing owners.
+
 # Funding schedule for Capital Structure V2 (F1)
 
 Cash on hand is the exact basis, measured on one date, or unknown. Burn is a

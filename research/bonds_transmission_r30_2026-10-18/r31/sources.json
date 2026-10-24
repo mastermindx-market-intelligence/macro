@@ -1,0 +1,53 @@
+[
+  {
+    "id": "R31-S01",
+    "type": "primary_filing",
+    "title": "CoreWeave Form 10-Q for June 30, 2026",
+    "url": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm",
+    "asof": "2026-06-30",
+    "reviewed": "Note 10 annual principal, selected borrowing conditions and entity restrictions",
+    "use": "Dated annual obligation mapping; no current daily cash-gap claim",
+    "root_refs": [
+      "turn14view0",
+      "turn15view0",
+      "turn15view1",
+      "turn15view2",
+      "turn16view0"
+    ]
+  },
+  {
+    "id": "R31-S02",
+    "type": "primary_statistical_method",
+    "title": "Federal Reserve Financial Accounts explanatory text",
+    "url": "https://www.federalreserve.gov/releases/z1/current/introductory_text.htm",
+    "read_at": "2026-10-18",
+    "use": "Transactions/revaluation/other-change identity, release frequency and current metadata",
+    "mutable_url": true,
+    "root_refs": [
+      "turn19view0"
+    ]
+  },
+  {
+    "id": "R31-S03",
+    "type": "primary_market_method",
+    "title": "CME Key Rate Duration Adjustment",
+    "url": "https://www.cmegroup.com/education/files/key-rate-duration-adjustment.pdf",
+    "revision": "January 2017",
+    "reviewed": "Introductory and maturity-specific sensitivity text",
+    "use": "Key-rate sensitivity design; no current portfolio quotes",
+    "root_refs": [
+      "turn18view0"
+    ]
+  },
+  {
+    "id": "R31-S04",
+    "type": "primary_research",
+    "title": "Repo Markets and the Fed's Balance Sheet: Implications for Monetary Policy Implementation",
+    "url": "https://www.federalreserve.gov/econres/notes/feds-notes/repo-markets-and-the-feds-balance-sheet-implications-for-monetary-policy-implementation-20260826.html",
+    "published": "2026-08-26",
+    "use": "Qualitative coupon/dealer financing and bill/MMF alternatives; no imported price forecast",
+    "root_refs": [
+      "turn20view0"
+    ]
+  }
+]

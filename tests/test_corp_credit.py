@@ -41,6 +41,7 @@ from engine.corp_credit import (
     _ytm_solve,
     accrued_30_360_us,
     canonicalize_bonds,
+    compute_first_seen,
     compute_g_spread_bp,
     compute_matched_delta,
     compute_near_par_flag,
@@ -485,6 +486,66 @@ class TestMatchedPanelFixture:
         )
 
 
+class TestMatchedPanelGuards:
+    """Entry seasoning and churn are independent of delta availability."""
+
+    def test_cold_store_excludes_first_five_bars_then_admits_mature_delta(self):
+        dates = pd.bdate_range("2026-01-02", periods=6).strftime("%Y-%m-%d").tolist()
+        panel = pd.DataFrame([
+            {"as_of": dt, "isin": "REG", "segment": "ig", "par": 1000.0,
+             "g_spread_bp": 100.0 + 2 * i, "near_par_call_flag": False}
+            for i, dt in enumerate(dates)
+        ])
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert dates[0] not in delta
+        for dt in dates[1:5]:
+            assert delta[dt] == {"d1": None, "matched_n": 0, "comp_change": False}
+        assert delta[dates[5]] == {"d1": 2.0, "matched_n": 1, "comp_change": False}
+
+    def test_complete_turnover_keeps_composition_flag_without_matched_bonds(self):
+        dates = pd.bdate_range("2026-01-02", periods=7).strftime("%Y-%m-%d").tolist()
+        panel = pd.DataFrame([
+            {"as_of": dt, "isin": "OLD" if i < 6 else "NEW", "segment": "ig",
+             "par": 1000.0, "g_spread_bp": 100.0 + 2 * i,
+             "near_par_call_flag": False}
+            for i, dt in enumerate(dates)
+        ])
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert delta[dates[5]] == {"d1": 2.0, "matched_n": 1, "comp_change": False}
+        assert delta[dates[6]] == {"d1": None, "matched_n": 0, "comp_change": True}
+
+    @pytest.mark.parametrize("with_churn", [False, True])
+    def test_invalid_matched_price_does_not_erase_population_churn(self, with_churn):
+        dates = pd.bdate_range("2026-01-02", periods=7).strftime("%Y-%m-%d").tolist()
+        rows = []
+        for i, dt in enumerate(dates):
+            rows.append({
+                "as_of": dt, "isin": "COMMON", "segment": "ig", "par": 1000.0,
+                "g_spread_bp": 100.0 if i < 6 else float("nan"),
+                "near_par_call_flag": False,
+            })
+            if with_churn:
+                rows.append({
+                    "as_of": dt, "isin": "OLD" if i < 6 else "NEW",
+                    "segment": "ig", "par": 1000.0, "g_spread_bp": 300.0,
+                    "near_par_call_flag": False,
+                })
+        panel = pd.DataFrame(rows)
+        panel["first_seen"] = compute_first_seen(panel)
+
+        delta = compute_matched_delta(panel, dates, "segment", "market")["ig"]
+
+        assert delta[dates[6]] == {
+            "d1": None, "matched_n": 0, "comp_change": with_churn,
+        }
+
+
 # ---------------------------------------------------------------------------
 # 5. Dispersion floors
 # ---------------------------------------------------------------------------
@@ -545,13 +606,12 @@ class TestNearParFlag:
 
     def test_near_par_excluded_from_delta_but_present_in_levels(self):
         """Near-par HY bond: absent from matched-panel delta, present in level aggregates."""
-        base_date = date(2026, 1, 2)
-        d0 = base_date.isoformat()
-        d1 = (base_date + timedelta(days=1)).isoformat()
+        sorted_dates = pd.bdate_range("2026-01-02", periods=6).strftime("%Y-%m-%d").tolist()
+        d0, d1 = sorted_dates[0], sorted_dates[-1]
 
-        # Two bonds: regular HY + near-par HY
+        # Both bonds have six observed bars; only the regular HY bond can season in.
         rows = []
-        for dt in [d0, d1]:
+        for dt in sorted_dates:
             # Regular HY bond (spread ~300bp)
             rows.append({
                 "as_of": dt, "isin": "US000000REG1",
@@ -570,7 +630,7 @@ class TestNearParFlag:
             })
 
         panel = pd.DataFrame(rows)
-        sorted_dates = [d0, d1]
+        panel["first_seen"] = compute_first_seen(panel)
 
         # Compute matched delta for "hy" segment
         delta = compute_matched_delta(panel, sorted_dates, "segment", "segment")
@@ -1434,3 +1494,337 @@ class TestSectorMappingAmbiguity:
         assert sectors.iloc[0] == "Technology", (
             f"Bond with unambiguous (same) sector should be mapped to 'Technology'; got {sectors.iloc[0]!r}"
         )
+
+# ---------------------------------------------------------------------------
+# Bounded history in the existing latest-panel publication
+# ---------------------------------------------------------------------------
+
+def _bounded_history_panel():
+    from lib.nyse_calendar import sessions_between
+    days = sessions_between(date(2026, 8, 3), date(2026, 10, 16))
+    rows = []
+    for i, day in enumerate(days):
+        for isin, issuer in [("037833100", "TEST0"), ("594918104", None)]:
+            spread = 100.0 + 2.0 * i
+            rows.append({
+                "as_of": day.isoformat(), "isin": isin, "issuer": issuer,
+                "theme": "synthetic" if issuer else None, "sector": "Synthetic",
+                "segment": "ig", "name": "Synthetic bond", "funds": "SPIB",
+                "coupon": 5.0, "maturity": "2031-10-16", "tenor_yrs": 5.0,
+                "par": 1000.0, "mv": 990.0, "accrued_pct": 1.0,
+                "price_clean": 99.0, "price_dirty": 100.0,
+                "ytm_pct": 4.0 + spread / 100.0, "cmt_pct": 4.0,
+                "cmt_as_of": day.isoformat(), "g_spread_bp": spread,
+                "near_par_call_flag": False, "currency": "USD",
+                "currency_status": "observed", "terms_consistent": True,
+            })
+    panel = pd.DataFrame(rows)
+    panel["first_seen"] = compute_first_seen(panel)
+    return panel, [day.isoformat() for day in days]
+
+
+class TestBoundedInstrumentHistory:
+    def test_only_mapped_history_is_bounded_and_existing_levels_are_unchanged(self):
+        from engine.corp_credit import _build_bond_panel_latest, parse_instrument_history
+        panel, dates = _bounded_history_panel()
+        latest = _build_bond_panel_latest(panel, dates, calculation_convention="clean")
+        old_columns = ["isin", "par", "mv", "price_clean", "price_dirty", "g_spread_bp"]
+        pd.testing.assert_frame_equal(
+            latest[old_columns].reset_index(drop=True),
+            panel[panel["as_of"] == dates[-1]][old_columns].reset_index(drop=True),
+        )
+        mapped = latest[latest["issuer"] == "TEST0"].iloc[0]
+        payload = parse_instrument_history(
+            mapped["instrument_history_json"], isin="037833100", as_of=dates[-1], issuer="TEST0",
+        )
+        assert payload["population"] == "current_registry_mapped_instruments"
+        assert [row["as_of"] for row in payload["observations"]] == dates[-22:]
+        assert payload["first_seen"] == dates[0]
+        assert payload["observations"][-1]["cmt_as_of"] == dates[-1]
+        assert payload["observations"][-1]["currency"] == "USD"
+        assert payload["historical_publication_qualified"] is False
+        assert payload["independent_historical_pricing_qualified"] is False
+        assert latest.loc[latest["issuer"].isna(), "instrument_history_json"].isna().all()
+
+
+    def test_non_session_latest_retains_levels_and_leaves_optional_history_absent(self):
+        from engine.corp_credit import _build_bond_panel_latest, _validate_instrument_history
+        panel, dates = _bounded_history_panel()
+        saturday = panel[panel["as_of"] == dates[-1]].copy()
+        saturday["as_of"] = "2026-10-17"
+        panel = pd.concat([panel, saturday], ignore_index=True)
+        latest = _build_bond_panel_latest(panel, dates + ["2026-10-17"], calculation_convention="clean")
+        assert latest["par"].tolist() == [1000.0, 1000.0]
+        assert latest["price_clean"].tolist() == [99.0, 99.0]
+        assert latest["instrument_history_json"].isna().all()
+        receipt = _validate_instrument_history(latest, "clean", "2026-10-17")
+        assert receipt["instrument_rows"] == 0
+        assert receipt["absent_mapped_rows"] == 1
+        assert receipt["unmapped_latest_rows"] == 1
+
+    @pytest.mark.parametrize("currencies,status,currency", [
+        (["USD", "USD"], "observed", "USD"),
+        (["USD", "EUR"], "conflict", None),
+        (["USD", ""], "missing", None),
+        (["USD", None], "missing", None),
+    ])
+    def test_currency_metadata_does_not_change_existing_aggregation(self, currencies, status, currency):
+        raw = pd.DataFrame([
+            {"as_of": "2026-10-16", "isin": "037833100", "cusip6": "037833",
+             "fund": fund, "name": name, "coupon": 5.0, "maturity": "2031-10-16",
+             "par_value": par, "market_value": mv, "currency": ccy}
+            for fund, name, par, mv, ccy in [
+                ("SPIB", "Small position", 100.0, 99.0, currencies[0]),
+                ("SPLB", "Largest position", 300.0, 303.0, currencies[1]),
+            ]
+        ])
+        row = canonicalize_bonds(raw).iloc[0]
+        assert row["par"] == 400.0
+        assert row["mv"] == 402.0
+        assert row["name"] == "Largest position"
+        assert row["price_dirty_raw"] == pytest.approx(100.5)
+        assert row["currency_status"] == status
+        assert row["currency"] == currency
+        assert bool(row["terms_consistent"])
+        raw.loc[0, "coupon"] = 6.0
+        changed = canonicalize_bonds(raw).iloc[0]
+        assert not bool(changed["terms_consistent"])
+        assert changed["coupon"] == 5.0  # incumbent largest-par metadata is retained
+        assert changed["par"] == row["par"]
+        assert changed["mv"] == row["mv"]
+
+    def test_cmt_provenance_keeps_numeric_api_and_never_uses_a_future_curve(self):
+        from engine.corp_credit import _build_cmt_lookup, _selected_cmt_dates
+        curve = pd.DataFrame({"1.0": [4.0, 5.0], "10.0": [4.0, 5.0]},
+                             index=pd.to_datetime(["2026-10-09", "2026-10-16"]))
+        observed = pd.Series(["2026-10-12", "2026-10-19", "2026-10-26"])
+        result = compute_g_spread_bp(pd.Series([6.0] * 3), pd.Series([5.0] * 3), observed, curve)
+        assert len(result) == 2
+        cmt, spread = result
+        assert cmt.iloc[:2].tolist() == [4.0, 5.0]
+        assert spread.iloc[:2].tolist() == [200.0, 100.0]
+        assert pd.isna(cmt.iloc[2]) and pd.isna(spread.iloc[2])
+        assert list(_build_cmt_lookup(curve, pd.DatetimeIndex(observed)).columns) == ["1.0", "10.0"]
+        selected = _selected_cmt_dates(curve, observed)
+        assert selected.iloc[:2].tolist() == ["2026-10-09", "2026-10-16"]
+        assert pd.isna(selected.iloc[2])
+
+    def test_codec_enforces_exact_byte_and_record_limits(self):
+        import json
+        from engine.corp_credit import (
+            INSTRUMENT_HISTORY_MAX_BYTES, _build_bond_panel_latest, parse_instrument_history,
+        )
+        panel, dates = _bounded_history_panel()
+        raw = _build_bond_panel_latest(panel, dates, calculation_convention="clean").iloc[0]["instrument_history_json"]
+        padding = " " * (INSTRUMENT_HISTORY_MAX_BYTES - len(raw.encode("utf-8")))
+        assert parse_instrument_history(raw + padding, isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError, match="byte limit"):
+            parse_instrument_history(raw + padding + " ", isin="037833100", as_of=dates[-1])
+        payload = json.loads(raw)
+        payload["observations"].append(payload["observations"][-1])
+        with pytest.raises(ValueError, match="observation limit"):
+            parse_instrument_history(json.dumps(payload, separators=(",", ":")), isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError, match="duplicate JSON key"):
+            parse_instrument_history('{"schema":"duplicate",' + raw[1:], isin="037833100", as_of=dates[-1])
+        with pytest.raises(ValueError):
+            parse_instrument_history("[" * 1100 + "0" + "]" * 1100,
+                                     isin="037833100", as_of=dates[-1])
+
+    @pytest.mark.parametrize("change", ["duplicate", "future", "future_curve", "nan", "boolean", "claim"])
+    def test_codec_rejects_conflicting_dates_values_and_unsupported_claims(self, change):
+        import json
+        from engine.corp_credit import _build_bond_panel_latest, parse_instrument_history
+        panel, dates = _bounded_history_panel()
+        raw = _build_bond_panel_latest(panel, dates, calculation_convention="clean").iloc[0]["instrument_history_json"]
+        payload = json.loads(raw)
+        if change == "duplicate":
+            payload["observations"][1]["as_of"] = payload["observations"][0]["as_of"]
+        elif change == "future":
+            payload["observations"][-1]["as_of"] = "2026-10-19"
+        elif change == "future_curve":
+            payload["observations"][-1]["cmt_as_of"] = "2026-10-19"
+        elif change == "nan":
+            payload["observations"][-1]["g_spread_bp"] = float("nan")
+        elif change == "boolean":
+            payload["observations"][-1]["g_spread_bp"] = True
+        else:
+            payload["independent_historical_pricing_qualified"] = True
+        with pytest.raises(ValueError):
+            parse_instrument_history(json.dumps(payload, separators=(",", ":")),
+                                     isin="037833100", as_of=dates[-1])
+
+    def test_snapshot_rebuilds_history_after_a_price_convention_change(self, monkeypatch, tmp_path):
+        import json
+        import engine.corp_credit as cc
+        dates = ["2026-10-14", "2026-10-15", "2026-10-16"]
+        raw = pd.DataFrame([
+            {"as_of": day, "isin": "037833100", "cusip6": "037833", "fund": "SPIB",
+             "name": "Synthetic bond", "coupon": 5.0, "maturity": "2031-10-16",
+             "par_value": 1000.0, "market_value": 990.0, "currency": "USD"}
+            for day in dates
+        ])
+        registry = {"themes": {"synthetic": {"issuers": {"TEST0": {"tier": "IG"}}}}}
+        monkeypatch.setattr(cc, "_load_holdings", lambda root: raw.copy())
+        monkeypatch.setattr(cc, "_load_issuer_registry", lambda root: registry)
+        monkeypatch.setattr(cc, "_load_cmt_curve", lambda root: pd.DataFrame(
+            {"1.0": [4.0] * 3, "10.0": [4.0] * 3}, index=pd.to_datetime(dates)))
+        monkeypatch.setattr(cc, "_load_baml_oas", lambda root: None)
+        monkeypatch.setattr(cc, "_load_ticker_sectors", lambda root: {})
+        monkeypatch.setattr(cc, "_load_constituents_name_sector", lambda root: {})
+        monkeypatch.setattr(cc, "match_issuers", lambda panel, reg: (
+            pd.Series("TEST0", index=panel.index), pd.Series("synthetic", index=panel.index)))
+        monkeypatch.setattr(cc, "initial_price_convention", lambda *args: "dirty")
+        monkeypatch.setattr(cc, "run_validation", lambda *args: {
+            "as_of": dates[-1], "overall": "PASS", "price_convention": "clean",
+            "sample_metadata": {"LQD": {"as_of": dates[-1]}}, "criteria": {},
+        })
+        original = cc._build_bond_panel_latest
+        conventions = []
+        def build(panel, source_dates, *, calculation_convention):
+            conventions.append(calculation_convention)
+            return original(panel, source_dates, calculation_convention=calculation_convention)
+        monkeypatch.setattr(cc, "_build_bond_panel_latest", build)
+        cc.snapshot(root=tmp_path)
+        latest = pd.read_parquet(tmp_path / "corp_bonds/series/bond_panel_latest.parquet")
+        payload = cc.parse_instrument_history(
+            latest.iloc[0]["instrument_history_json"], isin="037833100", as_of=dates[-1])
+        receipt = json.loads((tmp_path / "corp_bonds/validation.json").read_text())
+        assert conventions == ["dirty", "clean"]
+        assert payload["calculation_convention"] == "clean"
+        assert all(row["price_clean"] == 99.0 for row in payload["observations"])
+        assert all(row["price_dirty"] == pytest.approx(99.0 + row["accrued_pct"])
+                   for row in payload["observations"])
+        assert receipt["input_binding"]["instrument_history"]["convention_verified_rows"] == 3
+        assert receipt["input_binding"]["instrument_history"]["unmapped_latest_rows"] == 0
+
+
+class TestExplicitValidationSampleAsOf:
+    """The file-generation date cannot replace the holdings as-of date."""
+
+    @pytest.mark.parametrize(("reported", "expected"), [
+        (b"Jul 13, 2026", "2026-07-13"),
+        (b"2026-10-15", "2026-10-15"),
+        (b"February 29, 2024", "2024-02-29"),
+    ])
+    def test_valid_explicit_date_is_preserved(self, reported, expected):
+        content = TestSpreadsheetMLParser()._build_xml().replace(b"Jul 13, 2026", reported)
+        frame, observed = parse_spreadsheetml(content, "LQD")
+        assert observed == expected
+        assert frame["as_of"].unique().tolist() == [expected]
+
+    def test_missing_label_does_not_use_file_or_collection_day(self):
+        content = TestSpreadsheetMLParser()._build_xml().replace(
+            b"Fund Holdings as of", b"Holdings date unavailable")
+        # The fixture still has its file-generation date and inception date.
+        with pytest.raises(ValueError, match="as-of date"):
+            parse_spreadsheetml(content, "LQD")
+
+    @pytest.mark.parametrize("reported", [
+        b"", b"not-a-date", b"NaT", b"today", b"Jul 13", b"Feb 29, 2026",
+    ])
+    def test_malformed_partial_or_relative_date_refuses(self, reported):
+        content = TestSpreadsheetMLParser()._build_xml().replace(b"Jul 13, 2026", reported)
+        with pytest.raises(ValueError, match="as-of date"):
+            parse_spreadsheetml(content, "LQD")
+
+
+@pytest.fixture
+def validation_sample_files(tmp_path, monkeypatch):
+    import scripts.fetch_ishares_validation_sample as sample
+
+    def no_network(*_args, **_kwargs):
+        raise AssertionError("synthetic validation sample must not acquire data")
+
+    monkeypatch.setattr(sample, "_fetch_fund_workbook", no_network)
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    raw_path = raw_dir / "LQD_fixture.xml"
+    raw_path.write_bytes(TestSpreadsheetMLParser()._build_xml())
+    return sample, raw_dir, raw_path, tmp_path / "out"
+
+
+class TestValidationSampleKeepFirst:
+    def test_same_date_changed_response_keeps_first_bytes(self, validation_sample_files):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        written = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        target = out_dir / "LQD_2026-07-13.parquet"
+        assert written == str(target)
+        original = target.read_bytes()
+        content = raw_path.read_bytes()
+        changed = content.replace(b">89.05<", b">90.05<")
+        assert changed != content
+        raw_path.write_bytes(changed)
+
+        result = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert result is None  # The new response was not published or certified equal.
+        assert target.read_bytes() == original
+        assert pd.read_parquet(target)["clean_price"].iloc[0] == pytest.approx(89.05)
+        assert sorted(path.name for path in out_dir.iterdir()) == [target.name]
+
+    def test_later_source_date_adds_file_preserving_first(self, validation_sample_files):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        first = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        assert first is not None
+        original = Path(first).read_bytes()
+        raw_path.write_bytes(raw_path.read_bytes().replace(b"Jul 13, 2026", b"Jul 14, 2026"))
+
+        later = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert later == str(out_dir / "LQD_2026-07-14.parquet")
+        assert Path(first).read_bytes() == original
+        assert pd.read_parquet(later)["as_of"].unique().tolist() == ["2026-07-14"]
+        assert sorted(path.name for path in out_dir.iterdir()) == [
+            "LQD_2026-07-13.parquet", "LQD_2026-07-14.parquet",
+        ]
+
+    def test_concurrent_first_writer_is_not_replaced(self, validation_sample_files, monkeypatch):
+        import os
+        sample, raw_dir, _raw_path, out_dir = validation_sample_files
+        target = out_dir / "LQD_2026-07-13.parquet"
+        original_link = os.link
+        winner = b"original concurrent sample bytes"
+        calls = []
+
+        def publish_competing_first(source, destination, *args, **kwargs):
+            assert Path(destination) == target
+            target.write_bytes(winner)
+            calls.append(target)
+            # A real no-replace primitive must fail against the installed winner.
+            return original_link(source, destination, *args, **kwargs)
+
+        monkeypatch.setattr(os, "link", publish_competing_first)
+        result = sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+
+        assert result is None
+        assert calls == [target]
+        assert target.read_bytes() == winner
+        assert sorted(path.name for path in out_dir.iterdir()) == [target.name]
+
+    def test_failed_encoding_does_not_publish_partial_sample(self, validation_sample_files, monkeypatch):
+        sample, raw_dir, _raw_path, out_dir = validation_sample_files
+
+        def partial_then_error(_frame, destination, **_kwargs):
+            if hasattr(destination, "write"):
+                destination.write(b"incomplete parquet")
+            else:
+                Path(destination).write_bytes(b"incomplete parquet")
+            raise OSError("controlled encoding failure")
+
+        monkeypatch.setattr(pd.DataFrame, "to_parquet", partial_then_error)
+        with pytest.raises(OSError, match="controlled encoding failure"):
+            sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir)
+        assert list(out_dir.iterdir()) == []
+
+    @pytest.mark.parametrize("missing_label", [False, True])
+    def test_unqualified_date_never_writes_sample(self, validation_sample_files, missing_label):
+        sample, raw_dir, raw_path, out_dir = validation_sample_files
+        content = raw_path.read_bytes()
+        if missing_label:
+            content = content.replace(b"Fund Holdings as of", b"Holdings date unavailable")
+        else:
+            content = content.replace(b"Jul 13, 2026", b"not-a-date")
+        raw_path.write_bytes(content)
+
+        assert sample.fetch_and_save("LQD", raw_dir=raw_dir, out_dir=out_dir) is None
+        assert list(out_dir.iterdir()) == []

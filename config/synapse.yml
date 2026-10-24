@@ -16631,15 +16631,24 @@ artifacts:
     scored_path_surfaces: []
     consumers:
       - engine/corp_credit.py
+      - engine/credit_momentum.py
+      - engine/credit_dislocation.py
     external_consumers: []
     notes: >
-      CCW-W2 §3-P2. Single-date bond-level panel snapshot (latest available
-      as_of). Columns: as_of, isin, issuer, segment, coupon_pct, maturity,
-      par_value, clean_price, dirty_price, accrued_pct, ytm_pct, cmt_rate_pct,
-      g_spread_bp, near_par_flag, bucket (maturity bucket), theme, sector.
-      Matched-panel composition guard applied (ENTRY_SEASONING_BARS=5,
-      COMPOSITION_MARKER_PAR_SHARE=0.005). Near-par callable HY excluded
-      (NEAR_PAR_CLEAN=99.0). Display-tier; authority all-false. Non-fatal (CCW-R16).
+      Single-date bond-level panel (latest available as_of). Existing columns
+      retain their values: isin, issuer, segment, coupon, maturity, par, mv,
+      price_clean, price_dirty, accrued_pct, ytm_pct, cmt_pct, g_spread_bp,
+      near_par_call_flag, first_seen, funds, theme, sector and tenor_yrs.
+      Additive source metadata: currency/currency_status, terms_consistent and
+      cmt_as_of. Optional instrument_history_json (ccw.bond_history.v1) covers
+      current_registry_mapped_instruments only: at most 22 actual common-session
+      observations, 16 KiB per cell, no filled dates. Unmapped rows retain their
+      full latest levels and a null history cell. Absent history and invalid
+      history differ. The complete file and historical convention integrity are
+      bound by the existing validation receipt. Historical publication timing
+      and independent historical pricing remain unqualified. Existing five-bar
+      seasoning and near-par exclusions apply to changes. Display-only;
+      rank/size/gate/escalate remain false. No additional artifact or writer.
 
   ccw-latest-json:
     path: data/corp_bonds/latest.json
@@ -16685,6 +16694,7 @@ artifacts:
     scored_path_surfaces: []
     consumers:
       - engine/corp_credit.py
+      - engine/credit_dislocation.py
     external_consumers: []
     notes: >
       CCW-W2 §5. Validation gate results (criteria a-d). Schema: {as_of,
@@ -16700,6 +16710,33 @@ artifacts:
       scripts/fetch_ishares_validation_sample.py). Authority: all-false.
 
   # --- CCW W3 (credit momentum + breadth + watch) artifacts ---
+
+  ccw-credit-dislocation-json:
+    path: data/corp_bonds/credit_dislocation.json
+    format: json
+    producer: engine/credit_dislocation.py
+    known_extra_writers: []
+    owner_program: ccw
+    cadence: collect
+    storage: git
+    asof_field: source_as_of
+    freshness_sla_hours: 72
+    schema: corp_credit.dislocation.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/credit_dislocation_view.py
+      - scripts/build_bonds.py
+    external_consumers: []
+    notes: >
+      CCW issuer matched-spread changes against coarse grade/maturity peers and
+      common-session equity observations. No current risk assertion for stale
+      observations, no synthetic CDS and no total-debt claim from fund-held par.
+      Authority rank/size/gate/escalate all false. Thresholds unvalidated. Source
+      publication vintages remain unqualified; this artifact does not certify a
+      historical prediction. Render recomputes source age and carries provenance.
 
   ccw-credit-momentum-json:
     path: data/corp_bonds/credit_momentum.json

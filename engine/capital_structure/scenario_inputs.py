@@ -29,7 +29,11 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
+
+if TYPE_CHECKING:
+    from engine.fundamental_forensics.production_datasets import ProductionDatasetGeneration
+    from engine.fundamental_forensics.query_service import FinancialQueryResult
 
 from engine.capital_structure.issuer_state_contracts import (
     AUTHORITY,
@@ -423,6 +427,229 @@ def financial_inputs_from_record(record: Any) -> FinancialInputs:
     )
     _assert_round_trip(built, body, "financial_inputs")
     return built
+
+
+def financial_inputs_from_fif_cash_receipt(
+    generation: ProductionDatasetGeneration,
+    result: FinancialQueryResult,
+    *,
+    issuer_id: str,
+    available_at: str,
+    as_of: str,
+) -> FinancialInputs:
+    """Bind one supplied FIF cash receipt; acquire nothing and mint no clocks.
+
+    The caller supplies the actual availability of this retained receipt, not
+    the source period, a historical publication estimate or this function's
+    execution time. Both FIF query cutoffs and dataset admission must precede
+    that clock, which must be at or before the consumer cutoff.
+
+    Replaying against the supplied, digest-verified generation proves the
+    selected cell under its original policy. It does not attest the source,
+    make a reconstruction historical, or establish current cash. The original
+    context-only authority and delivery flags remain in the financial fact.
+    The schema's available_now is an accounting classification, not freshness.
+    Partial support does not constrain downstream arithmetic: a consumer must
+    separately withhold an opening balance across unobserved interim flows.
+    """
+    import hashlib
+    import re
+    from decimal import Decimal
+    from types import SimpleNamespace
+
+    from engine.fundamental_forensics.production_datasets import (
+        HARD_MAX_PRODUCTION_MANIFEST_BYTES,
+        OPTIONAL_PRODUCTION_DATASET_ROLES,
+        PRODUCTION_DATASET_ROLES,
+        ProductionDatasetGeneration,
+        load_generation,
+        load_query_dataset_payloads,
+        production_manifest_key,
+    )
+    from engine.fundamental_forensics.query import MetricCell, MetricMatrix
+    from engine.fundamental_forensics.query_service import (
+        FinancialQueryDataset,
+        FinancialQueryResult,
+        execute_financial_query,
+    )
+    from engine.fundamental_forensics.raw_ledger import (
+        canonical_json,
+        decimal_text,
+        parse_utc,
+    )
+
+    def clock(value: str, label: str) -> datetime:
+        _timestamp(value, label)
+        _require(re.search(r"[.,]\d{7,}", value) is None, f"{label}: submicrosecond clock refused")
+        parsed = parse_utc(value, field_name=label)
+        _require(parsed is not None, f"{label}: timestamp required")
+        return parsed
+
+    try:
+        available_clock = clock(available_at, "fif_cash.available_at")
+        cutoff = clock(as_of, "fif_cash.as_of")
+        _require(available_clock <= cutoff, "fif_cash: receipt is not available at the consumer cutoff")
+        _require(isinstance(generation, ProductionDatasetGeneration), "fif_cash: production generation required")
+        _require(isinstance(result, FinancialQueryResult), "fif_cash: query result required")
+
+        # The original store is deliberately never used. Revalidate all of the
+        # already supplied role bytes through the incumbent immutable loader.
+        manifest = generation.manifest
+        rows = manifest.get("objects")
+        _require(isinstance(rows, list), "fif_cash: generation object manifest required")
+        allowed_counts = (len(PRODUCTION_DATASET_ROLES),
+                          len(PRODUCTION_DATASET_ROLES) + len(OPTIONAL_PRODUCTION_DATASET_ROLES))
+        _require(len(rows) in allowed_counts, "fif_cash: inexact generation role count")
+        manifest_body = canonical_json(manifest).encode("utf-8")
+        _require(len(manifest_body) <= HARD_MAX_PRODUCTION_MANIFEST_BYTES, "fif_cash: manifest exceeds owner bound")
+        manifest_key = production_manifest_key(generation.binding.entity_id, generation.generation_id)
+        objects: dict[str, bytes] = {manifest_key: manifest_body}
+        expected_roles: set[str] = set()
+        for row in rows:
+            _require(isinstance(row, dict), "fif_cash: invalid generation role")
+            role, key = row.get("role"), row.get("object_key")
+            _require(isinstance(role, str) and isinstance(key, str), "fif_cash: invalid generation role identity")
+            _require(role not in expected_roles, "fif_cash: duplicate generation role")
+            expected_roles.add(role)
+            payload = generation.role_payloads.get(role)
+            _require(isinstance(payload, bytes), "fif_cash: missing generation role bytes")
+            _require(key != manifest_key, "fif_cash: generation key collision")
+            _require(key not in objects or objects[key] == payload, "fif_cash: conflicting generation bytes")
+            objects[key] = payload
+        _require(set(generation.role_payloads) == expected_roles, "fif_cash: inexact supplied role set")
+
+        def read_memory(key: str, maximum_bytes: int) -> bytes | None:
+            payload = objects.get(key)
+            _require(payload is None or len(payload) <= maximum_bytes, "fif_cash: role exceeds owner bound")
+            return payload
+
+        verified = load_generation(
+            SimpleNamespace(get_bytes_strict_bounded=read_memory),
+            generation.binding.entity_id,
+            generation.generation_id,
+        )
+        binding = verified.binding
+        _require(
+            re.fullmatch(r"[0-9]{10}", binding.cik) is not None
+            and binding.source_entity_id == binding.cik
+            and issuer_id == f"sec:cik:{binding.cik}",
+            "fif_cash: exact SEC CIK binding required",
+        )
+        payloads = load_query_dataset_payloads(verified)
+        _require(payloads["binding_document"] == {
+            "entity_id": binding.entity_id,
+            "cik": binding.cik,
+            "ticker": binding.ticker,
+            "source_entity_id": binding.source_entity_id,
+        }, "fif_cash: generation identity mismatch")
+        entity = payloads["entity"]
+        _require(
+            entity.entity_id == binding.entity_id and entity.cik == binding.cik
+            and entity.ticker == binding.ticker and entity.source_entity_id == binding.source_entity_id
+            and entity.identity_basis == "sec-cik",
+            "fif_cash: entity role identity mismatch",
+        )
+
+        _require(isinstance(result.body, bytes), "fif_cash: receipt bytes required")
+        _require(hashlib.sha256(result.body).hexdigest() == result.sha256, "fif_cash: query receipt digest mismatch")
+        _require(canonical_json(result.envelope).encode("utf-8") == result.body, "fif_cash: query envelope mismatch")
+        envelope = json.loads(result.body)
+        matrix = MetricMatrix.from_dict(envelope["receipt"])
+        _require(len(matrix.cells) == 1 and matrix.metric_ids == ("cash_and_cash_equivalents",),
+                 "fif_cash: exactly one cash cell required")
+        # Matrix wire entities contain identity only; an outcome-inert SIC is
+        # deliberately absent. The exact no-SIC replay below proves that this
+        # cash receipt needs no external issuer-class lookup.
+        cell = MetricCell.from_dict(matrix.cells[0].to_dict())
+        _require(cell.is_value and isinstance(cell.value, Decimal) and cell.value.is_finite() and cell.value >= 0,
+                 "fif_cash: known nonnegative exact cash value required")
+        _require(cell.unit == "USD" and cell.period.kind.value == "instant",
+                 "fif_cash: instant USD cash required")
+        _require(cell.provenance.concept_qname == "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+                 "fif_cash: admitted unrestricted-cash concept required")
+        _require(cell.entity_id == binding.source_entity_id and cell.ticker == binding.ticker,
+                 "fif_cash: cell issuer mismatch")
+        _require(cell.period.end <= available_clock.date(), "fif_cash: future measurement refused")
+        _require(
+            matrix.policy.source_snapshot_at <= available_clock
+            and matrix.policy.recorded_at <= available_clock
+            and verified.admitted_at <= matrix.policy.recorded_at
+            and cell.provenance.system_ready_at is not None
+            and cell.provenance.system_ready_at <= available_clock,
+            "fif_cash: receipt clocks exceed actual availability",
+        )
+
+        dataset = FinancialQueryDataset(
+            binding=binding, ledger=payloads["ledger"],
+            filing_metadata=payloads["filing_metadata"], registry=payloads["registry"],
+            delivery=verified.delivery(), lineage_evidence=payloads["lineage_evidence"],
+            dataset_admitted_at=verified.admitted_at,
+        )
+
+        def resolve(entity_id: str) -> FinancialQueryDataset:
+            _require(entity_id == binding.entity_id, "fif_cash: query issuer mismatch")
+            return dataset
+
+        request = {
+            "schema": "fundamental_forensics.financial_query_request/v1",
+            "entity_id": binding.entity_id,
+            "policy": matrix.policy.to_dict(),
+            "metric_ids": ["cash_and_cash_equivalents"],
+            "periods": [{
+                "kind": "instant", "start": None, "end": cell.period.end.isoformat(),
+                "label": cell.period.label,
+            }],
+        }
+        replay = execute_financial_query(
+            body=canonical_json(request).encode("utf-8"),
+            provider=SimpleNamespace(resolve=resolve),
+            # Reproduce the receipt without an external issuer-class lookup.
+            # A class-dependent result fails this exact replay; never guess.
+            issuer_sic_resolver=lambda _cik: None,
+        )
+        _require(replay.body == result.body and replay.sha256 == result.sha256,
+                 "fif_cash: receipt does not reproduce from its supplied generation")
+
+        cell_receipt = cell.to_dict()
+        source = {
+            "owner": "fundamental_forensics",
+            "metric_id": cell.metric_id,
+            "term_name": None,
+            "receipt_sha256": hashlib.sha256(canonical_json(cell_receipt).encode("utf-8")).hexdigest(),
+            "accession": cell.provenance.accession,
+            "filed": cell.provenance.filed_at.isoformat() if cell.provenance.filed_at is not None else None,
+            "query_response_sha256": result.sha256,
+            "query_response": envelope,
+            "dataset_generation_id": verified.generation_id,
+            "dataset_clocks": json.loads(canonical_json(verified.manifest["clocks"])),
+        }
+        fact = {
+            "schema": "capital_structure.financial_item_observation.v1",
+            "item_kind": "unrestricted_cash",
+            "availability": "available_now",
+            "amount": {"value": decimal_text(cell.value), "unit": "usd", "status": "known"},
+            "measured_at": cell.period.end.isoformat(),
+            "gross_net": "not_applicable",
+            "available_at": available_at,
+            "source": source,
+        }
+        fact["item_id"] = stable_id("fif-cash", {"issuer_id": issuer_id, **fact})
+        return FinancialInputs(
+            binding=GenerationBinding(
+                input_family=FINANCIALS_FAMILY,
+                schema=fact["schema"], support="partial",
+                generation_id=verified.generation_id,
+                artifact_sha256=sha256_of([fact]),
+                as_of=as_of,
+            ),
+            facts=(fact,), cash_basis="unrestricted_cash",
+        )
+    except ScenarioInputsError:
+        raise
+    except Exception:
+        # Invalid owner contracts are unavailable inputs, never zero cash.
+        # Do not expose source payloads or internal storage identifiers.
+        raise ScenarioInputsError("fif_cash: supplied receipt or generation could not be verified") from None
 
 
 def commitment_inputs_from_record(record: Any) -> CommitmentInputs:
@@ -1038,6 +1265,7 @@ __all__ = [
     "economic_term_from_record",
     "family_provenance_from_record",
     "financial_inputs_from_record",
+    "financial_inputs_from_fif_cash_receipt",
     "generation_binding_from_record",
     "instrument_from_record",
     "instrument_set_from_record",

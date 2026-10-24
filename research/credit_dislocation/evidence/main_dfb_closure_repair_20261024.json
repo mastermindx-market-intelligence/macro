@@ -1,0 +1,34 @@
+{
+  "schema": "bonds.current-main-closure-repair.v1",
+  "qualified_parent": "c9286df8141ee5855aba25239cf9e4a882f5d90f",
+  "base": "dfb1cfc758586ee6679bb14f4520e75676608548",
+  "recorded_at_utc": "2026-10-24T04:09:10.755085+00:00",
+  "pre_effect_precondition_failure": "Quoted YAML anchor mismatch in process44347, then Python syntax preflight failure in45812; no writes reached",
+  "previous_contract_returncode": 1,
+  "previous_introduced_findings": 3,
+  "previous_inherited_findings": 1,
+  "previous_result_sha256": "0c194490ca374769d54b626ebc198d9094a90589d3a8f1623e614426d0b53a1f",
+  "previous_log_sha256": "604f22f9ee11577ca59414af26ab2c6fa04406075311cdcec6fa616e1504f52f",
+  "added_paths": [
+    "engine/k3e_eval1_forward.py",
+    "engine/pick_forward_dist.py",
+    "engine/seasonality/multiplicity.py"
+  ],
+  "job": "ccw-w4-credit-desk",
+  "path_count_before": 1011,
+  "path_count_after": 1014,
+  "all_other_manifest_semantics_unchanged": true,
+  "ceilings_changed": false,
+  "inherited_probe": {
+    "path": "scripts/build_free_content.py",
+    "head_weight_seconds": 5875,
+    "base_weight_seconds": 5875,
+    "ceiling_seconds": 5873,
+    "disposition": "pre-existing; not hidden or weakened by this repair"
+  },
+  "baseline_registrations_preserved_in_failed_run": 909,
+  "baseline_existing_directories_preserved_in_failed_run": true,
+  "native_page_changed": false,
+  "native_regeneration": false,
+  "post_commit_validation": "https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277"
+}

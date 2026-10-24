@@ -25,10 +25,12 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import re
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -149,7 +151,12 @@ def parse_spreadsheetml(content: bytes, fund: str = "UNKNOWN") -> tuple[pd.DataF
     -------
     (df, as_of_str)
         df : DataFrame with OUT_COLS columns (Fixed Income rows only)
-        as_of_str : ISO date string of the holdings date, or today's date if not found
+        as_of_str : ISO date string explicitly reported in the holdings preamble
+
+    Raises
+    ------
+    ValueError
+        If the workbook lacks a valid explicit holdings as-of date.
     """
     # Strip BOM if present
     if content.startswith(b"\xef\xbb\xbf"):
@@ -204,7 +211,7 @@ def parse_spreadsheetml(content: bytes, fund: str = "UNKNOWN") -> tuple[pd.DataF
     # as_of: look for preamble row ["Fund Holdings as of", "<date>"] in first 20 rows.
     # The second cell holds a date like "Jul 13, 2026".
     # -----------------------------------------------------------------------
-    as_of_str = str(date.today())
+    as_of_str = None
     as_of_found = False
     _date_fmts = ["%b %d, %Y", "%B %d, %Y", "%m/%d/%Y", "%Y-%m-%d"]
     for row in all_rows[:20]:
@@ -230,7 +237,7 @@ def parse_spreadsheetml(content: bytes, fund: str = "UNKNOWN") -> tuple[pd.DataF
             if as_of_found:
                 break
         if not as_of_found:
-            log.warning("fetch_ishares: could not find as-of date for %s; using today", fund)
+            raise ValueError(f"{fund}: valid explicit sponsor as-of date not found")
 
     # -----------------------------------------------------------------------
     # Header row: first row whose first cell is exactly "Name"
@@ -427,7 +434,9 @@ def fetch_and_save(
 ) -> str | None:
     """Fetch or parse one fund; write the validation sample parquet.
 
-    Returns the output path on success, None on failure.
+    Returns the newly published output path, None on failure or an existing
+    same-date path. The first retained sample is never replaced or certified
+    as equal to a later response by this function.
     """
     if out_dir is None:
         _here = Path(__file__).resolve().parent.parent
@@ -465,7 +474,25 @@ def fetch_and_save(
         return None
 
     out_path = out_dir / f"{fund}_{as_of_str}.parquet"
-    df.to_parquet(out_path, index=False)
+    # Same-directory staging plus atomic no-replace publication follows the
+    # repository's _publish_once pattern. Never truncate a retained sample,
+    # including when another writer wins after this workbook was parsed.
+    fd, temporary = tempfile.mkstemp(prefix=".validation-", suffix=".parquet", dir=out_dir)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            df.to_parquet(stream, index=False)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(temporary, out_path)
+        except FileExistsError:
+            log.warning(
+                "fetch_ishares: existing sample retained at %s; "
+                "new response not published (keep-FIRST)", out_path,
+            )
+            return None
+    finally:
+        Path(temporary).unlink(missing_ok=True)
     print(f"  {fund}: {len(df)} rows → {out_path}")
     return str(out_path)
 
