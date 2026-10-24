@@ -76,7 +76,15 @@ confidence: high
 reversibility: easy
 decided_by: chairman
 decided_at: 2026-08-26
+superseded_by: "DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024"
 ---
+
+> **Narrow supersession, October 24, 2026:** the current Chairman request permits
+> the dedicated `WS:MARKETONTOLOGY` project continuity record. Only this record's
+> no-separate-workstream clause is superseded. All other scope, parity,
+> canonical-owner, scientific, source-custody and acceptance obligations survive,
+> as explicitly preserved by
+> [DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024](DEC-MARKETONTOLOGY-PROJECT-CONTINUITY-20261024.md).
 
 # Binding execution ruling
 
