@@ -425,6 +425,9 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
         git_candidate.publication._profile(limits)
         super().__init__(explicit_claims_path, operation_id=operation_id,
                          lane_id=lane_id, limits=limits, lock_timeout=lock_timeout)
+        # Capture before any original native attempt. A later publication
+        # wrapper must not adopt inherited parent evidence after a fork.
+        self._original_process_id = os.getpid()
         if (type(original_result_targets) not in (dict, MappingProxyType)
                 or len(original_result_targets) > limits.history_operations):
             _fail("finite predeclared original-result targets required; no factory")
@@ -448,6 +451,11 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
             paths.add(path)
         self.original_result_targets = MappingProxyType(targets)
         self._prepared_results = ContextVar("qledger_owner_prepared_results", default=())
+
+    @property
+    def original_process_id(self):
+        """Actual binding creator PID; no host/version or admission claim."""
+        return self._original_process_id
 
     @property
     def prepared_original_results(self):

@@ -9,7 +9,14 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 import os
+import sys
 from pathlib import Path
+
+# Ordinary file-path imports pin this source tree. In a qualified bootstrap,
+# __file__ belongs to the verified outside-checkout bundle; the finite finder
+# still refuses every unqualified first-party import.
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 from engine import qledger_original_result as storage
 from engine.qledger_original_conversion import (

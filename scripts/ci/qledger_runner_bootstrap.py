@@ -312,8 +312,18 @@ class LoadedBootstrap:
             return value
 
 
+class _FactsClock:
+    """Monotonic inspection only; no operation deadline or native admission."""
+    def __init__(self):
+        self.last = time.monotonic_ns()
+    def check(self):
+        now = time.monotonic_ns()
+        _require(now >= self.last, 'facts inspection clock regressed')
+        self.last = now
+
+
 @contextmanager
-def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
+def _qualified_invocation(*, owner_root, repo, config_path, config_digest, facts_only=False):
     """Qualify outside-checkout original/code bytes, then import only that bundle."""
     owner, repo, config_path = map(_absolute, (owner_root, repo, config_path))
     _require(not owner.is_relative_to(repo) and config_path.parent == owner, 'outside-checkout owner config required')
@@ -331,7 +341,7 @@ def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
     config = json.loads(raw)
     _require(_json(config) == raw and config['schema'] == 1 and config['repo'] == str(repo)
              and config['owner_root'] == str(owner), 'bootstrap config binding differs')
-    deadline = OriginalDeadline(config['original_deadline_monotonic_ns'])
+    deadline = _FactsClock() if facts_only else OriginalDeadline(config['original_deadline_monotonic_ns'])
     installed = _absolute(__file__)
     _require(installed.is_relative_to(owner) and not installed.is_relative_to(repo), 'bootstrap executed from mutable checkout')
     _read(installed, 16 * 1024 * 1024, deadline, expected=config['bootstrap_sha256'])
@@ -355,7 +365,10 @@ def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
              (Path(m.__file__).is_relative_to(repo) or Path(m.__file__).is_relative_to(root)))
             for n, m in list(sys.modules.items())), 'first-party module imported before qualification')
         _require(not any(getattr(x, '_qledger_bootstrap_active', False) for x in sys.meta_path), 'bootstrap already active')
-        sys.path[:] = [p for p in sys.path if not Path(p or os.getcwd()).resolve().is_relative_to(repo)]
+        # python -I must arrive without a mutable checkout search path. Do not
+        # silently repair a contaminated launcher or reorder global resolution.
+        _require(not any(Path(p or os.getcwd()).resolve().is_relative_to(repo) for p in sys.path),
+                 'mutable checkout import path is active')
         sys.meta_path.insert(0, bundle)
         admitted = True
     finally:
@@ -363,24 +376,12 @@ def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
     try:
         deadline.check()
         _require(config['entry_module'] in bundle.modules, 'qualified owner entry required')
-        context = BootstrapContext(repo, owner, result, config['manifest_digest'], deadline.endpoint,
-            config['gate']['candidate_oid'], doc['intent']['operation_id'], doc['target']['budget_id'], doc['target']['retention_id'])
         invocation_module = importlib.import_module('scripts.ci.qledger_owner_invocation')
         gate_module = importlib.import_module('scripts.ci.qledger_host_gate')
         invocation = invocation_module.load_conversion(repo, result_path=result, manifest_digest=config['manifest_digest'])
         bundle.check()
         deadline.check()
-        entry = importlib.import_module(config['entry_module'])
-        provider = bundle.callable(entry.build_evidence)(context)
-        evidence = _DeadlineEvidence(provider, bundle, deadline, context)
-        bundle.check()
-        args = dict(config['gate'])
-        args['runtime_code'] = tuple(gate_module.CodePin(_absolute(p), h) for p, h in args['runtime_code'].items())
-        args['producers'] = {(x['operation_id'], x['lane_id']): (x['budget_id'], x['retention_id']) for x in args['producers']}
-        args['owner_code'] = tuple(gate_module.CodePin(root / p, h) for p, h in pins.items()) + (
-            gate_module.CodePin(installed, config['bootstrap_sha256']), gate_module.CodePin(config_path, config_digest))
-        gate = gate_module.HostGate(invocation, evidence=evidence, **args)
-        yield LoadedBootstrap(gate, entry, bundle, deadline, context, config)
+        yield invocation, bundle, config, deadline, root, installed, owner, repo, result, gate_module, doc
     finally:
         if admitted:
             bundle.failure = bundle.failure or 'trusted bootstrap scope is closed'
@@ -396,12 +397,57 @@ def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
                 _imp.release_lock()
 
 
+@contextmanager
+def trusted_bootstrap(*, owner_root, repo, config_path, config_digest):
+    """Operational entries retain their original deadline and complete gate."""
+    with _qualified_invocation(owner_root=owner_root,repo=repo,config_path=config_path,
+                               config_digest=config_digest) as qualified:
+        invocation,bundle,config,deadline,root,installed,owner,repo,result,gate_module,doc = qualified
+        context = BootstrapContext(repo, owner, result, config['manifest_digest'], deadline.endpoint,
+            config['gate']['candidate_oid'], doc['intent']['operation_id'], doc['target']['budget_id'], doc['target']['retention_id'])
+        entry = importlib.import_module(config['entry_module'])
+        provider = bundle.callable(entry.build_evidence)(context)
+        evidence = _DeadlineEvidence(provider, bundle, deadline, context)
+        bundle.check()
+        args = dict(config['gate'])
+        args['runtime_code'] = tuple(gate_module.CodePin(_absolute(p), h) for p, h in args['runtime_code'].items())
+        args['producers'] = {(x['operation_id'], x['lane_id']): (x['budget_id'], x['retention_id']) for x in args['producers']}
+        args['owner_code'] = tuple(gate_module.CodePin(root / p, h) for p, h in config['bundle_files'].items()) + (
+            gate_module.CodePin(installed, config['bootstrap_sha256']), gate_module.CodePin(config_path, config_digest))
+        gate = gate_module.HostGate(invocation, evidence=evidence, **args)
+        yield LoadedBootstrap(gate, entry, bundle, deadline, context, config)
+
+
 def main():
     parser = argparse.ArgumentParser()
     for name in ('owner-root', 'repo', 'config-path', 'config-digest'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--entry', choices=('job-started', 'reader', 'producer'), required=True)
+    parser.add_argument('--entry', choices=('job-started', 'reader', 'producer',
+                        'capture-push-original', 'inspect-push-original'), required=True)
+    for name in ('owner-pid','retry-deadline','retry-budget-secs','max-attempts','push-alarm','attempt'):
+        parser.add_argument('--'+name, type=int)
+    parser.add_argument('--original-sha256')
+    parser.add_argument('--original-binding', nargs=5)
     args = parser.parse_args()
+    if args.entry in ('capture-push-original','inspect-push-original'):
+        # Facts are captured before a provider exists, solving the origin/budget
+        # construction dependency. This path cannot construct a gate, install,
+        # enter ClaimsBindingScope or return an operational deadline capability.
+        with _qualified_invocation(owner_root=args.owner_root,repo=args.repo,
+                config_path=args.config_path,config_digest=args.config_digest,facts_only=True) as q:
+            invocation,bundle,*_ = q
+            module = importlib.import_module('scripts.ci.qledger_push_original')
+            inputs=dict(owner_pid=args.owner_pid,deadline=args.retry_deadline,budget=args.retry_budget_secs,
+                        max_attempts=args.max_attempts,alarm=args.push_alarm,attempt=args.attempt,
+                        binding=args.original_binding)
+            if args.entry=='capture-push-original':
+                result=module.capture(invocation,**inputs)
+            else:
+                result=module.inspect(invocation,**inputs,digest=args.original_sha256)
+            bundle.check()
+            print(result)
+        return
+
     with trusted_bootstrap(owner_root=args.owner_root, repo=args.repo,
                            config_path=args.config_path, config_digest=args.config_digest) as loaded:
         if args.entry == 'job-started':
