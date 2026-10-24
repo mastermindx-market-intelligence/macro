@@ -155,10 +155,10 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Port the frozen canonical-projection/materializer candidate through the existing
-      ACP owner in one fresh registered carrier under HC-P3.T1a.RECOVER. Sixteen-file
-      donor freeze and current-base equality checks passed. Preserve current protected
-      guards and all independent-review, installed and original-parent gates.
+      Implement HC-P3.T1a.PORT1 in the acquired current-base carrier: bind the active
+      ACP packet/prelaunch gate to the canonical projection and exact tools. Preserve
+      current guards and the immutable donor; materialization/native consumption,
+      separate review, installed proof and original-parent acceptance remain open.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -285,8 +285,8 @@ do_not_redo:
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
   For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
-  same-child repairs of #1854 and #1852. Freeze the orphaned ACP donor under
-  HC-P3.T1a.RECOVER before any fresh current-source integration.
+  same-child repairs of #1854 and #1852. The ACP donor is frozen; implement the
+  pinned active canonical packet/gate step HC-P3.T1a.PORT1 on qualified 3095d09f.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1666,3 +1666,54 @@ An advisory native architecture read can inform this port but cannot implement o
 P7 re-review CONTINUE was delivered on the original reviewer thread at
 1792874037.908939; actual forward/START/result remain pending. P6 same-child repair
 was delivered at 1792874038.333279. Neither delivery is a START or acceptance.
+
+
+### HC-P3.T1a.PORT1 — Bind the active ACP packet and prelaunch gate to the canonical grant
+
+- **Parent and scope:** a bounded first implementation step within HC-P3.T1a.RECOVER
+  and HC-P3.T1a, under commission 1792861454.777859. Root owns the single acquired
+  operation meta-ceo-harness-acp-source-recovery-20261024-web-001, workspace
+  /Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-harness-acp-source-recovery-20261024-web-001,
+  branch sol/web-meta-ceo-harness-acp-source-recovery-20261024-web-001,
+  starting at protected 3095d09f1789a5b8002503beae872774c297b1a5.
+  Acquisition returned APPLIED, reused=false, clean. No parallel source writer.
+- **Problem:** the current packet binds canonical policy/profile generation but accepts
+  a separately supplied, syntactically valid tool-gate projection and tool contracts.
+  The donor joins the projection hash but still accepts fake qualified names/contracts.
+  Neither fact establishes the missing installed producer or actual live admission.
+- **Exact writable paths:** integrations/acp_worker/installed.py and
+  tests/test_acp_installed_factory.py only. The original sixteen-file donor remains
+  immutable at its recorded HEAD, blobs, working hashes and index SHA-256.
+- **Implementation:** use the incumbent canonical DSH projection and actual source
+  workspace-read catalog for the fixed provider-free profile and its exact grant.
+  Reconcile projection SHA-256, qualified tool namespace/names and per-tool contracts
+  using existing source-owner digest semantics; verify actual current admission receiver
+  compatibility before choosing the contract representation. Revalidate through the
+  existing mcp_runtime_overlay call reached by native prelaunch and readiness preparation.
+  A plausible unrelated gate, changed catalog, widened profile/grant or stale generation
+  must be refused before confinement/spawn.
+- **Preserve:** every current profile/realm/policy-generation, authority, worker UID/GID,
+  token/base-SHA, finite timeout/JavaScript deadline, resolved-root, nested immutable overlay,
+  environment ceiling, artifact, empty-home and Seatbelt guard. The original v2 socket,
+  six-field Attempt overlay, incumbent plugin/transport and attestation stay intact.
+- **Proof plan:** first update the factory fixture to construct from the real canonical
+  profile/catalog without calling the new private validation helper. Add discriminating
+  projection, namespace, missing/extra tool, contract and catalog/profile drift cases.
+  Exercise the actual adapter native-prelaunch callback, with a confinement sentinel
+  proving refusal occurs before launcher rendering. Run the changed factory suite and
+  directly relevant incumbent native/overlay/registry tests only as needed, record exact
+  commands/results, inspect the two-file diff, then publish a frozen Draft source PR.
+  Obtain separate exact-head fleet review and hosted CI; author tests alone cannot accept.
+- **Explicit remainder:** this step adds no unused materializer API. The donor's
+  governed_input_builder/MMX_GOVERNED_INPUT path is incompatible with current native
+  source, and its MCP environment conflicts with current Attempt binding. Any genuine
+  materialization/native-consumption work needs a separately pinned exact source scope
+  and real consumer proof. Full T1a/T1, installed RuntimeBinding, independent artifact
+  admission, original-parent consumption and HC-P3 remain open.
+- **Exclusions/rollback:** no capability-policy/catalog flip, issuer, service, route,
+  install, provider call, credential/account change, approval or merge. Source is
+  unmerged and reversible through the same carrier. Do not touch original Fabric-held,
+  P2, Rakazo, P6, P7, #1717 or #1790 source.
+- **State:** PLANNED_BEFORE_SOURCE_EDIT. Next action: implement only this active
+  canonical packet/gate join after source compatibility review; return exact source,
+  tests and review evidence without upgrading it to installed or full-mission proof.

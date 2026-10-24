@@ -67,7 +67,7 @@ next_actions:
   - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
-  - Port the frozen ACP donor through current protected source in one fresh registered HC-P3.T1a.RECOVER carrier; preserve current guards and original worktree/index, then obtain separate review and CI.
+  - Implement pinned HC-P3.T1a.PORT1 active canonical packet/gate join in the acquired 3095d09f source carrier; preserve current guards and immutable donor. Materialization/native consumption and installed proof remain separate; obtain non-author review and CI.
   - Obtain HC-P7.T0.R2 same-carrier independent review of repaired Draft 1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc; author checks passed, hosted CI pending.
   - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
@@ -349,3 +349,22 @@ reconciliation and all current guards; no installed/source acceptance is inferre
 P7 R2 request is 1792874037.908939 on retained reviewer thread1792870956.550899.
 P6 FIX1 request is 1792874038.333279 on retained builder thread1792872108.375879.
 Both deliveries await actual continuation receipts. Full mission remains incomplete.
+
+
+#### Active ACP source port and bounded installed-readiness limits
+
+HC-P3.T1a.PORT1 is pinned in the workstream before any source edit. Root acquired the
+single registered source carrier meta-ceo-harness-acp-source-recovery-20261024-web-001
+at protected 3095d09f1789a5b8002503beae872774c297b1a5, clean, reused=false. Its exact
+two-file scope joins the canonical projection/tool gate in the existing prelaunch path,
+preserving all current guards. The incompatible old materializer/native-input API is
+not copied; that producer/consumer work and all installed acceptance stay open.
+
+The P4 current caller's Executive session-target projection returned success with no
+addressable targets. This is scoped visibility, not proof of global session absence.
+P5 source review identified the existing computer-use policy/helper requirements but
+did not prove the installed policy, helper, grants or physical host identity. Its only
+host metadata command was read-only; the tool returned "aborted by user after 1985.3s"
+without output, PID, handle or completion receipt. No helper/policy contents, GUI,
+services or effects were attempted. Execution absence/termination is unconfirmed;
+do not repeat that command blindly or infer an account-wide eligibility result.
