@@ -36,7 +36,7 @@ def packet():
                  'authority':dict.fromkeys(['can_rank','can_gate','can_size','can_originate','can_open_entry'],False)}}
 
 
-def start(browser, *, value=None, status=200, headers=None):
+def start(browser, *, value=None, status=200, headers=None, search=''):
     context = browser.new_context()
     page = context.new_page()
     seen, errors = [], []
@@ -59,8 +59,9 @@ def start(browser, *, value=None, status=200, headers=None):
             else:r.fulfill(status=404)
         else:r.fulfill(status=204)
     page.on('pageerror',lambda e:errors.append(str(e)))
-    page.route('**/*',route);page.goto('https://macro.example/ontology.html')
-    page.locator('#ox-research summary').click()
+    page.route('**/*',route);page.goto('https://macro.example/ontology.html'+search)
+    if not page.locator('#ox-research').evaluate('(root)=>root.open'):
+        page.locator('#ox-research summary').click()
     page.wait_for_function("document.querySelector('[data-research-result]').dataset.state==='idle'")
     return context,page,seen,errors
 
@@ -73,6 +74,49 @@ def inspect(page):
 
 def settled(page,state):
     page.wait_for_function("s=>document.querySelector('[data-research-result]').dataset.state===s",arg=state)
+
+
+def test_pressure_watch_handoff_prefills_only_until_explicit_submit(browser):
+    from engine.stocks_hub import pressure_band
+    row = {'date':'2026-01-02','ticker':'TEST','side':'down'}
+    band = pressure_band({'asof':'2026-01-03','open_events':[row]})
+    href = band['open'][0]['research_href']
+    assert band['open'][0]['href'] == 'TEST.html'
+    context,page,seen,errors=start(browser,search='?'+urlsplit(href).query+'#ox-research')
+    try:
+        assert page.locator('[name=date]').input_value() == row['date']
+        assert page.locator('[name=ticker]').input_value() == row['ticker']
+        assert page.locator('[name=side]').input_value() == row['side']
+        assert seen == []
+        page.locator('#ox-research button[type=submit]').click()
+        settled(page,'ready')
+        assert len(seen) == 1
+        assert seen[0]['payload'] == {'schema':'ontology_drl_research_request.v1',**row}
+        assert 'historical availability' in page.locator('[data-research-result]').inner_text().lower()
+        assert not errors
+    finally:context.close()
+
+
+@pytest.mark.parametrize('query',[
+    'research_date=2026-01-02&research_ticker=TEST',
+    'research_ticker=TEST&research_side=down',
+    'research_date=2026-01-02&research_side=down',
+    'research_date=2026-02-30&research_ticker=TEST&research_side=down',
+    'research_date=0000-01-02&research_ticker=TEST&research_side=down',
+    'research_date=2026-01-02&research_ticker=test&research_side=down',
+    'research_date=2026-01-02&research_ticker=TEST&research_side=unknown',
+    *['research_date=2026-01-02&research_ticker=TEST&research_side=down&'+extra
+      for extra in ['research_date=2026-01-03','research_ticker=OTHER','research_side=up',
+                    'research_generation=claimed','research_asof=2026-01-02']],
+    'research_date=2026-01-02&research_ticker=%ZZ&research_side=down',
+])
+def test_pressure_watch_invalid_handoff_never_prefills_or_requests(browser,query):
+    context,page,seen,errors=start(browser,search='?'+query+'#ox-research')
+    try:
+        assert page.locator('[name=date]').input_value() == ''
+        assert page.locator('[name=ticker]').input_value() == ''
+        assert seen == [] and not errors
+    finally:context.close()
 
 
 @pytest.mark.parametrize('theme',['dark','light'])

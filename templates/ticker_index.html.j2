@@ -783,6 +783,7 @@ footer.foot { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--l
           <span class="pw-mv">{{ t(r.move_en ~ ' · ' ~ r.when_en, r.move_zh ~ ' · ' ~ r.when_zh) }}</span>
           <span class="pw-end"><i class="pw-sw pw-s-{{ r.end_cls }}"></i>{{ t(r.end_en, r.end_zh) }}</span>
         {%- if r.href %}</a>{% else %}</span>{% endif %}
+        {%- if r.research_href %}<p class="pw-note"><a href="{{ r.research_href }}">{{ t('Inspect event research for ' ~ r.t, '查看 ' ~ r.t ~ ' 的事件研究') }}</a></p>{% endif %}
         {%- endfor %}
       </div>
     </div>
@@ -804,6 +805,7 @@ footer.foot { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--l
             {%- if e.state_en %}<span class="pw-chip pw-st"{% if e.tip_en %} data-tip-en="{{ e.tip_en }}" data-tip-zh="{{ e.tip_zh }}"{% endif %}>{{ t(e.state_en, e.state_zh) }}</span>{% endif %}
           </span>
         {%- if e.href %}</a>{% else %}</span>{% endif %}
+        {%- if e.research_href %}<p class="pw-note"><a href="{{ e.research_href }}">{{ t('Inspect event research for ' ~ e.t, '查看 ' ~ e.t ~ ' 的事件研究') }}</a></p>{% endif %}
         {%- endfor %}
       </div>
     </div>
