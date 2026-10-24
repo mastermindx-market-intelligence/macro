@@ -145,3 +145,187 @@ def test_type_distinct_finite_bounded_keys():
                   {str(i): 10**100 for i in range(12)}]:
         assert key(ref, value) is None
     assert key(ref, {"b": 2, "a": 1}) == key(ref, {"a": 1, "b": 2})
+
+
+def _error_signature(error):
+    return (
+        error.validator, error.message,
+        list(error.absolute_path), list(error.absolute_schema_path),
+        [_error_signature(child) for child in error.context],
+    )
+
+
+def test_same_value_under_different_property_schemas_keeps_native_errors(payload):
+    value = deepcopy(payload)
+    # This exact string is valid at the first root property, but invalid at the
+    # later nullable-number property. A value-only success cache would hide it.
+    value["awards"][0]["values"]["total_obligated"] = value["schema_version"]
+    native = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert native
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in native]
+
+
+@pytest.mark.parametrize("invalid", [True, "1"])
+def test_repeated_numeric_property_does_not_conflate_types(payload, invalid):
+    value = deepcopy(payload)
+    value["awards"][0]["values"]["total_obligated"] = 1.0
+    value["awards"][1]["values"]["total_obligated"] = invalid
+    native = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert native
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in native]
+
+
+@pytest.mark.parametrize("first", ["2026-99-40", "2026-01-02"])
+def test_repeated_nested_property_format_errors_are_never_cached(payload, first):
+    value = deepcopy(payload)
+    value["awards"][0]["dates"]["start_date"] = first
+    value["awards"][1]["dates"]["start_date"] = "2026-99-40"
+    native = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert ["awards", 1, "dates", "start_date"] in [list(e.absolute_path) for e in native]
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in native]
+
+
+def test_changed_property_ref_sibling_retains_native_fallback(payload, monkeypatch):
+    schema = deepcopy(dossiers._dossier_validator().schema)
+    schema["properties"]["as_of"] = {
+        "$ref": "#/$defs/nullableText", "maxLength": 1,
+    }
+    native = Draft202012Validator(schema, format_checker=FormatChecker())
+    monkeypatch.setattr(dossiers, "_dossier_validator", lambda: native)
+    assert dossiers._dossier_validation_validator() is native
+    errors = list(native.iter_errors(payload))
+    assert any(e.validator == "maxLength" and list(e.absolute_path) == ["as_of"] for e in errors)
+
+
+def test_repeated_properties_remove_native_descend_and_evolve(payload, monkeypatch):
+    value = deepcopy(payload)
+    value["actions"] = [deepcopy(value["actions"][0]) for _ in range(64)]
+    reference = dossiers._dossier_validation_validator()
+    reference_type = type(reference)
+    # Keep the already-qualified $ref memo, resolver and every native keyword.
+    # Only replace the new properties handler with its former native handler.
+    monkeypatch.setitem(reference_type.VALIDATORS, "properties", Draft202012Validator.VALIDATORS["properties"])
+    reference = reference_type(reference.schema, format_checker=reference.format_checker)
+    candidate = dossiers._dossier_validation_validator()
+
+    def observe(validator):
+        counts = {"descend": 0, "evolve": 0}
+        cls = type(validator)
+        original_descend, original_evolve = cls.descend, cls.evolve
+
+        def descend(self, *args, **kwargs):
+            counts["descend"] += 1
+            yield from original_descend(self, *args, **kwargs)
+
+        def evolve(self, *args, **kwargs):
+            counts["evolve"] += 1
+            return original_evolve(self, *args, **kwargs)
+
+        monkeypatch.setattr(cls, "descend", descend)
+        monkeypatch.setattr(cls, "evolve", evolve)
+        errors = [_error_signature(e) for e in validator.iter_errors(value)]
+        return counts, errors
+
+    unchanged, expected = observe(reference)
+    corrected, actual = observe(candidate)
+    assert expected == actual == []
+    assert corrected["descend"] < unchanged["descend"]
+    assert corrected["evolve"] < unchanged["evolve"]
+    print({"compact_actions": 64, "native_properties": unchanged, "property_memo": corrected})
+
+
+def test_ref_and_property_successes_share_one_bounded_fresh_lru(payload, monkeypatch):
+    import collections
+
+    caches = []
+    original = collections.OrderedDict
+
+    class ObservedLRU(original):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.evictions = 0
+            self.namespaces = set()
+            caches.append(self)
+
+        def __setitem__(self, key, value):
+            self.namespaces.add("property" if key[0] == "property" else "ref")
+            return super().__setitem__(key, value)
+
+        def popitem(self, *args, **kwargs):
+            self.evictions += 1
+            return super().popitem(*args, **kwargs)
+
+    monkeypatch.setattr(collections, "OrderedDict", ObservedLRU)
+    validator = dossiers._dossier_validation_validator()
+    first = caches[-1]
+    value = deepcopy(payload)
+    value["actions"] = [deepcopy(value["actions"][0]) for _ in range(4200)]
+    for index, row in enumerate(value["actions"]):
+        row["action_key"] = f"action:{index}"
+        row["description"] = f"distinct memo-eligible reference value {index}"
+    assert not list(validator.iter_errors(value))
+    assert first.evictions > 0
+    assert len(first) == 4096
+    assert any(key[0] == "property" for key in first)
+    assert first.namespaces == {"ref", "property"}
+
+    def node_ids(node):
+        if isinstance(node, dict):
+            return {id(node)} | set().union(*(node_ids(item) for item in node.values()))
+        if isinstance(node, list):
+            return set().union(*(node_ids(item) for item in node))
+        return set()
+
+    copied_nodes = node_ids(validator.schema)
+    assert all(key[1] in copied_nodes for key in first if key[0] == "property")
+    second = dossiers._dossier_validation_validator()
+    assert second.schema is not validator.schema
+    assert caches[-1] is not first
+    assert not caches[-1]
+
+
+def test_unique_cheap_primitives_keep_native_errors_without_memo_churn(payload, monkeypatch):
+    import collections
+
+    caches, primitive_key_calls = [], []
+    original_lru = collections.OrderedDict
+    original_key = dossiers._dossier_memo_value_key
+
+    class ObservedLRU(original_lru):
+        evictions = 0
+
+        def __init__(self):
+            super().__init__()
+            caches.append(self)
+
+        def popitem(self, *args, **kwargs):
+            self.evictions += 1
+            return super().popitem(*args, **kwargs)
+
+    def key(value):
+        if type(value) is str and value.startswith("unique-primitive:"):
+            primitive_key_calls.append(value)
+        return original_key(value)
+
+    monkeypatch.setattr(collections, "OrderedDict", ObservedLRU)
+    monkeypatch.setattr(dossiers, "_dossier_memo_value_key", key)
+    value = deepcopy(payload)
+    value["actions"] = [deepcopy(value["actions"][0]) for _ in range(4201)]
+    for index, row in enumerate(value["actions"]):
+        row["action_key"] = f"unique-primitive:key:{index}"
+        row["action_id"] = f"unique-primitive:id:{index}"
+        row["obligation"] = index + 0.25
+    # Valid singleton values come first. Cheap checks still reject the final
+    # length and type errors at their full native paths after all that traffic.
+    value["actions"][-1]["action_key"] = "x" * 801
+    value["actions"][-1]["action_id"] = True
+    native = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert native
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in native]
+    assert not primitive_key_calls
+    assert caches[-1].evictions == 0
+    assert len(caches[-1]) < 4096

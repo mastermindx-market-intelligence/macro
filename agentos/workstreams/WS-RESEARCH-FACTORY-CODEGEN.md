@@ -37,6 +37,10 @@ artifacts:
   - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
+  - Commercial licensing for the incumbent Yahoo/yfinance route, Massive/Polygon,
+    Tiingo and ThetaData options is APPROVED_BY_CHAIRMAN_ATTESTATION. Consume
+    DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023; do not ask again
+    or require contract upload/public-terms re-proof. Historical/PIT remains separate.
   - Reuse accepted checks and reviews until their relevant source or requirements change.
   - Original contracts operation remains EFFECT_UNKNOWN. Chris authorized quarantine
     and a fresh seven-path implementation, not replay, refused reads or lease release.
@@ -89,7 +93,8 @@ After lawful incident settlement, accepted host/resource/helper/cleanup
 composition is still required. A recovered fixed-canary PASS is not candidate
 admission. P01 still owes actual staging identities, a known-answer primitive
 and future-dependent refusal control; injected nonfinite output tests prove
-plumbing only. Qualified historical data/rights, full counted trial/Vault and
+plumbing only. Qualified historical data availability (commercial rights are settled by
+DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023), full counted trial/Vault and
 evaluator composition, an honest historical/null result, naturally accrued
 prospective observations and continuity/rollback remain programme obligations.
 Existing runtime/admission engines remain dormant. No new OS/Fabric owner,

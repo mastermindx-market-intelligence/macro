@@ -5307,9 +5307,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_897),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_893),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_647),
+    ("templates/index.html", 138, 5_899),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_895),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_649),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5317,6 +5317,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 inert host-gate composition with frozen main153fb1e3:
+    one test-file token in the already-selected QLedger regression command
+    changes that job's estimate62->64. Canonical inference for this job adds
+    only its gate source/test paths, removes nothing and preserves every
+    fallback and all three probe selections. Reuse the retained membership:
+    exact weights5897/5893/5647 become5899/5895/5649, with137/137/130 jobs
+    and ten packs. Preserve ceilings138/137/130, estimator, selectors,
+    commands, timeouts and storage budgets; this adds no runtime allowance.
 
     2026-10-24 protected maindfb1cfc7 adds the dossier-validation memo
     suite to the already-selected unrun-government-revenue job:104->106
