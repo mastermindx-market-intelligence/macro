@@ -2245,3 +2245,40 @@ def test_d_observation_actual_native_get_binding_keeps_canonical_unchanged(obser
     assert record['requests'][1]['returned_frame_dates']==['2026-08-19T00:00:00']
     assert before=={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
     assert not topup._has_day(c.store,'greeks','SPY',D_MID)
+
+
+@pytest.mark.parametrize('phase',['headers','body'])
+def test_d_observation_inflight_deadline_is_sticky_unknown_without_capture_thread(observation_case,monkeypatch,phase):
+    import threading,time
+    from dataclasses import replace
+    from types import SimpleNamespace
+    from collectors import thetadata as td
+    c=observation_case;calls=[];closed=[]
+    monkeypatch.setattr(time,'monotonic',time.perf_counter)
+    class Session:
+        def get_adapter(self,url):return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self,url,**kw):
+            calls.append(url)
+            record=json.loads(c.receipt.read_text())
+            assert record['requests'][-1]['state']=='REQUEST_STARTED'
+            if phase=='headers':
+                threading.Event().wait(1)
+                pytest.fail('Absolute timer did not interrupt synchronous header read')
+            def body(**kw):
+                threading.Event().wait(1)
+                pytest.fail('Absolute timer did not interrupt synchronous body read')
+                yield b''
+            return SimpleNamespace(status_code=200,iter_content=body,close=lambda:closed.append(True))
+    monkeypatch.setattr(td,'_session',Session)
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    config=replace(c.config,transport=td.bounded_spy_d_session_transport(D_MID))
+    start=time.monotonic()
+    out=topup._observe_spy_d_session(c.store,c.ctx,c.now,start+.3,config,request_options={'version':'1'})
+    assert time.monotonic()-start<.8
+    assert out['state']=='EFFECT_UNKNOWN' and out['attempts']==1 and len(calls)==1
+    record=json.loads(c.receipt.read_text())
+    assert record['requests'][0]['state']=='EFFECT_UNKNOWN'
+    assert len(record['requests'])==1 and not (c.receipt.parent/'eod.csv').exists()
+    assert closed==([True] if phase=='body' else [])
+    again=topup._observe_spy_d_session(c.store,c.ctx,c.now,time.monotonic()+2,config,request_options={'version':'1'})
+    assert again['reason']=='existing_observation_claim' and len(calls)==1

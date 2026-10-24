@@ -823,3 +823,15 @@ installed source/access and host capacity remain separately held. Mock proofs ar
 synthetic structural checks only, not observed vendor availability or product
 acceptance. No retired whole-year writer, new timer, collector, queue or store is
 introduced.
+
+The optional deadline transport additionally requires the native POSIX main
+thread and exclusive inactive `ITIMER_REAL` ownership. It raises through the
+actual blocking GET/header/body read at the absolute shared deadline, closes the
+response while unwinding, cancels its timer and restores the prior handler.
+Unsupported thread/platform or an already-active timer refuses before GET. A
+read-inactivity timeout alone does not establish this bound: continuously
+trickling headers/body can prevent `iter_content(65536)` from yielding. Local
+loopback slow-drip regressions cover both phases. No background capture thread
+is launched; an interrupted physical request stays `EFFECT_UNKNOWN` in its
+exclusive journal and cannot start its second request or be replayed. Closing
+our client connection does not certify the provider-side outcome.

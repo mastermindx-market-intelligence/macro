@@ -429,3 +429,13 @@ separate. Actual production promotion requires a later qualified per-root source
 composition and declared coverage, not a SPY-only max-date side effect. All current
 checks of this preparation are synthetic structural mock tests; no activation,
 provider GET, new allowance or runtime installation follows from their passing.
+
+The unbound pilot adapter's absolute deadline is available only on the native
+POSIX main thread with no pre-existing real-time alarm. An active process timer
+or unsupported thread/platform is a pre-GET refusal, not a reason to fall back
+to inactivity timeouts. The guard interrupts the synchronous header/body read,
+closes the native response and restores the previous signal handler. No capture
+worker is detached. After a physical attempt the journal preserves unknown
+provider outcome/no-replay even when local cancellation/disconnection succeeds.
+These controls have local loopback/mock tests only; no production host, session
+allocation, installation or activation is established by that evidence.

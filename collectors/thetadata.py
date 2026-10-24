@@ -336,7 +336,51 @@ def list_expirations(symbol: str) -> list[str] | None:
 # Low-level HTTP helpers — CSV streaming
 # --------------------------------------------------------------------------- #
 
+class _AbsoluteCSVDeadline(BaseException):
+    """Interrupt the synchronous native request without entering HTTP retries."""
+
+
 def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry",
+             response_handler=None, raw_response_handler=None, deadline_at=None,
+             expected_origin=None) -> pd.DataFrame | None:
+    options = dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows,
+        limit_profile=limit_profile, response_handler=response_handler,
+        raw_response_handler=raw_response_handler, deadline_at=deadline_at,
+        expected_origin=expected_origin)
+    if deadline_at is None:
+        return _get_csv_inner(session, path, params, **options)
+    # Socket inactivity timeouts do not bound a continuously trickling response.
+    # The optional daily pilot runs synchronously on the native POSIX main thread:
+    # raise through the actual blocking GET/read, then let its existing finally
+    # close the response. No background capture/thread survives a timeout.
+    import signal
+    import threading
+    if (request_budget is None or type(deadline_at) not in (int, float)
+            or not math.isfinite(deadline_at) or deadline_at <= time.monotonic()
+            or threading.current_thread() is not threading.main_thread()
+            or not hasattr(signal, 'setitimer') or not hasattr(signal, 'ITIMER_REAL')
+            or signal.getitimer(signal.ITIMER_REAL) != (0., 0.)):
+        raise ValueError('Exclusive native main-thread absolute deadline unavailable')
+    previous = signal.getsignal(signal.SIGALRM)
+    def expired(signum, frame):
+        raise _AbsoluteCSVDeadline()
+    signal.signal(signal.SIGALRM, expired)
+    try:
+        remaining = deadline_at-time.monotonic()
+        if remaining <= 0:
+            raise _AbsoluteCSVDeadline()
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        return _get_csv_inner(session, path, params, **options)
+    except _AbsoluteCSVDeadline:
+        request_budget.stop()
+        raise _StreamTruncated('Absolute shared deadline interrupted native CSV request') from None
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.)
+        signal.signal(signal.SIGALRM, previous)
+
+
+def _get_csv_inner(session: requests.Session, path: str, params: dict, *, request_budget=None,
              max_bytes=None, max_rows=None, limit_profile="selected_expiry",
              response_handler=None, raw_response_handler=None, deadline_at=None,
              expected_origin=None) -> pd.DataFrame | None:

@@ -1926,3 +1926,80 @@ def test_d_session_native_second_call_cannot_reset_budget_or_deadline(d_session_
     kwargs={'request_budget':BoundedRequestBudget(2)} if changed=='budget' else {'deadline_at':51.}
     with pytest.raises(ValueError):c.run(t,'greeks',**kwargs)
     assert len(c.calls)==1
+
+
+@pytest.mark.parametrize('phase', ['headers', 'body'])
+def test_d_session_absolute_deadline_interrupts_live_local_drip(monkeypatch, phase):
+    """Loopback only: one iter_content chunk/header read never reaches a yield."""
+    import http.server
+    import signal
+    import threading
+    import time
+    from lib.options_source_receipts import BoundedRequestBudget
+    from collectors import thetadata as td
+    stopped = threading.Event(); disconnected = threading.Event(); attempts = []
+    class Drip(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args): pass
+        def do_GET(self):
+            attempts.append(self.path)
+            try:
+                if phase == 'body':
+                    self.send_response(200); self.send_header('Content-Length', '10000'); self.end_headers()
+                    wire = b'symbol,strike\nSPY,760\n' * 4
+                else:
+                    wire = b'HTTP/1.1 200 OK\r\nX-Slow: ' + b'x' * 70
+                for byte in wire:
+                    self.wfile.write(bytes([byte])); self.wfile.flush()
+                    if stopped.wait(.025): break
+            except (BrokenPipeError, ConnectionResetError):
+                disconnected.set()
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Drip)
+    thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval':.01})
+    thread.start()
+    origin = f'http://127.0.0.1:{server.server_port}'
+    monkeypatch.setattr(td, '_base_url', lambda: origin)
+    budget = BoundedRequestBudget(2); retained = []; statuses = []
+    old_handler = signal.getsignal(signal.SIGALRM)
+    session = td._session(); start = time.monotonic()
+    try:
+        with pytest.raises(td._StreamTruncated, match='Absolute shared deadline'):
+            td._get_csv(session, '/v3/option/history/eod', {}, request_budget=budget,
+                max_bytes=16384, max_rows=100, limit_profile='observed_root',
+                deadline_at=start+.15, expected_origin=origin,
+                response_handler=statuses.append, raw_response_handler=retained.append)
+        assert time.monotonic()-start < .65
+        assert budget.stopped and budget.attempts == 1 and len(attempts) == 1
+        assert not retained  # incomplete body is never a captured complete response
+        assert statuses == ([200] if phase == 'body' else [])
+        assert disconnected.wait(.5), 'the interrupted capture connection remained open'
+        assert signal.getsignal(signal.SIGALRM) is old_handler
+        assert signal.getitimer(signal.ITIMER_REAL) == (0., 0.)
+    finally:
+        stopped.set(); session.close(); server.shutdown(); server.server_close(); thread.join(1)
+        assert not thread.is_alive()
+
+
+def test_d_session_absolute_deadline_refuses_other_timer_or_thread_before_get(monkeypatch):
+    import signal
+    import threading
+    import time
+    from lib.options_source_receipts import BoundedRequestBudget
+    from collectors import thetadata as td
+    session = MagicMock(); budget = BoundedRequestBudget(2)
+    kw = dict(request_budget=budget, deadline_at=time.monotonic()+2)
+    previous = signal.getsignal(signal.SIGALRM)
+    signal.setitimer(signal.ITIMER_REAL, 10)
+    try:
+        with pytest.raises(ValueError, match='absolute deadline unavailable'):
+            td._get_csv(session, '/x', {}, **kw)
+        assert signal.getitimer(signal.ITIMER_REAL)[0] > 9
+        assert signal.getsignal(signal.SIGALRM) is previous
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+    errors = []
+    def run():
+        try: td._get_csv(session, '/x', {}, **kw)
+        except Exception as exc: errors.append(exc)
+    thread = threading.Thread(target=run); thread.start(); thread.join(1)
+    assert len(errors) == 1 and isinstance(errors[0], ValueError)
+    session.get.assert_not_called(); assert budget.attempts == 0
