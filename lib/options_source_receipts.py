@@ -413,7 +413,7 @@ class BoundedRequestBudget:
     Failure/uncertainty closes the budget; consumed attempts cannot be reset.
     """
     def __init__(self, max_gets=3, *, profile="selected_expiry"):
-        cap = {"selected_expiry": 3, "reference_population": 40}.get(profile)
+        cap = {"selected_expiry": 3, "reference_population": 40, "eod_catchup": 4}.get(profile)
         if cap is None or type(max_gets) is not int or not 1 <= max_gets <= cap:
             raise ValueError("Bounded acquisition permits1–3GETs")
         self.profile = profile
