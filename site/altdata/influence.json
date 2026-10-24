@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-20T16:47:56.827295+00:00",
+  "generated_utc": "2026-10-24T03:51:28.719434+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -750,10 +750,10 @@
       "n_actors": 6,
       "alt_corroborated": true,
       "alt_score": 5,
-      "alt_weighted": 2.1,
+      "alt_weighted": 1.85,
       "alt_channels": [
         "affiliation",
-        "darkpool_accum",
+        "github_momentum",
         "patent_cluster",
         "retail_buzz",
         "trump"
@@ -892,11 +892,12 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.3,
+      "alt_score": 4,
+      "alt_weighted": 1.6,
       "alt_channels": [
         "13f_add",
         "affiliation",
+        "lobbying",
         "patent_cluster"
       ],
       "top_holder": {
@@ -994,12 +995,13 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 2.1,
+      "alt_score": 6,
+      "alt_weighted": 2.4,
       "alt_channels": [
         "affiliation",
         "app_demand",
         "github_momentum",
+        "lobbying",
         "patent_cluster",
         "trump"
       ],
@@ -1062,7 +1064,7 @@
       "alt_channels": [
         "affiliation",
         "app_demand",
-        "github_momentum"
+        "lobbying"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1090,12 +1092,13 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.55,
+      "alt_score": 4,
+      "alt_weighted": 1.25,
       "alt_channels": [
         "affiliation",
-        "gov_contract_accel",
-        "retail_buzz"
+        "gov_contract",
+        "retail_buzz",
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1168,11 +1171,12 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.55,
+      "alt_score": 5,
+      "alt_weighted": 1.85,
       "alt_channels": [
         "affiliation",
         "gov_grant",
+        "lobbying",
         "patent_cluster",
         "stocktwits_bull"
       ],
@@ -1195,11 +1199,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.9,
+      "alt_score": 4,
+      "alt_weighted": 1.6,
       "alt_channels": [
         "affiliation",
-        "lobbying",
         "patent_cluster",
         "special_situation",
         "trump"
@@ -1252,11 +1255,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.15,
+      "alt_score": 2,
+      "alt_weighted": 1.0,
       "alt_channels": [
         "affiliation",
-        "stocktwits_bull",
         "trump"
       ],
       "top_holder": {
@@ -1324,10 +1326,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.9,
+      "alt_score": 3,
+      "alt_weighted": 1.45,
       "alt_channels": [
         "affiliation",
+        "material_8k",
         "patent_cluster"
       ],
       "top_holder": {
@@ -1349,12 +1352,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.1,
+      "alt_score": 4,
+      "alt_weighted": 1.25,
       "alt_channels": [
         "affiliation",
         "app_demand",
-        "special_situation"
+        "special_situation",
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "VOYA INVESTMENT MANAGEMENT LLC",
@@ -1673,6 +1677,14 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-10-22",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926033275/djt20261022_425.htm"
+    },
+    {
       "date": "2026-10-19",
       "form": "8-K",
       "company": "Curanex Pharmaceuticals Inc",
@@ -1714,11 +1726,11 @@
     },
     {
       "date": "2026-09-30",
-      "form": "425",
+      "form": "S-4",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/djt20260930_425.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
     },
     {
       "date": "2026-09-30",
@@ -1754,19 +1766,11 @@
     },
     {
       "date": "2026-09-30",
-      "form": "S-4",
+      "form": "8-K",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
+      "items": "1.01,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
     }
   ]
 }

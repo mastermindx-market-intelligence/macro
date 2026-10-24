@@ -186,7 +186,9 @@ def test_account_js_exposes_the_claim_the_theme_writer_consults() -> None:
     fn = acct[acct.index("function claimsPref("):acct.index("window.MMAccount = {")]
     assert "if (!_mounted) return false;" in fn
     assert "if (key !== 'theme' && key !== 'lang') return false;" in fn
-    assert "if (_hydrating || _authApplying) return false;" in fn
+    # Every presentation-apply window releases the account claim, including
+    # a parent-owned Shared Shell context; neither incumbent guard is dropped.
+    assert "if (_hydrating || _authApplying || _mmShellApplying()) return false;" in fn
     assert "state.acct.authenticated" in fn
     assert SITE_ACCOUNT_JS.read_text(encoding="utf-8") == acct, "site/account.js is the paired plain copy"
 

@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/python3.12",
+    "-B",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-92c51-focused-before-runner.py"
+  ],
+  "started_at": "2026-10-20T05:11:04.741698+00:00",
+  "source_sha256": "b314d835c264da49c0b3842944385ab99da069a5d2fa493182bbd41986e0eef8",
+  "finished_at": "2026-10-20T05:14:34.998660+00:00",
+  "exit": 1,
+  "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-92c51-focused-before.log",
+  "log_bytes": 2826,
+  "log_sha256": "c46112dadf1ccbb6c57f39af5fd4d6f6148d12550f59d38bb3a797538778c693"
+}

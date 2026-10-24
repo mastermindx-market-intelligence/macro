@@ -353,6 +353,24 @@
       $('v-zh-lead').textContent = '无法载入研报目录。这是加载问题，并非研报库为空。';
       return;
     }
+
+    // Language can change while the first catalog request is still pending.
+    // Preserve the loading shell until an actual catalog source has settled.
+    if (CATALOG_SOURCE === 'loading') return;
+
+    // Saved weekly figures cannot describe current activity. Retain the
+    // archive total; the status line already carries the saved timestamp.
+    if (!CATALOG_FRESH) {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = TOTAL_COUNT;
+      buildWeb();
+      $('v-en-lead').textContent =
+        'Research updates are delayed. Showing the saved catalog.';
+      $('v-zh-lead').textContent = '研报更新延迟，正在显示已保存的目录。';
+      return;
+    }
     var wk = ITEMS.filter(isThisWeek);
     var derivedNewN = wk.length;
     var desks = {}; wk.forEach(function (x) { if (isDeskInst(x.inst)) desks[x.inst] = 1; });

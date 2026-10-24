@@ -98,6 +98,41 @@ Alpaca/Benzinga receipt, no additional receipt paths, no optional Massive flag a
 no Massive token in that service's environment. These are presence-only observations,
 not a claim that the organization has no other agreement or credential.
 
+### Editorial acceptance for ticker-feed coverage
+
+Before counting a publisher activation as additional or improved ticker-feed
+coverage, record editorial acceptance in the existing activation evidence
+alongside the independent rights and delivery checks. The current
+[ticker editorial policy and view contract](ticker-news-editorial-quality.md)
+governs this assessment; a licensed, stored report is not itself served coverage.
+
+- Record the exact publisher's disposition under `engine/qkernel.py`, separately
+  from its transport and rights receipt. Excluded or unknown publishers cannot
+  count as eligible ticker-feed coverage, even when their permitted observations
+  are retained internally.
+- Review a representative, rights-permitted sample across the intended tickers
+  and an explicit observation window, including thinner-coverage tickers. Reuse
+  the shared article screening in `engine/news_common.py` and the current view
+  rules in `engine/qbus_news_editorial.py`. Record accepted and rejected formats,
+  ticker relevance and observed freshness; state the sample's limits. A provider
+  ticker tag or Company mentions match alone does not prove that the company is
+  the primary subject.
+- Verify the ordinary authenticated served feed and source controls in News &
+  announcements, Company mentions and Broader coverage. Preserve actual publisher
+  attribution and press-release labels. Excluded publishers must stay excluded
+  in every view, and sparse results must not fall back to excluded sources. Use
+  existing contract/fixture evidence for transitions absent from the observed
+  live sample, explicitly retaining that live-proof limit.
+- Report licensed/stored observations, editorially eligible served reports and
+  story groups separately, with their audience, ticker/view, observation window
+  and pagination scope. Explain why the observed content meets the intended
+  editorial standard and record remaining coverage gaps; publisher counts and
+  successful ingestion alone do not establish a quality improvement.
+
+This acceptance concerns ticker-feed coverage claims and does not broaden source
+permissions or replace the canonical policy, single writer, or release owner.
+Historical activation receipts below retain their original scope and dates.
+
 ## Duplicate groups and quality
 
 Clustering is conservative. The derived character-bigram index restricts posting
@@ -732,3 +767,60 @@ release gates. The Terminal Shared Brief assessment, held sector work and held
 Tiingo/financial-news cache work are not reassigned. No private draft, research
 bundle or `internal_research` evidence is authorized for automatic publication
 or export to `site/intelligence/briefing.json`.
+
+
+### Private release and bounded heartbeat repair — 20 October 2026, 19:05 UTC
+
+Private Press [#9888](https://github.com/mastermindx-market-intelligence/macro/pull/9888)
+merged at 18:58:31 as `e98d4e53265d2fb6d893c3286ddd6ca55df736d2`.
+Its exact head `f9270eadd1013a1c1cf69dc6bdf3f04e3c46c74e` had both
+independent APPROVE rulings, all 12 hosted packs and ci-gate successful in
+[39471764135](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39471764135),
+and a clean real merge-tree against then-current main. At 19:03:18 the normal
+updater had installed a descendant of the merge and all four qualified source
+hashes matched. The opt-in private CLI is present. No live draft was generated.
+
+A fresh read-only ordinary planner census at 19:03 used the incumbent
+configuration and current UTC date. It returned Brief 0 / Research Desk 1;
+`press-research_desk-2026-10-20-ecbcd172a7b6` has 21 first-party facts and an
+empty ticker list. A real private draft still needs a genuine current-day
+ordinary slot with exactly one explicitly supplied qualified ticker, or its
+complete provenance-preserving original staging record. Do not guess a ticker
+or alter cadence, source identity or held ingress. All three installed grant
+hashes and four audiences remain current; their operational revalidation
+deadline is 19 November 2026 13:41:32 UTC, not an asserted contractual expiry.
+
+The live banner investigation found repeated HTTP/1.1 stream cancellations
+about 15.1–15.6 seconds after API HTTP 200 responses. The app is served through
+Tencent EdgeOne, whose documented default HTTP/1 origin idle deadline is
+15 seconds. The actual site rule was not inspected. The existing 15-second
+heartbeat lacks margin; a narrow 5-second repair is prepared in operation
+`news-stream-heartbeat-20261020-c3`. Its actual-generator regression fails on
+old source and passes on the repair; 132 focused tests pass and independent
+source review is APPROVE. Permission checks, shared reads, polling and all
+data/error semantics are unchanged. This is a strong edge-idle diagnosis;
+sustained authenticated browser proof still requires deployment.
+
+The actual-principal read-only store sampler passed all 180 opens while those
+cancellations occurred, with a maximum 4.465 ms. This is not user/SSE proof.
+Terminal marker, compiled deploymentId and canonical source all identify
+`bbc07037aae3e98597945e23448781a091d15281`, active since 17:56:50.
+Evidence and bounded limitations are retained under
+`artifacts/news-stream-heartbeat-20261020-c3/`.
+
+Next three steps:
+1. Publish the reviewed heartbeat source, bind hosted CI/review, merge and use
+   the normal updater; then verify the real stream across repeated former
+   15-second boundaries.
+2. Accept the generated stock panel only after existing covering render
+   39439974736 publishes and the actual page is checked. Keep observing the
+   licensed publishers' natural acquisition progress and actual API/browser
+   visibility without equating backfill age with delivery latency.
+3. When a genuine eligible original company slot exists, qualify one private
+   draft through current identity/rights admission and the dedicated private
+   destination. The present blocker is the missing original single-ticker input.
+
+The primary activation is already applied; do not replay it. Dashboard #9612,
+Terminal sidebar #1081, sector holds, held Tiingo work and frozen W2C retain
+their separate owners and release conditions. No news draft is authorized for
+automatic public export.
