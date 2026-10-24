@@ -200,6 +200,10 @@ def test_plan_relation_pure_function_is_open_same_security_and_sorted():
         "lifecycle_state": "entered",
         "formation_date": "2026-08-10",
         "signal_date": "2026-08-15",
+        "signal_date_basis": None,
+        "observed_date": None,
+        "price_basis_date": None,
+        "recorded_at": None,
         "plan_asof": "2026-08-16",
     }
     assert _plan_relations_for(None, True)[0] == "unknown"
@@ -287,8 +291,8 @@ def test_setup_detail_renders_related_security_record():
     assert records[0]["data-plan-lifecycle"] == "entered"
     assert "Entered" in records[0].get_text(" ", strip=True)
     assert "入场" in records[0].get_text(" ", strip=True)
-    assert "Formed 形成于 2026-08-10" in records[0].get_text(" ", strip=True)
-    assert "Signal date 信号日期 2026-08-15" in records[0].get_text(" ", strip=True)
+    assert "Formation anchor 形成锚点 2026-08-10" in records[0].get_text(" ", strip=True)
+    assert "Source signal date · basis unavailable 来源信号日期 · 日期依据不可用 2026-08-15" in records[0].get_text(" ", strip=True)
     assert "Plan as of 计划截至 2026-08-16" in records[0].get_text(" ", strip=True)
     button = records[0].select_one(".pvs-plan-link")
     assert button["data-pvs-plan-target"] == "pv-LFUS-BULL-20260810"
@@ -712,3 +716,40 @@ def test_plan_book_reader_preserves_supported_intake(tmp_path, intake):
     vm = _base_vm()
     vm.update(us_prophet_book=admitted, us_prophet_book_error=error)
     _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+
+
+@pytest.mark.parametrize("basis,signal,label", [
+    ("tier_event_date", "2026-10-20", "Signal event session"),
+    ("legacy_formation_alias", "2026-10-16", "Formation alias · signal event unverified"),
+    (None, "2026-10-20", "Source signal date · basis unavailable"),
+    ("tier_observation", None, "Observation only · no signal event recorded"),
+])
+def test_related_plan_keeps_clock_meanings_without_entry_or_publication_claim(basis, signal, label):
+    from copy import deepcopy
+    from scripts.build_site import _plan_relations_for
+
+    # Retained USFD-BULL-20261016 clock values; alternatives exercise legacy/T3 inputs.
+    plan = dict(id="USFD-BULL-20261016", asset="USFD", lifecycle_state="ready",
+                formation_date="2026-10-16", signal_date=signal, signal_date_basis=basis,
+                observed_date="2026-10-22", price_basis_date="2026-10-22",
+                recorded_at="2026-10-23", plan_asof="2026-10-23")
+    original = deepcopy(plan)
+    relation = _plan_relations_for({"plans": [plan]})[1]["USFD"][0]
+    for key in ("signal_date_basis", "observed_date", "price_basis_date", "recorded_at"):
+        assert relation[key] == plan[key]
+    assert plan == original
+    html = str(_detail().body({"ticker": "USFD"}, "board", None,
+                             {"state": "related_security", "plans": [relation]}))
+    section = BeautifulSoup(html, "html.parser").select_one(".pvs-plan-relation")
+    en = " ".join(node.get_text(" ", strip=True) for node in section.select(".l-en"))
+    zh = " ".join(node.get_text(" ", strip=True) for node in section.select(".l-zh"))
+    assert label in en
+    assert "Formation anchor" in en and "形成锚点" in zh
+    assert "Price observations through" in en and "价格观测截至" in zh
+    assert "Recorded date" in en and "记录日期" in zh
+    assert "Publication / first-visible time not supplied" in en
+    assert "未提供发布／首次可见时间" in zh
+    assert "does not establish current entry availability" in en
+    assert "2026-10-22" in section.get_text()
+    assert "2026-10-23" in section.get_text()
+    assert 'data-plan-exact="unavailable"' in str(section)

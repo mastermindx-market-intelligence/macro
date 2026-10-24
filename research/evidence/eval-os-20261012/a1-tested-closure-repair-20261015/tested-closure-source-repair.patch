@@ -1,0 +1,20 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index 1151a19f4ebe..1e90546c4031 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -7517,6 +7517,15 @@ jobs:
+     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
+     scope: exclusive
+     paths:
++      - engine/sector_intelligence/consumer_cyclical_display.py
++      - engine/sector_intelligence/consumer_cyclical_projection.py
++      - engine/sector_intelligence/consumer_cyclical_shared_contract.py
++      - engine/sector_intelligence/finance_case_signal.py
++      - engine/sector_intelligence/finance_page_signal.py
++      - engine/sector_intelligence/finance_projection.py
++      - engine/sector_intelligence/finance_watching.py
++      - engine/sector_intelligence/finance_witness_hints.py
++      - scripts/build_consumer_cyclical_plnt_page.py
+       - collectors/biocatalyst/__init__.py
+       - engine/biocatalyst/__init__.py
+       - engine/capital_structure/__init__.py
