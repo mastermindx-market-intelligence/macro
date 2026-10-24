@@ -1,0 +1,79 @@
+{
+  "schema": "catalyst.company_assessment_v2_verification.v1",
+  "recorded_at": "2026-10-19",
+  "publication_operation": "catalyst-stock-context-r1-20261019",
+  "authoring_operation": "catalyst-assessment-v2-r5-20261019",
+  "carrier_pr": 9616,
+  "base_sha": "6cf685047eca56ad236e16fdc84adb4a07646168",
+  "source_sha256": {
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/catalyst_intelligence/__main__.py": "7f878761813b5742a072feb011f66b770a2d9c366bf0d35839ff19dea6749d9f",
+    "tests/test_catalyst_stock_context.py": "88f60e2a2a9e04a89f5c90c27e646a884849e76b2ebd66cf4b040cd37dcd281a"
+  },
+  "standalone_tests": {
+    "process_id": 86467,
+    "command": "python -m pytest -q tests/test_catalyst_stock_context.py --tb=short",
+    "passed": 88,
+    "new_cases": 45,
+    "exit_code": 0,
+    "warnings": 2
+  },
+  "composed_tests": {
+    "process_id": 28087,
+    "command": "python -m pytest -q tests/test_catalyst_stock_context.py tests/test_prophet_strategy_definition.py tests/test_prophet_daily_brief.py tests/test_news_impact_thesis.py --tb=short",
+    "passed": 453,
+    "exit_code": 0,
+    "warnings": 2,
+    "base_sha": "6cf685047eca56ad236e16fdc84adb4a07646168",
+    "owner_heads": {
+      "entry": "d4d43810c18f8e48b8cf49fa447392f7901f6b97",
+      "news": "28f35fd86233cae3a42078966538cd8248c3f738"
+    },
+    "published_merge_commit": null,
+    "setup_repairs": [
+      "omitted unchanged lib/ restored",
+      "omitted unchanged scripts/ restored",
+      "omitted unchanged app/ restored"
+    ],
+    "source_repairs_from_setup_failures": false
+  },
+  "v1_compatibility": {
+    "frozen_fixture": "research/catalyst_intelligence/stock_context_r1/fixtures/owner_assessment.json",
+    "proof": "parsed CLI JSON equality, including IDs and digests; unchanged v1 implementation and frozen fixture bytes",
+    "raw_stdout_byte_comparison_performed": false
+  },
+  "independent_review": {
+    "reviewer": "C3 integration_architecture_review",
+    "verdict": "ACCEPT",
+    "scope": "v2 consumer source and 45 added regression cases",
+    "tests_executed_by_reviewer": false,
+    "source_sha256": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b"
+  },
+  "bounded_adoption": {
+    "process_id": 37556,
+    "result": "APPLIED",
+    "source_and_target_base_equal": true,
+    "source_hashes_verified": true,
+    "entry_and_news_owner_files_adopted": false
+  },
+  "replay_capture": {
+    "process_id": 40879,
+    "exit_code": 0,
+    "cases": 4,
+    "real_path_assertions": "PASS",
+    "receipt": "fixtures/capture-receipt.json",
+    "source_scope": "exact composed research checkout",
+    "native_admission_established": false
+  },
+  "source_claim_gate": {
+    "process_id": 51876,
+    "command": "python scripts/check_validated_claims.py --scope source",
+    "exit_code": 0,
+    "checkout_repair": "missing allowlist restored byte-for-byte from carrier HEAD"
+  },
+  "diff_check": "PASS",
+  "qualification": "NONACTIVATED_RESEARCH_CONSUMER",
+  "native_admission_established": false,
+  "dependency_disposition": "R3 and R4 remain separate held PRs; their repaired behavior was tested in the identified composed checkout, not asserted for the uncomposed consumer branch.",
+  "disposition": "DRAFT_HOLD_FOR_SOL"
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "catalyst.stock_context_integration_verification.v1",
+  "operation_id": "catalyst-stock-context-r1-20261019",
+  "proof_date_utc": "2026-10-20",
+  "source_parent": "a073abedc58d945b10eb27380d49b879754c5bcc",
+  "integrated_main_parent": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+  "resolved_code_index_tree_before_documentation": "7a2ecd582e2efee9e717d707b855105edab4d440",
+  "conflict": {
+    "path": "tests/test_ci_pack.py",
+    "base_blob": "270d3fe5968b3914c443d2213a48f6d84916c0eb",
+    "main_blob": "ac293e803d1254e0efdf0358a7e6ef5970bba4e0",
+    "source_blob": "4a6571038e82187228c6a1ae7d8ce44b79ce2392",
+    "resolution": "retain the full main file plus the original 344-character Catalyst insertion",
+    "both_curated_owners": [
+      "catalyst-stock-context",
+      "local-projections"
+    ],
+    "packing_limits_changed": false,
+    "source_scopes_broadened": false
+  },
+  "source_sha256": {
+    "tests/test_ci_pack.py": "ae996f1dd1fc7dfd5e14cab3974996496df702097f7f8276ea126e586c63b2f1",
+    ".github/ci/legacy-jobs.yml": "4ab4db3f3067464138a78445a2185c2c600da46454e4a2343f60d91d34254d5c",
+    "tests/test_catalyst_stock_context.py": "88f60e2a2a9e04a89f5c90c27e646a884849e76b2ebd66cf4b040cd37dcd281a",
+    "engine/catalyst_intelligence/__init__.py": "ac312306b503d147c2ebbbe8a4aab461d2533b856a6f03f8b0dc66157db25833",
+    "engine/catalyst_intelligence/__main__.py": "7f878761813b5742a072feb011f66b770a2d9c366bf0d35839ff19dea6749d9f",
+    "engine/catalyst_intelligence/assessment.py": "104e02d28d3dfca1438b1f2629b0c354633616e822b780d129a036813b0bd0d5",
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/catalyst_intelligence/peer_context.py": "8d7b15d3cf90af5da6fd1c53711c3814e9af856460e4dfffaad9a233ea3934c7"
+  },
+  "unchanged_from_source_parent": [
+    "engine/catalyst_intelligence",
+    "tests/test_catalyst_stock_context.py",
+    "engine/news_impact",
+    "engine/prophet_entry_availability.py",
+    "engine/prophet_candidate_state.py",
+    "config/schemas/news_impact"
+  ],
+  "focused": {
+    "process_id": 95449,
+    "command": "python -m pytest -q tests/test_catalyst_stock_context.py tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs --tb=short",
+    "passed": 92,
+    "failed": 0,
+    "exit_code": 0,
+    "company_assessment_cases": 88,
+    "existing_ci_contract_cases": 4,
+    "pytest_seconds": 241.15,
+    "warnings": 2,
+    "warning_scope": "inherited pytest temporary-directory cleanup"
+  },
+  "review": {
+    "reviewer": "C3 biocatalyst_integration_judgment",
+    "verdict": "SOURCE_CONCURRENCE",
+    "scope": "exact additive CI conflict resolution and preservation of both existing owner declarations",
+    "tests_executed_by_reviewer": false,
+    "root_adopted_review": true
+  },
+  "new_code_tests_added": false,
+  "original_company_behavior_changed": false,
+  "fresh_head_hosted_ci": "REQUIRED_AFTER_PUBLICATION",
+  "later_moving_main_qualification": "NOT_CLAIMED",
+  "native_admission_established": false,
+  "scientific_qualification_changed": false,
+  "published_runtime": false,
+  "source_merge_to_main_authorized_by_this_record": false,
+  "disposition": "DRAFT_HOLD_FOR_SOL"
+}
