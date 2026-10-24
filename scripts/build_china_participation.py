@@ -49,6 +49,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 _TAPE_PATH = _ROOT / "data" / "china_participation" / "tape.parquet"
 _JSON_PATH = _ROOT / "site" / "chinastatedata" / "participation.json"
+_CURRENT_JSON_PATH = _ROOT / "site" / "chinastatedata" / "participation_current.json"
 
 
 def _load_existing_tape() -> pd.DataFrame | None:
@@ -70,12 +71,15 @@ def _build_full() -> pd.DataFrame:
     return tape
 
 
-def _append_new_rows(existing: pd.DataFrame) -> pd.DataFrame:
-    """Build full tape and append rows newer than last existing date."""
+def _append_new_rows(existing: pd.DataFrame, full: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Append first observations only; a current recomputation must never restate the archive."""
     from engine.china_participation import build_tape
+    if full is None:
+        full = build_tape(backfill=False)
+    if existing.empty:
+        return full.copy()
     last_date = existing.index.max()
     log.info("Appending new rows after %s…", last_date.date())
-    full = build_tape(backfill=False)
     new_rows = full[full.index > last_date].copy()
     if new_rows.empty:
         log.info("No new rows to append (last date is current).")
@@ -100,6 +104,13 @@ def _write_json(tape: pd.DataFrame) -> None:
     with open(_JSON_PATH, "w", encoding="utf-8") as fh:
         json.dump(snap, fh, indent=2, ensure_ascii=False, default=str)
     log.info("Wrote participation.json: %s", _JSON_PATH)
+
+
+def _write_current_json(current: pd.DataFrame) -> None:
+    from engine.china_participation import current_projection
+    _CURRENT_JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _CURRENT_JSON_PATH.write_text(json.dumps(
+        current_projection(current), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
 
 
 def _sanity_print(tape: pd.DataFrame) -> None:
@@ -170,18 +181,21 @@ def main(backfill: bool = False, smoke: bool = False) -> int:
     existing = _load_existing_tape()
     force_backfill = backfill or existing is None
 
-    if force_backfill:
-        tape = _build_full()
-    else:
-        tape = _append_new_rows(existing)
+    # One source computation feeds two explicitly different vintages.
+    from engine.china_participation import build_tape
+    current = _build_full() if force_backfill else build_tape(backfill=False)
+    tape = current if force_backfill else _append_new_rows(existing, current)
 
     if tape.empty:
         log.error("Tape is empty after build — check data stores")
         _sanity_print(tape)
         return 1
 
-    _write_tape(tape)
-    _write_json(tape)
+    # A no-new-date run leaves the archival file byte-for-byte untouched.
+    if force_backfill or len(tape) != len(existing):
+        _write_tape(tape)
+    _write_json(tape)  # legacy archive-based consumer contract
+    _write_current_json(current)  # current-source view, not historical evidence
     _sanity_print(tape)
 
     log.info(

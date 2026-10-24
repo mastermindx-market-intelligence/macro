@@ -44,7 +44,14 @@ def _read_payload(path) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for _, r in df.iterrows():
         try:
-            out[str(r["ticker"])] = json.loads(r["payload"])
+            payload = json.loads(r["payload"])
+            if not isinstance(payload, dict):
+                continue
+            for key in ("name", "asof"):
+                value = r.get(key)
+                if isinstance(value, str) and value:
+                    payload[key] = value
+            out[str(r["ticker"])] = payload
         except Exception:  # noqa: BLE001
             continue
     return out
@@ -86,7 +93,8 @@ def analyst_consensus(price_by: dict[str, float] | None = None) -> dict[str, dic
         fy1 = years[0] if years else None
         fy2 = next((y for y in years if y > fy1), None) if fy1 else None
         price = _num(price_by.get(t))
-        block: dict = {"reports": reports, "buy": buy, "hold": hold, "sell": sell}
+        block: dict = {"reports": reports, "buy": buy, "hold": hold, "sell": sell,
+                       "name": p.get("name"), "asof": p.get("asof")}
         if rat:
             block.update(rating=rat[0], rating_zh=rat[1], net=rat[2])
         if fy1 and eps.get(fy1) is not None:
@@ -221,7 +229,8 @@ def comment() -> dict[str, dict]:
         if inst_vs_retail is not None:
             cscore += 0.4 * inst_vs_retail
         cscore += 0.2 * (1 if rdelta > 0 else (-1 if rdelta < 0 else 0)) * _clip01(abs(rdelta) / 200.0)
-        out[t] = {"attention": attn, "inst_participation": instp, "main_cost": mcost,
+        out[t] = {"name": getattr(r, "name", None), "asof": getattr(r, "asof", None),
+                  "attention": attn, "inst_participation": instp, "main_cost": mcost,
                   "price": price, "score": score, "rank_delta": rdelta,
                   "inst_vs_retail": None if inst_vs_retail is None else round(inst_vs_retail, 3),
                   "main_force_cost_gap": None if mcg is None else round(mcg, 1),
@@ -274,7 +283,9 @@ def lhb() -> dict[str, dict]:
         inst_accum = _clip01(0.5 * _clip01((nbuy - nsell) / 4.0)
                              + 0.5 * _clip01(math.log1p(max(inb * 1e8, 0)) / math.log1p(3e8)))
         leading = bool(inb > 0 and nbuy >= 2)
-        out[t] = {"net_buy_yi": round(net, 2), "inst_net_buy_yi": round(inb, 2),
+        out[t] = {"name": getattr(r, "name", None), "asof": getattr(r, "asof", None),
+                  "last_date": getattr(r, "last_date", None),
+                  "net_buy_yi": round(net, 2), "inst_net_buy_yi": round(inb, 2),
                   "n_inst_buy": nbuy, "n_inst_sell": nsell,
                   "hotmoney_score": round(hot, 3), "inst_accum_score": round(inst_accum, 3),
                   "leading": leading, "tag": "机构吸筹" if leading else "游资"}
@@ -296,7 +307,9 @@ def block_trades() -> dict[str, dict]:
         prem = _num(getattr(r, "avg_premium_pct", None)) or 0.0
         a = _num(getattr(r, "block_amt_yi", None)) or 0.0
         score = _clip(prem / 8.0) if a >= t66 else 0.0
-        out[t] = {"avg_premium_pct": round(prem, 2), "block_amt_yi": round(a, 2),
+        out[t] = {"name": getattr(r, "name", None), "asof": getattr(r, "asof", None),
+                  "last_date": getattr(r, "last_date", None),
+                  "avg_premium_pct": round(prem, 2), "block_amt_yi": round(a, 2),
                   "block_score": round(score, 3),
                   "block_discount_unload": bool(prem < -5 and a >= t66)}
     return out
@@ -321,7 +334,11 @@ def fundflow() -> dict[str, dict]:
         namt = _num(getattr(r, "net_amount", None))
         if rate is None and net is None:
             continue
-        out[t] = {"main_net": None if net is None else round(net, 1),
+        trade_date = str(getattr(r, "trade_date", "") or "")
+        if len(trade_date) == 8 and trade_date.isdigit():
+            trade_date = f"{trade_date[:4]}-{trade_date[4:6]}-{trade_date[6:]}"
+        out[t] = {"date": trade_date or None, "asof": getattr(r, "asof", None),
+                  "main_net": None if net is None else round(net, 1),
                   "net_amount": None if namt is None else round(namt, 1),
                   "main_net_rate": None if rate is None else round(rate, 2),
                   "name": str(getattr(r, "name", "") or "") or t,

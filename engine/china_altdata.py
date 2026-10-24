@@ -16,6 +16,7 @@ See research/CHINA_INTEL_POWERHOUSE.md §2.
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime, timezone
 
 from lib import config
@@ -119,7 +120,7 @@ def _rank_pct(vals: dict) -> dict:
     HAVE the feed. Centered later to [-1,1]. Tied values share one percentile — without this,
     the ~97%-unanimous-buy analyst feed would get spread across the whole band by sort order
     and flip stocks' accumulate/distribute side arbitrarily."""
-    items = [(t, v) for t, v in vals.items() if v is not None]
+    items = [(t, v) for t, v in vals.items() if isinstance(v, (int, float)) and math.isfinite(v)]
     n = len(items)
     if n == 0:
         return {}
@@ -139,7 +140,7 @@ def _rank_pct(vals: dict) -> dict:
     return out
 
 
-def _compute_rows(min_signals: int = 2) -> list[dict]:
+def _compute_rows(min_signals: int = 2, weights: dict | None = None) -> list[dict]:
     """Full per-ticker convergence rows (sorted desc). Rank-normalizes EACH feed cross-
     sectionally, then combines on a signed [-1,1] scale. Shared by by_ticker + convergence_map."""
     from engine import china_conviction as cv
@@ -160,9 +161,11 @@ def _compute_rows(min_signals: int = 2) -> list[dict]:
     except Exception:  # noqa: BLE001
         crowd_map = {}
     names = _name_map()
-    for d in (comment, lhb, block, flow):     # backfill names from the new feeds too
+    for d in (analyst, comment, lhb, block, flow):  # prefer real names over ticker placeholders
         for t, v in d.items():
-            names.setdefault(t, v.get("name", t) if isinstance(v, dict) else t)
+            candidate = v.get("name") if isinstance(v, dict) else None
+            if candidate and candidate != t and (not names.get(t) or names[t] == t):
+                names[t] = str(candidate)
     universe = (set(analyst) | set(valuation) | set(margin) | set(comment) | set(lhb)
                 | set(block) | set(flow))
     raw = {"analyst": {}, "value": {}, "margin": {}, "comment": {}, "lhb": {}, "block": {}, "flow": {}}
@@ -185,7 +188,7 @@ def _compute_rows(min_signals: int = 2) -> list[dict]:
         if t in flow and flow[t].get("flow_score") is not None:
             raw["flow"][t] = flow[t]["flow_score"]
     pct = {leg: _rank_pct(vals) for leg, vals in raw.items()}
-    W = _leg_weights()
+    W = _leg_weights() if weights is None else weights
     rows: list[dict] = []
     for t in universe:
         present = {leg: pct[leg][t] * 2 - 1 for leg in pct if t in pct[leg]}
@@ -203,7 +206,8 @@ def _compute_rows(min_signals: int = 2) -> list[dict]:
         n_present = len(present)
         c100 = cv.to_100(abs(conv) * min(1.0, n_present / 3.0))
         _bk, ben, bzh = cv.signed_band(c100, sign)
-        reasons = [k for k, s in present.items() if (s > 0) == (conv > 0) and abs(s) > 0.05]
+        reasons = [k for k, s in present.items() if abs(conv) > 0.05
+                   and abs(s) > 0.05 and W.get(k, 0) * s * conv > 0]
         flags = list((crowd_map.get(t) or {}).get("flags") or [])
         if not flags and crowd_legacy.get(t):
             flags = ["leverage_crowded"]
@@ -212,25 +216,31 @@ def _compute_rows(min_signals: int = 2) -> list[dict]:
             "convergence": round(conv, 3), "n_signals": len(present),
             "conviction100": c100, "conviction_band_en": ben, "conviction_band_zh": bzh,
             "side": side, "reasons": reasons, "flags": flags,
+            "source_asof": {k: (d.get(t) or {}).get("date") or (d.get(t) or {}).get("asof")
+                            for k, d in {"analyst": analyst, "value": valuation, "margin": margin,
+                                         "comment": comment, "lhb": lhb, "block": block, "flow": flow}.items()},
+            "source_date_kind": {k: "observation" if (d.get(t) or {}).get("date") else "snapshot"
+                                 for k, d in {"analyst": analyst, "value": valuation, "margin": margin,
+                                              "comment": comment, "lhb": lhb, "block": block, "flow": flow}.items()},
         }
         for leg in raw:
             row[leg] = None if leg not in present else round(present[leg], 2)
         rows.append(row)
-    rows.sort(key=lambda r: (r["convergence"], r["n_signals"]), reverse=True)
+    rows.sort(key=lambda r: (-r["convergence"], -r["n_signals"], r["ticker"]))
     conv_pct = _rank_pct({r["ticker"]: r["convergence"] for r in rows})
     for r in rows:
         r["rank_pctile"] = round(conv_pct.get(r["ticker"], 0.5) * 100, 1)
     return rows
 
 
-def full_rows(min_signals: int = 2) -> list[dict]:
+def full_rows(min_signals: int = 2, weights: dict | None = None) -> list[dict]:
     """The FULL per-ticker convergence universe, unsliced. ``[]`` on failure. Never raises.
 
     ``by_ticker`` publishes only a top/bottom/triple DISPLAY slice; consumers that need
     per-name coverage (engine.china_intel_interest, the v4 board ordering) read this
     instead. Same rows ``convergence_map`` summarises, with ``flags`` (crowding) kept."""
     try:
-        return _compute_rows(min_signals)
+        return _compute_rows(min_signals, weights)
     except Exception as e:  # noqa: BLE001
         log.error("china_altdata.full_rows failed (%s)", e)
         return []
@@ -302,10 +312,11 @@ def _probationary_chips() -> dict[str, dict]:
         return {}
 
 
-def by_ticker(min_signals: int = 2, top_n: int = 30) -> dict | None:
+def by_ticker(min_signals: int = 2, top_n: int = 30, *,
+              rows: list[dict] | None = None, weights: dict | None = None) -> dict | None:
     """Per-ticker convergence desk view (top/bottom/triple slices). Never raises."""
     try:
-        rows = _compute_rows(min_signals)
+        rows = _compute_rows(min_signals, weights) if rows is None else rows
         if not rows:
             return None
         triple = [r for r in rows if r["n_signals"] >= 3]
@@ -339,7 +350,7 @@ def by_ticker(min_signals: int = 2, top_n: int = 30) -> dict | None:
             "triple": triple[:top_n],
             "top": rows[:top_n], "bottom": rows[-top_n:][::-1],
             "crowding_flags": crowding,
-            "weights": _leg_weights(),
+            "weights": _leg_weights() if weights is None else weights,
             # Probationary chip index: {ticker: {deep_discount_block?, inst_seat_lhb?}}
             # ZERO scoring weight; display chips + forward ledger seed only.
             "probationary": {t: c for t, c in prob.items()},

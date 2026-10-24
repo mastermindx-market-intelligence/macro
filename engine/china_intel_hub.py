@@ -29,6 +29,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config
+from lib.china_filing_urls import cninfo_source_url as _cninfo_source_url
 from engine import narrative_crossmarket
 
 log = logging.getLogger(__name__)
@@ -311,28 +312,6 @@ def _ticker_to_sec_code(ticker: str) -> tuple[str, str] | None:
 
 
 
-_CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
-_CNINFO_RELATIVE_PATH = re.compile(r"^finalpage/[A-Za-z0-9._/-]+$")
-
-
-def _cninfo_source_url(adjunct_url: str | None) -> str | None:
-    """Return a safe absolute CNInfo PDF URL for the stored relative source path.
-
-    The filing owner stores adjunct_url exactly as CNInfo supplied it and never
-    fetches the body. This reader may expose a user-navigable source reference,
-    but it must not turn arbitrary stored text into an outbound URL. Only the
-    observed CNInfo finalpage/ path family is accepted; absolute URLs,
-    traversal, backslashes and control characters fail closed.
-    """
-    raw = str(adjunct_url or "").strip()
-    if not raw or "://" in raw or "\\" in raw or ".." in raw:
-        return None
-    if any(ord(ch) < 32 for ch in raw):
-        return None
-    rel = raw.lstrip("/")
-    if not _CNINFO_RELATIVE_PATH.fullmatch(rel):
-        return None
-    return _CNINFO_STATIC_BASE + rel
 
 
 def _load_visits_context() -> dict:

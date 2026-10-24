@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china_altdata.html.j2
+  - templates/china-altdata-desk.css
+  - templates/china-altdata-desk.js
+  - site/china_altdata.html
+  - site/china-altdata-desk.css
+  - site/china-altdata-desk.js
+manifest: mockups/evidence/china_altdata_desk/manifest.json

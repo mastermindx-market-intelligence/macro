@@ -7,9 +7,10 @@ keyless microstructure parsers (涨停池 limit-up pool + sector breadth), rende
 site/china_altdata.html, and emits site/chinaaltdata/{by_ticker,mastermind,feed}.json (the
 mastermind.json is the context lens the intel bus + future China Mastermind read).
 
-Render-budget note: the heavy engines (participation tape, special-situations EDGAR scan,
-narrative radar) are NOT recomputed here — they run earlier in the same nightly cluster and
-we READ their emitted JSON. Only the cheap keyless parquet parsers are called live.
+Render budget: special situations and narrative radar reuse upstream JSON. The current
+participation projection is recomputed once from already-collected files so late arrivals
+and same-date corrections are visible even on the first render. It never writes the archive
+or invokes collectors. The company kernel is also computed once for all display outputs.
 
 Callable standalone + importable (build()). CONTEXT-ONLY · never raises · never blocks render.
 See research/CHINA_INTEL_POWERHOUSE.md §2.
@@ -18,7 +19,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 import sys
 from pathlib import Path
 
@@ -32,60 +32,7 @@ from lib.pages import write_page  # noqa: E402
 
 log = logging.getLogger(__name__)
 
-ASSETS = ("theme.css", "theme.js", "illus.css", "illus.js")
-
-# ---------------------------------------------------------------------------- #
-# Participation "tape" regime → plain-word label + stance + gauge position.
-# Display mapping ONLY (context, never a size). The gauge is a positioning-cycle dial:
-# score 0 = capitulation / fire-sale, 50 = neutral, 100 = euphoria. `tone` colours the
-# arc via --up/--warn/--down (so it honours the ZH red=up swap). `stance_*` is the
-# plain-word "so what do I do" the doctrine (Law 1) requires on every panel.
-# ---------------------------------------------------------------------------- #
-_REGIME = {
-    "forced_deleveraging": dict(score=8, tone="red",
-        en="Fire-sale", zh="恐慌抛售",
-        stance_en="Stand aside — forced selling is still clearing.",
-        stance_zh="观望——被迫抛售仍在出清。"),
-    "distribution": dict(score=30, tone="red",
-        en="Distribution", zh="派发出货",
-        stance_en="Protect gains — smart money is selling into strength.",
-        stance_zh="保护盈利——主力在拉高出货。"),
-    "dormant": dict(score=44, tone="yellow",
-        en="Dormant", zh="低迷休整",
-        stance_en="Watch — don't chase. The tape is quiet.",
-        stance_zh="观望，别追。市场清淡。"),
-    "unclear": dict(score=50, tone="yellow",
-        en="Mixed", zh="信号不明",
-        stance_en="Watch — the signals don't agree yet.",
-        stance_zh="观望——信号尚未一致。"),
-    "institutional_accumulation": dict(score=62, tone="green",
-        en="Accumulation", zh="机构吸筹",
-        stance_en="Get ready — institutions are building quietly.",
-        stance_zh="做好准备——机构正在悄悄吸筹。"),
-    "retail_ignition": dict(score=74, tone="yellow",
-        en="Retail ignition", zh="散户点火",
-        stance_en="Watch — don't chase. Retail-led moves fade fast.",
-        stance_zh="观望，别追。散户主导的行情消退很快。"),
-    "margin_acceleration": dict(score=86, tone="red",
-        en="Margin surge", zh="融资加速",
-        stance_en="Watch — don't chase. Leverage is doing the buying.",
-        stance_zh="观望，别追。买盘靠杠杆推动。"),
-    "broad_mania": dict(score=95, tone="red",
-        en="Euphoria", zh="全面狂热",
-        stance_en="Protect gains — the crowd is all-in.",
-        stance_zh="保护盈利——市场情绪全面亢奋。"),
-}
-_WHO = {
-    "retail": ("Retail-led", "散户主导"), "institutional": ("Institution-led", "机构主导"),
-    "margin": ("Leverage-led", "杠杆主导"), "state_proxy": ("State team", "国家队"),
-    "offshore": ("Offshore / 南向", "南向 / 离岸"), "mixed": ("Mixed hands", "多方混杂"),
-    "unclear": ("Unclear", "尚不明朗"),
-}
-_RISK = {
-    "low": ("Calm", "平静", "green"), "normal": ("Normal", "正常", "muted"),
-    "frothy": ("Frothy", "过热", "yellow"), "fire_sale": ("Fire-sale", "抛售", "red"),
-}
-
+ASSETS = ("theme.css", "theme.js", "navigation-refresh.css", "china-altdata-desk.css", "china-altdata-desk.js")
 
 def _site_dir() -> Path:
     sd = Path(config.load()["storage"]["site_dir"])
@@ -97,58 +44,6 @@ def _read_json(p: Path) -> dict:
         return json.loads(p.read_text())
     except Exception:  # noqa: BLE001 — missing/half-written upstream emit degrades to {}
         return {}
-
-
-# The participation producer writes the published-row lag into `data_gaps` as an internal
-# token (engine/china_participation.py:961-967). Parse it once here so the page can state the
-# row date, the tape-tail date and the lag in days in both languages — neither the raw token
-# nor the EN-only `snapshot_note` may be echoed to a reader.
-_STALE_RE = re.compile(
-    r"snapshot_staleness:published row (\d{4}-\d{2}-\d{2}) is (\d+)d "
-    r"behind tape tail (\d{4}-\d{2}-\d{2})")
-
-
-def _tape_staleness(part) -> dict | None:
-    """{row_date, lag_days, tail_date} from the producer's staleness token; None without it."""
-    try:
-        gaps = part.get("data_gaps") if isinstance(part, dict) else None
-        if not isinstance(gaps, list):
-            return None
-        for gap in gaps:
-            if not isinstance(gap, str):
-                continue
-            m = _STALE_RE.search(gap)
-            if m:
-                return {"row_date": m.group(1), "lag_days": int(m.group(2)),
-                        "tail_date": m.group(3)}
-    except Exception:  # noqa: BLE001 - a malformed upstream token degrades to no staleness line
-        return None
-    return None
-
-
-def _tape_read(part: dict) -> dict | None:
-    """Map an upstream participation snapshot → the hero 'tape' read. Context only; None on miss."""
-    if not part or not part.get("regime"):
-        return None
-    meta = _REGIME.get(part.get("regime"), _REGIME["unclear"])
-    who = _WHO.get(part.get("who_controls", "unclear"), _WHO["unclear"])
-    risk = _RISK.get(part.get("risk", "normal"), _RISK["normal"])
-    return {
-        "score": meta["score"], "tone": meta["tone"],
-        "regime_en": meta["en"], "regime_zh": meta["zh"],
-        "stance_en": meta["stance_en"], "stance_zh": meta["stance_zh"],
-        "who_en": who[0], "who_zh": who[1],
-        "risk_en": risk[0], "risk_zh": risk[1], "risk_tone": risk[2],
-        "date": part.get("date"),
-        "turnover_z20": part.get("turnover_z20"), "margin_chg_5d": part.get("margin_chg_5d"),
-        "southbound_net": part.get("southbound_net"), "southbound_z": part.get("southbound_z"),
-        "qvix": part.get("qvix"), "qvix_z": part.get("qvix_z"),
-        "margin_to_mcap": part.get("margin_to_mcap"),
-        "evidence": part.get("evidence") or [],
-        "snapshot_note": part.get("snapshot_note"),
-        "data_gaps": part.get("data_gaps") or [],
-        "staleness": _tape_staleness(part),
-    }
 
 
 def _zt_rows(zt: dict, names: dict, top_n: int = 14) -> list[dict]:
@@ -171,26 +66,27 @@ def _narr_rows(narr: dict, top_n: int = 12) -> list[dict]:
     return baskets[:top_n]
 
 
-def _tape_spark() -> str:
-    """Trading-intensity trajectory (turnover z vs 20-day normal) as an ilx waterline.
-    Reads the upstream tape.parquet (cheap; no recompute); '' on any miss — never raises."""
+def _current_participation(site: Path) -> dict:
+    """Read-only source computation, including the first render after this upgrade.
+
+    No collector or archive writer is reachable here. A same-date revision must not
+    be missed by trusting a cached artifact's maximum observation date.
+    """
     try:
-        import pandas as pd
-        from lib import illus
-        p = config.data_dir() / "china_participation" / "tape.parquet"
-        if not p.exists():
-            return ""
-        s = pd.read_parquet(p)["turnover_z20"].dropna().tail(90)
-        if len(s) < 8:
-            return ""
-        dates = [str(d)[:10] for d in s.index]
-        vals = [round(float(v), 2) for v in s.values]
-        return illus.illus({"dates": dates, "vals": vals}, kind="baseline", baseline=0.0,
-                           accent="var(--info)", height=58, value_fmt="{:+.1f}",
-                           aria_en="Trading intensity vs 20-day normal",
-                           aria_zh="成交强度相对20日常态")
-    except Exception:  # noqa: BLE001
-        return ""
+        from engine.china_participation import build_tape, current_projection
+        current = current_projection(build_tape(backfill=False))
+        if not current.get("date"):
+            raise ValueError("current source frame has no observation")
+        path = site / "chinastatedata" / "participation_current.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(current, ensure_ascii=False, allow_nan=False), encoding="utf-8")
+        return current
+    except Exception as exc:  # archive fallback remains visibly qualified
+        log.warning("China current participation unavailable: %s", exc)
+        fallback = _read_json(site / "chinastatedata" / "participation.json")
+        fallback["projection_kind"] = "first_observed_archive"
+        fallback["computed_at"] = None
+        return fallback
 
 
 def build() -> dict | None:
@@ -198,7 +94,9 @@ def build() -> dict | None:
     from engine import china_extras as ce
     from engine import china_signal_lab as lab
 
-    bt = ad.by_ticker()
+    weights = ad._leg_weights()
+    full_rows = ad.full_rows(weights=weights)
+    bt = ad.by_ticker(rows=full_rows, weights=weights)
     mm = ad.mastermind(bt)
     scorecard = lab.build_china_scorecard()
     try:                                        # 券商金股 + 业绩预告 — GATED display panels ([]/{} without token)
@@ -217,7 +115,7 @@ def build() -> dict | None:
     site.mkdir(parents=True, exist_ok=True)
 
     # ---- richer alt-data planes: READ upstream emits (render-budget) + cheap keyless parsers ----
-    tape = _tape_read(_read_json(site / "chinastatedata" / "participation.json"))
+    participation = _current_participation(site)
     special = _read_json(site / "chinaspecialdata" / "special.json")
     narr_raw = _read_json(site / "factordata" / "china_narrative_radar.json")
     narr = _narr_rows(narr_raw)
@@ -231,6 +129,9 @@ def build() -> dict | None:
     except Exception:  # noqa: BLE001
         zt, zt_breadth = [], []
 
+    from engine.china_altdata_desk import build_desk
+    desk = build_desk(full_rows, weights, participation, special, crowd_labels)
+
     env = Environment(
         loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=False)
     from engine import i18n
@@ -238,17 +139,18 @@ def build() -> dict | None:
     html = env.get_template("china_altdata.html.j2").render(
         ad=bt, lab=scorecard, mm=mm, crowd_labels=crowd_labels, broker_gold=broker_gold,
         guidance=guidance, guidance_labels=guidance_labels,
-        tape=tape, tape_spark=_tape_spark(), special=special, narr=narr,
+        desk=desk, special=special, narr=narr,
         narr_asof=(narr_raw or {}).get("as_of"), zt=zt, zt_breadth=zt_breadth)
     write_page(site / "china_altdata.html", html)
     for a in ASSETS:
         src = config.ROOT / "templates" / a
-        if src.exists() and not (site / a).exists():
+        if src.exists():
             site_assets.copy_asset(a, src, site)
     log.info("wrote %s/china_altdata.html (%d KB)", site, len(html) // 1024)
 
     out = site / "chinaaltdata"
     out.mkdir(parents=True, exist_ok=True)
+    (out / "desk.json").write_text(json.dumps(desk, ensure_ascii=False, separators=(",", ":"), allow_nan=False))
     (out / "by_ticker.json").write_text(
         json.dumps(bt or {}, ensure_ascii=False, separators=(",", ":"), default=str))
     (out / "mastermind.json").write_text(

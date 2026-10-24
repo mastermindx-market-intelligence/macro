@@ -5724,6 +5724,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - lib/china_filing_urls.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11198,8 +11199,23 @@ jobs:
     # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
     # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
     paths:
+      - lib/china_filing_urls.py
+      - scripts/__init__.py
+      - site/chinastatedata/participation.json
+      - site/chinastatedata/participation_current.json
       - "templates/china_altdata.html.j2"
+      - "templates/china-altdata-desk.css"
+      - "templates/china-altdata-desk.js"
+      - "engine/china_altdata_desk.py"
+      - "engine/china_participation.py"
+      - "scripts/build_china_participation.py"
       - "tests/test_china_altdata.py"
+      - "tests/test_china_altdata_projection.py"
+      - "tests/test_china_participation_refresh.py"
+      - "tests/test_china_altdata_desk_ui.py"
+      - "tests/test_china_altdata_desk_browser.py"
+      - "tests/test_china_extras.py"
+      - "tests/fixtures/china_altdata_desk.json"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -11280,10 +11296,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
-      - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
-        run: python -m pytest tests/test_china_altdata.py -q -p no:cacheprovider
+      - name: install Evidence Desk dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 playwright
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install isolated Evidence Desk browser
+        run: python -m playwright install --with-deps chromium
+      - name: China Evidence Desk — source clocks, archive isolation, signed evidence and complete research journeys
+        run: python -m pytest tests/test_china_altdata.py tests/test_china_altdata_projection.py tests/test_china_participation_refresh.py tests/test_china_altdata_desk_ui.py tests/test_china_altdata_desk_browser.py tests/test_china_extras.py -q -p no:cacheprovider
 
   china-board-breadth:
     if: ${{ false }}
@@ -12229,6 +12250,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - lib/china_filing_urls.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -18677,6 +18699,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/china_filing_urls.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -28798,6 +28821,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/china_filing_urls.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
@@ -30116,6 +30140,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - lib/china_filing_urls.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py

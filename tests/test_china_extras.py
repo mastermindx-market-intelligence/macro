@@ -95,6 +95,31 @@ def test_margin_positioning_change_and_pct_cap(monkeypatch, tmp_path):
     assert b["pct_mcap"] == 2.5                            # 50 / 2000 * 100
 
 
+def test_snapshot_metadata_survives_payload_and_table_parsers(monkeypatch, tmp_path):
+    _point(monkeypatch, tmp_path)
+    ticker = "600000.SS"
+    stamp = "2026-10-23"
+    _write(tmp_path, "china_analyst", "forecast.parquet", pd.DataFrame([{
+        "ticker":ticker, "name":"浦发银行", "asof":stamp,
+        "payload":json.dumps({"reports":2, "buy":2, "eps":{}})}]))
+    _write(tmp_path, "china_valuation", "percentiles.parquet", pd.DataFrame([{
+        "ticker":ticker, "asof":"2026-08-24", "payload":json.dumps({"pe":{"pctile":20}})}]))
+    assert ce.analyst_consensus()[ticker]["asof"] == stamp
+    assert ce.analyst_consensus()[ticker]["name"] == "浦发银行"
+    assert ce.valuation_percentile()[ticker]["asof"] == "2026-08-24"
+    tables = {
+        ("china_comment","detail"): [{"ticker":ticker,"name":"浦发银行","asof":stamp,"score":60}],
+        ("china_lhb","detail"): [{"ticker":ticker,"asof":stamp,"net_buy_yi":1,"last_date":"2026-10-21"}],
+        ("china_block_trades","detail"): [{"ticker":ticker,"asof":stamp,"block_amt_yi":1,"avg_premium_pct":2}],
+        ("tushare","moneyflow"): [{"ticker":ticker,"asof":stamp,"trade_date":"20261022","main_net":10,"main_net_rate":2}],
+    }
+    monkeypatch.setattr(ce, "_read_table", lambda group,name:pd.DataFrame(tables[(group,name)]))
+    for reader in (ce.comment,ce.lhb,ce.block_trades,ce.fundflow):
+        assert reader()[ticker]["asof"] == stamp
+    assert ce.fundflow()[ticker]["date"] == "2026-10-22"
+    assert ce.lhb()[ticker]["last_date"] == "2026-10-21"
+
+
 def test_all_empty_when_caches_missing(monkeypatch, tmp_path):
     _point(monkeypatch, tmp_path)
     assert ce.analyst_consensus({}) == {}

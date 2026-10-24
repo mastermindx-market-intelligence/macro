@@ -1,0 +1,569 @@
+{
+  "generated_at": "2026-10-24T06:00:00+00:00",
+  "participation": {
+    "schema": "china_participation.current.v1",
+    "projection_kind": "current_source_recomputation",
+    "history_qualification": "not_point_in_time",
+    "computed_at": "2026-10-24T06:00:00+00:00",
+    "date": "2026-10-22",
+    "latest_date": "2026-10-23",
+    "regime": "dormant",
+    "turnover_z20": -1.03,
+    "margin_chg_5d": -2.57,
+    "zt_breadth": 0.267,
+    "zt_universe_n": 1875,
+    "qvix_z": 0.54,
+    "southbound_net": 123456,
+    "broker_rs": null,
+    "trend": [
+      {
+        "date": "2026-10-01",
+        "value": 0
+      },
+      {
+        "date": "2026-10-02",
+        "value": 0.29
+      },
+      {
+        "date": "2026-10-03",
+        "value": 0.49
+      },
+      {
+        "date": "2026-10-04",
+        "value": 0.55
+      },
+      {
+        "date": "2026-10-05",
+        "value": 0.44
+      },
+      {
+        "date": "2026-10-06",
+        "value": 0.17
+      },
+      {
+        "date": "2026-10-07",
+        "value": -0.2
+      },
+      {
+        "date": "2026-10-08",
+        "value": -0.6
+      },
+      {
+        "date": "2026-10-09",
+        "value": -0.93
+      },
+      {
+        "date": "2026-10-10",
+        "value": -1.13
+      },
+      {
+        "date": "2026-10-11",
+        "value": -1.17
+      },
+      {
+        "date": "2026-10-12",
+        "value": -1.04
+      },
+      {
+        "date": "2026-10-13",
+        "value": null
+      },
+      {
+        "date": "2026-10-14",
+        "value": -0.5
+      },
+      {
+        "date": "2026-10-15",
+        "value": -0.24
+      },
+      {
+        "date": "2026-10-16",
+        "value": -0.09
+      },
+      {
+        "date": "2026-10-17",
+        "value": -0.11
+      },
+      {
+        "date": "2026-10-18",
+        "value": -0.29
+      },
+      {
+        "date": "2026-10-19",
+        "value": -0.61
+      },
+      {
+        "date": "2026-10-20",
+        "value": -1
+      },
+      {
+        "date": "2026-10-21",
+        "value": -1.38
+      },
+      {
+        "date": "2026-10-22",
+        "value": -1.67
+      }
+    ]
+  },
+  "weights": {
+    "value": 0.24,
+    "margin": 0.2,
+    "flow": 0.18,
+    "comment": 0.15,
+    "lhb": -0.1,
+    "block": -0.05,
+    "analyst": 0.08
+  },
+  "rows": [
+    {
+      "ticker": "600000.SS",
+      "name": "Fixture company 1",
+      "name_zh": "测试公司1",
+      "convergence": 0.8,
+      "flags": [
+        "leverage_crowded"
+      ],
+      "value": 0.7,
+      "margin": 0,
+      "flow": null,
+      "comment": null,
+      "lhb": null,
+      "block": null,
+      "analyst": null,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600001.SS",
+      "name": "Fixture company 2",
+      "name_zh": "测试公司2",
+      "convergence": 0.71,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600002.SS",
+      "name": "Fixture company 3",
+      "name_zh": "测试公司3",
+      "convergence": 0.62,
+      "flags": [],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600003.SS",
+      "name": "Fixture company 4",
+      "name_zh": "测试公司4",
+      "convergence": 0.53,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": null,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600004.SS",
+      "name": "Fixture company 5",
+      "name_zh": "测试公司5",
+      "convergence": 0.44,
+      "flags": [
+        "leverage_crowded"
+      ],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": null,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600005.SS",
+      "name": "Fixture company 6",
+      "name_zh": "测试公司6",
+      "convergence": 0.35,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": null,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600006.SS",
+      "name": "Fixture company 7",
+      "name_zh": "测试公司7",
+      "convergence": 0.26,
+      "flags": [],
+      "value": 0.7,
+      "margin": 0,
+      "flow": null,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": null,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600007.SS",
+      "name": "Fixture company 8",
+      "name_zh": "测试公司8",
+      "convergence": 0.17,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": null,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600008.SS",
+      "name": "Fixture company 9",
+      "name_zh": "测试公司9",
+      "convergence": 0.08,
+      "flags": [
+        "leverage_crowded"
+      ],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": null,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600009.SS",
+      "name": "Fixture company 10",
+      "name_zh": "测试公司10",
+      "convergence": -0.01,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": null,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600010.SS",
+      "name": "Fixture company 11",
+      "name_zh": "测试公司11",
+      "convergence": -0.1,
+      "flags": [],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": null,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600011.SS",
+      "name": "Fixture company 12",
+      "name_zh": "测试公司12",
+      "convergence": -0.19,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600012.SS",
+      "name": "Fixture company 13",
+      "name_zh": "测试公司13",
+      "convergence": -0.28,
+      "flags": [
+        "leverage_crowded"
+      ],
+      "value": 0.7,
+      "margin": 0,
+      "flow": null,
+      "comment": null,
+      "lhb": 0.6,
+      "block": null,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600013.SS",
+      "name": "Fixture company 14",
+      "name_zh": "测试公司14",
+      "convergence": -0.37,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600014.SS",
+      "name": "Fixture company 15",
+      "name_zh": "测试公司15",
+      "convergence": -0.46,
+      "flags": [],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": null,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600015.SS",
+      "name": "Fixture company 16",
+      "name_zh": "测试公司16",
+      "convergence": -0.55,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": null,
+      "comment": 0.2,
+      "lhb": null,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600016.SS",
+      "name": "Fixture company 17",
+      "name_zh": "测试公司17",
+      "convergence": -0.64,
+      "flags": [
+        "leverage_crowded"
+      ],
+      "value": 0.7,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": null,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600017.SS",
+      "name": "Fixture company 18",
+      "name_zh": "测试公司18",
+      "convergence": -0.73,
+      "flags": [],
+      "value": -0.5,
+      "margin": 0,
+      "flow": 0.4,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": -0.4,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    },
+    {
+      "ticker": "600018.SS",
+      "name": "Fixture company 19",
+      "name_zh": "测试公司19",
+      "convergence": -0.82,
+      "flags": [],
+      "value": 0.7,
+      "margin": 0,
+      "flow": null,
+      "comment": 0.2,
+      "lhb": 0.6,
+      "block": null,
+      "analyst": 0.8,
+      "source_asof": {
+        "margin": "2026-10-22"
+      }
+    }
+  ],
+  "special": {
+    "unlocks": {
+      "asof": "2026-10-23",
+      "events": [
+        {
+          "ticker": "600000.SS",
+          "name": "Fixture company 1",
+          "unlock_date": "2026-10-24",
+          "float_pct": 1054.987
+        },
+        {
+          "ticker": "600001.SS",
+          "name": "Fixture company 2",
+          "unlock_date": "2026-10-25",
+          "float_pct": 13
+        },
+        {
+          "ticker": "600002.SS",
+          "name": "Fixture company 3",
+          "unlock_date": "2026-10-26",
+          "float_pct": 14
+        },
+        {
+          "ticker": "600003.SS",
+          "name": "Fixture company 4",
+          "unlock_date": "2026-10-27",
+          "float_pct": 15
+        },
+        {
+          "ticker": "600004.SS",
+          "name": "Fixture company 5",
+          "unlock_date": "2026-10-28",
+          "float_pct": 16
+        },
+        {
+          "ticker": "600005.SS",
+          "name": "Fixture company 6",
+          "unlock_date": "2026-10-29",
+          "float_pct": 17
+        },
+        {
+          "ticker": "600006.SS",
+          "name": "Fixture company 7",
+          "unlock_date": "2026-10-30",
+          "float_pct": 18
+        },
+        {
+          "ticker": "600007.SS",
+          "name": "Fixture company 8",
+          "unlock_date": "2026-10-31",
+          "float_pct": 19
+        },
+        {
+          "ticker": "600008.SS",
+          "name": "Fixture company 9",
+          "unlock_date": "2026-11-01",
+          "float_pct": 20
+        },
+        {
+          "ticker": "600009.SS",
+          "name": "Fixture company 10",
+          "unlock_date": "2026-11-02",
+          "float_pct": 21
+        }
+      ]
+    },
+    "preannounce": {
+      "asof": "2026-10-23",
+      "top_movers": [
+        {
+          "ticker": "600000.SS",
+          "name": "Fixture company 1",
+          "type": "预增",
+          "quarter": "2026Q3",
+          "pct_change": 265430.305
+        }
+      ]
+    },
+    "buyback": {
+      "asof": "2026-10-23",
+      "top": [
+        {
+          "ticker": "600001.SS",
+          "name": "Fixture company 2",
+          "plan_amt_yi": 3,
+          "done_amt_yi": 0,
+          "progress": "实施中"
+        }
+      ]
+    },
+    "inquiry": {
+      "asof": "2026-10-23",
+      "letters": [
+        {
+          "secCode": "600002",
+          "secName": "Fixture company 3",
+          "date": "2026-10-20"
+        }
+      ]
+    },
+    "hero": {
+      "freshness": {
+        "n_planes": 7,
+        "n_fresh": 6,
+        "n_unreadable": 1,
+        "all_fresh": false,
+        "stale_labels": [
+          {
+            "en": "Risk warnings",
+            "zh": "风险警示"
+          }
+        ],
+        "oldest_stale_asof": "2026-10-13"
+      }
+    }
+  }
+}

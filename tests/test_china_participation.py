@@ -682,7 +682,7 @@ def test_cie13_source_contract_preserves_units_negative_knowledge_and_actor_unce
     assert "margin_trade_amt / (trade_amt_ratio / 100)" == legs["turnover"]["derivation"]
     assert legs["margin"]["fields"]["margin_to_mcap"] == "percent of float market cap"
 
-    assert legs["limit_breadth"]["unit"] == "percent of A-share universe at limit-up"
+    assert legs["limit_breadth"]["unit"] == "percent of observed universe touching limit-up; denominator zt_universe_n"
     assert legs["limit_breadth"]["rule_ref"] == "CN-SYS-R4"
     assert any("incompatible" in x for x in legs["limit_breadth"]["refusals"])
 

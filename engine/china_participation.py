@@ -31,14 +31,14 @@ Margin
 Limit breadth
 -------------
 Preferred: ``data/china_microstructure/limit_tape.parquet`` (W1 parallel build) column
-  ``limit_up_breadth_pct`` (% of ~5000-name universe at limit-up).
+  ``limit_up_breadth_pct`` (% of the observed universe touching limit-up).
 Fallback: ``data/china_flows/limit_breadth.parquet`` ``seal_rate`` (56-85 range) is NOT
   mapped into zt_breadth — seal_rate is the % of ZT names that held their seal and has
   incompatible units to the _ZT_BREADTH_* thresholds (which expect % of universe).
   When W1 tape is absent the breadth leg degrades to null + a named gap entry.
   The classifier handles zt_missing explicitly (margin-only paths fire when zt absent).
 
-Southbound (Hong Kong → mainland)
+Southbound (mainland → Hong Kong)
 ----------------------------------
 ``data/china_connect/southbound.parquet`` column ``net`` (净买入, 万 CNY). 2014-11→.
 
@@ -166,7 +166,7 @@ SOURCE_CONTRACTS = {
     "limit_breadth": {
         "source": "data/china_microstructure/limit_tape.parquet",
         "field": "zt_breadth",
-        "unit": "percent of A-share universe at limit-up",
+        "unit": "percent of observed universe touching limit-up; denominator zt_universe_n",
         "rule_ref": "CN-SYS-R4",
         "refusals": [
             "china_flows/limit_breadth.parquet seal_rate is incompatible units and never substitutes"
@@ -284,7 +284,7 @@ def _load_margin() -> tuple[pd.DataFrame, list[str]]:
     out = pd.DataFrame(index=df.index)
     if "margin_total" in df.columns:
         out["margin_balance"] = df["margin_total"]
-        out["margin_chg_5d"] = df["margin_total"].pct_change(5) * 100
+        out["margin_chg_5d"] = df["margin_total"].pct_change(5, fill_method=None) * 100
     else:
         gaps.append("margin:margin_total column missing")
         out["margin_balance"] = np.nan
@@ -295,6 +295,22 @@ def _load_margin() -> tuple[pd.DataFrame, list[str]]:
         gaps.append("margin:fin_pct_float column missing")
         out["margin_to_mcap"] = np.nan
     return out, gaps
+
+
+def _dated_limit_tape(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize the producer's explicit session date; never interpret row numbers as time."""
+    if "date" in df.columns:
+        dates = pd.to_datetime(df["date"], errors="coerce", utc=True)
+        dates = pd.DatetimeIndex(dates).tz_convert(None).normalize()
+    elif isinstance(df.index, pd.DatetimeIndex):
+        dates = pd.to_datetime(df.index, errors="coerce", utc=True).tz_convert(None).normalize()
+    else:
+        log.warning("limit_tape has neither a date column nor a DatetimeIndex")
+        return pd.DataFrame(index=pd.DatetimeIndex([], name="date"))
+    out = df.copy()
+    out.index = dates
+    out = out.loc[out.index.notna()]
+    return out.loc[~out.index.duplicated(keep="last")].sort_index()
 
 
 def _load_limit_breadth() -> tuple[pd.Series, list[str]]:
@@ -308,8 +324,7 @@ def _load_limit_breadth() -> tuple[pd.Series, list[str]]:
     # W1 preferred path
     ms_path = _data_path("china_microstructure", "limit_tape.parquet")
     if os.path.exists(ms_path):
-        df = pd.read_parquet(ms_path)
-        df.index = pd.to_datetime(df.index)
+        df = _dated_limit_tape(pd.read_parquet(ms_path))
         if "limit_up_breadth_pct" in df.columns:
             s = df["limit_up_breadth_pct"].rename("zt_breadth")
             return s, gaps
@@ -453,7 +468,9 @@ def _load_broker_rs() -> tuple[pd.Series, list[str]]:
     csi_ret = np.log(csi / csi.shift(1))
     # Align on common dates
     aligned = pd.DataFrame({"broker": br_ret, "csi": csi_ret}).dropna(how="all")
-    rs = (aligned["broker"] - aligned["csi"]).rolling(20, min_periods=10).sum()
+    spread = aligned["broker"] - aligned["csi"]
+    # A historical rolling window cannot establish a valid current endpoint.
+    rs = spread.rolling(20, min_periods=10).sum().where(spread.notna())
     rs.name = "broker_rs"
     return rs, gaps
 
@@ -766,8 +783,9 @@ def build_tape(backfill: bool = False) -> pd.DataFrame:
     frame["failed_seal_ratio"] = np.nan
     ms_path = _data_path("china_microstructure", "limit_tape.parquet")
     if os.path.exists(ms_path):
-        lt = pd.read_parquet(ms_path)
-        lt.index = pd.to_datetime(lt.index)
+        lt = _dated_limit_tape(pd.read_parquet(ms_path))
+        if "universe_n" in lt:
+            frame["zt_universe_n"] = lt["universe_n"]
         if "failed_up_seal_count" in lt.columns and "limit_up_count" in lt.columns:
             fsr = (lt["failed_up_seal_count"] / lt["limit_up_count"].replace(0, np.nan))
             frame["failed_seal_ratio"] = fsr
@@ -942,10 +960,10 @@ def latest_snapshot(tape: pd.DataFrame) -> dict:
     }
     for col in ["turnover_z20", "turnover_z60", "margin_balance", "margin_chg_5d",
                 "margin_to_mcap", "southbound_net", "southbound_z",
-                "etf_share_chg", "zt_breadth", "failed_seal_ratio",
+                "etf_share_chg", "zt_breadth", "zt_universe_n", "failed_seal_ratio",
                 "qvix", "qvix_z", "broker_rs", "regime", "who_controls", "risk"]:
         v = row.get(col, None)
-        if isinstance(v, float) and np.isnan(v):
+        if isinstance(v, (float, np.floating)) and not np.isfinite(v):
             snap[col] = None
         elif isinstance(v, (np.floating, np.integer)):
             snap[col] = float(v)
@@ -970,4 +988,30 @@ def latest_snapshot(tape: pd.DataFrame) -> dict:
             f"publishing last fully-populated row ({date_str})"
         )
 
+    return snap
+
+
+def current_projection(tape: pd.DataFrame, computed_at: str | None = None) -> dict:
+    """Current source recomputation, explicitly NOT a first-observed historical vintage."""
+    from datetime import datetime, timezone
+    snap = latest_snapshot(tape)
+    snap.pop("backfill", None)
+    snap["schema"] = "china_participation.current.v1"
+    snap["projection_kind"] = "current_source_recomputation"
+    snap["computed_at"] = computed_at or datetime.now(timezone.utc).isoformat()
+    snap["history_qualification"] = "not_point_in_time; archive and evidence-clock qualification unchanged"
+    snap["source_available_at"] = None  # not retained by these producers
+    snap["latest_date"] = None if tape.empty else tape.index[-1].strftime("%Y-%m-%d")
+    snap["previous_observation"] = None
+    if not tape.empty and snap.get("date"):
+        prior_tape = tape.loc[tape.index < pd.Timestamp(snap["date"])]
+        if not prior_tape.empty:
+            prior = latest_snapshot(prior_tape)
+            snap["previous_observation"] = {key: prior.get(key) for key in
+                ("date", "turnover_z20", "margin_chg_5d", "zt_breadth", "qvix_z", "southbound_net", "broker_rs")}
+    snap["trend"] = []
+    if not tape.empty and "turnover_z20" in tape:
+        for dt, value in tape["turnover_z20"].tail(90).items():
+            snap["trend"].append({"date": dt.strftime("%Y-%m-%d"),
+                                  "value": float(value) if pd.notna(value) and np.isfinite(value) else None})
     return snap
