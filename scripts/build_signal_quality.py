@@ -34,6 +34,10 @@ from engine.bar_derive import daily_close_for  # noqa: E402
 from engine import marker_integrity  # noqa: E402
 
 
+class SignalBuildError(RuntimeError):
+    """An unexpected ticker input/analysis failure invalidated this build."""
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Build MTF confluence buy-filter signals.")
     ap.add_argument("--intraday", action="store_true",
@@ -50,11 +54,10 @@ def main() -> None:
 
     src = ROOT / "data" / "stocks"
     out_sig = ROOT / "site" / "signals"
-    out_sig.mkdir(parents=True, exist_ok=True)
     arch = ROOT / "data" / "signal_archive"
-    arch.mkdir(parents=True, exist_ok=True)
 
     snap, asof = [], None
+    pending_signals = []
     files = sorted(glob.glob(str(src / "*.parquet")))
     for fp in files:
         t = Path(fp).stem
@@ -79,9 +82,10 @@ def main() -> None:
                 high = df["high"] if "high" in df.columns else None
                 low = df["low"] if "low" in df.columns else None
                 res = analyze(t, close, high, low)
-        except Exception:
-            continue
+        except Exception as exc:
+            raise SignalBuildError(f"MTF signal build failed for {t} ({fp})") from exc
         if not res:
+            # The analyzer's existing insufficient-history path is not a failure.
             continue
         # RC-R2 append-only marker law: a nightly recompute may never re-date or delete
         # a marker the site already rendered (engine/marker_integrity.py; drift counts
@@ -92,7 +96,10 @@ def main() -> None:
         except Exception:  # noqa: BLE001 — unreadable prior file → treat as new
             prev = None
         res = marker_integrity.merge_payload(prev, res, run_stamp=run_stamp)
-        sig_path.write_text(json.dumps(res, separators=(",", ":")))
+        # Prepare every payload before touching either published shape. A later
+        # input, analysis, merge, or serialization failure must leave the prior
+        # cohort unchanged, rather than expose a partially rebuilt set of files.
+        pending_signals.append((sig_path, json.dumps(res, separators=(",", ":"))))
         asof = res["asof"]
         # `markers` is the validated trade stream only (risk_flag breaches live in their own
         # res["risk_flags"] list), so the brain's `last` is cleanly the last trade decision.
@@ -111,12 +118,20 @@ def main() -> None:
             "NOT a buy and NOT scored; acting early is empirically worse entry quality — see CONFLUENCE_TUNING.md).")
     if args.intraday:
         note += " [intraday-derived close, ~15-min delayed — research hook]"
-    (arch / "mtf_signals_latest.json").write_text(json.dumps({
+    leaf_payload = json.dumps({
         "asof": asof, "tf": "3D", "universe": "us_deep",
         "source": "intraday_delayed" if args.intraday else "daily_adjusted",
         "note": note,
         "signals": snap,
-    }, indent=1))
+    }, indent=1)
+
+    # Computation has succeeded. This is not a filesystem transaction: publisher
+    # gates must still reject/restore an I/O failure during this write phase.
+    out_sig.mkdir(parents=True, exist_ok=True)
+    arch.mkdir(parents=True, exist_ok=True)
+    for sig_path, payload in pending_signals:
+        sig_path.write_text(payload)
+    (arch / "mtf_signals_latest.json").write_text(leaf_payload)
     print(f"wrote {len(snap)} tickers -> site/signals/ + "
           f"data/signal_archive/mtf_signals_latest.json (asof {asof}"
           f"{', intraday' if args.intraday else ''})")
