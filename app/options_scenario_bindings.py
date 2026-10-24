@@ -12,40 +12,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import os
 from pathlib import Path
-import re
 
 from engine.research_vault import r2_store
+from engine.options_hub_retention import PrivateScenarioObjects as _PrivateObjects
 
 POLICY_ID = "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023"
-_KEY = re.compile(r"options_hub/(?:gex|moves)_history/[A-Z0-9][A-Z0-9.-]{0,14}/sha256/[0-9a-f]{64}\.json\Z")
-
-
-class _PrivateObjects:
-    """Constrain the incumbent store to immutable Options keys and create-only IO."""
-
-    def __init__(self, store, capture_enabled):
-        self.store, self.capture_enabled = store, capture_enabled
-
-    def _target(self, bucket, key):
-        if bucket != self.store.bucket or type(key) is not str or not _KEY.fullmatch(key):
-            raise ValueError("scenario object target unavailable")
-
-    def get_object(self, *, Bucket, Key):
-        self._target(Bucket, Key)
-        # Preserve the streaming body, ContentLength and original error codes.
-        return self.store._s3.get_object(Bucket=Bucket, Key=Key)
-
-    def put_object(self, *, Bucket, Key, Body, ContentType, IfNoneMatch):
-        self._target(Bucket, Key)
-        if not self.capture_enabled or IfNoneMatch != "*" or ContentType != "application/json":
-            raise ValueError("scenario capture is not enabled")
-        if not self.store.put_bytes_strict_conditional(
-                Key, Body, expected_version=None, content_type=ContentType):
-            # The retention layer reconciles only this original key after a
-            # conditional race or uncertain response; never a second PUT.
-            raise RuntimeError("scenario conditional create conflict")
-
-
 @dataclass(frozen=True)
 class ScenarioSourceRuntime:
     store: r2_store.R2Store
@@ -60,6 +31,12 @@ class ScenarioSourceRuntime:
         from engine import options_scenario_capture as producer
 
         descriptor = route._descriptor(capture, investigation_id, revision, grant_id)
+        # Whole moves artifacts may include calibration from the distinct Levels
+        # Yahoo index-grading route. The Research Factory attestation does not
+        # establish that route's provenance. Preserve its reference and refuse;
+        # never strip fields or silently substitute a GEX-only request.
+        if descriptor.moves is not None:
+            raise route._refuse_unavailable("source_unavailable")
         refs = [descriptor.gex] + ([] if descriptor.moves is None else [descriptor.moves])
         versions = [ref.version_ref for ref in refs]
         bucket = self.store.bucket

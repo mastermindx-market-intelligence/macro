@@ -543,3 +543,32 @@ def retain_before_publish(s3, bucket: str, artifacts, publish, *, action=None,
     publish()
     return RetentionOutcome(authority=action.authority, purpose=action.purpose,
                             retained=tuple(retained), published=True)
+
+
+_PRIVATE_SCENARIO_KEY = re.compile(r"options_hub/(?:gex|moves)_history/[A-Z0-9][A-Z0-9.-]{0,14}/sha256/[0-9a-f]{64}\.json\Z")
+
+
+class PrivateScenarioObjects:
+    """Constrain the incumbent store to immutable Options keys and create-only IO."""
+
+    def __init__(self, store, capture_enabled):
+        self.store, self.capture_enabled = store, capture_enabled
+
+    def _target(self, bucket, key):
+        if bucket != self.store.bucket or type(key) is not str or not _PRIVATE_SCENARIO_KEY.fullmatch(key):
+            raise ValueError("scenario object target unavailable")
+
+    def get_object(self, *, Bucket, Key):
+        self._target(Bucket, Key)
+        # Preserve the streaming body, ContentLength and original error codes.
+        return self.store._s3.get_object(Bucket=Bucket, Key=Key)
+
+    def put_object(self, *, Bucket, Key, Body, ContentType, IfNoneMatch):
+        self._target(Bucket, Key)
+        if not self.capture_enabled or IfNoneMatch != "*" or ContentType != "application/json":
+            raise ValueError("scenario capture is not enabled")
+        if not self.store.put_bytes_strict_conditional(
+                Key, Body, expected_version=None, content_type=ContentType):
+            # The retention layer reconciles only this original key after a
+            # conditional race or uncertain response; never a second PUT.
+            raise RuntimeError("scenario conditional create conflict")

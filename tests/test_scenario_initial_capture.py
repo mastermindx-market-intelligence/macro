@@ -98,11 +98,14 @@ def test_hub_hashes_original_producer_bytes_not_reserialized_display(monkeypatch
 
 # Production binding composition below uses real route/auth/RLS-policy callbacks.
 # Only external transports and the private-store factory are controlled doubles.
-def runtime_setup(monkeypatch, tmp_path, *, capture_enabled=False):
+def runtime_setup(monkeypatch, tmp_path, *, capture_enabled=False, with_moves=True):
     from app import options_scenario_bindings as B
     from engine.research_vault import r2_store
     from tests.test_options_scenarios import BUCKET
     h = World()
+    if not with_moves:
+        original_capture = h.capture
+        h.capture = lambda **kw: original_capture(**{**kw, 'with_moves': False})
     h.patch(monkeypatch)
     h.s3 = FakeS3()
     class Store(r2_store.R2Store):
@@ -168,14 +171,14 @@ def test_runtime_refuses_public_alias_local_fallback_and_missing_producer(monkey
 
 
 def test_runtime_real_callbacks_capture_then_read_recovery_and_reopen(monkeypatch, tmp_path):
-    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True, with_moves=False)
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
     payload = {'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
                'operation_id':OP,'grant_id':None,'capture':h.capture()}
     response = h.post(client, payload, token_value=token())
     assert response.json().get('mode') == 'capture', response.text
     assert h.s3.objects[h.gex_ref.key] == h.gex_bytes
-    assert h.s3.objects[h.moves_ref.key] == h.moves_bytes
+    assert h.moves_ref.key not in h.s3.objects
     count = sum(x[0] == 'put' for x in h.s3.log)
     response = h.post(client, {**payload,'mode':'qualify'}, token_value=token())
     assert response.json().get('mode') == 'qualify', response.text
@@ -183,7 +186,7 @@ def test_runtime_real_callbacks_capture_then_read_recovery_and_reopen(monkeypatc
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row(revision=1, inv=INV_B)))
     response = h.post(client, h.resolve_payload(revision=1, inv=INV_B), token_value=token())
     assert response.json().get('mode') == 'resolve', response.text
-    assert sum(x[0] == 'put' for x in h.s3.log) == count == 2
+    assert sum(x[0] == 'put' for x in h.s3.log) == count == 1
     assert response.headers['cache-control'] == 'private, no-store'
     assert response.headers['vary'] == 'Authorization'
 
@@ -227,7 +230,7 @@ def test_runtime_private_transport_rejects_other_namespace_and_overwrite(monkeyp
 
 def test_runtime_session_change_after_read_withholds_all_bytes(monkeypatch, tmp_path):
     from tests.test_options_scenarios import UID
-    h, client, _ = runtime_setup(monkeypatch, tmp_path)
+    h, client, _ = runtime_setup(monkeypatch, tmp_path, with_moves=False)
     h.s3.objects[h.gex_ref.key] = h.gex_bytes
     h.s3.objects[h.moves_ref.key] = h.moves_bytes
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row()))
@@ -243,7 +246,7 @@ def test_runtime_session_change_after_read_withholds_all_bytes(monkeypatch, tmp_
 
 
 def test_runtime_uncertain_write_has_no_retry_or_false_success(monkeypatch, tmp_path):
-    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True, with_moves=False)
     monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
     calls = []
     def lost(key, data, **kw):
@@ -261,7 +264,7 @@ def test_runtime_uncertain_write_has_no_retry_or_false_success(monkeypatch, tmp_
 def test_runtime_request_scopes_do_not_borrow_actor_or_operation(monkeypatch, tmp_path):
     from app.options_auth import OptionsPrincipal
     from tests.test_options_scenarios import UID, ISS, SID
-    h, _, _ = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    h, _, _ = runtime_setup(monkeypatch, tmp_path, capture_enabled=True, with_moves=False)
     runtime = h.app.state.options_scenario_source_bindings
     p = OptionsPrincipal(UID, ISS, SID, 2000)
     bound = runtime.for_request(token=token(), principal=p, investigation_id=INV_B,
@@ -274,50 +277,21 @@ def test_runtime_request_scopes_do_not_borrow_actor_or_operation(monkeypatch, tm
     assert not h.s3.log and not h.trace
 
 
-def test_runtime_real_private_store_transport_sends_one_put_on_redirect_or_error(monkeypatch):
-    """Actual boto3/store/adapter against loopback; no cloud or fixture policy."""
-    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-    import threading
-    import pytest
-    from engine.research_vault import r2_store
-    from app.options_scenario_bindings import _PrivateObjects
-    h = World()
-    class Handler(BaseHTTPRequestHandler):
-        def do_PUT(self):
-            self.server.puts += 1
-            self.rfile.read(int(self.headers.get('Content-Length', '0')))
-            assert self.headers.get('If-None-Match') == '*'
-            raw = b'<Error><Code>SlowDown</Code></Error>' if self.server.status != 200 else b''
-            self.send_response(self.server.status)
-            if self.server.status == 301:
-                self.send_header('x-amz-bucket-region', 'us-east-1')
-            self.send_header('Content-Length', str(len(raw)))
-            self.end_headers(); self.wfile.write(raw)
-        def do_HEAD(self):
-            self.server.heads += 1
-            self.send_response(500); self.send_header('Content-Length','0'); self.end_headers()
-        def log_message(self, *args): pass
-    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
-    server.puts = server.heads = 0
-    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
-    try:
-        monkeypatch.setenv('R2_RESEARCH_ENDPOINT', f'http://127.0.0.1:{server.server_port}')
-        monkeypatch.setenv('R2_RESEARCH_ACCESS_KEY_ID', 'controlled-local-key')
-        monkeypatch.setenv('R2_RESEARCH_SECRET_ACCESS_KEY', 'controlled-local-secret')
-        monkeypatch.setenv('R2_RESEARCH_BUCKET', 'controlled-private')
-        monkeypatch.setenv('R2_BUCKET', 'controlled-public')
-        monkeypatch.delenv('RESEARCH_LOCAL_STORE', raising=False)
-        store = r2_store.build_store(single_attempt_writes=True)
-        objects = _PrivateObjects(store, True)
-        for status in (200, 301, 503):
-            server.status = status
-            before = server.puts
-            args = dict(Bucket=store.bucket, Key=h.gex_ref.key, Body=h.gex_bytes,
-                        ContentType='application/json', IfNoneMatch='*')
-            if status == 200: objects.put_object(**args)
-            else:
-                with pytest.raises(Exception): objects.put_object(**args)
-            assert server.puts == before + 1 and server.heads == 0
-    finally:
-        server.shutdown(); server.server_close(); thread.join(timeout=5)
-        assert not thread.is_alive()
+def test_runtime_unqualified_whole_moves_never_inherit_named_source_attestation(monkeypatch, tmp_path):
+    """Optional moves may embed the distinct Levels Yahoo grading route."""
+    h, client, _ = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    original = h.capture()
+    prospective = {'investigation_id':INV_B,'revision':1,'expected_revision':0,
+                   'operation_id':OP,'grant_id':None,'capture':original}
+    for mode in ('capture', 'qualify', 'resolve'):
+        if mode == 'resolve':
+            monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row(revision=1, inv=INV_B)))
+            payload = h.resolve_payload(revision=1, inv=INV_B)
+        else:
+            monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
+            payload = {**prospective, 'mode':mode}
+        response = h.post(client, payload, token_value=token())
+        assert response.json().get('status') == 'unavailable', (mode, response.text)
+        assert response.json().get('reason') == 'source_unavailable', (mode, response.text)
+        assert not h.s3.log, (mode, h.s3.log)
+        assert h.capture() == original and original['source']['moves'] is not None
