@@ -10,6 +10,7 @@ The result retains original claims inputs, not the repository's complete history
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from contextlib import contextmanager
 from hashlib import sha256
 import json
 import os
@@ -17,6 +18,7 @@ from pathlib import Path
 import re
 import stat
 from types import MappingProxyType
+from threading import Lock, get_ident
 
 from engine.qledger_store import NativeClaimsWrite, _NativeClaimsBinding
 from engine.qledger_store_native import NativeClaimsIntent, NativeClaimsSession, _sync_dir, _sync_file, _write_all
@@ -587,6 +589,49 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
             paths.add(path)
         self.original_result_targets = MappingProxyType(targets)
         self._prepared_results = ContextVar("qledger_owner_prepared_results", default=())
+        # Actual binding ownership, shared across ContextVar/thread views. It
+        # records local entry provenance only, never runtime admission/recovery.
+        self._original_entry_guard = Lock()
+        self._original_entry_seen = False
+        self._original_entry_owner = None
+        self._original_entry_context = ContextVar("qledger_original_invocation", default=None)
+
+    @contextmanager
+    def _fresh_original_invocation(self):
+        """Atomically exclude other same-binding producers through completion.
+
+        Admission is checked here, not when a future callback is constructed.
+        Earlier activity is sticky across task/thread ContextVar views. Existing
+        unscoped direct originals remain supported, but cannot later be borrowed
+        by a fresh engine invocation. Nothing here grants host/resource authority.
+        """
+        if os.getpid() != self.original_process_id:
+            _fail("original process differs; inherited native binding cannot transfer")
+        if not self._original_entry_guard.acquire(blocking=False):
+            _fail("same-binding original invocation is already active")
+        token = None
+        try:
+            if (self._original_entry_seen or self.attempts or self.prepared_original_results
+                    or self.pre_attempt_failure is not None):
+                _fail("fresh original invocation cannot borrow earlier producer activity")
+            owner = (object(), os.getpid(), get_ident())
+            self._original_entry_owner = owner
+            token = self._original_entry_context.set(owner)
+            # Entering the original is not retried, including when no rows were
+            # emitted or response/clock/resource completion remains unknown.
+            self._original_entry_seen = True
+            yield
+        finally:
+            if token is not None:
+                self._original_entry_context.reset(token)
+            self._original_entry_owner = None
+            self._original_entry_guard.release()
+
+    def _require_original_entry_owner(self):
+        owner = self._original_entry_owner
+        if (owner is None or self._original_entry_context.get() is not owner
+                or (os.getpid(), get_ident()) != owner[1:]):
+            _fail("another producer owns this same-binding original invocation")
 
     @property
     def original_process_id(self):
@@ -631,11 +676,27 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
     def _admit(self, intent, *, original=None):
         if os.getpid() != self.original_process_id:
             _fail("original process differs; inherited native binding cannot transfer")
+        if self._original_entry_owner is not None:
+            self._require_original_entry_owner()
+            return self._admit_original(intent, original=original)
+        # An unscoped writer racing fresh callback admission either owns this
+        # guard first (making later entry non-fresh), or refuses before effect.
+        if not self._original_entry_guard.acquire(blocking=False):
+            _fail("same-binding original invocation is already active")
+        try:
+            self._original_entry_seen = True
+            return self._admit_original(intent, original=original)
+        finally:
+            self._original_entry_guard.release()
+
+    def _admit_original(self, intent, *, original=None):
         super()._admit(intent, original=original)
         target = self._target_for(intent)
         self._predecessors_for(target)
 
     def _apply_original_write(self, session, write):
+        if self._original_entry_owner is not None:
+            self._require_original_entry_owner()
         target = self._target_for(write.intent)
         predecessors = self._predecessors_for(target)
         receipt = _receipt(write, predecessors, self.limits)

@@ -7,6 +7,7 @@ confirm_install/hold; no production issuer or serialized boolean is supplied her
 from __future__ import annotations
 
 from hashlib import sha256
+from contextvars import ContextVar
 import json
 import os
 import sys
@@ -33,6 +34,36 @@ from scripts.ci import qledger_publication as publication
 
 def _fail(message, code="OWNER_INVOCATION_UNPROVEN"):
     raise SnapshotIntegrityError(code, message)
+
+
+_LIVE_PRODUCER = ContextVar("qledger_live_producer_invocation", default=None)
+
+
+class _LiveProducerInvocation:
+    """Live callback boundary only; never serializable admission or transfer."""
+    def __init__(self, invocation, binding, gate, installed, budget, retention):
+        self.invocation, self.binding, self.gate = invocation, binding, gate
+        self.installed, self.budget, self.retention = installed, budget, retention
+        self.pid, self.active = os.getpid(), True
+
+    def check(self, phase):
+        if (not self.active or _LIVE_PRODUCER.get() is not self
+                or os.getpid() != self.pid or self.pid != self.binding.original_process_id):
+            _fail("same-process live producer invocation is absent")
+        return self.invocation._gate(self.gate, phase, self.installed,
+            producer_binding=self.binding, budget_id=self.budget, retention_id=self.retention)
+
+    def __reduce__(self):
+        raise TypeError("live producer invocation cannot transfer")
+
+
+def require_live_producer(binding):
+    """Inspect the existing caller's active scope; this function cannot enter it."""
+    live = _LIVE_PRODUCER.get()
+    if type(live) is not _LiveProducerInvocation or live.binding is not binding:
+        _fail("same-process live producer invocation is absent")
+    live.check("engine-owner-entry")
+    return live
 
 
 def load_conversion(repo, *, result_path, manifest_digest):
@@ -216,8 +247,14 @@ class ConversionInvocation:
             _fail("producer version differs from admitted installation")
         try:
             failure_before = binding.pre_attempt_failure
-            with ClaimsBindingScope(binding):
-                result = producer(*args, **(kwargs or {}))
+            live = _LiveProducerInvocation(self, binding, gate, installed_commit_oid, budget_id, retention_id)
+            token = _LIVE_PRODUCER.set(live)
+            try:
+                with ClaimsBindingScope(binding):
+                    result = producer(*args, **(kwargs or {}))
+            finally:
+                live.active = False
+                _LIVE_PRODUCER.reset(token)
             # Opening/admission/preparation can refuse before _begin creates an
             # attempt. A caught refusal must not look like legitimate no-write.
             if binding.pre_attempt_failure is not failure_before:
