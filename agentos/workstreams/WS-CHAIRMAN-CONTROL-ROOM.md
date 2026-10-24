@@ -187,10 +187,10 @@ waves:
     status: in_progress
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
-      Consume independent review HC-P7.T0.R1 on Draft #1853 at
-      8166837a7998f43a85040ec8bf2f9fd5b3bc5d88; Cursor reviewer START is
-      1792871518.772959. Hosted CI 40126167301 is still running. Preserve 32 public cases,
-      eight empty holdout slots and all 48 R2 obligations; executable and live proof remain gated.
+      Execute pinned one-file HC-P7.T0.FIX1 for independent REQUEST_CHANGES on #1853
+      at 8166837a; repair case coverage, leaked coding oracles and eligibility semantics.
+      Freeze the repaired head for re-review on the same original Cursor child; preserve
+      32 public cases, eight empty holdouts and all R2 obligations. Live proof remains gated.
   - id: HC-P8
     title: Optional model and local-inference evaluation
     status: todo
@@ -284,9 +284,9 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, execute the pinned additive Office producer-consumer task HC-P6.T0;
-  consume same-child Rakazo repair and the started independent #1853 review/CI.
-  Consume current ACP custody reconciliation before any overlapping source write.
+  For Mastermind #1841, repair #1853's independent findings under HC-P7.T0.FIX1, then
+  obtain same-carrier re-review of the exact repaired head. Consume HC-P6.T0 placement,
+  same-child Rakazo repair and ACP custody reconciliation before overlapping writes.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1130,9 +1130,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   No installed Office, authenticated real account, live worker, parent acceptance,
   24-hour/seven-day or full P6/mission claim. No approval/merge, purchases, credential
   moves, account-policy changes, service installation or live provider calls.
-- **State:** READY_FOR_NEW_CURSOR_PLACEMENT; pinned before implementation. Production
-  Result adapter/hook work remains a later bounded task after this observed join and
-  current source-custody reconciliation, not an implicit extension of T0.
+- **State:** DELIVERY_SENT, original Cursor request thread 1792872108.375879,
+  after exact-head task readback at 5da9124f. Actual agent/START/result remain pending.
+  Production Result adapter/hook work requires a later bounded task after the observed
+  join and source-custody check; it is not an implicit extension of T0.
 
 ### HC-P7.T0 — Prospective evaluation preparation
 
@@ -1179,6 +1180,49 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   HC-P7 remains todo. Zero cases run, zero holdouts authored/sealed and no duration or
   installed acceptance is claimed. Hosted CI and HC-P7.T0.R1 review remain pending.
 
+### HC-P7.T0.FIX1 — Repair independent evaluation review findings
+
+- **Review consumed:** GitHub COMMENT review PRR_kwDOTotz3c8AAAABUCeAJg, submitted
+  2026-10-24T19:59:48Z by independent Cursor bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a,
+  original child meta-ceo-harness-evaluation-review-cursor-20261024-01. Verdict
+  REQUEST_CHANGES on #1853 head 8166837a7998f43a85040ec8bf2f9fd5b3bc5d88 /
+  blob b485c9f29e0885d9e67cd2eea57a222685846414. Parent STOP 1792872228.147259
+  closes that completed read-only review assignment before author repair.
+- **Owner/source:** root retains the existing registered evaluation preparation carrier
+  meta-ceo-harness-evaluation-preparation-20261024-web-001 and the same Draft #1853.
+  Exactly research/META_CEO_HARNESS_EVALUATION_PREPARATION_2026-10-24.json may change.
+- **F1/F2:** add a real overlapping direct-Slack/app-turn scenario to existing COORD-01
+  and a subscription-expiry/missed-event scenario to existing INCIDENT-03. Preserve
+  task usefulness, explicit synthetic status and decision-only proof ceilings.
+- **F3:** remove every unsupported secondary case mapping identified by review.
+  Row 46 must reference its prospective comparison protocol without a blanket case list;
+  row 47 retains the actual STRATEGY-04 probe plus primary-measure protocol reference.
+  Add short case-specific mapping reasons and local protocol references where needed.
+  Never change any original R2 outcome/label, six-criterion text or source locator.
+- **F4:** move CODE-02 expected statuses and CODE-04 expected render counts from the
+  model-visible input bundle to explicit grader-only fields. Supply an implementable
+  behavioral contract, not fixture-name answer lookup. Preserve the input-only delivery
+  allowlist; expected values and grading anchors never enter a future task prompt.
+  CODE-04 may distinguish audience-only/generation-only binding changes within that
+  same existing case so partial identity checks cannot satisfy its stated contract.
+- **F5:** replace the undefined eligibility denominator with an explicitly prospective,
+  pre-outcome frozen eligible-unit set. Define membership, numerator intersection,
+  missingness and zero-denominator behavior. Not-started, blocked, invalid, degraded
+  and unknown units remain in that frozen denominator after outcomes; do not select
+  only successful/technically valid units for the proposed 85% threshold. Pre-execution
+  exclusions and all planned units remain visible. No eligible manifest is invented now.
+- **Verification:** preserve exactly 32 public cases/eight empty holdout slots, every
+  NOT_RUN/UNBOUND/null evidence field, all 48 exact R2 labels/outcomes and six criteria.
+  Check each repaired mapping against its actual case input; prove model-visible input
+  lacks the removed oracles; validate all denominator symbols and local protocol refs.
+  Reuse the existing source-only validation, checking only the changed risk areas plus
+  invariant preservation. Zero campaign runs, holdout authoring or new runtime schema.
+- **Return/review:** publish exact new head and changed one-file scope, author checks,
+  hashes and hosted CI; request qualified re-review of that frozen head on the SAME
+  original Cursor review child/carrier. No approval/merge or self-acceptance.
+- **State:** READY_FOR_AUTHOR_REPAIR; pinned before the first source edit. Full HC-P7,
+  R2 and mission acceptance remain open.
+
 ### HC-P7.T0.R1 — Independent preparation review
 
 - **Exact subject:** Mastermind #1853 at 8166837a7998f43a85040ec8bf2f9fd5b3bc5d88,
@@ -1196,10 +1240,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   original root/parent, existing Mastermind admission only. This is a new T0 subject,
   not a replay or replacement for any held Fabric/P2 review. Require actual agent ID,
   START, independent reviewer provenance and result on its original placement thread.
-- **State:** STARTED, Secretary receipt 1792871518.772959, independent Cursor
-  bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a on original thread 1792870956.550899.
-  Exact frozen subject is unchanged; semantic verdict remains pending. HC-P7 and
-  the original mission stay incomplete regardless of this source verdict.
+- **State:** RETURNED_REQUEST_CHANGES on exact #1853 head 8166837a, GitHub COMMENT
+  PRR_kwDOTotz3c8AAAABUCeAJg at 2026-10-24T19:59:48Z. Parent STOP
+  1792872228.147259 closes R1; same-carrier terminal confirmation is pending.
+  Five findings are consumed in HC-P7.T0.FIX1 below. No acceptance is inferred.
 
 ### Accepted progress and outstanding gates
 
@@ -1434,3 +1478,24 @@ carriers and one dirty criteria carrier found no overlap at the proposed new con
 test; existing App, auth, UI and orchestration differences are preserved. No producer
 bytes have yet been acquired/consumed for this task, no worker has yet been placed,
 and no P6 or mission acceptance is claimed.
+
+
+#### Independent preparation review and bounded repair
+
+The independent Cursor reviewer posted GitHub COMMENT PRR_kwDOTotz3c8AAAABUCeAJg
+on #1853 at 2026-10-24T19:59:48Z, REQUEST_CHANGES on exact head 8166837a and blob
+b485c9f2. Exact R2 extraction, cohort/holdout counts, non-execution/proof ceilings,
+refusal taxonomy, comparison attribution, rubric and fixture arithmetic held up.
+Five repair findings are accepted: absent Slack/app and subscription scenarios,
+overstated crosswalk links, model-visible coding oracles, and an undefined 85%
+eligibility denominator. Parent STOP 1792872228.147259 closes that R1 assignment;
+HC-P7.T0.FIX1 pins the same-source one-file repair before editing. The original
+32 public cases, eight empty holdouts and exact R2 obligations remain mandatory.
+
+HC-P6.T0 was requested after published pin 5da9124f and exact readback, original
+thread 1792872108.375879. Actual Cursor placement/START remains pending.
+A separate read-only P4 eligibility check used existing Executive V3 session_targets:
+successful response, data=[], server_version 0.2.0. This proves no addressable target
+in this caller's current projection, not global absence. The existing canary source
+requires an authentic original CONTINUE read_ref and one current child; no such
+reference was supplied or fabricated and no grant/canary was started.

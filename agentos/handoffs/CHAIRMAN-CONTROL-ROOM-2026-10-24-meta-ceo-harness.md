@@ -68,7 +68,7 @@ next_actions:
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
   - Consume Secretary ACP custody PICKUP 1792871522.079479 for the original dirty carrier; no new T1a implementation was placed.
-  - Consume independent reviewer bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a START 1792871518.772959 and hosted CI for Draft 1853 at 8166837a7998f43a85040ec8bf2f9fd5b3bc5d88.
+  - Repair the five independent REQUEST_CHANGES findings on Draft 1853 under HC-P7.T0.FIX1, then freeze the repaired head for same-carrier re-review; R1 parent STOP is 1792872228.147259.
   - Execute pinned additive HC-P6.T0 with the existing unchanged Mission/Result exporter and real TypeScript Office consumers; preserve existing App/auth/source carriers.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
@@ -285,3 +285,24 @@ carriers and one dirty criteria carrier found no overlap at the proposed new con
 test; existing App, auth, UI and orchestration differences are preserved. No producer
 bytes have yet been acquired/consumed for this task, no worker has yet been placed,
 and no P6 or mission acceptance is claimed.
+
+
+#### Independent preparation review and bounded repair
+
+The independent Cursor reviewer posted GitHub COMMENT PRR_kwDOTotz3c8AAAABUCeAJg
+on #1853 at 2026-10-24T19:59:48Z, REQUEST_CHANGES on exact head 8166837a and blob
+b485c9f2. Exact R2 extraction, cohort/holdout counts, non-execution/proof ceilings,
+refusal taxonomy, comparison attribution, rubric and fixture arithmetic held up.
+Five repair findings are accepted: absent Slack/app and subscription scenarios,
+overstated crosswalk links, model-visible coding oracles, and an undefined 85%
+eligibility denominator. Parent STOP 1792872228.147259 closes that R1 assignment;
+HC-P7.T0.FIX1 pins the same-source one-file repair before editing. The original
+32 public cases, eight empty holdouts and exact R2 obligations remain mandatory.
+
+HC-P6.T0 was requested after published pin 5da9124f and exact readback, original
+thread 1792872108.375879. Actual Cursor placement/START remains pending.
+A separate read-only P4 eligibility check used existing Executive V3 session_targets:
+successful response, data=[], server_version 0.2.0. This proves no addressable target
+in this caller's current projection, not global absence. The existing canary source
+requires an authentic original CONTINUE read_ref and one current child; no such
+reference was supplied or fabricated and no grant/canary was started.
