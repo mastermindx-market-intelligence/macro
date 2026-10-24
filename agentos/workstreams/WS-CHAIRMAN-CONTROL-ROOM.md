@@ -155,10 +155,10 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Obtain HC-P3.T1a.PORT1.R1 independent review and CI for Draft #1856 at a9601a9c.
-      The canonical gate is active in construction and both prelaunch callbacks;
-      author tests passed. Preserve the frozen source/donor, materialization/native
-      consumption, installed proof and original-parent acceptance gates.
+      Reconcile the original new-subject Fabric review refusal/root-verification gap
+      under HC-P3.T1a.PORT1.R1.RECON; no retry or alternate placement. Draft #1856 at
+      a9601a9c stays frozen, with author tests and Attempt Overlay CI passed. General CI,
+      semantic review, materialization/native consumption and installed acceptance remain open.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -188,8 +188,9 @@ waves:
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
       Obtain same-carrier HC-P7.T0.R2 review of repaired Draft #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc.
-      FIX1 passed author source checks and exact remote readback; hosted CI 40129725707
-      remains in progress. Preserve 32 public cases, eight empty holdouts and all R2
+      FIX1 passed author source checks, exact remote readback and hosted CI 40129725707.
+      Same-reviewer continuation delivery is being reconciled. Preserve 32 public cases,
+      eight empty holdouts and all R2
       obligations. No evaluation campaign or full acceptance has occurred.
   - id: HC-P8
     title: Optional model and local-inference evaluation
@@ -286,7 +287,7 @@ do_not_redo:
 next_action: >
   For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
   same-child repairs of #1854 and #1852 (R2). Draft #1856 at a9601a9c publishes the
-  tested ACP canonical gate; request its pinned new-subject independent review.
+  tested ACP canonical gate; reconcile its original review refusal/root gap without replay.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1785,8 +1786,9 @@ consumption, independent release and full T1a/T1/P3 remain open.
   independently run checks versus author reports, limitations, model/usage only when
   attested, and terminal review receipt. Do not accept full T1a/T1/P3 or the mission.
   Parent will consume the actual result and explicitly STOP or REQUEST_REPAIR.
-- **State:** PLANNED_BEFORE_REQUEST. Capabilities are available but worker admission
-  and start remain unprobed. No review or model execution is claimed before receipt.
+- **State:** REQUEST_REFUSED_ROOT_UNVERIFIED, controller 73605. The nested prelaunch
+  refusal and outer ROOT_UNVERIFIED/absence-false receipts are preserved below.
+  No worker start or semantic review is qualified; retry remains forbidden.
 
 
 ### HC-P1B.T1.R2 — Close remaining source-pin and launcher gaps on the same repair carrier
@@ -1831,11 +1833,104 @@ consumption, independent release and full T1a/T1/P3 remain open.
   terminal/custody receipt; then freeze for separate non-author fleet review. No author
   approval/merge, provider call, purchase, credentials/account changes, database install
   or full Rakazo journey claim. Source-flow findings above are not an executed exploit.
-- **State:** PLANNED_BEFORE_CONTINUATION. Next action: deliver explicit same-child
-  REQUEST_REPAIR after this record is published; independent review remains owed.
+- **State:** REQUEST_REPAIR_DELIVERED at 1792875816.586879 on the original thread.
+  Actual R2 forwarding/START/new head remain unobserved; independent review is owed.
 
 Secretary receipt 1792875586.684559 confirms the Rakazo source-freeze/STOP was forwarded
 to the same still-running carrier; only exact-head CI observation remains authorized
 until the parent's pinned R2 continuation. No terminal/custody return is yet observed.
 ACP #1856 exact-head DSH ACP Attempt Overlay workflow 40132237065 is completed SUCCESS;
 general CI 40132237175 remains in progress. Neither result is semantic acceptance.
+
+
+#### Current fleet and CI receipts after the ACP publication
+
+- Rakazo R2 REQUEST_REPAIR delivered on the original thread at 1792875816.586879.
+  Actual R2 forwarding/START/new head are not yet observed. Same carrier remains.
+- P7/P6 continuation delivery reconciliation requested at 1792875869.139359 on the
+  original commission; no duplicate placement or replay was authorized.
+- Exact-head general CI is now completed SUCCESS for #1853/0f433e8 (40129725707),
+  #1854/ffe70d75 (40129202042) and #1852/7c80eb33 (40129509142).
+  These green heads do not clear pending semantic review or source repair.
+- ACP #1856/a9601a9c general CI40132237175 has three running test shards; Attempt
+  Overlay40132237065 passed. New Fabric review has the qualified-refusal/root gap
+  recorded in HC-P3.T1a.PORT1.R1.RECON, not a semantic verdict.
+
+
+### HC-P3.T1a.PORT1.R1.RECON — Qualify the original refused review request
+
+- **Exact identity:** Fabric request meta-ceo-harness-acp-port1-review-20261024-01,
+  root meta-ceo-open-harness-convergence-20261024-sol-001, parent
+  meta-ceo-harness-implementation-20261024-web-001, controller 73605, exact source
+  #1856/a9601a9cf04eba9ed82b3c17995122f49c7a2603. Request returned CONTROLLER_CREATED,
+  adapter exit 75, worker_start_proven=false, execution_absence_proven=false,
+  retry_allowed=false.
+- **Readback:** status is REQUEST_REFUSED_BEFORE_LAUNCH. Its nested request record
+  says execution_absence_proven=true and retains the requested root/parent, but the
+  outer qualified response says root_verified=false and execution_absence_proven=false.
+  fabric_result refuses ROOT_UNVERIFIED. Controller output has only BEGIN/EXIT=75
+  markers and a completed wrapper; no worker identity, semantic verdict or source review.
+  Preserve both levels. Do not infer qualified absence from the nested flag alone.
+- **Bounded task:** ask the incumbent Secretary/Fabric owner to inspect the retained
+  original request/controller/refusal metadata for this exact identity and explain the
+  refusal and root-verification gap, with an actual root-qualified disposition or the
+  precise missing evidence. Read-only metadata only; no worker launch, fresh ID,
+  route/pool switch, credential/account/config change, policy repair or fabricated receipt.
+- **State:** PLANNED_BEFORE_RECONCILIATION_REQUEST. The new review remains unverified
+  with retry forbidden; #1856 source stays frozen. The original three older Fabric
+  terminal/EFFECT_UNKNOWN holds remain separate and unchanged.
+
+
+### HC-P6.T1.DESIGN — Genuine associated Mission and selected Result acquisition
+
+- **Observed gap:** #1854's real exports are individually valid, but Result and Mission
+  were acquired in separate observations from the same bound Runtime reader. Runtime's
+  receipt is explicitly request-scoped; _start mints a fresh identity on each observation.
+  The existing uniqueness test requires different identities. Equal data_version samples
+  do not equate independent observations. projectOffice correctly returns UNKNOWN /
+  RESULT_OBSERVATION_UNQUALIFIED for the cross-observation pair.
+- **Source pin/owners:** Mastermind 3095d09f1789a5b8002503beae872774c297b1a5,
+  executive_runtime.py receipt/observation/selection owners; fabric_job_view.py bounded
+  root acquisition/provenance/v3 projection; workspace_read_service.py actual Result
+  and Mission acquisition; mastermind_workspace_app authenticated transport; the existing
+  common workspace contract and Office decoders/projector. Protected docs/sol_skills
+  and the authority-boundaries source are unchanged from verified e00e97b8 to this pin.
+  The principal-architect authority reference was read from the protected repository.
+- **Invariant:** Runtime owns each observation identity, retained connection, bounded
+  selection, namespace validation, close and finalized receipt. WorkspaceReadService
+  owns the Control Room bracket and cross-owner composition. GitHub owns source/proof;
+  App authentication and current binding stay with incumbent owners. No stable identity,
+  copied receipt, cached authority, second selection allowance or UI join relaxation.
+- **Alternatives:** keeping separate reads preserves safety but cannot supply the positive
+  Office association; comparing only equal counters or rewriting IDs is invalid.
+  The preferred candidate is one explicitly bounded composite selection for an exact
+  root/job/attempt/envelope-digest tuple, followed by actual incumbent projections and
+  one authenticated compound read. Existing standalone reads remain unchanged.
+- **Strongest counterargument:** a composite operation can accidentally expand SQL,
+  bytes, recursive completion or VM-step budgets, or bypass retained provenance/close
+  checks. The current VM guard resets on activate, so simply chaining both methods is
+  not shared-budget proof. A case that fits each phase separately but exceeds the
+  combined allowance must fail without any partial result or successful receipt.
+- **Smallest useful vertical source slice:** one Runtime-owned compound selection;
+  reuse existing Fabric/Mission/Result projection laws on its actual same-observation
+  materials; one Control Room bracket and existing principal/permission checks;
+  a closed additional transport frame/endpoint through the existing Unix service;
+  actual emitted documents consumed unchanged by existing TS decoders/projectOffice.
+  A dormant Runtime method or test-only manufactured pair does not finish this slice.
+- **Contract constraints:** fixed selectors only, no caller SQL/cursors/paths; one
+  automatically minted identity and receipt available only after physical close.
+  Preserve current root/Attempt ceilings and explicit finite combined statement/row/
+  cell/total-byte/node/VM bounds. Preserve the Result 16384-byte whole-envelope ceiling
+  and the incumbent 2000000-byte outer transport ceiling. A versioned compound response
+  must refuse oversized, unqualified, changed or denied sources without partial success.
+  Do not widen the frozen v2/v3 grammars or installed account grants.
+- **Proof plan:** real test-owned Runtime/namespace/authenticated HTTP/Unix route to
+  export, then real TypeScript consumer; exact fresh-file hashes/identities; positive
+  shared observation plus wrong tuple/digest/root, separate observation, mid-read
+  Control Room/Runtime/permission drift, second selection, budget, close/custody and
+  explicit missing-input refusals. Independent observations must still differ.
+- **Placement state:** SOURCE_GAP_CHARACTERIZED; current semantic overlap/custody check
+  and exact writable-path/transport/budget packet are in preparation. No implementation
+  child or source carrier has been placed for this slice. Known #1854 fixture repairs,
+  ACP #1856, old R2 App/auth edits and original Fabric holds remain fenced.
+  Source acceptance, signed-in UI use, installed custody and full P6 remain open.

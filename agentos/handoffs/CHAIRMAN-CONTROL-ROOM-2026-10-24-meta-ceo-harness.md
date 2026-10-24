@@ -67,8 +67,8 @@ next_actions:
   - Deliver and consume pinned same-child HC-P1B.T1.R2 for Draft 1852 at 7c80eb33; local Git behavior, outer npm environment and canonical-root/loader gaps remain before independent review.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
-  - Request pinned HC-P3.T1a.PORT1.R1 independent review of Draft 1856 at a9601a9c, then consume exact-head CI/review. Source tests passed; materialization/native consumption, installed and full mission proof remain open.
-  - Obtain HC-P7.T0.R2 same-carrier independent review of repaired Draft 1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc; author checks passed, hosted CI pending.
+  - Reconcile the original HC-P3.T1a.PORT1.R1 Fabric request refusal/root-verification gap without retry or replacement. Draft 1856/a9601a9c stays frozen; semantic review, materialization/native consumption and installed acceptance remain open.
+  - Reconcile HC-P7.T0.R2 same-carrier continuation delivery and obtain the independent verdict for Draft 1853/0f433e8; author checks and exact-head hosted CI40129725707 passed.
   - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
@@ -407,3 +407,45 @@ to the same still-running carrier; only exact-head CI observation remains author
 until the parent's pinned R2 continuation. No terminal/custody return is yet observed.
 ACP #1856 exact-head DSH ACP Attempt Overlay workflow 40132237065 is completed SUCCESS;
 general CI 40132237175 remains in progress. Neither result is semantic acceptance.
+
+
+#### Current fleet and CI receipts after the ACP publication
+
+- Rakazo R2 REQUEST_REPAIR delivered on the original thread at 1792875816.586879.
+  Actual R2 forwarding/START/new head are not yet observed. Same carrier remains.
+- P7/P6 continuation delivery reconciliation requested at 1792875869.139359 on the
+  original commission; no duplicate placement or replay was authorized.
+- Exact-head general CI is now completed SUCCESS for #1853/0f433e8 (40129725707),
+  #1854/ffe70d75 (40129202042) and #1852/7c80eb33 (40129509142).
+  These green heads do not clear pending semantic review or source repair.
+- ACP #1856/a9601a9c general CI40132237175 has three running test shards; Attempt
+  Overlay40132237065 passed. New Fabric review has the qualified-refusal/root gap
+  recorded in HC-P3.T1a.PORT1.R1.RECON, not a semantic verdict.
+
+
+### HC-P3.T1a.PORT1.R1.RECON — Qualify the original refused review request
+
+- **Exact identity:** Fabric request meta-ceo-harness-acp-port1-review-20261024-01,
+  root meta-ceo-open-harness-convergence-20261024-sol-001, parent
+  meta-ceo-harness-implementation-20261024-web-001, controller 73605, exact source
+  #1856/a9601a9cf04eba9ed82b3c17995122f49c7a2603. Request returned CONTROLLER_CREATED,
+  adapter exit 75, worker_start_proven=false, execution_absence_proven=false,
+  retry_allowed=false.
+- **Readback:** status is REQUEST_REFUSED_BEFORE_LAUNCH. Its nested request record
+  says execution_absence_proven=true and retains the requested root/parent, but the
+  outer qualified response says root_verified=false and execution_absence_proven=false.
+  fabric_result refuses ROOT_UNVERIFIED. Controller output has only BEGIN/EXIT=75
+  markers and a completed wrapper; no worker identity, semantic verdict or source review.
+  Preserve both levels. Do not infer qualified absence from the nested flag alone.
+- **Bounded task:** ask the incumbent Secretary/Fabric owner to inspect the retained
+  original request/controller/refusal metadata for this exact identity and explain the
+  refusal and root-verification gap, with an actual root-qualified disposition or the
+  precise missing evidence. Read-only metadata only; no worker launch, fresh ID,
+  route/pool switch, credential/account/config change, policy repair or fabricated receipt.
+- **State:** PLANNED_BEFORE_RECONCILIATION_REQUEST. The new review remains unverified
+  with retry forbidden; #1856 source stays frozen. The original three older Fabric
+  terminal/EFFECT_UNKNOWN holds remain separate and unchanged.
+
+P6 source diagnosis is now pinned in HC-P6.T1.DESIGN: real request-scoped Runtime
+identities explain the correctly withheld independent exports. A bounded same-observation
+vertical read is being prepared; no identity rewrite, UI guard weakening or new writer.
