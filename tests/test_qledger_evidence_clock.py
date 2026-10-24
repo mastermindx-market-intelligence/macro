@@ -125,9 +125,9 @@ def test_explicit_strict_clock_readback_mismatch_is_not_success(tmp_path, monkey
     from pathlib import Path
     import pytest
     actual_link = qclock.os.link
-    def different(source, target):
-        value = actual_link(source, target)
-        target.write_text('{"first_prospective_registration_utc":"foreign-original"}')
+    def different(source, target, **kwargs):
+        value = actual_link(source, target, **kwargs)
+        qclock._clock_path("thematic_desk", tmp_path).write_text('{"first_prospective_registration_utc":"foreign-original"}')
         return value
     monkeypatch.setattr(qclock.os, "link", different)
     with pytest.raises(ValueError, match="readback differs"):
@@ -143,22 +143,23 @@ def test_strict_two_absent_callers_preserve_first_installed_clock(tmp_path, monk
     both_absent = threading.Barrier(2)
     first_returned = threading.Event()
     real_open, real_write, real_link = Path.open, Path.write_text, os.link
-    def absent_read(path, *a, **k):
-        try:
-            return real_open(path, *a, **k)
-        except FileNotFoundError:
-            if path == target and (a[0] if a else k.get('mode')) == 'rb':
-                both_absent.wait(timeout=5)
-            raise
+    real_snapshot, observed = qclock._strict_clock_snapshot, set()
+    def absent_read(path, field):
+        value = real_snapshot(path, field)
+        name = threading.current_thread().name
+        if path == target and value is None and name not in observed:
+            observed.add(name)
+            both_absent.wait(timeout=5)
+        return value
     def ordered_write(path, *a, **k):
         if threading.current_thread().name == 'clock-B' and path.name.endswith('.tmp'):
             assert first_returned.wait(5)
         return real_write(path, *a, **k)
     def ordered_link(source, destination, *a, **k):
-        if threading.current_thread().name == 'clock-B' and Path(destination) == target:
+        if threading.current_thread().name == 'clock-B' and Path(destination).name == target.name:
             assert first_returned.wait(5)
         return real_link(source, destination, *a, **k)
-    monkeypatch.setattr(Path, 'open', absent_read)
+    monkeypatch.setattr(qclock, '_strict_clock_snapshot', absent_read)
     monkeypatch.setattr(Path, 'write_text', ordered_write)
     monkeypatch.setattr(os, 'link', ordered_link)
     values, errors = {}, []
@@ -186,9 +187,9 @@ def test_strict_link_response_loss_preserves_original_and_next_read_never_reinst
     target = qclock._clock_path('thematic_desk', tmp_path)
     real_link = qclock.os.link
     installs = []
-    def lost(source, destination):
-        real_link(source, destination)
-        installs.append(destination)
+    def lost(source, destination, **kwargs):
+        real_link(source, destination, **kwargs)
+        installs.append(target)
         raise OSError('fixture install return lost')
     monkeypatch.setattr(qclock.os, 'link', lost)
     with pytest.raises(OSError, match='return lost'):
@@ -205,8 +206,8 @@ def test_strict_link_response_loss_preserves_original_and_next_read_never_reinst
 def test_strict_collision_never_heals_invalid_winner(tmp_path, monkeypatch):
     import pytest
     target = qclock._clock_path('thematic_desk', tmp_path)
-    def collision(source, destination):
-        destination.write_bytes(b'original invalid winner\n')
+    def collision(source, destination, **kwargs):
+        target.write_bytes(b'original invalid winner\n')
         raise FileExistsError('fixture another installer won')
     monkeypatch.setattr(qclock.os, 'link', collision)
     with pytest.raises(ValueError):
@@ -219,8 +220,8 @@ def test_strict_collision_missing_winner_is_uncertain_without_second_install(tmp
     import pytest
     target = qclock._clock_path('thematic_desk', tmp_path)
     attempts = []
-    def collision(source, destination):
-        attempts.append(destination)
+    def collision(source, destination, **kwargs):
+        attempts.append(target)
         raise FileExistsError('fixture collision winner removed')
     monkeypatch.setattr(qclock.os, 'link', collision)
     with pytest.raises(ValueError, match='winner unavailable'):

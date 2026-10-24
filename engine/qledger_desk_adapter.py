@@ -640,13 +640,23 @@ def register_prospective(rows: Iterable[dict], *, family: str,
                 binding._check_intent(native_intent)
                 prior_attempts = len(binding.attempts)
             intent_args = {} if native_intent is None else {"native_intent": native_intent}
-            results = qledger.register_batch(candidates, root=root, dedupe=True, today=today, **intent_args)
+            if native_intent is None:
+                results = qledger.register_batch(candidates, root=root, dedupe=True, today=today, **intent_args)
+            else:
+                with binding.prospective_clock_scope(native_intent, family=family,
+                        horizon_d=candidates[0]["horizon_d"], horizon_unit=qledger.HORIZON_UNIT_TRADING,
+                        git_sha=git_sha) as family_clock:
+                    results = qledger.register_batch(candidates, root=root, dedupe=True, today=today, **intent_args)
     except Exception as exc:  # noqa: BLE001 — LOUD, never silent (blocker: silent total failure)
         stats["error"] = str(exc)
         print(f"::error title={family}-qledger-register-failed::qledger[{family}] "
              f"register_batch raised: {exc}", flush=True)
         log.error("qledger[%s]: register_batch failed: %s", family, exc)
         if native_intent is not None:
+            if 'binding' in locals() and len(getattr(binding, 'attempts', ())) > locals().get('prior_attempts', 0):
+                attempt = binding.attempts[-1]
+                stats["native_write_status"] = attempt.outcome.status if attempt.outcome is not None else "unproven"
+                stats["family_clock_status"] = "uncertain"
             raise NativeProspectiveFailure(native_intent, stats) from exc
         return stats
 
@@ -671,6 +681,14 @@ def register_prospective(rows: Iterable[dict], *, family: str,
 
     stats["n_accepted"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "open")
     stats["n_rejected"] = sum(1 for r in results if isinstance(r, dict) and r.get("status") == "rejected")
+
+    if native_intent is not None:
+        record = family_clock.record
+        if record is not None:
+            stats["family_clock_status"] = "readback_verified"
+            stats["clock_started"] = True
+            stats["clock_record"] = record
+        return stats
 
     if (not dry_run and stats["n_accepted"] > 0
             and (native_intent is None or (stats["native_write_status"] == "materialized"

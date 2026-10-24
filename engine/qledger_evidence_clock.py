@@ -39,7 +39,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -88,6 +87,159 @@ def read_start(family: str, root: Path | str | None = None) -> dict[str, Any] | 
     return _read(_clock_path(family, root))
 
 
+class _StrictClockRecord(dict):
+    """Process-local stable-file observation, never original settlement authority."""
+    def __init__(self, path, observation):
+        super().__init__(observation[2])
+        self.path, self.observation, self.pid = path, observation, os.getpid()
+
+    def __reduce_ex__(self, protocol):
+        raise TypeError("clock observations cannot transfer original authority")
+
+
+def _clock_directory(path):
+    import stat
+    from engine.qledger_store_sources import _open_directory
+    descriptor = _open_directory(path)
+    info = os.fstat(descriptor)
+    if info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) & 0o022:
+        os.close(descriptor)
+        raise ValueError("unsafe original clock directory")
+    return descriptor
+
+
+def _strict_clock_snapshot(path, field):
+    """Bounded stable bytes plus file/directory barriers, not original authority."""
+    import stat
+    from engine.qledger_store_native import _sync_file, _sync_dir
+    from engine.qledger_store_sources import _file_identity
+    try:
+        directory = _clock_directory(path.parent)
+    except FileNotFoundError:
+        return None
+    fd = None
+    try:
+        try:
+            fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+        except FileNotFoundError:
+            return None
+        info = os.fstat(fd)
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
+                or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) & 0o022 or info.st_size > 65536):
+            raise ValueError("unsafe or oversized original clock")
+        payload = bytearray()
+        while len(payload) <= 65536:
+            block = os.read(fd, min(8192, 65537 - len(payload)))
+            if not block:
+                break
+            payload.extend(block)
+        value = json.loads(payload)
+        if (len(payload) != info.st_size or len(payload) > 65536 or not isinstance(value, dict)
+                or not isinstance(value.get(field), str) or not value[field]):
+            raise ValueError("existing clock is unproven; preserve original")
+        _sync_file(fd)
+        _sync_dir(directory)
+        if (_file_identity(info) != _file_identity(os.fstat(fd))
+                or _file_identity(info) != _file_identity(os.stat(path.name, dir_fd=directory, follow_symlinks=False))):
+            raise ValueError("original clock changed during readback")
+        other = _clock_directory(path.parent)
+        try:
+            if (os.fstat(other).st_dev, os.fstat(other).st_ino) != (os.fstat(directory).st_dev, os.fstat(directory).st_ino):
+                raise ValueError("original clock directory changed")
+        finally:
+            os.close(other)
+        return bytes(payload), _file_identity(info), value
+    finally:
+        if fd is not None:
+            os.close(fd)
+        os.close(directory)
+
+
+def _install_strict_clock(path, record, field):
+    """Existing clock format, non-overwriting install and durable exact readback."""
+    from engine.qledger_store_native import _sync_file, _sync_dir
+    existing = _strict_clock_snapshot(path, field)
+    if existing is not None:
+        return _StrictClockRecord(path, existing)
+    # Preserve the existing strict API's directory creation, with a bound and
+    # barriers for each new parent; no symlinked ancestor is followed.
+    missing, ancestor = [], path.parent
+    while True:
+        try:
+            parent = _clock_directory(ancestor)
+            break
+        except FileNotFoundError:
+            if len(missing) >= 128:
+                raise ValueError("clock directory depth exceeds bound")
+            missing.append(ancestor.name)
+            ancestor = ancestor.parent
+    try:
+        for name in reversed(missing):
+            try:
+                os.mkdir(name, 0o755, dir_fd=parent)
+            except FileExistsError:
+                pass
+            _sync_dir(parent)
+            child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            import stat
+            if os.fstat(child).st_uid != os.geteuid() or stat.S_IMODE(os.fstat(child).st_mode) & 0o022:
+                os.close(child)
+                raise ValueError("unsafe original clock directory")
+            os.close(parent)
+            parent = child
+    finally:
+        os.close(parent)
+    payload = json.dumps(record, indent=2, sort_keys=(field == "first_prospective_registration_utc"),
+                         ensure_ascii=False) + "\n"
+    if len(payload.encode("utf-8")) > 65536:
+        raise ValueError("original clock exceeds explicit readback bound")
+    directory = _clock_directory(path.parent)
+    temporary = None
+    try:
+        for attempt in range(16):
+            name = f".{path.name}.{os.urandom(12).hex()}.tmp"
+            try:
+                descriptor = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                                     0o600, dir_fd=directory)
+                temporary = name
+                break
+            except FileExistsError:
+                continue
+        else:
+            raise ValueError("private clock staging collision bound")
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.flush()
+            _sync_file(handle.fileno())
+        # Confirm the pathname still names the held directory before linking.
+        other = _clock_directory(path.parent)
+        try:
+            if (os.fstat(other).st_dev, os.fstat(other).st_ino) != (os.fstat(directory).st_dev, os.fstat(directory).st_ino):
+                raise ValueError("clock directory changed before installation")
+        finally:
+            os.close(other)
+        installed_here = False
+        try:
+            os.link(Path(temporary).name, path.name, src_dir_fd=directory, dst_dir_fd=directory,
+                    follow_symlinks=False)
+            installed_here = True
+        except FileExistsError:
+            pass  # Preserve/read the winner; original-scoped caller decides provenance.
+        os.unlink(Path(temporary).name, dir_fd=directory)
+        temporary = None
+        _sync_dir(directory)
+        installed = _strict_clock_snapshot(path, field)
+        if installed is None:
+            raise ValueError("clock collision winner unavailable; effect uncertain")
+        if installed_here and installed[2] != record:
+            raise ValueError("evidence clock readback differs; original effect uncertain")
+        return _StrictClockRecord(path, installed)
+    finally:
+        if temporary is not None:
+            os.unlink(Path(temporary).name, dir_fd=directory)
+        os.close(directory)
+
+
 def record_start(family: str, *, horizon_d: int, horizon_unit: str,
                  git_sha: str | None = None, root: Path | str | None = None,
                  now: str | None = None, strict: bool = False) -> dict[str, Any]:
@@ -107,28 +259,15 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
     records refuse, write failures propagate and returned new records require
     exact bounded readback. Strict callers install a fully written private
     staging file with a non-overwriting hard link; a collision reads the
-    existing winner instead of replacing it. This does not prove crash
-    durability or exclude legacy clock writers; it never provides a recovery
-    restamp.
+    existing winner instead of replacing it. File/directory barriers supplement
+    exact readback; this does not exclude legacy writers or settle any particular
+    native original, and never provides a recovery restamp.
     """
     path = _clock_path(family, root)
 
     def checked_read():
-        # Explicit native owner only. Refuse ambiguity; never heal/restamp an
-        # unreadable original. This is bounded visibility, not fsync durability.
-        try:
-            with path.open("rb") as handle:
-                payload = handle.read(65537)
-        except FileNotFoundError:
-            return None
-        if len(payload) > 65536:
-            raise ValueError("evidence clock exceeds explicit readback bound")
-        value = json.loads(payload)
-        if (not isinstance(value, dict)
-                or not isinstance(value.get("first_prospective_registration_utc"), str)
-                or not value["first_prospective_registration_utc"]):
-            raise ValueError("existing evidence clock is unproven; preserve original")
-        return value
+        observation = _strict_clock_snapshot(path, "first_prospective_registration_utc")
+        return None if observation is None else _StrictClockRecord(path, observation)
 
     existing = checked_read() if strict else _read(path)
     if existing is not None and existing.get("first_prospective_registration_utc"):
@@ -141,31 +280,10 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
         "git_sha": git_sha,
     }
     try:
-        path.parent.mkdir(parents=True, exist_ok=True)
+        if not strict:
+            path.parent.mkdir(parents=True, exist_ok=True)
         if strict:
-            # Same-directory unique staging prevents shared-.tmp races. The
-            # link is the sole first-install operation: it cannot replace an
-            # existing clock, even if both callers observed absence earlier.
-            descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
-            try:
-                with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
-                    handle.write(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-                    handle.flush()
-                    os.fsync(handle.fileno())
-                try:
-                    os.link(temporary, path)
-                except FileExistsError:
-                    winner = checked_read()
-                    if winner is None:
-                        raise ValueError("evidence clock collision winner unavailable; effect uncertain")
-                    return winner
-                if checked_read() != record:
-                    raise ValueError("evidence clock readback differs; original effect uncertain")
-                return record
-            finally:
-                # Only this call's private staging name, never the clock or
-                # another caller's partial/shared temporary, is removed.
-                os.unlink(temporary)
+            return _install_strict_clock(path, record, "first_prospective_registration_utc")
         tmp = path.with_name(path.name + ".tmp")
         tmp.write_text(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
                        encoding="utf-8")

@@ -373,6 +373,9 @@ class _NativeClaimsBinding:
         self.limits = limits
         self.lock_timeout = lock_timeout
         self._session_factory = session_factory
+        self._original_process_id = os.getpid()
+        self._registration_family = ContextVar("qledger_original_family_clock", default=None)
+        self._active_registration_clock = ContextVar("qledger_live_registration_clock", default=None)
         self._last_outcome: ContextVar[Any] = ContextVar("qledger_native_last_outcome", default=None)
         self._attempts: ContextVar[tuple[NativeClaimsAttempt, ...]] = ContextVar(
             "qledger_native_attempts", default=(),
@@ -381,6 +384,10 @@ class _NativeClaimsBinding:
         self._pre_attempt_failure: ContextVar[NativeClaimsPreAttemptFailure | None] = ContextVar(
             "qledger_native_pre_attempt_failure", default=None,
         )
+
+    @property
+    def original_process_id(self):
+        return self._original_process_id
 
     @property
     def last_outcome(self):
@@ -403,6 +410,19 @@ class _NativeClaimsBinding:
             if len(self.attempts) == attempts_before:
                 self._pre_attempt_failure.set(NativeClaimsPreAttemptFailure(stage, type(exc).__name__))
             raise
+
+    @contextmanager
+    def prospective_clock_scope(self, intent, *, family, horizon_d, horizon_unit, git_sha):
+        from engine.qledger import _NativeFamilyClock
+        scope = _NativeFamilyClock(self, intent, family, horizon_d, horizon_unit, git_sha)
+        if self._registration_family.get() is not None:
+            raise ValueError("nested native prospective clock scope")
+        token = self._registration_family.set(scope)
+        try:
+            yield scope
+            scope.require_complete()
+        finally:
+            self._registration_family.reset(token)
 
     def _new_session(self, intent=None):
         factory = self._session_factory
@@ -506,8 +526,10 @@ class _NativeClaimsBinding:
                     yield writer
             except ClaimsStorageError as exc:
                 outcome = exc.outcome
-                if writer is not None and writer.clock_attempted:
-                    outcome = replace(outcome, clock_status="uncertain")
+                if writer is not None:
+                    outcome = writer._pending_clock_outcome(outcome)
+                    if writer.clock_attempted:
+                        outcome = replace(outcome, clock_status="uncertain")
                 if writer is not None and writer.write is not None:
                     self._record(writer.write, outcome)
                 else:
@@ -574,11 +596,24 @@ class _NativeClaimsWriter:
         self.snapshot = session.read_snapshot()
         self.outcome = None
         self.clock_attempted = False
+        self._registration_rows = None
+        self._registration_clocks = None
+        self._registration_clock_pending = False
 
     def read_rows(self) -> list[Any]:
         return _legacy_rows_from_lines(_snapshot_lines(self.snapshot))
 
+    def _pending_clock_outcome(self, outcome):
+        # The obligation predates native apply. Materialization cannot expose
+        # a publishable not_attempted clock state before the hook is entered.
+        # Known before-root failures retain their actual not-attempted fact.
+        if self._registration_clock_pending and outcome.status in (
+                "materialized", "already_applied", "root_effect_uncertain"):
+            return replace(outcome, clock_status="uncertain")
+        return outcome
+
     def _record(self, outcome):
+        outcome = self._pending_clock_outcome(outcome)
         self.outcome = outcome
         return self.binding._record(self.write, outcome)
 
@@ -588,6 +623,12 @@ class _NativeClaimsWriter:
         if plan.is_noop:
             raise SnapshotIntegrityError("CONFLICT", "existing transaction requires original-input reconciliation")
         self.write = NativeClaimsWrite(self.intent, plan, self.binding.claims_path)
+        if self._registration_rows is not None:
+            from engine.qledger import _NativeRegistrationClocks
+            rows, today = self._registration_rows
+            self._registration_clocks = _NativeRegistrationClocks(self, rows, today,
+                self.binding._registration_family.get())
+            self._registration_clock_pending = True
         self.binding._begin(self.write)
         return self._record(self.binding._apply_original_write(self.session, self.write))
 
@@ -600,6 +641,38 @@ class _NativeClaimsWriter:
         with self.binding._observe_pre_attempt_failure("replace-preparation"):
             self.binding._admit(self.intent)
             return self._execute(self.session.prepare_replace(rows, expected_view_digest=expected_view_digest))
+
+    def bind_registration_clocks(self, rows, *, today):
+        if self.write is not None or self._registration_rows is not None:
+            raise ValueError("original clock inputs must precede native apply")
+        # Freeze the exact same serialization used by the registrar's append.
+        from engine.qledger import _json_default
+        serialized, total = [], 0
+        for row in rows:
+            raw = (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+            total += len(raw)
+            if (len(serialized) >= self.binding.limits.input_rows
+                    or total > min(self.binding.limits.logical_bytes, self.binding.limits.snapshot_bytes)):
+                raise ValueError("original clock row inputs exceed existing limits")
+            serialized.append(raw)
+        self._registration_rows = (tuple(serialized), today)
+
+
+    def complete_registration_clocks(self):
+        from engine.qledger_store_protocol import SnapshotIntegrityError
+        from engine.qledger import _NativeRegistrationClocks
+        sequence = self._registration_clocks
+        if type(sequence) is not _NativeRegistrationClocks:
+            raise SnapshotIntegrityError("CLOCK_UNPROVEN", "original registration clocks were not prebound")
+        self.mark_clock_attempt()
+        token = self.binding._active_registration_clock.set(sequence)
+        try:
+            sequence.run()
+            sequence.require_complete(self)
+            self._registration_clock_pending = False
+            self._record(replace(self.outcome, clock_status="confirmed"))
+        finally:
+            self.binding._active_registration_clock.reset(token)
 
     def mark_clock_attempt(self) -> None:
         if self.outcome is None or self.outcome.status != "materialized":

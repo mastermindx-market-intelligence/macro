@@ -308,7 +308,11 @@ def owner_bridge(original, monkeypatch, *, intents=("bridge",)):
         target.write_bytes(payload)
     monkeypatch.setattr(q, "_prepare_claim", lambda claim: dict(claim))
     clocks = []
-    monkeypatch.setattr(q, "_start_control_clocks_for", lambda rows, root, today=None: clocks.append(list(rows)))
+    original_clock_hook = q._start_control_clocks_for
+    def observed_clock_hook(rows, root, today=None):
+        clocks.append(list(rows))
+        return original_clock_hook(rows, root, today=today)
+    monkeypatch.setattr(q, "_start_control_clocks_for", observed_clock_hook)
     identities = [n.NativeClaimsIntent(write.intent.operation_id, write.intent.lane_id, tag) for tag in intents]
     targets = {intent: result.OriginalResultTarget(root, root / tag, tag,
         candidate.continuity.accepted_tip_oid, candidate.accepted_ref, "refs/heads/main", candidate.commit_metadata)
@@ -478,7 +482,11 @@ def thematic_owner(original, monkeypatch):
     monkeypatch.setattr(adapter, 'outcome_not_yet_determined', lambda *a: (True, ''))
     monkeypatch.setattr(clock, 'git_sha', lambda root: 'fixture-provenance')
     family_clocks = []
-    monkeypatch.setattr(clock, 'record_start', lambda *a, **k: family_clocks.append('attempted') or {'fixture': True})
+    original_family_clock = clock.record_start
+    def observed_family_clock(*args, **kwargs):
+        family_clocks.append('attempted')
+        return original_family_clock(*args, **kwargs)
+    monkeypatch.setattr(clock, 'record_start', observed_family_clock)
     def invoke():
         return allocation.run_native_thematic_owner(['us'], native_intents={'us': intent},
             root=binding.repo_root, owner_binding=binding, call=object())
