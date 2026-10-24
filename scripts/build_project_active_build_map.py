@@ -28,6 +28,7 @@ import subprocess
 import sys
 import tempfile
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
@@ -39,6 +40,7 @@ SCHEMA = "project_active_builds.v1"
 SOURCE_SCHEMA = "project_active_builds.source.v1"
 RECENT_MERGE_LIMIT = 50
 OPEN_PR_LIMIT = 100
+MAX_FILE_READ_CONCURRENCY = 8  # bounded subprocess reads, not another collector
 MAX_MERGED_DAYS = 90
 _PARSE_ISO_TIMESTAMP = datetime.fromisoformat
 _MERGE_STATES = frozenset(
@@ -928,28 +930,44 @@ def _collect_repository(
             "number,title,headRefName,updatedAt,isDraft,mergeStateStatus,url,body",
         ]
     )
-    if not isinstance(open_data, list):
+    if (not isinstance(open_data, list) or len(open_data) > OPEN_PR_LIMIT
+            or any(type(item) is not dict or type(item.get("number")) is not int
+                   or item["number"] <= 0 for item in open_data)):
+        return None
+    numbers = [item["number"] for item in open_data]
+    if len(numbers) != len(set(numbers)):
         return None
 
-    open_prs: list[dict[str, Any]] = []
-    for item in open_data:
+    def changed_files_page(item: dict[str, Any]) -> list[str] | None:
         # `gh pr view --json files` follows GraphQL's entire file connection.
         # Very large PRs (observed 17,430 files) can produce a false empty
-        # connection even while REST confirms thousands of changed paths.
-        # Acquire only one bounded REST page; the existing files_truncated
-        # contract explicitly discloses any incomplete collision coverage.
-        number = item.get("number")
-        if type(number) is not int or number <= 0:
-            return None
+        # connection. Acquire only one bounded REST page per exact PR number.
         files = gh_runner([
-            "api", f"repos/{spec.repository}/pulls/{number}/files?per_page=100&page=1",
+            "api", f"repos/{spec.repository}/pulls/{item['number']}/files?per_page=100&page=1",
             "--jq", "[.[].filename]",
         ])
         if (type(files) is not list or len(files) > 100
                 or any(type(path) is not str or not path for path in files)
                 or len(files) != len(set(files))):
-            # An incomplete/unexpected REST page is not a real zero-file PR.
             return None
+        return files
+
+    # The existing Control Room permits 180 seconds for this entire three-repo
+    # refresh. Serial subprocess acquisition of the 300 bounded file pages
+    # measured 191 seconds on the actual M2 host. At most eight ephemeral
+    # workers acquire independent GETs; executor.map retains PR-list order,
+    # and any missing/bad page still fails the WHOLE snapshot closed.
+    if open_data:
+        with ThreadPoolExecutor(max_workers=min(MAX_FILE_READ_CONCURRENCY, len(open_data))) as pool:
+            file_pages = list(pool.map(changed_files_page, open_data))
+    else:
+        file_pages = []
+    if any(page is None for page in file_pages):
+        return None
+
+    open_prs: list[dict[str, Any]] = []
+    for item, files in zip(open_data, file_pages):
+        number = item["number"]
         # The bounded list observation is authoritative only for the fields
         # it actually supplies. UNKNOWN merge status is retained as UNKNOWN,
         # never inferred to be clean from a stale or second source read.

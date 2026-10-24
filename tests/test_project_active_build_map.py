@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import threading
 import stat
 from datetime import datetime, timezone
 
@@ -480,6 +481,53 @@ def test_changed_file_page_rejects_duplicates_and_over_budget(bad_page):
     gh, _ = _large_pr_collector(bad_page)
     assert project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
         collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=gh) is None
+
+
+
+def test_file_page_collector_runs_bounded_in_parallel_with_stable_row_order():
+    """Real owner timeout needs concurrent reads, without unbounded fanout."""
+    barrier = threading.Barrier(2)
+    observed_pages = []
+    def fake_gh(args):
+        if args[0] == "api" and "/git/ref/heads/" in args[1]:
+            return {"object": {"sha": "a" * 40}}
+        if args[:2] == ["pr", "list"] and "open" in args:
+            return [
+                {"number": 10, "title": "first", "headRefName": "one",
+                 "updatedAt": "2026-10-24T09:00:00Z", "mergeStateStatus": "UNKNOWN"},
+                {"number": 20, "title": "second", "headRefName": "two",
+                 "updatedAt": "2026-10-24T08:00:00Z", "mergeStateStatus": "UNSTABLE"},
+            ]
+        if args[:2] == ["pr", "list"] and "merged" in args:
+            return []
+        if args[0] == "api" and "/files?" in args[1]:
+            observed_pages.append(args[1])
+            barrier.wait(timeout=3)
+            return ["first.py"] if "/pulls/10/" in args[1] else ["second.py"]
+        raise AssertionError(f"unexpected API read: {args!r}")
+
+    result = project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=fake_gh)
+    assert result is not None
+    assert len(observed_pages) == 2
+    assert [entry["number"] for entry in result["open_prs"]] == [10, 20]
+    assert [entry["files"] for entry in result["open_prs"]] == [["first.py"], ["second.py"]]
+    assert [entry["merge_state"] for entry in result["open_prs"]] == ["UNKNOWN", "UNSTABLE"]
+
+
+@pytest.mark.parametrize("bad_numbers", [[10, 10], [10, True], [10, -4]])
+def test_file_collector_refuses_invalid_or_duplicate_pr_numbers_before_requests(bad_numbers):
+    queried = []
+    def fake(args):
+        queried.append(args)
+        if args[0] == "api" and "/git/ref/heads/" in args[1]:
+            return {"object": {"sha": "a" * 40}}
+        if args[:2] == ["pr", "list"] and "open" in args:
+            return [{"number": n} for n in bad_numbers]
+        raise AssertionError("invalid PR list must not generate individual fetches")
+    assert project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=fake) is None
+    assert len(queried) == 2
 
 
 def test_live_collection_queries_every_declared_repository_and_branch():
