@@ -3,7 +3,7 @@
 **Date:** 2026-10-24. **Scope:** Intelligence Evaluation OS only, in Macro's existing qualitative-intelligence programme.  
 **Authoring seat:** ChatGPT GPT-6 Astra Pro, under the Chairman's current census/masterplan/execution assignment.  
 **Programme verdict:** **PARTIAL — principal implementation merged and installed; final consumer, operational and scientific acceptance remains open.**  
-**Publication:** Draft documentation PR; no merge or release is requested by this document.  
+**Publication:** [Draft documentation PR #10168](https://github.com/mastermindx-market-intelligence/macro/pull/10168); no merge or release is requested by this document.  
 **Completion flags:** production_proven = false; scoped_commission_complete = false; programme_complete = false.
 
 ## 1. Decision and immediate priority
@@ -11,6 +11,8 @@
 Finish acceptance of the system that is already installed. The highest product value is proving that an authorized operator can follow a real engine from its current evidence through the authenticated panel/detail path, see a correct numeric-source result, and understand what the result does and does not permit. Production cache/coherence/performance and a genuine subsequent owner run are separate acceptance obligations. Another implementation wave or a broad rerun of accepted tests would not answer these questions.
 
 The first executable item in this assignment is **P0: repair task continuity and publish the current frontier**. A 17:07:48Z Agent OS import temporarily left the local task buffer empty. At 17:11:32Z the secretary restored the 25 existing records, including original T01–T24, under the existing local P12 wave. A fresh 17:17:11Z read confirmed that recovery; it also found every owner null, every dependency list empty, and downstream acceptance tasks marked ready. Do not restore them again. Preserve their IDs, evidence and blocked effects; repair their dependencies, accountable owners and dependency-aware readiness using the original task graph. Correct canonical next actions that still tell a successor to merge PR #6651.
+
+**Execution checkpoint:** P0's metadata repair ran at 18:12:47Z through the existing mmtask CLI: 24 original graph tasks, 50 dependency edges, all original owners filled, no dangling references or cycles, and every original status/evidence entry preserved. The archive hash is unchanged; T16/T21 remain blocked. The disjoint census task is P12.T25. The source-frontier correction is included in Draft #10168.
 
 This is a continuity repair, not product acceptance. After it, the next product lane is **P1: released consumer-path acceptance**, with the authentication-dependent portion held at the existing OS consent boundary. Independent evidence mapping and the read-only production qualification design can proceed without moving that boundary.
 
@@ -114,6 +116,12 @@ The installed Discovery observation used deployment head 4e0911617bc5c407b194d0e
 
 The A28 cache probe covered 647 artifacts / approximately 446 MiB, with cache-hit 1.293s and forced read 12.810s under a local 1 GiB / 60s probe budget. This is useful bounded evidence. That budget is not an adopted production SLO, and this probe is not a substitute for the real VPS population, process memory, concurrency, freshness or mutation invalidation checks.
 
+### Retained A1 population reconciled during execution
+
+The original Codex root advanced T03 to implementation_complete at 18:09:21Z using the retained authenticated A1 observation from 03:04:41Z in integration/production-4579f45-20261024/auth-overview.json. This census independently opened that receipt: 386 groups = 385 canonical engines + one noncanonical group; 650 outputs = 156 complete + 145 partial + 349 could_not_look. The 301 assessed outputs are not the full 650. Output-class coverage is 195 non-null / 455 null. Health is 85 healthy, 76 stale, two degraded, 62 unavailable and 425 null. Engine evidence bands are 36 Accruing, 339 Degraded and ten Ungraded by design, with zero Validated and zero Disproven.
+
+These are different denominators. Historical T1 curation of 107/109 required engines is not evidence that 650 current output artifacts have classes. The retained A1 API observation returned 200, coherent read status and a cache hit; it is valuable real-path evidence, but it predates the follow-on release and does not close current provider coverage, independent acceptance or numeric/log correlation. P0 preserved the original root's T03 state and receipt.
+
 ## 5. Prior masterplans: every original obligation
 
 ### Documents recovered and their continuing authority
@@ -174,7 +182,7 @@ Owners O1–O7 are accountable disciplines, not claims that seven sessions are r
 |---|---|---|---|
 | T01 custody/source | none | Recovered thread/worktree and exact merged refs; bounded recovery established | Preserve disk-only UNKNOWN; inspect only custody material to the next write. O6 |
 | T02 original-scope reconciliation | T01 | Original 13 obligations and 24-task/44-case maps retained | Apply explicit legacy dispositions; a map is not legacy completion. O1 |
-| T03 canonical identity/classes/providers | T01,T02 | Source and bounded registry/required-tier integration accepted | Current selected provider/population and null-handling proof at the real consumer. O1 |
+| T03 canonical identity/classes/providers | T01,T02 | Source and bounded registry/required-tier integration accepted; original root reconciled retained 385-engine/650-output A1 population at 18:09:21Z and marked implementation_complete, not independently accepted | Current complete provider/gradeability coverage and changed follow-on consumer acceptance remain open. O1 |
 | T04 disposition/lifecycle | T02,T03 | Source truth table and QA accepted | Verify real missing/degraded/retired/disproven paths and readable explanations. O5 |
 | T05 horizons/market | T03 | Ruler/grade/market source corrections accepted | Preserve current declared ruler versus first annotation; no max-union or >63 own-horizon implication. O2 |
 | T06 registration/control origin | T03 | demand_chain Aug19, stock_desk Aug29, thematic_desk Aug31 general clocks accepted | Owner-local control qualification/cohort origin still requires actual evidence. O2 |
@@ -288,4 +296,10 @@ The present census establishes major implementation and installation progress. I
 
 ## 12. Publication and first-execution checkpoint
 
-Initial full-plan checkpoint: census and prioritized masterplan prepared; user-requested Draft docs publication and secretary summary are the next acts. P0 is defined above and will be executed immediately after those publication acts. This section will be amended with exact PR, Slack and task-repair receipts before this assignment closes.
+- Masterplan published as [Draft PR #10168](https://github.com/mastermindx-market-intelligence/macro/pull/10168), initial commit 8d7df43a0743e7cc6ecb69b10b92334a03e10c67. The user-requested Draft state remains the publication boundary; no merge arm was added.
+- Requested summary posted to [#dotsandgroksecretary](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792865461818639) and read back from the exact thread.
+- P0 started after those publication acts as existing-harness task P12.T25. At 18:12:47Z, original T01–T24 dependencies matched TASK_GRAPH.json exactly: 50 edges, no cycles or missing references, all accountable owners present, and all 25 prior task IDs/statuses/evidence retained. The new census task brings the local count to 26; it is not a duplicate product obligation.
+- Archive SHA256 remained cc794c7240a3c18024fc2916927677e52cb74c3f361a9d1bc4754aa1be6bcc03. T16/T21 stayed blocked. The original Codex T03 advancement was preserved. Dependency-aware mmtask next returned P12.T25 followed by T04/T05/T06/T08; downstream T22–T24 no longer appear immediately executable.
+- The two canonical workstream next actions are corrected in this Draft, and agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md carries the delta. Historical sections remain intact.
+- Exact repair proof: research/evidence/eval_os_pro_census_20261024/continuity-repair.json and host /Users/chriswong/gwcap/estate-census/intelligence-evaluation-os-P0-continuity-2026-10-24.json. Record validation uses the real scripts/agentos.py validate command against a full copied store with these three authored records applied; its exact receipt accompanies the PR.
+- The next product lane is P1 real consumer acceptance under the existing root and exact held auth effect. This census did not dispatch another worker, install a watcher or change any production completion flag.

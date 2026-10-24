@@ -26,14 +26,19 @@ waves:
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
     next_action: >
-      Publish the qualified nine-input tested-merge closure repair on original PR6651 under fresh
-      canonical capacity and source custody, then fresh binding checks, incumbent merge and production proof.
+      PR6651 merged as 4579f45 and follow-on PR10130 as 5aae3c5 on 2026-10-24.
+      Preserve accepted source, CI, installation and exact-asset A1 proof. Complete changed
+      authenticated numeric/log and panel/detail consumption, real production cache/coherence
+      qualification and independent operator comprehension under the existing effect owners.
+      The original SecurityAgent consent holds only its dependent browser action.
 next_action: >
-  Continue the existing PR #6651 under current Chairman assignment and root
-  01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
-  reads, dark/light EN/ZH experience, exact-head CI/review, Chairman-authorized governed merge and
-  authenticated normal-release proof. Historical receiver labels do not imply a live writer.
-  Natural accrual remains independent and must remain honestly qualified.
+  Continue residual acceptance of the released #6651/#10130 source using the 2026-10-24
+  census masterplan in Draft PR10168 and original root 01a1333d-b0c0-7f33-9259-dd718391d9e4.
+  Preserve the existing SecurityAgent consent and UNKNOWN effects on their original carriers.
+  Reuse unchanged A1 visuals by exact asset identity; prove changed numeric/internal-log
+  correlation, selected-store coherence/performance and operator comprehension. Natural
+  post-release owner progression remains independently qualified. Programme and production
+  acceptance remain partial; do not reopen either merged implementation PR.
 owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
@@ -57,7 +62,14 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md
 ---
+
+## 2026-10-24 Pro census frontier
+
+PRs #6651 and #10130 are merged; the 15-file affected installation and bounded CLI/Discovery/asset receipts are retained. Full follow-on authenticated consumption, production cache/coherence/performance, operator comprehension and natural owner progression remain open. The census and exact proof limits are in research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md (Draft #10168). Original source/effect custody and all completion flags are preserved. Historical sections below are retained evidence, not current instructions to merge #6651 again.
+
 
 ## Current tested-merge dependency repair — 2026-10-15
 

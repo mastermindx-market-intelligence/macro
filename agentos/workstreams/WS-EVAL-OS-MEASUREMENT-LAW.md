@@ -50,11 +50,13 @@ waves:
       demand_chain are matched-control-required; thematic_desk is benchmark-only. #5665/#5672
       repaired demand-chain wiring/replay semantics.
 next_action: >
-  Preserve all three accepted general clocks. Verify current original scheduled producer/grader
-  and cohort/control qualification through their existing owners; do not restart the superseded
-  thematic first-clock task. Continue final composed adversarial acceptance and staged metric-
-  validity qualification on PR #6651. The latest inspected scheduled collect failed and its
-  older persisted status cannot qualify that run.
+  Preserve all three accepted general clocks and the merged #6651/#10130 measurement source.
+  Follow the 2026-10-24 census masterplan in Draft PR10168 for final composed authority-path
+  acceptance, current control/cohort qualification and genuine subsequent post-release
+  producer/grader evidence. QLedger storage PR10079 remains with owner root
+  01a153e8-3c85-7bb2-af63-7f477b570512 and is not qualified or activated by this plan.
+  The retained pre-release scheduled run is historical evidence, not a post-release pass.
+  Do not remint a clock, force a grade, activate global strict validity or repeat merged work.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -85,7 +87,14 @@ artifacts:
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md
 ---
+
+## 2026-10-24 Pro census frontier
+
+Source and bounded installation/consumer evidence have advanced beyond the old pre-merge frontier. #6651 merged as 4579f45 and #10130 as 5aae3c5. General clocks, accepted direction/ruler work and existing control policy remain intact. Current owner-local control/cohort qualification, natural post-release progression, final composed authority acceptance and original empirical residuals remain partial. Draft #10168 reconciles all original obligations and preserves the exact held effects. No strict-mode or storage activation is introduced.
+
 
 ## Reconciliation — 2026-08-27
 
