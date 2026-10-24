@@ -157,8 +157,8 @@ waves:
     next_action: >
       Reconcile the original new-subject Fabric review refusal/root-verification gap
       under HC-P3.T1a.PORT1.R1.RECON; no retry or alternate placement. Draft #1856 at
-      a9601a9c stays frozen, with author tests and Attempt Overlay CI passed. General CI,
-      semantic review, materialization/native consumption and installed acceptance remain open.
+      a9601a9c stays frozen, with author tests and both hosted workflows passed.
+      Semantic review, materialization/native consumption and installed acceptance remain open.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -181,8 +181,8 @@ waves:
       Obtain HC-P6.T0.R1 independent review of repaired Draft #1854 at 3be06cec,
       frozen after FIX1 return and parent STOP. Real producer bytes decode but their distinct Runtime
       identities prevent a qualified Office Result join; do not force association.
-      Obtain the actual carrier/START receipt for separately pinned HC-P6.T1 after
-      placement request 1792877325.877669. Full signed-in office, native chat and original
+      Consume HC-P6.T1 builder return after START 1792877657.493229 and A1 receipt
+      1792877720.201799 on the same child. Full signed-in office, native chat and original
       P6 product acceptance remain open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
@@ -290,8 +290,8 @@ next_action: >
   For Mastermind #1841, preserve #1853/0f433e8 independent source PASS; obtain
   #1854/3be06cec non-author review and consume #1852 R2. Draft #1856 at a9601a9c publishes the
   tested ACP canonical gate; reconcile its original review refusal/root gap without replay.
-  Consume actual placement and START for HC-P6.T1 requested at 1792877325.877669;
-  Rakazo R2 started on its same carrier at 1792877026.469489.
+  Consume HC-P6.T1 builder return and HC-P6.T0.R1 independent review after their
+  actual START receipts; Rakazo R2 remains on its same carrier after 1792877026.469489.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -2139,10 +2139,12 @@ After this source slice, the parent must still pin the actual UI consumption and
 installed proof steps. Rollback is withdrawal/revision of the unmerged candidate;
 there is no production rollout or persistent migration in this task.
 
-- **State:** PLACEMENT_REQUESTED after publication of the complete task at Macro
-  51b5f6bdd8744e9e94b40618a31f2595e1c14e7b. Secretary request 1792877325.877669
-  names exactly the planned child. Actual Cursor identity, carrier, admission and START
-  remain unobserved; request delivery is not worker execution.
+- **State:** STARTED after exact task publication and placement request 1792877325.877669.
+  START 1792877657.493229 identifies Cursor bc-263fbf9e-a33b-50ba-90c3-46e88217d302,
+  an isolated Cursor-managed VM at base 3095d09f with account-default model/no override.
+  Exact served model is not reported; branch will be assigned at first push. A1 CARRIED
+  1792877720.201799 steers Macro 317eae34 into this SAME running child, no new run.
+  Actual completed source stages, branch/head, tests and consumer proof remain pending.
 
 
 ### Placement and retained-carrier checkpoint — HC-P6.T1 / Rakazo R2
@@ -2227,7 +2229,10 @@ there is no production rollout or persistent migration in this task.
 - **Proof ceiling / exclusions:** SOURCE_PRODUCER_CONSUMER_QUALIFICATION only. No
   full P6/R2, signed-in UI, installed/native, live provider, real 24h/7d, campaign,
   approval/merge, purchase, credential move or account-policy change.
-- **State:** PLANNED_BEFORE_PLACEMENT. No review child/START/verdict is claimed yet.
+- **State:** STARTED after placement request 1792877639.527619. Receipt
+  1792877725.206329 identifies independent reviewer bc-22460428-9083-5778-844a-fee5dc2a5c81,
+  Cursor VM/account-default model, separate from the author, with Macro 317eae34 and
+  exact frozen subject 3be06cec. Actual verdict and terminal custody return are pending.
 
 
 ### Source-return checkpoint — P7 R2 PASS / P6 FIX1 frozen
@@ -2303,3 +2308,50 @@ Source basis personally read at protected 3095d09f:
 Read-only native design advice found no contradictory owner/selection/budget requirement;
 it is advisory, not independent acceptance of any implementation. Original HC-P6.T1
 placement remains the only authorized new implementation child.
+
+
+### Active fleet and refusal-source checkpoint
+
+- HC-P6.T1: START 1792877657.493229, Cursor
+  bc-263fbf9e-a33b-50ba-90c3-46e88217d302, isolated managed VM, base 3095d09f,
+  account-default model/no override (exact served model unreported). The actual branch
+  is not yet assigned. A1 delivery 1792877639.134139 was carried into the SAME running
+  child at 1792877720.201799, with authoritative Macro 317eae34. No replacement run.
+- HC-P6.T0.R1: independent review placement 1792877639.527619, START
+  1792877725.206329, Cursor bc-22460428-9083-5778-844a-fee5dc2a5c81. It is distinct
+  from author bc-68bbcc42, reads only the frozen #1854/3be06cec subject and must
+  return a COMMENT verdict plus terminal/no-write custody. No verdict yet.
+- #1856/a9601a9c exact-head workflows 40132237065 (DSH ACP Attempt Overlay) and
+  40132237175 (CI) are now both completed/SUCCESS. No test rerun was requested.
+  Mechanical success does not discharge the independent review gate.
+- Secretary HC-P3.T1a.PORT1.R1.RECON RESULT 1792877358.835829 reports read-only
+  NO_STATE_CHANGE for six retained records. request-refused.json says
+  prelaunch_FabricTaskError and launch_attempted=false. continuation-finished.json
+  says rc75/request_refused_before_launch with the original effective run ID and no
+  successor. Owner result is RESULT_NOT_AVAILABLE. Exact exception text and routing
+  stdout bytes were not retained; only the 474-byte stdout SHA256
+  5187ab4e7cc4635b8ff07e74d860f56466600c55919abd5d7543bf296a975e1f remains.
+  A NO_ROUTE/parse failure is only an inference, not a proven refusal reason.
+- Retained request root/parent/task/source match the original review request, including
+  its actual Macro 6bb94e42 task pin (not the later 60ec checkpoint). Only routing child
+  PID73644 is recorded, rc0, 21:03:49.794Z–21:03:50.150Z. The wrapper controller73605
+  has no retained PID binding; an owner observation says it is not running. No worker
+  execution or semantic output is reported.
+- Exact retained record SHA256 values:
+  request.json f8492d7b79fd2fc2c98ecffc0ffb139318be14e3264199757f7cb39860d506d6;
+  request.packet (5055B) 6678269fd606dd9af2bcbf73dcb6e025ce560946a1114511933d8bff01ee00fe;
+  request-refused.json 6e7a2e2f1f169f57294721f6b92264c15e8a41906b19fab835a6241d279b08ed;
+  continuation-request.json 0fdcc29f4ab4814846cbdf8782589e75a67351c37315641dbfd55e03b89759c6;
+  continuation-finished.json 7c30292980286b9fae4c02b7a038d319c567d5999021adc5baf2d9e8a498fb46;
+  routing-process.jsonl 55571206e3556fd8b304e3d55ace8f5b1d7d98e4e39e298c673f8955be1809bb.
+- The owner reports that refusal root/parent, retained-request digest, no attempted
+  launch and absent launch/log are checked before returning its absence-true state.
+  The outer MCP layer still reports root_verified=false/absence=false because its
+  top-level run-log lineage is null; exact wrapper source rule remains unverified.
+  Parent is checking actual primary source before a new disposition. Same-run replay
+  remains prohibited; no fresh ID, alternate pool or other review placement was made.
+  The three earlier terminal EFFECT_UNKNOWN runs remain untouched.
+- Read-only native advisors are mapping the next ACP materialization/child-consumption
+  and Office UI source steps from incumbent owners. These are planning inputs only;
+  no downstream implementation placement, path expansion, source edit, installed action
+  or acceptance is authorized by those advisory reads.

@@ -543,3 +543,50 @@ HC-P6.T1.A1 clarifies the unchanged nested Workspace Result BODY, preserves the 
 CONTENT_OVER_BUDGET fallback under compound AVAILABLE, requires final composed Mission
 currentness/index association, and charges creation-event provenance cumulatively.
 Same child/17 paths/owners; no implementation acceptance or widened authority.
+
+
+### Active fleet and refusal-source checkpoint
+
+- HC-P6.T1: START 1792877657.493229, Cursor
+  bc-263fbf9e-a33b-50ba-90c3-46e88217d302, isolated managed VM, base 3095d09f,
+  account-default model/no override (exact served model unreported). The actual branch
+  is not yet assigned. A1 delivery 1792877639.134139 was carried into the SAME running
+  child at 1792877720.201799, with authoritative Macro 317eae34. No replacement run.
+- HC-P6.T0.R1: independent review placement 1792877639.527619, START
+  1792877725.206329, Cursor bc-22460428-9083-5778-844a-fee5dc2a5c81. It is distinct
+  from author bc-68bbcc42, reads only the frozen #1854/3be06cec subject and must
+  return a COMMENT verdict plus terminal/no-write custody. No verdict yet.
+- #1856/a9601a9c exact-head workflows 40132237065 (DSH ACP Attempt Overlay) and
+  40132237175 (CI) are now both completed/SUCCESS. No test rerun was requested.
+  Mechanical success does not discharge the independent review gate.
+- Secretary HC-P3.T1a.PORT1.R1.RECON RESULT 1792877358.835829 reports read-only
+  NO_STATE_CHANGE for six retained records. request-refused.json says
+  prelaunch_FabricTaskError and launch_attempted=false. continuation-finished.json
+  says rc75/request_refused_before_launch with the original effective run ID and no
+  successor. Owner result is RESULT_NOT_AVAILABLE. Exact exception text and routing
+  stdout bytes were not retained; only the 474-byte stdout SHA256
+  5187ab4e7cc4635b8ff07e74d860f56466600c55919abd5d7543bf296a975e1f remains.
+  A NO_ROUTE/parse failure is only an inference, not a proven refusal reason.
+- Retained request root/parent/task/source match the original review request, including
+  its actual Macro 6bb94e42 task pin (not the later 60ec checkpoint). Only routing child
+  PID73644 is recorded, rc0, 21:03:49.794Z–21:03:50.150Z. The wrapper controller73605
+  has no retained PID binding; an owner observation says it is not running. No worker
+  execution or semantic output is reported.
+- Exact retained record SHA256 values:
+  request.json f8492d7b79fd2fc2c98ecffc0ffb139318be14e3264199757f7cb39860d506d6;
+  request.packet (5055B) 6678269fd606dd9af2bcbf73dcb6e025ce560946a1114511933d8bff01ee00fe;
+  request-refused.json 6e7a2e2f1f169f57294721f6b92264c15e8a41906b19fab835a6241d279b08ed;
+  continuation-request.json 0fdcc29f4ab4814846cbdf8782589e75a67351c37315641dbfd55e03b89759c6;
+  continuation-finished.json 7c30292980286b9fae4c02b7a038d319c567d5999021adc5baf2d9e8a498fb46;
+  routing-process.jsonl 55571206e3556fd8b304e3d55ace8f5b1d7d98e4e39e298c673f8955be1809bb.
+- The owner reports that refusal root/parent, retained-request digest, no attempted
+  launch and absent launch/log are checked before returning its absence-true state.
+  The outer MCP layer still reports root_verified=false/absence=false because its
+  top-level run-log lineage is null; exact wrapper source rule remains unverified.
+  Parent is checking actual primary source before a new disposition. Same-run replay
+  remains prohibited; no fresh ID, alternate pool or other review placement was made.
+  The three earlier terminal EFFECT_UNKNOWN runs remain untouched.
+- Read-only native advisors are mapping the next ACP materialization/child-consumption
+  and Office UI source steps from incumbent owners. These are planning inputs only;
+  no downstream implementation placement, path expansion, source edit, installed action
+  or acceptance is authorized by those advisory reads.
