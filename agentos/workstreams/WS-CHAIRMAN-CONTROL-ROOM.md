@@ -152,13 +152,13 @@ waves:
       reconcile it without replay. HC-P2 live acceptance remains gated on P1 and admission.
   - id: HC-P3
     title: Existing Executive and Fabric contract integration
-    status: todo
+    status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Execute HC-P3.T1a.RECOVER's read-only donor freeze after ORPHANED_PRESERVE
-      reconciliation 1792873163.320769. Current responsibility is recorded; the original
-      carrier stays immutable. Qualify current protected source before one fresh carrier
-      and preserve installed/currentness and original-parent gates.
+      Port the frozen canonical-projection/materializer candidate through the existing
+      ACP owner in one fresh registered carrier under HC-P3.T1a.RECOVER. Sixteen-file
+      donor freeze and current-base equality checks passed. Preserve current protected
+      guards and all independent-review, installed and original-parent gates.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -1053,8 +1053,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   artifact binding and prior guard preservation; separate non-author fleet review and CI.
   This cannot satisfy genuine installed RuntimeBinding or HC-P3.T1 live acceptance.
   No issuer/queue/registry replacement, install, credentials, provider calls, approval or merge.
-- **State:** READY_FOR_READ_ONLY_FREEZE; actual source implementation is conditional
-  on the recorded freeze and current-base reconciliation. Original candidate is retained.
+- **State:** DONOR_FROZEN_CURRENT_BASE_QUALIFIED. The sixteen-file manifest
+  60902b125caf1401aeff47b0b02f1f52aa306a4ca577d6d99a0ab0e37a57318a is recorded below.
+  Root may acquire the single named fresh carrier for the bounded current-guard port.
+  The original carrier remains unchanged; independent review/live proof remain open.
 
 ### HC-P3.T1a — Canonical provider-free DSH host-packet source join
 
@@ -1099,16 +1101,11 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   any recovery/implementation packet; no author approval, merge or silent adoption.
 - **Risk / rollback:** source-only candidate; remove/revise the unmerged change through
   normal review. Never install or turn on a route as part of this task.
-- **State:** HELD_UNPUBLISHED_SOURCE_OVERLAP. The planned pre-write check found a
-  1001-line two-file delta in the original review carrier against protected e00/f93.
-  installed.py imports the canonical projection/catalog and adds _current_dsh_projection,
-  materialize_governed_input and verify_governed_input; matching tests are staged.
-  The exact staged/working blobs are 7e7a5c7e467230f20195e5f8c995a1b2a2cc5522
-  and 20ff99e470677a57fedee4d14bfa8f6c2e49da99. They are not the protected blobs
-  8b51455b81eb11356999eb5426cb447e5fb8a587 / e22d1fb09d2f20f60e5ec6a24813784f2a751407.
-  No original file was modified or tested; no fresh implementation was dispatched.
-  This discovery is source evidence, not candidate acceptance or live custody transfer.
-
+- **State:** SOURCE_RECOVERY_ASSIGNED under HC-P3.T1a.RECOVER after the bounded
+  ORPHANED_PRESERVE reconciliation and sixteen-file donor freeze. The original
+  1001-line delta is retained as pinned reference, not copied wholesale or executed.
+  Root owns one fresh registered current-base carrier for this port; no ACP Cursor
+  implementation child was placed. The full installed T1 source/host gates remain open.
 ### HC-P6.T0.FIX1 — Make fresh consumption reusable and clean owned test state
 
 - **Returned source:** Draft Mastermind #1854 at
@@ -1140,8 +1137,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   usage README within the already allowed five-file scope. No production changes,
   producer-test rewrites, new authority, dependency locks, installation, real credentials
   or live provider calls. Independent non-author review follows the repaired frozen head.
-- **State:** READY_FOR_SAME_CHILD_REPAIR; explicit continuation is pending. No full P6,
-  installed/native or mission acceptance, approval or merge is inferred.
+- **State:** REQUEST_REPAIR_DELIVERED at 1792874038.333279 on the original child
+  thread; actual forward/START/new head remain pending. No full P6, installed/native
+  or mission acceptance, approval or merge is inferred.
 
 ### HC-P6.T0 — Qualify the existing Office Mission/Result producer-to-consumer join
 
@@ -1314,8 +1312,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **Done:** exact-head PASS / REQUEST_CHANGES / HOLD with concrete evidence and
   independent provenance; CI 40129725707 is separate and currently in progress.
   Review only; no source repair, formal approval/merge or campaign/holdout execution.
-- **State:** READY_FOR_SAME_CARRIER_REREVIEW; no replacement child or replay of any
-  held Fabric/P2 task. Full HC-P7/R2/mission acceptance remains open.
+- **State:** CONTINUE_DELIVERED at 1792874037.908939 on the original review thread;
+  actual forward/START/result remain pending. No replacement child or held-task replay.
+  Full HC-P7/R2/mission acceptance remains open.
 
 ### HC-P7.T0.R1 — Independent preparation review
 
@@ -1620,3 +1619,50 @@ Original worktree/index/registration stay unchanged. No source transfer or live 
 Rakazo repair forwarding is now confirmed: Secretary ACK 1792872529.114219, same
 bc-3aad7289 carrier, run run-88748d79-18e2-41a5-a973-66d7c7b96836 and same #1852.
 Its new head/result remain pending. No task is accepted from these progress receipts.
+
+
+#### ACP donor freeze — recovery source inputs
+
+HC-P3.T1a.RECOVER read-only freeze completed at original HEAD
+810c025e8c24f9d2deb3049f726002c4c8c983c8. The sixteen working files match their staged blobs;
+no unstaged/untracked source was present. Git optional locks and fsmonitor were
+explicitly disabled for this read; original HEAD and index hash were unchanged afterward.
+
+- Index SHA-256: 0be3b0517f0001bf868181e5a446c8920b25a4d7e21233cae63c514c78be29df
+- Canonical manifest SHA-256: 60902b125caf1401aeff47b0b02f1f52aa306a4ca577d6d99a0ab0e37a57318a
+- Read receipt: /tmp/meta-ceo-acp-donor-freeze-20261024-web-001.json (full immutable
+  contents are reproduced in this committed table; the temporary file is not sole custody).
+- Current protected base 3095d09f1789a5b8002503beae872774c297b1a5 exists in the
+  repository. installed.py, test_acp_installed_factory.py, dsh_mcp_client_projection.py
+  and executive_agent_capabilities.py are byte-identical to the prior f93 inputs.
+- This freeze is source evidence only. It neither executes the donor nor establishes
+  installed source/currentness, admission, review, parent consumption or task effects.
+
+| Path | Git blob | SHA-256 | Bytes |
+| --- | --- | --- | ---: |
+| config/executive_agent_capabilities.json | 75b2f426d547cad15414d6c7c5ff703905a55d43 | bb355c3be110afe0d3a7074351fbdef9a74ee036516919d4eda0954f2f5056f5 | 21393 |
+| control_plane/codex_worker.py | cda13cf043ffbc45f653367c33b784d2b3611354 | a3c7ae7cd7ac758fd3485ae68f2dfe7f226500f929a6ec57165499578fc1ad08 | 224206 |
+| control_plane/executive_agent_capabilities.py | 9f18fb06450ffd00011702e855e0481c7a47c4be | c03a4ced5f0f80f20dfaf48ad6614c6031d06f04498ec4c5b111ca3495c1d579 | 101340 |
+| control_plane/worker_adapter.py | e50fe914738e328fc2d3bf37ccd6425e3676c7cf | 8cc72c47fc127e07fa540024bb4141fe677e25c92bb0a8c3fd0b9a0a1113364d | 10183 |
+| integrations/acp_worker/installed.py | 7e7a5c7e467230f20195e5f8c995a1b2a2cc5522 | 61798787f7c43b4314040a90a57b967898f8b84dcfdc715768b07aeb1f626f3e | 38460 |
+| integrations/acp_worker/native.py | e424a76b8632b3a4a6ff25851a524927e3bbe0f0 | 4e5513e317fae56c718fd75d0be15e46959d5a3805a8d69697e9710f3e792310 | 27963 |
+| integrations/acp_worker/workspace_read_mcp.py | 52f2ac7970873e3f445c429503a07ed7599d1518 | 776c93b66c079a73b26aaf5d1b43062826b4b05db3095ebdf12e7b4eaa98c9d5 | 16988 |
+| integrations/acp_worker/workspace_read_server.py | ece014cbdda60b40e33a420549f6230f5c8e5d3f | 8eea198bc4a1c0fc67b2fc89d87ade883cdccc01db5a6f83f13dacd21a40eab0 | 6477 |
+| scripts/acp_workspace_read_mcp.py | 06a68d7c4a3d384f0bc0280c1031dacee566ce26 | 56170af36adfe43d36a5fc041a4a240f938a4f21c0644c174362e5942bce72fc | 843 |
+| tests/test_acp_installed_factory.py | 20ff99e470677a57fedee4d14bfa8f6c2e49da99 | 6c4eb20522fbf9eb25124420dd5d639da0fc40332da0565c103ba4c83d569801 | 28112 |
+| tests/test_acp_native_startup.py | eeb31dcd17ec4a6b3a00345fece782a52c4d956b | 3c4c00a065e38fc879ff1b22ba76a9dc042df1feb95d9ba41f96e1130fc9fe52 | 15568 |
+| tests/test_acp_workspace_read_mcp.py | 98cf6c14c5beb7e6ec46036964738f759d743e1c | b9ec2e8a6bb588637315b17059e2ce9f84325e453169e4f666e927663c3c3742 | 7248 |
+| tests/test_acp_workspace_read_server.py | 6780bffd304182d9d5c2047ddb9cf18878382310 | 672655f439cb3c1e4f7266a66ca4b7d93432730613d2a29831b8b5ed72354844 | 7198 |
+| tests/test_executive_agent_capabilities.py | 6e99c9899957a13a94ddbff36841b24c75725076 | 8b3f9675b486a4e22b3d81c2a5273fce912609e61f5b26e59540b1c83b18c154 | 38843 |
+| tests/test_executive_codex_worker.py | 3a7f71a5106c09fc11a972369e1bc640e7ec8386 | 3f39f61fea5466644bfb16a71a1fbb2d58da7201b5317c7d370522848dfabb27 | 171321 |
+| tests/test_executive_model_router.py | ce04102dfb64582448c62457d3bc605f1526309f | dc6530d75db7d010783fa254fc204de8c1e2e99f808e15c15683267e49712897 | 30106 |
+
+Current assignment: root owns one fresh registered carrier for the bounded T1a port
+under the original Chairman commission. The old review carrier is retained unchanged.
+Source reconciliation must preserve the current protected guards and use the old
+candidate only as a pinned donor; no wholesale overlay or additional production scope.
+An advisory native architecture read can inform this port but cannot implement or accept it.
+
+P7 re-review CONTINUE was delivered on the original reviewer thread at
+1792874037.908939; actual forward/START/result remain pending. P6 same-child repair
+was delivered at 1792874038.333279. Neither delivery is a START or acceptance.

@@ -67,7 +67,7 @@ next_actions:
   - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
-  - Freeze and reconcile the orphaned ACP donor under HC-P3.T1a.RECOVER after custody RESULT 1792873163.320769; original carrier stays unchanged, fresh implementation conditional.
+  - Port the frozen ACP donor through current protected source in one fresh registered HC-P3.T1a.RECOVER carrier; preserve current guards and original worktree/index, then obtain separate review and CI.
   - Obtain HC-P7.T0.R2 same-carrier independent review of repaired Draft 1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc; author checks passed, hosted CI pending.
   - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
@@ -333,3 +333,19 @@ Original worktree/index/registration stay unchanged. No source transfer or live 
 Rakazo repair forwarding is now confirmed: Secretary ACK 1792872529.114219, same
 bc-3aad7289 carrier, run run-88748d79-18e2-41a5-a973-66d7c7b96836 and same #1852.
 Its new head/result remain pending. No task is accepted from these progress receipts.
+
+
+#### ACP frozen donor inputs and active continuations
+
+Read-only HC-P3.T1a.RECOVER freeze passed for all sixteen staged/working files at
+810c025e8c24f9d2deb3049f726002c4c8c983c8. No original worktree/index mutation.
+Index SHA-256 0be3b0517f0001bf868181e5a446c8920b25a4d7e21233cae63c514c78be29df; canonical manifest SHA-256
+60902b125caf1401aeff47b0b02f1f52aa306a4ca577d6d99a0ab0e37a57318a. The same-commit workstream records every
+path/blob/full SHA-256/byte count. Current protected 3095d09f source for the installed
+factory/test and canonical projection/capability registry matches prior f93. One fresh
+root-owned T1a carrier is now eligible for the bounded port, subject to actual source
+reconciliation and all current guards; no installed/source acceptance is inferred.
+
+P7 R2 request is 1792874037.908939 on retained reviewer thread1792870956.550899.
+P6 FIX1 request is 1792874038.333279 on retained builder thread1792872108.375879.
+Both deliveries await actual continuation receipts. Full mission remains incomplete.
