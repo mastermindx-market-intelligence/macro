@@ -27,6 +27,7 @@ import logging
 import os
 import re
 import sys
+import tempfile
 import threading
 import time
 from datetime import date as _date, datetime as _datetime, timezone as _timezone
@@ -1182,6 +1183,37 @@ def load_exposure_contexts(path: str | None) -> dict[str, dict]:
     return data["roots"]
 
 
+def build_ndx_family_offline(
+    asof: str, theta_store: str | Path, out_dir: Path,
+) -> Path:
+    """An explicit EOD candidate inside the incumbent Hub builder, never R2.
+
+    Do not use this as an intraday/source-rights receipt. Original scheduled
+    nightly root selection, R2 publication and available head remain untouched.
+    """
+    from engine.index_options_family import (
+        NDX_FAMILY_ROOTS, build_ndx_family_gex,
+    )
+
+    year = pd.Timestamp(asof).year
+    frames = {}
+    for root in NDX_FAMILY_ROOTS:
+        greeks = _load_parquets("greeks", root, [year], theta_store)
+        if not greeks.empty:
+            greeks = _normalise_date(greeks)
+            greeks = greeks[greeks["date"] == asof].copy()
+        oi = _load_oi_for_date(root, asof, theta_store)
+        frames[root] = (greeks, oi)
+    result = build_ndx_family_gex(frames, asof)
+    output = out_dir / "gex" / "NDX.json"
+    # Local-only and opt-in: never replace an existing holder of an output.
+    if output.is_symlink() or output.exists():
+        raise FileExistsError(f"refusing to overwrite existing family candidate: {output}")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    _write_json(output, result)
+    return output
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -1202,7 +1234,38 @@ def main() -> None:
                     help="Override thetadata store root")
     ap.add_argument("--exposure-context", default=None, metavar="JSON",
                     help="Explicit admitted owner receipts, bound to exact source inputs (no default)")
+    ap.add_argument("--ndx-family-offline", action="store_true",
+                    help="Opt-in NDX+NDXP combined GEX to a NEW local directory only; never R2")
     args = ap.parse_args()
+
+    if args.ndx_family_offline:
+        # Guard BEFORE the scheduled root selection, env-derived live output,
+        # watchdog or any publisher initialization. CLI's incumbent default
+        # is --publish: the operator must explicitly choose --no-publish.
+        if (args.publish or not args.date or not args.out or not args.theta_store or
+                args.roots or args.exposure_context):
+            ap.error("--ndx-family-offline requires --no-publish --date YYYY-MM-DD "
+                     "--theta-store STORE --out DIR and forbids --roots/--exposure-context")
+        target = Path(args.out)
+        if not target.is_absolute():
+            ap.error("--ndx-family-offline output must be an absolute new staging directory")
+        # This non-publisher preview must not target a mutable Macro public
+        # live tree or a scheduled operator directory via an arbitrary --out.
+        # Only allow the host's temporary scratch tree, with parents resolved.
+        scratch = Path(tempfile.gettempdir()).resolve()
+        resolved_target = target.resolve()
+        if scratch not in resolved_target.parents:
+            ap.error("--ndx-family-offline must stage under the host temporary directory")
+        from engine.index_options_family import FamilySourceUnavailable, _session
+        try:
+            _session(args.date)
+            output = build_ndx_family_offline(args.date, Path(args.theta_store), target)
+        except (FamilySourceUnavailable, FileExistsError, ValueError) as exc:
+            log.error("NDX family candidate refused without publication: %s", exc)
+            sys.exit(1)
+        log.info("NDX+NDXP source-local candidate staged at %s (NOT PUBLISHABLE)", output)
+        return
+
     exposure_contexts = load_exposure_contexts(args.exposure_context)
 
     # A relative, missing, or non-directory input root stops here, before the
