@@ -462,7 +462,7 @@
         "to_label_zh": "直接总量",
         "support_before": 4,
         "support_after": 5,
-        "level_ratio": 0.9792013096092357,
+        "level_ratio": 0.9792013096092356,
         "regime_treatment": "continuity_adjusted"
       }
     ]
@@ -491,7 +491,7 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Leverage normal",
+    "open_interest": "Leverage light",
     "volatility": "Volatility compressed",
     "altseason": "Mixed relative trend"
   },
