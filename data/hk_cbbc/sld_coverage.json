@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-10-22T11:57:04.731602+00:00",
-  "call_levels_in_store": 4846,
-  "new_pdfs_this_run": 28,
-  "failed_pdfs": 52,
+  "fetched_at": "2026-10-23T11:43:49.800138+00:00",
+  "call_levels_in_store": 4954,
+  "new_pdfs_this_run": 46,
+  "failed_pdfs": 48,
   "pdftotext_available": true
 }

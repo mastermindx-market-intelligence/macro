@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-23T03:12:40.738963+00:00",
+"updated":"2026-10-23T14:29:23.327544+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -28888,7 +28888,7 @@
 "asof":"2025-12-31",
 "source":"10-K 2025-12-31",
 "fy":2025,
-"accession":"0001500435-26-000006",
+"accession":"0001500435-26-000068",
 "method":"us_member",
 "concept":"Revenues",
 "by_region":[

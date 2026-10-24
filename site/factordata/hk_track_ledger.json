@@ -1,7 +1,7 @@
 {
  "schema": "track_ledger/v1",
  "market": "HK",
- "as_of": "2026-10-22",
+ "as_of": "2026-10-23",
  "state": "accruing",
  "bench": {
   "code": "_HSI",
@@ -10,19 +10,292 @@
  },
  "summary": {
   "state": "accruing",
-  "n_calls": 894,
-  "n_logged": 894,
-  "n_matured": 442,
-  "n_beat": 211,
-  "n_lag": 231,
-  "n_suspended": 116,
-  "hit_matured": 0.477,
-  "wilson_lo_pct": 43.1,
-  "wilson_hi_pct": 52.4,
-  "win_pct": 47.7,
+  "n_calls": 907,
+  "n_logged": 907,
+  "n_matured": 455,
+  "n_beat": 218,
+  "n_lag": 237,
+  "n_suspended": 91,
+  "hit_matured": 0.479,
+  "wilson_lo_pct": 43.4,
+  "wilson_hi_pct": 52.5,
+  "win_pct": 47.9,
   "first_read_est": "2026-08-24"
  },
  "rows": [
+  {
+   "t": "2020.HK",
+   "nm": "Anta Sports",
+   "sec": "Consumer",
+   "grp": "setting_up",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 1,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "9961.HK",
+   "nm": "Trip.com",
+   "sec": "Consumer",
+   "grp": "setting_up",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 2,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "6160.HK",
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
+   "grp": "setting_up",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 3,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "0241.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 4,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "1810.HK",
+   "nm": "Xiaomi",
+   "sec": "Internet & Tech",
+   "grp": "setting_up",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 5,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "0780.HK",
+   "nm": "Tongcheng Travel",
+   "sec": "Internet & Tech",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "0083.HK",
+   "nm": "Sino Land",
+   "sec": "Exchange & Diversified",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "0257.HK",
+   "nm": "China Everbright Environment",
+   "sec": "Telecom & Utilities",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "1929.HK",
+   "nm": "Chow Tai Fook",
+   "sec": "Consumer",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "1209.HK",
+   "nm": "China Resources Mixc",
+   "sec": "Property",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 10,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "2319.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 11,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "0012.HK",
+   "nm": "Henderson Land",
+   "sec": "Property",
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 12,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
+  {
+   "t": "1109.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-10-22",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 13,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-10-23"
+  },
   {
    "t": "0392.HK",
    "nm": null,
@@ -67,8 +340,8 @@
   },
   {
    "t": "0241.HK",
-   "nm": "Alibaba Health",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-10-21",
    "e": null,
@@ -277,8 +550,8 @@
   },
   {
    "t": "0322.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Tingyi",
+   "sec": "Consumer",
    "grp": "watch",
    "d": "2026-10-21",
    "e": null,
@@ -340,8 +613,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-10-21",
    "e": null,
@@ -466,8 +739,8 @@
   },
   {
    "t": "0241.HK",
-   "nm": "Alibaba Health",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-10-16",
    "e": null,
@@ -697,8 +970,8 @@
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "setting_up",
    "d": "2026-10-16",
    "e": null,
@@ -781,8 +1054,8 @@
   },
   {
    "t": "0322.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Tingyi",
+   "sec": "Consumer",
    "grp": "setting_up",
    "d": "2026-10-16",
    "e": null,
@@ -1159,8 +1432,8 @@
   },
   {
    "t": "0241.HK",
-   "nm": "Alibaba Health",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-10-15",
    "e": null,
@@ -1264,8 +1537,8 @@
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "setting_up",
    "d": "2026-10-15",
    "e": null,
@@ -1327,8 +1600,8 @@
   },
   {
    "t": "0322.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Tingyi",
+   "sec": "Consumer",
    "grp": "setting_up",
    "d": "2026-10-15",
    "e": null,
@@ -1411,8 +1684,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-15",
    "e": null,
@@ -1600,8 +1873,8 @@
   },
   {
    "t": "2319.HK",
-   "nm": "Mengniu Dairy",
-   "sec": "Consumer",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-10-15",
    "e": null,
@@ -1676,9 +1949,7 @@
    "m": false,
    "rk": 1,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1697,9 +1968,7 @@
    "m": false,
    "rk": 2,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1718,9 +1987,7 @@
    "m": false,
    "rk": 3,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1739,16 +2006,14 @@
    "m": false,
    "rk": 4,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
   {
    "t": "1038.HK",
-   "nm": "CK Infrastructure",
-   "sec": "Telecom & Utilities",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-10-14",
    "e": null,
@@ -1760,9 +2025,7 @@
    "m": false,
    "rk": 5,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1781,9 +2044,7 @@
    "m": false,
    "rk": 6,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1802,9 +2063,7 @@
    "m": false,
    "rk": 7,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1823,9 +2082,7 @@
    "m": false,
    "rk": 8,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1844,9 +2101,7 @@
    "m": false,
    "rk": 9,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1865,9 +2120,7 @@
    "m": false,
    "rk": 10,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1886,9 +2139,7 @@
    "m": false,
    "rk": 11,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1907,9 +2158,7 @@
    "m": false,
    "rk": 12,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1928,9 +2177,7 @@
    "m": false,
    "rk": 13,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1949,9 +2196,7 @@
    "m": false,
    "rk": 14,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -1970,16 +2215,14 @@
    "m": false,
    "rk": 15,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "setting_up",
    "d": "2026-10-14",
    "e": null,
@@ -1991,9 +2234,7 @@
    "m": false,
    "rk": 16,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2012,9 +2253,7 @@
    "m": false,
    "rk": 17,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2033,9 +2272,7 @@
    "m": false,
    "rk": 18,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2054,9 +2291,7 @@
    "m": false,
    "rk": 19,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2075,16 +2310,14 @@
    "m": false,
    "rk": 20,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-14",
    "e": null,
@@ -2096,9 +2329,7 @@
    "m": false,
    "rk": 21,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2117,9 +2348,7 @@
    "m": false,
    "rk": 22,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2138,9 +2367,7 @@
    "m": false,
    "rk": 23,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2159,9 +2386,7 @@
    "m": false,
    "rk": 24,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2180,9 +2405,7 @@
    "m": false,
    "rk": 25,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2201,9 +2424,7 @@
    "m": false,
    "rk": 26,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2222,9 +2443,7 @@
    "m": false,
    "rk": 27,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2243,9 +2462,7 @@
    "m": false,
    "rk": 28,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2264,9 +2481,7 @@
    "m": false,
    "rk": 29,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2285,9 +2500,7 @@
    "m": false,
    "rk": 30,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2306,9 +2519,7 @@
    "m": false,
    "rk": 31,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2327,9 +2538,7 @@
    "m": false,
    "rk": 32,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2348,9 +2557,7 @@
    "m": false,
    "rk": 33,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2369,9 +2576,7 @@
    "m": false,
    "rk": 34,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2390,9 +2595,7 @@
    "m": false,
    "rk": 35,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2411,9 +2614,7 @@
    "m": false,
    "rk": 36,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2432,9 +2633,7 @@
    "m": false,
    "rk": 37,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2453,9 +2652,7 @@
    "m": false,
    "rk": 38,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-10-15"
   },
@@ -2765,8 +2962,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-13",
    "e": null,
@@ -2822,8 +3019,8 @@
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "setting_up",
    "d": "2026-10-13",
    "e": null,
@@ -2974,8 +3171,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-13",
    "e": null,
@@ -3354,8 +3551,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-12",
    "e": null,
@@ -3563,8 +3760,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-12",
    "e": null,
@@ -3924,8 +4121,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-09",
    "e": null,
@@ -4114,8 +4311,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-09",
    "e": null,
@@ -4456,8 +4653,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-08",
    "e": null,
@@ -4532,8 +4729,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-08",
    "e": null,
@@ -4817,8 +5014,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-07",
    "e": null,
@@ -4931,8 +5128,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-07",
    "e": null,
@@ -5957,8 +6154,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-10-02",
    "e": null,
@@ -6090,8 +6287,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "setting_up",
    "d": "2026-10-02",
    "e": null,
@@ -6280,8 +6477,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "setting_up",
    "d": "2026-10-02",
    "e": null,
@@ -6584,8 +6781,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-30",
    "e": null,
@@ -6717,8 +6914,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "setting_up",
    "d": "2026-09-30",
    "e": null,
@@ -7192,8 +7389,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-29",
    "e": null,
@@ -7743,8 +7940,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-24",
    "e": null,
@@ -8104,8 +8301,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-23",
    "e": null,
@@ -8604,11 +8801,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -6.1,
+   "x": 1.83,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 1,
    "tr": null,
    "fl": [],
@@ -8623,11 +8820,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -33.9,
+   "x": -25.93,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 2,
    "tr": null,
    "fl": [],
@@ -8642,11 +8839,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -2.5,
+   "x": 5.49,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 3,
    "tr": null,
    "fl": [],
@@ -8661,11 +8858,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": 0.8,
+   "x": 8.78,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 4,
    "tr": null,
    "fl": [],
@@ -8680,11 +8877,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -2.3,
+   "x": 5.61,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 5,
    "tr": null,
    "fl": [],
@@ -8699,11 +8896,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -0.3,
+   "x": 7.68,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 6,
    "tr": null,
    "fl": [],
@@ -8718,11 +8915,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -19.3,
+   "x": -11.35,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 7,
    "tr": null,
    "fl": [],
@@ -8737,11 +8934,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -14.3,
+   "x": -6.36,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 8,
    "tr": null,
    "fl": [],
@@ -8756,11 +8953,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -13.5,
+   "x": -5.58,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 9,
    "tr": null,
    "fl": [],
@@ -8775,11 +8972,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -9.7,
+   "x": -1.75,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 10,
    "tr": null,
    "fl": [],
@@ -8794,11 +8991,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": 0.9,
+   "x": 8.81,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 11,
    "tr": null,
    "fl": [],
@@ -8813,11 +9010,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -4.5,
+   "x": 3.44,
+   "dy": 21,
+   "st": "beat",
+   "m": true,
    "rk": 12,
    "tr": null,
    "fl": [],
@@ -8832,11 +9029,11 @@
    "d": "2026-09-21",
    "e": null,
    "l": null,
-   "p": null,
-   "x": null,
-   "dy": null,
-   "st": "early",
-   "m": false,
+   "p": -8.6,
+   "x": -0.65,
+   "dy": 21,
+   "st": "lag",
+   "m": true,
    "rk": 13,
    "tr": null,
    "fl": [],
@@ -8864,8 +9061,8 @@
   },
   {
    "t": "0241.HK",
-   "nm": "Alibaba Health",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-09-18",
    "e": null,
@@ -9320,8 +9517,8 @@
   },
   {
    "t": "0322.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Tingyi",
+   "sec": "Consumer",
    "grp": "watch",
    "d": "2026-09-15",
    "e": null,
@@ -9491,8 +9688,8 @@
   },
   {
    "t": "2319.HK",
-   "nm": "Mengniu Dairy",
-   "sec": "Consumer",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-15",
    "e": null,
@@ -9719,8 +9916,8 @@
   },
   {
    "t": "0006.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Power Assets",
+   "sec": "Telecom & Utilities",
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -9776,8 +9973,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-11",
    "e": null,
@@ -9814,8 +10011,8 @@
   },
   {
    "t": "2319.HK",
-   "nm": "Mengniu Dairy",
-   "sec": "Consumer",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-11",
    "e": null,
@@ -10042,8 +10239,8 @@
   },
   {
    "t": "0006.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Power Assets",
+   "sec": "Telecom & Utilities",
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -10156,8 +10353,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-10",
    "e": null,
@@ -10593,8 +10790,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-09",
    "e": null,
@@ -10897,8 +11094,8 @@
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "watch",
    "d": "2026-09-08",
    "e": null,
@@ -11144,8 +11341,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-07",
    "e": null,
@@ -11163,8 +11360,8 @@
   },
   {
    "t": "2015.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Li Auto",
+   "sec": "Auto & EV",
    "grp": "watch",
    "d": "2026-09-07",
    "e": null,
@@ -11980,8 +12177,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "entry_open",
    "d": "2026-08-31",
    "e": null,
@@ -12607,8 +12804,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "entry_open",
    "d": "2026-08-28",
    "e": null,
@@ -13728,8 +13925,8 @@
   },
   {
    "t": "0144.HK",
-   "nm": "China Merchants Port",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-25",
    "e": null,
@@ -14697,8 +14894,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -15077,8 +15274,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-19",
    "e": null,
@@ -15248,8 +15445,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "entry_open",
    "d": "2026-08-18",
    "e": null,
@@ -15419,8 +15616,8 @@
   },
   {
    "t": "0144.HK",
-   "nm": "China Merchants Port",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-18",
    "e": null,
@@ -15438,8 +15635,8 @@
   },
   {
    "t": "1109.HK",
-   "nm": "China Resources Land",
-   "sec": "Property",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-14",
    "e": null,
@@ -15609,8 +15806,8 @@
   },
   {
    "t": "3692.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Hansoh Pharmaceutical",
+   "sec": "Healthcare & Pharma",
    "grp": "watch",
    "d": "2026-08-14",
    "e": null,
@@ -15628,8 +15825,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-13",
    "e": null,
@@ -15761,8 +15958,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "watch",
    "d": "2026-08-13",
    "e": null,
@@ -15780,8 +15977,8 @@
   },
   {
    "t": "0144.HK",
-   "nm": "China Merchants Port",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-13",
    "e": null,
@@ -15818,8 +16015,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-12",
    "e": null,
@@ -15913,8 +16110,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "watch",
    "d": "2026-08-12",
    "e": null,
@@ -16027,8 +16224,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-11",
    "e": null,
@@ -16103,8 +16300,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Orient Overseas",
+   "sec": "Exchange & Diversified",
    "grp": "watch",
    "d": "2026-08-11",
    "e": null,
@@ -16198,8 +16395,8 @@
   },
   {
    "t": "2338.HK",
-   "nm": "Weichai Power",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-10",
    "e": null,
@@ -17243,11 +17440,11 @@
   }
  ],
  "meta": {
-  "n_total": 894,
+  "n_total": 907,
   "truncated": 0,
   "grain": "board_day",
   "survivorship": {
-   "n_suspended": 116,
+   "n_suspended": 91,
    "note": "no delisting archive — vanished names leave the sample"
   }
  },
@@ -17350,8 +17547,8 @@
    },
    {
     "t": "2015.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Li Auto",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-08-03",
     "e": null,
@@ -17844,8 +18041,8 @@
    },
    {
     "t": "2015.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Li Auto",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-30",
     "e": null,
@@ -18129,8 +18326,8 @@
    },
    {
     "t": "2015.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Li Auto",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-29",
     "e": null,
@@ -18490,8 +18687,8 @@
    },
    {
     "t": "2015.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Li Auto",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-28",
     "e": null,
@@ -19877,8 +20074,8 @@
    },
    {
     "t": "1109.HK",
-    "nm": "China Resources Land",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -20371,8 +20568,8 @@
    },
    {
     "t": "2015.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Li Auto",
+    "sec": "Auto & EV",
     "grp": "watch",
     "d": "2026-07-23",
     "e": null,
@@ -21245,8 +21442,8 @@
    },
    {
     "t": "1109.HK",
-    "nm": "China Resources Land",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-20",
     "e": null,
@@ -22195,8 +22392,8 @@
    },
    {
     "t": "0144.HK",
-    "nm": "China Merchants Port",
-    "sec": "Industrials & Transport",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-17",
     "e": null,
@@ -22309,8 +22506,8 @@
    },
    {
     "t": "0006.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Power Assets",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-17",
     "e": null,
@@ -23905,8 +24102,8 @@
    },
    {
     "t": "1109.HK",
-    "nm": "China Resources Land",
-    "sec": "Property",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-07",
     "e": null,
@@ -23924,8 +24121,8 @@
    },
    {
     "t": "0006.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Power Assets",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-03",
     "e": null,

@@ -1,14 +1,19 @@
-## Current source artifact adoption — 23 October 2026
+## Current integrated source candidate — 24 October 2026
 
-The exact completed private Bonds HTML has been adopted into the existing held source candidate. `site/bonds.html` now has 728,050 bytes and SHA-256 `be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c`; the previous health 75 page is retained in parent 9291 and its private preimage.
+| Area | Actual result and remaining boundary |
+| --- | --- |
+| Source integration | Published 66b plus retained main 93f in the same normal merge; CI manifest, packing history and generated page conflicts resolved. Final committed head and publication are recorded in the canonical checkpoint. |
+| CI packing | Both established focused checks passed: 2 passed, 234 deselected. Main limits remain index 136/5886, free-content 136/5858, Prophet 130/5636, at most ten packs. Both histories and all candidate/upstream dependency additions remain. |
+| Native page | 728,002 bytes; SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`. Actual native run completed 00:17:42 UTC; page adoption and its two existing tests completed 00:27:40 UTC. |
+| Input and source integrity | 562 fixed files: 537 main market inputs, 19 integrated assets and six unchanged private holdings/sample files. 56 source pins, 14/14 native checks, no effect-guard denial, original/private inputs intact. No provider acquisition. |
+| Asset closure | 29 nonpage assets equal the index; 24 literal assets, 28 edges, 11 CSS files, six fonts and 22 matching version bindings. Sparse assets restored from exact Git bytes. No missing or unsupported reference. |
+| Observed market state | October 22, health 75, displayed MOVE 107.0. The old health-76 artifact remains preserved. Retained Git inputs and commit snapshot mtimes do not prove original-close bytes or vendor first availability. |
+| Credit limits | October 15 CDI, stale six sessions; 311 one-date histories, zero five-/21-session comparisons. September 10 current credit and rank/size/gate/escalate authority withheld. |
+| Visual gate | Actual failure on missing owning receipts for duration and CDI templates. Real mockups were materialized through the canonical helper; the earlier sparse-preflight failure is preserved separately. No browser or visual acceptance. |
+| Branch qualification/publication | The final merge needs its own official contract against 93f with NO_REAP=1 and normal same-branch publication. Existing 66b contract/push evidence is complete and is not the new commit's result. |
+| Review/release | Draft/HOLD remains, auto-merge off. Prelaunch refusal/no eligible worker justified direct source work only. Original capture/restoration, independent review, protected-main merge and production proof remain open. |
 
-Before adoption, all 56 native source pins and 29 nonpage asset identities matched Git. The 29 sparse asset omissions were restored from their existing bytes. The initial overstrict physical-file check failed before writing and remains a separate receipt. No asset source, generator, provider observation or runtime policy changed.
-
-**Page qualification:** PID75979 completed 09:33:42 UTC; the two established committed-page and fingerprinted-stylesheet tests passed in 1.36 seconds (subprocess 2.02 seconds). Receipt `aa960d02325edd28e6db613048f5b777de23fafd24b5ae9da3cbf751b0be1e96`; log `6265b7dc32dba77c83bc2122ef5ee39d73e7b7299ea1aff306427621bf34c360`. Prior native 14/14 and literal assets remain bound to their original completed evidence. [Compact adoption evidence](evidence/page_adoption_20261023.json).
-
-This source child requires its own official contract against locked 88b5 with NO_REAP=1 and normal same-branch publication. Consume parent CI 39930172875 before that push, then the child's ordinary checks. The [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) carries actual final identities/results.
-
-**Still held:** browser/visual acceptance, independent review and production. Candidate health 76 remains distinct from retained health 75; October 23 acquisition is not original-close availability. CDI stays October 15/stale-six-sessions, with 311 one-date histories and no eligible five-/21-session comparisons; September 10 credit and action authority remain withheld. Original Terminal/Fabric/deployment/0038/render constraints, Forex green evidence, original private workspaces and all earlier accepted results remain intact. Licensing/product-use is Chairman-COMPLETE.
+[Exact compact evidence](evidence/page_adoption_20261024.json), [master plan](MASTERPLAN.md) and [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) bind this result. Keep every earlier pass, failed phase and private workspace. Forex a9 is published with green CI; its current-candidate review has no verdict after a prelaunch transport-integrity refusal. Original Terminal/0038/deployment/render boundaries and Chairman-COMPLETE licensing remain unchanged.
 
 ---
 

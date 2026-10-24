@@ -1812,6 +1812,30 @@ def test_supplied_action_without_resolved_authority_refuses_actual_build(tree, m
     assert _file_hashes(root) == before
 
 
+def test_native_tracks_emitter_feeds_selected_house_display_without_etf_identity(tree):
+    from types import SimpleNamespace
+    from engine.theme_graph.security_navigation import compose_security_hierarchy
+    from tests.test_theme_graph_hierarchy_paths import _selected_security_row
+    document = yaml.safe_load(tree[1].read_text())
+    document['hierarchy'] = {'categories': [{'id':'theme:energy','name_en':'Energy',
+        'name_zh':'能源','asserted_on':materialize.HIERARCHY_EPOCH}], 'micro_themes': [],
+        'parents': [{'parent':'theme:energy','child':'theme:solar','asserted_on':materialize.HIERARCHY_EPOCH}]}
+    tree[1].write_text(yaml.safe_dump(document))
+    native = _build(tree, belief_time='2026-10-08', computed_at='2026-10-08T00:00:00Z')
+    view = SimpleNamespace(read_nodes=lambda: native.nodes, read_edges=lambda: native.edges,
+        read_evidence=lambda: native.evidence, read_node_lifecycle=lambda: [])
+    result = compose_security_hierarchy(view, [_selected_security_row()],
+        identity_kind='security', identity_id='SEC:US-XNAS-AAA',
+        asof='2026-10-09', knowledge_cutoff='2026-10-09T12:00:00Z')
+    references = result['etf_tracking']['references']
+    assert [(r['symbol'],r['basket_node_id']) for r in references] == [('TAN','basket:baskets:solar_us')], result
+    ref = references[0]
+    native_edge = next(e for e in native.edges if e['edge_id'] == ref['edge_id'])
+    assert ref['clocks'] == {k:native_edge[k] for k in ref['clocks']}
+    assert ref['era'] == 'reconstruction' and ref['date_provenance'] == 'seed_constant'
+    assert ref['evidence'][0]['published_at'] == US_DOC_DATE
+    assert result['etf_tracking']['security_identity']['status'] == 'unavailable'
+    assert all(not n.get('name_en') for n in native.nodes if n['node_id'] == ref['etf_node_id'])
 # ---------------------------------------------------------------------------
 # 11. Activity-history fold wiring (ORCH-PIPE 2026-10-21, lane B1)
 # ---------------------------------------------------------------------------

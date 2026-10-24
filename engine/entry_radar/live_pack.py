@@ -638,6 +638,11 @@ class LivePack:
     #: honestly ``unavailable`` when no confirmed-lane source was supplied.
     confirmed_lanes: dict[str, Any] = field(default_factory=dict)
 
+    # Optional provenance for next-session research only. Excluded from the
+    # firing hash and never read by detectors; legacy packs have no receipt.
+    identity_observation: dict[str, Any] | None = None
+    earnings_generation: dict[str, Any] | None = None
+
     def by_ticker(self) -> dict[str, PackName]:
         return {row.ticker: row for row in self.names}
 
@@ -649,6 +654,10 @@ class LivePack:
     def manifest(self) -> dict[str, Any]:
         """The JSON-safe pack record.  ``substrate`` rides the parquet sidecar."""
         return {
+            **({"identity_observation": _jsonable(self.identity_observation)}
+               if self.identity_observation is not None else {}),
+            **({"earnings_generation": _jsonable(self.earnings_generation)}
+               if self.earnings_generation is not None else {}),
             "schema": self.schema,
             "as_of": self.as_of,
             "next_session": self.next_session,
@@ -679,7 +688,9 @@ class LivePack:
             substrate=(dict(self.substrate) if isinstance(self.substrate, dict)
                        else self.substrate),
             substrate_missing=self.substrate_missing, pack_hash=self.pack_hash,
-            proof=dict(proof), confirmed_lanes=dict(self.confirmed_lanes))
+            proof=dict(proof), confirmed_lanes=dict(self.confirmed_lanes),
+            identity_observation=_jsonable(self.identity_observation),
+            earnings_generation=_jsonable(self.earnings_generation))
 
 
 def _jsonable(value: Any) -> Any:
@@ -1995,7 +2006,8 @@ def load_pack(state_dir: Path | str, *, as_of: str | None = None) -> LivePack | 
         # claim (confirmed_lanes_snapshot's docstring) is only true if EVERY
         # entry point normalizes, not just the write path.
         confirmed_lanes=lane_rows,
-        proof=manifest.get("proof"))
+        proof=manifest.get("proof"), identity_observation=manifest.get("identity_observation"),
+        earnings_generation=manifest.get("earnings_generation"))
 
 
 def pack_is_fresh(pack: LivePack | None, now: datetime) -> bool:

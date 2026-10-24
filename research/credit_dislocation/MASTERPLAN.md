@@ -1,39 +1,48 @@
-## Current source candidate adoption — 23 October 2026
+## Current main integration and native page — 24 October 2026
 
-The existing recovery owner has adopted the already-qualified private Bonds HTML into `site/bonds.html` for the same Draft/HOLD PR #9590. This is source-candidate adoption. Genuine browser, independent-review and production acceptance remain open. Final commit, exact-head contract, normal-push and hosted-CI results belong in the [canonical owner checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277).
+The recovery owner has resolved the current branch integration for the same Draft/HOLD PR #9590. Published parent `66b5c90b3369c89c693b94b0a4f531b570f5fb8e` is composed with retained protected-main pin `93f844e9fff86c11565884f1edd5eb92d1152452` through a normal history-preserving merge. Final commit, exact-head contract, normal push and ordinary CI outcomes belong in the [existing canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). This source integration does not authorize protected-main merge or production acceptance.
 
-### Exact artifact and qualification
+### Resolved composition and exact proof
 
-The adopted page is **728,050 bytes**, SHA-256 `be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c`, copied without regeneration from `.cdi-proof/w4-spy-current-retained-native-20261023/site/bonds.html`. The previous 254,664-byte upstream-derived page remains preserved in parent `9291e3b91eb64743bb0d2e4514818898bc931acd` and the private preimage receipt, SHA-256 `77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065`.
+The manifest conflict retains seven candidate dependency additions and six upstream additions. The packing-history conflict retains both exact histories while taking main's limits: index 136/5886, free-content 136/5858, Prophet 130/5636, maximum ten packs. PID96480 completed the two established focused checks: **2 passed, 234 deselected**, pytest 168.39 seconds. No ceiling increased.
 
-Before the copy, all 56 native producer pins matched the exact source head, and all 29 nonpage candidate assets matched Git. Those assets were absent from the sparse working copy with skip-worktree flags. The initial extra physical-file assertion stopped before any write; its failed preflight is retained. The corrected preparation restored only those 29 existing files from their exact Git bytes. No asset source changed and no native build, provider observation or browser action was repeated.
+The page conflict was resolved by the actual completed incumbent native pipeline, not a side selection or manual mixture. The fixed input image contains **562 files / 58,484,235 bytes**: 537 exact retained main market files, 19 integrated-index assets and six unchanged private October 15 holdings/sample files. There are 237 content changes from the previous fixed image. Main's full SPY frame retains 8,491 dates through October 22, identical overlapping close_price and adjusted-close differences within the existing basis tolerance. No provider acquisition occurred; the original October 23 acquisition stays preserved. Changed Git blobs carry the protected-commit snapshot mtime, explicitly not a vendor-availability timestamp.
 
-PID75979 completed at **09:33:42.170499 UTC**. The two existing tests passed: `test_committed_bonds_page_matches_contract` and `test_committed_bonds_stylesheet_is_fingerprinted`, both in `tests/test_bonds_glance_copy.py`. Pytest reported **2 passed in 1.36 seconds**; the recorded subprocess wall time was 2.02 seconds. The old private page, new candidate, source report, input manifest and all nonpage assets remained exact. Only the owned page changed before documentation.
+The unchanged runner reused all 56 source pins except the actual merged `config/dag.yml` and `templates/mm_brain.js` bytes. The latter contains the accepted width-change-only ResizeObserver relayout. The native run completed at **00:17:42.154231 UTC** with return code 0, **14/14 checks**, zero effect-guard denials and exact original/private/source integrity.
 
-| Retained proof | SHA-256 |
+The generated page is **728,002 bytes**, SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`. All three index-stage page preimages remain preserved. A physical-preimage read initially failed before source writes because the unmerged page was sparse; that failed phase remains separate. The corrected adoption preserved the real index stages, materialized 29 identical existing assets, copied the exact generated page and staged it explicitly. Two existing committed-page tests passed at **00:27:40.570511 UTC**: pytest 1.51 seconds, subprocess 2.30 seconds.
+
+Literal asset closure has 24 referenced assets, 28 edges, 11 stylesheets, six real WOFF2 fonts and 22 matching version bindings; all 29 nonpage files match the merged index. This proves literal availability and the exact known inline module, not browser rendering, dynamic network behavior or interaction acceptance.
+
+| Bound result | SHA-256 |
 | --- | --- |
-| Page adoption and contract receipt | `aa960d02325edd28e6db613048f5b777de23fafd24b5ae9da3cbf751b0be1e96` |
-| Page-contract log | `6265b7dc32dba77c83bc2122ef5ee39d73e7b7299ea1aff306427621bf34c360` |
-| Pre-effect sparse-file failure receipt | `624f8983c41d9674dd85df0fd6a52ea0348a9a4fcb494529755bdbaf98280554` |
-| Prior native qualification report | `f2a8aac3c0a7ad9e33913406752761dacf507b1410f7c9135a4efeccf490740e` |
-| Immutable 562-input manifest | `2476f90920fc3a04e77013e5fc4279b9248867dbc1f90afe2b1dceadbd52b0e7` |
+| Fixed 562-input manifest | `668b936de9f24b0d104155db8ec00d80f65fb26e9ebec11ab50e1222ca165ac7` |
+| 56 source pins | `abe0fbab6b007cc846f65d8d164d74ac1680c0df0a57128f52f574515d7a51e7` |
+| Native qualification report | `05f7f64ab9aa737b95a65d8f775c0857230ff2d17d7d1b39f010c0ebdba2a0d8` |
+| Native execution log | `5251d78a0f00fe61d0376a2b385a1fb3df3d7ba84aa2a93dbcd293d36298420a` |
+| Exact page adoption and page tests | `cf08f497ca2c9091d5977d42a810a55ce82c8ec8105bee890a86764ce68abaf0` |
+| Page-test log | `0cea6eb6e257c149ce11c19d95724fd3717a9ece06af2d96f42840e90adec895` |
+| Focused CI packing-test log | `6b7f696053d0c7126b182c640585b3f336da9d3fc7e789a8e2d2e93b291e300d` |
+| Materialized-input visual-gate result | `dc34ff20e4bbb47d1bc1e855162b3bcbf5e2d61e5d8f99ebcd16240ce4f022df` |
 
-Compact source evidence is in [page_adoption_20261023.json](evidence/page_adoption_20261023.json). Full effect records remain under `.cdi-proof/integration-20261022/w4-spy-current-page-adoption-20261023.*`; provider inputs and caches remain private and unstaged.
+[page_adoption_20261024.json](evidence/page_adoption_20261024.json) contains compact source evidence. Full operational records remain private under the existing integration proof directory. No raw market or holdings files are staged.
 
-### Preserved meaning and remaining gates
+### Actual meaning and unsatisfied gates
 
-The page carries the actual newly observed October 22 generation, health 76 and displayed MOVE 107.0. The retained health 75 page remains a distinct historical artifact. The SPY observation was acquired on October 23; original closing-bell bytes, historical first availability and current production freshness are not inferred. CDI remains sourced to October 15, stale by six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit remains withheld and every action-authority flag stays false.
+The native result reports **October 22 / health 75 / displayed MOVE 107.0**. The prior 66b page reports health 76 and remains exact in its original commit and proof. A repeated score/date does not establish identity with any earlier closing-bell artifact. CDI remains October 15, stale six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit is withheld; rank, size, gate and escalate authority are false.
 
-The existing 14/14 native result and literal asset closure remain attributed to their completed operations. Copying their exact output does not create a new native qualification, visual receipt or original-review verdict. R11/CDI genuine owning capture and the complete interaction/viewport/accessibility scope remain required.
+The initial local visual gate refused sparse evidence inputs. The canonical `worktree_sparse.py add mockups` then materialized the actual tracked evidence tree without changing the index. The resulting gate **failed on missing owning receipts for `templates/_bonds_duration.html.j2` and `templates/_credit_dislocation.html.j2`**. Preserve both phases. Native/static qualification, old R33 evidence and reading the public production page cannot supply the two missing current owning captures.
+
+The bounded paid-worker request `bonds-9590-current-main-integration-20261023-sol-001` was refused before launch. Same-run refusal/continuation receipts record no launch, and a separate current routing diagnostic found no eligible remote mode. This justifies existing-principal direct source work under NO_ELIGIBLE_PRE_EFFECT_WORKER; it is not an independent verdict or permission to retry/switch workers.
 
 ### Ordered continuation
 
-1. Read the canonical checkpoint and actual HEAD/index/remote. This page copy, sparse materialization and two-test qualification are complete; consume their receipts rather than replaying them.
-2. Make the normal source child containing the exact page and these evidence/plans. Qualify its committed head against locked main `88b5bc86a234a74fd526f974288ef39a33170289` using the official contract with `CONTRACT_DELTA_NO_REAP=1`. Parent9291's zero/zero result is not the child result.
-3. Consume the existing parent CI 39930172875 terminal result before the next normal push. Its hosted contract passed; three packs failed before tests while acquiring artifacts. Both artifacts exist, but each failed-job log read returned a connector error, so the underlying downloader cause is unproven. Preserve all results; no speculative workflow patch, retry, bypass or optional dispatch.
-4. After the child's exact-head gate and existing remote ancestry qualify, push normally to the same PR branch and consume its ordinary hosted checks. Keep Draft/HOLD and auto-merge off. This child carries a real source-artifact delta; no render is dispatched.
-5. Continue source/provenance and genuine product proof through existing owners. A real connection/admission change is required before another candidate browser attempt. Do not fabricate evidence or use an alternate carrier to evade a refusal.
-6. Preserve original Terminal #1106 Draft/HOLD, its consumed terminal/unqualified Fabric result with retry=false, the safety-refused deployment, once-applied 0038 and consumed covering render 39688064251. Preserve Macro #9996's immutable green/live inactive CRUD, Forex 227735's green results, all prior failures/passes, original workspaces and held carry/COT/RiskRadar. Tiingo licensing/product-use stays Chairman-COMPLETE; no outreach.
+1. Consume recorded results before a new call. The merge resolutions, new native run, exact page adoption, asset checks, two packing checks and two page checks are complete.
+2. Finish the normal merge with parents 66b/93f and this compact evidence. Run the official contract on that exact committed head against 93f with `CONTRACT_DELTA_NO_REAP=1`; preserve every pre-existing worktree and retain failed/passing receipts separately.
+3. Reconcile the original remote branch, then publish normally only to `claude/ssd-ccw-dislocation-v1-cc87720e59421398`. Consume ordinary hosted CI/fences. Keep Draft/HOLD and auto-merge off; no force push, optional workflow retry or render dispatch.
+4. Restore the actual incumbent capture/admission path and obtain genuine owning visual/interaction evidence plus independent review before release acceptance. Do not fabricate a manifest, substitute historical captures or bypass an exact refusal.
+5. Continue Forex source-owner integration within its own gates. Exact a9 is published and CI39935082910/fences39935083130 succeeded. The materially new current-candidate review stopped before launch on a transport directory-integrity check and has no verdict; the original 429 review remains separate and unreplayed.
+6. Preserve Terminal #1106's original-review-only condition, exact refused deployment, once-applied 0038, consumed render39688064251, accepted Macro #9996 inactive CRUD, all original private workspaces and held carry/COT/RiskRadar. Tiingo licensing/intended use stays Chairman-COMPLETE.
 
 ---
 

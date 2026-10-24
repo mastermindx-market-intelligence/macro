@@ -1,0 +1,126 @@
+{
+  "schema": "bonds.source_candidate_page_adoption.v1",
+  "status": "ADOPTED_IN_HELD_SOURCE_INTEGRATION",
+  "intended_merge_parents": [
+    "66b5c90b3369c89c693b94b0a4f531b570f5fb8e",
+    "93f844e9fff86c11565884f1edd5eb92d1152452"
+  ],
+  "adopted_at_utc": "2026-10-24T00:27:40.570511+00:00",
+  "path": "site/bonds.html",
+  "bytes": 728002,
+  "sha256": "b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e",
+  "native_source": {
+    "path": ".cdi-proof/w4-main93f-retained-native-20261024/site/bonds.html",
+    "report_sha256": "05f7f64ab9aa737b95a65d8f775c0857230ff2d17d7d1b39f010c0ebdba2a0d8",
+    "input_manifest_sha256": "668b936de9f24b0d104155db8ec00d80f65fb26e9ebec11ab50e1222ca165ac7",
+    "source_pins_sha256": "abe0fbab6b007cc846f65d8d164d74ac1680c0df0a57128f52f574515d7a51e7",
+    "source_pins_verified": 56,
+    "native_checks_passed": 14,
+    "native_completed_at_utc": "2026-10-24T00:17:42.061285+00:00",
+    "input_count": 562,
+    "input_bytes": 58484235,
+    "main_market_input_count": 537,
+    "integrated_asset_input_count": 19,
+    "private_unchanged_input_count": 6,
+    "changed_input_count": 237
+  },
+  "previous_page": {
+    "source_parent": "66b5c90b3369c89c693b94b0a4f531b570f5fb8e",
+    "sha256": "be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c",
+    "health_score": 76,
+    "retained": true
+  },
+  "nonpage_assets": {
+    "count": 29,
+    "all_equal_merged_index": true,
+    "literal_asset_count": 24,
+    "literal_edge_count": 28,
+    "css_count": 11,
+    "font_count": 6,
+    "version_bindings": 22,
+    "missing": []
+  },
+  "page_contracts": {
+    "passed": 2,
+    "returncode": 0,
+    "pytest_seconds": 1.51,
+    "subprocess_seconds": 2.3,
+    "log_sha256": "0cea6eb6e257c149ce11c19d95724fd3717a9ece06af2d96f42840e90adec895"
+  },
+  "ci_packing": {
+    "passed": 2,
+    "deselected": 234,
+    "pytest_seconds": 168.39,
+    "limits_increased": false,
+    "limits": {
+      "index": [
+        136,
+        5886
+      ],
+      "free_content": [
+        136,
+        5858
+      ],
+      "prophet": [
+        130,
+        5636
+      ],
+      "max_packs": 10
+    },
+    "log_sha256": "6b7f696053d0c7126b182c640585b3f336da9d3fc7e789a8e2d2e93b291e300d"
+  },
+  "effect_receipt": {
+    "path": ".cdi-proof/integration-20261022/recovery-main93f-page-adoption-sparse-20261024.result.json",
+    "sha256": "cf08f497ca2c9091d5977d42a810a55ce82c8ec8105bee890a86764ce68abaf0",
+    "stage_preimage_sha256": {
+      "1": "0df12cb81abf9e112a84997953d31c5dadd127241f626075c1e7ea46fc4b2450",
+      "2": "be74674d212ddf7a292e017a25ba5bdf490ba57dfc87febfb22cb3c96441a59c",
+      "3": "5745c50390839fdb6c300fbd693f193c9ca1478877c1c7915fc46fba0e9e5e66"
+    },
+    "pre_effect_sparse_failure_retained": true,
+    "raw_failure_sha256": "a0415840d2be16cdbf6605b1add8046e141b429577bad52e6d4c99f1ce0815ca",
+    "normalized_failure_companion_sha256": "d636711f968e13d98d033cf87882e4a0bd84ea77913c79d3c341fcbc39a9dd29"
+  },
+  "observed_limits": {
+    "generated_market_date": "2026-10-22",
+    "health_score": 75,
+    "displayed_move": 107.0,
+    "cdi_source_date": "2026-10-15",
+    "cdi_age_sessions": 6,
+    "instrument_histories": 311,
+    "eligible_five_session_comparisons": 0,
+    "eligible_twenty_one_session_comparisons": 0,
+    "september10_credit_withheld": true,
+    "historical_first_availability_proven": false,
+    "original_close_identity_proven": false
+  },
+  "visual_gate": {
+    "status": "FAIL_MISSING_OWNING_RECEIPTS",
+    "changed_paths": [
+      "templates/_bonds_duration.html.j2",
+      "templates/_credit_dislocation.html.j2"
+    ],
+    "real_mockups_materialized": true,
+    "materialization_index_unchanged": true,
+    "result_sha256": "dc34ff20e4bbb47d1bc1e855162b3bcbf5e2d61e5d8f99ebcd16240ce4f022df",
+    "log_sha256": "9a54a2fc0b415112b382c0b0e39555e908b1ca63e380c40e903261c16c98a8fb",
+    "prior_sparse_refusal_retained": true
+  },
+  "acceptance": {
+    "source_artifact_adopted": true,
+    "browser": false,
+    "owning_visual_receipts": false,
+    "independent_release_review": false,
+    "current_production": false
+  },
+  "effects": {
+    "native_regeneration": true,
+    "provider_acquisition": false,
+    "browser_retry": false,
+    "worker_replay": false,
+    "deployment": false,
+    "migration": false,
+    "render_dispatch": false
+  },
+  "current_commit_and_ci": "See the existing canonical PR9590 comment6337092277; previous CI is not promoted to this integrated head."
+}
