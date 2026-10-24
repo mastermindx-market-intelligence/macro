@@ -13,6 +13,8 @@ author wrote is left alone.
 """
 from __future__ import annotations
 
+import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -116,3 +118,28 @@ def test_preload_hint_is_never_restamped():
 def test_stylesheet_link_is_still_restamped():
     out = _rw('<link rel="stylesheet" href="onboard.css?v=233832f9">')
     assert 'href="onboard.css?v=bbbbbbbb"' in out
+
+
+def test_shipped_international_page_uses_current_immutable_asset_keys():
+    """The committed country cockpit must not ship stale one-year CDN keys.
+
+    The post-render optimizer repairs stale keys in the next render, but source
+    releases can deploy the committed site/ snapshot before that render happens.
+    """
+    site = Path(__file__).resolve().parents[1] / "site"
+    html = (site / "intl.html").read_text(encoding="utf-8")
+    refs = re.findall(r'(?:src|href)="([^"?#>]+)\?v=([0-9a-f]{8})"', html)
+    critical = {"intl_workspace.js", "intl_workspace_state.js",
+                "shared_shell_bridge.js", "theme.css"}
+    observed = {url for url, _stamp in refs}
+    assert critical <= observed, f"missing critical versioned assets: {critical - observed}"
+
+    stale = []
+    for rel, stamp in refs:
+        path = (site / rel).resolve()
+        if not path.is_relative_to(site.resolve()) or not path.is_file():
+            continue
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()[:8]
+        if stamp != actual:
+            stale.append((rel, stamp, actual))
+    assert not stale, f"committed international page carries stale asset keys: {stale}"
