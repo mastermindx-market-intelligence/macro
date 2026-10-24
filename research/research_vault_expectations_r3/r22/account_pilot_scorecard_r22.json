@@ -1,0 +1,112 @@
+{
+  "schema": "research_vault.account_increment_scorecard.v1",
+  "state": "DESIGN_ONLY_NOT_RUN",
+  "unit": "one frozen evaluation window and one incremental permitted acquisition-capacity step",
+  "cells": {
+    "A": "baseline corpus + existing processing",
+    "B": "baseline corpus + improved RIO/W2/W3 processing",
+    "C": "expanded corpus + existing processing",
+    "D": "expanded corpus + improved RIO/W2/W3 processing"
+  },
+  "contrasts": {
+    "B-A": "processing contribution without more access",
+    "C-A": "acquisition contribution under old processing",
+    "D-B": "marginal acquisition contribution after improved processing",
+    "D-C": "processing contribution on expanded corpus"
+  },
+  "acquisition_counts": [
+    "provider records observed",
+    "policy/source-use eligible records",
+    "new source bytes acquired",
+    "new independent-origin reports",
+    "new predecessor/current pairs completed",
+    "new dissenting-assumption sources",
+    "new company/question gaps closed",
+    "new late-section/complete-evidence gaps closed",
+    "duplicate/repeated-origin reports",
+    "reports unusable under intended product rights"
+  ],
+  "intelligence_counts": [
+    "frozen tasks supported with source-bound answer",
+    "frozen tasks correctly abstained",
+    "tasks failing because not acquired",
+    "tasks failing because source body incomplete",
+    "tasks failing because discovery missed evidence",
+    "tasks failing because selected support omitted",
+    "tasks failing because model interpretation wrong",
+    "tasks failing because rights/access denied",
+    "revision pairs correctly reconstructed",
+    "independent disagreements correctly preserved",
+    "false consensus or duplicate-vote errors",
+    "prefix-only answers mislabeled complete"
+  ],
+  "latency": [
+    "publication_to_discovery",
+    "discovery_to_source_acquisition",
+    "source_acquisition_to_vault_admission",
+    "vault_admission_to_RIO",
+    "RIO_to_first_product_availability"
+  ],
+  "cost": [
+    "incremental subscription cost",
+    "actual W1 model input/output/cache tokens and ledger cost",
+    "source-processing retries/failures",
+    "storage/transfer marginal cost if available",
+    "cost per newly supported frozen task"
+  ],
+  "usage_optional_after_authorized_connection": [
+    "supported answer delivered",
+    "source inspection behavior",
+    "ordered same-session product progression",
+    "return use",
+    "commercial outcome where lawfully joinable"
+  ],
+  "source_independence": {
+    "forbidden_proxy": "raw institution-label count",
+    "required_evidence": [
+      "publication/original source identity",
+      "desk/author lineage when supported",
+      "quoted/source-of-source lineage",
+      "underlying evidence lineage when knowable"
+    ],
+    "unresolved_is": "unknown, not independent and not duplicate"
+  },
+  "capacity_steps": [
+    {
+      "step": "1_to_2_accounts",
+      "nominal_daily_capacity": 140,
+      "decision": "first marginal paid pilot"
+    },
+    {
+      "step": "2_to_3_accounts",
+      "nominal_daily_capacity": 210,
+      "decision": "near-full weekday raw-flow target if meaningful eligible gaps remain"
+    },
+    {
+      "step": "3_to_4_accounts",
+      "nominal_daily_capacity": 280,
+      "decision": "peak/backfill/resilience only; must justify its own marginal gain"
+    }
+  ],
+  "pre_registration": {
+    "freeze_questions_before_incremental_source_selection": true,
+    "freeze_source_use_audience": true,
+    "freeze_model_route_and_processing_version": true,
+    "freeze_evaluation_window": true,
+    "economic_minimum": "set after baseline task economics and before incremental corpus is opened to graders; no universal percentage asserted here"
+  },
+  "disqualifiers": [
+    "rights for intended automated collection/model processing are not positively established",
+    "improved processing path cannot complete at least one real permitted current-corpus task",
+    "incremental benefit is counted from repeated/secondary versions as independent sources",
+    "baseline and expanded conditions use different questions or materially different model budgets without disclosure",
+    "purchase decision relies on raw PDF count alone"
+  ],
+  "current_capacity_evidence": {
+    "measured_allocator_weekday_posts_per_day_approx": 208,
+    "per_account_cap": 70,
+    "current_catalog_net_growth_per_day_approx": 66.8,
+    "planning_interpretation": "current one-account lane appears saturated; three total accounts approximately match average raw weekday arrivals before burst/backfill/resilience headroom"
+  },
+  "not_run": true
+}

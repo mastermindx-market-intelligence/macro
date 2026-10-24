@@ -1,0 +1,68 @@
+{
+  "schema": "research_vault.gold_stage_matrix.r22",
+  "state": "DESIGN_ONLY_NOT_RUN",
+  "principle": "One gold case may test several waves; do not require an earlier wave to implement a later wave's job.",
+  "cases": {
+    "G1_COMPANY_DEFINITION_CHANGE": {
+      "W1_W2_producer": [
+        "Each Microsoft disclosure independently produces grounded capex/lease-definition claims.",
+        "Relevant numerical values and management qualifications survive grounding.",
+        "Document measurement definition is preserved; no cross-document conclusion is required."
+      ],
+      "W3": [
+        "Brain can consume each available RIO state after existing access/quota gates and open literal evidence.",
+        "Coverage status is disclosed."
+      ],
+      "W5_W6": [
+        "Cross-document comparison identifies that the headline numbers are not clean like-for-like underlying investment deltas.",
+        "No synthetic $15B demand cut."
+      ]
+    },
+    "G2_SAME_SOURCE_REVISION_AND_REPEAT": {
+      "W1_W2_producer": [
+        "Each ING document independently extracts the fixed target, current value, quoted prior where present, horizon and rationale.",
+        "Rolling 3M and fixed year-end claims remain distinguishable if source wording supports it."
+      ],
+      "W3": [
+        "Each report RIO can be inspected with source evidence."
+      ],
+      "W5": [
+        "Link same-source comparable claims across vintages.",
+        "Classify 1.18->1.16 as revision and later same endpoints as repetition/reaffirmation unless stronger chronology proves a second change."
+      ],
+      "W6": []
+    },
+    "G3_INDEPENDENT_SOURCE_DISAGREEMENT": {
+      "W1_W2_producer": [
+        "Amundi and ING documents independently extract their September Fed path forecasts and supporting rationale."
+      ],
+      "W3": [
+        "Each report's safe RIO state remains source-specific."
+      ],
+      "W5": [],
+      "W6": [
+        "Resolve independent source/origin sufficiently to compare the two views.",
+        "Preserve on-hold vs 25bp-hike disagreement without averaging it into consensus."
+      ]
+    },
+    "G4_LONG_REPORT_LATE_QUALIFICATION": {
+      "W1_W2_producer": [
+        "If current stored body is prefix-only, mark coverage partial and do not claim full-report analysis.",
+        "W1 may persist only claims supported inside the analyzed stored body."
+      ],
+      "W3": [
+        "Consumer carries prefix-only/unknown coverage and cannot turn no-match into whole-report absence."
+      ],
+      "deep_evidence_followup": [
+        "Existing Vault owner must make the late qualification searchable/readable under the same document identity before this case can become fully supported.",
+        "Then W1/W2 may produce a new correction/version against the changed canonical analyzed body contract."
+      ]
+    }
+  },
+  "producer_canary_pass": "W1/W2 canary passes on per-document grounding, provenance, correction and coverage semantics. Cross-document revision/disagreement synthesis is explicitly deferred to frozen W5/W6.",
+  "forbidden_scope_inflation": [
+    "Adding cross-document memory to the producer",
+    "Creating a graph store to make G2/G3 pass early",
+    "Calling G4 full-document green from the 60k prefix"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "research.tested_repair_candidate.r9.compact",
+  "status": "LOCAL_REVIEW_CANDIDATE_NOT_ADMITTED",
+  "executed_at_utc": "2026-09-16T09:01:20.650634+00:00",
+  "procedure_commit": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+  "implementation_pin": "11485597cc53b3137346084aae4623cceed28a3f",
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "node": "v22.16.0",
+  "candidate_suites": [
+    {"name": "corpus_and_selected_route", "checks": 19, "failures": 0, "errors": 0},
+    {"name": "backend_and_helper_boundaries", "checks": 15, "failures": 0, "errors": 0},
+    {"name": "selected_client", "checks": 19, "failures": 0, "errors": 0},
+    {"name": "selected_renderer", "checks": 7, "failures": 0, "errors": 0}
+  ],
+  "total_candidate_checks": 60,
+  "total_failures": 0,
+  "total_errors": 0,
+  "tests_first": {
+    "initial_backend": {"checks": 19, "assertion_failures": 6, "errors": 0},
+    "initial_client": {"checks": 18, "assertion_failures": 13},
+    "initial_renderer": {"checks": 7, "assertion_failures": 5},
+    "extra_client_newline_case": "Already passed before further changes; not falsely described as a new red-green repair"
+  },
+  "mutations": [
+    {"name": "database_failure_hidden", "assertion_failures": 1, "rejected": true},
+    {"name": "eligibility_removed_before_limit", "assertion_failures": 3, "rejected": true},
+    {"name": "preview_narrowing_removed", "assertion_failures": 3, "rejected": true},
+    {"name": "unavailable_becomes_empty", "assertion_failures": 6, "rejected": true},
+    {"name": "stale_guard_query_only", "assertion_failures": 8, "rejected": true},
+    {"name": "status_not_rendered", "assertion_failures": 5, "rejected": true}
+  ],
+  "mutation_scope": "Direct local challenge, restored after each mutation; not independent external review or additional tests in the 60 total",
+  "r8_gap_disposition": {
+    "G1_company_associations": "NOT_FIXED_NOT_BUILT",
+    "G2_error_as_empty": "CANDIDATE_PASS",
+    "G3_unavailable_client": "CANDIDATE_PASS",
+    "G4_eligibility_after_limit": "CANDIDATE_PASS",
+    "G5_stale_same_query_response": "CANDIDATE_PASS"
+  },
+  "source_validation": {
+    "corpus_full_git_blob": "0b035b34489a4efd2ae7a3c59d153b3d1977701a",
+    "full_corpus_bytes_verified": true,
+    "full_corpus_patch_check": true,
+    "isolated_patch_apply_matches_tested_candidate": true,
+    "api_expected_full_blob": "bca9b965057df653607765107ef789692c47dcdc",
+    "client_expected_full_blob": "1f0b673da6c3d6a44ad3d74b2994f70b9a4311c8",
+    "api_client_full_file_parity": false,
+    "api_client_mode": "Selected connector-range functions and controlled dependencies"
+  },
+  "candidate_sha256": {
+    "candidate/corpus.py": "26ed72ba9498b7e685ecc3e326aed2aa87614e6c735fa3007e3fb02bf11d0562",
+    "candidate/research_search.py.txt": "66ecc957da704c3e10dc6b993e052a6300b8dc1349f47c6a4bbcf8ca196caab5",
+    "candidate/catalog_ids.py.txt": "6eafb476c0f96627a7e5f2a83a20cf102aafad1888e23595a3de7904a016358b",
+    "candidate/search_client.js.txt": "2460075492f450fda043f1ddd69b32a720d0e622b5bbe7880fde2bfb2325cf48",
+    "candidate/render_feed.js.txt": "b6d96b80ccab06226075318bbaade85bfe578aaad45fbfbd9b8678cca6caa686",
+    "corpus_search_r9.patch": "e554219155f7c16e05282b53613d5d4813b9887b321efb04963c25c7f1579040"
+  },
+  "local_test_harness_sha256": {
+    "test_backend_candidate.py": "2e0a1e59565796bb76ddfaa9f6d9dc076e27c880d04f1662891128e69f616d5c",
+    "test_backend_boundaries.py": "3ae1f6c895c6bbbad96efb489af3b16ef864e1b2d581412c0f5b4ec4d153e377",
+    "test_client_candidate.js": "b35fc9032541362a5e15450dab863ba4d9a9cec066b8f5b02246bce68838d078",
+    "test_render_candidate.js": "58d5f89bc1053b60fe489070be0cfa386d7bd65894afc9dadfe722f214346aa3"
+  },
+  "browser": {
+    "status": "BLOCKED_BEFORE_PAGE_LOAD",
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR",
+    "target": "Synthetic local review HTML",
+    "browser_cases_executed": 0,
+    "screenshots": 0,
+    "policy_bypass_or_retry": false
+  },
+  "scope": "Synthetic SQLite/FTS5 and controlled route/client/DOM adapters. No real auth, billing, source-rights decision, original source, live API or production browser.",
+  "runtime_source_modified": false,
+  "owner_interface_accepted": false,
+  "full_repository_ci": false,
+  "production_proven": false,
+  "previous_111_cases_rerun": false,
+  "model_benchmark_run": false,
+  "new_native_host_process": false,
+  "source_binding": false,
+  "package": "Mastermind_Research_Vault_Chunk9_Package.zip conversation attachment; full new harnesses are there, not claimed committed as production tests",
+  "serialization": "Compact durable projection of expanded local verification_r9.json; not byte-identical to expanded local receipt"
+}

@@ -1,0 +1,72 @@
+--- a/engine/research_vault/corpus.py
++++ b/engine/research_vault/corpus.py
+@@ -29,6 +29,7 @@
+ """
+ from __future__ import annotations
+ 
++import json
+ import logging
+ import os
+ import re
+@@ -347,6 +348,9 @@
+     date_from: str | None = None,
+     date_to: str | None = None,
+     limit: int = 50,
++    *,
++    eligible_ids: set[str] | frozenset[str] | None = None,
++    raise_on_error: bool = False,
+ ) -> list[dict]:
+     """FTS5 BM25 search with optional institution + date-range facets.
+ 
+@@ -354,8 +358,23 @@
+       {id, title, institution, side, published_at, summary, excerpt, rank}.
+     The excerpt is drawn from the summary when present, else the body. Facet-only
+     queries (empty ``q`` but an institution/date filter) are supported via a plain
+-    metadata scan. Returns [] on empty/degenerate input. Never raises.
+-    """
++    metadata scan. Default callers retain the legacy list/failure behavior.
++
++    ``eligible_ids`` is the request-scoped set supplied by the EXISTING visibility
++    owner, not a new authorization decision. None preserves legacy unrestricted
++    internal search; an empty set returns no rows. Eligibility is applied before
++    the final SQL limit, for text and facet queries. JSON table support is
++    required for scoped queries; absence fails, never falls back to unrestricted.
++    ``raise_on_error`` lets the serving caller distinguish a failed search from
++    a healthy empty result without breaking legacy list-based callers.
++    """
++    if eligible_ids is not None:
++        if not isinstance(eligible_ids, (set, frozenset)):
++            raise ValueError("eligible_ids must be a set from the visibility owner")
++        if any(not valid_doc_id(i) for i in eligible_ids):
++            raise ValueError("eligible_ids contains an invalid document identifier")
++        if not eligible_ids:
++            return []
+     fts = sanitize_fts5(q)
+     where: list[str] = []
+     params: list = []
+@@ -369,6 +388,12 @@
+     if date_to:
+         where.append("d.published_date <= ?")
+         params.append(date_to[:10])
++
++    if not fts and not where:
++        return []
++    if eligible_ids is not None:
++        where.append("d.doc_id IN (SELECT value FROM json_each(?))")
++        params.append(json.dumps(sorted(eligible_ids), separators=(",", ":")))
+ 
+     try:
+         if fts:
+@@ -397,8 +422,10 @@
+                 LIMIT ?
+             """
+             rows = conn.execute(sql, [*params, limit]).fetchall()
+-    except sqlite3.OperationalError:
+-        # Malformed MATCH or missing table — degrade to empty.
++    except sqlite3.Error:
++        if raise_on_error:
++            raise
++        # Legacy readers preserve their existing empty-on-failure contract.
+         return []
+ 
+     out: list[dict] = []

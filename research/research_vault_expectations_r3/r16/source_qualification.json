@@ -1,0 +1,65 @@
+{
+ "record_kind":"research.source_qualification.r16",
+ "status":"ORIGINAL_CAPTURED_QUALIFICATION_PARTIAL",
+ "not_runtime_admission":true,
+ "procedure_commit":"eee809949ee79c0ea1ef922ce74c110b1bb1dddf",
+ "research_start_head":"0b354348dfc2f877d0cbfa34783546cc4156bf34",
+ "main_pin":"5269a38f383d466f03cf1d7599d12de70118acad",
+ "source_capture":{
+  "title":"The AI investment race","publisher":"BIS","series":"Working Paper1367","author":"Phurichai Rungcharoenkitkul",
+  "url":"https://www.bis.org/publications/working-paper-1367-ai-investment-race.pdf",
+  "observed_at_utc":"2026-09-17T05:23:20.687246+00:00","byte_length":921134,
+  "sha256":"f6a3bbf9178d2b9994cbaefcc356bd17fd5828a46f5e86a7021ed41765bd3c0a",
+  "pdfinfo_pages":56,"directory":"/private/tmp/mmx-rv-r16-public-source-a021qgk3",
+  "device":"3f5ce987-e3eb-40a3-af9f-4b0ae54919cc","process_pid":26531,"process_exit":0,
+  "publication_date":"2026-07-14","manuscript_date":"2026-07-07","not_inferred_revision_conflict":true
+ },
+ "extraction":{
+  "command":"pdftotext -layout","python_text_characters":155368,
+  "python_text_utf8_sha256":"c8324bfff29101939480804917ab5160b57622d204b91ab62d8f418a77a024fd",
+  "formfeed_characters":57,"split_fragments":58,"physical_page_map_validated":false,"semantic_quality_verified":false
+ },
+ "assay":{
+  "process_pid":33703,"process_exit":0,"measured_at_utc":"2026-09-17T05:24:49.087899+00:00","sqlite":"3.53.4",
+  "full_corpus_git_blob":"0b035b34489a4efd2ae7a3c59d153b3d1977701a","full_source_hash_verified":true,
+  "configured_body_cap":60000,"local_database":"local-evaluation.sqlite","local_row_id":"bis-work1367-local-r16",
+  "measured_v2_facts_argument_supplied":false,"body_discovery_only":true,
+  "selected_queries":8,"candidate_hits":7,"not_recall_or_answer_accuracy":true,
+  "targets":[
+   {"key":"model_structure","anchor":"winner-take-most","positions":[[5414,5430,4]],"candidate":true,"below_configured_cap":true},
+   {"key":"baseline_parameters","anchor":"Production concavity","positions":[[61105,61125,22],[69426,69446,25],[134819,134839,49],[136323,136343,49]],"candidate":true,"below_configured_cap":false},
+   {"key":"parameter_sensitivity","anchor":"Sensitivity to parameters","positions":[[134464,134489,49]],"candidate":true,"below_configured_cap":false},
+   {"key":"cost_of_debt_robustness","anchor":"Repricing period-1 debt","positions":[[144740,144763,51]],"candidate":true,"below_configured_cap":false},
+   {"key":"empirical_anchor","anchor":"Menlo Ventures","positions":[[148553,148567,53]],"candidate":false,"below_configured_cap":false},
+   {"key":"data_traceability","anchor":"Full URLs and as-of dates","positions":[[148844,148869,53]],"candidate":true,"below_configured_cap":false},
+   {"key":"conditional_loss","anchor":"conditional destruction","positions":[[72360,72383,26]],"candidate":true,"below_configured_cap":false},
+   {"key":"benchmark_optimum","anchor":"social optimum","positions":[[12442,12456,6],[13963,13977,7]],"candidate":true,"below_configured_cap":true}
+  ],
+  "position_tuple":"source start,end,UNVALIDATED raw-formfeed page index",
+  "cap_comparison":"Static code-policy comparison, NOT measured persisted coverage",
+  "source_sample":"Eight purposive anchors in one source, not representative or independently adjudicated"
+ },
+ "withdrawn_interpretations":{
+  "sql_text_length_returned":6747,"raw_field_name":"stored_characters",
+  "raw_derived_fraction":0.04342593069357911,"fraction_status":"WITHDRAWN_UNQUALIFIED",
+  "raw_inside_prefix_flags_status":"WITHDRAWN_UNQUALIFIED",
+  "reason":"SQL TEXT length can terminate before a NUL; no exact retrieved Python/byte length was established",
+  "embedded_nul_confirmed":false,"other_causes_excluded":false,
+  "verified_persisted_text_length":null,"verified_storage_fraction":null
+ },
+ "web_observation":{
+  "table2_physical_page":48,"printed_page":46,"native_raw_formfeed_index":49,
+  "web_pdf_sha256":null,"same_bytes_as_native_proven":false,"specific_off_by_one_bug_proven":false
+ },
+ "blocked_followup":{
+  "purpose":"Investigate control characters/stored length and physical-page extraction correspondence",
+  "tool":"Remote_Desktop_Commander.start_process","result":"OpenAI safety-status block",
+  "process_pid":null,"result_obtained":false,"retried_or_rerouted":false
+ },
+ "boundaries":{
+  "commercial_use_grant":false,"production_vault_admitted":false,"brain_run":false,
+  "r14_held_tests_executed":false,"model_evaluation":false,"customer_browser":false,
+  "original_or_raw_text_distributed":false,"production_modified":false
+ },
+ "serialization":"Compact durable record of completed native outputs and corrected interpretation; expanded package representation differs."
+}
