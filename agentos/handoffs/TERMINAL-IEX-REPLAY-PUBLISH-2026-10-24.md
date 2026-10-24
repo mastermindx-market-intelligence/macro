@@ -1,3 +1,66 @@
+---
+workstream: WS:TERMINAL-GITHUB-CANONICALIZATION
+session: sol/web-terminal-iex-publish-20261024
+model: sol
+ended_because: ci_handoff
+prs: [10157]
+mission: >
+  Preserve the already merged Terminal IEX HIST depth-replay release as a self-contained
+  exact-hash local Codex execution packet, without bypassing the incumbent Macro
+  publisher, credential denial, source rights, or a held Fabric effect.
+state_before: >
+  Terminal #1039 merged with passing CI but production replay and the original
+  IEX cohort had not been proven published. An M2 Studio VPS SSH publickey read
+  was denied. Fabric run terminal-iex-1039-publish-20261024 ended with Qwen
+  HTTP 429, no accepted result, and an unverified effect. The three private
+  original IEX envelopes were staged and hash-qualified only.
+changed:
+  - path: agentos/handoffs/TERMINAL-IEX-REPLAY-PUBLISH-2026-10-24.md
+    what: >
+      Saved source paths/hashes, original worker identity and denied operations,
+      canonical host-local publisher target, exact preflight, atomic publication
+      criteria, guest and entitled readback, and no-retry boundaries.
+verified:
+  - claim: Original IEX Terminal source merged and hosted release CI passed.
+    command: >
+      GitHub GET mastermindx-market-intelligence/mastermind-terminal/pulls/1039
+      and actions/runs/40077062713; check protected merge SHA
+      61b84737df09653edc9a11c9c3e1886606abda05.
+    result: >
+      Source merge accepted; does not establish installed deployment or
+      authenticated production historical-data use.
+  - claim: The selected private three-symbol IEX cohort matches retained hashes.
+    command: >
+      Read /Volumes/Mastermind/agent-workspaces/terminal/iex-1039-stage-20261024/
+      private-publisher-manifest.json; SHA256 and byte-compare its approved
+      large_trades/NVDA.json, SPY.json and QQQ.json against decode-receipt.json.
+    result: >
+      Staging qualified and four local Terminal reader cases passed. No
+      publication, VPS writer or customer-session proof is claimed.
+unverified:
+  - Existing canonical filesystem publisher identity and owner lock on the Terminal host.
+  - Actual source rights/redistribution grant and host-local data readback.
+  - Whether the failed Fabric controller produced an uncertain destination effect.
+  - Installed exact-SHA Terminal deployment and entitled consumer experience.
+unresolved:
+  - Legitimate existing VPS principal and atomic host-local Macro publication procedure.
+  - Target-cohort reconciliation and first-availability terms before any data promotion.
+next_actions:
+  - >
+    Authorized local M2 Codex session reconciles the original Fabric operation
+    and target bytes read-only, verifies release permissions, writer lease and
+    IEX terms, then either executes one owner-atomic exact-hash publication
+    with readback or reports the precise gate without modifying data.
+do_not_redo:
+  - Never replay original Fabric publisher run or change the Qwen provider/account.
+  - Never retry the specifically denied SSH publickey principal.
+  - Never reacquire the 2026-10-05 IEX archive or fabricate a new publisher.
+danger_areas:
+  - Exact hashes and selected pre-open cohort; no regular-session blending.
+  - MACRO_LIVE_DIR on Terminal host is not the Macro R2 uploader.
+  - IEX-only, T+1, partial samples are not CME futures or live order flow.
+---
+
 # Terminal IEX Historical Replay — M2 Studio local Codex release handoff
 
 **Date:** 2026-10-24. **Original mission:** Mastermind Terminal PR [#1039](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1039), protected merge `61b84737df09653edc9a11c9c3e1886606abda05`; source head `c08dcb3266f819ef413e280c869ed835bee05787`. The original complete local handoff is also retained as `TERMINAL-IEX-CODEX-HANDOFF-2026-10-24.md` in this chat's generated artifacts (SHA256 `a5722d5390d7f0c69cc69d9c8574d069e7c90bd22cb7d7eb0d4463a5c5ab1bd5`). This is a **Codex execution packet**, not a publisher admission, secret, runtime receipt or authority to bypass host access.
