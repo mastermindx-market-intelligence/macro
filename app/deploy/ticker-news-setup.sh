@@ -13,6 +13,7 @@ UNIT_SOURCE="$APP_DIR/app/deploy/macro-ticker-news.service"
 UNIT_INSTALLED=/etc/systemd/system/macro-ticker-news.service
 ENV_FILE=/etc/macro-ticker-news.env
 RIGHTS_FILE=/etc/macro-ticker-news-rights.json
+TIINGO_RIGHTS_FILE=/etc/macro-ticker-news-tiingo-rights.json
 STATE_DIR=/var/lib/macro-ticker-news
 UNIVERSE="$STATE_DIR/news_universe.json"
 HEALTH="$STATE_DIR/health.json"
@@ -100,11 +101,53 @@ load_provider_credentials() {
   fi
 }
 
+# Closed additional provider opt-in, using the existing root-owned writer env.
+# Never export the provider key to macro-api.
+load_tiingo_opt_in() {
+  local line count enabled
+  require_private_file "$ENV_FILE"
+  count=$(grep -c -E "^MM_TICKER_NEWS_TIINGO_ENABLED=" "$ENV_FILE" || true)
+  if [ "$count" = 0 ]; then
+    export MM_TICKER_NEWS_TIINGO_ENABLED=0
+    return 0
+  fi
+  [ "$count" = 1 ] || fail "expected exactly one MM_TICKER_NEWS_TIINGO_ENABLED line"
+  line=$(grep -E "^MM_TICKER_NEWS_TIINGO_ENABLED=" "$ENV_FILE")
+  enabled=$(printf '%s' "$line" | cut -d= -f2-)
+  case "$enabled" in
+    0) export MM_TICKER_NEWS_TIINGO_ENABLED=0; return 0 ;;
+    1) export MM_TICKER_NEWS_TIINGO_ENABLED=1 ;;
+    *) fail "MM_TICKER_NEWS_TIINGO_ENABLED must be 0 or 1" ;;
+  esac
+
+  count=$(grep -c -E "^TIINGO_NEWS_ENABLED=" "$ENV_FILE" || true)
+  [ "$count" = 1 ] || fail "TIINGO_NEWS_ENABLED must be present exactly once"
+  line=$(grep -E "^TIINGO_NEWS_ENABLED=" "$ENV_FILE")
+  [ "$line" = "TIINGO_NEWS_ENABLED=1" ] || fail "TIINGO_NEWS_ENABLED must equal 1"
+  export TIINGO_NEWS_ENABLED=1
+
+  count=$(grep -c -E "^TIINGO_NEWS_RIGHTS_FILE=" "$ENV_FILE" || true)
+  [ "$count" = 1 ] || fail "TIINGO_NEWS_RIGHTS_FILE must be present exactly once"
+  line=$(grep -E "^TIINGO_NEWS_RIGHTS_FILE=" "$ENV_FILE")
+  [ "$line" = "TIINGO_NEWS_RIGHTS_FILE=$TIINGO_RIGHTS_FILE" ] ||     fail "Tiingo rights file must be the canonical root-only path"
+  require_private_file "$TIINGO_RIGHTS_FILE"
+  export TIINGO_NEWS_RIGHTS_FILE="$TIINGO_RIGHTS_FILE"
+
+  count=$(grep -c -E "^TIINGO_API_KEY=" "$ENV_FILE" || true)
+  [ "$count" = 1 ] || fail "TIINGO_API_KEY must be present exactly once"
+  line=$(grep -E "^TIINGO_API_KEY=" "$ENV_FILE")
+  TIINGO_API_KEY=$(printf '%s' "$line" | cut -d= -f2-)
+  [ -n "$TIINGO_API_KEY" ] || fail "TIINGO_API_KEY is empty"
+  case "$TIINGO_API_KEY" in *$'\n'*|*$'\r'*) fail "TIINGO_API_KEY contains newline" ;; esac
+  export TIINGO_API_KEY
+}
+
 check_activation() {
   require_private_file "$RIGHTS_FILE"
   [ -f "$UNIT_SOURCE" ] && [ ! -L "$UNIT_SOURCE" ] || fail "reviewed unit missing"
   install -d -m 0700 "$STATE_DIR"
   load_provider_credentials
+  load_tiingo_opt_in
 
   # Verify the exact production interpreter has the sync WebSocket API before
   # touching systemd. This imports only; it opens no provider connection.

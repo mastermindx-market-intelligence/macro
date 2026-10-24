@@ -172,3 +172,25 @@ def test_api_restart_trigger_includes_qbus_news_engine_dependencies():
 def test_api_runtime_pins_sync_websocket_dependency():
     requirements = _text(ROOT / "app" / "requirements.txt")
     assert "websockets>=17.1,<18" in requirements
+
+def test_tiingo_activation_reuses_private_single_writer_and_api_read_mounts():
+    source_unit = _text(UNIT)
+    api_unit = _text(API_UNIT)
+    setup = _text(ROOT / "app" / "deploy" / "ticker-news-setup.sh")
+    assert "EnvironmentFile=/etc/macro-ticker-news.env" in source_unit
+    assert "TIINGO_API_KEY=" not in source_unit
+    assert "Environment=TIINGO_NEWS_RIGHTS_FILE=/etc/macro-ticker-news-tiingo-rights.json" in api_unit
+    assert "ReadOnlyPaths=-/etc/macro-ticker-news-tiingo-rights.json" in api_unit
+    assert "TIINGO_API_KEY=" not in api_unit
+    assert "EnvironmentFile=-/etc/macro-api.env" in api_unit
+    assert "Environment=TIINGO_NEWS_ENABLED=1" not in api_unit  # default OFF
+    assert 'TIINGO_RIGHTS_FILE=/etc/macro-ticker-news-tiingo-rights.json' in setup
+    assert "load_tiingo_opt_in" in setup
+    assert 'require_private_file "$TIINGO_RIGHTS_FILE"' in setup
+    assert 'expected exactly one MM_TICKER_NEWS_TIINGO_ENABLED line' in setup
+    assert 'TIINGO_NEWS_ENABLED must equal 1' in setup
+    assert 'TIINGO_API_KEY must be present exactly once' in setup
+    assert 'Tiingo rights file must be the canonical root-only path' in setup
+    assert "systemctl enable --now macro-ticker-news.service" in setup
+    assert "scripts/run_qbus_news.py --check-activation" in setup
+    assert "scripts/run_qbus_news.py --run " in source_unit

@@ -282,6 +282,30 @@ The incumbent primary delta cursor remains untouched by a supplemental Tiingo
 observation. A disabled, denied or broken Tiingo feed leaves the primary
 Benzinga/Alpaca/Massive user paths operational.
 
+### Protected production owner path (source-only readiness)
+
+The canonical ticker-news setup script has a single optional Tiingo source
+switch in the **existing** root-owned /etc/macro-ticker-news.env:
+
+- MM_TICKER_NEWS_TIINGO_ENABLED=1
+- TIINGO_NEWS_ENABLED=1
+- TIINGO_API_KEY=(actual provider credential; never commit or print)
+- TIINGO_NEWS_RIGHTS_FILE=/etc/macro-ticker-news-tiingo-rights.json
+
+The setup script requires exactly one of each line when opted in and a regular
+root-owned mode 0400/0600 Tiingo receipt at the fixed path. The existing
+--check validates this with no provider fetch or SQLite writes; --install
+remains disabled, and only the approved incumbent --arm action may start
+the same macro-ticker-news.service. Without the optional switch, the primary
+service behaves as before.
+
+The Macro API never receives TIINGO_API_KEY. Its existing service unit
+declares only the read-only receipt path and denies access to the writer
+credentials. The serving operator separately enables
+TIINGO_NEWS_ENABLED=1 in /etc/macro-api.env after accepting the actual
+source-owner receipt. If unset or withdrawn, API Tiingo reads remain dark.
+This note supplies release mechanics, not deployment or license-field proof.
+
 Verification before acceptance: run the network-dark
 tests/test_qbus_news_intake.py and tests/test_tiingo_sqlite_bridge.py,
 the corresponding primary provider/health tests and full CI-pack/contract

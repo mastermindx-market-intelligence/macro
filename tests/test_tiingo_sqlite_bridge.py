@@ -324,3 +324,44 @@ def test_api_revoking_tiingo_does_not_revoke_other_source(tmp_path: Path, monkey
     after = api._rights_for_user({"synthetic": True})
     assert after is not None and after.allows("benzinga", "title")
     assert not after.allows("tiingo:reuters.com", "title")
+
+
+
+def test_tiingo_health_is_scoped_to_licensed_publisher_and_revoked_at_read():
+    from app import ticker_news as api
+    from engine.qbus_news_store import NewsReadRights
+    raw = {
+        "schema": "qbus.news_health.v1",
+        "state": "live", "source": "benzinga", "last_successful_catchup": NOW.isoformat(),
+        "additional_sources": [
+            {"provider": "tiingo", "state": "available",
+             "last_successful_poll": NOW.isoformat(), "accepted_reports": 43},
+            {"provider": "massive", "state": "available",
+             "configured_publishers": ["reuters.com", "ft.com"],
+             "accepted_reports_since_start": 17},
+        ],
+    }
+    grant = rights.parse_rights_receipt(synthetic_receipt(
+        licensed_publisher_domains=["reuters.com"],
+    ), now=NOW, source="tiingo").rights
+    current = api._curated_health(raw, grant)
+    assert current["state"] == "unavailable"  # no authority over Benzinga
+    assert len(current["additional_sources"]) == 1
+    extra = current["additional_sources"][0]
+    assert extra["provider"] == "tiingo"
+    assert extra["configured_publishers"] == ["reuters.com"]
+    assert extra["last_successful_poll"] == NOW.isoformat()
+    assert "accepted_reports" not in extra  # raw writer count is not per-user
+    assert api._state_from_health(current, row_count=1) == "degraded"
+
+    # Removing the owner-issued Tiingo grant also removes Tiingo's freshness
+    # and publisher metadata: even a stale successful health receipt cannot
+    # resurrect revoked stories or imply publisher authorization.
+    denied = api._curated_health(raw, NewsReadRights(frozenset()))
+    assert denied["additional_sources"] == []
+    assert denied["state"] == "unavailable"
+
+    # The pre-existing Benzinga user must not inherit Tiingo metadata.
+    primary = api._curated_health(raw, NewsReadRights(frozenset({"benzinga"})))
+    assert primary["additional_sources"] == []
+    assert primary["state"] == "live"

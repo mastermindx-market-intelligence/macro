@@ -494,7 +494,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="enable rights-qualified additional publishers in the existing runner")
     p.add_argument("--massive-token-env", default="POLYGON_API_KEY")
     p.add_argument("--tiingo-news", action="store_true",
-                   help="opt in to the separately rights-qualified Tiingo bounded supplement")
+                   default=os.environ.get("MM_TICKER_NEWS_TIINGO_ENABLED") == "1",
+                   help="opt in to separately rights-qualified Tiingo in the existing runner")
     p.add_argument("--tiingo-token-env", default="TIINGO_API_KEY")
     p.add_argument("--tiingo-rights-file", type=Path)
     p.add_argument(

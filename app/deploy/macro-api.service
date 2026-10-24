@@ -27,6 +27,10 @@ Environment=MEDTECH_PUBLIC_ROOT=/srv/medtech/public
 Environment=MM_TICKER_NEWS_DB=/var/lib/macro-ticker-news/qbus.sqlite3
 Environment=MM_TICKER_NEWS_UNIVERSE=/var/lib/macro-ticker-news/news_universe.json
 Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json
+# Tiingo receipt path only; the API never receives provider credentials.
+# macro-api.env must independently enable TIINGO_NEWS_ENABLED=1 only after
+# the actual owner-issued publisher receipt is qualified.
+Environment=TIINGO_NEWS_RIGHTS_FILE=/etc/macro-ticker-news-tiingo-rights.json
 Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json
 # Integrated Answer v0 read API (app/integrated_answer.py _require_enabled): flag-on; route 404s when unset.
 Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1
@@ -108,6 +112,7 @@ ReadOnlyPaths=/var/lib/macro-market-memory/public
 # never become a second writer to the qbus hot store.
 ReadOnlyPaths=-/var/lib/macro-ticker-news
 ReadOnlyPaths=-/etc/macro-ticker-news-rights.json
+ReadOnlyPaths=-/etc/macro-ticker-news-tiingo-rights.json
 InaccessiblePaths=-/var/lib/macro-biocatalyst/state
 InaccessiblePaths=-/var/lib/macro-biocatalyst/activation
 InaccessiblePaths=-/etc/macro-biocatalyst.env

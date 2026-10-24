@@ -494,3 +494,16 @@ def test_multiple_supplements_preserve_runner_writer_and_health_contract(tmp_pat
         runner.run(max_connections=0)  # neither socket nor live feed is touched
         assert a.closed and b.closed
         assert store.current_cursor() is None
+
+def test_tiingo_activation_flag_is_explicit_and_off_by_default(monkeypatch):
+    from scripts.run_qbus_news import build_parser
+    monkeypatch.delenv("MM_TICKER_NEWS_TIINGO_ENABLED", raising=False)
+    assert not build_parser().parse_args([]).tiingo_news
+    monkeypatch.setenv("MM_TICKER_NEWS_TIINGO_ENABLED", "0")
+    assert not build_parser().parse_args([]).tiingo_news
+    monkeypatch.setenv("MM_TICKER_NEWS_TIINGO_ENABLED", "true")
+    assert not build_parser().parse_args([]).tiingo_news
+    monkeypatch.setenv("MM_TICKER_NEWS_TIINGO_ENABLED", "1")
+    assert build_parser().parse_args([]).tiingo_news
+    monkeypatch.delenv("MM_TICKER_NEWS_TIINGO_ENABLED", raising=False)
+    assert build_parser().parse_args(["--tiingo-news"]).tiingo_news

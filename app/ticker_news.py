@@ -410,16 +410,27 @@ def _curated_health(health: Mapping[str, Any], rights: NewsReadRights) -> dict[s
     if "additional_sources" in health:
         extras = []
         for item in health.get("additional_sources") or []:
-            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+            if not isinstance(item, Mapping):
                 continue
-            publishers = [publisher for publisher in item.get("configured_publishers", [])
-                          if isinstance(publisher, str) and "massive:" + publisher in eligible]
+            provider = item.get("provider")
+            if provider == "massive":
+                publishers = [publisher for publisher in item.get("configured_publishers", [])
+                              if isinstance(publisher, str) and "massive:" + publisher in eligible]
+            elif provider == "tiingo":
+                # The writer's acquisition health is not an entitlement. Only
+                # current source-granted publisher identities may be projected
+                # to this authenticated site_full user.
+                publishers = sorted(source.partition(":")[2] for source in eligible
+                                    if source.startswith("tiingo:"))
+            else:
+                continue
             if not publishers:
                 continue
             entry = dict(item, configured_publishers=publishers)
-            # The writer count includes rejected articles and cannot describe
-            # this curated population. Keep its untouched receipt at the writer.
+            # Global writer acceptance counts include rows not visible to this
+            # user and must never be represented as their licensed population.
             entry.pop("accepted_reports_since_start", None)
+            entry.pop("accepted_reports", None)
             extras.append(entry)
         result["additional_sources"] = extras
     return result
