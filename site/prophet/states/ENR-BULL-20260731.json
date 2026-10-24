@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ENR-BULL-20260731",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 40.8,
-  "raw_confidence": 39.9,
-  "delta_vs_base": -19.2,
+  "management_confidence": 40.4,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -19.6,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 79.2,
+    "validity": 97.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.841,
+    "dist_to_stop_r": 0.978,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 151.1,
-    "p1": -0.1058,
-    "p2": -0.0529,
+    "horizon_pct_used": 171.1,
+    "p1": -0.015,
+    "p2": -0.0075,
     "p3": null,
-    "move_r": -0.159,
-    "mfe_r": 0.028,
+    "move_r": -0.022,
+    "mfe_r": 0.121,
     "mae_r": -0.355
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.2000004577636716,
+  "_mfe": 0.860000305175781,
   "_mae": -2.5299990844726565,
-  "_max_p1": 0.01872663462206663,
-  "_first_trigger_ts": null,
+  "_max_p1": 0.08052437314379972,
+  "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 68,
-  "tau": 1.5111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 77,
+  "tau": 1.7111,
+  "closed": true,
+  "outcome": "NO_ENTRY"
 }

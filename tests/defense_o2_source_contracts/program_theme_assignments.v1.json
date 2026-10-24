@@ -1,0 +1,320 @@
+{
+  "contract": "government_program_theme_assignment_review.v1",
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-10-13T04:40:23.278704+00:00",
+  "reviewer": "O2 bounded source-only review, root admitted T0 context boundary and O3 quartet immutable accepted manifest2df3b888",
+  "owners": {
+    "fms": {
+      "owner_kind": "fms",
+      "path": "data/government_revenue/fms_case_graph.json",
+      "sha256": "f586d2a25722d8aa98a61b0be1863bee7f736c7025a45e26c35f3e8e15a2581e",
+      "available_at": "2026-10-11T16:29:02.044466+00:00",
+      "admission_ref": "existing:fms_case_graph.json",
+      "rights_state": "qualified_public_display"
+    },
+    "ontology": {
+      "owner_kind": "program_ontology",
+      "path": "data/government_revenue/program_ontology.json",
+      "sha256": "5785b5fe1e9ad0ad74739cb64f9756310708a51332b7decbba73a8d240da1e3f",
+      "available_at": "2026-08-23T07:50:00+00:00",
+      "admission_ref": "existing:program_ontology.json",
+      "rights_state": "qualified_public_display"
+    },
+    "atlas": {
+      "owner_kind": "identity_atlas",
+      "path": "data/government_revenue/identity_atlas.json",
+      "sha256": "cc1d26e024f3bd5290b935b64b9290b6e0aba6d64eda8185eda15b241004a9a2",
+      "available_at": "2026-08-19T05:44:34.128190+00:00",
+      "admission_ref": "existing:identity_atlas.json",
+      "rights_state": "qualified_public_display"
+    },
+    "quartet_economics": {
+      "owner_kind": "defense_economics",
+      "path": "data/government_revenue/defense_economics.json",
+      "sha256": "bd5017d33bbf4c4a7ca95798c92c742577405d0264b7dc525590da07a27086a9",
+      "available_at": "2026-10-13T03:10:00+00:00",
+      "admission_ref": "O3review:MANIFEST.sha256:2df3b88823aa9a5bea7931c772c4bdf44d9f93d84375ce094eb652ccb93610ff",
+      "rights_state": "qualified_public_display"
+    }
+  },
+  "assignments": {
+    "golden_dome": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "exposure": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "funding_stage": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      }
+    },
+    "munitions_replenishment": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references": [
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/0",
+            "row_id": "evt_cik0000936468_2026q2_results:defense_segment_sales"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/1",
+            "row_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/2",
+            "row_id": "evt_cik0000936468_2026q2_results:defense_segment_margin"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/1/axes/economics/facts/0",
+            "row_id": "evt_cik0000101829_2026q2_results:defense_segment_sales"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/1/axes/economics/facts/1",
+            "row_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/1/axes/economics/facts/2",
+            "row_id": "evt_cik0000101829_2026q2_results:defense_segment_margin"
+          }
+        ],
+        "state": "partial"
+      },
+      "exposure": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "funding_stage": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      }
+    },
+    "space": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references": [
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/2/axes/economics/facts/0",
+            "row_id": "evt_cik0001133421_2026q2_results:defense_segment_sales"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/2/axes/economics/facts/1",
+            "row_id": "evt_cik0001133421_2026q2_results:defense_segment_operating_profit"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/2/axes/economics/facts/2",
+            "row_id": "evt_cik0001133421_2026q2_results:defense_segment_margin"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/3/axes/economics/facts/0",
+            "row_id": "evt_cik0000202058_2026q2_results:defense_segment_sales"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/3/axes/economics/facts/1",
+            "row_id": "evt_cik0000202058_2026q2_results:defense_segment_margin"
+          }
+        ],
+        "state": "partial"
+      },
+      "exposure": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "funding_stage": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      }
+    },
+    "nato_fms_demand": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "exposure": {
+        "reason_code": "contractor_identity_not_reviewed",
+        "references": [
+          {
+            "owner_key": "fms",
+            "pointer": "/cases/3/contractors/0",
+            "row_id": "fms:transmittal:25-104"
+          }
+        ],
+        "state": "unreviewed"
+      },
+      "funding_stage": {
+        "reason_code": "congressional_notification_only",
+        "references": [
+          {
+            "owner_key": "fms",
+            "pointer": "/cases/3",
+            "row_id": "fms:transmittal:25-104"
+          }
+        ],
+        "state": "partial"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "condition_not_scheduled_date",
+        "references": [
+          {
+            "owner_key": "fms",
+            "pointer": "/cases/3/advancement_condition",
+            "row_id": "fms:transmittal:25-104"
+          }
+        ],
+        "state": "partial"
+      }
+    },
+    "fleet_sustainment_upgrades": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "exposure": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "funding_stage": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      }
+    },
+    "shipbuilding": {
+      "contrary_case": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "economics": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "exposure": {
+        "reason_code": "reviewed_program_participation",
+        "references": [
+          {
+            "owner_key": "ontology",
+            "pointer": "/role_assertions/0",
+            "row_id": "prog-role:c483832bff9d"
+          },
+          {
+            "owner_key": "atlas",
+            "pointer": "/issuers/4/entities/1",
+            "row_id": "legal:gd:electric-boat-corp"
+          }
+        ],
+        "state": "supported"
+      },
+      "funding_stage": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "market_context": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      },
+      "next_event": {
+        "reason_code": "owner_reference_absent",
+        "references": [],
+        "state": "source_unavailable"
+      }
+    }
+  }
+}

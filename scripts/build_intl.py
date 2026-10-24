@@ -30,6 +30,8 @@ from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_history_mount import attach_history  # noqa: E402
+from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
+from lib.intl_gs_observations import build_observation_set  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -40,7 +42,8 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
           "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
-          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
+          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js",
+          "intl_workspace_surveillance.css")
 
 
 def _ecb_publication_measure(materialized, *, evaluated_at, generation):
@@ -126,17 +129,21 @@ def _history_publication_sources(receipts):
 
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
-                           history_sources=None):
+                           history_sources=None, chart_source_sink=None):
     """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
+    if chart_source_sink is not None and (
+            type(chart_source_sink) is not dict or chart_source_sink):
+        raise ValueError("invalid_international_chart_sink")
     generation = "im-workspace-generation:" + str(uuid4())
     publication_inputs = None
+    eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
     try:
         from lib.intl_eod_publication import build_eod_inputs
         admitted = build_eod_inputs(
             closes, data_root=Path(data_root), evaluated_at=evaluated_at,
-            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
+            rights=eod_rights,
         )
         if admitted is not None:
             closes, publication_inputs = admitted
@@ -160,6 +167,10 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
             "as_of": closes.index[-1].date().isoformat(),
             "policy": "intl-conservative-observed-eod-tplus2-v1",
         }
+        if chart_source_sink is not None:
+            # Private, transient source-bound pair: templates never receive
+            # the dataframe, saved evidence or disclosure decisions.
+            chart_source_sink["sources"] = (closes, publication_inputs)
     registry = {
             "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
                         for cc, row in countries().items()],
@@ -198,6 +209,23 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         )
     except Exception as exc:
         log.error("International History panel unavailable (%s)", type(exc).__name__)
+    observation_set = None
+    try:
+        # W2F-X X2/X4: the incumbent chain as Wave 1 observations, built from
+        # the SAME admitted frame and the SAME eod grant object as the page.
+        # A failure withholds observations; it never suppresses the page.
+        observation_set = build_observation_set(
+            closes, publication_inputs=publication_inputs, evaluated_at=evaluated_at,
+            data_root=Path(data_root), rights=eod_rights)
+    except Exception as exc:
+        log.error("International Surveillance observations unavailable (%s)", type(exc).__name__)
+        observation_set = None
+    try:
+        # W2F seam: surveillance views mount independently; a missing or failed
+        # builder only disables its own sub-tab and never the page.
+        workspace = attach_surveillance(workspace, observations=observation_set)
+    except Exception as exc:
+        log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
     return workspace
 
 
@@ -1057,12 +1085,14 @@ def main() -> int:
             perf.pop("bench", None)
 
         workspace = None
+        chart_source_sink = {}
         try:
             workspace = _publication_workspace(
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
                 history_sources=_history_publication_sources(_intl_history_receipts),
+                chart_source_sink=chart_source_sink,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
@@ -1109,7 +1139,10 @@ def main() -> int:
                                     "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             log.error("International Library copy unavailable (%s)", type(exc).__name__)
-        macro_html, stocks_html = render_international_pages(tmpl, vm, catalogue=catalogue)
+        macro_html, stocks_html = render_international_pages(
+            tmpl, vm, catalogue=catalogue,
+            chart_sources=chart_source_sink.get("sources"),
+        )
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",

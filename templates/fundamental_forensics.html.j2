@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="tier_preview.css">
 <link rel="stylesheet" href="fundamental_forensics.css?v=20260816-ff0r1">
+<link rel="stylesheet" href="institutional_holding_research.css{% if holding_css_version is defined and holding_css_version %}?v={{ holding_css_version }}{% endif %}">
 </head>
 <body class="ff-page">
 {% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
@@ -89,7 +90,18 @@
             data-label-en="Export unavailable" data-label-zh="导出不可用">{{ t('Export', '导出') }}</button>
         </div>
       </div>
+      {#- A43 r3 (P0 first-viewport repair): the desk band ends on ONE stamp
+          line at every viewport, as the 10-12 fold receipt measured it. The
+          device-local saved-views briefcase (X2-s) and the retained-holding
+          reader (#9771) are desk tools, not glance modules: they sit behind
+          the closed Desk tools disclosure on the stamp line, so at rest they
+          add no height above the lead brief, and open at the full band width. -#}
+      <div class="ff-desk-stamp-row">
       <p class="ff-desk-stamp" id="ff-desk-stamp">{{ t('As of — · Source —', '截止 — · 来源 —') }}</p>
+      <p class="ff-desk-stamp" id="ff-saved-badge" hidden></p>
+      <details class="ff-desk-tools" id="ff-desk-tools">
+        <summary>{{ t('Desk tools', '桌面工具') }}</summary>
+        <div class="ff-desk-tools-body">
       {#- X2-s saved views: the device-local briefcase lives on this desk band.
           Hidden until fif_saved_briefcase.js wires it (progressive reveal, no
           dead controls when the module is absent); the governed
@@ -111,7 +123,35 @@
         <button type="button" class="ff-trace-open" id="ff-saved-rename" hidden>{{ t('Rename', '重命名') }}</button>
         <button type="button" class="ff-trace-open" id="ff-saved-delete" hidden>{{ t('Delete', '删除') }}</button>
       </div>
-      <p class="ff-desk-stamp" id="ff-saved-badge" hidden></p>
+      <details class="mx-disc ff-holding-research" id="ff-holding-research">
+  <summary>{{ t('Read a reported holding', '查阅已披露持仓') }}</summary>
+  <p>{{ t('Read one retained filing record. It is delayed disclosure, not current ownership or trading intent.', '查阅一条已留存的披露记录。这是滞后披露，不代表当前持仓或交易意图。') }}</p>
+  <form id="ff-holding-form" method="post" action="/api/forensics/v1/institutional/reported-holding" autocomplete="off">
+    <div class="ff-holding-fields">
+      <label for="ff-holding-cik">{{ t('Reporting CIK', '披露机构 CIK') }}<input class="ff-asof-input" id="ff-holding-cik" name="filer_cik" value="0001904423" inputmode="numeric" required maxlength="10"></label>
+      <label for="ff-holding-period">{{ t('Report period', '报告期') }}<input class="ff-asof-input" id="ff-holding-period" name="report_period" type="date" value="2026-06-30" required></label>
+      <label for="ff-holding-cutoff">{{ t('Known by (UTC)', '截至时间（UTC）') }}<input class="ff-asof-input" id="ff-holding-cutoff" name="decision_cutoff" value="2026-08-27T09:22:23.700168Z" required maxlength="64"></label>
+    </div>
+    <details class="mx-disc"><summary>{{ t('Filing and record identifiers', '披露及记录标识') }}</summary>
+      <div class="ff-holding-fields">
+        <label for="ff-holding-accession">{{ t('SEC accession', 'SEC 披露编号') }}<input class="ff-asof-input" id="ff-holding-accession" name="accession" value="0001904423-26-000004" required maxlength="20"></label>
+        <label for="ff-holding-row">{{ t('Holding record ID', '持仓记录标识') }}<input class="ff-asof-input" id="ff-holding-row" name="infotable_sk" value="4611686018427387905" inputmode="numeric" required maxlength="19"></label>
+        <label for="ff-holding-generation">{{ t('Pinned catalog (optional)', '固定目录版本（可选）') }}<input class="ff-asof-input" id="ff-holding-generation" name="generation_id" value="i13fgen_9ae95a9de85cc0ed426b09cd7db443210c8cdc5d9178aaad5859c3f8a57527cd" maxlength="72" autocomplete="off"></label>
+      </div>
+    </details>
+    <div class="ff-holding-actions">
+      <span>{{ t('Retained Custos example:', '已留存的 Custos 示例：') }}</span>
+      <button type="button" class="gbtn gbtn-quiet" data-holding-example="previous">2026-03-31</button>
+      <button type="button" class="gbtn gbtn-quiet" data-holding-example="current">2026-06-30</button>
+      <button type="submit" class="gbtn" id="ff-holding-read">{{ t('Read reported holding', '读取已披露持仓') }}</button>
+    </div>
+  </form>
+  <p id="ff-holding-status" role="status" aria-live="polite">{{ t('Choose a filing, then read its source record.', '选择披露文件，再读取其来源记录。') }}</p>
+  <div id="ff-holding-result" hidden></div>
+      </details>
+        </div>
+      </details>
+      </div>
       <div class="ff-company-action" id="ff-company-action" hidden>
         <span class="ff-action-glyph" aria-hidden="true">·</span>
         <span class="ff-action-copy">{{ t('Loading', '正在载入') }}</span>
@@ -551,5 +591,6 @@
 <script src="tier_preview.js" defer></script>
 <script src="fif_saved_briefcase.js?v=20261012-x2s1" defer></script>
 <script src="fundamental_forensics.js?v=20260816-ff0r1" defer></script>
+<script src="institutional_holding_research.js{% if holding_js_version is defined and holding_js_version %}?v={{ holding_js_version }}{% endif %}" defer></script>
 </body>
 </html>

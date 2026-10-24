@@ -26,8 +26,8 @@ waves:
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
     next_action: >
-      Finish exact-head verification, independent review and authenticated production proof for
-      the derived Intelligence OS evidence view, without persisting a new score state.
+      Publish the qualified nine-input tested-merge closure repair on original PR6651 under fresh
+      canonical capacity and source custody, then fresh binding checks, incumbent merge and production proof.
 next_action: >
   Continue the existing PR #6651 under current Chairman assignment and root
   01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
@@ -58,6 +58,25 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
+
+## Current tested-merge dependency repair — 2026-10-15
+
+Published ba848's fresh run38695328397 selected A1 but contract-delta found nine uncovered dependencies in its exact tested merge0ec629 (base3f62 + ba848). The head-only closure had been zero; seven existing files became reachable and main introduced finance_watching.py plus the PLNT builder. The canonical A1 closure on an isolated copy of that exact hosted commit reproduced precisely those nine misses. This is a real binding failure, not the inactive pilot check.
+
+Source634750adc150165d5d336c2c5df5a414b6e266e4 adds only those nine explicit paths to eval-os-a1. All319job definitions, order, prior paths, eight A1 suites, weights, ceilings and pack limits remain intact. The source and the exact existing hosted tree plus the same patch each pass three focused controls and full canonical closure with zero misses. Strict probes remain136/135/129jobs and10packs each; weights are5694/5502/5445 on source and5698/5506/5449 on the hosted tree, all within the unchanged limits. A verifier-only diff-header comparison failed before tests and was corrected to compare the resulting manifest. The hosted receipt's duration is invalid because a text index shadowed its timer; the original is retained and duration stays unknown. This does not affect the test, closure or packing calculations. No accepted test was repeated to repair that reporting field.
+
+Independent original Fabric eval-a1-tested-closure-review-01a1333d-c1 was consumed and reviewer-accepted with report corrections: actual job is eval-os-a1, a hash shape proves no patch identity, and deterministic remaining checks do not imply higher-tier authority. The parent verified exact patch hash and full YAML preservation. Canonical07:24 admission counted6active/cap8/0unindexed reservations. Read-only preview against mainaafbe3 is clean; its difference from tested base3f62 is eight existing generated/research path contents, with unchanged Python/CI sources, inventory and all17production paths. No generated contents or sealed outcomes were read.
+
+These22original records and their manifest are retained in research/evidence/eval-os-20261012/a1-tested-closure-repair-20261015. This containing commit is not yet remotely published; fresh hosted checks, incumbent-only merge and all normal production/consumer acceptance remain owed. Chris's release and consumed one-time base exception stand; no second manual base integration. Preserve original Fabric effects and refusals. All completion flags remain false.
+
+## Current ancestor-input repair — 2026-10-15
+
+Original b1 run38601317870 completed successfully; its final semantic evidence binds126jobs and348passing commandsteps. The incumbent refreshed tofea04c414282 (b1+main1865), exact ordinary merge verified, with all17productionfiles unchanged. Its own run38624362438 failed the new ancestor-init census ratchet, so the controller correctly refused release. That refusal is preserved, not recast as inherited or nonbinding.
+
+Source2d0e6e334986eb73496c102a939ee4e24a688c63 declares13existing ancestor package inputs in eval-os-a1. It preserves all319job execution definitions, existing path memberships, eightA1suites, census ceilings, weights and pack limits. Exact local RED was357rows/147substantive versusbase344/138; all13extra pairs belong to A1. After the additive repair the census returns344rows withzeroA1omissions. Three focused controls pass, complete tracked dependency closure haszero misses, and strict probes136/135/129jobs withweights5694/5502/5445 use10packs each within existing limits. Read-only preview againstobservedmainccbd7d874b0b passes; no secondmainintegration occurred. Sourcehashes/RED/GREEN/originalartifact are retained under research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/.
+
+Independent same-ID Fabric review eval-a1-ancestor-review-01a1333d-c1 is consumed and reviewer-accepted with report qualifiers (three lists are derived from one census; representative inputs include a test; non-substantive does not imply docstring-only). No material defect. This source is locally qualified, reviewed and unpublished; exact containinghead publication, fresh hosted checks, incumbent-only merge, normal updater/install/servedassets, authenticatedAPI-DOM/eightvisualstates, natural postrelease owner progression and actualoperator comprehension remain owed. Chris already released HOLD-FOR-SOL and the one-timebaseexception was consumed7e; no new approval is needed or inferred. Allcompletionflags remainfalse. Original experienceUNKNOWN and lostCLIreview effects remain frozen.
+
 
 ## Chairman release decision and CI repair — 2026-10-14
 
@@ -102,3 +121,40 @@ PR #6651 remains the sole held draft carrier. Its historical recovery operation 
 Latest delta: published213d5f29 source/browser/resource review is accepted. Its hosted CI found16 missing dependency-path entries across7 curated jobs; the same predicate failed contract-delta and pack0 while11 packs passed. Current main595a8927 was integrated cleanly, exact coverage was repaired without changing job commands/gates, and both affected controls pass locally. All21 qualified nonmanifest application/test hashes remain unchanged. Real200% browser zoom and observed reduced motion now pass their named scoped checks; the42-state matrix is unchanged. The repaired published head still requires concluded hosted CI and the existing reserved release/live/operator gates. See the current frontier at the top of the acceptance record for chronology and the original daily collector-versus-workflow distinction.
 
 The current source consumes bounded, dated owner readiness and recorded display-only confluence findings. Exact unique T4 paths associate context with canonical engines; unknown/ambiguous rows and unavailable numeric verification stay visible. Final malformed-row, null, fraction and partial-empty controls pass. Existing shared API/UI writer custody transferred explicitly to root after all product test sessions reconciled. Independent source-bound synthetic browser acceptance now passes all eight theme/language/viewport contexts and42 actual states; the65-file canonical bundle has zero receipt/manifest findings. Whole-corpus-sized647-artifact local synthetic capacity is qualified at446MiB maximumRSS, preserving a1.293s cache metadata cost; VPS/client latency remains unproved. Held-PR current-head CI/review, reserved release and normal authenticated production/operator acceptance remain pending. See research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md, mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml and the continuation; no authority or completion flag changed.
+
+
+## Approved one-time base integration — 2026-10-14T15:57Z
+
+Chris directly approved one ordinary integration of current main into the same
+PR6651 carrier, followed by the accepted source correction and fresh checks.
+This resolves the demonstrated orchestration loop: semantic/current contract-delta
+red exits the incumbent before base refresh, irrespective of capacity. The controller
+is not changed or bypassed and continues to own final merge. Source-bound diagnostic
+and the original retained Fabric audit are preserved with reviewer corrections.
+
+The published1b head integrated observed main50db81266bb88a93d8c0ec318389548c7939d4be
+cleanly. The bounded repair adds five missing eval-os-a1 input paths, preserves all318
+execution definitions/order/prior paths and all eight A1 suites, and adjusts only the
+measured build_free_content job ceiling134->135 with existing136/130 neighbors.
+Weight, pack and shared capacity limits remain unchanged. Original local26 remains
+preserved on its branch; its17 source evidence records are copied byte-for-byte.
+Fresh integrated-source qualification is pending and no publication is claimed.
+The15:55 census9/cap8 and PR8920 refresh register prevent a new hosted producer;
+local source preparation creates none. Completion, release and production flags
+remain false. See research/evidence/eval-os-20261012/approved-base-repair-20261014/.
+
+
+### Final integrated local qualification — 2026-10-14T16:05Z
+
+Exact source7e3157596cdb completed full tracked-inventory closure with zero omissions
+and strict packing135/135/129jobs,5684/5502/5445weights,10packs each, within existing
+136/135/130job limits. The sole newly authorized limit remains free-content134->135.
+No weight/pack/shared-capacity limit changed. Runtime/updater and three CI registration
+controls271PASS, theme parser12PASS, zero failures/errors/skips. The17-file census has
+15 unchanged: updater gains only three incoming API restart paths, and theme.css adds
+two canonical variables unused by the A1 consumers. Application/science/rendering proof
+is reused on unchanged bytes. Final hosted proof and production verification remain owed.
+Raw original evidence, exact hashes and source-bound inventory are committed under
+research/evidence/eval-os-20261012/approved-base-repair-20261014/. The containing commit
+adds evidence/continuity only; it does not change the qualified runtime/control bytes.
+Publication still requires fresh same-carrier custody and shared-capacity admission.

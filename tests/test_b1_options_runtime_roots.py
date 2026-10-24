@@ -1086,3 +1086,174 @@ def test_shells_parse_and_hub_script_compiles() -> None:
 def test_ci_names_this_suite() -> None:
     text = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     assert "tests/test_b1_options_runtime_roots.py" in text
+
+
+# D16b — bounded matrix freshness read. Copies substitute the interpreter and
+# the retry/timeout literals only. Production source keeps 6 x 1200s and 600s.
+
+GATE_FAKE_PYTHON = textwrap.dedent(
+    """\
+    #!/usr/bin/python3
+    import os
+    import sys
+    import time
+    from pathlib import Path
+
+    argv = sys.argv[1:]
+
+    if argv and argv[0] == "-":
+        sys.stdin.read()
+        mode = os.environ.get("B1_GATE_MODE", "")
+        if mode == "fresh":
+            print("fresh")
+            sys.exit(0)
+        if mode == "stale":
+            print("stale")
+            sys.exit(0)
+        if mode == "hang":
+            time.sleep(300)
+            print("fresh")
+            sys.exit(0)
+        if mode == "stderr":
+            sys.stderr.write("D16B_GATE_STDERR_BEACON\\n")
+            sys.exit(3)
+        sys.stderr.write("unknown B1_GATE_MODE\\n")
+        sys.exit(99)
+
+    if argv[:2] == ["-m", "scripts.build_options_matrix"]:
+        log = Path(os.environ["B1_LOG"])
+        with log.open("a", encoding="utf-8") as fh:
+            fh.write("matrix\\n")
+        sys.exit(0)
+
+    sys.stderr.write("unexpected gate interpreter argv\\n")
+    sys.exit(99)
+    """
+)
+
+_GATE_SHELLS = [
+    pytest.param(["/bin/sh"], id="sh"),
+    pytest.param(["/bin/bash", "--posix"], id="bash-posix"),
+]
+
+
+def _write_gate_fake(tmp: Path) -> tuple[Path, Path]:
+    fake_py = tmp / "gate-fake-python"
+    fake_py.write_text(GATE_FAKE_PYTHON, encoding="utf-8")
+    fake_py.chmod(0o755)
+    log = tmp / "gate-invocations.log"
+    return fake_py, log
+
+
+def _matrix_gate_copy(tmp: Path, fake_py: Path) -> Path:
+    text = MATRIX_SRC.read_text(encoding="utf-8")
+    text = text.replace(
+        f'PYTHON="{REAL_PYTHON}"',
+        f'PYTHON="{_plain(fake_py)}"',
+        1,
+    )
+    text = text.replace("SLEEP_SECS=1200", "SLEEP_SECS=0", 1)
+    text = text.replace("MAX_ATTEMPTS=6", "MAX_ATTEMPTS=2", 1)
+    text = text.replace("GATE_READ_TIMEOUT_SECS=600", "GATE_READ_TIMEOUT_SECS=2", 1)
+    if "SLEEP_SECS=1200" in text or "MAX_ATTEMPTS=6" in text:
+        raise RuntimeError("retry budget literals were not substituted")
+    dest = tmp / "run_options_matrix.gate.sh"
+    dest.write_text(text, encoding="utf-8")
+    dest.chmod(0o755)
+    return dest
+
+
+def _gate_log_text(log: Path) -> str:
+    if not log.exists():
+        return ""
+    return log.read_text(encoding="utf-8")
+
+
+def _assert_no_gate_dirs(gate_tmp: Path) -> None:
+    leftovers = sorted(path.name for path in gate_tmp.glob("options_matrix_gate.*"))
+    assert leftovers == []
+
+
+def _run_matrix_gate(
+    tmp: Path, mode: str, shell: list[str]
+) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
+    fake_py, log = _write_gate_fake(tmp)
+    repo = _code_repo(tmp / "code", "build_options_matrix.py")
+    script = _matrix_gate_copy(tmp, fake_py)
+    store = tmp / "theta"
+    store.mkdir()
+    gate_tmp = tmp / "gate-tmp"
+    gate_tmp.mkdir()
+    env = _base_env(
+        log,
+        TMPDIR=_plain(gate_tmp),
+        B1_GATE_MODE=mode,
+        MACRO_OPTIONS_MATRIX_ROOT=_plain(repo),
+        THETADATA_STORE=_plain(store),
+    )
+    try:
+        result = subprocess.run(
+            [*shell, str(script)],
+            cwd=tmp,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        pytest.fail(f"{shell} freshness read was not bounded within 60s")
+    return result, log, gate_tmp
+
+
+@pytest.mark.parametrize("shell", _GATE_SHELLS)
+def test_matrix_gate_hang_is_bounded_and_named(tmp_path: Path, shell: list[str]) -> None:
+    result, log, gate_tmp = _run_matrix_gate(tmp_path, "hang", shell)
+    text = result.stdout + result.stderr
+    assert result.returncode == 1, text
+    assert text.count("[options_matrix] freshness read timed out after 2s (attempt 1/2)") == 1, text
+    assert text.count("[options_matrix] freshness read timed out after 2s (attempt 2/2)") == 1, text
+    assert "matrix" not in _gate_log_text(log)
+    assert "launching build_options_matrix" not in text
+    _assert_no_gate_dirs(gate_tmp)
+
+
+@pytest.mark.parametrize("shell", _GATE_SHELLS)
+def test_matrix_gate_stderr_is_surfaced(tmp_path: Path, shell: list[str]) -> None:
+    result, log, gate_tmp = _run_matrix_gate(tmp_path, "stderr", shell)
+    text = result.stdout + result.stderr
+    assert "[options_matrix] gate stderr: D16B_GATE_STDERR_BEACON" in text, text
+    assert result.returncode == 1, text
+    assert "matrix" not in _gate_log_text(log)
+    assert "launching build_options_matrix" not in text
+    _assert_no_gate_dirs(gate_tmp)
+
+
+@pytest.mark.parametrize("shell", _GATE_SHELLS)
+def test_matrix_gate_fresh_path_unchanged(tmp_path: Path, shell: list[str]) -> None:
+    result, log, gate_tmp = _run_matrix_gate(tmp_path, "fresh", shell)
+    text = result.stdout + result.stderr
+    assert result.returncode == 0, text
+    assert "[options_matrix] store fresh (attempt 1/2) — proceeding" in text, text
+    assert _gate_log_text(log).split() == ["matrix"]
+    _assert_no_gate_dirs(gate_tmp)
+
+
+@pytest.mark.parametrize("shell", _GATE_SHELLS)
+def test_matrix_gate_stale_retries_then_aborts(tmp_path: Path, shell: list[str]) -> None:
+    result, log, gate_tmp = _run_matrix_gate(tmp_path, "stale", shell)
+    text = result.stdout + result.stderr
+    assert result.returncode == 1, text
+    assert text.count("[options_matrix] store not fresh yet (attempt ") == 2, text
+    assert "[options_matrix] store not fresh yet (attempt 1/2) — sleeping 0s" in text, text
+    assert "[options_matrix] store not fresh yet (attempt 2/2) — sleeping 0s" in text, text
+    assert "[options_matrix] ERROR: store still not fresh after 2 attempts — aborting" in text, text
+    assert "matrix" not in _gate_log_text(log)
+    assert "launching build_options_matrix" not in text
+    _assert_no_gate_dirs(gate_tmp)
+
+
+def test_matrix_gate_timeout_literal_is_pinned() -> None:
+    text = MATRIX_SRC.read_text(encoding="utf-8")
+    assert "GATE_READ_TIMEOUT_SECS=600" in text
+    assert "GATE_READ_TIMEOUT_SECS:-" not in text

@@ -562,6 +562,7 @@ def _implied_source_meta(asof_ts, metadata, cutoff, zq_row, sofr_row, front,
         "missing_source": [k for k in ("zq", "sofr", "zq_front")
                            if strips[k]["value_state"] in ("missing", "refused", "withheld")],
         "legacy_value_basis_note": _LEGACY_SOFR_NOTE if is_effr is False else None,
+        "effr_meeting_path": _effr_meeting_path(asof_ts, md, cutoff, strips["zq"], out),
     }
 
 
@@ -638,6 +639,566 @@ def _live_source_metadata(zq_asof: str | None, sofr_asof: str | None) -> dict:
     for key, asof in (("zq", zq_asof), ("sofr", sofr_asof)):
         meta[key] = {"observation_date": asof,
                      "contracts": _contracts_at(asof, f"{key}_contracts"),
+                     "contract_closes": _contract_closes_at(asof, f"{key}_contracts"),
                      "price_type": rf.PRICE_TYPE, "vendor": rf.VENDOR,
                      "rights": rf.RIGHTS}
+    effr = _fred_last("DFF")
+    if effr is not None:
+        meta["effr"] = {"value": effr[0], "observation_date": effr[1],
+                        "source": "fred:DFF"}
+    lo = _fred_last("DFEDTARL")
+    hi = _fred_last("DFEDTARU")
+    if lo is not None and hi is not None:
+        meta["target_range"] = {
+            "low": lo[0], "high": hi[0],
+            "observation_date": min(lo[1], hi[1]),
+        }
+    elif lo is not None:
+        meta["target_range"] = {"low": lo[0], "high": None,
+                                "observation_date": lo[1]}
+    elif hi is not None:
+        meta["target_range"] = {"low": None, "high": hi[0],
+                                "observation_date": hi[1]}
     return meta
+def _contract_closes_at(asof: str | None, store_key: str) -> dict | None:
+    """Per-symbol daily close at the path's OWN asof (nulls dropped).
+
+    Mirrors `_contracts_at` (symbol names only); used by the D1 EFFR meeting
+    path block to construct per-contract monthly averages. Returns None on
+    absence, missing-asof or any exception."""
+    if asof is None:
+        return None
+    try:
+        cf = store.read("rate_futures", store_key)
+        if cf is None or cf.empty:
+            return None
+        ts = pd.Timestamp(asof)
+        if ts not in cf.index:
+            return None
+        row = cf.loc[ts]
+        out_d = {str(c): float(row[c]) for c in cf.columns
+                 if not pd.isna(row[c])}
+        return out_d or None
+    except Exception:  # noqa: BLE001 — additive, never fatal
+        return None
+
+
+def _fred_last(series_id: str) -> tuple[float, str] | None:
+    """Last non-null of a FRED series at column 0 — (value, ISO date) or None."""
+    try:
+        df = store.read("fred", series_id)
+        if df is None or df.empty:
+            return None
+        s = df.iloc[:, 0].dropna()
+        if s.empty:
+            return None
+        return float(s.iloc[-1]), pd.Timestamp(s.index[-1]).date().isoformat()
+    except Exception:  # noqa: BLE001 — additive, never fatal
+        return None
+
+
+# --------------------------------------------------------------------------- #
+# D1 — FED-PATH EFFR MEETING PATH (RIC-INCLUDED-CORE, R-1)
+#
+# Additive block: a single new key in `implied_source_meta`. No existing output
+# byte changes. The function fails CLOSED inside its body (returns an
+# `unavailable` block on any exception) so compute() never raises because of D1.
+# --------------------------------------------------------------------------- #
+_SCHEMAv1_EFFR_MEETING = "fed_path_effr_meeting_path.v1"
+_ASSUMPTIONS_EFFR = (
+    "effective_date_convention=decision_plus_1d",
+    "no_intermeeting_change",
+    "effr_level_constant_between_effective_dates",
+)
+
+
+def _effr_unavailable_block(reason: str, cutoff_effective: str,
+                             cutoff_basis: str) -> dict:
+    return {
+        "schema": _SCHEMAv1_EFFR_MEETING,
+        "authority": "display_only",
+        "status": "unavailable",
+        "reason": reason,
+        "cutoff_effective": cutoff_effective,
+        "cutoff_basis": cutoff_basis,
+        "effective_date_law": "decision_plus_1d",
+        "calendar_years_covered": [],
+        "assumptions": list(_ASSUMPTIONS_EFFR),
+        "gap": None,
+        "months": [],
+        "refused_contracts": [],
+        "limitations": [],
+    }
+
+
+def _isfinite_real(v) -> bool:
+    """True iff v is a finite real number (no booleans, no NaN, no strings)."""
+    if isinstance(v, bool) or v is None:
+        return False
+    if isinstance(v, float) and v != v:  # NaN
+        return False
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return False
+    return np.isfinite(f)
+
+
+def _no_eff_open_open(lo: "date", hi: "date", eff_dates: list) -> bool:
+    for ed in eff_dates:
+        if lo < ed < hi:
+            return False
+    return True
+
+
+def _no_eff_open_closed(lo: "date", hi: "date", eff_dates: list) -> bool:
+    for ed in eff_dates:
+        if lo < ed <= hi:
+            return False
+    return True
+
+
+def _compare_zq_vs_mid(rcb, month_obs, mid_obs, gap_info: dict):
+    if month_obs is None or mid_obs is None:
+        return None
+    ctx = ({"effr_minus_midpoint_bp": gap_info["value_bp"]}
+           if gap_info.get("usable") and gap_info.get("value_bp") is not None
+           else None)
+    try:
+        return rcb.compare_qualified(
+            month_obs, mid_obs,
+            rcb.RULES["zq_month_vs_policy_midpoint.v1"],
+            context=ctx).to_dict()
+    except Exception:  # noqa: BLE001 — never fail the block
+        return None
+
+
+def _effr_meeting_path(asof_ts, md, cutoff, zq_strip_meta: dict, out: dict) -> dict:
+    """D1 EFFR monthly-identity reading of the ZQ strip (the EFFR-meeting path).
+
+    Reads only `md["zq"]["contract_closes"]` (per-vendor-symbol daily close) +
+    `md["effr"]` (FRED DFF daily) + `md["target_range"]` (FRED DFEDTAR{L,U})
+    + `md["effr_basis"]` (explicit EFFR-minus-midpoint bp). The B0 solver is
+    `engine.rates_command_basis.solve_reference_average`. Returns the schema'd
+    block; degrades to an `unavailable` block on strip absence or any
+    exception so the legacy compute never raises."""
+    from datetime import timedelta as _td
+    from engine import rates_command_basis as rcb
+    from engine import event_calendar as ec
+    from collectors import rate_futures as rf
+
+    try:
+        # --- 1) cutoff_effective + cutoff_basis ---
+        if cutoff is not None and str(cutoff).strip():
+            cutoff_effective = str(cutoff)
+            cutoff_basis = "supplied"
+        else:
+            cutoff_effective = (asof_ts.date() + _td(days=1)).isoformat()
+            cutoff_basis = "live_asof_plus_1d"
+
+        # --- 2) block availability on the ZQ strip's value_state ---
+        zq_state = (zq_strip_meta or {}).get("value_state") if isinstance(zq_strip_meta, dict) else None
+        if zq_state != "present":
+            return _effr_unavailable_block(
+                reason=f"zq_strip_{zq_state or 'missing'}",
+                cutoff_effective=cutoff_effective,
+                cutoff_basis=cutoff_basis)
+
+        md_zq = md.get("zq") if isinstance(md, dict) else None
+        closes = (md_zq or {}).get("contract_closes") if isinstance(md_zq, dict) else None
+        zq_obs_date = (md_zq or {}).get("observation_date") if isinstance(md_zq, dict) else None
+        if not isinstance(closes, dict) or not closes:
+            return _effr_unavailable_block(
+                reason="contract_closes_missing",
+                cutoff_effective=cutoff_effective,
+                cutoff_basis=cutoff_basis)
+
+        # --- 3) FOMC effective dates + calendar_years_covered ---
+        decisions = ec.fomc_decision_dates(date(1900, 1, 1), date(2999, 12, 31))
+        all_eff = sorted((d + _td(days=1)).isoformat() for d in decisions)
+        calendar_years_covered = sorted({d.year for d in decisions})
+        eff_date_objs = [date.fromisoformat(s) for s in all_eff]
+
+        # --- 4) R1 basis gate + duplicate handling ---
+        refused: list = []
+        admitted: dict = {}  # (year, month) -> (sym, close, parsed)
+        for sym in sorted(str(s) for s in closes.keys()):
+            p = rf.parse_contract_symbol(sym)
+            if p is None:
+                refused.append({"contract": sym, "reason": "unknown_basis:rate_index"})
+                continue
+            b = rf.strip_basis(p["symbol_root"])
+            if not b or b.get("rate_index") is None:
+                refused.append({"contract": sym, "reason": "unknown_basis:rate_index"})
+                continue
+            if b["rate_index"] != "EFFR":
+                refused.append({"contract": sym, "reason": "basis_mismatch:rate_index"})
+                continue
+            if b.get("averaging_law") != "arithmetic_calendar_day":
+                refused.append({"contract": sym, "reason": "basis_mismatch:averaging_law"})
+                continue
+            ym = (p["year"], p["month"])
+            if ym in admitted:
+                refused.append({"contract": sym, "reason": "duplicate_contract_month"})
+                continue
+            admitted[ym] = (sym, closes[sym], p)
+
+        # --- 5) optional EFFR daily + target midpoint ---
+        effr_md = md.get("effr") if isinstance(md, dict) else None
+        effr_value = (effr_md or {}).get("value") if isinstance(effr_md, dict) else None
+        effr_obs_date = (effr_md or {}).get("observation_date") if isinstance(effr_md, dict) else None
+
+        dff_obs = None
+        if isinstance(effr_md, dict) and effr_obs_date:
+            try:
+                dff_obs = rcb.qualify_observation(
+                    effr_value,
+                    {
+                        "subject": "effr_daily",
+                        "evidence_class": "official_measurement",
+                        "unit": "pct_ann_rate",
+                        "target": "effr_daily",
+                        "basket_or_index": "EFFR",
+                        "rate_index": "EFFR",
+                        "averaging_law": "point",
+                        "observation_time": effr_obs_date,
+                        "observation_precision": "day",
+                        "first_public_evidence": (
+                            date.fromisoformat(effr_obs_date) + _td(days=1)
+                        ).isoformat(),
+                        "first_public_precision": "day",
+                        "limitations": ("publication_lag_assumed_1d",),
+                        "rights": "public_official",
+                        "source": "fred:DFF",
+                    },
+                    cutoff_effective)
+            except Exception:
+                dff_obs = None
+
+        target_md = md.get("target_range") if isinstance(md, dict) else None
+        target_obs_date = None
+        mid_value = None
+        mid_source = "fed_path:out.target"
+        if isinstance(target_md, dict) and target_md:
+            lo = target_md.get("low")
+            hi = target_md.get("high")
+            target_obs_date = target_md.get("observation_date")
+            if _isfinite_real(lo) and _isfinite_real(hi):
+                mid_value = (float(lo) + float(hi)) / 2.0
+                mid_source = "fred:DFEDTARL+DFEDTARU"
+        # fallback to out.target_low/target_high
+        if mid_value is None:
+            lo_out = (out or {}).get("target_low")
+            hi_out = (out or {}).get("target_high")
+            if _isfinite_real(lo_out) and _isfinite_real(hi_out):
+                mid_value = (float(lo_out) + float(hi_out)) / 2.0
+                target_obs_date = None
+                mid_source = "fed_path:out.target"
+
+        mid_obs = None
+        if mid_value is not None:
+            try:
+                mid_obs = rcb.qualify_observation(
+                    mid_value,
+                    {
+                        "subject": "fed_funds_target_midpoint",
+                        "evidence_class": "official_measurement",
+                        "unit": "pct_ann_rate",
+                        "target": "fed_funds_target_midpoint",
+                        "averaging_law": "point",
+                        "observation_time": target_obs_date,
+                        "observation_precision": "day",
+                        "first_public_evidence": target_obs_date,
+                        "first_public_precision": "day",
+                        "rights": "public_official",
+                        "source": mid_source,
+                    },
+                    cutoff_effective)
+            except Exception:
+                mid_obs = None
+
+        # --- 6) R6 GAP (block level, computed once) ---
+        gap_info: dict = {"value_bp": None, "usable": False,
+                          "source": None, "reason": None}
+        block_limitations: list = []
+
+        effr_basis_md = md.get("effr_basis") if isinstance(md, dict) else None
+        eb_value = (effr_basis_md or {}).get("effr_minus_midpoint_bp") if isinstance(effr_basis_md, dict) else None
+        eb_obs = (effr_basis_md or {}).get("observation_date") if isinstance(effr_basis_md, dict) else None
+        eb_source = (effr_basis_md or {}).get("source") if isinstance(effr_basis_md, dict) else None
+
+        if _isfinite_real(eb_value):
+            if eb_obs is None or str(eb_obs).strip() == "":
+                gap_info["reason"] = "effr_basis_time_unknown"
+            elif _evidence_later(str(eb_obs), "day", cutoff_effective) is True:
+                gap_info["reason"] = "effr_basis_after_cutoff"
+            else:
+                gap_info["value_bp"] = float(eb_value)
+                gap_info["usable"] = True
+                gap_info["source"] = "explicit:" + (eb_source or "unspecified")
+        else:
+            d_dff_date = _as_date(effr_obs_date) if dff_obs is not None and dff_obs.value_state.value == "present" else None
+            d_mid_date = _as_date(target_obs_date) if mid_obs is not None and mid_obs.value_state.value == "present" else None
+            if d_dff_date is None or d_mid_date is None:
+                gap_info["reason"] = "gap_inputs_missing"
+            elif (d_dff_date.year not in calendar_years_covered
+                  or d_mid_date.year not in calendar_years_covered):
+                gap_info["reason"] = "meeting_calendar_unknown"
+            else:
+                lo_d, hi_d = min(d_dff_date, d_mid_date), max(d_dff_date, d_mid_date)
+                if not _no_eff_open_closed(lo_d, hi_d, eff_date_objs):
+                    gap_info["reason"] = "target_changed_between_gap_dates"
+                else:
+                    gap_info["value_bp"] = round((float(effr_value) - float(mid_value)) * 100.0, 6)
+                    gap_info["usable"] = True
+                    gap_info["source"] = (
+                        f"measured:fred:DFF@{effr_obs_date}-midpoint@{target_obs_date}"
+                    )
+                    block_limitations.append("single_day_gap")
+
+        # --- 7) per-month processing (sorted by ref_start) ---
+        months_out: list = []
+        # chain table: (year, month) -> end_rate, only for IDENTIFIED_CONDITIONAL records
+        # — used by R7.2 to chain the IMMEDIATELY PRECEDING calendar month only.
+        chain_identified: dict = {}
+
+        for (year, month), (sym, close_raw, _p) in sorted(admitted.items(),
+                                                         key=lambda kv: kv[0]):
+            ref_start_iso, ref_end_iso = rf.contract_reference_period(year, month, "monthly")
+            ref_start = date.fromisoformat(ref_start_iso)
+            ref_end = date.fromisoformat(ref_end_iso)
+            month_days = (ref_end - ref_start).days + 1
+            realised = max(0, min(month_days, (asof_ts.date() - ref_start).days))
+            remaining = month_days - realised
+
+            # R2 monthly-average qualification
+            month_obs = None
+            if _isfinite_real(close_raw):
+                try:
+                    month_obs = rcb.qualify_observation(
+                        100.0 - float(close_raw),
+                        {
+                            "subject": f"zq_month_average:{sym}",
+                            "evidence_class": "market_implied_expectation",
+                            "unit": "pct_ann_rate",
+                            "target": "effr_monthly_average",
+                            "basket_or_index": "EFFR",
+                            "rate_index": "EFFR",
+                            "averaging_law": "arithmetic_calendar_day",
+                            "reference_start": ref_start_iso,
+                            "reference_end": ref_end_iso,
+                            "observation_time": zq_obs_date,
+                            "observation_precision": "day",
+                            "first_public_evidence": zq_obs_date,
+                            "first_public_precision": "day",
+                            "rights": rf.RIGHTS,
+                            "source": f"yfinance:{sym}",
+                        },
+                        cutoff_effective)
+                except Exception:
+                    month_obs = None
+
+            inside = [e for e in all_eff if ref_start_iso <= e <= ref_end_iso]
+
+            # R8.a month_obs not present
+            if month_obs is None or month_obs.value_state.value != "present":
+                state_val = month_obs.value_state.value if month_obs else "missing"
+                months_out.append({
+                    "contract": sym,
+                    "reference_start": ref_start_iso,
+                    "reference_end": ref_end_iso,
+                    "month_days": month_days,
+                    "monthly_average": (month_obs.to_dict() if month_obs else None),
+                    "effective_dates_inside": inside,
+                    "status": "unavailable",
+                    "reason": f"monthly_average_{state_val}",
+                    "pre_change_rate": None,
+                    "pre_change_rate_source": None,
+                    "identification": None,
+                    "vs_target_midpoint": _compare_zq_vs_mid(rcb, month_obs, mid_obs, gap_info),
+                    "weights": {"days_pre": None, "days_post": None,
+                                "realised_days": realised,
+                                "remaining_days": remaining},
+                    "post_rate_sensitivity": None,
+                    "limitations": [],
+                })
+                continue
+
+            # R8.b ref year not in calendar
+            if ref_start.year not in calendar_years_covered:
+                months_out.append({
+                    "contract": sym,
+                    "reference_start": ref_start_iso,
+                    "reference_end": ref_end_iso,
+                    "month_days": month_days,
+                    "monthly_average": month_obs.to_dict(),
+                    "effective_dates_inside": inside,
+                    "status": "missing_inputs",
+                    "reason": "meeting_calendar_unknown",
+                    "pre_change_rate": None,
+                    "pre_change_rate_source": None,
+                    "identification": None,
+                    "vs_target_midpoint": _compare_zq_vs_mid(rcb, month_obs, mid_obs, gap_info),
+                    "weights": {"days_pre": None, "days_post": None,
+                                "realised_days": realised,
+                                "remaining_days": remaining},
+                    "post_rate_sensitivity": None,
+                    "limitations": [],
+                })
+                continue
+
+            pre = None
+            pre_source = None
+
+            if len(inside) == 1:
+                eff_iso = inside[0]
+                eff_d = date.fromisoformat(eff_iso)
+                route_used = False
+
+                # R7 Route 1: DFF
+                if (dff_obs is not None and dff_obs.value_state.value == "present"
+                        and effr_obs_date):
+                    d_dff = _as_date(effr_obs_date)
+                    if d_dff is not None and d_dff < eff_d:
+                        if _no_eff_open_open(d_dff, eff_d, eff_date_objs):
+                            pre = float(dff_obs.value)
+                            pre_source = f"observed_effr:fred:DFF@{effr_obs_date}"
+                            route_used = True
+
+                # R7 Route 2: chained from the IMMEDIATELY PRECEDING calendar month
+                if not route_used:
+                    if month == 1:
+                        prev_ym = (year - 1, 12)
+                    else:
+                        prev_ym = (year, month - 1)
+                    prior_end_rate = chain_identified.get(prev_ym)
+                    if prior_end_rate is not None:
+                        py, pm = prev_ym
+                        pre = float(prior_end_rate)
+                        pre_source = f"chained:{py}-{pm:02d}"
+                        route_used = True
+
+                # R7 Route 3: midpoint + gap
+                if (not route_used and mid_obs is not None
+                        and mid_obs.value_state.value == "present"
+                        and target_obs_date):
+                    d_mid = _as_date(target_obs_date)
+                    if d_mid is not None and d_mid < eff_d:
+                        if _no_eff_open_open(d_mid, eff_d, eff_date_objs):
+                            if gap_info["usable"] and gap_info["value_bp"] is not None:
+                                pre = float(mid_value) + gap_info["value_bp"] / 100.0
+                                pre_source = f"target_midpoint_plus_gap:{gap_info['source']}"
+                                route_used = True
+                            else:
+                                # not_identified, skip the solver
+                                months_out.append({
+                                    "contract": sym,
+                                    "reference_start": ref_start_iso,
+                                    "reference_end": ref_end_iso,
+                                    "month_days": month_days,
+                                    "monthly_average": month_obs.to_dict(),
+                                    "effective_dates_inside": inside,
+                                    "status": "not_identified",
+                                    "reason": "underidentified:effr_target_basis",
+                                    "pre_change_rate": None,
+                                    "pre_change_rate_source": None,
+                                    "identification": None,
+                                    "vs_target_midpoint": _compare_zq_vs_mid(rcb, month_obs, mid_obs, gap_info),
+                                    "weights": {"days_pre": (eff_d - ref_start).days,
+                                                "days_post": month_days - (eff_d - ref_start).days,
+                                                "realised_days": realised,
+                                                "remaining_days": remaining},
+                                    "post_rate_sensitivity": None,
+                                    "limitations": [],
+                                })
+                                continue
+
+            # solver call — exceptions bubble to the outer block-level try/except
+            assumptions = rcb.PathAssumptions(
+                month_start=ref_start_iso,
+                month_end=ref_end_iso,
+                effective_dates=tuple(all_eff),
+                pre_change_rate=pre,
+            )
+            identification = rcb.solve_reference_average([month_obs], assumptions)
+
+            ident_dict = identification.to_dict()
+            status_val = identification.status.value
+            missing_set = set(identification.missing)
+            month_limitations: list = []
+            days_pre = days_post = None
+            post_rate_sensitivity = None
+
+            if (status_val == "identified_conditional"
+                    and len(inside) == 1 and pre is not None):
+                reason = f"pre_change_rate:{pre_source}"
+                eff_d = date.fromisoformat(inside[0])
+                days_pre = (eff_d - ref_start).days
+                days_post = month_days - days_pre
+                post_rate_sensitivity = round(month_days / days_post, 4) if days_post else None
+            elif status_val == "identified_conditional" and not inside:
+                reason = "no_intra_month_change"
+                post_rate_sensitivity = 1.0
+            elif len(inside) >= 2:
+                reason = "multiple_effective_dates"
+            elif "pre_change_rate" in missing_set:
+                reason = "pre_change_rate_unavailable"
+            else:
+                reason = (identification.assumptions_used[-1]
+                          if identification.assumptions_used else None)
+
+            if pre_source and pre_source.startswith("chained:"):
+                month_limitations.append("chained_identification")
+
+            months_out.append({
+                "contract": sym,
+                "reference_start": ref_start_iso,
+                "reference_end": ref_end_iso,
+                "month_days": month_days,
+                "monthly_average": month_obs.to_dict(),
+                "effective_dates_inside": inside,
+                "status": status_val,
+                "reason": reason,
+                "pre_change_rate": pre,
+                "pre_change_rate_source": pre_source,
+                "identification": ident_dict,
+                "vs_target_midpoint": _compare_zq_vs_mid(rcb, month_obs, mid_obs, gap_info),
+                "weights": {"days_pre": days_pre, "days_post": days_post,
+                            "realised_days": realised,
+                            "remaining_days": remaining},
+                "post_rate_sensitivity": post_rate_sensitivity,
+                "limitations": month_limitations,
+            })
+
+            if status_val == "identified_conditional":
+                end_rate = None
+                if identification.identified and isinstance(identification.identified, dict):
+                    end_rate = identification.identified.get("end_rate")
+                if end_rate is not None:
+                    chain_identified[(year, month)] = float(end_rate)
+            # non-identified months break any chain into the following month
+
+        gap_out = gap_info if (gap_info["usable"] or gap_info["reason"]) else None
+        return {
+            "schema": _SCHEMAv1_EFFR_MEETING,
+            "authority": "display_only",
+            "status": "computed",
+            "reason": None,
+            "cutoff_effective": cutoff_effective,
+            "cutoff_basis": cutoff_basis,
+            "effective_date_law": "decision_plus_1d",
+            "calendar_years_covered": calendar_years_covered,
+            "assumptions": list(_ASSUMPTIONS_EFFR),
+            "gap": gap_out,
+            "months": months_out,
+            "refused_contracts": refused,
+            "limitations": block_limitations,
+        }
+
+    except Exception as exc:
+        # hard backstop — D1 must NEVER raise compute()
+        ce = str(cutoff) if cutoff else ""
+        return _effr_unavailable_block(
+            reason="internal_error:" + type(exc).__name__,
+            cutoff_effective=ce,
+            cutoff_basis=("supplied" if cutoff else "live_asof_plus_1d"))

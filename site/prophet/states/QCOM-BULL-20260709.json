@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "QCOM-BULL-20260709",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 10.3,
+  "management_confidence": 9.6,
   "raw_confidence": 8.0,
-  "delta_vs_base": -49.7,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "delta_vs_base": -50.4,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.109,
+    "dist_to_stop_r": -0.222,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 213.3,
-    "p1": -0.7394,
-    "p2": -0.3697,
+    "horizon_pct_used": 233.3,
+    "p1": -0.815,
+    "p2": -0.4075,
     "p3": null,
-    "move_r": -1.109,
+    "move_r": -1.222,
     "mfe_r": 0.97,
     "mae_r": -3.196
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 13.194006347656256,
@@ -45,14 +45,8 @@
   "_first_trigger_ts": "2026-09-23",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 96,
-  "tau": 2.1333,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 105,
+  "tau": 2.3333,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

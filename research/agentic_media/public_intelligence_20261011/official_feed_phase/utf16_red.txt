@@ -1,0 +1,23 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_utf16_doctype_cannot_evade_byte_level_xml_guard _____________
+
+inputs = {'feed_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1577/test.../qualification.json'), 'qualification_sha256': '37dd1c5a1eab06438ec749a10156bccb3d0d920a2e1054783b29b61ec5ec2ede', ...}
+
+    def test_utf16_doctype_cannot_evade_byte_level_xml_guard(inputs):
+        text=inputs['feed_path'].read_text().replace('encoding="Windows-1252"', 'encoding="UTF-16"')
+        marker=text.index('?>')+2
+        text=text[:marker]+'\n<!DOCTYPE rss [<!ENTITY agency "OCC">]>'+text[marker:]
+        raw=text.encode('utf-16')
+        inputs['feed_path'].write_bytes(raw);inputs['feed_sha256']=hashlib.sha256(raw).hexdigest()
+        change(inputs,lambda q:q.update(feed_sha256=inputs['feed_sha256']))
+>       with pytest.raises(ValueError,match='entities|DOCTYPE|malformed'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_feed_candidate.py:129: Failed
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_feed_candidate.py::test_utf16_doctype_cannot_evade_byte_level_xml_guard
+1 failed in 1.40s

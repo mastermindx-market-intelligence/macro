@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ARES-BULL-20260722",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 35.7,
-  "raw_confidence": 35.5,
-  "delta_vs_base": -24.3,
+  "management_confidence": 38.5,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -21.5,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 61.8,
+    "validity": 84.3,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.7,
+    "dist_to_stop_r": 0.881,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -0.1999,
-    "p2": -0.1,
+    "horizon_pct_used": 200.0,
+    "p1": -0.0791,
+    "p2": -0.0395,
     "p3": null,
-    "move_r": -0.3,
+    "move_r": -0.119,
     "mfe_r": 0.672,
-    "mae_r": -0.315
+    "mae_r": -0.41
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 22.949996948242188,
-  "_mae": -10.75,
+  "_mae": -14.010002136230469,
   "_max_p1": 0.4480233664859383,
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 90,
+  "tau": 2.0,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

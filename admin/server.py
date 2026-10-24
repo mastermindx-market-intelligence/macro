@@ -817,7 +817,7 @@ class Handler(BaseHTTPRequestHandler):
         return self.do_GET()
 
     # ---- GET ----------------------------------------------------------------
-    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
+    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/research-diagnostic-tokens.css", "/favicon.ico",
                    "/healthz", "/api/session"}
 
     def do_GET(self):
@@ -836,6 +836,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._theme_tokens_file()
             if path in ("/app.js", "/styles.css", "/preferences.js"):
                 return self._file(path.lstrip("/"))
+            if path == "/research-diagnostic-tokens.css":
+                from .research_diagnostic_tokens import stylesheet
+                try:
+                    body = stylesheet()
+                except (OSError, ValueError):
+                    return self._json({"error": "diagnostic presentation unavailable"}, 503)
+                etag = '"' + hashlib.sha256(body).hexdigest() + '"'
+                unchanged = self.headers.get("If-None-Match") == etag
+                self.send_response(304 if unchanged else 200)
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+                self.send_header("ETag", etag)
+                self.send_header("Cache-Control", "public, max-age=0, must-revalidate")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                if not unchanged:
+                    self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if not unchanged and self.command != "HEAD":
+                    self.wfile.write(body)
+                return
             if path == "/favicon.ico":
                 return self._json({}, 204)
             if path == "/healthz":

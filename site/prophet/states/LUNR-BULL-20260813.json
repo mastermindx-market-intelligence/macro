@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LUNR-BULL-20260813",
-  "asof": "2026-10-14",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 25.9,
-  "raw_confidence": 23.7,
-  "delta_vs_base": -34.1,
+  "asof": "2026-10-23",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.5,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.5,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 18.3,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 12.7,
-    "retention": 43.3,
-    "overlay": 47.0
+    "pace": 0.0,
+    "retention": 39.8,
+    "overlay": 46.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.284,
+    "dist_to_stop_r": -0.098,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 128.9,
-    "p1": -0.4773,
-    "p2": -0.2387,
+    "horizon_pct_used": 148.9,
+    "p1": -0.732,
+    "p2": -0.366,
     "p3": null,
-    "move_r": -0.716,
+    "move_r": -1.098,
     "mfe_r": 0.0,
-    "mae_r": -0.716
+    "mae_r": -1.098
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -6.680000190734862,
+  "_mae": -10.244999771118163,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 67,
+  "tau": 1.4889,
+  "closed": true,
+  "outcome": "NO_ENTRY"
 }

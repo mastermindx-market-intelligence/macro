@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ETR-BULL-20260623",
-  "asof": "2026-10-14",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 27.4,
-  "raw_confidence": 27.2,
-  "delta_vs_base": -32.6,
+  "asof": "2026-10-23",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 38.6,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -21.4,
   "recommended_action": null,
-  "human_state": "Stalling",
+  "human_state": "Closed",
   "components": {
-    "validity": 48.1,
+    "validity": 99.3,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 53.0
+    "pace": 24.7,
+    "retention": 0.0,
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.581,
+    "dist_to_stop_r": 0.995,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 88.9,
-    "p1": -0.2791,
-    "p2": -0.1395,
+    "horizon_pct_used": 108.9,
+    "p1": -0.0035,
+    "p2": -0.0017,
     "p3": null,
-    "move_r": -0.419,
+    "move_r": -0.005,
     "mfe_r": 0.107,
     "mae_r": -0.872
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.2299987792968778,
@@ -45,14 +45,8 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 40,
-  "tau": 0.8889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 49,
+  "tau": 1.0889,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

@@ -20,4 +20,5 @@ PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-exec "${PYTHON}" -m scripts.topup_thetadata_day --daily
+exec "${PYTHON}" -m scripts.topup_thetadata_day --daily \
+  --baseline-runtime /Users/chriswong/liveflow-ops-wt

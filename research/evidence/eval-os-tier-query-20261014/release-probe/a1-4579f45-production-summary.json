@@ -1,0 +1,67 @@
+{
+  "reporting_owner": "original root01a1333d; root-owned production observations, consumed by follow-on integration writer",
+  "source_receipt": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/acceptance-summary.json",
+  "source_receipt_sha256": "88eb830883a9d8d53a23b3b5c0ef1049cd5f07640fbc904daac776ad451c8736",
+  "observation": {
+    "source": "4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e",
+    "installed_head": "d8e8f1a4a085f3e219b56dfd88ad0c7d48a1af6e",
+    "installed_17_matches": true,
+    "updater_matches": true,
+    "stable_observed_epoch": true,
+    "served_asset_matches": {
+      "app.js": true,
+      "styles.css": true,
+      "preferences.js": true,
+      "assets/theme-tokens.css": true,
+      "index": true
+    },
+    "authenticated_overview_status": 200,
+    "observed_bands": {
+      "Validated": 0,
+      "Accruing": 36,
+      "Ungraded by design": 10,
+      "Degraded": 339,
+      "Disproven": 0
+    },
+    "legacy_source_preserved": true,
+    "first_page_request_ms": 25921.799999952316,
+    "scope": "Source/install/public bytes/authenticated overview bounded acceptance only; detail, visual states, natural owner and full programme remain separate.",
+    "visual_matrix": {
+      "desktop": [
+        1440,
+        879
+      ],
+      "mobile": [
+        390,
+        844
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "eight_cells_captured_and_visually_inspected": true,
+      "mobile_ceo_stacked_additional_screenshots_inspected": true,
+      "document_overflow_observed": false,
+      "scope": "Responsive emulation, not physical handset; overview plus mobile detail bounded inspection."
+    },
+    "detail": {
+      "engine": "collectors/symbol_directory.py::long-hold",
+      "status": 200,
+      "evidence_status": "Accruing",
+      "health": "healthy",
+      "unknown_horizon_coverage_preserved": true,
+      "back_focus_restored": true
+    },
+    "empty_filter": "Validated0 retains band and No engine matches this filter.",
+    "independent_operator_comprehension": false,
+    "natural_postrelease_owner_progression": false,
+    "overall_programme_complete": false,
+    "global_native_browser_custody": "Changed foreground detected during intended DevTools cleanup. Unrelated click effect UNKNOWN; no further global coordinate/keyboard actions. Exact retained-tab path remains usable.",
+    "remaining": "Natural owner/QLedger qualified fullplane transition and independent operator comprehension; same follow-on release/adoption. Loading latency25.9s retained, no broad performance pass. Original experienceUNKNOWN/lostCLIreview unchanged."
+  },
+  "followon_acceptance": "This proves only the original A1 landing scope; follow-on source/release/install/adoption remain unaccepted."
+}

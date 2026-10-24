@@ -1583,7 +1583,7 @@
     if (!first) return;
     var target = '#evidence=' + encodeURIComponent(first);
     if (location.hash === target) { handleHash(); return; }
-    location.hash = target;
+    var _ss = window.MMXSharedShell; if (_ss) { if (_ss.navigate(target, 'push') && location.hash === target) handleHash(); } else { location.hash = target; }
   }
 
   function hashPart(raw) {
@@ -1632,7 +1632,14 @@
     if (en) en.textContent = pair[0];
     if (zh) zh.textContent = pair[1];
     show(notice, true);
-    $$('.fi-section, .fi-toc').forEach(function (s) { s.style.display = 'none'; });
+    var keep = kind === 'not_connected' ? { 'rerating-map': 1, 'company-exposure': 1 } : {};
+    var keepSel = '.fi-section-head, .fi-falsifiers, .fi-hint-roster';
+    $$('.fi-section, .fi-toc').forEach(function (s) {
+      if (!keep[s.id]) { s.style.display = 'none'; return; }
+      Array.prototype.forEach.call(s.children || [], function (c) {
+        if (!c.matches(keepSel)) c.style.display = 'none';
+      });
+    });
   }
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1741,6 +1748,7 @@
     if (state.ui.scrim) state.ui.scrim.addEventListener('click', function () { setDrawer(false); });
     document.addEventListener('keydown', handleDrawerKeydown);
     window.addEventListener('hashchange', handleHash);
+    window.addEventListener('mmx:shell-location', handleHash);
     document.addEventListener('langchange', function () {
       // Item 8: capture which system tab held focus before the re-render.
       // renderSystem() below rebuilds the tab DOM from scratch, so the

@@ -126,6 +126,19 @@ public:
     - /finance_intelligence.html
     - /finance_intelligence.css
     - /finance_intelligence.js
+    # Consumer Cyclical PLNT synthetic display card (Wave-10 Build B): one
+    # static shell over the committed synthetic fixture, mounted through
+    # display_packet — no read-model payload, no live data. The route is held
+    # COMMENTED here, not entered, because the boundary guard lands entries in
+    # pairs: test_site_access_boundary.py:80 compares the Caddy @reg_asset
+    # token list byte-for-byte against this parsed exact list, and the same
+    # file's test_public_policy_targets_exist requires every exact entry to
+    # exist committed under site/. Both paired files (app/deploy/Caddyfile,
+    # site/consumer_cyclical_plnt.html) sit outside the Build-B carrier, and
+    # the page already reaches anonymous readers via the Caddyfile's *.html
+    # document wildcard. Uncomment ONLY together with the Caddyfile token and
+    # the render lane's first committed bake of the page.
+    # - /consumer_cyclical_plnt.html
     # Tier-preview shells, promoted from free_registered to ANONYMOUS-public
     # (SEO_SUPERCHARGE_MASTERPLAN §A1/W1a). The pages themselves are preview
     # SHELLS: honest totals + methodology + a small newest-first preview slice +
@@ -255,10 +268,28 @@ public:
     - /scene-motion.js
     - /chat.css
     - /theme.css
+    # International workspace presentation and local in-page controls. These
+    # exact files contain no datasets or data transport; source materializations
+    # and API authorization retain their existing publication/access boundaries.
+    - /intl_workspace.css
+    - /intl_workspace_macro.css
+    - /intl_workspace_risk.css
+    - /intl_workspace_history.css
+    - /intl_workspace_surveillance.css
+    - /intl_workspace_state.js
+    - /intl_library_search.js
+    - /intl_workspace_scenario.js
+    - /intl_workspace.js
+    - /intl_workspace_entry.js
     # Public Market Memory shell assets. They contain presentation/read-client
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
     - /market_memory.js
+    # UI-only OAuth intent and retained workbench assets load before code exchange.
+    # Saved packets, comparison results and source quotes remain API-authenticated.
+    - /market_memory_intent.js
+    - /market_memory_retained.js
+    - /market_memory_retained.css
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css
@@ -272,6 +303,8 @@ public:
     # runtime publishable token it renders deterministic local monograms.
     - /stock-logos.js
     - /theme.js
+    # Public Help build-age clock; UI-only, no data requests or account actions.
+    - /help_refresh.js
     # Presentation/runtime code required by the three public dashboard shells.
     # The signal-bearing JSON endpoints these scripts request remain outside
     # this allowlist and therefore keep their existing account/tier gates.
@@ -313,6 +346,9 @@ public:
     # transform logic and reads only the market preference already in the user's
     # own session — no signals, no customer data.
     - /nav_market.js
+    # Dormant presentation assets; no account, token, or market payload.
+    - /shared_shell_bridge.js
+    - /shared_shell.css
     - /supabase.js
     - /data_base.js
     - /live.js
@@ -405,6 +441,10 @@ public:
     # public byte through them.
     - /fundamental_forensics.css
     - /fundamental_forensics.js
+    # Holding-reader presentation and exact-selection client only; no embedded
+    # holding quantities/results. The POST response retains full-user auth.
+    - /institutional_holding_research.css
+    - /institutional_holding_research.js
     # Stock analyzer (stock.html) presentation + client scripts, promoted for
     # the same reason fundamental_forensics.css/js above were: the 2026-08-04
     # *.html change opened the page shell, but these were never promoted with
@@ -428,6 +468,16 @@ public:
     # plane is the Bearer-authenticated /api/brain/* gateway, which is
     # unchanged; the script itself carries no signals or customer data.
     - /mm_brain.js
+    # Native illustration code/styles only; all private response data remains
+    # inside the existing authenticated Brain transport and thread endpoints.
+    - /mm_brain_visuals.js
+    - /mm_brain_visuals.css
+    - /mm_brain_presentation.js
+    - /mm_brain_markdown.js
+    - /mm_brain_finance.js
+    - /mm_brain_finance.css
+    - /mm_brain_finance_math_v1.js
+    - /mm_brain_math.js
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #
@@ -673,6 +723,15 @@ deny:
     - /_mockup_research_vault.html
     - /qa_bottom_sensors.html
     - /status.html
+    # Internal research tools are served only by the authenticated admin owner.
+    # Keep this exact deny set aligned with Caddy @never_site and route exports.
+    - /committee.html
+    - /measurement.html
+    - /crossasset.html
+    - /signal_lab.html
+    - /tech_lab.html
+    - /macro_signals.html
+    - /factors.html
   prefixes: []
 
 premium:

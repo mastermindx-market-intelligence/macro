@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ISRG-BULL-20260731",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 43.7,
-  "raw_confidence": 46.0,
-  "delta_vs_base": -16.3,
+  "management_confidence": 49.1,
+  "raw_confidence": 52.0,
+  "delta_vs_base": -10.9,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 36.1,
+    "progress": 60.6,
     "pace": 0.0,
     "retention": 100.0,
-    "overlay": 56.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.645,
-    "dist_to_t1_r": 0.855,
-    "dist_to_t2_r": 2.355,
-    "horizon_pct_used": 151.1,
-    "p1": 0.4301,
-    "p2": 0.2151,
+    "dist_to_stop_r": 2.285,
+    "dist_to_t1_r": 0.215,
+    "dist_to_t2_r": 1.715,
+    "horizon_pct_used": 171.1,
+    "p1": 0.8568,
+    "p2": 0.4284,
     "p3": null,
-    "move_r": 0.645,
-    "mfe_r": 0.645,
+    "move_r": 1.285,
+    "mfe_r": 1.285,
     "mae_r": -0.505
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 36.610003662109364,
+  "_mfe": 72.92500610351561,
   "_mae": -28.639996337890636,
-  "_max_p1": 0.4301492616861633,
+  "_max_p1": 0.8568324063390389,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 68,
-  "tau": 1.5111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 77,
+  "tau": 1.7111,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

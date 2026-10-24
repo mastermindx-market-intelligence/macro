@@ -35,7 +35,8 @@
      `null` for a local-only build). A page that sets window.SUPABASE_CFG inline
      (e.g. watchlist.html) wins, so the value is identical either way. The
      publishable key is PUBLIC by design; per-user isolation is enforced by RLS. */
-  window.SUPABASE_CFG = window.SUPABASE_CFG || /*__SUPABASE_CFG__*/null;
+  var _bakedSupabaseCfg = /*__SUPABASE_CFG__*/null;
+  window.SUPABASE_CFG = window.SUPABASE_CFG || _bakedSupabaseCfg;
 
   /* ---- Google Analytics 4 (gtag.js) ---------------------------------------
      Injected once on EVERY page via this one shared script (every page loads
@@ -323,12 +324,31 @@
     };
     document.head.appendChild(_mmOverlayScript);
   }
-  function openTerminal(t, trigger, requestedUrl) {
+  function openTerminal(t, trigger, requestedUrl, returnFocus) {
     if (!mmTerminalOn()) return false;
     var directUrl = requestedUrl ? terminalExistingUrl(requestedUrl, false) : terminalUrl(t);
     var embedUrl = requestedUrl ? terminalExistingUrl(requestedUrl, true) : terminalEmbedUrl(t);
     loadTerminalOverlay(function (loaded) {
       if (loaded === false || !window.MDXTerminalOverlay) {
+        var _ss = window.MMXSharedShell;
+        if (_ss) {
+          // The controller is unavailable: offer only checked native presentation
+          // state, retaining a page-only return without transient query or hash data.
+          try {
+            var _tu = new URL(directUrl, location.href);
+            if (_tu.origin !== 'https://app.mastermind-x.com' || _tu.username || _tu.password ||
+                (_tu.pathname !== '/terminal' && _tu.pathname !== '/')) return;
+            var _tp = new URLSearchParams();
+            var _sym = String(t || _tu.searchParams.get('symbol') || _tu.searchParams.get('sym') || '').slice(0, 64);
+            if (_sym) _tp.set('symbol', _sym);
+            if (_tu.searchParams.get('ai') === '1') _tp.set('ai', '1');
+            _tp.set('from', 'macro');
+            if (location.origin === 'https://www.mastermind-x.com' || location.origin === 'https://mastermind-x.com')
+              _tp.set('ret', location.origin + location.pathname);
+            _ss.navigate('/terminal?' + _tp.toString(), 'push');
+          } catch (e) {}
+          return;
+        }
         location.href = directUrl;
         return;
       }
@@ -337,7 +357,8 @@
         url: embedUrl,
         directUrl: directUrl,
         targetOrigin: MM_TERMINAL_ORIGIN,
-        trigger: trigger || null
+        trigger: trigger || null,
+        returnFocus: returnFocus || trigger || null
       });
     });
     return true;
@@ -446,6 +467,9 @@
   document.addEventListener('click', function (e) {
     if (!mmTerminalOn() || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    // In particular, the overlay's "Open separately" link must escape this router.
+    var browsingTarget = a && a.getAttribute('target');
+    if (browsingTarget && browsingTarget.toLowerCase() !== '_self') return;
     var target = terminalTarget(a);
     if (!target) return;
     e.preventDefault(); e.stopPropagation();
@@ -462,7 +486,7 @@
     if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     var href = chip.getAttribute('data-href');
-    if (href) { location.href = href; }
+    if (href) { var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(href, 'push'); return; } location.href = href; }
   }, true);
 
   /* ---- account / profile panel loader -------------------------------------
@@ -471,25 +495,55 @@
      window.MMAccount.open(), which the settings-gear signed-in row calls. Identity
      rides the shared .mastermind-x.com cookie (credentials:include) — so it never
      loads a Supabase SDK here (jsdelivr is GFW-blocked). Path-depth aware; idempotent. */
-  (function loadAccount() {
-    if (window.__mmAccountLoading) return;
-    window.__mmAccountLoading = true;
+/* Account singleton loader -- drop-in replacement for the original loadAccount
+   IIFE (same scope, same net effect).  On every ordinary page this behaves
+   exactly as before and runs synchronously.  The single addition is a bounded
+   opt-in deferral: when the gov page publishes window.MDX_PROGRESSIVE_BOOT
+   carrying a ready.then promise, the SAME original loader below is deferred
+   until whichever comes first -- ready resolution, ready rejection, a 1500ms
+   fallback timer, or the first pointerdown/keydown input.  The original loader
+   body is unchanged: the __mmAccountLoading singleton guard is claimed
+   synchronously at execution (so a duplicate boot can never double-load), and
+   the MM_API default, the _mmSharedAssetRoot source prefix and the account.js
+   release key are all retained.  The deferral arms (timer + both listeners)
+   are removed on release and the loader fires exactly once.  No scheduler,
+   storage, auth, session or entitlement access is added. */
+(function loadAccount() {
+  if (window.__mmAccountLoading) return;
+  window.__mmAccountLoading = true;
+  var done = false;
+  function run() {
+    if (done) return;
+    done = true;
     window.MM_API = window.MM_API || 'https://app.mastermind-x.com';
-    /* Derive the shared-asset root from this script's own URL.  The previous
-       pathname special-case only knew about /sectors/, so every other nested
-       estate (/basket_canada/, /basket/, /rotation/, …) requested account.js
-       from its page folder.  That 404 also prevented account.js from loading
-       nav_market.js, leaving those pages on the legacy dropdown.  The rendered
-       theme.js reference already carries the correct ../ depth, so reuse it as
-       the single source of truth for every current and future nested page. */
+    /* Shared-asset root comes from this script's own URL context via
+       _mmSharedAssetRoot (the rendered theme.js reference already carries the
+       correct ../ depth); the explicit release key below keeps a year-cached
+       account.js from pinning an older navigation loader. */
     var pfx = _mmSharedAssetRoot;
     var s = document.createElement('script');
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261018-shared-shell-source-join'; s.async = true;
     document.head.appendChild(s);
-  })();
+  }
+  var boot = window.MDX_PROGRESSIVE_BOOT;
+  var ready = (boot && boot.ready && typeof boot.ready.then === 'function') ? boot.ready : null;
+  if (!ready) { run(); return; }
+  var timer = setTimeout(release, 1500);
+  document.addEventListener('pointerdown', release, true);
+  document.addEventListener('keydown', release, true);
+  ready.then(release, release);
+  function release() {
+    if (done) return;
+    clearTimeout(timer);
+    document.removeEventListener('pointerdown', release, true);
+    document.removeEventListener('keydown', release, true);
+    run();
+  }
+})();
+
 
   /* ---- Plotly charts: re-theme to the active theme -------------------------
      Charts are built transparent with neutral-grey axes (build_site.py); here we
@@ -516,13 +570,62 @@
   }
 
   /* ---- theme (dark default) ------------------------------------------------ */
+  /* ---- Shared Shell bridge: presentation/auth ownership helpers -------------
+     window.MMXSharedShell exists only in the exact qualified embed context: the
+     first-party child bridge installs it behind parent/frame-generation/referrer
+     guards and deletes it on teardown, so candidate EXISTENCE is itself the
+     qualification signal. There is deliberately no presented-state prerequisite
+     in these helpers. The bridge applies the parent's INITIAL context
+     synchronously BEFORE it marks itself presenting (handleInit -> applyContext
+     runs before the state flip), and applyingContext is a frozen, read-only
+     getter that is true for the synchronous duration of every bridge invocation
+     of the incumbent setTheme/setLang — the initial apply and later setter
+     calls alike. Gating applyingContext on the presented flag loses the initial
+     apply and leaks legacy preference writes during the first INIT (the
+     integration defect this repair removes). We read the getters at call time,
+     inside the synchronous dispatch; nothing is mirrored into a locally-lifted
+     flag an async boundary could race. No bridge => every helper is falsy =>
+     legacy behavior, byte for byte. */
+  function _mmShellBridge() {
+    try {
+      var s = window.MMXSharedShell;
+      return (s && typeof s.openAuth === 'function') ? s : null;
+    } catch (e) { return null; }
+  }
+  function _mmShellApplying() {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { return !!s.applyingContext; } catch (e) { return false; }
+  }
+  // Auth handoff: the parent renders identity UI; this frame must never open a
+  // duplicate sheet/modal, and a single user action must never emit a duplicate
+  // bridge intent — every auth entry point funnels through exactly one guarded
+  // seam (see _mmOpenOnboard / _openSDash). Candidate existence claims the
+  // handoff even before the first apply, because bridge.openAuth is queue-safe
+  // pre-INIT (the bridge enqueues and drains after INIT). Only fixed intent
+  // tokens cross — never mode options, sections, targets, credentials, or
+  // arbitrary caller params.
+  function _mmShellAuthHandoff(intent) {
+    var s = _mmShellBridge();
+    if (!s) return false;
+    try { s.openAuth(intent); } catch (e) {}
+    return true;
+  }
   function curTheme() { return docEl.getAttribute('data-theme') || 'dark'; }
   // Hour-derived theme for Auto mode: 7-19 local = light, else dark
   function _hourTheme() { var h = new Date().getHours(); return (h >= 7 && h < 19) ? 'light' : 'dark'; }
   function setTheme(tm) {
+    // Shared Shell bridge apply: repaint + emit only. The parent owns storage
+    // and Auto mode; nothing persists for the duration of the bridge call. The
+    // getter is read at call time inside the synchronous dispatch, which covers
+    // the INITIAL bridge apply that happens before the bridge marks itself
+    // presenting.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-theme', tm);
     // an explicit choice ends time-of-day auto mode (see each page's no-flash init)
-    try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    if (!shellApply) {
+      try { localStorage.setItem('theme', tm); localStorage.removeItem('themeAuto'); } catch (e) {}
+    }
     document.querySelectorAll('.theme-btn').forEach(function (b) {
       b.innerHTML = tm === 'light'
         ? '<span class="l-en">🌙 Dark</span><span class="l-zh">🌙 深色</span>'
@@ -531,7 +634,7 @@
     if (window.hydrateMTF) window.hydrateMTF();
     themeCharts();
     document.dispatchEvent(new CustomEvent('themechange', { detail: tm }));
-    skyToggleFx(tm);
+    if (!shellApply) skyToggleFx(tm);   // the user-choice flourish is legacy-only
     _syncThemeSegment();
   }
   /* Sitewide theme-toggle flourish: a luminous sun (→ light) or a crescent moon
@@ -632,10 +735,14 @@
   /* ---- language (en default) ----------------------------------------------- */
   function curLang() { return docEl.getAttribute('data-lang') || 'en'; }
   function setLang(lg) {
+    // Shared Shell bridge apply: repaint + emit only; no localStorage
+    // persistence. Read at call time so the initial bridge apply — which runs
+    // before the bridge marks itself presenting — is covered too.
+    var shellApply = _mmShellApplying();
     docEl.setAttribute('data-lang', lg);
     // WCAG 3.1.1: keep document.documentElement.lang in sync with the active language
     docEl.lang = lg === 'zh' ? 'zh-CN' : 'en';
-    try { localStorage.setItem('lang', lg); } catch (e) {}
+    if (!shellApply) { try { localStorage.setItem('lang', lg); } catch (e) {} }
     document.querySelectorAll('.lang-btn').forEach(function (b) {
       // label advertises the OTHER language (what a click switches you to)
       b.textContent = lg === 'zh' ? 'EN' : '中文';
@@ -1085,8 +1192,8 @@
           meta: { market: x._mk, source: 'animated_nav_search', to_terminal: !!(mmTerminalOn() && TERMINAL_PAGES[x._tgt]) }
         });
       } catch (e) {}
-      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box); return; }
-      location.href = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t);
+      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box, null, trigger); return; }
+      var _d = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d;
     }
 
     /* A search-only Chinese alias: broad-but-noisy (mixed Simplified/Traditional,
@@ -1807,10 +1914,96 @@
   };
 
   /* ---- lazy Supabase client (self-hosted SDK) --------------------------- */
+  var _botRecoveryMode = !!document.querySelector('meta[name="mm-bot-renew"]');
+  var _botRecovery = window.__MMBotSessionRecovery;
+  // Old theme bundles honor the disabled override and cannot auto-boot. Only
+  // this guarded broker may select the existing baked config during recovery.
   var _sbCfg = window.SUPABASE_CFG;
+  if (_botRecoveryMode && _sbCfg && _sbCfg.botRecoveryDisabled === true) {
+    _sbCfg = _botRecoveryOpen() ? _bakedSupabaseCfg : null;
+  }
   var _authEnabled = !!(_sbCfg && _sbCfg.url && _sbCfg.anonKey);
   var _sb = null, _sbLoading = null, _curUser = null, _authReady = false, _authBooted = false;
   var _SDK_URL = 'supabase.js';
+
+  // A Bot renewal document admits one bounded operation through this SAME
+  // broker/SDK/cookie codec. Missing or closed admission never falls back to
+  // ordinary auth boot. The controller is ephemeral and grants no entitlement.
+  var _botSessionKey = null, _botSessionValue = null;
+  var _botPrepared = false, _botRequested = false, _botWritten = false;
+  function _botRecoveryOpen() {
+    return !!(_botRecovery && _botRecovery.version === 1 &&
+      typeof _botRecovery.isOpen === 'function' &&
+      typeof _botRecovery.fail === 'function' && _botRecovery.signal &&
+      !_botRecovery.signal.aborted && _botRecovery.isOpen());
+  }
+  function _botRecoveryFail() {
+    if (_botRecovery && typeof _botRecovery.fail === 'function') _botRecovery.fail();
+    return false;
+  }
+  function _botRecoveryCheck() {
+    if (!_botRecoveryOpen()) return false;
+    // Best effort: document.cookie has no atomic compare-and-swap across hosts.
+    // Preserve a newer sign-in/out that is observable before our write.
+    if (_botPrepared && COOKIE_STORAGE.getItem(_botSessionKey) !== _botSessionValue) {
+      return _botRecoveryFail();
+    }
+    return true;
+  }
+  function _botRecoveryPrepare() {
+    if (!_botRecoveryCheck()) return false;
+    if (!_botPrepared) {
+      _botSessionKey = _storageKey();
+      _botSessionValue = COOKIE_STORAGE.getItem(_botSessionKey);
+      _botPrepared = true;
+      if (!_botSessionValue) return _botRecoveryFail();
+    }
+    return true;
+  }
+  var _botCookieStorage = {
+    getItem: function (key) {
+      // Hiding the code-verifier also disables the SDK's independent PKCE
+      // initialization path, which detectSessionInUrl:false alone does not do.
+      return _botRecoveryCheck() && key === _botSessionKey ? _botSessionValue : null;
+    },
+    setItem: function (key, value) {
+      if (!_botRecoveryCheck() || key !== _botSessionKey) throw new Error('recovery-closed');
+      if (_botWritten) {
+        if (value !== _botSessionValue) { _botRecoveryFail(); throw new Error('recovery-write-used'); }
+        return;
+      }
+      var session;
+      try { session = JSON.parse(value); } catch (e) { _botRecoveryFail(); throw new Error('recovery-session'); }
+      if (!session || !session.access_token ||
+          !Number.isFinite(Number(session.expires_at)) ||
+          Number(session.expires_at) <= Date.now() / 1000 + 15) {
+        _botRecoveryFail(); throw new Error('recovery-session');
+      }
+      if (!_botRecoveryCheck()) throw new Error('recovery-closed');
+      COOKIE_STORAGE.setItem(key, value);
+      if (COOKIE_STORAGE.getItem(key) !== value) { _botRecoveryFail(); throw new Error('recovery-cookie-write'); }
+      _botSessionValue = value;
+      _botWritten = true;
+    },
+    // Renewal is not the sign-out owner. Invalid-grant handling, aborted work,
+    // and late SDK cleanup must never delete a shared session.
+    removeItem: function () {}
+  };
+  function _botRecoveryFetch(input, init) {
+    var url = typeof input === 'string' ? input : input && input.url;
+    var expected = _sbCfg.url.replace(/\/+$/, '') + '/auth/v1/token?grant_type=refresh_token';
+    if (!_botRecoveryCheck() || _botRequested || url !== expected ||
+        !init || String(init.method).toUpperCase() !== 'POST') {
+      _botRecoveryFail();
+      // A terminal LOCAL result stops GoTrue's retry loop without another
+      // request. Throwing AbortError alone is retryable in the vendored SDK.
+      return Promise.resolve(new Response(
+        JSON.stringify({code:'bot_recovery_closed', message:'Recovery attempt ended'}),
+        {status:400, headers:{'Content-Type':'application/json'}}));
+    }
+    _botRequested = true;
+    return window.fetch(input, Object.assign({}, init, {signal:_botRecovery.signal}));
+  }
 
   function _loadSDK() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve();
@@ -1825,26 +2018,60 @@
   }
   function getSupabaseClient() {
     if (!_authEnabled) return Promise.reject(new Error('auth-disabled'));
+    if (_botRecoveryMode && !_botRecoveryPrepare()) return Promise.reject(new Error('recovery-closed'));
     if (_sb) return Promise.resolve(_sb);
     return _loadSDK().then(function () {
+      if (_botRecoveryMode && !_botRecoveryCheck()) throw new Error('recovery-closed');
       if (_sb) return _sb;
-      _sb = window.supabase.createClient(_sbCfg.url, _sbCfg.anonKey, {
+      var client = window.supabase.createClient(_sbCfg.url, _sbCfg.anonKey, {
+        global: _botRecoveryMode ? {fetch:_botRecoveryFetch} : {},
         auth: {
-          persistSession: true, autoRefreshToken: true, detectSessionInUrl: true,
+          persistSession: true, autoRefreshToken: !_botRecoveryMode, detectSessionInUrl: !_botRecoveryMode,
           // PKCE (not implicit): the return carries a one-time ?code= (NOT tokens)
           // that's useless without the code_verifier we stashed in storage before
           // redirecting — so tokens never touch the URL/history, and a pasted
           // #access_token link can't seed a session (no login-CSRF / fixation).
           flowType: 'pkce',
-          storage: COOKIE_STORAGE,         // permanent cookie session, shared cross-subdomain
+          storage: _botRecoveryMode ? _botCookieStorage : COOKIE_STORAGE,
           storageKey: _storageKey()        // sb-<ref>-auth-token — must match @supabase/ssr
         }
       });
-      _sb.auth.onAuthStateChange(function (evt, session) { _onAuth(evt, session); });
+      if (_botRecoveryMode) {
+        // The pinned GoTrue SDK has no public broadcast-disable option.
+        // Close this instance's channel synchronously, before async initialize
+        // resumes. A refused write/invalid grant must not broadcast a stale
+        // TOKEN_REFRESHED or SIGNED_OUT into another Bot tab.
+        try {
+          if (!('broadcastChannel' in client.auth)) throw new Error('recovery-sdk');
+          if (client.auth.broadcastChannel) client.auth.broadcastChannel.close();
+          client.auth.broadcastChannel = null;
+        } catch (e) {
+          _botRecoveryFail();
+          throw new Error('recovery-sdk');
+        }
+      }
+      _sb = client;
+      if (!_botRecoveryMode) _sb.auth.onAuthStateChange(function (evt, session) { _onAuth(evt, session); });
       return _sb;
     });
   }
   window.getSupabaseClient = getSupabaseClient;
+  if (_botRecoveryMode) {
+    getSupabaseClient.botRecoveryVersion = 1;
+    getSupabaseClient.acceptRecoverySession = function (session) {
+      if (!_botPrepared || !_botRecoveryCheck() || !session || !session.access_token ||
+          !Number.isFinite(Number(session.expires_at)) ||
+          Number(session.expires_at) <= Date.now() / 1000 + 15) return false;
+      var stored;
+      try { stored = JSON.parse(COOKIE_STORAGE.getItem(_botSessionKey)); }
+      catch (e) { return _botRecoveryFail(); }
+      return !!(stored && stored.access_token === session.access_token &&
+        Number(stored.expires_at) === Number(session.expires_at));
+    };
+    // No ordinary _authBoot, auth-event fan-out, UI, online/visibility handler,
+    // or SDK auto-refresh is allowed to escape the page's admission/deadline.
+    return;
+  }
 
   function _hasSessionCookie() {
     var map = _cookieMap();
@@ -3591,8 +3818,24 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
+    // Shared Shell: ONE central handoff at the single auth entry point. Every
+    // estate auth trigger funnels through this seam — MDXAuth.open, the gear
+    // popover sign-in/sign-up rows, the hub sign-in link, the settings
+    // dashboard CTAs (_sdWireCta), tier_preview's locked-container CTA, the
+    // Brain 401 path, plans.html — so guarding here means no per-caller guards,
+    // no duplicated bridge intents, and no in-frame sheet. The whitelist value
+    // is already one of the fixed tokens; nothing else about the caller travels.
+    // Claiming pre-INIT is safe: bridge.openAuth queues until INIT drains it.
+    if (_mmShellAuthHandoff(m === 'upgrade' ? 'billing' : m)) return;
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
     var pfx = _mmSharedAssetRoot;
     if (window.__mmOnboardLoading) return;    // second click while loading — first one will open
@@ -3916,6 +4159,14 @@
 
   /* ---- open / close ------------------------------------------------------- */
   function _openSDash(section) {
+    // Shared Shell: the native identity/Settings surface owns the presentation
+    // and preference UI, so the legacy dashboard must never be built or opened
+    // inside the frame. This is the single settings seam — window.MMSettings.open
+    // delegates here, and so does any future internal caller — hence exactly one
+    // 'settings' intent per entry with no per-export guard and no duplicate
+    // modal. The legacy `section` ('account'|'prefs') is NOT forwarded as a
+    // bridge param; only the fixed token crosses.
+    if (_mmShellAuthHandoff('settings')) return;
     _buildSDash();
     _renderSDash();
     // pick the section: honour the request, but default account->prefs when auth off
@@ -4031,6 +4282,14 @@
 
   function _applyServerPrefs(user) {
     if (!user) return;
+    // Shared Shell candidate exists: the native identity/Settings surface is
+    // the authoritative owner of the presented theme/locale, so late legacy
+    // server-pref application (theme/themeAuto/lang, incl. setThemeAuto and the
+    // MarketMemoryIntent.applyProfileLanguage path) must never fight it —
+    // including in the pre-INIT window, where the parent context owns the frame
+    // before the first apply has been acknowledged. The parent repaints this
+    // frame through the bridge's applyingContext setTheme/setLang instead.
+    if (_mmShellBridge()) return;
     var meta = user.user_metadata || {};
     var theme = _sharedPref(meta, 'theme', 'theme', _isTheme);
     var themeAuto = _sharedPref(meta, 'theme_auto', 'themeAuto', _isFlag);
@@ -4041,7 +4300,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
@@ -4050,7 +4313,14 @@
      carry a theme along with it — that restraint is the whole point. Coalesced
      over the 800 ms debounce, so a burst still costs one request. */
   function _savePrefToServer(which) {
-    if (_prefSyncing || !_curUser || !_authEnabled) return;
+    // _mmShellApplying(): a bridge applyingContext repaint fires the same
+    // themechange/langchange events, and the _hookPrefSync listeners run
+    // synchronously inside the dispatch, so the getter is still true when this
+    // is entered — during the INITIAL bridge apply (before the bridge marks
+    // itself presenting) exactly as during later CONTEXT applies. A bridge
+    // repaint is not a user preference edit: it must never reach
+    // sb.auth.updateUser writes (or the debounce queue).
+    if (_prefSyncing || _mmShellApplying() || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
     // account.js owns theme/lang while its panel holds a signed-in account; this path
     // then carries only the browser-only theme_auto flag, which is never claimed.

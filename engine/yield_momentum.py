@@ -453,3 +453,412 @@ def build_yield_momentum(frame: pd.DataFrame, *,
                         f'A trailing publication lag of at most {TRAILING_PUBLICATION_LAG_ROWS} weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date.'],
             'series': series,
             'qualification_version': QUALIFICATION_VERSION}
+
+
+CURVE_ACCOUNTING_SCHEMA = 'curve_accounting.v1'
+CURVE_ACCOUNTING_VERSION = 'ric_y1_curve_accounting.v1'
+_CURVE_SOURCES = {'us10y': 'DGS10', 'us10y_real': 'DFII10', 'term_premium_10y': 'THREEFYTP10'}
+_STALE_CALENDAR_DAYS = {'us10y': 7, 'us10y_real': 7, 'term_premium_10y': 31}
+_KW_MODEL_ID = 'kw_fred_threefytp10'
+_CURVE_LAW = (
+    'KW and ACM term premia are separate models with separate source, version, fit, vintage and maturity; '
+    'their disagreement is model disagreement, not a forecast or a signal.',
+    'nominal = expected short rate + term premium and nominal ~= real + inflation compensation are two '
+    'alternative accounting views of the same yield; they are never added together.',
+    'One nominal yield move cannot identify its own cause; conditional alternatives are shown, never a '
+    'single attribution.',
+)
+
+
+def _ref_end(d: str | None) -> str | None:
+    if d is None:
+        return None
+    try:
+        return _date(pd.Timestamp(d) + pd.DateOffset(years=10))
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def _curve_common_meta() -> dict[str, Any]:
+    return {
+        'observation_precision': 'day',
+        'first_public_precision': 'unknown',
+        'first_public_evidence': None,
+        'seasonal_treatment': 'n/a',
+        'rate_index': 'n/a',
+        'averaging_law': 'n/a',
+        'source_version': None,
+        'content_ref': None,
+        'admitted_at': None,
+        'target_epoch': None,
+    }
+
+
+def _stale_fields(cutoff_str: str | None, obs_date: str | None, column: str) -> dict[str, Any]:
+    if cutoff_str is None or obs_date is None:
+        return {}
+    cutoff_d = _date(cutoff_str)
+    if cutoff_d is None:
+        return {}
+    tol = _STALE_CALENDAR_DAYS.get(column)
+    if tol is None:
+        return {}
+    days = (pd.Timestamp(cutoff_d) - pd.Timestamp(obs_date)).days
+    if days <= tol:
+        return {}
+    return {
+        'value_state': 'stale',
+        'quality': ('stale',),
+        'limitations': (f'stale_beyond_tolerance_{tol}d',),
+    }
+
+
+def _slice_to_cutoff(frame: pd.DataFrame, cutoff_str: str) -> pd.DataFrame:
+    cutoff_d = _date(cutoff_str)
+    if cutoff_d is None:
+        return frame.iloc[:0]
+    keep = []
+    for idx in frame.index:
+        d = _date(idx)
+        if d is not None and d <= cutoff_d:
+            keep.append(idx)
+    if not keep:
+        return frame.iloc[:0]
+    return frame.loc[keep]
+
+
+def _latest_finite_column(frame: pd.DataFrame, column: str) -> tuple[float | None, str | None]:
+    if column not in frame.columns:
+        return None, None
+    s = _finite(frame[column])
+    valid = s[s.notna()]
+    if valid.empty:
+        return None, None
+    t = valid.index[-1]
+    return float(valid.iloc[-1]), _date(t)
+
+
+def _paired_nominal_real_date(frame: pd.DataFrame) -> tuple[str | None, str | None]:
+    has_nom = 'us10y' in frame.columns
+    has_real = 'us10y_real' in frame.columns
+    nom = _finite(frame['us10y']) if has_nom else pd.Series(dtype=float)
+    real = _finite(frame['us10y_real']) if has_real else pd.Series(dtype=float)
+    for idx in reversed(frame.index):
+        d = _date(idx)
+        if d is None:
+            continue
+        nv = nom.get(idx) if has_nom else np.nan
+        rv = real.get(idx) if has_real else np.nan
+        if pd.notna(nv) and pd.notna(rv) and np.isfinite(nv) and np.isfinite(rv):
+            return d, d
+    _, nom_d = _latest_finite_column(frame, 'us10y')
+    _, real_d = _latest_finite_column(frame, 'us10y_real')
+    return nom_d, real_d
+
+
+def _finite_on_date(frame: pd.DataFrame, column: str, date_str: str | None) -> float | None:
+    if date_str is None or column not in frame.columns:
+        return None
+    s = _finite(frame[column])
+    for t, v in s.items():
+        if _date(t) == date_str and pd.notna(v) and np.isfinite(v):
+            return float(v)
+    return None
+
+
+def _curve_accounting_shell(
+    *,
+    cutoff: str | None,
+    status: str,
+    reason: str | None,
+    basis_schema: str | None,
+    asof: str | None = None,
+) -> dict[str, Any]:
+    return {
+        'schema': CURVE_ACCOUNTING_SCHEMA,
+        'calculation_version': CURVE_ACCOUNTING_VERSION,
+        'basis_schema': basis_schema,
+        'cutoff': cutoff,
+        'asof': asof,
+        'status': status,
+        'reason': reason,
+        'display_only': True,
+        'authority': False,
+        'can_score': False,
+        'can_size': False,
+        'can_trade': False,
+        'law': list(_CURVE_LAW),
+        'observations': {},
+        'comparisons': {},
+        'accounting_views': [],
+        'views_are_alternatives_never_summed': True,
+    }
+
+
+def _curve_accounting(frame: pd.DataFrame, cutoff: Any) -> dict[str, Any]:
+    from engine import rates_command_basis as rcb
+
+    if len(frame.index) == 0:
+        return _curve_accounting_shell(
+            cutoff=None, status='unavailable', reason='empty_frame', basis_schema=None, asof=None
+        )
+    if cutoff is None:
+        cutoff_str = _date(frame.index[-1])
+        if cutoff_str is None:
+            return _curve_accounting_shell(
+                cutoff=None, status='unavailable', reason='empty_frame', basis_schema=None, asof=None
+            )
+    else:
+        cutoff_str = str(cutoff)
+    sliced = _slice_to_cutoff(frame, cutoff_str)
+    asof = _date(sliced.index[-1]) if len(sliced.index) else None
+    common = _curve_common_meta()
+
+    nom_d, real_d = _paired_nominal_real_date(sliced)
+    nom_val = _finite_on_date(sliced, 'us10y', nom_d) if nom_d else None
+    real_val = _finite_on_date(sliced, 'us10y_real', real_d) if real_d else None
+
+    kw_val, kw_d = _latest_finite_column(sliced, 'term_premium_10y')
+
+    nom_meta = {
+        **common,
+        'subject': 'UST_10Y_PAR',
+        'evidence_class': 'official_measurement',
+        'unit': 'pct_ann_rate',
+        'target': 'ust_par_yield',
+        'basket_or_index': 'UST',
+        'tenor': '10y',
+        'curve_convention': 'par',
+        'reference_start': nom_d,
+        'reference_end': _ref_end(nom_d),
+        'observation_time': nom_d,
+        'source': 'fred:DGS10',
+        'model_id': None,
+        'vintage': None,
+        'rights': 'public_official',
+        'limitations': ('observation_origin_unverified',),
+        **_stale_fields(cutoff_str, nom_d, 'us10y'),
+    }
+    real_meta = {
+        **common,
+        'subject': 'TIPS_10Y_REAL_PAR',
+        'evidence_class': 'official_measurement',
+        'unit': 'pct_ann_rate',
+        'target': 'ust_real_par_yield',
+        'basket_or_index': 'TIPS',
+        'tenor': '10y',
+        'curve_convention': 'real_par',
+        'reference_start': real_d,
+        'reference_end': _ref_end(real_d),
+        'observation_time': real_d,
+        'source': 'fred:DFII10',
+        'model_id': None,
+        'vintage': None,
+        'rights': 'public_official',
+        'limitations': ('observation_origin_unverified',),
+        **_stale_fields(cutoff_str, real_d, 'us10y_real'),
+    }
+    kw_meta = {
+        **common,
+        'subject': 'KW_TP_10Y',
+        'evidence_class': 'estimated_decomposition',
+        'unit': 'pct_ann_rate',
+        'target': 'term_premium_kw',
+        'basket_or_index': None,
+        'tenor': '10y',
+        'curve_convention': 'zero',
+        'reference_start': kw_d,
+        'reference_end': _ref_end(kw_d),
+        'observation_time': kw_d,
+        'source': 'fred:THREEFYTP10',
+        'model_id': _KW_MODEL_ID,
+        'vintage': None,
+        'rights': 'public_official',
+        'limitations': (
+            'model_estimate_not_observed',
+            'model_fit_unknown',
+            'model_vintage_unknown',
+            'observation_origin_unverified',
+        ),
+        **_stale_fields(cutoff_str, kw_d, 'term_premium_10y'),
+    }
+    acm_meta = {
+        **common,
+        'subject': 'ACM_TP_10Y',
+        'evidence_class': 'estimated_decomposition',
+        'unit': 'pct_ann_rate',
+        'target': 'term_premium_acm',
+        'basket_or_index': None,
+        'tenor': '10y',
+        'curve_convention': 'zero',
+        'reference_start': None,
+        'reference_end': None,
+        'observation_time': None,
+        'source': None,
+        'model_id': 'acm_not_admitted',
+        'vintage': None,
+        'rights': 'unknown',
+        'limitations': ('acm_input_not_admitted',),
+    }
+
+    ym = build_yield_momentum(sliced)
+    s10 = ym['series']['10y']
+    m_val = s10['velocity_bp']['22d']
+    pair = s10['endpoint_dates']['22d']
+    if isinstance(pair, list) and len(pair) == 2:
+        s_date, e_date = pair[0], pair[1]
+    else:
+        s_date, e_date = None, None
+        m_val = None
+    endpoint_rec = s10['endpoints']['22d']
+    move_limits = ['observation_origin_unverified']
+    if m_val is not None:
+        if endpoint_rec is None:
+            move_limits.append('endpoint_not_certified:None')
+        elif isinstance(endpoint_rec, dict) and endpoint_rec.get('certified') is not True:
+            reason = endpoint_rec.get('not_certified_reason')
+            move_limits.append(f'endpoint_not_certified:{reason}')
+
+    r_val = None
+    if s_date is not None and e_date is not None:
+        start_v = _finite_on_date(sliced, 'us10y_real', s_date)
+        end_v = _finite_on_date(sliced, 'us10y_real', e_date)
+        if start_v is not None and end_v is not None:
+            r_val = round((end_v - start_v) * 100, 1)
+
+    nom_move_meta = {
+        **common,
+        'subject': 'UST_10Y_PAR_MOVE_22D',
+        'evidence_class': 'official_measurement',
+        'unit': 'bp',
+        'target': 'ust_par_yield_move',
+        'basket_or_index': 'UST',
+        'tenor': '10y',
+        'curve_convention': 'par',
+        'reference_start': s_date,
+        'reference_end': e_date,
+        'observation_time': e_date,
+        'source': 'fred:DGS10',
+        'model_id': None,
+        'vintage': None,
+        'rights': 'public_official',
+        'limitations': tuple(move_limits),
+    }
+    real_move_meta = {
+        **common,
+        'subject': 'TIPS_10Y_REAL_PAR_MOVE_22D',
+        'evidence_class': 'official_measurement',
+        'unit': 'bp',
+        'target': 'ust_real_par_yield_move',
+        'basket_or_index': 'TIPS',
+        'tenor': '10y',
+        'curve_convention': 'real_par',
+        'reference_start': s_date,
+        'reference_end': e_date,
+        'observation_time': e_date,
+        'source': 'fred:DFII10',
+        'model_id': None,
+        'vintage': None,
+        'rights': 'public_official',
+        'limitations': ('observation_origin_unverified',),
+    }
+
+    obs_objects = {
+        'nominal_10y': rcb.qualify_observation(nom_val, nom_meta, cutoff_str),
+        'real_10y': rcb.qualify_observation(real_val, real_meta, cutoff_str),
+        'term_premium_kw_10y': rcb.qualify_observation(kw_val, kw_meta, cutoff_str),
+        'term_premium_acm_10y': rcb.qualify_observation(None, acm_meta, cutoff_str),
+        'nominal_10y_move_22d': rcb.qualify_observation(m_val, nom_move_meta, cutoff_str),
+        'real_10y_move_22d': rcb.qualify_observation(r_val, real_move_meta, cutoff_str),
+    }
+    comparisons = {
+        'inflation_compensation': rcb.compare_qualified(
+            obs_objects['nominal_10y'],
+            obs_objects['real_10y'],
+            rcb.RULES['inflation_compensation.v1'],
+        ).to_dict(),
+        'term_premium_kw_vs_acm': rcb.compare_qualified(
+            obs_objects['term_premium_kw_10y'],
+            obs_objects['term_premium_acm_10y'],
+            rcb.RULES['term_premium_kw_vs_acm.v1'],
+        ).to_dict(),
+        'nominal_par_vs_kw_zero': rcb.compare_qualified(
+            obs_objects['nominal_10y'],
+            obs_objects['term_premium_kw_10y'],
+            rcb.RULES['par_vs_zero.v1'],
+        ).to_dict(),
+        'yield_move_attribution': rcb.compare_qualified(
+            obs_objects['nominal_10y_move_22d'],
+            obs_objects['real_10y_move_22d'],
+            rcb.RULES['yield_move_attribution.v1'],
+        ).to_dict(),
+    }
+    observations = {k: v.to_dict() for k, v in obs_objects.items()}
+    any_present = any(o['value_state'] == 'present' for o in observations.values())
+    status = 'available' if any_present else 'unavailable'
+    reason = None if any_present else 'no_present_observation'
+    accounting_views = [
+        {
+            'view_id': 'expected_short_plus_term_premium',
+            'identity': 'nominal = expected_short + term_premium',
+            'present': ['term_premium_kw_10y'],
+            'not_observed': ['expected_short_10y'],
+            'note': (
+                'The expected short-rate path is not observed here and is never derived by '
+                'subtracting a zero-coupon model premium from a par yield.'
+            ),
+        },
+        {
+            'view_id': 'real_plus_inflation_compensation',
+            'identity': 'nominal ~= real + inflation_compensation',
+            'present': ['real_10y'],
+            'comparison': 'inflation_compensation',
+            'note': (
+                'This compensation is the same quantity as the published 10y breakeven; '
+                'it is shown once and never added to it or to the term premium.'
+            ),
+        },
+    ]
+    return {
+        'schema': CURVE_ACCOUNTING_SCHEMA,
+        'calculation_version': CURVE_ACCOUNTING_VERSION,
+        'basis_schema': rcb.SCHEMA_VERSION,
+        'cutoff': cutoff_str,
+        'asof': asof,
+        'status': status,
+        'reason': reason,
+        'display_only': True,
+        'authority': False,
+        'can_score': False,
+        'can_size': False,
+        'can_trade': False,
+        'law': list(_CURVE_LAW),
+        'observations': observations,
+        'comparisons': comparisons,
+        'accounting_views': accounting_views,
+        'views_are_alternatives_never_summed': True,
+    }
+
+
+def build_curve_accounting(frame: pd.DataFrame, *, cutoff: Any = None) -> dict[str, Any]:
+    cutoff_out: str | None
+    try:
+        if cutoff is not None:
+            cutoff_out = str(cutoff)
+        elif len(frame.index) == 0:
+            cutoff_out = None
+        else:
+            cutoff_out = _date(frame.index[-1])
+    except Exception:
+        cutoff_out = None
+    try:
+        return _curve_accounting(frame, cutoff)
+    except Exception as exc:
+        shell = _curve_accounting_shell(
+            cutoff=cutoff_out,
+            status='error',
+            reason=f'internal_error:{type(exc).__name__}',
+            basis_schema=None,
+            asof=None,
+        )
+        return shell

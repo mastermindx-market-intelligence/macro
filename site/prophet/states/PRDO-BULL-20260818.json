@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PRDO-BULL-20260818",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.4,
   "raw_confidence": 40.0,
   "delta_vs_base": -21.6,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 8.3,
-    "pace": 18.0,
-    "retention": 51.9,
-    "overlay": 59.0
+    "progress": 12.8,
+    "pace": 6.0,
+    "retention": 58.9,
+    "overlay": 55.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.091,
-    "dist_to_t1_r": 1.409,
-    "dist_to_t2_r": 2.909,
-    "horizon_pct_used": 120.0,
-    "p1": 0.0609,
-    "p2": 0.0304,
+    "dist_to_stop_r": 1.163,
+    "dist_to_t1_r": 1.337,
+    "dist_to_t2_r": 2.837,
+    "horizon_pct_used": 140.0,
+    "p1": 0.1084,
+    "p2": 0.0542,
     "p3": null,
-    "move_r": 0.091,
-    "mfe_r": 0.176,
+    "move_r": 0.163,
+    "mfe_r": 0.276,
     "mae_r": -0.563
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.7900013732910125,
+  "_mfe": 1.2399983215332,
   "_mae": -2.530000228881839,
-  "_max_p1": 0.11729790249309763,
+  "_max_p1": 0.18411259414004455,
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 54,
-  "tau": 1.2,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 63,
+  "tau": 1.4,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

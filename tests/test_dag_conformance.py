@@ -712,7 +712,11 @@ class TestLiveConformance:
         ):
             assert path in commit["run"]
         assert "assert_award_event_bundle" in commit["run"]
-        assert "scripts/ci/validate_government_revenue_award_event_bundle.py" in commit["run"]
+        guards = next(step for step in steps if step.get("name") == "stage reviewed source guards")
+        assert steps.index(guards) < steps.index(commit)
+        assert 'cat > "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"' in guards["run"]
+        assert '. "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"' in commit["run"]
+        assert "scripts/ci/validate_government_revenue_award_event_bundle.py" in guards["run"]
         assert "assert_award_event_source_clean" in commit["run"]
         assert "assert_subaward_bundle" in commit["run"]
         assert "assert_subaward_source_clean" in commit["run"]
@@ -723,8 +727,8 @@ class TestLiveConformance:
         assert "assert_idv_dossier_twins" in commit["run"]
         assert "assert_optional_budget_graph_twins" in commit["run"]
         assert "assert_recipient_graph_source_clean" in commit["run"]
-        assert "collectors and projection builders cannot write or stage" in commit["run"]
-        assert "receipt-bound award artifacts must arrive as one committed bundle" in commit["run"]
+        assert "collectors and projection builders cannot write or stage" in guards["run"]
+        assert "receipt-bound award artifacts must arrive as one committed bundle" in guards["run"]
         assert "data/government_revenue/collection_receipts.jsonl" in commit["run"], (
             "The source guard must preserve the receipt binding even though the SAM lane "
             "does not stage or collect the receipt ledger."
@@ -733,11 +737,11 @@ class TestLiveConformance:
         assert (
             "subaward snapshots, receipts, activation state, and ingest status "
             "must arrive as one committed bundle"
-        ) in commit["run"]
-        assert "publishing an unavailable zero-row dossier" in commit["run"]
+        ) in guards["run"]
+        assert "publishing an unavailable zero-row dossier" in guards["run"]
         assert "cannot stage a USAspending subaward source mutation" in commit["run"]
-        assert "subaward_projection_generation_matches" in commit["run"]
-        assert "subaward source snapshot does not match its activation generation" in commit["run"]
+        assert "subaward_projection_generation_matches" in guards["run"]
+        assert "subaward source snapshot does not match its activation generation" in guards["run"]
         assert commit["run"].count("data/government_revenue/subaward_dossiers.json") >= 3
         assert commit["run"].count("site/government-revenue-data/subaward-dossiers.json") >= 3
         assert commit["run"].count("data/government_revenue/idv_dossiers.json") >= 3
@@ -752,7 +756,7 @@ class TestLiveConformance:
         assert "site/government-revenue-data/budget-program.json" not in push_trigger["paths"]
         assert "scripts/ci/push_retry.sh" in commit["run"]
         assert "push_autostash_ok" in commit["run"]
-        assert "Rebuild AFTER every successful rebase" in commit["run"]
+        assert commit["run"].index("git pull --rebase") < commit["run"].index("python -m scripts.build_government_revenue")
         assert commit["run"].count("python -m scripts.build_government_revenue") == 1
         assert "git commit --amend --no-edit" in commit["run"]
 
@@ -777,8 +781,11 @@ class TestLiveConformance:
                 assert lane_text.index("push_fetch_main_for_rebase") < rebase_at
             else:
                 rebase_at = lane_text.index(
-                    "git pull --rebase --autostash -X theirs origin main"
+                    'git rebase --autostash -X theirs "$COMMODITY_ACCEPTED"'
                 )
+                fetch_at = lane_text.index("if ! push_fetch_main_for_rebase; then")
+                pin_at = lane_text.index("COMMODITY_ACCEPTED=$(git rev-parse", fetch_at)
+                assert fetch_at < pin_at < rebase_at
             rebuild_at = lane_text.index(
                 site_only_command, rebase_at
             )

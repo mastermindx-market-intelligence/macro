@@ -1,42 +1,42 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "INVA-BULL-20260826",
-  "asof": "2026-10-14",
+  "asof": "2026-10-23",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 39.5,
-  "raw_confidence": 40.0,
-  "delta_vs_base": -20.5,
+  "management_confidence": 39.4,
+  "raw_confidence": 39.2,
+  "delta_vs_base": -20.6,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 87.7,
+    "validity": 61.1,
     "progress": 0.0,
-    "pace": 27.3,
+    "pace": 15.3,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.907,
+    "dist_to_stop_r": 0.694,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 104.4,
-    "p1": -0.0617,
-    "p2": -0.0309,
+    "horizon_pct_used": 124.4,
+    "p1": -0.2037,
+    "p2": -0.1019,
     "p3": null,
-    "move_r": -0.093,
+    "move_r": -0.306,
     "mfe_r": 0.352,
     "mae_r": -0.676
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.3800003814697277,
@@ -45,14 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 56,
+  "tau": 1.2444,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

@@ -55,6 +55,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Callable
 
 from lib import user_prefs
+from lib.tiers import normalize_tier, tier_rank
 
 # --------------------------------------------------------------------------- #
 # Typed reads (F08 freeze section 5 vocabulary)
@@ -429,9 +430,6 @@ def quiet_decision(now_utc: datetime, prefs: AlertPrefs) -> tuple:
 _LAPSED_STATUSES = {"canceled", "past_due", "unpaid", "incomplete_expired"}
 
 
-_TIER_RANK = {"free": 0, "plus": 1, "pro": 2}
-
-
 def entitlement_decision(read: TypedRead, now_utc: datetime, requires_tier: str | None = None) -> str:
     """'send' | 'suppress' | 'unavailable'. Fail-closed (freeze section 5): an
     unrecognised status, an unparsable period, or a tier below ``requires_tier``
@@ -459,9 +457,12 @@ def entitlement_decision(read: TypedRead, now_utc: datetime, requires_tier: str 
             except Exception:  # noqa: BLE001
                 return "suppress"  # unparsable period_end fails closed
     if requires_tier:
-        have = _TIER_RANK.get(str(tier or "free"), -1)
-        need = _TIER_RANK.get(str(requires_tier), 99)
-        if have < need:
+        rank = tier_rank()
+        if rank is None:
+            return "unavailable"
+        have = normalize_tier(tier)
+        need = normalize_tier(requires_tier)
+        if have not in rank or need not in rank or rank.index(have) < rank.index(need):
             return "suppress"
     if status in ("active", "trialing", "none") or source == "comp":
         return "send"
@@ -512,11 +513,33 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if ent.state == READ_UNAVAILABLE:
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     requires_tier = payload.get("requires_tier")
+    if category == "options_exposure_node":
+        # Category policy is server-owned. A missing/free payload cannot lower
+        # the native Options plan minimum; a legitimate stricter tier survives.
+        rank = tier_rank()
+        if rank is None or "essential" not in rank:
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        if requires_tier is not None and not isinstance(requires_tier, str):
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        requested = normalize_tier(requires_tier)
+        # Unknown nonempty requirements retain the incumbent fail-closed
+        # entitlement decision; never downgrade a future tier to essential.
+        if not requested or (requested in rank
+                             and rank.index(requested) < rank.index("essential")):
+            requires_tier = "essential"
+        else:
+            requires_tier = requested
     ent_decision = entitlement_decision(ent, now_utc, requires_tier=requires_tier)
     if ent_decision == "unavailable":
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     if ent_decision == "suppress":
         return Decision(action="suppress", reason="entitlement_lapsed", to_email=to_email, lang=prefs.lang)
+    if category == "options_exposure_node":
+        # Preparatory preference only: the exact source/action and independently
+        # trusted arming/prior-state reader is not connected. Neither opt-in,
+        # plan access nor serialized row grant fields can substitute for it.
+        return Decision(action="unevaluable", reason="options_exposure_node_admission_unavailable",
+                        to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
         # surface it as unevaluable (typed, counted, visible in the run receipt).
