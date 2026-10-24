@@ -1,3 +1,11 @@
+## Main-dfb import-closure follow-up — 23 October 2026 (CDT)
+
+The normal merge c9286df8 passed all four focused source checks. Its official contract preserved all 909 baseline worktree registrations and existing directories, but identified three newly reached W4 import paths. This follow-up declares exactly engine/k3e_eval1_forward.py, engine/pick_forward_dist.py and engine/seasonality/multiplicity.py; W4 now has 1,014 paths. All other manifest semantics and packing/census ceilings are unchanged.
+
+The same contract also reported one inherited packing finding: scripts/build_free_content.py is 5,875 weight-seconds in both head and main-dfb against a 5,873 ceiling. It remains explicit; this repair does not mask it. The native page, fixed inputs and assets remain unchanged. The next exact-head contract and ordinary publication are recorded in the canonical PR9590 checkpoint. See evidence/main_dfb_closure_repair_20261024.json for the failed-run and repair evidence. Visual and independent-review holds remain.
+
+---
+
 ## Main integration after hosted CI repair — 23 October 2026 (CDT)
 
 The source repair child 12c254a3d8ca7c88977a17f71653117c2a3997a9 is integrated with main dfb1cfc758586ee6679bb14f4520e75676608548. The only merge conflict was site/bonds.html; it is resolved with the exact retained, qualified 728,615-byte native page, SHA-256 a4cbb8d4722f1b9fcd52c7729ce0792d5e03e2f81cfad24e7c3822e053538952.

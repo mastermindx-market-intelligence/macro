@@ -20831,6 +20831,7 @@ jobs:
       - "engine/intl_bonds.py"
       - "engine/intl_risk.py"
       - "engine/ird_velocity.py"
+      - engine/k3e_eval1_forward.py
       - "engine/k3e_expectation_surface.py"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
@@ -20927,6 +20928,7 @@ jobs:
       - "engine/passport.py"
       - "engine/path_personality.py"
       - "engine/path_risk_signals.py"
+      - engine/pick_forward_dist.py
       - "engine/pick_lab/__init__.py"
       - "engine/pick_lab/candidates.py"
       - "engine/pick_lab/registry.py"
@@ -21005,6 +21007,7 @@ jobs:
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/seasonality/contracts.py"
+      - engine/seasonality/multiplicity.py
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
