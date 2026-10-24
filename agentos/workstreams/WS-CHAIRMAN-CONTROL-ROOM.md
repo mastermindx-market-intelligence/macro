@@ -136,17 +136,17 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Reconcile the Secretary-reported same-child replacement after the original carrier's
-      403/no-code outcome. Require old terminal/no-effect evidence and full new identity,
-      START, repo/branch/SHA on C0CBC6AEAQZ/1792865049.365069 per request 1792868274.593379.
-      Consume actual source/result only after custody and repository scope are proven.
+      Consume the same child's actual source/result on C0CBC6AEAQZ/1792865049.365069.
+      Secretary receipt 1792868663.648029 reports the old carrier finished/archived,
+      no published source effect, and replacement bc-3aad7289-82db-5570-aef5-9bf911172fd3
+      running on Mastermind. Require actual branch/SHA, path proof, CI and independent review.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
     depends_on: [HC-P1A]
     next_action: >
       Preserve Draft Mastermind #1850 at ff473a3a9cb6afd6002a8643489f125430f6a085:
-      46 native DSH fixture checks and 38 compiler regressions pass. Consume exact-head CI.
+      46 native DSH fixture checks, 38 compiler regressions and hosted CI 40121353408 pass.
       Source review meta-ceo-harness-p2-source-review-20261024-01 is terminal/unverified;
       reconcile it without replay. HC-P2 live acceptance remains gated on P1 and admission.
   - id: HC-P3
@@ -279,7 +279,7 @@ do_not_redo:
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
   For Mastermind #1841, consume the original Cursor child return and its repository-scope
-  ruling, plus exact-head CI for source PR #1850. Retain all three terminal/unverified
+  ruling; preserve successful exact-head CI for source PR #1850. Retain all three terminal/unverified
   Fabric identities; reconcile effects before any replay. The new source fixture is built
   and locally qualified, with independent semantic review still missing. Preserve R2.
   Source release requires independent action: this receiver must not approve or merge.
@@ -814,14 +814,14 @@ memory, queue or router; cross-project/user leakage; a missing original obligati
 Wave statuses above are Agent OS editorial progress, not Executive runtime states.
 The detailed task states below are also editorial; START requires an actual fleet receipt.
 
-| ID | Depends on | Outcome / evidence | Delivery responsibility | Initial state |
+| ID | Depends on | Outcome / evidence | Delivery responsibility | Current state |
 |---|---|---|---|---|
 | HC-P0 | — | Exact source and donor pins, custody/effect recovery, accepted startup receipts preserved | Assigned Meta-CEO | accepted recovery |
-| HC-P1A.T1 | HC-P0 | Real DSH modules run the deterministic send/stream/cancel/resume/schedule/restart reference journey | Admitted Fabric implementation worker; independent reviewer separate | ready |
+| HC-P1A.T1 | HC-P0 | Real DSH modules run the deterministic send/stream/cancel/resume/schedule/restart reference journey | Admitted Fabric implementation worker; independent reviewer separate | original run terminal/unverified; paths held |
 | HC-P1A.T2 | HC-P1A.T1 | Authenticated full-app UI proof through a permitted interaction | Qualified UI executor after exact authentication boundary is resolved | blocked for the historical refused token-exchange action |
-| HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Cursor cloud implementation worker via existing admitted placement | ready |
-| HC-P2 | HC-P1A | One admitted route with actual identity/meter and failure evidence | Existing provider/Capacity domain + bounded adapter worker | proposed |
-| HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | proposed |
+| HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Cursor cloud implementation worker via existing admitted placement | replacement running; source/result pending |
+| HC-P2 | HC-P1A | One admitted route with actual identity/meter and failure evidence | Existing provider/Capacity domain + bounded adapter worker | T0 source published/CI green; independent review and live phase pending |
+| HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | conditional T1 not ready; authentic installed inputs pending |
 | HC-P4 | HC-P3 | Existing Wake/Dialogue continuity and actual 24-hour canary | Continuity domain | proposed |
 | HC-P5 | HC-P4 | Granted isolated computer/app task and negative controls | Existing computer/app domain | proposed |
 | HC-P6 | HC-P4 | Actual signed-in R2 office journey and responsive proof | Existing Mastermind OS domain | proposed |
@@ -886,10 +886,12 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **DONE_WHEN:** actual runnable observations or a precise reproducible platform blocker;
   independent source review; comparison identifies integration burden and missing proof.
 - **Risk / rollback:** disposable local fixture state, no account secrets or production writes.
-- **State:** original Cursor carrier reported blocked by 403 with no code/PR effects;
-  Secretary re-placed the same child on Mastermind, prefix bc-3aad7289. Full replacement
-  identity/START, old terminal/no-effect receipt and actual source/result are pending on
-  C0CBC6AEAQZ/1792865049.365069. Parent requested exact custody proof at 1792868274.593379.
+- **State:** Secretary receipt 1792868663.648029 reports the original carrier finished
+  and archived, both publication attempts denied by 403, and no PR/handoff. Replacement
+  bc-3aad7289-82db-5570-aef5-9bf911172fd3 is running on Mastermind from pre-start public
+  HEAD f93a807e278dd333650f02701318a5fc827c3b64. Original root/parent and admission are
+  preserved; actual branch/source/result and independent review remain pending in the
+  same C0CBC6AEAQZ/1792865049.365069 thread.
 
 ### HC-P2.T0 — DSH sealed-analysis source boundary
 
@@ -1004,7 +1006,8 @@ Advance SC1 as the current cross-session continuity frontier while leaving P0B a
 
 ### Cumulative execution frontier
 
-Current checkpoint: 2026-10-24 18:52:39 UTC. MISSION_COMPLETE=false. The existing owner
+Current checkpoint: the Git revision containing this record. MISSION_COMPLETE=false.
+The existing owner
 remains WS:CHAIRMAN-CONTROL-ROOM; no source custody or failed attempt has been transferred.
 
 #### Published source and local proof
@@ -1022,8 +1025,8 @@ remains WS:CHAIRMAN-CONTROL-ROOM; no source custody or failed attempt has been t
   Earlier ABI mismatches were repaired using the real retry-policy and Cordis fiber APIs.
 - Ceiling: SOURCE_CONTRACT_QUALIFIED / FIXTURE_ONLY. No live provider calls, usage or
   served-model attestation, admission, parent acceptance or production claim.
-- #1841 plan CI 40114679733 is SUCCESS. #1850 CI 40121353408 remains IN_PROGRESS at
-  this checkpoint. Source is OPEN/DRAFT/unmerged; no independent semantic PASS exists.
+- #1841 plan CI 40114679733 and #1850 CI 40121353408 are completed SUCCESS.
+  Source is OPEN/DRAFT/unmerged; no independent semantic PASS exists.
 - Macro's API reported mergeable=false. Current-main workstream comparison at
   4d471058826cd470ddf53e5c53d3086aec36d365 found no incumbent content changes; read-only
   git merge-tree completed exit 0, tree de81d5623fc63722f157268e81605848335e2c7e.
@@ -1058,16 +1061,20 @@ Cursor child meta-ceo-harness-rakazo-cursor-20261024-01 remains on
 C0CBC6AEAQZ/1792865049.365069. Original agent
 bc-d989996a-419b-5b6a-b684-19a2f61554da had ACK/START at 1792866168.374309.
 Parent repository-scope ruling 1792867055.078839 was acknowledged as forwarded at
-1792867397.447309. At 1792868161.509159 the Secretary reported the Macro-selected
-carrier received 403 pushing to Mastermind, wrote no code/opened no PR and did not
-touch #1850, then re-placed the SAME child on Mastermind with prefix bc-3aad7289.
-This is an owner report, not a complete replacement receipt. Parent request
-1792868274.593379 requires old-carrier terminal/no-effect evidence, FULL replacement
-identity, actual START, repo/branch/initial SHA, unchanged original root/parent and no
-further carrier switch without reconciliation. Do not infer a full ID from the prefix.
-Secretary owns that child's return and CI observation. Actual source/result and successor
-custody remain pending. Earlier bounded exact-ID/child/Rakazo source searches found no
-bindable published source; that does not prove absence of unpublished edits.
+1792867397.447309. Following the replacement report 1792868161.509159 and parent's
+custody request 1792868274.593379, the Secretary supplied receipt 1792868663.648029:
+the original carrier is finished and archived; both publication attempts returned
+403, and no PR or handoff was published. These are the accountable owner's retained
+transcript findings, not an independent proof of absence of all unpublished edits.
+The replacement is bc-3aad7289-82db-5570-aef5-9bf911172fd3, reported running on
+mastermindx-market-intelligence/Mastermind, launched about 12:57 PM MDT from default
+branch; its pre-start public HEAD was f93a807e278dd333650f02701318a5fc827c3b64.
+Its branch and first commit are not yet assigned. The Secretary confirmed the same
+root meta-ceo-open-harness-convergence-20261024-sol-001, parent
+meta-ceo-harness-implementation-20261024-web-001, existing Mastermind admission and
+no further carrier change without reconciliation. Secretary owns the return and CI
+observation. Actual branch/source/path proof, independent review and RESULT remain
+pending; running/START is not implementation or acceptance evidence.
 
 #### Runtime/source custody
 
@@ -1095,7 +1102,7 @@ It posts once to C0CCNK7JFAL referencing commission 1792861454.777859 only after
 evidence gates are proven, reconciles a prior matching send, then disables itself. It is
 not an implementation worker, retry owner, company lifecycle owner or native wake proof.
 
-Next: consume the same Cursor child's scope ruling and actual return, consume #1850's
+Next: consume the same Cursor child's custody/source return, preserve #1850's successful
 exact-head CI, and obtain original-run effect reconciliation/qualified independent review
 without replay. HC-P3's exact artifact and authentic installed inputs must become ready
 in their existing owner before a new implementation packet is issued. Full R2,
