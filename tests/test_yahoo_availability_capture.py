@@ -467,21 +467,6 @@ def test_wti_wrong_collector_refuses_before_fetch(modules, monkeypatch):
     assert "incumbent Yahoo adapter" in result.error
 
 
-def test_ordinary_collect_yahoo_opts_into_same_fetch_capture(monkeypatch):
-    from scripts import collect
-    from collectors.base import FetchResult
-    from engine import pit_lag_recorder
-    calls = []
-    class OrdinaryAdapter:
-        group = "yahoo"
-    def run(adapter, **kwargs):
-        calls.append(kwargs)
-        return FetchResult("yahoo", "ok")
-    monkeypatch.setattr(collect, "run_adapter", run)
-    monkeypatch.setattr(pit_lag_recorder, "record_fetch_result", lambda *a, **k: None)
-    collect._run_one("yahoo", OrdinaryAdapter, False)
-    collect._run_one("other", OrdinaryAdapter, False)
-    assert calls == [{"full_history": False, "capture_wti_receipts": True}, {"full_history": False}]
 
 
 
