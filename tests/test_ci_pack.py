@@ -5307,9 +5307,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# 2026-10-24: retain PR #10125's memo regression suite in its incumbent job.
+# The same-tree measurement adds two weight units, with identical selected IDs.
+# Fund only free-content 5873 -> 5875; the dated entry below records attribution.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_873),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_875),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6673,6 +6676,34 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Only a breached ceiling moves, to its measured head weight, no padding;
     job-count ceilings, the pack limit, selectors and every prior suite stay
     unchanged. Planning weights are not measured execution times.
+
+    2026-10-24 (PR #9590, inherited PR #10125 coverage funding):
+    Hosted run 40064141322 / pack-1 job 120783973422 fails the free-content
+    weight bound at 5,875 / 5,873. Its separate contract-delta census on
+    merge bd0215d4f2fd (head bd825ff0649a, base df6895341db9) measures the
+    same 5,875 in head and base: no introduced packing regression.
+
+    Canonical packing_probe_measurements on bd825ff0649a compares its real
+    manifest with a temporary manifest counterfactual removing only
+    dfb1cfc758586's tests/test_government_revenue_dossier_validation_memo.py
+    addition. Both use the SAME candidate source tree; the counterfactual
+    is not a historical-tree or main-baseline selection measurement:
+
+        templates/index.html          134 jobs, 5,867 -> 5,869 weight
+        scripts/build_free_content.py 135 jobs, 5,873 -> 5,875 weight
+        engine/prophet/plan_book.py    129 jobs, 5,633 -> 5,635 weight
+
+    Every selected job ID is identical; all rows remain at ten packs.
+    The retained suite raises unrun-government-revenue from 104 to 106.
+    Its companion declared path in defense-rail-laws changes no weight.
+    An additional counterfactual removing d8e8f1a4a085's source-binding
+    suite changes only defense-rail-laws (156 -> 158), absent from these
+    probe selections, and therefore contributes zero to the measured rows.
+
+    Fund only the breached free-content weight ceiling, 5,873 -> 5,875,
+    with no padding. Preserve every job-count and pack bound, the other
+    weight ceilings, all suites, commands, selectors and duration overrides.
+    These are deterministic planning weights, not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
