@@ -115,6 +115,7 @@ function _itemsForDate(dateStr) {{
   return _rrItems.filter(function (item) {{ return item.release_date === dateStr; }});
 }}
 function renderCard(item) {{ return "<article class=rr-card>" + item.release + "</article>"; }}
+function _rrUpdateSnapshotNotice() {{}}
 function _inlineEmptyHTML() {{ return "<div class=empty></div>"; }}
 function _setInlineHeader(dateStr) {{ dateHeader.value = dateStr; }}
 function _rrInlineBody() {{ return body; }}
