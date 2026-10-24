@@ -89,14 +89,27 @@
       {{ help("Every regime period since ~2006 in this classifier: how many there were, how long they typically lasted, and where they went next. HK regimes are globally sensitive and shorter than the US — treat as context.", "本分类器自约 2006 年以来的每个周期时段：共出现多少次、通常持续多久、结束后转向何处。香港的周期受全球因素影响大、且比美国更短 — 仅供参考。") }}
     </h2>
     <table>
-      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th><th>{{ t('median length (days)', '存续中位数（天）') }}</th><th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
+      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
+        <th>{{ t('median length (days)', '存续中位数（天）') }}</th>
+        <th>{{ t('most common next', '最常见的下一周期') }}{{ t(' (sample)', '（样本）') }}</th></tr>
       {% for row in lifespan_rows %}
-      <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td><td>{{ t(row.next, row.next_zh) }}</td></tr>
+      <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td>
+        <td>{{ t(row.next, row.next_zh) }}{% if row.get('sample') is not none %}
+          <span class="muted">{{ t('sample', '样本') }} {{ row.sample }}</span>
+          {% endif %}</td></tr>
       {% endfor %}
+      {% if regime_in_force %}
+      <tr><td colspan="4" class="muted">{{ t('Regime in force:', '现行周期：') }}
+        {{ td(regime_in_force.name) }} — {{ t('since', '始于') }}
+        {{ regime_in_force.start }}, {{ regime_in_force.age_days }}
+        {{ t('sessions old', '个交易日') }} · {{ t('median', '中位数') }}
+        {{ regime_in_force.median_days }} · {{ regime_in_force.n_segments }}
+        {{ t('periods in the sample', '个样本时段') }}</td></tr>
+      {% endif %}
     </table>
   </div>
 
-  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }} UTC</p>
+  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }}</p>
 <script>
 window.__CHART_SWAP__ = {
   colors: {"#5fbf7f":"#e07070","#e07070":"#5fbf7f","#2e9e4f":"#d04545","#d04545":"#2e9e4f"},

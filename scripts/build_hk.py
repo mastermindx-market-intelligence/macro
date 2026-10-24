@@ -290,7 +290,8 @@ def _build_sector_pages(env) -> int:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import (QUAD_SHORT, next_quads_line, quad_segments,
+                                 transition_stats)
     hist = store.read("hk_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("hk history: no regime_history; skipping history page")
@@ -299,16 +300,36 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("hk", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
+    # The segment in force: quad_segments carries its start date and
+    # transition_stats its age/median, neither of which reached a template
+    # before. Under two segments there is no median to age against, so the
+    # page degrades to the rendering it had (no age row, no sample marker).
+    cur = trans.get("current") or {}
+    seg = quad_segments(hist["quad"])
+    in_force = None
+    if len(seg) >= 2 and cur.get("quad") and cur.get("median_days") is not None:
+        in_force = {"name": QUAD_SHORT.get(cur["quad"], cur["quad"]),
+                    "start": str(seg.iloc[-1]["start"])[:10],
+                    "age_days": int(cur["age_days"]),
+                    "median_days": int(cur["median_days"]),
+                    "n_segments": int(trans.get("n_segments", 0))}
     rows = []
     for q in ("Q1", "Q2", "Q3", "Q4"):
         nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
+        n = trans["n_by_quad"].get(q)
+        # The unfinished segment is counted in n_by_quad but has no successor in
+        # matrix[q], so the sample behind "most common next" is one smaller for
+        # the regime in force and equal for every closed regime.
+        sample = None
+        if in_force is not None and isinstance(n, int):
+            sample = n - (1 if q == cur.get("quad") else 0)
+        rows.append({"name": QUAD_SHORT[q], "n": n if n is not None else "—",
+                     "median": trans["median_days"].get(q, "—"), "sample": sample,
                      "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
     html = env.get_template("hk_history.html.j2").render(
         latest=latest, generated_utc=generated,
         chart_regime=_chart_regime(px, hist) if not px.empty else "", chart_axes=_chart_axes(hist),
-        lifespan_rows=rows)
+        lifespan_rows=rows, regime_in_force=in_force)
     write_page(Path(config.load()["storage"]["site_dir"]) / "hk_history.html", html)
     log.info("wrote hk_history.html (%d regime periods)", trans.get("n_segments", 0))
 

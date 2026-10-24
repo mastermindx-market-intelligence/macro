@@ -81,10 +81,39 @@
 
   <div class="panel">
     <h2>{{ t('Regime lifespans — the base rates behind "what\'s next"', '周期存续期 — “下一步”背后的基准概率') }}
-      {{ help("Every regime period since 2007 in this classifier: how many there were, how long they typically lasted, and where they went when they ended. These are the base rates the front page's odds come from.", "本分类器自 2007 年以来的每一个周期时段：共出现多少次、通常持续多久，以及结束后转向何处。首页的概率即来自这些基准概率。") }}
+      {{ help("Every regime period in this classifier: how many there were, how long "
+              ~ "they typically lasted, and where they went when they ended. These are "
+              ~ "the base rates the front page's odds come from.",
+              "本分类器中的每一个周期时段：共出现多少次、通常持续多久，"
+              ~ "以及结束后转向何处。首页的概率即来自这些基准概率。") }}
     </h2>
+    {% if latest.playbook and latest.playbook.progress %}
+    {% set _pg = latest.playbook.progress %}
+    {% set _ph_en = {'early': 'early', 'mid': 'mid-life', 'late': 'older than most',
+                     'overdue': 'past nearly all its predecessors'} %}
+    {% set _ph_zh = {'early': '早期', 'mid': '中期', 'late': '长于多数前期',
+                     'overdue': '超出几乎所有前期周期'} %}
+    {% if latest.playbook.regime_age_note %}
+    <p class="muted">{{ t(latest.playbook.regime_age_note,
+                          latest.playbook.regime_age_note_zh) }}</p>
+    {% endif %}
+    <p class="muted">{{ t('Regime in force', '现行周期') }} —
+      {{ _pg.age_days }} {{ t('trading days old', '个交易日') }}
+      · {{ t('median', '中位数') }} {{ _pg.median_days }}
+      · {{ '%.0f'|format(_pg.pct_longer) }}%
+      {{ t('of predecessors ran longer', '的前期周期持续更久') }}
+      {% if _pg.get('median_remaining_days') is not none %}
+      · {{ t('about', '中位剩余约') }} {{ _pg.median_remaining_days }}
+      {{ t('sessions of median remaining', '个交易日') }}{% endif %}
+      · {{ _pg.n_history }} {{ t('periods in the sample', '个样本时段') }}
+      {% if _pg.get('phase') %}· {{ t('phase', '阶段') }}
+      {{ t(_ph_en.get(_pg.phase, _pg.phase), _ph_zh.get(_pg.phase, _pg.phase)) }}
+      {% endif %}</p>
+    {% endif %}
     <table>
-      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th><th>{{ t('median length (days)', '存续中位数（天）') }}</th><th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
+      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
+        <th>{{ t('median length (trading days)', '存续中位数（交易日）') }}</th>
+        <th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
       {% for row in lifespan_rows %}
       <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td><td>{{ t(row.next, row.next_zh) }}</td></tr>
       {% endfor %}
