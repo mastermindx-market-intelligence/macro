@@ -7,7 +7,8 @@ Capture additionally composes the fixed-file Options Hub producer with separate
 current Save/retention decisions and a qualified private destination; no source
 bytes, paths, URLs, policy or destination are accepted from the browser.
 
-All bindings default absent; no production wiring or authority is installed.
+Bindings default absent; app.options_scenario_bindings installs the existing
+private-store wiring only under explicit server activation flags.
 An acquired reference is expected byte identity only. Changed producer bytes
 refuse before retention; no latest/public fallback. After any possible capture
 effect, failures stay unavailable/UNKNOWN and recovery must qualify/read the
@@ -168,6 +169,9 @@ def _usable_bucket(bucket: Any) -> bool:
 
 
 def _bindings_usable(bindings: Any) -> bool:
+    from app.options_scenario_bindings import ScenarioSourceRuntime
+    if isinstance(bindings, ScenarioSourceRuntime):
+        return True
     if not isinstance(bindings, SourceScenarioBindings):
         return False
     return (
@@ -187,7 +191,8 @@ def bindings_from_app_state(request: Request):
     route can never install, replace or synthesize a backend.
     """
     state = getattr(request.app.state, "options_scenario_source_bindings", None)
-    if not isinstance(state, SourceScenarioBindings):
+    from app.options_scenario_bindings import ScenarioSourceRuntime
+    if not isinstance(state, (SourceScenarioBindings, ScenarioSourceRuntime)):
         return None
     return state
 
@@ -941,9 +946,12 @@ async def resolve_scenario_source_route(
             raise _refuse_unavailable("request_invalid")
         (mode, investigation_id, revision, grant_id, expected_revision,
          operation_id, capture) = _parse_body(raw)
+        from app.options_scenario_bindings import ScenarioSourceRuntime
+        runtime = isinstance(bindings, ScenarioSourceRuntime)
         if mode == "capture" and (bindings.producer_out_dir is None
-                or not callable(bindings.source_save_decision)
-                or not callable(bindings.retention_decision)):
+                or (runtime and not bindings.capture_enabled)
+                or (not runtime and (not callable(bindings.source_save_decision)
+                                     or not callable(bindings.retention_decision)))):
             raise _refuse_unavailable("source_binding_unavailable")
         access_token = _bearer_token(request)
         if access_token is None:
@@ -978,6 +986,11 @@ def _resolve_mode(bindings, access_token: str, principal, investigation_id: str,
 
 def _resolve_capture(bindings, access_token, principal, investigation_id, revision,
                      grant_id, capture, mode, expected_revision=None):
+    from app.options_scenario_bindings import ScenarioSourceRuntime
+    if isinstance(bindings, ScenarioSourceRuntime):
+        bindings = bindings.for_request(token=access_token, principal=principal,
+            investigation_id=investigation_id, revision=revision, grant_id=grant_id,
+            capture=capture, mode=mode, expected_revision=expected_revision)
     descriptor = _descriptor(capture, investigation_id, revision, grant_id)
     viewer = _native.ViewerIdentity(principal.principal_id,
                                     principal.principal_issuer, principal.auth_epoch)
@@ -1074,6 +1087,13 @@ def _capture_mode(bindings, access_token, principal, investigation_id, revision,
     retains the original operation and may only reconcile by read/qualify.
     """
     _check_prospective(access_token, investigation_id, expected_revision)
+    from app.options_scenario_bindings import ScenarioSourceRuntime
+    runtime = bindings
+    if isinstance(bindings, ScenarioSourceRuntime):
+        bindings = bindings.for_request(token=access_token, principal=principal,
+            investigation_id=investigation_id, revision=revision, grant_id=None,
+            capture=capture, mode="capture", expected_revision=expected_revision,
+            operation_id=operation_id)
     descriptor = _descriptor(capture, investigation_id, revision, None)
     viewer = _native.ViewerIdentity(principal.principal_id,
                                     principal.principal_issuer, principal.auth_epoch)
@@ -1087,7 +1107,7 @@ def _capture_mode(bindings, access_token, principal, investigation_id, revision,
         _recheck_context(access_token, principal, investigation_id, revision, None, None)
         # Exact retained bytes + current evaluate/read authority + native TS math
         # still qualify before canonical CAS; metadata emission is not acceptance.
-        return _resolve_capture(bindings, access_token, principal, investigation_id,
+        return _resolve_capture(runtime, access_token, principal, investigation_id,
                                 revision, None, capture, "capture", expected_revision)
     except Exception:
         # A failed/partial/lost retention response never means "nothing changed".

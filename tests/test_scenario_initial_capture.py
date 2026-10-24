@@ -94,3 +94,230 @@ def test_hub_hashes_original_producer_bytes_not_reserialized_display(monkeypatch
     monkeypatch.setattr(hub.time,'monotonic',lambda:10**20)
     stale=hub._hub_fetch('gex/SPY.json')
     assert stale['stale'] is True and stale['_scenario_source_identity']==identity
+
+
+# Production binding composition below uses real route/auth/RLS-policy callbacks.
+# Only external transports and the private-store factory are controlled doubles.
+def runtime_setup(monkeypatch, tmp_path, *, capture_enabled=False):
+    from app import options_scenario_bindings as B
+    from engine.research_vault import r2_store
+    from tests.test_options_scenarios import BUCKET
+    h = World()
+    h.patch(monkeypatch)
+    h.s3 = FakeS3()
+    class Store(r2_store.R2Store):
+        def __init__(self):
+            self.bucket, self._s3 = BUCKET, h.s3
+            self._single_attempt_writes = True
+            self._dedicated_write_client = h.s3
+        def validate_strict_conditional_write_capability(self):
+            pass
+        def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type):
+            assert expected_version is None and content_type == 'application/json'
+            self._s3.put_object(Bucket=self.bucket, Key=key, Body=data,
+                               ContentType=content_type, IfNoneMatch='*')
+            return True
+    store = Store()
+    def build(**kwargs):
+        assert kwargs == {'single_attempt_writes': True}
+        return store
+    monkeypatch.setattr(B.r2_store, 'build_store', build)
+    monkeypatch.setenv('OPTIONS_SCENARIO_SOURCE_ENABLED', '1')
+    monkeypatch.setenv('R2_RESEARCH_BUCKET', BUCKET)
+    monkeypatch.setenv('R2_BUCKET', 'shared-public-fixture')
+    monkeypatch.delenv('RESEARCH_LOCAL_STORE', raising=False)
+    monkeypatch.setenv('OPTIONS_SCENARIO_CAPTURE_ENABLED', '1' if capture_enabled else '0')
+    monkeypatch.setenv('OPTIONS_SCENARIO_PRODUCER_DIR', str(tmp_path))
+    for kind, raw in [('gex', h.gex_bytes), ('moves', h.moves_bytes)]:
+        path = tmp_path / kind / 'SPY.json'
+        path.parent.mkdir(exist_ok=True)
+        path.write_bytes(raw)
+    client = h.client(bind=False)
+    B.install_scenario_sources(h.app)
+    assert isinstance(h.app.state.options_scenario_source_bindings, B.ScenarioSourceRuntime)
+    return h, client, store
+
+
+def test_runtime_default_off_does_not_construct_or_contact_store(monkeypatch):
+    from app import options_scenario_bindings as B
+    h = World(); h.patch(monkeypatch); client = h.client(bind=False)
+    monkeypatch.delenv('OPTIONS_SCENARIO_SOURCE_ENABLED', raising=False)
+    monkeypatch.setattr(B.r2_store, 'build_store', lambda **kw: (_ for _ in ()).throw(AssertionError('IO')))
+    B.install_scenario_sources(h.app)
+    response = h.post(client, h.resolve_payload(), token_value=token())
+    assert response.json()['reason'] == 'source_binding_unavailable'
+    assert not h.trace
+
+
+def test_runtime_refuses_public_alias_local_fallback_and_missing_producer(monkeypatch, tmp_path):
+    from app import options_scenario_bindings as B
+    from fastapi import FastAPI
+    monkeypatch.setenv('OPTIONS_SCENARIO_SOURCE_ENABLED', '1')
+    monkeypatch.setattr(B.r2_store, 'build_store', lambda **kw: (_ for _ in ()).throw(AssertionError('IO')))
+    for env in [
+        {'R2_RESEARCH_BUCKET':'public', 'R2_BUCKET':'public'},
+        {'R2_RESEARCH_BUCKET':'private', 'RESEARCH_LOCAL_STORE':str(tmp_path)},
+        {'R2_RESEARCH_BUCKET':'private','OPTIONS_SCENARIO_CAPTURE_ENABLED':'1',
+         'OPTIONS_SCENARIO_PRODUCER_DIR':'relative/path'}]:
+        for key in ('R2_RESEARCH_BUCKET','R2_BUCKET','RESEARCH_LOCAL_STORE',
+                    'OPTIONS_SCENARIO_CAPTURE_ENABLED','OPTIONS_SCENARIO_PRODUCER_DIR'):
+            monkeypatch.delenv(key, raising=False)
+        for key, value in env.items(): monkeypatch.setenv(key, value)
+        app = FastAPI(); B.install_scenario_sources(app)
+        assert not hasattr(app.state, 'options_scenario_source_bindings')
+
+
+def test_runtime_real_callbacks_capture_then_read_recovery_and_reopen(monkeypatch, tmp_path):
+    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
+    payload = {'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
+               'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    response = h.post(client, payload, token_value=token())
+    assert response.json().get('mode') == 'capture', response.text
+    assert h.s3.objects[h.gex_ref.key] == h.gex_bytes
+    assert h.s3.objects[h.moves_ref.key] == h.moves_bytes
+    count = sum(x[0] == 'put' for x in h.s3.log)
+    response = h.post(client, {**payload,'mode':'qualify'}, token_value=token())
+    assert response.json().get('mode') == 'qualify', response.text
+    # The canonical CAS remains elsewhere; now simulate its caller-token read.
+    monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row(revision=1, inv=INV_B)))
+    response = h.post(client, h.resolve_payload(revision=1, inv=INV_B), token_value=token())
+    assert response.json().get('mode') == 'resolve', response.text
+    assert sum(x[0] == 'put' for x in h.s3.log) == count == 2
+    assert response.headers['cache-control'] == 'private, no-store'
+    assert response.headers['vary'] == 'Authorization'
+
+
+def test_runtime_capture_has_separate_zero_io_gate(monkeypatch, tmp_path):
+    h, client, _ = runtime_setup(monkeypatch, tmp_path)
+    response = h.post(client, {'mode':'capture','investigation_id':INV_B,'revision':1,
+        'expected_revision':0,'operation_id':OP,'grant_id':None,'capture':h.capture()},token_value=token())
+    assert response.json()['reason'] == 'source_binding_unavailable'
+    assert not h.s3.log and not h.trace
+
+
+def test_runtime_entitlement_and_revoked_pin_refuse_before_object_read(monkeypatch, tmp_path):
+    from tests.test_options_scenarios import GRANT
+    h, client, _ = runtime_setup(monkeypatch, tmp_path)
+    calls = []
+    def rpc(*a, **kw):
+        calls.append(1)
+        return FakeRpcResponse(h.handoff() if len(calls) == 1 else {'status':'not_found'})
+    monkeypatch.setattr(S, '_open_rpc', rpc)
+    response = h.post(client, h.resolve_payload(grant=GRANT), token_value=token())
+    assert response.json()['status'] in ('denied', 'unavailable'), response.text
+    assert not h.s3.log
+    h.state.row = {'tier':'free','features':[]}
+    response = h.post(client, h.resolve_payload(), token_value=token())
+    assert response.json()['reason'] == 'product_unavailable'
+    assert not h.s3.log
+
+
+def test_runtime_private_transport_rejects_other_namespace_and_overwrite(monkeypatch, tmp_path):
+    import pytest
+    from app.options_scenario_bindings import _PrivateObjects
+    h, _, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    objects = _PrivateObjects(store, True)
+    with pytest.raises(ValueError): objects.get_object(Bucket=store.bucket, Key='research_vault/catalog.json')
+    with pytest.raises(ValueError): objects.get_object(Bucket='public', Key=h.gex_ref.key)
+    with pytest.raises(ValueError): objects.put_object(Bucket=store.bucket, Key=h.gex_ref.key,
+        Body=h.gex_bytes, ContentType='application/json', IfNoneMatch=None)
+    assert not h.s3.log
+
+
+def test_runtime_session_change_after_read_withholds_all_bytes(monkeypatch, tmp_path):
+    from tests.test_options_scenarios import UID
+    h, client, _ = runtime_setup(monkeypatch, tmp_path)
+    h.s3.objects[h.gex_ref.key] = h.gex_bytes
+    h.s3.objects[h.moves_ref.key] = h.moves_bytes
+    monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse(h.row()))
+    read = h.s3.get_object
+    def changed(**kw):
+        response = read(**kw)
+        h.state.user = {**h.state.user, 'id':'cccccccc-cccc-4ccc-8ccc-cccccccccccc'}
+        return response
+    monkeypatch.setattr(h.s3, 'get_object', changed)
+    response = h.post(client, h.resolve_payload(), token_value=token())
+    assert response.json()['status'] in ('unavailable','denied'), response.text
+    assert 'gex' not in response.json() and 'capture' not in response.json()
+
+
+def test_runtime_uncertain_write_has_no_retry_or_false_success(monkeypatch, tmp_path):
+    h, client, store = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    monkeypatch.setattr(S, '_open_rpc', lambda *a, **kw: FakeRpcResponse({'status':'not_found'}))
+    calls = []
+    def lost(key, data, **kw):
+        calls.append(key)
+        raise TimeoutError('controlled unresolved write')
+    monkeypatch.setattr(store, 'put_bytes_strict_conditional', lost)
+    payload = {'mode':'capture','investigation_id':INV_B,'revision':1,'expected_revision':0,
+               'operation_id':OP,'grant_id':None,'capture':h.capture()}
+    response = h.post(client, payload, token_value=token())
+    assert response.json()['status'] == 'unavailable' and len(calls) == 1
+    response = h.post(client, {**payload,'mode':'qualify'}, token_value=token())
+    assert response.json()['status'] == 'unavailable' and len(calls) == 1
+
+
+def test_runtime_request_scopes_do_not_borrow_actor_or_operation(monkeypatch, tmp_path):
+    from app.options_auth import OptionsPrincipal
+    from tests.test_options_scenarios import UID, ISS, SID
+    h, _, _ = runtime_setup(monkeypatch, tmp_path, capture_enabled=True)
+    runtime = h.app.state.options_scenario_source_bindings
+    p = OptionsPrincipal(UID, ISS, SID, 2000)
+    bound = runtime.for_request(token=token(), principal=p, investigation_id=INV_B,
+        revision=1, grant_id=None, capture=h.capture(), mode='capture',
+        expected_revision=0, operation_id=OP)
+    # A cross-request binding never acquires authority from another valid session.
+    assert bound.resource_access({'viewer_id':'other'}) is False
+    assert bound.source_save_decision({'operation_id':'other'})['status'] == 'denied'
+    assert bound.retention_decision({'principal':'other'})['status'] == 'denied'
+    assert not h.s3.log and not h.trace
+
+
+def test_runtime_real_private_store_transport_sends_one_put_on_redirect_or_error(monkeypatch):
+    """Actual boto3/store/adapter against loopback; no cloud or fixture policy."""
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    import threading
+    import pytest
+    from engine.research_vault import r2_store
+    from app.options_scenario_bindings import _PrivateObjects
+    h = World()
+    class Handler(BaseHTTPRequestHandler):
+        def do_PUT(self):
+            self.server.puts += 1
+            self.rfile.read(int(self.headers.get('Content-Length', '0')))
+            assert self.headers.get('If-None-Match') == '*'
+            raw = b'<Error><Code>SlowDown</Code></Error>' if self.server.status != 200 else b''
+            self.send_response(self.server.status)
+            if self.server.status == 301:
+                self.send_header('x-amz-bucket-region', 'us-east-1')
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers(); self.wfile.write(raw)
+        def do_HEAD(self):
+            self.server.heads += 1
+            self.send_response(500); self.send_header('Content-Length','0'); self.end_headers()
+        def log_message(self, *args): pass
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    server.puts = server.heads = 0
+    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    try:
+        monkeypatch.setenv('R2_RESEARCH_ENDPOINT', f'http://127.0.0.1:{server.server_port}')
+        monkeypatch.setenv('R2_RESEARCH_ACCESS_KEY_ID', 'controlled-local-key')
+        monkeypatch.setenv('R2_RESEARCH_SECRET_ACCESS_KEY', 'controlled-local-secret')
+        monkeypatch.setenv('R2_RESEARCH_BUCKET', 'controlled-private')
+        monkeypatch.setenv('R2_BUCKET', 'controlled-public')
+        monkeypatch.delenv('RESEARCH_LOCAL_STORE', raising=False)
+        store = r2_store.build_store(single_attempt_writes=True)
+        objects = _PrivateObjects(store, True)
+        for status in (200, 301, 503):
+            server.status = status
+            before = server.puts
+            args = dict(Bucket=store.bucket, Key=h.gex_ref.key, Body=h.gex_bytes,
+                        ContentType='application/json', IfNoneMatch='*')
+            if status == 200: objects.put_object(**args)
+            else:
+                with pytest.raises(Exception): objects.put_object(**args)
+            assert server.puts == before + 1 and server.heads == 0
+    finally:
+        server.shutdown(); server.server_close(); thread.join(timeout=5)
+        assert not thread.is_alive()

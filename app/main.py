@@ -2758,6 +2758,8 @@ except Exception as _options_issue_desk_exc:  # noqa: BLE001
 try:
     from app.options_scenarios import router as options_scenarios_router  # noqa: E402
     app.include_router(options_scenarios_router)
+    from app.options_scenario_bindings import install_scenario_sources  # noqa: E402
+    install_scenario_sources(app)
 except Exception:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("protected scenario source router unavailable")

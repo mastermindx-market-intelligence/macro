@@ -264,6 +264,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -2205,6 +2206,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -3197,6 +3199,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -9570,6 +9573,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -13353,6 +13357,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -24766,7 +24771,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow jsonschema==4.26.0 rjsmin==1.2.5
+        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow jsonschema==4.26.0 rjsmin==1.2.5 "boto3>=1.34,<2.0"
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       # Share one pytest process across the related API suites. This keeps all
@@ -25136,6 +25141,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -33749,6 +33755,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
@@ -36878,6 +36885,7 @@ jobs:
     paths:
       - "app/options_auth.py"
       - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
       - "engine/intelligence_workspace/options_identity.py"
       - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/scenario_source_resolution.py"
