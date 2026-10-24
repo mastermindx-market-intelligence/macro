@@ -8,6 +8,7 @@ This seam is usable only in the same request that performs fresh authorization.
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from typing import Callable
 
@@ -19,6 +20,7 @@ from app.options_auth import resolve_authenticated_matrix_display, resolve_optio
 from engine.options_matrix_retention import SnapshotReference, parse_reference
 from engine.intelligence_workspace.entity import IdentityArtifactRead
 from engine.intelligence_workspace.options_matrix_delivery import MatrixDisplaySource
+from app.options_matrix_runtime import MatrixCaptureUnavailable
 
 
 _HEADERS = {"Cache-Control": "private, no-store", "Vary": "Authorization, Cookie"}
@@ -73,6 +75,9 @@ def _serve(runtime, ref, selection, token):
             security_master=captured.security_master, root_evidence=captured.root_evidence,
             source=captured.source, clock=runtime.clock,
         )
+    except MatrixCaptureUnavailable as exc:
+        logging.getLogger("macro.api").warning("Matrix capture unavailable: %s", exc.code)
+        return _error()
     except Exception:
         return _error()
 

@@ -314,17 +314,57 @@ entitlement and source checks. The whole Matrix response remains bound to the
 existing final consumer channel `/api/flow?f=matrix:<ROOT>`; the private POST is
 transport, not another rights authority or an export/Save action.
 
-The sole installation binding is the deployment-owned
-`app.state.options_matrix_display_runtime = MatrixHTTPRuntime(capture=...)`.
-There is no production default or environment enrollment shortcut. The capture
-reader receives only the validated native `SnapshotReference`, and must return
-`MatrixHTTPInputs` containing independently retained raw Matrix, genuine identity
-captures and a genuine `MatrixDisplaySource`. The existing
-`engine.options_matrix_retention.load_snapshot` can read/verify the exact native
-immutable object. `scripts/observe_options_matrix_publication.py` has a
-SPY-specific identity capture procedure; this route does not broaden its source
-admission. No runtime binding, source contract, dataset ID, policy pin or grant is
-installed by this source change. An absent binding yields503.
+`app.main` installs the concrete lazy `DeployedMatrixCapture(REPO)` through
+`install_matrix_display_runtime`. Installation performs no data, credential or
+network read. Each authenticated request reads audited deployment configuration
+from the existing `config.yml` `options_matrix_display` stanza. No such stanza is
+seeded by this change; the tracked config currently refuses with
+`configuration_missing:options_matrix_display`.
+
+The stanza has these closed fields, all supplied by the deployment owner:
+
+| Field | Required actual fact |
+| --- | --- |
+| `source_mode` | Exactly `local_retained` or `r2_public`; no fallback |
+| `root`, `vendor` | Existing identity scope `SPY`, `thetadata` only |
+| `dataset_id`, `dataset_version`, `source_family` | Audited Matrix composite binding, independent of policy |
+| `inputs` | Exactly `oi`, `eod`, `greeks`, each with native `dataset_id` and `version` |
+| `required_rights_rationale` | Explicit audited right-to-rationale mapping for the complete delivered output |
+| `registry_sha256` | Pin of exact existing `config/dataset_registry.yml` bytes |
+| `registry_revision`, `evidence_sha256` | Independently pinned policy revision context and exact evidence digest |
+
+These are server configuration, not another dataset registry or a grant. The
+reader captures the existing registry bytes, checks their digest, loads the
+existing `DatasetContract`/`Registry` vocabulary, resolves produced contracts and
+validates the native Matrix metadata/role DAG before returning `MatrixHTTPInputs`.
+Absent contracts refuse `native_produced_contracts_unavailable`; a changed registry
+refuses `native_registry_digest_mismatch`. Each final helper call still checks the
+actual row rights and policy; configuration never supplies an allowed decision.
+
+`local_retained` reads only the publisher's existing
+`data/live_flow_out/options_matrix/history/<ROOT>/<SHA256>.json` beneath REPO.
+The publisher runs on a separate producer host; that local history's presence on
+the deployed API host is UNKNOWN, and missing files refuse. `r2_public` reads only
+the immutable native history key under existing `R2_PUBLIC_BASE` or
+`config.yml:r2_data_plane.public_base`. It sends no credentials/bearer/cookies,
+disables ambient proxy handling and redirects, requests identity encoding,
+requires exact Content-Length, bounds one response buffer to16MiB and verifies
+native snapshot bytes. Neither mode reads the mutable head or falls back to the
+other mode, cached data or a fixture.
+
+The reader reuses `capture_spy_identity_inputs` with its bounded FD file reader for
+canonical `vendor_aliases.parquet`, `security_master.parquet` and `_receipt.json`.
+It preserves the existing SPY-only receipt serialization/scope. Read completion
+clocks are current observations, not historical known-at or input lineage proof.
+The regular-file reader rejects symlinks/FIFOs/oversize files and checks post-read
+size/mtime/ctime; registry/Matrix pins catch changed bytes. This is not an atomic
+multi-file snapshot or proof against every concurrent same-size rewrite.
+
+A per-runtime nonblocking semaphore admits at most two captures; an occupied
+runtime immediately refuses `capture_capacity_unavailable`. The actual reader
+holds its slot until it settles, including after its HTTP owner times out. No
+queue, retry, store, alternate reader or capacity-based failover is introduced.
+Named capture diagnostics are server logs only; HTTP refusals remain generic.
 
 The prepared Terminal source POST path uses the existing verified session token
 and `BILLING_BASE`, restricted to the legitimate HTTPS Macro origin
@@ -341,13 +381,21 @@ Terminal applies one10-second budget to authentication, incoming body, capture,
 transport and response reads, including abort/disconnect. Bounded readers allocate
 one buffer and do not await cancellation cleanup. Native bounds selection reads
 with5 seconds and response work with10 seconds. Native timeout drops late thread
-results; it cannot terminate a blocking reader thread. Installed readers must
-supply their own finite I/O deadlines and cleanup. Request timeout is not proof
-that their network read was cancelled.
+results; it cannot terminate a blocking reader thread. The concrete reader checks a6-second elapsed budget between bounded file/socket
+reads and uses2-second socket/open timeouts with read1, closing responses on
+settlement. DNS resolution, open and local filesystem syscalls can still stall
+beyond those checks; neither Python thread cancellation nor hard all-I/O
+cancellation is claimed. Such work retains its capture slot. Request timeout is
+not proof that its network read was cancelled.
 
-Local synthetic tests exercise the actual router using the exact extracted
-`app.main` registration statements and the real authorization helper. They do not
-exercise full `app.main` startup/dependency closure. Next tests execute its actual
+Local synthetic tests exercise the exact incumbent registration and installation
+statements, concrete local/R2 capture and the real authorization helper. A guarded
+real `app.main` import also installed the concrete runtime and served its405
+method route with no-store headers, with network/DB/credential access denied and
+only the observed existing read-only git identity command allowed. Its unrelated
+capital-structure router logged a document-term authority startup self-check
+warning and remained unmounted. This is qualified Matrix startup proof, not a
+claim that every optional router or the full dependency closure passed. Next tests execute its actual
 POST through synthetic fetch, including exact response bytes captured from the
 ASGI test. They establish source request composition, not deployed execution,
 rights enrollment, independent consequential review, release or production proof.
