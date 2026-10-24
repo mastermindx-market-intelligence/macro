@@ -168,6 +168,7 @@ jobs:
     timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
+      government_revenue_source_sha: ${{ steps.pushdata.outputs.source_sha }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
       # The capital-structure chain moved to its own `capital_structure` job. Its
       # INPUT — the source ledger `run collectors` (sec_capital_structure) just
@@ -961,8 +962,12 @@ jobs:
             # attempt rather than fail open. Every other fence outcome returns 0.
             if ! push_append_only_fence origin/main; then push_backoff; continue; fi
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              GOVREV_PUSH_SOURCE_SHA=$(git rev-parse HEAD)
               if push_do; then
                 echo "pushed market data on attempt $PUSH_ATTEMPT"
+                # No caller binding is emitted if the checkout drifted across push.
+                [ "$(git rev-parse HEAD)" = "$GOVREV_PUSH_SOURCE_SHA" ] || exit 75
+                printf 'source_sha=%s\n' "$GOVREV_PUSH_SOURCE_SHA" >> "$GITHUB_OUTPUT"
                 echo "published=true" >> "$GITHUB_OUTPUT"
                 push_won
                 exit 0
@@ -1691,6 +1696,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.collect.outputs.government_revenue_source_sha }}
       projection_only: true
 
   # collect_tail: the slow post-adapter accrual band, split out of `collect`

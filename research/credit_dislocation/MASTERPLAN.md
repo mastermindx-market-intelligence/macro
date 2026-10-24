@@ -1,3 +1,15 @@
+## Main integration after hosted CI repair — 23 October 2026 (CDT)
+
+The source repair child 12c254a3d8ca7c88977a17f71653117c2a3997a9 is integrated with main dfb1cfc758586ee6679bb14f4520e75676608548. The only merge conflict was site/bonds.html; it is resolved with the exact retained, qualified 728,615-byte native page, SHA-256 a4cbb8d4722f1b9fcd52c7729ce0792d5e03e2f81cfad24e7c3822e053538952.
+
+All 56 producer/template pins, 556 Git-bound inputs, six private fixed inputs, and 29 supporting assets still match that completed native generation. No material generation input changed, so the existing generation and its two page contracts remain applicable. The native build was not repeated. The sparse checkout had no site directory; resolution materialized only the owned page and staged it with git add --sparse, without changing the sparse profile or repeating the already-applied merge.
+
+The three missing W4 package declarations and protected-serving assertion repair remain included. Their focused tests passed before main integration. New merged-head checks and ordinary publication are recorded in the canonical PR9590 checkpoint after commit. The previous hosted run remains a failure at its own head; these source fixes do not establish full CI or visual acceptance.
+
+Evidence: evidence/main_dfb_retained_page_20261024.json and evidence/hosted_ci_repair_20261024.json. Real visual evidence, independent review, and release acceptance remain held. No source acquisition, deployment, migration, gate weakening, or production-currentness claim is added.
+
+---
+
 ## Hosted CI repair — 23 October 2026 (CDT)
 
 The published7818 hosted run40051334986 completed FAILURE. Its checkout was merge80206de87897fd538f202bbface211fef785ca92 against base1dafbb9634c3e77c03b06b3825eab63fadaa9430. Hosted contract-delta passed; packs1/6/8 failed. The original observer11080 is complete and consumed.
