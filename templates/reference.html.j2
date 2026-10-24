@@ -170,15 +170,14 @@ html[data-lang="zh"] .rf-kind { letter-spacing:0; text-transform:none; }
 /* ══ :target — deep-link open + focus state. ONE mechanism, two materials. ════ */
 .rf-body { display:none; }
 .rf-e:is(:target, .rf-open):not(.rf-closed) .rf-body { display:block; padding:0 var(--sp-4,16px) var(--sp-5,20px) var(--sp-4,16px); }
-/* DARK: lift by LUMINANCE (--panel2) + a 3px accent rail. */
-.rf-e:is(:target, .rf-open):not(.rf-closed) { background:var(--panel2); border-left:3px solid var(--link);
+/* DARK: lift by luminance with an even neutral border. */
+.rf-e:is(:target, .rf-open):not(.rf-closed) { background:var(--panel2); border:1px solid var(--line);
   padding-left:var(--sp-2,8px); }
 /* LIGHT: a --panel2 step on a white sheet is the "dirty smudge" §12 names. Lift by
-   STRUCTURE instead — the card stays white, gains an accent hairline and a real
-   shadow, and keeps the same 3px rail so the semantic marker is identical. */
+   STRUCTURE instead — the card stays white with an even neutral border and a
+   shadow. Typography carries the same open-state meaning in both themes. */
 html[data-theme="light"] .rf-e:is(:target, .rf-open):not(.rf-closed) { background:var(--panel);
-  border:1px solid color-mix(in srgb, var(--link) 34%, var(--line));
-  border-left:3px solid var(--link); box-shadow:var(--card-shadow); }
+  border:1px solid var(--line); box-shadow:var(--card-shadow); }
 .rf-e:is(:target, .rf-open):not(.rf-closed) .rf-label { font-weight:800; }
 .rf-e:is(:target, .rf-open):not(.rf-closed) + .rf-e > .rf-sum, .rf-e:is(:target, .rf-open):not(.rf-closed) > .rf-sum { border-top-color:transparent; }
 /* Close-affordance fallback (verified empirically in headless Chromium,
@@ -190,7 +189,7 @@ html[data-theme="light"] .rf-e:is(:target, .rf-open):not(.rf-closed) { backgroun
    and handleHash() removes the class the moment a real hash navigation
    re-opens that (or any) entry. */
 .rf-e.rf-closed .rf-body { display:none !important; }
-.rf-e.rf-closed { background:none; border-left-color:transparent; padding-left:0; }
+.rf-e.rf-closed { background:none; border:0; padding-left:0; }
 html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow:none; }
 
 /* ── record blocks ──────────────────────────────────────────────────────────── */
