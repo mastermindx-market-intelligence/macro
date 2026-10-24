@@ -1492,33 +1492,38 @@ def _surface_oi_map(root: str, session_date: str) -> dict:
 # ── prior-session close loader (FIX 3 — moneyness) ───────────────────────────
 
 def _load_prev_close(root: str, session_date: str) -> float | None:
-    """Return the prior-session close for `root` from the yahoo store.
+    """Return the exact prior NYSE session's price close, otherwise unknown.
 
-    Looks up data/yahoo/{ROOT}.parquet, takes the LAST row with date STRICTLY
-    before session_date (never session_date itself — lookahead law).
-    Returns None if the store is absent or no qualifying row exists.
-    INERT: never raises — missing store must not crash a cycle.
+    Published display inputs and the native Yahoo store use the same strict
+    selector. Total-return closes and stale earlier rows are never substitutes.
+    Missing inputs must not crash a live cycle.
     """
     try:
         from lib import store
-        import pandas as pd
+        from lib.live_flow_price_inputs import load_prior_close
+        from lib.live_flow_prior_close import select_prior_close
 
         safe_root = root.upper().replace("^", "_").replace("=", "_").replace("/", "_")
-        df = store.read("yahoo", safe_root)
-        if df is None or df.empty or "close" not in df.columns:
-            return None
-        sess_dt = pd.Timestamp(session_date)
-        # Strictly before session_date — no lookahead
-        prior = df[df.index < sess_dt]
-        if prior.empty:
-            return None
-        last_close = prior["close"].iloc[-1]
-        if pd.isna(last_close) or float(last_close) <= 0:
-            return None
-        return float(last_close)
+        value = load_prior_close(config.data_dir(), safe_root, session_date)
+        if value is not None:
+            return value
+        return select_prior_close(store.read("yahoo", safe_root), session_date)
     except Exception as e:  # noqa: BLE001
         log.debug("poller: prev_close failed for %s: %s", root, e)
         return None
+
+
+def _sync_prior_close_inputs(roots: list[str], session_date: str) -> None:
+    """Read incumbent published prices once at natural startup; never collect."""
+    try:
+        from lib.live_flow_price_inputs import sync_prior_closes
+
+        result = sync_prior_closes(_ROOT, config.data_dir(), roots, session_date)
+        log.info("poller: prior-close inputs %s", json.dumps(result, sort_keys=True))
+    except Exception as exc:  # noqa: BLE001
+        # Transport failures retain the old file; the reader still refuses it
+        # for a later session. Do not block genuine Flow publication on prices.
+        log.warning("poller: prior-close inputs unavailable (%s)", type(exc).__name__)
 
 
 # ── state I/O ─────────────────────────────────────────────────────────────────
@@ -3619,6 +3624,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     else:
         roots = _resolve_universe(cfg)
     log.info("poller: universe=%d roots", len(roots))
+    if args.rth_only and not args.once:
+        _sync_prior_close_inputs(roots, session_date)
 
     # A historical --date override is not a supported smoke, but retain the
     # legacy diagnostic's full-day semantics: a live-clock window on a past

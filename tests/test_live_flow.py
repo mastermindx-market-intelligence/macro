@@ -1579,7 +1579,8 @@ class TestHonestMoneyness:
             "2026-07-02",  # same as session_date → MUST NOT be used (PIT law)
             "2026-07-03",  # future → MUST NOT be used
         ])
-        df = pd.DataFrame({"close": [100.0, 999.0, 888.0]}, index=idx)
+        df = pd.DataFrame({"close_price": [100.0, 999.0, 888.0],
+                           "close": [90.0, 899.0, 788.0]}, index=idx)
         yahoo_dir = tmp_path / "yahoo"
         yahoo_dir.mkdir()
         df.to_parquet(yahoo_dir / f"{root}.parquet")
