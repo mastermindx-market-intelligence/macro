@@ -155,10 +155,10 @@ waves:
     status: todo
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Consume Secretary read-only ACP custody reconciliation PICKUP 1792871522.079479
-      for original dirty carrier deepseek-current-bridge-acp-review-20261022-sol-001.
-      No new T1a child was placed; preserve the unpublished overlapping candidate and
-      all source/currentness, installed-input and original-parent gates.
+      Execute HC-P3.T1a.RECOVER's read-only donor freeze after ORPHANED_PRESERVE
+      reconciliation 1792873163.320769. Current responsibility is recorded; the original
+      carrier stays immutable. Qualify current protected source before one fresh carrier
+      and preserve installed/currentness and original-parent gates.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -178,19 +178,19 @@ waves:
     status: in_progress
     depends_on: [HC-P4]
     next_action: >
-      Execute additive HC-P6.T0 producer-to-consumer qualification using unchanged
-      exports from the existing Result HTTP test and the real TypeScript Office projection.
-      Do not edit overlapping App/auth/source carriers. Full signed-in office, native chat,
-      intent correction, switching, stale data, logout and 320/390px acceptance remain open.
+      Consume same-child HC-P6.T0.FIX1 repair for Draft #1854 at ffe70d75, then obtain
+      independent source review. Real producer bytes decode but their distinct Runtime
+      identities prevent a qualified Office Result join; do not force association.
+      Full signed-in office, native chat and original P6 product acceptance remain open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
     status: in_progress
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
-      Execute pinned one-file HC-P7.T0.FIX1 for independent REQUEST_CHANGES on #1853
-      at 8166837a; repair case coverage, leaked coding oracles and eligibility semantics.
-      Freeze the repaired head for re-review on the same original Cursor child; preserve
-      32 public cases, eight empty holdouts and all R2 obligations. Live proof remains gated.
+      Obtain same-carrier HC-P7.T0.R2 review of repaired Draft #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc.
+      FIX1 passed author source checks and exact remote readback; hosted CI 40129725707
+      remains in progress. Preserve 32 public cases, eight empty holdouts and all R2
+      obligations. No evaluation campaign or full acceptance has occurred.
   - id: HC-P8
     title: Optional model and local-inference evaluation
     status: todo
@@ -284,9 +284,9 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, repair #1853's independent findings under HC-P7.T0.FIX1, then
-  obtain same-carrier re-review of the exact repaired head. Consume HC-P6.T0 placement,
-  same-child Rakazo repair and ACP custody reconciliation before overlapping writes.
+  For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
+  same-child repairs of #1854 and #1852. Freeze the orphaned ACP donor under
+  HC-P3.T1a.RECOVER before any fresh current-source integration.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1018,6 +1018,44 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   ready HC-P3.T1a below. No installed execution or new runtime owner is claimed; the
   full HC-P3 acceptance dependencies remain unchanged.
 
+### HC-P3.T1a.RECOVER — Current-owner recovery of the orphaned ACP donor
+
+- **Disposition/input:** Secretary RESULT 1792873163.320769 and note
+  /Users/chriswong/gwcap/acp-carrier-custody-reconciliation-20261024-deepseek-current-bridge.md
+  identify ORPHANED_PRESERVE: original review-lane carrier
+  deepseek-current-bridge-acp-review-20261022-sol-001, HEAD
+  810c025e8c24f9d2deb3049f726002c4c8c983c8, sixteen staged files and no unstaged or
+  untracked changes. No active writer was observed in the bounded checks. Portions
+  were released through #1196; the remainder is unpublished. Missing process/session/
+  PR records are not a universal historical effect-absence proof.
+- **Current responsibility assignment:** the current parent under Chairman commission
+  1792861454.777859 owns bounded recovery and reconciliation of this source candidate.
+  This records current responsibility without seeking an archived owner. The original
+  worktree, index and allocator registration remain immutable evidence, not a newly
+  activated source carrier. No lock release, cleanup, checkout or service effect.
+- **First action:** read-only freeze of all sixteen staged/working path identities,
+  full SHA-256 and Git blobs, HEAD/status/index agreement. Verify the two material
+  donor files: installed.py blob 7e7a5c7e467230f20195e5f8c995a1b2a2cc5522 and test
+  blob 20ff99e470677a57fedee4d14bfa8f6c2e49da99. Record full hashes in this record
+  before any donor-derived implementation. Stop on drift, a real new writer or scope conflict.
+- **Reconciliation:** compare against current protected source, observed master
+  3095d09f1789a5b8002503beae872774c297b1a5 (source-only #1827 telemetry change).
+  Preserve all current #1196 security/currentness/custody checks; the old donor has
+  material divergence and cannot be copied wholesale. Reuse only the needed canonical
+  projection/materialization concepts through the existing ACP owner.
+- **Conditional implementation carrier:** one fresh registered root-owned operation
+  meta-ceo-harness-acp-source-recovery-20261024-web-001 from the qualified current
+  protected base, only after the source freeze/reconciliation. Allowed production
+  scope remains HC-P3.T1a's installed.py and test_acp_installed_factory.py; any additional
+  required source file needs a concrete bounded task amendment before editing.
+  No new ACP Cursor child has yet been placed; no parallel source writer.
+- **Done/limits:** exact-head source/test evidence, current canonical catalog/generation/
+  artifact binding and prior guard preservation; separate non-author fleet review and CI.
+  This cannot satisfy genuine installed RuntimeBinding or HC-P3.T1 live acceptance.
+  No issuer/queue/registry replacement, install, credentials, provider calls, approval or merge.
+- **State:** READY_FOR_READ_ONLY_FREEZE; actual source implementation is conditional
+  on the recorded freeze and current-base reconciliation. Original candidate is retained.
+
 ### HC-P3.T1a — Canonical provider-free DSH host-packet source join
 
 - **Objective:** close the real source gap between the existing canonical capability/grant
@@ -1070,6 +1108,40 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   8b51455b81eb11356999eb5426cb447e5fb8a587 / e22d1fb09d2f20f60e5ec6a24813784f2a751407.
   No original file was modified or tested; no fresh implementation was dispatched.
   This discovery is source evidence, not candidate acceptance or live custody transfer.
+
+### HC-P6.T0.FIX1 — Make fresh consumption reusable and clean owned test state
+
+- **Returned source:** Draft Mastermind #1854 at
+  ffe70d75ad7fd85a3f38605547553ee262807213, five additive paths, original child
+  meta-ceo-harness-office-result-cursor-20261024-01, Cursor
+  bc-68bbcc42-a211-58a8-b502-9f02f65320e0, thread 1792872108.375879.
+  START 1792872520.615209; RESULT 1792873212.512929; parent STOP 1792873675.058829.
+- **Observed value:** unchanged real exporter bytes decode, but projectOffice returns
+  UNKNOWN / RESULT_OBSERVATION_UNQUALIFIED for distinct runtime source identities.
+  This is a useful reproducible source incompatibility, not a successful Result join.
+  Root read the actual new test and README. OS workflow 40129202144 passed;
+  repository CI 40129202042 remains in progress.
+- **Repair F1:** shared expectWithheld/expectChallenges and consumptionReport still use
+  constants for the original export's runtime identities in fresh mode. A genuinely
+  new exporter run generates new identities, so the fresh gate rejects valid new input
+  and its report is not derived wholly from the consumed documents. Confine immutable
+  acquisition pins to committed replay; derive fresh identities and report fields from
+  the actual decoded source. Preserve inequality and conservative withholding.
+- **Repair F2:** the malformed-input test creates an owned mkdtemp tree without cleanup.
+  Add bounded finally cleanup of only that exact attempt-owned tree, including failure
+  paths. Do not remove caller-provided fixture directories or any shared/unowned path.
+- **Verification:** use ONE new invocation of the existing exporter after the repair,
+  whose request-scoped identities differ from the committed export. Run the actual
+  fresh consumer on those unchanged bytes and report their dynamic identities/hashes.
+  Preserve original committed files and separate replay pins. Keep explicit bad-input
+  fail-closed tests and discrimination of the actual projection's guards; no fabricated
+  producer-compatible positive or altered DTO is fresh proof. Typecheck and exact-head CI.
+- **Scope:** same child/carrier/PR. Modify only result-producer.test.ts and its provenance/
+  usage README within the already allowed five-file scope. No production changes,
+  producer-test rewrites, new authority, dependency locks, installation, real credentials
+  or live provider calls. Independent non-author review follows the repaired frozen head.
+- **State:** READY_FOR_SAME_CHILD_REPAIR; explicit continuation is pending. No full P6,
+  installed/native or mission acceptance, approval or merge is inferred.
 
 ### HC-P6.T0 — Qualify the existing Office Mission/Result producer-to-consumer join
 
@@ -1130,10 +1202,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   No installed Office, authenticated real account, live worker, parent acceptance,
   24-hour/seven-day or full P6/mission claim. No approval/merge, purchases, credential
   moves, account-policy changes, service installation or live provider calls.
-- **State:** DELIVERY_SENT, original Cursor request thread 1792872108.375879,
-  after exact-head task readback at 5da9124f. Actual agent/START/result remain pending.
-  Production Result adapter/hook work requires a later bounded task after the observed
-  join and source-custody check; it is not an implicit extension of T0.
+- **State:** SOURCE_RETURNED_REPAIR_REQUIRED, Draft #1854/ffe70d75, RESULT
+  1792873212.512929. Actual pair is withheld for distinct Runtime source identities.
+  Builder STOP 1792873675.058829; HC-P6.T0.FIX1 is a bounded same-child repair.
+  Independent source review and production integration remain separate gates.
 
 ### HC-P7.T0 — Prospective evaluation preparation
 
@@ -1220,8 +1292,30 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **Return/review:** publish exact new head and changed one-file scope, author checks,
   hashes and hosted CI; request qualified re-review of that frozen head on the SAME
   original Cursor review child/carrier. No approval/merge or self-acceptance.
-- **State:** READY_FOR_AUTHOR_REPAIR; pinned before the first source edit. Full HC-P7,
-  R2 and mission acceptance remain open.
+- **State:** REPAIRED_PUBLISHED at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc,
+  exact author-validated remote blob 02e5adcf. R2 is pending same-carrier independent
+  review; full HC-P7, R2 acceptance and mission remain open.
+
+### HC-P7.T0.R2 — Re-review the repaired preparation on the original carrier
+
+- **Subject:** Draft Mastermind #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc;
+  research/META_CEO_HARNESS_EVALUATION_PREPARATION_2026-10-24.json, 236193 bytes,
+  SHA-256 9973b5f03575047875581c80dce71e31e11cc2af6381e87e3a38178f230f56e7,
+  Git blob 02e5adcf4cb7950f6fd7ecf4809b733c35715125. Exact tested remote content matched.
+- **Original independent child/carrier:** meta-ceo-harness-evaluation-review-cursor-20261024-01,
+  Cursor bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a, thread 1792870956.550899.
+  Secretary terminal receipt 1792872523.935489 closed R1 and retained this carrier.
+- **Review:** independently verify fixes F1–F5 from COMMENT review 5639733286 and
+  inspect the actual one-file delta. Challenge real Slack/app and subscription facts,
+  case-specific mapping reasons/protocol-only rows, separation of model inputs from
+  grading oracles, and the frozen eligible-unit denominator/permission-stop semantics.
+  Reconfirm 32 public cases, eight empty holdouts, all 48 exact R2 outcomes/six criteria
+  and non-execution/owner boundaries. Source remains frozen until this return.
+- **Done:** exact-head PASS / REQUEST_CHANGES / HOLD with concrete evidence and
+  independent provenance; CI 40129725707 is separate and currently in progress.
+  Review only; no source repair, formal approval/merge or campaign/holdout execution.
+- **State:** READY_FOR_SAME_CARRIER_REREVIEW; no replacement child or replay of any
+  held Fabric/P2 task. Full HC-P7/R2/mission acceptance remains open.
 
 ### HC-P7.T0.R1 — Independent preparation review
 
@@ -1499,3 +1593,30 @@ successful response, data=[], server_version 0.2.0. This proves no addressable t
 in this caller's current projection, not global absence. The existing canary source
 requires an authentic original CONTINUE read_ref and one current child; no such
 reference was supplied or fabricated and no grant/canary was started.
+
+
+#### Repaired evaluation, observed Office incompatibility and ACP recovery
+
+Evaluation FIX1 is published on same Draft #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc,
+236193 bytes, SHA-256 9973b5f03575047875581c80dce71e31e11cc2af6381e87e3a38178f230f56e7,
+blob 02e5adcf4cb7950f6fd7ecf4809b733c35715125; author checks and exact remote bytes agree.
+CI 40129725707 is in progress. Original reviewer terminal/custody receipt is
+1792872523.935489; the same agent is retained. HC-P7.T0.R2 is pinned before re-request.
+
+P6 Cursor START 1792872520.615209 and RESULT 1792873212.512929 returned Draft #1854
+at ffe70d75ad7fd85a3f38605547553ee262807213, five additive files. Actual exporter pair
+is incompatible with the current Office association because Runtime source identities
+differ; the consumer correctly withholds instead of manufacturing a join. OS CI passed,
+repository CI pending. Parent STOP 1792873675.058829 froze the first result. Root source
+consumption found fresh-mode hardcoded identities and missing owned temporary cleanup;
+HC-P6.T0.FIX1 pins a same-child repair before independent review or production integration.
+
+ACP RESULT 1792873163.320769 is ORPHANED_PRESERVE with no active writer observed,
+partly superseded by #1196. Parent STOP 1792873675.475989 closes that bounded investigation.
+HC-P3.T1a.RECOVER records current commission responsibility, an immutable read-only
+sixteen-file source freeze and conditional current-base reconciliation in one fresh carrier.
+Original worktree/index/registration stay unchanged. No source transfer or live proof yet.
+
+Rakazo repair forwarding is now confirmed: Secretary ACK 1792872529.114219, same
+bc-3aad7289 carrier, run run-88748d79-18e2-41a5-a973-66d7c7b96836 and same #1852.
+Its new head/result remain pending. No task is accepted from these progress receipts.

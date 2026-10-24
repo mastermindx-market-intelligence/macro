@@ -67,9 +67,9 @@ next_actions:
   - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
-  - Consume Secretary ACP custody PICKUP 1792871522.079479 for the original dirty carrier; no new T1a implementation was placed.
-  - Repair the five independent REQUEST_CHANGES findings on Draft 1853 under HC-P7.T0.FIX1, then freeze the repaired head for same-carrier re-review; R1 parent STOP is 1792872228.147259.
-  - Execute pinned additive HC-P6.T0 with the existing unchanged Mission/Result exporter and real TypeScript Office consumers; preserve existing App/auth/source carriers.
+  - Freeze and reconcile the orphaned ACP donor under HC-P3.T1a.RECOVER after custody RESULT 1792873163.320769; original carrier stays unchanged, fresh implementation conditional.
+  - Obtain HC-P7.T0.R2 same-carrier independent review of repaired Draft 1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc; author checks passed, hosted CI pending.
+  - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
   - PR 1717 accepted build/startup/401 cleanup and 43 native tests on unchanged source.
@@ -306,3 +306,30 @@ successful response, data=[], server_version 0.2.0. This proves no addressable t
 in this caller's current projection, not global absence. The existing canary source
 requires an authentic original CONTINUE read_ref and one current child; no such
 reference was supplied or fabricated and no grant/canary was started.
+
+
+#### Repaired evaluation, observed Office incompatibility and ACP recovery
+
+Evaluation FIX1 is published on same Draft #1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc,
+236193 bytes, SHA-256 9973b5f03575047875581c80dce71e31e11cc2af6381e87e3a38178f230f56e7,
+blob 02e5adcf4cb7950f6fd7ecf4809b733c35715125; author checks and exact remote bytes agree.
+CI 40129725707 is in progress. Original reviewer terminal/custody receipt is
+1792872523.935489; the same agent is retained. HC-P7.T0.R2 is pinned before re-request.
+
+P6 Cursor START 1792872520.615209 and RESULT 1792873212.512929 returned Draft #1854
+at ffe70d75ad7fd85a3f38605547553ee262807213, five additive files. Actual exporter pair
+is incompatible with the current Office association because Runtime source identities
+differ; the consumer correctly withholds instead of manufacturing a join. OS CI passed,
+repository CI pending. Parent STOP 1792873675.058829 froze the first result. Root source
+consumption found fresh-mode hardcoded identities and missing owned temporary cleanup;
+HC-P6.T0.FIX1 pins a same-child repair before independent review or production integration.
+
+ACP RESULT 1792873163.320769 is ORPHANED_PRESERVE with no active writer observed,
+partly superseded by #1196. Parent STOP 1792873675.475989 closes that bounded investigation.
+HC-P3.T1a.RECOVER records current commission responsibility, an immutable read-only
+sixteen-file source freeze and conditional current-base reconciliation in one fresh carrier.
+Original worktree/index/registration stay unchanged. No source transfer or live proof yet.
+
+Rakazo repair forwarding is now confirmed: Secretary ACK 1792872529.114219, same
+bc-3aad7289 carrier, run run-88748d79-18e2-41a5-a973-66d7c7b96836 and same #1852.
+Its new head/result remain pending. No task is accepted from these progress receipts.
