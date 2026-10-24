@@ -631,12 +631,12 @@ def _existing_customer(user_id: str) -> str | None:
 
 
 def _user_for_customer(customer_id: str) -> str | None:
-    try:
-        rows = _pg("GET", f"user_entitlements?stripe_customer_id=eq.{urllib.parse.quote(customer_id)}&select=user_id")
-        if rows:
-            return rows[0].get("user_id")
-    except Exception as exc:  # noqa: BLE001
-        log.warning("billing: user lookup failed for %s (%s)", customer_id, exc)
+    # Only a successful empty lookup means "unmapped". Transport/HTTP/JSON errors
+    # must reach the webhook's failure path so Stripe retries the original event;
+    # otherwise it records a skipped revocation as processed and strands paid access.
+    rows = _pg("GET", f"user_entitlements?stripe_customer_id=eq.{urllib.parse.quote(customer_id)}&select=user_id")
+    if rows:
+        return rows[0].get("user_id")
     return None
 
 

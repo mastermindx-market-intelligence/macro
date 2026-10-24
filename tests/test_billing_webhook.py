@@ -597,3 +597,106 @@ def test_checkout_failure_emits_commercial_path_event(monkeypatch, tmp_path):
     rows = load_events(root=tmp_path / "commercial_path")
     assert any(r.get("kind") == "checkout.fail" and r.get("reason") == "RuntimeError"
                for r in rows)
+
+
+@pytest.mark.parametrize("etype,status", [
+    ("customer.subscription.deleted", "canceled"),
+    ("invoice.payment_failed", "past_due"),
+])
+@pytest.mark.parametrize("failure", ["timeout", "http_503", "invalid_json"])
+def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
+    monkeypatch, etype, status, failure,
+):
+    """A failed authority lookup must not settle the event or strand paid access.
+
+    Only signature verification and the HTTP issuer are real; all provider, database,
+    mail and telemetry transports are isolated. The retained ledger remains the sole
+    duplicate authority, and later out-of-order events recompute current Stripe state.
+    """
+    import urllib.error
+    import stripe
+    from app import main
+
+    row = {
+        "user_id": "user_retry_test", "stripe_customer_id": "cus_retry_test",
+        "tier": "pro", "status": "active", "current_period_end": None,
+        "features": ["site_full", "terminal_live_options"], "source": "stripe",
+    }
+    recorded, invalidated, emitted = set(), [], []
+    mapping_available = False
+    writes = []
+    errors = {
+        "timeout": TimeoutError("offline simulated mapping timeout"),
+        "http_503": urllib.error.HTTPError("https://db.invalid", 503, "unavailable", {}, None),
+        "invalid_json": json.JSONDecodeError("invalid mapping response", "!", 0),
+    }
+
+    def fake_pg(method, path, **kwargs):
+        if path.startswith("stripe_events?"):
+            if method == "GET":
+                return [{"id": "found"}] if path.split("id=eq.")[1].split("&")[0] in recorded else []
+            assert method == "POST"
+            recorded.add(kwargs["body"][0]["id"])
+            return None
+        assert path.startswith("user_entitlements?")
+        if method == "GET":
+            if "stripe_customer_id=eq." in path:
+                if not mapping_available:
+                    raise errors[failure]
+                return [{"user_id": row["user_id"]}]
+            assert "user_id=eq.user_retry_test" in path
+            return [row.copy()]
+        assert method == "POST"
+        writes.append(kwargs["body"][0])
+        row.update(writes[-1])
+
+    fake_stripe = _fake_stripe([_sub(status, "pro_monthly", 1900000000)], [])
+    fake_stripe.Webhook, fake_stripe.error = stripe.Webhook, stripe.error
+    monkeypatch.setattr(billing, "_stripe", lambda: fake_stripe)
+    monkeypatch.setattr(billing, "_pg", fake_pg)
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "offline-test-key")
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", WHSEC)
+    monkeypatch.setattr(billing, "_billing_emails", lambda: None)
+    monkeypatch.setattr(billing, "_invalidate", invalidated.append)
+    monkeypatch.setattr(billing, "_commercial_emit", lambda kind, **fields: emitted.append(kind))
+    monkeypatch.setattr(main, "_brain_module", lambda: types.SimpleNamespace(
+        get_user_quotas=lambda *a, **kw: {"tier": "free", "quotas": {}},
+    ))
+    monkeypatch.setitem(main.app.dependency_overrides, main.require_user,
+                        lambda: {"id": "user_retry_test", "role": "authenticated"})
+
+    assert "terminal_live_options" in _get_api_me(main.app)[1]["features"]
+    payload = _event(etype, {"customer": "cus_retry_test"}, "evt_retry_test")
+    request = _FakeRequest(payload, {"stripe-signature": _sign(payload)})
+    with pytest.raises(type(errors[failure])):
+        asyncio.run(billing.webhook(request))
+    assert not recorded and not writes and not invalidated
+    assert emitted == ["webhook.error"]
+    assert row["tier"] == "pro"
+
+    mapping_available = True
+    assert asyncio.run(billing.webhook(request))["status"] == "ok"
+    assert recorded == {"evt_retry_test"} and invalidated == ["user_retry_test"]
+    response_status, issued = _get_api_me(main.app)
+    assert response_status == 200
+    assert issued["tier"] == "free" and issued["status"] == status and issued["features"] == []
+    assert asyncio.run(billing.webhook(request))["status"] == "duplicate"
+    assert len(writes) == 1 and len(invalidated) == 1
+
+    # A delayed older positive notification cannot re-grant after current-state revocation.
+    old_payload = _event("customer.subscription.updated", {
+        "customer": "cus_retry_test", "status": "active",
+    }, "evt_delayed_test")
+    assert asyncio.run(billing.webhook(_FakeRequest(
+        old_payload, {"stripe-signature": _sign(old_payload)},
+    )))["status"] == "ok"
+    assert row["tier"] == "free" and row["features"] == []
+
+
+def test_customer_mapping_absence_remains_unresolved(monkeypatch):
+    """A successful empty lookup still ignores an unrelated customer without writing."""
+    monkeypatch.setattr(billing, "_pg", lambda *a, **kw: [])
+    monkeypatch.setattr(billing, "_compute_entitlement", lambda cid: pytest.fail("unmapped customer"))
+    assert billing._user_for_customer("cus_unmapped") is None
+    billing._handle_event({"id": "evt_unmapped", "type": "invoice.payment_failed",
+                           "data": {"object": {"customer": "cus_unmapped"}}})
