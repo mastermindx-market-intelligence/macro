@@ -28,6 +28,7 @@ sys.path.insert(0, str(_ROOT))
 from engine.qledger_original_result import OriginalResultClaimsBinding
 from engine.qledger_store_protocol import SnapshotIntegrityError
 from scripts.ci import qledger_conversion_candidate as candidate
+from scripts.ci import qledger_engine_publisher as native_publisher
 
 
 def _require(value, message):
@@ -151,6 +152,8 @@ class _LiveFinalCandidate:
         self._index_path = self._index_before = None
         self._prepare_started = self._prepare_uncertain = False
         self.unsettled_preparation = None
+        self.publication_guard = Lock()
+        self.publication_attempt = None
 
     def _deadline(self):
         _require(type(self.original_deadline) is int and time.monotonic_ns() < self.original_deadline,
@@ -320,9 +323,16 @@ class _LiveFinalCandidate:
     def close(self):
         self.active = False
         try:
+            if self.publication_attempt is not None:
+                try:self.publication_attempt.close_known()
+                except BaseException as exc:
+                    self.publication_attempt.uncertain = True
+                    self.failure = exc
+                    raise
             if self._index_lock is not None:
                 try:
-                    self._index_lock.close(preserve=self._prepare_uncertain or self.unsettled_preparation is not None)
+                    self._index_lock.close(preserve=self._prepare_uncertain or self.unsettled_preparation is not None
+                        or (self.publication_attempt is not None and self.publication_attempt.uncertain))
                 except OSError as exc:
                     raise SnapshotIntegrityError('ENGINE_PUBLICATION_UNPROVEN', 'index lock custody changed; foreign lock preserved') from exc
         finally:
@@ -660,7 +670,8 @@ class _NativeEngineProducer:
         final = self.finalization = _LiveFinalCandidate(native, live, self.original_deadline)
         try:
             prepared = final.finish(self.finalizer(final))
-            return NativeEngineRun(MappingProxyType(dict(results)), writes, prepared, 'candidate_verified')
+            status = 'publication_confirmed' if native_publisher.confirmed(final) else 'candidate_verified'
+            return NativeEngineRun(MappingProxyType(dict(results)), writes, prepared, status)
         finally:
             final.close()
 
@@ -681,3 +692,8 @@ def build_native_engine_producer(context, *, owner_binding, regions, native_inte
     """
     return owner_binding, _NativeEngineProducer(context, owner_binding, regions,
         native_intents, finalizer, call)
+
+
+def publish_native_engine(checked, prepared, *, reader=None, **original_push):
+    """Opt-in original effect/readback; no default production transport/admission."""
+    return native_publisher.publish(checked, prepared, reader=reader, **original_push)

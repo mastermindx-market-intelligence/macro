@@ -92,7 +92,7 @@ sys.path.append(deps)
 spec=importlib.util.spec_from_file_location('test_owned_bootstrap',boot)
 b=importlib.util.module_from_spec(spec);sys.modules[spec.name]=b;spec.loader.exec_module(b)
 doc=json.loads(Path(cfg).read_bytes());repo=Path(doc['repo']);owner=Path(doc['owner_root'])
-preimport=action in ('missing-resource','changed-resource','symlink-resource','other-resource','baseline-red','missing-config-pin')
+preimport=action in ('missing-resource','changed-resource','symlink-resource','other-resource','unallowlisted-css','missing-config-pin')
 before=(repo/'data/qledger/claims.jsonl').read_bytes()
 try:
  with b.trusted_bootstrap(owner_root=owner,repo=repo,config_path=Path(cfg),config_digest=digest) as loaded:
@@ -142,9 +142,21 @@ try:
         assert not (root/'write-one').exists()
         print('TEST_OWNED_TRANSFER_REFUSED')
     else:
+        if action=='publication-positive':
+            from hashlib import sha256
+            from scripts.ci.qledger_engine_publisher import NativePublicationFinalizer
+            origin=owner/'test-owned-original.git'
+            subprocess.check_call(['git','init','--bare','--quiet',str(origin)])
+            subprocess.check_call(['git','-C',str(repo),'remote','add','origin',str(origin)])
+            subprocess.check_call(['git','-C',str(repo),'push','--quiet','origin',loaded.gate.candidate_oid+':refs/heads/main'])
+            info=origin.stat()
+            kwargs['publication']=NativePublicationFinalizer(origin_binding_sha256=sha256(str(origin).encode()).hexdigest(),
+                original_origin_inode=(info.st_dev,info.st_ino),original_attempt=1,original_max_attempts=20,original_alarm_seconds=420)
         refs=subprocess.check_output(['git','-C',str(repo),'show-ref'])
         result=loaded.producer(**kwargs)
-        assert result.status=='candidate_verified'
+        assert result.status==('publication_confirmed' if action=='publication-positive' else 'candidate_verified')
+        if action=='publication-positive':
+            assert subprocess.check_output(['git','-C',str(origin),'rev-parse','refs/heads/main']).strip().decode()==result.publication.candidate_oid
         assert config.ROOT==repo and config._LOAD_ROOT==repo
         assert subprocess.check_output(['git','-C',str(repo),'show-ref'])==refs
         assert len(result.original_writes)==1 and (root/'write-one/manifest.json').is_file()
@@ -153,11 +165,11 @@ try:
         assert b'fresh original full candidate' in text and b'?v=' in text
         assert subprocess.check_output(['git','-C',str(repo),'show',oid+':reports/keep.json'])==b'all original non-QL output'
         assert not (repo/'.git/index.lock').exists()
-        assert action in ('positive','qualified-cache-positive')
+        assert action in ('positive','qualified-cache-positive','publication-positive')
         print('TEST_OWNED_FULL_CANDIDATE')
 except Exception as exc:
- if action in ('positive','qualified-cache-positive','transfer'):raise
- reasons={'baseline-red':'unsafe bundle path','missing-resource':'canonical resources missing before import',
+ if action in ('positive','qualified-cache-positive','publication-positive','transfer'):raise
+ reasons={'unallowlisted-css':'unsafe bundle path','missing-resource':'canonical resources missing before import',
           'changed-resource':'pinned input digest differs','other-resource':'unsafe bundle path',
           'resource-module':'unqualified path import','missing-inputs':'missing or transferred exact original producer binding',
           'wrong-root':'actual original ROOT or cached configuration differs','foreign-cache':'actual original ROOT or cached configuration differs',
@@ -179,7 +191,7 @@ except Exception as exc:
     assert not (owner/'producer-evidence/write-one').exists()
  print('TEST_OWNED_REFUSAL',type(exc).__name__,str(exc))
 else:
- assert action in ('positive','qualified-cache-positive','transfer')
+ assert action in ('positive','qualified-cache-positive','publication-positive','transfer')
 '''
 
 
@@ -207,8 +219,11 @@ def entry_join(conversion_invocation,tmp_path):
             workflow_oids=[prepared.candidate.candidate_oid],producers=[producer],runner_name='fixture-runner',repository='fixture/macro',agent_id=28))
     driver=tmp_path/'driver.py';driver.write_text(DRIVER)
     def run(action):
-        if action=='baseline-red':
-            cfg['bootstrap_sha256']=put(script,subprocess.check_output(['git','show','HEAD:scripts/ci/qledger_runner_bootstrap.py'],cwd=SOURCE))
+        if action=='unallowlisted-css':
+            # Deterministic current negative: only the two canonical pinned
+            # SharedShell resources are admitted. Never load a mutable HEAD.
+            name='templates/qledger-unallowlisted.css'  # ci-trigger-closure: data — test-owned bundle member, never a repository read
+            cfg['bundle_files'][name]=put(bundle/name,b'body { display: none; }\n')
         if action=='missing-resource':del cfg['bundle_files']['templates/shared_shell.css']
         if action=='missing-config-pin':del cfg['gate']['runtime_code'][str(repo/'config.yml')]
         if action=='changed-resource':(bundle/'templates/shared_shell.css').write_text('altered')
@@ -222,10 +237,10 @@ def entry_join(conversion_invocation,tmp_path):
     return run
 
 
-@pytest.mark.parametrize('action',['positive','baseline-red','missing-resource','changed-resource','symlink-resource','other-resource','resource-module','missing-inputs','partial-inputs','serialized-inputs','wrong-root','foreign-cache','missing-retention','transfer','same-root-cache','caught-same-root-cache','qualified-cache-positive','missing-config-pin'])
+@pytest.mark.parametrize('action',['publication-positive','positive','unallowlisted-css','missing-resource','changed-resource','symlink-resource','other-resource','resource-module','missing-inputs','partial-inputs','serialized-inputs','wrong-root','foreign-cache','missing-retention','transfer','same-root-cache','caught-same-root-cache','qualified-cache-positive','missing-config-pin'])
 def test_actual_isolated_daily_entry_join_or_exact_refusal(entry_join,action):
     result=entry_join(action)
-    assert ('TEST_OWNED_FULL_CANDIDATE' if action in ('positive','qualified-cache-positive') else 'TEST_OWNED_TRANSFER_REFUSED' if action=='transfer' else 'TEST_OWNED_REFUSAL') in result
+    assert ('TEST_OWNED_FULL_CANDIDATE' if action in ('positive','qualified-cache-positive','publication-positive') else 'TEST_OWNED_TRANSFER_REFUSED' if action=='transfer' else 'TEST_OWNED_REFUSAL') in result
 
 
 def test_ordinary_root_and_config_loading_behavior_is_preserved(tmp_path,monkeypatch):

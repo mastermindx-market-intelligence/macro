@@ -913,3 +913,12 @@ def test_native_intent_cannot_be_consumed_by_throwaway_dry_run(tmp_path, monkeyp
         native_intent=NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write"))
     assert "dry_run" in result["error"]
     assert not (tmp_path / "data").exists()
+
+
+
+def test_legacy_unavailable_clock_is_not_reported_as_started(tmp_path,monkeypatch):
+    monkeypatch.setattr(qclock,'record_start',lambda *a,**k:None)
+    stats=qda.register_prospective([_stock_desk_row()],family='stock_desk',root=tmp_path,today=TODAY)
+    assert stats['n_accepted']==1 and stats['error'] is None
+    assert stats['clock_started'] is False and stats['clock_record'] is None
+    assert stats['family_clock_status']=='unavailable'

@@ -12,6 +12,8 @@ regression test cannot assert against code that isn't there).
 from __future__ import annotations
 
 from engine import qledger_evidence_clock as qclock
+import json
+import pytest
 
 
 def test_absent_family_reads_as_none(tmp_path):
@@ -81,18 +83,15 @@ def test_git_sha_never_raises_on_a_non_repo_path(tmp_path, monkeypatch):
     assert qclock.git_sha(root=tmp_path) is None
 
 
-def test_unreadable_clock_file_is_treated_as_absent_not_fatal(tmp_path):
-    path = tmp_path.joinpath("data", "qledger", "evidence_clock_start")
-    path.mkdir(parents=True)
-    (path / "stock_desk.json").write_text("{ not json")
-    assert qclock.read_start("stock_desk", root=tmp_path) is None
-    # record_start on top of a corrupt file heals it (treated as absent -> writes fresh).
-    rec = qclock.record_start("stock_desk", horizon_d=20, horizon_unit="trading_days",
-                              root=tmp_path, now="2026-08-14T03:00:00+00:00")
-    assert qclock.read_start("stock_desk", root=tmp_path) == rec
+def test_default_unreadable_clock_is_unavailable_and_never_restamped(tmp_path):
+    path=qclock._clock_path('stock_desk',tmp_path);path.parent.mkdir(parents=True)
+    original=b'{ not json';path.write_bytes(original)
+    assert qclock.read_start('stock_desk',root=tmp_path) is None
+    rec=qclock.record_start('stock_desk',horizon_d=20,horizon_unit='trading_days',root=tmp_path,now='2027-01-01T00:00:00+00:00')
+    assert rec is None and path.read_bytes()==original
 
 
-def test_explicit_strict_clock_failure_is_observable_without_changing_legacy(tmp_path, monkeypatch):
+def test_clock_persistence_failure_is_strict_or_explicitly_unavailable(tmp_path, monkeypatch):
     from pathlib import Path
     import pytest
     def refused(*a, **k):
@@ -100,7 +99,8 @@ def test_explicit_strict_clock_failure_is_observable_without_changing_legacy(tmp
     monkeypatch.setattr(qclock.os, 'link', refused)
     with pytest.raises(OSError, match='persistence refused'):
         qclock.record_start('thematic_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path, strict=True)
-    assert qclock.record_start('stock_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path)
+    assert qclock.record_start('stock_desk', horizon_d=5, horizon_unit='trading_days', root=tmp_path) is None
+    assert not qclock._clock_path('stock_desk',tmp_path).exists()
 
 
 def test_explicit_strict_clock_preserves_unreadable_original(tmp_path):
@@ -255,3 +255,65 @@ def test_strict_partial_private_staging_never_installs_or_adopts_other_temporari
     assert not target.exists()
     assert shared.read_bytes() == b'original shared partial' and orphan.read_bytes() == b'original private partial'
     assert set(target.parent.iterdir()) == {shared, orphan}
+
+
+
+@pytest.mark.parametrize('original',[b'[]',b'null',b'{"other":"unproven"}',b'{"first_prospective_registration_utc":""}'])
+def test_default_unqualified_existing_clock_preserves_all_bytes(tmp_path,original):
+    path=qclock._clock_path('stock_desk',tmp_path);path.parent.mkdir(parents=True);path.write_bytes(original)
+    assert qclock.record_start('stock_desk',horizon_d=20,horizon_unit='trading_days',root=tmp_path,now='2027-01-01T00:00:00+00:00') is None
+    assert path.read_bytes()==original
+    assert qclock.read_start('stock_desk',root=tmp_path) is None
+
+
+def test_default_permission_unavailability_cannot_restamp(tmp_path,monkeypatch):
+    from pathlib import Path
+    path=qclock._clock_path('stock_desk',tmp_path);path.parent.mkdir(parents=True)
+    original=b'{"first_prospective_registration_utc":"2026-01-01T00:00:00+00:00"}';path.write_bytes(original)
+    real_read,real_open=Path.read_text,qclock.os.open
+    def unavailable_read(subject,*args,**kwargs):
+        if subject==path:raise PermissionError('test-owned unavailable original read')
+        return real_read(subject,*args,**kwargs)
+    def unavailable_open(subject,*args,**kwargs):
+        if subject==path.name:raise PermissionError('test-owned unavailable original read')
+        return real_open(subject,*args,**kwargs)
+    monkeypatch.setattr(Path,'read_text',unavailable_read);monkeypatch.setattr(qclock.os,'open',unavailable_open)
+    assert qclock.record_start('stock_desk',horizon_d=20,horizon_unit='trading_days',root=tmp_path,now='2027-01-01T00:00:00+00:00') is None
+    assert path.read_bytes()==original
+
+
+def test_default_valid_existing_clock_preserves_original_format_and_fields(tmp_path):
+    path=qclock._clock_path('stock_desk',tmp_path);path.parent.mkdir(parents=True)
+    raw=b'{ "first_prospective_registration_utc" : "2026-01-01T00:00:00+00:00", "original_extra" : 7 }\n';path.write_bytes(raw)
+    actual=qclock.record_start('stock_desk',horizon_d=999,horizon_unit='changed',root=tmp_path,now='2027-01-01T00:00:00+00:00')
+    assert actual==json.loads(raw) and path.read_bytes()==raw
+
+
+@pytest.mark.parametrize('valid_winner',[False,True])
+def test_default_clock_collision_never_replaces_first_visible_winner(tmp_path,monkeypatch,valid_winner):
+    path=qclock._clock_path('stock_desk',tmp_path)
+    winner=b'{"first_prospective_registration_utc":"2026-01-01T00:00:00+00:00","original_extra":7}\n' if valid_winner else b'original unqualified bytes'
+    real_link=qclock.os.link
+    def compete(source,destination,**kwargs):
+        if destination==path.name:path.write_bytes(winner)
+        return real_link(source,destination,**kwargs)
+    monkeypatch.setattr(qclock.os,'link',compete)
+    rec=qclock.record_start('stock_desk',horizon_d=20,horizon_unit='trading_days',root=tmp_path,now='2027-01-01T00:00:00+00:00')
+    assert rec==(json.loads(winner) if valid_winner else None)
+    assert path.read_bytes()==winner
+
+
+def test_default_lost_directory_barrier_is_unavailable_without_recovery_restamp(tmp_path,monkeypatch):
+    from engine import qledger_store_native as native
+    path=qclock._clock_path('stock_desk',tmp_path);real=native._sync_dir
+    def uncertain(directory):
+        if path.exists():raise OSError('test-owned lost original directory barrier')
+        return real(directory)
+    with monkeypatch.context() as scoped:
+        scoped.setattr(native,'_sync_dir',uncertain)
+        rec=qclock.record_start('stock_desk',horizon_d=20,horizon_unit='trading_days',root=tmp_path,now='2026-01-01T00:00:00+00:00')
+    assert rec is None
+    original=path.read_bytes();assert json.loads(original)['first_prospective_registration_utc']=='2026-01-01T00:00:00+00:00'
+    visible=qclock.record_start('stock_desk',horizon_d=999,horizon_unit='changed',root=tmp_path,now='2027-01-01T00:00:00+00:00')
+    assert visible==json.loads(original) and path.read_bytes()==original
+    # A later visible family record does not settle the earlier original effect.

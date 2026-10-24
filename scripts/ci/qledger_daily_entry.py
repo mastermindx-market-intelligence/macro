@@ -24,7 +24,7 @@ def _require(value, message):
         raise GateRefusal(message)
 
 
-def build_producer(context, *, owner_binding=None, regions=None, native_intents=None, call=None):
+def build_producer(context, *, owner_binding=None, regions=None, native_intents=None, call=None, publication=None):
     """Select the real native factory/finalizer from explicit original facts."""
     loader = globals().get('__loader__')
     _require(getattr(loader, '_qledger_bootstrap_active', False), 'daily entry requires qualified outside-checkout code')
@@ -65,10 +65,14 @@ def build_producer(context, *, owner_binding=None, regions=None, native_intents=
     # not a fabricated live finalizer/admission or another native operation.
     from scripts.ci.qledger_engine_publication import (
         _qualify_daily_destinations, build_native_engine_producer, finalize_daily_engine_outputs)
+    if publication is not None:
+        from scripts.ci.qledger_engine_publisher import NativePublicationFinalizer
+        _require(type(publication) is NativePublicationFinalizer and publication.pid == os.getpid(),
+                 'exact same-process original publication finalizer required')
     inspection = SimpleNamespace(invocation=SimpleNamespace(binding=owner_binding), _deadline=deadline)
     deadline()
     owner_binding.read_snapshot()
     _qualify_daily_destinations(inspection, accepted_tip_oid=context.candidate_oid)
     deadline()
     return build_native_engine_producer(context, owner_binding=owner_binding, regions=regions,
-        native_intents=native_intents, finalizer=finalize_daily_engine_outputs, call=call)
+        native_intents=native_intents, finalizer=finalize_daily_engine_outputs if publication is None else publication, call=call)

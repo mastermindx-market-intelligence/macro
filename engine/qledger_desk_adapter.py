@@ -708,6 +708,10 @@ def register_prospective(rows: Iterable[dict], *, family: str,
                 raise
             stats["error"] = str(exc)
             raise NativeProspectiveFailure(native_intent, stats) from exc
+        if native_intent is None and rec is None:
+            stats["family_clock_status"] = "unavailable"
+            stats["clock_record"] = None
+            return stats
         if native_intent is not None:
             stats["family_clock_status"] = "readback_verified"
         stats["clock_started"] = True

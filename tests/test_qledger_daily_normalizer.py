@@ -30,8 +30,8 @@ def normalizer_fixture(tmp_path,request,alias_kind):
     files={
         'config.yml':'storage:\n  data_dir: data\n  site_dir: site\ncommodities:\n  china_gold_premium: {}\n',
         '.gitignore':'data/qledger/control_evidence_clock_start/\n',
-        'site/commodities.html':page(),
-        'site/start.html':'<html><head>'+''.join('<script src="'+name+'"></script>' for name in
+        'site/commodities.html':page(),  # ci-trigger-closure: data — temporary fixture destination, never a repository read
+        'site/start.html':'<html><head>'+''.join('<script src="'+name+'"></script>' for name in  # ci-trigger-closure: data — temporary fixture destination, never a repository read
             ('globe-deck.js','sky.js','hub-welcome.js','live_config.js','live.js','wh_banner.js'))+'</head></html>',
         'site/prophet/accepted.html':'accepted Prophet page',
         'data/prophet/ledger.jsonl':'accepted Prophet ledger',
@@ -40,7 +40,7 @@ def normalizer_fixture(tmp_path,request,alias_kind):
         'data/prophet/legacy_shadow/accepted.json':'{}',
         'data/prophet_arena/accepted.json':'{}',
         'data/prophet_stage_shadow/accepted.json':'{}',
-        'site/anticipationdata/us_leader_pullback.json':'accepted leader source',
+        'site/anticipationdata/us_leader_pullback.json':'accepted leader source',  # ci-trigger-closure: data — temporary fixture destination, never a repository read
         'data/options_signal_episode/accepted.json':'accepted narrow episode',
         'data/options_signal_campaign/accepted.json':'accepted narrow campaign',
         'data/hk/accepted.json':'accepted Asia source',
@@ -202,7 +202,7 @@ def test_native_alias_is_untouched_before_any_normalizer_or_cleanup(causal,monke
     def image(repo):
         result={}
         for path in repo.rglob('*'):
-            if '.git' in path.parts:continue
+            if '.git' in path.relative_to(repo).parts:continue
             info=path.lstat()
             payload=os.readlink(path) if stat.S_ISLNK(info.st_mode) else path.read_bytes() if stat.S_ISREG(info.st_mode) else None
             result[str(path.relative_to(repo))]=(info.st_mode,info.st_nlink,payload)
@@ -222,7 +222,7 @@ def test_native_alias_is_untouched_before_any_normalizer_or_cleanup(causal,monke
             alias.parent.mkdir(parents=True,exist_ok=True)
             alias.symlink_to(repo/'data/qledger',target_is_directory=True)
         else:
-            rel={'data-base-copy':'site/data_base.js','html-write':'site/alias.html',
+            rel={'data-base-copy':'site/data_base.js','html-write':'site/alias.html',  # ci-trigger-closure: data — temporary fixture destination, never a repository read
                  'template-write':'templates/index.html','hardlink':'site/native-alias.html'}[alias_kind]  # ci-trigger-closure: data — temporary fixture path, never a repository read
             alias=repo/rel;alias.unlink(missing_ok=True)
             if alias_kind=='hardlink':os.link(native,alias)

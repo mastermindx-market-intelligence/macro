@@ -328,7 +328,7 @@ class LoadedBootstrap:
         callback = self.bundle.callable(self.entry.reader)
         return self.gate.invoke_reader(lambda: callback(self.context))
 
-    def producer(self, *, owner_binding=None, regions=None, native_intents=None, call=None):
+    def producer(self, *, owner_binding=None, regions=None, native_intents=None, call=None, publication=None):
         original = self.config['producer_context']
         _require(type(original) is dict and set(original) == {'operation_id', 'lane_id', 'budget_id', 'retention_id'},
                  'explicit original producer context required')
@@ -336,11 +336,12 @@ class LoadedBootstrap:
         with self.gate.lease('entry'):
             self.gate.assert_valid(**context)
             builder = self.bundle.callable(self.entry.build_producer)
-            if any(x is not None for x in (owner_binding, regions, native_intents, call)):
+            if any(x is not None for x in (owner_binding, regions, native_intents, call, publication)):
                 _require(owner_binding is not None and regions is not None and native_intents is not None,
                          'complete explicit same-process producer inputs required')
+                options = {} if publication is None else {'publication': publication}
                 binding, callback = builder(self.context, owner_binding=owner_binding, regions=regions,
-                                            native_intents=native_intents, call=call)
+                                            native_intents=native_intents, call=call, **options)
             else:
                 binding, callback = builder(self.context)
             _require((binding.operation_id, binding.lane_id) == (original['operation_id'], original['lane_id']),

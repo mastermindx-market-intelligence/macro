@@ -63,27 +63,29 @@ def _now_iso() -> str:
 
 
 def _read(path: Path) -> dict[str, Any] | None:
-    """The existing record, or None when absent/unreadable.
+    """Best-effort recorded start, or unavailable; never permission to restamp.
 
-    Unreadable (corrupt JSON, permission error) is treated as ABSENT for the
-    write-once gate below rather than raising — a start timestamp is small,
-    inspectable, human-diffable text; a truly corrupted file is a repo-hygiene
-    problem to fix by hand, not a reason to crash the nightly. It is logged
-    loudly (never silently) so the corruption is visible."""
+    The installing path uses the bounded non-overwriting reader below. A failed
+    public read cannot establish absence or authorize a replacement chronology.
+    """
     if not path.exists():
         return None
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:  # noqa: BLE001
-        log.warning("qledger_evidence_clock: %s is unreadable (%s) — treating as absent "
-                   "for the write-once gate; this file needs manual attention", path, exc)
+        log.warning("qledger_evidence_clock: %s is unreadable (%s) — existing chronology "
+                   "unavailable; original bytes preserved", path, exc)
         return None
-    return raw if isinstance(raw, dict) else None
+    if (not isinstance(raw, dict) or not isinstance(raw.get("first_prospective_registration_utc"), str)
+            or not raw["first_prospective_registration_utc"]):
+        log.warning("qledger_evidence_clock: %s has no qualified original start; bytes preserved", path)
+        return None
+    return raw
 
 
 def read_start(family: str, root: Path | str | None = None) -> dict[str, Any] | None:
     """The recorded first-prospective-registration record for `family`, or None
-    if the evidence clock has not started for it yet."""
+    if absent or unavailable. None never authorizes a new registration stamp."""
     return _read(_clock_path(family, root))
 
 
@@ -242,36 +244,36 @@ def _install_strict_clock(path, record, field):
 
 def record_start(family: str, *, horizon_d: int, horizon_unit: str,
                  git_sha: str | None = None, root: Path | str | None = None,
-                 now: str | None = None, strict: bool = False) -> dict[str, Any]:
-    """WRITE-ONCE: record `family`'s first prospective-registration instant.
+                 now: str | None = None, strict: bool = False) -> dict[str, Any] | None:
+    """Record the first prospective start without overwriting any prior object.
 
-    If `family` already has a record, it is returned UNCHANGED — every argument
-    here (horizon_d, horizon_unit, git_sha, now) is ignored on a second call.
-    This is the entire contract: nothing may move a family's evidence-clock
-    start once it exists, no matter what a later run passes.
-
-    Never raises: an unwritable clock file must not sink a registration run
-    that otherwise succeeded (the claims themselves are the record that
-    matters most; this is a durable ANNOTATION on top of them). A write
-    failure is logged loudly and the caller gets back the record it TRIED to
-    write (not persisted) so a test/caller can still see what would have been
-    recorded. Explicit native owners may pass strict=True: unreadable existing
-    records refuse, write failures propagate and returned new records require
-    exact bounded readback. Strict callers install a fully written private
-    staging file with a non-overwriting hard link; a collision reads the
-    existing winner instead of replacing it. File/directory barriers supplement
-    exact readback; this does not exclude legacy writers or settle any particular
-    native original, and never provides a recovery restamp.
+    Both modes require bounded stable readback and the existing non-overwriting
+    install. An unreadable/unqualified existing object is unavailable, never
+    absent. Default callers receive None on storage uncertainty; no proposed
+    timestamp is returned as though persisted. Strict native callers keep their
+    raising/process-local observation contract. A visible family record alone
+    never settles an uncertain original registration.
     """
     path = _clock_path(family, root)
 
-    def checked_read():
-        observation = _strict_clock_snapshot(path, "first_prospective_registration_utc")
-        return None if observation is None else _StrictClockRecord(path, observation)
+    def unavailable(exc):
+        log.error("qledger_evidence_clock: original start unavailable for %s: %s", family, exc)
+        print(f"::error title={family}-evidence-clock-write-failed::qledger evidence-clock "
+              f"start for {family} is unavailable; original preserved: {exc}", flush=True)
 
-    existing = checked_read() if strict else _read(path)
-    if existing is not None and existing.get("first_prospective_registration_utc"):
-        return existing
+    try:
+        observation = _strict_clock_snapshot(path, "first_prospective_registration_utc")
+    except Exception as exc:  # noqa: BLE001 — default annotation remains nonfatal
+        unavailable(exc)
+        if strict:
+            raise
+        return None
+    if observation is not None:
+        value = _StrictClockRecord(path, observation)
+        return value if strict else dict(value)
+
+    # Preserve argument validation for a genuinely absent family only. Existing
+    # records ignore subsequent horizon/time arguments as before.
     record: dict[str, Any] = {
         "claim_family": family,
         "first_prospective_registration_utc": now or _now_iso(),
@@ -280,22 +282,13 @@ def record_start(family: str, *, horizon_d: int, horizon_unit: str,
         "git_sha": git_sha,
     }
     try:
-        if not strict:
-            path.parent.mkdir(parents=True, exist_ok=True)
-        if strict:
-            return _install_strict_clock(path, record, "first_prospective_registration_utc")
-        tmp = path.with_name(path.name + ".tmp")
-        tmp.write_text(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
-                       encoding="utf-8")
-        tmp.replace(path)          # atomic on POSIX — no reader ever sees a half-written file
-    except Exception as exc:  # noqa: BLE001 — never sink registration over an annotation write
-        log.error("qledger_evidence_clock: could not persist start record for %s: %s",
-                 family, exc)
-        print(f"::error title={family}-evidence-clock-write-failed::qledger evidence-clock "
-             f"start for {family} could not be written: {exc}", flush=True)
+        value = _install_strict_clock(path, record, "first_prospective_registration_utc")
+        return value if strict else dict(value)
+    except Exception as exc:  # noqa: BLE001 — never fabricate a persisted annotation
+        unavailable(exc)
         if strict:
             raise
-    return record
+        return None
 
 
 def git_sha(root: Path | str | None = None) -> str | None:
