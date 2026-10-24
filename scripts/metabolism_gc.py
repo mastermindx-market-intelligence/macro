@@ -1,8 +1,10 @@
 """scripts/metabolism_gc.py — Orphan-worktree GC helper (A1 companion).
 
-Reaps wf_*/metabolism worktrees whose branch is fully absorbed into
-origin/main or whose journal is in a terminal state (done/failed), subject
-to safety checks:
+Inspects wf_*/metabolism worktrees whose branch is absorbed into origin/main
+or whose journal is terminal; these are dry-run candidates, NOT delete approval.
+Actual removal requires a current exact-identity, lease-release/completion
+receipt, fresh remote ancestry, clean/unpushed Git state, an age floor and
+absence of live processes. Unknown or inaccessible evidence always holds.
 
   1. rev-parse --show-toplevel guard (dead-worktree-hits-main trap):
      If the worktree's `.git` file resolves to the MAIN repo root rather than
@@ -44,8 +46,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -79,10 +83,15 @@ def _is_live_main_checkout(worktree_path: Path) -> bool:
             cwd=str(worktree_path),
             capture_output=True, text=True, timeout=10,
         )
+        # A failing git probe is not evidence of an independent worktree.
+        # This also covers rc=128 with stdout containing an apparently valid path.
+        if result.returncode != 0 or not result.stdout.strip() or result.stderr.strip():
+            log.warning("GC: rev-parse failed for %s (rc=%s): %s", worktree_path,
+                        result.returncode, result.stderr.strip()[:200])
+            return True
         resolved = Path(result.stdout.strip())
-        # If resolved == worktree_path, it's a valid independent worktree.
-        # If resolved != worktree_path, the path fell through to another tree.
-        return resolved != worktree_path
+        # Only an exact, successful identity check admits this first gate.
+        return resolved.resolve() != worktree_path.resolve()
     except Exception as exc:  # noqa: BLE001
         log.warning("GC: rev-parse check failed for %s: %s — treating as live main", worktree_path, exc)
         return True  # fail-safe: don't touch it
@@ -95,8 +104,14 @@ def _has_open_files(worktree_path: Path) -> bool:
             ["lsof", "+D", str(worktree_path)],
             capture_output=True, text=True, timeout=15,
         )
-        # lsof exits 1 when no matches; exit 0 means at least one hit.
-        return result.returncode == 0 and bool(result.stdout.strip())
+        # Only rc=1 with *no* stdout or stderr proves no open files.
+        # rc=2, partial-access diagnostics, and ambiguous output all fail closed.
+        if result.returncode == 1 and not result.stdout.strip() and not result.stderr.strip():
+            return False
+        if result.returncode not in (0, 1) or result.stderr.strip():
+            log.warning("GC: lsof inconclusive for %s (rc=%s): %s",
+                        worktree_path, result.returncode, result.stderr.strip()[:200])
+        return True
     except Exception as exc:  # noqa: BLE001
         log.warning("GC: lsof check failed for %s: %s — treating as occupied", worktree_path, exc)
         return True  # fail-safe: don't touch it
@@ -177,12 +192,14 @@ def _list_worktrees(repo_root: Path) -> list[dict]:
         for line in result.stdout.splitlines():
             line = line.rstrip()
             if line.startswith("worktree "):
-                current = {"path": Path(line[len("worktree "):]), "branch": None}
+                current = {"path": Path(line[len("worktree "):]), "branch": None, "locked": False}
             elif line.startswith("branch "):
                 current["branch"] = line[len("branch "):]
                 # strip refs/heads/ prefix
                 if current["branch"].startswith("refs/heads/"):
                     current["branch"] = current["branch"][len("refs/heads/"):]
+            elif line.startswith("locked") and current.get("path"):
+                current["locked"] = True
             elif line == "" and current.get("path"):
                 worktrees.append(current)
                 current = {}
@@ -198,6 +215,106 @@ def _matches_pattern(name: str) -> bool:
     """Return True if the worktree name matches any watched pattern."""
     import fnmatch
     return any(fnmatch.fnmatch(name, pat) for pat in _WATCHED_PATTERNS)
+
+
+# ── Non-dry-run deletion admission (separate from dry-run candidacy) ─────────
+
+def _ready_for_delete(repo_root: Path, wt_path: Path, branch: str, *, locked: bool = False) -> bool:
+    """Fail closed unless repository, mount, age, cleanliness and remote proofs agree.
+
+    An ordinary terminal/failed journal is NOT completion or lease-release proof.
+    This intentionally errs on the side of keeping generated checkouts until
+    their identity/retention and upstream disposition can be established.
+    """
+    if locked or not branch or not wt_path.is_absolute():
+        return False
+    try:
+        if wt_path.is_symlink() or not wt_path.is_dir() or wt_path.resolve() == repo_root.resolve():
+            return False
+        s = wt_path.stat()
+        # Birth time is required: mtime alone can be old on a copied live tree.
+        born = getattr(s, "st_birthtime", 0)
+        if not born or time.time() - born < 14 * 86400:
+            return False
+        if time.time() - s.st_mtime < 6 * 3600:
+            return False
+        if s.st_dev != wt_path.parent.stat().st_dev:
+            return False  # mount transition or shadowed target
+        pointer = wt_path / ".git"
+        if not pointer.is_file() or pointer.is_symlink():
+            return False
+        entry = pointer.read_text().strip()
+        if not entry.startswith("gitdir: "):
+            return False
+        worktree_git_dir = Path(entry[8:]).resolve(strict=True)
+        if not (worktree_git_dir / "gitdir").is_file():
+            return False
+        if Path((worktree_git_dir / "gitdir").read_text().strip()).resolve() != pointer.resolve():
+            return False
+        # Every Git read disables partial-clone lazy fetching.
+        env = dict(os.environ, GIT_NO_LAZY_FETCH="1", GIT_TERMINAL_PROMPT="0",
+                   GIT_OPTIONAL_LOCKS="0")
+        def probe(cwd: Path, *args: str, limit: int = 15) -> str | None:
+            r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True,
+                               text=True, timeout=limit, env=env)
+            if r.returncode != 0 or (r.stderr or "").strip():
+                return None
+            return r.stdout.strip()
+        owner_git = probe(repo_root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        candidate_git = probe(wt_path, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        if not owner_git or not candidate_git:
+            return False
+        if Path(owner_git).resolve() != Path(candidate_git).resolve():
+            return False
+        if not str(worktree_git_dir).startswith(str(Path(owner_git).resolve() / "worktrees") + os.sep):
+            return False
+        if probe(wt_path, "branch", "--show-current") != branch:
+            return False
+        # Require a committed, clean and unpushed-free checkout; unknown state holds.
+        if probe(wt_path, "status", "--porcelain=v1", "--untracked-files=all") != "":
+            return False
+        if probe(wt_path, "rev-list", "HEAD", "--not", "--remotes") != "":
+            return False
+        # Local origin/main must be fresh relative to the actual remote.
+        local_main = probe(wt_path, "rev-parse", "refs/remotes/origin/main")
+        remote_main = probe(repo_root, "ls-remote", "origin", "refs/heads/main", limit=30)
+        if not local_main or not remote_main or remote_main != local_main + "\trefs/heads/main":
+            return False
+        if not _branch_merged_into_main(branch, wt_path):
+            return False
+        # 'failed' alone is not finished work. Require an explicit done journal.
+        done = False
+        for jf in (wt_path / "data" / "metabolism" / "journal").glob("*.json"):
+            try:
+                if json.loads(jf.read_text()).get("status") == "done":
+                    done = True
+                    break
+            except (OSError, ValueError):
+                return False
+        if not done:
+            return False
+        # Require a current, exact-identity lease-release/completion receipt.
+        # No such receipt => no local worktree deletion, even if Git is clean.
+        receipts = repo_root / "data" / "metabolism" / "gc-admissions"
+        safe_id = __import__("hashlib").sha256(str(wt_path.resolve()).encode()).hexdigest()
+        receipt = receipts / (safe_id + ".json")
+        if not receipt.is_file() or receipt.is_symlink():
+            return False
+        r = json.loads(receipt.read_text())
+        tip = probe(wt_path, "rev-parse", "HEAD")
+        if (r.get("worktree") != str(wt_path.resolve())
+            or r.get("branch") != branch
+            or r.get("head_sha") != tip
+            or r.get("remote_main_sha") != local_main
+            or r.get("status") != "completed"
+            or r.get("lease_released") is not True
+            or not 0 <= time.time() - float(r.get("checked_at", 0)) <= 3600):
+            return False
+        # Race guard: require exact renewed status/liveness immediately before removal.
+        return probe(wt_path, "status", "--porcelain=v1", "--untracked-files=all") == "" and not _has_open_files(wt_path)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("GC: deletion admission denied for %s: %s", wt_path, exc)
+        return False
 
 
 # ── Stale running marker sweep (R-V5-2) ──────────────────────────────────────
@@ -539,7 +656,7 @@ def gc(repo_root: Path, dry_run: bool = False) -> dict:
                 summary["skipped_alive"].append(str(wt_path))
                 continue
 
-            # Eligibility check: branch merged OR journal terminal
+            # Dry-run candidacy only: actual deletion requires stronger proof.
             eligible = False
             if branch and _branch_merged_into_main(branch, wt_path):
                 eligible = True
@@ -558,9 +675,13 @@ def gc(repo_root: Path, dry_run: bool = False) -> dict:
                 log.info("GC [DRY-RUN]: would reap %s (branch=%s)", name, branch)
                 summary["reaped"].append(str(wt_path))
             else:
+                if not _ready_for_delete(repo_root, wt_path, branch, locked=wt.get("locked", False)):
+                    log.warning("GC: no positive completion/lease/clean/age/mount proof for %s; retaining", wt_path)
+                    summary["skipped_safety"].append(str(wt_path))
+                    continue
                 try:
                     result = subprocess.run(
-                        ["git", "worktree", "remove", "--force", str(wt_path)],
+                        ["git", "worktree", "remove", str(wt_path)],
                         cwd=str(repo_root),
                         capture_output=True, text=True, timeout=30,
                     )
