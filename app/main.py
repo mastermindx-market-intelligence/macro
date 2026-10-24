@@ -2493,10 +2493,15 @@ from app.company_disclosures import PrivateDisclosureReader  # noqa: E402
 from engine.company_intelligence.issuer_disclosure_owner import (  # noqa: E402
     CommittedDisclosureSource, CurrentDisclosureOwner, ReadOnlyLocalObjects,
 )
+from engine.company_intelligence import issuer_disclosures as company_disclosure_native  # noqa: E402
+from engine.company_intelligence.sec_supplier_adoption import SOURCE_PATHS as SEC_SUPPLIER_SOURCE_PATHS  # noqa: E402
 _company_private_root = Path('/var/lib/macro-company-intelligence')
 _company_disclosure_owner = CurrentDisclosureOwner(
     CommittedDisclosureSource(REPO, app.state.company_context_owner),
-    ReadOnlyLocalObjects(_company_private_root / 'state'))
+    ReadOnlyLocalObjects(_company_private_root / 'state'),
+    supplier_sources={company_disclosure_native.SUPPLIER_FACT_SCHEMA:
+        CommittedDisclosureSource(REPO, app.state.company_context_owner,
+            sec_supplier_paths=SEC_SUPPLIER_SOURCE_PATHS)})
 app.state.company_disclosure_reader = PrivateDisclosureReader(
     _company_disclosure_owner,
     lambda: ReadOnlyLocalObjects(_company_private_root / 'artifacts'),
@@ -2590,6 +2595,10 @@ app.include_router(prophet_observations_router)
 # Read-only DailyBrief uses the original producer after site_full authentication.
 from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
 app.include_router(prophet_daily_brief_router)
+
+# Current research attention reuses the paid site-full owner boundary.
+from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
+app.include_router(catalyst_opportunity_router)
 
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not

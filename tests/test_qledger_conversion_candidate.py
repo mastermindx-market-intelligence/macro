@@ -10,6 +10,235 @@ from engine.qledger_store_protocol import open_logical_bytes
 from scripts.ci import qledger_conversion_candidate as candidate
 
 
+def _initial_conversion_owner(fixture, tmp_path, **changes):
+    from engine import qledger_original_conversion as owner_module
+    repo, tip, blob, _, limits = fixture
+    root = tmp_path / "conversion-evidence"
+    root.mkdir(exist_ok=True)
+    target = owner_module.ConversionOwnerTarget(root, root / "initial-one", "initial-one",
+        tip, "refs/remotes/origin/main", blob,
+        candidate.CandidateCommitMetadata("Conversion owner", "owner@example.invalid", 1700000000),
+        "original-budget", "original-retention")
+    target = replace(target, **changes)
+    intent = owner_module.OriginalConversionIntent("convert-owner", "original-lane", "original-conversion")
+    return owner_module.OriginalConversionOwner(repo, intent=intent, target=target, limits=limits)
+
+
+def test_original_conversion_retains_exact_bytes_and_restarts_without_git(fixture, tmp_path, monkeypatch):
+    from engine import qledger_original_conversion as owner_module
+    repo, _, _, raw, _ = fixture
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    claims = repo / "data/qledger/claims.jsonl"
+    claims.write_bytes(raw + b"unadopted-original-tail\n")
+    refs, index = git(repo, "show-ref"), (repo / ".git/index").read_bytes()
+    prepared = owner.prepare()
+    retained = owner.retain(prepared)
+    assert retained.source_bytes == raw
+    assert retained.eligible_for_cutover is False
+    assert git(repo, "show-ref") == refs
+    assert (repo / ".git/index").read_bytes() == index
+    assert claims.read_bytes() == raw + b"unadopted-original-tail\n"
+    restarted = owner_module.OriginalConversionOwner(repo, intent=owner.intent,
+                                                   target=owner.target, limits=owner.limits)
+    def no_git(*args, **kwargs):
+        raise AssertionError("restart readback must not need Git or re-prepare")
+    monkeypatch.setattr(candidate.publication, "_git", no_git)
+    recovered = restarted.readback(prepared.manifest_digest)
+    assert recovered.source_bytes == raw
+    with open_logical_bytes(recovered.snapshot) as stream:
+        assert stream.read() == raw
+    assert recovered.candidate_oid == prepared.candidate.candidate_oid
+    assert not hasattr(restarted, "apply") and not hasattr(restarted, "activate")
+
+
+@pytest.mark.parametrize("change", [
+    {"budget_id": "different-budget"}, {"retention_id": "different-retention"},
+    {"legacy_blob_oid": "0" * 40}, {"accepted_tip_oid": "0" * 40},
+    {"accepted_ref": "refs/remotes/origin/other"},
+    {"commit_metadata": candidate.CandidateCommitMetadata("Other", "other@example.invalid", 1)},
+])
+def test_original_conversion_restart_rejects_changed_original_context(fixture, tmp_path, change):
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    foreign = _initial_conversion_owner(fixture, tmp_path, **change)
+    with pytest.raises(SnapshotIntegrityError):
+        foreign.readback(prepared.manifest_digest)
+
+
+def test_original_conversion_restart_rejects_changed_intent_and_profile(fixture, tmp_path):
+    from engine import qledger_original_conversion as owner_module
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    foreign = owner_module.OriginalConversionOwner(owner.repo,
+        intent=owner_module.OriginalConversionIntent("other-operation", "original-lane", "original-conversion"),
+        target=owner.target, limits=owner.limits)
+    with pytest.raises(SnapshotIntegrityError):
+        foreign.readback(prepared.manifest_digest)
+    foreign = owner_module.OriginalConversionOwner(owner.repo, intent=owner.intent,
+        target=owner.target, limits=replace(owner.limits, logical_bytes=owner.limits.logical_bytes - 1))
+    with pytest.raises(SnapshotIntegrityError):
+        foreign.readback(prepared.manifest_digest)
+
+
+@pytest.mark.parametrize("fault", ["member", "manifest", "missing", "extra", "symlink", "hardlink"])
+def test_original_conversion_retention_corruption_never_becomes_a_reader(fixture, tmp_path, fault):
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    members = owner.target.result_path / "members"
+    member = next(members.iterdir())
+    if fault == "member":
+        member.write_bytes(b"corrupt")
+    elif fault == "manifest":
+        (owner.target.result_path / "manifest.json").write_bytes(b"{}")
+    elif fault == "missing":
+        member.unlink()
+    elif fault == "extra":
+        (members / ("0" * 64)).write_bytes(b"extra")
+    else:
+        elsewhere = tmp_path / "foreign-member"
+        elsewhere.write_bytes(member.read_bytes())
+        member.unlink()
+        if fault == "symlink":
+            member.symlink_to(elsewhere)
+        else:
+            import os
+            os.link(elsewhere, member)
+    with pytest.raises(SnapshotIntegrityError):
+        owner.readback(prepared.manifest_digest)
+
+
+@pytest.mark.parametrize("completed", [False, True])
+def test_original_conversion_retention_failure_keeps_same_path_and_never_overwrites(
+        fixture, tmp_path, monkeypatch, completed):
+    from engine import qledger_original_result as storage
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    write, stable = storage._write, storage._stable_owner
+    if completed:
+        def fail(*args):
+            raise OSError("lost final installation response")
+        monkeypatch.setattr(storage, "_stable_owner", fail)
+    else:
+        def fail(parent, name, payload):
+            if name == "manifest.json":
+                raise OSError("incomplete original installation")
+            return write(parent, name, payload)
+        monkeypatch.setattr(storage, "_write", fail)
+    with pytest.raises(SnapshotIntegrityError):
+        owner.retain(prepared)
+    monkeypatch.setattr(storage, "_write", write)
+    monkeypatch.setattr(storage, "_stable_owner", stable)
+    before = {p.relative_to(owner.target.result_path): p.read_bytes()
+              for p in owner.target.result_path.rglob("*") if p.is_file()}
+    with pytest.raises(SnapshotIntegrityError):
+        owner.retain(prepared)
+    assert before == {p.relative_to(owner.target.result_path): p.read_bytes()
+                      for p in owner.target.result_path.rglob("*") if p.is_file()}
+    if completed:
+        assert owner.readback(prepared.manifest_digest).source_bytes == fixture[3]
+    else:
+        with pytest.raises(SnapshotIntegrityError):
+            owner.readback(prepared.manifest_digest)
+
+
+def test_original_conversion_actual_read_budget_includes_manifest(fixture, tmp_path, monkeypatch):
+    from engine import qledger_original_result as storage
+    owner = _initial_conversion_owner((*fixture[:-1], replace(fixture[-1], snapshot_bytes=8192)), tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    import json
+    root_digest = json.loads(prepared.manifest_bytes)["snapshot"]["root"]
+    read, consumed = storage._read, []
+    def grow(parent, name, maximum, identities):
+        assert maximum <= owner.limits.snapshot_bytes - sum(consumed)
+        if name == root_digest:
+            assert maximum < owner.limits.root_bytes
+            (owner.target.result_path / "members" / name).write_bytes(b"x" * (maximum + 1))
+        value = read(parent, name, maximum, identities)
+        consumed.append(len(value))
+        return value
+    monkeypatch.setattr(storage, "_read", grow)
+    with pytest.raises(SnapshotIntegrityError):
+        owner.readback(prepared.manifest_digest)
+    assert sum(consumed) <= owner.limits.snapshot_bytes
+
+
+def _complete_conversion_output(owner, prepared, *, parent=None):
+    repo = owner.repo
+    blob = git(repo, "hash-object", "-w", "--stdin", input=b"complete owner output\n").decode()
+    retained = owner.readback(prepared.manifest_digest)
+    from engine.qledger_store_protocol import ROOT_PATH
+    changes = {tuple(part.encode("ascii") for part in path.split("/")):
+               git(repo, "hash-object", "-w", "--stdin", input=payload).decode()
+               for path, payload in {**retained.snapshot._members,
+                                     ROOT_PATH: retained.snapshot.root_bytes}.items()}
+    changes.update({(b"site", b"qledger", b"track_record.json"): blob, (b"other-engine-output",): blob})
+    source_tree = git(repo, "rev-parse", (parent or owner.target.accepted_tip_oid) + "^{tree}").decode()
+    tree = candidate._tree_with_members(repo, source_tree, changes, owner.limits)
+    commit = git(repo, "commit-tree", tree, "-p", parent or owner.target.accepted_tip_oid,
+                 input=b"actual complete frozen publication\n").decode()
+    return tree, commit
+
+
+def test_original_conversion_binds_complete_output_and_explicit_immutable_reader(fixture, tmp_path):
+    from engine import qledger_store as store
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    tree, commit = _complete_conversion_output(owner, prepared)
+    refs, index = git(owner.repo, "show-ref"), (owner.repo / ".git/index").read_bytes()
+    binding, witness = owner.check_publication_candidate(expected_manifest_digest=prepared.manifest_digest,
+        candidate_oid=commit, expected_tree_oid=tree, accepted_tip_oid=owner.target.accepted_tip_oid,
+        accepted_ref=owner.target.accepted_ref)
+    assert witness.publication.tree_oid == tree
+    assert binding.expected_root_digest == prepared.candidate.continuity.publication.root_digest
+    assert git(owner.repo, "show", commit + ":other-engine-output") == b"complete owner output"
+    assert git(owner.repo, "show", commit + ":site/qledger/track_record.json") == b"complete owner output"
+    with pytest.raises(SnapshotIntegrityError):
+        owner.check_publication_candidate(expected_manifest_digest=prepared.manifest_digest,
+            candidate_oid=prepared.candidate.candidate_oid, expected_tree_oid=tree,
+            accepted_tip_oid=owner.target.accepted_tip_oid, accepted_ref=owner.target.accepted_ref)
+    reader = owner.read_binding(expected_manifest_digest=prepared.manifest_digest, commit_oid=commit)
+    assert isinstance(store._production_claims_binding(owner.claims_path), store.LegacyClaimsBinding)
+    with store.ClaimsBindingScope(reader), store.ClaimsReadScope(owner.claims_path):
+        assert store.read_raw_lines(owner.claims_path, encoding="latin1") == fixture[3].decode("latin1").splitlines()
+        with store.open_raw_lines(owner.claims_path, encoding="latin1") as stream:
+            assert stream.read().encode("latin1") == fixture[3]
+        with pytest.raises(SnapshotIntegrityError):
+            with reader.mutation():
+                raise AssertionError("immutable conversion reader must not permit mutation")
+    assert git(owner.repo, "show-ref") == refs
+    assert (owner.repo / ".git/index").read_bytes() == index
+
+
+@pytest.mark.parametrize("change_claims", [False, True])
+def test_original_conversion_current_publication_requires_same_exact_legacy_source(
+        fixture, tmp_path, change_claims):
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    owner.retain(prepared)
+    if change_claims:
+        owner.claims_path.write_bytes(fixture[3] + b"different accepted claims\n")
+    (owner.repo / "unrelated").write_bytes(b"advanced accepted output\n")
+    git(owner.repo, "add", ".")
+    git(owner.repo, "commit", "-qm", "advanced accepted tip")
+    tip = git(owner.repo, "rev-parse", "HEAD").decode()
+    git(owner.repo, "update-ref", owner.target.accepted_ref, tip)
+    tree, commit = _complete_conversion_output(owner, prepared, parent=tip)
+    kwargs = dict(expected_manifest_digest=prepared.manifest_digest, candidate_oid=commit,
+                  expected_tree_oid=tree, accepted_tip_oid=tip, accepted_ref=owner.target.accepted_ref)
+    if change_claims:
+        with pytest.raises(SnapshotIntegrityError):
+            owner.check_publication_candidate(**kwargs)
+    else:
+        _, witness = owner.check_publication_candidate(**kwargs)
+        assert witness.source_blob_oid == owner.target.legacy_blob_oid
+        assert git(owner.repo, "show", commit + ":unrelated") == b"advanced accepted output"
+
+
 def git(repo, *args, input=None):
     return subprocess.check_output(["git", "-C", str(repo), *args], input=input).strip()
 
