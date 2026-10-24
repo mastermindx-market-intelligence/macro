@@ -15513,6 +15513,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
       - lib/stooq.py
       - engine/intl_performance_charts.py

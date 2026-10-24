@@ -35,6 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: Original8d1 hosted contract failure has an exact two-input source repair, pending a new admitted CI revision.
+  command: Originalrun40081206102 contract annotations; canonical local qledger closure and fragment/curation controls.
+  result: Added only identity_observation_snapshot.py and market_memory_identity_candidate.py to qledger-cluster-honest-ci paths; all355 parsed job definitions otherwise identical, target local closure zero and44 controls PASS. Originalplan digest/canonical identity verified135jobs/testeda69e/baseebe/tree1b452; all12 direct probe files plus3 envelope files unchanged against tested merge. Active original CI remains unmodified; no full tested-tree closure, fresh hosted pass or production claim.
 - claim: A28 finite HTTP execution source and exact streaming-contract test repair are locally qualified, with Linux enforcement still unproved.
   command: Existing affected runtime suites, canonical tracked closure, strict packing and three CI controls; original hosted pack9 artifact12550320968 reconciled.
   result: Localc166611cc8c0 has357 unique passing runtime cases, seven Linux-only cases unexecuted on macOS, three controls passed,29 affected exclusive scopes with zero gaps and134/134/127 job packing unchanged. All355 jobs/limits/prior commands remain; the existing A1 command adds only the boundary suite. No production load, publish or Linux acceptance. Source receipt release-probe/a28-20261024/envelope-source-qualification.json.
