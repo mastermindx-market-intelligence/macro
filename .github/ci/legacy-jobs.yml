@@ -13952,6 +13952,11 @@ jobs:
         run: python scripts/check_dag_conformance.py --verbose
       - name: complete existing dag-conformance contracts
         run: python -m pytest tests/test_dag_conformance.py tests/test_tech_lab_offrender_budget.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py tests/test_daily_graph_shadow_state_step.py tests/test_nightly_liveness.py tests/test_runner_queue_hostage.py -q
+      # MAS-6 active-build-map generator/regression is a nightly contract. Keep
+      # this in the existing inferred-scope CODE gate, not the CI contracts
+      # exclusive import closure (which drags unrelated engine/data surfaces).
+      - name: active-build-map pagination, null errors, report and concurrency contract
+        run: python -m pytest tests/test_build_active_build_map.py -q
       # Same family, one layer down: dag.yml pins WHAT the nightly lane runs,
       # this pins that the lane's timeout still lets it finish. tech_lab_offrender
       # was cancelled at its 40m cap every night 2026-07-19→07-26 — the declared

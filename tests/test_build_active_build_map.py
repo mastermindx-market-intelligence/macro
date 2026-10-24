@@ -35,6 +35,8 @@ import pytest
 # Ensure repo root is on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import scripts.build_active_build_map as active_build_map
+
 from scripts.build_active_build_map import (
     _collect_pr_files,
     compute_collisions,
@@ -335,3 +337,134 @@ def test_collect_pr_files_treats_null_files_as_typed_error():
         result = _collect_pr_files(123)
 
     assert result == ([], False, True, "UNKNOWN")
+
+
+def test_open_pr_fetch_paginates_current_scale_without_truncation(monkeypatch):
+    """The active-build join must not silently stop at the former 100-PR ceiling."""
+    rows = [
+        {
+            "number": number,
+            "title": f"PR {number}",
+            "head": {"ref": f"branch-{number}"},
+            "updated_at": "2026-09-16T00:00:00Z",
+            "draft": False,
+        }
+        for number in range(1, 279)
+    ]
+    pages = [rows[:100], rows[100:200], rows[200:]]
+    observed = {}
+
+    def fake_run_gh(args, timeout=30):
+        observed["args"] = list(args)
+        observed["timeout"] = timeout
+        return pages
+
+    monkeypatch.setattr(active_build_map, "_run_gh", fake_run_gh)
+    prs, truncated = active_build_map._collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 278
+    assert prs[-1]["head_ref"] == "branch-278"
+    assert truncated is False
+    assert "--paginate" in observed["args"]
+    assert "--slurp" not in observed["args"]
+    assert "repos/{owner}/{repo}/pulls" in observed["args"]
+    assert f"per_page={active_build_map._OPEN_PR_PAGE_SIZE}" in observed["args"]
+    assert observed["timeout"] >= 60
+
+
+def test_open_pr_fetch_refuses_malformed_pagination(monkeypatch):
+    monkeypatch.setattr(active_build_map, "_run_gh", lambda *args, **kwargs: [{"not": "a page"}])
+    prs, truncated = active_build_map._collect_open_prs()
+    assert prs is None
+    assert truncated is False
+
+
+def test_open_prs_enrich_concurrently_with_stable_result_order(monkeypatch):
+    """Four simultaneous read-only probes must retain deterministic PR order."""
+    import threading
+
+    gate = threading.Barrier(4, timeout=4)
+    lock = threading.Lock()
+    active = 0
+    highwater = 0
+    prs = [{"number": n, "title": f"PR {n}", "head_ref": f"b{n}",
+            "merge_state": "", "updated_at": "", "is_draft": False}
+           for n in (21, 22, 23, 24, 25)]
+
+    def read_files(num):
+        nonlocal active, highwater
+        with lock:
+            active += 1
+            highwater = max(highwater, active)
+        if num != 25:
+            gate.wait()
+        with lock:
+            active -= 1
+        if num == 25:
+            return [], False, True, "BEHIND"
+        return [f"engine/{num}.py"], False, False, "CLEAN"
+
+    monkeypatch.setattr(active_build_map, "_collect_open_prs", lambda: (prs, False))
+    monkeypatch.setattr(active_build_map, "_collect_recent_merged", lambda days: ([], False))
+    monkeypatch.setattr(active_build_map, "_collect_pr_files", read_files)
+    monkeypatch.setattr(active_build_map, "_resolve_main_sha", lambda: "a" * 40)
+
+    payload = active_build_map.build_map()
+    assert highwater == active_build_map._OPEN_PR_ENRICH_CONCURRENCY == 4
+    assert [p["number"] for p in payload["open_prs"]] == [21, 22, 23, 24, 25]
+    assert [p["files_error"] for p in payload["open_prs"]] == [
+        False, False, False, False, True]
+    assert payload["open_prs"][-1]["merge_state"] == "BEHIND"
+    assert payload["collisions"] == []
+    assert payload["schema"] == "active_builds.v1"
+
+
+def test_open_pr_fetch_accepts_flat_gh_paginated_output(monkeypatch):
+    """gh without --slurp returns a flat array on the installed CLI."""
+    rows = [
+        {"number": n, "title": f"PR {n}", "head": {"ref": f"branch-{n}"},
+         "updated_at": "2026-10-23T00:00:00Z", "draft": n % 2 == 0}
+        for n in range(1, 207)
+    ]
+    monkeypatch.setattr(active_build_map, "_run_gh",
+                        lambda argv, timeout=30: rows)
+    prs, truncated = active_build_map._collect_open_prs()
+    assert [pr["number"] for pr in prs] == list(range(1, 207))
+    assert prs[1]["is_draft"] is True
+    assert truncated is False
+
+
+def test_open_pr_fetch_refuses_mixed_and_invalid_page_rows(monkeypatch):
+    """Partial or mixed REST pagination cannot assert a complete snapshot."""
+    good = {"number": 1, "head": {"ref": "one"}}
+    for malformed in ([good, [good]], [[good], [None]], [42], {"items": [good]}):
+        monkeypatch.setattr(active_build_map, "_run_gh",
+                            lambda *a, data=malformed, **kw: data)
+        assert active_build_map._collect_open_prs() == (None, False)
+
+
+def test_markdown_collision_budget_retains_raw_inventory_and_priority():
+    """The human report is bounded while JSON retains every collision pair."""
+    from scripts.build_active_build_map import _MAX_MARKDOWN_COLLISION_ROWS
+    count = _MAX_MARKDOWN_COLLISION_ROWS + 50
+    collisions = [
+        {"pr_a": 10 + n, "pr_b": 2000 + n, "shared_count": 1,
+         "shared_files": ["engine/data.py"], "any_protected": False}
+        for n in range(count)
+    ]
+    collisions[-1] = {
+        "pr_a": 9898, "pr_b": 9899, "shared_count": 1,
+        "shared_files": [".github/workflows/daily.yml"],
+        "any_protected": True,
+    }
+    payload = _fixture_payload(open_prs=[])
+    payload["collisions"] = collisions
+    md = render_markdown(payload)
+    section = md.split("## File Collisions", 1)[1].split("## Recently Merged", 1)[0]
+    assert f"Showing {_MAX_MARKDOWN_COLLISION_ROWS} highest-risk collision pairs " in section
+    assert f"of {count} total" in section
+    assert "| #9898 | #9899 | 1 ⚠ |" in section
+    assert sum(line.startswith("| #") for line in section.splitlines()) == _MAX_MARKDOWN_COLLISION_ROWS
+    assert len(payload["collisions"]) == count
+    assert "data/governance/active_builds.json" in section
