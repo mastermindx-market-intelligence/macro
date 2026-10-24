@@ -1,8 +1,10 @@
 """scripts/metabolism_gc.py — Orphan-worktree GC helper (A1 companion).
 
-Reaps wf_*/metabolism worktrees whose branch is fully absorbed into
-origin/main or whose journal is in a terminal state (done/failed), subject
-to safety checks:
+Inspects wf_*/metabolism worktrees whose branch is absorbed into origin/main
+or whose journal is terminal; these are dry-run candidates, NOT delete approval.
+Actual removal requires a current exact-identity, lease-release/completion
+receipt, fresh remote ancestry, clean/unpushed Git state, an age floor and
+absence of live processes. Unknown or inaccessible evidence always holds.
 
   1. rev-parse --show-toplevel guard (dead-worktree-hits-main trap):
      If the worktree's `.git` file resolves to the MAIN repo root rather than
@@ -44,8 +46,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -79,10 +83,15 @@ def _is_live_main_checkout(worktree_path: Path) -> bool:
             cwd=str(worktree_path),
             capture_output=True, text=True, timeout=10,
         )
+        # A failing git probe is not evidence of an independent worktree.
+        # This also covers rc=128 with stdout containing an apparently valid path.
+        if result.returncode != 0 or not result.stdout.strip() or result.stderr.strip():
+            log.warning("GC: rev-parse failed for %s (rc=%s): %s", worktree_path,
+                        result.returncode, result.stderr.strip()[:200])
+            return True
         resolved = Path(result.stdout.strip())
-        # If resolved == worktree_path, it's a valid independent worktree.
-        # If resolved != worktree_path, the path fell through to another tree.
-        return resolved != worktree_path
+        # Only an exact, successful identity check admits this first gate.
+        return resolved.resolve() != worktree_path.resolve()
     except Exception as exc:  # noqa: BLE001
         log.warning("GC: rev-parse check failed for %s: %s — treating as live main", worktree_path, exc)
         return True  # fail-safe: don't touch it
@@ -95,8 +104,14 @@ def _has_open_files(worktree_path: Path) -> bool:
             ["lsof", "+D", str(worktree_path)],
             capture_output=True, text=True, timeout=15,
         )
-        # lsof exits 1 when no matches; exit 0 means at least one hit.
-        return result.returncode == 0 and bool(result.stdout.strip())
+        # Only rc=1 with *no* stdout or stderr proves no open files.
+        # rc=2, partial-access diagnostics, and ambiguous output all fail closed.
+        if result.returncode == 1 and not result.stdout.strip() and not result.stderr.strip():
+            return False
+        if result.returncode not in (0, 1) or result.stderr.strip():
+            log.warning("GC: lsof inconclusive for %s (rc=%s): %s",
+                        worktree_path, result.returncode, result.stderr.strip()[:200])
+        return True
     except Exception as exc:  # noqa: BLE001
         log.warning("GC: lsof check failed for %s: %s — treating as occupied", worktree_path, exc)
         return True  # fail-safe: don't touch it
@@ -177,12 +192,14 @@ def _list_worktrees(repo_root: Path) -> list[dict]:
         for line in result.stdout.splitlines():
             line = line.rstrip()
             if line.startswith("worktree "):
-                current = {"path": Path(line[len("worktree "):]), "branch": None}
+                current = {"path": Path(line[len("worktree "):]), "branch": None, "locked": False}
             elif line.startswith("branch "):
                 current["branch"] = line[len("branch "):]
                 # strip refs/heads/ prefix
                 if current["branch"].startswith("refs/heads/"):
                     current["branch"] = current["branch"][len("refs/heads/"):]
+            elif line.startswith("locked") and current.get("path"):
+                current["locked"] = True
             elif line == "" and current.get("path"):
                 worktrees.append(current)
                 current = {}
@@ -198,6 +215,21 @@ def _matches_pattern(name: str) -> bool:
     """Return True if the worktree name matches any watched pattern."""
     import fnmatch
     return any(fnmatch.fnmatch(name, pat) for pat in _WATCHED_PATTERNS)
+
+
+# ── Non-dry-run deletion admission (separate from dry-run candidacy) ─────────
+
+def _ready_for_delete(repo_root: Path, wt_path: Path, branch: str, *, locked: bool = False) -> bool:
+    """Deletion admission DISABLED pending canonical current owner RELEASE.
+
+    An hour-old self-described gc-admissions JSON cannot establish that a
+    worktree was not reattached after its release. The existing service does
+    not provide an atomic original-owner lease/attachment exclusion covering
+    both preflight and removal, or a durable PRE_EFFECT/effect receipt.
+    Until those contracts exist, no caller may infer worktree-delete authority.
+    This function intentionally grants no deletion admission.
+    """
+    return False
 
 
 # ── Stale running marker sweep (R-V5-2) ──────────────────────────────────────
@@ -345,27 +377,19 @@ def _parse_cycle_date(cycle_id: str) -> datetime | None:
 
 
 def reap_propose_branches(repo_root: Path, dry_run: bool = False) -> dict:
-    """Delete remote metabolism/propose-* branches for terminal cycles older than
-    _PROPOSE_BRANCH_RETENTION_DAYS.
+    """Audit old metabolism/propose-* remote branch candidates without deletion.
 
-    GATE: this function is a WRITE action — it is gated on AUTONOMY_PAUSED being
-    the exact string 'false' (same gate the other autonomous stages use).  When
-    the loop is paused, propose-branch deletion is suppressed; worktree reaping
-    (which is read-only discovery + local-fs removal, not a remote write) stays
-    ungated.
+    This legacy reaper has age/journal eligibility checks but NO authoritative
+    proof that the entire cycle merged, no unique commits remain, and no current
+    PR or lease owns the branch. Consequently both direct and CLI invocations
+    NEVER invoke git push --delete (even with dry_run=False).
 
-    Eligibility criteria for deletion:
-      - Remote branch name matches metabolism/propose-<cycle_id>
-      - cycle_id has a parseable date prefix AND that date is older than the
-        retention window  (prevents deleting very fresh cycles whose PRs may still
-        be in flight)
-      - The corresponding journal record in data/metabolism/journal/<cycle_id>.json
-        has a terminal top-level status ("done" or "failed") or at least one
-        terminal stage — confirms the cycle actually completed before deletion
-
-    Returns a summary dict: {"deleted": list[str], "skipped": list[str], "errors": list[str]}.
-    NEVER raises.
-    """
+    dry_run=True retains its legacy candidate report under the 'deleted' list
+    for compatibility, but these entries are AUDIT CANDIDATES, never effects.
+    dry_run=False puts such entries in 'skipped'. When autonomy is paused, no
+    pruning or reporting is undertaken. The separately owned merge lane is
+    unchanged and continues to enforce its own branch lifecycle fences.
+    """""
     summary: dict = {"deleted": [], "skipped": [], "errors": []}
 
     # GATE: branch deletion is a write action — respect the autonomous loop pause.
@@ -438,27 +462,22 @@ def reap_propose_branches(repo_root: Path, dry_run: bool = False) -> dict:
                 summary["skipped"].append(cycle_id)
                 continue
 
-            # Eligible — delete the remote branch
+            # Audit only. A terminal stage/failed cycle and elapsed time do NOT
+            # prove all PRs merged, no unique remote commits, or a current lease
+            # release. This legacy reaper has no authoritative checks for those
+            # conditions; it must not call git push --delete even when dry_run=False.
+            # The owned merge lane has its own separately gated branch lifecycle.
             branch = f"metabolism/propose-{cycle_id}"
             if dry_run:
-                log.info("GC propose-branch reaper [DRY-RUN]: would delete remote %s", branch)
-                summary["deleted"].append(branch)
-                continue
-            del_result = subprocess.run(
-                ["git", "push", "origin", "--delete", branch],
-                cwd=str(repo_root), capture_output=True, text=True, timeout=60,
-            )
-            if del_result.returncode == 0:
-                log.info("GC propose-branch reaper: deleted remote %s", branch)
+                log.info("GC propose-branch reaper [AUDIT ONLY]: candidate remote %s", branch)
+                # Preserve existing audit output shape; 'deleted' in dry-run is
+                # candidate-only, never evidence of remote deletion.
                 summary["deleted"].append(branch)
             else:
-                # Non-fatal: branch may have been deleted already by merge lane
-                log.warning(
-                    "GC propose-branch reaper: could not delete %s (non-fatal): %s",
-                    branch, del_result.stderr[:200],
-                )
-                summary["errors"].append(f"{branch}: {del_result.stderr[:100]}")
-
+                log.warning("GC propose-branch reaper: retained %s — missing "
+                            "current upstream/unique-commit/lease admission", branch)
+                summary["skipped"].append(cycle_id)
+            continue
     except Exception as exc:  # noqa: BLE001
         log.warning("metabolism_gc.reap_propose_branches: %s", exc)
         summary["errors"].append(str(exc))
@@ -539,7 +558,7 @@ def gc(repo_root: Path, dry_run: bool = False) -> dict:
                 summary["skipped_alive"].append(str(wt_path))
                 continue
 
-            # Eligibility check: branch merged OR journal terminal
+            # Dry-run candidacy only: actual deletion requires stronger proof.
             eligible = False
             if branch and _branch_merged_into_main(branch, wt_path):
                 eligible = True
@@ -553,26 +572,19 @@ def gc(repo_root: Path, dry_run: bool = False) -> dict:
                 summary["skipped_alive"].append(str(wt_path))
                 continue
 
-            # Reap
+            # Classify only. No original-owner atomic current lease/release,
+            # worktree reattachment fence or durable PRE_EFFECT authorization
+            # exists; DO NOT call git worktree remove from this GC helper.
             if dry_run:
-                log.info("GC [DRY-RUN]: would reap %s (branch=%s)", name, branch)
-                summary["reaped"].append(str(wt_path))
+                log.info("GC [DRY-RUN]: candidate only %s (branch=%s)", name, branch)
+                summary["reaped"].append(str(wt_path))  # legacy candidate-report shape
             else:
-                try:
-                    result = subprocess.run(
-                        ["git", "worktree", "remove", "--force", str(wt_path)],
-                        cwd=str(repo_root),
-                        capture_output=True, text=True, timeout=30,
-                    )
-                    if result.returncode == 0:
-                        log.info("GC: reaped %s", name)
-                        summary["reaped"].append(str(wt_path))
-                    else:
-                        log.warning("GC: remove failed for %s: %s", name, result.stderr)
-                        summary["errors"].append(f"{name}: {result.stderr}")
-                except Exception as exc:  # noqa: BLE001
-                    log.warning("GC: exception reaping %s: %s", name, exc)
-                    summary["errors"].append(f"{name}: {exc}")
+                log.warning(
+                    "GC: local deletion DISABLED pending canonical current owner "
+                    "RELEASE, atomic custody fence and PRE_EFFECT receipt: %s",
+                    wt_path,
+                )
+                summary["skipped_safety"].append(str(wt_path))
 
     except Exception as exc:  # noqa: BLE001
         log.warning("metabolism_gc.gc: unexpected error: %s", exc)
@@ -615,9 +627,12 @@ def main(argv: list[str] | None = None) -> int:
             len(sweep_result["errors"]),
         )
 
-    # F3(b): propose-branch reaper — gated on AUTONOMY_PAUSED='false' (write action).
-    # Runs alongside every GC invocation; always exits 0 on failure (never fatal).
-    propose_result = reap_propose_branches(repo_root, dry_run=args.dry_run)
+    # F3(b): remote-branch deletion is a DIFFERENT destructive operation.
+    # This generic GC CLI must not implicitly delete remote branches during a
+    # local worktree GC run. Remote prune requires a separate admitted owner
+    # with full-cycle completion, upstream and current-lease proof.
+    # Preserve the candidate audit without any remote git push --delete.
+    propose_result = reap_propose_branches(repo_root, dry_run=True)
     log.info(
         "GC propose-branch reaper: deleted=%d skipped=%d errors=%d",
         len(propose_result["deleted"]),
