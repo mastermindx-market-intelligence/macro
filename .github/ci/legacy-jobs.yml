@@ -262,6 +262,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -2198,6 +2201,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -3185,6 +3191,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -5724,6 +5733,10 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -6561,6 +6574,13 @@ jobs:
     # fails until it does.
     scope: exclusive
     paths:
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "config/theme_sources.yml"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
@@ -7070,6 +7090,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -9517,6 +9539,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -13089,6 +13114,10 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -13295,6 +13324,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "templates/ticker_index.html.j2"
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
@@ -17391,6 +17421,17 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -18677,6 +18718,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -21254,6 +21299,17 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -21507,6 +21563,16 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -22130,6 +22196,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "engine/research_intelligence/__init__.py"
@@ -22896,6 +22964,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -24556,6 +24626,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/theme_graph/theme_state_gap.py"
       - "engine/theme_graph/theme_state_w2_qualification.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -25076,6 +25149,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -27635,6 +27711,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -28798,6 +28876,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
@@ -30268,6 +30350,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "engine/intl_global_universe.py"
@@ -32899,6 +32984,10 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_energy_economic_change_non_regression.py"
@@ -33194,6 +33283,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -33694,6 +33785,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -34976,12 +35069,24 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_calendar.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_terminal_minute_observations.py"
+      - "tests/test_entry_radar_terminal_native_query.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
       - "engine/entry_radar/replay/leader_pivot_descriptor.py"
       - "tests/test_entry_radar_first_green_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/replay/rs_pullback_native_identity.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/**"
+      - "research/MARKET_MEMORY_INITIAL_REFERENCE_CANDIDATE_2026-10-14.md"
+      - "tests/test_dataos_identity.py"
+      - "tests/test_entry_radar_identity_observation_snapshot.py"
+      - "tests/test_entry_radar_rs_pullback_native_identity.py"
+      - "tests/test_market_memory_identity_candidate.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34989,9 +35094,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install calendar test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pyarrow
       - name: observed calendar, retained minute evidence and actual CLI replay
-        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py tests/test_entry_radar_rs_pullback_native_identity.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
@@ -36117,6 +36222,17 @@ jobs:
     # Explicit scope covers the transitive import closure; no vendor calls,
     # runtime collection, outcome evaluation, or committed-artifact writes occur.
     paths:
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_dataos_identity.py
+      - tests/test_market_memory_identity_candidate.py
+      - tests/test_dataos_initial_reference_publication.py
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
       - ".github/ci/legacy-jobs.yml"
@@ -36214,6 +36330,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
+          tests/test_dataos_initial_reference_publication.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_forex_source.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
@@ -36245,6 +36362,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
@@ -36546,6 +36669,10 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - engine/neuralweb/market_memory_history_transcripts.py
       - engine/neuralweb/market_memory_history_filings.py
       - engine/earnings_release/filing_key.py
@@ -36818,6 +36945,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
@@ -38547,6 +38677,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -39499,6 +39632,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "tests/test_sec_supplier_adoption.py"
       - "tests/test_sec_supplier_publisher_composition.py"
       - "tests/test_company_disclosure_additive_current.py"
@@ -41422,6 +41560,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - lib/symbol_directory_receipts.py
