@@ -16724,6 +16724,7 @@ jobs:
       - scripts/ci/push_retry.sh
       - scripts/ci/qledger_conversion_candidate.py
       - scripts/ci/qledger_engine_publication.py
+      - scripts/ci/qledger_daily_entry.py
       - scripts/ci/qledger_host_gate.py
       - scripts/ci/qledger_owner_evidence.py
       - scripts/ci/qledger_owner_invocation.py
@@ -16734,6 +16735,8 @@ jobs:
       - tests/test_qledger_causal_originals.py
       - tests/test_qledger_conversion_candidate.py
       - tests/test_qledger_daily_engine_join.py
+      - tests/test_qledger_daily_normalizer.py
+      - tests/test_qledger_daily_entry.py
       - tests/test_qledger_engine_finalizer.py
       - tests/test_qledger_engine_producer.py
       - tests/test_qledger_engine_publication.py
@@ -17623,6 +17626,7 @@ jobs:
       - site/basketdata/fear_greed.json
       - site/basketdata/foresight_cascade.json
       - site/basketdata/narrative_emergence.json
+      - site/basketdata/oracle_state.json
       - site/basketdata/radar.json
       - site/basketdata/radar_enriched.json
       - site/chinabasketdata/narrative_emergence.json
@@ -17639,6 +17643,7 @@ jobs:
       - site/factordata/us_track_ledger.json
       - site/flowleaders/leaders.json
       - site/leaderradar/radar.json
+      - site/intelligence/briefing.json
       - site/marketdata/subsector_rotation.json
       - site/master_brief.json
       - site/neuralwebdata/theme_state.json
@@ -17789,6 +17794,27 @@ jobs:
       - engine/research_vault/__init__.py
       - engine/sector_intelligence/__init__.py
       - engine/signal_foundry/__init__.py
+      - engine/china_gold_premium.py
+      - engine/commodity_decision_workspace.py
+      - engine/commodity_index.py
+      - engine/commodity_inputs.py
+      - engine/commodity_mtf.py
+      - engine/commodity_signals.py
+      - scripts/audit_china_gold_premium.py
+      - scripts/check_commodity_publication.py
+      - scripts/check_conflict_markers.py
+      - scripts/check_ms_board_coherence.py
+      - scripts/check_site_asset_refs.py
+      - scripts/check_start_runtime.py
+      - scripts/check_template_site_sync.py
+      - scripts/externalize_css.py
+      - scripts/inject_data_base.py
+      - scripts/optimize_assets.py
+      - scripts/ci/strip_conflict_markers.sh
+      - templates/commodities.html.j2
+      - templates/shared_shell.css
+      - templates/shared_shell_bridge.js
+      - tests/test_commodity_publication.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17832,7 +17858,7 @@ jobs:
       # was named by NO legacy job, so every grading-path change shipped dark; it
       # is hermetic (tmp_path store + monkeypatched price layer, no data/** reads).
       - name: qledger contract regression suite
-        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_conversion.py tests/test_qledger_conversion_candidate.py tests/test_qledger_host_gate.py tests/test_qledger_runner_bootstrap.py tests/test_qledger_owner_evidence.py tests/test_qledger_push_original.py tests/test_qledger_daily_engine_join.py tests/test_qledger_engine_publication.py tests/test_qledger_engine_producer.py tests/test_qledger_engine_finalizer.py tests/test_qledger_import_boundary.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_original_result.py tests/test_qledger_causal_originals.py tests/test_qledger_original_clocks.py tests/test_qledger_store_integrity.py -q
+        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_conversion.py tests/test_qledger_conversion_candidate.py tests/test_qledger_host_gate.py tests/test_qledger_runner_bootstrap.py tests/test_qledger_owner_evidence.py tests/test_qledger_push_original.py tests/test_qledger_daily_engine_join.py tests/test_qledger_engine_publication.py tests/test_qledger_engine_producer.py tests/test_qledger_engine_finalizer.py tests/test_qledger_daily_normalizer.py tests/test_qledger_daily_entry.py tests/test_qledger_import_boundary.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_original_result.py tests/test_qledger_causal_originals.py tests/test_qledger_original_clocks.py tests/test_qledger_store_integrity.py -q
       - name: qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts
         run: python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q
       # P3 — the forward-only desk adapters and the evidence-clock writer. These

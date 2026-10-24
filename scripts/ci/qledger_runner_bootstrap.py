@@ -105,6 +105,9 @@ def _read(path, maximum, deadline, *, expected=None, retain=True):
         os.close(parent)
 
 
+BUNDLE_RESOURCES = frozenset(('templates/shared_shell_bridge.js', 'templates/shared_shell.css'))
+
+
 class OriginalDeadline:
     """The caller's unchanged endpoint, with sticky expiry/clock failure."""
     def __init__(self, endpoint):
@@ -130,6 +133,8 @@ class _Bundle(importlib.abc.MetaPathFinder, importlib.abc.Loader):
         self.root, self.repo, self.sources = root, repo, sources
         self.modules, self.namespaces, self.failure = {}, set(), None
         for rel, payload in sources.items():
+            if rel in BUNDLE_RESOURCES:
+                continue  # pinned resource bytes never become importable modules
             pieces = PurePosixPath(rel).parts
             package = pieces[-1] == '__init__.py'
             names = pieces[:-1] if package else (*pieces[:-1], pieces[-1][:-3])
@@ -188,6 +193,35 @@ class _Bundle(importlib.abc.MetaPathFinder, importlib.abc.Loader):
         if package:
             module.__path__ = [str((self.root / rel).parent)]
         exec(compile(payload, filename, 'exec', dont_inherit=True), module.__dict__)
+
+    def runtime_root(self, module_name):
+        """Actual qualified checkout root before config import-time reads."""
+        self.check()
+        module = sys.modules.get(module_name)
+        _require(module_name == 'lib.config' and module_name in self.modules
+                 and module is not None and module.__loader__ is self, 'unqualified runtime root request')
+        return self.repo
+
+    def config_digest(self):
+        """Existing runtime CodePin identifies bytes, never resource admission."""
+        self.runtime_root('lib.config')
+        digest = getattr(self, 'runtime_config_pin', None)
+        if not _hash(digest):
+            self.reject('qualified original config pin unavailable')
+        return digest
+
+    def runtime_config(self, module_name):
+        self.runtime_root(module_name)
+        try:
+            digest = self.config_digest()
+            raw = _read(self.repo/'config.yml', 16 * 1024 * 1024, self.deadline, expected=digest)
+            return raw, digest
+        except Exception:
+            # A caught unqualified read cannot be erased by restoring the file
+            # or clearing a cache: other imported values could already depend
+            # on it. This loader stays poisoned through its original lifetime.
+            self.failure = self.failure or 'unqualified original configuration read'
+            raise
 
     def callable(self, value):
         self.check()
@@ -294,14 +328,21 @@ class LoadedBootstrap:
         callback = self.bundle.callable(self.entry.reader)
         return self.gate.invoke_reader(lambda: callback(self.context))
 
-    def producer(self):
+    def producer(self, *, owner_binding=None, regions=None, native_intents=None, call=None):
         original = self.config['producer_context']
         _require(type(original) is dict and set(original) == {'operation_id', 'lane_id', 'budget_id', 'retention_id'},
                  'explicit original producer context required')
         context = dict(repo=self.context.repo, commit_oid=self.gate.candidate_oid, phase='producer-build', **original)
         with self.gate.lease('entry'):
             self.gate.assert_valid(**context)
-            binding, callback = self.bundle.callable(self.entry.build_producer)(self.context)
+            builder = self.bundle.callable(self.entry.build_producer)
+            if any(x is not None for x in (owner_binding, regions, native_intents, call)):
+                _require(owner_binding is not None and regions is not None and native_intents is not None,
+                         'complete explicit same-process producer inputs required')
+                binding, callback = builder(self.context, owner_binding=owner_binding, regions=regions,
+                                            native_intents=native_intents, call=call)
+            else:
+                binding, callback = builder(self.context)
             _require((binding.operation_id, binding.lane_id) == (original['operation_id'], original['lane_id']),
                      'producer binding differs from original context')
             self.bundle.callable(callback)
@@ -353,10 +394,17 @@ def _qualified_invocation(*, owner_root, repo, config_path, config_digest, facts
     sources, total = {}, 0
     for name, digest in pins.items():
         rel = PurePosixPath(name)
-        _require(not rel.is_absolute() and '..' not in rel.parts and rel.suffix == '.py', 'unsafe bundle path')
+        _require(not rel.is_absolute() and '..' not in rel.parts
+                 and (rel.suffix == '.py' or name in BUNDLE_RESOURCES), 'unsafe bundle path')
         payload = _read(root / rel, min(16 * 1024 * 1024, 64 * 1024 * 1024 - total), deadline, expected=digest)
         sources[name], total = payload, total + len(payload)
+    if 'scripts/ci/qledger_daily_entry.py' in sources:
+        _require(BUNDLE_RESOURCES <= sources.keys(), 'daily entry canonical resources missing before import')
     bundle = _Bundle(root, repo, sources)
+    bundle.deadline = deadline
+    bundle.runtime_config_pin = config['gate']['runtime_code'].get(str(repo/'config.yml'))
+    if 'scripts/ci/qledger_daily_entry.py' in sources:
+        _require(_hash(bundle.runtime_config_pin), 'daily entry qualified config pin missing before import')
     admitted = False
     _imp.acquire_lock()
     try:

@@ -1,8 +1,9 @@
 """Inactive complete engine-tree composition for explicitly ordered settled native originals.
 
 Only a process-local original binding/write and its existing retained result are
-accepted. Preparation writes unreferenced Git objects; it neither runs a producer
-nor changes refs, index, checkout, budgets, selection or publication admission.
+accepted. The native daily finalizer normalizes/stages through incumbent APIs;
+its final freeze writes unreferenced Git objects without installing refs/index.
+No budgets, selection or publication admission are created here.
 """
 from dataclasses import dataclass
 from hashlib import sha256
@@ -213,8 +214,12 @@ class _LiveFinalCandidate:
         pin.check()
         return payload
 
-    def _run_prepare(self, program, args):
-        """Bounded same-carrier local preparation; never kill/retry on lost response."""
+    def _run_prepare(self, program, args, *, stream_output=False):
+        """Bounded same-carrier preparation; streaming logs are never object responses.
+
+        Never kill/retry on lost response. Object-response capture keeps its
+        original finite limit; incumbent staging logs stream to the owner only.
+        """
         env = {k:v for k,v in os.environ.items() if not k.startswith('BASH_FUNC_') and k not in (
             'BASH_ENV','ENV','SHELLOPTS','BASHOPTS','GIT_DIR','GIT_WORK_TREE','GIT_COMMON_DIR',
             'GIT_INDEX_FILE','GIT_OBJECT_DIRECTORY','GIT_ALTERNATE_OBJECT_DIRECTORIES')}
@@ -232,11 +237,15 @@ class _LiveFinalCandidate:
                 ready = selector.select(max(0, self._deadline()))
                 _require(ready, 'original finalizer response deadline exhausted; index lock preserved')
                 for key, _ in ready:
-                    data = os.read(key.fd, min(65536, 16385-len(buffers[key.fileobj])))
-                    _require(len(buffers[key.fileobj])+len(data) <= 16384,
+                    data = os.read(key.fd, 65536 if stream_output else min(65536, 16385-len(buffers[key.fileobj])))
+                    _require(stream_output or len(buffers[key.fileobj])+len(data) <= 16384,
                              'unbounded finalizer response; original process/index lock preserved')
                     if data:
-                        buffers[key.fileobj].extend(data)
+                        if stream_output:
+                            # Existing owner log, bounded chunks, no retained second store.
+                            sys.stderr.write(data.decode('utf-8', 'replace')); sys.stderr.flush()
+                        else:
+                            buffers[key.fileobj].extend(data)
                     else:
                         selector.unregister(key.fileobj)
             try:
@@ -373,6 +382,221 @@ class _LiveFinalCandidate:
 
     def __reduce__(self):
         raise TypeError('live final-candidate callback cannot transfer')
+
+
+
+def _qualify_daily_destinations(checked, *, accepted_tip_oid):
+    """Metadata-only qualification of the WHOLE incumbent mutation scope.
+
+    Normalizers write existing HTML/pairs, copy fixed assets, create/prune hash
+    assets and write the Gold receipt. Git helpers restore/delete arbitrary
+    dirty members of the same four roots. Qualify all those roots, not a list
+    of currently known filenames; reject aliases in restoration sources too.
+    The actual live controller still owns exclusion of concurrent mutators.
+    """
+    from engine.qledger_store_sources import _open_directory
+    b = checked.invocation.binding
+    roots = ('data', 'site', 'templates', 'reports')
+    remaining = b.limits.reference_visits
+    raw, _ = candidate.publication._git(b.repo_root,
+        ['ls-tree', '-r', '-z', accepted_tip_oid, '--', *roots],
+        output_limit=b.limits.snapshot_bytes)
+    checked._deadline()
+    _require(not raw or raw.endswith(b'\0'), 'incomplete accepted restoration inventory')
+    for entry in raw.split(b'\0')[:-1]:
+        remaining -= 1
+        checked._deadline()
+        _require(remaining >= 0, 'daily destination inventory exceeds original visit bound')
+        meta, path = entry.split(b'\t', 1)
+        fields = meta.split()
+        _require(len(fields) == 3 and fields[0] in (b'100644', b'100755')
+                 and fields[1] == b'blob' and path.split(b'/')[0] in {r.encode() for r in roots},
+                 'accepted restoration source contains an alias or non-file')
+
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK
+    seen = set()
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
+                info.st_mtime_ns, info.st_ctime_ns)
+    def walk(fd, depth):
+        nonlocal remaining
+        checked._deadline()
+        before = os.fstat(fd)
+        _require(depth <= 128 and stat.S_ISDIR(before.st_mode)
+                 and (before.st_dev, before.st_ino) not in seen,
+                 'daily destination directory is aliased or unbounded')
+        seen.add((before.st_dev, before.st_ino))
+        with os.scandir(fd) as entries:
+            for entry in entries:
+                remaining -= 1
+                checked._deadline()
+                _require(remaining >= 0, 'daily destination inventory exceeds original visit bound')
+                info = os.stat(entry.name, dir_fd=fd, follow_symlinks=False)
+                if stat.S_ISDIR(info.st_mode):
+                    child = os.open(entry.name, flags, dir_fd=fd)
+                    try:
+                        _require(identity(os.fstat(child)) == identity(info), 'daily destination directory changed')
+                        walk(child, depth+1)
+                    finally:
+                        os.close(child)
+                else:
+                    _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1,
+                             'daily destination contains a symbolic, hard or special-file alias')
+                _require(identity(os.stat(entry.name, dir_fd=fd, follow_symlinks=False)) == identity(info),
+                         'daily destination changed during qualification')
+        _require(identity(os.fstat(fd)) == identity(before), 'daily directory changed during qualification')
+
+    parent = _open_directory(b.repo_root)
+    try:
+        seen.add((os.fstat(parent).st_dev, os.fstat(parent).st_ino))
+        for name in roots:
+            info = os.stat(name, dir_fd=parent, follow_symlinks=False)
+            _require(stat.S_ISDIR(info.st_mode), 'actual daily root is aliased or absent')
+            fd = os.open(name, flags, dir_fd=parent)
+            try:
+                _require(identity(os.fstat(fd)) == identity(info), 'daily root changed')
+                walk(fd, 1)
+            finally:
+                os.close(fd)
+            _require(identity(os.stat(name, dir_fd=parent, follow_symlinks=False)) == identity(info), 'daily root changed')
+    except OSError as exc:
+        raise SnapshotIntegrityError('ENGINE_PUBLICATION_UNPROVEN', 'daily destination qualification failed before effects') from exc
+    finally:
+        os.close(parent)
+    checked._deadline()
+
+
+def finalize_daily_engine_outputs(checked):
+    """Native-only daily normalization/staging, then one object-only freeze.
+
+    The ordinary installing shell remains unchanged. Its pinned staging body is
+    reused verbatim except for the QLedger exclusion on restorative helpers.
+    No retry initialization, rebase, ref/index installation or push runs here.
+    """
+    _require(type(checked) is _LiveFinalCandidate, 'live original finalizer required')
+    try:
+        checked._check()  # BEFORE imports, normalization, restoration or deletion
+        _require(not getattr(checked, '_daily_started', False), 'daily finalizer already entered; no replay')
+        checked._daily_started = True
+        b = checked.invocation.binding
+        repo = b.repo_root
+        target = b._target_for(checked.invocation.write.intent)
+
+        def check():
+            checked._deadline()
+            checked._check()
+            _require(target.accepted_tip_oid == checked.live.installed
+                     and target.accepted_ref == 'refs/remotes/origin/main',
+                     'unchanged ordinary accepted source required')
+            candidate._ref_matches(repo, 'refs/heads/main', target.accepted_tip_oid)
+            candidate._ref_matches(repo, target.accepted_ref, target.accepted_tip_oid)
+
+        check()
+        daily = checked._program(name='daily_engine_commit_outputs.sh').decode()
+        retry = checked._program(name='push_retry.sh')
+        strip = checked._program(name='strip_conflict_markers.sh')
+        options = checked._program(name='options_signal_nightly.sh').decode()
+        # Exact markers fail closed on a future incumbent policy change. Never
+        # import/source mutable checkout Python or a checkout shell dispatcher.
+        begin = 'git add data/ site/ reports/\n'
+        end = 'bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \\\n'
+        _require(daily.count(begin) == daily.count(end) == 1, 'incumbent daily staging seam changed')
+        stage = daily.split(begin)[1].split(end)[0]
+        narrow = 'bash scripts/ci/options_signal_nightly.sh exclude-broad'
+        heal = 'push_staged_heal data/ site/ reports/ templates/'
+        _require(stage.count(narrow) == stage.count(heal) == 1, 'incumbent daily exclusions changed')
+        stage = (begin + stage).replace(narrow, 'exclude_broad').replace(
+            heal, heal + " ':(exclude)data/qledger/**'")
+        declaration = 'readonly -a OIP_EPISODE_CORE_PATHS=('
+        dispatch = 'if [ "${BASH_SOURCE[0]:-}" = "$0" ] || [ -z "${BASH_SOURCE[0]:-}" ]; then'
+        _require(options.count(declaration) == options.count(dispatch) == 1, 'incumbent Options library seam changed')
+        functions = declaration + options.split(declaration)[1].split(dispatch)[0]
+        library = retry + b'\n' + functions.encode() + b'\nset -e\n'
+        prefix = ('REPO_ROOT=' + shlex.quote(str(repo)) + '\n').encode()
+        _require((repo/'site').is_dir() and not (repo/'site').is_symlink()
+                 and (repo/'templates').is_dir() and not (repo/'templates').is_symlink(),
+                 'actual complete render roots required')
+
+        from lib import config, shared_shell
+        from scripts import (inject_data_base, externalize_css, optimize_assets,
+                             check_template_site_sync, check_start_runtime,
+                             check_ms_board_coherence, check_commodity_publication,
+                             check_conflict_markers, audit_china_gold_premium)
+        _require(config.ROOT == repo, 'normalizers require actual original ROOT')
+        _require(config.data_dir() == repo/'data' and config.site_dir() == repo/'site',
+                 'normalizer configuration redirects actual mutation roots')
+        _qualify_daily_destinations(checked, accepted_tip_oid=target.accepted_tip_oid)
+        check()
+        # optimize_assets reads these canonical bundle assets through its native
+        # Shared Shell API. Qualify the real bytes and their checkout projection.
+        for name in (shared_shell.ASSET_NAME, shared_shell.STYLESHEET_NAME):
+            frozen = checked._program(shared_shell.ROOT/'templates'/name)
+            local = repo/'templates'/name
+            _require(not local.is_symlink() and local.is_file()
+                     and local.stat().st_size == len(frozen)
+                     and local.read_bytes() == frozen, 'qualified Shared Shell asset differs from original render source')
+
+        def warn_run(label, operation):
+            check()
+            try:
+                rc = operation()
+                if isinstance(rc, int) and rc < 0:
+                    print('::warning::'+label+' failed; retaining incumbent lane-local semantics', file=sys.stderr)
+            except Exception as exc:
+                print('::warning::'+label+' failed: '+str(exc), file=sys.stderr)
+            check()
+
+        def normalize():
+            warn_run('data-base normalization', lambda: inject_data_base.inject(repo/'site'))
+            warn_run('CSS externalization', lambda: externalize_css.externalize(repo/'site'))
+            warn_run('asset optimization', lambda: optimize_assets.optimize(repo/'site'))
+            warn_run('template synchronization', lambda: check_template_site_sync.check(repo, fix=True))
+
+        def start_guard():
+            check()
+            page = repo/'site/start.html'
+            _require(not check_conflict_markers.scan_file(str(page)), 'start page conflict markers')
+            if check_start_runtime.check_page(page):
+                _require(check_start_runtime.heal_from(target.accepted_tip_oid, page)
+                         and not check_start_runtime.check_page(page), 'start runtime restore failed')
+            check()
+
+        def sweep():
+            check()
+            # A subshell preserves the incumbent helper's own exit semantics.
+            program = (b'(\n' + strip + b'\n)\n')
+            checked._run_prepare(program, ['site/', 'templates/', 'data/', 'reports/',
+                                          ':(exclude)data/qledger/**'], stream_output=True)
+            check()
+
+        normalize()
+        start_guard()
+        sweep()
+        checked._run_prepare(prefix+library+b'exclude_broad\noip_require_clean_broad_start\n', [], stream_output=True)
+        check()
+        # Match the incumbent final loop without pretending a rebase/install.
+        check_commodity_publication.verify_publication(repo, target.accepted_tip_oid, heal=True)
+        normalize()
+        for page in sorted((repo/'site').glob('*.html')):
+            check()
+            if check_ms_board_coherence.check_page(page):
+                if (not check_ms_board_coherence.heal_from(target.accepted_tip_oid, page)
+                        or check_ms_board_coherence.check_page(page)):
+                    print('::warning::MS board coherence incomplete after accepted restore', file=sys.stderr)
+        sweep()
+        start_guard()
+        warn_run('China gold premium final render audit', lambda: audit_china_gold_premium.run(strict_render=True))
+        check()
+        checked._run_prepare(prefix+library+stage.encode(), [], stream_output=True)
+        check()
+        prepared = checked.prepare_engine_tree('engine: original complete normalized output')
+        check_commodity_publication.verify_publication(repo, target.accepted_tip_oid,
+                                                       candidate_ref=prepared.candidate_oid)
+        check()
+        return prepared
+    except BaseException as exc:
+        checked.failure = exc
+        raise
 
 
 class _NativeEngineProducer:
