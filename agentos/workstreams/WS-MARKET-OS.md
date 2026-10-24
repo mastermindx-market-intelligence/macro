@@ -158,9 +158,10 @@ waves:
     title: MarketOntology — masterplan and local-wave adoption
     status: in_progress
     depends_on: []
-    next_action: 'Complete the existing P1.T1 authoring task through Draft #10165. Validate the appended
-      waves and qualify ordinary merge-import/export against a locked disposable snapshot. After normal
-      source landing, adopt through the existing MARKET-OS binding; no rebind or second record.'
+    next_action: 'P1.T1 authoring is implementation_complete and same-workstream qualification passed. Consume
+      Draft #10165''s current CI, independent review and normal source landing. After exact protected readback,
+      use a fresh locked snapshot and ordinary MARKET-OS merge-import, preserving every task and component
+      identity. No rebind.'
   - id: b-delivery-continuation
     title: MarketOntology B — original delivery continuations
     status: in_progress
@@ -350,7 +351,7 @@ next_action: >
   census remains clean. PARALLEL ORGANIZATIONAL WORK: the separate Market Ontology
   parity/fanout carrier remains independent and must preserve its own current authority,
   claim, and proof gates; do not infer that this workstream sync lands or dispatches it.
-  MARKETONTOLOGY CONTINUATION (October 24): proposed local waves are appended below the original ten; Draft #10165 extends this same record. Complete P1.T1 authoring and ordinary merge-import qualification, then use normal source review/landing and the existing locked import. A T004 and B P2.T2 continue independently. Preserve their accepted task evidence and all component identities; no rebind is required.
+  MARKETONTOLOGY CONTINUATION (October 24): P1.T1 authoring and same-workstream qualification are implementation-complete in Draft #10165. Consume its current CI, independent review and normal source landing, then use the existing locked merge-import after exact protected readback. A T004 and B P2.T2/P2.T3 continue independently; preserve accepted evidence and all component identities. No rebind is required.
 ---
 
 ## Current state
@@ -936,6 +937,13 @@ the two changed Agent OS records passed scoped validation with **zero errors and
 zero warnings**, and whitespace checks passed. Concurrent A/B updates to the live
 charter were observed separately; all qualification commands used disposable dirs.
 An unmerged Draft is not imported into the live charter as protected truth.
+
+At **1:43 p.m. CDT (18:43Z)**, P1.T1 became implementation_complete after
+publication of corrected source 2d88e7f1 and the passing qualification. Every
+other task object and task ID was unchanged at that completion readback, including
+T002 accepted, T004 active, P2.T1 accepted and P2.T2 active. No task was self-accepted.
+The qualification receipt binds the candidate published at 2d88e7f1; this later
+checkpoint changes only progress/next-action text and the cumulative handoff.
 
 Normal source review/landing and exact protected readback precede live source
 adoption through the existing locked merge path. The new handoff retains the

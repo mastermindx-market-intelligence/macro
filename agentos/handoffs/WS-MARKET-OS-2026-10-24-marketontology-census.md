@@ -74,6 +74,14 @@ verified:
       All preservation invariants pass. Full store: 1,963 records, zero errors,
       187 warnings. Scoped two records: zero errors/zero warnings. Whitespace passes.
       No second workstream or decision exception remains in the candidate.
+  - claim: The existing authoring task is implementation-complete with all other tasks preserved.
+    command: >
+      mmtask --dir ~/gwcap/project-charters/marketontology done P1.T1 --evidence
+      published-2d88e7f1-and-passing-qualification; compare before/after task objects.
+    result: >
+      At 18:43:18Z, P1.T1 in_progress -> implementation_complete. All other task
+      objects and task IDs unchanged. T002 accepted, T004 in_progress, P2.T1
+      accepted and P2.T2 in_progress. This is authoring completion, not acceptance.
 unverified:
   - claim: The corrected Draft has landed or its source waves are adopted in the live charter.
     what_would_verify: >
@@ -90,9 +98,9 @@ unresolved:
   - "Original held/unknown effects, consent, PIT and scientific limits remain on their original carriers."
 next_actions:
   - >
-    Same-record qualification has passed. Publish the corrected source on Draft
-    10165, record P1.T1 implementation completion with exact evidence, and update
-    the requested copy and existing coordination thread. Normal review remains separate.
+    Corrected source 2d88e7f1 is published and P1.T1 is implementation_complete.
+    Consume the same Draft 10165 current CI, independent review and normal landing;
+    keep the requested copy and existing coordination thread aligned with the checkpoint.
   - >
     After normal source landing, consume a fresh locked charter snapshot and use
     ordinary merge-import under MARKET-OS. No rebind, alias file or second workstream.
@@ -158,9 +166,12 @@ commands and observed results. It distinguishes the single authorized P1.T1
 task-state change from disposable import/export tests. It is not evidence of
 live source adoption or product acceptance.
 
-The source-authoring task proceeds to implementation_complete only after
-candidate validation, preservation qualification and publication. This is not
-self-acceptance; protected adoption and independent review remain distinct.
+At 1:43 p.m. CDT (18:43Z), the source-authoring task P1.T1 became
+implementation_complete after candidate validation, passing preservation
+qualification and publication at 2d88e7f1. All other task objects and IDs were
+unchanged at readback. This is not self-acceptance; protected adoption and
+independent review remain distinct. The qualification receipt binds 2d88e7f1;
+the later checkpoint updates only progress/next-action text and this handoff.
 
 ## Advisory review boundary
 
