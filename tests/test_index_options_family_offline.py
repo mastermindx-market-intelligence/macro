@@ -15,12 +15,12 @@ ASOF = "2026-10-23"
 
 def _frames(root):
     g = pd.DataFrame([{
-        "date": ASOF, "expiration": "2026-11-20", "strike": 20000.0,
+        "root": root, "date": ASOF, "expiration": "2026-11-20", "strike": 20000.0,
         "right": "C", "gamma": 0.004, "underlying_price": 20000.0,
         "implied_vol": 0.25, "delta": 0.5, "vanna": 0.0, "charm": 0.0,
     }])
     oi = pd.DataFrame([{
-        "date": ASOF, "expiration": "2026-11-20",
+        "root": root, "date": ASOF, "expiration": "2026-11-20",
         "strike": 20000.0, "right": "C", "open_interest": 100.0,
     }])
     return g, oi
@@ -177,3 +177,15 @@ def test_offline_writer_exclusive_new_private_tree(monkeypatch, tmp_path):
     with pytest.raises(FileExistsError):
         hub.build_ndx_family_offline(ASOF, tmp_path, target)
     assert written.read_bytes() == first_bytes
+
+
+def test_offline_unlabelled_theta_leg_creates_no_output(monkeypatch, tmp_path):
+    def read_greeks(session, root, store):
+        source = _frames(root)[0]
+        return source.drop(columns=["root"]) if root == "NDXP" else source
+    monkeypatch.setattr(hub, "greeks_for_date", read_greeks)
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
+    with pytest.raises(FamilySourceUnavailable, match=r"missing .* fields .*root"):
+        hub.build_ndx_family_offline(ASOF, tmp_path, tmp_path / "candidate")
+    assert not (tmp_path / "candidate").exists()

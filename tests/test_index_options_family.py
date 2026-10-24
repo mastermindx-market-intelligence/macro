@@ -19,12 +19,12 @@ SPOT = 20000.0
 def _row(root: str, *, gamma=0.004, oi=100, right="C", date=ASOF,
          expiration=EXP, strike=20000, spot=SPOT, iv=0.25):
     greek = {
-        "date": date, "expiration": expiration, "strike": strike, "right": right,
+        "root": root, "date": date, "expiration": expiration, "strike": strike, "right": right,
         "gamma": gamma, "underlying_price": spot, "implied_vol": iv,
         "delta": 0.5, "vanna": 0.0, "charm": 0.0,
     }
     open_interest = {
-        "date": date, "expiration": expiration, "strike": strike,
+        "root": root, "date": date, "expiration": expiration, "strike": strike,
         "right": right, "open_interest": oi,
     }
     return pd.DataFrame([greek]), pd.DataFrame([open_interest])
@@ -149,3 +149,33 @@ def test_missing_quote_does_not_go_to_bs_or_zero():
     raw["NDXP"] = (greek, oi)
     with pytest.raises(FamilySourceUnavailable, match="unknown gamma"):
         build_ndx_family_gex(raw, ASOF)
+
+
+@pytest.mark.parametrize("source_root", ["NDX", "NDXP"])
+@pytest.mark.parametrize("leg", [0, 1])
+def test_absent_theta_original_root_refuses_even_with_caller_root(source_root, leg):
+    raw = _both()
+    frames = list(raw[source_root])
+    frames[leg] = frames[leg].drop(columns=["root"])
+    raw[source_root] = tuple(frames)
+    with pytest.raises(FamilySourceUnavailable, match=r"missing .* fields .*root"):
+        qualify_ndx_family(raw, ASOF)
+
+
+def test_forged_root_label_refused_without_silent_retagging():
+    raw = _both()
+    greeks, oi = raw["NDXP"]
+    greeks.loc[0, "root"] = "NDX"
+    raw["NDXP"] = (greeks, oi)
+    with pytest.raises(FamilySourceUnavailable, match="conflicting root field"):
+        qualify_ndx_family(raw, ASOF)
+
+
+def test_contract_root_cannot_replace_missing_original_provider_root():
+    raw = _both()
+    greeks, oi = raw["NDXP"]
+    greeks = greeks.drop(columns=["root"])
+    greeks["contract_root"] = "NDXP"
+    raw["NDXP"] = (greeks, oi)
+    with pytest.raises(FamilySourceUnavailable, match=r"missing .* fields .*root"):
+        qualify_ndx_family(raw, ASOF)

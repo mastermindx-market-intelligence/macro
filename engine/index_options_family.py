@@ -17,8 +17,10 @@ from engine.exposure_math import MIN_QUOTED_IV
 
 NDX_FAMILY_ROOTS = ("NDX", "NDXP")
 _KEY = ("expiration", "strike", "right")
-_REQUIRED_G = ("date", "expiration", "strike", "right", "gamma", "underlying_price")
-_REQUIRED_OI = ("date", "expiration", "strike", "right", "open_interest")
+# The source's own root is mandatory on BOTH legs. Without it the caller
+# could mislabel an unqualified QQQ/other option frame as NDX or NDXP.
+_REQUIRED_G = ("root", "date", "expiration", "strike", "right", "gamma", "underlying_price")
+_REQUIRED_OI = ("root", "date", "expiration", "strike", "right", "open_interest")
 
 
 class FamilySourceUnavailable(ValueError):
