@@ -380,6 +380,8 @@ the next rung, so the shipped order is right before and after such a fix.
 | `macro-sentinel.service` + `.timer` | external freshness sentinel (masterplan W1 dead-man switch) plus the GATE-4 commercial-path pass — same unit, same `/etc/macro-sentinel.env` Telegram/Discord/email transport, no new vendor. Freshness still owns unit status; commercial-path is the leading `ExecStart=-` so a freshness breach cannot skip the money-path page |
 | `macro-user-backup.service` + `.timer` | encrypted nightly dump of the nine customer/billing tables to private R2 (MMX-001 / GATE-1) — self-armed by `update.sh` on the API box; restore is operator-only against a scratch project, see `docs/RESTORE_RUNBOOK.md` |
 | `live-rollback.sh` | disables the live lanes, restores legacy cron, and preserves artifacts in a backup |
+| `macro-git-store-maintenance.sh` + `.service` + `.timer` | nightly (02:40 UTC) bounded repack of the `/opt/macro` Git store; refuses when free space for the repack output is missing — self-armed by `update.sh` on the API box, see "Git store maintenance" below |
+| `journald-macro-vps.conf` | caps the persistent journal (`SystemMaxUse=300M`, `SystemKeepFree=2G`); installed to `/etc/systemd/journald.conf.d/10-macro-vps-cap.conf` by `update.sh` and `setup.sh` |
 
 ## Notes / gotchas
 
@@ -388,11 +390,85 @@ the next rung, so the shipped order is right before and after such a fix.
 - **CF "Full" vs "Full (strict)":** self-signed origin needs **Full**. Upgrade path:
   install a Cloudflare Origin Certificate and switch `tls internal` →
   `tls /etc/ssl/cf-origin.pem /etc/ssl/cf-origin.key`, then set CF to "Full (strict)".
-- **Disk:** the public repo carries `site/` (~395 MB) + `data/` (~367 MB); a depth-1
-  clone is ~1 GB. Fine on a standard droplet; `data/` is already there for the Slice-2 API.
+- **Disk:** the checkout keeps connected `main` history (MO-A-F04, no `--depth`), and every
+  3-minute pull lands a new fetch pack. With auto-gc disabled on the box (`gc.auto=0`),
+  only the nightly Git store maintenance below keeps `/opt/macro/.git` bounded; watch it
+  with `git -C /opt/macro count-objects -vH` and `df -h /`.
 - **Pre-launch exposure:** the site is `noindex` but still publicly reachable until you add
   the Cloudflare Access gate (Step 2.3) or the Supabase login (Slice 2). Add the gate before
   sharing the URL if you don't want the full product open.
+
+### Git store maintenance (macro-git-store-maintenance.service/.timer)
+
+Why: on 2026-10-19 the root disk filled. `/opt/macro/.git` had grown to 41G in 263
+packs: each 3-minute pull fetches every new `main` commit and lands its own pack, and
+nothing consolidated them because `gc.auto=0` is set in `/opt/macro/.git/config`. No
+script sets it; it was set by hand in late August 2026 (auto-gc's last run, 2026-08-28,
+failed with "fatal: failed to run repack" on a near-full disk). It stays 0 on purpose:
+the pull must never spawn a background repack that races it for disk.
+
+What runs: `macro-git-store-maintenance.timer` starts the oneshot every night at 02:40
+UTC (`Persistent=true`). The script (installed at `/usr/local/sbin/macro-git-store-maintenance`):
+
+1. under the updater lock (`/var/lock/macro-update.lock`, so a pull tick skips rather
+   than colliding): expires unreachable reflog entries and packs refs;
+2. deletes temporary packs older than 6 h left by a killed repack;
+3. checks free space for the worst case (the whole store again + 3 GiB) and
+   `MemAvailable` (768 MiB) BEFORE it writes anything;
+4. runs `git repack -d -l --cruft --cruft-expiration=2.weeks.ago` at idle I/O, nice 19,
+   one pack thread and a 128 MiB delta window, inside the unit's cgroup memory cap;
+5. under the lock again: `git prune --expire=2.weeks.ago` for loose objects.
+
+History is untouched (MO-A-F04): the job never fetches, deepens, truncates or edits
+`.git/shallow`; it only changes how the same reachable objects are stored. Objects
+that became unreachable in the last two weeks go to a cruft pack, as with `git gc`.
+
+Exit status: 0 = consolidated; 75 = deferred (lock or memory busy), logged and treated
+as success, retried next night; 1 = refused or failed, a failed unit in
+`systemctl --failed`. Read it with `journalctl -u macro-git-store-maintenance.service -n 50`.
+Run it by hand with `systemctl start macro-git-store-maintenance.service`.
+
+Recovery when it REFUSES for space (the store has outgrown root-disk headroom): do not
+run the repack on the root filesystem. Write the consolidated pack on
+`/mnt/terminal_storage` instead and swap it in, all while holding the updater lock
+(pull ticks skip until it is released; the site and macro-api keep serving):
+
+```bash
+M=/mnt/terminal_storage/macro-git-maint-$(date -u +%Y%m%d); mkdir -p "$M/objects/pack"
+exec 9>/var/lock/macro-update.lock; flock 9
+ls /opt/macro/.git/objects/pack/pack-*.pack > "$M/old-packs.txt"
+git -C /opt/macro for-each-ref --format='%(objectname)' | sort -u > "$M/old-tips.txt"
+# Writes ONLY to $M: one self-contained pack of every object reachable from refs,
+# reflogs and the index. GIT_OBJECT_DIRECTORY is required, not optional: pack-objects
+# creates its temporary pack in the repository's own objects/pack (the root disk) and
+# then dies renaming it onto another filesystem ("Invalid cross-device link"). The old
+# store stays readable through GIT_ALTERNATE_OBJECT_DIRECTORIES. Shallow grafts are
+# respected; deltas are recomputed with the default window.
+GIT_OBJECT_DIRECTORY="$M/objects" GIT_ALTERNATE_OBJECT_DIRECTORIES=/opt/macro/.git/objects \
+  git -C /opt/macro -c gc.auto=0 -c pack.threads=2 -c pack.windowMemory=192m \
+  pack-objects --keep-true-parents --non-empty --all --reflog --indexed-objects \
+  --delta-base-offset "$M/objects/pack/pack" < /dev/null
+```
+
+The lock may be released once pack-objects prints "Compressing objects" (it has read
+every ref by then), so pull ticks resume during the long compression; take it again for
+the swap. Under the lock: first add `$M/objects` to `.git/objects/info/alternates` so
+every object stays readable. Then rescue what only the old packs hold: a small fetch is
+unpacked loose and skips any object that is already packed, so a pull after the snapshot
+can depend on an old object that was unreachable at the snapshot and is therefore not in
+the new pack. Touch a `.keep` next to every pack that is not in `old-packs.txt`, run
+`sed 's/^/^/' "$M/old-tips.txt" | git -C /opt/macro pack-objects --revs --local
+--honor-pack-keep --non-empty --all --reflog --indexed-objects .git/objects/pack/pack`
+(it skips objects in the new pack and in the kept packs, so only those rescued objects and
+a few loose ones go on root), and remove the `.keep` files again. Now delete
+`objects/pack/multi-pack-index`, move every pack in `old-packs.txt` (`.pack`, `.idx`,
+`.rev`) aside on the same filesystem, and check with `git fsck --connectivity-only` (move
+the old packs back if it fails). Then delete the old packs, copy the new `.pack` and
+`.rev` and then its `.idx` into `objects/pack`, remove the alternates line, run fsck
+again, and finish with `git prune-packed` and
+`git prune --expire=2.weeks.ago` before releasing the lock (`exec 9>&-`). `git prune`
+also drops `.git/shallow` lines for boundary commits that are no longer reachable; the
+repository stays shallow and its reachable boundary is unchanged.
 
 ### Alert delivery drain (macro-alert-drain.service/.timer)
 
