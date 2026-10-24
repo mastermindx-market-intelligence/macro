@@ -252,6 +252,20 @@ def test_b1_source_and_regressions_select_the_executing_code_gate(changed_path: 
     assert "prophet-lab" in {job.job_id for job in selected}, reason
 
 
+def test_each_b1_suite_has_one_existing_ci_owner() -> None:
+    jobs = _load(LEGACY_JOBS)["jobs"]
+    owners = {test_file: [] for test_file in B1_TESTS}
+    for name, job in jobs.items():
+        commands = "\n".join(_run(step) for step in job.get("steps", []))
+        for test_file in B1_TESTS:
+            if test_file in commands:
+                owners[test_file].append(name)
+
+    assert owners == {
+        test_file: ["prophet-lab"] for test_file in B1_TESTS
+    }
+
+
 def test_registry_declares_all_six_b1_contracts_and_clocks() -> None:
     registry = _load(REGISTRY)
     contracts = {row["dataset_id"]: row for row in registry["datasets"]}
