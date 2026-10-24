@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-14T16:20:09.427136+00:00",
+  "qualified_a1": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "observed_main": "1302e876d406fc84552fd56c4d5edae2696da023",
+  "preview_tree": "6b6cccfbcaf3a76c62d2091e6fe88c201b71512b",
+  "rows": [
+    {
+      "path": "admin/evidence_findings.py",
+      "qualified_blob": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c",
+      "preview_blob": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c",
+      "unchanged": true
+    },
+    {
+      "path": "admin/evidence_status.py",
+      "qualified_blob": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0",
+      "preview_blob": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0",
+      "unchanged": true
+    },
+    {
+      "path": "admin/intelligence_os.py",
+      "qualified_blob": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+      "preview_blob": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+      "unchanged": true
+    },
+    {
+      "path": "admin/server.py",
+      "qualified_blob": "067b3520f2c535bb4ba16b1b514d0622f56e3d3b",
+      "preview_blob": "067b3520f2c535bb4ba16b1b514d0622f56e3d3b",
+      "unchanged": true
+    },
+    {
+      "path": "admin/static/app.js",
+      "qualified_blob": "4f1f97e033939fefd93cf5bf7476911451aba49a",
+      "preview_blob": "4f1f97e033939fefd93cf5bf7476911451aba49a",
+      "unchanged": true
+    },
+    {
+      "path": "admin/static/index.html",
+      "qualified_blob": "5e6a7167d1b6e263e3e3d50868ba570d2413e4e5",
+      "preview_blob": "5e6a7167d1b6e263e3e3d50868ba570d2413e4e5",
+      "unchanged": true
+    },
+    {
+      "path": "admin/static/preferences.js",
+      "qualified_blob": "bfc523ca16ddb7aa6b7b123df04ea3c926a536f0",
+      "preview_blob": "bfc523ca16ddb7aa6b7b123df04ea3c926a536f0",
+      "unchanged": true
+    },
+    {
+      "path": "admin/static/styles.css",
+      "qualified_blob": "a4817dd1554b8002321c966705b3b458a5c48a69",
+      "preview_blob": "a4817dd1554b8002321c966705b3b458a5c48a69",
+      "unchanged": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "qualified_blob": "895adf0c38b2c3193e95a344a1409111a7133eda",
+      "preview_blob": "895adf0c38b2c3193e95a344a1409111a7133eda",
+      "unchanged": true
+    },
+    {
+      "path": "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+      "qualified_blob": "35f98b27b96f8bb07bd72363e6f691302870b5f0",
+      "preview_blob": "35f98b27b96f8bb07bd72363e6f691302870b5f0",
+      "unchanged": true
+    },
+    {
+      "path": "engine/neuralweb/response_eval.py",
+      "qualified_blob": "499b1b3a45bad3a89265745c1f9293e674409c0e",
+      "preview_blob": "499b1b3a45bad3a89265745c1f9293e674409c0e",
+      "unchanged": true
+    },
+    {
+      "path": "engine/qledger.py",
+      "qualified_blob": "24dd479b42901b96d062b2e837eeaa0767966b42",
+      "preview_blob": "24dd479b42901b96d062b2e837eeaa0767966b42",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/build_intelligence_registry.py",
+      "qualified_blob": "0c104c074c8e7cc2f88eb6f9c76f1c0378aadc09",
+      "preview_blob": "0c104c074c8e7cc2f88eb6f9c76f1c0378aadc09",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/grade_qledger.py",
+      "qualified_blob": "2e715c01e3676ca0299a4af6d35b4bb17b68941f",
+      "preview_blob": "2e715c01e3676ca0299a4af6d35b4bb17b68941f",
+      "unchanged": true
+    },
+    {
+      "path": "admin/theme_tokens.py",
+      "qualified_blob": "75857b658836c043af0e2386325ce6c4cc8be2bc",
+      "preview_blob": "75857b658836c043af0e2386325ce6c4cc8be2bc",
+      "unchanged": true
+    },
+    {
+      "path": "templates/theme.css",
+      "qualified_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "preview_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "unchanged": true
+    },
+    {
+      "path": "engine/qledger_desk_adapter.py",
+      "qualified_blob": "3697d2a35fd7acb3bd3f96b301e474ba421e034d",
+      "preview_blob": "3697d2a35fd7acb3bd3f96b301e474ba421e034d",
+      "unchanged": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "qualified_blob": "e11bc96b9356db23f59424ff47c1fde75c3bde17",
+      "preview_blob": "cd7a4823fa932d584d22ea56643029ca8b3de791",
+      "unchanged": false
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "qualified_blob": "5b1678032c6a5b513530f8d86738cdc7ecb890f2",
+      "preview_blob": "eae31f84b54b35465138afcc2e15d23cc2dc7d7f",
+      "unchanged": false
+    },
+    {
+      "path": "scripts/merge_on_green.py",
+      "qualified_blob": "3b5112d78092f4af4ab8723178047991f7727a1f",
+      "preview_blob": "3b5112d78092f4af4ab8723178047991f7727a1f",
+      "unchanged": true
+    }
+  ],
+  "scope": "Preview only, not final source identity or production binding"
+}

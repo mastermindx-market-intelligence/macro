@@ -189,3 +189,13 @@ def test_successful_run_then_immediate_reinvocation_is_cheap_noop(tmp_path, monk
     rc2 = topup._daily_main(workers=1, deadline_min=topup._DEFAULT_DEADLINE_MIN, forced=False, now_fn=now_fn)
     assert rc2 == 0
     assert len(fake.calls) == n_calls_first   # zero NEW vendor calls
+
+
+def test_d_session_source_preparation_does_not_activate_any_rung():
+    import inspect
+    import scripts.topup_thetadata_day as topup
+    assert inspect.signature(topup._daily_main).parameters['d_session_observation'].default is None
+    assert topup._DSessionObservation.__dataclass_fields__['transport'].default is None
+    text=WRAPPER_PATH.read_text()
+    assert 'd-session' not in text and 'DSessionObservation' not in text
+    assert sorted((d['Hour'],d['Minute']) for d in _load_plist()['StartCalendarInterval'])==sorted(EXPECTED_FIRE_POINTS)

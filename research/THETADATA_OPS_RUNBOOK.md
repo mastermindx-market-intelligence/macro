@@ -396,3 +396,53 @@ with Fable/human after the threshold is confirmed.
 | Keepalive fires but backfill immediately dies | `backfill.log` tail | Python path not in launchd PATH — verify the plist LaunchAgents entry; use full Python path in wrapper if needed |
 | `LastExitStatus` in `launchctl list` = 32512 | Script not executable | `chmod +x .../theta_backfill_keepalive.sh` |
 | `_manifest.json` missing after ETF pass | Backfill didn't finish cleanly | Check log; resume — the script writes the manifest at completion |
+
+### Default-off D-session observation — source preparation, October 24
+
+Do not activate or run this preparation from this runbook. Existing schedule,
+wrapper, canonical four S/D cells and health are unchanged. The reviewed source
+seam is `_daily_main(..., d_session_observation=None)`; no CLI/env/plist enables it.
+The incumbent collector has an explicit source adapter
+`bounded_spy_d_session_transport(day)` using native `_get_csv`/normalizers, but no
+CLI/environment/plist/wrapper binds it. Transport defaults None, which records
+zero pilot attempts; source availability does not activate it.
+See the October 24 AD1T1 amendment for the exact callback interface and admission
+boundary. The existing commercial-rights Chairman decision is settled; this seam
+must not request another license approval or invent a vendor contract.
+
+After a separately qualified source/install/access/capacity boundary, a distinct
+natural 17:30 ET SPY session could be admitted with two total physical attempts,
+including any probe/retry/redirect (those are forbidden rather than extra calls).
+It validates existing OI[D]/OI[S] and their eligible live-contract membership,
+retaining full local report copies/hashes and explicit S-expiry exclusions. Missing
+expiration is not an exclusion, and a missing nonexpired member is not zero. It
+exclusively claims its exact date/rung under the
+existing canonical lock, reserves before GET, retains private raw bytes before
+parse, and preserves refusal/unknown/no-replay. Missing local reports or wrong
+rung/forced/nonsession/lock refusal mean no pilot calls. There is no automatic
+later-rung retry and no timer or retired-backfill restoration.
+
+Success is observation-only. Never merge its EOD/Greek frames into canonical
+Parquet or run/advance Hub from them. DOI/Hot remain at their actual compatible
+source date. Source/model/role clocks and unknown earliest availability remain
+separate. Actual production promotion requires a later qualified per-root source
+composition and declared coverage, not a SPY-only max-date side effect. All current
+checks of this preparation are synthetic structural mock tests; no activation,
+provider GET, new allowance or runtime installation follows from their passing.
+
+The unbound pilot adapter's absolute deadline is available only on the native
+POSIX main thread with no pre-existing real-time alarm. An active process timer
+or unsupported thread/platform is a pre-GET refusal, not a reason to fall back
+to inactivity timeouts. The guard interrupts the synchronous header/body read,
+closes the native response and restores the previous signal handler. No capture
+worker is detached. After a physical attempt the journal preserves unknown
+provider outcome/no-replay even when local cancellation/disconnection succeeds.
+These controls have local loopback/mock tests only; no production host, session
+allocation, installation or activation is established by that evidence.
+
+For a later admitted one-session binding, supply both the transport's fixed date
+and `_DSessionObservation.session_day` with the same exact allocated date.
+Default None withholds; a mismatch refuses before local-source preflight/claim.
+The native receipt records `bound_session` and the computed exact operation_ref.
+This source interface does not activate a schedule or roll a two-attempt
+allocation into a recurring allowance.

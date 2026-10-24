@@ -1,0 +1,20 @@
+{
+  "schema": "eval_os.snb_independent_review_adjudication.v1",
+  "observed_at": "2026-10-15T06:32:07.213839+00:00",
+  "source": "a353babbb5b8dcd3d8cf972cc8de76c1e7859a58",
+  "run_id": "eval-snb-source-review-01a1333d-c1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "author": "native Codex/OpenAI",
+  "reviewer": "Fabric MiniMax / ubuntu1",
+  "retained_result_sha256": "a8dad5aae86c71c6b3c305d292fd6a542f2d765d4e99a4fb32f399a26a188716",
+  "retained_result_bytes": 5145,
+  "verdict": "ACCEPTED_WITH_REPORT_CORRECTIONS",
+  "material_defects": [],
+  "corrections": [
+    "Reviewer counted nine CI locations; exact preserved source receipt shows twelve added entries across eleven existing job lists.",
+    "Commit contains six files; four diff sections were shown in addition to the full two new files.",
+    "Reviewer packet does not establish live source retrieval, disk safety, full closure, real model response or historical byte custody; parent byte checks and accepted harness tests are separately retained."
+  ],
+  "accepted_scope": "Independent packet review of factual/arithmetic correctness, answer/oracle separation and additive admission; root verified source hashes and factual claims. Full strict scope validation remains pending and no release/production/adoption is claimed.",
+  "provenance": "Original same-ID terminal rc0 consumed by assigning parent; this is not replacement of frozen experience or CLI review."
+}

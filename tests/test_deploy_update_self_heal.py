@@ -960,6 +960,8 @@ MUST_RESTART = [
     "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
+    # T11's native request lazily imports and then caches its numeric checker.
+    "engine/neuralweb/response_eval.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
     "engine/intelligence_workspace/runtime.py",
@@ -1113,6 +1115,9 @@ MUST_NOT_RESTART = [
     "engine/theme_graph/materialize.py",
     "collectors/equity_earnings.py.bak",
     "engine/earnings_catalysts.py",
+    "engine/neuralweb/response_eval.py.bak",
+    "engine/neuralweb/response_evaluation.py",
+    "scripts/run_brain_eval.py",
 ]
 
 
