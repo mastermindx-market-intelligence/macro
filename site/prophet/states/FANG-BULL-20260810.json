@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FANG-BULL-20260810",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.5,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 8.2,
+    "progress": 11.8,
     "pace": 0.0,
-    "retention": 28.4,
-    "overlay": 58.9
+    "retention": 46.1,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.09,
-    "dist_to_t1_r": 1.41,
-    "dist_to_t2_r": 2.91,
-    "horizon_pct_used": 160.0,
-    "p1": 0.0598,
-    "p2": 0.0299,
+    "dist_to_stop_r": 1.146,
+    "dist_to_t1_r": 1.354,
+    "dist_to_t2_r": 2.854,
+    "horizon_pct_used": 162.2,
+    "p1": 0.0971,
+    "p2": 0.0485,
     "p3": null,
-    "move_r": 0.09,
+    "move_r": 0.146,
     "mfe_r": 0.316,
     "mae_r": -0.5
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 72,
-  "tau": 1.6,
+  "days_elapsed": 73,
+  "tau": 1.6222,
   "closed": true,
   "outcome": "EXPIRED"
 }
