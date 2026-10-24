@@ -1862,3 +1862,48 @@ def test_daily_owner_forwards_version_only_for_explicit_opt_in(store,monkeypatch
  fake.bulk_greeks=greeks
  result=topup._ensure_daily_root(store,root,S_MID,D_MID,fake)
  assert result.state=='complete' and calls==[expected]
+
+
+@pytest.mark.parametrize('root,setting,expected', [
+    ('SPY', '', {}), ('QQQ', '', {}), ('SPY', ' spy , qqq ', {'version': '1'}),
+    ('QQQ', 'SPY,QQQ', {'version': '1'}), ('QQQ', 'SPY', {}),
+    ('AAPL', 'SPY,QQQ', {}),
+])
+def test_backfill_owner_shares_explicit_dated_version_policy(monkeypatch, root, setting, expected):
+    import collectors.thetadata as td
+    import scripts.backfill_thetadata_eod as backfill
+
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', setting)
+    calls = []
+    monkeypatch.setattr(td, 'bulk_eod', lambda *a, **kw: pd.DataFrame())
+    monkeypatch.setattr(td, 'bulk_open_interest', lambda *a, **kw: pd.DataFrame())
+    def greeks(*args, **kwargs):
+        calls.append((args, kwargs))
+        return pd.DataFrame()
+    monkeypatch.setattr(td, 'bulk_greeks', greeks)
+    day = date(2026, 10, 22)
+    assert backfill._pull_root_year(root, 2026, day, day)
+    assert calls == [((root, 0, day, day), {'order': 3, **expected})]
+    assert topup._dated_greek_request_options(root) == expected
+
+
+def test_invalid_dated_policy_stops_backfill_before_any_source_call(monkeypatch):
+    import collectors.thetadata as td
+    import scripts.backfill_thetadata_eod as backfill
+
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', 'SPY,AAPL')
+    for name in ('reachable', 'bulk_eod', 'bulk_open_interest', 'bulk_greeks'):
+        monkeypatch.setattr(td, name, lambda *a, **kw: pytest.fail('Invalid policy reached source'))
+    with pytest.raises(ValueError, match='SPY/QQQ'):
+        backfill._pull_root_year('SPY', 2026, S_MID, S_MID)
+    monkeypatch.setattr('sys.argv', ['backfill_thetadata_eod.py'])
+    with pytest.raises(SystemExit):
+        backfill.main()
+
+
+def test_opt_in_does_not_refetch_an_already_present_unversioned_day(store, monkeypatch):
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', 'SPY,QQQ')
+    topup._merge_day(store, 'greeks', 'SPY', S_MID, _df(S_MID))
+    assert topup._dated_greek_request_options('SPY') == {'version': '1'}
+    assert topup._ensure_one_cell(store, 'greeks', 'SPY', S_MID,
+        lambda: pytest.fail('Opt-in must not replay an existing day')) == 'already_present'
