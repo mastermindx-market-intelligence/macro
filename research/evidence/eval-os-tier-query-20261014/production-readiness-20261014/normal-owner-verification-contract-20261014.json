@@ -1,0 +1,45 @@
+{
+  "schema": "eval_os.normal_owner_verification_contract.v1",
+  "created_at": "2026-10-14T17:14:14.919771+00:00",
+  "source_commit": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "source_hashes": {
+    ".github/workflows/daily.yml": "89c1d9a77c7213366a597ffa4d96568dc72d9b7dce818d911a4e3719485a7bd7",
+    "scripts/collect.py": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b"
+  },
+  "scope": "Read-only source trace and post-release verification contract; no normal owner run observed or started",
+  "source_recheck": "Compare these source blobs to the eventual qualified landed revision; revise only changed contracts before using this plan.",
+  "owner_chain": [
+    "daily scheduled regime-matching Build B",
+    "scripts/collect.py run collectors",
+    "scripts/grade_qledger.py run_as_collect_step",
+    "run_readiness_post_step publication",
+    "normal workflow publication and macro-update install",
+    "authenticated API engines[].evidence_provider.recorded_snapshot",
+    "rendered engine detail recorded owner context"
+  ],
+  "schedule": {
+    "local": "18:30 America/New_York",
+    "candidate_next_slot": "2026-10-14T18:30:00-04:00",
+    "candidate_next_slot_utc": "2026-10-14T22:30:00+00:00",
+    "limitations": "Intended firing, not actual launch or completion. If A1 does not land before the owner executes its qualified source, use the next eligible normal owner run. Do not dispatch or alter clocks."
+  },
+  "acceptance": {
+    "normal_owner": "Original scheduled run identity and regime gate plus actual source revision containing qualified landed A1; collector green alone is insufficient because ordinary grader and readiness failures are nonfatal.",
+    "publication": "Retained owner publication after release from qualified source; correlate exact publication/installation identity with recorded_at and receipt provenance in authenticated API. No direct claim/grade/outcome corpus read.",
+    "consumer": "At same authenticated engine, compare recorded_snapshot fields and plain-language limitation with rendered detail; preserve unavailable fields.",
+    "cache": "Provider and HTTP overview caches each have300s TTL; owner artifact metadata participates in cache identity. UI observed_at, mtime or reload alone is not owner progression. Never use force=1 for natural progression proof.",
+    "scope_limits": "recorded_provenance is not current all-input qualification. native_comparison_deferred and excluded prices/calendar/task cohort stay unqualified. No automatic earned tier or promotion.",
+    "nonprogress": "If receipt is absent, old, invalid, failed or has no eligible publication, retain unresolved state or source-qualified owner explanation; do not relabel as fresh success."
+  },
+  "effects": {
+    "owner_started": false,
+    "production_mutated": false,
+    "outcome_contents_read": false,
+    "production_proven": false,
+    "programme_complete": false
+  }
+}

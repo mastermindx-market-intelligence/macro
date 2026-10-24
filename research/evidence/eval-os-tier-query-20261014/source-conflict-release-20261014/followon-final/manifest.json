@@ -1,0 +1,71 @@
+{
+  "recorded_at": "2026-10-14T13:36:42.051667+00:00",
+  "source": "566a10d139a041b4eca915420063290a9a302882",
+  "files": [
+    {
+      "path": "followon-a1-source-preview.json",
+      "sha256": "2fa71e83df1737f1d59bc0c4c37ff5fe29b4691037cbf9a15a5c2f58ff6fad05",
+      "bytes": 437
+    },
+    {
+      "path": "followon-aligned-previews.json",
+      "sha256": "c20a0305cab8a8a918bb99e9f0608c4d15095182b9e201c5d34feacee9a2fa22",
+      "bytes": 731
+    },
+    {
+      "path": "actual-a1-merge-preview.json",
+      "sha256": "61be6a0f240f0fd206e992fae4158a9eb066c1ba207a5649e0f761849fd4ca59",
+      "bytes": 593
+    },
+    {
+      "path": "followon-comparison-ancestry.json",
+      "sha256": "25fa0508eb87ef975647a535606cabdb3b41e7cea5a70b94da28149793067ad8",
+      "bytes": 280
+    },
+    {
+      "path": "followon-main-anchor-repair.json",
+      "sha256": "81168564e0095515e13453380bb6ead9613ab3b0272ba03319b0638440f63570",
+      "bytes": 692
+    },
+    {
+      "path": "followon-final-order-validation.json",
+      "sha256": "b68d310efd52f9851095abc103bd921c7ca2519989565a2b9af9ad7980782dd6",
+      "bytes": 984
+    },
+    {
+      "path": "followon-composed-positive-union.json",
+      "sha256": "6a6ea9a6c56a40c80cbdbe35088bca4ea40486313e288a8735d58e2fd2f1ad5d",
+      "bytes": 1572
+    },
+    {
+      "path": "followon-incoming-scope-repair.json",
+      "sha256": "17aa38ba8a607546e2bcf4fd744bc04ae3d2811c7b23465c6a7f969d87210747",
+      "bytes": 1636
+    },
+    {
+      "path": "incoming-scope-final-previews.json",
+      "sha256": "a7e4c61798a878cd04073db4792222c319fe0ab1af096cf2b783fa7e14a215ae",
+      "bytes": 560
+    },
+    {
+      "path": "incoming-scope-manifest-load.json",
+      "sha256": "a040f0052f0e22ec8694be6714c2ed463d9126b5fd563eb9d007773050f170a5",
+      "bytes": 365
+    },
+    {
+      "path": "actual-a1-merge-preview.log",
+      "sha256": "043acfbba387048d89d972d34b030a32edeff4c60d56e24b1c51f18c2905dbed",
+      "bytes": 413
+    },
+    {
+      "path": "incoming-scope-composed-a1-preview.log",
+      "sha256": "e49e1c9763e16e7f96e1edfd7da8d0d22ad168153904d342a5b0744941a2e194",
+      "bytes": 41
+    },
+    {
+      "path": "incoming-scope-main-preview.log",
+      "sha256": "f666f5d475e56698f51b8af9aed51bcb3a9f7d88d55e03039f41ba48f49b69d0",
+      "bytes": 41
+    }
+  ]
+}

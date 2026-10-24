@@ -818,3 +818,17 @@ def test_owner_publication_reads_retained_original_and_builds_current_binding(or
     with pytest.raises(p.SnapshotIntegrityError):
         binding.check_publication_candidate(write, candidate_oid=actual, expected_tree_oid=actual_tree,
             accepted_tip_oid=current_tip, accepted_ref='refs/remotes/origin/main')
+
+
+def test_explicit_owner_selection_is_visible_to_fresh_process_boundary(original,monkeypatch):
+    from admin import intelligence_execution as execution
+    monkeypatch.setattr(execution,'_collect',lambda *a,**k:pytest.fail('private native owner dispatched child'))
+    _,store,binding,_,_,_=owner_bridge(original,monkeypatch)
+    assert store.has_process_local_claims_selection() is False
+    with store.ClaimsBindingScope(binding):
+        assert store.has_process_local_claims_selection() is True
+        assert execution.response('panel',root=binding.repo_root)['error_code']=='evidence_binding_not_transferable'
+        with store.ClaimsReadScope(binding.repo_root):
+            assert store.has_process_local_claims_selection() is True
+        assert store.has_process_local_claims_selection() is True
+    assert store.has_process_local_claims_selection() is False

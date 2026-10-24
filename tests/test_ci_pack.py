@@ -4390,6 +4390,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
+    # Qledger suites retain all named imports; opaque fixture roots are audited.
+    "qledger-cluster-honest-ci",
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
@@ -5109,6 +5111,28 @@ def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
 
 
+def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
+    """The tuple-joined seed is a real input even when AST inference misses it."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "qledger-cluster-honest-ci")
+    for dependency in (
+        "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+        "engine/qledger_validity.py",  # ci-trigger-closure: data
+        "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+        "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+    ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
+    assert not selected, reason
+
+
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
     """The recovered MarketDesk owner must not become a whole-tree CI rider."""
     manifest = _yaml(MANIFEST)
@@ -5322,6 +5346,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 frozen83066 source composition retains its incoming precise
+    QLedger exclusive scope and all prior suites, plus two native-owner/finalizer
+    files. The exact literal closure additions match none of these probes.
+    Their selected sets lose only the old QLedger rider (weight80); free-content
+    also retains protected eval-os-a1 weight19->21. Current measurements are
+    index136/5836, free136/5834, Prophet129/5586, each ten packs. Existing
+    ceilings138/137/130 and5916/5912/5666 already cover them; no limit moves.
+    This planning attribution grants no runtime budget or native activation.
 
     2026-10-24 normal composition with frozen main8c48e5c8:
     canonical selected sets remain137/137/130, no additions/removals and

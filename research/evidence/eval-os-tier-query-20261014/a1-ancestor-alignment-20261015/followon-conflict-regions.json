@@ -1,0 +1,7 @@
+[
+  {
+    "start": 7545,
+    "end": 7560,
+    "context": "    # Keep its nightly checks intact; this lane owns A1 API/UI and finite QA.\n    # The qledger-cluster-honest-ci code owner retains grader/readiness suites.\n    scope: exclusive\n    paths:\n<<<<<<< f60f5b54c33566e6820e9e527400c1d1a41d241c\n=======\n      - collectors/biocatalyst/__init__.py\n      - engine/biocatalyst/__init__.py\n      - engine/capital_structure/__init__.py\n      - engine/codex_lane/__init__.py\n      - engine/context_index/__init__.py\n      - engine/earnings_narrative/__init__.py\n      - engine/earnings_release/__init__.py\n      - engine/fundamental_forensics/__init__.py\n      - engine/intelligence_workspace/adapters/__init__.py\n      - engine/market_os/__init__.py\n      - engine/seasonality/__init__.py\n      - engine/signal_foundry/__init__.py\n      - tests/__init__.py\n>>>>>>> 2d0e6e334986eb73496c102a939ee4e24a688c63\n      - engine/rates_command_basis.py\n      - engine/neuralweb/market_memory_brain_citations.py\n      - engine/neuralweb/market_memory_retained_catalog.py\n      - engine/neuralweb/market_memory_retained_legacy_guard.py"
+  }
+]
