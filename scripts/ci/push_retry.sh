@@ -109,6 +109,24 @@ _push_terminal_failure() {
 
 
 
+# Explicit process-local original binding; never inherited from environment.
+PUSH_QLEDGER_CONVERSION_ARGS=()
+push_bind_qledger_conversion() {
+  if [ "$#" -ne 5 ]; then return 2; fi
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    # A settled or uncertain original cannot be silently replaced in this process.
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[1]}" = "$1" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[3]}" = "$2" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[5]}" = "$3" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[7]}" = "$4" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[9]}" = "$5" ]
+    return $?
+  fi
+  PUSH_QLEDGER_CONVERSION_ARGS=(--conversion-result "$1"
+    --conversion-manifest-sha256 "$2" --conversion-accepted-tip "$3"
+    --candidate "$4" --tree "$5")
+}
+
 # Query the claims owner's one production selector. The current selector is
 # unconditionally legacy. Explicit native APIs are tested separately; there is
 # no environment or filesystem activation switch in this command.
@@ -118,6 +136,11 @@ push_qledger_preflight() {
   library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
   # Prefer the explicit Python 3 executable over a legacy system python.
   if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  # Bash 3 + nounset treats an empty array expansion as unbound. Leave the
+  # legacy argv untouched; prepend a binding only when explicitly supplied.
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    set -- "${PUSH_QLEDGER_CONVERSION_ARGS[@]}" "$@"
+  fi
   PYTHONPATH="$library_root${PYTHONPATH:+:$PYTHONPATH}" "$py" \
     -m scripts.ci.qledger_publication --repo "$(pwd -P)" --boundary "$boundary" "$@"
 }
@@ -360,6 +383,11 @@ push_do() {
   else
     for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
     push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
+  fi
+  # A validated native candidate is pushed by immutable OID, not a mutable
+  # local branch that could move between preflight and Git's ref resolution.
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    set -- origin "${PUSH_QLEDGER_CONVERSION_ARGS[7]}:refs/heads/main"
   fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?

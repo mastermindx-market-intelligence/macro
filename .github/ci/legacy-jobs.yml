@@ -262,6 +262,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -2203,6 +2205,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -3195,6 +3199,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -5739,6 +5745,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -7090,6 +7098,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -8280,6 +8290,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -8623,6 +8635,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -9552,6 +9566,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -11859,6 +11875,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "scripts/ci/qledger_conversion_candidate.py"
       - "scripts/ci/qledger_publication.py"
@@ -12379,6 +12396,12 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -12984,6 +13007,8 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -13347,6 +13372,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
       - "scripts/ci/qledger_conversion_candidate.py"
@@ -15154,6 +15181,14 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "engine/__init__.py"
+      - "engine/qledger_original_conversion.py"
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_conversion.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -18148,6 +18183,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
@@ -18406,6 +18443,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -18746,6 +18785,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -21581,6 +21622,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -22209,6 +22252,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -22980,6 +23025,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -23529,6 +23576,7 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/ci/qledger_conversion_candidate.py"
       - "scripts/ci/qledger_publication.py"
       - "app/**"
@@ -24647,6 +24695,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "scripts/ci/qledger_conversion_candidate.py"
       - "scripts/ci/qledger_publication.py"
@@ -25170,6 +25219,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -26161,6 +26212,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -26944,6 +26997,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "scripts/ci/qledger_conversion_candidate.py"
       - "scripts/ci/qledger_publication.py"
@@ -27742,6 +27796,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -28910,6 +28966,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -30385,6 +30443,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -33316,6 +33376,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -33821,6 +33883,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -36950,6 +37014,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
       - "engine/qledger_store_conversion.py"
@@ -38684,6 +38750,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
       # QLedger original-result and Git-candidate import closure.
       - "scripts/ci/qledger_conversion_candidate.py"
       - "scripts/ci/qledger_publication.py"
@@ -40265,6 +40332,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
@@ -40538,6 +40607,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       - "scripts/__init__.py"
       # QLedger original-result and Git-candidate import closure.
       - "engine/qledger_original_result.py"
@@ -41574,6 +41645,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - lib/symbol_directory_receipts.py

@@ -604,10 +604,29 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target-ref")
     parser.add_argument("--accepted-baseline", action="append", default=[])
     parser.add_argument("--push-arg", action="append", default=[])
+    parser.add_argument("--conversion-result", type=Path)
+    parser.add_argument("--conversion-manifest-sha256")
+    parser.add_argument("--conversion-accepted-tip")
     args = parser.parse_args(argv)
     try:
         from engine.qledger_store import LegacyClaimsBinding, _production_claims_binding, _require_legacy_namespace
         repo = _repo(args.repo)
+        explicit = (args.conversion_result, args.conversion_manifest_sha256, args.conversion_accepted_tip)
+        if any(value is not None for value in explicit):
+            if not all(value is not None for value in explicit):
+                _fail("PUBLICATION_INPUT", "complete explicit original-conversion invocation required")
+            from scripts.ci.qledger_owner_invocation import load_conversion
+            invocation = load_conversion(repo, result_path=args.conversion_result,
+                                         manifest_digest=args.conversion_manifest_sha256)
+            if args.accepted_baseline and args.accepted_baseline != [args.conversion_accepted_tip]:
+                _fail("PUBLICATION_INPUT", "incumbent baseline differs from original invocation")
+            result = invocation.preflight(boundary=args.boundary,
+                accepted_tip_oid=args.conversion_accepted_tip, tree_oid=args.tree,
+                parent_oid=args.parent, candidate_oid=args.candidate,
+                target_ref=args.target_ref or "refs/heads/main", push_args=tuple(args.push_arg))
+            print(json.dumps({"status": result.status, "boundary": args.boundary,
+                              "effect": "validation_only"}, sort_keys=True))
+            return 0
         binding = _production_claims_binding(repo / BASE_PATH)
         if type(binding) is not LegacyClaimsBinding:
             _fail("PUBLICATION_INPUT", "native publication needs a separately admitted explicit owner binding")

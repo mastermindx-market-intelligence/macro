@@ -337,6 +337,18 @@ class NativeClaimsAttempt:
     outcome: Any = None
 
 
+@dataclass(frozen=True)
+class NativeClaimsPreAttemptFailure:
+    """One task-local observation, not an attempt, durable result or admission.
+
+    Retain no exception/traceback or input bytes. Each failure has a fresh object
+    identity so an invocation can detect a new refusal without an unbounded log.
+    """
+
+    stage: str
+    error_type: str
+
+
 class _NativeClaimsBinding:
     """Inactive explicit owner binding; callers supply every causal write intent.
 
@@ -366,6 +378,9 @@ class _NativeClaimsBinding:
             "qledger_native_attempts", default=(),
         )
         self._unresolved: ContextVar[Any] = ContextVar("qledger_native_unresolved", default=None)
+        self._pre_attempt_failure: ContextVar[NativeClaimsPreAttemptFailure | None] = ContextVar(
+            "qledger_native_pre_attempt_failure", default=None,
+        )
 
     @property
     def last_outcome(self):
@@ -374,6 +389,20 @@ class _NativeClaimsBinding:
     @property
     def attempts(self) -> tuple[NativeClaimsAttempt, ...]:
         return self._attempts.get()
+
+    @property
+    def pre_attempt_failure(self) -> NativeClaimsPreAttemptFailure | None:
+        return self._pre_attempt_failure.get()
+
+    @contextmanager
+    def _observe_pre_attempt_failure(self, stage):
+        attempts_before = len(self.attempts)
+        try:
+            yield
+        except BaseException as exc:
+            if len(self.attempts) == attempts_before:
+                self._pre_attempt_failure.set(NativeClaimsPreAttemptFailure(stage, type(exc).__name__))
+            raise
 
     def _new_session(self, intent=None):
         factory = self._session_factory
@@ -469,22 +498,23 @@ class _NativeClaimsBinding:
     def mutation(self, *, native_intent=None):
         from engine.qledger_store_native import ClaimsStorageError
 
-        writer = None
-        try:
-            with self._new_session(native_intent) as session:
-                writer = _NativeClaimsWriter(self, session, native_intent)
-                yield writer
-        except ClaimsStorageError as exc:
-            outcome = exc.outcome
-            if writer is not None and writer.clock_attempted:
-                outcome = replace(outcome, clock_status="uncertain")
-            if writer is not None and writer.write is not None:
-                self._record(writer.write, outcome)
-            else:
-                self._last_outcome.set(outcome)
-            if outcome is not exc.outcome:
-                raise ClaimsStorageError(outcome) from exc
-            raise
+        with self._observe_pre_attempt_failure("mutation-entry"):
+            writer = None
+            try:
+                with self._new_session(native_intent) as session:
+                    writer = _NativeClaimsWriter(self, session, native_intent)
+                    yield writer
+            except ClaimsStorageError as exc:
+                outcome = exc.outcome
+                if writer is not None and writer.clock_attempted:
+                    outcome = replace(outcome, clock_status="uncertain")
+                if writer is not None and writer.write is not None:
+                    self._record(writer.write, outcome)
+                else:
+                    self._last_outcome.set(outcome)
+                if outcome is not exc.outcome:
+                    raise ClaimsStorageError(outcome) from exc
+                raise
 
     def reconcile_original_write(self, write: NativeClaimsWrite):
         """Reconcile retained exact inputs; never call registrar preparation/clocks.
@@ -562,12 +592,14 @@ class _NativeClaimsWriter:
         return self._record(self.binding._apply_original_write(self.session, self.write))
 
     def append_serialized_rows(self, rows):
-        self.binding._admit(self.intent)
-        return self._execute(self.session.prepare_append(rows))
+        with self.binding._observe_pre_attempt_failure("append-preparation"):
+            self.binding._admit(self.intent)
+            return self._execute(self.session.prepare_append(rows))
 
     def replace_serialized_rows(self, rows, *, expected_view_digest: str):
-        self.binding._admit(self.intent)
-        return self._execute(self.session.prepare_replace(rows, expected_view_digest=expected_view_digest))
+        with self.binding._observe_pre_attempt_failure("replace-preparation"):
+            self.binding._admit(self.intent)
+            return self._execute(self.session.prepare_replace(rows, expected_view_digest=expected_view_digest))
 
     def mark_clock_attempt(self) -> None:
         if self.outcome is None or self.outcome.status != "materialized":
