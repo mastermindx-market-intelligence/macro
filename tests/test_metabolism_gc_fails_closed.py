@@ -102,6 +102,20 @@ class GCFailClosedTests(unittest.TestCase):
             path.mkdir()
             self.assertFalse(gc_mod._ready_for_delete(repo, path, "wf_candidate"))
 
+    def test_main_never_implicitly_deletes_remote_propose_branches(self):
+        """Even a non-dry-run local GC must not authorize remote pruning."""
+        with TemporaryDirectory() as t:
+            root = Path(t)
+            with patch.object(gc_mod, "reap_propose_branches",
+                              return_value={"deleted": [], "skipped": [], "errors": []}) as remote, \
+                 patch.object(gc_mod, "compact_insight_bus",
+                              return_value={"retained": 0, "archived": 0, "errors": []}), \
+                 patch.object(gc_mod, "gc", return_value={
+                     "inspected": 0, "reaped": [], "skipped_alive": [],
+                     "skipped_safety": [], "errors": []}):
+                self.assertEqual(gc_mod.main(["--root", str(root)]), 0)
+                remote.assert_called_once_with(root, dry_run=True)
+
     def test_no_force_flag_in_deletion_command(self):
         source = inspect.getsource(gc_mod.gc)
         self.assertNotIn('"remove", "--force"', source)
