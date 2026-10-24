@@ -825,7 +825,7 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
     except Exception as exc:
         return dict(outcome, reason='local_oi_or_baseline_unavailable', error_type=type(exc).__name__)
     if config.transport is None:
-        return dict(outcome, reason='incumbent_bounded_transport_unimplemented', local_inputs=local_refs)
+        return dict(outcome, reason='bounded_transport_not_bound', local_inputs=local_refs)
     for identity in [config.original_root, config.assigning_parent]:
         if str(uuid.UUID(identity)) != identity:
             raise ValueError('Exact source custody identities required')
@@ -892,7 +892,7 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
             entry = dict(kind=kind, state='RESERVED', origin=config.transport.origin,
                 endpoint=endpoint, parameters=dict(symbol='SPY', expiration='*',
                 start_date=int(ctx.D.strftime('%Y%m%d')), end_date=int(ctx.D.strftime('%Y%m%d')),
-                format='csv', **({'version': '1'} if kind == 'greeks' else {})),
+                format='csv', **({'version': '1', 'right': 'both'} if kind == 'greeks' else {})),
                 requested_order=3 if kind == 'greeks' else None, raw_rows=None, normalized_rows=None)
             record['requests'].append(entry)
             save()
@@ -927,6 +927,11 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
             raw_rows = frame.attrs.get('_bounded_raw_rows')
             if type(raw_rows) is not int or not 0 < raw_rows <= 100000:
                 raise ValueError('Missing/out-of-bound actual raw row count')
+            expected_binding = dict(origin=entry['origin'], endpoint=entry['endpoint'],
+                parameters=entry['parameters'], raw_rows=raw_rows,
+                payload_sha256=entry['sha256'], payload_bytes=entry['bytes'])
+            if frame.attrs.get('_d_session_binding') != expected_binding:
+                raise ValueError('Unbound/mismatched actual request and raw-to-parser evidence')
             if kind=='greeks':
                 request_provenance = frame.attrs.get('requested_version')
                 entry['frame_request_version_provenance'] = request_provenance
@@ -951,6 +956,9 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
                       reason=coverage['reason'], coverage=coverage)
     except BaseException as exc:
         budget.stop()
+        if (record['requests'] and record['requests'][-1]['state'] == 'RESERVED'
+                and getattr(exc, 'request_started', None) is False):
+            record['requests'][-1].update(state='NOT_ATTEMPTED', reason='source_pre_get_refusal')
         if record['requests'] and (record['requests'][-1]['state'] in ('REQUEST_STARTED', 'HEADERS')
                 or (record['requests'][-1]['state'] == 'RESERVED'
                     and 'adapter_entered_at' in record['requests'][-1])):

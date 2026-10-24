@@ -402,8 +402,10 @@ with Fable/human after the threshold is confirmed.
 Do not activate or run this preparation from this runbook. Existing schedule,
 wrapper, canonical four S/D cells and health are unchanged. The reviewed source
 seam is `_daily_main(..., d_session_observation=None)`; no CLI/env/plist enables it.
-The incumbent bounded EOD/full-order Greek transport is still unimplemented for
-this pilot, so its default transport is None and records zero pilot attempts.
+The incumbent collector has an explicit source adapter
+`bounded_spy_d_session_transport(day)` using native `_get_csv`/normalizers, but no
+CLI/environment/plist/wrapper binds it. Transport defaults None, which records
+zero pilot attempts; source availability does not activate it.
 See the October 24 AD1T1 amendment for the exact callback interface and admission
 boundary. The existing commercial-rights Chairman decision is settled; this seam
 must not request another license approval or invent a vendor contract.

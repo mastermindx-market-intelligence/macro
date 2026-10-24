@@ -142,6 +142,7 @@ from __future__ import annotations
 
 import io
 import logging
+import math
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -337,7 +338,8 @@ def list_expirations(symbol: str) -> list[str] | None:
 
 def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
              max_bytes=None, max_rows=None, limit_profile="selected_expiry",
-             response_handler=None, raw_response_handler=None) -> pd.DataFrame | None:
+             response_handler=None, raw_response_handler=None, deadline_at=None,
+             expected_origin=None) -> pd.DataFrame | None:
     """Single streaming CSV GET; returns a parsed DataFrame or None on any error.
 
     v3 returns chunked streaming CSV.  No pagination — one continuous response.
@@ -347,9 +349,23 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
     produces no bytes for READ_TIMEOUT_BETWEEN_BYTES seconds raises ReadTimeout,
     which is caught and re-raised as _StreamTruncated so callers return None.
     """
-    if request_budget is None and (response_handler is not None or raw_response_handler is not None):
+    if request_budget is None and (response_handler is not None or raw_response_handler is not None
+                                   or deadline_at is not None or expected_origin is not None):
         raise ValueError("Response retention requires a bounded request")
-    url = f"{_base_url()}{path}"
+    source_origin = _base_url()
+    if expected_origin is not None and expected_origin != source_origin:
+        raise ValueError("Configured source origin changed")
+    url = f"{source_origin}{path}"
+    timeouts = _TIMEOUTS
+    if deadline_at is not None:
+        if type(deadline_at) not in (int, float) or not math.isfinite(deadline_at):
+            raise ValueError("Explicit finite shared deadline required")
+        remaining = deadline_at-time.monotonic()
+        if remaining <= 0:
+            raise ValueError("Shared deadline exhausted before request")
+        from requests.adapters import TimeoutSauce
+        timeouts = TimeoutSauce(total=remaining, connect=min(CONNECT_TIMEOUT, remaining),
+                                read=min(READ_TIMEOUT_BETWEEN_BYTES, remaining))
     params = dict(params)
     params.setdefault("format", "csv")
     if request_budget is not None:
@@ -361,7 +377,13 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
             raise ValueError("Bounded CSV needs explicit byte/row caps")
         request_budget.begin(session, url)
     try:
-        r = session.get(url, params=params, timeout=_TIMEOUTS, stream=True,
+        if deadline_at is not None and time.monotonic() >= deadline_at:
+            raise _StreamTruncated("Shared deadline exhausted after reservation")
+        if deadline_at is not None:
+            remaining = deadline_at-time.monotonic()
+            timeouts = TimeoutSauce(total=remaining, connect=min(CONNECT_TIMEOUT, remaining),
+                                    read=min(READ_TIMEOUT_BETWEEN_BYTES, remaining))
+        r = session.get(url, params=params, timeout=timeouts, stream=True,
                         **({"allow_redirects": False} if request_budget is not None else {}))
     except requests.exceptions.ConnectionError:
         log.warning("thetadata: terminal unreachable at %s — skip", _base_url())
@@ -422,6 +444,8 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
         chunks = []
         size = 0
         for chunk in r.iter_content(chunk_size=65536):
+            if deadline_at is not None and time.monotonic() >= deadline_at:
+                raise _StreamTruncated("Shared deadline exhausted during stream")
             if chunk:
                 size += len(chunk)
                 if request_budget is not None and size > max_bytes:
@@ -458,12 +482,14 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
         # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
         df = pd.read_csv(io.BytesIO(raw), low_memory=False,
                          keep_default_na=False, na_values=[""])
+        if deadline_at is not None and time.monotonic() >= deadline_at:
+            raise ValueError("Shared deadline exhausted during parse")
         if request_budget is not None and len(df) > max_rows:
             request_budget.stop()
             raise ValueError("bounded CSV row limit exceeded")
         if path in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values()) and not df.empty:
             try:
-                df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=_base_url())
+                df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=source_origin)
             except (ValueError, TypeError):
                 # Additive evidence cannot discard otherwise valid legacy rows.
                 # Without this receipt the qualification adapter fails closed.
@@ -759,6 +785,112 @@ def _concurrent_windows(
 # --------------------------------------------------------------------------- #
 # Public API
 # --------------------------------------------------------------------------- #
+
+class _DSessionRequestNotStarted(ValueError):
+    """A source validation rejected this call before its physical attempt."""
+    request_started = False
+
+
+class _SPYDSessionObservationTransport:
+    """Explicit two-request native adapter. Construction does not enable a caller.
+
+    No reachable probe, window worker, retry, fallback, pagination, OI or write.
+    The daily owner still supplies its durable shared budget and raw callbacks.
+    """
+    def __init__(self, day):
+        from urllib.parse import urlsplit
+        if type(day) is not date:
+            raise ValueError('Exact observation date required')
+        self.origin = _base_url()
+        parsed = urlsplit(self.origin)
+        if (parsed.scheme not in ('http', 'https') or not parsed.hostname
+                or parsed.username or parsed.password or parsed.query or parsed.fragment
+                or parsed.path not in ('', '/')):
+            raise ValueError('Unqualified native source origin')
+        self.day = day
+        self._index = 0
+        self._budget = None
+        self._deadline = None
+        self._closed = False
+
+    def __call__(self, kind, *, root, day, order, request_options, request_budget,
+                 max_bytes, max_rows, deadline_at, response_handler, raw_response_handler):
+        import hashlib
+        before = getattr(request_budget, 'attempts', None)
+        try:
+            expected = ('eod', 'greeks')
+            if (self._closed or self._index >= 2 or kind != expected[self._index]
+                    or root != 'SPY' or type(day) is not date or day != self.day
+                    or order != (3 if kind == 'greeks' else None)
+                    or request_options != ({'version':'1'} if kind == 'greeks' else {})
+                    or self.origin != _base_url()
+                    or getattr(request_budget, 'max_gets', None) != 2
+                    or getattr(request_budget, 'stopped', True)
+                    or before != self._index
+                    or (self._budget is not None and request_budget is not self._budget)
+                    or (self._deadline is not None and deadline_at != self._deadline)
+                    or type(deadline_at) not in (int, float) or not math.isfinite(deadline_at)
+                    or time.monotonic() >= deadline_at
+                    or type(max_bytes) is not int or not 0 < max_bytes <= 16*1024*1024
+                    or type(max_rows) is not int or not 0 < max_rows <= 100000
+                    or not callable(response_handler) or not callable(raw_response_handler)):
+                raise _DSessionRequestNotStarted('Observation source/scope/budget contract refused')
+            self._budget, self._deadline = request_budget, deadline_at
+            self._index += 1  # a failed call cannot be retried on this adapter
+            path = '/v3/option/history/eod' if kind == 'eod' else '/v3/option/history/greeks/eod'
+            params = dict(symbol='SPY', expiration='*', start_date=_date_int(day),
+                          end_date=_date_int(day), format='csv')
+            if kind == 'greeks':
+                params.update(right='both', version='1')
+            captured = {}
+            def retain(body):
+                captured.update(payload_sha256=hashlib.sha256(body).hexdigest(), payload_bytes=len(body))
+                raw_response_handler(body)  # durable complete body before _get_csv parses it
+            frame = _get_csv(_session(), path, params, request_budget=request_budget,
+                max_bytes=max_bytes, max_rows=max_rows, limit_profile='observed_root',
+                response_handler=response_handler, raw_response_handler=retain,
+                deadline_at=deadline_at, expected_origin=self.origin)
+            if frame is None or frame.empty:
+                self._closed = True
+                request_budget.stop()
+                return frame
+            clock = 'last_trade' if kind == 'eod' else 'timestamp'
+            required = {'symbol', 'expiration', 'strike', 'right', clock}
+            if not required <= set(frame):
+                raise ValueError('Observation source contract/clock columns missing')
+            observed = pd.to_datetime(frame[clock], errors='coerce')
+            if observed.isna().any() or observed.dt.tz is not None:
+                raise ValueError('Observation source clock unavailable')
+            if '_date' in frame:
+                declared = pd.to_datetime(frame['_date'], errors='coerce')
+                if declared.isna().any() or not declared.eq(observed.dt.normalize()).all():
+                    raise ValueError('Contradictory raw date override')
+            raw_rows = len(frame)
+            normalized = _normalize_eod_df(frame, root) if kind == 'eod' else _normalize_greeks_df(frame, order=3)
+            normalized.attrs['_bounded_raw_rows'] = raw_rows
+            normalized.attrs['_d_session_binding'] = dict(origin=self.origin, endpoint=path,
+                parameters=params, raw_rows=raw_rows, **captured)
+            if kind == 'greeks':
+                normalized.attrs['requested_version'] = '1'  # request provenance, not observed model
+            if time.monotonic() >= deadline_at:
+                raise ValueError('Observation shared deadline exhausted during normalization')
+            return normalized
+        except BaseException as exc:
+            self._closed = True
+            request_budget.stop()
+            if isinstance(exc, Exception) and getattr(request_budget, 'attempts', None) == before:
+                raise _DSessionRequestNotStarted('Observation rejected before physical attempt') from exc
+            raise
+
+
+def bounded_spy_d_session_transport(day: date):
+    """Prepare an unbound adapter; no CLI/env/scheduler calls this factory.
+
+    Source availability is not activation, installed-source admission or a budget.
+    Current daily configuration remains None until its owner qualifies those facts.
+    """
+    return _SPYDSessionObservationTransport(day)
+
 
 def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
              end_date: date | str | int, *, request_budget=None, max_bytes=None,

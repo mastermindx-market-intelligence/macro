@@ -1798,3 +1798,131 @@ def test_eod_retention_callbacks_require_explicit_budget(monkeypatch):
     monkeypatch.setattr(td,'reachable',lambda:pytest.fail('unexpected probe'))
     with pytest.raises(ValueError):td.bulk_eod('GLD',0,'2020-10-19','2020-10-22',
         raw_response_handler=lambda b:None)
+
+
+@pytest.fixture
+def d_session_native_case(monkeypatch):
+    """Actual native _get_csv/normalizers, synthetic bytes and session.get only."""
+    from collectors import thetadata as td
+    from lib.options_source_receipts import BoundedRequestBudget
+    from types import SimpleNamespace
+    d=date(2026,8,19);clock={'value':10.};calls=[];retained=[];statuses=[]
+    bodies={
+      'eod':b'symbol,expiration,strike,right,created,last_trade,close,volume\nSPY,2027-02-19,745,PUT,2026-08-19T17:15:00,2026-08-19T16:00:00,2,10\nSPY,2027-02-19,760,PUT,2026-08-19T17:15:00,2026-08-19T16:00:00,3,20\n',
+      'greeks':b'symbol,expiration,strike,right,timestamp,underlying_timestamp,underlying_price,gamma,delta,speed\nSPY,2027-02-19,745,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,-0.01,-0.3,0.001\nSPY,2027-02-19,760,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,0.02,-0.2,0.002\n'}
+    modes={'status':200,'retry':0,'during_stream':False,'parse_late':False};responses=[]
+    budget=BoundedRequestBudget(2)
+    class Session:
+        def get_adapter(self,url):return SimpleNamespace(max_retries=SimpleNamespace(total=modes['retry']))
+        def get(self,url,**kw):
+            assert budget.attempts==len(calls)+1  # budget is physical, not bulk-call count
+            assert kw['allow_redirects'] is False and kw['stream'] is True
+            assert kw['timeout'].total<=40.
+            kind='greeks' if '/greeks/' in url else 'eod'
+            calls.append((url,kw));response=_make_csv_response(bodies[kind],modes['status']);responses.append(response)
+            if modes['during_stream']:
+                def stream(**kwargs):clock['value']=100.;yield bodies[kind]
+                response.iter_content=stream
+            return response
+    monkeypatch.setattr(td,'_session',Session)
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    monkeypatch.setattr(td.time,'monotonic',lambda:clock['value'])
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('Pilot health probe'))
+    monkeypatch.setattr(td,'_concurrent_windows',lambda *a,**k:pytest.fail('Pilot retries/window pool'))
+    monkeypatch.setattr(td,'bulk_open_interest',lambda *a,**k:pytest.fail('Pilot extra OI'))
+    def run(transport,kind,**overrides):
+        def raw(body):
+            retained.append((kind,body))
+            if modes['parse_late']:clock['value']=100.
+        kw=dict(root='SPY',day=d,order=3 if kind=='greeks' else None,
+            request_options={'version':'1'} if kind=='greeks' else {},request_budget=budget,
+            max_bytes=16384,max_rows=100,deadline_at=50.,response_handler=statuses.append,raw_response_handler=raw)
+        kw.update(overrides);return transport(kind,**kw)
+    return SimpleNamespace(td=td,d=d,clock=clock,calls=calls,retained=retained,statuses=statuses,
+        bodies=bodies,modes=modes,budget=budget,responses=responses,run=run)
+
+
+def test_d_session_native_two_gets_payload_parser_binding_and_full_order(d_session_native_case,monkeypatch):
+    import hashlib
+    c=d_session_native_case;transport=c.td.bounded_spy_d_session_transport(c.d)
+    assert not c.calls  # factory is inert
+    original=pd.read_csv
+    def parse(stream,*a,**kw):
+        if isinstance(stream,io.BytesIO):assert any(body==stream.getvalue() for _,body in c.retained)
+        return original(stream,*a,**kw)
+    monkeypatch.setattr(pd,'read_csv',parse)
+    for kind in ['eod','greeks']:
+        frame=c.run(transport,kind)
+        assert len(frame)==2 and frame.attrs['_bounded_raw_rows']==2
+        binding=frame.attrs['_d_session_binding']
+        assert binding['payload_sha256']==hashlib.sha256(c.bodies[kind]).hexdigest()
+        assert binding['payload_bytes']==len(c.bodies[kind])
+        assert binding['parameters']==c.calls[-1][1]['params']
+        assert set(frame.date)=={pd.Timestamp(c.d)}
+        if kind=='greeks':assert 'speed' in frame and frame.attrs['requested_version']=='1'
+    assert len(c.calls)==c.budget.attempts==2 and c.statuses==[200,200]
+    assert c.calls[0][1]['params']==dict(symbol='SPY',expiration='*',start_date=20260819,end_date=20260819,format='csv')
+    assert c.calls[1][1]['params']==dict(symbol='SPY',expiration='*',start_date=20260819,end_date=20260819,format='csv',right='both',version='1')
+    with pytest.raises(ValueError):c.run(transport,'greeks')
+    assert len(c.calls)==2
+
+
+@pytest.mark.parametrize('mutation',['root','day','order','version','origin','caps','budget_reset','sequence','deadline'])
+def test_d_session_native_invalid_scope_zero_get(d_session_native_case,monkeypatch,mutation):
+    from lib.options_source_receipts import BoundedRequestBudget
+    c=d_session_native_case;t=c.td.bounded_spy_d_session_transport(c.d);kwargs={};kind='eod'
+    if mutation=='root':kwargs['root']='QQQ'
+    elif mutation=='day':kwargs['day']=c.d+timedelta(days=1)
+    elif mutation=='order':kwargs['order']=3
+    elif mutation=='version':kwargs['request_options']={'version':'1'}
+    elif mutation=='origin':monkeypatch.setattr(c.td,'_base_url',lambda:'http://127.0.0.1:9999')
+    elif mutation=='caps':kwargs['max_rows']=100001
+    elif mutation=='budget_reset':kwargs['request_budget']=BoundedRequestBudget(3)
+    elif mutation=='sequence':kind='greeks'
+    else:c.clock['value']=50.
+    with pytest.raises(ValueError):c.run(t,kind,**kwargs)
+    assert not c.calls and c.budget.attempts==0
+
+
+@pytest.mark.parametrize('status',[302,400,472,500])
+def test_d_session_native_first_status_stops_without_retry_or_redirect(d_session_native_case,status):
+    c=d_session_native_case;c.modes['status']=status;t=c.td.bounded_spy_d_session_transport(c.d)
+    assert c.run(t,'eod') is None
+    assert len(c.calls)==1 and c.budget.attempts==1 and not c.retained
+    c.responses[0].close.assert_called()
+    with pytest.raises(ValueError):c.run(t,'greeks')
+    assert len(c.calls)==1
+
+
+@pytest.mark.parametrize('mode',['bytes','rows','stream_deadline','parse_deadline','retry_adapter','missing_clock'])
+def test_d_session_native_body_bounds_and_deadline_close_operation(d_session_native_case,mode):
+    c=d_session_native_case;t=c.td.bounded_spy_d_session_transport(c.d);kwargs={}
+    if mode=='bytes':kwargs['max_bytes']=10
+    elif mode=='rows':kwargs['max_rows']=1
+    elif mode=='stream_deadline':c.modes['during_stream']=True
+    elif mode=='parse_deadline':c.modes['parse_late']=True
+    elif mode=='retry_adapter':c.modes['retry']=2
+    else:c.bodies['eod']=c.bodies['eod'].replace(b'last_trade',b'ingestion_time')
+    try:result=c.run(t,'eod',**kwargs)
+    except (c.td._StreamTruncated,ValueError):result=None
+    assert result is None and len(c.calls)==(0 if mode=='retry_adapter' else 1)
+    c.clock['value']=10.
+    with pytest.raises(ValueError):c.run(t,'greeks')
+    assert len(c.calls)<=(0 if mode=='retry_adapter' else 1)
+    if mode in ['rows','parse_deadline','missing_clock']:assert c.retained
+
+
+def test_d_session_native_actual_raw_count_before_dedup(d_session_native_case):
+    c=d_session_native_case;c.bodies['eod']+=c.bodies['eod'].split(b'\n',1)[1]
+    t=c.td.bounded_spy_d_session_transport(c.d)
+    frame=c.run(t,'eod')
+    assert len(frame)==2 and frame.attrs['_bounded_raw_rows']==4
+
+
+@pytest.mark.parametrize('changed',['budget','deadline'])
+def test_d_session_native_second_call_cannot_reset_budget_or_deadline(d_session_native_case,changed):
+    from lib.options_source_receipts import BoundedRequestBudget
+    c=d_session_native_case;t=c.td.bounded_spy_d_session_transport(c.d);c.run(t,'eod')
+    kwargs={'request_budget':BoundedRequestBudget(2)} if changed=='budget' else {'deadline_at':51.}
+    with pytest.raises(ValueError):c.run(t,'greeks',**kwargs)
+    assert len(c.calls)==1

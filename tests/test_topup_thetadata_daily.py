@@ -1901,11 +1901,16 @@ def observation_case(tmp_path, monkeypatch):
             calls.append((kind,kw))
             if mode['kind']=='abrupt':raise KeyboardInterrupt('unreturned request')
             kw['response_handler'](472 if mode['kind']=='refusal' else 200)
-            kw['raw_response_handler'](b'' if mode['kind']=='raw_empty' else
-                b'synthetic licensed-body substitute, not provider data\n')
+            body=b'' if mode['kind']=='raw_empty' else b'synthetic licensed-body substitute, not provider data\n'
+            kw['raw_response_handler'](body)
             if mode['kind']=='retry':kw['request_budget'].begin(session,url)
             frame=_observation_frame(D_MID)
             frame.attrs['_bounded_raw_rows']=len(frame)
+            import hashlib
+            actual=json.loads(p.read_text())['requests'][-1]
+            frame.attrs['_d_session_binding']=dict(origin=self.origin,endpoint=actual['endpoint'],
+                parameters=actual['parameters'],raw_rows=len(frame),
+                payload_sha256=hashlib.sha256(body).hexdigest(),payload_bytes=len(body))
             if mode['kind']=='missing_raw_count':frame.attrs.pop('_bounded_raw_rows')
             if mode['kind']=='raw_row_cap':frame.attrs['_bounded_raw_rows']=100001
             if mode['kind']=='date':frame['date']=pd.Timestamp(S_MID)
@@ -2190,3 +2195,53 @@ def test_d_observation_expired_baseline_retained_and_explicitly_excluded(observa
     value=topup._d_session_coverage(a,g,d,s,D=D_MID,S=S_MID,requested_version='1')
     assert not value['ready'] and value['missing_by_input']['greeks_D']==1
     assert value['excluded_before_D']['oi_S']==1 and value['observed_contracts']==2
+
+
+@pytest.mark.parametrize('wrong_date',[False,True])
+def test_d_observation_actual_native_get_binding_keeps_canonical_unchanged(observation_case,monkeypatch,wrong_date):
+    import hashlib,io
+    from types import SimpleNamespace
+    from dataclasses import replace
+    from collectors import thetadata as td
+    c=observation_case;calls=[]
+    bodies={
+      'eod':b'symbol,expiration,strike,right,last_trade,created,close,volume\nSPY,2027-02-19,745,PUT,2026-08-19T16:00:00,2026-08-19T17:15:00,2,10\nSPY,2027-02-19,760,PUT,2026-08-19T16:00:00,2026-08-19T17:15:00,3,20\n',
+      'greeks':b'symbol,expiration,strike,right,timestamp,underlying_timestamp,underlying_price,gamma,speed\nSPY,2027-02-19,745,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,-0.01,0.001\nSPY,2027-02-19,760,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,0.02,0.002\n'}
+    if wrong_date:bodies['eod']=bodies['eod'].replace(b'2026-08-19T16:00:00',b'2026-08-18T16:00:00')
+    class Session:
+        def get_adapter(self,url):return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self,url,**kw):
+            record=json.loads(c.receipt.read_text())
+            assert record['attempts']==len(calls)+1 and record['requests'][-1]['state']=='REQUEST_STARTED'
+            with topup._writer_lock(c.store) as held:assert held is False
+            kind='greeks' if '/greeks/' in url else 'eod';calls.append((url,kw))
+            assert kw['allow_redirects'] is False
+            return SimpleNamespace(status_code=200,close=lambda:None,
+                iter_content=lambda **k:iter([bodies[kind]]))
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    monkeypatch.setattr(td,'_session',Session)
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('Additional probe'))
+    monkeypatch.setattr(td,'_concurrent_windows',lambda *a,**k:pytest.fail('Retries/window worker'))
+    original=pd.read_csv
+    def parse(stream,*args,**kwargs):
+        if isinstance(stream,io.BytesIO):
+            record=json.loads(c.receipt.read_text());request=record['requests'][-1]
+            assert request['state']=='RAW_CAPTURED'
+            assert request['sha256']==hashlib.sha256(stream.getvalue()).hexdigest()
+        return original(stream,*args,**kwargs)
+    monkeypatch.setattr(pd,'read_csv',parse)
+    config=replace(c.config,transport=td.bounded_spy_d_session_transport(D_MID))
+    before={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    with topup._writer_lock(c.store) as held:
+        assert held;out=_run_observation(c,config=config)
+    assert out['state']==('WITHHELD' if wrong_date else 'OBSERVED_COMPLETE')
+    assert out['attempts']==2 and len(calls)==2
+    record=json.loads(c.receipt.read_text())
+    assert record['model_scope'] is None and record['model_details'] is None
+    assert record['requests'][1]['frame_request_version_provenance']=='1'
+    assert record['requests'][1]['response_model_metadata'] is None
+    assert record['requests'][0]['returned_frame_dates']==[
+        '2026-08-18T00:00:00' if wrong_date else '2026-08-19T00:00:00']
+    assert record['requests'][1]['returned_frame_dates']==['2026-08-19T00:00:00']
+    assert before=={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    assert not topup._has_day(c.store,'greeks','SPY',D_MID)

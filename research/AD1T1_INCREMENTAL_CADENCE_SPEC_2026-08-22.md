@@ -750,12 +750,13 @@ first availability. OI report dates and their prior-position roles remain separa
 
 The existing `_daily_main` now has a private optional `d_session_observation`
 argument, default `None`. No CLI flag, environment parser, plist or wrapper
-supplies it. `_DSessionObservation.transport` also defaults to `None`: the current
-incumbent collector does **not** yet provide the qualified physical-attempt,
-raw-retention and shared-deadline contract below. An explicit preparation with
-that missing seam returns `incumbent_bounded_transport_unimplemented`, with zero
-pilot requests and no operation claim. This is an engineering seam, not a rights
-question or an enabled production feature.
+supplies it. `_DSessionObservation.transport` also defaults to `None`. The source
+collector now provides `bounded_spy_d_session_transport(day)` through `_get_csv`
+and native normalizers, freezing origin/date/parameters and the shared budget and
+deadline. No production caller binds it: an explicit preparation with transport
+None returns `bounded_transport_not_bound`, with zero pilot requests or claim.
+Source implementation is not installed-source/access/custody qualification, an
+allocation or an enabled product feature.
 
 The sole proposed rung is a natural session invocation entering at 17:30 ET,
 using the canonical calendar and frozen D/S. Forced, nonsession, pre-gate, other
@@ -767,7 +768,7 @@ most two physical attempts TOTAL: EOD[D], then full-order Greeks[D], SPY only,
 with the existing explicit requested-version-1 policy. Probes, retries, redirects,
 pagination, extra OI and fallback are not an additional allowance.
 
-Future enabling contract (currently unimplemented in the incumbent collector):
+Implemented source interface (still unbound/default-off at runtime):
 
 ```
 transport.origin
@@ -776,24 +777,29 @@ transport(kind, *, root, day, order, request_options, request_budget,
           response_handler, raw_response_handler) -> normalized DataFrame
 ```
 
-The owner must compose this through the existing bulk EOD/Greek normalizers and
-budgeted native transport, not a parallel collector or raw HTTP path. Every
-physical attempt must call `request_budget.begin(session, exact_url)` BEFORE GET;
+The explicit pilot adapter composes the existing EOD/Greek normalizers and
+budgeted native `_get_csv`, without changing ordinary bulk callers or the separate
+four-root historical catch-up scope. It is not a parallel collector or raw HTTP path. Every physical attempt must call `request_budget.begin(session, exact_url)` BEFORE GET;
 the existing budget rejects retry-enabled adapters, and this observation refuses
 second attempts for the same endpoint. Status must be reported, complete bounded
 raw bytes durably retained before parsing, and the shared monotonic deadline
 honored during transport/streaming. Normalized frames must retain the actual
 pre-normalization row count in `attrs["_bounded_raw_rows"]`; missing or oversized
 raw counts withhold even when deduplication produced a small frame. Raw and
-normalized row counts are distinct receipt fields. The current wrappers' probes/retries and
-missing bounded Greek raw hooks are why source preparation leaves this seam None.
-One call to each bulk method does not prove two physical attempts.
+normalized row counts are distinct receipt fields. The adapter also returns
+`_d_session_binding` for the exact origin/endpoint/query,
+body SHA/length and raw row count. The daily observation compares it with its
+actual callback receipt before accepting the normalized frame. Request version1
+is not observed response-model evidence. DefaultNone remains until source review,
+protected integration/install, actual allocation/journal/access/custody and host
+capacity are qualified. One high-level method call alone proves no physical bound.
 
 An existing private retention parent is required outside the canonical store.
 The exact SPY/date/17:30 claim is exclusive and fsynced. It reserves each attempt
 before GET. Refusal, uncertain return, incomplete capture and existing claims
 never become retries at 19:00/21:00. Raw observations/receipts stay private; no raw
-licensed payload is committed. The declared observation population is contracts with expiration >= D. Full
+licensed payload is committed. The declared observation population is contracts
+with expiration >= D. Full
 local reports and canonical file hashes are retained before exclusions; valid
 S-expiring baseline rows are explicitly counted as expiry-before-D exclusions.
 Invalid/missing/non-normalized expiration is never an exclusion. Eligible local
