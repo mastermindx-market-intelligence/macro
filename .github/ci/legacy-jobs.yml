@@ -262,6 +262,18 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -2198,6 +2210,18 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -3185,6 +3209,18 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -5724,6 +5760,10 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -6561,6 +6601,13 @@ jobs:
     # fails until it does.
     scope: exclusive
     paths:
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "config/theme_sources.yml"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
@@ -6914,6 +6961,899 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/institutional_census/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_os/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/medtech/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/price_pressure/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/seasonality/__init__.py"
+      - "scripts/deliver_options_scenario_source.py"
+      - "tests/test_options_scenario_delivery.py"
+      - "engine/options_scenario_source_arrival.py"
+      - "tests/test_options_scenario_source_arrival.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+      - "app/__init__.py"
+      - "app/account_actions.py"
+      - "app/account_prefs.py"
+      - "app/billing.py"
+      - "app/billing_emails.py"
+      - "app/biocatalyst.py"
+      - "app/brain_runs.py"
+      - "app/capital_structure.py"
+      - "app/catalyst_opportunity.py"
+      - "app/company_disclosures.py"
+      - "app/company_intelligence.py"
+      - "app/company_supplier_research.py"
+      - "app/dossier_quote.py"
+      - "app/earnings.py"
+      - "app/edge_client.py"
+      - "app/email_segments.py"
+      - "app/forensics.py"
+      - "app/gate.py"
+      - "app/government_revenue.py"
+      - "app/hub.py"
+      - "app/institutional_research.py"
+      - "app/integrated_answer.py"
+      - "app/intelligence_hub_market_pulse.py"
+      - "app/live_status_projection.py"
+      - "app/macro_command.py"
+      - "app/mailer.py"
+      - "app/main.py"
+      - "app/market_memory.py"
+      - "app/marketing_emails.py"
+      - "app/medtech.py"
+      - "app/observability.py"
+      - "app/ontology_explorer.py"
+      - "app/options_auth.py"
+      - "app/options_issue_desk.py"
+      - "app/options_scenario_bindings.py"
+      - "app/options_scenarios.py"
+      - "app/paywall.py"
+      - "app/prophet_daily_brief.py"
+      - "app/prophet_lab.py"
+      - "app/prophet_observations.py"
+      - "app/public_quote_projection.py"
+      - "app/regwall.py"
+      - "app/research.py"
+      - "app/support.py"
+      - "app/tape.py"
+      - "app/tape_decode.py"
+      - "app/tape_symbols.py"
+      - "app/ticker_news.py"
+      - "app/ticker_news_stream.py"
+      - "app/treasury_history.py"
+      - "app/unsubscribe.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/biocatalyst/drugs_at_fda.py"
+      - "collectors/cboe.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/dod_budget.py"
+      - "collectors/dod_budget_live.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/edgar_earnings_8k.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_facts.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_forensics.py"
+      - "collectors/edgar_headcount.py"
+      - "collectors/edgar_rpo.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/equity_earnings.py"
+      - "collectors/equity_profile.py"
+      - "collectors/equity_revisions.py"
+      - "collectors/fms_notifications.py"
+      - "collectors/fred.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/holdings.py"
+      - "collectors/openfigi.py"
+      - "collectors/sbir_awards.py"
+      - "collectors/sec_capital_structure.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "collectors/us_names_zh.py"
+      - "collectors/usaspending_awards.py"
+      - "collectors/usaspending_idv_graph.py"
+      - "collectors/usaspending_subawards.py"
+      - "config/ai_pricing.yml"
+      - "config/biocatalyst_sources.yml"
+      - "config/biocatalyst_sponsor_ticker_map.yml"
+      - "config/capability_manifest.yml"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "config/compiled_kill_registry.yml"
+      - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
+      - "config/government_revenue/candidate_historical_suppressions.v1.json"
+      - "config/government_revenue/candidate_issuance_corrections.v1.json"
+      - "config/government_revenue/program_theme_assignments.v1.json"
+      - "config/growth_events.yml"
+      - "config/issuer_group_allowlist.yml"
+      - "config/market_memory_canary.v1.json"
+      - "config/market_memory_factory_bindings.v1.json"
+      - "config/market_memory_retained_use.v1.json"
+      - "config/metabolism_budget.yml"
+      - "config/plans.yml"
+      - "config/ruling_graph.yml"
+      - "config/site_access.yml"
+      - "config/sparse_worktree.json"
+      - "config/synapse.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config/us_names_zh.json"
+      - "config/us_search_aliases_zh.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "contracts/financial_intelligence_packet.schema.json"
+      - "contracts/government_revenue/government_idv_bridge.v1.schema.json"
+      - "contracts/government_revenue/government_idv_dossiers.v1.schema.json"
+      - "contracts/government_revenue/government_procurement_event.v2.schema.json"
+      - "contracts/government_revenue/government_revenue_candidate.v1.schema.json"
+      - "contracts/government_revenue/government_revenue_candidate_historical_suppressions.v1.schema.json"
+      - "contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json"
+      - "contracts/government_revenue/government_revenue_candidate_queue.v1.schema.json"
+      - "contracts/government_revenue/government_revenue_dossiers.v1.schema.json"
+      - "contracts/government_revenue/government_subaward_dossiers.v1.schema.json"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "contracts/market_os/security_state.v1.schema.json"
+      - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/selection_cohort_read.v1.schema.json"
+      - "contracts/theme_graph/selection_cohort_source.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/_text_scrub.py"
+      - "engine/activist.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/analyst_revisions.py"
+      - "engine/anticipation.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/basket_index.py"
+      - "engine/basket_membership_pit.py"
+      - "engine/basket_mtf.py"
+      - "engine/basket_score.py"
+      - "engine/basket_tape.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_intl.py"
+      - "engine/baskets_region.py"
+      - "engine/beneficial_ownership.py"
+      - "engine/biocatalyst/activation.py"
+      - "engine/biocatalyst/catalyst_events.py"
+      - "engine/biocatalyst/change_classification.py"
+      - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/discovery.py"
+      - "engine/biocatalyst/endpoint_alignment.py"
+      - "engine/biocatalyst/fixed_cohort.py"
+      - "engine/biocatalyst/history.py"
+      - "engine/biocatalyst/peer_matrix.py"
+      - "engine/biocatalyst/prospective.py"
+      - "engine/biocatalyst/protocols.py"
+      - "engine/biocatalyst/publication.py"
+      - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/sponsor_identity.py"
+      - "engine/biocatalyst/storage.py"
+      - "engine/biocatalyst/trial_screen.py"
+      - "engine/biocatalyst/trials.py"
+      - "engine/btc_mtf.py"
+      - "engine/capital_allocation.py"
+      - "engine/capital_need.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/event_spine.py"
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/spine_paths.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "engine/cash_runway.py"
+      - "engine/catalyst_opportunity/projection.py"
+      - "engine/catalyst_opportunity/reader.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_regime_store.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_standout_track.py"
+      - "engine/china_validation.py"
+      - "engine/chronicle/__init__.py"
+      - "engine/chronicle/adapters.py"
+      - "engine/chronicle/earnings_calls.py"
+      - "engine/chronicle/schema.py"
+      - "engine/chronicle/spine.py"
+      - "engine/chronicle/state_log.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/coiled.py"
+      - "engine/company_intelligence/current_company_context.py"
+      - "engine/company_intelligence/current_context_runtime.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/issuer_disclosure_preflight.py"
+      - "engine/company_intelligence/issuer_disclosure_publication.py"
+      - "engine/company_intelligence/issuer_disclosure_selection.py"
+      - "engine/company_intelligence/issuer_disclosures.py"
+      - "engine/company_intelligence/opportunity_context.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/sec_supplier_adoption.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/composite_score.py"
+      - "engine/context_index/fusion.py"
+      - "engine/context_index/gitinfo.py"
+      - "engine/context_index/lexical.py"
+      - "engine/context_index/packet.py"
+      - "engine/context_index/structured.py"
+      - "engine/conviction_accrual.py"
+      - "engine/conviction_delta.py"
+      - "engine/cross_asset.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/crowding.py"
+      - "engine/cycles.py"
+      - "engine/dannytrades.py"
+      - "engine/dannytrades_chip.py"
+      - "engine/debt_maturity.py"
+      - "engine/demand_chain.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/dispersion.py"
+      - "engine/donor.py"
+      - "engine/earnings_blackout.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_qual.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/entity_resolver.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/entry_radar/candidate_provenance.py"
+      - "engine/entry_radar/catalyst_adapters.py"
+      - "engine/entry_radar/catalyst_context.py"
+      - "engine/entry_radar/catalyst_edgar_live.py"
+      - "engine/entry_radar/catalyst_edgar_store.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/contracts.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/live_eval.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/research_priority.py"
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/spool.py"
+      - "engine/entry_signal.py"
+      - "engine/equity_factors.py"
+      - "engine/event_atlas.py"
+      - "engine/event_calendar.py"
+      - "engine/event_landmine.py"
+      - "engine/expectation_state.py"
+      - "engine/extension.py"
+      - "engine/foresight_divergence.py"
+      - "engine/foresight_grader.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/forward_dist.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/attested_history_credentials.py"
+      - "engine/fundamental_forensics/attested_history_store.py"
+      - "engine/fundamental_forensics/attested_query_snapshots.py"
+      - "engine/fundamental_forensics/companyfacts_ledger.py"
+      - "engine/fundamental_forensics/context_projection.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/excel_export.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/financial_intelligence_packet.py"
+      - "engine/fundamental_forensics/health.py"
+      - "engine/fundamental_forensics/issuer_sic.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/ixbrl_raw_ledger.py"
+      - "engine/fundamental_forensics/latency.py"
+      - "engine/fundamental_forensics/lineage_evidence.py"
+      - "engine/fundamental_forensics/metric_registry.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
+      - "engine/fundamental_forensics/packet_service.py"
+      - "engine/fundamental_forensics/periods.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/production_datasets.py"
+      - "engine/fundamental_forensics/production_provider.py"
+      - "engine/fundamental_forensics/query.py"
+      - "engine/fundamental_forensics/query_exports.py"
+      - "engine/fundamental_forensics/query_service.py"
+      - "engine/fundamental_forensics/query_snapshots.py"
+      - "engine/fundamental_forensics/raw_ledger.py"
+      - "engine/fundamental_forensics/revision_service.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/fundamental_forensics/source_sync.py"
+      - "engine/fundamental_forensics/statement_graph.py"
+      - "engine/fundamental_forensics/statement_service.py"
+      - "engine/gdelt_client.py"
+      - "engine/gex_confirm.py"
+      - "engine/gov_exposure.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/government_revenue/amount_semantics.py"
+      - "engine/government_revenue/award_events.py"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/budget_program.py"
+      - "engine/government_revenue/candidate_grader.py"
+      - "engine/government_revenue/candidates.py"
+      - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "engine/government_revenue/dossiers.py"
+      - "engine/government_revenue/entity_resolution.py"
+      - "engine/government_revenue/federation.py"
+      - "engine/government_revenue/fms_cases.py"
+      - "engine/government_revenue/freshness.py"
+      - "engine/government_revenue/idv_bridge.py"
+      - "engine/government_revenue/idv_dossiers.py"
+      - "engine/government_revenue/metrics.py"
+      - "engine/government_revenue/opportunities.py"
+      - "engine/government_revenue/point_in_time.py"
+      - "engine/government_revenue/program_dossier.py"
+      - "engine/government_revenue/program_ontology.py"
+      - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_disclosure.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "engine/government_revenue/prophet_annotation.py"
+      - "engine/government_revenue/public_agreement.py"
+      - "engine/government_revenue/research_state.py"
+      - "engine/government_revenue/sbir_progression.py"
+      - "engine/government_revenue/subaward_dossiers.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/grading.py"
+      - "engine/group_flow.py"
+      - "engine/guidance_gap.py"
+      - "engine/guidance_source_context.py"
+      - "engine/guidance_source_evidence.py"
+      - "engine/hold.py"
+      - "engine/htf_durability.py"
+      - "engine/i18n.py"
+      - "engine/ignition_features.py"
+      - "engine/index_direction.py"
+      - "engine/indicators_m2.py"
+      - "engine/inputs.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "engine/intelligence_workspace/adapters/base.py"
+      - "engine/intelligence_workspace/adapters/company_intelligence.py"
+      - "engine/intelligence_workspace/adapters/earnings.py"
+      - "engine/intelligence_workspace/adapters/industry.py"
+      - "engine/intelligence_workspace/adapters/quote.py"
+      - "engine/intelligence_workspace/adapters/stage.py"
+      - "engine/intelligence_workspace/adapters/technicals.py"
+      - "engine/intelligence_workspace/adapters/theme.py"
+      - "engine/intelligence_workspace/consumers.py"
+      - "engine/intelligence_workspace/context_compiler.py"
+      - "engine/intelligence_workspace/projection.py"
+      - "engine/intelligence_workspace/runtime.py"
+      - "engine/k3e_eval1_forward.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/ledger_identity.py"
+      - "engine/liquidity_chip.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_profile.py"
+      - "engine/liquidity_source_availability.py"
+      - "engine/live_quotes.py"
+      - "engine/llm_auth.py"
+      - "engine/long_hold_clocks.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/market_ontology/bea_gvc_current.py"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/confluence_source.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/share_cards.py"
+      - "engine/marketing/source_authority.py"
+      - "engine/master_brain.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/moat_falsifiers.py"
+      - "engine/mtf_upturn.py"
+      - "engine/name_direction.py"
+      - "engine/name_resolver.py"
+      - "engine/name_score.py"
+      - "engine/name_score_grader.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/narrative_rotation.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/analyst_doctrine.py"
+      - "engine/neuralweb/ask_brain.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/brain_curve.py"
+      - "engine/neuralweb/brain_financial_reader.py"
+      - "engine/neuralweb/brain_financial_views.py"
+      - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_market_intel.py"
+      - "engine/neuralweb/brain_native_inputs.py"
+      - "engine/neuralweb/brain_user_memory.py"
+      - "engine/neuralweb/brain_visuals.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/chart_perception.py"
+      - "engine/neuralweb/chat_plain_words.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/neuralweb/constitution.py"
+      - "engine/neuralweb/context_api.py"
+      - "engine/neuralweb/cortex.py"
+      - "engine/neuralweb/doctrine.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_brain_citations.py"
+      - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "engine/neuralweb/market_memory_episode_features.py"
+      - "engine/neuralweb/market_memory_episode_retrieval.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_lineage.py"
+      - "engine/neuralweb/market_memory_operating_cortex_service.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/neuralweb/market_memory_playback.py"
+      - "engine/neuralweb/market_memory_projection.py"
+      - "engine/neuralweb/market_memory_retained_catalog.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
+      - "engine/neuralweb/market_memory_retained_context_cohort.py"
+      - "engine/neuralweb/market_memory_retained_legacy_guard.py"
+      - "engine/neuralweb/market_memory_retained_saved.py"
+      - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_trusted.py"
+      - "engine/neuralweb/market_packet.py"
+      - "engine/neuralweb/metabolism.py"
+      - "engine/neuralweb/native_facts.py"
+      - "engine/neuralweb/query.py"
+      - "engine/neuralweb/read.py"
+      - "engine/neuralweb/reflexes.py"
+      - "engine/neuralweb/response_eval.py"
+      - "engine/neuralweb/rotation_risk_context.py"
+      - "engine/neuralweb/sector_map.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/ontology_explorer.py"
+      - "engine/ontology_portfolio.py"
+      - "engine/ontology_scenario.py"
+      - "engine/ontology_scenario_runtime.py"
+      - "engine/ontology_theme.py"
+      - "engine/opex.py"
+      - "engine/options_issue_desk.py"
+      - "engine/options_ivspread.py"
+      - "engine/oracle/tilt.py"
+      - "engine/passport.py"
+      - "engine/pick_forward_dist.py"
+      - "engine/pick_lab/__init__.py"
+      - "engine/pick_lab/candidates.py"
+      - "engine/pick_lab/registry.py"
+      - "engine/pick_lab/signals_1d.py"
+      - "engine/pick_lab/snapshot.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/playbook.py"
+      - "engine/pooling.py"
+      - "engine/portfolio_brief.py"
+      - "engine/portfolio_changes.py"
+      - "engine/portfolio_vocab.py"
+      - "engine/postcross.py"
+      - "engine/price_pressure/research.py"
+      - "engine/prophet_board_read.py"
+      - "engine/prophet_bridge.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_doors.py"
+      - "engine/prophet_early_observations.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_integrity.py"
+      - "engine/prophet_lab/__init__.py"
+      - "engine/prophet_lab/boards.py"
+      - "engine/prophet_lab/contracts.py"
+      - "engine/prophet_lab/earnings_dossier.py"
+      - "engine/prophet_lab/intelligence_vector.py"
+      - "engine/prophet_lab/observation.py"
+      - "engine/prophet_lab/response.py"
+      - "engine/prophet_lab/sources.py"
+      - "engine/prophet_lab/timeparse.py"
+      - "engine/prophet_live/__init__.py"
+      - "engine/prophet_live/interval.py"
+      - "engine/prophet_live/live_states.py"
+      - "engine/prophet_stage_inputs.py"
+      - "engine/prophet_strategy_definition.py"
+      - "engine/provenance_sidecar.py"
+      - "engine/provider_health.py"
+      - "engine/pullback_zone.py"
+      - "engine/qbus.py"
+      - "engine/qbus_news_annotate.py"
+      - "engine/qbus_news_cluster.py"
+      - "engine/qbus_news_contract.py"
+      - "engine/qbus_news_editorial.py"
+      - "engine/qbus_news_quality.py"
+      - "engine/qbus_news_receipts.py"
+      - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
+      - "engine/qbus_news_store.py"
+      - "engine/qbus_news_universe.py"
+      - "engine/qbus_news_velocity.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_validity.py"
+      - "engine/qual_extraction.py"
+      - "engine/quote_resolution.py"
+      - "engine/rate_inflation_transmission.py"
+      - "engine/rates_command_basis.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/regime_vector.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/__init__.py"
+      - "engine/research_vault/catalog.py"
+      - "engine/research_vault/corpus.py"
+      - "engine/research_vault/download_quota.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_index.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/producer_generation.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/slugs.py"
+      - "engine/research_vault/source_layout.py"
+      - "engine/research_vault/view_ratelimit.py"
+      - "engine/research_vault/watermark.py"
+      - "engine/residual_alpha.py"
+      - "engine/risk_envelope.py"
+      - "engine/risk_sizing.py"
+      - "engine/roc_blowoff.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/multiplicity.py"
+      - "engine/sector_intelligence/__init__.py"
+      - "engine/sector_intelligence/contracts.py"
+      - "engine/sector_intelligence/launch_slo_verifier.py"
+      - "engine/sector_pulse.py"
+      - "engine/sector_rate_inflation.py"
+      - "engine/security_state.py"
+      - "engine/setup_tier.py"
+      - "engine/setups.py"
+      - "engine/shadow_book.py"
+      - "engine/short_volume.py"
+      - "engine/signal_archive.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/smart_money.py"
+      - "engine/special_arb.py"
+      - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
+      - "engine/spine.py"
+      - "engine/spotlight.py"
+      - "engine/stock_dossier.py"
+      - "engine/stock_events.py"
+      - "engine/stock_fundamentals.py"
+      - "engine/stock_macro_sensitivity.py"
+      - "engine/stock_personality.py"
+      - "engine/stock_score.py"
+      - "engine/stock_view.py"
+      - "engine/sue.py"
+      - "engine/t0_indicator.py"
+      - "engine/theme_context.py"
+      - "engine/theme_crowding.py"
+      - "engine/theme_graph/capability.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/economic_context.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
+      - "engine/theme_graph/local_sources.py"
+      - "engine/theme_graph/materialize.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/rights_use.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/selection_cohort.py"
+      - "engine/theme_graph/selection_cohort_publication.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_gap.py"
+      - "engine/theme_graph/theme_state_owner_readers.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "engine/theme_scoring.py"
+      - "engine/theme_validation.py"
+      - "engine/thesis_funnel.py"
+      - "engine/ticker_alerts.py"
+      - "engine/ticker_shape.py"
+      - "engine/track_record.py"
+      - "engine/transmission_chains.py"
+      - "engine/transmission_company_continuation.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/us_board_rank.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "engine/us_candidate_lanes.py"
+      - "engine/us_context_vector.py"
+      - "engine/us_early_turn.py"
+      - "engine/us_prophet_fusion.py"
+      - "engine/validation.py"
+      - "engine/valuation.py"
+      - "engine/valuation_assumptions.py"
+      - "engine/valuation_event_bridge.py"
+      - "engine/valuation_event_proposal.py"
+      - "engine/valuation_scenario.py"
+      - "engine/velocity.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/vol_squeeze.py"
+      - "engine/washout_turn.py"
+      - "engine/weinstein_stage.py"
+      - "engine/yield_momentum.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/commercial_path.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "lib/filing_value_units.py"
+      - "lib/finra_knowable.py"
+      - "lib/growth_registry.py"
+      - "lib/help_directory.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "lib/massive_ticker.py"
+      - "lib/mastermind_response_log.py"
+      - "lib/opportunity_case.py"
+      - "lib/opportunity_evidence.py"
+      - "lib/options_context.py"
+      - "lib/quote_native_metadata.py"
+      - "lib/team_membership.py"
+      - "lib/ticker_popularity.py"
+      - "lib/tiers.py"
+      - "lib/treasury_daily_history.py"
+      - "lib/user_prefs.py"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
+      - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
+      - "research/US_BOARD_MEASUREMENT.md"
+      - "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json"
+      - "research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/test_options_auth.py"
+      - "tests/test_options_scenarios.py"
+      - "tests/test_scenario_initial_capture.py"
+      - "collectors/base.py"
+      - "collectors/sponsors.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "engine/etf_flows.py"
+      - "engine/exposure_math.py"
+      - "engine/grading_stats.py"
+      - "engine/intelligence_workspace/options_contract_identity.py"
+      - "engine/intraday_greeks.py"
+      - "engine/levels_engine.py"
+      - "engine/levels_grade.py"
+      - "engine/levels_publish.py"
+      - "engine/moves_engine.py"
+      - "engine/options_exposure_projection.py"
+      - "engine/options_hub.py"
+      - "engine/options_scenario_capture.py"
+      - "engine/vex_engine.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/options_source_receipts.py"
+      - "lib/stooq.py"
+      - "lib/symbol_directory_receipts.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/build_options_hub_nightly.py"
+      - "tests/test_options_scenario_capture.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "tests/test_options_hub_retention.py"
+      - "tests/test_scenario_source_resolution.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -7049,9 +7989,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install matrix-test deps
-        run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
+        run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -7070,6 +8010,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -7260,6 +8204,9 @@ jobs:
       - "engine/options_scenario_surface.py"
       - "engine/options_scenario_admission.py"
       - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "engine/options_plan_quote_context.py"
+      - "engine/options_nbbo_cohort.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -7579,6 +8526,8 @@ jobs:
       - "tests/test_options_scenario_surface.py"
       - "tests/test_options_scenario_admission.py"
       - "tests/test_options_payoff.py"
+      - "tests/test_options_plan_expiry.py"
+      - "tests/test_options_plan_quote_context.py"
       - "tests/test_options_market_memory_local_receipts.py"
       - "tests/test_options_market_memory_local_replica.py"
       - "tests/test_options_signal_campaign.py"
@@ -7742,7 +8691,7 @@ jobs:
       - name: qualified joint exposure and legacy Hub publication compatibility
         run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
-        run: python -m pytest tests/test_options_payoff.py -q
+        run: python -m pytest tests/test_options_payoff.py tests/test_options_plan_expiry.py tests/test_options_plan_quote_context.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
       # cross-repo contracts — an unwired suite here rots silently and the consumer 404s.
       - name: Terminal EOD-context R2 mirror (key map pinned, corrupt-file guard, fail-soft)
@@ -9517,6 +10466,18 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -13089,6 +14050,10 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -13295,6 +14260,16 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "templates/ticker_index.html.j2"
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
@@ -17391,6 +18366,17 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -18677,6 +19663,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -20539,7 +21529,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: account actions (app/account_actions.py)
@@ -21254,6 +22244,17 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/foresight_divergence.py"
       - "engine/foresight_grader.py"
       - "engine/theme_graph/theme_state_gap.py"
@@ -21507,6 +22508,17 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -22130,6 +23142,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "engine/research_intelligence/__init__.py"
@@ -22896,6 +23913,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -24556,6 +25578,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/theme_graph/theme_state_gap.py"
       - "engine/theme_graph/theme_state_w2_qualification.py"
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
@@ -24738,7 +25763,6 @@ jobs:
           tests/test_activation_funnel_report.py
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
-          tests/test_options_auth.py
           tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
@@ -25076,6 +26100,18 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -27635,6 +28671,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -28798,6 +29839,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
@@ -30268,6 +31313,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "engine/intl_global_universe.py"
@@ -32899,6 +33947,10 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_energy_economic_change_non_regression.py"
@@ -33194,6 +34246,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -33694,6 +34751,17 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       - "engine/market_os/__init__.py"
@@ -34976,12 +36044,24 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_calendar.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_terminal_minute_observations.py"
+      - "tests/test_entry_radar_terminal_native_query.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
       - "engine/entry_radar/replay/leader_pivot_descriptor.py"
       - "tests/test_entry_radar_first_green_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/replay/rs_pullback_native_identity.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/**"
+      - "research/MARKET_MEMORY_INITIAL_REFERENCE_CANDIDATE_2026-10-14.md"
+      - "tests/test_dataos_identity.py"
+      - "tests/test_entry_radar_identity_observation_snapshot.py"
+      - "tests/test_entry_radar_rs_pullback_native_identity.py"
+      - "tests/test_market_memory_identity_candidate.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34989,9 +36069,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install calendar test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pyarrow
       - name: observed calendar, retained minute evidence and actual CLI replay
-        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py tests/test_entry_radar_rs_pullback_native_identity.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
@@ -36117,6 +37197,17 @@ jobs:
     # Explicit scope covers the transitive import closure; no vendor calls,
     # runtime collection, outcome evaluation, or committed-artifact writes occur.
     paths:
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_dataos_identity.py
+      - tests/test_market_memory_identity_candidate.py
+      - tests/test_dataos_initial_reference_publication.py
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
       - ".github/ci/legacy-jobs.yml"
@@ -36214,6 +37305,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
+          tests/test_dataos_initial_reference_publication.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_forex_source.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
@@ -36245,6 +37337,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
@@ -36546,6 +37644,10 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - engine/neuralweb/market_memory_history_transcripts.py
       - engine/neuralweb/market_memory_history_filings.py
       - engine/earnings_release/filing_key.py
@@ -36818,6 +37920,18 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenarios.py"
+      - "app/options_scenario_bindings.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
       # Private-news/Press integration also reaches the reviewed release boundary.
@@ -38547,6 +39661,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -39499,6 +40616,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/market_memory_identity_candidate.py
       - "tests/test_sec_supplier_adoption.py"
       - "tests/test_sec_supplier_publisher_composition.py"
       - "tests/test_company_disclosure_additive_current.py"
@@ -41422,6 +42544,16 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/options_auth.py"
+      - "app/options_scenario_bindings.py"
+      - "app/options_scenarios.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/intelligence_workspace/scenario_source_resolution.py"
+      - "engine/options_hub_retention.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/options_scenario_capture.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - lib/symbol_directory_receipts.py

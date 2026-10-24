@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-23",
-  "generated_at": "2026-10-24T04:33:40+00:00",
+  "as_of": "2026-10-24",
+  "generated_at": "2026-10-24T09:47:32+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 81564.6,
-    "change_24h_pct": 0.32,
+    "price": 80847.54,
+    "change_24h_pct": -0.28,
     "stance_en": "NEUTRAL",
     "stance_zh": "中性",
-    "summary_en": "The big picture reads neutral. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向中性。支撑来自基本面与动量；拖累来自宏观环境与期货持仓。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 7,
-    "exposure_pct": 42,
+    "summary_en": "The big picture reads neutral. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向中性。支撑来自基本面与风险读数；拖累来自宏观环境与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 8,
+    "exposure_pct": 40,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-23",
+    "as_of": "2026-10-24",
     "integrity_ok": true,
-    "final_exposure_pct": 42,
+    "final_exposure_pct": 40,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-23"
+        "as_of": "2026-10-24"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -209,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Capitulation (bottoming)",
+          "state_zh": "投降（筑底）",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
