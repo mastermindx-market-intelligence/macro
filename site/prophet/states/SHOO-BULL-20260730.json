@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SHOO-BULL-20260730",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 38.9,
-  "raw_confidence": 38.7,
-  "delta_vs_base": -21.1,
+  "management_confidence": 39.2,
+  "raw_confidence": 39.6,
+  "delta_vs_base": -20.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 72.9,
+    "validity": 75.6,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.791,
+    "dist_to_stop_r": 0.813,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 186.7,
-    "p1": -0.1394,
-    "p2": -0.0697,
+    "horizon_pct_used": 188.9,
+    "p1": -0.1246,
+    "p2": -0.0623,
     "p3": null,
-    "move_r": -0.209,
+    "move_r": -0.187,
     "mfe_r": 0.195,
     "mae_r": -0.366
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "EXPIRED"
 }

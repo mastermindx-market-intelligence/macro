@@ -8,7 +8,8 @@ Execution location is not buyer/seller identity, opening intent or market share.
 
 from collections.abc import Mapping
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation, localcontext
+from decimal import (Context, Decimal, DivisionByZero, InvalidOperation, Overflow,
+                     ROUND_HALF_EVEN, localcontext)
 import math
 import re
 
@@ -153,8 +154,15 @@ def measure_observed_prints(rows: list[dict] | None) -> dict:
     venues, rejected = {}, 0
     # Include the entire binary64 exponent span as well as significant digits,
     # so reordering tiny and large positive premiums cannot discard small rows.
-    with localcontext() as context:
-        context.prec = 1000
+    # Isolate exponent limits, rounding and traps as well as precision. A caller
+    # may have configured a small Emax/Emin or enabled Inexact/Rounded traps.
+    # All binary64 inputs and their products fit inside this private span.
+    arithmetic = Context(
+        prec=1000, rounding=ROUND_HALF_EVEN, Emin=-999999, Emax=999999,
+        capitals=1, clamp=0, flags=[],
+        traps=[InvalidOperation, DivisionByZero, Overflow],
+    )
+    with localcontext(arithmetic):
         for row in rows:
             try:
                 valid = _valid(row)

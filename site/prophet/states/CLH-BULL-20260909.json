@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CLH-BULL-20260909",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 51.8,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 95.5,
+    "validity": 90.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.967,
+    "dist_to_stop_r": 0.927,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.0223,
-    "p2": -0.0111,
+    "horizon_pct_used": 95.6,
+    "p1": -0.0489,
+    "p2": -0.0244,
     "p3": null,
-    "move_r": -0.033,
+    "move_r": -0.073,
     "mfe_r": 0.003,
     "mae_r": -0.228
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 43,
+  "tau": 0.9556
 }
