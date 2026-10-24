@@ -18,6 +18,9 @@ import stat
 import sys
 import uuid
 
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 DESTINATION = Path("/var/lib/macro-api/options_plan/reference.json")
 MAX_BYTES = 262144
 MAX_HEADER = 32768

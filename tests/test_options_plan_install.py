@@ -104,3 +104,27 @@ def test_local_existing_receipt_rejects_before_any_transport(case):
     with pytest.raises(FileExistsError):
         install.deliver(request, source, receipt, lambda *a: pytest.fail("must never repeat transport"))
     assert not destination.parent.exists()
+
+
+def test_file_entry_pins_own_repo_before_foreign_cwd_and_pythonpath(tmp_path):
+    import subprocess
+    import sys
+    root = Path(install.__file__).resolve().parents[1]
+    decoy = tmp_path / "foreign"
+    for name in ("scripts", "lib"):
+        package = decoy / name
+        package.mkdir(parents=True)
+        (package / "__init__.py").write_text("raise RuntimeError('foreign package imported')\n")
+    cwd = tmp_path / "unrelated"; cwd.mkdir()
+    # -S excludes ambient editable installs. The only repo-root admission is
+    # this entry file's own strong pin; neither __main__ nor transport executes.
+    code = (
+        "import json,runpy,sys; "
+        "runpy.run_path(sys.argv[1],run_name='entry_pin_probe'); "
+        "import scripts,lib; print(json.dumps([scripts.__file__,lib.__file__]))"
+    )
+    env = dict(os.environ, PYTHONPATH=str(decoy))
+    result = subprocess.run([sys.executable, "-S", "-c", code, str(root / "scripts/install_options_plan_reference.py")],
+        cwd=cwd, env=env, text=True, capture_output=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == [str(root / "scripts/__init__.py"), str(root / "lib/__init__.py")]
