@@ -35,9 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
-- claim: API restart trigger behavior is preserved while removing the same-line source conflict.
-  command: Exact algebraic three-path comparison, bash syntax, six positive/negative shell checks and existing updater suite.
-  result: Initial521 preserved main74aa plus response_eval but still conflicted in Git because both branches edited the same long line. Restored the common-ancestor regex and placed the same three exact paths in a separate OR condition inside the existing trigger block.376testsPASS; six focused checksPASS; no service change or manual base integration. Current-main clean composition and fresh admission still required. Original8d1 terminal failure and exact-base replayUNKNOWN remain historical facts.
+- claim: A source-only additive API restart guard resolves the actual updater conflict without losing trigger behavior.
+  command: c9a076 plus main92d06 source preview4be449; exact updater comparison, algebraic path equivalence, bash syntax, six focused shell checks and affected API suite.
+  result: Both initial long-line521 and adjacent-OR b824 preparations still conflicted. Final c9a076 places the same three exact paths in a separate if block within the existing trigger section. Clean preview preserves the entire incoming updater plus that single guard; no manual base integration.236affected API tests and six path checksPASS; prior376 full updater tests retained for unchanged behavior. Original8d1 final consumed135jobs391semanticPASS/1knownclosureFAIL/14blocked; exact-base replayUNKNOWN preserved. Fresh admission/publication/hosted CI and all production obligations remain open.
 - claim: The two-input repair clears the canonical full curated closure on the exact original hosted source composition.
   command: Original a69e97ea tested source plus only bbbca two-path diff; canonical tracked-tree curated_exclusive_closure_findings.
   result: Zero findings across all355 job definitions; candidatebbbca restored clean after qualification. Originalpack1 artifact12556058771 digest/canonical consumed; closure assertion failed, one semantic step passed and14blocked; exact-base replay timeout and descendantUNKNOWN remain, no replay/reclassification. Source repair accepted locally; hosted terminal and new admitted revision remain required.
