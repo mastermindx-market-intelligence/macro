@@ -30,6 +30,11 @@ def test_canonical_me_and_unlimited_overlay_not_parallel_policy(monkeypatch):
     text = json.dumps(result)
     for private in ('synthetic@example.invalid', 'unrelated_secret', 'chat_budget', 'private', 'Bearer'):
         assert private not in text
+    user['user_metadata'].update(alert_email_optin=' TRUE ', alert_categories=[' OPTIONS_EXPOSURE_NODE '])
+    assert frozen_options_account(ID, AT)['account']['user']['user_metadata'] == {
+        'alert_email_optin': True, 'alert_categories': ['options_exposure_node']}
+    user['user_metadata']['alert_categories'].append('future')
+    assert frozen_options_account(ID, AT)['account']['user']['user_metadata']['alert_categories'][-1] == 'future'
     monkeypatch.setattr(drain, 'fetch_user_record', lambda principal: (drain.READ_OK, {**user, 'id': 'other'}))
     monkeypatch.setattr(main, 'me', lambda **kwargs: (_ for _ in ()).throw(AssertionError('must not evaluate mismatched account')))
     assert frozen_options_account(ID, AT) is None

@@ -31,11 +31,16 @@ def frozen_options_account(principal, evaluation_at):
         meta = user.get('user_metadata')
         if not isinstance(meta, dict):
             return None
+        from lib.user_prefs import read_user_prefs
+        prefs = read_user_prefs(user)
+        # Preserve invalid present values as observations, so the native policy
+        # refuses them instead of silently reinterpreting missing consent.
+        consent = {key: prefs[key] if key in prefs else meta[key]
+                   for key in ('alert_email_optin', 'alert_categories') if key in meta}
         # Only account/consent facts needed by the ONE native policy cross this
         # private pipe. No token, email, name, quota, unrelated metadata or secret.
         return {'kind': 'observed', 'principal': principal, 'evaluationAt': evaluation_at,
-                'account': {'user': {'id': principal, 'user_metadata': {
-                    key: meta[key] for key in ('alert_email_optin', 'alert_categories') if key in meta}},
+                'account': {'user': {'id': principal, 'user_metadata': consent},
                     'me': {key: account[key] for key in (
                         'id', 'tier', 'features', 'status', 'current_period_end', 'source') if key in account}}}
     except Exception:
