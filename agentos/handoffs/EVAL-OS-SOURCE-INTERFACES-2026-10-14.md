@@ -35,6 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: A28 finite HTTP execution source and exact streaming-contract test repair are locally qualified, with Linux enforcement still unproved.
+  command: Existing affected runtime suites, canonical tracked closure, strict packing and three CI controls; original hosted pack9 artifact12550320968 reconciled.
+  result: Localc166611cc8c0 has357 unique passing runtime cases, seven Linux-only cases unexecuted on macOS, three controls passed,29 affected exclusive scopes with zero gaps and134/134/127 job packing unchanged. All355 jobs/limits/prior commands remain; the existing A1 command adds only the boundary suite. No production load, publish or Linux acceptance. Source receipt release-probe/a28-20261024/envelope-source-qualification.json.
 - claim: Ordinary A1 source publication retains canonical capacity and exact carrier custody without waiting on unrelated PR custody.
   command: Retained GET-only admission observer repair; seven boundary controls and four transport controls.
   result: The historical09:53 admission with seven proofs and PR9209 as indexed lease owner remains admitted;
@@ -168,11 +171,11 @@ unresolved:
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
 - A1 PR6651 landed4579 and bounded installation/API/DOM/eight-state proof is retained. Original authority rerun remained unused and native supersession resolved that historical gate. Full performance, independent comprehension and natural owner acceptance remain open.
-- Follow-on PR10130 original82c1 CI40058907449 has a manifest path-parity failure; exact local source normalization5c3c17 repairs the reproduced cause. Hosted base replay timed out with descendant settlement unknown; no replay or base-pass claim.
+- Original82c1 CI40058907449 is terminal/consumed; its prior base replay timeout and descendant UNKNOWN stay held. Published11b CI40065342017 now passes manifest control; pack9 records a real PR regression in fourteen old eager-reader test seams. Localc166 repairs those tests against frozen policies and actual streaming/legacy fallback; new hosted proof is still owed.
 next_actions:
-- Consume original PR10130 CI40058907449 terminal result, then fresh canonical admission and current source/custody before ordinary same-branch publication of the qualified descendant. Preserve all binding checks and incumbent merge ownership.
-- Use accepted e09 A28 streaming correction plus5c3c17 source-only manifest normalization; retain203 unique affected runtime cases and42fragment plus4control passes without repeating unchanged proof.
-- After qualified follow-on landing verify twelve files, installed updater and API/admin processes, numeric request/log correlation, existing CLI and rights-qualified Discovery adoption. A28 production performance, independent comprehension and natural QLedger owner progression remain unproved.
+- Consume SAME original PR10130 CI40065342017 terminal artifact; then fresh canonical admission/current head/main/custody and ordinary same-branch publication of accepted local chain11b->aaef->c166 plus evidence child. Preserve incumbent merge ownership and all binding checks.
+- Run new Linux-only envelope contracts in ordinary fresh hosted CI. Unsupported enforcement and process-local binding refuse; cleanup UNKNOWN latches instead of replacing a child. The safety profile is not an SLO or measured production performance.
+- After qualified landing verify twelve files, updater/API/admin, numeric response-log correlation, actual CLI and rights-qualified Discovery adoption. A28 production performance/comprehension/natural owner remain owed; no forced owner or parallel QLedger cutover.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -187,11 +190,11 @@ prs:
 - 10130
 ---
 
-## Current checkpoint — 2026-10-24 A28 correction and exact hosted repair
+## Current checkpoint — 2026-10-24 bounded HTTP derivation and original pack9 repair
 
-PR10130 is the single follow-on carrier; remote82c1 remains under originalCI40058907449. A1 has landed and its bounded installed/browser proof remains accepted. The local ordinary chain82c1 -> e09d782 ->5c3c17 contains the reviewed complete T1 stream, bounded T4 prewarm and representation-only manifest repair. No manual main integration or synthetic ancestry was added. Publication is still pending terminal originalCI and ordinary admission.
+Published PR10130 remains11b under originalCI40065342017. Local ordinary descendantc166611cc8c0 includes acceptedaaef fallback plus the complete HTTP execution boundary and14 stale reader-mock repairs;357 unique affected runtime PASS/7Linux-only skipped/3CI controls PASS/29tracked closures0misses/strict134-134-127 packing unchanged. Actual Linux enforcement, new hosted checks and production acceptance remain separate. Originalpack9 exactZIP/reconciler records pr_regression, not a waived base failure. No main integration or carrier push occurred. Same-root source/release continuation owns the next terminal-result/admission boundary.
 
-Source receipts: research/evidence/eval-os-tier-query-20261014/release-probe/a28-20261024/. Runtime union203 unique cases includes composed178 and retained26 with one overlap. Fragment42 and relevantCI4 pass; all355parsed job definitions/ordered paths/commands/limits remain unchanged. The original hosted failure remains visible; timed-out base replay is not rerun or reclassified. No production performance, whole-process memory bound, new QLedger cutover, owner action or empirical/scientific adoption is claimed. Original Fabric C0429/unknown usage, C1prelaunch refusal, experience/lostCLI and browser effects remain intact.
+The earlier Sol envelope continuation was interrupted before edits; one supported Desktop resume was refused and was not rerouted. Root implemented locally. Initial macOS exited-child killpg refusals are preserved; no retry/alternate signal. Darwin now refuses the Linux envelope before dispatch. No live Docker daemon was available and none was started. Original Fabric uncertainties, global browser effects and budgets remain intact.
 
 ## 2026-10-15 A1 repair published
 
