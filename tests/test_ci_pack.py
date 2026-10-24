@@ -5308,7 +5308,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_873),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_881),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5317,6 +5317,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 recovery composition retains protected daa2c497's Eval-OS A1
+    CI source law and separately preserves Tiingo #8697's local proof
+    against older main 3dd5556b. Latest-base probe weights must be measured
+    again on THIS exact composed tree before publication; older ceilings
+    and test receipts are historical evidence, not live qualification.
+
+    2026-10-24 Macro current-main daa2c497 + held Tiingo #8697 source:
+    actual exact-source packing test reports build_free_content.py at
+    135 of 355 jobs, 5,881 estimated weight, ten packs, with unchanged
+    selected job count against current protected source. Current main
+    funded 5,873 after Eval-OS A1. Fund this exact observed additional
+    eight units, not padding or inferred runtime. Keep other probes,
+    136-job ceiling, 10-pack limit, suite commands and CI scope intact.
+    This is local measured composition; differential contract-delta and
+    hosted current-head CI remain separately owed.
 
     2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
     ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
@@ -5350,6 +5366,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     research/evidence/eval-os-20261012/a1-ci-delta-20261014/.
     Fresh checks of the final containing source remain mandatory.
 
+    2026-10-23 Tiingo #8697 dark-path source candidate integrated with
+    protected main 3dd5556b while retaining tested per-publisher
+    source rights and canonical qbus/SQLite contract. Local pre-release
+    candidate only; the original PR remains Draft/Hold and hosted current-
+    head CI has not run. Preserve current-base coverage and ceilings.
+
+    2026-10-23 full-tree contract-delta versus protected main 3dd5556b:
+    scripts/build_free_content.py baseline 134 jobs / 5,854 weighted seconds,
+    Tiingo candidate 134 jobs / 5,860, ten packs both and no new selected
+    jobs. The existing ticker-news-qbus code step gained the two Tiingo/news
+    suites and one SQLite bridge suite (+6 measured estimator units). Main
+    ceiling 5,858 covered only +4; fund the remaining +2 precisely to 5,860.
+    Retain 136-job / ten-pack limits, existing suite execution, protected
+    index 5,886 and Prophet 5,636 ceilings. This is measured local
+    integration evidence, not hosted acceptance or production qualification.
+
     2026-10-23 F11 selected-version composition on protected f564c087:
     the one existing Brain invocation gains test_research_thesis_read.py.
     Preserve canonical job/pack ceilings, selectors and all measurement history;
@@ -5362,6 +5394,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every existing selected job and weight remains unchanged; all probes
     retain ten packs. Fund only this measured six-unit excess, preserving
     current-main job limits, other weight limits, timeouts and selectors.
+
+    2026-10-22 prior held Tiingo source composition with main 0feedfc5
+    enrolled test_tiingo_news.py and test_news_llm.py into the incumbent
+    ticker-news-qbus job (+4 estimated units). These historic measurements
+    predate this candidate's new SQLite test and current protected main;
+    retain them as provenance, not current pack-budget certification.
 
     2026-10-22 recovered final composition joins featurece4664f6 and
     protected main7a8f690d. Canonical measurements on this actual merged

@@ -119,6 +119,7 @@ def parse_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str | None = None,
 ) -> QualifiedNewsRights:
     """Qualify an owner-issued source receipt for the current product use."""
 
@@ -127,8 +128,17 @@ def parse_rights_receipt(
         raise NewsReceiptError("rights_schema")
     if _text(obj.get("status"), "rights_status", maximum=32).lower() != "approved":
         raise NewsReceiptError("rights_not_approved")
+    requested_source = source
     source = _text(obj.get("source"), "rights_source", maximum=260).lower()
-    if source != _SOURCE and re.fullmatch(
+    if requested_source is not None:
+        requested_source = _text(
+            requested_source, "rights_source_requested", maximum=64
+        ).lower()
+        if requested_source not in ("benzinga", "tiingo"):
+            raise NewsReceiptError("rights_source_unsupported")
+        if source != requested_source:
+            raise NewsReceiptError("rights_source")
+    elif source != _SOURCE and re.fullmatch(
         r"massive:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", source
     ) is None:
         raise NewsReceiptError("rights_source")
@@ -170,6 +180,14 @@ def parse_rights_receipt(
         if not _bool(caps, required):
             raise NewsReceiptError(f"capability_{required}_required")
 
+    # This Tiingo consumer runs deterministic quality ranking, event clustering,
+    # and provider-article normalization. Those are derivative uses, not merely
+    # headline display. Deny Tiingo activation unless the contract owner
+    # explicitly licenses this processing; Benzinga\u0027s historic rules stay unchanged.
+    if source == "tiingo" and not _bool(
+        caps, "derivative_processing", default=False
+    ):
+        raise NewsReceiptError("capability_derivative_processing_required")
     allow_url = _bool(caps, "source_link_display", default=False)
     allow_teaser = _bool(caps, "teaser_display", default=False)
 
@@ -180,6 +198,43 @@ def parse_rights_receipt(
     ):
         _bool(caps, optional, default=False)
 
+    # Tiingo's producer license is not a wildcard sublicence for every original
+    # publisher. A commercial-rights owner may list exact, licensed publisher
+    # domains in THIS existing receipt. No list means ingestion-only: the API
+    # must never show syndicated vendor headlines on implied authority.
+    read_rights = NewsReadRights(
+        allowed_sources=frozenset({source}), allow_title=True,
+        allow_url=allow_url, allow_teaser=allow_teaser,
+    )
+    if source == "tiingo":
+        raw_publishers = obj.get("licensed_publisher_domains", [])
+        if (not isinstance(raw_publishers, list) or len(raw_publishers) > 64):
+            raise NewsReceiptError("rights_tiingo_publishers")
+        publishers: list[str] = []
+        for raw in raw_publishers:
+            domain = _text(raw, "rights_tiingo_publisher", maximum=253)
+            if (not re.fullmatch(
+                    r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+",
+                    domain,
+                ) or domain in publishers):
+                raise NewsReceiptError("rights_tiingo_publishers")
+            publishers.append(domain)
+        # Preserve the original Tiingo collector's unpartitioned grant
+        # when no publisher list is present. This matters for immutable
+        # grant-binding and nested-withdrawal detection on the original PR.
+        if publishers:
+            entries = [
+                SourceReadRights("tiingo", True, allow_url, allow_teaser),
+                *(
+                    SourceReadRights("tiingo:" + domain, True, allow_url, allow_teaser)
+                    for domain in publishers
+                ),
+            ]
+            read_rights = NewsReadRights(
+                allowed_sources=frozenset(entry.source for entry in entries),
+                allow_title=False, allow_url=False, allow_teaser=False,
+                source_fields=tuple(entries),
+            )
     return QualifiedNewsRights(
         receipt_id=receipt_id,
         owner_ref=owner_ref,
@@ -188,12 +243,7 @@ def parse_rights_receipt(
         audience=requested_audience,
         effective_at=effective_at,
         expires_at=expires_at,
-        rights=NewsReadRights(
-            allowed_sources=frozenset({source}),
-            allow_title=True,
-            allow_url=allow_url,
-            allow_teaser=allow_teaser,
-        ),
+        rights=read_rights,
         provider=provider,
         derivative_processing=_bool(caps, "derivative_processing", default=False),
     )
@@ -204,13 +254,14 @@ def load_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str | None = None,
 ) -> QualifiedNewsRights | None:
     """Read an owner-provided receipt; every read/parse/qualification fault denies."""
 
     receipt_path = Path(path)
     try:
         raw = json.loads(receipt_path.read_text(encoding="utf-8"))
-        return parse_rights_receipt(raw, now=now, audience=audience)
+        return parse_rights_receipt(raw, now=now, audience=audience, source=source)
     except (OSError, ValueError, TypeError, NewsReceiptError):
         return None
 
@@ -458,7 +509,12 @@ def combine_news_rights(receipts: tuple[QualifiedNewsRights, ...]) -> NewsReadRi
         for source in receipt.rights.allowed_sources:
             counts[source] = counts.get(source, 0) + 1
     grants = tuple(
-        SourceReadRights(source, rights.allow_title, rights.allow_url, rights.allow_teaser)
+        SourceReadRights(
+            source,
+            rights.allows(source, "title"),
+            rights.allows(source, "url"),
+            rights.allows(source, "teaser"),
+        )
         for receipt in receipts
         for rights in (receipt.rights,)
         for source in sorted(rights.allowed_sources)
@@ -473,6 +529,7 @@ def combine_news_rights(receipts: tuple[QualifiedNewsRights, ...]) -> NewsReadRi
 
 def load_rights_set(
     paths, *, now: datetime, audience: str = "site_full",
+    allow_tiingo: bool = False,
 ) -> tuple[QualifiedNewsRights, ...]:
     """One current receipt per configured carrier; failures stay source-local."""
     out = []
@@ -490,7 +547,10 @@ def load_rights_set(
             if isinstance(source, str):
                 source = source.strip().lower()
                 source_counts[source] = source_counts.get(source, 0) + 1
-            out.append(parse_rights_receipt(raw, now=now, audience=audience))
+            explicit_source = "tiingo" if allow_tiingo and source == "tiingo" else None
+            out.append(parse_rights_receipt(
+                raw, now=now, audience=audience, source=explicit_source,
+            ))
         except (OSError, ValueError, TypeError, NewsReceiptError):
             continue
     return tuple(receipt for receipt in out if source_counts.get(receipt.source) == 1)

@@ -434,6 +434,73 @@ def normalize_news(payload: Mapping[str, object], *, transport: str,
     )
 
 
+
+def normalize_tiingo_news(
+    article: Mapping[str, object], *, received_at: datetime,
+) -> NewsRevision:
+    """Bridge a *validated* Tiingo observation to the single qbus revision law.
+
+    Provider crawl and publisher time are source metadata, never proof of our
+    first receipt or an authoritative update timestamp. A later conflicting
+    observation must go through the incumbent reducer, never an overwrite.
+    """
+    if not isinstance(article, Mapping) or article.get("provider") != "tiingo":
+        raise NewsContractError("tiingo_provider")
+    received = _aware_utc(received_at, "received_at_not_aware")
+    declared_received = _parse_clock(
+        article.get("received_at"), "received_at", required=True,
+    )
+    if declared_received != received:
+        raise NewsContractError("tiingo_received_at_mismatch")
+    publisher = _text(article.get("source"), "tiingo_publisher", 253, required=True).lower()
+    if not re.fullmatch(
+        r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+",
+        publisher,
+    ):
+        raise NewsContractError("invalid_tiingo_publisher")
+    url = _text(article.get("url"), "url", MAX_URL_CHARS, required=True)
+    try:
+        parts = urlsplit(url)
+        host = (parts.hostname or "").lower().removeprefix("www.")
+        if (parts.scheme not in ("http", "https") or parts.username or parts.password
+                or parts.port not in (None, 80, 443)
+                or not (host == publisher or host.endswith("." + publisher))):
+            raise ValueError
+    except ValueError:
+        raise NewsContractError("tiingo_source_url_mismatch") from None
+    provider_id = article.get("provider_id")
+    if isinstance(provider_id, bool) or not isinstance(provider_id, int) or provider_id < 1:
+        raise NewsContractError("tiingo_provider_id")
+    published = _parse_clock(article.get("published_at"), "published_at", required=True)
+    crawled = _parse_clock(
+        article.get("provider_crawled_at"), "provider_crawled_at", required=True,
+    )
+    if published > received or crawled > received:
+        raise NewsContractError("tiingo_clock_after_receipt")
+    tickers = article.get("tickers")
+    if not isinstance(tickers, (list, tuple)):
+        raise NewsContractError("tiingo_tickers")
+    # Publisher identity is part of source key so SQL admission cannot
+    # silently upgrade a syndicated/SEO story under a generic vendor label.
+    return _build(
+        source="tiingo:" + publisher,
+        source_item_id=_source_id(provider_id),
+        transport="tiingo_rest",
+        message_id=None,
+        action="updated", action_explicit=False,
+        published_at=published, updated_at=None, source_event_at=None,
+        received_at=received, version_at=crawled,
+        version_clock_domain="tiingo_provider_crawl",
+        content={
+            "title": article.get("title"), "url": url,
+            "teaser": article.get("description"), "tickers": tickers,
+            "tags": article.get("tags"),
+        },
+        massive=True,
+    )
+
+
+
 def massive_publisher_domain(payload: Mapping[str, object]) -> str:
     """Canonical publisher identity from provider metadata, never vendor branding."""
     publisher = payload.get("publisher")

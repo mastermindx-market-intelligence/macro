@@ -30,7 +30,7 @@ def publisher_identity(source: str, url: str = "") -> str:
     source = source.strip().lower()
     if source == "benzinga":
         return "benzinga.com"
-    if source.startswith("massive:"):
+    if source.startswith(("massive:", "tiingo:")):
         return publisher_domain(source.partition(":")[2])
     try:
         host = (urlsplit(url).hostname or "").lower()
@@ -117,7 +117,7 @@ def representatives_in_display_order(rows, rights=None, *, comparison=None):
 def curated_source(source: str) -> bool:
     """Only implemented publisher-preserving transports may enter this view."""
     key = str(source or "").strip().lower()
-    if key != "benzinga" and not key.startswith("massive:"):
+    if key != "benzinga" and not key.startswith(("massive:", "tiingo:")):
         return False
     return publisher_category(publisher_identity(key)) in {"reporting", "press_release"}
 

@@ -1262,9 +1262,10 @@ class NewsStore:
         or scan forward past a mismatching legacy row to invent an anchor binding.
         """
         source, separator, source_item_id = candidate.anchor_story_id.partition(":")
-        if source == "massive":
+        if source in ("massive", "tiingo"):
+            provider = source
             publisher, separator, source_item_id = source_item_id.partition(":")
-            source = f"massive:{publisher}"
+            source = f"{provider}:{publisher}"
         if not separator or not source_item_id:
             return None
         row = self._conn.execute(

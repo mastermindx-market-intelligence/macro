@@ -36820,6 +36820,19 @@ jobs:
     paths:
       - "app/treasury_history.py"
       - "lib/treasury_daily_history.py"
+      - "tests/test_news_llm.py"
+      # Tiingo News regression suite: canonical tracked-tree closure, additive only.
+      - "engine/financial_news.py"
+      - "engine/macro_news.py"
+      - "engine/news_ai_feed.py"
+      - "engine/news_event_ledger.py"
+      - "engine/news_llm.py"
+      - "engine/news_rss.py"
+      - "engine/news_vector.py"
+      - "engine/tiingo_news.py"
+      - "scripts/build_news.py"
+      - "tests/test_tiingo_news.py"
+      - "tests/test_tiingo_sqlite_bridge.py"  # Tiingo publisher identity, rights and SQLite read-only proof
       # Private-news/Press integration also reaches the reviewed release boundary.
       - "engine/press/adjusted_baseline.py"
       - "templates/press/press_news.css"
@@ -37972,6 +37985,9 @@ jobs:
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
+          tests/test_tiingo_news.py
+          tests/test_tiingo_sqlite_bridge.py
+          tests/test_news_llm.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py

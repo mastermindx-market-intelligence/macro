@@ -1317,3 +1317,25 @@ def test_consequence_honest_empty_all_families_fixture_in_en_and_zh():
     for slug in ("earnings_call", "macro_release", "regime_flip", "risk_band",
                  "research_vault", "prophet_ledger"):
         assert slug not in section, f"raw family slug leaked: {slug!r}"
+
+
+def test_tiingo_headline_only_display_is_readable_and_attributed():
+    """The News page must not produce empty links when source_link_display is denied."""
+    vm = _full_vm()
+    feed = vm["news_feed"]
+    for idx in (0, 1, 3):
+        feed[idx]["provider"] = "tiingo"
+        feed[idx]["data_attribution"] = "Data sourced by Tiingo"
+        feed[idx]["url"] = ""
+    html = _env().get_template("news.html.j2").render(**vm)
+    assert '<span class="nx-lead-title">' in html
+    assert '<div class="nx-mover">' in html
+    assert '<span class="nx-story-title">' in html
+    assert 'class="nx-lead-title" href=""' not in html
+    assert 'class="nx-mover" href=""' not in html
+    assert 'class="nx-story-title" href=""' not in html
+    assert 'Data sourced by <a href="https://www.tiingo.com"' in html
+    assert "新闻数据来源" in html
+
+    # No attribution for pages that didn't display any Tiingo-linked item.
+    assert 'Data sourced by <a href="https://www.tiingo.com"' not in _render_full()

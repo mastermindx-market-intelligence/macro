@@ -222,6 +222,25 @@ def _summarise_batch_raw(items: list[dict], client, model: str):
 _summarise_batch = _summarise_batch_raw
 
 
+
+def model_transfer_excluded(headline: dict) -> bool:
+    """Deny unqualified news sources before external-model provider acquisition.
+
+    Canonical qbus Tiingo source is publisher-scoped (tiingo:reuters.com),
+    while the original collector sets provider=tiingo. Neither is an
+    external-model rights receipt. The existing rights owner remains canonical.
+    """
+    if headline.get("model_processing_allowed") is False:
+        return True
+    for name in ("provider", "source"):
+        marker = headline.get(name)
+        if isinstance(marker, str):
+            token = marker.strip().casefold()
+            if token == "tiingo" or token.startswith("tiingo:"):
+                return True
+    return False
+
+
 def annotate(headlines: list[dict], batch_size: int | None = None,
              max_batches: int | None = None) -> list[dict]:
     """Attach `summary`, `llm_importance`, `llm_tone` to each headline in place-ish
@@ -237,6 +256,15 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     process level via llm_auth).
     """
     if not headlines:
+        return headlines
+    # News-source display/retention rights do not authorize external-model transfer.
+    # Tiingo stays excluded from this model consumer until a separately accepted
+    # source-specific processing path exists. Do not even acquire providers for an
+    # all-excluded batch; preserve the caller's list and original articles.
+    work = [(n, h) for n, h in enumerate(headlines)
+            if not model_transfer_excluded(h)
+            and (h.get("title") or "").strip()]
+    if not work:
         return headlines
     cfg = _cfg()
     if not bool(cfg.get("enabled", True)):
@@ -256,7 +284,6 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     mb = int(max_batches or cfg.get("max_batches", 12))
 
     # Build the worklist: index every headline that wants enrichment.
-    work = [(n, h) for n, h in enumerate(headlines) if (h.get("title") or "").strip()]
     batches = [work[i:i + bs] for i in range(0, len(work), bs)][:mb]
     calls = 0
     provider_used_log: list[str] = []

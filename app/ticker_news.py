@@ -338,7 +338,27 @@ def _additional_rights_paths() -> tuple[Path, ...]:
 def _current_rights_receipts() -> tuple[QualifiedNewsRights, ...]:
     path = _rights_receipt_path()
     paths = ((path,) if path is not None else ()) + _additional_rights_paths()
-    return load_rights_set(paths, now=datetime.now(timezone.utc), audience="site_full")
+    now = datetime.now(timezone.utc)
+    incumbent = load_rights_set(paths, now=now, audience="site_full")
+
+    # No Tiingo news may enter this authenticated API merely because a file
+    # names that vendor: the producer remains OFF, and its rights are a
+    # distinct owner-issued product scope. Evaluate both gates on EVERY read.
+    if config.secret("TIINGO_NEWS_ENABLED") != "1":
+        return incumbent
+    tiingo_rights_path = config.secret("TIINGO_NEWS_RIGHTS_FILE")
+    if not tiingo_rights_path:
+        return incumbent
+    tiingo = load_rights_receipt(
+        Path(tiingo_rights_path), now=now, audience="site_full",
+        source="tiingo",
+    )
+    if (tiingo is None or
+            not any(source.startswith("tiingo:") for source in tiingo.rights.allowed_sources)):
+        # Generic vendor permission does not imply original publishers may be
+        # shown to an authenticated site_full user.
+        return incumbent
+    return (*incumbent, tiingo)
 
 
 def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:

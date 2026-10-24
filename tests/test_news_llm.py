@@ -182,6 +182,69 @@ def test_provider_label_no_crash_when_no_key():
         _restore_credentials(saved)
 
 
+def test_tiingo_namespaced_sources_cannot_acquire_model_provider(monkeypatch):
+    from engine import news_llm
+
+    tiingo_variants = [
+        {"title": "Synthetic Tiingo A", "source": "tiingo:reuters.com"},
+        {"title": "Synthetic Tiingo B", "provider": "tiingo:apnews.com"},
+        {"title": "Synthetic Tiingo C", "provider": "tiingo"},
+        {"title": "Synthetic Tiingo D", "source": "TIINGO:reuters.com"},
+    ]
+    assert all(news_llm.model_transfer_excluded(row) for row in tiingo_variants)
+    assert news_llm.model_transfer_excluded({
+        "title": "Synthetic rights-denied RSS", "provider": "rss",
+        "model_processing_allowed": False,
+    })
+    assert not news_llm.model_transfer_excluded({
+        "title": "Synthetic already-qualified RSS", "provider": "rss",
+        "model_processing_allowed": True,
+    })
+
+    def must_not_acquire(*args, **kwargs):
+        raise AssertionError("unlicensed Tiingo news reached a model provider")
+    from engine import llm_auth
+    monkeypatch.setattr(llm_auth, "build_providers", must_not_acquire)
+    assert news_llm.annotate(tiingo_variants) is tiingo_variants
+    assert all("llm_importance" not in row for row in tiingo_variants)
+
+
+def test_static_enrichment_excludes_namespaced_tiingo_and_does_not_copy_llm_results(monkeypatch):
+    from engine import news_llm
+    from scripts import build_news
+
+    blocked = {
+        "title": "Synthetic separately permitted RSS report",
+        "provider": "massive",
+        "source": "tiingo:reuters.com",
+        "domain": "reuters.com",
+        "quality": 70,
+    }
+    allowed = {
+        "title": "Synthetic separately permitted RSS report",
+        "provider": "rss",
+        "source": "reuters.com",
+        "domain": "reuters.com",
+        "quality": 70,
+    }
+    model_inputs = []
+
+    def annotate_only_in_scope(rows):
+        model_inputs.extend(rows)
+        for row in rows:
+            row["llm_importance"] = 95
+            row["summary"] = "Synthetic model output"
+        return rows
+
+    monkeypatch.setattr(news_llm, "annotate", annotate_only_in_scope)
+    monkeypatch.setattr(news_llm, "provider_label", lambda: "synthetic")
+    build_news._enrich([[blocked, allowed]])
+    assert model_inputs == [allowed]
+    assert "llm_importance" not in blocked
+    assert "summary" not in blocked
+    assert allowed["llm_importance"] == 95
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:
