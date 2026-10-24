@@ -21209,8 +21209,69 @@ jobs:
       - engine/catalyst_opportunity/projection.py
       - engine/catalyst_opportunity/reader.py
       - site/basketdata/sector_pulse.json
-
-
+      # Exact main93f transitive closure found by the committed b702 contract.
+      - app/company_supplier_research.py
+      - collectors/edgar_earnings_8k.py
+      - contracts/theme_graph/identity_resolution.v1.schema.json
+      - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+      - engine/company_intelligence/h20_reported_event.py
+      - engine/company_intelligence/opportunity_context.py
+      - engine/company_intelligence/opportunity_qualification.py
+      - engine/company_intelligence/research_generation.py
+      - engine/company_intelligence/sec_supplier_adoption.py
+      - engine/entry_radar/c5_adapter.py
+      - engine/entry_radar/candidate_provenance.py
+      - engine/entry_radar/catalyst_adapters.py
+      - engine/entry_radar/catalyst_context.py
+      - engine/entry_radar/catalyst_edgar_live.py
+      - engine/entry_radar/catalyst_edgar_store.py
+      - engine/entry_radar/challengers.py
+      - engine/entry_radar/detectors.py
+      - engine/entry_radar/earnings_context.py
+      - engine/entry_radar/entry_events.py
+      - engine/entry_radar/four_hour.py
+      - engine/entry_radar/g0_adapter.py
+      - engine/entry_radar/indicator_core.py
+      - engine/entry_radar/indicator_ingest.py
+      - engine/entry_radar/live_eval.py
+      - engine/entry_radar/live_ledger.py
+      - engine/entry_radar/live_pack.py
+      - engine/entry_radar/pack_spool.py
+      - engine/entry_radar/quote_context.py
+      - engine/entry_radar/readings.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/entry_radar/research_priority.py
+      - engine/entry_radar/research_read.py
+      - engine/foresight_divergence.py
+      - engine/foresight_grader.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/ontology_portfolio.py
+      - engine/ontology_scenario.py
+      - engine/ontology_scenario_runtime.py
+      - engine/ontology_theme.py
+      - engine/price_pressure/research.py
+      - engine/theme_graph/change_report.py
+      - engine/theme_graph/native_disclosure_propagation.py
+      - engine/theme_graph/security_navigation.py
+      - engine/theme_graph/structural_navigation.py
+      - engine/theme_graph/theme_state_gap.py
+      - engine/theme_graph/theme_state_owner_readers.py
+      - engine/theme_graph/theme_state_w2_qualification.py
+      - engine/transmission_chains.py
+      - engine/transmission_company_continuation.py
+      - lib/economic_propagation.py
+      - lib/economic_propagation_v2.py
+      - lib/opportunity_case.py
+      - lib/opportunity_evidence.py
+      - lib/quote_native_metadata.py
+      - research/theme_graph/W2_EXPOSURE_AXES_PREREG.md
+      - research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json
+      - research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
+      - scripts/calibrate_rate_inflation.py
+      - scripts/probe_theme_exposure_axes.py
   quant-q12-parity-forward:
     if: ${{ false }}
     gate: code

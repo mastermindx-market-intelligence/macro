@@ -1,48 +1,43 @@
-## Current main integration and native page — 24 October 2026
+## Current integration and exact W4 closure repair — 24 October 2026
 
-The recovery owner has resolved the current branch integration for the same Draft/HOLD PR #9590. Published parent `66b5c90b3369c89c693b94b0a4f531b570f5fb8e` is composed with retained protected-main pin `93f844e9fff86c11565884f1edd5eb92d1152452` through a normal history-preserving merge. Final commit, exact-head contract, normal push and ordinary CI outcomes belong in the [existing canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277). This source integration does not authorize protected-main merge or production acceptance.
+The normal merge is `b702303b6fa866566400975b8e12b3d24c9657f3` (parents `66b5c90b3369c89c693b94b0a4f531b570f5fb8e` and protected-main pin `93f844e9fff86c11565884f1edd5eb92d1152452`). Its official exact-head contract **failed** at 00:41:26 UTC: **62 introduced, zero inherited** findings, all missing literal inputs for `ccw-w4-credit-desk`. Preserve that failed result; the earlier packing tests were not import-closure acceptance.
 
-### Resolved composition and exact proof
+The bounded repair adds precisely those 62 existing Git paths to that job, increasing its input list from 946 to 1,008. Every added blob equals the protected-main pin; 35 changed since 66b. All other manifest fields/jobs, `tests/test_ci_pack.py`, and main's packing limits are unchanged. The three existing closure and exclusivity tests completed at 00:49:04 UTC: **3 passed in 208.07 seconds**. See [the compact repair receipt](evidence/ci_closure_repair_20261024.json). This focused pass is not the repaired commit's official contract result.
 
-The manifest conflict retains seven candidate dependency additions and six upstream additions. The packing-history conflict retains both exact histories while taking main's limits: index 136/5886, free-content 136/5858, Prophet 130/5636, maximum ten packs. PID96480 completed the two established focused checks: **2 passed, 234 deselected**, pytest 168.39 seconds. No ceiling increased.
+### Native result and authority boundaries
 
-The page conflict was resolved by the actual completed incumbent native pipeline, not a side selection or manual mixture. The fixed input image contains **562 files / 58,484,235 bytes**: 537 exact retained main market files, 19 integrated-index assets and six unchanged private October 15 holdings/sample files. There are 237 content changes from the previous fixed image. Main's full SPY frame retains 8,491 dates through October 22, identical overlapping close_price and adjusted-close differences within the existing basis tolerance. No provider acquisition occurred; the original October 23 acquisition stays preserved. Changed Git blobs carry the protected-commit snapshot mtime, explicitly not a vendor-availability timestamp.
+The completed native page and its proof remain unchanged: **728,002 bytes**, SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`; October 22, health **75**, displayed MOVE **107.0**. The retained input image has 562 files: 537 exact main market inputs, 19 integrated assets and six unchanged private holdings/sample inputs. All 56 source pins, 14 native checks and two committed-page tests passed. The 29 nonpage assets equal the index, including the literal closure's six fonts. No provider acquisition or original-close/vendor-availability identity is inferred. The old health-76 artifact remains preserved in 66b.
 
-The unchanged runner reused all 56 source pins except the actual merged `config/dag.yml` and `templates/mm_brain.js` bytes. The latter contains the accepted width-change-only ResizeObserver relayout. The native run completed at **00:17:42.154231 UTC** with return code 0, **14/14 checks**, zero effect-guard denials and exact original/private/source integrity.
+CDI is October 15, stale six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit and rank/size/gate/escalate authority remain withheld. [The completed page-adoption receipt](evidence/page_adoption_20261024.json) is immutable and must not be rerun for this CI-only repair.
 
-The generated page is **728,002 bytes**, SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`. All three index-stage page preimages remain preserved. A physical-preimage read initially failed before source writes because the unmerged page was sparse; that failed phase remains separate. The corrected adoption preserved the real index stages, materialized 29 identical existing assets, copied the exact generated page and staged it explicitly. Two existing committed-page tests passed at **00:27:40.570511 UTC**: pytest 1.51 seconds, subprocess 2.30 seconds.
+The actual materialized-input visual gate remains **FAIL**: missing owning `EVIDENCE.yml` receipts for `templates/_bonds_duration.html.j2` and `templates/_credit_dislocation.html.j2`. The earlier sparse preflight failure and subsequent actual gate result are separate. Native/static proof does not replace current owning browser captures or interaction evidence. Draft/HOLD and auto-merge off remain mandatory; source publication does not establish release or production acceptance.
 
-Literal asset closure has 24 referenced assets, 28 edges, 11 stylesheets, six real WOFF2 fonts and 22 matching version bindings; all 29 nonpage files match the merged index. This proves literal availability and the exact known inline module, not browser rendering, dynamic network behavior or interaction acceptance.
+The paid Bonds repair request was refused before launch, and the current routing diagnostic found no eligible remote worker. Those retained receipts justify this bounded direct owner repair, not an independent verdict or a substitute review. Preserve all original workspaces, private inputs, failed phases and exact refusals.
 
-| Bound result | SHA-256 |
+### Exact retained receipts
+
+| Result | SHA-256 |
 | --- | --- |
-| Fixed 562-input manifest | `668b936de9f24b0d104155db8ec00d80f65fb26e9ebec11ab50e1222ca165ac7` |
-| 56 source pins | `abe0fbab6b007cc846f65d8d164d74ac1680c0df0a57128f52f574515d7a51e7` |
-| Native qualification report | `05f7f64ab9aa737b95a65d8f775c0857230ff2d17d7d1b39f010c0ebdba2a0d8` |
-| Native execution log | `5251d78a0f00fe61d0376a2b385a1fb3df3d7ba84aa2a93dbcd293d36298420a` |
-| Exact page adoption and page tests | `cf08f497ca2c9091d5977d42a810a55ce82c8ec8105bee890a86764ce68abaf0` |
-| Page-test log | `0cea6eb6e257c149ce11c19d95724fd3717a9ece06af2d96f42840e90adec895` |
-| Focused CI packing-test log | `6b7f696053d0c7126b182c640585b3f336da9d3fc7e789a8e2d2e93b291e300d` |
-| Materialized-input visual-gate result | `dc34ff20e4bbb47d1bc1e855162b3bcbf5e2d61e5d8f99ebcd16240ce4f022df` |
+| Normal b702 merge commit | `7db701a247226a32ecdf1c57fcaf7063a1c27a94f74fdf90ca5adae6528fb24f` |
+| Failed b702 official contract | `7a47f912a8285a53ab83e84986eadbc463e0abac3e2ad91dccfa8a71bbed36fc` |
+| Failed contract log | `4346615de1981ac563fdd51e329cdf35a0215ac3bff7aed812164353edbcc713` |
+| Exact 62-path repair and three passing tests | `e223118e1bfa6c1a8fc681c8448c898ea58aa4080418463da2e9e314f0b806c9` |
+| Three-test log | `826e41d809660a8c0af1679724b54db8ec87b7c1f9c281a172a6be65d1aa493d` |
+| Repaired CI manifest bytes | `9effea6f4cf48d8aa1464bd02c63b6d2141c9c6e9c4fc145972e319fb038bd38` |
+| Completed page adoption and page tests | `cf08f497ca2c9091d5977d42a810a55ce82c8ec8105bee890a86764ce68abaf0` |
+| Actual materialized-input visual-gate failure | `dc34ff20e4bbb47d1bc1e855162b3bcbf5e2d61e5d8f99ebcd16240ce4f022df` |
 
-[page_adoption_20261024.json](evidence/page_adoption_20261024.json) contains compact source evidence. Full operational records remain private under the existing integration proof directory. No raw market or holdings files are staged.
+The public compact receipt contains only bounded source/test evidence. Full operational receipts and worktree inventories remain in the original private proof directory. No raw market or holdings files are staged.
 
-### Actual meaning and unsatisfied gates
+### Ordered continuation from this repair checkpoint
 
-The native result reports **October 22 / health 75 / displayed MOVE 107.0**. The prior 66b page reports health 76 and remains exact in its original commit and proof. A repeated score/date does not establish identity with any earlier closing-bell artifact. CDI remains October 15, stale six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit is withheld; rank, size, gate and escalate authority are false.
+1. Commit this exact declaration repair and its documentation as a normal child of b702, preserving the normal merge and its failed contract.
+2. Run the official contract on that exact child against 93f with `CONTRACT_DELTA_NO_REAP=1`. Preserve all 906 baseline worktree registrations and every baseline existing directory. Record the new result independently; do not rerun or relabel b702's failure.
+3. Reconcile the original remote branch and publish normally only to `claude/ssd-ccw-dislocation-v1-cc87720e59421398` if the source contract passes. Consume ordinary hosted CI/fences without workflow retry, force push or render dispatch. The [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) records the resulting child, publication and checks.
+4. Resolve current owning visual evidence and independent review through their incumbent paths before release acceptance. If the original carrier refuses an effect, retain that exact boundary; no worker, host, browser or provider substitution.
+5. Forex continues in its existing candidate operation. Its source-owner transaction/lifecycle design is a proposal, with runtime untouched and source adoption held. Preserve Terminal #1106's original-review-only condition, once-applied 0038, the exact refused deployment, accepted inactive CRUD, consumed render and held carry/COT/RiskRadar. Tiingo intended use remains Chairman-COMPLETE.
 
-The initial local visual gate refused sparse evidence inputs. The canonical `worktree_sparse.py add mockups` then materialized the actual tracked evidence tree without changing the index. The resulting gate **failed on missing owning receipts for `templates/_bonds_duration.html.j2` and `templates/_credit_dislocation.html.j2`**. Preserve both phases. Native/static qualification, old R33 evidence and reading the public production page cannot supply the two missing current owning captures.
-
-The bounded paid-worker request `bonds-9590-current-main-integration-20261023-sol-001` was refused before launch. Same-run refusal/continuation receipts record no launch, and a separate current routing diagnostic found no eligible remote mode. This justifies existing-principal direct source work under NO_ELIGIBLE_PRE_EFFECT_WORKER; it is not an independent verdict or permission to retry/switch workers.
-
-### Ordered continuation
-
-1. Consume recorded results before a new call. The merge resolutions, new native run, exact page adoption, asset checks, two packing checks and two page checks are complete.
-2. Finish the normal merge with parents 66b/93f and this compact evidence. Run the official contract on that exact committed head against 93f with `CONTRACT_DELTA_NO_REAP=1`; preserve every pre-existing worktree and retain failed/passing receipts separately.
-3. Reconcile the original remote branch, then publish normally only to `claude/ssd-ccw-dislocation-v1-cc87720e59421398`. Consume ordinary hosted CI/fences. Keep Draft/HOLD and auto-merge off; no force push, optional workflow retry or render dispatch.
-4. Restore the actual incumbent capture/admission path and obtain genuine owning visual/interaction evidence plus independent review before release acceptance. Do not fabricate a manifest, substitute historical captures or bypass an exact refusal.
-5. Continue Forex source-owner integration within its own gates. Exact a9 is published and CI39935082910/fences39935083130 succeeded. The materially new current-candidate review stopped before launch on a transport directory-integrity check and has no verdict; the original 429 review remains separate and unreplayed.
-6. Preserve Terminal #1106's original-review-only condition, exact refused deployment, once-applied 0038, consumed render39688064251, accepted Macro #9996 inactive CRUD, all original private workspaces and held carry/COT/RiskRadar. Tiingo licensing/intended use stays Chairman-COMPLETE.
+The source merge, native generation, page adoption and focused checks are completed evidence. A later passing repair contract must remain distinct from the failed b702 contract. The canonical checkpoint is the current publication/check readback; earlier sections below remain historical.
 
 ---
 

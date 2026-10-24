@@ -1,19 +1,28 @@
-## Current integrated source candidate — 24 October 2026
+## Current source repair — 24 October 2026
 
-| Area | Actual result and remaining boundary |
+The normal merge is `b702303b6fa866566400975b8e12b3d24c9657f3` (parents `66b5c90b3369c89c693b94b0a4f531b570f5fb8e` and protected-main pin `93f844e9fff86c11565884f1edd5eb92d1152452`). Its official exact-head contract **failed** at 00:41:26 UTC: **62 introduced, zero inherited** findings, all missing literal inputs for `ccw-w4-credit-desk`. Preserve that failed result; the earlier packing tests were not import-closure acceptance.
+
+The bounded repair adds precisely those 62 existing Git paths to that job, increasing its input list from 946 to 1,008. Every added blob equals the protected-main pin; 35 changed since 66b. All other manifest fields/jobs, `tests/test_ci_pack.py`, and main's packing limits are unchanged. The three existing closure and exclusivity tests completed at 00:49:04 UTC: **3 passed in 208.07 seconds**. See [the compact repair receipt](evidence/ci_closure_repair_20261024.json). This focused pass is not the repaired commit's official contract result.
+
+| Area | Verified result or remaining gate |
 | --- | --- |
-| Source integration | Published 66b plus retained main 93f in the same normal merge; CI manifest, packing history and generated page conflicts resolved. Final committed head and publication are recorded in the canonical checkpoint. |
-| CI packing | Both established focused checks passed: 2 passed, 234 deselected. Main limits remain index 136/5886, free-content 136/5858, Prophet 130/5636, at most ten packs. Both histories and all candidate/upstream dependency additions remain. |
-| Native page | 728,002 bytes; SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`. Actual native run completed 00:17:42 UTC; page adoption and its two existing tests completed 00:27:40 UTC. |
-| Input and source integrity | 562 fixed files: 537 main market inputs, 19 integrated assets and six unchanged private holdings/sample files. 56 source pins, 14/14 native checks, no effect-guard denial, original/private inputs intact. No provider acquisition. |
-| Asset closure | 29 nonpage assets equal the index; 24 literal assets, 28 edges, 11 CSS files, six fonts and 22 matching version bindings. Sparse assets restored from exact Git bytes. No missing or unsupported reference. |
-| Observed market state | October 22, health 75, displayed MOVE 107.0. The old health-76 artifact remains preserved. Retained Git inputs and commit snapshot mtimes do not prove original-close bytes or vendor first availability. |
-| Credit limits | October 15 CDI, stale six sessions; 311 one-date histories, zero five-/21-session comparisons. September 10 current credit and rank/size/gate/escalate authority withheld. |
-| Visual gate | Actual failure on missing owning receipts for duration and CDI templates. Real mockups were materialized through the canonical helper; the earlier sparse-preflight failure is preserved separately. No browser or visual acceptance. |
-| Branch qualification/publication | The final merge needs its own official contract against 93f with NO_REAP=1 and normal same-branch publication. Existing 66b contract/push evidence is complete and is not the new commit's result. |
-| Review/release | Draft/HOLD remains, auto-merge off. Prelaunch refusal/no eligible worker justified direct source work only. Original capture/restoration, independent review, protected-main merge and production proof remain open. |
+| Merge custody | b702 is the normal two-parent integration of 66b and 93f; it remains preserved. |
+| Failed exact merge contract | 62 introduced / zero inherited, all W4 undeclared inputs; result SHA-256 `7a47f912a8285a53ab83e84986eadbc463e0abac3e2ad91dccfa8a71bbed36fc`. |
+| Bounded repair | 62 literal inputs added only to W4; every blob equals 93f. No job command, limit or test changed. |
+| Focused qualification | All three existing closure/exclusivity tests passed; result SHA-256 `e223118e1bfa6c1a8fc681c8448c898ea58aa4080418463da2e9e314f0b806c9`. |
+| Packing limits | Index 136/5886, free-content 136/5858, Prophet 130/5636, maximum ten packs; both measurement histories retained. |
+| Exact child and publication | To be consumed separately in the [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277); the focused pass does not stand in for the official child contract. |
+| Browser/review/release | Current owning R11/CDI visual receipts and independent review remain open; Draft/HOLD, auto-merge off. |
 
-[Exact compact evidence](evidence/page_adoption_20261024.json), [master plan](MASTERPLAN.md) and [canonical checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277) bind this result. Keep every earlier pass, failed phase and private workspace. Forex a9 is published with green CI; its current-candidate review has no verdict after a prelaunch transport-integrity refusal. Original Terminal/0038/deployment/render boundaries and Chairman-COMPLETE licensing remain unchanged.
+The completed native page and its proof remain unchanged: **728,002 bytes**, SHA-256 `b48c097efe2bd07d80739614256824df4dc32910f686cc55a13ca8ecc687334e`; October 22, health **75**, displayed MOVE **107.0**. The retained input image has 562 files: 537 exact main market inputs, 19 integrated assets and six unchanged private holdings/sample inputs. All 56 source pins, 14 native checks and two committed-page tests passed. The 29 nonpage assets equal the index, including the literal closure's six fonts. No provider acquisition or original-close/vendor-availability identity is inferred. The old health-76 artifact remains preserved in 66b.
+
+CDI is October 15, stale six sessions, with 311 one-date histories and zero eligible five-/21-session comparisons. September 10 credit and rank/size/gate/escalate authority remain withheld. [The completed page-adoption receipt](evidence/page_adoption_20261024.json) is immutable and must not be rerun for this CI-only repair.
+
+The actual materialized-input visual gate remains **FAIL**: missing owning `EVIDENCE.yml` receipts for `templates/_bonds_duration.html.j2` and `templates/_credit_dislocation.html.j2`. The earlier sparse preflight failure and subsequent actual gate result are separate. Native/static proof does not replace current owning browser captures or interaction evidence. Draft/HOLD and auto-merge off remain mandatory; source publication does not establish release or production acceptance.
+
+The paid Bonds repair request was refused before launch, and the current routing diagnostic found no eligible remote worker. Those retained receipts justify this bounded direct owner repair, not an independent verdict or a substitute review. Preserve all original workspaces, private inputs, failed phases and exact refusals.
+
+[Master plan](MASTERPLAN.md) preserves the ordered continuation. Earlier records below are historical snapshots and do not override this failed-contract/repair distinction.
 
 ---
 
