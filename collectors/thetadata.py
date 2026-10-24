@@ -857,6 +857,30 @@ class _SPYDSessionObservationTransport:
         self._deadline = None
         self._closed = False
 
+    def preflight(self, *, deadline_at):
+        """Inspect local transport capacity before a durable pilot claim; no GET.
+
+        Account/source admission remains the installing owner's factual check.
+        The in-flight adapter repeats its deadline/retry guards at each attempt.
+        """
+        import signal
+        import threading
+        try:
+            if (self._closed or self._index != 0 or self.origin != _base_url()
+                    or type(deadline_at) not in (int, float) or not math.isfinite(deadline_at)
+                    or deadline_at <= time.monotonic()
+                    or threading.current_thread() is not threading.main_thread()
+                    or not hasattr(signal, 'setitimer') or not hasattr(signal, 'ITIMER_REAL')
+                    or signal.getitimer(signal.ITIMER_REAL) != (0., 0.)):
+                return False
+            session = _session()  # construction/adapter inspection only, never reachable()
+            for path in ('/v3/option/history/eod', '/v3/option/history/greeks/eod'):
+                if session.get_adapter(self.origin+path).max_retries.total not in (0, False):
+                    return False
+            return True
+        except Exception:
+            return False
+
     def __call__(self, kind, *, root, day, order, request_options, request_budget,
                  max_bytes, max_rows, deadline_at, response_handler, raw_response_handler):
         import hashlib
@@ -928,10 +952,10 @@ class _SPYDSessionObservationTransport:
 
 
 def bounded_spy_d_session_transport(day: date):
-    """Prepare an unbound adapter; no CLI/env/scheduler calls this factory.
+    """Prepare an adapter; exact default-off CLI operation may bind it.
 
     Source availability is not activation, installed-source admission or a budget.
-    Current daily configuration remains None until its owner qualifies those facts.
+    Absent exact operation configuration the daily caller still supplies None.
     """
     return _SPYDSessionObservationTransport(day)
 

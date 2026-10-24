@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-24",
-  "generated_utc": "2026-10-24T13:56:32.800845+00:00",
+  "generated_utc": "2026-10-24T21:58:31.394834+00:00",
   "n_tickers": 2924,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -262,9 +262,9 @@
       "gov_contract_usd_30d": 166945124.0,
       "gov_contract_accel": 29.22,
       "patents": 798,
-      "hf_downloads_30d": 12217395.0,
+      "hf_downloads_30d": 12420809.0,
       "insider_mspr": 100.0,
-      "github_stars": 7922,
+      "github_stars": 7923,
       "congress_position_usd": 94864000.0,
       "convergence_score": 5,
       "trump_linked": false,
@@ -351,7 +351,7 @@
       "days_to_earnings": 9,
       "next_earnings": "2026-11-02",
       "earnings_surprise_pct": 10.7,
-      "github_stars": 22159,
+      "github_stars": 22157,
       "stocktwits_bull_ratio": 0.87,
       "stocktwits_watchers": 325472,
       "convergence_score": 4,
@@ -696,11 +696,11 @@
       "lobbying_usd": 4420000.0,
       "app_rating": 4.7,
       "app_reviews": 27007331,
-      "hf_downloads_30d": 161551777.0,
+      "hf_downloads_30d": 161995692.0,
       "days_to_earnings": 11,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 216.3,
-      "github_stars": 201203,
+      "github_stars": 201215,
       "congress_position_usd": 518224000.0,
       "convergence_score": 3,
       "trump_linked": false,
@@ -735,7 +735,7 @@
       "lobbying_usd": 4150000.0,
       "patents": 701,
       "wsb_mentions": 36,
-      "hf_downloads_30d": 1466534.0,
+      "hf_downloads_30d": 1473327.0,
       "days_to_earnings": 5,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 1.6,
@@ -859,11 +859,11 @@
       "app_rating": 4.77,
       "app_reviews": 20382554,
       "patents": 510,
-      "hf_downloads_30d": 27238924.0,
+      "hf_downloads_30d": 27752449.0,
       "days_to_earnings": 11,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 12.6,
-      "github_stars": 194253,
+      "github_stars": 194263,
       "congress_position_usd": 2097837000.0,
       "convergence_score": 6,
       "trump_linked": true,
@@ -1135,8 +1135,8 @@
       "trump_side": "buy",
       "patents": 318,
       "wsb_mentions": 207,
-      "hf_downloads_30d": 25414658.0,
-      "github_stars": 18613,
+      "hf_downloads_30d": 25809398.0,
+      "github_stars": 18611,
       "congress_position_usd": 328986000.0,
       "convergence_score": 6,
       "trump_linked": true,
@@ -1827,15 +1827,14 @@
     "TWLO": {
       "ticker": "TWLO",
       "channels": [
-        "cnbc_pick",
-        "github_momentum"
+        "cnbc_pick"
       ],
-      "weighted_score": 0.55,
+      "weighted_score": 0.25,
       "days_to_earnings": 5,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 22.0,
       "github_stars": 2086,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -1857,7 +1856,7 @@
         "special_situation"
       ],
       "weighted_score": 0.95,
-      "hf_downloads_30d": 24366948.0,
+      "hf_downloads_30d": 24639364.0,
       "days_to_earnings": 5,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": 2.7,
@@ -2744,10 +2743,22 @@
       "ticker": "CRM",
       "channels": [],
       "weighted_score": 0,
-      "hf_downloads_30d": 3467087.0,
+      "hf_downloads_30d": 3512872.0,
       "github_stars": 11255,
       "congress_position_usd": 310513000.0,
       "convergence_score": 0,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "BABA": {
+      "ticker": "BABA",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "hf_downloads_30d": 158046381.0,
+      "congress_position_usd": 173656000.0,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2760,28 +2771,16 @@
         "stocktwits_bull"
       ],
       "weighted_score": 1.15,
-      "hf_downloads_30d": 60932185.0,
+      "hf_downloads_30d": 61230330.0,
       "days_to_earnings": 11,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": -13.0,
-      "github_stars": 251735,
+      "github_stars": 251748,
       "stocktwits_bull_ratio": 0.67,
       "stocktwits_watchers": 601506,
       "convergence_score": 4,
       "trump_linked": false,
       "affiliated": true
-    },
-    "BABA": {
-      "ticker": "BABA",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "hf_downloads_30d": 155891716.0,
-      "congress_position_usd": 173656000.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
     },
     "CSCO": {
       "ticker": "CSCO",
@@ -3837,7 +3836,7 @@
       "days_to_earnings": 5,
       "next_earnings": "2026-10-29",
       "earnings_surprise_pct": -66.7,
-      "github_stars": 16228,
+      "github_stars": 16232,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -4526,7 +4525,7 @@
       "days_to_earnings": 11,
       "next_earnings": "2026-11-04",
       "earnings_surprise_pct": 75.0,
-      "github_stars": 19785,
+      "github_stars": 19788,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
@@ -4613,14 +4612,16 @@
     },
     "DDOG": {
       "ticker": "DDOG",
-      "channels": [],
-      "weighted_score": 0,
+      "channels": [
+        "github_momentum"
+      ],
+      "weighted_score": 0.3,
       "days_to_earnings": 12,
       "next_earnings": "2026-11-05",
       "earnings_surprise_pct": 38.5,
-      "github_stars": 3770,
+      "github_stars": 3771,
       "congress_position_usd": 297185000.0,
-      "convergence_score": 0,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -5026,7 +5027,7 @@
       "ticker": "ESTC",
       "channels": [],
       "weighted_score": 0,
-      "github_stars": 78354,
+      "github_stars": 78357,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
@@ -5044,7 +5045,7 @@
       "ticker": "GTLB",
       "channels": [],
       "weighted_score": 0,
-      "github_stars": 24536,
+      "github_stars": 24538,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false

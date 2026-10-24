@@ -32,6 +32,15 @@ USER = {"id": "9c1f-user", "email": "reader@example.com",
         "user_metadata": {"display_name": "Ada", "lang": "en"}}
 
 
+def test_browser_pending_preferences_account_and_snapshot_fences():
+    """Actual controller/consumer code, with storage and provider I/O mocked."""
+    import subprocess
+
+    subprocess.run(["node", "--test", str(Path(__file__).resolve().parent / "js" /
+                                       "onboarding_pending_prefs.test.cjs")], check=True,
+                   capture_output=True, text=True)
+
+
 class _Resp:
     def __init__(self, body=b"{}"):
         self._body = body
