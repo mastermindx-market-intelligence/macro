@@ -33,6 +33,21 @@ THETA_SNAPSHOT_PARAMETERS = frozenset({"symbol", "expiration", "strike", "right"
     "stock_price", "max_dte", "strike_range", "min_time", "use_market_value", "current_day_only"})
 
 
+def dated_greek_request_options(root: str) -> dict:
+    """Explicit shared writer opt-in; never upgrade existing rows or source rights.
+
+    Daily and backfill writers must use the same requested version: whichever
+    supplies a new day first can otherwise leave its requested version unknown.
+    Empty configuration preserves all incumbent acquisition defaults.
+    """
+    import os
+    selected = {r.strip().upper() for r in os.environ.get(
+        "THETADATA_DATED_GREEKS_V1_ROOTS", "").split(",") if r.strip()}
+    if selected - {"SPY", "QQQ"}:
+        raise ValueError("Dated Greek version opt-in supports only SPY/QQQ")
+    return {"version": "1"} if root.upper() in selected else {}
+
+
 def _snapshot_calculation_provenance(path, parameters):
     if path == THETA_SNAPSHOT_ENDPOINTS["oi"]:
         return None

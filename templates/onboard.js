@@ -31,6 +31,47 @@
   var SS_STASH = "mm.onboardLanding";        // per-tab wizard stash (this surface)
   var LS_PENDING_PREFS = "mm.pendingPrefs";  // SAME key the Terminal applies on first sign-in
   var LS_ONBOARD_RESUME = "mm.onboardResume";// Google-OAuth round-trip stash (matches terminal oauth.ts)
+  var LS_FIRST_TOUCH_UTM = "mm.firstTouchUtm";
+  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content"];
+  // D07's canonical marketing tokens only. Never retain a URL, referrer, free text
+  // or an auth/payment claim. One complete touch is captured before URL scrubbing;
+  // it survives reload/confirmation navigation without mixing later campaigns.
+  function validFirstTouchUtm(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== UTM_KEYS.length) return null;
+    var out = {};
+    for (var i = 0; i < UTM_KEYS.length; i++) {
+      var key = UTM_KEYS[i], token = value[key];
+      if (typeof token !== "string" || token.length < 1 || token.length > 128 || /[^A-Za-z0-9_.:-]/.test(token)) return null;
+      out[key] = token;
+    }
+    return out;
+  }
+  function captureFirstTouchUtm() {
+    try {
+      var raw = localStorage.getItem(LS_FIRST_TOUCH_UTM);
+      if (raw !== null) {
+        var saved = null;
+        try { if (raw.length <= 2048) saved = validFirstTouchUtm(JSON.parse(raw)); } catch (e) {}
+        if (saved) return saved;
+        localStorage.removeItem(LS_FIRST_TOUCH_UTM);
+      }
+    } catch (e) {}  // blocked storage must never block account creation
+    var candidate = {}, touch = null;
+    try {
+      var params = new URLSearchParams(window.location.search);
+      for (var i = 0; i < UTM_KEYS.length; i++) {
+        var values = params.getAll(UTM_KEYS[i]);
+        if (values.length !== 1) return null;
+        candidate[UTM_KEYS[i]] = values[0];
+      }
+      touch = validFirstTouchUtm(candidate);
+    } catch (e) {}
+    if (touch) {
+      try { localStorage.setItem(LS_FIRST_TOUCH_UTM, JSON.stringify(touch)); } catch (e) {}
+    }
+    return touch;
+  }
+  var firstTouchUtm = captureFirstTouchUtm();
   var SS_ME = "mm.me";                        // /api/me cache (60s) — shared by upgrade mode + auth chrome
   var ME_TTL = 60000;                         // 60s
   var STRIPE_JS = "https://js.stripe.com/v3";
@@ -1192,8 +1233,10 @@
         });
         return;
       }
-      // signup — stash first/last in user_metadata (mirror of terminal StepAccount)
-      sb.auth.signUp({ email: S.email, password: S.password, options: { data: { first_name: S.firstName, last_name: S.lastName } } })
+      // UTM is untrusted attribution only; never an auth or entitlement input.
+      var signupData = { first_name: S.firstName, last_name: S.lastName };
+      if (firstTouchUtm) signupData.utm = validFirstTouchUtm(firstTouchUtm);
+      sb.auth.signUp({ email: S.email, password: S.password, options: { data: signupData } })
         .then(function (r) {
           if (r.error) { showErr(r.error.message); setSubmitBusy(false); return; }
           S.password = "";
