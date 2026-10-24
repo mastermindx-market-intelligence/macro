@@ -12,6 +12,8 @@ Rules:
 from __future__ import annotations
 
 import json
+import base64
+import io
 import logging
 import hashlib
 import math
@@ -173,6 +175,37 @@ def capture_yahoo_observation(ticker: str, provider_slice: pd.DataFrame,
     expected = {"provider": "yahoo", "field": "Adj Close", "basis": "total_return", "ticker": ticker}
     if type(ticker) is not str or ticker not in YAHOO_CAPTURE_COHORT or lineage != expected:
         raise ValueError("availability Yahoo lineage refused")
+    return _capture_yahoo_images(ticker, provider_slice, merged,
+                                 adapter_return_known_by=adapter_return_known_by)
+
+
+def capture_yahoo_wti_observation(provider_slice: pd.DataFrame, merged: pd.DataFrame, *,
+                                  lineage: dict | None,
+                                  adapter_return_known_by: datetime) -> dict:
+    """Capture this ordinary Yahoo CL=F return prospectively, without acquisition.
+
+    Separate opt-in from the fixed nine-sector research cohort. This records the
+    actual vendor field and immutable normalized values; neither CL session-date
+    semantics nor roll policy, settlement basis, source-use adoption, or a past
+    snapshot cutoff is inferred. The incumbent runner supplies current-call
+    metadata and clocks; caller dictionaries are not authentication.
+    """
+    common = {"provider": "yahoo", "ticker": "CL=F",
+              "series_identity": "vendor_continuous_CL=F"}
+    allowed = [{**common, "field": field, "basis": basis} for field, basis in (
+        ("Adj Close", "vendor_continuous_adjusted_close"),
+        ("Close", "vendor_continuous_close_no_adj_close_returned"))]
+    if lineage not in allowed:
+        raise ValueError("availability WTI current-call lineage refused")
+    return _capture_yahoo_images("CL=F", provider_slice, merged,
+                                 adapter_return_known_by=adapter_return_known_by,
+                                 wti_lineage=lineage)
+
+
+def _capture_yahoo_images(ticker: str, provider_slice: pd.DataFrame,
+                           merged: pd.DataFrame, *, adapter_return_known_by: datetime,
+                           wti_lineage: dict | None = None) -> dict:
+    # Shared incumbent content-addressed publication, not another store/registry.
     known_by = _availability_clock(adapter_return_known_by)
     provider_data = _availability_image(provider_slice)
     merged_data = _availability_image(merged)
@@ -218,9 +251,129 @@ def capture_yahoo_observation(ticker: str, provider_slice: pd.DataFrame,
         "historical_original_availability_proven": False,
         "canonical_cache_transaction_durability": "UNQUALIFIED",
     }
+    if wti_lineage is not None:
+        receipt["schema"] = "yahoo.wti_observation_capture.v1"
+        receipt["source_lineage"] = dict(wti_lineage)
+        for image in (receipt["provider_return_image"], receipt["merged_capture_image"]):
+            image["basis"] = wti_lineage["basis"]
+        receipt["provider_return_image"]["scope"] = "validated_adapter_output_not_vendor_wire"
+        receipt.update(
+            collector="collectors.yahoo.YahooAdapter",
+            series_generation="sha256:" + merged_digest,
+            effective_bar_date=merged.index[-1].date().isoformat(),
+            futures_session_date_convention=None,
+            futures_session_completion=None,
+            continuous_contract_roll_policy=None,
+            settlement_price_equivalence=None,
+            scenario_snapshot_binding=None,
+            commercial_rights_attestation={
+                "decision_key": "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023",
+                "named_route": "Research Factory Yahoo/yfinance data route",
+                "status": "APPROVED_BY_CHAIRMAN_ATTESTATION",
+                "native_collector_purpose_binding": "NOT_ESTABLISHED"},
+            scenario_adoption="UNQUALIFIED_NATIVE_INPUTS")
     receipt_digest = _availability_publish(receipts, _availability_json(receipt))
     return {"receipt_sha256": receipt_digest,
             "receipt_ref": "receipts/" + receipt_digest + ".json", "receipt": receipt}
+
+
+_WTI_PARQUET_LIMIT = 8 * 1024 * 1024
+_WTI_EXPORT_LIMIT = 2_000_000
+
+
+def _wti_parquet_bytes(path: Path) -> bytes:
+    """Bounded incumbent-file read; never follow a substituted final symlink."""
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= _WTI_PARQUET_LIMIT:
+            raise ValueError("WTI canonical byte bound refused")
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            raw = stream.read(before.st_size + 1)
+        after = os.fstat(descriptor)
+        if (len(raw) != before.st_size or
+                (before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) !=
+                (after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)):
+            raise ValueError("WTI canonical changed during read")
+        return raw
+    finally:
+        os.close(descriptor)
+
+
+def export_yahoo_wti_observation(capture: dict, provider_slice: pd.DataFrame,
+                                  merged: pd.DataFrame) -> dict:
+    """Export exact private capture bytes through existing Yahoo data publication.
+
+    Git carries this ONE generation without pretending its files retain private
+    CAS modes. No CAS import, new storage backend, acquisition or positive
+    scenario adoption. A consumer must recheck the parquet hash, all image
+    digests and clocks, then bind a NEW snapshot; old exports are never current
+    merely because a file exists. Validation failure preserves the prior
+    sidecar; a durability failure after replacement remains an uncertain
+    publication, never grounds to replay acquisition or fabricate success.
+    """
+    import pyarrow.parquet as parquet
+
+    receipt = capture["receipt"]
+    if receipt.get("schema") != "yahoo.wti_observation_capture.v1" or receipt.get("ticker") != "CL=F":
+        raise ValueError("WTI capture export schema refused")
+    receipt_raw = _availability_json(receipt)
+    provider_raw, merged_raw = _availability_image(provider_slice), _availability_image(merged)
+    yahoo = config.data_dir() / "yahoo"
+    private = yahoo / ".availability_capture"
+    entries = [(receipt_raw, capture["receipt_sha256"], "receipts"),
+               (provider_raw, receipt["provider_return_image"]["sha256"], "objects"),
+               (merged_raw, receipt["merged_capture_image"]["sha256"], "objects")]
+    for raw, digest, directory in entries:
+        if digest != hashlib.sha256(raw).hexdigest():
+            raise ValueError("WTI capture export digest mismatch")
+        _availability_verify_existing(private / directory / (digest + ".json"), raw)
+    for key, raw in (("provider_return_image", provider_raw), ("merged_capture_image", merged_raw)):
+        if receipt[key]["bytes"] != len(raw):
+            raise ValueError("WTI capture export length mismatch")
+    canonical = yahoo / "CL_F.parquet"
+    parquet_raw = _wti_parquet_bytes(canonical)
+    # Bound decompression before decoding a local canonical parquet generation.
+    table = parquet.ParquetFile(io.BytesIO(parquet_raw))
+    metadata = table.metadata
+    if (metadata.num_rows > _CAPTURE_ROW_LIMIT or metadata.num_columns > 4 or
+            sum(metadata.row_group(i).total_byte_size for i in range(metadata.num_row_groups)) > 32 * 1024 * 1024):
+        raise ValueError("WTI canonical decoded bound refused")
+    if _availability_image(table.read().to_pandas()) != merged_raw:
+        raise ValueError("WTI canonical/capture values differ")
+    exported_at = _availability_now()
+    if exported_at < datetime.fromisoformat(receipt["merged_capture_image"]["immutable_publication_durable_at_utc"]):
+        raise ValueError("WTI export clock regression")
+    def bound(raw):
+        return {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+                "content_base64": base64.b64encode(raw).decode("ascii")}
+    export = {"schema": "yahoo.wti_observation_export.v1", "ticker": "CL=F",
+              "exported_known_by_utc": _availability_clock(exported_at),
+              "capture_receipt": bound(receipt_raw),
+              "provider_return_image": bound(provider_raw),
+              "merged_capture_image": bound(merged_raw),
+              "canonical_parquet": {"path": "data/yahoo/CL_F.parquet",
+                                    "sha256": hashlib.sha256(parquet_raw).hexdigest(), "bytes": len(parquet_raw)},
+              "scenario_adoption": "UNQUALIFIED_NATIVE_INPUTS",
+              "historical_original_availability_proven": False}
+    data = _availability_json(export)
+    if len(data) > _WTI_EXPORT_LIMIT:
+        raise ValueError("WTI export byte bound refused")
+    descriptor, temporary = tempfile.mkstemp(prefix=".CL_F.observation-", dir=yahoo)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        if _wti_parquet_bytes(canonical) != parquet_raw:
+            raise ValueError("WTI canonical changed during export")
+        os.replace(temporary, yahoo / "CL_F.observation.json")
+        _availability_fsync_dir(yahoo)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return {"path": "data/yahoo/CL_F.observation.json", "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data)}
 
 
 def _path(group: str, name: str) -> Path:

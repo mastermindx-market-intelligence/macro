@@ -1022,3 +1022,120 @@ def test_render_velocity_card_prints_close_at_fire_price():
     }]
     html = _render_hk_lab(build_vm(fx))
     assert '<span class="pick-close">HK$11.18</span>' in html
+
+
+# --------------------------------------------------------------------------- #
+#  Company names on pick cards and fire rows (W28A Spec 5)                     #
+# --------------------------------------------------------------------------- #
+
+def _panel(html: str, tab: str) -> str:
+    """Slice one tab panel (velocity / allbooks) out of the rendered page."""
+    body = html.split(f'<section data-tab-panel="{tab}"', 1)[1]
+    return body.split("<section data-tab-panel=", 1)[0]
+
+
+def _named_fixture(picks=None, fires=None) -> dict:
+    """Prod fixture with hklab_1d_pure carrying the given picks / recent fires."""
+    fx = _hk_prod_fixture()
+    if picks is not None:
+        fx["books"]["hklab_1d_pure"]["picks_today"] = picks
+    if fires is not None:
+        fx["books"]["hklab_1d_pure"]["recent_fires"] = fires
+    return fx
+
+
+def _pick(ticker: str, **extra) -> dict:
+    return {"ticker": ticker, "rank": 1, "close_at_fire": 11.18, "sector": "Consumer Cyclical",
+            "why": ["1D MACD cross ≤2"], "features": {}, **extra}
+
+
+def _fire(ticker: str, **extra) -> dict:
+    return {**_make_hk_fire(ticker, "2026-10-15", None, False), **extra}
+
+
+def test_hk_pick_card_prints_company_name():
+    from engine.pick_lab.render_hk import build_vm
+    pick = _pick("1929.HK", name="Chow Tai Fook", name_zh="周大福")
+    html = _render_hk_lab(build_vm(_named_fixture(picks=[pick])))
+    card = ('<span class="pick-tk">1929.HK <span class="pick-rank pick-nm">'
+            '<span class="l-en">Chow Tai Fook</span><span class="l-zh">周大福</span></span></span>')
+    assert _panel(html, "velocity").count(card) == 1
+    assert _panel(html, "allbooks").count(card) == 1
+
+
+def test_hk_pick_card_falls_back_when_name_zh_null():
+    from engine.pick_lab.render_hk import build_vm
+    pick = _pick("3690.HK", name="Meituan", name_zh=None)
+    html = _render_hk_lab(build_vm(_named_fixture(picks=[pick])))
+    card = ('<span class="pick-tk">3690.HK <span class="pick-rank pick-nm">'
+            '<span class="l-en">Meituan</span><span class="l-zh">Meituan</span></span></span>')
+    assert _panel(html, "velocity").count(card) == 1
+    assert _panel(html, "allbooks").count(card) == 1
+    assert ">None<" not in html
+
+
+def test_hk_fire_row_prints_company_name():
+    from engine.pick_lab.render_hk import build_vm
+    fire = _fire("0005.HK", name="HSBC", name_zh="汇丰控股")
+    html = _render_hk_lab(build_vm(_named_fixture(fires=[fire])))
+    row = ('<td>0005.HK <span class="pick-rank pick-nm"><span class="l-en">HSBC</span>'
+           '<span class="l-zh">汇丰控股</span></span></td>\n            <td>2026-10-15</td>')
+    assert _panel(html, "velocity").count(row) == 1
+    assert _panel(html, "allbooks").count(row) == 1
+    assert "<td>open</td>" in _panel(html, "velocity")
+
+
+def test_hk_fire_row_name_keeps_halt_chip():
+    from engine.pick_lab.render_hk import build_vm
+    fires = [_fire("3690.HK", name="Meituan", name_zh="美团", halt_voided=True),
+             _fire("0700.HK", name="Tencent", name_zh="腾讯控股", halted=True)]
+    html = _render_hk_lab(build_vm(_named_fixture(fires=fires)))
+    voided = ('<td>3690.HK <span class="pick-rank pick-nm"><span class="l-en">Meituan</span>'
+              '<span class="l-zh">美团</span></span><span class="halt-chip">'
+              '<span class="l-en">halt-voided</span><span class="l-zh">停牌已撤</span></span></td>')
+    halted = ('<td>0700.HK <span class="pick-rank pick-nm"><span class="l-en">Tencent</span>'
+              '<span class="l-zh">腾讯控股</span></span><span class="halt-chip">'
+              '<span class="l-en">halted</span><span class="l-zh">停牌中</span></span></td>')
+    for tab in ("velocity", "allbooks"):
+        assert _panel(html, tab).count(voided) == 1
+        assert _panel(html, tab).count(halted) == 1
+
+
+def test_hk_pick_card_without_name_renders_ticker_only():
+    from engine.pick_lab.render_hk import build_vm
+    picks = [_pick("1929.HK"), _pick("2318.HK", name="")]
+    fires = [_fire("0005.HK"), _fire("0388.HK", name=None)]
+    html = _render_hk_lab(build_vm(_named_fixture(picks=picks, fires=fires)))
+    vel = _panel(html, "velocity")
+    assert '<span class="pick-tk">1929.HK</span>' in vel
+    assert '<span class="pick-tk">2318.HK</span>' in vel
+    assert "<td>0005.HK</td>" in vel and "<td>0388.HK</td>" in vel
+    assert 'pick-nm"' not in html
+
+
+def test_hk_name_equal_to_ticker_is_not_repeated():
+    from engine.pick_lab.render_hk import build_vm
+    assert 'pick-nm"' not in _render_hk_lab(build_vm(_hk_prod_fixture()))
+    pick = _pick("0700.HK", name="0700.HK", name_zh="0700.HK")
+    html = _render_hk_lab(build_vm(_named_fixture(picks=[pick])))
+    assert '<span class="pick-tk">0700.HK</span>' in _panel(html, "velocity")
+    assert 'pick-nm"' not in html
+
+
+def test_hk_company_name_is_escaped():
+    from engine.pick_lab.render_hk import build_vm
+    pick = _pick("0323.HK", name="Maanshan Iron & Steel", name_zh="马钢股份")
+    html = _render_hk_lab(build_vm(_named_fixture(picks=[pick])))
+    assert '<span class="l-en">Maanshan Iron &amp; Steel</span>' in _panel(html, "velocity")
+    assert "Iron & Steel" not in html
+
+
+def test_hk_company_name_reuses_the_rank_rule():
+    # The name span borrows the existing muted .pick-rank rule; it adds no CSS of its own,
+    # so the page's <style> block is byte-identical to main (no new visual decision).
+    src = (ROOT / "templates" / "hk_stocks_lab.html.j2").read_text()
+    rule = ".pick-rank{font-size:11px;color:var(--muted);font-weight:600;min-width:22px}"
+    assert src.count(rule) == 1
+    assert ".pick-nm{" not in src and ".pick-nm " not in src
+    cn = (ROOT / "templates" / "china_stocks_lab.html.j2").read_text()
+    assert "pick-nm" not in cn and "co_name" not in cn

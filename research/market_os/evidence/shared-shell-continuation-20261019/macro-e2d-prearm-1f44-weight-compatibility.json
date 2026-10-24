@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-10-20T05:51:10.185323+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "preview": "033b4be997c628cd8aa0d2c90b53cab4ba8695e2",
+  "same_helpers_and_ceiling_blobs": {
+    "scripts/run_ci_pack.py": {
+      "head": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "preview": "f92be10fc37455fd427829f0f964c5ef581b3a80"
+    },
+    "tests/test_ci_pack.py": {
+      "head": "8b4fd8f5b76bc853bf3c321d792f898c8b770dea",
+      "preview": "8b4fd8f5b76bc853bf3c321d792f898c8b770dea"
+    }
+  },
+  "jobs": 329,
+  "all_job_weight_differences": [],
+  "capital_structure_weights": {
+    "before": 247,
+    "after": 247
+  },
+  "rows_on_prior_producing_ids": [
+    {
+      "probe": "templates/index.html",
+      "prior_jobs": 135,
+      "before": 5796,
+      "after": 5796,
+      "ceiling": 5803
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "prior_jobs": 134,
+      "before": 5671,
+      "after": 5671,
+      "ceiling": 5664
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "prior_jobs": 128,
+      "before": 5545,
+      "after": 5545,
+      "ceiling": 5600
+    }
+  ],
+  "fresh_selection_run": false,
+  "source_mutation": false,
+  "fetch_retried": false
+}

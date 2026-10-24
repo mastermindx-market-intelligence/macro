@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-20",
-  "generated_at": "2026-10-20T14:21:45+00:00",
+  "as_of": "2026-10-24",
+  "generated_at": "2026-10-24T12:57:46+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 82005.99,
-    "change_24h_pct": -0.01,
-    "stance_en": "RISK-ON",
-    "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与风险读数；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 23,
-    "exposure_pct": 41,
+    "price": 80847.54,
+    "change_24h_pct": -0.28,
+    "stance_en": "NEUTRAL",
+    "stance_zh": "中性",
+    "summary_en": "The big picture reads neutral. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向中性。支撑来自基本面与风险读数；拖累来自宏观环境与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 8,
+    "exposure_pct": 40,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-24",
     "integrity_ok": true,
-    "final_exposure_pct": 41,
+    "final_exposure_pct": 40,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -47,9 +47,9 @@
           "label_en": "Structure",
           "label_zh": "结构",
           "source": "master.board.structure",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Broken",
+          "state_zh": "走坏",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         },
         {
@@ -133,9 +133,9 @@
           "label_en": "Stablecoin tide",
           "label_zh": "稳定币潮汐",
           "source": "master.board.stbl",
-          "state_en": "Expanding",
-          "state_zh": "扩张",
-          "tone": "bull",
+          "state_en": "Contracting",
+          "state_zh": "收缩",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         },
         {
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-20"
+        "as_of": "2026-10-24"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -178,13 +178,13 @@
         },
         {
           "key": "cot",
-          "label_en": "Cot",
-          "label_zh": "cot",
+          "label_en": "CME positioning",
+          "label_zh": "CME 持仓",
           "source": "master.board.cot",
-          "state_en": "Unavailable",
-          "state_zh": "暂无",
-          "tone": "neutral",
-          "grade": null
+          "state_en": "Crowded long",
+          "state_zh": "多头拥挤",
+          "tone": "bear",
+          "grade": "EXTREMES"
         }
       ]
     },
@@ -229,9 +229,9 @@
           "label_en": "Attention (Wikipedia)",
           "label_zh": "关注度",
           "source": "master.board.attention",
-          "state_en": "Mania (froth)",
-          "state_zh": "狂热（过热）",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "NEW"
         }
       ]
@@ -257,9 +257,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Amplifies sell-offs",
+          "state_zh": "放大下跌",
+          "tone": "bear",
           "grade": "CONFIRMED"
         }
       ]

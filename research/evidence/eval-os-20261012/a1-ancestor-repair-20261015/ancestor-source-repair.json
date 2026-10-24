@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-15T06:36:12.416531+00:00",
+  "parent": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+  "change": "Declare only thirteen existing ancestor package inputs of eval-os-a1",
+  "added_paths": [
+    "collectors/biocatalyst/__init__.py",
+    "engine/biocatalyst/__init__.py",
+    "engine/capital_structure/__init__.py",
+    "engine/codex_lane/__init__.py",
+    "engine/context_index/__init__.py",
+    "engine/earnings_narrative/__init__.py",
+    "engine/earnings_release/__init__.py",
+    "engine/fundamental_forensics/__init__.py",
+    "engine/intelligence_workspace/adapters/__init__.py",
+    "engine/market_os/__init__.py",
+    "engine/seasonality/__init__.py",
+    "engine/signal_foundry/__init__.py",
+    "tests/__init__.py"
+  ],
+  "jobs": 319,
+  "all_execution_definitions_order_prior_memberships_preserved": true,
+  "ceilings_weights_pack_limits_unchanged": true,
+  "manifest_sha256": "b008f00a9c21a874858d8979ce31ea60a3f7b968c0e8f9d91fda21957269e9cc",
+  "patch_sha256": "c039d1c2ba5e7b8d6eee7ac1c9defbf80416d43ce80f76a43cc9be7130763b86",
+  "expected_count_reduction": {
+    "all": 13,
+    "substantive": 9
+  },
+  "qualified": false
+}

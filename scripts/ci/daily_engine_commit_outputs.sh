@@ -234,6 +234,9 @@ while push_attempt; do
   # both sides' hashed files (next externalize_css prunes the orphan) and
   # finishes the rebase; anything else is left for the abort+retry below.
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+    # A nightly may have rendered before a newer accepted workspace landed.
+    COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
     # Two producers may first capture the same pair before either pushes. Keep
     # main's exact retained receipt after -X theirs, without losing other output.
     # The correction uses the existing locked committer with exact receipt paths.
@@ -294,6 +297,7 @@ while push_attempt; do
     fi
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
     python3 scripts/ci/turn_watch_capture_retention.py check --candidate "$qledger_push_candidate" || exit $?
     if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi

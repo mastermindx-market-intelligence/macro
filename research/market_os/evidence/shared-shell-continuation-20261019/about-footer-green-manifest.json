@@ -1,0 +1,424 @@
+{
+  "schema": "mastermind.shared_shell_local_fixture.v1",
+  "macro_head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "site_directory": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/site",
+  "routes": [
+    "/macro.html",
+    "/about.html"
+  ],
+  "files": {
+    "/about.html": {
+      "sha256": "2bfc1c3a2eaab89261e532e98ce0f3eea0f07924e69eebd998f82989ad27083f",
+      "bytes": 38676,
+      "referenced_by": [
+        "selected-route"
+      ]
+    },
+    "/account.js": {
+      "sha256": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
+      "bytes": 75230,
+      "referenced_by": [
+        "/theme.js"
+      ]
+    },
+    "/apple-touch-icon.png": {
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6",
+      "bytes": 23722,
+      "referenced_by": [
+        "/macro.html",
+        "/about.html"
+      ]
+    },
+    "/assets/css/0d0d9dc5.css": {
+      "sha256": "0d0d9dc57980d424e3a3a2f3bb2de45415816d871eb74049b1f3ab83f4b28d9c",
+      "bytes": 20187,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/4e822d03.css": {
+      "sha256": "4e822d03cdc78bc96b00aa23cc9c0500f3c0b11d68f82f76f27b4f3adff6314a",
+      "bytes": 21173,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/5b12dcfe.css": {
+      "sha256": "5b12dcfe6144a6cae08b096767e135ace314aef8334be2fc8377fe128501f9a3",
+      "bytes": 4709,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/5d06f044.css": {
+      "sha256": "5d06f0449db9c8b7a5ea8eaf3da15d9c1ea4f6ad46f6fc85b71aae5f8f57a668",
+      "bytes": 187390,
+      "referenced_by": [
+        "/macro.html",
+        "/assets/css/5d06f044.css"
+      ]
+    },
+    "/assets/css/7689f0db.css": {
+      "sha256": "7689f0dbdf0be248b083bb8bafd2817d7d8b3189c89f88838f069d7bfc099838",
+      "bytes": 7577,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/abe9c747.css": {
+      "sha256": "abe9c747d2b87ee23031d16fe358d92aa2bed320378840dc1dba102b1982cb78",
+      "bytes": 183971,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/ac31abdd.css": {
+      "sha256": "ac31abdd2ee0813ec337e3070df02ce96d0518dad176f3a35191f1198045bc84",
+      "bytes": 59355,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/b2bc0843.css": {
+      "sha256": "b2bc08430f71be9ca2ec3b060e931d1761688194b9d06885bb50e01f1bff59df",
+      "bytes": 1103,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/ca820c05.css": {
+      "sha256": "ca820c05bc8e8d2e7e0ba56592244015080ceeacd245a133b210df38a57cc0ff",
+      "bytes": 18079,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/assets/css/ddaf9092.css": {
+      "sha256": "ddaf909254559e029d361672d617f903306709a0fa984804b4a3bc829d8ee76c",
+      "bytes": 28240,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/favicon.ico": {
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24",
+      "bytes": 6597,
+      "referenced_by": [
+        "/macro.html",
+        "/about.html"
+      ]
+    },
+    "/favicon.svg": {
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "bytes": 2043,
+      "referenced_by": [
+        "/macro.html",
+        "/about.html"
+      ]
+    },
+    "/fonts/Inter-400.woff2": {
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "bytes": 23664,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/Inter-500.woff2": {
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "bytes": 24272,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/Inter-600.woff2": {
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "bytes": 24452,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/Inter-700.woff2": {
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "bytes": 24356,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/Inter-800.woff2": {
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "bytes": 24400,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/Inter-900.woff2": {
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "bytes": 23900,
+      "referenced_by": [
+        "/theme.css",
+        "/landing.css"
+      ]
+    },
+    "/fonts/InterDisplay-500.woff2": {
+      "sha256": "a5b16b4bd4d1ad12a11c12bc3325bd09250364237e943974a7560ec2b7f22c9a",
+      "bytes": 24256,
+      "referenced_by": [
+        "/assets/css/7689f0db.css"
+      ]
+    },
+    "/fonts/InterDisplay-600.woff2": {
+      "sha256": "d8bb10ec73c52ddeeed35b9e7913cf0cf0226ca3469c696883413f49ef03aa61",
+      "bytes": 24340,
+      "referenced_by": [
+        "/macro.html",
+        "/assets/css/7689f0db.css"
+      ]
+    },
+    "/fonts/InterDisplay-700.woff2": {
+      "sha256": "634290d856dfb3503c76eb655754e324b7b3513fb66254346db6046d186a253e",
+      "bytes": 24280,
+      "referenced_by": [
+        "/assets/css/7689f0db.css"
+      ]
+    },
+    "/heatmap.js": {
+      "sha256": "05810a5823bb51daa735bc389850aab206ee40ed3523d1f90bf1c791433ce5bc",
+      "bytes": 160592,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/landing.css": {
+      "sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+      "bytes": 120266,
+      "referenced_by": [
+        "/about.html"
+      ]
+    },
+    "/live.js": {
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "bytes": 50731,
+      "referenced_by": [
+        "/macro.html",
+        "/live.js"
+      ]
+    },
+    "/live_config.js": {
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "bytes": 367,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/logo_config.js": {
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "bytes": 202,
+      "referenced_by": [
+        "/macro.html",
+        "/theme.js"
+      ]
+    },
+    "/macro.html": {
+      "sha256": "2afab45c3cc23c36af1e13b2d2e316fed0a71fc92d8e64ad9ff72a58920bc209",
+      "bytes": 692681,
+      "referenced_by": [
+        "selected-route"
+      ]
+    },
+    "/mm_brain.js": {
+      "sha256": "5eedc2cee65e3a3e08e9554984441ce308cb8a04a8f1b01e7c3d5b56147f9011",
+      "bytes": 279908,
+      "referenced_by": [
+        "/theme.js"
+      ]
+    },
+    "/mm_brain_visuals.css": {
+      "sha256": "98f7caf6060f5fa27bd7dc169fd3535588a21625c284461b988021f235036a61",
+      "bytes": 6824,
+      "referenced_by": [
+        "/mm_brain.js"
+      ]
+    },
+    "/mm_brain_visuals.js": {
+      "sha256": "1d23a300c48171d28d57be5587c040beb3941f1558740d8c6f57b0ea7ef1a310",
+      "bytes": 17686,
+      "referenced_by": [
+        "/mm_brain.js"
+      ]
+    },
+    "/nav_market.js": {
+      "sha256": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+      "bytes": 96534,
+      "referenced_by": [
+        "/account.js",
+        "/nav_market.js"
+      ]
+    },
+    "/navigation-refresh.css": {
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "bytes": 104548,
+      "referenced_by": [
+        "/macro.html",
+        "/theme.js"
+      ]
+    },
+    "/onboard.css": {
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "bytes": 64745,
+      "referenced_by": [
+        "/about.html",
+        "/onboard.js"
+      ]
+    },
+    "/onboard.js": {
+      "sha256": "ffda78f1f20c71acec516f346d581dbe800f14cd6f4a1eafcd952a6f3a8ff647",
+      "bytes": 185426,
+      "referenced_by": [
+        "/about.html",
+        "/theme.js",
+        "/onboard.js"
+      ]
+    },
+    "/product-nav-icons.css": {
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "bytes": 40320,
+      "referenced_by": [
+        "/macro.html",
+        "/theme.css"
+      ]
+    },
+    "/release_publications_live.js": {
+      "sha256": "d9a19340843ef489606a3cd19f24a16e68ef33ff9966f71a814c6e4871646767",
+      "bytes": 52693,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/risk_envelope_live.js": {
+      "sha256": "47a6eb04c763621586810accfc35777113ccaa982be3a520716f97f989428abd",
+      "bytes": 15392,
+      "referenced_by": [
+        "/macro.html",
+        "/risk_envelope_live.js"
+      ]
+    },
+    "/risk_radar_workspace.css": {
+      "sha256": "052f114a8dce449c929908988f73c30248e3ed59547a3cb58f70de82bc2cb20a",
+      "bytes": 31791,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/risk_radar_workspace.js": {
+      "sha256": "4df5cb03b908c42a673e950094656e56b994f40c715172ee4c765ecf0f4087d5",
+      "bytes": 28178,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/risk_state_live.js": {
+      "sha256": "2b9d32d5ca0be24808c7fd9691c1224575cf2904d0fa8c582c5ed4466bca96dd",
+      "bytes": 25134,
+      "referenced_by": [
+        "/macro.html",
+        "/risk_state_live.js"
+      ]
+    },
+    "/shared_shell.css": {
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "bytes": 467,
+      "referenced_by": [
+        "/macro.html",
+        "/about.html"
+      ]
+    },
+    "/shared_shell_bridge.js": {
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "bytes": 51246,
+      "referenced_by": [
+        "/macro.html",
+        "/about.html",
+        "/shared_shell_bridge.js"
+      ]
+    },
+    "/stock-logos.js": {
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "bytes": 16539,
+      "referenced_by": [
+        "/macro.html",
+        "/stock-logos.js",
+        "/theme.js"
+      ]
+    },
+    "/supabase.js": {
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+      "bytes": 110797,
+      "referenced_by": [
+        "/theme.js",
+        "/supabase.js"
+      ]
+    },
+    "/tablesort.js": {
+      "sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+      "bytes": 15556,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/terminal_overlay.js": {
+      "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+      "bytes": 41029,
+      "referenced_by": [
+        "/theme.js",
+        "/terminal_overlay.js"
+      ]
+    },
+    "/theme.css": {
+      "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+      "bytes": 221941,
+      "referenced_by": [
+        "/macro.html",
+        "/theme.css"
+      ]
+    },
+    "/theme.js": {
+      "sha256": "c27f65318a3877e154e11f4f43fc7545e9fb67aa52cdd15cda2aaba9ebd21c29",
+      "bytes": 271223,
+      "referenced_by": [
+        "/macro.html",
+        "/theme.js",
+        "/onboard.js"
+      ]
+    },
+    "/tier_preview.css": {
+      "sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592",
+      "bytes": 4074,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    },
+    "/tier_preview.js": {
+      "sha256": "14b41b6c7cb97972eb07035fae6858fb8f9167cf9091c17f85f52b98de8ad47c",
+      "bytes": 19841,
+      "referenced_by": [
+        "/macro.html"
+      ]
+    }
+  },
+  "optional_missing_literals": [],
+  "optional_rejected_literals": [
+    {
+      "path": "/.supabase.js",
+      "referenced_by": "/supabase.js",
+      "reason": "noncanonical or hidden path"
+    }
+  ],
+  "admission": "selected HTML plus literal local presentation dependency closure; no JSON, extra HTML, or symlinks",
+  "total_bytes": 3622703,
+  "publication": false
+}

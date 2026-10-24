@@ -114,10 +114,19 @@ def test_donut_is_a_ring_and_missing_shares_are_disclosed(page, later_series_sty
         # Series color rules must not fill a ring when styles are composed later.
         page.add_style_tag(content="#mmb-root .mmb-v-series-0{fill:currentColor}")
     assert mount(page, sample('donut', columns=['Category', 'Value'], rows=[['A', 3], ['B', 2], ['Missing', None]]))
-    rings = page.locator('svg circle').evaluate_all(
-        '(items)=>items.map(e=>({classes:e.getAttribute("class"),'
-        'attributeFill:e.getAttribute("fill"),computedFill:getComputedStyle(e).fill}))'
-    )
+    # ResizeObserver can replace the SVG between a locator's query and evaluation.
+    # Select connected nodes and read their styles in one synchronous observation.
+    rings = page.wait_for_function(
+        """() => {
+            const items = Array.from(document.querySelectorAll('svg circle'));
+            if (!items.length || items.some(e => !e.isConnected)) return false;
+            return items.map(e => ({
+                classes: e.getAttribute('class'),
+                attributeFill: e.getAttribute('fill'),
+                computedFill: getComputedStyle(e).fill
+            }));
+        }"""
+    ).json_value()
     assert len(rings) == 2, rings
     assert all(ring["computedFill"] == "none" for ring in rings), rings
     assert 'known values only' in page.locator('figure').inner_text()
@@ -126,6 +135,33 @@ def test_donut_is_a_ring_and_missing_shares_are_disclosed(page, later_series_sty
 def test_bars_too_small_to_see_have_visible_disclosure(page):
     assert mount(page, sample('bar', columns=['Category', 'Value'], rows=[['Small', 1], ['Large', 1e9]]))
     assert 'too small to see' in page.locator('figure').inner_text()
+
+
+@pytest.mark.parametrize("later_series_style", [False, True])
+def test_initial_resize_delivery_keeps_rings_connected_and_real_resize_redraws(page, later_series_style):
+    if later_series_style:
+        page.add_style_tag(content="#mmb-root .mmb-v-series-0{fill:currentColor}")
+    wire = sample('donut', columns=['Category', 'Value'], rows=[['A', 3], ['B', 2], ['Missing', None]])
+    initial = page.evaluate('''(wire) => {
+        MMBrainVisuals.mount(document.querySelector('#host'), wire);
+        const original = document.querySelector('figure svg');
+        const rings = Array.from(original.querySelectorAll('circle'));
+        // Two rendering frames include the observer's initial delivery. A no-op
+        // width notification must not detach nodes already handed to a reader.
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve({
+            sameSvg: document.querySelector('figure svg') === original,
+            rings: rings.map(e => ({connected: e.isConnected, fill: getComputedStyle(e).fill}))
+        }))));
+    }''', wire)
+    assert initial == {'sameSvg': True, 'rings': [{'connected': True, 'fill': 'none'}] * 2}
+    page.set_viewport_size({'width': 820, 'height': 844})
+    page.wait_for_function('''() => {
+        const plot = document.querySelector('.mmb-v-plot'), svg = plot.querySelector('svg');
+        return svg && Number(svg.getAttribute('width')) === Math.floor(plot.getBoundingClientRect().width);
+    }''')
+    assert page.locator('svg').get_attribute('width') == '788'
+    assert page.locator('svg circle').evaluate_all('(items) => items.every(e => e.isConnected && getComputedStyle(e).fill === "none")')
+    assert 'known values only' in page.locator('figure').inner_text()
 
 
 def test_csv_download_keeps_utf8_bom_and_escaped_values(page, tmp_path):
