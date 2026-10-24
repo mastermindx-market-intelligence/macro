@@ -298,3 +298,21 @@ No production dataset/policy enrollment, rights grant, export, Save, database or
 publisher effect is performed. Tests use synthetic contracts and policy, the
 actual existing identity/auth/source-use code, and one actual Matrix builder
 invocation over synthetic local Parquets. They are not production acceptance.
+
+`app.options_matrix_http.matrix_display_response` is the unregistered native HTTP
+composition seam. An incumbent handler supplies the captured `SnapshotReference`,
+raw `IdentityArtifactRead`, semantic selection and trusted server inputs. It calls
+the real fresh-auth/source-use helper with `release_body=matrix.body` and emits
+`Response(content=result.body)` without parsing, JSON serialization or a stale
+flag. Both success and refusal carry `private, no-store`; refusal contains no
+artifact or private policy detail. It creates no route, capture reader or grant.
+
+The scoped Macro application has no `/api/hub/matrix/{root}` serving handler.
+Terminal currently probes that backend path, then reads the published R2 key
+`options_structure/matrix/<ROOT>.json` through a JSON parser. The publisher retains
+exact history bytes before advancing that head. Qualified HTTP delivery still
+needs an actual handler to capture and bind those bytes and the chosen selection,
+genuine native contracts/policy/identity readers and an authenticated transport
+from Terminal to that handler. Neither ordinary product entitlement nor a snapshot
+digest alone supplies that source-use binding. This seam is source preparation;
+it does not make the existing Terminal display rights-qualified.
