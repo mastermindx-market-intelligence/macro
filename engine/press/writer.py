@@ -394,7 +394,8 @@ def _vintage_tag(dated: Any, as_of: Any, date_role: Any = None) -> str:
 
 # W2: extract to chronicle injection helper
 def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
-                 prior_failures: list[str] | None = None) -> tuple[str, str]:
+                 prior_failures: list[str] | None = None,
+                 single_attempt: bool = False) -> tuple[str, str]:
     """Assemble (system_prompt, user_prompt) for one slot.
 
     Everything that decides what the model sees lives in this one function on
@@ -505,6 +506,10 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         + "\n" + _house_style(cfg)
         + "\n" + _ENVELOPE
     )
+
+    if single_attempt:
+        system_prompt = system_prompt.replace(
+            "  A draft that breaks one is regenerated at most twice and then dropped.", "", 1)
 
     parts: list[str] = []
     parts.append(f"RUN DATE: {slot.get('as_of')}")
@@ -763,6 +768,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
           attempt: int = 0, prior_failures: list[str] | None = None,
           single_provider_attempt: bool = False,
           admitted_token_cap: bool = False,
+          single_attempt: bool = False,
           private_admission_check: Callable[[], None] | None = None) -> dict:
     """Write one draft.  Returns {"ok", "draft"|None, "reason", "provider", ...}.
 
@@ -798,8 +804,11 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
         return _fail(state, readiness['reason'], charge=False, record=False,
                      native_plan_preflight=readiness)
 
+    if single_attempt and (not single_provider_attempt or attempt != 0):
+        return _fail(state, "invalid_single_attempt_mode", charge=False, record=False)
+    prompt_mode = {"single_attempt": True} if single_attempt else {}
     system_prompt, user_prompt = build_prompt(
-        slot, cfg, attempt=attempt, prior_failures=prior_failures)
+        slot, cfg, attempt=attempt, prior_failures=prior_failures, **prompt_mode)
     max_tokens = int(llm_cfg.get("max_tokens") or 4000)
     token_cap: dict[str, Any] | None = None
     if admitted_token_cap:

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EQT-BULL-20260720",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.1,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 39.1,
+    "progress": 41.9,
     "pace": 0.0,
-    "retention": 88.3,
-    "overlay": 58.9
+    "retention": 96.8,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.716,
-    "dist_to_t1_r": 0.784,
-    "dist_to_t2_r": 2.284,
-    "horizon_pct_used": 195.6,
-    "p1": 0.4776,
-    "p2": 0.2388,
+    "dist_to_stop_r": 1.786,
+    "dist_to_t1_r": 0.714,
+    "dist_to_t2_r": 2.214,
+    "horizon_pct_used": 197.8,
+    "p1": 0.5238,
+    "p2": 0.2619,
     "p3": null,
-    "move_r": 0.716,
+    "move_r": 0.786,
     "mfe_r": 0.812,
     "mae_r": -0.745
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-29",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 88,
-  "tau": 1.9556,
+  "days_elapsed": 89,
+  "tau": 1.9778,
   "closed": true,
   "outcome": "EXPIRED"
 }

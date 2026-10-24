@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SEDG-BULL-20260827",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 35.1,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 68.1,
+    "validity": 89.0,
     "progress": 0.0,
-    "pace": 14.0,
+    "pace": 12.7,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.752,
+    "dist_to_stop_r": 0.917,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
-    "p1": -0.1653,
-    "p2": -0.0827,
+    "horizon_pct_used": 128.9,
+    "p1": -0.0551,
+    "p2": -0.0276,
     "p3": null,
-    "move_r": -0.248,
+    "move_r": -0.083,
     "mfe_r": 1.409,
     "mae_r": -1.148
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667,
+  "days_elapsed": 58,
+  "tau": 1.2889,
   "closed": true,
   "outcome": "INVALIDATED"
 }
