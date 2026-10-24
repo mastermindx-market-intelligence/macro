@@ -27,9 +27,50 @@ _PREFIX = "company_intelligence"
 PUBLISH_CONFLICT = 2
 UPLOAD_WORKERS = 8
 
+# These values reach retained publication logs. SDK response fields and even
+# exception class names can be arbitrary strings, so accept known labels only.
+_SAFE_CREATE_EXCEPTION_CLASSES = frozenset({
+    "ClientError", "EndpointConnectionError", "ConnectionClosedError",
+    "ReadTimeoutError", "ConnectTimeoutError", "HTTPClientError", "SSLError",
+    "ProxyConnectionError", "NoCredentialsError", "PartialCredentialsError",
+    "ParamValidationError", "RuntimeError", "TimeoutError", "ConnectionError", "OSError",
+})
+_SAFE_CREATE_SDK_CODES = frozenset({
+    "AccessDenied", "AllAccessDisabled", "AuthorizationHeaderMalformed",
+    "BadDigest", "ConditionalRequestConflict", "EntityTooLarge", "ExpiredToken",
+    "InternalError", "InvalidAccessKeyId", "InvalidArgument", "InvalidDigest",
+    "InvalidRequest", "InvalidToken", "MethodNotAllowed", "NoSuchBucket",
+    "NotImplemented", "OperationAborted", "PreconditionFailed", "RequestExpired",
+    "RequestTimeTooSkewed", "RequestTimeout", "ServiceUnavailable",
+    "SignatureDoesNotMatch", "SlowDown", "XAmzContentSHA256Mismatch",
+})
+
 
 class ImmutableAddressIntegrityError(RuntimeError):
     """A generation-addressed key already exists but is not byte-identical."""
+
+
+def _immutable_create_failure_details(exc: Exception) -> dict[str, str | int]:
+    """Retain safe failure labels, never a message, URL, header or response body.
+
+    A failed response does not establish whether the create reached storage.
+    These details must not authorize a retry or reinterpret the key as absent.
+    """
+    exception_class = type(exc).__name__
+    try:
+        response = getattr(exc, "response", None)
+    except Exception:  # noqa: BLE001 - malformed diagnostics cannot replace the failure
+        response = None
+    error = response.get("Error") if type(response) is dict else None
+    metadata = response.get("ResponseMetadata") if type(response) is dict else None
+    code = error.get("Code") if type(error) is dict else None
+    status = metadata.get("HTTPStatusCode") if type(metadata) is dict else None
+    return {
+        "operation": "put_object",
+        "exception_class": exception_class if exception_class in _SAFE_CREATE_EXCEPTION_CLASSES else "unavailable",
+        "sdk_error_code": code if type(code) is str and code in _SAFE_CREATE_SDK_CODES else "unavailable",
+        "http_status": status if type(status) is int and 100 <= status <= 599 else "unavailable",
+    }
 
 
 def _client():
@@ -176,12 +217,19 @@ def _publish_immutable_object(
     try:
         s3.put_object(**args)
     except Exception as exc:  # noqa: BLE001
-        if _is_precondition_failed(exc):
+        try:
+            precondition_failed = _is_precondition_failed(exc)
+        except Exception:  # noqa: BLE001 - malformed SDK metadata is still a failed create
+            precondition_failed = False
+        if precondition_failed:
             # A competing publisher won between our head and put.  Only an
             # exact byte/metadata match is a safe retry/no-op.
             if _immutable_remote_matches(s3, bucket, key, body, expected_sha256):
                 return
-        raise ImmutableAddressIntegrityError(f"immutable key create failed: {key}") from exc
+        details = json.dumps(_immutable_create_failure_details(exc), sort_keys=True)
+        # Suppress the SDK exception chain: its raw message can contain URLs or
+        # credentials. The outer publisher already retains this safe wrapper.
+        raise ImmutableAddressIntegrityError(f"immutable key create failed: {key}; details={details}") from None
 
 
 def publish(
