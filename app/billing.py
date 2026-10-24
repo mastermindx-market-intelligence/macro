@@ -1535,8 +1535,9 @@ def _conversion_epoch(value: Any) -> bool:
 
 def _conversion_price(sub: Any) -> tuple[str, str, str] | None:
     """Qualify the single original catalog price; never infer cadence from a label."""
+    page = _field(sub, "items", {})
     items = _sub_items(sub)
-    if len(items) != 1:
+    if _field(page, "has_more") is not False or len(items) != 1:
         return None
     price = _field(items[0], "price")
     recurring = _field(price, "recurring", {}) or {}

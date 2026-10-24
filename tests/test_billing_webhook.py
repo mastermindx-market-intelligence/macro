@@ -727,7 +727,7 @@ def conversion_system(monkeypatch):
     sub = {"id": "sub_conversion", "customer": cid, "created": created - 20,
            "livemode": False, "status": "active", "trial_start": None, "trial_end": None,
            "metadata": {"mm_user_id": uid}, "current_period_end": 1900000000,
-           "items": {"data": [{"price": price, "current_period_end": 1900000000}]}}
+           "items": {"has_more": False, "data": [{"price": price, "current_period_end": 1900000000}]}}
     session = {"id": "cs_conversion", "customer": cid, "client_reference_id": uid,
                "livemode": False, "mode": "subscription", "status": "complete",
                "payment_status": "paid", "amount_total": 12345, "currency": "usd",
@@ -1008,3 +1008,20 @@ def test_client_eid_collision_is_not_a_falsely_acknowledged_conversion(conversio
     assert f.row["tier"] == "pro" and not f.ledger
     assert f.analytics == {eid: foreign}  # first fact is retained, never overwritten/coerced
     assert not any(r["type"] == "checkout.completed" for r in f.analytics.values())
+
+
+@pytest.mark.parametrize("etype", ["checkout.session.completed", "customer.subscription.created"])
+@pytest.mark.parametrize("page_state", ["missing", True, None])
+def test_incomplete_subscription_page_cannot_qualify_single_price_conversion(conversion_system, etype, page_state):
+    f = conversion_system
+    if etype == "customer.subscription.created":
+        f.sub.update(status="trialing", trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+    ev = f.event(etype)
+    # A visible first item is insufficient: the fresh provider page must attest
+    # that no unseen subscription item can change the purported single purchase.
+    if page_state == "missing":
+        f.sub["items"].pop("has_more")
+    else:
+        f.sub["items"]["has_more"] = page_state
+    assert f.send(ev)["status"] == "ok"
+    assert not f.analytics and not f.requests
