@@ -5310,9 +5310,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
 # probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_911),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_907),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_661),
+    ("templates/index.html", 138, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_905),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_659),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5320,6 +5320,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 normal composition with frozen main74aa06c9:
+    exact canonical memberships remain137/137/130, with no job added or
+    removed and ten packs. Against published4e the QLedger job66->76 adds10
+    units (accepted adapter+2; four registered component files+8), while
+    protected prelaunch-hardening51->49 contributes-2. Thus final weights
+    are5909/5905/5659, exactly+8 per probe; no extra headroom. Preserve the
+    incoming commands, job ceilings138/137/130, ten packs and all runtime/
+    storage limits. Six composed Options owner-closure paths match none
+    of these probes. No selector/estimator or assertion changes.
 
     2026-10-24 inert owner/engine component registration on2ab57a91:
     four actual test-file tokens in the existing QLedger regression command
