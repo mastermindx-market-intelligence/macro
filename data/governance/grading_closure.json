@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-23T14:50:59.557607+00:00",
+  "generated_at": "2026-10-24T11:05:02.131247+00:00",
   "n_ledgers": 35,
   "n_closed": 27,
   "n_grader_starved": 8,
@@ -14,9 +14,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 118461,
+      "n_logged": 118457,
       "n_graded": 214763,
-      "last_graded_at": "2026-10-23T14:46:45.720776+00:00",
+      "last_graded_at": "2026-10-24T11:00:42.197883+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 214763,
       "n_graded": 214763,
-      "last_graded_at": "2026-10-23T14:46:45.720776+00:00",
+      "last_graded_at": "2026-10-24T11:00:42.197883+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -42,8 +42,8 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 1266,
-      "n_graded": 801,
+      "n_logged": 1276,
+      "n_graded": 814,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -98,8 +98,8 @@
       "graders": [
         "engine/china_standout_track.py"
       ],
-      "n_logged": 5847,
-      "n_graded": 3718,
+      "n_logged": 5994,
+      "n_graded": 3803,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -127,7 +127,7 @@
         "engine/china_sector_cycles_grader.py",
         "scripts/grade_promises.py"
       ],
-      "n_logged": 3551,
+      "n_logged": 3604,
       "n_graded": 5081,
       "last_graded_at": "2026-07-02T18:59:33.219372+00:00",
       "tune_step": "N",
@@ -183,8 +183,8 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 45,
-      "n_graded": 29,
+      "n_logged": 46,
+      "n_graded": 30,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"
@@ -197,8 +197,8 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 50,
-      "n_graded": 32,
+      "n_logged": 51,
+      "n_graded": 33,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"

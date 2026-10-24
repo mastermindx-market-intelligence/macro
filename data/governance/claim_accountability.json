@@ -1,8 +1,8 @@
 {
   "schema": "claim_accountability.v1",
-  "generated_at": "2026-10-23T14:51:02.082465+00:00",
+  "generated_at": "2026-10-24T11:05:04.640748+00:00",
   "global": {
-    "n_claims": 118461,
+    "n_claims": 118457,
     "n_grades": 214763,
     "n_with_falsifier": 1266,
     "falsifier_coverage": 0.010687,
@@ -213,15 +213,15 @@
       }
     },
     "intel_hub": {
-      "n_claims": 7000,
-      "falsifier_coverage": 0.040571,
+      "n_claims": 6996,
+      "falsifier_coverage": 0.040595,
       "n_with_falsifier": 284,
-      "hit_gradeable_share": 0.949143,
-      "n_hit_gradeable": 6644,
+      "hit_gradeable_share": 0.949114,
+      "n_hit_gradeable": 6640,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 10444,
-        "graded_5d_share": 1.492,
+        "graded_5d_share": 1.492853,
         "matured_21d_count": 3695,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -824,15 +824,15 @@
       }
     },
     "intel_hub": {
-      "n_claims": 7000,
-      "falsifier_coverage": 0.040571,
+      "n_claims": 6996,
+      "falsifier_coverage": 0.040595,
       "n_with_falsifier": 284,
-      "hit_gradeable_share": 0.949143,
-      "n_hit_gradeable": 6644,
+      "hit_gradeable_share": 0.949114,
+      "n_hit_gradeable": 6640,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 10444,
-        "graded_5d_share": 1.492,
+        "graded_5d_share": 1.492853,
         "matured_21d_count": 3695,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -1144,7 +1144,7 @@
     }
   },
   "track_record_ref": {
-    "generated_at": "2026-10-23T14:46:53.688106+00:00",
+    "generated_at": "2026-10-24T11:00:50.012821+00:00",
     "grade_horizons": [
       5,
       21,

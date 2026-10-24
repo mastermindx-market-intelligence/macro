@@ -336,7 +336,8 @@ def list_expirations(symbol: str) -> list[str] | None:
 # --------------------------------------------------------------------------- #
 
 def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
-             max_bytes=None, max_rows=None, limit_profile="selected_expiry") -> pd.DataFrame | None:
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry",
+             response_handler=None, raw_response_handler=None) -> pd.DataFrame | None:
     """Single streaming CSV GET; returns a parsed DataFrame or None on any error.
 
     v3 returns chunked streaming CSV.  No pagination — one continuous response.
@@ -346,6 +347,8 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
     produces no bytes for READ_TIMEOUT_BETWEEN_BYTES seconds raises ReadTimeout,
     which is caught and re-raised as _StreamTruncated so callers return None.
     """
+    if request_budget is None and (response_handler is not None or raw_response_handler is not None):
+        raise ValueError("Response retention requires a bounded request")
     url = f"{_base_url()}{path}"
     params = dict(params)
     params.setdefault("format", "csv")
@@ -375,6 +378,13 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
             request_budget.stop()
         return None
 
+    if response_handler is not None:
+        try:
+            response_handler(r.status_code)
+        except BaseException:
+            request_budget.stop()
+            r.close()
+            raise
     if request_budget is not None and r.status_code != 200:
         request_budget.stop()
         r.close()
@@ -434,6 +444,12 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
                 request_budget.stop()
             r.close()
 
+    if raw_response_handler is not None:
+        try:
+            raw_response_handler(raw)  # durable complete bytes before ANY CSV validation
+        except Exception as exc:
+            request_budget.stop()
+            raise _StreamTruncated("bounded raw response retention failed") from exc
     if not raw or raw.strip() in (b"", b"No data found for your request"):
         return pd.DataFrame()
 
@@ -745,7 +761,8 @@ def _concurrent_windows(
 # --------------------------------------------------------------------------- #
 
 def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
-             end_date: date | str | int) -> pd.DataFrame | None:
+             end_date: date | str | int, *, request_budget=None, max_bytes=None,
+             max_rows=None, response_handler=None, raw_response_handler=None) -> pd.DataFrame | None:
     """EOD option chain data for all strikes of a given root+expiry, over a date range.
 
     Endpoint: GET /v3/option/history/eod
@@ -771,6 +788,32 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
       date (datetime64), open, high, low, close, volume, count, bid, ask
     or None if the terminal is unreachable or returns a permission error.
     """
+    if request_budget is not None:
+        start, end = _parse_date_int(start_date), _parse_date_int(end_date)
+        if (root not in {"GLD", "SLV", "TLT", "HYG"}
+                or _normalize_expiration_param(exp) != "*"
+                or not 0 <= (end - start).days <= 4
+                or end >= pd.Timestamp.now(tz="America/New_York").date()):
+            raise ValueError("Bounded EOD requires one supported root and at most5 historical days")
+        params = dict(symbol=root, expiration="*", start_date=_date_int(start),
+                      end_date=_date_int(end), format="csv")
+        try:
+            frame = _get_csv(_session(), "/v3/option/history/eod", params,
+                request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows,
+                limit_profile="observed_root", response_handler=response_handler,
+                raw_response_handler=raw_response_handler)
+        except _StreamTruncated:
+            request_budget.stop()
+            return None
+        if frame is None or frame.empty:
+            return frame
+        raw_rows = len(frame)
+        _validate_bounded_eod_source(frame, start, end)
+        normalized = _normalize_eod_df(frame, root)
+        normalized.attrs["_bounded_raw_rows"] = raw_rows
+        return normalized
+    if response_handler is not None or raw_response_handler is not None:
+        raise ValueError("Response retention requires a bounded request")
     if not reachable():
         log.warning("thetadata: terminal not reachable — bulk_eod returning None")
         return None
@@ -814,6 +857,26 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
             return pd.DataFrame()
 
     return _normalize_eod_df(df, root)
+
+
+def _validate_bounded_eod_source(df: pd.DataFrame, start: date, end: date) -> None:
+    """Require the native EOD last-trade clock; created is ingestion, not session.
+
+    This guard is only for the explicitly bounded route. Legacy normalization
+    retains its existing fallback behavior. No timezone/availability is inferred.
+    """
+    required = {"symbol", "expiration", "strike", "right", "last_trade", "close", "volume"}
+    if not required <= set(df.columns):
+        raise ValueError("EOD source schema requires last_trade and contract fields")
+    observed = pd.to_datetime(df["last_trade"], errors="coerce")
+    if (observed.isna().any() or observed.dt.tz is not None
+            or not observed.dt.date.between(start, end).all()):
+        raise ValueError("EOD source last_trade does not establish requested sessions")
+    if "_date" in df.columns:
+        supplied = pd.to_datetime(df["_date"], errors="coerce")
+        if (supplied.isna().any() or supplied.dt.tz is not None
+                or not supplied.eq(observed.dt.normalize()).all()):
+            raise ValueError("EOD source _date contradicts last_trade session")
 
 
 def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:
