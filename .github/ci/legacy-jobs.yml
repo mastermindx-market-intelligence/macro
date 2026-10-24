@@ -6941,6 +6941,23 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/institutional_census/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_os/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/medtech/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/price_pressure/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/seasonality/__init__.py"
       - "scripts/deliver_options_scenario_source.py"
       - "tests/test_options_scenario_delivery.py"
       - "engine/options_scenario_source_arrival.py"
@@ -25667,9 +25684,6 @@ jobs:
           tests/test_activation_funnel_report.py
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
-
-
-
           tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:
