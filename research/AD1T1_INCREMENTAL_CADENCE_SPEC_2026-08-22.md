@@ -782,7 +782,10 @@ physical attempt must call `request_budget.begin(session, exact_url)` BEFORE GET
 the existing budget rejects retry-enabled adapters, and this observation refuses
 second attempts for the same endpoint. Status must be reported, complete bounded
 raw bytes durably retained before parsing, and the shared monotonic deadline
-honored during transport/streaming. The current wrappers' probes/retries and
+honored during transport/streaming. Normalized frames must retain the actual
+pre-normalization row count in `attrs["_bounded_raw_rows"]`; missing or oversized
+raw counts withhold even when deduplication produced a small frame. Raw and
+normalized row counts are distinct receipt fields. The current wrappers' probes/retries and
 missing bounded Greek raw hooks are why source preparation leaves this seam None.
 One call to each bulk method does not prove two physical attempts.
 

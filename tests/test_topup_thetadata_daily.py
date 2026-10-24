@@ -1905,6 +1905,9 @@ def observation_case(tmp_path, monkeypatch):
                 b'synthetic licensed-body substitute, not provider data\n')
             if mode['kind']=='retry':kw['request_budget'].begin(session,url)
             frame=_observation_frame(D_MID)
+            frame.attrs['_bounded_raw_rows']=len(frame)
+            if mode['kind']=='missing_raw_count':frame.attrs.pop('_bounded_raw_rows')
+            if mode['kind']=='raw_row_cap':frame.attrs['_bounded_raw_rows']=100001
             if mode['kind']=='date':frame['date']=pd.Timestamp(S_MID)
             if mode['kind']=='partial' and kind=='greeks':frame=frame.iloc[:1].copy()
             if mode['kind']=='model' and kind=='greeks':frame.attrs['requested_version']='2'
@@ -1944,7 +1947,8 @@ def test_d_observation_mock_two_attempts_private_only_and_no_replay(observation_
 
 @pytest.mark.parametrize('kind,expected,max_attempts',[('refusal','STOPPED',1),('abrupt','EFFECT_UNKNOWN',1),
     ('retry','STOPPED',1),('date','WITHHELD',2),('partial','WITHHELD',2),
-    ('model','STOPPED',2),('empty','STOPPED',1),('raw_empty','STOPPED',1),('late','STOPPED',1)])
+    ('model','STOPPED',2),('empty','STOPPED',1),('raw_empty','STOPPED',1),
+    ('missing_raw_count','STOPPED',1),('raw_row_cap','STOPPED',1),('late','STOPPED',1)])
 def test_d_observation_mock_negative_outcomes_never_promote(observation_case,kind,expected,max_attempts):
     c=observation_case;c.mode['kind']=kind
     if kind=='abrupt':

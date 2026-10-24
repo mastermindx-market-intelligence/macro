@@ -859,7 +859,7 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
                 endpoint=endpoint, parameters=dict(symbol='SPY', expiration='*',
                 start_date=int(ctx.D.strftime('%Y%m%d')), end_date=int(ctx.D.strftime('%Y%m%d')),
                 format='csv', **({'version': '1'} if kind == 'greeks' else {})),
-                requested_order=3 if kind == 'greeks' else None)
+                requested_order=3 if kind == 'greeks' else None, raw_rows=None, normalized_rows=None)
             record['requests'].append(entry)
             save()
             def response(status):
@@ -890,9 +890,13 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
                 raise ValueError('Missing actual acquisition receipt')
             if not isinstance(frame, pd.DataFrame) or frame.empty or len(frame) > 100000:
                 raise ValueError('Missing/malformed/oversized pilot frame')
+            raw_rows = frame.attrs.get('_bounded_raw_rows')
+            if type(raw_rows) is not int or not 0 < raw_rows <= 100000:
+                raise ValueError('Missing/out-of-bound actual raw row count')
             if kind=='greeks' and frame.attrs.get('requested_version', '1') != '1':
                 raise ValueError('Conflicting Greek model/version scope')
-            entry.update(state='PARSED', parsed_at=datetime.now(timezone.utc).isoformat(), rows=len(frame))
+            entry.update(state='PARSED', parsed_at=datetime.now(timezone.utc).isoformat(),
+                         raw_rows=raw_rows, normalized_rows=len(frame))
             entry['source_date'] = ctx.D.isoformat()
             frames[kind] = frame
             save()
