@@ -35,6 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: The two-input repair clears the canonical full curated closure on the exact original hosted source composition.
+  command: Original a69e97ea tested source plus only bbbca two-path diff; canonical tracked-tree curated_exclusive_closure_findings.
+  result: Zero findings across all355 job definitions; candidatebbbca restored clean after qualification. Originalpack1 artifact12556058771 digest/canonical consumed; closure assertion failed, one semantic step passed and14blocked; exact-base replay timeout and descendantUNKNOWN remain, no replay/reclassification. Source repair accepted locally; hosted terminal and new admitted revision remain required.
 - claim: Original8d1 hosted contract failure has an exact two-input source repair, pending a new admitted CI revision.
   command: Originalrun40081206102 contract annotations; canonical local qledger closure and fragment/curation controls.
   result: Added only identity_observation_snapshot.py and market_memory_identity_candidate.py to qledger-cluster-honest-ci paths; all355 parsed job definitions otherwise identical, target local closure zero and44 controls PASS. Originalplan digest/canonical identity verified135jobs/testeda69e/baseebe/tree1b452; all12 direct probe files plus3 envelope files unchanged against tested merge. Active original CI remains unmodified; no full tested-tree closure, fresh hosted pass or production claim.
