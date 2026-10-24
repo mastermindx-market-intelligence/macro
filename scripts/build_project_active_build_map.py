@@ -933,30 +933,30 @@ def _collect_repository(
 
     open_prs: list[dict[str, Any]] = []
     for item in open_data:
-        detail = gh_runner(
-            [
-                "pr",
-                "view",
-                str(item["number"]),
-                "--repo",
-                spec.repository,
-                "--json",
-                "files,mergeStateStatus,body",
-            ]
-        )
-        if not isinstance(detail, dict) or not isinstance(detail.get("files"), list):
+        # `gh pr view --json files` follows GraphQL's entire file connection.
+        # Very large PRs (observed 17,430 files) can produce a false empty
+        # connection even while REST confirms thousands of changed paths.
+        # Acquire only one bounded REST page; the existing files_truncated
+        # contract explicitly discloses any incomplete collision coverage.
+        number = item.get("number")
+        if type(number) is not int or number <= 0:
             return None
-        files = [
-            str(file["path"])
-            for file in detail["files"]
-            if isinstance(file, dict) and file.get("path")
-        ]
-        resolved_state = str(detail.get("mergeStateStatus") or "")
-        list_state = str(item.get("mergeStateStatus") or "UNKNOWN")
-        merge_state = resolved_state if resolved_state and resolved_state != "UNKNOWN" else list_state
+        files = gh_runner([
+            "api", f"repos/{spec.repository}/pulls/{number}/files?per_page=100&page=1",
+            "--jq", "[.[].filename]",
+        ])
+        if (type(files) is not list or len(files) > 100
+                or any(type(path) is not str or not path for path in files)
+                or len(files) != len(set(files))):
+            # An incomplete/unexpected REST page is not a real zero-file PR.
+            return None
+        # The bounded list observation is authoritative only for the fields
+        # it actually supplies. UNKNOWN merge status is retained as UNKNOWN,
+        # never inferred to be clean from a stale or second source read.
+        merge_state = str(item.get("mergeStateStatus") or "UNKNOWN")
         open_prs.append(
             {
-                "number": item["number"],
+                "number": number,
                 "url": item.get("url", ""),
                 "title": item.get("title", ""),
                 "branch": item.get("headRefName", ""),
@@ -964,8 +964,12 @@ def _collect_repository(
                 "draft": bool(item.get("isDraft", False)),
                 "merge_state": merge_state,
                 "files": files,
-                "files_truncated": len(files) >= 100,
-                "body": detail.get("body") or item.get("body") or "",
+                # An empty page does not prove zero changed files: GraphQL
+                # can report zero for exceptionally large PRs while REST
+                # still reports changed paths. Never imply complete negative
+                # collision coverage from an uncorroborated empty page.
+                "files_truncated": len(files) == 100 or len(files) == 0,
+                "body": item.get("body") or "",
             }
         )
 
