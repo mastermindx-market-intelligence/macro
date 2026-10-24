@@ -4466,6 +4466,7 @@ CURATED_EXCLUSIVE = {
     # `options-catalyst-links` (#7774) is hermetic and reads daily.yml and
     # this manifest as text. Closure-coverage audit: zero misses.
     "market-os-macro-workspaces",
+    "ccw-w4-credit-desk",
     "uk-policy-desk",
     # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
     "finance-intelligence",
