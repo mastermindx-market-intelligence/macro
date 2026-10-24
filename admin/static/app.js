@@ -4623,7 +4623,7 @@ function iosMatches(r) {
   if (f.evidence_status && (!r.canonical_t1 || String(r.evidence_status) !== f.evidence_status)) return false;
   if (f.state && st !== f.state) return false;
   if (f.output_class && cls !== f.output_class) return false;
-  if (f.authority && String(r.authority) !== f.authority) return false;
+  if (f.authority && (r.authority == null ? "null" : String(r.authority)) !== f.authority) return false;
   if (f.owner_program && String(r.owner_program) !== f.owner_program) return false;
   if (IOS.q) {
     const hay = `${r.engine_id} ${r.owner_program || ""} ${r.producer || ""} ${r.output_class || ""} ${r.evidence_status || ""} ${(r.evidence_reason_codes || []).join(" ")}`.toLowerCase();
@@ -4677,9 +4677,14 @@ function iosGoto(p) { IOS.page = Math.max(1, p); iosRenderTable(); }
 
 function iosRenderChips() {
   const d = IOS.data; if (!d) return;
-  const c = d.census || {};
-  const byWorst = {};
-  IOS.rows.forEach(r => { const k = r.worst_state == null ? "null" : String(r.worst_state); byWorst[k] = (byWorst[k] || 0) + 1; });
+  // These filters select engine/group rows, not the artifact census. Count every
+  // row once, including registry gaps and canonical engines with no outputs.
+  const rowCounts = key => IOS.rows.reduce((counts, r) => {
+    const value = r[key] == null ? "null" : String(r[key]);
+    counts[value] = (counts[value] || 0) + 1;
+    return counts;
+  }, Object.create(null));
+  const byWorst = rowCounts("worst_state"), byClass = rowCounts("output_class"), byAuthority = rowCounts("authority");
   const f = IOS.filter;
   const el = $("#iosChips"); if (!el) return;
   /* owner_program is the one OPEN vocabulary here — 99 distinct programs live, so it gets
@@ -4688,8 +4693,8 @@ function iosRenderChips() {
   el.innerHTML = `
     <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("Evidence")}</span>${iosNormalizeCeoBands(d.ceo_view).map(band => iosChip(band.evidence_status, f.evidence_status === band.evidence_status, `iosSetFilter('evidence_status', this.dataset.val)`, { val: band.evidence_status }, band.n_engines)).join("")}</div>
     <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("state")}</span>${iosCountsToChips(byWorst, "state", f.state)}</div>
-    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("output class")}</span>${iosCountsToChips(c.by_output_class, "output_class", f.output_class)}</div>
-    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("authority")}</span>${iosCountsToChips(c.by_authority, "authority", f.authority)}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("output class")}</span>${iosCountsToChips(byClass, "output_class", f.output_class)}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("authority")}</span>${iosCountsToChips(byAuthority, "authority", f.authority)}</div>
     <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("program")}</span>
       <select id="iosProg"><option value="" data-ios-copy="all programs">${esc(iosText("all programs"))}</option>
         ${progs.map(p => `<option value="${esc(p)}"${f.owner_program === p ? " selected" : ""}>${esc(p)}</option>`).join("")}</select>
