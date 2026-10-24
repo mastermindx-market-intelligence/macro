@@ -2,8 +2,8 @@
 key: PAPER-INTERNATIONAL-WAVES
 title: International Markets Paper implementation Waves 1–3
 objective: Deliver the existing International product with the received foundation, ten views and existing-owner
-  Saved integration, preserved legacy tools, truthful source qualification, independent review, served user journeys
-  and a subsequent normal publication.
+  Saved integration, preserved legacy tools, truthful source qualification, independent review, served
+  user journeys and a subsequent normal publication.
 status: active
 program: international-risk-intelligence
 repos:
@@ -52,40 +52,48 @@ owns_paths:
 - agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md
 - agentos/handoffs/PAPER-INTERNATIONAL-WAVES-*.md
 - research/website-revamp-MASTERPLAN-2026-10-24.md
+- research/website-revamp-IM00-DISPOSITION-2026-10-24.md
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: Disposition local commits b73d1ccc and 83dcd863 against main ab809596, retained local candidate 7f1aa2ec
-    and remote PR8754 58270853. Identify only remaining access, ECB provenance, route and builder/generation deltas;
-    preserve accepted unchanged foundations. Qualifier EFFECT_UNKNOWN/T03k and original CI diagnostic fences remain
-    intact.
+  next_action: 'IM00/P3 disposition is complete for local7f1aa2ec versus remote58270853 and mainab809596;
+    ending main4d471058 has zero changes across the nine assessed paths plus Caddy and this record. Existing
+    International integration writer should prepare the narrow ECB provenance port on the then-current
+    main: retain the clean mount/two-test deltas, introduce the full ready/stale/missing/failed rich issuer
+    contract and compatible field-only wrapper, wire the existing Macro call once, insert only the inert
+    JSON block while preserving Surveillance, and adapt four publication assertions to the current shell
+    harness. Omit the redundant policy-comment hunk; carry missing access regression guards without replacing
+    newer tests and disposition removed International-specific guard coverage against the ten-asset current
+    harness. Qualify affected behavior/review after the port; original CI, qualifier EFFECT_UNKNOWN/T03k,
+    served and IW2 gates remain distinct. See the dated IM00 disposition.'
   pr: 8754
 - id: IM01
   title: Overview
   status: in_progress
   depends_on:
   - IM00
-  next_action: Reconcile current-main Overview markup/CSS with the retained mount and admitted R10 references. Preserve
-    accepted fixture/source/visual receipts; close remaining composition, desktop-light, narrow/native-zoom and
-    released-path J01/X01 gaps through admitted surfaces.
+  next_action: Reconcile current-main Overview markup/CSS with the retained mount and admitted R10 references.
+    Preserve accepted fixture/source/visual receipts; close remaining composition, desktop-light, narrow/native-zoom
+    and released-path J01/X01 gaps through admitted surfaces.
   pr: 8754
 - id: IM02
   title: Compare and Rotation
   status: in_progress
   depends_on:
   - IM00
-  next_action: Reconcile the differing chart/integration module and unmounted or review-pending raw-snapshot binding
-    with current main. Qualify genuine common-window source and benchmark inputs, then served J02. Do not infer
-    missing observations, benchmark permission or qualifier completion.
+  next_action: Reconcile the differing chart/integration module and unmounted or review-pending raw-snapshot
+    binding with current main. Qualify genuine common-window source and benchmark inputs, then served
+    J02. Do not infer missing observations, benchmark permission or qualifier completion.
   pr: 8754
 - id: IM03
   title: Country Inspector and Evidence
   status: in_progress
   depends_on:
   - IM00
-  next_action: Retain the matching Inspector projection/mount/template evidence. Qualify current entry/return, field-clock,
-    permission-filtering and focus joins, then authenticated served J03/X01 through the actual admitted access path.
+  next_action: Retain the matching Inspector projection/mount/template evidence. Qualify current entry/return,
+    field-clock, permission-filtering and focus joins, then authenticated served J03/X01 through the actual
+    admitted access path.
   pr: 8754
 - id: IM04
   title: Macro and Policy
@@ -93,9 +101,10 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Disposition local ECB provenance commit 83dcd863 through the current mount/builder/shell generation
-    path, preserving accepted local-publication evidence. Resolve actual non-ECB coverage and independent field
-    clocks through existing qualification owners before served J04.
+  next_action: 'ECB provenance83dcd863 remains absent from main. Follow the IM00 disposition: rich-result
+    helper prerequisite plus compatible wrapper, current Macro caller and narrow inert shell record; preserve
+    main Surveillance. Retain historical103-case source evidence only for its original candidate. Then
+    qualify actual non-ECB coverage, independent field clocks and served J04 through existing owners.'
   pr: 8754
 - id: IM05
   title: Risk and Transmission
@@ -103,9 +112,9 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Reconcile current-main Risk markup and builder integration while preserving accepted summary, currency/pressure
-    arithmetic and six-family composition. Qualify actual family coverage and J05; missing families must remain
-    missing rather than imply calm.
+  next_action: Reconcile current-main Risk markup and builder integration while preserving accepted summary,
+    currency/pressure arithmetic and six-family composition. Qualify actual family coverage and J05; missing
+    families must remain missing rather than imply calm.
   pr: 8754
 - id: IM06
   title: History and Scenarios
@@ -114,15 +123,15 @@ waves:
   - IM00
   - IM03
   next_action: Retain accepted Scenario math and matching Scenario source. Reconcile remaining History/current-builder
-    and context/reset deltas; qualify the typed history reader and served J06/J07 without replaying the held qualifier.
-    Recomputed history is not first-known history.
+    and context/reset deltas; qualify the typed history reader and served J06/J07 without replaying the
+    held qualifier. Recomputed history is not first-known history.
   pr: 8754
 - id: IM07
   title: Library and deterministic search
   status: in_progress
-  next_action: Retain matching catalogue/search/view blobs; reconcile the differing Library mount and current destination/return
-    bindings. Complete PF01-PF18 and J08 through admitted access, preserving the specific Library-to-Stock-to-Back
-    Chrome boundary.
+  next_action: Retain matching catalogue/search/view blobs; reconcile the differing Library mount and
+    current destination/return bindings. Complete PF01-PF18 and J08 through admitted access, preserving
+    the specific Library-to-Stock-to-Back Chrome boundary.
   depends_on:
   - IM00
   pr: 8754
@@ -132,62 +141,69 @@ waves:
   depends_on:
   - IM00
   next_action: Credit accepted contract/compiler/adapter work and disposition candidate-only lib/intl_investigation_owner.py
-    against the incumbent IW2 interface. Raw-context/T03k acceptance remains held; genuine persistence stays with
-    IW2 and Terminal804. Do not create another Saved owner or store.
+    against the incumbent IW2 interface. Raw-context/T03k acceptance remains held; genuine persistence
+    stays with IW2 and Terminal804. Do not create another Saved owner or store.
 - id: IM09
   title: Existing Saved workspace extension
   status: in_progress
   depends_on:
   - IM08
-  next_action: Credit accepted Saved-detail presentation and bounded responsive source. Reconcile actual IW2 Terminal804/kernel/migration/cutover
-    gates, then prove same-owner save/readback/fresh-session reopen, evidence-change recovery and account isolation.
-    Presentation source is not durable persistence.
+  next_action: Credit accepted Saved-detail presentation and bounded responsive source. Reconcile actual
+    IW2 Terminal804/kernel/migration/cutover gates, then prove same-owner save/readback/fresh-session
+    reopen, evidence-change recovery and account isolation. Presentation source is not durable persistence.
 - id: IM10
   title: Qualified policy comparison
   status: in_progress
-  next_action: Credit accepted pure four-point comparison and bounded preview source. Resolve four genuine qualified
-    endpoint observations and source mappings; after IM08/IM09 gates, prove settings-only preview/save/readback/reopen/conditional
+  next_action: Credit accepted pure four-point comparison and bounded preview source. Resolve four genuine
+    qualified endpoint observations and source mappings; after IM08/IM09 gates, prove settings-only preview/save/readback/reopen/conditional
     undo on the incumbent Saved record.
   depends_on:
   - IM04
   - IM08
   - IM09
-next_action: 'Continue IM00 (local P3): compare retained local candidate 7f1aa2ec, remote PR8754 58270853 and current
-  main ab809596; disposition all four local commits and identify remaining foundation/access/ECB provenance/builder
-  integration deltas. Continue only the compatible bounded source work through existing custody. Original diagnostic/egress,
-  qualifier EFFECT_UNKNOWN/T03k, Paper/native-access and IW2 Saved/cutover fences remain action-specific; CI, qualified
-  inputs, served journeys and a subsequent normal publication are separate acceptance gates.'
+next_action: 'IM00/P3 disposition is complete for local7f1aa2ec versus remote58270853 and mainab809596;
+  ending main4d471058 has zero changes across the nine assessed paths plus Caddy and this record. Existing
+  International integration writer should prepare the narrow ECB provenance port on the then-current main:
+  retain the clean mount/two-test deltas, introduce the full ready/stale/missing/failed rich issuer contract
+  and compatible field-only wrapper, wire the existing Macro call once, insert only the inert JSON block
+  while preserving Surveillance, and adapt four publication assertions to the current shell harness. Omit
+  the redundant policy-comment hunk; carry missing access regression guards without replacing newer tests
+  and disposition removed International-specific guard coverage against the ten-asset current harness.
+  Qualify affected behavior/review after the port; original CI, qualifier EFFECT_UNKNOWN/T03k, served
+  and IW2 gates remain distinct. See the dated IM00 disposition.'
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 - research/website-revamp-MASTERPLAN-2026-10-24.md
 - agentos/handoffs/PAPER-INTERNATIONAL-WAVES-2026-10-24.md
+- research/website-revamp-IM00-DISPOSITION-2026-10-24.md
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.
 - Preserve the three original handoff archive hashes and original native design archives.
-- Do not create WS-WEBSITE-REVAMP or promote local P1/P2 process groupings into product waves; existing key and
-  IM00-IM10 identities are preserved (DEC:PAPER-WAVES-CENSUS-RECONCILIATION).
-- Do not rerun accepted unchanged numerical/source/fixture suites merely to reproduce counts; the 2026-10-24 census
-  credits their recorded scope (research/website-revamp-MASTERPLAN-2026-10-24.md sections 5-6).
-- Do not repeat the accepted local harness rebind P2.T1 or recreate the nine tasks; supported import preserved their
-  identities/history (agentos/handoffs/PAPER-INTERNATIONAL-WAVES-2026-10-24.md).
+- Do not create WS-WEBSITE-REVAMP or promote local P1/P2 process groupings into product waves; existing
+  key and IM00-IM10 identities are preserved (DEC:PAPER-WAVES-CENSUS-RECONCILIATION).
+- Do not rerun accepted unchanged numerical/source/fixture suites merely to reproduce counts; the 2026-10-24
+  census credits their recorded scope (research/website-revamp-MASTERPLAN-2026-10-24.md sections 5-6).
+- Do not repeat the accepted local harness rebind P2.T1 or recreate the nine tasks; supported import preserved
+  their identities/history (agentos/handoffs/PAPER-INTERNATIONAL-WAVES-2026-10-24.md).
 landmines:
 - This knowledge record grants no source lease, job, execution permission, routing or wake.
 - One integration writer owns the root controller, builder, main template and CI integration.
-- Browser, rights and deployment proof remain separate gates; Follow remains excluded; Saved writes require the
-  existing Investigation owner and accepted interface.
-- Historical provider/model admission statements below are dated observations, not current routing permission; use
-  current protected procedure and actual runtime admission.
-- PR8754 run38751445578 retains NO FURTHER REQUESTS/account-egress; run39400637901 packs3/6 diagnostics remain unadmitted.
-  No substitute artifact reader, new CI or canary to evade them (research/website-revamp-MASTERPLAN-2026-10-24.md
+- Browser, rights and deployment proof remain separate gates; Follow remains excluded; Saved writes require
+  the existing Investigation owner and accepted interface.
+- Historical provider/model admission statements below are dated observations, not current routing permission;
+  use current protected procedure and actual runtime admission.
+- PR8754 run38751445578 retains NO FURTHER REQUESTS/account-egress; run39400637901 packs3/6 diagnostics
+  remain unadmitted. No substitute artifact reader, new CI or canary to evade them (research/website-revamp-MASTERPLAN-2026-10-24.md
   section 8).
-- Qualifier process2217592/environment EFFECT_UNKNOWN, frozen T03k reviews, Paper/native-access and IW2 Terminal804/Saved/migration/cutover
-  fences are distinct and remain binding; accepted source does not clear them.
+- Qualifier process2217592/environment EFFECT_UNKNOWN, frozen T03k reviews, Paper/native-access and IW2
+  Terminal804/Saved/migration/cutover fences are distinct and remain binding; accepted source does not
+  clear them.
 - Commercial MAS284-MAS287 and preference findings R1/R2 are separately commissioned Workstream:NONE maintenance;
   they do not add International dependencies or completion criteria.
-- P3-P13 are local harness display positions for IM00-IM10. P1/P2 are unadopted local process proposals. Draft record
-  publication is not a merge, source lease, job START or product acceptance.
+- P3-P13 are local harness display positions for IM00-IM10. P1/P2 are unadopted local process proposals.
+  Draft record publication is not a merge, source lease, job START or product acceptance.
 decisions:
 - DEC:PAPER-WAVES-CENSUS-RECONCILIATION
 ---
@@ -224,7 +240,7 @@ Evidence: original `research/paper_international_wave1_wave2/README.md`, named c
 
 ## Sequencing and wave disposition
 
-1. **IM00/P3 first:** resolve which access and ECB-provenance changes remain necessary against current main. Preserve unchanged accepted leaves; identify the exact compatible integration delta before any source write or release action.
+1. **IM00/P3 first:** the nine-path disposition is now complete. Prepare the narrow ECB provenance integration described in the dated receipt, preserve current Surveillance/access behavior, and then qualify the affected integrated behavior. Existing source custody and separate release gates remain.
 2. **IM01-IM07:** use the original dependency graph. Source/UI preparation may proceed on independent admitted paths, while real input qualification and original release effects retain their own gates. Complete the individual J00-J08 acceptance in the evidence annex.
 3. **IM08-IM10:** advance adapters and presentation within their existing custody. Genuine Saved and Policy persistence depend on the incumbent IW2 interface, actual migration/release state and qualified observations.
 4. **Final programme acceptance:** prove X01-X03, all 18 preserved families, required dark/light/auto EN/ZH/narrow/zoom/access behavior on the actual served revision and a subsequent normal publication. There is no new feature or generic redesign wave.
@@ -240,7 +256,7 @@ At the bounded 18:11 UTC observation on October 24, PR8754 was open/Draft at `58
 | P1.T1 | Preserve superseded duplicate-record proposal; no WS-WEBSITE-REVAMP. |
 | T001 | Preserve superseded initial recovery/adoption framing. |
 | T002 | Preserve implementation_complete recovery evidence; this is not product acceptance. |
-| T003 | Delivered census exists. Its stale missing-file blocker is cleared; supported adoption transition covers this record amendment and dated handoff. Draft publication and accepted-main adoption remain distinct. |
+| T003 | `implementation_complete` via supported mmtask after four-file byte readback of Draft10163 commit8525fb48; nine IDs and the other eight rows unchanged. Draft publication and accepted-main adoption remain distinct. |
 | T004 | Ongoing commercial release consumption stays with Operations and its existing normal controller. |
 | T005 | Commercial acceptance remains ready but dependent on T004; no authenticated journey completion claim. |
 | T006 | Preserve original International release blocker; independent IM00 source disposition can proceed without replaying held effects. |
@@ -248,6 +264,15 @@ At the bounded 18:11 UTC observation on October 24, PR8754 was open/Draft at `58
 | P2.T1 | Preserve accepted Secretary rebind/import/export repair and nine-task retention evidence; do not rerun or recreate it. |
 
 The validated local export at 17:51:55 UTC is prepared-only and was not applied wholesale: its proposed `masterplan-adoption`/`codex-session-plan` additions are not product waves. No generated Agent OS view or local generated harness block is hand-edited.
+
+
+## IM00 execution checkpoint — 2026-10-24
+
+The [nine-path disposition](../../research/website-revamp-IM00-DISPOSITION-2026-10-24.md) is complete. Both retained source commits fail unchanged application to current main. The access configuration hunk is comment-only and redundant; main's ten International assets are already present in all four Caddy matcher lists. Missing access regression guards remain useful; replacement coverage for the older removed International-specific guards is unverified and needs current-harness disposition.
+
+ECB provenance remains absent. The mount and two tests share unchanged parent blobs with main and pass patch checks. The builder lacks the rich-result prerequisite and must retain current Surveillance; the shell needs only the optional escaped JSON insertion, and its old R10 test file is absent from main. Four of nine per-path patches apply, five require omission/manual port/prerequisite handling. Patch applicability is not behavior acceptance.
+
+Main advanced to4d471058 at the ending check; all nine paths, Caddy and this workstream were unchanged fromab809596. Existing PR8754 remains remote58270853/Draft; the occupied local tree remains clean7f1aa2ec. No source suite, held diagnostic, qualifier or publisher was replayed. The next action is the bounded existing-writer integration, not another census or blind push of the four local commits. IM00 remains in_progress.
 
 ## Separate commercial maintenance reference
 

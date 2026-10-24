@@ -22,6 +22,9 @@ changed:
     all 50 tasks, 18 preservation families and separate dated commercial evidence.
 - path: agentos/handoffs/PAPER-INTERNATIONAL-WAVES-2026-10-24.md
   what: Checkpoint current revisions, proof limits, source custody and exact continuation.
+- path: research/website-revamp-IM00-DISPOSITION-2026-10-24.md
+  what: 'Complete first IM00 bite: four-commit/nine-path semantic and non-mutating patch disposition,
+    ending-main qualification and one concrete incumbent-writer integration step.'
 verified:
 - claim: Canonical WS binding and unchanged baseline blob on observed current main
   command: GitHub connector fetch_file macro agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md at11f88c730c2d5f25569d5c5508ff46ce71e14eb8
@@ -52,13 +55,37 @@ verified:
   command: collaboration.followup_task /root/website_plan_review with the four corrected local draft files
   result: Ready for same Draft10163; no material corrections. Publication readback and IM00 execution
     remain distinct next steps.
+- claim: Canonical publication readback and supported T003 completion
+  command: GitHub fetch_file at8525fb480a1e1d4c316e718165612fe8dfd85baf for four files; mmtask --slug
+    website-revamp done T003 --evidence <publication receipt>; compare task rows before/after
+  result: All four files byte-identical; T003 implementation_complete; nine task IDs preserved, other
+    eight rows unchanged. Host masterplan saved.
+- claim: All four local commits and nine source paths dispositioned against main
+  command: git show/diff/rev-parse at7f1aa2ec,58270853,ab809596; parsed YAML equality; git apply --check
+    and per-path --include checks against extracted main; current Caddy parser helpers
+  result: Both full source patches reject; four path patches apply, five need omission/manual port/missing-prerequisite
+    handling. Policy comment-only; ten International assets in each four matcher lists. ECB result helper/record
+    still absent on main. Full dated disposition and raw receipts retained.
+- claim: Ending main move did not change the assessed paths; occupied source carrier unchanged
+  command: GitHub branches/main and pulls/8754; git diff --name-status ab809596d4a1760855d209cab69c7fb9b62d4ddd
+    4d471058826cd470ddf53e5c53d3086aec36d365 -- <nine paths> app/deploy/Caddyfile agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md;
+    git status --porcelain; git rev-parse HEAD
+  result: No scoped path changes; PR8754 still58270853/Draft/unarmed; clean local7f1aa2ec. Source disposition
+    applies to ending main4d471058 for assessed paths.
+- claim: Independent IM00 disposition review with remaining proof limits incorporated
+  command: collaboration.followup_task /root/website_plan_review with retained exact-source diffs and
+    dry-run evidence
+  result: Central disposition supported. Complete helper failure paths, current-shell adaptation and unresolved
+    removed International guard coverage explicitly retained; current Caddy tokens remain static-only
+    evidence.
 unverified:
 - claim: Canonical amendment is merged into main
   what_would_verify: A subsequent approved merge and exact accepted-main readback; this assignment explicitly
     keeps existing PR10163 Draft.
-- claim: Remaining local integration delta is safe on current main
-  what_would_verify: IM00 per-path semantic disposition of b73d1ccc/83dcd863, separating already represented
-    behavior from compatible or conflicting deltas; then bounded existing-owner integration review.
+- claim: The bounded remaining source port is integrated and behaviorally accepted on current main
+  what_would_verify: Existing writer implements the dated disposition while preserving Surveillance/access
+    behavior, obtains affected mount/builder/shell and guard proof plus current review. Patch-check success
+    alone is not behavior proof.
 - claim: Current CI, real source qualification, authenticated journeys, Saved durability and normal publication
     are accepted
   what_would_verify: Distinct admitted original-effect resolution and actual receipts for J00-J10/X01-X03/PF01-PF18
@@ -75,16 +102,18 @@ unresolved:
 - Actual current-main integration, useful qualified source coverage, complete design/access and authenticated
   connected acceptance remain open.
 next_actions:
-- Finish existing Draft10163 record readback/schema validation, persist corrected requested host copy,
-  and complete T003 implementation through supported mmtask with evidence; Draft publication is not accepted-main
-  adoption.
-- 'Continue IM00/P3: compare all paths touched by b73d1ccc and83dcd863 at local7f1aa2ec, remote58270853
-  and mainab809596; classify containment/compatibility/conflict and record one narrow existing-carrier
-  integration recommendation.'
-- Update this handoff and canonical next_action with the actual disposition; amend the same PR, checkpoint
-  and update the already authorized channel summary.
-- Existing International writer integrates only qualified remaining deltas with actual custody; thereafter
-  proceed through unchanged dependencies and distinct CI/data/served/Saved acceptance gates.
+- 'Existing International integration writer: refresh only materially changed scoped main paths and current
+  custody; port the complete rich ECB ready/stale/missing/failed result and compatible field-only wrapper
+  and caller, direct mount/two-test delta, narrow inert JSON shell insertion and focused current-harness
+  assertions. Preserve Surveillance and current access behavior.'
+- Carry missing access regression guards into current tests; omit redundant policy-comment change and
+  preserve newer Shared Shell/internal-deny/cache checks. Qualify affected behavior/review on the eventual
+  integration. Disposition the removed older International-specific guard coverage; current policy/edge
+  tokens alone do not establish regression coverage or served access.
+- Proceed through original IM dependencies and distinct CI/source qualification/served/Saved/publication
+  gates. Do not replay original denied or EFFECT_UNKNOWN operations.
+- This assigned census session publishes the disposition and final checkpoint in the same Draft10163 and
+  updates the already authorized Slack summary. Draft record publication is not main/product acceptance.
 do_not_redo:
 - No WS-WEBSITE-REVAMP, second PR, renamed IM IDs or promotion of local P1/P2 process groupings into product
   waves.
@@ -118,7 +147,7 @@ decisions:
 
 ## 0. State
 
-This is a completed documentation checkpoint in an ongoing Pro session, not a claim that the programme or IM00 is complete. The author is the assigned ChatGPT Astra Pro census session (`chatgpt2:website-revamp-census-pr10163`); `model: sol` denotes the schema's executive-authored record class. The recovered original Codex context is `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. Its active source/effect custody is retained.
+This is a completed documentation and first IM00-disposition checkpoint, not a claim that the programme or full IM00 wave is complete. The author is the assigned ChatGPT Astra Pro census session (`chatgpt2:website-revamp-census-pr10163`); `model: sol` denotes the schema's executive-authored record class. The recovered original Codex context is `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. Its active source/effect custody is retained.
 
 The full item audit, evidence links and acceptance contract are in `research/website-revamp-MASTERPLAN-2026-10-24.md`. That file is an evidence annex to WS:PAPER-INTERNATIONAL-WAVES. P3-P13 alias IM00-IM10; all eleven canonical waves are in_progress with explicit remaining gates. No wave is added or dropped.
 
@@ -130,7 +159,9 @@ The requested host masterplan is `/Users/chriswong/gwcap/estate-census/website-r
 
 ## 2. Next bite
 
-Complete Draft10163 amendment/readback and supported T003 adoption, then perform the IM00 per-path semantic disposition against observed current main. Use git objects or admitted exact-revision GitHub source. Classify already represented, compatible remaining delta, conflicting newer implementation and specific evidence hold. Name one narrow integration step through the incumbent carrier. Do not infer a diagnosis from failed pack numbers or use another reader for the denied diagnostics.
+The nine-path disposition is complete in `research/website-revamp-IM00-DISPOSITION-2026-10-24.md`. Main4d471058 retains the same assessed bytes asab809596. Both whole source patches reject; main already has the ten public International assets, while rich ECB provenance remains missing. Mount/two-test deltas are direct candidates; current builder/shell and missing shell harness require the explicit port described there.
+
+Existing integration writer owns that narrow source bite: retain current Surveillance/access code, add the reviewed rich-helper prerequisite/current Macro caller/one inert shell block and focused publication checks, then qualify affected behavior. T003 Draft incorporation is implementation_complete after byte readback; all nine tasks and other rows survive. No source checkout was changed and original held effects were not replayed.
 
 ## 3. What was decided
 
