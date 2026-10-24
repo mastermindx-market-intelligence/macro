@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 280,
+    "opportunity_queue_depth": 292,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,30 +1690,30 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 280,
-      "scored": 398,
+      "open": 292,
+      "scored": 410,
       "newest": [
         {
-          "id": "radar-confluence-AMCR-2026-10-23",
-          "problem_or_desire": "$AMCR: confluence combo Weekly 21/100 golden cross + 7/35 golden cross + reclaims 100-day line + cloud breakout firing, test WR 83%",
+          "id": "radar-confluence-AMCR-2026-10-24",
+          "problem_or_desire": "$AMCR: confluence combo Weekly 21/100 golden cross + weekly reclaims 35-day line + Ichimoku bull cross + Price reclaims AVWAP from earnings-proxy anchor firing, test WR 85%",
           "expected_value": 0.55,
-          "score": 0.479426,
+          "score": 0.504134,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-confluence-AMD-2026-10-23",
-          "problem_or_desire": "$AMD: confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+          "id": "radar-confluence-AWK-2026-10-24",
+          "problem_or_desire": "$AWK: confluence combo Weekly 21/100 golden cross + weekly reclaims 35-day line + weekly MACD bullish cross + ribbon flips up firing, test WR 85%",
           "expected_value": 0.55,
-          "score": 0.479426,
+          "score": 0.504134,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-confluence-APH-2026-10-23",
-          "problem_or_desire": "$APH: confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+          "id": "radar-confluence-CAT-2026-10-24",
+          "problem_or_desire": "$CAT: confluence combo Weekly short-term uptrend + weekly RSI-14 washed out + lower-band reclaim firing, test WR 67%",
           "expected_value": 0.55,
-          "score": 0.479426,
+          "score": 0.504134,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 2056,
-      "receipts": 2056,
+      "total": 2068,
+      "receipts": 2068,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-23-240b809206",
-          "channel": "x",
-          "account": "meagan",
-          "status": "clean",
-          "published_at": "2026-10-24T01:55:16Z"
-        },
-        {
-          "id": "pub-ob-2026-10-23-f0d7526773",
-          "channel": "x",
-          "account": "founder",
-          "status": "clean",
-          "published_at": "2026-10-24T01:55:16Z"
-        },
-        {
-          "id": "pub-ob-2026-10-23-fcbeb9619e",
+          "id": "pub-ob-2026-10-24-b2b023084b",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-23T23:02:18Z"
+          "published_at": "2026-10-24T20:36:38Z"
+        },
+        {
+          "id": "pub-ob-2026-10-24-ddf95f55f2",
+          "channel": "x",
+          "account": "meagan",
+          "status": "clean",
+          "published_at": "2026-10-24T20:36:38Z"
+        },
+        {
+          "id": "pub-ob-2026-10-24-a6c9002b2e",
+          "channel": "x",
+          "account": "kelly",
+          "status": "clean",
+          "published_at": "2026-10-24T20:36:38Z"
         }
       ]
     },
@@ -1986,8 +1986,8 @@
   ],
   "content": {
     "total_posts": 28,
-    "signal_posts": 6,
-    "charts": 207,
+    "signal_posts": 3,
+    "charts": 193,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-24"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-24T09:17:04Z",
-  "inputs_hash": "sha256:74748a65597703e9b3dc153c376269cb55a532aa5c4a5f3b726cbd3c8c4c02bd",
+  "produced_at": "2026-10-24T21:06:17Z",
+  "inputs_hash": "sha256:5e1d3fb6f445c2e0fe3d803de903144abaa43109f88c8e592256b489dad92a62",
   "tier": "display"
 }

@@ -1782,3 +1782,286 @@ def test_registered_industrial_prior_read_error_is_not_silent_absence(monkeypatc
     monkeypatch.setattr(reader,"_fetch_bytes",_as_fetch_bytes(fake_get))
     with pytest.raises(PriorWorkspaceFetchFailed):
         load_prior_workspace_for_ticker("LMT",base_url="https://example.test/industrial-prior-failure")
+
+
+# These responses are synthetic requests.Response objects. No SEC request occurs.
+def _sec_synthetic_response(url, status=200, body=b"synthetic", headers=None):
+    import requests
+    response = requests.Response()
+    response.status_code = status
+    response.url = url
+    response._content = body
+    response._content_consumed = True
+    response.headers.update(headers or {})
+    return response
+
+
+@pytest.fixture
+def _sec_mock_transport(monkeypatch):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    def refuse(*args, **kwargs):
+        raise AssertionError("selected SEC acquisition tests never use the network")
+    monkeypatch.setattr(socket.socket, "connect", refuse)
+    monkeypatch.setattr(owner.time, "sleep", lambda _: None)
+    calls = []
+    responses = {}
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        if url not in responses:
+            raise AssertionError(f"unplanned synthetic HTTP request: {url}")
+        return responses[url]() if callable(responses[url]) else responses[url]
+    monkeypatch.setattr(requests, "get", get)
+    return owner, calls, responses
+
+
+def test_sec_exhibit_checks_redirect_eligibility_before_following(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    next_url = EXHIBIT_URL.replace("www.sec.gov", "sec.gov").replace(EXHIBIT_NAME, "canonical.htm")
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": next_url})
+    responses[next_url] = _sec_synthetic_response(next_url, body=b"actual synthetic entity", headers={"Content-Type": "text/html; charset=UTF-8", "Content-Encoding": "gzip"})
+    response = owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    receipt = owner._acquisition_receipt(response, cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                          url=EXHIBIT_URL, text=response[1].decode(), decode_policy="utf8_strict")
+    assert [call[0] for call in calls] == [EXHIBIT_URL, next_url]
+    assert all(call[1]["allow_redirects"] is False for call in calls)
+    assert receipt["final_url"] == next_url and receipt["entity_sha256"] == sha256(response[1]).hexdigest()
+    assert receipt["body_representation"] == "requests.content_after_content_decoding"
+    assert receipt["content_encoding"] == "gzip"  # header metadata, NOT a raw-wire digest
+    assert receipt["declared_charset"] == "utf-8"
+    assert receipt["acquired_at"].endswith("Z")
+    assert receipt["redirects"] == [{"url": EXHIBIT_URL, "status": 302, "location": next_url, "next_url": next_url}]
+
+
+@pytest.mark.parametrize("location", [
+    "https://evil.test/body.htm", "https://www.sec.gov.evil.test/body.htm",
+    EXHIBIT_URL.replace(str(int(AAPL_CIK)), "999999"),
+    EXHIBIT_URL.replace(AAPL_ACCESSION.replace("-", ""), "000000000026000001"),
+    EXHIBIT_URL + "?token=x", EXHIBIT_URL + "#fragment", "\n" + EXHIBIT_URL,
+])
+def test_sec_exhibit_never_requests_ineligible_redirect_target(_sec_mock_transport, location):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": location})
+    with pytest.raises(owner.RefreshError):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+
+
+def test_sec_exhibit_cycle_limit_and_implicit_history_fail_closed(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": EXHIBIT_URL})
+    with pytest.raises(owner.RefreshError, match="cycle"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+    calls.clear()
+    response = _sec_synthetic_response(EXHIBIT_URL)
+    response.history = [_sec_synthetic_response("https://evil.test", 302)]
+    responses[EXHIBIT_URL] = response
+    with pytest.raises(owner.RefreshError, match="unobserved redirect"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+    calls.clear()
+    for i in range(7):
+        url = EXHIBIT_URL if i == 0 else f"{ARCHIVE_BASE}/hop{i}.htm"
+        responses[url] = _sec_synthetic_response(url, 302, headers={"Location": f"hop{i + 1}.htm"})
+    with pytest.raises(owner.RefreshError, match="limit"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 6  # the sixth redirect is observed but never followed
+
+
+@pytest.mark.parametrize("traced", [False, True])
+def test_sec_actual_acquisition_to_bound_source_row_retains_receipt(_sec_mock_transport, traced):
+    from copy import deepcopy
+    from engine.company_intelligence.event_workspace import WorkspaceError
+    owner, calls, responses = _sec_mock_transport
+    fake = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = fake(url)
+        responses[url] = _sec_synthetic_response(url, status, body, {"Content-Type": "text/html; charset=utf-8"})
+    trace = []
+    filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                         **({"trace": trace.append} if traced else {}))
+    receipt = filing["acquisition_receipt"]
+    assert receipt["requested_url"] == EXHIBIT_URL and receipt["final_url"] == EXHIBIT_URL
+    assert receipt["entity_sha256"] == receipt["source_sha256"]
+    assert receipt["decode_policy"] == ("utf8_strict" if traced else "utf8_strict_then_latin1_strict")
+    assert all((kwargs.get("allow_redirects") is False) == (url == EXHIBIT_URL) for url, kwargs in calls)
+    if traced:
+        assert trace[0]["source"]["acquisition_receipt"] == receipt
+    tx, tx_sha = _transcript()
+    def build(selected, prior_receipt=None):
+        return build_event_workspace(registry=apple_registry(), ticker="AAPL", asof=AAPL_CALL_DATE,
+            fiscal_period=flagship_fiscal_period(), exhibit_body=selected["exhibit_body"], filing=selected,
+            transcript=tx, transcript_sha256=tx_sha, observed_at="2026-08-16T18:00:00Z",
+            source_available_at=ACCEPTANCE, prior_acquisition_receipt=prior_receipt)
+    workspace = build(filing)
+    source = next(item for item in workspace["sources"] if item["kind"] == "issuer_release")
+    assert json.loads(json.dumps(source))["acquisition_receipt"] == receipt
+    without = {k: v for k, v in filing.items() if k != "acquisition_receipt"}
+    prior = build(without)
+    assert workspace["event_id"] == prior["event_id"]
+    assert workspace["lifecycle"] == prior["lifecycle"]
+    assert workspace["facts"] == prior["facts"]
+    prior_source = next(item for item in prior["sources"] if item["kind"] == "issuer_release")
+    assert {k: v for k, v in source.items() if k != "acquisition_receipt"} == prior_source
+    offline = build(without, prior_receipt=receipt)
+    assert "acquisition_receipt" not in next(item for item in offline["sources"] if item["kind"] == "issuer_release")
+    for prior_receipt in ({**receipt, "source_sha256": "0" * 64}, {**receipt, "acquired_at": "9999-01-01T00:00:00Z"}):
+        refreshed = build(filing, prior_receipt=prior_receipt)
+        assert next(item for item in refreshed["sources"] if item["kind"] == "issuer_release")["acquisition_receipt"] == receipt
+    for field, value in [("source_sha256", "0" * 64), ("final_url", "https://evil.test/body.htm")]:
+        bad = deepcopy(filing)
+        bad["acquisition_receipt"][field] = value
+        with pytest.raises(WorkspaceError, match="acquisition receipt"):
+            build(bad)
+
+
+def test_sec_legacy_custom_http_and_offline_binding_never_mint_receipts(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    fixture_http = _http_get_factory()
+    trace = []
+    for traced in (False, True):
+        filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+            http_get=fixture_http, **({"trace": trace.append} if traced else {}))
+        assert "acquisition_receipt" not in filing
+    assert "acquisition_receipt" not in trace[0]["source"]
+    assert calls == []
+    from engine.earnings_release.binding import bind_release_document
+    bound = bind_release_document(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                  body=EXHIBIT.read_text(), exhibit_url=EXHIBIT_URL)
+    assert not hasattr(bound, "acquisition_receipt")
+
+
+def test_sec_selected_acquisition_refuses_implicit_foreign_response_before_binding(_sec_mock_transport, monkeypatch):
+    """Old requests.get followed this redirect then discarded its final URL."""
+    import requests
+    owner, calls, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        if url != EXHIBIT_URL:
+            status, body = plain(url)
+            return _sec_synthetic_response(url, status, body)
+        if kwargs.get("allow_redirects") is False:
+            return _sec_synthetic_response(url, 302, headers={"Location": "https://unrelated.example/release.htm"})
+        # Synthetic legacy-library response, never a real foreign fetch.
+        response = _sec_synthetic_response("https://unrelated.example/release.htm", 200, EXHIBIT.read_bytes())
+        response.history = [_sec_synthetic_response(url, 302)]
+        return response
+    monkeypatch.setattr(requests, "get", get)
+    with pytest.raises(RefreshError, match="selected SEC acquisition refused"):
+        owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert sum(url == EXHIBIT_URL for url, _ in calls) == 1
+    assert not any(url.startswith("https://unrelated.example") for url, _ in calls)
+
+
+def test_sec_actual_decoder_is_recorded_and_strict_trace_does_not_backfill(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    body = b"<html>synthetic caf\xe9</html>"
+    for url in (SUBMISSIONS_URL, HEADERS_URL):
+        status, value = plain(url)
+        responses[url] = lambda url=url, status=status, value=value: _sec_synthetic_response(url, status, value)
+    responses[EXHIBIT_URL] = lambda: _sec_synthetic_response(EXHIBIT_URL, body=body, headers={"Content-Type": "text/html; charset=iso-8859-1"})
+    legacy = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    receipt = legacy["acquisition_receipt"]
+    assert receipt["decoder"] == "latin-1" and receipt["declared_charset"] == "iso-8859-1"
+    assert receipt["entity_sha256"] == sha256(body).hexdigest()
+    assert receipt["source_sha256"] == sha256(body.decode("latin-1").encode("utf-8")).hexdigest()
+    assert receipt["entity_sha256"] != receipt["source_sha256"]
+    traces = []
+    with pytest.raises(RefreshError, match="does not decode as UTF-8"):
+        owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION, trace=traces.append)
+    assert traces[0]["candidates"][-1]["outcome"] == "decode_failure"
+    assert traces[0]["source"] is None
+
+
+@pytest.mark.parametrize("url", ["https://foreign.example/ex991.htm", f"{ARCHIVE_BASE}/index.htm", f"{ARCHIVE_BASE}/index-headers.html", f"{ARCHIVE_BASE}/filing-index-headers.html"])
+def test_sec_initial_ineligible_url_is_rejected_before_any_request(_sec_mock_transport, url):
+    from engine.earnings_release.receipts import ReceiptError
+    owner, calls, _ = _sec_mock_transport
+    with pytest.raises(ReceiptError):
+        owner._http_get_sec_exhibit(url, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert calls == []
+
+
+def test_sec_real_acquisition_repeated_source_keeps_original_receipt_and_generation(_sec_mock_transport, tmp_path):
+    owner, _, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = plain(url)
+        responses[url] = lambda url=url, status=status, body=body: _sec_synthetic_response(url, status, body)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake, http_get=owner._http_get) == 0
+    first = _marker(tmp_path)
+    prior = json.loads((tmp_path / "event_workspaces" / "generations" / first["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    source = next(s for s in prior["sources"] if s["kind"] == "issuer_release")
+    original_receipt = source["acquisition_receipt"]
+    puts = len(fake.puts)
+    assert _refresh(tmp_path, fake, http_get=owner._http_get, prior_workspace=prior) == 0
+    second = _marker(tmp_path)
+    assert second["generation_id"] == first["generation_id"]
+    assert fake.puts[puts:] == []
+    current = json.loads((tmp_path / "event_workspaces" / "generations" / second["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    assert next(s for s in current["sources"] if s["kind"] == "issuer_release")["acquisition_receipt"] == original_receipt
+
+
+@pytest.mark.parametrize("prior_kind", ["first", "old_source_without_receipt", "new_transport_same_body"])
+def test_sec_acquisition_cutoff_survives_actual_generation_write(_sec_mock_transport, tmp_path, prior_kind):
+    """Synthetic acquisition facts; exercise BOTH builder and immutable writer."""
+    from copy import deepcopy
+    from engine.company_intelligence.event_workspace import WorkspaceError, _utc
+    owner, _, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = plain(url)
+        responses[url] = lambda url=url, status=status, body=body: _sec_synthetic_response(url, status, body)
+    filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    acquired = "2026-10-24T21:00:00.123456Z"
+    filing["acquisition_receipt"]["acquired_at"] = acquired
+    tx, tx_sha = _transcript()
+    kwargs = dict(registry=apple_registry(), ticker="AAPL", asof=AAPL_CALL_DATE,
+        fiscal_period=flagship_fiscal_period(), exhibit_body=filing["exhibit_body"],
+        transcript=tx, transcript_sha256=tx_sha, source_available_at=ACCEPTANCE)
+    observed = "2026-10-24T21:00:00.123456Z" if prior_kind == "first" else "2026-08-16T18:00:00Z"
+    prior_receipt = None
+    if prior_kind == "new_transport_same_body":
+        prior_receipt = {**filing["acquisition_receipt"], "acquired_at": "2026-08-17T18:00:00.987654Z", "content_type": "text/html"}
+    row = build_event_workspace(**kwargs, filing=filing, observed_at=observed,
+        prior_observed_at=observed, prior_source_sha256=filing["acquisition_receipt"]["source_sha256"],
+        prior_acquisition_receipt=prior_receipt)
+    assert _utc(row["generated_at"], field_name="generated_at") >= _utc(acquired, field_name="acquired_at")
+    directory = write_workspace_generation(tmp_path, {row["event_id"]: row})
+    manifest = json.loads((directory / "manifest.json").read_text())
+    emitted = json.loads((directory / "workspaces" / f"{row['event_id']}.json").read_text())
+    original_manifest_bytes = (directory / "manifest.json").read_bytes()
+    original_row_bytes = (directory / "workspaces" / f"{row['event_id']}.json").read_bytes()
+    assert emitted["generated_at"] == manifest["generated_at"] == "2026-10-24T21:00:01Z"
+    assert emitted["lifecycle"] == row["lifecycle"]
+    source = next(s for s in emitted["sources"] if s["kind"] == "issuer_release")
+    assert source["acquisition_receipt"]["acquired_at"] == acquired
+    validate_generation_clocks(manifest, {row["event_id"]: emitted})
+    bad_manifest, bad_row = deepcopy(manifest), deepcopy(emitted)
+    bad_manifest["generated_at"] = bad_row["generated_at"] = "2026-10-24T21:00:00Z"
+    with pytest.raises(WorkspaceError):
+        validate_generation_clocks(bad_manifest, {row["event_id"]: bad_row})
+    # A valid identical repeat retains the original actual fact and cutoff.
+    repeat_filing = deepcopy(filing)
+    repeat_filing["acquisition_receipt"]["acquired_at"] = "2026-10-25T21:00:00.654321Z"
+    repeated = build_event_workspace(**kwargs, filing=repeat_filing, observed_at="2026-10-25T21:00:01Z",
+        prior_observed_at=observed, prior_source_sha256=source["source_sha256"],
+        prior_acquisition_receipt=source["acquisition_receipt"])
+    repeat_dir = write_workspace_generation(tmp_path, {row["event_id"]: repeated})
+    assert repeat_dir == directory
+    assert (repeat_dir / "manifest.json").read_bytes() == original_manifest_bytes
+    assert (repeat_dir / "workspaces" / f"{row['event_id']}.json").read_bytes() == original_row_bytes
+
+
+@pytest.mark.parametrize("location", ["index.htm", "index.html", "index.txt", "index-headers.html", "filing-index.htm", "filing-index.html", "filing-index-headers.html", "filing-index-headers.txt", "./canonical.htm", "../canonical.htm", "a/../canonical.htm", "%63anonical.htm", "a\\canonical.htm", "canonical.htm?", "canonical.htm#", "https:canonical.htm", "https:/canonical.htm"])
+def test_sec_redirect_rejects_index_and_raw_normalization_before_follow(_sec_mock_transport, location):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": location})
+    with pytest.raises(owner.RefreshError):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
