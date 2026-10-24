@@ -68,6 +68,24 @@ class GCFailClosedTests(unittest.TestCase):
             self.assertEqual(result["skipped_safety"], [str(path)])
             shell.assert_not_called()
 
+    def test_gc_dry_run_is_only_a_candidate_not_deletion(self):
+        with TemporaryDirectory() as t:
+            repo = Path(t) / "owner"
+            path = Path(t) / "wf_candidate"
+            repo.mkdir()
+            path.mkdir()
+            candidate = {"path": path, "branch": "wf_candidate", "locked": False}
+            with patch.object(gc_mod, "_list_worktrees", return_value=[candidate]), \
+                 patch.object(gc_mod, "_is_live_main_checkout", return_value=False), \
+                 patch.object(gc_mod, "_has_open_files", return_value=False), \
+                 patch.object(gc_mod, "_branch_merged_into_main", return_value=True), \
+                 patch.object(gc_mod, "_ready_for_delete") as admitted, \
+                 patch.object(gc_mod.subprocess, "run") as shell:
+                result = gc_mod.gc(repo, dry_run=True)
+            self.assertEqual(result["reaped"], [str(path)])
+            shell.assert_not_called()
+            admitted.assert_not_called()
+
     def test_locked_worktree_hard_denied(self):
         with TemporaryDirectory() as t:
             repo = Path(t) / "owner"

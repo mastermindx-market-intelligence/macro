@@ -311,7 +311,9 @@ def _ready_for_delete(repo_root: Path, wt_path: Path, branch: str, *, locked: bo
             or not 0 <= time.time() - float(r.get("checked_at", 0)) <= 3600):
             return False
         # Race guard: require exact renewed status/liveness immediately before removal.
-        return probe(wt_path, "status", "--porcelain=v1", "--untracked-files=all") == "" and not _has_open_files(wt_path)
+        return (probe(wt_path, "rev-parse", "HEAD") == tip
+                and probe(wt_path, "status", "--porcelain=v1", "--untracked-files=all") == ""
+                and not _has_open_files(wt_path))
     except Exception as exc:  # noqa: BLE001
         log.warning("GC: deletion admission denied for %s: %s", wt_path, exc)
         return False
