@@ -13,7 +13,7 @@ status: done
 program: qualitative-intelligence
 repos:
   - macro
-owner: Eval-OS session (COO Fable lane)
+owner: Intelligence Evaluation OS programme lead (current Chairman-assigned principal)
 class: build
 blast_radius: reversible
 ambiguity: specified
@@ -25,6 +25,7 @@ owns_paths:
   - tests/test_check_intelligence_registry.py
   - config/intelligence_registry_overlay.yml
 decisions:
+  - "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024"
   - "DEC:EVAL-OS-BLINDNESS-EXITS-BY-PLANE"
 waves:
   - id: W1
@@ -55,7 +56,15 @@ next_action: >
   two deliberate output_class nulls as durable residue. Any T4 output-health work, T12 Agent OS
   tier interface, prospective evidence accrual, cortex two-species adjudication, options_structure
   curation, or T7/T8 measurement belongs to its own canonical workstream/wave and does not reopen T1.
+artifacts:
+  - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
 ---
+
+## Wave audit — 2026-10-24
+
+W1, W2 and W3 remain done, and the workstream remains done. Preserve the recovered parked build, #5620 fix-wave acceptance and the bounded 107/109 curation with two deliberate nulls. The retained current A1 population of 650 output artifacts is a different denominator and does not reopen this registry objective. The current programme-lead role carries any new downstream acceptance through WS:EVAL-OS-EVIDENCE-VIEW A1; no registry rebuild or automatic null-filling is commissioned.
+
 
 ## State (2026-08-14)
 

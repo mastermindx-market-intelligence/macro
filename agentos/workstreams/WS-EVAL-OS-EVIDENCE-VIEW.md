@@ -12,7 +12,7 @@ status: active
 program: qualitative-intelligence
 repos:
   - macro
-owner: Eval-OS program (CEO Sol; bounded operator implementation)
+owner: Intelligence Evaluation OS programme lead (current Chairman-assigned principal)
 class: build
 blast_radius: reversible
 ambiguity: specified
@@ -21,24 +21,29 @@ depends_on:
   - "WS:EVAL-OS-OUTPUT-HEALTH"
 decisions:
   - "DEC:EVAL-OS-RECOVERY-ARCHITECTURE-FREEZE"
+  - "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024"
 waves:
   - id: A1
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
+    depends_on: []
     next_action: >
-      PR6651 merged as 4579f45 and follow-on PR10130 as 5aae3c5 on 2026-10-24.
-      Preserve accepted source, CI, installation and exact-asset A1 proof. Complete changed
-      authenticated numeric/log and panel/detail consumption, real production cache/coherence
-      qualification and independent operator comprehension under the existing effect owners.
-      The original SecurityAgent consent holds only its dependent browser action.
+      The current programme lead continues A1 acceptance of merged #6651/4579f45 and
+      #10130/5aae3c5. First qualify the actual released selected-store read path with
+      bounded production population/coherence/latency/memory evidence and truthful
+      engine/output denominators; reuse accepted unchanged source and visual proof.
+      Then bind permitted real authenticated requests to numeric/internal-log evidence
+      and obtain independent operator comprehension. Preserve the existing SecurityAgent
+      consent and exact unknown effects; do not retry a denied action. A1 does not wait
+      for W4 natural-time completion, a historical owner session or #10079 activation.
 next_action: >
-  Continue residual acceptance of the released #6651/#10130 source using the 2026-10-24
-  census masterplan in Draft PR10168 and original root 01a1333d-b0c0-7f33-9259-dd718391d9e4.
-  Preserve the existing SecurityAgent consent and UNKNOWN effects on their original carriers.
-  Reuse unchanged A1 visuals by exact asset identity; prove changed numeric/internal-log
-  correlation, selected-store coherence/performance and operator comprehension. Natural
-  post-release owner progression remains independently qualified. Programme and production
-  acceptance remain partial; do not reopen either merged implementation PR.
+  Execute A1's bounded released-reader qualification now under the current programme-lead
+  role, recording exact source, population, coherence and resource limits in this record.
+  Continue other safe A1 acceptance slices while the original authenticated action is held.
+  Record actual live-writer/effect boundaries narrowly; do not wait for an absent owner or
+  archived chat. Obtain fresh non-authoring review of changed source and remaining proof;
+  no author self-approval or self-merge. The wave table, not a separate masterplan, owns
+  current status, prerequisites and next action.
 owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
@@ -62,13 +67,33 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
-  - research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md
-  - agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md
+  - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
 ---
 
-## 2026-10-24 Pro census frontier
+## A1 audited frontier and executable acceptance — 2026-10-24
 
-PRs #6651 and #10130 are merged; the 15-file affected installation and bounded CLI/Discovery/asset receipts are retained. Full follow-on authenticated consumption, production cache/coherence/performance, operator comprehension and natural owner progression remain open. The census and exact proof limits are in research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md (Draft #10168). Original source/effect custody and all completion flags are preserved. Historical sections below are retained evidence, not current instructions to merge #6651 again.
+**Status: in_progress. Top product wave: A1.** The original objective, five evidence bands and T1/T4 dependency boundaries remain unchanged. Nine sibling waves are accepted; this record does not reopen them. The current Chairman-assigned principal holds programme leadership. The original Codex root and PR authors remain provenance and the carriers of their specific live/unknown effects, not required owners for ordinary continuation.
+
+| Acceptance slice | Existing evidence | Next observable result / responsible role |
+|---|---|---|
+| Source, integration and installation | #6651 merged 4579f45; #10130 merged 5aae3c5; retained source CI and 15 affected installed-file checks | Programme lead preserves accepted bytes; qualify only a material changed source/dependency or missing consumer boundary. |
+| Canonical identity and disposition | Retained authenticated A1 observation: 385 canonical engines + one gap; 650 outputs; 301 assessed; 455 null classes; zero Validated | Product/measurement role verifies the actual selected provider and distinguishes engine counts, output counts, missing, zero, ungraded and degraded states. Historical 107/109 curation is a different population. |
+| Selected-store coherence and production resource use | Bounded local A28 probe: 647 artifacts / about 446 MiB, hit 1.293s, forced 12.810s; local 1 GiB/60s probe limits | Storage/performance role observes the installed bounded reader on the real estate: source/process epoch, population, cold/hit/refresh duration and process RSS; honest coherent/fail-closed status. No live mutation, cutover, stress load or production SLO is inferred from local limits. |
+| Authenticated panel/detail and numeric/log correlation | Accepted A1 eight-cell journey and exact-asset reuse; follow-on code installed; current follow-on request not proved | Product/integration role correlates one permitted real request, selected evidence, numeric result and internal log. Original OS consent remains held; the rubric is internal and absent from user/admin response fields. |
+| Operator comprehension and independent acceptance | Bounded source/visual reviews retained within their exact scopes | A fresh non-authoring reviewer identifies measured horizon/cohort, missing evidence, health/support distinction and permitted next action from the qualified journey. Unknown old review effects remain separately reconciled. |
+| Natural evidence and scientific limits | Three general clocks and historical scheduled observations exist; W4 current progression remains partial | Display incomplete accrual honestly. Do not make A1 depend on W4 completion, new market outcomes or every original programme obligation. No promotion or financial authority is introduced. |
+
+### Immediate bounded action
+
+Use the actual installed A1 reader and an explicitly read-only, bounded observation to resolve the missing production population/coherence/resource slice. Preserve actual live writers. If access is refused, terminate that exact action and continue a different permitted acceptance slice; do not reword or switch carriers to repeat the denial. No browser authentication workaround, credentials, data mutation, service restart, cache purge or QLedger activation is part of this action. Record the measured scope and remaining limits here.
+
+The local October T01–T24 task graph remains historical commission/acceptance evidence. It is not a second wave authority and its all-programme T21/T22/T23 closure edges do not create a new dependency on this bounded A1 objective. Ordinary work is assigned to roles under current leadership; the exact SecurityAgent consent and actual STARTed/UNKNOWN effects retain their own carriers.
+
+### Handoff contract
+
+Recipient: A1 storage/performance acceptance role, currently carried by the assigned programme lead. One action: return the bounded released-reader observation specified above. Source: this workstream's A1 wave and acceptance table at the reviewed candidate revision. Return location: this record's dated evidence section, with the receipt linked from Draft #10168. A returned result is reviewed independently before any stronger completion claim. The author does not self-approve or self-merge.
+
 
 
 ## Current tested-merge dependency repair — 2026-10-15

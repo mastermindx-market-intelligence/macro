@@ -15,7 +15,7 @@ status: done
 program: qualitative-intelligence
 repos:
   - macro
-owner: Eval-OS program (CEO Sol; Fable COO execution lane)
+owner: Intelligence Evaluation OS programme lead (current Chairman-assigned principal)
 class: build
 blast_radius: reversible
 ambiguity: specified
@@ -28,6 +28,7 @@ owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
 decisions:
+  - "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024"
   - "DEC:EVAL-OS-T4-ADMIN-SURFACE"
   - "DEC:EVAL-OS-RECOVERY-ARCHITECTURE-FREEZE"
 waves:
@@ -62,7 +63,15 @@ next_action: >
   None for T4 output health. This bounded workstream is complete and PROVEN_LIVE. Any T7/T8
   evidence-scorecard/CEO-view work is a separate Eval OS wave under the recovery architecture and
   requires a fresh operation/carrier; do not reopen H1 or use this workstream as score authority.
+artifacts:
+  - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
 ---
+
+## Wave audit — 2026-10-24
+
+W1 and W2 remain done, and the workstream remains done. W1 source #5721 and W2/H1 authenticated deployed-estate acceptance are retained within the original objective. No current counter-evidence reopens either wave. The current programme-lead role preserves this accepted substrate; T7/T8 and follow-on consumer work proceed under WS:EVAL-OS-EVIDENCE-VIEW A1. Source installation, output health, empirical support and authority remain different facts.
+
 
 ## Reconciliation — 2026-08-27
 

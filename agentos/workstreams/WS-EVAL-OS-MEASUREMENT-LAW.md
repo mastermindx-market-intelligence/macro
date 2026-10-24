@@ -13,13 +13,14 @@ status: active
 program: qualitative-intelligence
 repos:
   - macro
-owner: Eval-OS program (CEO Sol; bounded operator recovery lanes)
+owner: Intelligence Evaluation OS programme lead (current Chairman-assigned principal)
 class: build
 blast_radius: reversible
 ambiguity: scoped
 decisions:
   - "DEC:EVAL-OS-RECOVERY-ARCHITECTURE-FREEZE"
   - "DEC:EVAL-OS-DARK-WORKER-RECOVERY-2026-08-29"
+  - "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024"
 waves:
   - id: W1
     title: Architecture + metric validity
@@ -36,11 +37,15 @@ waves:
   - id: W4
     title: Append-only law + forward-only accrual
     status: in_progress
+    depends_on: [W2, W5]
     next_action: >
-      General evidence clocks now exist for demand_chain (2026-08-19), stock_desk (2026-08-29)
-      and thematic_desk (2026-08-31). Preserve their original receipts. Current runner-local
-      control qualification, cohort exclusion and genuine normal-run evidence still require
-      owner evidence; absence in Git is not absence in runtime.
+      The current programme lead inspects the existing producer/grader and runner-local
+      control/cohort receipts, preserving demand_chain 2026-08-19, stock_desk 2026-08-29
+      and thematic_desk 2026-08-31 general clocks. Identify the next genuine normal
+      publication and verify its selected-store consumption. Protect the QLedger integration
+      writer evidenced in the 2026-10-24T18:09Z recovery return and any unknown cutover
+      effect; an absent historical owner alone is not a wait condition. Do not force a run,
+      remint clocks or use the pre-release scheduled receipt as post-release proof.
   - id: W5
     title: Control-leg decision
     status: done
@@ -49,14 +54,36 @@ waves:
       is required only where governed policy names a defensible counterfactual. stock_desk and
       demand_chain are matched-control-required; thematic_desk is benchmark-only. #5665/#5672
       repaired demand-chain wiring/replay semantics.
+  - id: W6
+    title: Final composed promotion and clock-integrity acceptance
+    status: todo
+    depends_on: [W2, W3, W5]
+    next_action: >
+      Reuse the landed direction, ruler, correction and readiness tests, then bind their
+      adversarial conclusions to the actual released selected-store/consumer path.
+      Verify lawful horizon, market, direction, denominator, cohort and control basis;
+      missing or ineligible evidence must remain explicit and readiness must grant no
+      promotion or financial authority. Obtain fresh non-authoring acceptance for the
+      remaining exact-source scope. W3 remains done; this is its explicitly reserved
+      continuation, not a rebuild or a requirement for new market outcomes.
+  - id: W7
+    title: Staged invalid-emitter qualification and strict-hardening disposition
+    status: todo
+    depends_on: [W1, W6]
+    next_action: >
+      Qualify current affected emitters through the existing metric-validity CLI and
+      staged enforcement path, preserving accepted tests and WARN-tier behavior until
+      the actual rollout gates are satisfied. Record emitter coverage, exclusions,
+      observability and rollback evidence. Do not infer fleet-wide strict activation
+      from a merged substrate, a source-only change or this documentation PR.
+
 next_action: >
-  Preserve all three accepted general clocks and the merged #6651/#10130 measurement source.
-  Follow the 2026-10-24 census masterplan in Draft PR10168 for final composed authority-path
-  acceptance, current control/cohort qualification and genuine subsequent post-release
-  producer/grader evidence. QLedger storage PR10079 remains with owner root
-  01a153e8-3c85-7bb2-af63-7f477b570512 and is not qualified or activated by this plan.
-  The retained pre-release scheduled run is historical evidence, not a post-release pass.
-  Do not remint a clock, force a grade, activate global strict validity or repeat merged work.
+  Execute W4's read-only control/cohort and normal-publication evidence inspection under
+  current role-based programme leadership; protect actual live writers and unknown effects.
+  Prepare W6 on the released #6651/#10130 source using accepted evidence, then W7 under
+  its declared prerequisites. The top product continuation is the independently executable
+  WS:EVAL-OS-EVIDENCE-VIEW A1; W4 natural-time completion is not an A1 dependency.
+  Use the wave records as the execution authority and the dated audit only as evidence.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -87,13 +114,36 @@ artifacts:
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
-  - research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md
-  - agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md
+  - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
 ---
 
-## 2026-10-24 Pro census frontier
+## Wave audit and leadership continuity — 2026-10-24
 
-Source and bounded installation/consumer evidence have advanced beyond the old pre-merge frontier. #6651 merged as 4579f45 and #10130 as 5aae3c5. General clocks, accepted direction/ruler work and existing control policy remain intact. Current owner-local control/cohort qualification, natural post-release progression, final composed authority acceptance and original empirical residuals remain partial. Draft #10168 reconciles all original obligations and preserves the exact held effects. No strict-mode or storage activation is introduced.
+The existing objective and wave identities are the source of execution state. The Chairman's current instruction assigns the programme-lead role to the present principal. Historical roots, PR authors and absent sessions are provenance, not mandatory approval recipients. Actual active writes, pending effects, explicit denials and exact authentication consent remain protected. The original root's T03 advancement is retained; the reported active QLedger alias/entry-point integration is not taken over or duplicated.
+
+| Wave | Audited status | Evidence and acceptance boundary |
+|---|---|---|
+| W1 | done | #5471 accepted the architecture/validity substrate. WARN-tier defaults do not prove global strict enforcement; W7 carries that reserved residue. |
+| W2 | done | #5559 and corrective #5563 accepted the horizon/market substrate. Preserve 5/21/63 grade limits and explicit declared rulers. |
+| W3 | done | #5519, #5573, #5572 and later legality repairs are retained. W6 represents the final composed-path acceptance explicitly reserved by this wave. |
+| W4 | in_progress | All three general clocks exist. Current owner-local control/cohort qualification and genuine subsequent progression remain partial. Historical scheduled run 38406512307 is not a post-release pass. |
+| W5 | done | P0d/#5609, #5665 and #5672 establish benchmark/control policy and wiring; stock/demand require governed controls, thematic is benchmark-only. |
+| W6 | todo; added with rationale | Original P1/T17 composed acceptance was already reserved in W3 but absent from waves[]. It depends on accepted W2/W3/W5 and does not reopen them. Pass requires the released authority-consumer path, adversarial proof and independent acceptance. |
+| W7 | todo; added with rationale | Original T0/T3/G1 strict-hardening residue was already reserved in W1. It depends on W1/W6. Pass requires affected-emitter qualification and an explicit governed enforcement disposition, not an automatic strict flip. |
+
+W4 depends on W2/W5 because clock/cohort legality uses the accepted market and control contracts; both are already done. W6 and W7 expose previously declared obligations rather than enlarging the programme. No accepted wave is superseded or reopened, and no new programme/workstream is created.
+
+### Programme boundaries retained
+
+The August recovery decision still owns the original T0–T12 obligations. T2 benchmark/MFE/MAE, outcome-dependent T5 taxonomy, original T6 historical PIT/adjudication, broader T9 adoption and T10–T12 consumer/adoption residue remain explicitly assessed in the dated audit. They are not silently counted complete by these bounded wave states. The programme-lead role owns their reconciliation through existing source owners; a later separately specified empirical build belongs in an explicit bounded canonical wave, not a second plan or automatic cross-project commission.
+
+A1 can complete its honest read-only product objective while W4 accrual remains incomplete. There is no A1 dependency on W4, QLedger #10079 activation, every empirical legacy objective, or the October commission's global T22–T24 closure chain. Programme completion remains false.
+
+### Source-linked continuation
+
+Recipient: current Intelligence Evaluation OS programme lead. Action: execute the highest-value safe A1 acceptance slice while W4 and W6 retain their explicit independent work. Source: WS:EVAL-OS-EVIDENCE-VIEW.md, wave A1 and its acceptance table. Return: the A1 workstream evidence section and the dated handoff in this Draft PR. Any independent review binds an exact candidate revision; the author neither approves nor merges their own change.
+
 
 
 ## Reconciliation — 2026-08-27

@@ -1,38 +1,34 @@
 {
-  "schema": "eval_os.docs_validation_receipt.v1",
-  "observed_at": "2026-10-24T18:14:54.667567+00:00",
+  "schema": "eval_os.wave_correction_validation.v1",
+  "observed_at": "2026-10-24T19:10:19.063276+00:00",
   "command": [
     "python3",
     "/Users/chriswong/gwcap/agentos-mirror/macro/scripts/agentos.py",
     "validate",
     "--root",
-    "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/census-20261024-pro/validation-store",
+    "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/census-20261024-pro/wave-correction/validation-store",
     "--quiet"
   ],
   "returncode": 0,
-  "changed_records": [
-    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+  "summary": "agentos: 1964 records (108 workstreams, 523 decisions, 562 discoveries, 771 handoffs) — 0 error(s), 1087 warning(s)",
+  "record_paths": [
     "agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md",
-    "agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md"
+    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+    "agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md",
+    "agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md",
+    "agentos/decisions/DEC-EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024.md",
+    "agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md"
   ],
-  "source_delta_sha256": "00d4e698a060ebc1224322a93c43f2c717ca2ddbc51f599f16af2d2012409eda",
-  "log_sha256": "dfe7601051dec411d6d0f43d27d24f4f592db47672233213c87bbac47ef25dfc",
-  "full_store_copy": true,
-  "canonical_store_mutated": false,
-  "generated_views_written": false,
-  "log_lines": 1,
-  "baseline_returncode": 0,
-  "baseline_summary": "agentos: 1962 records (108 workstreams, 522 decisions, 562 discoveries, 770 handoffs) — 0 error(s), 1079 warning(s)",
-  "candidate_summary": "agentos: 1963 records (108 workstreams, 522 decisions, 562 discoveries, 771 handoffs) — 0 error(s), 1083 warning(s)",
-  "added_diagnostics_normalized": [
-    "::warning title=agentos-phantom-artifact::<STORE>/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md: [phantom-artifact] artifacts entry 'research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md' does not exist in repo 'macro'",
-    "::warning title=agentos-phantom-artifact::<STORE>/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md: [phantom-artifact] artifacts entry 'agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md' does not exist in repo 'macro'",
-    "::warning title=agentos-phantom-artifact::<STORE>/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md: [phantom-artifact] artifacts entry 'research/INTELLIGENCE_EVALUATION_OS_MASTERPLAN_2026-10-24.md' does not exist in repo 'macro'",
-    "::warning title=agentos-phantom-artifact::<STORE>/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md: [phantom-artifact] artifacts entry 'agentos/handoffs/EVAL-OS-PRO-CENSUS-2026-10-24.md' does not exist in repo 'macro'",
-    "agentos: 1963 records (108 workstreams, 522 decisions, 562 discoveries, 771 handoffs) — 0 error(s), 1083 warning(s)"
-  ],
-  "removed_diagnostics_normalized": [
-    "agentos: 1962 records (108 workstreams, 522 decisions, 562 discoveries, 770 handoffs) — 0 error(s), 1079 warning(s)"
-  ],
-  "warning_disposition": "Baseline has1079warnings. Candidate adds4phantom-artifact warnings for the new masterplan/handoff referenced by both changed workstreams; scripts/agentos.py resolves artifact existence against its unchanged mirror _ROOT, outside the supplied record-store copy. Both exact files are included in this Draft PR. No schema errors or unrelated record changes were introduced; warnings are not claimed resolved in the mirror."
+  "workstreams": 4,
+  "total_waves": 13,
+  "statuses": {
+    "done": 9,
+    "in_progress": 2,
+    "todo": 2
+  },
+  "original_nine_done_preserved": true,
+  "A1_no_W4_dependency": true,
+  "all_local_wave_dependencies_resolve": true,
+  "source_delta_sha256": "3746954030997295d1443e59b1bc1113f6d070a36420b749f3e87a09adedb6de",
+  "scope": "Schema and authored graph validation on a copied record store. Artifact joins still resolve against the unmodified mirror; this is not product acceptance."
 }
