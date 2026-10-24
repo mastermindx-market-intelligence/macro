@@ -1,3 +1,13 @@
+## Compatible mainc6f integration — 23 October 2026 (CDT)
+
+The newer main c6f6484ce53b897fbaf35d9727bab0ba90b3561a merges cleanly with the main94d native-qualification commit 0ae44a8a. All 56 producer/template pins, 556 Git-bound inputs and 29 supporting assets still match the completed main94d generation. The native page remains exactly 728,415 bytes with SHA256 1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8. No material invalidator or repeated native build occurred.
+
+The new main94d generation already passed all 14 guarded native checks. Its two committed-page contracts are qualified, including the sparse-checkout CSS materialization recorded in the prior receipt. The exact merged-head contract and normal publication are the next gates; their post-commit results belong in the canonical PR9590 checkpoint. Real visual evidence, independent review and production acceptance remain open.
+
+Evidence: evidence/main_c6f_compatibility_20261024.json and evidence/page_adoption_main94d_20261024.json.
+
+---
+
 ## Main94d native qualification after nightly data changes — 23 October 2026 (CDT)
 
 The nightly main94d snapshot changed 218 of 556 Git-bound inputs. The new finite source image contains 562 actual retained inputs (58,493,472 bytes): 537 exact market-data files, 19 assets, and six unchanged October15 holdings/sample inputs. All 56 producer/template pins and 29 supporting assets remain unchanged. Exact needed Git objects were fetched together while the original image preparation continued; no provider acquisition occurred.
