@@ -5733,6 +5733,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - app/__init__.py
@@ -13112,6 +13114,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "lib/shared_shell.py"
@@ -17417,6 +17421,8 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
@@ -21293,6 +21299,8 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
@@ -21555,6 +21563,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
@@ -24616,6 +24626,8 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "engine/theme_graph/theme_state_gap.py"
       - "engine/theme_graph/theme_state_w2_qualification.py"
