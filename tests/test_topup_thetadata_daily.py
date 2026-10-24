@@ -1920,7 +1920,7 @@ def observation_case(tmp_path, monkeypatch):
             if mode['kind']=='late':clock['value']=100.
             return frame
     config=topup._DSessionObservation(private,'01a156f1-f450-7793-8951-bddadd4784c2',
-        '01a15700-1ae2-7a73-9756-f1546da7ace8',Transport())
+        '01a15700-1ae2-7a73-9756-f1546da7ace8',Transport(),session_day=D_MID)
     return SimpleNamespace(store=store,private=private,config=config,calls=calls,mode=mode,clock=clock,
         ctx=topup.RunContext(D_MID,S_MID,False),now=_et(2026,8,19,17,30),
         receipt=private/f'spy-{D_MID.isoformat()}-1730-observation-v1/receipt.json')
@@ -2282,3 +2282,21 @@ def test_d_observation_inflight_deadline_is_sticky_unknown_without_capture_threa
     assert closed==([True] if phase=='body' else [])
     again=topup._observe_spy_d_session(c.store,c.ctx,c.now,time.monotonic()+2,config,request_options={'version':'1'})
     assert again['reason']=='existing_observation_claim' and len(calls)==1
+
+
+@pytest.mark.parametrize('binding',[None,date(2026,8,18),date(2026,8,20),'2026-08-19'])
+def test_d_observation_session_binding_refuses_before_local_read_and_claim(observation_case,monkeypatch,binding):
+    from dataclasses import replace
+    c=observation_case
+    monkeypatch.setattr(topup,'_d_session_local_oi',lambda *a:pytest.fail('Unbound operation reached local-source preflight'))
+    out=_run_observation(c,config=replace(c.config,session_day=binding))
+    assert out['reason']=='observation_session_not_bound' and out['attempts']==0
+    assert not c.calls and not c.receipt.parent.exists()
+
+
+def test_d_observation_receipt_binds_exact_session_operation(observation_case):
+    c=observation_case;out=_run_observation(c)
+    assert out['state']=='OBSERVED_COMPLETE'
+    record=json.loads(c.receipt.read_text())
+    assert record['bound_session']==D_MID.isoformat()
+    assert record['operation_ref']==f'spy-{D_MID.isoformat()}-1730-observation-v1'

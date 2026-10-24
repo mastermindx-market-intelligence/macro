@@ -680,6 +680,7 @@ class _DSessionObservation:
     original_root: str
     assigning_parent: str
     transport: Callable | None = None
+    session_day: _date | None = None  # one prospective operation, never a daily allowance
 
 
 def _d_session_coverage(eod, greeks, oi_d, oi_s, *, D, S, requested_version):
@@ -816,6 +817,8 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
             or entered_et.date() != ctx.D
             or entered_et.time().replace(second=0, microsecond=0) != _time_of_day(17, 30)):
         return outcome
+    if type(config.session_day) is not _date or config.session_day != ctx.D:
+        return dict(outcome, reason='observation_session_not_bound')
     if request_options != {'version': '1'}:
         return dict(outcome, reason='greek_request_policy_unestablished')
     if _time.monotonic() >= deadline_at:
@@ -840,6 +843,7 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
         return dict(outcome, reason='existing_observation_claim')
     _eod_sync_directory(parent)
     record = dict(outcome, schema='options.d_session_observation/v1', state='PREPARED',
+        operation_ref=directory.name, bound_session=config.session_day.isoformat(),
         reason=None, original_root=config.original_root, assigning_parent=config.assigning_parent,
         entered_at=entered_at.isoformat(), started_at=datetime.now(timezone.utc).isoformat(),
         first_availability=None, market_universe_complete=None, model_scope=None,

@@ -835,3 +835,12 @@ loopback slow-drip regressions cover both phases. No background capture thread
 is launched; an interrupted physical request stays `EFFECT_UNKNOWN` in its
 exclusive journal and cannot start its second request or be replayed. Closing
 our client connection does not certify the provider-side outcome.
+
+The trusted optional configuration must bind one exact `session_day` (default
+None). A missing, non-date or different session refuses before local OI reading,
+claim creation or any pilot request. Its receipt retains that bound session and
+computed `spy-YYYY-MM-DD-1730-observation-v1` operation identity. Reusing this
+configuration on another session does not carry its allocation forward. Neither
+a date label nor configuration construction authenticates an operator or grants
+provider access; the actual one-operation allocation and installation/custody
+preconditions remain separate. No CLI/environment entry is enabled here.

@@ -439,3 +439,10 @@ worker is detached. After a physical attempt the journal preserves unknown
 provider outcome/no-replay even when local cancellation/disconnection succeeds.
 These controls have local loopback/mock tests only; no production host, session
 allocation, installation or activation is established by that evidence.
+
+For a later admitted one-session binding, supply both the transport's fixed date
+and `_DSessionObservation.session_day` with the same exact allocated date.
+Default None withholds; a mismatch refuses before local-source preflight/claim.
+The native receipt records `bound_session` and the computed exact operation_ref.
+This source interface does not activate a schedule or roll a two-attempt
+allocation into a recurring allowance.
