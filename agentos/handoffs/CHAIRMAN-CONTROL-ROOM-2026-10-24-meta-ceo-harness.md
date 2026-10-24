@@ -773,3 +773,29 @@ Topology preparation actual START1792883822.186639: bc-7072b0b1-6da7-57bf-9204-0
 isolatedCursorVM, defaultmodel, protected3095, sixnewpaths. No topology execution.
 Commission interim1792883692.106129 is session monitoring, not R5-reconciliation proof.
 MISSION_COMPLETE=false; no final RESULT.
+
+### T2 draft execution-order amendment
+
+T2.A2 explicitly permits isolated12-path UI draft implementation against the fixed
+unmerged#1859/40d685dc935506455fe0342c5059afbd76354de1 dependency while final backend
+review/fallback proof proceeds. This parent planning change follows the real mounted
+producer121tests/210SQL maxchain, strict API, genuine positive bytes and resolved
+UI source separation. It preserves all final review/head-binding/source qualification/
+release/installed/product gates and existing admission; a blocked source arrangement
+must be reported without changing admission. No T2 placement has been sent yet.
+
+The draft must label its exact parent and stack on the #1859 branch, own only12paths,
+preserve #1473 Executive code and all inherited backend files, and report any parent
+drift. No fabricated fallback, force/reset, opportunistic rebase, PR approval/merge,
+provider/account/credential action or final qualification before dependencies close.
+
+R3 repair1792885269.523659 and T1.R1 review1792885279.683489 are delivered after
+task74b91156; actual STARTs remain distinct. #1859/40d CIshards0/1SUCCESS, shard2
+running at23:44UTC. Root read actual repaired Fabric notes propagation, maxchain
+and mounted exporter, without replacing required independent review.
+
+ACP source advice found an incumbent current_authority_snapshot for actual sealed
+Attempt authority, but no complete live join to child session/process/artifact/tool
+generation. The one-shot v2 admission ACK, fixture state.allowed and test build
+cannot serve as that join. Preserve #1856 refusal; no new source/activation task.
+MISSION_COMPLETE=false; no final RESULT.

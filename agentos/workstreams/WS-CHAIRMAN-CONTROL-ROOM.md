@@ -292,7 +292,8 @@ do_not_redo:
 next_action: >
   For Mastermind #1841, place pinned HC-P6.T1.R1 on frozen #1859/40d for source
   challenge while reconciling same-child A1 fallback proof. Bind final head/delta
-  before PASS; only then place the prepared T2 UI slice. Execute pinned Rakazo R3
+  before PASS. Place the isolated T2 draft under explicit A2 on fixed40d, retaining
+  final integration/review gates. Execute pinned Rakazo R3
   label correction on its original author, then same-reviewer delta review.
   Consume topology source/readiness after START1792883822.186639 without execution.
   Reconcile only retained records of the one ambiguous #1790 Fabric request; no retry.
@@ -2405,13 +2406,12 @@ terminal EFFECT_UNKNOWN subjects remain untouched.
   Project Overview -> select one exact Result reference -> one authenticated compound
   read -> atomic Mission/Result presentation -> Project Result card and Today's
   existing Returns to review section. Do not add another picker or source owner.
-- **Readiness:** BLOCKED_ON_T1_EXACT_HEAD_REVIEW_AND_FINAL_SOURCE_PIN. Bounded UI
-  custody/source separation is resolved in T2.CUSTODY below; no implementation
-  child, carrier or source edit is authorized yet. Before placement, pin the actual
-  T1 backend head, independent verdict, fixed response/status contract, genuine
-  associated positive/CONTENT_OVER_BUDGET bytes and refusal evidence. Resolve the
-  existing App/auth source custody below. A protected-source advance alone does not
-  justify rebasing unrelated candidates or replacing their writers.
+- **Readiness:** DRAFT_IMPLEMENTATION_READY under explicit parent amendment T2.A2:
+  isolated twelve-path draft against exact unmerged40d dependency after bounded
+  custody/source separation. Final integration and qualification remain blocked on
+  the actual final T1 independent verdict/head binding and genuine required evidence.
+  No protected-source advance alone permits rebasing unrelated candidates, replacing
+  their writers, broadening scope or treating an unmerged dependency as accepted.
 - **Proposed fleet task when ready:** one separate Cursor implementation child
   meta-ceo-harness-office-ui-cursor-20261024-01 under the existing commission/root/
   parent, followed by a separate exact-head non-author review. Parent must first
@@ -2540,7 +2540,8 @@ native UI/chat and real observation campaigns remain separate gates.
   same-purpose work before a new source assignment. This task only prepares that
   decision; no automatic adoption, overwrite or release.
 - **State:** BOUNDED_CENSUS_COMPLETED; narrow #1473 Executive-source separation
-  is resolved below without adoption or mutation. T2 stays gated on T1 review.
+  is resolved below without adoption or mutation. T2.A2 permits isolated draft work;
+  final integration/qualification stays gated on the final T1 review/head binding.
 
 
 ### HC-P1B.T2 — Prepare the real pinned Rakazo topology journey
@@ -3231,3 +3232,98 @@ If placement/start is uncertain, reconcile same child; no duplicate or alternate
   Its initial SOURCE_PREPARATION_AND_READINESS_ONLY restriction remains.
 - Commission thread interim1792883692.106129 describes monitoring of this active
   session, not R5 reconciliation evidence or a task-completion RESULT.
+
+
+### HC-P6.T2.A2 — Start the isolated UI draft against a fixed producer dependency
+
+**Parent execution-order decision:** permit reversible, isolated T2 draft implementation
+against the actual frozen40d producer while final T1 review/A1 proof proceeds.
+This revises the parent's earlier serial implementation ordering. All independent
+review, source qualification, release, installed and product-acceptance gates remain.
+No permission, policy, tool grant, review verdict or source ownership is inferred.
+
+The new evidence supporting parallel draft work is the real mounted40d producer,
+121 author Python passes, corrected D6 guard, canonical six-node read210/256SQL,
+unchanged closed API/projection laws, actual10024B positive bytes, and completed
+bounded UI custody/source separation. The UI's12 writable paths are disjoint from
+the producer's19. A1 is bounded producer-test/fresh-evidence work; a later substantive
+review finding can still require coordinated source repair before either task closes.
+
+#### Exact source and fleet placement
+
+- Child: meta-ceo-harness-office-ui-cursor-20261024-01, one separate Cursor cloud
+  implementation carrier under root meta-ceo-open-harness-convergence-20261024-sol-001
+  and parent meta-ceo-harness-implementation-20261024-web-001. Existing admitted
+  account-default model only; no override or replacement of another child.
+- Repository mastermindx-market-intelligence/Mastermind. Exact initial dependency
+  commit40d685dc935506455fe0342c5059afbd76354de1 from Draft#1859, whose protected
+  ancestor is3095d09f1789a5b8002503beae872774c297b1a5.
+  The40d commit is an UNMERGED_DEPENDENCY, not protected/accepted source.
+- Use an isolated registered source carrier with that exact dependency. Verify
+  the actual fetched SHA and record branch/base/carrier/START before edits.
+  If existing admission does not allow this source arrangement, report the precise
+  block without changing admission or substituting an unqualified base.
+- Publish a stacked Draft whose base is cursor/associated-mission-result-read-d302,
+  clearly labeling the exact tested parent commit and the dependency on #1859.
+  The author owns only the twelve T2 paths. Never edit the backend author's branch,
+  original R2 carriers, #1473, #1854 fixtures, or the inherited T1 files.
+- A later parent advance does not silently change the tested source. Keep exact
+  initial/final dependency SHAs, own commits and changed-path counts. Before final
+  qualification, parent will pin reviewed T1 head/delta and any necessary ordinary
+  source integration; no force/reset, opportunistic rebase, PR merge or hidden scope
+  widening. Report dependency drift instead of calling a moving base already verified.
+
+#### Implementation sequence and boundaries
+
+1. Read T2, T2.CUSTODY, T2.A1 and this A2, plus the T1 closed contract/fixture at40d.
+   Preserve the resolved #1473 boundary: no Token/exchange/executivePost/Executive
+   capability objects or existing Executive-auth test-block changes/adoption.
+2. Implement the closed compound decoder and conditional raw/typed capability through
+   existing fixed acquisition/auth owners. Keep existing nested decoders/projectOffice,
+   both byte ceilings, typed unavailable behavior and all before/after generation checks.
+3. Wire both existing picker sites to one App request owner. Coordinate standalone
+   missionRequest and Result tickets; publish/clear both snapshots and both revisions
+   atomically in the existing hook. Update Project's Mission presentation from the
+   same final v3 document. Preserve legacy ResultCard when compound is absent; a failed
+   compound request never falls back to standalone.
+4. Prove actual App -> createWebAuth -> typed host -> hook -> projector -> Office using
+   unchanged40d positive response bytes. Test stale standalone Mission, A/B/A, late
+   failure/abort-ignoring transport, same-visible-state auth generation/privacy clear,
+   missing capability, no extra acquisition and truthful unavailable/incomplete states.
+   Use the existing test stack; no package/lock changes or production/provider/auth actions.
+5. Keep genuine fallback producer handoff pending until A1 supplies actual bytes or
+   a precise canonical-content limitation. Synthetic consumer cases must remain labeled.
+   Do not create a fake “captured” fallback to satisfy this dependency.
+6. Return a concrete Draft/source checkpoint with own exact head, parent pin,12-path
+   census, actual tests/typecheck/CI and remaining dependency items; freeze for
+   separate non-author UI review. Do not claim final source qualification while the
+   parent's final T1 review/head binding or required genuine evidence is unresolved.
+
+The original12-path table and all T2/A1 behavior, privacy, lifecycle and native limits
+remain authoritative. No T2 SOURCE_WEB_OFFICE_COMPOUND_CONSUMPTION_QUALIFIED verdict,
+full P6/R2 acceptance, installed/native parity, 24h/7d result or final mission RESULT
+can follow merely from this draft parallelism.
+
+**State:** DRAFT_IMPLEMENTATION_READY_ON_FIXED40D_DEPENDENCY; placement not yet sent.
+Final integration/qualification remains BLOCKED_ON_FINAL_T1_REVIEW_AND_HEAD_BINDING.
+
+### Latest dispatch and remaining ACP source prerequisite
+
+R3 same-author repair request1792885269.523659 follows task74b91156. Independent
+T1.R1 placement1792885279.683489 follows the same published task pin; actual STARTs
+remain separately observed. New40d CI shards0/1 are SUCCESS; shard2 remains running
+at23:44UTC. Root directly read the actual pure-notes propagation, real maximum-chain
+test and mounted positive exporter; these source reads do not replace fleet review.
+
+A bounded GitHub-only ACP investigation identified the incumbent token-free
+AttemptRegistry.current_authority_snapshot at protected3095, which checks current
+Job/Attempt/fence/quota/lease and ONLINE worker/SEALED_WORKER facts. It does not
+supply an ACP logical session, native process/artifact closure or live child guard.
+Native process identity, artifact gate and prepare_prompt provide complementary
+facts; the v2 admission channel closes after readiness ACK. #1790's fixture
+state.allowed and TEST_LOCAL_PROFILE_BUILD are not installed authority or complete
+compiled payload. Before materialization/activation, an actual control-to-child live
+binding contract is still needed through incumbent native/adapter/tool-admission
+owners. Startup seed, alive PID, deadline or fixture boolean cannot substitute.
+No new ACP source task or activation was placed by this advisory; #1856's review
+refusal and all original no-replay boundaries remain unchanged.
