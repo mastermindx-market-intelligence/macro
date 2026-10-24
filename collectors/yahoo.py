@@ -134,8 +134,10 @@ class YahooAdapter(Adapter):
             # Per-call metadata only: never annotate inherited cache rows or
             # fallback frames, and never persist this dictionary in parquet attrs.
             self._availability_sources = {}
+            self._wti_availability_source = None
         else:
             self.__dict__.pop("_availability_sources", None)
+            self.__dict__.pop("_wti_availability_source", None)
         tickers = self.all_tickers()
         _report_delisted_exclusions(self.maintained_tickers())
         period = "max" if full_history else "1mo"
@@ -189,6 +191,11 @@ class YahooAdapter(Adapter):
         value = getattr(self, "_availability_sources", {}).get(ticker)
         return dict(value) if value is not None else None
 
+    def wti_source_metadata(self) -> dict | None:
+        """Actual current-call CL field, never a calendar/roll/settlement claim."""
+        value = getattr(self, "_wti_availability_source", None)
+        return dict(value) if value is not None else None
+
     def _extract(self, df: pd.DataFrame, t: str, ohlc: set[str],
                  no_adj_close: list[str], *,
                  capture_source_metadata: bool = False) -> pd.DataFrame | None:
@@ -199,6 +206,8 @@ class YahooAdapter(Adapter):
         the response is keyed by the vendor symbol, which differs for renamed names."""
         if capture_source_metadata:
             self._availability_sources.pop(t, None)
+            if t == "CL=F":
+                self._wti_availability_source = None
         try:
             sym = fetch_symbol(t)
             sub = df[sym] if isinstance(df.columns, pd.MultiIndex) else df
@@ -237,6 +246,14 @@ class YahooAdapter(Adapter):
                 self._availability_sources[t] = {
                     "provider": "yahoo", "field": "Adj Close",
                     "basis": "total_return", "ticker": t}
+            if capture_source_metadata and t == "CL=F" and not sub_out.empty:
+                adjusted = "Adj Close" in available.columns
+                self._wti_availability_source = {
+                    "provider": "yahoo", "ticker": "CL=F",
+                    "series_identity": "vendor_continuous_CL=F",
+                    "field": "Adj Close" if adjusted else "Close",
+                    "basis": ("vendor_continuous_adjusted_close" if adjusted else
+                              "vendor_continuous_close_no_adj_close_returned")}
             return sub_out if not sub_out.empty else None
         except KeyError:
             log.warning("yahoo: no data for %s", t)
@@ -267,6 +284,8 @@ class YahooAdapter(Adapter):
             frames.pop(t, None)
             if capture_source_metadata:
                 self._availability_sources.pop(t, None)
+                if t == "CL=F":
+                    self._wti_availability_source = None
         healed: list[str] = []
         scrap: list[str] = []  # no-Adj-Close names were already logged on the window pass
         bs = self.cfg["batch_size"]

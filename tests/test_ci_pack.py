@@ -5306,6 +5306,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Protected dfb1cfc7 registers the GovRev memo test: its already-selected job
+# weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
+# probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -5326,6 +5329,8 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     native measurements remain index 135/5,881, free-content 135/5,877,
     plan-book 128/5,631, all ten packs, no new selected job. Fund the exact
     four-unit excess (two inherited, two new); other ceilings stay unchanged.
+    Fresh main 9227e34f3a62 now owns the inherited GovRev baseline 5,875;
+    this composition retains only the two reader-test units above it: 5,877.
 
     2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
     ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
