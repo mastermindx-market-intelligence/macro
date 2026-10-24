@@ -183,7 +183,7 @@ def refresh(
         elif dry_run:
             print("company intelligence: dry-run validated; root manifest not promoted")
         else:
-            print("company intelligence: immutable generation published and root marker promoted")
+            print("company intelligence: generation validated; publish step returned success")
         return publish_rc
 
 
