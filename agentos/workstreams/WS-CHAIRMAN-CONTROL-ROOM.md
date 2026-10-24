@@ -117,6 +117,75 @@ waves:
       `awaiting_fable`, `returned` and `transport_degraded` from current bounded Slack history
       into the Control Room. Store no inbox/attention/cursor state and add no sending to the
       Control Room surface.
+  - id: HC-P0
+    title: Meta-CEO harness source and effect recovery
+    status: done
+    next_action: >
+      Preserve the recovered exact donor and PR receipts; do not repeat accepted startup
+      proof or the refused ephemeral-token exchange. Begin HC-P1A and HC-P1B in isolated carriers.
+  - id: HC-P1A
+    title: DSH full-application reference journey
+    status: todo
+    depends_on: [HC-P0]
+    next_action: >
+      Commission a bounded fleet implementation of the provider-free send, stream, cancel,
+      resume, schedule and restart journey against real pinned DSH modules; retain auth proof separately.
+  - id: HC-P1B
+    title: Rakazo challenger reference journey
+    status: todo
+    depends_on: [HC-P0]
+    next_action: >
+      Place an independent Cursor cloud implementation of the same reference journey on pinned
+      Rakazo; report actual runnable proof or a precise platform blocker without importing a new queue.
+  - id: HC-P2
+    title: Existing admitted model-route parity
+    status: todo
+    depends_on: [HC-P1A]
+    next_action: >
+      Connect one currently admitted existing provider route; prove model identity, metering,
+      cancellation and pre-effect failure behavior without moving credentials or changing account policy.
+  - id: HC-P3
+    title: Existing Executive and Fabric contract integration
+    status: todo
+    depends_on: [HC-P1A, HC-P2]
+    next_action: >
+      Reuse the governed MCP and WorkerResult lineage; implement the minimal typed consumer
+      adapter and prove independent review plus exact original-parent result consumption.
+  - id: HC-P4
+    title: Event-driven office continuity
+    status: todo
+    depends_on: [HC-P3]
+    next_action: >
+      Compose existing Wake, Dialogue and Agent OS; run the real 24-hour restart and
+      return-consumption canary after source, review and installation gates are satisfied.
+  - id: HC-P5
+    title: Granted computer and app journey
+    status: todo
+    depends_on: [HC-P4]
+    next_action: >
+      Prove one isolated granted computer task with revocation, wrong-bot denial,
+      untrusted-content handling and per-effect authorization through incumbent owners.
+  - id: HC-P6
+    title: Signed-in Meta-CEO office acceptance
+    status: todo
+    depends_on: [HC-P4]
+    next_action: >
+      Integrate the existing R2 office consumer and verify intent correction, audience/project
+      switching, stale results, logout and 320/390px layouts; preserve native Project Chat's separate gate.
+  - id: HC-P7
+    title: Independent comparative evaluation and reliability
+    status: todo
+    depends_on: [HC-P1B, HC-P5, HC-P6]
+    next_action: >
+      Use the existing Agent Evaluation owner for preregistered tasks, sealed holdout and
+      seven-day observation; require zero duplicate, unapproved or falsely accepted effects.
+  - id: HC-P8
+    title: Optional model and local-inference evaluation
+    status: todo
+    depends_on: [HC-P7]
+    next_action: >
+      Consider a measured route evaluation only through existing Router and Capacity.
+      Purchases, credential moves and account-policy changes remain excluded.
 decisions:
   - DEC:CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED
   - DEC:CHAIRMAN-CONTROL-ROOM-ACTIVE-SESSION-DIALOGUE-F0-ACCEPTED
@@ -203,17 +272,10 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent.
-  Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
-  exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
-  exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual
-  semantic-freshness condition: current SC1 next action, 7,276 canonical bytes under the 8 KiB ceiling,
-  untruncated. #836 `f5b37701...` has the durable Web-Sol semantic-ACK provenance blocker repaired on the
-  incumbent carrier and current-base focused tests plus hosted CI green; independent exact-head review still
-  gates source release, with 0.5.0 install/restart/live canary remaining downstream. After those source gates,
-  wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor
-  creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS,
-  transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.
+  For the Chairman's 2026-10-24 Meta-CEO harness commission (Mastermind #1841), execute HC-P1A
+  and HC-P1B from the pinned task records below through admitted fleet workers, then obtain
+  independent review. Preserve the existing R2 acceptance contract and unrelated legacy waves.
+  Source release requires independent action: this receiver must not approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
   execution_commission_refs: []
@@ -694,3 +756,176 @@ managed-environment mutation and required restart/failure proof. ASD becomes `PR
 separately authorized A2 and A3 canaries prove a real already-active Sol↔Fable project dialogue
 through the production path. The A1 merge alone authorizes no credential installation, production
 message, A3/A4, generic Wake or P1.
+
+
+## Meta-CEO harness implementation — Chairman commission 2026-10-24
+
+### Identity and authority
+
+| Field | Pinned value |
+|---|---|
+| Current assignment | Own and implement Mastermind PR #1841 end to end; Slack commission C0CBC6AEAQZ/1792861454.777859 |
+| Canonical continuity owner | WS:CHAIRMAN-CONTROL-ROOM; this is an addendum to its existing Meta-CEO R2 acceptance contract |
+| Accountable function | Current Chairman-assigned Meta-CEO receiver; a historical chat is not a required approver |
+| Planning root | meta-ceo-open-harness-convergence-20261024-sol-001 |
+| Planning artifact | Mastermind #1841, head dc0016ec6f27a5e45014917adb3c8a4043ff46ab, docs/superpowers/plans/2026-10-24-meta-ceo-open-harness-convergence-masterplan.md |
+| Protected procedure | Mastermind master e00e97b81a5d41cb8a570ad080316279a0f3853f; mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap major 1 |
+| This source carrier | Macro branch sol/web-meta-ceo-harness-plan-20261024-web-001, acquired through mmx-workspace from 11f88c730c2d5f25569d5c5508ff46ce71e14eb8 |
+| Plan structure | User-requested template from Mastermind #1700 at 39602a939b5a56e74dfd97afc9ad0bdbf2734dec; template only, not protected law |
+| Return | RESULT to #chatgpt-web-returns (C0CCNK7JFAL), referencing commission thread 1792861454.777859 when the requested outcome is finished |
+| Boundaries | No self-merge or approval; no purchases, credential moves or account-policy changes; no duplicate authority/control plane |
+| Cumulative handoff | agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-24-meta-ceo-harness.md |
+
+This section is the current commission's plan inside the existing organizational owner.
+It does not assign other live sessions, transfer their effects, or replace the 48 original R2
+proof obligations above. The inherited SC1/P0B/ASD waves retain their own scope and custody.
+
+### North star, constraints and verification
+
+**User's job:** converse with one persistent Meta-CEO office, correct an intent, and receive
+a genuinely accepted useful result without manual routing between agent conversations.
+
+**Machine's job:** use a replaceable donor application and admitted model as consumers of
+existing Executive, RuntimeBinding, Wake/Dialogue, Capacity, Fabric and Agent OS owners.
+
+**DONE_WHEN:** the signed-in original Chairman operation receives an independently reviewed
+and actually consumed useful result, survives disconnect/restart and concurrent project
+changes without replay or wrong audience, and meets the original R2 obligations applicable
+to this commission. The 24-hour and seven-day observations must be real elapsed observations;
+fixture time advancement cannot satisfy them. Native Project Chat remains its separate gate.
+
+**Product excellence:** coherent office navigation, honest states/costs, accessible keyboard
+behavior, dark/light and EN/ZH where the existing design contract requires them, mobile
+320/390px proof, clear pending questions, and independently challenged failure handling.
+
+**Falsifiers:** a mock-only success represented as production proof; local worker completion
+represented as parent consumption; a refused/unknown effect replayed; a duplicate lifecycle,
+memory, queue or router; cross-project/user leakage; a missing original obligation.
+
+### Work breakdown and ownership
+
+Wave statuses above are Agent OS editorial progress, not Executive runtime states.
+The detailed task states below are also editorial; START requires an actual fleet receipt.
+
+| ID | Depends on | Outcome / evidence | Delivery responsibility | Initial state |
+|---|---|---|---|---|
+| HC-P0 | — | Exact source and donor pins, custody/effect recovery, accepted startup receipts preserved | Assigned Meta-CEO | accepted recovery |
+| HC-P1A.T1 | HC-P0 | Real DSH modules run the deterministic send/stream/cancel/resume/schedule/restart reference journey | Admitted Fabric implementation worker; independent reviewer separate | ready |
+| HC-P1A.T2 | HC-P1A.T1 | Authenticated full-app UI proof through a permitted interaction | Qualified UI executor after exact authentication boundary is resolved | blocked for the historical refused token-exchange action |
+| HC-P1B.T1 | HC-P0 | Same reference journey on pinned Rakazo, with two bots and visibility/approval isolation | Cursor cloud implementation worker via existing admitted placement | ready |
+| HC-P2 | HC-P1A | One admitted route with actual identity/meter and failure evidence | Existing provider/Capacity domain + bounded adapter worker | proposed |
+| HC-P3 | HC-P1A, HC-P2 | Typed existing Executive/Fabric adapter and original-parent result consumption | Existing governed MCP/ACP domain + independent review | proposed |
+| HC-P4 | HC-P3 | Existing Wake/Dialogue continuity and actual 24-hour canary | Continuity domain | proposed |
+| HC-P5 | HC-P4 | Granted isolated computer/app task and negative controls | Existing computer/app domain | proposed |
+| HC-P6 | HC-P4 | Actual signed-in R2 office journey and responsive proof | Existing Mastermind OS domain | proposed |
+| HC-P7 | HC-P1B, HC-P5, HC-P6 | Preregistered comparison and actual seven-day reliability | Existing Agent Evaluation + independent acceptance | proposed |
+| HC-P8 | HC-P7 | Optional justified model evaluation within existing capacity | Existing model owner; procurement excluded | proposed |
+
+The Meta-CEO owns architecture, dependency arbitration, review consumption and the original
+outcome. Fleet builders own bounded investigate/implement/test/repair loops; the principal
+does not shadow-implement their assigned files. Cursor is an execution surface, not a model
+tier. Concrete provider/model/host identity remains the admitted route's returned evidence.
+
+### HC-P1A.T1 — DSH reference journey, provider-free first
+
+- **Objective / why now:** close the missing native application behavior proof before wiring
+  company effects. Existing startup and 43 native unit tests are already accepted evidence.
+- **Inputs:** Mastermind source e00e97b81a5d41cb8a570ad080316279a0f3853f; #1717 head
+  30888f518e2b2f31f2cf9ec39e59cd353cc7c8a9; full-app donor
+  deepseek-ai/deepseek-harness at 687f282e8625c6b8d11ff58211a90524be2e4317.
+- **Scope:** new qualification source under integrations/deepseek_harness/qualification/
+  and narrowly named tests. Read existing donor modules and run them from an isolated,
+  immutable input. Preserve #1717, #1790 and donor tracked source.
+- **Exclusions:** no company/provider credentials; no login-token exchange; no auth bypass;
+  no external company dispatch; no production install; no new memory/queue/router;
+  no changes to current source carriers or runtime state.
+- **Dependencies:** P0 recovered. Native module tests are a separate source-proof lane;
+  they do not satisfy the held authenticated browser proof.
+- **Suggested lane:** admitted economical C2_COMPLEX_BOUNDED Fabric builder.
+  Material business impact, routine reversible execution risk, low requirements ambiguity.
+  WHY NOT FABLE: architecture and acceptance are bounded; no frontier principal is needed.
+- **Work:** inspect actual Cordis/session/controller/scheduler seams; freeze a deterministic
+  fake model/tool reference journey; implement a reproducible runner that exercises those
+  real modules; test streaming, cancellation without replay, resume/history association,
+  plugin load, scheduled event and restart persistence; retain concise machine evidence.
+- **DONE_WHEN / independent review:** runnable artifact and exact donor identity;
+  observed assertions from real imported modules, explicit unsupported coverage, no
+  self-authored fixture mistaken for the donor; negative tests reject stale/mismatched
+  state and fail if the integration is removed; separate reviewer challenges source/proof.
+- **Risk / rollback / effects:** isolated source and disposable test state only. Never
+  alter original port 3080/service or a previously refused authentication action.
+  Cleanup only processes created by this task and prove termination.
+- **Evidence:** returned commit/patch, tests/commands, donor SHA, retained result and true
+  provider/model identity. These fields remain pending until actual execution.
+- **State:** ready. No worker START is claimed by this plan.
+
+### HC-P1B.T1 — Rakazo challenger with the same journey
+
+- **Objective:** produce observed app-shell comparison, not a speculative product ranking.
+- **Inputs:** #1841 donor assessment at dc0016ec6f27a5e45014917adb3c8a4043ff46ab;
+  Rakazo pin c5e66e010ee3f3166d2ad216f928a75a0b9a2218 and its actual license.
+- **Scope:** new integrations/rakazo_qualification/ source and directly related tests/docs
+  in a harness-provisioned isolated workspace, with mock model/tool inputs.
+- **Exclusions:** no proprietary/unlicensed imports; no company credentials; no production
+  service or donor database/queue adopted as company authority; no purchases or account changes.
+- **Suggested lane:** existing Cursor cloud placement, C2_COMPLEX_BOUNDED, independently
+  reviewed through Fabric. Actual launch identity and provider remain unproven until returned.
+- **Work:** qualify pinned source/dependency/license; run two bot identities, conversation,
+  routine, private/shared computer visibility, effect-approval and disconnect recovery;
+  use the DSH reference journey semantics; report exact unsupported capabilities separately.
+- **DONE_WHEN:** actual runnable observations or a precise reproducible platform blocker;
+  independent source review; comparison identifies integration burden and missing proof.
+- **Risk / rollback:** disposable local fixture state, no account secrets or production writes.
+- **State:** ready; no delivery or START has yet occurred.
+
+### Accepted progress and outstanding gates
+
+| Item | Evidence and actual disposition |
+|---|---|
+| Protected procedure | GitHub master e00e97b81a5d41cb8a570ad080316279a0f3853f; compatible same-pin INDEX and required companions |
+| Existing Agent OS owner | Macro 11f88c730c2d5f25569d5c5508ff46ce71e14eb8; existing R2 commission in this record; no duplicate workstream created |
+| Full-app DSH build/startup | #1717 comments 6337054896 and 6356648504: 9/9 build, disposable loopback 401 auth gate, exact test process reaped, 43/43 native tests; source head and donor pin unchanged at current local read |
+| Current pilot custody | #1717 local tracked tree clean at 30888f5; old publication registration gap preserved. No modification/adoption of that original carrier |
+| Existing governed fixture | #1790 c4d28680813898c9b0f7bd367d67cd7e873744c4; exact-head CI success reported by GitHub; not production acceptance |
+| Prior independent review | Run deepseek-dsh-pr1790-5741-minimax-security-20261023-r4, original root deepseek-harness-os-upgrade-20261022-web-001: TERMINAL, rc0; actual verdict REQUEST_CHANGES, response digest 186574a488e4e797295e190ca73fec4ff2d6b7d7290723737d6fd34661748f75 |
+| Review interpretation | Prior 5741 head's blocker F1 was two operational state files. c4d removes them; exact changed-head qualification remains separate. F2 scope wording and F3/F4 security-test coverage remain advisory findings; no new PASS invented |
+| Host access | Studio Direct C2 Personal runtime identifies m2studio; actual file/process read succeeded; adapter capabilities exposed but new worker admission/START not yet proven |
+| Handoffs search | Bounded search of ~/.local/share/mastermind-runtime/handoffs found five files and no meta-ceo/deepseek/DSH/#1841 match; this is absence in that directory, not absence of all continuity |
+| Held proof | Historical authenticated ephemeral-token exchange was tool-safety refused. Preserve that exact action; native/provider-free source tests do not clear it |
+| Production state | Harness convergence remains PARTIAL / not accepted; no deployment, model-route canary, 24-hour canary or seven-day observation claimed |
+
+The three DSH pins serve distinct proofs: full app 687f282e; governed MCP fixture
+4878cdab; research inspection 22ddee37. They must not be silently substituted.
+
+### Decisions and supersession
+
+- **2026-10-24:** use this existing workstream because its R2 acceptance declaration is the
+  parent of #1841. Preserve original obligations and legacy waves.
+- **2026-10-24:** preserve accepted #1717 startup and unit proof; implement the missing
+  real-module reference journey rather than repeating unchanged checks.
+- **2026-10-24:** isolate new workers from registered incumbent source carriers. Current
+  human assignment supplies the mission; no abandoned chat is required to begin.
+- **2026-10-24:** keep the r4 review's actual REQUEST_CHANGES verdict despite rc0 and a
+  transport-level accepted flag. No semantic acceptance is inferred.
+- The former top-level SC1 next_action is historical context, reproduced below, not a
+  new assignment or current validation of those older heads.
+
+Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent.
+  Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
+  exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
+  exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual
+  semantic-freshness condition: current SC1 next action, 7,276 canonical bytes under the 8 KiB ceiling,
+  untruncated. #836 `f5b37701...` has the durable Web-Sol semantic-ACK provenance blocker repaired on the
+  incumbent carrier and current-base focused tests plus hosted CI green; independent exact-head review still
+  gates source release, with 0.5.0 install/restart/live canary remaining downstream. After those source gates,
+  wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor
+  creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS,
+  transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.
+
+### Cumulative recovery frontier
+
+Current P0 recovery is saved here and in the scoped handoff. HC-P1A.T1 and HC-P1B.T1
+are ready for admitted dispatch. Record actual run/agent IDs, START evidence, source
+revision and retained return before changing their execution claims. The next material
+action is fleet implementation followed by independent review. No watcher, native wake,
+provider route, merge or production acceptance is implied by these planning records.
