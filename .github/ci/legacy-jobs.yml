@@ -26859,6 +26859,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "tests/test_government_revenue_dossier_validation_memo.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/projection.py"
@@ -27343,7 +27344,7 @@ jobs:
       - name: wave 9D — exact-identifier issuer graph expansion fences
         run: python -m pytest tests/test_government_revenue_issuer_graph_expansion.py -q
       - name: builder envelope + publication fence + dossier/subaward rails
-        run: python -m pytest tests/test_build_government_revenue.py tests/test_check_government_revenue_projection.py tests/test_government_revenue_dossiers.py tests/test_government_revenue_subaward_api.py -q
+        run: python -m pytest tests/test_build_government_revenue.py tests/test_check_government_revenue_projection.py tests/test_government_revenue_dossiers.py tests/test_government_revenue_dossier_validation_memo.py tests/test_government_revenue_subaward_api.py -q
       # The prophet↔government-revenue context bridge. Named by NOTHING in
       # .github/ before this line — not this manifest, not any workflow, and not
       # even a ci.yml trigger path — so the one suite proving the Prophet side
