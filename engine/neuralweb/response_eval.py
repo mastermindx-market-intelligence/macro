@@ -1113,3 +1113,327 @@ def run_benchmark(
         "doctrine_fingerprint": _doctrine_fingerprint(),
         "error": scored.get("error"),
     }
+
+
+# Root-approved finite measurement-meaning acceptance; INTERNAL QA ONLY.
+# This is not an empirical financial evaluator or a consumer qualification grant.
+_MEASUREMENT_BENCHMARK = "benchmark_eval_os_measurement_v1.json"
+
+
+def _measurement_number(value: object) -> float:
+    import math
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError("measurement_number_invalid")
+    return float(value)
+
+
+def _measurement_source_fact(contract: dict, payload: dict) -> None:
+    from engine.intelligence_workspace.contracts import semantic_fingerprint
+    source, reported = contract["source_fact"], payload["fact"]
+    if source.get("schema") != "datapoint_value.v1" or reported.get("schema") != source["schema"]:
+        raise ValueError("source_fact_mismatch")
+    if source.get("status") != "available" or semantic_fingerprint(source) != semantic_fingerprint(reported):
+        raise ValueError("source_fact_mismatch")
+
+
+def measurement_contract_checks(case: dict) -> dict:
+    """Consume a frozen synthetic reported contract, independent of its oracle.
+
+    Results inherit this module's INTERNAL QA/user-facing prohibition. No IO,
+    judge/model calls, fitting, trial writes or production authority. Numerical
+    owners are imported only for the compatible branch, never by admin imports.
+    """
+    result = {"accepted": False, "reason": None, "measurements": {},
+              "internal_qa_only": True, "outcome_access_allowed": False}
+    try:
+        contract, p, cls = case["contract"], case["class_payload"], case["output_class"]
+        if contract.get("synthetic_qa") is not True:
+            raise ValueError("synthetic_qa_scope_required")
+        values: dict = {}
+        if cls == "predictive":
+            for key in ("target_id", "horizon_d", "horizon_unit"):
+                if p.get(key) != contract[key]:
+                    raise ValueError("predictive_target_mismatch")
+            if contract["kind"] == "probability":
+                from engine import k3e_eval1_forward as core
+                if (contract["target_id"] != "K3E-UP-DOWN-FLAT-21"
+                        or contract["horizon_d"] != core.PRIMARY_HORIZON_SESSIONS
+                        or contract["horizon_unit"] != "NYSE_sessions"):
+                    raise ValueError("probability_target_unqualified")
+                probs = p["probabilities"]
+                try:
+                    for value in probs:
+                        _measurement_number(value)
+                    core._validate_probs_row(probs)
+                except (TypeError, ValueError):
+                    raise ValueError("probability_invalid") from None
+                values = {"log_loss": float(core.row_log_losses([probs], [p["label"]])[0]),
+                          "brier": float(core.brier_score([probs], [p["label"]]))}
+            elif contract["kind"] == "quantile":
+                from engine import pick_forward_dist as core
+                from engine.seasonality.contracts import _validate_quantile_map, ContractError
+                if p.get("unit") != contract["unit"]:
+                    raise ValueError("predictive_target_mismatch")
+                levels, quantiles = contract["levels"], p["quantiles"]
+                try:
+                    if len(levels) != len(quantiles) or len(levels) < 2 or levels != sorted(set(levels)):
+                        raise ValueError
+                    for value in levels + quantiles:
+                        _measurement_number(value)
+                    _validate_quantile_map({f"q{int(level * 100):02}": value
+                                            for level, value in zip(levels, quantiles)}, "fixture.quantiles")
+                    if any(level * 100 != int(level * 100) for level in levels):
+                        raise ValueError
+                except (TypeError, ValueError, ContractError):
+                    raise ValueError("quantile_invalid") from None
+                y = _measurement_number(p["realized"])
+                values = {"mean_pinball": float(core.mean_pinball([y], [quantiles], levels)[0]),
+                          "interval_coverage": core.interval_coverage([y], [quantiles[0]], [quantiles[-1]])}
+            else:
+                raise ValueError("predictive_kind_unqualified")
+        elif cls == "ranking":
+            eligible, ranked, missing = contract["eligible"], p["ranking"], p["missing"]
+            if (len(set(eligible)) != len(eligible) or set(p["eligible"]) != set(eligible)
+                    or len(p["eligible"]) != len(eligible) or len(set(ranked)) != len(ranked)
+                    or len(set(missing)) != len(missing) or set(ranked) & set(missing)
+                    or set(ranked) | set(missing) != set(eligible)):
+                raise ValueError("ranking_population_mismatch")
+            k = contract["top_k"]
+            if type(k) is not int or k < 1 or len(ranked) < k or not eligible:
+                raise ValueError("ranking_support_insufficient")
+            if (p.get("eligible_known_at") != contract["eligible_known_at"]
+                    or _measurement_number(p["eligible_known_at"]) > _measurement_number(contract["decision_at"])):
+                raise ValueError("ranking_population_not_known")
+            relevance = contract["relevance"]
+            if set(relevance) != set(eligible) or any(v not in (0, 1) for v in relevance.values()):
+                raise ValueError("ranking_relevance_unqualified")
+            values = {"precision_at_k": sum(relevance[x] for x in ranked[:k]) / k,
+                      "coverage": len(ranked) / len(eligible), "eligible_n": len(eligible)}
+        elif cls == "classification_state":
+            labels, predicted, truth = contract["labels"], p["predicted"], p["truth"]
+            if (not labels or len(set(labels)) != len(labels) or set(contract["label_definitions"]) != set(labels)
+                    or not truth or len(predicted) != len(truth)
+                    or not set(predicted + truth) <= set(labels)):
+                raise ValueError("state_label_definition_invalid")
+            if p.get("truth_source") != contract["truth_source"]:
+                raise ValueError("state_label_source_mismatch")
+            if p.get("clock_unit") != contract["clock_unit"]:
+                raise ValueError("state_clock_mismatch")
+            if _measurement_number(p["known_at"]) > _measurement_number(p["decision_at"]):
+                raise ValueError("state_label_not_available")
+            matrix = [[0 for _ in labels] for _ in labels]
+            for actual, guess in zip(truth, predicted):
+                matrix[labels.index(actual)][labels.index(guess)] += 1
+            values = {"accuracy": sum(a == b for a, b in zip(truth, predicted)) / len(truth),
+                      "n_labels": len(truth), "confusion": matrix}
+        elif cls == "detection_event":
+            if p.get("clock_unit") != contract["clock_unit"] or contract["matching"] != "one_alarm_one_event":
+                raise ValueError("event_clock_or_matching_mismatch")
+            events, alarms = p["events"], p["alarms"]
+            em, am = {e["id"]: e for e in events}, {a["id"]: a for a in alarms}
+            if len(em) != len(events) or len(am) != len(alarms):
+                raise ValueError("event_ids_not_distinct")
+            for event in events:
+                _measurement_number(event["at"])
+            for alarm in alarms:
+                if _measurement_number(alarm["at"]) >= _measurement_number(alarm["expires"]):
+                    raise ValueError("event_alarm_window_invalid")
+            matches = p["matches"]
+            aa, ee = [pair[0] for pair in matches], [pair[1] for pair in matches]
+            if len(set(aa)) != len(aa) or len(set(ee)) != len(ee):
+                raise ValueError("event_match_not_one_to_one")
+            leads = []
+            for aid, eid in matches:
+                alarm, event = am[aid], em[eid]
+                issued, expires, occurs = (_measurement_number(alarm["at"]),
+                                            _measurement_number(alarm["expires"]),
+                                            _measurement_number(event["at"]))
+                if not issued <= occurs <= expires or issued >= expires:
+                    raise ValueError("event_match_outside_window")
+                leads.append(occurs - issued)
+            exposure = _measurement_number(contract["exposure"])
+            if exposure <= 0:
+                raise ValueError("event_exposure_invalid")
+            false = len(alarms) - len(matches)
+            values = {"matched": len(matches), "missed": len(events) - len(matches),
+                      "false_alarms": false, "false_alarm_rate": false / exposure,
+                      "mean_lead": sum(leads) / len(leads) if leads else None}
+        elif cls in ("descriptive", "generative"):
+            _measurement_source_fact(contract, p)
+            values = {"source_supported": True}
+            if cls == "generative":
+                if "self_grade" in p:
+                    raise ValueError("self_grading_forbidden")
+                from datetime import date
+                readings = p["readings"]
+                for reading in readings:
+                    if (not isinstance(reading.get("entity"), str) or not reading["entity"]
+                            or _measurement_number(reading["window"]) <= 0
+                            or not isinstance(reading.get("as_of"), str)):
+                        raise ValueError("reading_scope_unqualified")
+                    try:
+                        date.fromisoformat(reading["as_of"])
+                    except ValueError:
+                        raise ValueError("reading_scope_unqualified") from None
+                different = 0
+                for i, left in enumerate(readings):
+                    _measurement_number(left["value"])
+                    if left.get("target_id") != contract["reading_target_id"] or left.get("unit") != contract["reading_unit"]:
+                        raise ValueError("reading_scope_unqualified")
+                    for right in readings[i + 1:]:
+                        _measurement_number(right["value"])
+                        keys = ("target_id", "entity", "unit", "window", "as_of")
+                        same = all(left[key] == right[key] for key in keys)
+                        if same and left["value"] != right["value"]:
+                            raise ValueError("same_contract_contradiction")
+                        if not same:
+                            different += 1
+                values["legitimate_scope_differences"] = different
+        elif cls == "salience":
+            if (not isinstance(p.get("generator"), str) or not p["generator"]
+                    or p["judge"] == p["generator"] or p["judge"] != contract["reference_owner"]
+                    or p.get("target") != "relevance" or contract["target"] != "relevance"
+                    or p.get("rubric_version") != contract["rubric_version"]):
+                raise ValueError("salience_reference_not_independent")
+            eligible, assessed, selected = contract["eligible"], p["assessed"], p["selected"]
+            if (not eligible or not selected or len(set(eligible)) != len(eligible)
+                    or len(p["eligible"]) != len(eligible) or set(p["eligible"]) != set(eligible)
+                    or len(set(assessed)) != len(assessed) or len(set(selected)) != len(selected)
+                    or not set(selected) <= set(assessed) <= set(eligible)
+                    or set(contract["relevance"]) != set(eligible)):
+                raise ValueError("salience_population_mismatch")
+            if any(type(v) is not bool for v in contract["relevance"].values()):
+                raise ValueError("salience_reference_invalid")
+            values = {"relevance_precision": sum(contract["relevance"][x] for x in selected) / len(selected),
+                      "coverage": len(assessed) / len(eligible)}
+        else:
+            raise ValueError("measurement_class_unqualified")
+        result.update(accepted=True, measurements=values)
+    except ValueError as exc:
+        result["reason"] = str(exc)
+    except (KeyError, TypeError, IndexError, AttributeError):
+        result["reason"] = "reported_contract_incomplete"
+    return result
+
+
+def validate_measurement_acceptance_protocol(protocol: dict, frozen: dict) -> dict:
+    """Check the finite synthetic QA freeze, dependence and separate research looks.
+
+    It admits no empirical protocol/outcome access. Frozen literal declarations
+    must match; overlap-connected intervals and same owner block form one block.
+    """
+    result = {"accepted": False, "reason": None, "internal_qa_only": True,
+              "outcome_access_allowed": False}
+    try:
+        if protocol.get("scope") != "synthetic_internal_qa" or protocol.get("outcome_access_allowed") is not False:
+            raise ValueError("protocol_scope_forbidden")
+        if frozen.get("protocol_id") != "EVAL-OS-MEASUREMENT-SYNTHETIC-QA-V1" or type(protocol.get("version")) is not int:
+            raise ValueError("protocol_freeze_unavailable")
+        mutable = {"observations", "declared_independent_blocks", "trial_ids", "look_ids",
+                   "inspected_holdout_ids", "contaminated_holdout_ids"}
+        for key in frozen.keys() - mutable:
+            if (protocol.get(key) != frozen[key] or frozen[key] is None or frozen[key] == ""
+                    or isinstance(protocol.get(key), bool) != isinstance(frozen[key], bool)):
+
+                raise ValueError("protocol_frozen_term_changed:" + key)
+        population = protocol["population"]
+        ids = population["case_ids"]
+        if population["kind"] != "synthetic" or not ids or len(set(ids)) != len(ids):
+            raise ValueError("protocol_population_invalid")
+        if len(protocol["observations"]) > protocol["max_observation_rows"]:
+            raise ValueError("protocol_observation_budget_exceeded")
+        if not protocol["observations"]:
+            raise ValueError("protocol_observations_absent")
+        rows: dict[str, dict] = {}
+        for row in protocol["observations"]:
+            if not row["id"] or not row["block_id"] or _measurement_number(row["start"]) >= _measurement_number(row["end"]):
+                raise ValueError("protocol_observation_invalid")
+            if row["id"] in rows and rows[row["id"]] != row:
+                raise ValueError("protocol_occurrence_collision")
+            rows[row["id"]] = row
+        for original in frozen["observations"]:
+            if rows.get(original["id"]) != original:
+                raise ValueError("protocol_frozen_observation_changed")
+        observations = list(rows.values())
+        parents = list(range(len(observations)))
+        def find(i):
+            while parents[i] != i:
+                i = parents[i]
+            return i
+        for i, left in enumerate(observations):
+            for j, right in enumerate(observations[:i]):
+                overlap = left["start"] < right["end"] and right["start"] < left["end"]
+                if overlap or left["block_id"] == right["block_id"]:
+                    parents[find(i)] = find(j)
+        blocks = len({find(i) for i in range(len(observations))})
+        declared = protocol["declared_independent_blocks"]
+        if type(declared) is not int or declared != blocks:
+            raise ValueError("protocol_independent_count_inflated")
+        counts = {}
+        for kind in ("trial", "look"):
+            names, budget = protocol[kind + "_ids"], protocol["max_" + kind + "s"]
+            if type(budget) is not int or budget < 1 or not names or any(not isinstance(x, str) or not x for x in names):
+                raise ValueError("protocol_research_count_invalid")
+            if not set(frozen[kind + "_ids"]) <= set(names):
+                raise ValueError("protocol_research_history_erased")
+            if len(set(names)) != len(names) or len(names) > budget:
+                raise ValueError("protocol_research_budget_exceeded")
+            counts[kind + "_count"] = len(names)
+        inspected = set(protocol["inspected_holdout_ids"])
+        contaminated = set(protocol["contaminated_holdout_ids"])
+        if not set(frozen["inspected_holdout_ids"]) <= inspected:
+            raise ValueError("protocol_inspection_erased")
+        if not inspected <= contaminated:
+            raise ValueError("protocol_contamination_erased")
+        result.update(accepted=True, independent_blocks=blocks, observation_rows=len(protocol["observations"]),
+                      distinct_observations=len(observations), contaminated_holdouts=sorted(contaminated), **counts)
+    except ValueError as exc:
+        result["reason"] = str(exc)
+    except (KeyError, TypeError, AttributeError):
+        result["reason"] = "protocol_incomplete"
+    return result
+
+
+def _measurement_oracle_equal(actual: object, expected: object, tolerance: float) -> bool:
+    if isinstance(expected, dict):
+        return (isinstance(actual, dict) and actual.keys() == expected.keys()
+                and all(_measurement_oracle_equal(actual[k], v, tolerance) for k, v in expected.items()))
+    if isinstance(expected, list):
+        return (isinstance(actual, list) and len(actual) == len(expected)
+                and all(_measurement_oracle_equal(a, b, tolerance) for a, b in zip(actual, expected)))
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return (isinstance(actual, (int, float)) and not isinstance(actual, bool)
+                and abs(actual - expected) <= tolerance)
+    return type(actual) is type(expected) and actual == expected
+
+
+def run_measurement_acceptance_cases(benchmark: dict | None = None) -> dict:
+    """Run existing offline owner's frozen synthetic cases; return INTERNAL QA.
+
+    Reads only its own fixture through the incumbent benchmark reader when no
+    in-memory benchmark is supplied. No LLM, score_response, sidecar or UI export.
+    """
+    doc = load_benchmark(_MEASUREMENT_BENCHMARK) if benchmark is None else benchmark
+    frozen_doc = load_benchmark(_MEASUREMENT_BENCHMARK)
+    frozen = frozen_doc.get("protocol") or {}
+    references = {c["id"]: c for c in frozen_doc.get("cases") or []}
+    protocol = validate_measurement_acceptance_protocol(doc.get("protocol") or {}, frozen)
+    rows = []
+    cases = doc.get("cases") or []
+    ids = [c.get("id") for c in cases]
+    expected_ids = (frozen.get("population") or {}).get("case_ids") or []
+    population_ok = bool(expected_ids) and len(set(ids)) == len(ids) and set(ids) == set(expected_ids)
+    for case in cases:
+        measured = measurement_contract_checks(case)
+        subset = {k: measured[k] for k in ("accepted", "reason", "measurements")}
+        reference = references.get(case.get("id")) or {}
+        contract_unchanged = (case.get("output_class") == reference.get("output_class")
+                              and case.get("contract") == reference.get("contract")
+                              and case.get("expected") == reference.get("expected"))
+        rows.append({"case_id": case.get("id"), "output_class": case.get("output_class"),
+                     "actual": subset, "contract_matches_freeze": contract_unchanged,
+                     "agrees_with_oracle": contract_unchanged and _measurement_oracle_equal(
+                         subset, reference.get("expected"), frozen.get("numeric_tolerance", 0.0))})
+    return {"ok": protocol["accepted"] and population_ok and all(r["agrees_with_oracle"] for r in rows),
+            "internal_qa_only": True, "outcome_access_allowed": False,
+            "protocol": protocol, "case_population_matches": population_ok, "cases": rows}

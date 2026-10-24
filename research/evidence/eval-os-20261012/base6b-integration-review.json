@@ -1,0 +1,71 @@
+{
+  "schema": "eval-os.base6b-integration-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "carrier": "PR6651",
+  "ours": "92d70f385388f3fc86bf9dc964375671edc99501",
+  "theirs": "6b154e09357300964c0720448cee9654bf2585d0",
+  "base": "ee3b1907497c4d5179d76626777b007e0da93d18",
+  "source_state": "Clean resolved index in in-progress merge, not containingcommit or remoteattestation",
+  "ruling": "ACCEPTED_BOUNDED_INTEGRATION_SOURCE_PENDING_PARENT_CHECKS",
+  "findings": [],
+  "manifest_sha256": "8145c40930021cfcd83cac174dd65adb3d455d4568c12796508b05f6f67fadbe",
+  "manifest_review": {
+    "job_count": 301,
+    "unchanged_candidate_job_objects": 298,
+    "changed_jobs": [
+      "options-estate-guards",
+      "washout-turn-organ",
+      "unrun-picks-boards"
+    ],
+    "only_changed_field": "paths",
+    "additions_count": 22,
+    "removed_paths": [],
+    "changed_objects_equal_incoming_main": true,
+    "new_jobs": [],
+    "A1": "Unchanged92drepair dependencycommand/eightsuites/mandatoryNode/1166paths; no oldmissingdeps restored",
+    "ceilings_commands_gates": "Unchanged"
+  },
+  "incoming_preservation": {
+    "incoming_changed_files": 6,
+    "only_incoming_file_not_byte_equal_main": ".github/ci/legacy-jobs.yml, intentionally retains candidate A1/previousacceptedpaths",
+    "price_ladder_and_tests_exact_main": true,
+    "all_other_incoming_owner_files_exact_main": true,
+    "unmerged_index_entries": 0
+  },
+  "qualified_preservation": {
+    "all21_previously_qualified_file_index_blobs_equal92d": true,
+    "application_science_UI_updater_changed": false,
+    "repair_verification": "Accepted isolated373PASS and AgentOS0errors retained; incomingdependencyinputchanges require currentbaseaffectedchecks, not unchangedsourcewhole-suite repeat"
+  },
+  "price_owner_delta": {
+    "legacy_function_class_AST_changed": [],
+    "new_definitions": [
+      "CanonicalClose",
+      "_c01_bind",
+      "_c01_code",
+      "_c01_values",
+      "_default_registry",
+      "resolve_close_canonical",
+      "terminal_daily_ohlc_contract_v1"
+    ],
+    "source_sha256": "5fb39fb4e62cc30e8df2e2307b8a5740a43839a846943e91b351ea6342934645",
+    "test_sha256": "062787bace086a4c92da04533d2d71221d88401e619dbf775831d7076d1a0bf8",
+    "scope": "Preserve existingmainowneradditiveseam; no newreviewerfinancial/productionqualification claimed"
+  },
+  "pending": [
+    "Root45576fouraffectedCIcontrols/closurepackingandtest_price_ladder",
+    "Root12229AgentOSvalidation",
+    "exactmergecommitandpublishedheadbinding",
+    "freshhostedselection/executionandcontrollergates",
+    "installedauthenticatedproduction/postreleaseT23/operator/legacyacceptance"
+  ],
+  "authority": "RetainedChrisapproval permits incumbentcontroller/baseupdatesfreshchecks/deployprodverify. No newHOLD or archivedchatACK invented; bindingchecks remain owed.",
+  "reviewer_effects": {
+    "tests": false,
+    "network_CIqueries": false,
+    "source_Gitwrites": false,
+    "newFabric_nativelabor": false,
+    "evidence_write": "this externalreceipt"
+  }
+}
