@@ -1,4 +1,4 @@
-"""Controlled source fixtures only; no provider, fixing or product admission."""
+"""Controlled source fixtures only; no provider or product admission."""
 from copy import deepcopy
 import pytest
 
@@ -6,6 +6,7 @@ from engine.options_nbbo_cohort import canonical_occ_symbol
 from engine.options_plan_expiry import prepare_expiry_payoff, prepare_plan_draft_expiry
 
 KNOWN = "2026-10-23T21:00:00Z"
+BASIS = dict(kind="hold_to_expiry_intrinsic", expiration="2026-10-30")
 
 
 def leg(strike=100, side="buy", entry=3, root="SPY", expiry="2026-10-30"):
@@ -24,14 +25,12 @@ def leg(strike=100, side="buy", entry=3, root="SPY", expiry="2026-10-30"):
             path="/v3/reference/options/contracts/" + ticker,
             capability=dict(http_status=200, verdict="entitled"), contract=fields,
             field_presence={k: True for k in fields}, completed_at="2026-10-23T20:01:00Z",
-            payload_sha256="a" * 64),
-        settlement_context=dict(contract=deepcopy(c), economic_expiry_at=expiry + "T20:00:00Z",
-            available_at="2026-10-23T20:02:00Z", fixing_basis="official_close",
-            fixing_ref="https://fixtures.invalid/controlled-not-live#sha256=" + "b" * 64))
+            payload_sha256="a" * 64))
 
 
 def evaluate(legs, spots=(90, 100, 105, 110, 120), **kw):
-    return prepare_expiry_payoff(legs, spots, known_by=kw.get("known_by", KNOWN))
+    return prepare_expiry_payoff(legs, spots, known_by=kw.get("known_by", KNOWN),
+                                 payoff_basis=kw.get("payoff_basis", BASIS))
 
 
 def codes(result):
@@ -48,6 +47,9 @@ def test_authored_long_call_without_quote_iv_or_open_session():
         breakevens=[103])
     assert result["assumptions"]["current_quote_required"] is False
     assert result["assumptions"]["entry_basis"] == "user_assumption_not_fill"
+    assert result["known_by"] == KNOWN
+    assert result["contract_expirations"] == ["2026-10-30"]
+    assert result["temporal_context"]["relation"] == "EXPIRY_DATE_AFTER_KNOWN_BY_DATE"
     assert "r" not in result["assumptions"] and "model_name" not in result["assumptions"]
     assert source == before
 
@@ -76,9 +78,39 @@ def test_cannot_run_one_spot_across_incompatible_contracts(other, code):
     assert code in codes(evaluate([leg(), other]))
 
 
-def test_same_date_different_fixing_instant_is_unpriced():
-    other = leg(110); other["settlement_context"]["economic_expiry_at"] = "2026-10-30T19:30:00Z"
-    assert "INCOMPATIBLE_SETTLEMENT_HORIZON" in codes(evaluate([leg(), other]))
+def test_explicit_hypothetical_model_has_no_fixing_or_settlement_requirement():
+    out = evaluate([leg()])
+    assert out["status"] == "PREPARED_EXPIRY_PAYOFF"
+    assert out["assumptions"]["payoff_basis"] == BASIS
+    assert out["assumptions"]["underlying_price"] == "hypothetical_at_expiry"
+    assert out["assumptions"]["outcome"] == "conditional_not_realized"
+    assert out["assumptions"]["early_exercise"] == "excluded"
+    assert out["assumptions"]["assignment"] == "excluded"
+    assert "economic_expiry_at" not in out["assumptions"]
+
+
+@pytest.mark.parametrize("basis", [None, {}, dict(kind="actual_fixing", expiration="2026-10-30"),
+    {**BASIS, "economic_expiry_at": "2026-10-30T20:00:00Z"}])
+def test_actual_fixing_or_other_model_basis_is_explicitly_unsupported(basis):
+    assert "PAYOFF_BASIS_UNSUPPORTED" in codes(evaluate([leg()], payoff_basis=basis))
+
+
+def test_conditional_model_date_must_equal_contract_expiry():
+    assert "PAYOFF_EXPIRY_MISMATCH" in codes(evaluate([leg()], payoff_basis={**BASIS, "expiration": "2026-11-06"}))
+
+
+def test_legacy_actual_settlement_context_cannot_be_silently_ignored():
+    source = leg(); source["settlement_context"] = dict(fixing_basis="official_close")
+    assert "CONTEXT_BASIS_UNSUPPORTED" in codes(evaluate([source]))
+
+
+def test_historical_contract_is_explicitly_after_expiry_not_a_prior_decision():
+    basis = dict(kind="hold_to_expiry_intrinsic", expiration="2026-10-15")
+    result = evaluate([leg(expiry="2026-10-15")], payoff_basis=basis)
+    assert result["known_by"] == KNOWN
+    assert result["temporal_context"] == dict(known_by_date_new_york="2026-10-23",
+        contract_expiration="2026-10-15", relation="EXPIRY_DATE_BEFORE_KNOWN_BY_DATE",
+        historical_first_availability_established=False)
 
 
 @pytest.mark.parametrize("mutate,code", [
@@ -89,12 +121,6 @@ def test_same_date_different_fixing_instant_is_unpriced():
     (lambda x: x["assumptions"].update(quantity=True), "POSITION_ASSUMPTION_INVALID"),
     (lambda x: x["assumptions"].update(quantity=1.5), "POSITION_ASSUMPTION_INVALID"),
     (lambda x: x["assumptions"].update(quantity=0), "POSITION_ASSUMPTION_INVALID"),
-    (lambda x: x.update(settlement_context=None), "SETTLEMENT_FIXING_UNQUALIFIED"),
-    (lambda x: x["settlement_context"].update(fixing_basis="AM_index"), "SETTLEMENT_FIXING_UNQUALIFIED"),
-    (lambda x: x["settlement_context"].update(available_at="2026-10-24T00:00:00Z"), "SETTLEMENT_FIXING_UNQUALIFIED"),
-    (lambda x: x["settlement_context"].update(economic_expiry_at="2026-10-30T20:00:00"), "SETTLEMENT_FIXING_UNQUALIFIED"),
-    (lambda x: x["settlement_context"].update(economic_expiry_at="2026-10-31T20:00:00Z"), "SETTLEMENT_FIXING_UNQUALIFIED"),
-    (lambda x: x["settlement_context"].update(fixing_ref="https://fixtures.invalid/unbound"), "SETTLEMENT_FIXING_UNQUALIFIED"),
     (lambda x: x["contract"].update(occ_symbol="SPY   261030C00101000"), "IDENTITY_INVALID"),
     (lambda x: x["reference_observation"].update(completed_at="2026-10-23T22:00:00Z"), "TERMS_UNQUALIFIED"),
     (lambda x: x["reference_observation"]["capability"].update(http_status=403), "TERMS_UNQUALIFIED"),
@@ -132,10 +158,6 @@ def test_invalid_spot_domain_is_unpriced(spots):
     assert "SPOTS_INVALID" in codes(evaluate([leg()], spots))
 
 
-def test_equivalent_offset_horizons_compare_as_instants():
-    other = leg(110); other["settlement_context"]["economic_expiry_at"] = "2026-10-30T16:00:00-04:00"
-    assert evaluate([leg(), other])["status"] == "PREPARED_EXPIRY_PAYOFF"
-
 
 def test_malformed_capability_and_huge_input_return_typed_unpriced():
     source = leg(); source["reference_observation"]["capability"] = ["not-a-receipt"]
@@ -156,7 +178,7 @@ def draft():
 
 def test_actual_plan_assumption_shape_joins_exact_pin_and_preserves_unknown_clock():
     plan = draft(); before = deepcopy(plan)
-    out = prepare_plan_draft_expiry(plan, [leg()], [100, 110], known_by=KNOWN)
+    out = prepare_plan_draft_expiry(plan, [{k: v for k, v in leg().items() if k != "assumptions"}], [100, 110], known_by=KNOWN, payoff_basis=BASIS)
     assert out["curve"]["pnl"] == [-300, 700]  # row.mid=99 is never the entry.
     assert out["source_pins"][0]["asofRaw"] is None
     assert out["source_pins"][0]["sourceStale"] is True
@@ -170,4 +192,4 @@ def test_actual_plan_assumption_shape_joins_exact_pin_and_preserves_unknown_cloc
 ])
 def test_plan_pin_context_conflicts_cannot_rebind_or_overwrite_source(change, code):
     plan = draft(); change(plan)
-    assert code in codes(prepare_plan_draft_expiry(plan, [leg()], [100], known_by=KNOWN))
+    assert code in codes(prepare_plan_draft_expiry(plan, [{k: v for k, v in leg().items() if k != "assumptions"}], [100], known_by=KNOWN, payoff_basis=BASIS))
