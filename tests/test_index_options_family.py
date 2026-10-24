@@ -49,6 +49,8 @@ def test_identical_visible_strike_expiry_side_remain_distinct_am_pm_contracts():
     assert result["net_gex_bn"] == pytest.approx(expected, abs=0.0001)
     assert result["coverage"]["n_contracts"] == 2
     metadata = result["family_source"]
+    assert "exposure_projection" not in result  # v2 would collapse AM/PM identity
+    assert metadata["projection_state"] == "unavailable_root_identity_not_bound_to_v2"
     assert metadata["source_roots"] == ["NDX", "NDXP"]
     assert metadata["historical_first_available_at"] is None
     assert metadata["redistribution_grant"] is None

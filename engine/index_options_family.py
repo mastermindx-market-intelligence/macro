@@ -156,6 +156,11 @@ def build_ndx_family_gex(
     if (not result.get("by_strike") or result.get("net_gex_bn") is None or
             result.get("spot_ref") is None):
         raise FamilySourceUnavailable("GEX computation incomplete; refuse family output")
+    # The existing native exposure_projection/v2 contract keys do NOT encode
+    # NDX vs NDXP settlement identity. It would collapse overlapping contracts,
+    # even though the legacy GEX headline (root-aware OI join above) is correct.
+    # Never export a misleading 'complete' projection from the combined frame.
+    result.pop("exposure_projection", None)
     result["family_source"] = {
         "schema": "mastermind.index_options_family_source.v1",
         "root": "NDX",
@@ -169,6 +174,7 @@ def build_ndx_family_gex(
         "historical_first_available_at": None,
         "complete_chain_receipt": False,
         "redistribution_grant": None,
+        "projection_state": "unavailable_root_identity_not_bound_to_v2",
         "state": "OFFLINE_SOURCE_QUALIFIED_NOT_PUBLISHABLE",
     }
     return result

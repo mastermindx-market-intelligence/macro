@@ -27,10 +27,10 @@ def _frames(root):
 
 
 def test_offline_candidate_uses_existing_loader_and_retains_two_contract_roots(monkeypatch, tmp_path):
-    monkeypatch.setattr(hub, "_load_parquets",
-                        lambda kind, root, years, store: _frames(root)[0] if kind == "greeks" else None)
-    monkeypatch.setattr(hub, "_load_oi_for_date",
-                        lambda root, session, store: _frames(root)[1])
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store: _frames(root)[0])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
     out = hub.build_ndx_family_offline(ASOF, tmp_path, tmp_path / "candidate")
     assert out.name == "NDX.json"
     parsed = json.loads(out.read_text())
@@ -45,21 +45,21 @@ def test_existing_target_is_preserved(monkeypatch, tmp_path):
     target = tmp_path / "candidate" / "gex" / "NDX.json"
     target.parent.mkdir(parents=True)
     target.write_bytes(b"prior-publisher-bytes")
-    monkeypatch.setattr(hub, "_load_parquets",
-                        lambda kind, root, years, store: _frames(root)[0])
-    monkeypatch.setattr(hub, "_load_oi_for_date",
-                        lambda root, session, store: _frames(root)[1])
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store: _frames(root)[0])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
     with pytest.raises(FileExistsError):
         hub.build_ndx_family_offline(ASOF, tmp_path, tmp_path / "candidate")
     assert target.read_bytes() == b"prior-publisher-bytes"
 
 
 def test_missing_root_refuses_and_leaves_no_output(monkeypatch, tmp_path):
-    monkeypatch.setattr(hub, "_load_parquets",
-                        lambda kind, root, years, store:
+    monkeypatch.setattr(hub, "greeks_for_date",
+                        lambda session, root, store:
                         pd.DataFrame() if root == "NDXP" else _frames(root)[0])
-    monkeypatch.setattr(hub, "_load_oi_for_date",
-                        lambda root, session, store: _frames(root)[1])
+    monkeypatch.setattr(hub, "oi_for_date",
+                        lambda session, root, store: _frames(root)[1])
     with pytest.raises(FamilySourceUnavailable, match="NDXP"):
         hub.build_ndx_family_offline(ASOF, tmp_path, tmp_path / "candidate")
     assert not (tmp_path / "candidate").exists()
@@ -105,6 +105,9 @@ def test_real_parquet_store_via_actual_cli_offline_only(monkeypatch, tmp_path):
         greek, interest = _frames(root)
         greek["gamma"] = gamma
         interest["open_interest"] = oi
+        greek["root"] = interest["root"] = root
+        greek["date"] = pd.to_datetime(greek["date"])
+        interest["date"] = pd.to_datetime(interest["date"])
         for kind, frame in (("greeks", greek), ("oi", interest)):
             path = tmp_path / "theta" / kind / root / "2026.parquet"
             path.parent.mkdir(parents=True)

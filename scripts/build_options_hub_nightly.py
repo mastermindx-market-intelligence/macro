@@ -40,7 +40,10 @@ import numpy as np
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
-from engine.thetadata_store import _load_parquets, _normalise_date, store_root, clear_parquet_cache
+from engine.thetadata_store import (
+    _load_parquets, _normalise_date, store_root, clear_parquet_cache,
+    greeks_for_date, oi_for_date,
+)
 from engine.options_hub import (
     compute_vol,
     compute_gex,
@@ -1195,14 +1198,12 @@ def build_ndx_family_offline(
         NDX_FAMILY_ROOTS, build_ndx_family_gex,
     )
 
-    year = pd.Timestamp(asof).year
     frames = {}
     for root in NDX_FAMILY_ROOTS:
-        greeks = _load_parquets("greeks", root, [year], theta_store)
-        if not greeks.empty:
-            greeks = _normalise_date(greeks)
-            greeks = greeks[greeks["date"] == asof].copy()
-        oi = _load_oi_for_date(root, asof, theta_store)
+        # Incumbent date-predicate store readers avoid loading/caching full
+        # root-year Greeks/OI on a bounded one-session NDX family attempt.
+        greeks = greeks_for_date(asof, root, theta_store)
+        oi = oi_for_date(asof, root, theta_store)
         frames[root] = (greeks, oi)
     result = build_ndx_family_gex(frames, asof)
     output = out_dir / "gex" / "NDX.json"
