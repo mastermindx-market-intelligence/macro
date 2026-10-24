@@ -165,5 +165,34 @@
   "material_source_conflicts": {
     "panama_flag_state_vs_india_mea_on_peace": "PANAMA_OCT5_1930Z_INCIDENT_REPORTED_OCT8_VS_INDIA_OCT6_EARLIER_TODAY_KNOWABLE_OCT6",
     "israel_katz_gaza_readiness": "TOI_09:47_ISRAEL_LOCAL_OCT6_IS_06:47Z_FIRST_KNOWN_UPPER_BOUND_ORIGINAL_PRESS_RELEASE_UNRESOLVED"
+  },
+  "oct6_source_access_decision": {
+    "decision": "DO_NOT_CERTIFY_OCT6_SOURCE_DAY",
+    "decision_recorded_at_utc": "2026-10-24T08:37:51.218498Z",
+    "admission_state": "SOURCE_CENSUS_INCOMPLETE",
+    "no_market_outcomes_read": true,
+    "admitted_events": 0,
+    "canonical_candidate_count": 26,
+    "candidate_corrections": 16,
+    "missing_mandatory_evidence": [
+      "Reuters or equivalently complete original historical wire, Oct 6 00:00-24:00 UTC: authenticated source issue/vintage clocks, event families, negative-source coverage and pagination/exhaustive count receipt",
+      "UKMTO full warning/advisory/notice issue-history and negative coverage for Oct 6, with original public distribution first-issue times (incident dates and product filenames are not sufficient)",
+      "Unresolved first-publication, event-identity, vintage edit and material-novelty adjudication for the candidate pool, especially On Peace and Black Sea/Persian Gulf shipping clusters"
+    ],
+    "insufficient_alternatives": [
+      "Google News historical Reuters RSS: 100-item query caps, cross-day indexing and generic pubDate values; discovery only",
+      "GDELT first-seen/crawl time: not necessarily earliest original wire-publication time; no archive completeness guarantee",
+      "Public syndicated Reuters articles and mirrors: sparse edited articles with later copy clocks and no auditable all-day negative inventory",
+      "UKMTO recent incidents and four warnings 156-159: incident versus public issue day divergence, other product types and first industry distribution not fully captured"
+    ],
+    "potential_licensed_route": "LSEG Reuters News Service historical original-wire access with verified entitlements and an actually executed exhaustive query; none validated in this environment",
+    "reopen_only_when": [
+      "Authorized first-party historical original Reuters/wire feed yields immutable original issue clocks and auditable complete full-day query/negative coverage receipt",
+      "Authoritative UKMTO public/industry warning and advisory issue-time log covers all Oct 6 products with verified first-issue/negative search receipts",
+      "Independent point-in-time source-only adjudication reconciles material novelty and duplicates without using US/HSI outcomes"
+    ],
+    "policy": "Frozen Epoch2 prospective protocol, no reanchoring, no post hoc narrowing, no backfill into quarantined Epoch1; research-only and no trading/alert/order authority",
+    "evidence_pr_comment": "https://github.com/mastermindx-market-intelligence/macro/pull/8012#issuecomment-6381542895",
+    "next_independent_lane": "Exact-head independent review of UTC source-day wall-clock guard and research admission/firewall, then source-only next-day acquisition when admissible"
   }
 }
