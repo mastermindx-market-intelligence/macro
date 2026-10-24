@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "YUM-BULL-20260821",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.3,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 65.2,
+    "validity": 66.3,
     "progress": 0.0,
-    "pace": 6.0,
+    "pace": 4.7,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.728,
+    "dist_to_stop_r": 0.738,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 140.0,
-    "p1": -0.1811,
-    "p2": -0.0905,
+    "horizon_pct_used": 142.2,
+    "p1": -0.1747,
+    "p2": -0.0874,
     "p3": null,
-    "move_r": -0.272,
+    "move_r": -0.262,
     "mfe_r": 0.346,
     "mae_r": -1.472
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Falling Behind Schedule",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 63,
-  "tau": 1.4,
+  "days_elapsed": 64,
+  "tau": 1.4222,
   "closed": true,
   "outcome": "INVALIDATED"
 }
