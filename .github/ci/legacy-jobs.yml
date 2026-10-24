@@ -36134,7 +36134,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema==4.26.0
       - name: EDGAR filing identity join + release binding (Wave 1B)
         run: >-
           python -m pytest
