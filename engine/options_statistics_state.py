@@ -18,7 +18,9 @@ from engine import options_statistics as measurement
 
 SCHEMA = "options.observed_statistics_state/v1"
 _COUNTERS = ("input_row_count", "rejected_row_count", "duplicate_row_count",
-             "conflicting_identity_count", "ambiguous_row_count")
+             "conflicting_identity_count", "ambiguous_row_count",
+             "source_input_row_count", "source_rejected_row_count",
+             "source_non_novel_row_count")
 _ARITHMETIC = Context(prec=1000, rounding=ROUND_HALF_EVEN,
                       Emin=-999999, Emax=999999, capitals=1, clamp=0,
                       flags=[], traps=[InvalidOperation, DivisionByZero, Overflow])
@@ -95,6 +97,9 @@ def _validate(state):
         if root["input_row_count"] != sum((count, root["rejected_row_count"],
                 root["duplicate_row_count"], root["ambiguous_row_count"])):
             raise ValueError("population does not reconcile")
+        if root["source_input_row_count"] != sum((root["input_row_count"],
+                root["source_rejected_row_count"], root["source_non_novel_row_count"])):
+            raise ValueError("source acquisition counts do not reconcile")
         if root["ambiguous_row_count"] < 2 * root["conflicting_identity_count"]:
             raise ValueError("inconsistent ambiguity counter")
         if count:
@@ -143,16 +148,23 @@ def _add(bucket, row, premium):
         bucket["premium_decimal"] = str(Decimal(bucket["premium_decimal"]) + premium)
 
 
-def advance_statistics(prior, rows, *, session_date, root, observed_at):
+def advance_statistics(prior, rows, *, session_date, root, observed_at,
+                       source_rejected_row_count=0, source_non_novel_row_count=0):
     """Advance a copy on caller-deduplicated rows; exclude in-batch ambiguities.
 
     A missing statistics key starts prospective coverage without resetting the
     caller's prior sequence state. Observation time never becomes a source date.
     Identical duplicate rows count once within this call; across calls the
     incumbent producer MUST supply only novel rows. No second dedup store exists.
+    Source acquisition counters count received rows across poll batches (including
+    repeat observations), not unique prints. They preserve prefilter failures
+    and prior-highwater exclusions separately from the admitted population.
     """
     if type(rows) is not list:
         raise TypeError("rows must be a list")
+    for value in (source_rejected_row_count, source_non_novel_row_count):
+        if type(value) is not int or value < 0:
+            raise ValueError("invalid source acquisition counter")
     if type(root) is not str or re.fullmatch(r"[A-Z0-9.^=-]+", root) is None:
         raise ValueError("invalid root")
     if type(session_date) is not str or date.fromisoformat(session_date).isoformat() != session_date:
@@ -177,6 +189,9 @@ def advance_statistics(prior, rows, *, session_date, root, observed_at):
         target = state["roots"].setdefault(root, _root(clock))
         target["last_observed_at"] = clock
         target["input_row_count"] += len(rows)
+        target["source_input_row_count"] += len(rows) + source_rejected_row_count + source_non_novel_row_count
+        target["source_rejected_row_count"] += source_rejected_row_count
+        target["source_non_novel_row_count"] += source_non_novel_row_count
         groups = {}
         for row in rows:
             try:
@@ -219,6 +234,7 @@ def statistics_snapshot(state):
         out["population"] = "prospective_observed_source_valid_novel_prints"
         out["coverage"] = "caller_selected_roots_not_whole_market_or_whole_session"
         out["continuity"] = "observed_poll_batches_continuous_session_coverage_not_established"
+        out["source_counter_basis"] = "received_rows_across_poll_batches_including_repeated_observations"
         for root in out["roots"].values():
             for bucket in [root["totals"], *root["rights"].values(), *root["locations"].values(), *root["venues"].values()]:
                 premium = Decimal(bucket.pop("premium_decimal"))
@@ -226,5 +242,11 @@ def statistics_snapshot(state):
             count = root["totals"]["print_count"]
             root["nbbo_print_coverage"] = (count - root["locations"]["UNKNOWN"]["print_count"]) / count if count else None
             root["venue_print_coverage"] = (count - root["venues"].get("UNKNOWN", {"print_count": 0})["print_count"]) / count if count else None
-            root["status"] = "OBSERVED" if count else "OBSERVED_EMPTY" if not root["input_row_count"] else "NO_UNAMBIGUOUS_VALID_ROWS"
+            root["status"] = (
+                "OBSERVED" if count else
+                "OBSERVED_EMPTY" if not root["source_input_row_count"] else
+                "NO_VALID_SOURCE_ROWS" if root["source_rejected_row_count"] == root["source_input_row_count"] else
+                "NO_NEW_VALID_ROWS" if not root["input_row_count"] else
+                "NO_UNAMBIGUOUS_VALID_ROWS"
+            )
         return out

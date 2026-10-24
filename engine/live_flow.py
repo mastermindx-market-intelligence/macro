@@ -774,11 +774,13 @@ def process_batch(
     # ── 1. Combine + sign ─────────────────────────────────────────────────────
     session_open_et, session_close_et = session_window_et(session_date)
     frames = []
+    statistics_source_rejected = 0
     sequence_notes: list[str] = []
     for df, right_label in ((calls_df, "C"), (puts_df, "P")):
         if df is None or (isinstance(df, pd.DataFrame) and df.empty):
             continue
         dfc = df.copy()
+        statistics_source_rows = len(dfc)
         if "right" not in dfc.columns:
             dfc["right"] = right_label
         # Validate source identity and RTH membership before calls/puts
@@ -847,6 +849,7 @@ def process_batch(
             dfc["size"] = canonical_sizes.map(int).astype("int64")
             dfc["price"] = canonical_prices.astype(float)
             dfc["strike"] = canonical_strikes.astype(float)
+        statistics_source_rejected += statistics_source_rows - len(dfc)
         frames.append(dfc)
 
     if not frames:
@@ -855,6 +858,7 @@ def process_batch(
             options_statistics = advance_statistics(
                 options_statistics, [], session_date=session_date,
                 root=statistics_root, observed_at=batch_ts,
+                source_rejected_row_count=statistics_source_rejected,
             )
         return {
             "events": [],
@@ -880,6 +884,7 @@ def process_batch(
         }
 
     combined = pd.concat(frames, ignore_index=True)
+    statistics_valid_source_rows = len(combined)
     if not combined.empty:
         roots = set(combined["root"].tolist())
         if len(roots) != 1:
@@ -944,6 +949,8 @@ def process_batch(
         options_statistics = advance_statistics(
             options_statistics, statistics_frame.to_dict("records"),
             session_date=session_date, root=statistics_root, observed_at=batch_ts,
+            source_rejected_row_count=statistics_source_rejected,
+            source_non_novel_row_count=statistics_valid_source_rows - len(combined),
         )
 
     combined = _sign_batch(combined)

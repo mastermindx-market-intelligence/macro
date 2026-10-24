@@ -188,7 +188,8 @@ def test_actual_engine_counts_before_sign_and_repull_counts_once():
     assert state["options_statistics"]["roots"]["SPY"]["duplicate_row_count"] == 1
     before = deepcopy(state)
     second = _engine(prior=state, rows=original)
-    assert second["options_statistics"] == state["options_statistics"]
+    assert second["options_statistics"]["roots"]["SPY"]["totals"] == state["options_statistics"]["roots"]["SPY"]["totals"]
+    assert second["options_statistics"]["roots"]["SPY"]["source_non_novel_row_count"] == 2
     assert state == before
     assert list(state["seen_sequences"].values()) == [1]
 
@@ -305,3 +306,41 @@ def test_pending_wal_drain_preserves_statistics_and_does_not_recount(tmp_path, m
     again, _ = poller._drain_pending_learning_events(SESSION, second, event_stager=stage)
     assert len(calls) == 1
     assert again["options_statistics"] == expected
+
+
+@pytest.mark.parametrize("rows,status,received,rejected,prints", [
+    ([], "OBSERVED_EMPTY", 0, 0, 0),
+    ([row(size=True)], "NO_VALID_SOURCE_ROWS", 1, 1, 0),
+    ([row(sequence=None)], "NO_VALID_SOURCE_ROWS", 1, 1, 0),
+    ([row(bid=None)], "OBSERVED", 1, 0, 1),
+    ([row(size=True), row(sequence=2, bid=None)], "OBSERVED", 2, 1, 1),
+])
+def test_actual_engine_preserves_prefilter_quality_across_restart(
+        tmp_path, monkeypatch, rows, status, received, rejected, prints):
+    import scripts.live_flow_poller as poller
+    monkeypatch.setattr(poller, "_state_dir", lambda: tmp_path)
+    state = _engine(rows=rows)
+    poller._save_day_state(SESSION, state)
+    recovered = poller._load_day_state(SESSION)
+    projected = statistics_snapshot(recovered["options_statistics"])["roots"]["SPY"]
+    assert projected["status"] == status
+    assert projected["source_input_row_count"] == received
+    assert projected["source_rejected_row_count"] == rejected
+    assert projected["totals"]["print_count"] == prints
+
+
+def test_actual_cycle_projects_invalid_only_and_mixed_source_quality(monkeypatch):
+    import pandas as pd
+    poller, _ = _poller_fixture(monkeypatch)
+    monkeypatch.setattr(poller, "_fetch_root", lambda root, *args: (
+        root, pd.DataFrame([row(root=root, size=True)] +
+             ([row(root=root, sequence=2, bid=None)] if root == "QQQ" else [])), pd.DataFrame()))
+    _, _, meta, state, _ = _cycle(poller)
+    spy = meta["observed_statistics"]["roots"]["SPY"]
+    qqq = meta["observed_statistics"]["roots"]["QQQ"]
+    assert spy["status"] == "NO_VALID_SOURCE_ROWS"
+    assert spy["source_input_row_count"] == spy["source_rejected_row_count"] == 1
+    assert spy["totals"]["print_count"] == 0
+    assert qqq["source_input_row_count"] == 2 and qqq["source_rejected_row_count"] == 1
+    assert qqq["totals"]["print_count"] == 1
+    assert state["options_statistics"]["roots"]["SPY"]["source_rejected_row_count"] == 1
