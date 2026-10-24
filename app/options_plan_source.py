@@ -100,7 +100,8 @@ def read_plan_reference(contexts, *, key, known_by, session=None):
             **{"strike_price.gte": min(float(c["strike"]) for c in contracts),
                "strike_price.lte": max(float(c["strike"]) for c in contracts)}, limit=100)
         budget = BoundedRequestBudget(max_gets=1)
-        prober = RestProber(key, timeout=8, request_budget=budget, session=session)
+        prober = RestProber(key, base_url="https://api.polygon.io", profile="selected_expiry",
+            timeout=8, max_bytes=262144, max_rows=100, request_budget=budget, session=session)
         path = "/v3/reference/options/contracts"
         payload = prober.probe("plan_selected_terms", path, params=params)
         capability = prober.results["plan_selected_terms"]

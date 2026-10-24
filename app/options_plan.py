@@ -74,3 +74,6 @@ async def plan_expiry(request: Request, _principal=Depends(require_plan_access))
     except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
         return JSONResponse({"status": "INVALID", "reason": "invalid_plan_request"},
                             status_code=422, headers=HEADERS)
+    except Exception:
+        return JSONResponse({"status": "UNAVAILABLE", "reason": "contract_terms_unavailable"},
+                            status_code=503, headers=HEADERS)

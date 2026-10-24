@@ -184,3 +184,18 @@ def test_existing_uncached_entitlement_rule_shared_by_private_read(monkeypatch, 
     else:
         with pytest.raises(OptionUseRefused, match="entitlement_unavailable"):
             auth.resolve_entitled_options_principal("token")
+
+
+def test_reference_constructor_pins_qualified_origin_profile_and_bounds(monkeypatch):
+    actual = source.RestProber
+    seen = []
+    def make(*args, **kwargs):
+        seen.append(kwargs.copy())
+        return actual(*args, **kwargs)
+    monkeypatch.setattr(source, "RestProber", make)
+    contexts = source.plan_inputs(plan(), known_by="2026-10-24T12:00:00Z")
+    source.read_plan_reference(contexts, key="test", known_by="2026-10-24T12:00:00Z", session=Session())
+    assert seen[0]["base_url"] == "https://api.polygon.io"
+    assert seen[0]["profile"] == "selected_expiry"
+    assert seen[0]["max_bytes"] == 262144 and seen[0]["max_rows"] == 100
+    assert seen[0]["request_budget"].max_gets == 1
