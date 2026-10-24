@@ -1,0 +1,90 @@
+{
+  "scope": "Current imported actual engine_detail API function with synthetic T1/T4 context and real verified declaration bytes; not HTTP/account/production proof",
+  "api_sha256": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551",
+  "response": {
+    "ok": true,
+    "engine": {
+      "engine_id": "SYNTHETIC source declaration check",
+      "canonical_t1": true,
+      "owner_program": null,
+      "producer": null,
+      "output_class": "descriptive",
+      "output_class_rationale": null,
+      "authority": null,
+      "ledger": null,
+      "ledger_evidence": null,
+      "graded_by_design": "no \u2014 descriptive",
+      "graded_by_design_evidence": null,
+      "graded_by_design_source": "SYNTHETIC only",
+      "declared_horizon": null,
+      "validation_state": "phase0",
+      "validation_state_evidence": null,
+      "evidence_ref": [
+        "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+      ],
+      "excluded_reason": null,
+      "n_artifacts": 1,
+      "worst_state": "healthy",
+      "evidence_status": "Ungraded by design",
+      "evidence_reason_codes": [
+        "t1_semantic_ungraded"
+      ],
+      "evidence_refs": [
+        "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+      ],
+      "evidence_provider": {
+        "kind": "t1_owner_native",
+        "binding": null,
+        "family": null,
+        "read_status": "ok"
+      },
+      "evidence_owner_scope": {
+        "source": "data/species/registry.json",
+        "owner_lifecycle": "phase0",
+        "bound_species": null,
+        "qualified_task_scope": null,
+        "reason": null
+      },
+      "evidence_ruler": {
+        "declared_horizon": null,
+        "selected_qledger_rung": null,
+        "qledger_clock": null
+      },
+      "evidence_basis": {
+        "clock_basis_by_horizon": {},
+        "evidence_basis_by_horizon": {},
+        "pooling_refused": false,
+        "available_clock_bases": []
+      },
+      "evidence_maturity": {
+        "validation_state": "phase0",
+        "rungs": {}
+      },
+      "evidence_coverage": {
+        "by_horizon": {}
+      },
+      "evidence_measurement": {
+        "source": "scripts/grade_qledger.py:compute_promotion_readiness",
+        "by_horizon": {}
+      },
+      "evidence_source_links": [
+        {
+          "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+          "kind": "repository_source_declaration",
+          "revision": "23dfff6dc2920d04e90cf3a9e8c51e0c2a6f7bf6",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/23dfff6dc2920d04e90cf3a9e8c51e0c2a6f7bf6/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+        }
+      ]
+    },
+    "generated": {
+      "scope": "SYNTHETIC source declaration check; no outcome inputs"
+    },
+    "outputs": [
+      {
+        "engine_id": "SYNTHETIC source declaration check",
+        "state": "healthy",
+        "assessment_status": "complete"
+      }
+    ]
+  }
+}

@@ -15,6 +15,7 @@ def fixture(tmp_path):
  for n in m.FMS_FILES:
   p=root/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('{}\n')
  helper=root/'scripts/ci/fms_persist.py';helper.parent.mkdir(parents=True);helper.write_bytes(Path(m.__file__).read_bytes())
+ (helper.parent/'govrev_source_binding.py').write_bytes(Path(m.__file__).with_name('govrev_source_binding.py').read_bytes())
  (root/'unrelated.txt').write_text('baseline\n');run(root,'add','.');run(root,'commit','-m','baseline');run(root,'push','origin','HEAD:main');run(tmp_path,'clone','--branch','main',str(origin),str(peer));run(peer,'config','user.name','test');run(peer,'config','user.email','test@example.invalid')
  p=root/m.FMS_FILES[1];p.write_text(p.read_text()+'{"new":true}\n');run(root,'add',m.FMS_FILES[1]);run(root,'commit','-m','acquired once')
  return root,origin,peer,tmp_path/'receipt.json'
@@ -87,7 +88,11 @@ def test_proposed_workflow_persist_shell_preserves_concurrent_source(fixture):
  env.pop('PYTHONPATH',None)
  r=subprocess.run(['bash','-e','-o','pipefail','-c',step['run']],cwd=root,env=env,capture_output=True,text=True)
  assert r.returncode==0,r.stdout+r.stderr
- assert 'publish_default=true' in (out.parent/'outputs').read_text()
+ outputs=dict(line.split('=',1) for line in (out.parent/'outputs').read_text().splitlines())
+ assert outputs['publish_default']=='true'
+ confirmed=run(origin,'rev-parse','main')
+ assert outputs['source_sha']==confirmed
+ assert confirmed!=run(root,'rev-parse','HEAD'), 'the settled transplant, not original acquisition HEAD, must be handed off'
  assert run(origin,'show','main:'+m.FMS_FILES[1]).endswith('{"next":true}')
  assert run(origin,'show','main:unrelated.txt')=='next unrelated'
  assert json.loads((out.parent/'fms-persist-local-fixture-1.json').read_text())['state']=='ORIGINAL_EFFECT_CONFIRMED'

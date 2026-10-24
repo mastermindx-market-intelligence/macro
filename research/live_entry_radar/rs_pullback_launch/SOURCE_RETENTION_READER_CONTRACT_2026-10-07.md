@@ -11,7 +11,58 @@ Terminal can retain bounded one-minute source observations in its existing per-s
 
 [Phase 1](PHASE1_ADMISSION_2026-10-07.json) remains **NOT_ADMITTED** with 29 refusals; H1, H2 and H3 remain **NOT_TESTED**. The admission artifact SHA-256 remains `a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f`. Retention code, synthetic conformance, hosted CI and deployment are separate evidence classes.
 
-The unchanged [original joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) and [v2 declaration and basis-refusal receipt](SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json) remain historical evidence for their exact source revisions. The distinct [v3 role and unadjusted-capture receipt](SOURCE_UNADJUSTED_CAPTURE_CONFORMANCE_2026-10-07.json) binds the current candidate implementation by exact file SHA-256 values. All three use injected transport and synthetic clocks; none is a real market observation. The original producer was delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840); this source packet does not assert v3 delivery or activation.
+The unchanged [original joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) and [v2 declaration and basis-refusal receipt](SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json) remain historical evidence for their exact source revisions. The distinct [v3 role and unadjusted-capture receipt](SOURCE_UNADJUSTED_CAPTURE_CONFORMANCE_2026-10-07.json) binds its recorded pre-R27 implementation by exact file SHA-256 values; it is historical evidence and does not bind the later decoder-output extension below. All three use injected transport and synthetic clocks; none is a real market observation. The original producer was delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840); this source packet does not assert v3 delivery or activation.
+
+## R27 decoder output v2 — 2026-10-20
+
+R27 adds an explicit **decode-output version**, independent of Terminal capture
+v1/v2/v3. The default `DECODE_SCHEMA` remains output v1, with its existing
+serialization and row seals unchanged. Callers opt in with
+`output_schema=DECODE_SCHEMA_V2`; unknown or malformed modes refuse.
+
+After a capture is enrolled, visible at the actual decision cutoff and validated
+against the explicit expected symbol, every emitted v2 row carries:
+
+```python
+source_observation = {
+    # Existing capture, page, row and owner-read provenance stays intact.
+    "decode_schema": "mastermind.entry_radar.terminal_minute_observations.v2",
+    "source_vendor": payload["source"],
+    "source_symbol": payload["symbol"],
+}
+```
+
+The provider and symbol come from the validated retained payload. Caller stream
+metadata, a security-ID suffix, an option root or an attestation boolean cannot
+supply or replace them. The fields are inside the existing full-row receipt
+digest, and the envelope carries the selected output schema. Keeping the version
+on each row preserves its meaning when callers extract only `minutes`.
+
+No usable source query is created for an incomplete, failed, empty, suppressed,
+unenrolled or not-yet-visible observation. Future capture semantics remain
+uninterpreted until the existing enrolled-prefix visibility boundary permits them.
+
+Choosing v2 changes serialization and its row digest. It does **not** create a new
+capture, market revision, reader receipt or availability clock. Use one output
+representation per observation in a candidate. Combining v1/v2 representations
+of the same observation remains a conflicting revision in the existing selector.
+Historic reconstruction requires the retained raw snapshot and genuine original
+owner-read receipts; running the new decoder now is not evidence that v2 output
+was issued historically. A current reread supplies current availability only.
+
+The fields support a future native identity query. They do not authenticate
+custody, prove a security binding or admit a market source. A caller can recompute
+a JSON checksum; consumers must invoke the owner decoder from custodied reader
+inputs instead of recognizing an arbitrary decorated JSON row as owner proof.
+`basis_id=None`, `TERMINAL_BASIS_UNPROVEN`, all other owner requirements, and false
+admission/trading authority remain intact.
+
+The new synthetic suite is
+`tests/test_entry_radar_terminal_native_query.py`. It binds complete pre-R27 v1
+outputs for legacy capture v1/v2 and both v3 roles to the exact prior decoder,
+then proves the explicit output-version delta, original read-clock boundary,
+query provenance, unchanged revision identities, and preserved selector refusals.
+It does not replace or refresh the historical joint conformance receipts.
 
 ## Owner and storage boundaries
 
@@ -187,3 +238,133 @@ contract source hashes. It must be regenerated if any bound source changes, incl
 an independently reviewed Terminal transport repair. Its synthetic clocks and local
 PASS do not establish source admission, hosted delivery, installed compatibility or
 a live collection budget.
+
+
+## R28: explicit native owner-read consumer join
+
+`engine/entry_radar/replay/rs_pullback_native_identity.py` adds
+`build_input_panel_from_owner_reads`. It is an opt-in research entry point above
+the existing R27 Terminal decoder and R12 identity selector. The public
+`build_input_panel` JSON v1/v2 entry point retains its prior behavior; its complete
+pre-change synthetic panel hashes remain pinned by the R28 compatibility tests.
+
+| Contract | Schema |
+| --- | --- |
+| Native input description | `mastermind.rs_pullback_launch.phase1_owner_input.v1` |
+| Native panel | `mastermind.rs_pullback_launch.phase1_owner_panel.v1` |
+| Per-candidate, per-role identity binding report | `mastermind.rs_pullback_launch.native_identity_binding.v1` |
+
+The native input description carries an explicit `window_policy_schema` equal to
+the existing phase1 input v1 or v2 schema, the same fixed candidate population,
+calendar and context contracts, and `required_symbols` for stock, SPY, QQQ and
+sector roles. Symbols constrain decoding; they never supply a missing source
+query. Stream metadata can still carry basis and availability evidence. Caller
+`minutes`, JSON Terminal read receipts, and legacy stream `identity` or
+`security_id` metadata are rejected by this entry point.
+
+### Actual objects and explicit enrollment
+
+Callers retain the actual immutable objects returned by
+`read_terminal_minute_snapshot` and `read_identity_snapshot`. A
+`NativeRoleReads` value contains:
+
+- `terminal_read`: the retained current Terminal snapshot, or `None`.
+- `enrolled_terminal_reads`: a tuple of actual Terminal read objects whose
+  receipts explicitly enroll the current snapshot's retained prefixes.
+- `identity_read`: the actual identity generation read for this candidate and
+  role, or `None`.
+
+Supply these values through `owner_reads[candidate_id][role]` and pass the
+configured `reader_identity` separately. The current Terminal snapshot is not
+implicitly enrolled. Missing candidates or roles in this mapping remain in the
+predeclared population with unavailable inputs. Unknown candidate/role mappings
+and arbitrary dictionaries presented as native read objects are contract errors.
+
+This shape allows an earlier candidate to retain its original read while a later
+candidate uses a genuinely later read. It creates neither an identity revision
+store nor a second selector. Python types and checksums do not authenticate a
+caller; trusted reader call-path custody and retention of the original source
+objects are still required. Creating or reading an object today does not grant
+it historical availability.
+
+### Decision order and retained evidence
+
+The existing calendar and window-policy guards run first. Once a candidate is
+inside its visible owner session and passes those guards, each role proceeds as
+follows:
+
+1. Decode the actual retained Terminal snapshot through R27 output v2, with
+   `stream_metadata=None`, explicit enrolled receipts, the frozen role symbol,
+   and actual `decision_at`. Only visible decoded rows whose event starts are in
+   the owner's `[open, close)` session can supply a query.
+2. Derive one exact provider/symbol pair from those rows' source observations.
+   Display bars, a capture header without retained observations, incomplete or
+   failed captures, another session's rows, and caller metadata cannot supply a
+   substitute query. No visible source query means no identity-owner call.
+3. Inspect only the identity consumer-read completion clock needed to establish
+   visibility. A valid clock strictly after the decision withholds the input
+   before `alias_table()` parses its identity payload. An invalid clock cannot
+   establish future invisibility and produces a retained source refusal.
+4. For an eligible read, invoke the existing
+   `alias_table().resolve_binding(vendor, vendor_symbol, owner_session_date,
+   decision_at=actual_cutoff, snapshot_receipts=(actual_receipt,))`.
+   R12 continues to own validity intervals, semantic validation, history
+   selection, refusal and binding. The adapter invents no interval or security
+   identity.
+5. Run the original minute, revision, price/volume basis, first-seen and context
+   checks using the resolved effective identity. Native identity replaces only
+   the legacy identity-metadata check.
+
+The cutoff follows the existing panel's conservative microsecond representation:
+a finer instant is never rounded forward to admit later evidence. The v2 feature
+anchor determines window geometry only; it never substitutes for the actual
+decision cutoff used for Terminal, identity, basis or context visibility.
+
+The original decoded row is copied without filling its `security_id`, changing
+its revision or recalculating its seal. Its effective native identity travels
+separately through the private aggregation path. The binding report commits the
+unchanged row-set digest, each original row receipt/revision, and the actually
+selected Terminal read receipts.
+
+The report preserves the complete native `AliasResolution`, including intentional
+null fields. In particular, a native `REFUSED` result may leave `vendor_symbol`
+and `security_id` null; the visible query is retained separately. The full identity
+consumer-read receipt is included only when the actual native result names that
+read's matching snapshot `receipt_sha256`. This applies to `BOUND`, `REFUSED`,
+and `UNAVAILABLE / NO_BINDING_AT_EVENT_DATE`. A native result with no selected
+receipt contributes no supplied generation, artifact vector, history prefix or
+read clocks. An adapter-level future-read unavailability has no fabricated native
+resolution.
+
+Each binding report has its own digest and enters the candidate snapshot digest.
+Full supplied-read diagnostics and opaque input hashes remain at panel level;
+future-only provenance is excluded from candidate digests. With valid availability
+clocks still strictly after cutoff, changing future payloads or receipt semantics
+cannot change the earlier candidate. Once malformed source bytes become visible,
+typed identity/JSON/encoding errors retain a refused candidate. Unexpected
+implementation errors remain errors instead of being disguised as missing data.
+
+### Remaining limits and verification scope
+
+R28 does not admit Terminal's adjustment basis. `TERMINAL_BASIS_UNPROVEN` still
+blocks an aggregate even when native identity is `BOUND`. Same-clock revision
+conflicts, missing minutes, first-seen failures, calendar/window guards, daily
+context and incumbent assessment requirements remain effective. All candidates
+remain present; no outcome, firing state, score, registered detector or trading
+authority is created.
+
+The new synthetic suite exercises real temporary file/Parquet reader paths,
+native MU binding and ETF refusals, exact source-row preservation, actual
+decision versus feature-anchor visibility, per-candidate retained reads,
+future-payload invariance, nanosecond availability exclusion, typed refusal
+retention, revision conflicts and both legacy full-output goldens. It is included
+in the existing `entry-radar-rs-pullback-calendar` CI job with the existing identity
+reader's dependency closure and PyArrow dependency. These fixtures and source
+checks are not authentic market-data availability or identity-publication proof.
+
+No canonical identity generation is promoted by this consumer API. Source
+publication, independent review, production-host qualification, canonical
+generation authority, missing authentic ETF bindings and market-data admission
+remain distinct requirements. Historical conformance receipts earlier in this
+document retain their original source binding; they are not silently rebound to
+R28 or presented as a new joint execution.
