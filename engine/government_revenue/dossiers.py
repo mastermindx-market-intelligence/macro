@@ -888,6 +888,11 @@ def _dossier_validation_validator() -> Any:
     memo, resolved_refs = OrderedDict(), {}
     memo_property_nodes = set()
     cheap_property_keywords = {"type", "minLength", "maxLength"}
+    cheap_refs = {
+        f"#/$defs/{name}"
+        for name, subschema in frozen["$defs"].items()
+        if isinstance(subschema, dict) and not (subschema.keys() - cheap_property_keywords)
+    }
 
     def collect_property_nodes(node):
         if isinstance(node, dict):
@@ -918,7 +923,8 @@ def _dossier_validation_validator() -> Any:
                 memo.popitem(last=False)
 
     def cached(validator, ref, value, source_schema):
-        key = _dossier_ref_memo_key(ref, value)
+        # Keep cheap reference checks native without displacing reusable checks.
+        key = None if ref in cheap_refs else _dossier_ref_memo_key(ref, value)
         if hit(key):
             return
         if ref not in resolved_refs:
