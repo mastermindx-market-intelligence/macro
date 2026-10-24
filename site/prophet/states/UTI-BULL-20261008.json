@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UTI-BULL-20261008",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 67.5,
-  "raw_confidence": 72.2,
-  "delta_vs_base": 7.5,
+  "management_confidence": 68.6,
+  "raw_confidence": 70.0,
+  "delta_vs_base": 8.6,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 37.7,
-    "pace": 87.8,
+    "progress": 36.1,
+    "pace": 79.7,
     "retention": 50.0,
-    "overlay": 58.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.682,
-    "dist_to_t1_r": 0.818,
-    "dist_to_t2_r": 2.318,
-    "horizon_pct_used": 33.3,
-    "p1": 0.4547,
-    "p2": 0.2273,
+    "dist_to_stop_r": 1.644,
+    "dist_to_t1_r": 0.856,
+    "dist_to_t2_r": 2.356,
+    "horizon_pct_used": 35.6,
+    "p1": 0.4296,
+    "p2": 0.2148,
     "p3": null,
-    "move_r": 0.682,
+    "move_r": 0.644,
     "mfe_r": 0.682,
     "mae_r": -0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.3333
+  "days_elapsed": 16,
+  "tau": 0.3556
 }
