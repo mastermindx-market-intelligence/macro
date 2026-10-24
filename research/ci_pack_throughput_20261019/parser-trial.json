@@ -1,5 +1,5 @@
 {
-  "status": "local verification passed; normal hosted proof pending",
+  "status": "merged with exact-head hosted proof; natural post-merge comparison pending",
   "base": "d52827f26b062f67d594350a65becf406710d4d1",
   "original_profile_tree": "ff3996daeb00dd92c50f93865d685c4cd5044f5d",
   "changes": [
@@ -242,5 +242,79 @@
       "returncode": 0,
       "wall_seconds": 337.02842337510083
     }
-  }
+  },
+  "release": {
+    "headRefOid": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+    "mergeCommit": {
+      "oid": "9c7df3786fc3856fbb692da301584b4b443ab66d"
+    },
+    "mergedAt": "2026-10-20T04:57:13Z",
+    "state": "MERGED"
+  },
+  "landing_verified_blobs": 7,
+  "hosted_trials": [
+    {
+      "run_id": 39357355984,
+      "head": "f22f133c9d877c060890a36b04e2027e389c010c",
+      "conclusion": "success",
+      "fif_command_seconds": 1581.753219,
+      "role": "superseded head",
+      "stage_summary": {
+        "run_id": 39357355984,
+        "head": "f22f133c9d877c060890a36b04e2027e389c010c",
+        "created_at": "2026-10-20T02:09:11Z",
+        "status": "completed",
+        "conclusion": "success",
+        "run_to_gate_seconds": 2067.0,
+        "summed_job_wall_minutes": 225.78333333333333,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    },
+    {
+      "run_id": 39360739679,
+      "head": "546fefb118f6bba91a0112f2ecef1f946b16f537",
+      "conclusion": "success",
+      "fif_command_seconds": 2093.137111,
+      "role": "superseded head",
+      "stage_summary": {
+        "run_id": 39360739679,
+        "head": "546fefb118f6bba91a0112f2ecef1f946b16f537",
+        "conclusion": "success",
+        "created_at": "2026-10-20T02:46:35Z",
+        "run_to_gate_seconds": 2561.0,
+        "summed_job_wall_minutes": 225.9,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    },
+    {
+      "run_id": 39364786931,
+      "head": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+      "conclusion": "success",
+      "fif_command_seconds": 1573.073102,
+      "role": "release proof",
+      "selected_jobs": 96,
+      "manifest_jobs": 258,
+      "passed_proof_units": 299,
+      "infrastructure_findings": 0,
+      "tested_tree_sha": "d794aaad6d2d6974fa6b6ee7bdc43ebb1ab3d167",
+      "base_sha": "6629c26843e83e2221f118e82e69411496105175",
+      "plan_sha256": "1e4334c952bdc7113114d0cc75fdcd20fdf8bff2ade6dc738f91575e2c3ebf6f",
+      "evidence_sha256": "559c007c2392513f8d90ba1ae1a372269f60514a01d0939750776f8fc199abfe",
+      "stage_summary": {
+        "run_id": 39364786931,
+        "head": "db89558c56865f0961f0f50bfbb0c04ef3320690",
+        "conclusion": "success",
+        "created_at": "2026-10-20T03:32:00Z",
+        "run_to_gate_seconds": 2073.0,
+        "summed_job_wall_minutes": 222.45,
+        "last_pack_to_gate_start_seconds": 2.0
+      }
+    }
+  ],
+  "hosted_limitations": [
+    "Three naturally triggered trial runs; two GitHub main refreshes, no manual CI rerun.",
+    "59 paths changed between original and final head; command and test-count equality alone do not establish equal transitive inputs.",
+    "Earlier ancestry trial has 560 fewer primary tests and lacks the later G-pack step.",
+    "No causal fleet p95 or cost-neutrality estimate."
+  ]
 }

@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-15T03:10:20.575143+00:00",
+"updated":"2026-10-24T03:17:51.288259+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -23844,32 +23844,32 @@
 ]
 },
 "CMC":{
-"foreign_pct":20.3,
-"asof":"2025-08-31",
-"source":"10-K 2025-08-31",
-"fy":2025,
-"accession":"0000022444-25-000138",
+"foreign_pct":18.9,
+"asof":"2026-08-31",
+"source":"10-K 2026-08-31",
+"fy":2026,
+"accession":"0000022444-26-000065",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerIncludingAssessedTax",
-"em_pct":7.9,
+"em_pct":7.2,
 "by_region":[
 {
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":79.7
+"pct":81.1
 },
 {
 "key":"OtherGeographicalAreas",
 "label":"Other Geographical Areas",
 "cls":"mixed",
-"pct":12.4
+"pct":11.7
 },
 {
 "key":"PL",
 "label":"PL",
 "cls":"em",
-"pct":7.9
+"pct":7.2
 }
 ]
 },
@@ -26900,37 +26900,37 @@
 ]
 },
 "IDT":{
-"foreign_pct":21.1,
-"asof":"2025-07-31",
-"source":"10-K 2025-07-31",
-"fy":2025,
-"accession":"0001493152-25-016071",
+"foreign_pct":20.2,
+"asof":"2026-07-31",
+"source":"10-K 2026-07-31",
+"fy":2026,
+"accession":"0001437749-26-031469",
 "method":"us_member",
-"concept":"Revenues",
+"concept":"RevenueFromContractWithCustomerIncludingAssessedTax",
 "by_region":[
 {
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":78.9
+"pct":79.8
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":21.1
+"pct":20.2
 },
 {
 "key":"GB",
 "label":"GB",
 "cls":"dm",
-"pct":15.0
+"pct":12.3
 },
 {
-"key":"Others",
-"label":"Others",
+"key":"Other",
+"label":"Other",
 "cls":"mixed",
-"pct":6.1
+"pct":7.9
 }
 ]
 },
@@ -28888,7 +28888,7 @@
 "asof":"2025-12-31",
 "source":"10-K 2025-12-31",
 "fy":2025,
-"accession":"0001500435-26-000006",
+"accession":"0001500435-26-000068",
 "method":"us_member",
 "concept":"Revenues",
 "by_region":[
@@ -35791,8 +35791,8 @@
 "attempted":2879,
 "parsed":1002,
 "skips":{
-"no_geo_axis":1371,
-"no_denominator":398,
+"no_geo_axis":1372,
+"no_denominator":397,
 "no_10k":72,
 "no_instance":27,
 "agg_no_total":3,

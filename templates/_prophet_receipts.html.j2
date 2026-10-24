@@ -48,6 +48,8 @@
 {% set pvr_copy = {
   'plan_not_built': ["Cleared every check — no entry plan came together tonight", '各项检查都通过 — 但今晚没能形成完整计划'],
   'already_open':   ['Already has a plan running', '已有在跑的计划'],
+  'base_after_event': ["Passed the board's checks — its base re-formed after the signal fired", '通过了榜单检查 — 但基底在信号触发后重新形成'],
+  'validation_failed': ["Passed the board's checks — tonight's plan data didn't verify", '通过了榜单检查 — 但今晚的计划数据未能核验'],
   'not_ready':      ["Setting up, but the entry hasn't come", '形态在走，入场点还没到'],
   'ran_too_far':    ['Ran too far — waiting for a pullback', '涨得太急 — 等回调'],
   'stood_down':     ['Standing aside for now', '暂时回避'],
@@ -113,6 +115,32 @@ html[data-theme="light"] .pvr-g.is-near::before{background:var(--pv-wait)}
 html[data-theme="light"] .pvr-tk{background:#fff;border-color:color-mix(in srgb,var(--muted) 38%,transparent);color:color-mix(in srgb,var(--text) 70%,var(--muted))}
 html[data-theme="light"] .pvr-g.is-near .pvr-tk{color:var(--text)}
 @media (max-width:640px){.pvr-why{font-size:12px}}
+{# ═ R7 WAVE A (R7-24) — see-all refusal receipts (pvr_receipts) + the Today count
+   (pvr_today_count). Neutral surfaces only (Chairman rule 2026-10-18): hairline
+   dividers, even borders, ink via --text/--muted/--ink-* — no container edge accent,
+   no box-shadow. The summary focus ring is the only accent, and it is an outline. #}
+.pvr-rcs{margin:0}
+.pvr-rc-hd{margin:0 0 2px;font-size:12.5px;font-weight:700;color:var(--text)}
+.pvr-rc,.pvr-rc-more{border-top:1px solid var(--line-quiet, var(--line))}
+.pvr-rc-sum{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;cursor:pointer;list-style:none;padding:9px 0;color:var(--text)}
+.pvr-rc-sum::-webkit-details-marker{display:none}
+.pvr-rc-sum:focus-visible{outline:2px solid var(--ink-link);outline-offset:2px}
+.pvr-rc-tk{font:600 10.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em;color:var(--muted)}
+.pvr-rc-nm{font-size:12.5px;font-weight:600;color:var(--text)}
+.pvr-rc-sec{font-size:11px;color:var(--muted)}
+.pvr-rc-why{font-size:11.5px;color:var(--muted);margin-left:auto;text-align:right}
+.pvr-rc-mh{font-size:12px;font-weight:650;color:var(--text)}
+.pvr-rc-bd{display:grid;gap:8px;padding:0 0 11px}
+.pvr-rc-row{margin:0;font-size:11.5px;color:var(--text)}
+.pvr-rc-k{font-size:11px;color:var(--muted)}
+.pvr-rc-p{margin:0;font-size:11.5px;line-height:1.55;color:var(--muted);max-width:62ch}
+.pvr-rc-a{font-size:11.5px}
+.pvr-rc-cap{margin:0 0 2px;font-size:11px;line-height:1.5;color:var(--muted)}
+.pvr-tc{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0}
+.pvr-tc-hd{font-size:12.5px;font-weight:700;color:var(--text)}
+.pvr-tc-n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pvr-tc-a{font-size:11.5px}
+@media (max-width:640px){.pvr-rc-why{margin-left:0;text-align:left;flex-basis:100%}}
 </style>
 {% endmacro %}
 
@@ -231,5 +259,107 @@ html[data-theme="light"] .pvr-g.is-near .pvr-tk{color:var(--text)}
     {%- endif -%}
   </p>
 </details>
+{%- endif -%}
+{% endmacro %}
+
+{# ═══ R7 WAVE A SLICE A3 — SEE-ALL REFUSAL RECEIPTS + TODAY COUNT (R7-24, R7-05).
+
+   pvr_receipts is the SEE-ALL LANDING list: one disclosure per passed-on name, each
+   readable as "not a rejection and not a Wait". pvr_today_count is the Today-side
+   count plus ONE plain link to that landing (seat ruling OQ4: plain text link — no
+   chevron, arrow or icon; seat ruling OQ5: the refusal title is main's pair, always
+   read from pvr_copy['validation_failed'], never retyped here).
+
+   DISPLAY ORDER here is R7-24's, and R7-24's alone: the plan-data refusals
+   (validation_failed) lead, then every other name by score descending. That is a
+   DIFFERENT contract from pvr_shelf above, which keeps its own never-re-order,
+   never-re-group, never-re-count rule over the engine's pre-ordered groups — nothing
+   in this macro may change the shelf's grouping, counts or output.
+
+   DEVIATION from the R7 spec's `<button aria-expanded>` wording, ruled by the packet:
+   the disclosure is a native <details class="pvr-rc"> + <summary> — the same
+   accessible expanded state, without JS.
+
+   PRODUCER GAPs this partial does not paper over: the receipts contract carries no
+   per-name `sector` (rendered only when a string one arrives) and no per-check
+   "What passed" rows (that heading is omitted, never rendered empty); when capped
+   groups ship fewer names than cx.passed, the header keeps the engine's lossless
+   total and no copy is invented to explain the difference. #}
+{% macro pvr_receipts(cx, limit=4, next_build_en=none, next_build_zh=none, sample=false) -%}
+{%- if cx is mapping %}
+{#- LOCAL display list only: cx is never mutated and never re-counted — N stays
+    cx.passed, the engine's lossless total, even when capped groups ship fewer rows. -#}
+{%- set _vf = [] %}{% set _rest = [] %}
+{%- for g in (cx.groups or []) %}
+  {%- for nm in (g.names or []) %}
+    {%- if g.reason == 'validation_failed' %}
+      {%- set _ = _vf.append({'nm': nm, 'reason': 'validation_failed'}) %}
+    {%- else %}
+      {%- set _ = _rest.append({'nm': nm, 'reason': g.reason}) %}
+    {%- endif %}
+  {%- endfor %}
+{%- endfor %}
+{#- R7-24's "then the rest by original priority": score descending, STABLE — a
+    non-numeric score sorts last in its original order instead of raising. -#}
+{%- set _num = [] %}{% set _tail = [] %}
+{%- for it in _rest %}
+  {%- if it.nm.score is number %}{% set _ = _num.append(it) %}
+  {%- else %}{% set _ = _tail.append(it) %}{% endif %}
+{%- endfor %}
+{%- set _ordered = _vf + (_num|sort(attribute='nm.score', reverse=true)) + _tail %}
+{%- set _n_more = (_ordered|length) - limit if (_ordered|length) > limit else 0 %}
+{%- if next_build_en is string %}{% set _en_tail = '; the next build is ' ~ next_build_en ~ '.' %}{% else %}{% set _en_tail = '.' %}{% endif %}
+{%- if next_build_zh is string %}{% set _zh_tail = '；下次构建在 ' ~ next_build_zh ~ '。' %}{% else %}{% set _zh_tail = '。' %}{% endif %}
+{%- if _ordered -%}
+<div class="pvr-rcs">
+  <p class="pvr-rc-hd">{{ t(cx.passed ~ ' names', cx.passed ~ ' 只') }}</p>
+  {%- for it in _ordered %}
+  {%- if _n_more and loop.index0 == limit %}
+  {#- ONE nested disclosure carries the overflow; the "Showing…" line sits above the
+      list it explains. M counts names ACTUALLY present, never cx.passed − limit. -#}
+  <details class="pvr-rc-more">
+    <summary class="pvr-rc-sum"><span class="pvr-rc-mh">{{ t('Show ' ~ _n_more ~ ' more', '再显示 ' ~ _n_more ~ ' 只') }}</span></summary>
+    <p class="pvr-rc-cap">{{ t('Showing ' ~ limit ~ ' of ' ~ cx.passed ~ '. Plan data refusals are listed first, then the rest by original priority.', '显示 ' ~ cx.passed ~ ' 只中的 ' ~ limit ~ ' 只。计划数据未核实的排在最前，其余按建立时优先级排序。') }}</p>
+  {%- endif %}
+  {%- set _cp = pvr_copy.get(it.reason) or pvr_copy['unknown'] %}
+  <details class="pvr-rc">
+    <summary class="pvr-rc-sum">
+      <span class="pvr-rc-tk">{{ it.nm.ticker }}</span>
+      <span class="pvr-rc-nm">{{ it.nm.name }}</span>
+      {%- if it.nm.sector is string %}<span class="pvr-rc-sec">{{ it.nm.sector }}</span>{% endif %}
+      <span class="pvr-rc-why">{{ t(_cp[0], _cp[1]) }}</span>
+    </summary>
+    {%- if it.reason == 'validation_failed' %}
+    <div class="pvr-rc-bd">
+      <p class="pvr-rc-row"><span class="pvr-rc-k">{{ t('What didn’t verify', '未能核实的内容') }}</span> — {{ t('Tonight’s plan data', '今晚的计划数据') }}</p>
+      <p class="pvr-rc-p">{{ t("Because the plan data didn't verify, we show no entry zone, timing or exit for " ~ it.nm.ticker ~ ' tonight.', '由于计划数据未能核实，今晚不显示 ' ~ it.nm.ticker ~ ' 的入场区间、时机或退出。') }}</p>
+      <p class="pvr-rc-p">{{ t('This is not a rejection of the setup and not a Wait. It rejoins the board when its plan data verifies' ~ _en_tail, '这不是否定该形态，也不是等待。计划数据核实后它会重新回到榜单' ~ _zh_tail) }}</p>
+      {#- "What passed" needs per-check rows the receipts contract does not carry; an
+          empty heading would be a promise with nothing behind it, so it is omitted. -#}
+      <a class="pvr-rc-a" href="stock.html#{{ it.nm.ticker }}">{{ t('Open research', '查看研究') }}</a>
+    </div>
+    {%- else %}
+    {#- Any other reason: no invented body copy — just the research link. -#}
+    <div class="pvr-rc-bd"><a class="pvr-rc-a" href="stock.html#{{ it.nm.ticker }}">{{ t('Open research', '查看研究') }}</a></div>
+    {%- endif %}
+  </details>
+  {%- endfor %}
+  {%- if _n_more %}</details>{% endif %}
+  {%- if sample %}<p class="pvr-ft">{{ t('Sample names and prices for design review, not live signals.', '示例名称与价格，仅供设计评审，并非实时信号。') }}</p>{% endif %}
+</div>
+{%- endif %}
+{%- endif -%}
+{% endmacro %}
+
+{% macro pvr_today_count(cx, href, sample=false) -%}
+{#- The Today-side summary: label, count, ONE plain link (OQ4). Empty for a non-cx,
+    a missing key, or anything that is not a positive int — True is not a count. -#}
+{%- if cx is mapping and cx.passed is integer and cx.passed > 0 %}
+<div class="pvr-tc">
+  <span class="pvr-tc-hd">{{ t('Passed on tonight', '今晚未纳入') }}</span>
+  <span class="pvr-tc-n">{{ cx.passed }}</span>
+  <a class="pvr-tc-a" href="{{ href }}">{{ t('See all ' ~ cx.passed ~ ' passed names', '查看全部 ' ~ cx.passed ~ ' 只未纳入标的') }}</a>
+  {%- if sample %}<p class="pvr-ft">{{ t('Sample names and prices for design review, not live signals.', '示例名称与价格，仅供设计评审，并非实时信号。') }}</p>{% endif %}
+</div>
 {%- endif -%}
 {% endmacro %}

@@ -108,7 +108,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       },
       {
@@ -219,7 +219,7 @@
         "components": [
           {
             "component_id": "retail_sales_yoy_leg",
-            "contribution": 16.76,
+            "contribution": 19.65,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -229,9 +229,9 @@
             "null_reason": null,
             "owner_field": "fred.RSAFS.retail_sales",
             "owner_ref": "data/fred/RSAFS.parquet",
-            "raw_value": 5.3619,
+            "raw_value": 6.2876,
             "sign": 1,
-            "standardized_value": 83.51,
+            "standardized_value": 89.3,
             "weight": 0.5
           },
           {
@@ -279,7 +279,7 @@
           }
         },
         "transformation": "YoY percent changes mapped 50+clamp(v/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
-        "value": 72.18,
+        "value": 75.07,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, BOTH legs required present (coverage_floor=1.0, judgment call 6); retail sales YoY 0.50, real disposable income YoY 0.50"
       },
@@ -393,59 +393,59 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 737763.0,
-        "delta": -25839.0,
+        "current_value": 745021.0,
+        "delta": 7258.0,
         "metric_id": "retail_sales_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 763602.0
+        "prior_value": 737763.0
       },
       {
-        "current_value": 5.3619,
-        "delta": 0.3527,
+        "current_value": 6.2876,
+        "delta": 0.9257,
         "metric_id": "retail_sales_yoy",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 5.0092
+        "prior_value": 5.3619
       },
       {
         "current_value": 51.7,
-        "delta": -3.5,
+        "delta": 0.0,
         "metric_id": "consumer_sentiment_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 55.2
+        "prior_value": 51.7
       },
       {
         "current_value": -11.1684,
-        "delta": -0.6336,
+        "delta": 0.0,
         "metric_id": "consumer_sentiment_yoy",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": -10.5348
+        "prior_value": -11.1684
       },
       {
-        "current_value": 72.18,
-        "delta": 4.64,
+        "current_value": 75.07,
+        "delta": 2.89,
         "metric_id": "cash_flow_momentum",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 67.54
+        "prior_value": 72.18
       },
       {
         "current_value": 48.22,
-        "delta": -2.61,
+        "delta": 0.0,
         "metric_id": "credit_stress",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 50.83
+        "prior_value": 48.22
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-07-01",
-    "prior_generation_id": "consumer_payments-US-29cd09727bf59391",
+    "prior_effective_date": "2026-08-01",
+    "prior_generation_id": "consumer_payments-US-83c311bae9cfd359",
     "prior_method_version": "consumer_payments.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-c9a0442fe3ef56e2"
+    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
+    "predecessor_generation_id": "consumer_payments-US-83c311bae9cfd359"
   },
   "drivers": {
     "balance_sheet": [
@@ -510,7 +510,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "retail_sales_yoy",
-        "impact_magnitude": 5.3619,
+        "impact_magnitude": 6.2876,
         "impact_sign": 1,
         "label": {
           "en": "Retail sales YoY",
@@ -519,7 +519,7 @@
         "note": "bucket reuse: published under drivers.rate_side because the contract's driver bucket pair is fixed as rate_side/balance_sheet and Consumer has no dedicated spending bucket -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.RSAFS.retail_sales",
         "unit": "percent",
-        "value": 5.3619
+        "value": 6.2876
       },
       {
         "coverage_state": "PRESENT",
@@ -538,21 +538,21 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-18T03:44:43Z",
-    "calculation_as_of": "2026-08-01",
-    "code_version": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
-    "content_sha256": "eb829a4292d90a07ee544be725bb3f9e8ca1cd0b0023f3db09a728c1ebdd1278",
-    "generation_id": "consumer_payments-US-eb829a4292d90a07",
+    "built_at": "2026-10-21T05:02:49Z",
+    "calculation_as_of": "2026-09-01",
+    "code_version": "6cc8cb019992e235d1db1c136e89d3300c2c5965",
+    "content_sha256": "d1c19d2e3f56814576572c98743d366a48b466f82e52597be762b61f1b43ea40",
+    "generation_id": "consumer_payments-US-d1c19d2e3f568145",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-08-01",
+    "effective_date": "2026-09-01",
     "hysteresis": {
       "applied": true,
       "band": 5.0,
       "held_prior": true,
-      "note": "prior quadrant held: credit_stress crossed the 50 boundary since the prior print but stayed within the 5.0-pt hysteresis band of ITS OWN boundary"
+      "note": "prior quadrant held: no axis crossed the 50 boundary since the prior print but stayed within the 5.0-pt hysteresis band of ITS OWN boundary"
     },
     "method_version": "consumer_payments.compose.v1",
     "movement_state": null,
@@ -563,20 +563,20 @@
     },
     "null_reason": null,
     "one_month_vector": {
-      "dx": 4.64,
-      "dy": -2.61,
+      "dx": 2.89,
+      "dy": 0.0,
       "null_reason": null,
       "status": "PRESENT",
       "x_axis_id": "cash_flow_momentum",
       "y_axis_id": "credit_stress"
     },
     "prior_state": {
-      "effective_date": "2026-07-01",
+      "effective_date": "2026-08-01",
       "method_version": "consumer_payments.compose.v1",
       "state_id": "B"
     },
     "quadrant": {
-      "x": 72.18,
+      "x": 75.07,
       "x_status": "PRESENT",
       "y": 48.22,
       "y_status": "PRESENT"
@@ -591,7 +591,7 @@
       "en": "Cash-flow/spending momentum x consumer credit stress",
       "zh": "现金流/支出动能 × 消费信贷压力"
     },
-    "transition_distance": 5.32
+    "transition_distance": 2.89
   },
   "implications": {
     "items": [
@@ -614,8 +614,8 @@
         "horizon": "current",
         "implication_id": "headline_computed",
         "text": {
-          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 72.2, credit stress 48.2, boundary 50).",
-          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 72.2，信贷压力 48.2，分界 50）。"
+          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 75.1, credit stress 48.2, boundary 50).",
+          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 75.1，信贷压力 48.2，分界 50）。"
         },
         "trace_ref": "engine.market_os.macro_workspaces.consumer_payments#headline"
       },
@@ -636,8 +636,8 @@
         "horizon": "current",
         "implication_id": "retail_sales_read",
         "text": {
-          "en": "Retail sales read +5.4% YoY (+1.1% MoM).",
-          "zh": "零售销售读数为同比+5.4%（环比+1.1%）。"
+          "en": "Retail sales read +6.3% YoY (+0.8% MoM).",
+          "zh": "零售销售读数为同比+6.3%（环比+0.8%）。"
         },
         "trace_ref": "data/fred/RSAFS.parquet"
       },
@@ -773,7 +773,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.RSAFS.retail_sales",
@@ -784,10 +784,10 @@
         "metric_id": "retail_sales_level",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/RSAFS.parquet",
         "reference_id": "mastermind.market_reference/v1#retail_sales_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -802,14 +802,14 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": 737763.0,
+        "value": 745021.0,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "mom_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.RSAFS.retail_sales",
@@ -820,10 +820,10 @@
         "metric_id": "retail_sales_mom",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/RSAFS.parquet",
         "reference_id": "mastermind.market_reference/v1#retail_sales_mom",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -838,14 +838,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 1.1274,
+        "value": 0.7708,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.RSAFS.retail_sales",
@@ -856,10 +856,10 @@
         "metric_id": "retail_sales_yoy",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/RSAFS.parquet",
         "reference_id": "mastermind.market_reference/v1#retail_sales_yoy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -874,7 +874,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.3619,
+        "value": 6.2876,
         "value_type": "percent"
       },
       {
@@ -1457,7 +1457,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.cash_flow_momentum",
@@ -1468,10 +1468,10 @@
         "metric_id": "cash_flow_momentum",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "engine.market_os.macro_workspaces.consumer_payments",
         "reference_id": "mastermind.market_reference/v1#cash_flow_momentum",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1486,14 +1486,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 72.18,
+        "value": 75.07,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.credit_stress",
@@ -1504,10 +1504,10 @@
         "metric_id": "credit_stress",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "engine.market_os.macro_workspaces.consumer_payments",
         "reference_id": "mastermind.market_reference/v1#credit_stress",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1529,34 +1529,41 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "consumer_payments-US-29cd09727bf59391"
+      "generation_id": "consumer_payments-US-83c311bae9cfd359"
     },
     "headline": {
-      "effective_date": "2026-07-01",
+      "effective_date": "2026-08-01",
       "hysteresis": {
-        "applied": false,
+        "applied": true,
         "band": 5.0,
-        "held_prior": false,
-        "note": "no comparable prior print; raw threshold classification, hysteresis not applied"
+        "held_prior": true,
+        "note": "prior quadrant held: credit_stress crossed the 50 boundary since the prior print but stayed within the 5.0-pt hysteresis band of ITS OWN boundary"
       },
       "method_version": "consumer_payments.compose.v1",
-      "movement_state": "NO_EARLIER_PUBLICATION",
+      "movement_state": null,
       "nearest_boundary": {
         "axis": "credit_stress",
-        "distance": 0.83,
+        "distance": 1.78,
         "null_reason": null
       },
       "null_reason": null,
-      "one_month_vector": null,
+      "one_month_vector": {
+        "dx": 4.64,
+        "dy": -2.61,
+        "null_reason": null,
+        "status": "PRESENT",
+        "x_axis_id": "cash_flow_momentum",
+        "y_axis_id": "credit_stress"
+      },
       "prior_state": {
-        "effective_date": null,
-        "method_version": null,
-        "state_id": null
+        "effective_date": "2026-07-01",
+        "method_version": "consumer_payments.compose.v1",
+        "state_id": "B"
       },
       "quadrant": {
-        "x": 67.54,
+        "x": 72.18,
         "x_status": "PRESENT",
-        "y": 50.83,
+        "y": 48.22,
         "y_status": "PRESENT"
       },
       "state_id": "B",
@@ -1569,7 +1576,7 @@
         "en": "Cash-flow/spending momentum x consumer credit stress",
         "zh": "现金流/支出动能 × 消费信贷压力"
       },
-      "transition_distance": null
+      "transition_distance": 5.32
     },
     "metrics": {
       "items": [
@@ -1577,7 +1584,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.RSAFS.retail_sales",
@@ -1588,10 +1595,10 @@
           "metric_id": "retail_sales_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/RSAFS.parquet",
           "reference_id": "mastermind.market_reference/v1#retail_sales_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1606,14 +1613,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": 763602.0,
+          "value": 737763.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "mom_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.RSAFS.retail_sales",
@@ -1624,10 +1631,10 @@
           "metric_id": "retail_sales_mom",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/RSAFS.parquet",
           "reference_id": "mastermind.market_reference/v1#retail_sales_mom",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1642,14 +1649,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": -0.582,
+          "value": 1.1274,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.RSAFS.retail_sales",
@@ -1660,10 +1667,10 @@
           "metric_id": "retail_sales_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/RSAFS.parquet",
           "reference_id": "mastermind.market_reference/v1#retail_sales_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1678,14 +1685,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 5.0092,
+          "value": 5.3619,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.UMCSENT.umich_sentiment",
@@ -1696,10 +1703,10 @@
           "metric_id": "consumer_sentiment_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/UMCSENT.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_sentiment_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1714,14 +1721,14 @@
             "value": null
           },
           "unit": "index_1966q1_100",
-          "value": 55.2,
+          "value": 51.7,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.UMCSENT.umich_sentiment",
@@ -1732,10 +1739,10 @@
           "metric_id": "consumer_sentiment_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/UMCSENT.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_sentiment_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1750,14 +1757,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": -10.5348,
+          "value": -11.1684,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.TOTALSL.consumer_credit_total",
@@ -1768,10 +1775,10 @@
           "metric_id": "consumer_credit_total_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/TOTALSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_total_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1786,14 +1793,14 @@
             "value": null
           },
           "unit": "usd_billions_sa",
-          "value": 5186204.07,
+          "value": 5196778.44,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.TOTALSL.consumer_credit_total",
@@ -1804,10 +1811,10 @@
           "metric_id": "consumer_credit_total_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/TOTALSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_total_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1822,14 +1829,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.577,
+          "value": 2.7318,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.REVOLSL.consumer_credit_revolving",
@@ -1840,10 +1847,10 @@
           "metric_id": "consumer_credit_revolving_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/REVOLSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_revolving_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1858,14 +1865,14 @@
             "value": null
           },
           "unit": "usd_billions_sa",
-          "value": 1357221.44,
+          "value": 1352414.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.REVOLSL.consumer_credit_revolving",
@@ -1876,10 +1883,10 @@
           "metric_id": "consumer_credit_revolving_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/REVOLSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_revolving_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1894,14 +1901,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 3.5824,
+          "value": 3.3709,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.NONREVSL.consumer_credit_nonrevolving",
@@ -1912,10 +1919,10 @@
           "metric_id": "consumer_credit_nonrevolving_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/NONREVSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_nonrevolving_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1930,14 +1937,14 @@
             "value": null
           },
           "unit": "usd_billions_sa",
-          "value": 3828982.63,
+          "value": 3844364.44,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.NONREVSL.consumer_credit_nonrevolving",
@@ -1948,10 +1955,10 @@
           "metric_id": "consumer_credit_nonrevolving_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/NONREVSL.parquet",
           "reference_id": "mastermind.market_reference/v1#consumer_credit_nonrevolving_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1966,14 +1973,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.2253,
+          "value": 2.5088,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.PSAVERT.personal_saving_rate",
@@ -1984,10 +1991,10 @@
           "metric_id": "personal_saving_rate_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/PSAVERT.parquet",
           "reference_id": "mastermind.market_reference/v1#personal_saving_rate_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2002,14 +2009,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 3.0,
+          "value": 4.1,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_3m_level_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.PSAVERT.personal_saving_rate",
@@ -2020,10 +2027,10 @@
           "metric_id": "personal_saving_rate_change_3m",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/PSAVERT.parquet",
           "reference_id": "mastermind.market_reference/v1#personal_saving_rate_change_3m",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2038,14 +2045,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.1,
+          "value": -0.3,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DSPIC96.real_disposable_income",
@@ -2056,10 +2063,10 @@
           "metric_id": "real_disposable_income_level",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/DSPIC96.parquet",
           "reference_id": "mastermind.market_reference/v1#real_disposable_income_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2074,14 +2081,14 @@
             "value": null
           },
           "unit": "usd_billions_chained_saar",
-          "value": 18122.5,
+          "value": 18410.5,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DSPIC96.real_disposable_income",
@@ -2092,10 +2099,10 @@
           "metric_id": "real_disposable_income_yoy",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/DSPIC96.parquet",
           "reference_id": "mastermind.market_reference/v1#real_disposable_income_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2110,7 +2117,7 @@
             "value": null
           },
           "unit": "percent",
-          "value": 0.4523,
+          "value": 1.3013,
           "value_type": "percent"
         },
         {
@@ -2261,7 +2268,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.cash_flow_momentum",
@@ -2272,10 +2279,10 @@
           "metric_id": "cash_flow_momentum",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "engine.market_os.macro_workspaces.consumer_payments",
           "reference_id": "mastermind.market_reference/v1#cash_flow_momentum",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2290,14 +2297,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 67.54,
+          "value": 72.18,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.credit_stress",
@@ -2308,10 +2315,10 @@
           "metric_id": "credit_stress",
           "model_version": "consumer_payments.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "engine.market_os.macro_workspaces.consumer_payments",
           "reference_id": "mastermind.market_reference/v1#credit_stress",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2326,7 +2333,7 @@
             "value": null
           },
           "unit": "score",
-          "value": 50.83,
+          "value": 48.22,
           "value_type": "score_0_100"
         }
       ]
@@ -2430,7 +2437,7 @@
         },
         "owner_ref": "collectors.fred[RSAFS]",
         "provider": "US Census Bureau / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

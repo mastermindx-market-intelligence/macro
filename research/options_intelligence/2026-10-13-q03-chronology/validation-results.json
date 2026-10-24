@@ -1,0 +1,44 @@
+{
+  "schema": "options.q03.chronology_validation.v1",
+  "synthetic_only": true,
+  "seed": 20261013,
+  "property_cases": 2000,
+  "new_regression_tests": 28,
+  "candidate_sha256": "9ceb0bdeb6352b0ea195375e164bb60e0dec86ec86ab1519bc9b60ddf9212832",
+  "test_sha256": "6630ef16ff93c01d3c4150b116f47fceddf7d4fc3726bf2eb1a5dfd6ce11a95a",
+  "mutations": [
+    {
+      "mutation": "trust_maturity_instead_of_actual_endpoint",
+      "killed": true,
+      "exit_code": 1,
+      "test_summary": "FAILED (failures=5, errors=1)"
+    },
+    {
+      "mutation": "allow_duplicate_or_unsorted_calendar",
+      "killed": true,
+      "exit_code": 1,
+      "test_summary": "FAILED (failures=8, errors=2)"
+    },
+    {
+      "mutation": "remove_clock_validation_and_utc_normalization",
+      "killed": true,
+      "exit_code": 1,
+      "test_summary": "FAILED (failures=1, errors=5)"
+    },
+    {
+      "mutation": "compute_elapsed_horizon_in_local_wall_time",
+      "killed": true,
+      "exit_code": 1,
+      "test_summary": "FAILED (failures=1)"
+    },
+    {
+      "mutation": "consume_generator_again_for_every_row",
+      "killed": true,
+      "exit_code": 1,
+      "test_summary": "FAILED (errors=1)"
+    }
+  ],
+  "empirical_acceptance": false,
+  "independent_model_review": "NOT_STARTED_DISPATCH_REFUSED",
+  "scope_limit": "P3 remains day-granular; calendar venue/completeness and exact session-close/consumer receipts not certified."
+}

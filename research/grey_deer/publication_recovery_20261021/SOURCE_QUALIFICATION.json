@@ -1,0 +1,442 @@
+{
+  "schema": "grey_deer.publication_source_qualification.v1",
+  "programme": "MAS-258 / WS:GREY-DEER-RISK-INTELLIGENCE",
+  "mission_complete": false,
+  "source_only": true,
+  "reader": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1660",
+    "reviewed_head": "b54c58df73077bf50762e71136d8a8ae6c92bed2",
+    "landing": "3960aefcf4724a88812d79d97c1b370dc9f951c4",
+    "merged_at": "2026-10-21T06:24:13Z",
+    "head_ci": {
+      "run": 39548764911,
+      "conclusion": "success"
+    },
+    "head_codeql": {
+      "run": 39548762594,
+      "aggregate_check": 119053039090,
+      "conclusion": "success"
+    },
+    "merge_group_ci": {
+      "run": 39551281464,
+      "conclusion": "success"
+    },
+    "protected_readback": {
+      "commit": "2151a89f7ea3a340ec04932cbcfdf6a838df79b1",
+      "owned_blobs_equal": 10
+    },
+    "local_tests": {
+      "passed": 263,
+      "skipped": 1,
+      "seconds": 50.54,
+      "skip": "existing live-vendor MCP case"
+    },
+    "workspace_release": {
+      "operation": "risk-radar-serving-freshness-20261021",
+      "effect": "APPLIED",
+      "receipt_state": "REMOVED",
+      "process": 15878,
+      "tracked_head_preserved": true
+    },
+    "cleanup": {
+      "initial_release": "NOT_APPLIED / PRESERVED_DIRTY; no files removed",
+      "cleanup_process": 2439,
+      "preserved_synthetic_logs": "/tmp/rr-reader-fixture-logs-20261021-a54qksnm",
+      "preserved_sha256": {
+        "packet_rejections.jsonl": "fc01cba7cf119a14a6e7bddcf985b10228b8a7774edb2344353d253e4507b747",
+        "run_events.jsonl": "cea17700998711f3c5e8879f5e98bf94371fe86be2b8501fe9e38bfc802fe0d1"
+      },
+      "removed_verified_disposable": [
+        ".pytest_cache",
+        "vendor/macro_src"
+      ],
+      "tracked_vendor_symlink": "preserved"
+    }
+  },
+  "publisher": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1667",
+    "head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+    "accepted_application_head": "dd44a6b69587e048a5346387436ab441f1b85512",
+    "current_head_delta": "one documentation sentence specifies required voting sources; application and tests unchanged",
+    "source_state": "MERGED / PROTECTED SOURCE VERIFIED",
+    "local_tests": {
+      "passed": 472,
+      "skipped": 1,
+      "seconds": 75.66,
+      "python": "3.12.13",
+      "suites": 17,
+      "process": 58949,
+      "exit_code": 0,
+      "skip": "existing live-vendor MCP case; synthetic consumer case passed"
+    },
+    "ci": {
+      "run": 39580529597,
+      "aggregate_check": 119173199093,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-21T10:34:00Z",
+      "timestamp_precision": "minute"
+    },
+    "codeql": {
+      "run": 39580522600,
+      "aggregate_check": 119156961534,
+      "conclusion": "success"
+    },
+    "native_publication": {
+      "operation": "risk-radar-natural-publication-20261021",
+      "local_and_remote": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+      "clean": true
+    },
+    "bounded_c3_reviews": [
+      {
+        "reviewer": "publisher_contract_review",
+        "initial_head": "888901cc796e1b9829b33d6c84042987fcea4979",
+        "initial_ruling": "NOT_ACCEPTED",
+        "defects": [
+          "MV/typed required-voter membership disagreement at the regime-date boundary",
+          "orphan immutable file reuse skipped file fsync"
+        ],
+        "repair_head": "dd44a6b69587e048a5346387436ab441f1b85512",
+        "ruling": "ACCEPTED",
+        "scope": "capture/lifecycle/pair/ordering carries from initial review; finite repaired boundary and durability closure",
+        "blobs": {
+          "brain/perception_publication.py": "b0c4fc446e631bcb3abda27c7a7c7d94deb85017",
+          "brain/decision_context.py": "22a0d1152b63d50d68c1669e4be362f7704ebd40",
+          "tests/test_perception_publication.py": "0789c8f8f110a07a64e0c0d3799066945c8b81ee"
+        }
+      },
+      {
+        "reviewer": "risk_contract_review",
+        "initial_ruling": "NOT_ACCEPTED",
+        "defects": [
+          "missing or falsy capture clocks were replaced with invented observation clocks",
+          "a current receipt could be attributed to an older entry date"
+        ],
+        "repair_head": "dd44a6b69587e048a5346387436ab441f1b85512",
+        "ruling": "ACCEPTED",
+        "scope": "finite capture-clock and journal attribution repair; unchanged trusted initial-prompt/log/reconcile flow carries",
+        "blobs": {
+          "brain/perception_receipt.py": "0cdcb7f8fcadb10e47f781de95bfac2c112aef71",
+          "brain/journal.py": "ab8440249fee00774527c48e3da9fc5efd23d183",
+          "tests/test_perception_custody.py": "7ab49f617564b914fc33da5d4dca811800d4e2bf"
+        },
+        "initial_head": "888901cc796e1b9829b33d6c84042987fcea4979"
+      }
+    ],
+    "retained_failures": [
+      "Initial historical-hindsight, canonical-ordering, invalid-clock and malformed/removed-section regression failures remain part of source history.",
+      "Missing-parent durability reproduced with two failing cases before repair; focused 57 cases passed after repair.",
+      "C3 findings reproduced as two typed-boundary failures and eight custody/durability failures with one existing passing control before repair; focused 171 passed after repair.",
+      "Prior bounded C2 review retrieval failed or timed out; no execution, source change or acceptance was inferred. Later immutable GitHub reviews supplied acceptance.",
+      "Earlier intermediate test result 458 passed / 1 skipped used Python 3.12.4; final 472 / 1 run used workspace Python 3.12.13."
+    ],
+    "limits": [
+      "initial_prompt_projection_only",
+      "no claim of later MCP/tool evidence use",
+      "no HMAC or remote attestation",
+      "a crash before decision append can leave no receipt",
+      "UTC-day attribution deliberately withholds ambiguous cross-day evidence",
+      "no production publisher execution or deployment proved"
+    ],
+    "queue": {
+      "method": "normal native gh merge-queue admission; exact head fence; no administrator/waiver",
+      "receipt_process": 6620,
+      "receipt_exit_code": 0,
+      "first_merge_group": {
+        "head": "f8b259e0938db461e964cbd9e3d474d9ed6507f3",
+        "ci_run": 39586187259
+      },
+      "latest_observed_merge_group": {
+        "head": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+        "ci_run": 39586671816,
+        "created_at": "2026-10-21T10:43:30Z",
+        "status": "completed",
+        "conclusion": "success",
+        "aggregate_check": 119191966611,
+        "completed_at": "2026-10-21T11:19:43Z"
+      },
+      "protected_landing": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+      "following_composition": {
+        "head": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+        "ci_run": 39586673741,
+        "status": "completed",
+        "conclusion": "success",
+        "aggregate_check": 119192103008,
+        "completed_at": "2026-10-21T11:20:03Z"
+      },
+      "predecessor_ci": {
+        "pr": 1669,
+        "head": "5a5f89b7ed7eabf59d14c3b947acde00a68c99be",
+        "ci_run": 39586670042,
+        "status": "completed",
+        "conclusion": "success",
+        "updated_at": "2026-10-21T11:21:37Z"
+      }
+    },
+    "landing": "041b8ab5d530f31a6f96638c53d25b35dfc9a270",
+    "merged_at": "2026-10-21T11:21:56Z",
+    "cleanup": {
+      "process": 67474,
+      "completed_at": "2026-10-21T11:24:34.358219+00:00",
+      "preserved_test_artifacts": 26,
+      "preserved_root": "/tmp/rr-publisher-fixture-evidence-20261021-h59hmj0t",
+      "manifest_sha256": "9209407e5f8c85a037af2c3ab01f5f0c146792978504a1a7ca31209f8ecb6f71",
+      "removed_reproducible": [
+        ".venv",
+        ".pytest_cache",
+        "vendor/macro_src",
+        "147 __pycache__ .pyc files"
+      ],
+      "tracked_vendor_symlink_preserved": true
+    },
+    "workspace_release": {
+      "operation": "risk-radar-natural-publication-20261021",
+      "process": 70439,
+      "effect": "APPLIED",
+      "receipt_state": "REMOVED",
+      "clean": true,
+      "published_head": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+      "history_preserved": true
+    }
+  },
+  "composition": {
+    "before": "2151a89f7ea3a340ec04932cbcfdf6a838df79b1",
+    "after": "a0faf7e44f76ac77c61e177738663544ddb6949d",
+    "ruling": "ACCEPTED finite C3 source carry",
+    "evidence": "The 1642-character /api/market_view route is byte-identical; the response-cache prefix deny remains; the added BOT availability path is a separate read-only projection.",
+    "changed_shared_blobs": {
+      "app/web.py": "357debd40945d097dc3c4a4ba25938fdbb67ef85",
+      "app/response_cache.py": "2486b5ec6f9f05f15349a10296588cce18453ace"
+    },
+    "exclusion": "Not an attestation of all BOT changes, hosted CI, runtime dependencies or production."
+  },
+  "retained_owners": {
+    "macro_9932": {
+      "head": "146d958aa710667792a4e8ff9c3732832a444e7c",
+      "state": "open; existing owner continuation",
+      "source_note": "New owner-authored commit directly follows de95aa4; this was not a merge-controller refresh. Root preserves branch/source custody.",
+      "native_readback": "local equals remote and clean",
+      "ci": {
+        "run": 39582392930,
+        "status": "completed",
+        "conclusion": "success",
+        "updated_at": "2026-10-21T10:52:05Z"
+      },
+      "current_controller_hold": {
+        "owner_checkpoint": "MAS-258 Census / MTF continuation — 2026-10-21 12:17 UTC",
+        "latest_completed_sweep": 39597422577,
+        "job": 119213096951,
+        "refusal_at": "2026-10-21T12:12:19Z",
+        "active_ci_runs": 11,
+        "capacity": 8,
+        "required_changed_definition_main": "8c02ea8f0d32",
+        "disposition": "Existing armed normal-controller carrier; no manual refresh, cap/lease override, duplicate dispatch or merge."
+      }
+    },
+    "macro_9957": {
+      "head": "26f60b69a5c929f2a5a4316add623d01ccbc7eac",
+      "state": "draft/HOLD after exact-head CI success; original independent request unresolved",
+      "limits": "Forward merge repair does not admit historical contradictions or prove fresh MTF. Existing owner's unresolved external review request is not retried or replaced.",
+      "ci": {
+        "run": 39578368434,
+        "conclusion": "success",
+        "all_twelve_packs_and_gate": "success",
+        "aggregate_completed_at": "2026-10-21T10:49:50Z",
+        "provenance": "existing owner's current PR-body receipt"
+      },
+      "independent_review": {
+        "request": "mas258-mtf-published-review-20261021-01",
+        "root": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+        "status": "NOT_FOUND / UNVERIFIED / EXECUTION_NOT_ELIGIBLE",
+        "execution_absence_proven": false,
+        "retry_allowed": false,
+        "provenance": "owner read-only reconciliation reported at10:53UTC; no root retry or replacement"
+      },
+      "current_parent_identity_diagnosis": {
+        "owner_checkpoint": "MAS-258 Census / MTF continuation — 2026-10-21 12:17 UTC",
+        "exact_parent": "/root",
+        "observed_error": "INVALID_ARGUMENT / parent_id",
+        "diagnosis": "Committed original-error report plus matched installed validation ordering identify a documented pre-dispatch technical schema rejection. Raw original response bytes remain unavailable; transport audit is corroborative.",
+        "facade_flags": "retry_allowed=false and execution_absence_proven=false are emitted unconditionally for caught errors; retain them as emitted, not as event-specific permission or dispatch proof.",
+        "remaining_blocker": "Verified supported schema-valid representation of the actual immediate parent; incumbent session-target projection returned no targets.",
+        "original_run_retained": "mas258-mtf-published-review-20261021-01",
+        "original_root_retained": "6ad8240e-707c-83ea-babc-1ceaae3669e0",
+        "no_identity_substitution_or_retry": true,
+        "source_review_accepted": false
+      }
+    },
+    "macro_9980": {
+      "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9980",
+      "head": "dba0935c5572d550156771d54d3cc7b18d3072ee",
+      "operation": "census-mtf-six-corrections-20261021",
+      "state": "open / draft / PARKED / PREPARED_SOURCE_ONLY",
+      "correction_scope": "Six already C3-accepted stale companion-reasons removals; 62 bytes each, 372 total, owner-authored.",
+      "owner_reported_validation": "Exact six candidate hashes, retained bytes, unchanged ledger/preimages and readback verified; CI39594838598 all12 packs and gate passed12:09:51UTC.",
+      "root_metadata_readback": "Exact head, open draft, no labels, unmerged independently read through GitHub.",
+      "application": "HELD; no canonical application receipt. Requires accepted prevention, current target/dependency/ledger predicates and existing canonical writer/publication sequencing.",
+      "ownership": "Original census/MTF owner retained; this release evidence does not take source custody."
+    }
+  },
+  "production": {
+    "installed": "fe7afd0111141bae27927715e709d074fea729e2",
+    "latest_read_only_preflight": "RUNTIME_PREFLIGHT_2026-10-21T102054Z.json",
+    "new_deployment": false,
+    "reserved_exact_release_approval_required": true,
+    "latest_health": {
+      "observed_during": "2026-10-21T10:59:54.253313+00:00 through 2026-10-21T11:00:39.266917+00:00",
+      "exception_type": "TimeoutError",
+      "error": "timed out",
+      "timeout_seconds": 10,
+      "strict_health_file": "COMPOSED_HEALTH_PREFLIGHT.json",
+      "strict_health_passed": false
+    },
+    "health_dependency": "HEALTH_DEPENDENCY.json",
+    "release_ready": false
+  },
+  "held": [
+    "Fresh eligible upstream MTF and natural paired publication",
+    "Entitled Market View visual acceptance",
+    "Existing warning/recovery and product-path holds",
+    "532 B0/B1 fits NOT_ADMITTED / zero executed; Yahoo-purpose unknown; FRED HOLD; T13h21 refusal; independent N null",
+    "W5 one natural 30-row SPY batch has immature outcomes, not 30 independent events",
+    "No new policy authority, auto-exits, cohort, manual nightly/producer/refresh, model fit or early grading"
+  ],
+  "prepared_at": "2026-10-21T10:21:05.527931+00:00",
+  "rehearsal_review": {
+    "initial_controller_sha256": "6a6acdb27af3f850e9c38a46b7aefbe1abb884a3702507e4f9f4bb5f64a07cf3",
+    "startup_sha256": "bd2546bc075693167bdece56488bb80a9e10dc71cedbfa5d8723968e0b7332b9",
+    "initial_ruling": "NOT_ACCEPTED",
+    "finding": "A timeout could kill only the unshare launcher and permit restoration while its child was alive.",
+    "proposed_repair": "unshare --kill-child=KILL; dedicated process session/group; kill and reap launcher plus bounded process-group absence verification before restoration; preserve receiver without restoration if child exit remains unverified.",
+    "execution": "PASSED at exact integration da548855; not final protected release qualification",
+    "repair_review": "ACCEPTED finite C3 timeout/child-custody closure; no remaining design blocker; execution result excluded",
+    "repair_controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
+    "namespace_timeout_probe": {
+      "expected_timeout_observed": true,
+      "launcher_reaped": true,
+      "process_group_gone": true,
+      "exit_code": -9,
+      "stderr": "",
+      "application_invoked": false,
+      "portfolio_invoked": false
+    }
+  },
+  "upstream_metadata_observation": {
+    "at": "2026-10-21T10:20:54.719492+00:00",
+    "head": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+    "regime_asof": "2026-10-20",
+    "mtf_asof": "2026-08-05",
+    "stable_git_and_working_bytes": true,
+    "scope": "raw metadata only; not publisher admission or production publication"
+  },
+  "capability_observation": {
+    "fabric_adapter_available": true,
+    "worker_admission": "UNPROBED",
+    "worker_start": "UNPROBED",
+    "change": "Fabric tools became exposed during this continuation; this supersedes earlier absence only. No paid request dispatched by this publisher owner, no original-owner review request retried."
+  },
+  "updated_at": "2026-10-21T12:23:07Z",
+  "integration_rehearsal": {
+    "summary_file": "INTEGRATED_REHEARSAL_SUMMARY.json",
+    "full_report_file": "INTEGRATED_REHEARSAL_RESULT.json",
+    "full_report_sha256": "de1bf3394237687ad85bfd74ab3dd50b3e9205ad7ed4a3ec282ecde62d246178",
+    "candidate": "da54885500484235d3ca06b14237e06d6676e654",
+    "tree": "9d39c30093d2a88fdb460b3e4126853a830f7852",
+    "archive_sha256": "828107b554ba10c124f90a446aefb330fb234e99b7ed41854f44c666ffde392c",
+    "qualified": true,
+    "started_at": "2026-10-21T10:39:25.558184+00:00",
+    "completed_at": "2026-10-21T10:39:39.059369+00:00",
+    "job_count": 18,
+    "dispatch_attempt_count": 0,
+    "first_run_attempt_count": 0,
+    "authority_files_unchanged": 10,
+    "production_identity_unchanged": true,
+    "restoration_verified": true
+  },
+  "final_archive_qualification": {
+    "state": "STARTUP_AND_RESTORATION_PASSED_AT_87d4af0; ISOLATED_HEALTH_CONTRACT_NOT_ESTABLISHED; PRODUCTION_HOLD",
+    "imports_added": [
+      "portfolio.performance_read",
+      "portfolio.performance_projection",
+      "brain.cli_bridge",
+      "brain.codex_bridge",
+      "brain.provider_waterfall"
+    ],
+    "reason": "The expanded-import rehearsal candidate subsequently became the exact protected commit and complete tree. No reexecution or relabelled earlier result is needed. Changed future source requires scoped qualification.",
+    "composition_review_file": "COMPOSITION_REVIEW.json",
+    "startup_sha256": "daa374604acc11144722ccc25b079b2e8cd780f6b4182afb53f07ab3b71eae29",
+    "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "production_release_ready": false,
+    "health_gate": "Failed live six-second observation retained; exact 87d4af0 isolated candidate also lacked complete response by six seconds; baseline isolated 5.988967098-second pass does not clear live/recovery health.",
+    "protected_source_binding_file": "PROTECTED_SOURCE_BINDING.json"
+  },
+  "composed_rehearsal": {
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+    "summary_file": "COMPOSED_REHEARSAL_SUMMARY.json",
+    "full_report_file": "COMPOSED_REHEARSAL_RESULT.json",
+    "full_report_sha256": "ada695588a81395030266c393015d2f588082fb641b4177e91fe54487ed24be2",
+    "archive_sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "started_at": "2026-10-21T10:59:54.253313+00:00",
+    "completed_at": "2026-10-21T11:00:39.266917+00:00",
+    "qualified": true,
+    "explicit_candidate_modules": [
+      "app.main",
+      "brain.perception_publication",
+      "brain.perception_receipt",
+      "brain.cli_bridge",
+      "brain.codex_bridge",
+      "brain.provider_waterfall",
+      "portfolio.performance_read",
+      "portfolio.performance_projection"
+    ],
+    "job_count": 18,
+    "dispatch_attempt_count": 0,
+    "first_run_attempt_count": 0,
+    "authority_files_unchanged": 10,
+    "production_identity_unchanged": true,
+    "restoration_verified": true,
+    "protected_landing_binding": "EXACT_COMMIT_AND_FULL_TREE_EQUAL: 87d4af0a152eefa3c5f441f5600fae9133b3deaa"
+  },
+  "release_decision": "RELEASE_DECISION.md — HOLD, not ready for production authorization",
+  "release_decision_review": {
+    "file": "DECISION_REVIEW.json",
+    "ruling": "ACCEPTED / HOLD",
+    "production_authorized": false,
+    "baseline_recovery_health": "unproved under observed failed six-second contract",
+    "protected_source_delta": "ACCEPTED; exact rehearsal-to-protected binding only; production HOLD unchanged"
+  },
+  "rehearsal_cleanup": {
+    "file": "REHEARSAL_CLEANUP.json",
+    "process": 80090,
+    "production_operation": false,
+    "canonical_full_reports_preserved": true
+  },
+  "paired_health_route": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_file": "ISOLATED_HEALTH_ROUTE_RESULT.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+    "execution_completed": true,
+    "paired_helper_contract_passed": false,
+    "candidate_deadline": "request_6s / no complete response",
+    "baseline_elapsed_seconds": 5.988967098,
+    "production_release_ready": false
+  },
+  "later_protected_source": {
+    "file": "LATER_PROTECTED_SOURCE_DELTA.json",
+    "head": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+    "scope": "six session-bridge/docs/test files; no application/provider/helper paths changed; exact archive qualification remains 87d4af0"
+  },
+  "prior_evidence_ci": {
+    "head": "b538af5a3e00bd70c97b8de71e761b07fe000cb4",
+    "run": 39593488893,
+    "all_twelve_packs": "success",
+    "contract_delta": "success",
+    "aggregate_check": 119208183490,
+    "completed_at": "2026-10-21T11:58:42Z",
+    "scope": "this prior evidence head only; new material health qualification needs its own admission checks"
+  }
+}
