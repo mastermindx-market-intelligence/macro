@@ -6947,6 +6947,23 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Package initializers executed by the Matrix main-registration import closure.
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/catalyst_opportunity/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/institutional_census/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_os/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/medtech/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/price_pressure/__init__.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/seasonality/__init__.py"
       # Exact tracked source leaves also exist on the sparse contract-delta checkout.
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
