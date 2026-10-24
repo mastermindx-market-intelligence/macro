@@ -44,9 +44,12 @@ confidence: high
 reversibility: easy
 decided_by: Chairman
 decided_at: 2026-10-23
+superseded_by: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
 ---
 
 # RF-T01 Yahoo/yfinance commercial-license Chairman ruling
+
+Commercial approval is now governed by [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md). The original vintage findings and carrier history below remain evidence; the standing ruling supersedes this record's narrower approval scope and generic contract-audit caveat.
 
 ## Exact scope of the accepted decision
 
