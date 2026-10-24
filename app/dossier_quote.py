@@ -50,6 +50,7 @@ from app.public_quote_projection import (
     QuoteProjectionError,
     finite_number as _shared_finite_number,
     project_regular_quote,
+    project_extended_quote,
 )
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 
@@ -292,6 +293,9 @@ def _public_projection(row: Mapping[str, Any], *, ticker: str, now: float) -> di
         ),
         "regular_session_date": projected.regular_session_date,
         "display_only": True,
+        "extended_quote": project_extended_quote(
+            row, now=now, max_age_seconds=_LIVE_MAX_AGE_SECONDS,
+        ),
     }
 
 
