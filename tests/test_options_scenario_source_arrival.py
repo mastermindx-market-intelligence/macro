@@ -195,6 +195,36 @@ def test_short_writes_are_completed_before_publishing(monkeypatch, tmp_path):
     assert (root / "gex/SPY.json").read_bytes() == h.gex_bytes
 
 
+@pytest.mark.parametrize("replacement", ["different_inode", "symlink"])
+def test_link_name_replacement_is_uncertain_and_preserves_final(monkeypatch, tmp_path, replacement):
+    h = world(with_moves=False); root = tree(tmp_path); real_link = os.link
+    marker = root / "unrelated"; marker.write_bytes(b"must survive")
+    def replace_inside_link(src, dst, **kwargs):
+        # The original pre-link lstat has already returned at this boundary.
+        os.unlink(src, dir_fd=kwargs["src_dir_fd"])
+        if replacement == "symlink":
+            os.symlink(marker, src, dir_fd=kwargs["src_dir_fd"])
+        else:
+            fd = os.open(src, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600,
+                         dir_fd=kwargs["src_dir_fd"])
+            try:
+                os.write(fd, b"x" * len(h.gex_bytes))
+            finally:
+                os.close(fd)
+        return real_link(src, dst, **kwargs)
+    with monkeypatch.context() as m:
+        m.setattr(arrival.os, "link", replace_inside_link)
+        with pytest.raises(arrival.SourceArrivalUncertain, match="source_arrival_uncertain"):
+            run(h, root)
+    target = root / "gex/SPY.json"
+    if replacement == "symlink":
+        assert target.is_symlink()
+    else:
+        assert target.read_bytes() == b"x" * len(h.gex_bytes)
+    assert marker.read_bytes() == b"must survive"
+    assert not h.s3.log and not h.saves
+
+
 @pytest.mark.parametrize("failure", ["link_reply_lost", "directory_fsync"])
 def test_ambiguous_or_post_link_failure_leaves_final_and_never_claims_rollback(monkeypatch, tmp_path, failure):
     h = world(with_moves=False); root = tree(tmp_path)

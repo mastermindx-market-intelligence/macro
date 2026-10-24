@@ -103,6 +103,9 @@ def arrive_gex_source(
         os.link(temporary, f"{descriptor.root}.json", src_dir_fd=directory,
                 dst_dir_fd=directory, follow_symlinks=False)
         linked = True
+        published = os.stat(f"{descriptor.root}.json", dir_fd=directory, follow_symlinks=False)
+        if (published.st_dev, published.st_ino) != owned_inode or not stat.S_ISREG(published.st_mode) or published.st_size != len(raw):
+            raise OSError("published source changed")
         os.fsync(directory)
         return descriptor.gex
     except FileExistsError:
