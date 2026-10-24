@@ -489,16 +489,34 @@ def compute_gex(
         return empty_with_projection()
 
     # ── merge OI[t-1] ────────────────────────────────────────────────────────
+    # The NDX+NDXP family contains distinct AM/PM contracts which can share
+    # expiration, strike AND side. Only root-tagged family frames may use the
+    # four-part key; never let their OI cross-match. Ordinary single-root frames
+    # retain the incumbent three-part join without changing its behavior.
     if oi_prev_df is not None and not oi_prev_df.empty:
-        oi = _legacy_option_rows(oi_prev_df)[["expiration", "strike", "right", "open_interest"]].copy()
+        oi_input = _legacy_option_rows(oi_prev_df)
+        family_join = "contract_root" in g.columns or "contract_root" in oi_input.columns
+        if family_join and not ("contract_root" in g.columns and
+                                "contract_root" in oi_input.columns):
+            raise ValueError("family OI join requires root identity in both frames")
+        join_keys = ["expiration", "strike", "right"]
+        if family_join:
+            join_keys.append("contract_root")
+            if g.duplicated(join_keys).any() or oi_input.duplicated(join_keys).any():
+                raise ValueError("duplicate root-scoped option contract")
+        oi = oi_input[join_keys + ["open_interest"]].copy()
         oi["expiration"] = pd.to_datetime(oi["expiration"]).dt.date.astype(str)
         oi["strike"] = oi["strike"].astype(float)
         g["expiration"] = pd.to_datetime(g["expiration"]).dt.date.astype(str)
         g["strike"] = g["strike"].astype(float)
         g = g.merge(oi.rename(columns={"open_interest": "oi_prev"}),
-                    on=["expiration", "strike", "right"], how="left")
+                    on=join_keys, how="left", validate="one_to_one" if family_join else "many_to_many")
+        if family_join and g["oi_prev"].isna().any():
+            raise ValueError("family OI missing for root-scoped contract")
         g["oi_prev"] = pd.to_numeric(g["oi_prev"], errors="coerce").fillna(0.0)
     else:
+        if "contract_root" in g.columns:
+            raise ValueError("family OI input missing")
         g["oi_prev"] = 0.0
 
     # Only use contracts with positive OI[t-1]

@@ -7000,6 +7000,12 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/thetadata.py"
+      - "engine/options_intel_brief.py"
+      - "engine/options_universe.py"
+      - "ops/launchd/run_with_env.sh"
+      - "scripts/backfill_thetadata_eod.py"
+      - "scripts/topup_thetadata_day.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
@@ -7933,6 +7939,7 @@ jobs:
       - "engine/gex_engine.py"
       - "engine/greeks.py"
       - "engine/options_matrix.py"
+      - "engine/index_options_family.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_structure.py"
       - "engine/thetadata_store.py"
@@ -7946,6 +7953,9 @@ jobs:
       - "site/options_structure/examples/matrix.json"
       - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
+      - "tests/test_index_options_family.py"
+      - "tests/test_index_options_family_offline.py"
+      - "tests/test_ndx_optin_collector.py"
       - "tests/test_options_matrix_retention.py"
       - "tests/test_observe_options_matrix_publication.py"
       - "tests/test_qualify_options_matrix_older_snapshot.py"
@@ -8043,7 +8053,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_index_options_family.py tests/test_index_options_family_offline.py tests/test_ndx_optin_collector.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -8096,6 +8106,7 @@ jobs:
       - "tests/test_options_dated_projection.py"
       - "scripts/massive_entitlement_probe.py"
       - "engine/options_hub.py"
+      - "engine/index_options_family.py"
       - "engine/vex_engine.py"
       - "scripts/build_options_hub_nightly.py"
       - "tests/test_build_options_hub_nightly.py"
