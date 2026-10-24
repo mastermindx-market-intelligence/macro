@@ -259,17 +259,9 @@ def _sweep_stale_tmp(store: Path) -> int:
 
 
 def _dated_greek_request_options(root: str) -> dict:
-    """Explicit prospective root opt-in; default acquisition remains unchanged.
-
-    This only selects the documented vendor EOD version. It neither upgrades
-    existing rows nor supplies missing terms, identity, rights or PIT clocks.
-    """
-    import os
-    selected = {r.strip().upper() for r in os.environ.get(
-        "THETADATA_DATED_GREEKS_V1_ROOTS", "").split(",") if r.strip()}
-    if selected - {"SPY", "QQQ"}:
-        raise ValueError("Dated Greek version opt-in supports only SPY/QQQ")
-    return {"version": "1"} if root.upper() in selected else {}
+    """Compatibility entry point for the shared explicit writer policy."""
+    from lib.options_source_receipts import dated_greek_request_options
+    return dated_greek_request_options(root)
 
 
 # ── legacy / @universe bounded 3-tier one-day ensure (§G) ───────────────────
