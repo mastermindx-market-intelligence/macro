@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AESI-BULL-20260826",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.2,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.3,
+    "dist_to_stop_r": -0.387,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
-    "p1": -0.8669,
-    "p2": -0.4334,
+    "horizon_pct_used": 128.9,
+    "p1": -0.9244,
+    "p2": -0.4622,
     "p3": null,
-    "move_r": -1.3,
+    "move_r": -1.387,
     "mfe_r": 0.505,
     "mae_r": -1.406
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667,
+  "days_elapsed": 58,
+  "tau": 1.2889,
   "closed": true,
   "outcome": "EXPIRED"
 }
