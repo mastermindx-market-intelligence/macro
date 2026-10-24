@@ -54,5 +54,16 @@
     "T23": "ready",
     "T24": "ready",
     "P12.T25": "in_progress"
+  },
+  "publication_checkpoint": {
+    "observed_at": "2026-10-24T18:18:07.643233+00:00",
+    "commit": "7e44366801629648e37ad62eddf1e841f477b166",
+    "draft_pr": 10168,
+    "all_six_source_files_exact_readback": true,
+    "draft": true,
+    "labels": [],
+    "auto_merge": null,
+    "task_state": "implementation_complete",
+    "meaning": "Bounded metadata/docs implementation complete; no programme/product acceptance and no merge."
   }
 }
