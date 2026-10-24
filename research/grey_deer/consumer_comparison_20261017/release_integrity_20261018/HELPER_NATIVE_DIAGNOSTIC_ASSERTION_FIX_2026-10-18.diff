@@ -1,0 +1,10 @@
+--- native-run2/tests/test_deploy_provenance.py
++++ candidate/tests/test_deploy_provenance.py
+@@ -612,7 +612,6 @@
+     assert (tmp_path / "remote/app/old.py").read_text() == "old\n"
+     # The protected descendant prevents deleting its newly introduced container.
+     # That filtered-tree difference cannot be called a verified exact rollback.
+-    assert "cannot delete non-empty directory: new_package" in (tmp_path / "deploy.log").read_text()
+     assert "restoration failed verification; leaving service stopped" in result.stdout
+     assert (tmp_path / "service_state").read_text() == "inactive"
+     assert events.read_text().splitlines() == [new_sha]

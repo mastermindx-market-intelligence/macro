@@ -1811,3 +1811,639 @@ def test_r26_scenario_limit_filters_invalid_rows_before_truncating(r26_render):
     fragment, _ = r26_render(payload)
     assert 'Additional scenario names remain in the source record.' in fragment
     assert 'case 7' in fragment and 'case 8' not in fragment
+
+
+# ─── W23-L4: the radar prints what its own artifacts already record ───────────
+# Fixtures are inline copies of the values the seat quoted from the committed
+# data/neuralweb/world_state.json and data/risk_radar/scorecard.json copies.
+
+_W23_LIFT_EN = ("This state's own measured 21-day rate is 16.0% vs a 17.8% base rate "
+               "(lift 0.9x — at or below base, an early flag not an edge).")
+_W23_LIFT_ZH = ("该等级自身实测 21 日回撤率 16.0%，长期基准 17.8%（倍数 0.9x——"
+               "不高于基准，属早期提示而非优势）。")
+_W23_DD = {
+    "dd_h5": 0.054, "dd_h10": 0.12, "dd_h21": 0.22,
+    "dd_base_h5": 0.036, "dd_base_h10": 0.086, "dd_base_h21": 0.178,
+    "dd_measure": ">=5% SPY pullback (empirical 2006-2026; rises with intensity)",
+    "dd_lift_note_en": _W23_LIFT_EN, "dd_lift_note_zh": _W23_LIFT_ZH,
+}
+_W23_CC = {
+    "show": True, "label_en": "Midterm year", "label_zh": "中期选举年",
+    "stat_en": ("Midterm-year drops between April and October have run deeper than "
+                "usual — though the pattern is loose, and the worst crashes on record "
+                "came in other years."),
+    "stat_zh": ("中期选举年 4–10 月的回撤历来比平常更深——但规律并不严格，"
+                "史上最深的下跌都发生在其他年份。"),
+    "caveat_en": "Calendar context only — it gently adjusts position size and never "
+                 "changes a signal band or raises an alarm.",
+    "caveat_zh": "仅为日历背景——只轻微调整仓位，不改变信号等级，也绝不单独拉响警报。",
+    "favor": [{"ticker": "XLV", "en": "Health Care", "zh": "医疗保健"},
+              {"ticker": "XLP", "en": "Staples", "zh": "必需消费"},
+              {"ticker": "XLU", "en": "Utilities", "zh": "公用事业"}],
+    "avoid": [{"ticker": "XLE", "en": "Energy", "zh": "能源"},
+              {"ticker": "XLY", "en": "Discretionary", "zh": "可选消费"}],
+}
+_W23_XAF = {"asof": "2026-10-17", "regime": "mixed / no clear trend",
+            "funding_state": "calm", "confirm": {"verdict": "mixed", "n_blind_flags": 0}}
+_W23_MARKS = {
+    "dd": ("<!-- Drawdown ladder -->", "<!-- Trajectory -->"),
+    "cycle": ("<!-- Cycle context -->", "<!-- Track record"),
+    "trk": ("<!-- Track record", "MACRO WEATHER BOARD"),
+    "contra": ('<div class="contra-callout">', "Contradictions are context only")}
+
+
+def _w23_evidence(thin=True):
+    """risk_radar_probability_evidence.v1 as the producer wrote it."""
+    rows = (("h5", 66, 3, 0.045454545454545456), ("h10", 90, 10, 0.1111111111111111),
+            ("h21", 66, 16, 0.24242424242424243))
+    horizons = {}
+    for hk, n, events, rate in rows:
+        horizons[hk] = {"n": n, "events": events, "observed_rate": rate, "thin": thin,
+                        "displayed_probability": rate, "from": "2020-01-02",
+                        "through": "2026-09-11", "observed_rate_ci90": [0.01, 0.09],
+                        "population_sha256": "deadbeefdeadbeef"}
+    return {"schema": "risk_radar_probability_evidence.v1",
+            "evidence_class": "reconstructed_historical", "precision_grade": False,
+            "window": "2006-01-01/2026-09-11",
+            "limitations": ["Daily windows overlap; these are model forecasts."],
+            "source": {"sha256": "cafebabecafebabe"}, "horizons": horizons}
+
+
+def _w23_track(graded=51, alerts=None, audit=True, awaiting=18):
+    """scorecard.json markets.us shape: monitoring / windows.y1.alerts / audit."""
+    mon = {"log_fresh": True, "last_logged_days_ago": 1, "ungraded_backlog": 0,
+           "backlog_cutoff_bd": 28, "graded_n": graded}
+    if awaiting is not None:
+        mon["awaiting_maturity"] = awaiting
+    trk = {"asof_last_row": "2026-10-16", "monitoring": mon,
+           "windows": {"y1": {"alerts": alerts or {"n": 0, "tp": 0, "fp": 0,
+                                                   "hit_rate": None}}}}
+    if audit:
+        horizons = {}
+        for hk in ("h5", "h10", "h21"):
+            horizons[hk] = {"n": 51, "events": 0, "excluded_n": 18,
+                            "from": "2026-06-23", "through": "2026-09-17",
+                            "observed_rate": 0.0, "mean_forecast": 0.026431,
+                            "brier": 0.000742, "paired_brier_delta": -0.000604,
+                            "bins": [{"n": 51, "observed_rate": 0.0}]}
+        trk["probability_audit"] = {
+            "as_of": "2026-10-17", "input_rows": 69, "min_display_n": 5,
+            "status": "descriptive_only",
+            "note_en": "Historical issued odds, not a test of today's model. Daily "
+                       "windows overlap; publication timing is unverified.",
+            "note_zh": "历史发布概率，并非当前模型验证。每日窗口重叠；首发时点未经核实。",
+            "prospective": {"fingerprint": "abcdef0123456789"},
+            "horizons": horizons}
+    return trk
+
+
+def _w23_frag(html, block):
+    start, end = _W23_MARKS[block]
+    i = html.find(start)
+    assert i >= 0, "rendered page lost marker %r" % start
+    assert html.find(end, i + 1) >= 0, "rendered page lost marker %r" % end
+    return html[i:html.find(end, i + 1)]
+
+
+@pytest.fixture
+def w23_render(tmp_path, monkeypatch):
+    """Native consumer: real template + real _build_view_model; no network, no data/."""
+    import copy
+    import socket
+    from jinja2 import Environment, FileSystemLoader
+    from engine.i18n import tr, td
+    from scripts import build_macro_context as bmc
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("W23 rendering permits no network I/O")
+
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    env = Environment(autoescape=True, loader=FileSystemLoader(
+        str(Path(bmc.__file__).resolve().parents[1] / "templates")))
+    env.globals.update(tr=tr, td=td, ASSET_NAMES=bmc.ASSET_NAMES)
+    base = bmc._build_view_model(_r25_snapshot(), _r25_world_state(), [], "2026-10-02",
+                                 tmp_path, regime_data=_r25_regime_data())
+
+    def render(rr=None, co=None):
+        vm = copy.deepcopy(base)
+        radar = {**vm["risk_radar"], **(copy.deepcopy(rr) if rr else {})}
+        radar["scares"] = [{"label_en": "Growth", "label_zh": "增长",
+                           "score": 41, "band": "watch", "dominant": True}]
+        vm["risk_radar"] = radar
+        if co is not None:
+            vm["contradictions"] = {**vm["contradictions"], **copy.deepcopy(co)}
+        return env.get_template("macro_context.html.j2").render(
+            vm=vm, built="2026-10-02 12:00 UTC", today="2026-10-02")
+
+    return render
+
+
+def test_contradictions_read_the_cross_asset_verdict_from_the_producers_actual_path():
+    from scripts.build_macro_context import _build_contradictions
+    out = _build_contradictions({"cross_asset_flows": _W23_XAF,
+                                 "contradictions": {"n": 3}})
+    assert out["cross_asset_verdict"] == "mixed"
+
+
+def test_legacy_verdict_cross_asset_path_is_not_read():
+    from scripts.build_macro_context import _build_contradictions
+    out = _build_contradictions({"verdict": {"cross_asset": {"verdict": "confirm"}}})
+    assert out["cross_asset_verdict"] is None
+
+
+@pytest.mark.parametrize("lobe", [{}, {"cross_asset_flows": {}},
+                                  {"cross_asset_flows": {"confirm": {}}},
+                                  {"cross_asset_flows": "junk"},
+                                  {"cross_asset_flows": {"confirm": "junk"}},
+                                  {"cross_asset_flows": {"confirm": {"verdict": None}}}])
+def test_cross_asset_verdict_row_stays_hidden_without_the_lobe(w23_render, lobe):
+    from scripts.build_macro_context import _build_contradictions
+    co = _build_contradictions(dict(lobe, intelligence={"n_divergences": 4},
+                                    contradictions={"n": 1}))
+    assert co["cross_asset_verdict"] is None
+    f = _w23_frag(w23_render(co=co), "contra")
+    assert "Cross-asset verdict" not in f and "跨资产判定" not in f
+    assert "Intelligence divergences" in f
+
+
+def test_cross_asset_verdict_row_renders_bilingually(w23_render):
+    from scripts.build_macro_context import _build_contradictions
+    co = _build_contradictions({"cross_asset_flows": _W23_XAF})
+    f = _w23_frag(w23_render(co=co), "contra")
+    assert '<span class="l-en">Cross-asset verdict</span>' in f
+    assert '<span class="l-zh">跨资产判定</span>' in f
+    assert '<span class="l-en">mixed</span>' in f and "喜忧参半" in f
+
+
+def test_lift_note_builder_carries_both_producer_keys():
+    from scripts.build_macro_context import _build_risk_radar
+    ws = {"risk_radar_raw": {"drawdown_prob": {
+        "h5": 0.054, "base_h5": 0.036, "lift_note_en": _W23_LIFT_EN,
+        "lift_note_zh": _W23_LIFT_ZH}}}
+    rr = _build_risk_radar(ws, None)
+    assert rr["dd_lift_note_en"] == _W23_LIFT_EN
+    assert rr["dd_lift_note_zh"] == _W23_LIFT_ZH
+
+
+def test_lift_note_renders_the_producer_sentence(w23_render):
+    f = _w23_frag(w23_render(rr=_W23_DD), "dd")
+    assert '<span class="l-en">This state&#39;s own measured 21-day' in f
+    assert "an early flag not an edge" in f
+    assert '<span class="l-zh">该等级自身实测 21 日回撤率 16.0%' in f
+    assert "属早期提示而非优势" in f
+
+
+def test_lift_note_absent_renders_nothing(w23_render):
+    rr = {k: v for k, v in _W23_DD.items() if not k.startswith("dd_lift")}
+    f = _w23_frag(w23_render(rr=rr), "dd")
+    assert "lift" not in f.lower() and "倍数" not in f
+    assert "normally 4%" in f and f.count('class="dd-cell-base"') == 3
+
+
+def test_dd_ladder_shows_the_recorded_sample_beside_each_probability(w23_render):
+    f = _w23_frag(w23_render(rr={**_W23_DD, "dd_evidence": _w23_evidence()}), "dd")
+    assert "observed 3 of n=66 · 5%" in f and "实测 n=66 中 3 次 · 5%" in f
+    assert "observed 10 of n=90 · 11%" in f and "实测 n=90 中 10 次 · 11%" in f
+    assert "observed 16 of n=66 · 24%" in f and "实测 n=66 中 16 次 · 24%" in f
+    assert ">5%<" in f and ">12%<" in f and ">22%<" in f
+    assert "normally 4%" in f and "通常 4%" in f
+    for hidden in ("deadbeef", "cafebabe", "risk_radar_probability_evidence",
+                   "2020-01-02", "sha256", "forecast", "ci90"):
+        assert hidden not in f
+
+
+def test_dd_ladder_qualifies_non_precision_grade_evidence_bilingually(w23_render):
+    f = _w23_frag(w23_render(rr={**_W23_DD, "dd_evidence": _w23_evidence()}), "dd")
+    en = "Observed rates come from reconstructed past readings"
+    zh = "实测比例基于重构的历史读数"
+    assert '<span class="l-en">' + en in f and '<span class="l-zh">' + zh in f
+    assert f.count(en) == 1 and f.count(zh) == 1
+    assert "risk gradient" in f and "风险梯度" in f
+    for banned in ("证伪", "申报", "实时", "已验证", "falsifier", "validated", "live"):
+        assert banned not in f
+
+
+@pytest.mark.parametrize("evid", [None, {}, "junk", [], {"horizons": {}},
+                                  {"horizons": []}, {"horizons": "junk"},
+                                  {"horizons": {"h5": "junk"}},
+                                  {"horizons": {"h5": {"n": None, "events": 1}}},
+                                  {"horizons": {"h5": {"events": 3}}}])
+def test_dd_ladder_unchanged_when_calibration_evidence_is_absent(w23_render, evid):
+    plain = {k: v for k, v in _W23_DD.items() if k != "dd_evidence"}
+    f = _w23_frag(w23_render(rr={**plain, "dd_evidence": evid}), "dd")
+    assert f == _w23_frag(w23_render(rr=plain), "dd")
+    assert ">5%<" in f and ">12%<" in f and ">22%<" in f and "normally 4%" in f
+    assert "observed" not in f and "实测 n=" not in f and "reconstructed" not in f
+
+
+def test_dd_ladder_marks_thin_cells(w23_render):
+    f = _w23_frag(w23_render(rr={**_W23_DD, "dd_evidence": _w23_evidence(True)}), "dd")
+    assert f.count("thin history") == 3 and f.count("样本偏少") == 3
+    g = _w23_frag(w23_render(rr={**_W23_DD, "dd_evidence": _w23_evidence(False)}), "dd")
+    assert "thin history" not in g and "样本偏少" not in g
+    assert "observed 16 of n=66 · 24%" in g
+
+
+def test_dd_ladder_drops_missing_event_and_rate_parts(w23_render):
+    evid = _w23_evidence()
+    evid["horizons"]["h5"] = {"n": 66, "events": None, "observed_rate": None}
+    evid["horizons"]["h10"] = {"n": 90, "events": 10}
+    f = _w23_frag(w23_render(rr={**_W23_DD, "dd_evidence": evid}), "dd")
+    assert "observed n=66" in f and "observed  of" not in f and "实测 n=66" in f
+    assert "n=66 ·" not in f.split("n=90")[0] and "n=90 ·" not in f
+    assert "observed 10 of n=90" in f and "实测 n=90 中 10 次" in f
+
+
+def test_cycle_context_renders_the_producer_historical_observation(w23_render):
+    f = _w23_frag(w23_render(rr={"cycle_ctx": _W23_CC}), "cycle")
+    assert '<span class="l-en">Midterm-year drops between April and October' in f
+    assert '<span class="l-zh">中期选举年 4–10 月的回撤历来比平常更深' in f
+
+
+def test_cycle_context_still_renders_label_chips_and_caveat(w23_render):
+    f = _w23_frag(w23_render(rr={"cycle_ctx": _W23_CC}), "cycle")
+    assert "Midterm year" in f and "Health Care" in f and "Energy" in f
+    assert (f.index(">Midterm year<") < f.index("Midterm-year drops")
+            < f.index("Calendar context only"))
+
+
+@pytest.mark.parametrize("mut", [{}, {"stat_en": "", "stat_zh": ""},
+                                 {"stat_en": None, "stat_zh": None}])
+def test_cycle_context_silent_when_stat_absent(w23_render, mut):
+    silent = {k: v for k, v in _W23_CC.items() if not k.startswith("stat_")}
+    f = _w23_frag(w23_render(rr={"cycle_ctx": dict(silent, **mut)}), "cycle")
+    assert f == _w23_frag(w23_render(rr={"cycle_ctx": silent}), "cycle")
+    assert f.count('class="cycle-ctx-text"') == 1
+    assert "Midterm-year drops" not in f and "Calendar context only" in f
+
+
+def test_track_line_discloses_the_graded_population_when_the_alert_window_is_empty(
+        w23_render):
+    f = _w23_frag(w23_render(rr={"track": _w23_track()}), "trk")
+    assert "51 past readings graded" in f and "18 still maturing" in f
+    assert "no elevated alert in the past year to score yet" in f
+    assert "已评分 51 条历史读数" in f and "18 条待到期" in f
+    assert "Graded calls accruing" not in f
+
+
+def test_track_line_shows_issued_probability_audit_counts_and_their_window(w23_render):
+    f = _w23_frag(w23_render(rr={"track": _w23_track()}), "trk")
+    assert "Next week: 0 of 51 issued calls preceded a ≥5% drop" in f
+    assert "Next 2 weeks: 0 of 51 issued calls" in f
+    assert "未来1周：已发布 51 次中 0 次早于 ≥5% 下跌" in f
+    assert f.count("2026-06-23") == 2
+    assert "2026-06-23 to 2026-09-17" in f and "2026-06-23 至 2026-09-17" in f
+    assert "Historical issued odds, not a test of today&#39;s model" in f
+    assert "历史发布概率，并非当前模型验证" in f
+    for hidden in ("brier", "0.000742", "abcdef", "paired", "bins", "2026-10-17"):
+        assert hidden not in f
+
+
+def test_track_line_prints_the_window_per_horizon_when_they_differ(w23_render):
+    trk = _w23_track()
+    trk["probability_audit"]["horizons"]["h5"]["from"] = "2026-05-01"
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert f.count("2026-06-23") == 4 and f.count("2026-05-01") == 2
+    assert "issued calls preceded a ≥5% drop (2026-05-01 to 2026-09-17)" in f
+    assert "下跌（2026-05-01 至 2026-09-17）" in f
+
+
+def test_track_line_withholds_a_horizon_below_the_min_display_n(w23_render):
+    trk = _w23_track()
+    trk["probability_audit"]["horizons"]["h5"].update({"n": 3, "events": 1})
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert "Next week:" not in f and "未来1周：" not in f
+    assert "Next month: 0 of 51 issued calls" in f
+
+
+def test_track_line_omits_the_audit_div_when_no_horizon_clears_the_floor(w23_render):
+    trk = _w23_track()
+    for horizon in trk["probability_audit"]["horizons"].values():
+        horizon["n"] = 2
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert "issued calls preceded" not in f and '<div class="c-muted">' not in f
+    assert "51 past readings graded" in f
+
+
+def test_track_line_without_an_audit_block_renders_only_the_seed_line(w23_render):
+    f = _w23_frag(w23_render(rr={"track": _w23_track(audit=False)}), "trk")
+    assert "51 past readings graded" in f
+    assert "issued calls preceded" not in f and '<div class="c-muted">' not in f
+
+
+@pytest.mark.parametrize("mut", [None, {}])
+def test_track_line_absent_without_a_scorecard(w23_render, mut):
+    f = _w23_frag(w23_render(rr={"track": mut}), "trk")
+    assert '<div class="trk-line">' not in f
+
+
+def test_track_line_keeps_the_hit_rate_branch_when_alerts_exist(w23_render):
+    trk = _w23_track(alerts={"n": 7, "tp": 4, "fp": 3, "hit_rate": 0.571})
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert "Track record: 4 of 7 elevated calls preceded a ≥5% drop (past year)" in f
+    assert "past readings graded" not in f
+
+
+def test_track_line_keeps_the_alerts_branch_before_the_graded_copy(w23_render):
+    trk = _w23_track(alerts={"n": 7, "tp": 0, "fp": 7, "hit_rate": None})
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert "Too few elevated alerts to judge yet — 7 graded" in f
+    assert "past readings graded" not in f
+
+
+def test_track_line_stale_ledger_branch_still_wins(w23_render):
+    trk = _w23_track()
+    trk["monitoring"]["log_fresh"] = False
+    f = _w23_frag(w23_render(rr={"track": trk}), "trk")
+    assert "Monitoring paused — ledger stale" in f
+    assert "past readings graded" not in f
+
+
+def test_track_line_graded_copy_omits_the_awaiting_clause_when_absent(w23_render):
+    f = _w23_frag(w23_render(rr={"track": _w23_track(awaiting=None)}), "trk")
+    assert "51 past readings graded — no elevated alert" in f
+    assert "still maturing" not in f and "条待到期" not in f
+
+
+def test_track_line_accrual_copy_still_renders_without_graded_rows(w23_render):
+    f = _w23_frag(w23_render(rr={"track": _w23_track(graded=0)}), "trk")
+    assert "Graded calls accruing — check back once alerts mature" in f
+    assert "评分记录积累中" in f and "past readings graded" not in f
+
+# ── W23-L15: rates panel prints the producer's scored-leg gate + state labels ──
+
+_L15_GATE_EN = ("Display-only. Scored-leg gate: NO rate/inflation leg passed the "
+                "forward-drawdown bar with purged-CV robustness (see "
+                "reports/rate-inflation-transmission-calibration.md).")
+_L15_GATE_ZH = ("仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛"
+                "并满足清洗交叉验证稳健性（详见校准报告）。")
+
+
+def _l15_lobe(state=True, gate=True):
+    """Fixture copy of the committed rates_transmission lobe (seat-quoted values)."""
+    lobe = {
+        "asof": "2026-10-16",
+        "headwinds": [
+            {"asset": "SPY", "net": -0.446, "verdict": "headwind"},
+            {"asset": "XLB", "net": -0.408, "verdict": "headwind"},
+        ],
+        "tailwinds": [{"asset": "TLT", "net": 0.313, "verdict": "tailwind"}],
+    }
+    if state:
+        lobe["state"] = {
+            "rates": {
+                "label": {"en": "Real 10y 2.88% (restrictive, rising — at a 5y extreme)",
+                          "zh": "实际10年期 2.88%（偏紧，处于5年极值）"},
+                "real_10y_pctile": 0.99,
+                "turn_watch": "extreme_watch",
+            },
+            "inflation": {
+                "label": {"en": "Core PCE 3.0% (above target, cooling)",
+                          "zh": "核心PCE 3.0%（高于目标）"},
+            },
+            "expectations": {
+                "label": {"en": "5y5y breakeven 2.34% vs model 2.77% (drifting down)",
+                          "zh": "5年5年盈亏平衡 2.34% vs 模型 2.77%（下行）"},
+            },
+        }
+    if gate:
+        lobe["scored_status"] = {"en": _L15_GATE_EN, "zh": _L15_GATE_ZH}
+    return lobe
+
+
+@pytest.fixture
+def l15_panel(tmp_path, monkeypatch):
+    """Real builder + real template; returns the rates-panel fragment for one lobe."""
+    import socket
+    from jinja2 import Environment, FileSystemLoader
+    from engine.i18n import tr, td
+    from scripts import build_macro_context as bmc
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("W23-L15 rendering permits no network I/O")
+
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    env = Environment(autoescape=True, loader=FileSystemLoader(
+        str(Path(bmc.__file__).resolve().parents[1] / "templates")))
+    env.globals.update(tr=tr, td=td, ASSET_NAMES=bmc.ASSET_NAMES)
+
+    def render(lobe):
+        ws = _r25_world_state()
+        if lobe is not None:
+            ws["rates_transmission"] = lobe
+        vm = bmc._build_view_model(_r25_snapshot(), ws, [], "2026-10-02",
+                                   tmp_path, regime_data=_r25_regime_data())
+        html = env.get_template("macro_context.html.j2").render(
+            vm=vm, built="2026-10-02 12:00 UTC", today="2026-10-02")
+        i = html.find("<!-- Rates Transmission -->")
+        j = html.find("<!-- FX / Dollar -->", i + 1)
+        assert i >= 0 and j > i, "rates panel markers missing from rendered page"
+        return html[i:j]
+
+    return render
+
+
+def _l15_legs(frag):
+    """(en, zh) flattened text legs of a fragment, one language visible at a time."""
+    flat = lambda s: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s)).strip()  # noqa: E731
+    en = re.sub(r'<span class="l-zh">.*?</span>', "", frag, flags=re.S)
+    zh = re.sub(r'<span class="l-en">.*?</span>', "", frag, flags=re.S)
+    return flat(en), flat(zh)
+
+
+def test_headwind_tailwind_carries_the_producer_scored_leg_gate():
+    from scripts import build_macro_context as bmc
+    out = bmc._build_headwind_tailwind({"rates_transmission": _l15_lobe()}, {})
+    assert out["rates"]["scored_status_en"] == _L15_GATE_EN
+    assert out["rates"]["scored_status_zh"] == _L15_GATE_ZH
+
+
+@pytest.mark.parametrize("bad", ["absent", None, "x", []],
+                         ids=["absent", "none", "str", "list"])
+def test_headwind_tailwind_gate_keys_are_none_when_the_gate_is_not_a_mapping(bad):
+    from scripts import build_macro_context as bmc
+    lobe = _l15_lobe()
+    if bad == "absent":
+        lobe.pop("scored_status")
+    else:
+        lobe["scored_status"] = bad
+    out = bmc._build_headwind_tailwind({"rates_transmission": lobe}, {})
+    assert out["rates"]["scored_status_en"] is None
+    assert out["rates"]["scored_status_zh"] is None
+
+
+def test_rates_panel_renders_the_three_producer_state_labels(l15_panel):
+    en, zh = _l15_legs(l15_panel(_l15_lobe()))
+    assert "Rates Real 10y 2.88% (restrictive, rising — at a 5y extreme)" in en
+    assert "Inflation Core PCE 3.0% (above target, cooling)" in en
+    assert "Expectations 5y5y breakeven 2.34% vs model 2.77% (drifting down)" in en
+    assert "利率 实际10年期 2.88%（偏紧，处于5年极值）" in zh
+    assert "通胀 核心PCE 3.0%（高于目标）" in zh
+    assert "通胀预期 5年5年盈亏平衡 2.34% vs 模型 2.77%（下行）" in zh
+    assert "S&amp;P 500 headwind -0.45" in en
+    assert "As of 2026-10-16" in en
+
+
+def test_rates_panel_renders_the_scored_leg_gate_bilingually(l15_panel):
+    en, zh = _l15_legs(l15_panel(_l15_lobe()))
+    assert _L15_GATE_EN in en
+    assert _L15_GATE_ZH in zh
+    assert _L15_GATE_ZH not in en and _L15_GATE_EN not in zh
+
+
+def test_rates_panel_never_prints_a_percentile_rank_word(l15_panel):
+    f = l15_panel(_l15_lobe())
+    low = f.lower()
+    for banned in ("percentile", "z-score", "falsifier", "refuted", "证伪",
+                   "extreme_watch", "extreme watch", "0.99"):
+        assert banned not in low, banned
+    en, _zh = _l15_legs(f)
+    assert "5y extreme" in en
+
+
+@pytest.mark.parametrize("st", [{}, None, {"rates": {}}, {"rates": {"label": {}}},
+                                {"rates": {"label": None}}, {"rates": {"label": "x"}}],
+                         ids=["empty", "none", "rates-empty", "label-empty",
+                              "label-none", "label-str"])
+def test_rates_panel_silent_when_state_and_gate_absent(l15_panel, st):
+    lobe = _l15_lobe(gate=False)
+    lobe["state"] = st
+    f = l15_panel(lobe)
+    en, _zh = _l15_legs(f)
+    assert "liq-row" not in f
+    assert "Scored-leg" not in f
+    assert "S&amp;P 500 headwind -0.45" in en
+    assert "As of 2026-10-16" in en
+
+
+def test_rates_panel_rows_follow_the_headwind_list_in_producer_order(l15_panel):
+    en, _zh = _l15_legs(l15_panel(_l15_lobe()))
+    order = ["S&amp;P 500 headwind", "Real 10y 2.88%", "Core PCE 3.0%",
+             "5y5y breakeven 2.34%", "Scored-leg gate", "As of 2026-10-16"]
+    pos = [en.find(x) for x in order]
+    assert all(p >= 0 for p in pos), pos
+    assert pos == sorted(pos) and len(set(pos)) == len(pos)
+
+
+def test_rates_panel_missing_inflation_lobe_omits_only_that_row(l15_panel):
+    lobe = _l15_lobe()
+    del lobe["state"]["inflation"]
+    f = l15_panel(lobe)
+    en, _zh = _l15_legs(f)
+    assert "Core PCE" not in en
+    assert "Real 10y 2.88%" in en and "5y5y breakeven" in en
+    assert "Scored-leg gate" in en
+    assert f.count("liq-row") == 3
+
+
+def test_rates_panel_without_a_lobe_keeps_the_empty_state(l15_panel):
+    f = l15_panel(None)
+    assert "No rates transmission data." in f
+    assert "暂无利率传导数据。" in f
+    assert "liq-row" not in f
+
+
+# W26-L24: the bonds card must print the mechanism levels behind its labels.
+def _r26_bonds_section(fragment):
+    match = re.search(r'<section[^>]*data-domain="bonds".*?</section>', fragment, re.S)
+    assert match, "R26 render has no bonds section"
+    return match.group(0)
+
+
+def _r26_forex_section(fragment):
+    match = re.search(r'<section[^>]*data-domain="forex".*?</section>', fragment, re.S)
+    assert match, "R26 render has no forex section"
+    return match.group(0)
+
+
+def _r26_levels(section):
+    dl = re.search(r'<dl data-mechanism-levels="bonds">.*?</dl>', section, re.S)
+    if not dl:
+        return []
+    return re.findall(r'<dd style="margin:0">([^<]*)</dd>', dl.group(0))
+
+
+def test_bonds_card_prints_the_levels_behind_its_labels(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"]["term_premium"] = 1.0729
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "Levels behind these labels" in section
+    assert "标签背后的数值" in section
+    assert _r26_levels(section) == ["3.88%", "+82 bp", "2.93%", "1.07%", "+1.07 pp"]
+    assert "1.0729" not in section
+    for label in ("政策利率", "未来12个月市场隐含利率变动", "10年期实际收益率",
+                  "期限溢价", "10年期减3个月利差"):
+        assert label in section
+    dl = re.search(r'<dl data-current-read="bonds">.*?</dl>', section, re.S)
+    assert dl is not None and dl.group(0).count("<dt") == 6
+
+
+def test_bonds_levels_never_reach_the_forex_card(r26_render):
+    control, _ = r26_render(_r26_payload())
+    payload = _r26_payload()
+    mech = payload["forex"]["mechanism_evidence"]
+    mech["fed_path"] = {"policy_rate": 3.88, "implied_bp_12m": 82}
+    mech["real_10y"] = 2.93
+    mech["term_premium"] = 1.02
+    mech["curve_slope_10y3m"] = 1.07
+    fragment, _ = r26_render(payload)
+    forex = _r26_forex_section(fragment)
+    assert "data-mechanism-levels" not in forex
+    assert "Levels behind these labels" not in forex
+    assert "3.88%" not in forex
+    assert "+82 bp" not in forex
+    assert forex == _r26_forex_section(control)
+
+
+def test_bonds_levels_add_no_probability_and_no_extra_rows(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"]["probability"] = 0.987654321
+    payload["bonds"]["mechanism_evidence"]["p_cond"] = 0.123456789
+    payload["bonds"]["mechanism_evidence"]["score"] = 55.5555
+    payload["bonds"]["mechanism_evidence"]["credit_canary"] = 0.4242
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert _r26_levels(section) == ["3.88%", "+82 bp", "2.93%", "1.02%", "+1.07 pp"]
+    low = section.lower()
+    for banned in ("0.99", "98.77", "0.12", "55.56", "0.42", "probab", "概率", "canary"):
+        assert banned.lower() not in low
+
+
+@pytest.mark.parametrize("mech", [
+    {},
+    None,
+    [],
+    {"fed_path": None, "real_10y": None, "term_premium": None, "curve_slope_10y3m": None},
+    {"fed_path": {"policy_rate": "7412345", "implied_bp_12m": float("nan")},
+     "real_10y": True, "term_premium": float("inf"), "curve_slope_10y3m": False},
+])
+def test_bonds_levels_stay_silent_without_valid_numbers(r26_render, mech):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"] = mech
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "data-mechanism-levels" not in section
+    assert "Levels behind these labels" not in section
+    assert "标签背后的数值" not in section
+    assert "7412345" not in section
+    assert "None" not in section
+    assert re.search(r"\b(nan|inf)\b", section, re.I) is None
+    assert "1.00%" not in section
+    assert "+0.00 pp" not in section
+    assert 'data-current-read="bonds"' in section
+
+
+def test_bonds_levels_print_each_valid_number_alone(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"] = {
+        "fed_path": {"policy_rate": 4.125, "implied_bp_12m": -50}, "real_10y": "2.9",
+        "term_premium": None, "curve_slope_10y3m": -0.255,
+    }
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "Levels behind these labels" in section
+    assert _r26_levels(section) == ["%.2f%%" % 4.125, "-50 bp", "%+.2f pp" % -0.255]
+    assert "2.9" not in _r26_levels(section)

@@ -18,6 +18,7 @@ REMOVAL is the mutation each of these tests exists to catch (CA1A handoff §15.1
 from __future__ import annotations
 
 import re
+from rjsmin import jsmin
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +42,7 @@ def test_theme_js_growth_helper_ships_in_both_pair_files():
     that the CA1A helper block is present and identical in both."""
     block = re.search(r"window\.mmTrackGrowth = function[\s\S]*?\n      \};", TH_T)
     assert block, "mmTrackGrowth helper missing from templates/theme.js"
-    assert block.group(0) in TH_S, "mmTrackGrowth helper differs between theme.js pair"
+    assert jsmin(block.group(0)) in jsmin(TH_S), "mmTrackGrowth helper differs between theme.js pair"
 
 
 def test_flow_velocity_producer_ships_in_both_pair_files():

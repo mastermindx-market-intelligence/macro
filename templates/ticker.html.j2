@@ -39,6 +39,8 @@
 <script data-dbase src="../data_base.js"></script>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../ticker_news.css">
+<script defer src="../ticker_news.js"></script>
 <script defer src="../theme.js"></script>
 <script defer src="../assets/js/company-intelligence-dossier.js?v=a3f07e08"></script>
 <script defer src="../assets/js/dossier-live-quote.js?v=20260827a"></script>
@@ -986,6 +988,8 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   </div>
   {% endif %}
 </header>
+
+{% include "ticker_news_panel.html.j2" %}
 
 <!-- ═ COMPANY INTELLIGENCE — verified dynamic context, context-only authority ═ -->
 <section class="mod ci-mod rv" id="company-update" data-company-intelligence data-ticker="{{ ticker }}" aria-labelledby="ci-title">

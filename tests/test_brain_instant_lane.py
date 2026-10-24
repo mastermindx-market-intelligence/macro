@@ -402,7 +402,7 @@ def _deep_stream_spy(calls: list):
     def _loop(message, lane, history, context, root_, tdd, thu, client, model, max_t, tb,
               meta_event, usage_out=None, answer_out=None, thinking_out=None,
               mode="chat", image_blocks=None, providers=None, user_id="", user_email="",
-              effort=None, thinking_mode=None, deepseek_thinking=None, context_receipt=None):
+              effort=None, thinking_mode=None, deepseek_thinking=None, context_receipt=None, visuals_out=None):
         calls.append(message)
         yield f"data: {json.dumps(meta_event)}\n\n"
         yield f"data: {json.dumps({'type': 'delta', 'text': _DEEP_REPLY})}\n\n"
@@ -2672,7 +2672,7 @@ def test_w1c_deep_route_request_keeps_legacy_context_byte_identical_and_carries_
     def _spy_loop(message, lane, history, context, root_, tdd, thu, client, model, max_t, tb,
                   meta_event, usage_out=None, answer_out=None, thinking_out=None,
                   mode="chat", image_blocks=None, providers=None, user_id="", user_email="",
-                  effort=None, thinking_mode=None, deepseek_thinking=None, context_receipt=None):
+                  effort=None, thinking_mode=None, deepseek_thinking=None, context_receipt=None, visuals_out=None):
         seen_contexts.append(dict(context))
         yield f"data: {json.dumps(meta_event)}\n\n"
         if context_receipt is not None:

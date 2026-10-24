@@ -1,0 +1,1121 @@
+{
+  "document_type": "fif_z0_closure_matrix",
+  "version": 1,
+  "workstream": "WS:FINANCIAL-INTELLIGENCE-FABRIC",
+  "masterplan": {
+    "commit": "44e3c09b367a761558e3251f86d5e853deb03d4d",
+    "path": "research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json",
+    "case_count": 54
+  },
+  "as_of": "2026-10-20",
+  "verdicts": [
+    "CLOSED",
+    "PARTIAL",
+    "OPEN",
+    "PENDING_LIVE",
+    "HUMAN_GATE"
+  ],
+  "obligation_kinds": [
+    "test_gap",
+    "implementation_gap",
+    "live_proof",
+    "ci_proof",
+    "human_gate",
+    "owner_decision",
+    "design_ruling",
+    "dependency_admission",
+    "pending_merge",
+    "records"
+  ],
+  "summary": {
+    "CLOSED": 30,
+    "PARTIAL": 17,
+    "OPEN": 0,
+    "PENDING_LIVE": 3,
+    "HUMAN_GATE": 4
+  },
+  "final_acceptance": {
+    "claimable": false,
+    "independent_acceptance": "Z1 pending",
+    "independent_acceptance_history": [
+      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs."
+    ],
+    "rule": "No phase, report, PR or green CI is a final claim while any case is not CLOSED; Z1 independent acceptance follows a fully CLOSED matrix."
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "tasks": [
+        "T1"
+      ],
+      "condition": "Every required positive-evidence field changed independently with valid recomputed receipt ID/hash",
+      "required_behavior": "Refuse forged semantic evidence; test all18 fields, not only stale hashes.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_forged_evidence_field_is_refused_at_runtime_and_admission",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_both_uris_swapped_to_another_approved_namespace_need_the_source_map"
+      ],
+      "obligations": [],
+      "note": "All 18 positive-evidence keys forged independently; the taxonomy-URI pair is bound to the source namespace map (train #9773, a16aac02)."
+    },
+    {
+      "id": "A02",
+      "tasks": [
+        "T2"
+      ],
+      "condition": "Genuine AAPL confirmation, no-lineage, pre-lineage, as-reported and latest-restated",
+      "required_behavior": "Retain correct values, immutable source hashes and historical refusals; no invented revision.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_valid_policy_responses_stay_byte_identical_after_the_t1_repair",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_absent_evidence_keeps_accepted_hashes_byte_identical",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_historical_a3_cutoff_preserves_not_evaluable"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A03",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Same-report duplicates with different decimals; precision-compatible nontransitive chain",
+      "required_behavior": "Keep source occurrences and distinguish exact/consistent/inconsistent; no greedy transitive equality.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_disagreeing_same_report_duplicates_are_kept_and_break_the_chain",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_rounded_link_classifies_rounded_consistent_and_mints_nothing",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_repeated_chain_classifies_repeated_with_exact_edges",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_changed_tail_is_contradictory_and_never_mints"
+      ],
+      "obligations": [],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F4: the inconsistent leg was asserted only by an uncited test; evidence amended, stays CLOSED."
+    },
+    {
+      "id": "A04",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Ordinary comparative reprint vs amendment vs changed reported fact",
+      "required_behavior": "Confirmation is not revision; latest_restated remains missing without explicit revision evidence.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_latest_restated_ignores_confirmation",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_typed_revision_occurrence_classifies_revised_and_mints_nothing",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a04_a_confirmed_reprint_is_not_a_restatement",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a04_an_untyped_later_vintage_is_never_silently_picked",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a04_only_a_typed_amendment_satisfies_latest_restated"
+      ],
+      "obligations": [],
+      "note": "A confirmed reprint keeps latest_restated missing; an untyped later vintage (same or changed value) is not evaluable under every selection; only an explicit AMENDMENT revision satisfies latest_restated while as_reported keeps the original."
+    },
+    {
+      "id": "A05",
+      "tasks": [
+        "S2"
+      ],
+      "condition": "Three or more accession lineage with contradiction or ambiguity",
+      "required_behavior": "Version and review multi-filing law; preserve v1 refusal instead of disabling its guard.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_v1_chained_bundle_still_raises_the_two_filing_guard",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_mixed_rule_versions_on_one_key_are_refused",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_admission_refuses_forks_skips_and_missing_accessions",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_equal_acceptance_times_classify_ambiguous_and_mint_nothing"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A06",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Currency, units, scaling, fiscal and calendar periods differ",
+      "required_behavior": "Refuse incompatible comparisons or expose an explicitly governed conversion and basis.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a06_01_non_usd_refused_shipped_units_stay_inside_governed_universe",
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a06_02_shares_vs_usd_shares_contract_units_remain_distinct",
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a06_03_fiscal_basis_label_on_shipped_and_qualification_fixture",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_currency_mismatch_between_release_and_cell_unit",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_release_scale_falls_back_to_scale_factor_table",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_drops_cells_without_a_unit_or_period_kind"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A07",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Known dimensions, empty dimensions and unknown dimensions",
+      "required_behavior": "Do not treat unknown as consolidated; dimensional lineage does not confer metric eligibility.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_attested_occurrence_governance.py::test_evidence_bundle_selects_unknown_dimensions_but_core_rejects_them",
+        "tests/test_fundamental_forensics_attested_occurrence_governance.py::test_dimensions_unknown_profile_cannot_be_relabelled_as_core_revenue",
+        "tests/test_fundamental_forensics_attested_occurrence_governance.py::test_dimensions_unknown_evidence_contract_cannot_gain_semantic_authority",
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a07_01_unknown_issuer_class_is_not_treated_as_applicable"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A08",
+      "tasks": [
+        "S1"
+      ],
+      "condition": "Derived ratio with zero/missing/negative or mismatched denominator",
+      "required_behavior": "Version formula/applicability; print missing/not-applicable reason, never invented zero.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a08_01_negative_denominator_not_applicable",
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a08_02_zero_and_missing_denominators",
+        "tests/test_fundamental_forensics_query.py::test_formula_requires_a_shared_attested_revision_basis",
+        "tests/test_fundamental_forensics_peer_comparability.py::test_a35_k1_excludes_instant_peer_against_duration_anchor",
+        "tests/test_fundamental_forensics_metric_registry.py::test_governance_bundle_hides_future_append_only_definitions_without_rewriting_prior_content_id"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A09",
+      "tasks": [
+        "S0"
+      ],
+      "condition": "Repeated visual rows, rowspan tables and instant cash inside duration columns",
+      "required_behavior": "Preserve statement presentation and semantic period separately; no accidental duplicate loss.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_statement_grid.py::test_repeat_rows_stay_distinct_with_distinct_order",
+        "tests/test_fundamental_forensics_statement_grid.py::test_rowspan_label_carries_and_keeps_column_assignment",
+        "tests/test_fundamental_forensics_statement_grid.py::test_rowspan_overrun_is_refused",
+        "tests/test_fundamental_forensics_lane_c2_bac_periods.py::test_r7_instant_fact_under_a_grouped_duration_column_refuses",
+        "tests/test_fundamental_forensics_lane_c2_bac_periods.py::test_r7_cash_position_instants_agree_with_their_duration_columns"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A10",
+      "tasks": [
+        "D1",
+        "S0"
+      ],
+      "condition": "Inline transforms, hidden values, taxonomy changes and malformed source package",
+      "required_behavior": "Retain parse evidence and explicit unsupported states; independent validator is not mapping authority.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_index_malformed_duplicate",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_index_malformed_unnamed",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_invented_namespace_is_reported_with_original_uri"
+      ],
+      "obligations": [
+        {
+          "kind": "dependency_admission",
+          "owner": "Chairman (dependency admission)",
+          "next_action": "No version-pinned independent iXBRL validator is installed and the seat may not pip-install one. Once admitted, record its result as comparison evidence that never carries mapping authority."
+        }
+      ]
+    },
+    {
+      "id": "A11",
+      "tasks": [
+        "T1",
+        "D1"
+      ],
+      "condition": "Invented or unsupported namespace URI with plausible concept/value",
+      "required_behavior": "Reject; preserve approved original taxonomy identity, not a guessed namespace.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_forged_taxonomy_uri_is_refused",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_forged_uri_is_also_refused_at_admission",
+        "tests/test_fundamental_forensics_cross_filing_lineage.py::test_both_uris_swapped_to_another_approved_namespace_need_the_source_map",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_invented_namespace_is_reported_with_original_uri"
+      ],
+      "obligations": [],
+      "note": "A guessed approved namespace is refused unless the source namespace map binds it (train #9773, a16aac02)."
+    },
+    {
+      "id": "A12",
+      "tasks": [
+        "D3",
+        "S2"
+      ],
+      "condition": "Later filing, correction, mapping or rule available after query cutoff",
+      "required_behavior": "Exclude from then-known view under each required source/system/policy clock.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_source_cutoff_between_filings_hides_the_unaccepted_tail",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence",
+        "tests/test_fundamental_forensics_query.py::test_system_cutoff_gates_mapping_compute_and_publication_clocks",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a12_a_correction_recorded_after_the_cutoff_stays_out_of_the_then_known_view",
+        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction"
+      ],
+      "obligations": [
+        {
+          "kind": "pending_merge",
+          "owner": "FIF seat",
+          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then add the mapping-pack clock: a cutoff before 1.1.0 replays the 1.0.0 mapping."
+        }
+      ],
+      "note": "Source, accepted, recorded, compute and publication clocks are tested; a correction recorded after the cutoff stays out of both the source and the judgment then-known views."
+    },
+    {
+      "id": "A13",
+      "tasks": [
+        "D2",
+        "D3"
+      ],
+      "condition": "Historical filing fetched today without historic capture evidence",
+      "required_behavior": "Label reconstruction; never mint historical operational attestation.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_aapl_golden_bytes_admit_as_reconstruction",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_attestation_claim_refused",
+        "tests/test_fundamental_forensics_attestation_admission.py::test_capture_basis_refuses_attestation_claims",
+        "tests/test_fundamental_forensics_coverage_contract.py::test_attested_false_everywhere"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A14",
+      "tasks": [
+        "D3",
+        "G4"
+      ],
+      "condition": "CIK, security aliases and multiple share classes",
+      "required_behavior": "Use Data OS owner binding; no new identity namespace or double-counted issuer.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_peer_cohort.py::test_goog_googl_collapse_one_member_and_a35_i1",
+        "tests/test_fundamental_forensics_peer_cohort.py::test_duplicate_issuer_id_raises_entity_ids_must_be_unique",
+        "tests/test_fundamental_forensics_production_provider.py::test_production_statement_provider_binds_via_cik_over_two_class_issuer",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_a14_two_share_classes_with_one_owner_binding_cik_collapse",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_member_identity_comes_from_the_owner_binding",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_excludes_a_contract_cik_disagreeing_with_owner_binding",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_excludes_a_member_with_no_owner_binding"
+      ],
+      "obligations": [],
+      "note": " 2026-10-20: PR #9870 (main 8d788e63) binds the share-class collapse to the Data OS owner identity binding; no local map, no new namespace."
+    },
+    {
+      "id": "A15",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Production provider unavailable or invalid",
+      "required_behavior": "No silent synthetic/golden fallback; retain separate demonstration delivery labels.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_financial_query_api.py::test_production_mode_never_falls_back_to_golden",
+        "tests/test_fif_se_receipts.py::test_golden_mode_health_carries_no_generation_header",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_health_reports_mode_and_generation_names_only"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A16",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Unsupported issuer/accession/metric/query size",
+      "required_behavior": "Return bounded typed refusal; no arbitrary source fetch or misleading empty success.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_financial_query_api.py::test_unsupported_metric_returns_400",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_oversized_body_returns_413_provider_not_opened",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_default_golden_provider_unknown_entity_returns_400",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_request_path_performs_no_network_or_extraction"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A17",
+      "tasks": [
+        "D1",
+        "D3"
+      ],
+      "condition": "Incomplete package, digest mismatch, stale manifest or correction",
+      "required_behavior": "Do not publish a complete generation until required components verify.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_member_digest_mismatch",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_index_digest_mismatch",
+        "tests/test_fundamental_forensics_broad_sec.py::test_manifest_identity_and_component_mutations_fail_closed",
+        "tests/test_fundamental_forensics_production_dataset_store.py::test_generation_requires_all_role_objects_and_matching_digests",
+        "tests/test_fundamental_forensics_production_dataset_store.py::test_a17_component_collision_leaves_no_manifest_and_no_latest",
+        "tests/test_fundamental_forensics_production_dataset_store.py::test_a17_read_back_mismatch_is_not_completion",
+        "tests/test_fundamental_forensics_production_dataset_store.py::test_a17_stale_generation_is_kept_by_id_but_never_rewinds_latest"
+      ],
+      "obligations": [],
+      "note": "A component collision or read-back mismatch aborts before the manifest and pointer; a stale or equal-clock generation stays loadable by id but never rewinds latest."
+    },
+    {
+      "id": "A18",
+      "tasks": [
+        "D1",
+        "D3",
+        "V0"
+      ],
+      "condition": "Write response lost, immediate absence or delayed commit",
+      "required_behavior": "Preserve original-target EFFECT_UNKNOWN; no replay/failover until reconciliation.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_ambiguous_write_keeps_effect_unknown_on_original_target",
+        "tests/test_fundamental_forensics_attested_query_snapshots.py::test_pointer_cas_reconciles_ambiguous_commit_and_exact_candidate_is_idempotent",
+        "tests/test_fundamental_forensics_recovery_drill.py::test_effect_unknown_delayed_pointer_commit_reconciles_landed_zero_writes",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s1_lost_write_response_is_reconciled_in_run_exactly_once",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s2_immediate_absence_writes_typed_partial_report_then_clean_rerun",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s2_drop_after_commit_alone_is_inert_at_base",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s3_delayed_pointer_commit_lands_before_rerun_reports_unchanged",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s4_cross_drill_invariants"
+      ],
+      "obligations": [],
+      "note": " 2026-10-20: PR #9863 (main d0952736) commits the drill; S2 reconciled with the A21 observation record under R-A21-STORE-TRACE (PR #9871)."
+    },
+    {
+      "id": "A19",
+      "tasks": [
+        "D1"
+      ],
+      "condition": "Untrusted source markup, XML expansion, scripts, unexpected redirects or huge input",
+      "required_behavior": "Bound parser resources, sanitize display, deny execution and unsafe source traversal.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_doctype_and_entity_declarations_refused",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_script_content_is_inert",
+        "tests/test_fundamental_forensics_admitted_filing_package.py::test_refusal_member_oversize",
+        "tests/test_fundamental_forensics_companyfacts.py::test_default_companyfacts_fetcher_explicitly_disables_redirects",
+        "tests/test_fundamental_forensics_companyfacts.py::test_companyfacts_rejects_redirect_before_streaming_or_persistence",
+        "tests/test_fundamental_forensics_excel_export.py::test_xml_special_characters_are_escaped",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::no script-evaluating sink exists in the workbench source",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::esc() escapes all five HTML metacharacters",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::every vetted URL helper returns through safeUrl, which admits only http(s)",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::every interpolated href is an escaped variable bound from a vetted URL helper",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::statement tree: hostile titles, labels, units and receipts render as text",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::normalized table: hostile period fields render as text",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::evidence drawer: hostile query node, control ids and vintages render as text",
+        "tests/fundamental_forensics_a19_hostile.test.mjs::revisions table: hostile vintages, ids and policy echo render as text"
+      ],
+      "obligations": [],
+      "note": "Workbench: static sink and href guards plus hostile-payload renders of the statement tree, normalized table, evidence drawer and revisions table; mutation-checked (dropping an esc() call or binding a raw href fails the suite). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F3 (fundamental_forensics_a19_hostile.test.mjs \"executed only by a disabled job\") REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success). A19 stays CLOSED."
+    },
+    {
+      "id": "A20",
+      "tasks": [
+        "D1",
+        "C0"
+      ],
+      "condition": "Many operators request SEC sources concurrently",
+      "required_behavior": "Use one incumbent shared request budget; no10-per-worker multiplication or limit evasion.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fif_publication_workflow_shape.py::test_contract_sec_steps_pace_at_two_requests_per_second",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_one_shared_pacer_sleeps_between_every_consecutive_pair",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_live_fetchers_routes_both_fetch_paths_through_one_pacer",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_concurrent_acquires_never_mark_twice_inside_one_interval"
+      ],
+      "obligations": [],
+      "note": " 2026-10-20: PR #9869 (main fc16cd51) routes every FIF SEC fetch through the incumbent shared pacer (<= 2 req/s across N workers)."
+    },
+    {
+      "id": "A21",
+      "tasks": [
+        "C0"
+      ],
+      "condition": "No new filings, source outage, duplicate delivery and retry",
+      "required_behavior": "Differentiate checked-no-change from source_outage and stale; idempotent generation, no rerender freshness.",
+      "verdict": "PENDING_LIVE",
+      "evidence": [
+        "tests/test_fundamental_forensics_filing_observation_state.py::test_observe_duplicate_delivery_is_idempotent",
+        "tests/test_fundamental_forensics_filing_observation_state.py::test_mark_published_requires_successful_check_and_is_monotone",
+        "tests/test_fundamental_forensics_filing_observation_state.py::test_freshness_classifies_around_the_sla_boundary",
+        "tests/test_fundamental_forensics_filing_observation_state.py::test_missing_outcome_requires_a_known_cause",
+        "tests/test_fif_a21_publish_observation.py::test_t1_first_publish_writes_one_new_filing_observation_per_issuer",
+        "tests/test_fif_a21_publish_observation.py::test_t2_second_run_same_inputs_later_clock_is_checked_no_change",
+        "tests/test_fif_a21_publish_observation.py::test_t3_changed_material_is_new_content_with_old_record_as_cas_prior",
+        "tests/test_fif_a21_publish_observation.py::test_t4_commit_failure_withholds_the_observation_not_attempted_get_none",
+        "tests/test_fif_a21_publish_observation.py::test_t5a_observation_write_lost_after_commit_lands_via_read_back",
+        "tests/test_fif_a21_publish_observation.py::test_t5b_observation_write_never_lands_is_not_landed_rc_unchanged",
+        "tests/test_fif_a21_publish_observation.py::test_t6_unreadable_prior_record_refuses_before_any_write",
+        "tests/test_fif_a21_publish_observation.py::test_t7_exclusion_observation_state_covers_every_reason_constant",
+        "tests/test_fif_a21_publish_observation.py::test_t7a_source_outage_exclusion_observes_source_outage",
+        "tests/test_fif_a21_publish_observation.py::test_t7b_refusal_class_exclusion_observes_check_failed",
+        "tests/test_fif_a21_publish_observation.py::test_t8_same_clock_rerun_is_byte_identical_zero_extra_writes",
+        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b"
+      ],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "natural schedule",
+          "next_action": "Observe one scheduled publish (never dispatched) after PR #9871 lands and a later no-new-filing cycle: issuers/<id>/observation.json carries new_filing then checked_no_change; a withheld row shows observation_write withheld:<reason>."
+        }
+      ],
+      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write)."
+    },
+    {
+      "id": "A22",
+      "tasks": [
+        "P1"
+      ],
+      "condition": "Signed-out, unauthorized or wrong-entitlement request",
+      "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_financial_query_api.py::test_provider_not_constructed_before_auth_or_admission",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_misbound_provider_returns_503",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_malformed_json_returns_400",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers"
+      ],
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add a caplog test proving the 401/403/503 paths log no secret, path, traceback or source body (the body scan already lives in _assert_error, tests/test_fundamental_forensics_financial_query_api.py:391-400; no test captures logs)."
+        }
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven."
+    },
+    {
+      "id": "A23",
+      "tasks": [
+        "P1",
+        "X2"
+      ],
+      "condition": "Different users or temporal query policies hit shared cache",
+      "required_behavior": "Tenant/entitlement/policy/generation isolation; saved research does not alter canonical facts.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_financial_query_api.py::test_two_users_two_policies_share_no_answer_object",
+        "tests/test_fif_x2_ownership_guards.py::test_partition_never_reads_one_users_list_into_another_users_rows"
+      ],
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat",
+          "next_action": "Add generation isolation (two generations in one process never share an answer object) and prove saved research cannot alter canonical facts."
+        }
+      ]
+    },
+    {
+      "id": "A24",
+      "tasks": [
+        "P1",
+        "P2"
+      ],
+      "condition": "Public shell, source drawer, browser bundle and network errors",
+      "required_behavior": "Do not leak locked licensed content or private receipts; authorized source trace works.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_page.py::test_anonymous_shell_leaks_no_occurrence_ids_or_company_names",
+        "tests/test_fundamental_forensics_page.py::test_public_summary_projection_emits_only_the_two_free_counts"
+      ],
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat",
+          "next_action": "Add a JS test that the browser bundle and network-error states leak no locked content or private receipt, while the authorized source trace still resolves."
+        }
+      ]
+    },
+    {
+      "id": "A25",
+      "tasks": [
+        "E1",
+        "E2",
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "condition": "Model candidate contains invented figure or injected instruction",
+      "required_behavior": "Deterministic evidence admission rejects; narrative never creates canonical number or action authority.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a25_invented_figure_is_refused_even_beside_real_ones",
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a25_injected_instruction_key_is_refused",
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a25_injected_instruction_inside_allowed_fields_is_refused",
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a25_admitted_output_carries_no_canonical_number_or_action_authority",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_a25_invented_release_figure_never_overwrites_the_filed_packet",
+        "tests/test_fundamental_forensics_specialist_pack_contract.py::test_a25_injected_row_key_rejected",
+        "tests/test_fundamental_forensics_specialist_pack_contract.py::test_a25_pack_authority_cannot_be_widened"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A26",
+      "tasks": [
+        "E0"
+      ],
+      "condition": "Large percentage move from tiny base or basis change",
+      "required_behavior": "Expose amount/base/period, source and materiality rationale; no opaque universal risk score.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_detectors.py::test_a26_working_capital_finding_exposes_amount_base_and_materiality",
+        "tests/test_fundamental_forensics_detectors.py::test_a26_tiny_base_is_caveated_not_scored",
+        "tests/test_fundamental_forensics_detectors.py::test_a26_basis_change_across_periods_is_caveated",
+        "tests/test_fundamental_forensics_detectors.py::test_a26_unchanged_basis_carries_no_basis_caveat"
+      ],
+      "obligations": [],
+      "note": "Additive detector change; expected_run_v1.json re-pinned by seat ruling (only added keys/codes and the ids hashing them differ)."
+    },
+    {
+      "id": "A27",
+      "tasks": [
+        "E0",
+        "Q1"
+      ],
+      "condition": "Accounting anomaly with legitimate alternative explanation",
+      "required_behavior": "Label observation/inference and uncertainty; never assert fraud or alpha without supporting evidence.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_detectors.py::test_a27_findings_separate_observation_from_inference_and_never_assert_fraud_or_alpha",
+        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A28",
+      "tasks": [
+        "E1"
+      ],
+      "condition": "Missing disclosure vs failed extraction vs moved/rephrased section",
+      "required_behavior": "Distinguish source absence from process failure; do not invent removed disclosure.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_absent_section_is_not_evaluable_not_removed",
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a28_failed_extraction_is_a_process_error_not_source_absence",
+        "tests/test_fundamental_forensics_disclosure_alignment_e1.py::test_a28_relocated_risk_paragraph_is_moved_not_removed"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A29",
+      "tasks": [
+        "E2",
+        "G1"
+      ],
+      "condition": "KPI definition changes; revenue/ARR/guide/consensus; GAAP vs non-GAAP",
+      "required_behavior": "Retain issuer definition/version and reconciliation; do not splice unlike histories.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_relabel_starts_new_series_and_records_each_definition_change",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_two_labels_within_one_event_record_no_definition_change_in_either_order",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_non_gaap_eps_is_retained_never_compared_and_gaap_reconciles",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_guidance_is_context_only_however_figures_module_names_it",
+        "tests/test_fundamental_forensics_release_reconciliation.py::test_q4_and_full_year_columns_yield_one_series_per_period_length_class"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A30",
+      "tasks": [
+        "G3",
+        "K4"
+      ],
+      "condition": "Bank/financial-institution statement or denominator",
+      "required_behavior": "No industrial gross-margin/FCF detector leakage; print applicability and sector-native basis.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_detectors.py::test_bank_class_issuer_does_not_receive_industrial_detectors",
+        "tests/test_fundamental_forensics_detector_applicability.py::test_bank_sic_gates_four_industrial_detectors",
+        "tests/test_fundamental_forensics_detector_applicability.py::test_bank_sic_gates_accruals",
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a30_01_bank_not_applicable",
+        "tests/test_fundamental_forensics_financial_query_service.py::test_bank_sic_entity_gets_not_applicable_on_class_restricted_metric"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A31",
+      "tasks": [
+        "G2"
+      ],
+      "condition": "Industrial company financing subsidiary and eliminations",
+      "required_behavior": "Distinguish group/segment/consolidated scope; no inventory or cash-flow double-counting.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_query.py::test_g0_c_a31_no_sum_fence_consolidated_cell_is_the_filed_undimensioned_fact",
+        "tests/test_fif_g_pack_gold.py::test_negative_pin_scope_label",
+        "tests/test_fif_g_pack_gold.py::test_negative_pin_negative_mapping"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A32",
+      "tasks": [
+        "G4"
+      ],
+      "condition": "Alphabet multiple securities with one filing issuer",
+      "required_behavior": "One issuer filing truth, supported security projection, no duplicate peer weight.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_peer_cohort.py::test_goog_googl_collapse_one_member_and_a35_i1",
+        "tests/test_fundamental_forensics_production_provider.py::test_no_share_class_pick_on_request_path",
+        "tests/test_fundamental_forensics_production_provider.py::test_production_statement_provider_binds_via_cik_over_two_class_issuer"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A33",
+      "tasks": [
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "A1"
+      ],
+      "condition": "Four additional accounting stress issuers",
+      "required_behavior": "Same general provider and kernel with governed packs; no ticker-specific patched answers.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_kernel_has_no_ticker_or_cik_literals_outside_the_golden_layer",
+        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_golden_layer_allowlist_is_still_live",
+        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_guard_detects_a_patched_ticker_branch"
+      ],
+      "obligations": [
+        {
+          "kind": "ci_proof",
+          "owner": "FIF seat",
+          "next_action": "The kernel-vs-gold replays in test_fif_g_pack_kernel.py and test_fif_g_pack_gold.py skip without FIF_GSRC_STAGE_ROOT. Record a run where they execute (not skip) for SNOW, CAT, BAC and GOOGL."
+        }
+      ]
+    },
+    {
+      "id": "A34",
+      "tasks": [
+        "K1",
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "condition": "Twelve specialist packs with different quality/coverage",
+      "required_behavior": "Each pack gets its own schema/gold/held-out/review/live proof; group summary cannot hide gaps.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_specialist_pack_contract.py::test_a25_pack_authority_cannot_be_widened",
+        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate"
+      ],
+      "obligations": [
+        {
+          "kind": "implementation_gap",
+          "owner": "FIF seat (pack lanes)",
+          "next_action": "All 12 packs are catalogue_state 'specified'. Each pack needs its own gold, held-out, review and live proof; the group summary must list per-pack gaps."
+        }
+      ]
+    },
+    {
+      "id": "A35",
+      "tasks": [
+        "C1"
+      ],
+      "condition": "Peers with misaligned periods, missing scope or incompatible metrics",
+      "required_behavior": "Explicit exclusions and denominators, comparability controls and no synthetic ranks from missing data.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_peer_comparability.py::test_a35_d1_excludes_mismatched_duration_and_keeps_close_period",
+        "tests/test_fundamental_forensics_peer_comparability.py::test_a35_k1_excludes_instant_peer_against_duration_anchor",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_excludes_a_peer_whose_metric_version_differs",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_drops_cells_without_a_unit_or_period_kind",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_generation_metric_versions_reads_each_member_registry",
+        "tests/test_fundamental_forensics_peer_comparability.py::test_denominator_invariant_holds_for_ranked_below_min_n_and_unavailable"
+      ],
+      "obligations": [],
+      "note": "Unit, period kind and member registry version reach the production cohort (train #9773, 9ea577c0)."
+    },
+    {
+      "id": "A36",
+      "tasks": [
+        "C2",
+        "V1"
+      ],
+      "condition": "250-deep/1000-core coverage targets",
+      "required_behavior": "Predeclare issuer/period/field thresholds; prove them by manifest, not ticker loop count.",
+      "verdict": "PENDING_LIVE",
+      "evidence": [
+        "tests/test_fundamental_forensics_coverage_proof.py::test_shipped_thresholds_and_real_catalog",
+        "tests/test_fundamental_forensics_coverage_proof.py::test_real_run_sanity_shipped_thresholds_block",
+        "tests/test_fundamental_forensics_coverage_proof.py::test_v1a_s1_strict_requires_the_tier_pass"
+      ],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "FIF seat (coverage lane)",
+          "next_action": "Remeasure by manifest after the 2026-10-21T00:00Z core-catalogue clock and PR #9799 land: the 2026-10-20 remeasure (research/financial_intelligence_fabric/FIF_A36_COVERAGE_REMEASURE_2026-10-20.md) reads 32,267/50,000 deep (0/250) and 63,202/100,000 core (0/1,000) with blockers census_identity_mismatch, legacy_field_id_alias, manifest_draft, manifest_unattested."
+        }
+      ],
+      "note": "2026-10-20: measured tier proposal is emitted when the frozen target is not met (implementation gap met); the 250/1,000 target is not worker-editable. 2026-10-20: PR #9884 (cov-wire) wires the coverage manifest's specialist and packet cells to the production pack producers and the frozen packet request (DEC:FIF-MANIFEST-PACKET-REQUEST-FROZEN-2026-10-20); sic_source follows the contract resolver (sec_submissions / unbound)."
+    },
+    {
+      "id": "A37",
+      "tasks": [
+        "Q0",
+        "Q1"
+      ],
+      "condition": "Previously unseen issuer/report format or negative example",
+      "required_behavior": "Untouched held-out tests, false-positive/abstention report and failed-family disposition.",
+      "verdict": "PARTIAL",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "dependency_admission",
+          "owner": "independent Q1 labeler (never the FIF seat or a pack lane)",
+          "next_action": "Run the Q1 held-out evaluation per pack from an independently produced label set and commit the false-positive/abstention reports; research/financial_intelligence_fabric/FIF_A37_HELD_OUT_QUALIFIED_ABSTAIN_2026-10-20.md records that no labels exist yet, so all 12 packs abstain (qualified, not a pass)."
+        }
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) NOTE: obligation kind relabelled implementation_gap->dependency_admission (an external-labeler dependency, not a code gap)."
+    },
+    {
+      "id": "A38",
+      "tasks": [
+        "P1",
+        "P2",
+        "X0"
+      ],
+      "condition": "Same query in Python/kernel/API/UI/CSV/Parquet/JSON",
+      "required_behavior": "Identical normalized value, cutoff, basis and provenance; serialization differences explicit.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_query_exports.py::test_a38_decimal_parity_json_csv_parquet",
+        "tests/test_fundamental_forensics_query_exports.py::test_a38_x1p_every_carried_field_is_identical_per_cell",
+        "tests/test_fundamental_forensics_query_exports.py::test_a38_x1p_decimal_value_exact_roundtrip_all_formats",
+        "tests/test_fundamental_forensics_api_client.py::test_query_round_trip_equals_route_body"
+      ],
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat",
+          "next_action": "Add one parity check across kernel, API, UI drawer, CSV, Parquet and JSON for a single query on the production generation."
+        }
+      ]
+    },
+    {
+      "id": "A39",
+      "tasks": [
+        "X1"
+      ],
+      "condition": "Source-linked Excel formula, refresh, signed-out state and correction",
+      "required_behavior": "Real supported Excel environment demonstration; static workbook does not satisfy refresh.",
+      "verdict": "HUMAN_GATE",
+      "evidence": [
+        "tests/test_fundamental_forensics_excel_export.py::test_decimal_1234_50_emits_exact_numeric_v",
+        "tests/test_fundamental_forensics_excel_export.py::test_none_cell_is_omitted"
+      ],
+      "obligations": [
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (macOS permission grant)",
+          "next_action": "A real Excel demonstration needs computer-use Accessibility and Screen Recording grants (refused 2026-10-19). After the grant, record refresh, signed-out state and correction in Excel."
+        }
+      ]
+    },
+    {
+      "id": "A40",
+      "tasks": [
+        "X0",
+        "X1"
+      ],
+      "condition": "CSV/Excel formula injection, precise decimals, dates and null values",
+      "required_behavior": "Safe cell encoding and exact numerical/vintage roundtrip; no hidden numeric-to-string ambiguity.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_query_exports.py::test_a40_x1p_no_unguarded_formula_leads_in_csv_or_xlsx",
+        "tests/test_fundamental_forensics_query_exports.py::test_a40_x1p_probe_leads_apostrophe_guarded_end_to_end",
+        "tests/test_fundamental_forensics_query_exports.py::test_a40_x1p_negative_and_non_ieee_values",
+        "tests/test_fundamental_forensics_query_exports.py::test_a40_x1p_exact_text_cells_list_every_non_ieee_value_cell",
+        "tests/test_fundamental_forensics_excel_export.py::test_decimal_1234_50_emits_exact_numeric_v",
+        "tests/test_fundamental_forensics_excel_export.py::test_none_cell_is_omitted"
+      ],
+      "obligations": []
+    },
+    {
+      "id": "A41",
+      "tasks": [
+        "X2"
+      ],
+      "condition": "Reload/direct link/back navigation of saved query or alert",
+      "required_behavior": "Restore exact subject/metric/period/policy/cutoff/cohort; reuse existing user-state/notification owners.",
+      "verdict": "PARTIAL",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "owner_decision",
+          "owner": "Chairman (flag owner)",
+          "next_action": "FIF_SAVED_RESEARCH_ENABLE and ALERT_DRAIN_ENABLE stay OFF; the round-trip JS tests pass, but restore through the existing user-state and notification owners is unproven live until the flag owner enables them."
+        }
+      ]
+    },
+    {
+      "id": "A42",
+      "tasks": [
+        "P0",
+        "P2"
+      ],
+      "condition": "Primary analyst asks what changed and why it matters",
+      "required_behavior": "Readable first viewport and drilldown; do not bury insight in a dense database wall.",
+      "verdict": "HUMAN_GATE",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "FIF seat",
+          "next_action": "Commit the P2 capture on production data after the 2026-10-20 02:30Z scheduled publish: a readable first viewport plus drilldown for the five issuers."
+        },
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
+        }
+      ]
+    },
+    {
+      "id": "A43",
+      "tasks": [
+        "P2",
+        "Z0"
+      ],
+      "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
+      "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_check_ui_visual_evidence.py::test_committed_evidence_corpus_has_zero_findings",
+        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated"
+      ],
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add the tablet cell to REQUIRED_CELLS in tests/test_check_ui_visual_evidence.py (today desktop/mobile x en/zh x dark/light only) so the recaptured tablet corpus is guarded, and assert focus restore / disabled-control text on the keyboard set (tab_keys, drawer_trap); cite the P0 view contract RECEIPT_REST_CELLS_PER_VIEWPORT tablet receipt (tests/test_fundamental_forensics_p0_view_contract.py:299-302)."
+        }
+      ],
+      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability."
+    },
+    {
+      "id": "A44",
+      "tasks": [
+        "P2"
+      ],
+      "condition": "Evidence source click from number, change or finding",
+      "required_behavior": "Resolve to relevant authorized source span and occurrence/version, not a generic home page.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/fundamental_forensics_a44_span.test.mjs::the workbench carries no generic EDGAR fallback destination",
+        "tests/fundamental_forensics_a44_span.test.mjs::statement tree: a cell with no recorded span renders the disabled unavailable control",
+        "tests/fundamental_forensics_a44_span.test.mjs::statement tree: a recorded span on the same cell renders the live control",
+        "tests/fundamental_forensics_a44_span.test.mjs::evidence drawer: a control with no span says so and links nowhere"
+      ],
+      "obligations": [
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "A signed-in witness of the source click needs an existing logged-in Chrome profile."
+        }
+      ],
+      "note": "A missing or malformed span renders a disabled bilingual unavailable control and a drawer that links nowhere; the source carries no EDGAR fallback destination (mutation-checked)."
+    },
+    {
+      "id": "A45",
+      "tasks": [
+        "A0",
+        "A1"
+      ],
+      "condition": "Newly admitted real filing through installed production path",
+      "required_behavior": "Source/capture/query/publication/browser linkage and natural-cycle proof; no fixture-only acceptance.",
+      "verdict": "HUMAN_GATE",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "natural schedule",
+          "next_action": "A newly admitted real filing through the installed production path, starting with the 2026-10-20 02:30Z scheduled publish (schedule-born only, never dispatched)."
+        },
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
+        }
+      ]
+    },
+    {
+      "id": "A46",
+      "tasks": [
+        "V0",
+        "V1"
+      ],
+      "condition": "Predeclared load/network/corpus benchmark and slow owner",
+      "required_behavior": "Meet accepted latency SLOs with measured distributions; no request-time SEC and no silent stale-green.",
+      "verdict": "HUMAN_GATE",
+      "evidence": [
+        "tests/test_fundamental_forensics_latency.py::test_f_client_error_burst_never_pollutes_the_percentile_window"
+      ],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "FIF seat",
+          "next_action": "Run the predeclared benchmark against production after the 2026-10-20 02:30Z scheduled publish; name the slow owner if an SLO misses."
+        },
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
+        }
+      ]
+    },
+    {
+      "id": "A47",
+      "tasks": [
+        "V0"
+      ],
+      "condition": "Restart, lost publication, restore and rollback",
+      "required_behavior": "Exact generation/receipt recovery, tenant protection, originals intact; no duplicate writers.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_recovery_drill.py::test_restart_new_store_object_sees_same_generation_and_clock",
+        "tests/test_fundamental_forensics_recovery_drill.py::test_backup_restore_round_trip_is_exact_and_idempotent",
+        "tests/test_fundamental_forensics_recovery_drill.py::test_restore_refuses_different_bytes_and_never_overwrites",
+        "tests/test_fundamental_forensics_recovery_drill.py::test_rollback_is_a_correction_the_owner_refuses_to_rewind"
+      ],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "FIF seat",
+          "next_action": "Run the recovery drill (restart, lost publication, restore, rollback) against a non-production generation and record the receipts."
+        }
+      ]
+    },
+    {
+      "id": "A48",
+      "tasks": [
+        "Q2"
+      ],
+      "condition": "Finding outcome learned later or corrected after publication",
+      "required_behavior": "Preserve original judgment/version; delayed evidence does not rewrite past apparent knowledge.",
+      "verdict": "PENDING_LIVE",
+      "evidence": [
+        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction",
+        "tests/test_fundamental_forensics_finding_judgments.py::test_dangling_supersedes_is_refused",
+        "tests/test_fundamental_forensics_finding_judgments.py::test_missing_and_duplicate_originals_are_refused",
+        "tests/test_fundamental_forensics_finding_judgments.py::test_computed_at_alone_does_not_create_a_correction"
+      ],
+      "obligations": [
+        {
+          "kind": "live_proof",
+          "owner": "natural schedule",
+          "next_action": "A production then-known read through the judgment ledger after the first post-publication correction."
+        }
+      ]
+    },
+    {
+      "id": "A49",
+      "tasks": [
+        "R0",
+        "Z1"
+      ],
+      "condition": "Native Opus to Fabric operator to worker execution",
+      "required_behavior": "Actual supported/admitted starts and consumed returns; one global envelope, no simulated fleet.",
+      "verdict": "PARTIAL",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "records",
+          "owner": "FIF seat",
+          "next_action": "Reconcile the non-terminal lane-ledger rows and record the single global execution envelope in the workstream record."
+        }
+      ]
+    },
+    {
+      "id": "A50",
+      "tasks": [
+        "R0",
+        "Z1"
+      ],
+      "condition": "Pressure to finish excluded adjacent programs",
+      "required_behavior": "No SNI/Grey Deer Risk/Market OS/Options/Prophet/Market Ontology/GMI/Executive/Fabric implementation; excluded legacy work recorded, not marked done.",
+      "verdict": "PARTIAL",
+      "evidence": [],
+      "obligations": [
+        {
+          "kind": "records",
+          "owner": "FIF seat",
+          "next_action": "Record the excluded programs (SNI, Grey Deer Risk, Market OS, Options, Prophet, Market Ontology, GMI, Executive OS, Fabric) in the workstream record as excluded, not done."
+        }
+      ]
+    },
+    {
+      "id": "A51",
+      "tasks": [
+        "Z0",
+        "Z1"
+      ],
+      "condition": "Phase, research report or CI is green but product obligations remain",
+      "required_behavior": "No premature finalization; clear included-scope acceptance and remaining natural/human/effect obligations.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fif_z0_closure_matrix.py::test_matrix_covers_every_case_once",
+        "tests/test_fif_z0_closure_matrix.py::test_closed_rows_cite_existing_tests",
+        "tests/test_fif_z0_closure_matrix.py::test_open_rows_carry_owned_obligations",
+        "tests/test_fif_z0_closure_matrix.py::test_no_final_claim_while_any_row_is_open"
+      ],
+      "obligations": [],
+      "note": "This matrix plus its guard test; Z1 independent acceptance is still required before any final claim. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F5 (all CLOSED rows CI-dark because their suites live only in .github/ci/legacy-jobs.yml) REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success); 36/39 cited suites are legacy-pack suites selected by that job when a PR touches FIF paths, 3 run in ci.yml. Z1 r1 verdict FAIL applied: F1/F2 lowered, F3/F5 rebutted, F4 amended, A54 ratified."
+    },
+    {
+      "id": "A52",
+      "tasks": [
+        "D0",
+        "D2"
+      ],
+      "condition": "Unverified rights, licence renewal or attestation trust change",
+      "required_behavior": "No purchase/credential/permission bypass; block only dependent release and continue safe independent work.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_coverage_contract.py::test_rights_lists_empty",
+        "tests/test_fundamental_forensics_coverage_contract.py::test_attested_false_everywhere"
+      ],
+      "obligations": [
+        {
+          "kind": "implementation_gap",
+          "owner": "FIF seat",
+          "next_action": "No rights-gated release component exists: every admitted source is public SEC EDGAR and the coverage source_rights lists are empty and guarded. Before any non-public source is admitted, add a per-source rights hold that blocks only the dependent pack or release, with a test that independent work still publishes."
+        }
+      ],
+      "note": "Today's scope is public EDGAR only, so no release is rights-blocked; the hold mechanism itself is not built."
+    },
+    {
+      "id": "A53",
+      "tasks": [
+        "S1",
+        "S2"
+      ],
+      "condition": "Historical query after a mapping/rule revision",
+      "required_behavior": "Return the cutoff-valid policy version; no newest-rules hindsight contamination.",
+      "verdict": "PARTIAL",
+      "evidence": [
+        "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a53_01_revision_append_cutoff_digest_unchanged",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence"
+      ],
+      "obligations": [
+        {
+          "kind": "pending_merge",
+          "owner": "FIF seat",
+          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then test that a cutoff before 1.1.0 returns the 1.0.0 policy version."
+        }
+      ]
+    },
+    {
+      "id": "A54",
+      "tasks": [
+        "X0",
+        "V0"
+      ],
+      "condition": "Async export resumes after entitlement/cancellation or source change",
+      "required_behavior": "Use existing job/export owner; immutable input refs and reauthorization; no second lifecycle.",
+      "verdict": "CLOSED",
+      "evidence": [
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_csv_posts_are_byte_identical",
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_parquet_posts_are_byte_identical",
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_without_auth_is_401_and_skips_provider",
+        "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_after_a_new_generation_binds_the_new_receipt"
+      ],
+      "obligations": [],
+      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10): RATIFY — export is a synchronous stateless re-issue (no export job owner, no second lifecycle, no cancellation state); the design_ruling obligation is discharged by that ratification."
+    }
+  ]
+}

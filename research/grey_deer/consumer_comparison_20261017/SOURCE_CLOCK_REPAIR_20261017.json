@@ -1,0 +1,93 @@
+{
+  "schema": "risk_radar.source_clock_repair.v1",
+  "prepared_at": "2026-10-17T08:27:47Z",
+  "status": "SOURCE_IMPLEMENTED_REVIEWED_HOSTED_GATES_PENDING",
+  "programme_acceptance": false,
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "pr": 1567,
+  "pr_url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1567",
+  "operation": "risk-radar-future-source-clock-20261017-01a14837",
+  "base_sha": "a552a5e506ae808efa575c2e13cb56f478c72b87",
+  "semantic_head_sha": "ab849c140d23a5548f3c55995078a0124236986c",
+  "final_head_sha": "1e6a8a23fac1153eaef6c5b2f97525f0d960980f",
+  "files": [
+    {
+      "path": "brain/market_view.py",
+      "git_blob": "68c923556b0342c725dd7e208709a9421e2dbafd",
+      "sha256": "bdd2b29821c891f72a2c65b3f487d02b3bba31d2bb5058cd50ca96d9876daf66"
+    },
+    {
+      "path": "tests/test_market_view.py",
+      "git_blob": "fae0f27b322b35f03a94556f8fa96d7c8fd9d340",
+      "sha256": "019087ee87d3288343802e24ca4664c6e6b0c946b4bb64aa4507856a7d201740"
+    }
+  ],
+  "unchanged_helper": {
+    "path": "brain/regime_frame.py",
+    "sha256": "d3105e21265da63574a2076300b3bdaeda56383d2ca5679e081976ac57832abc"
+  },
+  "change": "Check the explicit source date against current UTC date in the central Market View freshness path. Future-dated source facts are retained as stale/advisory and excluded from validated posture tilt. Native session-age, expiry threshold, same-day and holiday behavior are preserved.",
+  "validation": {
+    "red": {
+      "future_failures": 2,
+      "passing_controls": 10,
+      "source": "protected base native code",
+      "cases": "Future Saturday 2026-07-18 and 2099-01-01 at evaluation 2026-07-17 23:59:59Z; native helper clamps both to zero age."
+    },
+    "green": {
+      "passed": 184,
+      "failed": 0,
+      "elapsed_seconds": 31.31,
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_market_view.py tests/test_regime_frame.py tests/test_rotation_risk_context.py -q -rA",
+      "log_sha256": "4afa6fb474d5a6aeaebc1e7c473fea1c6515ab8b7761741558cd531c7a0072b9"
+    },
+    "controls": [
+      "same-day UTC midnight",
+      "NYSE Independence Day observed closure",
+      "native five-session boundary and six-session expiry",
+      "missing, empty, malformed, impossible and non-date source values",
+      "existing Market View decision modes and rotation source/publication clock behavior"
+    ],
+    "final_comment_only": {
+      "whole_file_python_ast_equal": true,
+      "test_rerun": false,
+      "reason": "The independent review requested correction of an obsolete liquidity-transmission comment; semantic source and tests were unchanged."
+    }
+  },
+  "review": {
+    "agent": "/root/consumer_repro_review",
+    "status": "ACCEPTED_CLOSED_STOP",
+    "scope": "Read-only exact semantic-head Market View, Regime Frame and test source copies; hashes checked; implementation and downstream stale/advisory exclusion reviewed.",
+    "limitation": "Reviewer did not rerun 184 tests, verify workspace custody, certify production or establish live policy/book/prompt/ledger parity.",
+    "semantic_market_view_sha256": "6ecae7776dfeb2ea374ca6cfd226783cb432e6cf2841aa4a1d664b8f28276535",
+    "manifest_sha256": "fd042cf37fe4a20502df4d3136d1b9cc77e5076da74706d7c99ce818bdf346db"
+  },
+  "custody": {
+    "parent_checked": true,
+    "open_prs": 381,
+    "registered_worktrees": 219,
+    "nonprimary_target_checks": 218,
+    "errors": 0,
+    "active_target_conflicts": 0,
+    "qualification": "PR pagination tails checked; one >1100-file PR checked by exact merge-base/head target blobs. One apparent prior target delta belonged to already merged PR1285. No primary checkout edits."
+  },
+  "hosted": {
+    "ci_run_id": 39016492939,
+    "status": "pending_at_preparation",
+    "merge_queue": "native required",
+    "merge_sha": null,
+    "source_main_blob_readback": null
+  },
+  "runtime": {
+    "deployed": false,
+    "canonical_constraint": "autonomous_production_deploy: prohibited",
+    "approval_required_for": "Exact operation merge SHA deployed via existing deploy_from_git owner, followed by health and real changed-path consumer proof.",
+    "live_book_policy_prompt_ledger_parity": "NOT_TESTED",
+    "backend_to_user_acceptance": false
+  },
+  "preservation": {
+    "original_reproduction_receipt_sha256": "b97f8950faaed8b7772b5228ea6defe4a9bb62b327f756ef60928284079e718e",
+    "original_reproduction_modified": false,
+    "new_numerical_authority": false
+  }
+}

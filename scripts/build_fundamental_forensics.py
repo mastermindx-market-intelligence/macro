@@ -25,13 +25,14 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import hashlib
 import json
 import logging
 import math
 import os
 import shutil
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -58,6 +59,11 @@ from engine.fundamental_forensics.disclosure_projection import (
     read_disclosure_projection_directory,
 )  # noqa: E402
 from engine.fundamental_forensics.detectors import issuer_class_for_sic  # noqa: E402
+from engine.fundamental_forensics.metric_registry import (  # noqa: E402
+    ISSUER_CLASSES,
+    load_core_metric_registry,
+    qualify_metric,
+)
 from engine.fundamental_forensics.peer_cohort import (  # noqa: E402
     CohortDefinition,
     CohortMember,
@@ -68,6 +74,7 @@ from engine.fundamental_forensics.production_datasets import (  # noqa: E402
     ProductionDatasetError,
     build_production_dataset_store,
     load_latest_generation,
+    registry_from_payload,
 )
 
 log = logging.getLogger("build_fundamental_forensics")
@@ -808,16 +815,28 @@ def _contract_members(contract: Mapping[str, Any]) -> list[dict[str, Any]]:
         cik10 = _cik10(issuer.get("cik"))
         if not ticker or cik10 is None:
             continue
-        accessions = [
-            row.get("accession")
-            for row in issuer.get("accessions") or []
-            if isinstance(row, dict) and isinstance(row.get("accession"), str)
-        ]
+        accession_periods: dict[str, str] = {}
+        accessions: list[str] = []
+        for row in issuer.get("accessions") or []:
+            if not isinstance(row, dict):
+                continue
+            accession = row.get("accession")
+            if not isinstance(accession, str):
+                continue
+            accessions.append(accession)
+            period = row.get("period_of_report")
+            if isinstance(period, str):
+                try:
+                    date.fromisoformat(period)
+                except ValueError:
+                    continue
+                accession_periods[accession] = period
         members.append({
             "ticker": ticker,
             "cik10": cik10,
             "sic": issuer.get("sic"),
             "accessions": accessions,
+            "accession_periods": accession_periods,
         })
     return members
 
@@ -832,19 +851,27 @@ def _contract_metric_ids(contract: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(item for item in raw if isinstance(item, str) and item)
 
 
-def _contract_not_applicable(contract: Mapping[str, Any]) -> dict[str, frozenset[str]]:
-    """The contract's per-ticker metric exclusions, normalized for lookup."""
-    denominator = contract.get("field_denominator")
-    if not isinstance(denominator, dict):
-        return {}
-    raw = denominator.get("not_applicable")
-    if not isinstance(raw, dict):
-        return {}
+def _class_not_applicable_metric_ids(root: Path) -> dict[str, frozenset[str]]:
+    """Per-issuer-class metric exclusions derived from the shipped catalog.
+
+    G0-b retired the ticker-keyed ``field_denominator.not_applicable`` overlay:
+    the build path derives its exclusions from the same S1-b class policies the
+    query path qualifies through ``qualify_metric`` (formula=None, the direct
+    stage's exact call), so a per-ticker answer can no longer diverge from the
+    class answer. Keyed by issuer class — never by ticker, CIK, or issuer name
+    — and resolved per member through ``issuer_class_for_sic`` at the call
+    site.
+    """
+    registry = load_core_metric_registry(root)
     out: dict[str, frozenset[str]] = {}
-    for ticker, metrics in raw.items():
-        if not isinstance(metrics, dict):
-            continue
-        out[str(ticker).upper()] = frozenset(metrics)
+    for issuer_class in sorted(ISSUER_CLASSES):
+        excluded = frozenset(
+            contract.metric_id
+            for contract in registry.contracts
+            if qualify_metric(contract, None, issuer_class, {}).state != "applicable"
+        )
+        if excluded:
+            out[issuer_class] = excluded
     return out
 
 
@@ -858,12 +885,52 @@ def _cohort_policy_defaults() -> dict[str, Any]:
     }
 
 
+def _generation_metric_versions(
+    generation: Any,
+    metric_ids: tuple[str, ...],
+    cache: dict[str, dict[str, str]] | None = None,
+) -> dict[str, str]:
+    """The rule version of each metric in the member generation's pinned registry.
+
+    A generation whose registry role is absent, undecodable or cannot be
+    rebuilt yields no versions: its observations then carry
+    ``metric_version=None``, which the cohort's A35-V1 check excludes against
+    any versioned anchor. ``cache`` is keyed by the role payload digest, so
+    members published under one registry snapshot rebuild it once.
+    """
+    payloads = getattr(generation, "role_payloads", None)
+    raw = payloads.get("registry_json") if isinstance(payloads, Mapping) else None
+    if not isinstance(raw, (bytes, bytearray)):
+        return {}
+    digest = hashlib.sha256(bytes(raw)).hexdigest()
+    if cache is not None and digest in cache:
+        return cache[digest]
+    versions: dict[str, str] = {}
+    try:
+        registry = registry_from_payload(json.loads(bytes(raw).decode("utf-8")))
+    except (UnicodeDecodeError, json.JSONDecodeError, ProductionDatasetError):
+        registry = None
+    if registry is not None:
+        for metric_id in metric_ids:
+            try:
+                version = registry.metric(metric_id).version
+            except KeyError:
+                continue
+            if isinstance(version, str) and version:
+                versions[metric_id] = version
+    if cache is not None:
+        cache[digest] = versions
+    return versions
+
+
 def _tree_metric_observations(
     generation: Any,
     accessions: list[str],
     metric_ids: tuple[str, ...],
-    not_applicable: Mapping[str, frozenset[str]],
-    ticker: str,
+    excluded_metrics: frozenset[str],
+    accession_periods: Mapping[str, str],
+    same_end: dict[str, tuple[MetricObservation, ...]] | None = None,
+    metric_versions: Mapping[str, str] | None = None,
 ) -> dict[str, MetricObservation] | None:
     """Project the latest available cell per metric from the precomputed trees.
 
@@ -871,11 +938,28 @@ def _tree_metric_observations(
     dataset-absent case. A cell whose value is not canonical text contributes
     nothing (the cohort table then reports that member×metric as a missing
     observation); no value is converted, scaled, rounded, or floated here.
+    A cell without a stated period kind or unit contributes nothing either:
+    the cohort's A35-K1/U1 controls compare against the anchor's basis and
+    unit, so an observation with neither known is not comparable (A35).
+    ``metric_versions`` (``_generation_metric_versions``) stamps each
+    observation with the member registry's rule version for A35-V1.
+    ``excluded_metrics`` is the member's class-derived not-applicable closure
+    (G0-b), intersected with the field denominator by the caller.
+
+    Cells sharing the latest end date (a 10-Q's quarter beside its
+    year-to-date column) resolve to the shortest stated duration, so among
+    distinct durations the pick never depends on cell order; cells of equal
+    duration keep the first one met in contract accession order, and a dated
+    cell always outranks an undated one. When ``same_end`` is given, every metric
+    whose latest end date carried more than one cell gets all of them there,
+    for the caller to align against an anchor (``_aligned_to_anchor``).
     """
     wanted = set(metric_ids)
-    excluded_metrics = not_applicable.get(ticker, frozenset())
     latest: dict[str, MetricObservation] = {}
-    latest_end: dict[str, str] = {}
+    latest_end: dict[str, date] = {}
+    candidates: dict[str, list[MetricObservation]] = {}
+    metric_statement_types: dict[str, set[str]] = {}
+    refused: set[tuple[str, str]] = set()
     readable = False
     for accession in accessions:
         try:
@@ -884,10 +968,17 @@ def _tree_metric_observations(
             continue
         readable = True
         for statement in tree.get("statements") or []:
+            if not isinstance(statement, dict):
+                continue
+            statement_type = statement.get("statement_type")
+            if statement.get("refusal") and isinstance(statement_type, str):
+                refused.add((accession, statement_type))
             for tree_row in statement.get("rows") or []:
                 metric_id = tree_row.get("standardized_metric_id")
                 if not isinstance(metric_id, str) or metric_id not in wanted:
                     continue
+                if isinstance(statement_type, str):
+                    metric_statement_types.setdefault(metric_id, set()).add(statement_type)
                 for cell in tree_row.get("cells") or []:
                     value_text = cell.get("value")
                     if not isinstance(value_text, str):
@@ -896,30 +987,125 @@ def _tree_metric_observations(
                     end = period.get("end")
                     if not isinstance(end, str):
                         continue
+                    start = period.get("start")
+                    start_date: date | None = None
+                    if isinstance(start, str):
+                        try:
+                            start_date = date.fromisoformat(start)
+                        except ValueError:
+                            continue
                     try:
                         end_date = date.fromisoformat(end)
                         value = Decimal(value_text)
                     except (ValueError, InvalidOperation):
                         continue
-                    if metric_id in latest_end and end <= latest_end[metric_id]:
+                    period_kind = period.get("kind")
+                    cell_unit = cell.get("unit")
+                    if not (isinstance(period_kind, str) and period_kind):
                         continue
-                    latest_end[metric_id] = end
-                    latest[metric_id] = MetricObservation(
+                    if not (isinstance(cell_unit, str) and cell_unit):
+                        continue
+                    incumbent_end = latest_end.get(metric_id)
+                    if incumbent_end is not None and end_date < incumbent_end:
+                        continue
+                    observation = MetricObservation(
                         value=value,
                         period_end=end_date,
-                        period_basis=str(period.get("kind") or ""),
+                        period_basis=period_kind,
                         applicable=metric_id not in excluded_metrics,
+                        period_start=start_date,
+                        unit=cell_unit,
+                        metric_version=(metric_versions or {}).get(metric_id),
                     )
+                    if incumbent_end is None or end_date > incumbent_end:
+                        latest_end[metric_id] = end_date
+                        latest[metric_id] = observation
+                        candidates[metric_id] = [observation]
+                        continue
+                    candidates[metric_id].append(observation)
+                    days = _duration_days(observation)
+                    incumbent_days = _duration_days(latest[metric_id])
+                    if days is not None and (incumbent_days is None or days < incumbent_days):
+                        latest[metric_id] = observation
+    for metric_id, observation in list(latest.items()):
+        statement_types = metric_statement_types.get(metric_id, set())
+        if not statement_types:
+            continue
+        rm_dates: list[date] = []
+        for refused_accession, refused_type in refused:
+            if refused_type not in statement_types:
+                continue
+            period_text = accession_periods.get(refused_accession)
+            if not isinstance(period_text, str):
+                continue
+            try:
+                rm_dates.append(date.fromisoformat(period_text))
+            except ValueError:
+                continue
+        if not rm_dates:
+            continue
+        rm = max(rm_dates)
+        if observation.period_end is not None and observation.period_end < rm:
+            latest[metric_id] = MetricObservation(
+                value=None,
+                period_end=rm,
+                period_basis=observation.period_basis,
+                applicable=observation.applicable,
+                withheld=True,
+            )
+    if same_end is not None:
+        for metric_id, observation in latest.items():
+            pool = candidates.get(metric_id, [])
+            if len(pool) > 1 and not observation.withheld:
+                same_end[metric_id] = tuple(pool)
     return latest if readable else None
+
+
+def _duration_days(observation: MetricObservation) -> int | None:
+    if observation.period_start is None or observation.period_end is None:
+        return None
+    return (observation.period_end - observation.period_start).days
 
 
 @dataclass(frozen=True)
 class _AdmittedPeer:
     member: Mapping[str, Any]
     issuer_id: str
+    # A14: the owner binding's identity — cik in canonical cik10 form and the
+    # binding's listing label (contract ticker only when the binding has none).
+    binding_cik: str
+    binding_ticker: str
     sic: str
     issuer_class: str
     observations: Mapping[str, MetricObservation]
+    same_end: Mapping[str, tuple[MetricObservation, ...]] = field(default_factory=dict)
+
+
+def _aligned_to_anchor(
+    peer: _AdmittedPeer, anchor_observations: Mapping[str, MetricObservation]
+) -> Mapping[str, MetricObservation]:
+    """The peer's observations with each same-end tie resolved toward the anchor.
+
+    Only a metric whose latest end date carried several cells is touched: the
+    one closest in duration to the anchor's own cell replaces the default
+    (shortest) pick. Nothing moves off the latest end date, so a duration no
+    candidate can match still reaches the kernel's A35-D1 exclusion.
+    """
+    aligned = dict(peer.observations)
+    for metric_id, pool in peer.same_end.items():
+        anchor_obs = anchor_observations.get(metric_id)
+        target = None if anchor_obs is None else _duration_days(anchor_obs)
+        if target is None:
+            continue
+        aligned[metric_id] = min(
+            pool,
+            key=lambda obs: (
+                _duration_days(obs) is None,
+                abs((_duration_days(obs) or 0) - target),
+                _duration_days(obs) or 0,
+            ),
+        )
+    return aligned
 
 
 def _member_exclusion(
@@ -945,9 +1131,10 @@ def _compose_peer_cohort(
     Evaluation order is fixed: an unavailable store excludes every member
     (``production_dataset_absent``); otherwise per member, in contract order,
     identity (exact-CIK join) is resolved before the generation is read, the
-    generation before the SIC gate, and the SIC gate before any class
-    derivation — so a member without a pinned SIC never reaches an
-    applicability call. An excluded member never enters a CohortDefinition.
+    generation's owner identity binding before the SIC gate, and the SIC gate
+    before any class derivation — so a member without a pinned SIC never
+    reaches an applicability call. An excluded member never enters a
+    CohortDefinition.
     """
     contract = _read_coverage_contract(root)
     members = _contract_members(contract) if contract else []
@@ -955,7 +1142,7 @@ def _compose_peer_cohort(
         return None, PEER_COHORT_REASON_DATASET_ABSENT
     contract_id = str(contract.get("contract_id") or "")
     metric_ids = _contract_metric_ids(contract)
-    not_applicable = _contract_not_applicable(contract)
+    class_not_applicable = _class_not_applicable_metric_ids(root)
 
     exclusions: list[dict[str, Any]] = []
     admitted: list[_AdmittedPeer] = []
@@ -969,6 +1156,7 @@ def _compose_peer_cohort(
             ))
         return None, PEER_COHORT_REASON_DATASET_ABSENT
 
+    registry_versions: dict[str, dict[str, str]] = {}
     for member in members:
         issuer_id, join_reason = issuer_master.join(member["cik10"])
         if issuer_id is None:
@@ -987,6 +1175,37 @@ def _compose_peer_cohort(
                 "no admitted production dataset generation for the issuer",
             ))
             continue
+        # A14: the identity authority is the generation's owner binding (the
+        # admission-time manifest issuer block), never the contract's local
+        # cik/ticker. A binding that cannot be read, or whose cik has no
+        # cik10 form, is an absent dataset identity; a cik that names a
+        # different issuer than the contract row is an identity disagreement
+        # — either way the member is excluded, never silently re-keyed.
+        try:
+            binding = generation.binding
+        except ProductionDatasetError:
+            binding = None
+        binding_cik = _cik10(binding.cik) if binding is not None else None
+        if binding_cik is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "no owner identity binding on the admitted production dataset generation",
+            ))
+            continue
+        if binding_cik != member["cik10"]:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_IDENTITY,
+                # A14 review F1: the authority-side cik is carried in the
+                # reason so the disagreement is reconstructable from the row.
+                f"contract cik disagrees with owner binding cik {binding_cik}",
+            ))
+            continue
+        # the binding's listing label wins; the contract ticker survives only
+        # when the binding carries none (A14).
+        binding_ticker = (
+            str(binding.ticker).strip().upper()
+            if binding.ticker is not None else ""
+        ) or member["ticker"]
         sic = _pinned_sic(member["sic"])
         if sic is None:
             exclusions.append(_member_exclusion(
@@ -994,9 +1213,17 @@ def _compose_peer_cohort(
                 "coverage contract carries no parseable pinned sic for the issuer",
             ))
             continue
+        issuer_class = issuer_class_for_sic(sic)
+        excluded_metrics = (
+            frozenset(metric_ids) & class_not_applicable.get(issuer_class, frozenset())
+        )
+        same_end: dict[str, tuple[MetricObservation, ...]] = {}
         observations = _tree_metric_observations(
-            generation, member["accessions"], metric_ids, not_applicable,
-            member["ticker"],
+            generation, member["accessions"], metric_ids, excluded_metrics,
+            member.get("accession_periods") or {}, same_end=same_end,
+            metric_versions=_generation_metric_versions(
+                generation, metric_ids, registry_versions
+            ),
         )
         if observations is None:
             exclusions.append(_member_exclusion(
@@ -1007,9 +1234,12 @@ def _compose_peer_cohort(
         admitted.append(_AdmittedPeer(
             member=member,
             issuer_id=issuer_id,
+            binding_cik=binding_cik,
+            binding_ticker=binding_ticker,
             sic=sic,
-            issuer_class=issuer_class_for_sic(sic),
+            issuer_class=issuer_class,
             observations=observations,
+            same_end=same_end,
         ))
 
     # Distinct contract CIKs can in principle join to one issuer id; the
@@ -1030,17 +1260,25 @@ def _compose_peer_cohort(
     if not admitted:
         return None, PEER_COHORT_REASON_DATASET_ABSENT
 
-    observations_by_issuer = {peer.issuer_id: peer.observations for peer in admitted}
     tables: list[dict[str, Any]] = []
     for anchor in admitted:
+        observations_by_issuer = {
+            peer.issuer_id: peer.observations
+            if peer is anchor
+            else _aligned_to_anchor(peer, anchor.observations)
+            for peer in admitted
+        }
         definition = CohortDefinition(
             cohort_id=f"{contract_id}:{anchor.issuer_id}" if contract_id else anchor.issuer_id,
             anchor_issuer_id=anchor.issuer_id,
             members=tuple(
                 CohortMember(
                     issuer_id=peer.issuer_id,
-                    cik=peer.member["cik10"],
-                    tickers=(peer.member["ticker"],),
+                    # A14: the owner binding's identity is the only key the
+                    # kernel collapses on; the contract row's local cik/ticker
+                    # never reach the table.
+                    cik=peer.binding_cik,
+                    tickers=(peer.binding_ticker,),
                     issuer_class=peer.issuer_class,
                     sic=peer.sic,
                 )
@@ -1444,6 +1682,8 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
         state_summary=counts,
         active_section="research",
         active_page="fundamental_forensics",
+        holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],
+        holding_css_version=hashlib.sha256((root / "templates" / "institutional_holding_research.css").read_bytes()).hexdigest()[:8],
     )
     page = site / "fundamental_forensics.html"
     page_temp = _temp_sibling(page)
@@ -1452,7 +1692,8 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
         os.replace(page_temp, page)
     finally:
         page_temp.unlink(missing_ok=True)
-    for name in ("fundamental_forensics.css", "fundamental_forensics.js"):
+    for name in ("fundamental_forensics.css", "fundamental_forensics.js",
+                 "institutional_holding_research.css", "institutional_holding_research.js"):
         _atomic_copy(root / "templates" / name, site / name)
     return page
 

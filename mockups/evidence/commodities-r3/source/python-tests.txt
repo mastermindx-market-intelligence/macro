@@ -1,0 +1,4 @@
+Integrated-source test summary
+python3 -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_critical_minerals_display.py tests/test_critical_minerals_panel.py tests/test_commodities_w6_truth.py tests/test_commodities_ignition_copy.py tests/test_commodity_mtf_verdict_honesty.py -q
+187 passed, 25 subtests passed; 2 pre-existing pytest garbage-directory cleanup warnings.
+CI closure/startability/narrow-selection: 3 passed, 198 deselected.

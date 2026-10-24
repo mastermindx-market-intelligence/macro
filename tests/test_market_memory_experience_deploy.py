@@ -43,6 +43,153 @@ MASKED_MARKET_MEMORY_SIBLINGS = {
     "/var/lib/macro-market-memory/state/breadth-v1",
     "/var/lib/macro-market-memory/state/production-record-options-episode-v1",
 }
+
+
+def _population_fixture(tmp_path, monkeypatch):
+    from tests.test_market_memory_population import _real_store
+    experience, trusted, technical = _real_store(tmp_path, monkeypatch, runs=1)
+    roots = (ROOT, experience, trusted, technical)
+    monkeypatch.setattr(cli, "_POPULATION_ROOTS", roots)
+    source_checks = []
+
+    def verify(root, **kwargs):
+        source_checks.append((root, kwargs))
+        return "a" * 40
+
+    monkeypatch.setattr(cli, "_verified_repository_commit", verify)
+    return roots, source_checks
+
+
+def _diagnose(roots):
+    return cli.diagnose_registered_spy_population(
+        roots[0], experience_root=roots[1], trusted_root=roots[2],
+        technical_root=roots[3], through_session="2026-08-20")
+
+
+def test_population_diagnostic_real_owner_is_read_only_and_rechecks_policy(tmp_path, monkeypatch):
+    import hashlib
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+
+    def snapshot():
+        return {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                for root in roots[1:] for p in root.rglob("*") if p.is_file()}
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("population diagnostic must not accrue or read outcomes")
+    monkeypatch.setattr(owner, "accrue_spy_experience", forbidden)
+    monkeypatch.setattr(owner, "verify_terminal_ledger", forbidden)
+    monkeypatch.setattr(cli, "accrue_registered_spy_experience", forbidden)
+    before = snapshot()
+    result = _diagnose(roots)
+    assert snapshot() == before
+    assert result["operational_study_admission"] is False
+    assert result["scope"] == "internal_operator_outcome_blind_v1_census"
+    assert result["manifest"]["census"]["counts"]["expected"] == 4
+    assert result["manifest"]["census"]["counts"]["unrecorded"] == 3
+    assert len(checks) == 4  # Before import + two bound build checks + final disclosure.
+    assert all(call[1]["extra_inputs"] == ("engine/neuralweb/market_memory_population.py",)
+               for call in checks)
+
+
+@pytest.mark.parametrize("changed", ["registration", "store", "installation", "source"])
+def test_population_diagnostic_drift_fails_before_final_disclosure(tmp_path, monkeypatch, changed):
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+    original = owner.verify_experience_installation
+    count = 0
+
+    def verify(*args, **kwargs):
+        nonlocal count
+        count += 1
+        value = original(*args, **kwargs)
+        if count >= 3:
+            key = {"registration": "registration_id", "store": "store_id",
+                   "installation": "installation_id", "source": "store_id"}[changed]
+            value[key] = "changed-owner"
+        return value
+
+    monkeypatch.setattr(owner, "verify_experience_installation", verify)
+    if changed == "source":
+        def source(*args, **kwargs):
+            checks.append((args, kwargs))
+            return ("a" if len(checks) < 4 else "b") * 40
+        monkeypatch.setattr(cli, "_verified_repository_commit", source)
+    with pytest.raises(Exception, match="changed|owner required"):
+        _diagnose(roots)
+
+
+@pytest.mark.parametrize("index", range(4))
+def test_population_diagnostic_rejects_alternate_roots_before_owner_io(monkeypatch, index):
+    def forbidden(*args, **kwargs):
+        pytest.fail("root validation must precede source/owner access")
+    monkeypatch.setattr(cli, "_verified_repository_commit", forbidden)
+    roots = list(cli._POPULATION_ROOTS)
+    roots[index] = Path("/unadmitted-v2-root")
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="exact installed v1 roots"):
+        _diagnose(roots)
+
+
+def test_population_cli_mode_never_falls_through_to_writer(monkeypatch, capsys):
+    def forbidden(*args, **kwargs):
+        pytest.fail("diagnostic must not fall through to writer")
+    monkeypatch.setattr(cli, "accrue_registered_spy_experience", forbidden)
+    monkeypatch.setattr(cli, "diagnose_registered_spy_population", lambda *a, **k: {"diagnostic": True})
+    args = ["--experience-root", str(cli._POPULATION_ROOTS[1]), "--diagnose-population",
+            "--trusted-root", str(cli._POPULATION_ROOTS[2]), "--technical-root", str(cli._POPULATION_ROOTS[3]),
+            "--through-session", "2026-08-20"]
+    assert cli.main(args) == 0
+    assert '"diagnostic":true' in capsys.readouterr().out
+    for invalid in (args + ["--verify-terminal"], args[:-2], args[0:2] + args[-2:]):
+        with pytest.raises(SystemExit):
+            cli.main(invalid)
+
+
+def test_population_unbound_rights_check_never_opens_owner_paths(tmp_path, monkeypatch):
+    from engine.neuralweb import market_memory_experience_accrual as owner
+    from engine.neuralweb import market_memory_population as population
+    roots, checks = _population_fixture(tmp_path, monkeypatch)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("unbound rights decision must precede owner I/O")
+    monkeypatch.setattr(owner, "load_registration", forbidden)
+    monkeypatch.setattr(owner, "verify_experience_installation", forbidden)
+
+    class ScopeChecked(Exception):
+        pass
+
+    def before_owner(root, **kwargs):
+        policy = kwargs["policy"]
+        grant = policy.authorize_population_manifest(
+            repository_root=str(root), experience_root=str(roots[1]),
+            through_session="2026-08-20", registration_id=None, store_id=None)
+        assert grant.granted is True
+        assert grant.registration_id is grant.store_id is None
+        assert len(checks) == 1  # Only pre-import verification, not policy I/O.
+        raise ScopeChecked()
+    monkeypatch.setattr(population, "read_population_manifest_capability", before_owner)
+    with pytest.raises(ScopeChecked):
+        _diagnose(roots)
+
+
+def test_population_refuses_noninstalled_cli_before_source_verification(tmp_path, monkeypatch):
+    roots, _checks = _population_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(cli, "_ROOT", tmp_path / "unreviewed-cli")
+    def forbidden(*args, **kwargs):
+        pytest.fail("executing CLI root must match before source verification")
+    monkeypatch.setattr(cli, "_verified_repository_commit", forbidden)
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="installed CLI"):
+        _diagnose(roots)
+
+
+@pytest.mark.parametrize("module_name", ["market_memory_population", "market_memory_experience_accrual"])
+def test_population_refuses_imported_code_outside_verified_root(tmp_path, monkeypatch, module_name):
+    import engine.neuralweb as neuralweb
+    roots, _checks = _population_fixture(tmp_path, monkeypatch)
+    module = getattr(neuralweb, module_name)
+    monkeypatch.setattr(module, "__file__", str(tmp_path / "unreviewed/engine/neuralweb/module.py"))
+    with pytest.raises(cli.MarketMemoryExperienceCliError, match="imports differ"):
+        _diagnose(roots)
 SIBLING_PROFILES = ("source", "context", "identity", "breadth", "technicals")
 
 

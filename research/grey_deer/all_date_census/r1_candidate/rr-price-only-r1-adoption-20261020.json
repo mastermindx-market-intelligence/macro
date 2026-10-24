@@ -1,0 +1,11 @@
+{
+  "applied_at": "2026-10-20T02:42:47.317076+00:00",
+  "path": "research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+  "original_sha256": "687bfed7c3cae90b350c7fd33f5301dc9c33bd09596553566790d131f77ebd67",
+  "adopted_sha256": "2f09526c3501e540d699b3ba69cd5f2866d736a1200dd9787a7c417aa90080ee",
+  "bytes": 27378,
+  "disposition": "R1_REPORTING_CLARIFICATION_ADOPTED_AS_PROPOSED_DESIGN",
+  "execution_admission": "NOT_ADMITTED",
+  "actual_estimation_units_executed": 0,
+  "old_version_preserved_at": "ac08d5bd630d480a97fcbd0d9814946724250011"
+}

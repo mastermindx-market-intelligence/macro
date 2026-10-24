@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import hashlib
 import json
+import re
+from urllib.parse import urlsplit
 from typing import Mapping
 
 SCHEMA = "qbus.news_revision.v1"
@@ -84,7 +86,7 @@ def _parse_clock(value: object, field: str, *, required: bool) -> datetime | Non
         text = value.strip()
         if not text:
             raise ValueError
-        if "T" in text or text.endswith("Z"):
+        if re.match(r"^\d{4}-\d{2}-\d{2}[Tt ]", text):
             parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
         else:
             parsed = parsedate_to_datetime(text)
@@ -192,9 +194,9 @@ def _content_digest(*, title: str, url: str, teaser: str, body_sha256: str,
 
 
 def _revision_id(*, source_item_id: str, removed: bool, content_hash: str,
-                 version_at: datetime, version_clock_domain: str) -> str:
+                 version_at: datetime, version_clock_domain: str, source: str = "benzinga") -> str:
     basis = "|".join((
-        "benzinga",
+        source,
         source_item_id,
         "removed" if removed else "article",
         content_hash,
@@ -219,7 +221,7 @@ def _build(*, source_item_id: str, transport: str, message_id: str | None,
            updated_at: datetime | None, source_event_at: datetime | None,
            received_at: datetime, version_at: datetime,
            version_clock_domain: str, content: Mapping[str, object] | None,
-           massive: bool = False) -> NewsRevision:
+           massive: bool = False, source: str = "benzinga") -> NewsRevision:
     removed = action == "removed"
     content = content or {}
     title = _text(
@@ -244,6 +246,7 @@ def _build(*, source_item_id: str, transport: str, message_id: str | None,
         tags=tags,
     )
     revision_id = _revision_id(
+        source=source,
         source_item_id=source_item_id,
         removed=removed,
         content_hash=content_hash,
@@ -252,7 +255,7 @@ def _build(*, source_item_id: str, transport: str, message_id: str | None,
     )
     return NewsRevision(
         schema=SCHEMA,
-        source="benzinga",
+        source=source,
         source_item_id=source_item_id,
         transport=transport,
         message_id=message_id,
@@ -428,4 +431,66 @@ def normalize_news(payload: Mapping[str, object], *, transport: str,
         version_clock_domain="massive_benzinga_system_updated",
         content=payload,
         massive=True,
+    )
+
+
+def massive_publisher_domain(payload: Mapping[str, object]) -> str:
+    """Canonical publisher identity from provider metadata, never vendor branding."""
+    publisher = payload.get("publisher")
+    if not isinstance(publisher, Mapping):
+        raise NewsContractError("invalid_publisher")
+    homepage = publisher.get("homepage_url")
+    if not isinstance(homepage, str):
+        raise NewsContractError("invalid_publisher")
+    try:
+        parts = urlsplit(homepage)
+        host = (parts.hostname or "").lower().removeprefix("www.")
+        if (parts.scheme not in {"http", "https"} or parts.username or parts.password
+                or parts.port not in {None, 80, 443}
+                or not re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?", host)
+                or "." not in host):
+            raise ValueError
+    except ValueError:
+        raise NewsContractError("invalid_publisher") from None
+    return host
+
+
+def normalize_massive_news(
+    payload: Mapping[str, object], *, received_at: datetime,
+) -> NewsRevision:
+    """Normalize the general multi-publisher endpoint, distinct from Benzinga v2.
+
+    Massive's published clock is not an update or local-arrival clock. The API
+    documents no correction timestamp: changed content at an identical publisher
+    clock remains a reducer conflict, rather than fabricating an authoritative
+    correction. Body, image and provider AI fields never enter this contract.
+    """
+    if not isinstance(payload, Mapping):
+        raise NewsContractError("invalid_payload")
+    received = _aware_utc(received_at, "received_at_not_aware")
+    publisher = massive_publisher_domain(payload)
+    published = _parse_clock(payload.get("published_utc"), "published_at", required=True)
+    raw_tickers = payload.get("tickers")
+    if not isinstance(raw_tickers, (list, tuple)) or any(not isinstance(t, str) for t in raw_tickers):
+        raise NewsContractError("invalid_provider_tickers")
+    url = _text(payload.get("article_url"), "url", MAX_URL_CHARS, required=True)
+    try:
+        parts = urlsplit(url)
+        if parts.scheme not in {"http", "https"} or not parts.hostname or parts.username or parts.password:
+            raise ValueError
+    except ValueError:
+        raise NewsContractError("invalid_url") from None
+    return _build(
+        source="massive:" + publisher,
+        source_item_id=_source_id(payload.get("id")),
+        transport="massive_news_v2", message_id=None, action="updated",
+        action_explicit=False, published_at=published, updated_at=None,
+        source_event_at=None, received_at=received, version_at=published,
+        version_clock_domain="massive_news_published",
+        content={
+            "title": payload.get("title"), "url": url,
+            "teaser": payload.get("description"),
+            "stocks": [ticker.strip().upper() for ticker in raw_tickers],
+            "tags": payload.get("keywords"),
+        },
     )

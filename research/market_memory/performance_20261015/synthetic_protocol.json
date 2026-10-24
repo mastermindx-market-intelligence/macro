@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-15T17:49:30.156938+00:00",
+  "source_head": "c85859dda6f2979192cae5891eb63cbf4d907cf7",
+  "kind": "SYNTHETIC_SOFTWARE_CAPACITY_ONLY",
+  "sizes": [
+    16,
+    64,
+    128,
+    256
+  ],
+  "trials_per_size": 5,
+  "fresh_process_each_trial": true,
+  "warm_cache_policy": "OS cache not cleared; corpus build separate from query time",
+  "date_end": "2026-08-19",
+  "query_cutoff": "2026-08-20T12:00:00Z",
+  "k": 8,
+  "method": "historical_hypothetical zero purge/embargo fixed L1 baseline",
+  "policy": "Existing tests Policy fake authorizer; not production authorization cost",
+  "fixture": "Existing capture()/owner()/load() test helpers; actual trusted writer and original capability APIs",
+  "forbidden": [
+    "source changes",
+    "production data or service reads",
+    "labels or forecast studies",
+    "capability guard/limit monkeypatch",
+    "network/provider calls from harness"
+  ],
+  "positive_check": "N captures accounted, N-1 eligible, min(8,N-1) returned, deterministic same selection per size",
+  "negative_check": "257 captures refused by unchanged MAX_CAPTURES=256",
+  "measure": [
+    "build seconds",
+    "query and disclosure seconds",
+    "nearest-rank P50/P95 across5",
+    "RSS platform corrected",
+    "logical file bytes/count, source fixture and all retained artifacts separately"
+  ],
+  "limits": "300 seconds per process, stop remaining larger sizes after failure or timeout, report gaps; never extrapolate measured distributions or count synthetic cases as real evidence"
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "risk_radar.helper_companion_modules_native.v1",
+  "status": "COMPLETED",
+  "started_at_utc": "2026-10-18T09:36:05.813565+00:00",
+  "base_source_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "source_status": "WORKTREE_CANDIDATE",
+  "source_sha256": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "0da8a0d094b3b6f20bdedbdc427481a6425d709736621e7c5554a125cf78cc48",
+    "tests/conftest.py": "27f8e1b605eac16fad17a17b92878e2d561b8dd17d2481c6ecf5fb8024245f80",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "owned_paths": [
+    "scripts/deploy_code_to_vps.sh",
+    "tests/test_deploy_provenance.py",
+    "tests/test_datadog_vps_install.py",
+    "tests/test_forward_evaluation.py",
+    "tests/test_portfolio_archival.py"
+  ],
+  "custody_target_function_receipt": "/tmp/rr-companion-target-function-custody-20261018.json",
+  "custody_current_heads_receipt": "/tmp/rr-companion-custody-current-heads-20261018.json",
+  "semantic_review_sha256": "2e2b60b9423432fb42caf82e540045471c3b84ce5ab13a85c2790a20154c00c0",
+  "prior_owning59_receipt": "/tmp/rr-helper-companion59-native-receipt-20261018.json",
+  "prior_owning59_repeated": false,
+  "remaining_companion_functions_byte_identical": true,
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--basetemp=/tmp/rr-helper-companion-modules-20261018-pytest",
+    "--junitxml=/tmp/rr-helper-companion-modules-native-20261018.xml",
+    "tests/test_datadog_vps_install.py",
+    "tests/test_forward_evaluation.py",
+    "tests/test_portfolio_archival.py"
+  ],
+  "fuses": {
+    "BOT_TEST_LIVE_LLM": "0",
+    "MASTERMIND_BOT_RESPONSE_LOG_DISABLED": "1",
+    "MASTERMIND_RESEARCH_LLM": "0",
+    "AUTONOMOUS_FIRST_RUN": "0",
+    "CHINA_FIRST_RUN": "0",
+    "HK_FIRST_RUN": "0",
+    "ETF_FIRST_RUN": "0"
+  },
+  "production_deploy": false,
+  "held_worktree_mutation": false,
+  "test_effects": "Existing conftest isolates books, ledgers and provider paths; Datadog tests use render/check-only paths and a temporary systemd root; one archival test starts/stops a local in-memory scheduler, not a production service.",
+  "completed_at_utc": "2026-10-18T09:36:09.202687+00:00",
+  "elapsed_seconds": 3.389,
+  "exit_code": 1,
+  "log_path": "/tmp/rr-helper-companion-modules-native-20261018.log",
+  "log_bytes": 12568,
+  "log_sha256": "9c75322966d041fe1390804bbccea9fcba8d23925615c200fd52bb41a6d5a5cb",
+  "post_source_hashes_match": true,
+  "post_git_status": " M tests/test_datadog_vps_install.py\n M tests/test_deploy_provenance.py\n M tests/test_forward_evaluation.py\n M tests/test_portfolio_archival.py\n",
+  "junit_sha256": "c69ee28e247a0385c0102a25c569875d6f2aa50a547eff90436bf2cd436d28d3",
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "5",
+      "skipped": "0",
+      "tests": "54",
+      "time": "2.868",
+      "timestamp": "2026-10-18T02:36:06.119173-07:00",
+      "hostname": "m2studio"
+    }
+  ]
+}

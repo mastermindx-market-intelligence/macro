@@ -1,0 +1,112 @@
+{
+  "observed_at": "2026-10-20T03:46:16.286661+00:00",
+  "head": {
+    "args": [
+      "rev-parse",
+      "HEAD"
+    ],
+    "rc": 0,
+    "stdout": "ac08d5bd630d480a97fcbd0d9814946724250011\n",
+    "stderr": ""
+  },
+  "blobs": [
+    {
+      "args": [
+        "rev-parse",
+        "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md"
+      ],
+      "rc": 128,
+      "stdout": "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md' does not exist in 'ac08d5bd630d480a97fcbd0d9814946724250011'\n"
+    },
+    {
+      "args": [
+        "rev-parse",
+        "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md"
+      ],
+      "rc": 128,
+      "stdout": "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md' does not exist in 'ac08d5bd630d480a97fcbd0d9814946724250011'\n"
+    },
+    {
+      "args": [
+        "rev-parse",
+        "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central.md"
+      ],
+      "rc": 128,
+      "stdout": "ac08d5bd630d480a97fcbd0d9814946724250011:research/migration_packets/MP-20261018-sector-central.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central.md' does not exist in 'ac08d5bd630d480a97fcbd0d9814946724250011'\n"
+    },
+    {
+      "args": [
+        "rev-parse",
+        "b912fd97827cca925a7123aa2012e9765077f3f7:research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md"
+      ],
+      "rc": 0,
+      "stdout": "fa2b3f3941d3757f9a18545a616003e3aa8428b3\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "rev-parse",
+        "b912fd97827cca925a7123aa2012e9765077f3f7:research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md"
+      ],
+      "rc": 0,
+      "stdout": "19fa4a5f9758e22294357cd10dea7520b02aa1bc\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "rev-parse",
+        "b912fd97827cca925a7123aa2012e9765077f3f7:research/migration_packets/MP-20261018-sector-central.md"
+      ],
+      "rc": 0,
+      "stdout": "f23be13d107e0d05be2dd580f2439271da6cae88\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "rev-parse",
+        "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md"
+      ],
+      "rc": 128,
+      "stdout": "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md' does not exist in '247677efade31ea32d6b6ef5b701de61c47392cd'\n"
+    },
+    {
+      "args": [
+        "rev-parse",
+        "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md"
+      ],
+      "rc": 128,
+      "stdout": "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md' does not exist in '247677efade31ea32d6b6ef5b701de61c47392cd'\n"
+    },
+    {
+      "args": [
+        "rev-parse",
+        "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central.md"
+      ],
+      "rc": 128,
+      "stdout": "247677efade31ea32d6b6ef5b701de61c47392cd:research/migration_packets/MP-20261018-sector-central.md\n",
+      "stderr": "fatal: path 'research/migration_packets/MP-20261018-sector-central.md' does not exist in '247677efade31ea32d6b6ef5b701de61c47392cd'\n"
+    }
+  ],
+  "history": {
+    "args": [
+      "log",
+      "--max-count=8",
+      "--format=%H %cI %s",
+      "--name-status",
+      "247677efade31ea32d6b6ef5b701de61c47392cd",
+      "--",
+      "research/migration_packets/MP-20261018-sector-central-capability-crosswalk.md",
+      "research/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md",
+      "research/migration_packets/MP-20261018-sector-central.md"
+    ],
+    "rc": 0,
+    "stdout": "b91514a3a4301edff33ced2644e4cea7cdfef716 2026-10-19T01:21:41-07:00 [MO-BW6] B-F11-6: Research mode \u2014 answers grounded only in what we already publish, with the ceiling sentence and plain-word nulls (MO-PAID-031) (#7100)\n\nD\tresearch/migration_packets/MP-20261018-sector-central-capability-crosswalk.md\nD\tresearch/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md\nD\tresearch/migration_packets/MP-20261018-sector-central.md\n2cca92fb3f6ca34c5ab53f1e167a05a1375f6b37 2026-10-18T00:53:00-07:00 design(sector-central): preserve intelligence workflow and retire container accent rails (#9592)\n\nA\tresearch/migration_packets/MP-20261018-sector-central-capability-crosswalk.md\nA\tresearch/migration_packets/MP-20261018-sector-central-paper-and-acceptance.md\nA\tresearch/migration_packets/MP-20261018-sector-central.md\n",
+    "stderr": ""
+  },
+  "current_sector_paths": []
+}

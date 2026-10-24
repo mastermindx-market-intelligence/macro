@@ -88,6 +88,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import urllib.request
 import urllib.error
 import uuid as _uuid_mod
@@ -171,6 +172,10 @@ class MonitorResult:
     # its log line to a run that saw nothing at all (round-3 review MINOR-1:
     # MonitorPlan.stale_n was computed then silently discarded).
     stale_n: int = 0
+    # Optional Government Revenue dry-planning block, present ONLY when the
+    # the existing monitor consumes declared subscriptions; delivery stays dry.
+    # every existing construction and test byte-compatible.
+    govrev: dict | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -554,6 +559,469 @@ def _classify_outcome(plan: MonitorPlan) -> tuple[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# Government Revenue monitor declarations -- pure, bounded, DRY planning only.
+#
+# These hooks evaluate EXPLICITLY DECLARED government_revenue monitor
+# declarations carried by the EXISTING immutable thesis content
+# (thesis_versions.content.government_revenue_monitor, wire shape). They read
+# only what the caller passes in: no network, no scheduler, no public write,
+# no notification side effect, and no alert_outbox row of any new category is
+# ever enqueued from here. Returned intents are DRY PLANNING ONLY until the
+# root independently qualifies payload/privacy/category/installation; no
+# activation flag bypass and no drain enable exists on this path.
+# ---------------------------------------------------------------------------
+
+GOVREV_DECLARATION_SCHEMA = "government_revenue.monitor_declaration.v1"
+GOVREV_INTENT_CATEGORY = "government_revenue"
+GOVREV_STATUS_BASELINE = "baseline"
+GOVREV_STATUS_NEW_EVENT = "new_event"
+GOVREV_STATUS_CORRECTION = "correction"
+GOVREV_STATUS_NO_CHANGE = "no_change"
+GOVREV_STATUS_OUTAGE = "outage"
+GOVREV_STATUS_INVALID = "invalid_declaration"
+GOVREV_STATUSES = (
+    GOVREV_STATUS_BASELINE, GOVREV_STATUS_NEW_EVENT, GOVREV_STATUS_CORRECTION,
+    GOVREV_STATUS_NO_CHANGE, GOVREV_STATUS_OUTAGE, GOVREV_STATUS_INVALID,
+)
+GOVREV_MAX_INPUT_REFS = 16
+GOVREV_MAX_BASELINE_EVENTS = 100
+GOVREV_MAX_DECLARATION_BYTES = 24 * 1024
+_GOVREV_INPUT_REF_RE = re.compile(r"^(workspace-sha256:[0-9a-f]{64}|grw2-[0-9a-f]{24})$")
+_GOVREV_CANONICAL_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$")
+_GOVREV_TICKER_RE = re.compile(r"^[A-Z0-9]+([.-][A-Z0-9]+)*$")
+# Only these two statuses mint a notification intent; the intent identity is
+# deterministic (thesis + declaring immutable revision + event record/version/
+# knownAt) so replanning the same evidence never duplicates.
+_GOVREV_NOTIFIED_STATUSES = (GOVREV_STATUS_NEW_EVENT, GOVREV_STATUS_CORRECTION)
+_GOVREV_VERSION_MAX = 999_999_999
+
+
+def _govrev_canonical_utc(value: Any) -> str | None:
+    """Canonical UTC wall clock (millisecond precision, Z only), calendar-validated."""
+    if not isinstance(value, str) or not _GOVREV_CANONICAL_UTC_RE.fullmatch(value):
+        return None
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return None
+    return value
+
+
+def _govrev_bounded_line(value: Any, max_len: int) -> str | None:
+    """PostgreSQL btrim(text, ' ') semantics, bounded, control-character free."""
+    if not isinstance(value, str):
+        return None
+    trimmed = value.strip(" ")
+    if not trimmed or len(trimmed) > max_len:
+        return None
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in trimmed):
+        return None
+    return trimmed
+
+
+def _govrev_nullable_line(value: Any, max_len: int) -> str | None:
+    return None if value is None else _govrev_bounded_line(value, max_len)
+
+
+def parse_govrev_declaration(value: Any) -> tuple[dict | None, str | None]:
+    """Strictly validate the optional declaration carried by immutable thesis
+    content (wire shape, exactly as the owning SQL function stores it).
+
+    Returns (declaration, None) for a valid declaration, (None, "absent") when
+    the member is missing or explicitly null, and (None, <error_class>) for
+    anything malformed: unknown/private keys, free URLs or bodies, malformed
+    clocks, non-finite versions and over-limit payloads are all refused here.
+    """
+    if value is None:
+        return None, "absent"
+    if not isinstance(value, dict):
+        return None, "declaration_not_object"
+    if sorted(value.keys()) != sorted([
+        "schema", "enabled", "subject", "selection", "window", "knowledge_cutoff", "input_refs", "baseline_events",
+    ]):
+        return None, "declaration_keys"
+    if value["schema"] != GOVREV_DECLARATION_SCHEMA or not isinstance(value["enabled"], bool):
+        return None, "declaration_header"
+    subject = value["subject"]
+    if not isinstance(subject, dict) or subject.get("schema") != "mastermind.thesis-subject-ref/v1":
+        return None, "declaration_subject"
+    required_subject = {"schema", "kind", "owner", "key", "identity_state", "company_id", "display"}
+    if not required_subject.issubset(subject) or set(subject) - required_subject - {"listing"}:
+        return None, "declaration_subject"
+    kind, owner = subject.get("kind"), subject.get("owner")
+    if kind not in ("issuer", "theme") or owner not in ("data_os.security_master", "terminal.analysis_symbol", "macro.theme_registry"):
+        return None, "declaration_subject"
+    if (owner == "macro.theme_registry") != (kind == "theme"):
+        return None, "declaration_subject"
+    if _govrev_bounded_line(subject.get("key"), 256) != subject.get("key") or _govrev_bounded_line(subject.get("display"), 256) != subject.get("display"):
+        return None, "declaration_subject"
+    if subject.get("identity_state") not in ("resolved", "listing_scoped"):
+        return None, "declaration_subject"
+    if subject.get("company_id") is not None and _govrev_bounded_line(subject["company_id"],256) != subject["company_id"]:
+        return None, "declaration_subject"
+    listing = subject.get("listing")
+    if listing is not None:
+        if not isinstance(listing,dict) or set(listing) != {"symbol","mic","security_id"}:
+            return None,"declaration_subject"
+        if _govrev_bounded_line(listing.get("symbol"),24) != listing.get("symbol"):
+            return None,"declaration_subject"
+        for field,cap in (("mic",32),("security_id",256)):
+            if listing[field] is not None and _govrev_bounded_line(listing[field],cap) != listing[field]:
+                return None,"declaration_subject"
+    if owner == "terminal.analysis_symbol":
+        if subject["identity_state"] != "listing_scoped" or not listing or listing["symbol"] != subject["key"] or subject["key"] != subject["key"].upper():
+            return None,"declaration_subject"
+    elif subject["identity_state"] != "resolved":
+        return None,"declaration_subject"
+    if kind == "theme" and listing is not None:
+        return None,"declaration_subject"
+
+    selection = value["selection"]
+    if not isinstance(selection, dict) or sorted(selection.keys()) != sorted(
+        ["mode", "truth", "q", "agency", "ticker", "issuer"]
+    ):
+        return None, "selection_keys"
+    if selection["mode"] not in ("changes", "awards", "opportunities", "recompetes"):
+        return None, "selection_mode"
+    if selection["truth"] not in ("all", "official", "linked", "defense"):
+        return None, "selection_truth"
+    q = _govrev_nullable_line(selection["q"], 120)
+    agency = _govrev_nullable_line(selection["agency"], 100)
+    ticker = _govrev_nullable_line(selection["ticker"], 10)
+    if q is None and selection["q"] is not None:
+        return None, "selection_text"
+    if agency is None and selection["agency"] is not None:
+        return None, "selection_text"
+    if ticker is None and selection["ticker"] is not None:
+        return None, "selection_text"
+    if ticker is not None and not _GOVREV_TICKER_RE.match(ticker):
+        return None, "selection_ticker"
+    if selection["issuer"] not in (None, "LMT", "RTX", "NOC", "LHX"):
+        return None, "selection_issuer"
+
+    window = value["window"]
+    if not isinstance(window, dict) or sorted(window.keys()) != ["end", "start"]:
+        return None, "window_keys"
+    start = _govrev_canonical_utc(window.get("start"))
+    end = _govrev_canonical_utc(window.get("end"))
+    cutoff = _govrev_canonical_utc(value["knowledge_cutoff"])
+    if not start or not end or not cutoff or start > end:
+        return None, "window_clock"
+
+    refs = value["input_refs"]
+    if not isinstance(refs, list) or not 1 <= len(refs) <= GOVREV_MAX_INPUT_REFS:
+        return None, "input_refs"
+    if any(not isinstance(ref, str) or not _GOVREV_INPUT_REF_RE.fullmatch(ref) for ref in refs):
+        return None, "input_ref_shape"
+    if len(set(refs)) != len(refs):
+        return None, "input_ref_duplicate"
+
+    raw_events = value["baseline_events"]
+    if not isinstance(raw_events, list) or len(raw_events) > GOVREV_MAX_BASELINE_EVENTS:
+        return None, "baseline_events"
+    baseline: list[dict] = []
+    for item in raw_events:
+        if not isinstance(item, dict) or sorted(item.keys()) != sorted(
+            ["record_id", "event_id", "version", "known_at"]
+        ):
+            return None, "baseline_event_keys"
+        record_id = _govrev_bounded_line(item["record_id"], 128)
+        event_id = _govrev_bounded_line(item["event_id"], 128)
+        known_at = _govrev_canonical_utc(item["known_at"])
+        version = item["version"]
+        if not record_id or not event_id or not known_at or known_at > cutoff:
+            return None, "baseline_event_fields"
+        # Finite positive versions only: bools, floats, zero and oversized
+        # counters are all refused before any planning happens.
+        if isinstance(version, bool) or not isinstance(version, int) or not 1 <= version <= _GOVREV_VERSION_MAX:
+            return None, "baseline_event_version"
+        baseline.append({"recordId": record_id, "eventId": event_id, "version": version, "knownAt": known_at})
+    if len({(b["recordId"], b["eventId"]) for b in baseline}) != len(baseline):
+        return None, "baseline_event_duplicate"
+
+    if len(json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")) > GOVREV_MAX_DECLARATION_BYTES:
+        return None, "declaration_too_large"
+
+    return {
+        "schema": value["schema"],
+        "enabled": value["enabled"],
+        "subject": subject,
+        "selection": {
+            "mode": selection["mode"], "truth": selection["truth"],
+            "q": q, "agency": agency, "ticker": ticker, "issuer": selection["issuer"],
+        },
+        "window": {"start": start, "end": end},
+        "knowledgeCutoff": cutoff,
+        "inputRefs": list(refs),
+        "baselineEvents": baseline,
+    }, None
+
+
+GOVREV_MAX_OBSERVATIONS = 500
+GOVREV_MAX_WORKSPACE_BYTES = 8 * 1024 * 1024
+
+
+def _govrev_instant(value: Any) -> Any:
+    if not isinstance(value,str) or value.endswith("-00:00"): return None
+    try:
+        parsed=datetime.fromisoformat(value.replace("Z","+00:00"))
+        return parsed.astimezone(timezone.utc) if parsed.tzinfo is not None else None
+    except (ValueError,OverflowError): return None
+
+
+def _govrev_clock(value: Any) -> str | None:
+    """Canonical display clock; comparisons retain the source's full precision."""
+    instant=_govrev_instant(value)
+    return instant.isoformat(timespec="milliseconds").replace("+00:00","Z") if instant is not None else None
+
+
+def _govrev_content_ref(workspace: dict) -> str:
+    # Same content basis as scripts.build_government_revenue._workspace_bundle_id:
+    # assembly time is excluded; original producer bundle must match these bytes.
+    basis={k:v for k,v in workspace.items() if k not in {"bundle_id","generated_at"}}
+    digest=hashlib.sha256(json.dumps(basis,sort_keys=True,separators=(",",":"),ensure_ascii=False,allow_nan=False).encode()).hexdigest()
+    return "grw2-"+digest[:24]
+
+
+def govrev_workspace_readiness(workspace: Any) -> tuple[bool, str | None, str | None]:
+    if not isinstance(workspace,dict): return False,"workspace_unavailable",None
+    events=workspace.get("events")
+    if not isinstance(events,list) or len(events)>GOVREV_MAX_OBSERVATIONS:
+        return False,"workspace_population_unbounded",None
+    if any(not isinstance(event,dict) for event in events) or len({event.get("event_id") for event in events}) != len(events):
+        return False,"workspace_event_identity_conflict",None
+    try:
+        from engine.government_revenue.workspace import is_valid_procurement_workspace
+        if not is_valid_procurement_workspace(workspace): return False,"invalid_governed_workspace",None
+        if workspace.get("bundle_id") != _govrev_content_ref(workspace): return False,"workspace_identity_mismatch",None
+    except (ImportError,TypeError,ValueError,OverflowError): return False,"workspace_validation_unavailable",None
+    knowledge=_govrev_clock(workspace.get("known_at"))
+    if knowledge is None: return False,"workspace_knowledge_clock_missing",None
+    coverage=workspace.get("coverage") or {}
+    if workspace.get("next_cursor") or coverage.get("events_truncated") or len(events)<coverage.get("events_visible",len(events)):
+        return False,"incomplete_monitor_population",None
+    freshness=workspace.get("freshness") or {}
+    if freshness.get("status") != "ok": return False,"workspace_not_current",None
+    return True,None,knowledge
+
+
+def load_govrev_workspace() -> Any:
+    """Bounded read of the incumbent published artifact; no network or user fields."""
+    path=config.ROOT/"data/government_revenue/workspace.json"
+    try:
+        with path.open("rb") as handle: raw=handle.read(GOVREV_MAX_WORKSPACE_BYTES+1)
+        if len(raw)>GOVREV_MAX_WORKSPACE_BYTES: return None
+        return json.loads(raw)
+    except (OSError,ValueError,UnicodeError): return None
+
+
+def _govrev_matches(event: dict, selection: dict) -> bool:
+    kind=event.get("kind")
+    modes={"awards":"award_change","opportunities":"opportunity","recompetes":"recompete"}
+    if selection["mode"] in modes and kind!=modes[selection["mode"]]: return False
+    impacts=event.get("listed_company_impacts") or []
+    agency=event.get("agency") or {}
+    agency_name=agency.get("department_name") or agency.get("name") or ""
+    source_class=(event.get("evidence") or {}).get("source_class")
+    if selection["truth"]=="official" and (kind=="recompete" or source_class=="observed_source_revision"): return False
+    if selection["truth"]=="linked" and not any(i.get("ticker") for i in impacts if isinstance(i,dict)): return False
+    if selection["truth"]=="defense" and not re.search(r"defen[cs]e|military|air force|army|navy|space force", " ".join(str(agency.get(k) or "") for k in ("name","department_name","subagency_name")),re.I): return False
+    if selection["agency"] and agency_name!=selection["agency"]: return False
+    tickers={event.get("primary_ticker")} | {i.get("ticker") for i in impacts if isinstance(i,dict)}
+    for key in ("ticker","issuer"):
+        if selection[key] and selection[key] not in tickers: return False
+    if selection["q"]:
+        award=event.get("award_change") or {};opportunity=event.get("opportunity") or {};change=event.get("change") or {}
+        terms=[event.get(k) for k in ("event_id","record_id","title_original","title_zh","primary_ticker")]
+        terms += [agency_name,agency.get("subagency_name"),opportunity.get("notice_id"),opportunity.get("solicitation_number"),award.get("award_key"),award.get("generated_award_id"),award.get("piid"),award.get("recipient_name"),change.get("what_changed_en"),change.get("what_changed_zh")]
+        if selection["q"].casefold() not in " ".join(str(x or "") for x in terms).casefold(): return False
+    return True
+
+
+def _govrev_collect_events(declaration: dict, workspace: dict) -> tuple[list[dict], str | None]:
+    events=[];current_clock=_govrev_instant(workspace.get("known_at"));current_ref=workspace["bundle_id"]
+    for raw in workspace["events"]:
+        if not _govrev_matches(raw,declaration["selection"]): continue
+        change=raw.get("change") or {};known=_govrev_clock(change.get("known_at"))
+        instant=_govrev_instant(change.get("known_at"))
+        if instant is None or instant>current_clock: return [],"event_knowledge_clock_invalid"
+        if not _govrev_instant(declaration["window"]["start"])<=instant<=_govrev_instant(declaration["window"]["end"]): continue
+        events.append({"record_id":raw["record_id"],"event_id":raw["event_id"],"version":raw["version"],"known_at":known,"source_known_at":change["known_at"],"is_correction":change.get("is_correction") is True,"input_ref":current_ref})
+    return events,None
+
+
+def govrev_intent_identity(*, thesis_id: Any, thesis_version: Any, event: dict) -> str:
+    """Deterministic dedup identity for one planned intent: the thesis, the
+    immutable revision that declared the monitor, and the event's record/
+    version/knownAt. Never derived from the serving source bundle."""
+    parts = "|".join([
+        str(thesis_id), str(thesis_version), event["record_id"], event["event_id"],
+        str(event["version"]), _govrev_instant(event.get("source_known_at",event["known_at"])).isoformat(timespec="microseconds"),
+    ])
+    return "govrev:" + hashlib.sha256(parts.encode("utf-8")).hexdigest()[:32]
+
+
+def evaluate_govrev_monitors(
+    *, heads: list[dict], versions: dict[str, dict], workspace: Any, now_utc: Any = None
+) -> list[dict]:
+    """Evaluate every explicitly declared Government Revenue monitor for the
+    supplied active heads, strictly over their EXISTING immutable content.
+
+    Pure: no IO, no scheduler, no public write, no notification side effect,
+    and baselines are never mutated here. Returns one typed row per evaluated
+    monitor with exact inputRef/event/version evidence; intents are DRY
+    PLANNING ONLY (dry_run_only=True) and are never enqueued."""
+    ready, gate_reason, as_of = govrev_workspace_readiness(workspace)
+    current_clock=_govrev_clock(now_utc or _now_utc_iso())
+    if ready and (current_clock is None or _govrev_instant(workspace.get("known_at"))>_govrev_instant(now_utc or _now_utc_iso())):
+        ready=False;gate_reason="future_workspace_knowledge"
+    rows: list[dict] = []
+    for head in heads:
+        thesis_id = head.get("id")
+        user_id = head.get("user_id")
+        thesis_version = head.get("current_version")
+        row: dict = {
+            "thesis_id": thesis_id, "user_id": user_id, "thesis_version": thesis_version,
+            "status": None, "reason": None, "events": [], "planned_intents": [],
+        }
+        # Active owner/version agreement is validated BEFORE any planning: a
+        # head/version disagreement is an outage, never a plan.
+        version_row = versions.get(f"{thesis_id}:{thesis_version}")
+        if (head.get("lifecycle_state") != "active" or not isinstance(version_row, dict)
+            or version_row.get("thesis_id") != thesis_id or version_row.get("user_id") != user_id
+            or version_row.get("version") != thesis_version):
+            row["status"] = GOVREV_STATUS_OUTAGE
+            row["reason"] = "owner_or_version_mismatch"
+            rows.append(row)
+            continue
+        content = version_row.get("content")
+        declaration, error = parse_govrev_declaration(
+            content.get("government_revenue_monitor") if isinstance(content, dict) else None)
+        if error == "absent":
+            continue  # not a Government Revenue subscriber: not evaluated at all
+        if error is not None:
+            row["status"] = GOVREV_STATUS_INVALID
+            row["reason"] = error
+            rows.append(row)
+            continue
+        if declaration["enabled"] is not True:
+            continue  # explicitly disabled declaration: inert, not evaluated
+        if not ready:
+            row["status"] = GOVREV_STATUS_OUTAGE
+            row["reason"] = gate_reason
+            rows.append(row)
+            continue
+        if as_of < declaration["knowledgeCutoff"]:
+            row["status"] = GOVREV_STATUS_OUTAGE
+            row["reason"] = "stale_workspace"
+            rows.append(row)
+            continue
+        if head.get("subject_ref") != declaration["subject"]:
+            row["status"] = GOVREV_STATUS_INVALID; row["reason"]="subject_mismatch"; rows.append(row); continue
+        needed={"awards":"award_events","opportunities":"opportunities","recompetes":"recompetes"}.get(declaration["selection"]["mode"])
+        if needed and (workspace.get("freshness",{}).get(needed) or {}).get("status") != "ok":
+            row["status"]=GOVREV_STATUS_OUTAGE;row["reason"]="required_rail_unavailable";rows.append(row);continue
+        required=[needed] if needed else ["award_events","opportunities","recompetes"]
+        age_error=None
+        for rail in required:
+            health=(workspace.get("freshness") or {}).get(rail) or {}
+            if health.get("status") != "ok" or health.get("failure_state") is not None: age_error="required_rail_unavailable";break
+            sla=health.get("freshness_sla_minutes")
+            if sla is None and health.get("freshness_sla_days") is not None:
+                days=health["freshness_sla_days"]
+                if isinstance(days,bool) or not isinstance(days,(int,float)) or not 0<days<float("inf"):
+                    age_error="required_rail_freshness_unqualified";break
+                sla=days*1440
+            if sla is not None:
+                observed=_govrev_clock(health.get("observed_at") or health.get("last_successful_observed_at") or health.get("known_at"))
+                if isinstance(sla,bool) or not isinstance(sla,(int,float)) or not 0<sla<float("inf") or observed is None:
+                    age_error="required_rail_freshness_unqualified";break
+                age=(datetime.fromisoformat(current_clock.replace("Z","+00:00"))-datetime.fromisoformat(observed.replace("Z","+00:00"))).total_seconds()/60
+                if age<0 or age>sla: age_error="required_rail_stale";break
+        if age_error:
+            row["status"]=GOVREV_STATUS_OUTAGE;row["reason"]=age_error;rows.append(row);continue
+        events, collect_error = _govrev_collect_events(declaration, workspace)
+        if collect_error is not None:
+            row["status"] = GOVREV_STATUS_OUTAGE
+            row["reason"] = collect_error
+            rows.append(row)
+            continue
+
+        # First observation with an empty declared baseline establishes the
+        # baseline and emits NOTHING; later runs classify against it.
+        # The immutable cutoff identifies the subscribed baseline even when its
+        # matching population was empty. Later observations can still be new.
+        first_baseline = len(declaration["baselineEvents"]) == 0
+        baseline_index = {b["recordId"]: b for b in sorted(declaration["baselineEvents"],key=lambda x:(x["version"],x["knownAt"]))}
+        statuses: list[str] = []
+        for event in events:
+            prior = baseline_index.get(event["record_id"])
+            if prior is not None and event["version"] == prior["version"] and _govrev_instant(event["source_known_at"]) == _govrev_instant(prior["knownAt"]):
+                event_status, baseline_version = GOVREV_STATUS_NO_CHANGE, prior["version"]
+            elif _govrev_instant(event["source_known_at"]) <= _govrev_instant(declaration["knowledgeCutoff"]):
+                # Historical rows absent from a bounded baseline are not new since subscription.
+                event_status, baseline_version = (GOVREV_STATUS_BASELINE if first_baseline else GOVREV_STATUS_NO_CHANGE), None
+            elif prior is None:
+                event_status = GOVREV_STATUS_CORRECTION if event["is_correction"] else GOVREV_STATUS_NEW_EVENT
+                baseline_version=None
+            else:
+                # Correction is decided by the declared baseline record+version
+                # together with the event's own is_correction flag -- never by
+                # which source bundle happened to serve the observation.
+                baseline_version = prior["version"]
+                event_status = GOVREV_STATUS_CORRECTION if event["is_correction"] else GOVREV_STATUS_NEW_EVENT
+            statuses.append(event_status)
+            evidence = {
+                "record_id": event["record_id"], "event_id": event["event_id"],
+                "version": event["version"], "known_at": event["known_at"], "source_known_at":event["source_known_at"],
+                "input_ref": event["input_ref"], "is_correction": event["is_correction"],
+                "status": event_status, "baseline_version": baseline_version,
+                "intent_identity": None,
+            }
+            if event_status in _GOVREV_NOTIFIED_STATUSES:
+                evidence["intent_identity"] = govrev_intent_identity(
+                    thesis_id=thesis_id, thesis_version=thesis_version, event=event)
+                row["planned_intents"].append({
+                    "identity": evidence["intent_identity"],
+                    "category": GOVREV_INTENT_CATEGORY,
+                    "status": event_status,
+                    "thesis_id": thesis_id, "thesis_version": thesis_version,
+                    "record_id": event["record_id"], "event_id": event["event_id"],
+                    "version": event["version"], "known_at": event["known_at"], "source_known_at":event["source_known_at"],
+                    "input_ref": event["input_ref"], "is_correction": event["is_correction"],
+                    "dry_run_only": True,
+                })
+            row["events"].append(evidence)
+        if GOVREV_STATUS_CORRECTION in statuses:
+            row["status"] = GOVREV_STATUS_CORRECTION
+        elif GOVREV_STATUS_NEW_EVENT in statuses:
+            row["status"] = GOVREV_STATUS_NEW_EVENT
+        elif GOVREV_STATUS_BASELINE in statuses:
+            row["status"] = GOVREV_STATUS_BASELINE
+        else:
+            row["status"] = GOVREV_STATUS_BASELINE if first_baseline else GOVREV_STATUS_NO_CHANGE
+        rows.append(row)
+    return rows
+
+
+def govrev_planning_summary(rows: list[dict]) -> dict:
+    """Aggregate a dry-planning evaluation. enqueued_n is ALWAYS 0: nothing on
+    this path is written anywhere."""
+    counts = {status: 0 for status in GOVREV_STATUSES}
+    planned = 0
+    for row in rows:
+        counts[row["status"]] = counts.get(row["status"], 0) + 1
+        planned += len(row["planned_intents"])
+    return {
+        "evaluated_n": len(rows),
+        "planned_n": planned,
+        "enqueued_n": 0,
+        **counts,
+        "note": "dry planning only; no alert_outbox write and no new category enqueued",
+    }
+
+
+# ---------------------------------------------------------------------------
 # IO functions -- isolated, monkeypatched in tests
 # ---------------------------------------------------------------------------
 
@@ -670,10 +1138,13 @@ def _now_utc_iso() -> str:
 
 
 def run(
-    *, now_utc=None, limit: int = 500, dry_run: bool = True, evidence_base: str = EVIDENCE_BASE
+    *, now_utc=None, limit: int = 500, dry_run: bool = True, evidence_base: str = EVIDENCE_BASE,
+    govrev_workspace: Any = None,
 ) -> MonitorResult:
     if now_utc is None:
         now_utc = _now_utc_iso()
+    if isinstance(limit,bool) or not isinstance(limit,int) or not 1<=limit<=500:
+        raise ValueError("monitor limit must be an integer from 1 to 500")
     run_id = hashlib.sha256(f"{now_utc}|{limit}".encode("utf-8")).hexdigest()[:12]
 
     entries, latch_state, tripwire_error = load_tripwire_view()
@@ -727,6 +1198,25 @@ def run(
         f"{v.get('thesis_id')}:{v.get('version')}": v for v in (versions_read.rows or [])
     }
 
+    # The existing nightly entry point consumes the incumbent published workspace
+    # for explicit immutable declarations. Private names/filters are never published.
+    # This contribution plans only; notification payload/privacy admission remains owed.
+    govrev: dict | None = None
+    if govrev_workspace is not None or any(isinstance(v.get("content"),dict) and v["content"].get("government_revenue_monitor") is not None for v in versions.values()):
+        if govrev_workspace is None: govrev_workspace=load_govrev_workspace()
+        govrev_rows = evaluate_govrev_monitors(
+            heads=[
+                {"id": t.get("id"), "user_id": t.get("user_id"),
+                 "current_version": t.get("current_version"), "lifecycle_state": "active", "subject_ref":t.get("subject_ref")}
+                for t in theses
+            ],
+            versions=versions,
+            workspace=govrev_workspace,
+            now_utc=now_utc,
+        )
+        govrev = govrev_planning_summary(govrev_rows)
+        govrev["monitors"] = govrev_rows
+
     plan = plan_enqueue(
         theses=theses,
         versions=versions,
@@ -749,6 +1239,7 @@ def run(
             no_coverage_n=plan.no_coverage_n,
             unmappable_n=plan.unmappable_n,
             stale_n=plan.stale_n,
+            govrev=govrev,
             run_id=run_id,
         )
     existing_ids = {r["fire_event_id"] for r in (existing_read.rows or [])}
@@ -771,6 +1262,7 @@ def run(
             no_coverage_n=plan.no_coverage_n,
             unmappable_n=plan.unmappable_n,
             stale_n=plan.stale_n,
+            govrev=govrev,
             run_id=run_id,
             planned_n=len(to_send),
         )
@@ -790,6 +1282,7 @@ def run(
             no_coverage_n=plan.no_coverage_n,
             unmappable_n=plan.unmappable_n,
             stale_n=plan.stale_n,
+            govrev=govrev,
             run_id=run_id,
         )
 
@@ -805,6 +1298,7 @@ def run(
         no_coverage_n=plan.no_coverage_n,
         unmappable_n=plan.unmappable_n,
         stale_n=plan.stale_n,
+        govrev=govrev,
         run_id=run_id,
         planned_n=len(to_send),
     )

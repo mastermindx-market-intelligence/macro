@@ -11,15 +11,23 @@ from pathlib import Path
 from engine.neuralweb.market_memory_history import HistoricalExperienceError
 from engine.neuralweb.market_memory_history_archive import read_day
 from engine.neuralweb.market_memory_history_macro import read_macro_chronology,select_macro_date,_flags
+from engine.neuralweb.market_memory_history_filings import (read_filing_path, MAX_SOURCE_ROWS, SCHEMA as FILING_SCHEMA)
 
 SCHEMA='market_memory.daily_dossier.v1'
 
 
 def build_daily_dossier(archive: Path, market_date: str, *, expected_manifest_sha256: str,
                         macro_path: Path | None=None, expected_macro_sha256: str | None=None,
-                        reveal_outcomes: bool=False) -> dict:
+                        reveal_outcomes: bool=False, filings_path: Path | None=None,
+                        expected_filings_sha256: str | None=None, filings_offset: int=0) -> dict:
     if (macro_path is None) != (expected_macro_sha256 is None):
         raise HistoricalExperienceError('macro path and exact source digest must be supplied together')
+    if ((filings_path is None) != (expected_filings_sha256 is None)
+            or type(filings_offset) is not int or not 0 <= filings_offset <= MAX_SOURCE_ROWS
+            or (filings_path is None and filings_offset != 0)):
+        raise HistoricalExperienceError('explicit paired filing source and bounded offset required')
+    if filings_path is not None and Path(filings_path).name != 'earnings_8k_dates.parquet':
+        raise HistoricalExperienceError('exact earnings filing source filename required')
     market=read_day(archive,market_date,expected_manifest_sha256=expected_manifest_sha256,
                     reveal_outcomes=reveal_outcomes)
     macro=None
@@ -28,10 +36,13 @@ def build_daily_dossier(archive: Path, market_date: str, *, expected_manifest_sh
         macro=select_macro_date(chronology,market_date)
         macro['status']='OBSERVED' if macro['total_events'] else 'NO_OBSERVATION'
         macro['sha256']=expected_macro_sha256
-    return compose_daily_dossier(market, macro)
+    filings = None if filings_path is None else read_filing_path(filings_path, market_date,
+        expected_sha256=expected_filings_sha256, offset=filings_offset)
+    return compose_daily_dossier(market, macro, filings=filings)
 
 
-def compose_daily_dossier(market: dict, macro: dict | None=None) -> dict:
+def compose_daily_dossier(market: dict, macro: dict | None=None, filings: dict | None=None,
+                          transcripts: dict | None=None) -> dict:
     """Shared projection of already-verified market/macro packets; no source I/O."""
     if (type(market) is not dict or market.get('mode')!='RETROSPECTIVE_EXPLORATORY'
             or market.get('pit_backtest_eligible') is not False):
@@ -63,7 +74,25 @@ def compose_daily_dossier(market: dict, macro: dict | None=None) -> dict:
                 or macro.get('date_basis')!='fred_realtime_start_date_only'):
             raise HistoricalExperienceError('verified macro packet must match the exact requested date')
         _flags(macro)
-    return {'schema':SCHEMA,'market_date':market_date,'mode':market['mode'],
+    if filings is not None:
+        if (type(filings) is not dict or filings.get('schema') != FILING_SCHEMA
+                or filings.get('calendar_date') != market_date
+                or filings.get('mode') != 'RETROSPECTIVE_EXPLORATORY'
+                or any(filings.get(k) is not False for k in ('point_in_time_eligible',
+                    'historical_ticker_identity_proven','intraday_publication_time_verified',
+                    'calendar_completeness_proven'))):
+            raise HistoricalExperienceError('verified filing context must match date and qualification')
+    if transcripts is not None:
+        from engine.neuralweb.market_memory_history_transcripts import DATE_SCHEMA
+        if (type(transcripts) is not dict or transcripts.get('schema') != DATE_SCHEMA
+                or transcripts.get('calendar_date') != market_date
+                or transcripts.get('mode') != 'RETROSPECTIVE_EXPLORATORY'
+                or transcripts.get('body_columns_read') is not False
+                or any(transcripts.get(k) is not False for k in ('point_in_time_eligible',
+                    'publication_time_verified','historical_security_identity_proven',
+                    'calendar_completeness_proven'))):
+            raise HistoricalExperienceError('verified transcript date and qualification required')
+    result = {'schema':SCHEMA,'market_date':market_date,'mode':market['mode'],
         'retrospective_only':True,'outcomes_revealed':'outcomes' in market,
         'market':market,'macro':macro,'summary':summary,
         'coverage':{
@@ -78,3 +107,10 @@ def compose_daily_dossier(market: dict, macro: dict | None=None) -> dict:
             'actual_historical_mastermind_alerts':'NOT_INCLUDED',
             'strict_point_in_time_eligibility':'NOT_PROVEN',
         }}
+    if filings is not None:
+        result['filings'] = filings
+        result['coverage']['issuer_filings_and_earnings_context'] = 'SELECTED_ITEM_202_FILING_METADATA_ONLY'
+    if transcripts is not None:
+        result['transcripts'] = transcripts
+        result['coverage']['earnings_call_records'] = 'RETAINED_REPORTED_DATE_METADATA_ONLY'
+    return result

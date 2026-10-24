@@ -1,0 +1,5 @@
+2026-10-14T09:52:12.5874984Z FAILED tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof[hk-mobile-layout.json-hk-stock-v36.js] - AssertionError: assert '747b63f0dfb9...9a54b94d69762' == 'c21c26f8c75a...752137966812b'
+2026-10-14T09:52:12.5877529Z FAILED tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof[ca-mobile-layout-canada.json-canada-stock-v36.js] - AssertionError: assert '747b63f0dfb9...9a54b94d69762' == 'c21c26f8c75a...752137966812b'
+2026-10-14T09:52:12.5879917Z FAILED tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair - AssertionError: assert {'path': 'moc...a54b94d69762'} == {'path': 'moc...52137966812b'}
+2026-10-14T10:10:48.9586476Z CI_PACK_FAILED_JOBS=[]
+2026-10-14T10:11:07.6655679Z CI_PACK_FAILED_JOBS=["stock-dashboard-first-frame"]

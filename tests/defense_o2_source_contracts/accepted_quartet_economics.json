@@ -1,0 +1,623 @@
+{
+  "contract": "defense_economics.v1",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-13T03:10:00Z",
+  "source_bindings": {
+    "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results": {
+      "sha256": "42fbc33fdce1db6a47911bf120874f8190afc79bbf7daf97a79b598bd113aa9c",
+      "content_id": "dbdb52181b11a47904c898da",
+      "contract": "event_workspace.v1",
+      "owner_family": "company_intelligence",
+      "issuer_id": "cik:0000936468",
+      "security_id": "xnys:LMT",
+      "periods": [
+        "2026Q2"
+      ],
+      "observed_at": "2026-10-13T02:42:07Z",
+      "source_available_at": "2026-07-23T10:30:57Z",
+      "owner_admission_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results"
+    },
+    "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results": {
+      "sha256": "85b94f1579577f1a943eec313f56949568e4b4557930e6cf723dd1b4be502dbb",
+      "content_id": "dbdb52181b11a47904c898da",
+      "contract": "event_workspace.v1",
+      "owner_family": "company_intelligence",
+      "issuer_id": "cik:0000101829",
+      "security_id": "xnys:RTX",
+      "periods": [
+        "2026Q2"
+      ],
+      "observed_at": "2026-10-13T03:03:46Z",
+      "source_available_at": "2026-07-23T14:51:03Z",
+      "owner_admission_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results"
+    },
+    "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results": {
+      "sha256": "86ac0141a8d5cdeffccec072509c95c6ef85c63841ce6d2a13b2f274a4d4fee5",
+      "content_id": "dbdb52181b11a47904c898da",
+      "contract": "event_workspace.v1",
+      "owner_family": "company_intelligence",
+      "issuer_id": "cik:0001133421",
+      "security_id": "xnys:NOC",
+      "periods": [
+        "2026Q2"
+      ],
+      "observed_at": "2026-10-13T03:03:46Z",
+      "source_available_at": "2026-07-21T10:45:45Z",
+      "owner_admission_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results"
+    },
+    "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results": {
+      "sha256": "10d067ef1f5a64c936a0d49bef7294534cc696c33842c9666f65785597f6382c",
+      "content_id": "dbdb52181b11a47904c898da",
+      "contract": "event_workspace.v1",
+      "owner_family": "company_intelligence",
+      "issuer_id": "cik:0000202058",
+      "security_id": "xnys:LHX",
+      "periods": [
+        "2026Q2"
+      ],
+      "observed_at": "2026-10-13T02:42:08Z",
+      "source_available_at": "2026-07-29T20:08:15Z",
+      "owner_admission_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results"
+    }
+  },
+  "profiles": [
+    {
+      "issuer_id": "cik:0000936468",
+      "security_id": "xnys:LMT",
+      "ticker_display": "LMT",
+      "name": "Lockheed Martin",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results",
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "economics": {
+          "state": "supported",
+          "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results",
+          "observed_at": "2026-10-13T02:42:07Z",
+          "fiscal_period": "2026Q2",
+          "reason_code": "reported_segment_context",
+          "summary_en": "Missiles and Fire Control: 2026Q2 reported segment context.",
+          "summary_zh": "Missiles and Fire Control：2026Q2 报告分部资料。",
+          "evidence_refs": [
+            "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results"
+          ],
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "facts": [
+            {
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_sales",
+              "value": 4101.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_sales",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "e2d8a3e1144d9661306961013270f5dec43870909749c5d8f1cceb8c62b933b2",
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "span_id": "span_dd4ad4c92cda6212847e",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+              "value": 594.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "e2fa8f5b4364b8ef4dd1f26ab47105d908d06ec84d835e3d1aac404a63f1464a",
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "span_id": "span_c99d75618699fde79237",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0000936468_2026q2_results:defense_segment_margin",
+              "value": 14.5,
+              "unit": "percent",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Missiles and Fire Control:reported",
+              "fact_class": "reported_segment_margin",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000936468_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "6978e2340a8503590a60b7d19aae46c4ea02a62986b91628d06ae0e35b011e0d",
+                "document_id": "disclosure_document_a2a1a6468e04d0060c3be22d18fbe46f347bd14e4a29c3d46b815bc7ee3844fc",
+                "span_id": "span_6026c1639440b042e9ad",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm"
+              }
+            }
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "next_condition": "Confirm contract scope and margin evidence; watch the next company report; review observed market response separately.",
+      "invalidation": "Source revision, issuer/security mismatch, or a failed byte receipt invalidates the quoted fact.",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      },
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "next_condition_zh": "核实公司的合约范围及利润率证据，关注下一份公司报告，并独立查看已观察到的市场反应。",
+      "invalidation_zh": "来源修订、发行人或证券不匹配，或字节凭据核验失败，均使引用数值失效。"
+    },
+    {
+      "issuer_id": "cik:0000101829",
+      "security_id": "xnys:RTX",
+      "ticker_display": "RTX",
+      "name": "RTX",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results",
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "economics": {
+          "state": "supported",
+          "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results",
+          "observed_at": "2026-10-13T03:03:46Z",
+          "fiscal_period": "2026Q2",
+          "reason_code": "reported_segment_context",
+          "summary_en": "Raytheon: 2026Q2 reported segment context.",
+          "summary_zh": "Raytheon：2026Q2 报告分部资料。",
+          "evidence_refs": [
+            "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results"
+          ],
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "facts": [
+            {
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_sales",
+              "value": 8269.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_sales",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "d449b14ceec38a656c5c5e637d37ec474226cf3ee623778421669ca38b49f971",
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "span_id": "span_84315b0edcc7065793c4",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+              "value": 1042.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "6ef2f188e9d2ce34ed7857879668626c31da066a68f4eb7e2e724e1adfd2f588",
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "span_id": "span_c682a0d64f2e878d719f",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0000101829_2026q2_results:defense_segment_margin",
+              "value": 12.6,
+              "unit": "percent",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Raytheon:reported",
+              "fact_class": "reported_segment_margin",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000101829_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "bbff10a626398017146b3020ca8f2399cf1e5a56c08c1f3eeb907ad8f1291d57",
+                "document_id": "disclosure_document_4fee22951e298854f7bf1c68f5bd50164159d9bba755f7cfa0d425b518f55bba",
+                "span_id": "span_2a0f74e42b29ab4d81fe",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000010182926000025/a2026-07x238xkerexhibit99.htm"
+              }
+            }
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "next_condition": "Confirm contract scope and margin evidence; watch the next company report; review observed market response separately.",
+      "invalidation": "Source revision, issuer/security mismatch, or a failed byte receipt invalidates the quoted fact.",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      },
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "next_condition_zh": "核实公司的合约范围及利润率证据，关注下一份公司报告，并独立查看已观察到的市场反应。",
+      "invalidation_zh": "来源修订、发行人或证券不匹配，或字节凭据核验失败，均使引用数值失效。"
+    },
+    {
+      "issuer_id": "cik:0001133421",
+      "security_id": "xnys:NOC",
+      "ticker_display": "NOC",
+      "name": "Northrop Grumman",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results",
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "economics": {
+          "state": "supported",
+          "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results",
+          "observed_at": "2026-10-13T03:03:46Z",
+          "fiscal_period": "2026Q2",
+          "reason_code": "reported_segment_context",
+          "summary_en": "Defense Systems: 2026Q2 reported segment context.",
+          "summary_zh": "Defense Systems：2026Q2 报告分部资料。",
+          "evidence_refs": [
+            "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results"
+          ],
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted"
+          ],
+          "facts": [
+            {
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_sales",
+              "value": 2093.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_sales",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "c9add69f010ac1b0fa8bb613bc0a165221d36f062a86a1fd5b9b91cc00e239be",
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "span_id": "span_53fab29ae5bd1d8fca18",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_operating_profit",
+              "value": 156.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_operating_profit",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4",
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "span_id": "span_ddb128431560afd9173e",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0001133421_2026q2_results:defense_segment_margin",
+              "value": 7.5,
+              "unit": "percent",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Defense Systems:reported",
+              "fact_class": "reported_segment_margin",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0001133421_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "c4495da75095c64bf4e0587e45d7426f496ca4fc9fe72111715005361cfe0041",
+                "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+                "span_id": "span_df877e77d5d8020f8f70",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm"
+              }
+            }
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "next_condition": "Confirm contract scope and margin evidence; watch the next company report; review observed market response separately.",
+      "invalidation": "Source revision, issuer/security mismatch, or a failed byte receipt invalidates the quoted fact.",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      },
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "next_condition_zh": "核实公司的合约范围及利润率证据，关注下一份公司报告，并独立查看已观察到的市场反应。",
+      "invalidation_zh": "来源修订、发行人或证券不匹配，或字节凭据核验失败，均使引用数值失效。"
+    },
+    {
+      "issuer_id": "cik:0000202058",
+      "security_id": "xnys:LHX",
+      "ticker_display": "LHX",
+      "name": "L3Harris Technologies",
+      "identity_mode": "current",
+      "identity_owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results",
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "economics": {
+          "state": "partial",
+          "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results",
+          "observed_at": "2026-10-13T02:42:08Z",
+          "fiscal_period": "2026Q2",
+          "reason_code": "reported_segment_context",
+          "summary_en": "Missile Solutions: 2026Q2 reported segment context.",
+          "summary_zh": "Missile Solutions：2026Q2 报告分部资料。",
+          "evidence_refs": [
+            "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results"
+          ],
+          "limitations": [
+            "segment_not_program_workshare",
+            "shareholder_capture_not_asserted",
+            "historical_pit_not_admitted",
+            "reported_operating_profit_unavailable"
+          ],
+          "facts": [
+            {
+              "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_sales",
+              "value": 1054.0,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Missile Solutions:reported",
+              "fact_class": "reported_segment_sales",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "b7fd883b761544ca41ab950f6a9c9e63e8a7732862f3bf6f7a1d173d0a1bde6f",
+                "document_id": "disclosure_document_3df4c7a26f2785d867ef9db04de63564d0bc060892ac123414fa43b5417b9125",
+                "span_id": "span_ac7907fdcdc6c30fe217",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000054/exhibit991q2cy26earnings.htm"
+              }
+            },
+            {
+              "fact_id": "evt_cik0000202058_2026q2_results:defense_segment_margin",
+              "value": 12.3,
+              "unit": "percent",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment:Missile Solutions:reported",
+              "fact_class": "reported_segment_margin",
+              "owner_ref": "event_workspace:dbdb52181b11a47904c898da:evt_cik0000202058_2026q2_results",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "cc4b3eb82f5eb96cbf5b959d19ff477508b32c4b6bc1e21432b48caa20d0270b",
+                "document_id": "disclosure_document_3df4c7a26f2785d867ef9db04de63564d0bc060892ac123414fa43b5417b9125",
+                "span_id": "span_b9f5d1d8adaaa3d3e803",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/202058/000020205826000054/exhibit991q2cy26earnings.htm"
+              }
+            }
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "所需证据暂不可用。",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": "Segment sales and margin do not establish program workshare or shareholder capture.",
+      "next_condition": "Confirm contract scope and margin evidence; watch the next company report; review observed market response separately.",
+      "invalidation": "Source revision, issuer/security mismatch, or a failed byte receipt invalidates the quoted fact.",
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      },
+      "contrary_case_zh": "分部销售额及利润率不能证明项目份额或股东获益。",
+      "next_condition_zh": "核实公司的合约范围及利润率证据，关注下一份公司报告，并独立查看已观察到的市场反应。",
+      "invalidation_zh": "来源修订、发行人或证券不匹配，或字节凭据核验失败，均使引用数值失效。"
+    }
+  ],
+  "authority": {
+    "context_only": true,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_escalate": false
+  },
+  "content_id": "dfe1-07b9016f6b41f792dfece23e"
+}

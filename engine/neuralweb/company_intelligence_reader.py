@@ -13,6 +13,9 @@ import ipaddress
 import json
 import os
 import socket
+import signal
+from contextlib import contextmanager
+from contextvars import ContextVar
 import threading
 import time
 import urllib.parse
@@ -58,6 +61,48 @@ _MAX_CONTEXT_CACHE_ENTRIES = 256
 
 class CompanyIntelligenceReadError(RuntimeError):
     """The public source is unavailable or fails its immutable-contract checks."""
+
+
+# Optional producer-only budget. Context-local; never changes other readers or
+# enlarges the incumbent per-request timeout. No thread/process is launched.
+_read_deadline = ContextVar("company_intelligence_read_deadline", default=None)
+
+
+class CompanyIntelligenceReadBudgetExceeded(CompanyIntelligenceReadError):
+    """Optional consumer exhausted its own read budget."""
+
+
+def check_read_budget() -> float:
+    deadline = _read_deadline.get()
+    remaining = _REQUEST_TIMEOUT_SECONDS if deadline is None else deadline - time.monotonic()
+    if remaining <= 0:
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget exhausted")
+    return min(_REQUEST_TIMEOUT_SECONDS, remaining)
+
+
+@contextmanager
+def bounded_read_budget(seconds: float):
+    # This optional ordinary-writer scope is synchronous/main-thread only.
+    # A requests timeout does NOT bound DNS, headers or a trickling response.
+    # Never replace another consumer's active process timer or launch a worker.
+    if (not 0 < seconds <= 16 or threading.current_thread() is not threading.main_thread()
+            or signal.getitimer(signal.ITIMER_REAL) != (0.0, 0.0)):
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget unavailable")
+    previous = _read_deadline.get()
+    deadline = time.monotonic() + seconds
+    token = _read_deadline.set(min(previous, deadline) if previous is not None else deadline)
+    old_handler = signal.getsignal(signal.SIGALRM)
+    def expired(_signum, _frame):
+        raise CompanyIntelligenceReadBudgetExceeded("optional owner read budget exhausted")
+    try:
+        signal.signal(signal.SIGALRM, expired)
+        signal.setitimer(signal.ITIMER_REAL, seconds)
+        check_read_budget()
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+        _read_deadline.reset(token)
 
 
 _cache_lock = threading.Lock()
@@ -191,13 +236,14 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
                 "Accept": "application/json",
                 "User-Agent": "MastermindCompanyIntelligence/1.0",
             },
-            timeout=_REQUEST_TIMEOUT_SECONDS,
+            timeout=check_read_budget(),
             stream=True,
             # A redirected R2 object could switch this server-side fetch to a
             # private endpoint.  Immutable objects never need a redirect.
             allow_redirects=False,
         )
         with response:
+            check_read_budget()
             response_url = urllib.parse.urlsplit(str(getattr(response, "url", url) or url))
             if (
                 getattr(response, "is_redirect", False)
@@ -218,6 +264,7 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
             chunks: list[bytes] = []
             used = 0
             for chunk in response.iter_content(chunk_size=65536):
+                check_read_budget()
                 if not chunk:
                     continue
                 used += len(chunk)
@@ -229,6 +276,7 @@ def _fetch_bytes(url: str, *, limit: int, allow_404: bool = False) -> bytes | No
         raise
     except requests.RequestException as exc:
         raise CompanyIntelligenceReadError("Company Intelligence public source unavailable") from exc
+    check_read_budget()
     if len(body) > limit:
         raise CompanyIntelligenceReadError("public object exceeds safe size bound")
     return body

@@ -150,7 +150,9 @@ def _load_ledger(path: Path) -> "object":
     import pandas as pd  # noqa: PLC0415
     if not path.exists():
         raise FileNotFoundError(f"ledger not found: {path}")
-    return pd.read_parquet(path)
+    # As in the accrual verifier (SKEWFLAKE), finish Arrow read work before
+    # interpreter shutdown so the decided CLI exit code survives teardown.
+    return pd.read_parquet(path, use_threads=False)
 
 
 def _select_legacy_rows(ledger: "object") -> "object":

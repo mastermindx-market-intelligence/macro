@@ -1,0 +1,8 @@
+utc_time	method	url	http_status	bytes	note
+2026-10-19T05:38:27Z	GET	https://www.mastermind-x.com/api/company-intelligence/private/company-context	401	117	F04 private company context; 401 = mounted + auth-gated (anonymous status only)
+2026-10-19T05:38:27Z	GET	https://www.mastermind-x.com/api/company-intelligence/private/issuers/US-NVDA/product-integrations	401	117	F04 private issuer product integrations; 401 = mounted + auth-gated
+2026-10-19T05:38:28Z	GET	https://www.mastermind-x.com/api/company-intelligence/private/issuers/US-NVDA/economic-context	404	22	F04/E20 economic context; 404 = not mounted on the production API (arrives with #9423, unmerged)
+2026-10-19T05:38:28Z	GET	https://www.mastermind-x.com/api/health	200	101	API liveness only; not a content or install-SHA claim
+2026-10-19T05:38:29Z	GET	https://www.mastermind-x.com/neuralwebdata/selection_cohort/us.json	401	76	W3C US cohort projection; 401 body {locked:true,reason:authentication_required} - content NOT OBSERVED
+2026-10-19T05:38:30Z	GET	https://www.mastermind-x.com/neuralwebdata/selection_cohort/cn.json	401	76	W3C CN cohort projection; 401 body {locked:true,reason:authentication_required} - content NOT OBSERVED
+2026-10-19T05:38:30Z	GET	https://app.mastermind-x.com/options?tab=prophet	200	31493	Terminal shell HTML (anonymous); status only, NOT a render observation

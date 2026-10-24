@@ -983,3 +983,38 @@ def test_hint_chip_copy_matches_the_runtime_label_map():
     assert roster_tag is not None, "roster <ul> tag missing"
     assert f'data-aria-en="{en}"' in roster_tag.group(0)
     assert f'data-aria-zh="{zh}"' in roster_tag.group(0)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W20-A Spec 1 — the not_connected notice keeps the two committed lists shown.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _w20a_render_notice_body() -> str:
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    start = js.index("function renderNotice(")
+    end = js.index("\n  function ", start + 1)
+    return js[start:end]
+
+
+def _w20a_section_slice(html: str, section_id: str) -> str:
+    start = html.index(f'id="{section_id}"')
+    nxt = html.find("<section", start)
+    return html[start:nxt if nxt > -1 else len(html)]
+
+
+def test_w20a_not_connected_notice_keeps_the_committed_lists() -> None:
+    body = _w20a_render_notice_body()
+    for token in ("not_connected", "rerating-map", "company-exposure",
+                  "fi-falsifiers", "fi-hint-roster"):
+        assert token in body, f"renderNotice must mention {token}"
+
+
+def test_w20a_committed_lists_live_in_the_kept_sections() -> None:
+    html = _render()
+    assert 'class="fi-falsifiers"' in _w20a_section_slice(html, "rerating-map")
+    assert 'class="fi-hint-roster"' in _w20a_section_slice(html, "company-exposure")
+    for other in ("what-changed", "system-map", "subtheme-atlas",
+                  "macro-matrix", "constraint-map"):
+        slice_html = _w20a_section_slice(html, other)
+        assert 'class="fi-falsifiers"' not in slice_html
+        assert 'class="fi-hint-roster"' not in slice_html

@@ -321,6 +321,8 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 .cs-latest-grid > div + div { padding-left: 12px; border-left: 1px solid var(--cs-line); }
 .cs-latest-grid span { display: block; color: var(--cs-muted); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .cs-latest-grid strong { display: block; margin-top: 4px; overflow: hidden; font-family: var(--font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.cs-covenant-room .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.cs-covenant-room .cs-latest-grid strong > span { color: inherit; font: inherit; letter-spacing: normal; text-transform: none; }
 
 .cs-change-list { display: grid; gap: 7px; }
 .cs-change { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; padding: 8px 0; border-top: 1px solid var(--cs-line); gap: 9px; }
@@ -416,4 +418,33 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .cs-evidence-drawer { transition: none; }
   .cs-loading-dot { animation: none; }
+}
+
+/* Agreement facts share the desk's dark raised panel and light research card. */
+.cs-ma-agreement .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; font-size: 13px; }
+.cs-ma-agreement details { margin-top: var(--sp-3,12px); padding-top: var(--sp-2,8px); border-top: 1px solid var(--cs-line); }
+.cs-ma-agreement summary { min-height: 36px; cursor: pointer; }
+.cs-ma-agreement p { line-height: 1.6; overflow-wrap: anywhere; }
+/* Filed issue terms reuse the desk's dark material and light hairline system. */
+.cs-bond-terms { margin-top: 14px; }
+.cs-bond-terms > p { max-width: 96ch; color: var(--cs-muted); }
+.cs-bond-terms h2 { margin: 0; font-size: 20px; line-height: 1.3; }
+.cs-bond-terms h3 { margin: 20px 0 9px; font-size: 14px; }
+.cs-bond-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.cs-bond-issuer { min-width: 0; padding: 16px; border: 1px solid var(--cs-line); border-radius: var(--r-card, 12px); background: var(--cs-surface); }
+.cs-bond-issuer h4 { margin: 0; font-size: 16px; }
+.cs-bond-issuer p { color: var(--cs-muted); font-size: 11px; overflow-wrap: anywhere; }
+.cs-bond-issuer .cs-latest-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 0; }
+.cs-bond-issuer .cs-latest-grid > div { padding: 9px 0 0; border: 0; }
+.cs-bond-issuer .cs-latest-grid strong { overflow: visible; white-space: normal; }
+.cs-bond-issuer summary { padding: 15px 0 3px; color: var(--cs-cyan); cursor: pointer; }
+.cs-bond-issuer dl { margin: 10px 0; }
+.cs-bond-issuer dl > div { display: grid; grid-template-columns: 1fr 2fr; padding: 6px 0; border-bottom: 1px solid var(--cs-line); gap: 10px; }
+.cs-bond-issuer dt { color: var(--cs-muted); }
+.cs-bond-issuer dd { margin: 0; overflow-wrap: anywhere; }
+.cs-bond-scope { font-size: 11px; }
+@media (max-width: 700px) {
+  .cs-bond-pair { grid-template-columns: 1fr; gap: 10px; }
+  .cs-bond-issuer { padding: 13px; }
+  .cs-bond-issuer dl > div { grid-template-columns: 1fr; gap: 3px; }
 }

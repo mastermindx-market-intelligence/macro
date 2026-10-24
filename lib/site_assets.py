@@ -124,7 +124,12 @@ def emit_theme_js(src: Path) -> str:
     overlay_src = src.with_name("terminal_overlay.js")
     if overlay_src.exists():
         text = f"{text.rstrip()}\n\n{overlay_src.read_text().lstrip()}"
-    return text
+    # One transformation of the final bundle preserves bake/overlay ordering.
+    # Import only on emission: unrelated consumers can import this helper without
+    # loading the build dependency. A missing dependency must fail the build.
+    from rjsmin import jsmin
+
+    return jsmin(text, keep_bang_comments=True)
 
 
 def copy_asset(asset: str, src: Path, dst_dir: Path) -> None:

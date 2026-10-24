@@ -1445,3 +1445,162 @@ def test_two_users_two_policies_share_no_answer_object(router_app, monkeypatch) 
     assert bodies["paid-user-a"] != bodies["paid-user-b"]
     assert repeat.status_code == 200
     assert repeat.content == bodies["paid-user-a"]
+
+
+# ---------------------------------------------------------------------------
+# A22 (Z1 test-gap closure): denied and failed paths log nothing private.
+#
+# The row requires "no secret/source body in error or logging." The existing
+# tests pin the response side (status, private headers, no leak in the body);
+# this test pins the LOGGING side: over every denied/failed path, at DEBUG
+# level, neither the API's own logger (app/forensics.py:85) nor the root
+# logger may carry a forbidden fragment, the request body, or a provider
+# class name.
+# ---------------------------------------------------------------------------
+
+_FORBIDDEN_LOG_FRAGMENTS = (
+    "/Users/",
+    "/opt/",
+    "traceback",
+    "Traceback",
+    "R2",
+    "paid-user",
+    "secret internal path",
+    "/data/private",
+)
+
+
+def _record_text(record) -> str:
+    """Every textual surface one record can leak through."""
+    import traceback as traceback_mod
+
+    parts = [str(record.msg), record.getMessage()]
+    if record.args:
+        parts.append(" ".join(repr(arg) for arg in record.args))
+    if record.exc_info:
+        parts.append(record.exc_text or "".join(traceback_mod.format_exception(*record.exc_info)))
+    return "\n".join(parts)
+
+
+def _assert_nothing_private_logged(caplog, *, body: bytes, provider_class: str) -> None:
+    records = [
+        record
+        for record in caplog.records
+        if record.name == "fundamental_forensics.api" or record.name == "root"
+    ]
+    forbidden = list(_FORBIDDEN_LOG_FRAGMENTS) + [body.decode("utf-8"), provider_class]
+    for record in records:
+        text = _record_text(record)
+        for fragment in forbidden:
+            assert fragment not in text, (
+                f"logger {record.name!r} at {record.levelname} leaked {fragment!r}:\n{text[:400]}"
+            )
+
+
+def test_denied_and_failed_paths_log_nothing_private(router_app, monkeypatch, caplog) -> None:
+    import logging
+
+    caplog.set_level(logging.DEBUG)
+
+    # Path 1: anonymous 401 (the :164 shape) — deny before the provider opens.
+    resolve_calls: list = []
+    monkeypatch.setattr(
+        forensics_api,
+        "_financial_query_provider",
+        lambda: _fip1_provider(resolve_calls),
+    )
+    body = _make_request()
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        caplog.clear()
+        response = client.post(
+            _QUERY_PATH, content=body, headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 401
+    assert resolve_calls == []
+    _assert_nothing_private_logged(caplog, body=body, provider_class="_Provider")
+
+    # Path 2: free user 403 (the :181 shape) — deny before entitlement clears.
+    from fastapi import HTTPException
+    import app.main as app_main
+    import app.paywall as paywall_mod
+
+    monkeypatch.setattr(app_main, "require_user", lambda auth: {"id": "free-user", "tier": "free"})
+    monkeypatch.setattr(
+        paywall_mod,
+        "enforce_site_full",
+        lambda user, always=False: (_ for _ in ()).throw(
+            HTTPException(status_code=403, detail="site_full required")
+        ),
+    )
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        caplog.clear()
+        response = client.post(
+            _QUERY_PATH, content=body, headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 403
+    assert resolve_calls == []
+    _assert_nothing_private_logged(caplog, body=body, provider_class="_Provider")
+
+    # Path 3: misbound provider 503 (the :562 shape).
+    fip1 = fip1_fixture_dataset(ROOT)
+
+    class _Misbound:
+        def resolve(self, entity_id: str) -> FinancialQueryDataset:
+            return fip1
+
+    monkeypatch.setattr(forensics_api, "_financial_query_provider", lambda: _Misbound())
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
+        "id": "paid-user"
+    }
+    misbound_body = _make_request(entity_id="mmx.issuer.someoneelse")
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        caplog.clear()
+        response = client.post(
+            _QUERY_PATH, content=misbound_body, headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 503
+    _assert_nothing_private_logged(caplog, body=misbound_body, provider_class="_Misbound")
+
+    # Path 4: generic provider exception 503 (the :726 shape) — the provider
+    # raises a RuntimeError whose message IS a secret; neither the message nor
+    # its traceback may reach a log record.
+    class _BrokenProvider:
+        def resolve(self, entity_id: str) -> FinancialQueryDataset:
+            raise RuntimeError("secret internal path /data/private/stuff")
+
+    monkeypatch.setattr(forensics_api, "_financial_query_provider", lambda: _BrokenProvider())
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        caplog.clear()
+        response = client.post(
+            _QUERY_PATH, content=body, headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 503
+    _assert_nothing_private_logged(caplog, body=body, provider_class="_BrokenProvider")
+
+    # Path 5: unlawful delivery 503 (the :741 shape) — a dataset whose delivery
+    # block names its source provenance must not surface it in a log either.
+    base = fip1_fixture_dataset(ROOT)
+    unlawful = FinancialQueryDataset(
+        binding=base.binding,
+        ledger=base.ledger,
+        filing_metadata=base.filing_metadata,
+        registry=base.registry,
+        delivery={
+            "kind": "committed_golden_fixture",
+            "attested": True,
+            "production_issuer_service": False,
+        },
+    )
+
+    class _Unlawful:
+        def resolve(self, entity_id: str) -> FinancialQueryDataset:
+            return unlawful
+
+    monkeypatch.setattr(forensics_api, "_financial_query_provider", lambda: _Unlawful())
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        caplog.clear()
+        response = client.post(
+            _QUERY_PATH, content=body, headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 503
+    _assert_nothing_private_logged(caplog, body=body, provider_class="_Unlawful")

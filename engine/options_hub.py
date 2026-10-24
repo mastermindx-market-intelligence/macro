@@ -70,6 +70,21 @@ def _f(x, n: int = 2):
     return round(v, n) if np.isfinite(v) else None
 
 
+def _legacy_option_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    """Preserve the pre-clock EOD row population for legacy analytics.
+
+    Native raw clocks are additional provenance, not additional contracts. The
+    qualified projection consumes the original frame before this compatibility
+    view and refuses ambiguous repeated contract keys. Legacy analytics retain
+    the normalizer's previous full-row equality, without selecting a latest
+    observation or interpreting an unknown timezone.
+    """
+    clocks = [c for c in ("timestamp", "underlying_timestamp", "_theta_acquisition") if c in frame.columns]
+    if not clocks:
+        return frame.copy()
+    return frame.drop(columns=clocks).drop_duplicates().copy()
+
+
 def _today_str() -> str:
     return str(_date.today())
 
@@ -150,7 +165,7 @@ def compute_vol(
         return _empty_vol(root, asof)
 
     # ── normalise dates ──────────────────────────────────────────────────────
-    df = greeks_df.copy()
+    df = _legacy_option_rows(greeks_df)
     df["date"] = pd.to_datetime(df["date"]).dt.date.astype(str)
 
     asof_df = df[df["date"] == asof]
@@ -412,6 +427,9 @@ def compute_gex(
     oi_prev_df: pd.DataFrame,
     asof: str,
     root: str,
+    *,
+    exposure_context: dict | None = None,
+    exposure_inputs: tuple[pd.DataFrame, pd.DataFrame] | None = None,
 ) -> dict:
     """Build the options_hub/gex/{root} payload.
 
@@ -429,31 +447,50 @@ def compute_gex(
                     expiration, strike, right, open_interest.
         asof:       'YYYY-MM-DD' reference date.
         root:       Option root symbol.
+        exposure_context: Optional existing-owner exact terms/source receipt;
+                    see docs/OPTIONS_EXPOSURE_PROJECTION.md. Missing receipts
+                    remain explicit unavailable qualification.
 
     Returns a dict matching the options_hub.gex/v1 schema.
     """
     from engine.greeks import bs_greeks as _bs_greeks  # local import for hermetic tests
+    from engine.options_exposure_projection import build_exposure_projection
+
+    # Capture membership before the historical OI/IV filters. No inference from
+    # legacy marginals; the projection retains its own explicit qualification.
+    projection_greeks, projection_oi = greeks_df, oi_prev_df
+    if exposure_inputs is not None:
+        if (not exposure_context or exposure_context.get("kind") != "dated_provider_approximation"
+                or not exposure_context.get("contract_identity") or not isinstance(exposure_inputs, tuple)
+                or len(exposure_inputs) != 2 or not all(isinstance(f, pd.DataFrame) for f in exposure_inputs)):
+            raise ValueError("Separate projection inputs require a scoped dated identity")
+        projection_greeks, projection_oi = exposure_inputs
+    projection = build_exposure_projection(projection_greeks, projection_oi, asof, root,
+                                          context=exposure_context)
+
+    def empty_with_projection():
+        return {**_empty_gex(root, asof), "exposure_projection": projection}
 
     _MIN_IV = 0.005
 
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
-    g = greeks_df.copy()
+    g = _legacy_option_rows(greeks_df)
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── spot ────────────────────────────────────────────────────────────────
     spot_vals = g["underlying_price"].dropna()
     spot = float(spot_vals.median()) if not spot_vals.empty else float("nan")
     if not np.isfinite(spot) or spot <= 0:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── merge OI[t-1] ────────────────────────────────────────────────────────
     if oi_prev_df is not None and not oi_prev_df.empty:
-        oi = oi_prev_df[["expiration", "strike", "right", "open_interest"]].copy()
+        oi = _legacy_option_rows(oi_prev_df)[["expiration", "strike", "right", "open_interest"]].copy()
         oi["expiration"] = pd.to_datetime(oi["expiration"]).dt.date.astype(str)
         oi["strike"] = oi["strike"].astype(float)
         g["expiration"] = pd.to_datetime(g["expiration"]).dt.date.astype(str)
@@ -467,7 +504,7 @@ def compute_gex(
     # Only use contracts with positive OI[t-1]
     g = g[g["oi_prev"] > 0].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── prepare fields ────────────────────────────────────────────────────────
     g["is_call"] = g["right"].str.upper() == "C"
@@ -494,7 +531,7 @@ def compute_gex(
     _iv = g["iv"].to_numpy(float)
     g = g[~np.isfinite(_iv) | (_iv >= MIN_QUOTED_IV)].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── gamma (use feed value when present, else BS fallback) ─────────────────
     # This mirrors engine/gex_model._dollar_gamma logic.
@@ -662,6 +699,7 @@ def compute_gex(
 
     return {
         "schema": "options_hub.gex/v1",
+        "exposure_projection": projection,
         "asof": asof,
         "root": root,
         "spot_ref": _f(spot),

@@ -142,19 +142,25 @@ decisions:
   - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
 next_action: >
-  Wave 3 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-14-fif-e2e-wave3):
-  C0-c #9047, D1-ext C #9056, D1X B'2 #9095, X1-p #9052, X2-n #9069, X2-s
-  #9068, CA-RK2 #9192 and the A0 chain #9116/#9203/#9214/#9221 (typed
-  per-issuer exclusion). A five-issuer publish now exits 0 but only AAPL
-  reconstructs; GOOGL/SNOW (ragged grid), BAC (retained parent-company role,
-  table-of-contents capture) and CAT (10-K year-row header, title phrase) are
-  typed exclusions. Next: #9246 Lane A hand merge → Lane B P5B (R1–R3) →
-  Lane C CAT R4/R5 → BAC retained-role re-mint ruling → five-issuer publish
-  repro → A0 gate (VPS FIF_FINANCIAL_DATASET_MODE=production flip held for
-  the Chairman or a Sol-delegated root; A45 entitled-browser receipts;
-  schedule-born production proof) → G1–G4 → A1 → C2/E2/K1–K4/Q1/Q2/V0/V1 →
-  coverage tiers (250-deep, then 1,000-core) → independent acceptance.
-  Merge by hand with --match-head-commit on concluded green; never arm.
+  Z0 closure wave (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-20-fif-z0-closure-wave).
+  Production serves fif_financial_dataset_mode=production (A0 flipped; schedule run
+  39389080686 is the natural-cycle witness). Landed 2026-10-19/20: train #9773, Z0
+  #9792, A1 #9759, PK-FW #9843, PK01 #9845, clock #9761, repair #9853, z0gaps #9858,
+  A52 #9859, A18 #9863, A14 #9870, A20 #9869, step 5 #9794, twelve-pack fold #9872,
+  A21 #9871 (c304c027c26b75d0f954a0699ddc56e0a3ec3e61), A43 #9879 (67638926282eb17c6c5a5ab631fce06527004914), step 6 #9799 (44c244f05debb1e468b5b635b5234d98b36fb7c3), doctrine
+  #9882 (69288ad8d58ecb17cc39d016adef62746e5d8d40), cov-wire #9884 (38e22414cdb21096536086d3f3460893a1d94df1). Z0 matrix:
+  A14/A18/A20/A43 CLOSED; A21/A36 PENDING_LIVE; A42/A45/A46 HUMAN_GATE (entitled
+  browser profile, named once). Next: second A36 remeasure after the 2026-10-21T00:00Z
+  core-catalogue clock (the manifest now runs the production pack and packet
+  producers); Z1 r1 (fabric lane fif-z1rev-20261020-r1) CONSUMED 2026-10-20 —
+  FAIL: A43/A22 lowered to PARTIAL (test gaps), A54 RATIFIED, F3/F5 rebutted
+  (legacy-pack convention), record research/financial_intelligence_fabric/
+  FIF_Z1_INDEPENDENT_REVIEW_2026-10-20.md; next a fabric build lane adds the
+  tablet REQUIRED_CELLS cell + focus-restore assertion (A43) and a caplog
+  no-leak test (A22), then re-review only that diff; Q1 held-out labels from an
+  independent labeler (A37 is a qualified abstain until then).
+  Merge by hand with --match-head-commit on concluded green; never arm; never
+  dispatch filing-forensics-sec, daily.yml or research-ingest.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -224,6 +230,8 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not rebuild the 2026-10-20 Z0 closure wave: A14 owner-binding collapse (#9870), A18 fault drill (#9863), A20 shared SEC pacer (#9869), A21 observation wiring with R-A21-T8B/R-A21-STORE-TRACE (#9871), A43 tablet desk header + three-viewport evidence sets (#9879), step 5/6 (#9794/#9799), the twelve-pack fold (#9872), the desk doctrine stripe removal (#9882) and the coverage-manifest producer wiring (#9884).
+  - Do not author Q1 held-out labels or reports from the seat or a pack lane; the A37 qualified abstain stands until an independent labeler produces them.
   - Do not create a second semantic model, query kernel, or metric registry.
   - Do not fetch SEC data, write R2, add an API, page, detector, peer engine, LLM, or score in FIF-1.
   - Do not debug or replace the attested-history Wave 0B credential path.
@@ -303,6 +311,12 @@ do_not_redo:
     X2-s, CA-RK2 or the A0 chain (#9116/#9203/#9214/#9221); do not
     re-diagnose the four five-issuer exclusions; do not fix CAT capture-side,
     because retained packages keep their minted statement_roles.
+  - >
+    Option B (2026-10-18): do not rebuild typed per-statement refusals, the
+    refusal pin or its classification order (ruling v3.1), A35-W1 cohort
+    withholding or the desk withheld blocks; do not re-mint the BAC
+    parent-company income role or rewrite BAC parent-only manifests; do not
+    re-run the C2 census without cause.
 waves:
   - id: FIF-0
     title: Program reset — land masterplan, naming, and collision map

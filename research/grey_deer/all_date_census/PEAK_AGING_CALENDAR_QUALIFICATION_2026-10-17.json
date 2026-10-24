@@ -1,0 +1,130 @@
+{
+  "excluded_off_reference_rows": [],
+  "qualification": "Recomputed on the frozen SPY reference calendar. All original date values agree; September 28 is added to show peak aging. No off-reference source rows exist. Frozen census and original supplementary values remain unchanged.",
+  "qualified_sha256": "b9107750adc17ff5260739a978e60853d4d11de75f6842d2e7b112f5b88ac001",
+  "qualifies": "PEAK_AGING_ADDENDUM_2026-10-17.json",
+  "records": [
+    {
+      "close_price": 600.010009765625,
+      "date": "2026-09-28",
+      "drawdown252": -0.10300334296857472,
+      "drawdown63": -0.08519721848908557,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-06-30",
+      "peak63_price": 655.8900146484375,
+      "ticker": "SMH"
+    },
+    {
+      "close_price": 606.9000244140625,
+      "date": "2026-09-29",
+      "drawdown252": -0.09270298129800836,
+      "drawdown63": -0.021854748216463382,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-07-01",
+      "peak63_price": 620.4600219726562,
+      "ticker": "SMH"
+    },
+    {
+      "close_price": 609.0,
+      "date": "2026-09-30",
+      "drawdown252": -0.08956358187170654,
+      "drawdown63": -0.0033223069236236746,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-07-10",
+      "peak63_price": 611.030029296875,
+      "ticker": "SMH"
+    },
+    {
+      "close_price": 558.8400268554688,
+      "date": "2026-10-15",
+      "drawdown252": -0.16455121123643301,
+      "drawdown63": -0.11840983541209749,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-10-05",
+      "peak63_price": 633.9000244140625,
+      "ticker": "SMH"
+    },
+    {
+      "close_price": 560.7899780273438,
+      "date": "2026-09-28",
+      "drawdown252": -0.1438451784454332,
+      "drawdown63": -0.12480496678863029,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-06-30",
+      "peak63_price": 640.760009765625,
+      "ticker": "SOXX"
+    },
+    {
+      "close_price": 567.4400024414062,
+      "date": "2026-09-29",
+      "drawdown252": -0.1336926245685206,
+      "drawdown63": -0.05379357863759393,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-07-01",
+      "peak63_price": 599.7000122070312,
+      "ticker": "SOXX"
+    },
+    {
+      "close_price": 568.6400146484375,
+      "date": "2026-09-30",
+      "drawdown252": -0.1318605728606992,
+      "drawdown63": -0.022451430779660386,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-07-09",
+      "peak63_price": 581.7000122070312,
+      "ticker": "SOXX"
+    },
+    {
+      "close_price": 514.7100219726562,
+      "date": "2026-10-15",
+      "drawdown252": -0.21419518129680304,
+      "drawdown63": -0.12688501730904866,
+      "peak252_date": "2026-06-22",
+      "peak63_date": "2026-10-05",
+      "peak63_price": 589.510009765625,
+      "ticker": "SOXX"
+    },
+    {
+      "close_price": 194.52999877929688,
+      "date": "2026-09-28",
+      "drawdown252": -0.018566206598654267,
+      "drawdown63": -0.008865366359031568,
+      "peak252_date": "2026-06-02",
+      "peak63_date": "2026-09-22",
+      "peak63_price": 196.27000427246094,
+      "ticker": "XLK"
+    },
+    {
+      "close_price": 194.5,
+      "date": "2026-09-29",
+      "drawdown252": -0.018717555058776036,
+      "drawdown63": -0.009018210801095328,
+      "peak252_date": "2026-06-02",
+      "peak63_date": "2026-09-22",
+      "peak63_price": 196.27000427246094,
+      "ticker": "XLK"
+    },
+    {
+      "close_price": 195.75,
+      "date": "2026-09-30",
+      "drawdown252": -0.01241111261056771,
+      "drawdown63": -0.0026494332355496697,
+      "peak252_date": "2026-06-02",
+      "peak63_date": "2026-09-22",
+      "peak63_price": 196.27000427246094,
+      "ticker": "XLK"
+    },
+    {
+      "close_price": 189.19000244140625,
+      "date": "2026-10-15",
+      "drawdown252": -0.06341582949798885,
+      "drawdown63": -0.06341582949798885,
+      "peak252_date": "2026-10-06",
+      "peak63_date": "2026-10-06",
+      "peak63_price": 202.0,
+      "ticker": "XLK"
+    }
+  ],
+  "schema": "grey_deer.peak_aging_calendar_qualification.v1",
+  "source_ref": "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+}

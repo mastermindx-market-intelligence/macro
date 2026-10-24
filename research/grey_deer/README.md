@@ -5,8 +5,8 @@
 passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
 2026-10-11, continued by the Opus seat on 2026-10-13 and 2026-10-14 (resumption file:
 `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). Both frozen retrospective pullback runs are
-null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY lane now runs
-prospectively in the nightly at research tier. This README is an index only — it duplicates
+null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY research lane is wired into the nightly; legitimate forward issuance
+remains unproved at the October 17 inspection. This README is an index only — it duplicates
 no architecture.
 
 ## Canonical files (this directory)
@@ -49,7 +49,34 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-10-14, Opus seat W7/W8)
+## Current next action (2026-10-17, Meta-CEO continuation)
+
+Read [the existing continuation §0A](GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md),
+then [the dated findings/action map](RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md).
+The new all-date census is accepted descriptive evidence only: 36 exposures,
+8,486 reference sessions, 305,496 rows; zero new fits or promotions. Its frozen
+protocol, outputs, recorded-version corrections, calendar and peak-aging evidence
+are in [all_date_census/](all_date_census/). Source/release verification is tracked
+with this carrier; full programme acceptance remains outstanding.
+
+Current source carrier: [PR #9515](https://github.com/mastermindx-market-intelligence/macro/pull/9515).
+[T13 admission](all_date_census/T13_METADATA_ADMISSION_2026-10-17.md) is complete at metadata scope only: H2 lacks a prior release for 348/1,321 reference dates; source-purpose and actual Massive/T12 sample remain unadmitted. No fits or trial writes.
+
+[Pinned consumer comparison](consumer_comparison_20261017/README.md) is complete at source-function scope: eight planned cases plus a reproduced future-date freshness defect. The paired native elevated case preserves Market View's alert branch while held-risk still returns ok under legacy risk-on. Full runtime/book/prompt/ledger parity and cutover remain unproved. The narrow follow-on [Mastermind #1567](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1567) repairs the reproduced future-date check at final reviewed head 1e6a8a23fac1153eaef6c5b2f97525f0d960980f; 184 native tests pass and independent source review is accepted. Exact-head and native merge-queue checks passed; #1567 merged as b08223680180 at 10:59:54Z, with both owned blobs verified after fetching master. The [source/release preflight](consumer_comparison_20261017/SOURCE_RELEASE_PREFLIGHT_20261017.json) records a healthy older October 9 runtime, the exact merged archive and a 1,507-file repository delta. Full bundle qualification, the required production decision and real consumer proof remain open. Macro #9515's prior 8bcd569 head is independently blocked by shared weekly-brief CI; its current head still needs the normal gates. No runtime deployment occurred.
+
+Supporting records: [source audit](risk_radar_source_consumer_audit_20261017.md),
+[contract annex](risk_radar_architecture_contract_20261017.md),
+[methods](risk_radar_turning_point_methods_20261017.md),
+[research design](risk_radar_research_protocol_20261017.md) and
+[calendar qualification](risk_radar_calendar_qualification_20261017.md).
+
+W5 forward issuance is still unproved at source pin 3ab3382: forward_log absent,
+BACKFILL_ASOF/CLOCK refusals retained. Source-clock qualification, existing-owner
+warning delivery and authenticated consumer proof are the next delivery verticals.
+Preserve active writers, #9428 refusals, #8132 hold, numerical policy owners and
+all accepted/failed historical evidence.
+
+## Prior next action (updated 2026-10-14, Opus seat W7/W8)
 
 - Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
   `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md`. W0–W5, W7 and W8 are merged

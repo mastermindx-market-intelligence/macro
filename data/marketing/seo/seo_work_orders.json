@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-10-11T19:22:24Z",
+  "as_of": "2026-10-18T17:51:09Z",
   "orders": [
     {
       "id": "missing_description",
@@ -123,13 +123,14 @@
       "class": "desc_length",
       "severity": "medium",
       "pages": [
+        "crypto.html",
         "macro_capital_structure.html",
         "macro_consumer_payments.html",
         "macro_monetary.html",
         "sanctions_map.html",
         "stock_seasonality.html"
       ],
-      "pages_count": 5,
+      "pages_count": 6,
       "suggested_fix": "Adjust description length to 50-170 chars",
       "falsifiable_check": "Measure len(desc) for each page; assert 50 <= len <= 170"
     },
@@ -140,10 +141,11 @@
       "class": "title_length",
       "severity": "medium",
       "pages": [
+        "consumer_cyclical_plnt.html",
         "stock_seasonality.html",
         "watchlist.html"
       ],
-      "pages_count": 2,
+      "pages_count": 3,
       "suggested_fix": "Adjust title length to 15-70 chars",
       "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
     },

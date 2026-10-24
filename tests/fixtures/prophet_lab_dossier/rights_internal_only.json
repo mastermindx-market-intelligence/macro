@@ -1,0 +1,81 @@
+{
+  "name": "rights_internal_only",
+  "kind": "display_code",
+  "expected_code": "RIGHTS_INTERNAL_ONLY",
+  "expected_rights_state": null,
+  "note": "user_redistribution posture INTERNAL_ONLY (A10 rights axis).",
+  "vector": {
+    "schema": "prophet.intelligence_vector/v1",
+    "projection_id": "piv:2222222222222222222222222222222222222222222222222222222222222222",
+    "decision_cut": {
+      "opened_at": "2026-07-30T20:05:00Z"
+    },
+    "evidence_families": [
+      {
+        "family_projection_id": "pif:1111111111111111111111111111111111111111111111111111111111111111",
+        "coverage": {
+          "state": "UNKNOWN",
+          "basis": "not_evaluated"
+        },
+        "quality": {
+          "flags": []
+        },
+        "observations": [
+          {
+            "native_metric_id": "earnings:event_workspace",
+            "value_state": "ABSENT",
+            "absence_reasons": [
+              "UNKNOWN"
+            ]
+          }
+        ],
+        "point_in_time": {
+          "missing_clocks": [],
+          "source_published_at": {
+            "value": "2026-07-30T20:00:00Z"
+          },
+          "known_at": {
+            "value": "2026-07-30T20:03:00Z"
+          },
+          "computed_at": {
+            "value": "2026-07-30T20:04:00Z"
+          }
+        },
+        "trajectory": {
+          "state": "NOT_APPLICABLE",
+          "dimensions": []
+        },
+        "owner_lane_dispositions": {
+          "lanes": [
+            {
+              "lane": "FACT_REVENUE",
+              "disposition": "ABSENT"
+            },
+            {
+              "lane": "GUIDANCE_REVENUE_YOY_PCT",
+              "disposition": "ABSENT"
+            },
+            {
+              "lane": "DELTA_REVENUE",
+              "disposition": "ABSENT"
+            }
+          ]
+        },
+        "source_refs": [],
+        "evidence_roots": [],
+        "explanation_facts": []
+      }
+    ]
+  },
+  "inputs": {
+    "rights": {
+      "FACT_REVENUE": "INTERNAL_ONLY",
+      "GUIDANCE_REVENUE_YOY_PCT": "INTERNAL_ONLY",
+      "DELTA_REVENUE": "INTERNAL_ONLY"
+    },
+    "observed_at_attests_capture": false,
+    "historical_event_set_unavailable": false,
+    "identity_binding_conflict": false,
+    "corrected_later_lanes": []
+  }
+}

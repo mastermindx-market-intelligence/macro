@@ -15,6 +15,12 @@ Two independent axes stay apart on every row: the leadership THESIS
 revisable: a later full re-admission opens a NEW episode linked by ``prior_episode_id``.
 Nothing here is a lifetime delisting. Historical bar order is causal; current adjusted
 data are NOT first-seen evidence (``EVIDENCE_MODE`` says so on every read).
+
+The universe helper ``describe_lineage_universe`` and the structural chips
+``lineage_chip`` / ``lineage_roster`` are exact-equivalent to running ``describe_lineage``
+with the same peers dict: every byte of every subject's descriptor matches, including the
+fingerprint, the basket mean (sequential float addition), and the failure-mode ordering
+on sourcing errors.
 """
 from __future__ import annotations
 
@@ -24,8 +30,9 @@ from datetime import date
 import hashlib
 import json
 import math
-from typing import Iterable, Mapping
+from typing import Callable, Iterable, Mapping
 
+import numpy as np
 import pandas as pd
 
 SCHEMA = "leader_lineage.v1"
@@ -36,6 +43,7 @@ THESIS_STATES = ("INTACT", "DAMAGED", "CONTRADICTED", "UNKNOWN")
 SETUP_STATES = ("WATCH", "RESET", "REBUILDING", "RE_IGNITION", "EXTENDED", "INVALIDATED")
 BREAK_CLASSES = ("FAILED_BREAK", "STRUCTURAL_BREAK", "REPAIRED_TREND", "UNRESOLVED")
 PHASES = ("ACTIVE", "DAMAGED", "REPAIRED", "FAILED")
+ROSTER_COUNT_STATES = PHASES + ("NO_PRIOR_LEADER", "UNAVAILABLE")  # every descriptor state; roster counts sum to coverage.issuers
 LADDER = (
     "higher_low_confirmed_on",        # R1  price: closes hold above the frozen trough
     "reclaim_50d_on",                 # R2  price: confirmed closes above the fast average
@@ -47,6 +55,10 @@ LADDER = (
     "pivot_confirmed_on",             # R7  read-only from the intraday pivot owner's descriptor
 )
 REVISION_REQUIRES = ("new_leadership_qualification", "ordered_ladder_R1_R4", "owner_dated_R5_R6")
+
+_CHIP_KEYS = ("schema", "era", "evidence_mode", "definition_sha256", "as_of", "state", "reason",
+              "thesis_state", "setup_state", "break_class", "contradiction_evidence", "revisable",
+              "price_ath", "rs_ath", "episode", "source_ref", "source_fingerprint_sha256")
 
 
 @dataclass(frozen=True)
@@ -102,9 +114,11 @@ def _num(value):
         return None
 
 
-def _source(series: pd.Series, cut: date) -> dict[date, float]:
+def _source_slow(series: pd.Series, cut: date) -> dict[date, float]:
     """Completed sessions at or before the cut. Duplicate dates and boolean prices raise;
-    a non-numeric value becomes nan (a gap), never a carried-forward value."""
+    a non-numeric value becomes nan (a gap), never a carried-forward value. Always invoked
+    when the fast-path preconditions are not all met (string/object dtype, NaT index, tz,
+    non-normalized stamp, or any unexpected precondition breach)."""
     out: dict[date, float] = {}
     for stamp, raw in series.items():
         day = _date(stamp)
@@ -120,6 +134,35 @@ def _source(series: pd.Series, cut: date) -> dict[date, float]:
             val = math.nan
         out[day] = val
     return out
+
+
+def _source_fast(series: pd.Series, cut: date) -> dict[date, float]:
+    """EXACT-equivalent of ``_source_slow`` when ALL preconditions hold: float64,
+    pd.DatetimeIndex, naive, no NaT, normalized. Skips the per-item ``_date`` / ``float``
+    calls and the per-iteration dict probe; produces byte-identical output (python dates,
+    python floats, dict insertion order, duplicate_session on a within-cut repeat)."""
+    idx = series.index
+    vals = series.values
+    cut_ts = pd.Timestamp(cut)
+    mask = idx <= cut_ts
+    kept_idx = idx[mask]
+    kept_vals = vals[mask]
+    if not kept_idx.is_unique:
+        raise ValueError("duplicate_session")
+    return dict(zip(kept_idx.date, kept_vals.tolist()))
+
+
+def _source(series: pd.Series, cut: date) -> dict[date, float]:
+    """Dispatch to the fast path when ALL preconditions hold; otherwise the slow path.
+    The two paths are byte-equivalent for legal inputs."""
+    idx = series.index
+    if (isinstance(idx, pd.DatetimeIndex)
+            and idx.tz is None
+            and not idx.hasnans
+            and bool((idx == idx.normalize()).all())
+            and series.dtype == np.float64):
+        return _source_fast(series, cut)
+    return _source_slow(series, cut)
 
 
 def _latest_owner_row(rows, day: date, key: str = "as_of"):
@@ -218,32 +261,57 @@ def _apply_owner_evidence(cur: dict, day: date, fundamentals, volume_demand, piv
             cur["ladder"]["pivot_confirmed_on"] = pv.isoformat()
 
 
-# ----------------------------------------------------------------------------- replay
-def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, volume_demand, pivot, spec):
-    fundamentals = list(fundamentals or ())
-    volume_demand = list(volume_demand or ())
+# ----------------------------------------------------------------------------- fingerprint
+def _fingerprint(close: pd.Series, as_of, ticker: str, source_ref: str | None) -> str:
+    """Same body as ``describe_lineage``'s fingerprint block. ``OverflowError`` from the
+    digest is allowed to escape — callers may want to see it."""
     try:
         cut = _date(as_of)
-        # The caller's completed-session calendar must be strictly increasing and END at as_of:
-        # a session dated after as_of is a contradiction, never silently dropped (sources may
-        # extend past as_of; they are cut, the calendar is not).
-        calendar = [_date(d) for d in sessions]
-        if calendar != sorted(set(calendar)) or not calendar or calendar[-1] != cut:
-            raise ValueError("invalid_or_incomplete_calendar")
-        prices, benches = _source(close, cut), _source(benchmark, cut)
-        peer_src = {k: _source(v, cut) for k, v in (peers or {}).items() if k != ticker}
-    except (TypeError, ValueError, OverflowError, AttributeError) as exc:
-        day = as_of if type(as_of) is date else date.min
-        return [_unavailable(day, str(exc))], []
-    starts = [min(d) for d in (prices, benches) if d]
-    if len(starts) != 2:
-        return [_unavailable(cut, "missing_source")], []
-    calendar = [d for d in calendar if d >= max(starts)]
-    if not calendar:
-        return [_unavailable(cut, "missing_source")], []
-    stalled_rungs = [] if peer_src else ["rs_vs_peer_basket_rising_on"]
+        src = _source(close, cut)
+        closes = [[k.isoformat(), _num(v)] for k, v in src.items()]
+    except (TypeError, ValueError, AttributeError):
+        closes = None
+    return hashlib.sha256(json.dumps({"ticker": ticker, "as_of": str(as_of), "source_ref": source_ref,
+                                      "close": closes}, sort_keys=True, default=str).encode()).hexdigest()
+
+
+# ----------------------------------------------------------------------------- replay core
+def _basket_leave_one_out_mean(vals: np.ndarray, sidx: int) -> float:
+    """Sequential leave-one-out mean for the subject at position ``sidx``. The cumulative
+    addition goes over the leave-one-out values in ``vals`` order — the same order the
+    state machine would iterate if it called :func:`sum` per day. ``np.add.accumulate`` is
+    bit-identical to a python ``sum`` over the same ordered floats; ``math.fsum``,
+    ``np.sum`` and total-minus-self reductions are NOT bit-identical and would fail T7."""
+    if sidx < 0 or sidx >= len(vals):
+        raise IndexError("sidx out of range")
+    if len(vals) <= 1:
+        raise ValueError("no peers for leave-one-out")
+    if sidx == 0:
+        leave = vals[1:]
+    elif sidx == len(vals) - 1:
+        leave = vals[:-1]
+    else:
+        leave = np.concatenate([vals[:sidx], vals[sidx + 1:]])
+    return float(np.add.accumulate(leave.astype(float))[-1]) / len(leave)
+
+
+def _replay_core(*, ticker: str, prices: dict[date, float], benches: dict[date, float],
+                 has_peers: bool, basket_mean: Callable[[date], float | None],
+                 calendar: list[date], fundamentals: list, volume_demand: list,
+                 pivot: dict | None, spec: LineageSpec, emit_rows: bool):
+    """Shared state-machine over an ALREADY-trimmed calendar and ALREADY-sourced dicts.
+    Used by both ``replay_lineage`` (emit_rows=True) and ``describe_lineage`` /
+    ``describe_lineage_universe`` (emit_rows=False). ``basket_mean(day)`` must return the
+    peer mean at ``day`` (NOT divided by the benchmark) or ``None`` if the basket does not
+    exist on that day; the basket ratio is computed in the loop as ``basket_mean(day) / b``
+    so the single-ticker path (``has_peers=False``) yields ``None`` cheaply. Returns
+    ``(rows, episodes, n_sessions)``; ``n_sessions`` is ``len(calendar)`` on the main
+    path and the early-return paths return ``1`` to match the existing single-row fallback."""
+    stalled_rungs = [] if has_peers else ["rs_vs_peer_basket_rising_on"]
 
     hist: list[tuple[date, float, float, float | None]] = []   # (day, close, rs, basket_rs)
+    closes_list: list[float] = []
+    rs_list: list[float] = []
     episodes: list[dict] = []
     cur: dict | None = None
     rows: list[dict] = []
@@ -252,26 +320,29 @@ def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, v
         c, b = prices.get(day, math.nan), benches.get(day, math.nan)
         if not (_finite(c) and _finite(b)):
             hist.clear()
+            closes_list.clear()
+            rs_list.clear()
             if cur is not None:
                 cur["history_complete"] = False
                 cur["_streaks"] = {key: 0 for key in cur["_streaks"]}
-            rows.append(_unavailable(day, "missing_or_invalid_completed_session"))
+            if emit_rows:
+                rows.append(_unavailable(day, "missing_or_invalid_completed_session"))
+            elif k == len(calendar) - 1:
+                rows.append(_unavailable(day, "missing_or_invalid_completed_session"))
             continue
         rs = c / b
-        basket = None
-        if peer_src:
-            vals = [src.get(day, math.nan) for src in peer_src.values()]
-            if all(_finite(v) for v in vals):
-                basket = (sum(vals) / len(vals)) / b
+        bmean = basket_mean(day)
+        basket = bmean / b if bmean is not None else None
         hist.append((day, c, rs, basket))
+        closes_list.append(c)
+        rs_list.append(rs)
         n = len(hist)
-        closes = [h[1] for h in hist]
-        ma_fast = sum(closes[-spec.fast_window:]) / spec.fast_window if n >= spec.fast_window else None
-        ma_slow = sum(closes[-spec.slow_window:]) / spec.slow_window if n >= spec.slow_window else None
+        ma_fast = sum(closes_list[-spec.fast_window:]) / spec.fast_window if n >= spec.fast_window else None
+        ma_slow = sum(closes_list[-spec.slow_window:]) / spec.slow_window if n >= spec.slow_window else None
         qualified = False
         if n > spec.high_window and ma_slow is not None:
-            window = hist[-spec.high_window - 1:-1]
-            qualified = (rs > max(h[2] for h in window) and c > hist[-spec.high_window - 1][1]
+            window = rs_list[-spec.high_window - 1:-1]
+            qualified = (rs > max(window) and c > hist[-spec.high_window - 1][1]
                          and c > ma_slow)
 
         # ---- episode open / re-admission: a NEW linked episode, never a relabel of the old one
@@ -317,7 +388,7 @@ def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, v
                 # R1 higher low: the last higher_low_sessions closes all hold above the frozen trough
                 if (lad["higher_low_confirmed_on"] is None and since_trough >= spec.higher_low_sessions
                         and n >= spec.higher_low_sessions
-                        and min(closes[-spec.higher_low_sessions:]) > cur["correction_trough_price"]):
+                        and min(closes_list[-spec.higher_low_sessions:]) > cur["correction_trough_price"]):
                     lad["higher_low_confirmed_on"] = day.isoformat()
                 # R2 confirmed closes above the fast average, only after R1
                 st["above_50"] = st["above_50"] + 1 if ma_fast is not None and c > ma_fast else 0
@@ -342,7 +413,7 @@ def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, v
                 if (lad["rs_vs_spy_rising_on"] is None and st["rs_spy"] >= spec.confirm_sessions
                         and lad["reclaim_200d_on"] is not None):
                     lad["rs_vs_spy_rising_on"] = day.isoformat()
-                if peer_src:
+                if has_peers:
                     prev_basket = hist[-spec.rs_window - 1][3] if n > spec.rs_window else None
                     rel_peer = None
                     if basket is not None and prev_basket is not None and prev_basket > 0:
@@ -388,8 +459,11 @@ def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, v
                     cur["fundamental_deterioration"] = {
                         "state": "PRESENT" if state == "PRESENT" else "NONE" if state in ("NONE", "STABILIZED") else "UNKNOWN",
                         "source_ref": row.get("source_ref"), "as_of": when.isoformat()}
-        rows.append(_row(day, c, rs, ma_fast, ma_slow, cur, spec))
-    return rows, [_public(ep) for ep in episodes]
+        if emit_rows:
+            rows.append(_row(day, c, rs, ma_fast, ma_slow, cur, spec))
+        elif k == len(calendar) - 1:
+            rows.append(_row(day, c, rs, ma_fast, ma_slow, cur, spec))
+    return rows, [_public(ep) for ep in episodes], len(calendar)
 
 
 def _row(day: date, c: float, rs: float, ma_fast, ma_slow, cur: dict | None, spec: LineageSpec) -> dict:
@@ -430,6 +504,48 @@ def _row(day: date, c: float, rs: float, ma_fast, ma_slow, cur: dict | None, spe
             "price": _num(c), "rs": _num(rs), "ma_fast": _num(ma_fast), "ma_slow": _num(ma_slow)}
 
 
+# ----------------------------------------------------------------------------- replay / describe
+def _replay(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, volume_demand, pivot, spec,
+            emit_rows: bool = True):
+    """Orchestrator: validate / source / trim, build the basket_mean callable, hand off to the core.
+    Public surface unchanged — the universe helper takes a parallel code path."""
+    fundamentals = list(fundamentals or ())
+    volume_demand = list(volume_demand or ())
+    try:
+        cut = _date(as_of)
+        calendar = [_date(d) for d in sessions]
+        if calendar != sorted(set(calendar)) or not calendar or calendar[-1] != cut:
+            raise ValueError("invalid_or_incomplete_calendar")
+        prices, benches = _source(close, cut), _source(benchmark, cut)
+        peer_src = {k: _source(v, cut) for k, v in (peers or {}).items() if k != ticker}
+    except (TypeError, ValueError, OverflowError, AttributeError) as exc:
+        day = as_of if type(as_of) is date else date.min
+        return [_unavailable(day, str(exc))], [], 1
+    starts = [min(d) for d in (prices, benches) if d]
+    if len(starts) != 2:
+        return [_unavailable(cut, "missing_source")], [], 1
+    calendar = [d for d in calendar if d >= max(starts)]
+    if not calendar:
+        return [_unavailable(cut, "missing_source")], [], 1
+    has_peers = bool(peer_src)
+    if has_peers:
+        peer_keys = list(peer_src.keys())
+        def basket_mean(day):
+            vals = [peer_src[k].get(day, math.nan) for k in peer_keys]
+            if all(_finite(v) for v in vals):
+                return sum(vals) / len(vals)
+            return None
+    else:
+        def basket_mean(day):
+            return None
+    rows, episodes, n_sessions = _replay_core(
+        ticker=ticker, prices=prices, benches=benches,
+        has_peers=has_peers, basket_mean=basket_mean, calendar=calendar,
+        fundamentals=fundamentals, volume_demand=volume_demand, pivot=pivot,
+        spec=spec, emit_rows=emit_rows)
+    return rows, episodes, n_sessions
+
+
 def replay_lineage(
     close: pd.Series, benchmark: pd.Series, *, as_of: date, sessions: Iterable[date],
     ticker: str = "", peers: Mapping[str, pd.Series] | None = None,
@@ -453,10 +569,20 @@ def replay_lineage(
     No forward fill: a missing or invalid session clears the rolling evidence and marks the
     episode history incomplete. A later qualification opens a NEW episode linked to this one.
     """
-    rows, _ = _replay(close, benchmark, as_of=as_of, sessions=sessions, ticker=ticker, peers=peers,
+    rows, _, _ = _replay(close, benchmark, as_of=as_of, sessions=sessions, ticker=ticker, peers=peers,
                       fundamentals=fundamentals, volume_demand=volume_demand, pivot=pivot,
-                      spec=spec or LineageSpec())
+                      spec=spec or LineageSpec(), emit_rows=True)
     return rows
+
+
+def _replay_core_direct(close, benchmark, *, as_of, sessions, ticker, peers, fundamentals, volume_demand,
+                         pivot, spec, emit_rows):
+    """Thin wrapper that returns (rows, episodes, n_sessions) so describe_lineage can report
+    sessions_replayed == the trimmed-calendar length instead of len(rows). The orchestrator
+    itself returns the same three-tuple to all callers."""
+    return _replay(close, benchmark, as_of=as_of, sessions=sessions, ticker=ticker, peers=peers,
+                   fundamentals=fundamentals, volume_demand=volume_demand, pivot=pivot, spec=spec,
+                   emit_rows=emit_rows)
 
 
 def describe_lineage(close: pd.Series, benchmark: pd.Series, *, as_of: date, sessions: Iterable[date],
@@ -464,19 +590,302 @@ def describe_lineage(close: pd.Series, benchmark: pd.Series, *, as_of: date, ses
                      **owner_inputs) -> dict:
     """Current lineage read at ``as_of`` plus every episode reconstructed from the history."""
     spec = spec or LineageSpec()
-    rows, episodes = _replay(close, benchmark, as_of=as_of, sessions=sessions, ticker=ticker,
-                             peers=owner_inputs.get("peers"), fundamentals=owner_inputs.get("fundamentals"),
-                             volume_demand=owner_inputs.get("volume_demand"), pivot=owner_inputs.get("pivot"),
-                             spec=spec)
+    rows, episodes, n_sessions = _replay_core_direct(close, benchmark, as_of=as_of, sessions=sessions,
+                                                      ticker=ticker, peers=owner_inputs.get("peers"),
+                                                      fundamentals=owner_inputs.get("fundamentals"),
+                                                      volume_demand=owner_inputs.get("volume_demand"),
+                                                      pivot=owner_inputs.get("pivot"), spec=spec,
+                                                      emit_rows=False)
     current = deepcopy(rows[-1])
-    try:
-        closes = [[k.isoformat(), _num(v)] for k, v in _source(close, _date(as_of)).items()]
-    except (TypeError, ValueError, AttributeError):
-        closes = None
-    fingerprint = hashlib.sha256(json.dumps({"ticker": ticker, "as_of": str(as_of), "source_ref": source_ref,
-                                             "close": closes}, sort_keys=True, default=str).encode()).hexdigest()
+    fingerprint = _fingerprint(close, as_of, ticker, source_ref)
     current.update({"schema": SCHEMA, "era": ERA, "ticker": ticker, "evidence_mode": EVIDENCE_MODE,
                     "authority": dict(AUTHORITY), "definition_sha256": spec.digest,
                     "source_ref": source_ref, "source_fingerprint_sha256": fingerprint,
-                    "episodes": episodes, "sessions_replayed": len(rows)})
+                    "episodes": episodes, "sessions_replayed": n_sessions})
     return current
+
+
+# ----------------------------------------------------------------------------- universe
+def _precompute_basket_arrays(src_dicts: dict, closes_keys: list, calendar: list[date]):
+    """For every closes key, build per-day (has_basket, mean) arrays over the FULL calendar
+    (calendar[-1] is the cut session). The mean is the leave-one-out sequential addition in
+    closes insertion order — bit-identical to a python ``sum`` over the same ordered floats
+    (np.add.accumulate is bit-identical; ``np.sum`` / ``math.fsum`` / total-minus-self are
+    explicitly NOT acceptable per the lineage-enrol spec). Subjects whose own series raised
+    during sourcing are recorded as ``has_basket[i] = False`` everywhere, so the universe
+    helper does not need a separate invalid-set check."""
+    n_days = len(calendar)
+    n_keys = len(closes_keys)
+    if n_keys == 0:
+        return {}
+
+    # vals_per_day[d, k] = closes_keys[k]'s value on calendar[d] (NaN when absent or non-finite)
+    vals_per_day = np.full((n_days, n_keys), np.nan, dtype=float)
+    for ki, key in enumerate(closes_keys):
+        dct = src_dicts.get(key)
+        if dct is None:
+            continue
+        for di, day in enumerate(calendar):
+            v = dct.get(day, np.nan)
+            if v is None or (isinstance(v, float) and (math.isnan(v) or v <= 0)):
+                continue
+            vals_per_day[di, ki] = float(v)
+
+    basket_data: dict = {}
+    for sidx in range(n_keys):
+        if sidx == 0:
+            leave = vals_per_day[:, 1:]
+        elif sidx == n_keys - 1:
+            leave = vals_per_day[:, :-1]
+        else:
+            leave = np.concatenate([vals_per_day[:, :sidx], vals_per_day[:, sidx + 1:]], axis=1)
+        if leave.shape[1] == 0:
+            basket_data[closes_keys[sidx]] = ([False] * n_days, [None] * n_days)
+            continue
+        has_basket = np.all(np.isfinite(leave) & (leave > 0), axis=1)
+        seq_sums = np.zeros(n_days, dtype=float)
+        if has_basket.any():
+            seq_sums[has_basket] = np.add.accumulate(leave[has_basket], axis=1)[:, -1]
+        means = np.where(has_basket, seq_sums / leave.shape[1], np.nan)
+        basket_data[closes_keys[sidx]] = (has_basket.tolist(), means.tolist())
+    return basket_data
+
+
+def _make_basket_callable(calendar: list[date], has_basket: list[bool],
+                          means: list[float | None]) -> Callable[[date], float | None]:
+    day_to_idx = {d: i for i, d in enumerate(calendar)}
+
+    def basket_mean(day):
+        i = day_to_idx.get(day)
+        if i is None:
+            return None
+        if not has_basket[i]:
+            return None
+        return means[i]
+
+    return basket_mean
+
+
+def describe_lineage_universe(closes: Mapping[str, pd.Series], benchmark: pd.Series, *,
+                              as_of: date, sessions: Iterable[date],
+                              tickers: Iterable[str] | None = None,
+                              source_refs: Mapping[str, str | None] | None = None,
+                              spec: LineageSpec | None = None) -> tuple[dict[str, dict], dict]:
+    """Same descriptor as ``describe_lineage(..., peers=closes)`` for every subject in
+    ``tickers`` (or ``list(closes.keys())`` when ``tickers`` is ``None``). The
+    contract — JSON-equality for every subject — is tested in T1/T2.
+
+    Optimization: validate cut/calendar once, source the benchmark and every closes series
+    once (caching the exception), and precompute the leave-one-out basket per subject. The
+    state machine still runs once per subject on a per-subject trimmed calendar, so every
+    row byte matches a fresh ``describe_lineage`` call.
+
+    No owner inputs are accepted here — the helper is purely structural. Caller-side
+    fundamentals / volume / pivot rows must be merged into the descriptor at a downstream
+    stage."""
+    spec = spec or LineageSpec()
+    closes_keys = list(closes.keys())
+    if tickers is None:
+        tickers = list(closes_keys)
+
+    # 1. Validate cut/calendar once. On failure, every subject is UNAVAILABLE with the same reason.
+    try:
+        cut = _date(as_of)
+        calendar = [_date(d) for d in sessions]
+        if calendar != sorted(set(calendar)) or not calendar or calendar[-1] != cut:
+            raise ValueError("invalid_or_incomplete_calendar")
+    except (TypeError, ValueError, OverflowError, AttributeError) as exc:
+        day = as_of if type(as_of) is date else date.min
+        unavailable = _unavailable(day, str(exc))
+        descs: dict[str, dict] = {}
+        for t in tickers:
+            ref = (source_refs or {}).get(t)
+            desc = deepcopy(unavailable)
+            desc.update({"schema": SCHEMA, "era": ERA, "ticker": t,
+                         "evidence_mode": EVIDENCE_MODE, "authority": dict(AUTHORITY),
+                         "definition_sha256": spec.digest, "source_ref": ref,
+                         "source_fingerprint_sha256": _fingerprint(closes.get(t, pd.Series(dtype=float)),
+                                                                   as_of, t, ref),
+                         "episodes": [], "sessions_replayed": 1})
+            descs[t] = desc
+        coverage = {"issuers": len(tickers), "with_peer_basket": 0,
+                    "with_fundamentals": 0, "with_volume_demand": 0, "with_pivot": 0}
+        return descs, coverage
+
+    # 2. Source the benchmark once.
+    try:
+        benches = _source(benchmark, cut)
+    except (TypeError, ValueError, OverflowError, AttributeError) as exc:
+        bench_exc_str: str | None = str(exc)
+        benches = None
+    else:
+        bench_exc_str = None
+
+    # 3. Source each closes entry once.
+    src_dicts: dict[str, dict[date, float]] = {}
+    src_errs: dict[str, str] = {}
+    for k in closes_keys:
+        try:
+            src_dicts[k] = _source(closes[k], cut)
+        except (TypeError, ValueError, OverflowError, AttributeError) as exc:
+            src_errs[k] = str(exc)
+
+    # 4. Precompute basket availability / leave-one-out means per subject.
+    basket_data = _precompute_basket_arrays(src_dicts, closes_keys, calendar)
+
+    descs = {}
+    with_peer_basket = 0
+    for t in tickers:
+        ref = (source_refs or {}).get(t)
+        # Per spec order: cut/calendar (handled above), subject's own sourcing, benchmark,
+        # FIRST raising peer in closes insertion order excluding subject.
+        if t in src_errs:
+            unavailable = _unavailable(cut, src_errs[t])
+            subject_prices: dict[date, float] = {}
+            trimmed_calendar: list[date] = []
+            has_peers = bool(closes_keys) and (len(closes_keys) - (1 if t in closes_keys else 0)) > 0
+            basket_mean_fn = _make_basket_callable(calendar, [False] * len(calendar),
+                                                  [None] * len(calendar))
+            n_sessions = 1
+            episodes: list = []
+            rows = [unavailable]
+        elif bench_exc_str is not None:
+            unavailable = _unavailable(cut, bench_exc_str)
+            subject_prices = src_dicts.get(t, {})
+            trimmed_calendar = []
+            has_peers = bool(closes_keys) and (len(closes_keys) - (1 if t in closes_keys else 0)) > 0
+            basket_mean_fn = _make_basket_callable(calendar, [False] * len(calendar),
+                                                  [None] * len(calendar))
+            n_sessions = 1
+            episodes = []
+            rows = [unavailable]
+        else:
+            # Subject's own source is fine and the benchmark is fine. Look for the first
+            # raising peer in closes insertion order excluding the subject.
+            peer_exc: str | None = None
+            for k in closes_keys:
+                if k == t:
+                    continue
+                if k in src_errs:
+                    peer_exc = src_errs[k]
+                    break
+            if peer_exc is not None:
+                unavailable = _unavailable(cut, peer_exc)
+                subject_prices = src_dicts.get(t, {})
+                trimmed_calendar = []
+                has_peers = bool(closes_keys) and (len(closes_keys) - (1 if t in closes_keys else 0)) > 0
+                basket_mean_fn = _make_basket_callable(calendar, [False] * len(calendar),
+                                                      [None] * len(calendar))
+                n_sessions = 1
+                episodes = []
+                rows = [unavailable]
+            else:
+                # All sources clean. Build peer_src + per-subject trimmed calendar.
+                subject_prices = src_dicts.get(t, {})
+                peer_src = {k: src_dicts[k] for k in closes_keys if k != t}
+                has_peers = len(peer_src) > 0
+                starts = [min(d) for d in (subject_prices, benches) if d]
+                if len(starts) != 2:
+                    unavailable = _unavailable(cut, "missing_source")
+                    subject_prices = {}
+                    trimmed_calendar = []
+                    basket_mean_fn = _make_basket_callable(calendar, [False] * len(calendar),
+                                                          [None] * len(calendar))
+                    n_sessions = 1
+                    episodes = []
+                    rows = [unavailable]
+                else:
+                    trimmed_calendar = [d for d in calendar if d >= max(starts)]
+                    if not trimmed_calendar:
+                        unavailable = _unavailable(cut, "missing_source")
+                        subject_prices = {}
+                        trimmed_calendar = []
+                        basket_mean_fn = _make_basket_callable(calendar, [False] * len(calendar),
+                                                              [None] * len(calendar))
+                        n_sessions = 1
+                        episodes = []
+                        rows = [unavailable]
+                    else:
+                        has_basket, means = basket_data.get(t, ([False] * len(calendar),
+                                                                [None] * len(calendar)))
+                        basket_mean_fn = _make_basket_callable(calendar, has_basket, means)
+                        rows, episodes, n_sessions = _replay_core(
+                            ticker=t, prices=subject_prices, benches=benches,
+                            has_peers=has_peers, basket_mean=basket_mean_fn,
+                            calendar=trimmed_calendar,
+                            fundamentals=[], volume_demand=[], pivot=None,
+                            spec=spec, emit_rows=False)
+
+        current = deepcopy(rows[-1])
+        # Count subjects whose leave-one-out basket exists on the cut session (calendar[-1]).
+        has_basket_t, _ = basket_data.get(t, ([False] * len(calendar), [None] * len(calendar)))
+        if has_basket_t and has_basket_t[-1] and t not in src_errs and bench_exc_str is None:
+            with_peer_basket += 1
+        fingerprint = _fingerprint(closes.get(t, pd.Series(dtype=float)), as_of, t, ref)
+        current.update({"schema": SCHEMA, "era": ERA, "ticker": t,
+                        "evidence_mode": EVIDENCE_MODE, "authority": dict(AUTHORITY),
+                        "definition_sha256": spec.digest, "source_ref": ref,
+                        "source_fingerprint_sha256": fingerprint,
+                        "episodes": episodes, "sessions_replayed": n_sessions})
+        descs[t] = current
+
+    coverage = {"issuers": len(tickers), "with_peer_basket": with_peer_basket,
+                "with_fundamentals": 0, "with_volume_demand": 0, "with_pivot": 0}
+    return descs, coverage
+
+
+# ----------------------------------------------------------------------------- chips
+def lineage_chip(descriptor: Mapping) -> dict:
+    """Pure projection of one descriptor onto the ship-merge chip surface. A fresh
+    ``authority`` is always present (the module constant is never reused); every other
+    value is a deep copy or ``None`` when the key is absent."""
+    out: dict = {}
+    for k in _CHIP_KEYS:
+        v = descriptor.get(k)
+        out[k] = deepcopy(v) if v is not None else None
+    out["authority"] = dict(AUTHORITY)
+    return out
+
+
+def lineage_roster(descriptors: Mapping[str, Mapping], coverage: Mapping, *, as_of: str) -> dict:
+    """Flatten a universe of descriptors into the ship-merge roster shape. Counts every
+    ROSTER_COUNT_STATES key (zero when absent), so counts sum to the issuer census; every episode gets its ladder reclaim dates surfaced.
+    Raises ``ValueError("mixed_definition_digest")`` when descriptors disagree on
+    ``definition_sha256``; falls back to ``LineageSpec().digest`` when ``descriptors`` is empty."""
+    spec_default = LineageSpec()
+    digests = {d.get("definition_sha256") for d in descriptors.values() if d.get("definition_sha256")}
+    if not digests:
+        definition_sha256 = spec_default.digest
+    else:
+        if len(digests) > 1:
+            raise ValueError("mixed_definition_digest")
+        definition_sha256 = next(iter(digests))
+
+    counts = {k: 0 for k in ROSTER_COUNT_STATES}
+    for desc in descriptors.values():
+        state = desc.get("state")
+        if state in counts:
+            counts[state] += 1
+
+    episodes: list[dict] = []
+    for ticker, desc in descriptors.items():
+        for ep in desc.get("episodes") or []:
+            lad = ep.get("ladder") or {}
+            episodes.append({
+                "ticker": ticker,
+                "episode_id": ep.get("episode_id"),
+                "prior_episode_id": ep.get("prior_episode_id"),
+                "leadership_qualified_at": ep.get("leadership_qualified_at"),
+                "phase": ep.get("phase"),
+                "break_class": ep.get("break_class"),
+                "correction_trough_on": ep.get("correction_trough_on"),
+                "reclaim_50d_on": lad.get("reclaim_50d_on"),
+                "reclaim_200d_on": lad.get("reclaim_200d_on"),
+                "closed_on": ep.get("closed_on"),
+                "close_reason": ep.get("close_reason"),
+            })
+
+    return {"schema": SCHEMA, "era": ERA, "as_of": as_of,
+            "definition_sha256": definition_sha256, "evidence_mode": EVIDENCE_MODE,
+            "authority": dict(AUTHORITY),
+            "episodes": episodes, "counts": counts, "coverage": dict(coverage)}

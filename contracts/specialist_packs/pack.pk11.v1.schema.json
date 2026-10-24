@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk11.v1.schema.json",
   "title": "Specialist pack PK11 v1 catalogue",
-  "description": "Financial-institution credit/capital/liquidity. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Financial-institution credit/capital/liquidity. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk11/v1",
   "pack_id": "PK11",
   "name": "Financial-institution credit/capital/liquidity",
@@ -16,10 +16,291 @@
     "production source trace",
     "BAC (cik 0000070858)"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "provision_for_credit_losses_total",
+      "name": "Provision for credit losses, total (pack formula)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "credit_loss_expense_financing_receivables",
+      "name": "Credit loss expense (reversal), financing receivables (formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "credit_loss_expense_off_balance_sheet",
+      "name": "Credit loss expense (reversal), off-balance-sheet credit exposures (formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "allowance_for_credit_losses",
+      "name": "Allowance for credit losses",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "net_write_offs",
+      "name": "Allowance for credit losses, write-offs net of recoveries (rollforward input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "loans_held_for_investment",
+      "name": "Loans and leases held for investment",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "deposits",
+      "name": "Deposits",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "cet1_capital",
+      "name": "Common equity tier 1 capital",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "risk_weighted_assets",
+      "name": "Risk-weighted assets",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "net_interest_income",
+      "name": "Net interest income",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "cet1_ratio_disclosed",
+      "name": "Common equity tier 1 capital ratio, disclosed",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "regulatory_minimum_disclosed",
+      "name": "Regulatory minimum CET1 capital ratio, disclosed",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "lcr_disclosed",
+      "name": "Liquidity coverage ratio, disclosed",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "nsfr_disclosed",
+      "name": "Net stable funding ratio, disclosed",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "liquid_assets_disclosed",
+      "name": "Liquid assets, disclosed",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "npl_or_npa_disclosed",
+      "name": "Nonperforming loans or assets, disclosed",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "acl_coverage",
+      "kind": "cross_statement",
+      "operands": [
+        "allowance_for_credit_losses",
+        "loans_held_for_investment"
+      ]
+    },
+    {
+      "check_id": "cet1_vs_minimum",
+      "kind": "cross_statement",
+      "operands": [
+        "cet1_ratio_disclosed",
+        "regulatory_minimum_disclosed"
+      ]
+    },
+    {
+      "check_id": "capital_ratio_arithmetic",
+      "kind": "cross_statement",
+      "operands": [
+        "cet1_capital",
+        "risk_weighted_assets",
+        "cet1_ratio_disclosed"
+      ]
+    },
+    {
+      "check_id": "provision_vs_acl_rollforward",
+      "kind": "rollforward",
+      "operands": [
+        "allowance_for_credit_losses",
+        "credit_loss_expense_financing_receivables",
+        "net_write_offs"
+      ]
+    },
+    {
+      "check_id": "nii_not_revenue",
+      "kind": "qualitative_presence",
+      "operands": [
+        "net_interest_income",
+        "core:revenue"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "division_by_zero",
+      "parameter": null,
+      "meaning": "a ratio denominator is zero"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    },
+    {
+      "code": "issuer_class_unknown",
+      "parameter": null,
+      "meaning": "the SIC needed to resolve applicability is unbound"
+    },
+    {
+      "code": "industrial_basis_excluded_for_financial_institution",
+      "parameter": null,
+      "meaning": "(K1K2) an industrial-basis row on a bank-class issuer"
+    },
+    {
+      "code": "issuer_class_not_bank",
+      "parameter": null,
+      "meaning": "the resolver class for the issuer's SIC is not bank, so the pack does not apply"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

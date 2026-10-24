@@ -1,0 +1,23 @@
+{
+  "before": {
+    "declared": 24,
+    "checked": 23,
+    "missing": [
+      "scripts/stage_official_feed_press.py"
+    ],
+    "result": "FAIL reproduced"
+  },
+  "after": {
+    "declared": 24,
+    "checked": 24,
+    "missing": [],
+    "positive": true,
+    "missing_entrypoint_refused": true,
+    "changed_entrypoint_refused": true,
+    "payload_compiles": true
+  },
+  "checker_sha256": "4fcc2b5305d3119118601e177c8b85663875ef75044ed27947f262174e2c395d",
+  "production_execution": false,
+  "original_expected_hashes_unchanged": true,
+  "release_application_head_unchanged": "5d06f81f068aa876743862a1d16b4687adca6422"
+}

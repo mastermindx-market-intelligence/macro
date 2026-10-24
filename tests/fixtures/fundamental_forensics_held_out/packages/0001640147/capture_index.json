@@ -1,0 +1,38 @@
+[
+  {
+    "accession": "0001640147-23-000030",
+    "form": "10-K",
+    "period_of_report": "2023-01-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "6950af86795852aa6a971bf7a168eb51ca1c052b871bc4a83d2927fada1ae803",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001640147-23-000260",
+    "form": "10-Q",
+    "period_of_report": "2023-10-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "b6ec096216c860776dd4a45782bfa04b6cbcd7d669e6beeed11a6dceb5c06924",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001640147-23-000199",
+    "form": "10-Q",
+    "period_of_report": "2023-07-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "91ba7d1f823bb93d9a7f2e8ff4a703d4ee4bff2f898c1484c7db163fd9ed1777",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001640147-24-000123",
+    "form": "DEF 14A",
+    "period_of_report": "2024-01-31",
+    "selection": "capture_only",
+    "manifest_sha256": null,
+    "admission": "member_missing:presentation",
+    "statement_roles_state": null
+  }
+]

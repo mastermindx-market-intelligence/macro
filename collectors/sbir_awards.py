@@ -47,16 +47,18 @@ import argparse
 import hashlib
 import json
 import logging
+from functools import lru_cache
 import os
 import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode
 
 import pandas as pd
 import requests
+from jsonschema import Draft202012Validator, FormatChecker
 
 from collectors.base import Adapter
 from lib import config
@@ -632,6 +634,141 @@ def sbir_projection_generation_matches(state: dict | None, frame: pd.DataFrame) 
     )
 
 
+def _sbir_format_checker() -> FormatChecker:
+    """Own the two used formats without optional jsonschema format packages."""
+    checker = FormatChecker(formats=[])
+
+    @checker.checks("date", raises=(ValueError, TypeError))
+    def source_date(value: Any) -> bool:
+        if not isinstance(value, str):
+            return True  # The schema owns nullability and types.
+        return bool(_ISO_DATE.fullmatch(value)) and bool(datetime.strptime(value, "%Y-%m-%d"))
+
+    @checker.checks("date-time", raises=(ValueError, TypeError))
+    def source_clock(value: Any) -> bool:
+        if not isinstance(value, str):
+            return True
+        parsed = datetime.fromisoformat(value)
+        return parsed.tzinfo is not None and parsed.utcoffset().total_seconds() == 0
+
+    return checker
+
+
+@lru_cache(maxsize=5)
+def _sbir_contract_validator(contract: str) -> Draft202012Validator:
+    """Load only the five local standalone source schemas; no remote resolution."""
+    contracts = {
+        SBIR_OBSERVATION_SCHEMA, SBIR_COLLECTION_RECEIPT_SCHEMA,
+        SBIR_PROJECTION_STATE_SCHEMA, SBIR_INGEST_STATUS_SCHEMA, SBIR_COVERAGE_MANIFEST_SCHEMA,
+    }
+    if contract not in contracts:
+        raise ValueError("unknown SBIR source schema")
+    name = contract.removeprefix("government_revenue.") + ".schema.json"
+    path = Path(__file__).resolve().parents[1] / "contracts" / "government_revenue" / name
+    schema = json.loads(path.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema, format_checker=_sbir_format_checker())
+
+
+def validate_sbir_source_contract(payload: Any, contract: str) -> None:
+    """Validate canonical JSON shape without exposing rejected source values."""
+    try:
+        json.dumps(payload, allow_nan=False)
+    except (ValueError, TypeError):
+        raise ValueError("SBIR source artifact is not finite canonical JSON") from None
+    error = next(_sbir_contract_validator(contract).iter_errors(payload), None)
+    if error is not None:
+        # Do not echo error.message: it may contain the forbidden private value.
+        raise ValueError("SBIR source schema violation: " + contract) from None
+    if contract == SBIR_COLLECTION_RECEIPT_SCHEMA:
+        _validate_sbir_receipt_binding(payload)
+
+
+def _validate_sbir_receipt_binding(receipt: dict) -> None:
+    pairs = parse_qsl(receipt["query"], keep_blank_values=True)
+    query = dict(pairs)
+    if len(query) != len(pairs) or set(query) not in ({"agency", "rows", "start"}, {"agency", "rows", "start", "year"}):
+        raise ValueError("SBIR receipt query binding is invalid")
+    try:
+        query["rows"] = int(query["rows"])
+        query["start"] = int(query["start"])
+    except (ValueError, TypeError):
+        raise ValueError("SBIR receipt query binding is invalid") from None
+    if (
+        query["agency"] != receipt["agency"] or query.get("year") != receipt["year"]
+        or not 1 <= query["rows"] <= MAX_PAGE_SIZE
+        or query["start"] != receipt["offset"]
+        or query["start"] != (receipt["page"] - 1) * query["rows"]
+        or receipt["record_count"] > query["rows"]
+        or receipt["short_page"] != (receipt["record_count"] < query["rows"])
+        or receipt["request_sha256"] != _sha256_json({"method": "GET", "endpoint": SBIR_AWARDS_URL, "query": query})
+    ):
+        raise ValueError("SBIR receipt request binding is invalid")
+    expected = _sha256_json({key: receipt[key] for key in (
+        "observed_at", "rail", "endpoint", "query", "page", "record_count", "request_sha256", "response_sha256",
+    )})
+    if receipt["receipt_id"] != "sbir-award:" + expected:
+        raise ValueError("SBIR receipt identity binding is invalid")
+
+
+def _validate_sbir_observation_frame(frame: pd.DataFrame) -> None:
+    if set(frame.columns) != set(SBIR_OBSERVATION_COLUMNS):
+        raise ValueError("SBIR observation columns differ from the canonical schema")
+    for _, row in frame.iterrows():
+        record = {column: _generation_value(row.get(column)) for column in SBIR_OBSERVATION_COLUMNS}
+        validate_sbir_source_contract(record, SBIR_OBSERVATION_SCHEMA)
+        if (
+            record["sbir_award_key"] != record["agency_tracking_number"]
+            or record["source_at"] != record["effective_at"]
+            or record["source_at_field"] != ("proposal_award_date" if record["source_at"] else None)
+            or record["known_at"] != record["observed_at"]
+            or datetime.fromisoformat(record["first_seen_at"]) > datetime.fromisoformat(record["known_at"])
+        ):
+            raise ValueError("SBIR observation semantic binding is invalid")
+
+
+def validate_sbir_source_bundle(frame: pd.DataFrame, state: dict, status: dict) -> None:
+    """Check final source artifacts before receipts or activation bytes change."""
+    _validate_sbir_observation_frame(frame)
+    validate_sbir_source_contract(state, SBIR_PROJECTION_STATE_SCHEMA)
+    validate_sbir_source_contract(status, SBIR_INGEST_STATUS_SCHEMA)
+    validate_sbir_source_contract(state["coverage_manifest"], SBIR_COVERAGE_MANIFEST_SCHEMA)
+    manifest_id = sbir_coverage_manifest_id(state["coverage_manifest"])
+    if (
+        not sbir_projection_generation_matches(state, frame)
+        or status["projection_generation_id"] != state["projection_generation_id"]
+        or state["coverage_manifest_id"] != manifest_id
+        or status["coverage_manifest_id"] != manifest_id
+        or status["coverage_manifest"] != state["coverage_manifest"]
+        or status["run_id"] != state["run_id"]
+        or status["observed_at"] != state["observed_at"]
+        or status["known_at"] != status["observed_at"]
+        or status["effective_at"] != status["observed_at"]
+        or status["last_successful_observed_at"] != state["last_successful_observed_at"]
+        or status["freshness"]["last_good_at"] != status["observed_at"]
+        or status["observations_total"] != len(frame)
+        or status["cells_declared"] != len(state["coverage_manifest"]["query_cells"])
+        or status["cells_collected"] != len(state["cells"])
+        or status["cells_declared"] != status["cells_collected"]
+        or state["last_successful_observed_at"] != state["observed_at"]
+        or status["first_baseline"] != state["first_baseline"]
+        or status["rows_seen"] != sum(cell["rows_seen"] for cell in state["cells"])
+        or status["rows_accepted"] != sum(cell["rows_accepted"] for cell in state["cells"])
+        or status["receipts_this_run"] != sum(len(cell["receipt_ids"]) for cell in state["cells"])
+        or status["requests_this_run"] != status["receipts_this_run"]
+        or status["observations_new_this_run"] > status["rows_accepted"]
+        or status["observations_new_this_run"] > status["observations_total"]
+        or sum(status["phase_counts_this_run"].values()) != status["rows_accepted"]
+        or status["cells_source_exhausted"] != sum(cell["source_exhausted"] for cell in state["cells"])
+        or status["cells_truncated_by_page_cap"] != sum(cell["truncated_by_page_cap"] for cell in state["cells"])
+        or [{"agency": cell["agency"], "year": cell["year"]} for cell in state["cells"]] != state["coverage_manifest"]["query_cells"]
+        or any(cell["rows_accepted"] > cell["rows_seen"] or cell["pages_fetched"] != len(cell["receipt_ids"])
+            or cell["source_exhausted"] and cell["truncated_by_page_cap"] for cell in state["cells"])
+        or state["run_id"] != "sbir-" + _sha256_json({"observed_at": state["observed_at"], "coverage_manifest_id": manifest_id})[:24]
+    ):
+        raise ValueError("SBIR source bundle semantic binding is invalid")
+
+
 def _validated_receipt(receipt: Any, observed_at: str) -> tuple[str, str]:
     """Require the exact page receipt that contained this row."""
     if not isinstance(receipt, dict):
@@ -899,6 +1036,7 @@ def _verify_staged_parquet(tmp: Path, frame: pd.DataFrame) -> pd.DataFrame:
         raise RuntimeError(
             f"staged artifact dropped canonical columns: {tmp.name}: {', '.join(absent)}"
         )
+    _validate_sbir_observation_frame(replayed)
     return replayed
 
 
@@ -931,6 +1069,7 @@ def _append_receipts(receipts: Iterable[dict[str, Any]], path: Path) -> int:
                     raise ValueError("receipt record missing receipt_id")
                 if _contains_forbidden_receipt_key(row):
                     raise ValueError("raw, sensitive, or PII receipt field is forbidden")
+                validate_sbir_source_contract(row, SBIR_COLLECTION_RECEIPT_SCHEMA)
                 canonical = json.dumps(row, sort_keys=True, separators=(",", ":"))
                 receipt_id = str(row["receipt_id"])
                 previous = existing_receipts.get(receipt_id)
@@ -944,6 +1083,7 @@ def _append_receipts(receipts: Iterable[dict[str, Any]], path: Path) -> int:
 
     new_lines: list[str] = []
     for receipt in receipts:
+        validate_sbir_source_contract(receipt, SBIR_COLLECTION_RECEIPT_SCHEMA)
         receipt_id = _text(receipt.get("receipt_id"))
         if not receipt_id:
             raise ValueError("sbir collection receipt missing receipt_id")
@@ -1148,6 +1288,7 @@ class SbirAwardsCollector:
             record_count=len(rows),
             short_page=len(rows) < self.page_size,
         )
+        validate_sbir_source_contract(receipt, SBIR_COLLECTION_RECEIPT_SCHEMA)
         return rows, receipt
 
     # ------------------------------------------------------------------ paths
@@ -1184,6 +1325,7 @@ class SbirAwardsCollector:
             max_rows_per_run=MAX_ROWS_PER_RUN,
             request_pacing_seconds=self.request_pacing_seconds,
         )
+        validate_sbir_source_contract(manifest, SBIR_COVERAGE_MANIFEST_SCHEMA)
         manifest_id = sbir_coverage_manifest_id(manifest)
 
         previous_observations = _read_existing(paths["observations"])
@@ -1200,6 +1342,7 @@ class SbirAwardsCollector:
             raise RuntimeError(
                 "active sbir projection state does not match its observation ledger"
             )
+        _validate_sbir_observation_frame(previous_observations)
         first_baseline = previous_observations.empty and not previous_state
 
         run_id = "sbir-" + _sha256_json({
@@ -1362,6 +1505,8 @@ class SbirAwardsCollector:
             "limitations": [PROGRESSION_LIMITATION],
             "authority": dict(AUTHORITY),
         }
+
+        validate_sbir_source_bundle(merged, state, status)
 
         # Receipt evidence lands before the ledger; the state and status are the
         # activation markers and land only after the full ledger does.

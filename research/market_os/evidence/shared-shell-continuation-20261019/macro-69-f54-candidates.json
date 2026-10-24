@@ -1,0 +1,164 @@
+{
+  "schema": "mastermind.attended.threeway_candidate.v1",
+  "observed_at": "2026-10-20T04:17:13.069203+00:00",
+  "head": "69e8566dc85e701c70ace72320a16d4ba6c95847",
+  "incoming": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+  "base": "d52827f26b062f67d594350a65becf406710d4d1",
+  "preview_tree": "2469d1a134b60f6117068ca79f7c19cb3307ff95",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-69-f54-candidate-.github_ci_legacy-jobs.yml",
+      "bytes": 1921381,
+      "sha256": "2765218fe4b440ee9cb7aa164094cdd5bd300f03d1f5200dd5852ad71e7f4447",
+      "base_blob": "3c0bea4b5cb14cdec3d17864f836562602fd076c",
+      "ours_blob": "ac017c679b8c3699d8d641ab06ce4c3d530c6faa",
+      "incoming_blob": "14156cca4c347342b918e9693c1d42ff11bfaf98"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-69-f54-candidate-app_deploy_Caddyfile",
+      "bytes": 75883,
+      "sha256": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+      "base_blob": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "ours_blob": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6",
+      "incoming_blob": "923bce007b403b80aa8d5538b3964fea90de0569"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-69-f54-candidate-tests_test_ci_pack.py",
+      "bytes": 365585,
+      "sha256": "cb3dd519f5d4edac425519243a0d821f68b6e74037ea61fba94ed89a5febfc7c",
+      "base_blob": "f9b403c51c650ab0e5ab1a774a0e10dfbdb10d94",
+      "ours_blob": "65501e5d6b7b7c83775dbeac73c0096fc4956582",
+      "incoming_blob": "2bdbfa6a9aed0789fc478cfae0ee56c0a339cc42"
+    }
+  ],
+  "manifest_jobs": 329,
+  "manifest_conflicts_resolved": 10,
+  "manifest_all_fields_verified": true,
+  "manifest_simultaneous_path_changes": [
+    {
+      "path": "jobs.bea-gvc-current-descriptive-consumer.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.c19-wp32-integrated-answer-correction-denial-pins.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.c19-wp22-dhi-traversal.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.conviction-profile.paths",
+      "ours_added": [
+        "lib/shared_shell.py"
+      ],
+      "incoming_added": [
+        "collectors/edgar_guidance.py",
+        "collectors/guidance_source_context.py",
+        "collectors/sec_document_spine.py",
+        "collectors/sec_request_pacer.py",
+        "engine/fundamental_forensics/sec_document_spine.py",
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py",
+        "tests/test_guidance_source_context.py",
+        "tests/test_guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.fif-kernel-guards.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.nw-lobe-unfreeze.paths",
+      "ours_added": [
+        "lib/shared_shell.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.crypto-assistant-context.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.washout-turn-organ.paths",
+      "ours_added": [
+        "lib/shared_shell.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.research-price-panel.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    },
+    {
+      "path": "jobs.ticker-news-qbus.paths",
+      "ours_added": [
+        "lib/shared_shell.py",
+        "lib/site_assets.py"
+      ],
+      "incoming_added": [
+        "engine/guidance_source_context.py",
+        "engine/guidance_source_evidence.py"
+      ]
+    }
+  ],
+  "manifest_checked_nodes": 397,
+  "test_incoming_executable_ast_preserved": true,
+  "test_both_histories_preserved": true,
+  "test_incoming_weight_ceiling_retained_pending_measurement": 5661,
+  "caddy_incoming_exact_four_insertions": true,
+  "caddy_ours_other_bytes_preserved": true,
+  "working_source_edited": false,
+  "index_unchanged": true
+}

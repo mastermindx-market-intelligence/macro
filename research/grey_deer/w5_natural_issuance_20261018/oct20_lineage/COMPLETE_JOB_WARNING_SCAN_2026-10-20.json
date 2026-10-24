@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-20T03:47:51.936177+00:00",
+  "job_id": 117575031870,
+  "source_path": "/tmp/rr-w5-engine-job117575031870-20261018.log",
+  "source_bytes": 4482863,
+  "source_sha256": "8b0852ab26cf54a928f9c88be752621d6ebee546db60131176f1805f366b9702",
+  "complete_line_count": 44668,
+  "scan_scope": "All decoded job-log lines; case-insensitive grey.deer.pullback references and same-line warning/error combinations; not a parsed GitHub annotations API result.",
+  "all_grey_deer_pullback_matches": [
+    {
+      "line": 37299,
+      "text": "engine\tUNKNOWN STEP\t2026-10-18T06:00:08.8627340Z   GREY_DEER_PULLBACK_WRITER_IDENTITY: daily.yml:engine"
+    },
+    {
+      "line": 37300,
+      "text": "engine\tUNKNOWN STEP\t2026-10-18T06:00:08.8627720Z   GREY_DEER_PULLBACK_GRADER_IDENTITY: daily.yml:engine"
+    },
+    {
+      "line": 38123,
+      "text": "engine\tUNKNOWN STEP\t2026-10-18T06:27:16.5255050Z ##[group]Grey Deer pullback prospective issue+grade (grey_deer_pullback_nightly)  [3s, rc=0]"
+    }
+  ],
+  "same_line_warning_error_matches": [],
+  "no_provider_or_first_party_execution": true
+}

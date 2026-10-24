@@ -1,0 +1,24 @@
+{
+  "scope": "Pinned protected-main preparation only; not current installation/browser proof",
+  "main": "a0fa900488db2f9270a2ce5cda6f7418a87eb86f",
+  "pages": [
+    {
+      "path": "blog/index.html",
+      "expected": "2b5efaa610549f7d5f5e438e6eda5c91f4a97bcee32765aa55dd0b20ab2466f8",
+      "actual": "2b5efaa610549f7d5f5e438e6eda5c91f4a97bcee32765aa55dd0b20ab2466f8",
+      "unchanged": true
+    },
+    {
+      "path": "learn/index.html",
+      "expected": "22120fc98543ce0465d8f2ebeb43d84b5ac249716000f7a3f56e5af26d8844b2",
+      "actual": "22120fc98543ce0465d8f2ebeb43d84b5ac249716000f7a3f56e5af26d8844b2",
+      "unchanged": true
+    },
+    {
+      "path": "tools/calculators/position-size.html",
+      "expected": "be34f6882a73ba104e45ddda631c0bb7225913dca5ae1f80acc08e2f53df8d46",
+      "actual": "be34f6882a73ba104e45ddda631c0bb7225913dca5ae1f80acc08e2f53df8d46",
+      "unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+{
+  "en": {
+    "chart": {
+      "answer": "This is an illustration specimen. All numbers and scenarios are fictional and demonstrate the native answer components.",
+      "wire": {
+        "type": "chart",
+        "visual_id": "515413ef991c9afbe68cd7f5",
+        "visual": {
+          "version": 1,
+          "template": "bar",
+          "basis": "illustrative",
+          "title": "Treasury yield changes · fictional example",
+          "subtitle": "A teaching example of the chart template, not observed market data.",
+          "takeaway": "Longer maturities fall more in this example; positive and negative moves share the same zero baseline.",
+          "unit": "bp",
+          "columns": [
+            "Maturity",
+            "Change"
+          ],
+          "rows": [
+            [
+              "2Y",
+              1.1
+            ],
+            [
+              "3Y",
+              -0.3
+            ],
+            [
+              "5Y",
+              -1.8
+            ],
+            [
+              "7Y",
+              -2.6
+            ],
+            [
+              "10Y",
+              -3.2
+            ],
+            [
+              "20Y",
+              -3.5
+            ],
+            [
+              "30Y",
+              -3.8
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "sources": [],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    },
+    "brief": {
+      "answer": "This is an illustration specimen. All numbers and scenarios are fictional and demonstrate the native answer components.",
+      "wire": {
+        "type": "chart",
+        "visual_id": "0738c8275f7fb15c77e68373",
+        "visual": {
+          "version": 1,
+          "template": "scenarios",
+          "basis": "illustrative",
+          "title": "Three paths to distinguish",
+          "subtitle": "A conceptual teaching framework, not a live forecast or trading instruction.",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "Path",
+            "Condition",
+            "Interpretation"
+          ],
+          "rows": [
+            [
+              "Continuation",
+              "Yields ease while risk compensation stabilizes.",
+              "Verify the following observations rather than relying on a single rebound."
+            ],
+            [
+              "Consolidation",
+              "Part of the move retraces without breaking the relevant range.",
+              "Separate short-term noise from a persistent change."
+            ],
+            [
+              "Reversal",
+              "New observations support the previous driver again.",
+              "Revisit the conditions and identify which evidence has changed."
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "sources": [],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    },
+    "timeline": {
+      "answer": "These synthetic events match the fixture tool output exactly. They are not actual economic releases.",
+      "wire": {
+        "type": "chart",
+        "visual_id": "830567fdf1994b9e8a263cd2",
+        "visual": {
+          "version": 1,
+          "template": "timeline",
+          "basis": "source",
+          "title": "Source-bound timeline · synthetic test data",
+          "subtitle": "Tests source binding and display only; not a real calendar or market feed.",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "Time",
+            "Event"
+          ],
+          "rows": [
+            [
+              "09:00",
+              "Release A"
+            ],
+            [
+              "10:30",
+              "Release B"
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "text_cells_matched": 4,
+            "sources": [
+              "fixture_read"
+            ],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    }
+  },
+  "zh": {
+    "chart": {
+      "answer": "这是一个图解教学示例。所有数值及情景均为虚构，用于展示原生回答组件。",
+      "wire": {
+        "type": "chart",
+        "visual_id": "765a045df45d371724af1492",
+        "visual": {
+          "version": 1,
+          "template": "bar",
+          "basis": "illustrative",
+          "title": "国债收益率变化 · 虚构示例",
+          "subtitle": "仅演示图表功能；并非实际市场数据。",
+          "takeaway": "长端下降更多；非零基线以上及以下的变化均按真实比例显示。",
+          "unit": "bp",
+          "columns": [
+            "期限",
+            "变化"
+          ],
+          "rows": [
+            [
+              "2Y",
+              1.1
+            ],
+            [
+              "3Y",
+              -0.3
+            ],
+            [
+              "5Y",
+              -1.8
+            ],
+            [
+              "7Y",
+              -2.6
+            ],
+            [
+              "10Y",
+              -3.2
+            ],
+            [
+              "20Y",
+              -3.5
+            ],
+            [
+              "30Y",
+              -3.8
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "sources": [],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    },
+    "brief": {
+      "answer": "这是一个图解教学示例。所有数值及情景均为虚构，用于展示原生回答组件。",
+      "wire": {
+        "type": "chart",
+        "visual_id": "134d55eaab7b99968c762211",
+        "visual": {
+          "version": 1,
+          "template": "scenarios",
+          "basis": "illustrative",
+          "title": "如何区分三条路径",
+          "subtitle": "概念性教学框架，不是交易建议或当前市场预测。",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "路径",
+            "条件",
+            "含义"
+          ],
+          "rows": [
+            [
+              "延续",
+              "收益率回落，同时风险溢价企稳。",
+              "继续核实后续观测，而非仅依赖一次反弹。"
+            ],
+            [
+              "整理",
+              "前期变动部分回撤，但关键区间仍守住。",
+              "区分噪声与持续趋势变化。"
+            ],
+            [
+              "反转",
+              "数据重新指向原有驱动。",
+              "回顾判断条件，说明哪些证据已经改变。"
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "sources": [],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    },
+    "timeline": {
+      "answer": "这些人工事件与测试工具输出逐字一致，但不代表真实经济发布。",
+      "wire": {
+        "type": "chart",
+        "visual_id": "4ca7d5a4b4cc563ba8eadb3c",
+        "visual": {
+          "version": 1,
+          "template": "timeline",
+          "basis": "source",
+          "title": "来源绑定时间线 · 人工测试数据",
+          "subtitle": "仅验证来源绑定及显示，并非真实日历或市场数据。",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "时间",
+            "事件"
+          ],
+          "rows": [
+            [
+              "09:00",
+              "发布甲"
+            ],
+            [
+              "10:30",
+              "发布乙"
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "text_cells_matched": 4,
+            "sources": [
+              "fixture_read"
+            ],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    }
+  }
+}

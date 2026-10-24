@@ -1,0 +1,10 @@
+{
+  "close": {
+    "drawerHidden": true,
+    "focus": "savedViewSelect"
+  },
+  "escape": {
+    "drawerHidden": true,
+    "focus": "savedViewSelect"
+  }
+}

@@ -137,6 +137,11 @@ pages:
   macro:japan:
     archetype: "regime_dashboard"
 
+  macro:macro_family:
+    archetype: "regime_dashboard"
+    evidence: [site/macro/]
+    why: "The eleven committed macro fragments expose regime-driver readings and changes across growth, inflation, jobs, money, credit, rates and related domains."
+
   macro:macro:
     priority: "P0"
     archetype: "regime_dashboard"
@@ -308,6 +313,11 @@ pages:
   macro:subsectors_china:
     archetype: "discovery_board"
 
+  macro:theme_tree:
+    archetype: "discovery_board"
+    evidence: [templates/theme_tree.html.j2]
+    why: "An exploration board from categories through micro-themes to companies, with counts, breadth and company lookup; the composition routes discovery."
+
   macro:us_stocks:
     priority: "P0"
     archetype: "discovery_board"
@@ -354,6 +364,16 @@ pages:
   macro:cn_reversal_sleeve:
     archetype: "instrument_analyzer"
     why: "one monthly contrarian sleeve, analysed as a single instrument"
+
+  macro:consumer_cyclical_plnt:
+    archetype: "instrument_analyzer"
+    evidence: [templates/consumer_cyclical_plnt.html.j2]
+    why: "A PLNT economic-change detail card with metric availability and provenance; its synthetic input does not change the company-detail composition."
+
+  macro:financial_lineage:
+    archetype: "instrument_analyzer"
+    evidence: [site/financial_lineage.html]
+    why: "Point-in-time analysis of one issuer's balance-sheet metrics and filing changes; the committed Apple fixture remains display-only."
 
   macro:fund_ako:
     archetype: "instrument_analyzer"
@@ -753,6 +773,11 @@ pages:
     archetype: "intelligence_desk"
     why: "smart-money holdings desk ('which stocks fund managers are buying'), kin to macro:smart_money"
 
+  macro:finance_intelligence:
+    archetype: "intelligence_desk"
+    evidence: [templates/finance_intelligence.html.j2]
+    why: "A financial-system research desk with dated changes, rerating links, company exposure and source receipts."
+
   macro:flow_velocity:
     archetype: "intelligence_desk"
 
@@ -854,6 +879,11 @@ pages:
   macro:calibration:
     archetype: "editorial"
     why: "calibration/measurement reading surface, kin to macro:measurement"
+
+  macro:glossary:
+    archetype: "editorial"
+    evidence: [templates/glossary.html.j2]
+    why: "A reading reference of plain-language definitions with an alphabet rail, domain sections and source links; search narrows the reading surface."
 
   macro:learn:
     archetype: "editorial"
@@ -1044,12 +1074,32 @@ pages:
   terminal:analysis:
     archetype: "chart_workspace"
 
+  terminal:dev_chart_bench:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/dev/chart-bench/page.tsx]
+    why: "A full-viewport chart-engine benchmark mount; the chart surface keeps Terminal's governing doctrine while its developer-only lifecycle stays separate."
+
+  terminal:dev_futures:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/dev/futures/page.tsx]
+    why: "A production-disabled preview of the Terminal futures chart workspace with synthetic scenarios; chart composition remains separate from data provenance."
+
+  terminal:dev_futures_sample:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/dev/futures-sample/page.tsx]
+    why: "A production-disabled historical-sample futures chart and replay surface, governed like the other Terminal chart workspaces."
+
   terminal:discover:
     priority: "P0"
     archetype: "chart_workspace"
     primary_user_question: "What is worth looking at right now?"
     evidence: [terminal/components/gates/SignupGate.tsx]
     why: "Terminal app view — chart_workspace records the governing doctrine (adjudicated divergence, census §3.4), not the view's function; re-keying by function would subject Terminal views to Macro archetype law. Adjudicated 2026-08-12, DS-PR-1 review."
+
+  terminal:dislocations:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/dislocations/page.tsx]
+    why: "A signed-in Terminal app view of dislocations joined to the watchlist and book; it follows the existing discover and alerts doctrine ruling."
 
   terminal:embed_chart:
     archetype: "chart_workspace"
@@ -1064,6 +1114,31 @@ pages:
     primary_user_question: "Where is the options market positioned?"
     evidence: [terminal/lib/entitlement.ts]
     note: "terminal_live_options feature — essential + pro (incl. trial); anonymous and free get OptionsPaywall"
+
+  terminal:options_futures:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/options/futures/page.tsx]
+    why: "The paid Terminal futures workspace, mounted through FuturesWorkspaceMount and governed like the existing options view."
+
+  terminal:legacypath:
+    archetype: "chart_workspace"
+    evidence: ['terminal/app/(shell)/[...legacyPath]/page.tsx']
+    why: "The persistent Terminal route host follows Terminal doctrine; each embedded Macro document keeps its own canonical archetype."
+
+  terminal:monitor:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/monitor/page.tsx]
+    why: "A signed-in Terminal app view, governed by the existing Terminal doctrine divergence like alerts and discover."
+
+  terminal:research:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/research/page.tsx]
+    why: "A signed-in Terminal app view; its native reader follows Terminal doctrine while retained Macro documents keep their own archetypes."
+
+  terminal:today:
+    archetype: "chart_workspace"
+    evidence: [terminal/app/(shell)/today/page.tsx]
+    why: "A signed-in Terminal app view, governed by the existing Terminal doctrine divergence rather than the Macro command-center layout law."
 
   terminal:portfolio:
     priority: "P0"
@@ -1180,6 +1255,21 @@ pages:
 
   terminal:dev_theater:
     archetype: "utility"
+
+  terminal:dev_workspaces:
+    archetype: "utility"
+    evidence: [terminal/app/dev/workspaces/page.tsx]
+    why: "An isolated saved-workspace management menu with seeded sharing states and no mounted market chart; internal component plumbing like dev_settings."
+
+  terminal:invite:
+    archetype: "utility"
+    evidence: [terminal/app/invite/page.tsx]
+    why: "A team-invitation acceptance and sign-in flow, within the account utility family."
+
+  terminal:reset_password:
+    archetype: "utility"
+    evidence: [terminal/app/reset-password/page.tsx]
+    why: "A password-recovery flow that mounts the recovery client from the existing recovery-cookie state."
 
   terminal:login:
     archetype: "utility"

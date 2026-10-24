@@ -1,0 +1,19 @@
+
+tests/test_market_packet.py:1873: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_final_regular_interval_survives_post_close_delivery[False]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_final_regular_interval_survives_post_close_delivery[True]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[regular-1-True]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[regular-90-True]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[regular-91-False]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[day-2-True]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[minute-1-False]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[trade-1-False]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[regular--61-False]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_closing_point_requires_bounded_explicit_regular_price[regular--60-True]
+FAILED tests/test_build_basket_pulse.py::TestClosingComparison::test_half_day_source_close_comes_from_shared_calendar
+FAILED tests/test_market_packet.py::test_closing_comparison_consumer_keeps_real_source_time[settled_regular-1-True]
+FAILED tests/test_market_packet.py::test_closing_comparison_consumer_keeps_real_source_time[settled_regular-90-True]
+13 failed, 4 passed, 312 deselected in 2.22s

@@ -67,6 +67,32 @@ def test_public_contract_and_transform_registry_are_fixed():
     }
 
 
+def test_indexed_direct_text_preserves_owner_and_mixed_content_without_full_scan():
+    content = (
+        b'<r xmlns:ix="http://www.xbrl.org/2013/inlineXBRL">before'
+        b'<a>Caf\xc3\xa9&amp;<![CDATA[raw]]><!--split-->tail'
+        b'<b>nested</b>after<ix:exclude>excluded</ix:exclude>end</a>'
+        b'<empty/>' + b'<s>unrelated</s>' * 1000 + b'</r>'
+    )
+    _, nodes, events = parser_module._TreeBuilder(
+        content, parser_module._limits_snapshot()
+    ).build()
+    reference_events = list(events)
+
+    class IndexedOnlyEvents(parser_module._TextEvents):
+        def __iter__(self):
+            raise AssertionError("direct text scanned the complete event stream")
+
+    indexed = IndexedOnlyEvents(events)
+    indexed.starts = events.starts
+    for node in nodes:
+        expected = "".join(e.value for e in reference_events if e.owner is node)
+        assert parser_module._direct_text(node, indexed) == expected
+        assert parser_module._direct_text(node, reference_events) == expected
+    a = next(node for node in nodes if node.local == "a")
+    assert parser_module._direct_text(a, indexed) == "Café&rawtailafterend"
+
+
 def test_pure_instance_context_units_dimensions_and_exact_multibyte_spans():
     content = (FIXTURES / "minimal_instance.xml").read_bytes()
     result = parse_sec_filing_document(content, document_name="minimal_instance.xml")

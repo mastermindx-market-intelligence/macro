@@ -1,0 +1,5 @@
+{
+  "observation_sha256": "d584b17677dad5ea2ab5dde948b183b58bd8262a1e556bbac0bb2bfdc6c85cfb",
+  "limitation": "Native cumulative counter sum is an observation, not independently reconciled billed usage; inherited counter baselines and overlap with native-backed Fabric runs are not adjudicated. Do not add native and Fabric totals or claim complete dollar cost.",
+  "A42_status": "PARTIAL_COST_OBSERVATION; complete billed total and valid cross-system deduplication unavailable. No token-efficiency claim."
+}

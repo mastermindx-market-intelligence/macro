@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 import yaml
+import pytest
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from scripts.build_capital_structure_page import render
@@ -17,6 +18,12 @@ from scripts import build_public_pages
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 SITE = ROOT / "site"
+
+
+@pytest.fixture(autouse=True)
+def isolated_page_data(tmp_path, monkeypatch):
+    # render(tmp_path) must not let the policy sidecar append to real data/.
+    monkeypatch.setattr("lib.config.data_dir", lambda: tmp_path / "data")
 
 
 def _render_template() -> str:
@@ -66,6 +73,7 @@ def test_static_builder_writes_shell_and_exact_companion_assets(tmp_path: Path) 
     isolated_templates.mkdir()
     for name in (
         "capital_structure.html.j2",
+        "_ma_agreement_context.html.j2",
         "capital_structure_boot.js",
         "capital_structure.css",
         "capital_structure.js",

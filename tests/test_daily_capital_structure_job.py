@@ -72,16 +72,27 @@ CAPITAL_STRUCTURE_MODULES = {
         "projection — canonical/public twin must stay byte-identical",
     "scripts.check_capital_structure_health":
         "ingestion-truth gate — selected filings with zero durable evidence must fail",
+    "scripts.build_capital_structure_state":
+        "state bundle — one generation or nothing, binds the served projection",
+    "scripts.compile_capital_structure_instrument_candidate_terms":
+        "candidate terms — best-effort nightly: a refusal is recorded, never fatal",
+    "scripts.build_capital_structure_capacity_inputs":
+        "capacity inputs — one generation or nothing, binds the served state (SPEC_U1B §3)",
 }
 
 # The compilers that must stay fatal for their OWN checkpoint.  The two
 # share-count steps are excluded on purpose: they are designed to be SKIPPED
-# (repository variables default off).
+# (repository variables default off).  The candidate-term compiler is excluded
+# too, by design: its refusal is today's NORMAL night, so it is
+# continue-on-error with its outcome recorded in the checkpoint gate — the
+# capacity-inputs producer that consumes its output is the fatal one.
 FATAL_COMPILERS = (
     "scripts.compile_capital_structure_events",
     "scripts.compile_capital_structure_document_terms",
     "scripts.build_capital_structure_projection",
     "scripts.check_capital_structure_health",
+    "scripts.build_capital_structure_state",
+    "scripts.build_capital_structure_capacity_inputs",
 )
 
 # Staged path -> the step ids in THIS job that produce it.
@@ -93,7 +104,10 @@ FATAL_COMPILERS = (
 # collector's ledger in THIS tree and fails closed unless the bytes match the
 # receipt `collect` stamped.
 CS_STAGED_PATH_PRODUCERS = {
-    "data/capital_structure": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health"),
+    "data/capital_structure": (
+        "cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health", "cs_state",
+        "cs_candidates", "cs_inputs",
+    ),
     "site/capital-structure-data": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health"),
 }
 CS_GATING_PRODUCERS = sorted(
@@ -420,6 +434,11 @@ def test_health_precedes_projection_and_binds_public_freshness(steps):
         "health → projection so public freshness cannot use an older horizon; "
         f"got terms={terms}, health={health}, projection={projection}"
     )
+    state = _index_of_run(steps, "scripts.build_capital_structure_state")
+    assert projection < state, (
+        "the state bundle binds the served projection's generation, so it must run "
+        f"after the projection it reads; got projection={projection}, state={state}"
+    )
 
 
 def test_the_checkpoint_stages_only_its_own_generation(steps):
@@ -593,6 +612,69 @@ def test_the_job_is_declared_in_the_dag(steps):
     assert declared == actual_ids, (
         f"config/dag.yml declares {declared} for {JOB}, the workflow runs "
         f"{actual_ids}. The lane must match the job's real serial order."
+    )
+
+
+# --------------------------------------------------------------------------
+# SPEC_U1B §1 gate 21: the nightly materializes the capacity inputs bundle.
+# The candidate-term compiler runs first (best-effort — its refusal is today's
+# normal night and is RECORDED in the checkpoint gate, never fatal), then the
+# capacity-inputs producer (fatal — one generation or nothing), both after the
+# state bundle they bind and before the commit that stages their outputs.
+# --------------------------------------------------------------------------
+
+
+def test_u1b_daily_job_runs_compiler_then_inputs_producer_after_state(steps):
+    state_at = _index_of_run(steps, "scripts.build_capital_structure_state")
+    candidates_at = _index_of_run(
+        steps, "scripts.compile_capital_structure_instrument_candidate_terms"
+    )
+    inputs_at = _index_of_run(steps, "scripts.build_capital_structure_capacity_inputs")
+    commit_at = _index_of(steps, CS_COMMIT_STEP)
+    assert state_at < candidates_at < inputs_at < commit_at, (
+        f"order is state={state_at}, candidates={candidates_at}, inputs={inputs_at}, "
+        f"commit={commit_at}. The inputs bundle binds the served state generation, "
+        "and the checkpoint stages what the two producers wrote."
+    )
+
+    candidates = steps[candidates_at]
+    inputs = steps[inputs_at]
+    assert candidates.get("id") == "cs_candidates", candidates.get("id")
+    assert inputs.get("id") == "cs_inputs", inputs.get("id")
+    assert candidates.get("continue-on-error") is True, (
+        "the candidate-term compiler must stay best-effort: a refusal is a normal "
+        "night (instruments stay typed-unavailable), never a failed job"
+    )
+    assert "continue-on-error" not in inputs, (
+        "the capacity-inputs producer is fatal — one generation or nothing; "
+        "continue-on-error would let a torn bundle ride the checkpoint"
+    )
+    # Among the checkpoint's own gated producers, cs_candidates is the ONLY one
+    # allowed to fail: every other producer's step stays fatal.
+    for step_id in CS_GATING_PRODUCERS:
+        step = next(s for s in steps if s.get("id") == step_id)
+        assert (step.get("continue-on-error") is True) == (step_id == "cs_candidates"), (
+            f"{step_id} carries continue-on-error={step.get('continue-on-error')!r}; "
+            "only cs_candidates may fail without failing the job"
+        )
+
+    # The checkpoint gate references BOTH outcomes: the inputs producer as a hard
+    # term, the candidate compiler as a recorded success-or-failure term (so a
+    # refusal is carried into the gate without ever vetoing the commit, and a
+    # SKIPPED producer still blocks it).
+    cond = str(steps[commit_at].get("if") or "")
+    assert "steps.cs_candidates.outcome" in cond, f"if: {cond}"
+    assert "steps.cs_candidates.outcome == 'failure'" in cond, (
+        f"the recorded term must admit a REFUSED candidate compile. if: {cond}"
+    )
+    assert "steps.cs_inputs.outcome == 'success'" in cond, f"if: {cond}"
+
+    capture = steps[_index_of(steps, "capture the rejected capital-structure ledger")]
+    paths = str((capture.get("with") or {}).get("path") or "")
+    assert "data/capital_structure/instrument_candidate_terms.parquet" in paths
+    assert "data/capital_structure/capacity_inputs.json" in paths, (
+        "the rejected-generation capture must include the fatal producer's own "
+        "artifact — it is the one file that says why the night refused"
     )
 
 

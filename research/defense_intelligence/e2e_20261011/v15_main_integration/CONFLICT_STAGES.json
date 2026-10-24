@@ -1,0 +1,86 @@
+{
+  "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+    "1": {
+      "sha256": "7792e57fc14d68336525b4e8c744d2dd26292724deb827a9f2a27b5e261c45e8",
+      "bytes": 38595
+    },
+    "2": {
+      "sha256": "177595d65ab4f3667a73cf2916954e1d2cdbd74a61b82d8d404b128608358f95",
+      "bytes": 43915
+    },
+    "3": {
+      "sha256": "ea6997720f0844327ac57e3303b441ae6e0b00903f7991e5b6b0c5e79e58e75f",
+      "bytes": 38600
+    }
+  },
+  "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+    "1": {
+      "sha256": "538a1f5a6c97ec0c5e26bf77776513b6bf840a8ce7c5e1c2b86da92b0360b527",
+      "bytes": 497059
+    },
+    "2": {
+      "sha256": "435373e26d447899e43015784d57809c7be791efd43605194c5e3a18ea4632b7",
+      "bytes": 497059
+    },
+    "3": {
+      "sha256": "c28b48ca6d4de62a92bd8b09032c88084fd037ba8a3682366a3f64694a33e199",
+      "bytes": 497059
+    }
+  },
+  "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+    "1": {
+      "sha256": "4708f0202d5d6ad5e709f34eff2941b92a29e7b34d1be5da209b85a862ca97b2",
+      "bytes": 489480
+    },
+    "2": {
+      "sha256": "da8afefe506599dc3d97cca2888960e596e8f41c71695e367249cc83fe8785d3",
+      "bytes": 489480
+    },
+    "3": {
+      "sha256": "6861deb2c43f8b370b898131b786ab5881990e03badff36da08ec2c6d724db1e",
+      "bytes": 489480
+    }
+  },
+  "site/government_revenue.html": {
+    "1": {
+      "sha256": "59730d12653e5e0bf899e88a2de2ae207949be907440ade9814d9538b1b7ed62",
+      "bytes": 282986
+    },
+    "2": {
+      "sha256": "7b0b20328db28a134bb9aa9c80a9e64f4c3beff295f544641903c0748d8429fe",
+      "bytes": 189591
+    },
+    "3": {
+      "sha256": "0e7600fa638140872afddb68f644309096a7b37f957650333b5391869fa60985",
+      "bytes": 282986
+    }
+  },
+  "site/research_screener.html": {
+    "1": {
+      "sha256": "c9b7acf01c08431ed395c7005370c2e1d6e9afd56b60db7962e42c1400aa0176",
+      "bytes": 72696
+    },
+    "2": {
+      "sha256": "1df020ada6528b27873a71e2b962fdd806c12ce81d8a9c41fcebd59d72dd5dee",
+      "bytes": 72696
+    },
+    "3": {
+      "sha256": "f73f6f691c8921e3fafa1968d50252826be174fcaaf7792461cb6e88d2ff197a",
+      "bytes": 72696
+    }
+  },
+  "site/theme.js": {
+    "1": {
+      "sha256": "09627b2d14443ad8c748fff2c3566aae6ebecd562774d120a9da14cd9fc0916b",
+      "bytes": 412132
+    },
+    "2": {
+      "sha256": "c4daaedd2cd3cf41cea0afb86c21feeb99bd0e75d1ea2fbe83805f7914d7c3e8",
+      "bytes": 264989
+    },
+    "3": {
+      "sha256": "bd0a93b395ae963f7d2a873111735ab7b2e05e2f0a909fe58c2f3c40577e587c",
+      "bytes": 412610
+    }
+  }
+}

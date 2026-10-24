@@ -1,0 +1,65 @@
+/* Native answer illustrations: extend the host's Chart/Table/Text/Disclosure/State
+   families, not a second theme. All presentation stays in this governed asset. */
+:is(#mmb-root,.mmb-visual-surface) .mmb-v{box-sizing:border-box;min-width:0;max-width:100%;margin:26px 0;padding:24px 0 12px;color:var(--mmb-text);font-family:var(--mmb-font,var(--font-ui));border-top:1px solid var(--mmb-line);font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v *{box-sizing:border-box;min-width:0}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-title{margin:0;font-size:18px;font-weight:650;letter-spacing:-.015em;line-height:1.4;color:var(--mmb-hi)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-subtitle{margin:5px 0 0;font-size:13px;color:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-basis{margin:9px 0 18px;font-size:12px;line-height:1.45;color:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-plot{width:100%;max-width:100%;min-height:260px;overflow:hidden}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-plot svg{display:block;max-width:100%;font-family:var(--mmb-font,var(--font-ui));overflow:visible}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-grid{stroke:var(--mmb-line);stroke-width:1;stroke-dasharray:2 4}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-zero{stroke:var(--mmb-muted);stroke-width:1}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-axis{fill:var(--mmb-muted);font-size:10px;font-variant-numeric:tabular-nums}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-total{fill:var(--mmb-hi);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-series-0{color:var(--mmb-info);fill:currentColor;stroke:currentColor}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-series-1{color:var(--mmb-muted);fill:currentColor;stroke:currentColor}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-series-2{color:var(--mmb-hi);fill:currentColor;stroke:currentColor}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-series-3{color:var(--mmb-violet);fill:currentColor;stroke:currentColor}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-series-4{color:var(--mmb-glow);fill:currentColor;stroke:currentColor}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-line.mmb-v-series-1{stroke-dasharray:5 4}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-line.mmb-v-series-2{stroke-dasharray:2 3}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-line.mmb-v-series-3{stroke-dasharray:8 3 2 3}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-line.mmb-v-series-4{stroke-dasharray:10 4}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-area{fill-opacity:.1;stroke:none}
+:is(#mmb-root,.mmb-visual-surface) circle.mmb-v-ring{fill:none}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin:4px 0 18px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-legend-item{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mmb-text);font:inherit;font-size:12px;padding:4px;min-height:44px;cursor:pointer;text-align:left;max-width:100%}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-legend-item[aria-pressed=false]{opacity:.45;text-decoration:line-through}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-swatch{font-size:18px;flex:0 0 14px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;margin:12px 0;border-radius:var(--r-ctl,8px)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;line-height:1.55}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table th,:is(#mmb-root,.mmb-visual-surface) .mmb-v-table td{padding:11px 12px;border-bottom:1px solid var(--mmb-line);vertical-align:top;min-width:86px;max-width:300px;overflow-wrap:anywhere}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table th:first-child,:is(#mmb-root,.mmb-visual-surface) .mmb-v-table td:first-child{padding-left:0}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table th{font-weight:550;color:var(--mmb-hi)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table thead th{font-size:12px;color:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-table tbody tr:last-child th,:is(#mmb-root,.mmb-visual-surface) .mmb-v-table tbody tr:last-child td{border-bottom:0}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-number{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--font-mono)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:22px 0}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-label{font-size:12px;color:var(--mmb-muted);font-weight:500}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-metric{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.3;margin-top:6px;color:var(--mmb-hi)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-detail{font-size:12px;color:var(--mmb-muted);margin:6px 0 0;line-height:1.6}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-status .mmb-v-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:10px 0;border-bottom:1px solid var(--mmb-line);align-items:baseline}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-status .mmb-v-row-body{text-align:right}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-state{display:inline-block;font-size:13px;color:var(--mmb-text);font-weight:550}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-scenarios .mmb-v-row{padding:17px 0;border-bottom:1px solid var(--mmb-line)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-scenarios .mmb-v-label{font-size:14px;color:var(--mmb-hi);margin-bottom:6px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-row-title{font-size:14px;line-height:1.6}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-timeline,:is(#mmb-root,.mmb-visual-surface) .mmb-v-flow{list-style:none;margin:18px 0;padding:0}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-timeline .mmb-v-row{display:grid;grid-template-columns:80px minmax(0,1fr);gap:18px;padding:17px 0;border-bottom:1px solid var(--mmb-line)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-timeline .mmb-v-label{font-variant-numeric:tabular-nums}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-flow .mmb-v-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px;padding:15px 0;position:relative}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-flow .mmb-v-label{color:var(--mmb-hi);font-size:14px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-flow .mmb-v-label:after{content:' →';color:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-takeaway{margin:18px 0 12px;font-size:14px;color:var(--mmb-hi)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-details{margin-top:12px;font-size:12px;color:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-details summary{cursor:pointer;min-height:44px;line-height:44px;width:fit-content;max-width:100%}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-export{border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);padding:8px 12px;min-height:44px;margin-top:12px;background:transparent;color:var(--mmb-text);font:inherit;cursor:pointer}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v :is(button,summary,[tabindex]):focus-visible{outline:2px solid var(--mmb-info);outline-offset:3px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Light is a paper inset with separation by shadow rather than luminous depth. */
+html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v{background:var(--mmb-panel);border:1px solid var(--mmb-line);border-radius:var(--r-panel,14px);padding:18px;box-shadow:var(--mmb-shadow-pop)}
+html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v-grid{stroke-dasharray:none;opacity:.65}
+html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v-area{fill-opacity:.06}
+@media(max-width:540px){:is(#mmb-root,.mmb-visual-surface) .mmb-v{margin:18px 0;font-size:13px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-metric{font-size:20px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-timeline .mmb-v-row{grid-template-columns:62px minmax(0,1fr);gap:12px}html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v{padding:12px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-legend-item{min-height:44px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-details summary{min-height:44px;line-height:44px}}
+@media(prefers-reduced-motion:reduce){:is(#mmb-root,.mmb-visual-surface) .mmb-v *{scroll-behavior:auto}}

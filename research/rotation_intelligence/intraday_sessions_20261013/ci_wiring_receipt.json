@@ -1,0 +1,11 @@
+{
+  "old_candidate": "ca87ad25283d66a75c54a8721df6e0a341e91fe2",
+  "old_contract_failure": "new heatmap suite not named by a workflow run step",
+  "new_heatmap_job": "china-board-breadth",
+  "new_heatmap_suite": "tests/test_sp500_heatmap_intraday_clock.py",
+  "basket_pulse_code_job": "hk-robustness-w5",
+  "unrun_audit_exit": 0,
+  "focused_tests_passed": 491,
+  "old_hosted_pack_results_do_not_certify_new_head": true,
+  "production_verified": false
+}

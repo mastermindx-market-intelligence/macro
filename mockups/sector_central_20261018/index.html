@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sector Intelligence · Design reference</title>
+<link rel="stylesheet" href="../../templates/theme.css"><link rel="stylesheet" href="reference.css">
+</head>
+<body class="sector-reference">
+<div class="reviewbar" aria-label="Design review controls">
+ <span><strong>Design reference</strong><span class="review-note"> · Test fixture + retained archive · Not live · Not applied to Paper</span></span>
+ <div class="review-controls"><button id="theme-toggle" type="button">Dark mode</button><button id="lang-toggle" type="button">中文</button>
+ <label>State <select id="state-select"><option value="source">Source fixture</option><option value="loading">Loading</option><option value="empty">Empty</option><option value="stale">Stale</option><option value="error">Error</option><option value="signed-out">Signed out</option></select></label></div>
+</div>
+<div id="sector-app">
+ <header class="page-head"><div><div class="eyebrow">MASTERMIND / <span data-en="MARKET INTELLIGENCE" data-zh="市场情报">MARKET INTELLIGENCE</span></div><h1 data-en="Sector Intelligence" data-zh="板块情报">Sector Intelligence</h1><p data-en="Follow leadership. Understand the change." data-zh="追踪领涨板块，理解市场变化。">Follow leadership. Understand the change.</p></div><div class="session"><span class="session-label" data-en="SOURCE SNAPSHOT" data-zh="来源快照">SOURCE SNAPSHOT</span><strong id="source-date">Loading source</strong><span id="source-basis"></span></div></header>
+ <nav class="workspace-nav" aria-label="Sector Intelligence tasks"><a href="#overview" data-task="brief" data-en="Brief" data-zh="简报">Brief</a><a href="#moving" data-task="explore" data-en="Explore" data-zh="探索">Explore</a><a href="#research" data-task="research" data-en="Research" data-zh="研究">Research</a><span class="nav-context" data-en="United States · Sector groups" data-zh="美国 · 板块组">United States · Sector groups</span></nav>
+ <main id="main" tabindex="-1"><div class="skeleton-layout"><div class="skel skel-title"></div><div class="skel skel-chart"></div></div></main>
+ <footer class="page-foot"><span data-en="Source-bound measurements. Stock entries keep their own qualification." data-zh="测量依据原始来源，个股入场保留独立资格。">Source-bound measurements. Stock entries keep their own qualification.</span><a href="#sources" data-en="Sources & methods" data-zh="来源与方法">Sources & methods</a></footer>
+</div>
+<dialog id="source-dialog"><form method="dialog"><button class="dialog-close" aria-label="Close sources">×</button></form><div class="eyebrow" data-en="SOURCE RECORD" data-zh="来源记录">SOURCE RECORD</div><h2 data-en="What this view knows" data-zh="本视图的数据依据">What this view knows</h2><p data-en="This record identifies the selected source and its evidence class. The reference combines a synthetic test fixture with separately dated archive examples." data-zh="本记录标明所选来源及证据类别。参考稿使用合成测试样本，以及单独标注日期的存档示例。">This is the existing synthetic contract fixture, not a live market observation.</p><pre id="source-json"></pre></dialog>
+<script src="reference.js"></script>
+</body></html>

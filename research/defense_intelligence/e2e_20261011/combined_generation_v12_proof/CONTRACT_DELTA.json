@@ -1,0 +1,37 @@
+{
+  "head": "c54b8c132ff00492b7551d15b6a5eabd0e25785c",
+  "base": "46cd92e0c213a4ba2c2f1423f147355fe9795983",
+  "introduced": 0,
+  "inherited": 2,
+  "delta": {
+    "introduced_closure": [],
+    "inherited_closure": [],
+    "introduced_suites": [],
+    "inherited_suites": [],
+    "introduced_probes": [],
+    "inherited_probes": [
+      [
+        "engine/prophet/plan_book.py",
+        "jobs",
+        130,
+        129,
+        130,
+        []
+      ],
+      [
+        "templates/index.html",
+        "jobs",
+        136,
+        135,
+        136,
+        []
+      ]
+    ],
+    "introduced_skip_only": [],
+    "inherited_skip_only": [],
+    "introduced_trigger_gaps": [],
+    "inherited_trigger_gaps": []
+  },
+  "implementation": "canonical check_contract_delta functions in separate existing managed SSD trees; same head ceilings and exact-tree tracked-path inventory; no guard modification",
+  "passed": true
+}

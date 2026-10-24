@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import threading
+import time
 from bisect import bisect_right
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
@@ -15,11 +16,72 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
 
 from engine.fundamental_forensics.health import evaluate_health
+from engine.fundamental_forensics.latency import RECORDER, evaluate_slo, load_slo_config
 from engine.fundamental_forensics.private_state import load_state_blob
 
-router = APIRouter()
+
+class _TimedRoute(APIRoute):
+    """FIF V0-a: time each real route's work and record the distribution.
+
+    The timed span is the whole route handler — dependency solving included
+    (FastAPI solves dependencies inside the handler), so an auth rejection is
+    timed too. Only success responses (2xx/3xx) enter the percentile window:
+    4xx responses raise the route template's ``client_error_n`` and 5xx
+    responses its ``error_n``, both outside the window, so a burst of fast
+    401/403/400 rejections can never drag p95 down to a stale green. The
+    dedicated method-not-allowed handlers never reach real handler work and
+    are not recorded at all. The ``Server-Timing`` header rides success
+    responses only, and never the file exports: A54 pins identical export
+    posts to byte-identical responses, headers included, so an export is
+    recorded but carries no per-request duration. An ``HTTPException`` (the
+    router's expected failure boundary) is counted under its own status and
+    re-raised unchanged, any
+    other exception is counted as a 500 and re-raised unchanged. Recording
+    itself can never alter a status, body or existing header: it sits inside
+    its own ``try/except Exception: pass``.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def timed_route_handler(request: Request) -> Response:
+            if self.endpoint in _METHOD_NOT_ALLOWED_ENDPOINTS:
+                # A private 405 answers before any real handler work runs:
+                # not a latency sample, not a client-error count.
+                return await original(request)
+            t0 = time.perf_counter()
+            try:
+                response = await original(request)
+            except HTTPException as exc:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, exc.status_code)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            except Exception:
+                duration_ms = (time.perf_counter() - t0) * 1000.0
+                try:
+                    RECORDER.record(self.path, duration_ms, 500)
+                except Exception:  # noqa: BLE001 - timing must never fail a request
+                    pass
+                raise
+            duration_ms = (time.perf_counter() - t0) * 1000.0
+            if self.path not in _BYTE_IDENTICAL_EXPORT_PATHS:
+                response.headers["Server-Timing"] = f"fif;dur={duration_ms:.1f}"
+            try:
+                RECORDER.record(self.path, duration_ms, response.status_code)
+            except Exception:  # noqa: BLE001 - timing must never fail a request
+                pass
+            return response
+
+        return timed_route_handler
+
+
+router = APIRouter(route_class=_TimedRoute)
 log = logging.getLogger("fundamental_forensics.api")
 REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
 
@@ -72,6 +134,14 @@ _PRIVATE_HEADERS = {
 
 _SNAPSHOT_ID_RE = re.compile(r"\Affqsv2_[a-f0-9]{64}\Z")
 _ROOT_CELL_ID_RE = re.compile(r"\Ametric_cell_[a-f0-9]{64}\Z")
+# FIF PF-3: the optional health ``entity_id`` query parameter names the issuer
+# whose production generation headers are wanted. Only a full match may reach
+# a store key; anything else answers with no generation headers, never an
+# error and never the raw value in a log line.
+# FIF PF r1 (R3): the code tail follows the canonical issuer grammar
+# (lib/dataos/identity.py ``_CODE_RE`` — '.' and '-' are real US class
+# suffixes, 'BRK-B' included) and the length is bounded separately.
+_HEALTH_ENTITY_ID_RE = re.compile(r"ISS:[A-Z]{2}-[A-Z0-9]{4}-[A-Z0-9][A-Z0-9.\-]*")
 _MAX_QUERY_VALUE_BYTES = 128
 # Bounded receipt reads do not automatically bound response construction.  A
 # valid sealed receipt can name many selected leaves; never turn it into a
@@ -181,7 +251,10 @@ def forensics_state(_user: dict = Depends(require_site_full_user)) -> Response:
 
 
 @router.get("/api/forensics/health")
-def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+def forensics_health(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
     """Return operational/source freshness, never private rows or storage keys.
 
     FIF D3 adds names/ids-only dataset-mode reporting on the response HEADERS
@@ -190,6 +263,25 @@ def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONRespo
     ``X-FIF-Dataset-Generation-Id`` and ``X-FIF-Dataset-Admitted-At`` when a
     production generation exists. No object keys, no payloads, no values
     beyond the mode name and the generation id.
+
+    FIF PF-3: the optional ``entity_id`` query parameter names the issuer the
+    generation headers describe. Absent, the pre-PF-3 behaviour is unchanged
+    byte for byte. Present and a full match of ``_HEALTH_ENTITY_ID_RE``, the
+    summary is looked up for exactly that issuer. Present but malformed, or a
+    matching issuer with no pointer: no generation headers, the same 200 body,
+    never a 4xx/5xx — and the raw value is never logged or passed anywhere
+    near a store key. Golden mode never emits generation headers.
+
+    FIF PF r1 (R2): with exactly one well-formed ``entity_id`` in production
+    mode the answer also carries ONE names-only pointer header,
+    ``X-FIF-Dataset-Pointer``: ``admitted`` (a summary was returned, headers as
+    today), ``none`` (the store was built, the lookup did not raise, and the
+    pointer is absent) or ``unavailable`` (the store is None, or building it
+    or reading the summary raised — the provider's own contract: a damaged
+    store is temporarily unavailable, not "not published"). A malformed,
+    repeated or over-length id gets no pointer header and no generation
+    headers. The absent-parameter path and golden mode stay byte for byte
+    unchanged; the JSON body is identical in every case.
     """
     headers = dict(_PRIVATE_HEADERS)
     # A15: an invalid dataset mode refuses health with the same private 503
@@ -204,22 +296,103 @@ def forensics_health(_user: dict = Depends(require_site_full_user)) -> JSONRespo
         raise _private_error(503, "forensics health temporarily unavailable") from None
     headers["X-FIF-Financial-Dataset-Mode"] = mode
     if mode == "production":
-        from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
-            build_production_dataset_store,
-            latest_generation_summary,
-        )
+        # PF-3: an absent parameter keeps the D3 default issuer; a present
+        # parameter must be the ONLY value and full-match the entity grammar
+        # (under the byte bound) before it may name a store key; anything
+        # else simply reports no generation. R4: a repeated key is malformed
+        # — the module's own rule refuses duplicates rather than choosing one
+        # silently — and this route never raises because of the parameter.
+        values = request.query_params.getlist("entity_id")
+        summary_issuer: str | None = "ISS:US-XNAS-AAPL"
+        pointer_reported = False
+        if not values:
+            pass
+        elif len(values) == 1 and len(values[0].encode("utf-8")) <= _MAX_QUERY_VALUE_BYTES:
+            if _HEALTH_ENTITY_ID_RE.fullmatch(values[0]):
+                summary_issuer = values[0]
+                pointer_reported = True
+            else:
+                summary_issuer = None
+        else:
+            summary_issuer = None
+        if summary_issuer is not None:
+            from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
+                build_production_dataset_store,
+                latest_generation_summary,
+            )
 
-        try:
-            store = build_production_dataset_store()
-            summary = latest_generation_summary(store, "ISS:US-XNAS-AAPL") if store is not None else None
-        except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
-            log.warning("production dataset health summary unavailable (%s)", type(exc).__name__)
             summary = None
-        if summary is not None:
-            headers["X-FIF-Dataset-Generation-Id"] = summary["dataset_generation_id"]
-            headers["X-FIF-Dataset-Admitted-At"] = summary["admitted_at"]
+            store_readable = False
+            try:
+                store = build_production_dataset_store()
+                if store is not None:
+                    summary = latest_generation_summary(store, summary_issuer)
+                    store_readable = True
+            except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+                log.warning(
+                    "production dataset health summary unavailable (%s)", type(exc).__name__
+                )
+            if summary is not None:
+                headers["X-FIF-Dataset-Generation-Id"] = summary["dataset_generation_id"]
+                headers["X-FIF-Dataset-Admitted-At"] = summary["admitted_at"]
+                if pointer_reported:
+                    headers["X-FIF-Dataset-Pointer"] = "admitted"
+            elif pointer_reported:
+                headers["X-FIF-Dataset-Pointer"] = (
+                    "none" if store_readable else "unavailable"
+                )
     payload = evaluate_health(REPO, now=datetime.now(timezone.utc))
     return JSONResponse(payload, headers=headers)
+
+
+# ---------------------------------------------------------------------------
+# FIF V0-a: the entitled latency report — measured distributions judged
+# against the DECLARED budgets in config/fundamental_forensics/slo.v1.json.
+# ---------------------------------------------------------------------------
+
+_SLO_CONFIG_LOCK = threading.Lock()
+_SLO_CONFIG_CACHE: dict | None = None
+
+
+@router.get("/api/forensics/slo")
+def forensics_slo(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    """Report measured per-route latency distributions against the SLO config.
+
+    Entitled exactly like health. The payload carries route templates and
+    measured aggregates only — never an issuer, tenant, query or user
+    identifier. The config is loaded once, at first use, from the repo path;
+    a config that cannot be read or parsed is a 503, never a fabricated
+    "within" — the report exists only against the real declared budgets. The
+    reported ``window`` is the recorder's actual sample window, not the
+    config's declared one, and the response carries the full private header
+    set with ``Cache-Control: no-store``.
+    """
+    global _SLO_CONFIG_CACHE
+    try:
+        with _SLO_CONFIG_LOCK:
+            if _SLO_CONFIG_CACHE is None:
+                _SLO_CONFIG_CACHE = load_slo_config(
+                    REPO / "config" / "fundamental_forensics" / "slo.v1.json"
+                )
+            config = _SLO_CONFIG_CACHE
+    except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
+        log.warning("forensics SLO config unavailable (%s)", type(exc).__name__)
+        return JSONResponse(
+            {"error": "slo_config_unavailable"},
+            status_code=503,
+            headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+        )
+    evaluation = evaluate_slo(RECORDER.snapshot(), config)
+    return JSONResponse(
+        {
+            "schema": "fif_slo_report.v1",
+            "config_status": config["status"],
+            "window": RECORDER.window,
+            "routes": evaluation["routes"],
+            "unbudgeted": evaluation["unbudgeted"],
+        },
+        headers={**_PRIVATE_HEADERS, "Cache-Control": "no-store"},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1322,6 +1495,32 @@ async def financial_statements(
             "X-FIF-Response-SHA256": result.sha256,
         },
     )
+
+
+# FIF V0-a MAJOR-1 fix: these handlers answer with the private 405 before any
+# real handler work runs, so the timed route does not record them at all — a
+# 405 is neither a latency sample nor a client-error count on the real route
+# template. (The alternative, keying the recorder by (method, path), would
+# break the SLO config's path-template keys.)
+_BYTE_IDENTICAL_EXPORT_PATHS = frozenset(
+    {
+        "/api/forensics/v1/financial/query.xlsx",
+        "/api/forensics/v1/financial/query.csv",
+        "/api/forensics/v1/financial/query.parquet",
+    }
+)
+
+_METHOD_NOT_ALLOWED_ENDPOINTS = frozenset(
+    {
+        financial_query_method_not_allowed,
+        financial_query_xlsx_method_not_allowed,
+        financial_query_csv_method_not_allowed,
+        financial_query_parquet_method_not_allowed,
+        financial_revisions_method_not_allowed,
+        financial_packet_method_not_allowed,
+        financial_statements_method_not_allowed,
+    }
+)
 
 
 __all__ = ["router", "require_site_full_user"]

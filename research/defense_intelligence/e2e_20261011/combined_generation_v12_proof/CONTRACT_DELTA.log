@@ -1,0 +1,7 @@
+contract-delta: probe templates/index.html: head 136 jobs / 5,682 s / 10 packs; base 136 jobs / 5,678 s / 10 packs; ceilings 135 / 5,803 / 10
+contract-delta: probe scripts/build_free_content.py: head 134 jobs / 5,479 s / 10 packs; base 134 jobs / 5,475 s / 10 packs; ceilings 134 / 5,600 / 10
+contract-delta: probe engine/prophet/plan_book.py: head 130 jobs / 5,445 s / 10 packs; base 130 jobs / 5,441 s / 10 packs; ceilings 129 / 5,600 / 10
+contract-delta: head census seconds: probes 93.9, skip_only 21.8, trigger_gaps 30.9
+contract-delta: base census seconds: probes 93.2, skip_only 21.8, trigger_gaps 31.1
+::notice title=contract-delta::packing probe engine/prophet/plan_book.py: 130 jobs is over the ceiling 129, and this PR's base is already at 130 — pre-existing, not introduced by this PR; heal separately
+::notice title=contract-delta::packing probe templates/index.html: 136 jobs is over the ceiling 135, and this PR's base is already at 136 — pre-existing, not introduced by this PR; heal separately

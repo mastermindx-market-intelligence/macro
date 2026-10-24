@@ -1,0 +1,19 @@
+{
+  "source_id": "usda-nass-2026-10-13-crop-progress",
+  "checks": [
+    {
+      "path": "data/research_vault/catalog.json",
+      "sha256": "d11960cb1564b6ed75da0acf6c29b5fe4936a50700f64f14fff85f858a88a5d8",
+      "exact_installed_commit": "0ce6fe978863a9becf8137362367ae1e6346965b"
+    },
+    {
+      "path": "data/research_vault/excerpts.json",
+      "sha256": "80d3e41c80426d5fd21eda610217cc277ec22326cbbdf214daa85cf96ec7412f",
+      "exact_installed_commit": "0ce6fe978863a9becf8137362367ae1e6346965b"
+    }
+  ],
+  "commit_installed_parity": true,
+  "public_report_present": false,
+  "press_publication": false,
+  "writes": 0
+}

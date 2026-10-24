@@ -29,7 +29,7 @@ from datetime import date, datetime
 from typing import Any, Mapping, MutableMapping, Sequence
 
 COVENANT_TERM_SCHEMA = "capital_structure.covenant_term_observation.v1"
-PARSER_VERSION = "capital-structure-covenant-terms/1.0.0"
+PARSER_VERSION = "capital-structure-covenant-terms/1.1.0"
 
 # Names mirror the phrase the agreement itself states. Economic type/unit is
 # clause dependent; never attach a unit before reading the clause. The tuple
@@ -304,6 +304,49 @@ def _section_label(text: str) -> tuple[str, str]:
     return ("Section 7.11 Financial Covenants", "section_7_11_financial_covenants")
 
 
+def _html_fixed_charge_clause(manifest: Mapping[str, Any], raw: bytes):
+    """Read one explicit minimum fixed-charge clause from a retained HTML body.
+
+    TOC headings have no operative clause. Other leverage/coverage definitions
+    are not synonyms for this closed-enum term; no unsupported term is emitted.
+    """
+    from .covenant_html import visible_html
+
+    if hashlib.sha256(raw).hexdigest() != manifest["document"]["content_sha256"]:
+        raise CovenantSpanUnbound("HTML bytes do not match retained source identity")
+    try:
+        view = visible_html(raw)
+    except ValueError as exc:
+        raise CovenantSpanUnbound(str(exc)) from exc
+    headings = re.compile(
+        r"(?:^|\n)(?:Section\s+)?(?P<number>\d+\.\d+)\s+"
+        r"Financial Condition Covenants\s*\.", re.I)
+    clause = re.compile(
+        r"Consolidated Fixed Charge Coverage Ratio\s*\.\s*"
+        r"Permit the Consolidated Fixed Charge Coverage Ratio\s+"
+        r"for any period of four aggregate consecutive fiscal quarters of the "
+        r"Parent REIT to be less than\s+(\d{1,2}\.\d{2} to 1\.00)\.", re.I)
+    found = []
+    for heading in headings.finditer(view.text):
+        # Never cross into another numbered covenant or an unbounded appendix.
+        limit = min(len(view.text), heading.end() + 16_384)
+        following = re.search(r"\n(?:Section\s+)?\d+\.\d+\s+", view.text[heading.end():limit], re.I)
+        if following:
+            limit = heading.end() + following.start()
+        for match in clause.finditer(view.text, heading.end(), limit):
+            found.append((heading, match))
+    if len(found) != 1:
+        raise CovenantSpanUnbound("requires one unambiguous operative fixed-charge clause")
+    heading, match = found[0]
+    try:
+        view.exact_byte_span(*match.span(1))
+    except ValueError as exc:
+        raise CovenantSpanUnbound(str(exc)) from exc
+    label = heading.group(0).strip()
+    normalized = "section_" + heading.group("number").replace(".", "_") + "_financial_condition_covenants"
+    return view, label, normalized, match
+
+
 def _semantic_body(record: Mapping[str, Any]) -> tuple:
     """Parts of a record whose change is a real correction. Excludes
     parser_version/generated_at bookkeeping so a parser-label-only relabel
@@ -323,12 +366,20 @@ def extract_candidates(manifest: Mapping[str, Any], text: str) -> list[dict[str,
     explicit 'unavailable' record (never a zero, never inferred)."""
     manifest_id = manifest["manifest_id"]
     document = manifest["document"]
-    section_label_raw, section_label_normalized = _section_label(text)
     encoded = text.encode("utf-8")
+    html_view = None
+    html_match = None
+    if re.search(r"<html(?:\s|>)", text, re.I):
+        html_view, section_label_raw, section_label_normalized, html_match = _html_fixed_charge_clause(manifest, encoded)
+        text = html_view.text
+        term_names = ("minimum_fixed_charge_coverage_ratio",)
+    else:
+        section_label_raw, section_label_normalized = _section_label(text)
+        term_names = COVENANT_TERM_NAMES
     candidates: list[dict[str, Any]] = []
-    for name in COVENANT_TERM_NAMES:
+    for name in term_names:
         pattern = _TERM_PATTERNS.get(name)
-        match = pattern.search(text) if pattern else None
+        match = html_match if html_view is not None else pattern.search(text) if pattern else None
         clause_id = _clause_id_for(manifest_id, section_label_normalized, name)
         clause = {
             "clause_id": clause_id,
@@ -402,8 +453,11 @@ def extract_candidates(manifest: Mapping[str, Any], text: str) -> list[dict[str,
         else:
             value_text = match.group(1)
             char_start, char_end = match.start(1), match.end(1)
-            byte_start = len(text[:char_start].encode("utf-8"))
-            byte_end = byte_start + len(value_text.encode("utf-8"))
+            if html_view is not None:
+                byte_start, byte_end = html_view.exact_byte_span(char_start, char_end)
+            else:
+                byte_start = len(text[:char_start].encode("utf-8"))
+                byte_end = byte_start + len(value_text.encode("utf-8"))
             locator = build_locator(document.get("document_type"), _seq,
                                      section_label_normalized, name, byte_start, byte_end)
             validate_locator(locator, len(encoded))

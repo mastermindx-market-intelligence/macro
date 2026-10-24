@@ -1,0 +1,10 @@
+2026-10-14T09:57:54.2558212Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json, which is not in the same diff
+2026-10-14T09:57:54.2562466Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: site/theme.js is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json, which is not in the same diff
+2026-10-14T09:57:54.2566939Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: templates/_navlinks.html.j2 is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json, which is not in the same diff
+2026-10-14T09:57:54.2571034Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: templates/_site_nav.html.j2 is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json, which is not in the same diff
+2026-10-14T09:57:54.2575410Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json, which is not in the same diff
+2026-10-14T09:57:54.2579550Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: site/theme.js is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json, which is not in the same diff
+2026-10-14T09:57:54.2582972Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: templates/_navlinks.html.j2 is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json, which is not in the same diff
+2026-10-14T09:57:54.2586482Z ##[error]PINNED PATH CHANGED WITHOUT RECEIPT: templates/_site_nav.html.j2 is pinned by mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json, which is not in the same diff
+2026-10-14T10:20:01.7479583Z CI_PACK_FAILED_JOBS=[]
+2026-10-14T10:20:18.3460706Z CI_PACK_FAILED_JOBS=["p0b-receipt-closure"]

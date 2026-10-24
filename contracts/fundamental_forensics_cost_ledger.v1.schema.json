@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/fundamental_forensics_cost_ledger.v1.schema.json",
+  "title": "Fundamental Forensics cost and operator-burden ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "built_at", "complete", "rates", "components", "totals",
+    "denominators", "per_unit", "operator_burden"
+  ],
+  "properties": {
+    "schema": {"const": "fundamental_forensics.cost_ledger/v1"},
+    "built_at": {"type": "string", "minLength": 1},
+    "complete": {"type": "boolean"},
+    "rates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rates_id", "content_sha256"],
+      "properties": {
+        "rates_id": {"type": "string", "minLength": 1},
+        "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "licence", "storage", "parse", "inference", "review"],
+      "properties": {
+        "source": {"$ref": "#/$defs/component"},
+        "licence": {"$ref": "#/$defs/component"},
+        "storage": {"$ref": "#/$defs/component"},
+        "parse": {"$ref": "#/$defs/component"},
+        "inference": {"$ref": "#/$defs/component"},
+        "review": {"$ref": "#/$defs/component"}
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["one_time", "per_month", "query_window"],
+      "properties": {
+        "one_time": {"$ref": "#/$defs/period_totals"},
+        "per_month": {"$ref": "#/$defs/period_totals"},
+        "query_window": {"$ref": "#/$defs/period_totals"}
+      }
+    },
+    "denominators": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualified_filings", "qualified_issuers_deep", "qualified_issuers_core", "queries"
+      ],
+      "properties": {
+        "qualified_filings": {"$ref": "#/$defs/denominator"},
+        "qualified_issuers_deep": {"$ref": "#/$defs/denominator"},
+        "qualified_issuers_core": {"$ref": "#/$defs/denominator"},
+        "queries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "source", "window"],
+          "properties": {
+            "value": {"type": ["null", "integer"], "minimum": 0},
+            "source": {"type": "string"},
+            "window": true
+          }
+        }
+      }
+    },
+    "per_unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualified_filings", "qualified_issuers_deep", "qualified_issuers_core", "queries"
+      ],
+      "properties": {
+        "qualified_filings": {"$ref": "#/$defs/per_unit"},
+        "qualified_issuers_deep": {"$ref": "#/$defs/per_unit"},
+        "qualified_issuers_core": {"$ref": "#/$defs/per_unit"},
+        "queries": {"$ref": "#/$defs/per_unit"}
+      }
+    },
+    "operator_burden": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "minutes_total", "events", "by_act_kind", "by_actor_role", "window", "notes"
+      ],
+      "properties": {
+        "status": {"enum": ["measured", "unmeasured"]},
+        "minutes_total": {"type": ["null", "number"]},
+        "events": {"type": "integer", "minimum": 0},
+        "by_act_kind": {
+          "type": "object",
+          "additionalProperties": {"type": "number", "minimum": 0}
+        },
+        "by_actor_role": {
+          "type": "object",
+          "additionalProperties": {"type": "number", "minimum": 0}
+        },
+        "window": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["first", "last"],
+              "properties": {
+                "first": {"type": "string", "minLength": 1},
+                "last": {"type": "string", "minLength": 1}
+              }
+            }
+          ]
+        },
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "design_comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deep_fleet_design_bytes",
+        "deep_six_role_bytes_measured",
+        "deep_six_role_ratio_to_design",
+        "deep_all_member_bytes_measured",
+        "cold_deep_gets_design",
+        "cold_deep_gets_receipt_estimate",
+        "cold_deep_gets_ratio_receipt_to_design"
+      ],
+      "properties": {
+        "deep_fleet_design_bytes": {"const": 2708491000},
+        "deep_six_role_bytes_measured": {"type": ["null", "integer"], "minimum": 0},
+        "deep_six_role_ratio_to_design": {"type": ["null", "number"], "minimum": 0},
+        "deep_all_member_bytes_measured": {"type": ["null", "integer"], "minimum": 0},
+        "cold_deep_gets_design": {"const": 7250},
+        "cold_deep_gets_receipt_estimate": {"type": ["null", "integer"], "minimum": 0},
+        "cold_deep_gets_ratio_receipt_to_design": {"type": ["null", "number"], "minimum": 0}
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantity_value", "quantity_unit", "quantity_status", "usd_per_unit",
+        "rate_status", "rate_verified", "basis_period", "rate_basis_period",
+        "cost_usd", "cost_status", "incomplete_reason", "notes", "counts"
+      ],
+      "properties": {
+        "quantity_value": {"type": ["null", "number"]},
+        "quantity_unit": {"type": "string", "minLength": 1},
+        "quantity_status": {"enum": ["measured", "estimated", "unmeasured"]},
+        "usd_per_unit": {"type": ["null", "number"], "minimum": 0},
+        "rate_status": {"enum": ["declared_rate", "unmeasured"]},
+        "rate_verified": {"type": "boolean"},
+        "basis_period": {"enum": ["one_time", "per_month", "query_window", "undeclared_window"]},
+        "rate_basis_period": {"enum": ["one_time", "per_month"]},
+        "cost_usd": {"type": ["null", "number"]},
+        "cost_status": {
+          "enum": ["measured", "declared", "declared_unverified", "incomplete"]
+        },
+        "incomplete_reason": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "enum": [
+                "inference_rows_uncosted",
+                "inference_rows_absent",
+                "inference_filter_empty",
+                "usage_lines_undecodable",
+                "inference_rows_outside_window_only",
+                "storage_lower_bound",
+                "burden_ledger_empty"
+              ]
+            }
+          ]
+        },
+        "notes": {"type": "array", "items": {"type": "string"}},
+        "counts": {"type": "object"}
+      }
+    },
+    "period_totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["known_usd", "complete", "incomplete_components"],
+      "properties": {
+        "known_usd": {"type": ["null", "number"]},
+        "complete": {"type": "boolean"},
+        "incomplete_components": {
+          "type": "array",
+          "items": {
+            "enum": ["source", "licence", "storage", "parse", "inference", "review"]
+          }
+        },
+        "reason": {
+          "oneOf": [
+            {"type": "null"},
+            {"enum": ["queries_window_absent"]}
+          ]
+        }
+      }
+    },
+    "denominator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source"],
+      "properties": {
+        "value": {"type": ["null", "integer"], "minimum": 0},
+        "source": {"type": "string"}
+      }
+    },
+    "per_unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "one_time_usd", "per_month_usd", "query_window_usd", "components",
+        "basis", "complete", "reason"
+      ],
+      "properties": {
+        "one_time_usd": {"type": ["null", "number"]},
+        "per_month_usd": {"type": ["null", "number"]},
+        "query_window_usd": {"type": ["null", "number"]},
+        "components": {
+          "type": "array",
+          "items": {
+            "enum": ["source", "licence", "storage", "parse", "inference", "review"]
+          }
+        },
+        "basis": {
+          "type": "array",
+          "items": {"enum": ["one_time", "per_month", "query_window"]}
+        },
+        "complete": {"type": "boolean"},
+        "reason": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "enum": [
+                "denominator_unmeasured",
+                "denominator_zero",
+                "components_incomplete",
+                "queries_window_absent"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

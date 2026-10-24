@@ -1,0 +1,16 @@
+{
+  "integration_main": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+  "browser_source_commit": "7b87fd8fe32a4c35075a76ec07e51c95ec3f28ae",
+  "conflict_resolution": "Nine independent additive CI path lists concatenated; the two disjoint restart-trigger additions were both retained. No worker contribution was discarded.",
+  "material_changes": {
+    ".github/ci/legacy-jobs.yml": {
+      "captured": "15ebea5e3346fa6ca1893028669ff182175eebe948c3b6d6f60edacb20382cab",
+      "current": "c74a8fea1cc41bac3709d5a2e56a89252531a68ff6a0c8f0d32e70accdc91b1b"
+    }
+  },
+  "api_source_changes": {},
+  "api_input_changes": {},
+  "static_asset_changes": {},
+  "html_sha256": "377e2c76a826ac19a6ec5cc1074bc62389c75efe7c1998e0450cb41ffb31d30b",
+  "html_unchanged": true
+}

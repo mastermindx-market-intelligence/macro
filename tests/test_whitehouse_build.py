@@ -198,6 +198,125 @@ def test_inject_no_body_appends() -> None:
     assert inj._MARKER in out
 
 
+# --- who wrote each read, and the Treasury numbers the panel dropped ------------------
+def _served(rid, reason, pub_days_ago=0):
+    r = _rec(rid, pub_days_ago, 5, 80)
+    r["degraded_reason"] = reason
+    return r
+
+
+def _cards(html):
+    import re
+    return dict(re.findall(r'<section class="wh-card[^"]*" id="([^"]+)">(.*?)</section>',
+                           html, re.S))
+
+
+def test_card_names_the_fallback_model_that_wrote_the_read() -> None:
+    # evaluate() stamps the FIRST configured model in `model` before the call; only
+    # degraded_reason "served_by:<provider>" records that a fallback wrote the read.
+    import re
+    rows = [_served("wh-ds", "served_by:deepseek"), _served("wh-cx", "served_by:codex"),
+            _served("wh-none", None), _served("wh-odd", "served_by:mystery"),
+            _served("wh-trunc", "truncated")]
+    cards = _cards(bw._render_page(config.ROOT, rows))
+    assert re.search(r"read by fallback.*?: DeepSeek</span>", cards["wh-ds"], re.S)
+    assert re.search(r"read by fallback.*?: Codex</span>", cards["wh-cx"], re.S)
+    # a None reason does not prove the first model wrote it (cached replies carry no
+    # reason), so no card makes a provider claim it cannot back
+    for rid in ("wh-none", "wh-odd", "wh-trunc"):
+        assert "read by fallback" not in cards[rid]
+
+
+def test_hero_and_footer_do_not_credit_claude_with_fallback_reads() -> None:
+    rows = [_served("wh-ds", "served_by:deepseek"), _served("wh-none", None)]
+    html = bw._render_page(config.ROOT, rows)
+    assert "Claude Opus writes the read below" not in html
+    assert "1 of the 2 reads below were written by a fallback model" in html
+    assert "(or by the fallback model named on a card)" in html
+    clean = bw._render_page(config.ROOT, [_served("wh-none", None)])
+    assert "reads below were written by a fallback model" not in clean
+    assert "(or by the fallback model named on a card)" not in clean
+
+
+def test_committed_ledger_fallback_reads_are_each_named() -> None:
+    if not bw._ledger_path(config.ROOT).exists():
+        pytest.skip("data/whitehouse/alerts.jsonl not in this checkout")
+    rows = bw._load_ledger(config.ROOT)
+    assert {"deepseek", "codex"} <= set(bw._SERVED_BY)
+    fell_back = [r for r in rows
+                 if str(r.get("degraded_reason") or "").startswith("served_by:")
+                 and str(r["degraded_reason"]).split(":", 1)[1] in bw._SERVED_BY]
+    assert fell_back, "the committed ledger records fallback-served reads"
+    html = bw._render_page(config.ROOT, rows)
+    cards = _cards(html)
+    assert sum("read by fallback" in c for c in cards.values()) == len(fell_back)
+    for r in fell_back:
+        assert "read by fallback" in cards[r["id"]], r["id"]
+    assert f"{len(fell_back)} of the {len(rows)} reads below" in html
+
+
+def test_live_card_says_until_when_and_late_read_is_dated() -> None:
+    now = datetime.now(timezone.utc)
+    late = _rec("wh-late", 3, 5, 80)
+    late["generated_at"] = (now - timedelta(days=1)).isoformat()   # read 2 days after publish
+    same = _rec("wh-same", 0, 5, 80)
+    old = _rec("wh-old", 30, 3, 80)
+    cards = _cards(bw._render_page(config.ROOT, [late, same, old]))
+    exp = bw._expires_at(late)
+    assert f"live until</span>" in cards["wh-late"]
+    assert bw._date_display(exp.isoformat()) in cards["wh-late"]
+    assert "read written" in cards["wh-late"]
+    assert bw._date_display(late["generated_at"]) in cards["wh-late"]
+    assert "read written" not in cards["wh-same"]
+    assert "live until" not in cards["wh-old"]
+
+
+def _treasury():
+    return {
+        "tga": {"level_bn": 948.492, "asof": "2026-10-16", "chg_1d_bn": 13.802,
+                "chg_5d_bn": 61.023, "chg_20d_bn": -24.183},
+        "net_liquidity": {"netliq_bn": 5827.145, "chg_20d_bn": 78.783,
+                          "pctile_expanding": 0.777, "rrp_bn": 0.201},
+        "plumbing": {"headline_state": "neutral_hollow", "rrp_buffer_state": "exhausted",
+                     "reserve_scarcity_state": "tightening",
+                     "headline_summary_en": "RRP buffer is empty — drains hit reserves.",
+                     "headline_summary_zh": None},
+    }
+
+
+def test_treasury_panel_shows_plumbing_read_rrp_balance_and_tga_20d() -> None:
+    import re
+    html = bw._render_page(config.ROOT, [], _treasury())
+    assert '<span class="l-en">RRP buffer is empty — drains hit reserves.</span>' in html
+    assert '<span class="l-zh">RRP buffer is empty — drains hit reserves.</span>' in html
+    assert re.search(r"RRP buffer</span>.{0,80}?\$0\.2bn", html, re.S)
+    assert re.search(r'-24\s*<span class="l-en">20d', html)
+    assert re.search(r'\+79\s*<span class="l-en">20d', html)   # net liquidity unchanged
+
+
+def test_committed_treasury_watch_numbers_reach_the_panel() -> None:
+    import re
+    from markupsafe import escape
+    tw = bw._load_treasury_watch(config.ROOT / "site")
+    if tw is None:
+        pytest.skip("site/whdata/treasury_watch.json not in this checkout")
+    html = bw._render_page(config.ROOT, [], tw)
+    pl, nl, tg = tw.get("plumbing") or {}, tw.get("net_liquidity") or {}, tw.get("tga") or {}
+    shown = 0
+    if pl.get("headline_summary_en"):
+        assert str(escape(pl["headline_summary_en"])) in html
+        shown += 1
+    if pl.get("rrp_buffer_state") and isinstance(nl.get("rrp_bn"), (int, float)):
+        assert re.search(r"RRP buffer</span>.{0,80}?\$" + re.escape("%.1f" % nl["rrp_bn"])
+                         + "bn", html, re.S)
+        shown += 1
+    if isinstance(tg.get("chg_20d_bn"), (int, float)):
+        assert re.search(re.escape("%+.0f" % tg["chg_20d_bn"]) + r'\s*<span class="l-en">20d',
+                         html)
+        shown += 1
+    assert shown, "the committed treasury_watch.json carries none of the three reads"
+
+
 def _run() -> None:
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

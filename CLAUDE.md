@@ -15,6 +15,14 @@ AI approver to locate. The current assigned session resolves authorized technica
 contracts through existing interfaces. Preserve actual live writers, rights,
 reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
 
+## Permanent visual rule
+
+Chairman design rule (2026-10-18): never add a colored left edge or equivalent
+accent stripe to a container; do not relocate it to another edge. Use neutral
+surface hierarchy, even borders, typography and labeled semantic ink. Preserve
+complete focus outlines and meaningful chart series. The canonical rule lives in
+`docs/DESIGN_DOCTRINE.md`; the shared component specimen must follow it.
+
 ## Shared workspace + completion (STANDING)
 
 Read [Shared workspace + completion (STANDING)](docs/agent_guides/CLAUDE_WORKSPACE_COMPLETION.md) before the relevant action.

@@ -110,6 +110,7 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -655,6 +656,36 @@ def _git(*args: str, cwd: Path | None = None, timeout: int = 60,
     if result.returncode != 0:
         return None
     return result.stdout
+
+
+def git_updated(path: Path) -> str | None:
+    """Latest commit date for the current path, using the incumbent per-path query.
+
+    Context compilation consumes only updated dates. Do not walk the complete
+    addition history to compute an unused created date, and do not combine paths:
+    Git's history simplification and merge diffs are path-dependent.
+    """
+    try:
+        rel = path.resolve().relative_to(_ROOT)
+    except ValueError:
+        return None
+    updated = _git("log", "-1", "--format=%as", "--", str(rel))
+    last = (updated or "").strip().splitlines()
+    return last[0] if last else None
+
+
+def git_updated_batch(paths: Iterable[Path]) -> dict[Path, str | None]:
+    """Read each distinct path once, with at most four concurrent history queries.
+
+    Keep the exact per-path reader: combined-path Git history changes merge
+    semantics. Results and the executor belong only to this invocation; joining
+    in input order preserves deterministic callers without a persistent cache.
+    """
+    unique = list(dict.fromkeys(paths))
+    if not unique:
+        return {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        return dict(zip(unique, executor.map(git_updated, unique)))
 
 
 def git_dates(path: Path) -> tuple[str | None, str | None]:
@@ -1895,6 +1926,14 @@ def draft_handoff(payload: dict[str, Any]) -> str:
         f"Canonical path: `{canonical}`. Snapshot as_of `{as_of}`. "
         "The carriers list is the machine pin. Do not retype head SHAs, "
         "base SHAs, CI run ids, comment ids or review ids by hand.",
+        "",
+        "Next-action review: the currently assigned receiver must inspect the",
+        "original PR/workspace and reconcile live writers, leases and effects.",
+        "Do not make a historical original writer or archived parent chat the",
+        "sole actor. Name the receiver\'s next permitted action; an actual",
+        "STARTed operation or EFFECT_UNKNOWN stays fenced on the same original carrier.",
+        "An exact-session proof target remains exact; advance only disjoint work.",
+        "If no valid receiver has been assigned, name the real assignment gate.",
         "",
     ]
     if pins:
@@ -5251,6 +5290,12 @@ def compile_bundle(
     excluded: list[dict[str, Any]] = []
     groups: dict[str, list[dict[str, Any]]] = {name: [] for name in PACK_ORDER}
     order = [0]
+    dated_items: list[tuple[dict[str, Any], Path]] = []
+
+    def dated_item(date_path: Path, **fields: Any) -> dict[str, Any]:
+        item = _bundle_item(updated=None, **fields)
+        dated_items.append((item, date_path))
+        return item
 
     def emit(pack: str, item: dict[str, Any]) -> None:
         item["_seq"] = order[0]
@@ -5278,15 +5323,13 @@ def compile_bundle(
         emit("higher_law", item)
 
     # ---- workstream state (never dropped by budget) ------------------------
-    _, ws_updated = git_dates(ws_path)
-    emit("workstream_block", _bundle_item(
+    emit("workstream_block", dated_item(ws_path,
         kind="workstream",
         key=f"WS:{key}",
         path=_rel(ws_path),
         locator=f"{_rel(ws_path)}#frontmatter",
         authority_class="A4",
         status=str(rec.get("status") or "unknown"),
-        updated=ws_updated,
         excerpt=_workstream_excerpt(rec, prs),
         why="the compilation target",
     ))
@@ -5294,14 +5337,13 @@ def compile_bundle(
         for entry in rec.get(field) or []:
             if not isinstance(entry, str) or not entry.strip():
                 continue
-            emit("workstream_block", _bundle_item(
+            emit("workstream_block", dated_item(ws_path,
                 kind="constraint",
                 key=f"WS:{key}",
                 path=_rel(ws_path),
                 locator=f"{_rel(ws_path)}#{field}",
                 authority_class="A4",
                 status=label,
-                updated=ws_updated,
                 excerpt=f"[{label.upper()}] {_clip(_flat(entry), EXCERPT_CONSTRAINT)}",
                 why=f"{field} declared on WS:{key}",
             ))
@@ -5315,15 +5357,13 @@ def compile_bundle(
         dep_path = source(f"WS/{dep}")
         if malformed("dependency", f"WS:{dep}", dep_path):
             continue
-        _, dep_updated = git_dates(dep_path)
-        emit("dependency", _bundle_item(
+        emit("dependency", dated_item(dep_path,
             kind="dependency",
             key=f"WS:{dep}",
             path=_rel(dep_path),
             locator=f"{_rel(dep_path)}#frontmatter",
             authority_class="A4",
             status=str(dep_rec.get("status") or "unknown"),
-            updated=dep_updated,
             excerpt=(
                 f"{_flat(dep_rec.get('title'))}\n"
                 f"status: {dep_rec.get('status')}\n"
@@ -5383,17 +5423,15 @@ def compile_bundle(
                 if supersedes else "")
         body = _fields(dec_rec, (("question", "question"), ("answer", "answer"),
                                  ("rationale", "rationale")))
-        _, dec_updated = git_dates(dec_path)
         rows.append({
             "_date": str(_as_date(dec_rec.get("decided_at")) or ""),
-            "item": _bundle_item(
+            "item": dated_item(dec_path,
                 kind="decision",
                 key=f"DEC:{dec_key}",
                 path=_rel(dec_path),
                 locator=f"{_rel(dec_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dec_rec.get("confidence") or "unknown"),
-                updated=dec_updated,
                 excerpt=_clip(body, EXCERPT_DECISION - len(note)) + note,
                 why="; ".join(reasons[dec_key]),
             ),
@@ -5467,17 +5505,15 @@ def compile_bundle(
         if not citations.get(dsc_key, 0) and age is not None and age > STALE_DISCOVERY_DAYS:
             drop("discovery", f"DSC:{dsc_key}", dsc_path, f"uncited and {age}d old")
             continue
-        _, dsc_updated = git_dates(dsc_path)
         rows.append({
             "_date": str(verified or ""),
-            "item": _bundle_item(
+            "item": dated_item(dsc_path,
                 kind="discovery",
                 key=f"DSC:{dsc_key}",
                 path=_rel(dsc_path),
                 locator=f"{_rel(dsc_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dsc_rec.get("confidence") or "unknown"),
-                updated=dsc_updated,
                 excerpt=_clip(_fields(dsc_rec, (("claim", "claim"), ("so what", "so_what"),
                                                 ("falsifier", "falsifier"))),
                               EXCERPT_DISCOVERY),
@@ -5529,15 +5565,13 @@ def compile_bundle(
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
-            _, hnd_updated = git_dates(hnd_path)
-            emit("handoff", _bundle_item(
+            emit("handoff", dated_item(hnd_path,
                 kind="handoff",
                 key=f"WS:{key}",
                 path=_rel(hnd_path),
                 locator=f"{_rel(hnd_path)}#frontmatter",
                 authority_class="A4",
                 status=str(hnd_all[stem].get("ended_because") or "unknown"),
-                updated=hnd_updated,
                 excerpt=_clip(
                     _fields(hnd_all[stem], (
                         ("mission", "mission"), ("state before", "state_before"),
@@ -5582,6 +5616,13 @@ def compile_bundle(
                     f"quote it.",
             why=f"listed in WS:{key} artifacts",
         ))
+
+    # Date membership follows the original eligible item sites, not the broader
+    # source digest (which also binds excluded/superseding records). Fill every
+    # candidate before costing: dates affect both packing and omission accounting.
+    dates = git_updated_batch(path for _item, path in dated_items)
+    for item, path in dated_items:
+        item["updated"] = dates[path]
 
     # ---- budget ------------------------------------------------------------
     # Selection happens BEFORE rendering, over the already-filtered items, so JSON and

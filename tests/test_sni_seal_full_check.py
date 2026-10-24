@@ -96,6 +96,46 @@ def test_schk_01_walk_compare_detects_every_diff_kind(tmp_path: Path) -> None:
     assert by_kind[KIND_DIFFER].relpath == "sub/changed.txt"
 
 
+def test_schk_01b_regeneration_rejects_unsafe_or_unexpected_sidecars(
+    tmp_path: Path,
+) -> None:
+    """Only the real zero-byte TrialLedger lock is outside sealed artifacts.
+
+    The default full-tree comparator remains strict. The scratch-run view does
+    not mask other extra output, a nonempty lock, or a symlink masquerading as
+    the writer's durable lock. This exercises the new policy without touching
+    any shared source ledger or using a live writer.
+    """
+    committed = tmp_path / "committed"
+    produced = tmp_path / "produced"
+    committed.mkdir()
+    produced.mkdir()
+    for directory in (committed, produced):
+        (directory / "trial_ledger.jsonl").write_text('{"trial":"pinned"}\n')
+    lock = produced / ".trial_ledger.jsonl.lock"
+    lock.write_bytes(b"")
+
+    assert [(d.kind, d.relpath) for d in walk_compare(committed, produced)] == [
+        (KIND_EXTRA, ".trial_ledger.jsonl.lock")
+    ]
+    assert walk_compare(committed, produced, _regenerated_study=True) == []
+    assert lock.is_file()  # The verifier must never remove a durable lock.
+
+    (produced / "unexpected-new-file").write_text("not a seal artifact")
+    assert [(d.kind, d.relpath) for d in walk_compare(
+        committed, produced, _regenerated_study=True
+    )] == [(KIND_EXTRA, "unexpected-new-file")]
+    (produced / "unexpected-new-file").unlink()
+
+    lock.write_bytes(b"not an empty advisory-lock sidecar")
+    with pytest.raises(ValueError, match="unexpected regenerated trial-ledger lock"):
+        walk_compare(committed, produced, _regenerated_study=True)
+    lock.unlink()
+    lock.symlink_to(produced / "trial_ledger.jsonl")
+    with pytest.raises(ValueError, match="unexpected regenerated trial-ledger lock"):
+        walk_compare(committed, produced, _regenerated_study=True)
+
+
 def test_schk_02_named_exception_tolerates_only_its_field(tmp_path: Path) -> None:
     committed = tmp_path / "committed"
     produced = tmp_path / "produced"

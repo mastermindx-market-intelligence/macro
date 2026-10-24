@@ -1,0 +1,117 @@
+........................................................................ [ 16%]
+........................................................................ [ 33%]
+........................................................................ [ 50%]
+...............................................................s........ [ 66%]
+........................................................................ [ 83%]
+...................F..................................................   [100%]
+=================================== FAILURES ===================================
+_________ test_reviewed_risk_history_requires_complete_object_jsonl[] __________
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2316/.../qualification.json'), 'qualification_sha256': 'df51df96f29e2517bed2e22be2194df0c0f2f2b36f588d51d22695c8b3a510b1', ...}
+suffix = ''
+
+    @pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+    def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+        artifact = 'data/risk_radar/forward_log.jsonl'
+        path = inputs['root'] / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                        drawdown_prob={'h21': 0.12}),
+                   dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                        drawdown_prob={'h21': 0.19, 'h10': 0.11, 'h5': 0.06})]
+        path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+        row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                   relevance='Dated risk backdrop, not evidence of the event effect.')
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+        if suffix:
+            with pytest.raises(ValueError, match='artifact is malformed'):
+                P.plan_external_candidate(**inputs)
+        else:
+            fact = P.plan_external_candidate(**inputs)['validation_context']['facts'][-1]
+            assert fact['id'] == 'risk_radar' and fact['dated'] == '2026-10-10'
+>           assert fact['values'] == ['70', '0.19', '0.11', '0.06']
+E           AssertionError: assert ['70'] == ['70', '0.19', '0.11', '0.06']
+E             
+E             Right contains 3 more items, first extra item: '0.19'
+E             Use -v to get more diff
+
+tests/test_press_external_candidate.py:475: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_idle_critical_mismatch_re0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-dfafac5b-b48a-4c60-a1d6-5d47a804d4ff'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-69fecb39-b3fa-4f32-a105-79157094282b'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_external_candidate.py::test_reviewed_risk_history_requires_complete_object_jsonl[]
+1 failed, 428 passed, 1 skipped, 1 deselected, 14 warnings in 30.83s

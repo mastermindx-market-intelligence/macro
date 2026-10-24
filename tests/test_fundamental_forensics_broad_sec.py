@@ -978,15 +978,26 @@ def test_cli_recovery_requires_exact_ratified_anchor(capsys: pytest.CaptureFixtu
     assert payload["reason_code"] == "recovery_plan_invalid"
 
 
-def test_broad_sec_suite_is_named_in_engine_render_guards() -> None:
+def _legacy_job(name: str) -> str:
     text = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     match = re.search(
-        r"(?ms)^  engine-render-guards:\n.*?(?=^  [A-Za-z0-9_-]+:)",
+        rf"(?ms)^  {re.escape(name)}:\n.*?(?=^  [A-Za-z0-9_-]+:)",
         text,
     )
-    assert match is not None
-    job = match.group(0)
-    assert "tests/test_fundamental_forensics_broad_sec.py" in job
+    assert match is not None, name
+    return match.group(0)
+
+
+def test_broad_sec_suite_is_named_in_engine_render_guards() -> None:
+    # This suite reads nightly-written data (class B), so it stays on the
+    # engine-render-guards step.
+    assert "tests/test_fundamental_forensics_broad_sec.py" in _legacy_job("engine-render-guards")
+
+
+def test_broad_sec_hermetic_suites_are_named_in_fif_kernel_guards() -> None:
+    # The hermetic broad SEC lane and EDGAR index suites moved to
+    # fif-kernel-guards (gate: code) on 2026-10-12 so a pull request runs them.
+    job = _legacy_job("fif-kernel-guards")
     assert "tests/test_filing_forensics_broad_sec_lane.py" in job
     assert "tests/test_fundamental_forensics_edgar_index.py" in job
 

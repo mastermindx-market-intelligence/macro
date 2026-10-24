@@ -1,0 +1,45 @@
+
+import pathlib,sys,os,json,traceback,time,threading
+stage=pathlib.Path(sys.argv[1]).resolve();receiver=stage/'receiver'
+os.chdir(receiver);sys.path.insert(0,str(receiver))
+events=[];denied=[];writes=set()
+def inside(p):
+ if isinstance(p,int):return True
+ if isinstance(p,bytes):p=os.fsdecode(p)
+ return pathlib.Path(p).resolve().is_relative_to(stage)
+def allowwrite(p,event):
+ if isinstance(p,int):
+  if p in (0,1,2):return
+  p=os.readlink('/proc/self/fd/'+str(p))
+ if not inside(p):
+  denied.append({'event':event,'path':str(p)});raise PermissionError('isolated rehearsal write fence')
+ writes.add(str(pathlib.Path(p).resolve().relative_to(stage)))
+def audit(event,args):
+ if event=='open':
+  p,mode,flags=args
+  if (mode and any(x in mode for x in ('w','a','x','+'))) or (isinstance(flags,int) and flags & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND)):allowwrite(p,event)
+ elif event in ('os.mkdir','os.remove','os.rmdir','os.truncate'):allowwrite(args[0],event)
+ elif event in ('os.rename','os.link','os.symlink'):
+  allowwrite(args[0],event);allowwrite(args[1],event)
+ elif event in ('socket.connect','socket.connect_ex','subprocess.Popen','os.system','os.posix_spawn','os.exec'):
+  denied.append({'event':event});raise PermissionError('isolated rehearsal network/process fence')
+sys.addaudithook(audit)
+result={'registered_startup_called':False,'startup_completed':False}
+try:
+ from app import main
+ assert pathlib.Path(main.__file__).resolve().is_relative_to(receiver)
+ before_threads={t.name for t in threading.enumerate()}
+ main._start_scheduler();result['registered_startup_called']=True
+ sch=main.app.state.scheduler
+ result['startup_completed']=True;result['scheduler_running']=bool(sch and sch.running)
+ result['first_run_states']={k:getattr(main.app.state,k,None) for k in ('autonomous_first_run','china_first_run','hk_first_run','heavyweight_first_run','etf_first_run')}
+ result['threads_created']=sorted({t.name for t in threading.enumerate()}-before_threads)
+ if sch:
+  sch.pause()
+  result['jobs']=[{'id':j.id,'next_run_time':str(j.next_run_time)} for j in sch.get_jobs()]
+  sch.shutdown(wait=False)
+except BaseException as e:
+ result['exception_type']=type(e).__name__;result['exception']=str(e);result['traceback']=traceback.format_exc()
+result['denied_events']=denied;result['write_paths']=sorted(writes)
+(stage/'attempt2/startup-result.json').write_text(json.dumps(result,indent=2)+'\n')
+print('RR_STARTUP_RESULT:'+json.dumps(result))

@@ -1,0 +1,17 @@
+{
+  "accepted": false,
+  "alternate_carrier_or_provider_attempted": false,
+  "carrier": "authorized M2 Remote Desktop Commander -> installed fabric_task.py",
+  "effect": "NO_RECORDED_WORKER_DISPATCH",
+  "next": "Continue independent in-scope source/browser/old-consumer verification; preserve this denied review lane without replay.",
+  "original_status_after_denial": "NOT_FOUND",
+  "parent_id": "market-time-machine-20261015",
+  "platform_result": "blocked by OpenAI safety checks",
+  "quality_verdict": null,
+  "requested_once": true,
+  "retry": false,
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-transcripts-20261016-review-01",
+  "schema": "market_memory.transcript_review_dispatch_state.v1",
+  "source_packet_sha256": "04fa5aaecb27daaac752bc241bcaa1dd233f90ed70f146184d53bde38ebe6bf5"
+}

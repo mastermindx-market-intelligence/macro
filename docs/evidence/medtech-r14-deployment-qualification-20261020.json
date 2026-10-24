@@ -1,0 +1,93 @@
+{
+  "capacity_observation": {
+    "available_bytes": 36907368448,
+    "cleanup_performed": false,
+    "filesystem_used_percent": 56,
+    "observed_at": "2026-10-20T03:40:41.411585Z"
+  },
+  "created_at": "2026-10-20T04:18:54.296663+00:00",
+  "limits": [
+    "Isolated source qualification; not a full repository-suite pass.",
+    "No production installation, refresh, SQL application, or live paid-account request is established by this receipt.",
+    "Hosted CI, actual API namespace readback and first complete production refresh remain release gates."
+  ],
+  "qualification": {
+    "argv": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_medtech.py",
+      "tests/test_medtech_deployment.py",
+      "tests/test_check_script_import_pinning.py",
+      "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex",
+      "tests/test_market_memory_options_deploy.py::test_networked_option_writer_masks_every_other_known_secret_path",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "-q"
+    ],
+    "bytecode_writes": false,
+    "platform": "Darwin",
+    "process_exit": 0,
+    "pytest_passed": 85,
+    "pytest_seconds": 171.58,
+    "python": "3.14.7",
+    "result": "pass",
+    "subtests_passed": 31
+  },
+  "read_only_vps_preflight": {
+    "medtech_environment_absent": true,
+    "medtech_identity_absent": true,
+    "medtech_roots_absent": true,
+    "medtech_units_not_found_inactive": true,
+    "observed_at": "2026-10-20T04:16:08.331801Z",
+    "srv_mode": "0755",
+    "srv_owner": "root:root",
+    "ssh_exit": 0,
+    "systemd_version": "255.4-1ubuntu8.18"
+  },
+  "retained_source_receipt": "medtech-r14-retained-source-20261020.json",
+  "review": {
+    "composition_diff_sha256": "282f224b79e70441fd743b9a7cadde8ebb98252fe26f24767e5f2c285359e2aa",
+    "result": "pass",
+    "reviewed_behaviors": [
+      "nonroot bounded collector and storage floor",
+      "no-follow fixed identity and empty-root provisioning",
+      "actual running API mount, inode, environment and invocation proof",
+      "first-install prerequisite before mandatory API mounts",
+      "disabled installer and explicit first-refresh activation",
+      "all incoming restart clauses and FIF dataset setting preserved",
+      "33 additive MedTech CI paths across 13 existing jobs",
+      "existing options-worker environment restrictions preserved"
+    ]
+  },
+  "schema": "medtech.deployment.qualification.v1",
+  "source_binding": {
+    "files_sha256": {
+      ".github/ci/legacy-jobs.yml": "33fef66b843e807d6f735b804944c83636e9b90718661dd65fbe4f1a1c0e916e",
+      ".github/workflows/medtech-contracts.yml": "b08768023bd08182ff8a44b24783d57c2b147b8998694d6edef8763866e6e308",
+      ".gitignore": "a6df176894cce87dc7092311ee4134bfeecc35f9f495d88e890882526d1ac976",
+      "app/deploy/api-setup.sh": "ec0165258d711716a876b53f1d50dcdce3b89e79cd205859e9e4f0ba8e7f2b56",
+      "app/deploy/macro-api.service": "f52b74f5e32378c1eeab888ba656a3cf65d10134d6b47c6d31323d470ed28c4c",
+      "app/deploy/macro-market-memory-options.service": "9ccc9f7dae3284043dd051fe8df56e74e9cae8e141c2f2cefa72c512a4d768c5",
+      "app/deploy/macro-medtech.service": "c3df7b6269c81c2a23de8f3d363e6b63dcee59ade5f28b4ba2553f8d0e290f4e",
+      "app/deploy/macro-medtech.timer": "218dc9baf2fae1684e606d6ea7c42e7aa99f645d1fb9d266b8d14c274d350a32",
+      "app/deploy/medtech-api-boundary.py": "aa8c9d51af0c219ff64576a97dc7a3a6bea010599d7a2fdcd7dea5f1c90257ee",
+      "app/deploy/medtech-environment.example": "99c0214c6621dc43ea32a4021857bf5eea3f0a24d24db9218b1ef01ed8574d8a",
+      "app/deploy/medtech-prereqs.py": "16cd1ece169d2a4ae124803f07d02633cdff92143dc27778857fab492633c5c8",
+      "app/deploy/medtech-setup.sh": "dc38d225db36167cb27d03cb4a3dca1be51914c1aa5e5477a698520d710d4c3d",
+      "app/deploy/update.sh": "71abfe98a0ffb620413cb9e6a68a6e1fc5228654fdb57661f6be95015388d77f",
+      "app/main.py": "e7852e0032bda10f428f6d27750ed8602e82ad27cc90e97eb29628386da62730",
+      "app/medtech.py": "38c4a16cbe81b4d321bd3ebb071202df543de67e4b033e72200003f5bb3117db",
+      "collectors/medtech/__init__.py": "df100749c188ba25ec29ae02addd75cb8b2fa89b65d240f678aff1f7c3cc2310",
+      "collectors/medtech/openfda.py": "b8486326ca0191249012a70e856fbd2612f021cda3ffb182db812be62f1a91a6",
+      "engine/medtech/__init__.py": "373e4ae6d18e48c8f3e5b1d5de5024e76739fcaa5a98e2329099e7ed82744353",
+      "engine/medtech/events.py": "57c7a91820ae0874a6c2a8a739b2ff02934b702afa912f8047233eda81a098e7",
+      "engine/medtech/publication.py": "6d06f49e8b857ccd2b61b9d0c0d73d371edde5f64c2c01cc8310dc2911b5a93e",
+      "engine/medtech/store.py": "cba837c1720716107c790aa594cf89661e8b4d39590734cd14a9eba39fa44aad",
+      "scripts/medtech_worker.py": "460b05149dc27b03fb36742764295e7538181ccc061d6c2980ef4b5701c35c1f",
+      "tests/test_medtech.py": "2c38cae368a4b68e7107d10e1281c02d5ebe4ecdd4c14b0e50e6538f51aa5084",
+      "tests/test_medtech_deployment.py": "ecbb4d4dff0ddc5f95a24ac7460bcea472d4bc7ed4e531c003afc39a4f4ab684"
+    },
+    "incoming_main": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+    "prior_candidate": "f7c7ef33c3bc6d0abef853924cd56b4475f6738c"
+  }
+}

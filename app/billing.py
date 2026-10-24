@@ -839,7 +839,9 @@ def _compute_entitlement(customer_id: str) -> dict:
     keys: list[str] = []
     try:
         ents = stripe.entitlements.ActiveEntitlement.list(customer=customer_id, limit=100).data
-        keys = [e.lookup_key for e in ents]
+        # Stripe lookup_key can be null. Persist only valid feature names; a
+        # NULL array member must never poison a paid membership read.
+        keys = [e.lookup_key for e in ents if isinstance(e.lookup_key, str) and e.lookup_key]
     except Exception as exc:  # noqa: BLE001 — entitlement propagation lag → config fallback in reducer
         log.debug("billing: active-entitlement list failed for %s (%s)", customer_id, exc)
     return _entitlement_from_state(subs, keys)

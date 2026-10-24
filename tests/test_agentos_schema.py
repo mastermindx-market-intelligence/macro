@@ -1795,6 +1795,36 @@ def test_d3_draft_handoff_round_trips(tmp_path: Path) -> None:
     assert "base-sha-reference" not in strict.stdout
 
 
+
+def test_d3_draft_handoff_successor_guidance_without_new_gate(tmp_path: Path) -> None:
+    """Authoring guidance prevents ghost-parent waits without claiming live custody."""
+    payload = _handoff_payload(
+        next_actions=["The original writer must finish the existing PR."],
+    )
+    source = _dump_json(tmp_path, "ghost_parent_handoff.json", payload)
+    result = _agentos("draft-handoff", "--from", str(source))
+    assert result.returncode == 0, result.stderr
+    assert "currently assigned receiver" in result.stdout
+    assert "historical original writer" in result.stdout
+    assert "STARTed" in result.stdout and "EFFECT_UNKNOWN" in result.stdout
+    assert "same original carrier" in result.stdout
+    # A drafter cannot know whether a historical writer retains a live lease.
+    # Preserve original payload as data; avoid manufacturing a gate or transfer.
+    assert "The original writer must finish the existing PR." in result.stdout
+    assert "agentos/handoffs/DRAFT-ROUNDTRIP-2026-10-12.md" in result.stdout
+    protocol = (REPO / "research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md").read_text()
+    schema = (REPO / "agentos/schema/handoff.schema.yml").read_text()
+    assert "Historical writer references are not current liveness" in protocol
+    assert "current assigned receiver owns recovery" in schema
+    assert "reviewer judgment" in protocol
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": result.stdout,
+    })
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+
+
 def test_d3_draft_dec_and_decision_round_trip(tmp_path: Path) -> None:
     src = _dump_json(tmp_path, "decision.json", _decision_payload())
     alias = _agentos("draft-dec", "--from", str(src))

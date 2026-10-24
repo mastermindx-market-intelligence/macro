@@ -1,0 +1,15 @@
+{
+  "schema": "defense.installed_identity_owner_qualification.v1",
+  "read_started_at": "2026-10-14T10:42:49.367195+00:00",
+  "read_completed_at": "2026-10-14T10:42:49.368336+00:00",
+  "receipt_sha256": "d96591309fe348ff410b77a24ef74657fb53ef81b962bdc3b7a4d1a9f0f3d68f",
+  "stable_read": true,
+  "generation": "2026-10-11T16:03:17",
+  "owner_code_version": "bb0830d8d778ba4d9e5b56b9b4c2f2a856f70112",
+  "publication_seal": "missing",
+  "identity_observations": "missing",
+  "verdict": "REFUSED_BY_EXISTING_SNAPSHOT_CONTRACT",
+  "reason": "Installed owner uses same legacy Oct11 reference generation; missing owner publication and observation history. Current review does not establish historical eligibility.",
+  "source_scope": "Read-only exact /opt/macro/data/reference/_receipt.json through documented deployment host; no runtime writes/restarts/new provider data.",
+  "next": "Existing identity owner supplies lawful owner-sealed generation; consumer cannot invent seals. Excluded DataOS implementation remains outside Defense work."
+}

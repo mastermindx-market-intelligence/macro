@@ -62,3 +62,11 @@ adapter's dataos_resolution value "alias_table_resolved" is already reserved for
 that world, so K2-C receipts upgrade without a contract break. Until then, any
 session tempted to "just map" a CUSIP through a display-tier surface must treat
 this record as the refusal.
+
+2026-10-19 — DEC:K2C-NATIVE-READ-IS-NOT-SEMANTIC-OWNER-PROOF supersedes ONLY
+the reading of this record under which an exact owner-native CUSIP match could
+contribute to a K2-C semantic positive. Every other clause stays in force, as does
+the Data OS alias-space path above and the reserved value alias_table_resolved.
+This record is deliberately NOT retired: superseded_by evicts a whole record
+from every compiled bundle and cannot express clause scope, so retiring it would
+drop these still-binding identity-plane laws and their evidence from served context.

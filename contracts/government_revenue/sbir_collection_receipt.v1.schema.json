@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/government_revenue/sbir_collection_receipt.v1.schema.json",
+  "title": "Existing SBIR collection receipt v1",
+  "description": "Canonical existing producer shape. Closed objects exclude source PII, abstracts and raw transport. Executable format checking and existing hash/generation/cross-field checks are required; JSON Schema alone does not prove bindings or source activation.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "contract": {
+      "const": "government_revenue.sbir_collection_receipt.v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^sbir-award:[0-9a-f]{64}$"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "rail": {
+      "const": "sbir_awards"
+    },
+    "endpoint": {
+      "const": "https://api.www.sbir.gov/public/api/awards"
+    },
+    "query": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agency": {
+      "enum": [
+        "DOW",
+        "HHS",
+        "NASA",
+        "NSF",
+        "DOE",
+        "USDA",
+        "EPA",
+        "DOC",
+        "ED",
+        "DOT",
+        "DHS"
+      ]
+    },
+    "year": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(19|20)\\d{2}$"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "short_page": {
+      "type": "boolean"
+    },
+    "request_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "response_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract",
+    "receipt_id",
+    "observed_at",
+    "rail",
+    "endpoint",
+    "query",
+    "agency",
+    "year",
+    "page",
+    "offset",
+    "record_count",
+    "short_page",
+    "request_sha256",
+    "response_sha256"
+  ],
+  "additionalProperties": false
+}

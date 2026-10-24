@@ -1,0 +1,213 @@
+{
+  "inspection": "schema_and_coverage_only",
+  "market_prices_exported": false,
+  "production_snapshot": false,
+  "rows": [
+    {
+      "bytes": 244544,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1993-01-29 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 8483,
+      "path": "data/yahoo/SPY.parquet",
+      "price_basis_receipt": false,
+      "sha256": "d98a3efbfbc0096beb9c223508ba4b7a536053521a49ffa57abbfa23da07b2ee",
+      "state": "readable",
+      "symbol": "SPY"
+    },
+    {
+      "bytes": 188071,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLB.parquet",
+      "price_basis_receipt": false,
+      "sha256": "26385aeabc36fe53f81245892df54afe4252d65c806454621ce28bd2c1fc2d3b",
+      "state": "readable",
+      "symbol": "XLB"
+    },
+    {
+      "bytes": 60378,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "2018-06-19 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 2090,
+      "path": "data/yahoo/XLC.parquet",
+      "price_basis_receipt": false,
+      "sha256": "b278b41aca69d8e46b2fee8ed986132afb60fc9672b38539e9467b77f5f1f2f4",
+      "state": "readable",
+      "symbol": "XLC"
+    },
+    {
+      "bytes": 193579,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLE.parquet",
+      "price_basis_receipt": false,
+      "sha256": "287ce2f0760002b0ba4f0f1ba21078239e5ee1b19cf5b3ca0d791e035056990a",
+      "state": "readable",
+      "symbol": "XLE"
+    },
+    {
+      "bytes": 189037,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLF.parquet",
+      "price_basis_receipt": false,
+      "sha256": "c12aadb47e6a92a543b1c279a536fe9f24060d99330828446582bddac67a6448",
+      "state": "readable",
+      "symbol": "XLF"
+    },
+    {
+      "bytes": 189172,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLI.parquet",
+      "price_basis_receipt": false,
+      "sha256": "ba0c3b0cf649d803a141939a91435b6d3add0f5468df58ca36a8f3da2d5bdb6d",
+      "state": "readable",
+      "symbol": "XLI"
+    },
+    {
+      "bytes": 189971,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLK.parquet",
+      "price_basis_receipt": false,
+      "sha256": "a841b8e814f945fbba1677b8f85d353420a8325861746a1a0cdc4125d9d9bee0",
+      "state": "readable",
+      "symbol": "XLK"
+    },
+    {
+      "bytes": 181487,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLP.parquet",
+      "price_basis_receipt": false,
+      "sha256": "e1f28924ba891b0330a045153a5b84ccd12731e40004d633832226d956b808ac",
+      "state": "readable",
+      "symbol": "XLP"
+    },
+    {
+      "bytes": 72513,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "2015-10-08 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 2768,
+      "path": "data/yahoo/XLRE.parquet",
+      "price_basis_receipt": false,
+      "sha256": "8d419f54a0a0149d37e9d00c1f70ccb85d48d146d7772f9c10580548df8202e1",
+      "state": "readable",
+      "symbol": "XLRE"
+    },
+    {
+      "bytes": 186378,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLU.parquet",
+      "price_basis_receipt": false,
+      "sha256": "7ff21c5c609247ff5cbe1edc94654471bd91d32c4eae459f0af84220a68086e4",
+      "state": "readable",
+      "symbol": "XLU"
+    },
+    {
+      "bytes": 184243,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLV.parquet",
+      "price_basis_receipt": false,
+      "sha256": "689315f0593f506f0391ef8d16b14b20150d036d67e76e2c473883c945165473",
+      "state": "readable",
+      "symbol": "XLV"
+    },
+    {
+      "bytes": 189659,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first": "1998-12-22 00:00:00",
+      "has_open": false,
+      "last": "2026-10-12 00:00:00",
+      "n_rows": 6993,
+      "path": "data/yahoo/XLY.parquet",
+      "price_basis_receipt": false,
+      "sha256": "1e52d75895fa004230a6e2693b13012a8a15b2d03f8d2d78ffad73e58b2af905",
+      "state": "readable",
+      "symbol": "XLY"
+    }
+  ],
+  "schema": "rotation_daily_store_schema_census.v1",
+  "source_ref": "7f1e4ede020b53b1d86b39642e9c88f334f0d61a"
+}

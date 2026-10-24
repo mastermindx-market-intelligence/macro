@@ -105,7 +105,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-31",
+        "source_asof": "2026-09-30",
         "status": "PRESENT"
       },
       {
@@ -131,29 +131,29 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 0.710668008577656,
-        "delta": -0.2266,
+        "current_value": 0.5250507383817364,
+        "delta": -0.4122,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.9372992907410378
       },
       {
-        "current_value": -0.011709533365944935,
-        "delta": -0.0046,
+        "current_value": -0.07435526959582717,
+        "delta": -0.0672,
         "metric_id": "coincident_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": -0.007129906816814469
       },
       {
-        "current_value": 0.4668343771851653,
-        "delta": 0.08,
+        "current_value": 0.3532239605396654,
+        "delta": -0.0336,
         "metric_id": "lagging_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.38679772082090835
       },
       {
-        "current_value": -0.44696559605333874,
-        "delta": -0.2038,
+        "current_value": -0.32783529096129627,
+        "delta": -0.0846,
         "metric_id": "coincident_lagging_ratio_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": -0.24319183709936
@@ -167,26 +167,27 @@
   },
   "corrections": {
     "changed_fingerprints": [
-      "business_cycle:lagging_tier_diffusion:9efee38b6e3c5134",
-      "business_cycle:lagging_tier_index:dba76648ab70fd40",
-      "business_cycle:lagging_tier_momentum_6m:ca5f4ca73a1f2144",
-      "business_cycle:leading_tier_index:aba8d2a2703b9473",
-      "business_cycle:leading_tier_momentum_6m:0433fe0d4b94ef05"
+      "business_cycle:coincident_tier_index:7cbab0348a831212",
+      "business_cycle:coincident_tier_momentum_6m:8c19c10ecc201d5c",
+      "business_cycle:lagging_tier_index:3f6192bda6d4e055",
+      "business_cycle:lagging_tier_momentum_6m:8ac6e59cca65e697",
+      "business_cycle:leading_tier_index:21cdde8742ba57fc",
+      "business_cycle:leading_tier_momentum_6m:a020bd90dba6b2c0"
     ],
     "correction_state": "superseded",
     "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-8794e22a07402dff"
+    "predecessor_generation_id": "business_activity-US-ba3cdb294e069b4b"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-15T05:14:07Z",
+    "built_at": "2026-10-21T05:02:49Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "39d00535d992abc7b707b5b53695cbef0ae907ee",
-    "content_sha256": "16700a75dc3c9b47ef91f5357788dab419018a628e352c0ac20d984d85080570",
-    "generation_id": "business_activity-US-16700a75dc3c9b47",
+    "code_version": "6cc8cb019992e235d1db1c136e89d3300c2c5965",
+    "content_sha256": "68e6bc8e2e93d93870d121efb72de651fd99f65c77aca6ba75128c11eeefc42a",
+    "generation_id": "business_activity-US-68e6bc8e2e93d938",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -282,8 +283,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.710668008577656, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.710668008577656，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.5250507383817364, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.5250507383817364，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -306,8 +307,8 @@
         "horizon": "current",
         "implication_id": "coincident_tier_read",
         "text": {
-          "en": "Coincident tier: 6-month momentum -0.011709533365944935, direction falling, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "同步层：6个月动量 -0.011709533365944935，方向 falling，广度 100.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Coincident tier: 6-month momentum -0.07435526959582717, direction falling, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "同步层：6个月动量 -0.07435526959582717，方向 falling，广度 100.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.coincident"
       },
@@ -329,8 +330,8 @@
         "horizon": "current",
         "implication_id": "lagging_tier_read",
         "text": {
-          "en": "Lagging tier: 6-month momentum 0.4668343771851653, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "滞后层：6个月动量 0.4668343771851653，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Lagging tier: 6-month momentum 0.3532239605396654, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "滞后层：6个月动量 0.3532239605396654，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.lagging"
       },
@@ -453,7 +454,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.32111076764258,
+        "value": 95.13549349744666,
         "value_type": "index"
       },
       {
@@ -489,7 +490,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.710668008577656,
+        "value": 0.5250507383817364,
         "value_type": "number"
       },
       {
@@ -525,7 +526,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.8171915735969679,
+        "value": 0.751176547533377,
         "value_type": "number"
       },
       {
@@ -640,9 +641,9 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "rebased_100_composite",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
@@ -651,10 +652,10 @@
         "metric_id": "coincident_tier_index",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_index",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -669,16 +670,16 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 36.180262362461924,
+        "value": 36.21417790162398,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "6m_change",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -687,10 +688,10 @@
         "metric_id": "coincident_tier_momentum_6m",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_momentum_6m",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -705,16 +706,16 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": -0.011709533365944935,
+        "value": -0.07435526959582717,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "ema_of_6m_change",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.trend",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -723,10 +724,10 @@
         "metric_id": "coincident_tier_trend",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_trend",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -741,16 +742,16 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": -0.07254167131860809,
+        "value": -0.06441179551749056,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "share_of_legs_rising_6m",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
@@ -759,10 +760,10 @@
         "metric_id": "coincident_tier_diffusion",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_diffusion",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -784,9 +785,9 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "sign_of_6m_momentum",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.direction",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
@@ -795,10 +796,10 @@
         "metric_id": "coincident_tier_direction",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_direction",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -820,9 +821,9 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "count_of_available_legs",
-        "calculation_as_of": "2026-08-31",
+        "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.75,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.coincident.n_legs",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader_input_coverage",
@@ -831,10 +832,10 @@
         "metric_id": "coincident_tier_leg_count",
         "model_version": "business_activity.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-31",
+        "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#coincident_tier_leg_count",
-        "reference_period": "2026-08-31",
+        "reference_period": "2026-09-30",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -849,7 +850,7 @@
           "value": null
         },
         "unit": "legs",
-        "value": 3,
+        "value": 2,
         "value_type": "count"
       },
       {
@@ -885,7 +886,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 92.98775856332804,
+        "value": 92.72807203776249,
         "value_type": "index"
       },
       {
@@ -921,7 +922,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.4668343771851653,
+        "value": 0.3532239605396654,
         "value_type": "number"
       },
       {
@@ -957,7 +958,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.3419914545148086,
+        "value": 0.2752299577251748,
         "value_type": "number"
       },
       {
@@ -1101,7 +1102,7 @@
           "value": null
         },
         "unit": "ratio_pt",
-        "value": -0.44696559605333874,
+        "value": -0.32783529096129627,
         "value_type": "number"
       },
       {

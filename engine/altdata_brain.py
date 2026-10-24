@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
@@ -359,6 +360,10 @@ def _det_baseline(t: dict, min_weighted: float = 0.9) -> tuple[str, str, str]:
     channels = set(t.get("channels") or [])
 
     # --- deterministic directional witness ---
+    # A NON-FINITE rs (NaN/±inf) is an unreadable price series: it is missing
+    # evidence (branch c), NOT an rs < 0 underweight witness (W17 SPEC 2).
+    if isinstance(rs, (int, float)) and not math.isfinite(rs):
+        rs = None
     if rs is not None:
         # (a)/(b): price series available — RS sign is the sole directional witness.
         det_lean = "overweight" if rs >= 0 else "underweight"

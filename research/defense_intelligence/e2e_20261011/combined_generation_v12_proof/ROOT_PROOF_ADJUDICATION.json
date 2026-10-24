@@ -1,0 +1,37 @@
+{
+  "schema": "defense.candidate_proof_adjudication.v1",
+  "source_checkout": "c54b8c132ff00492b7551d15b6a5eabd0e25785c",
+  "receipt_sha256": "ee5228f81d2a28cc491e42cd54f0ab2885e49aeb536658d56cace2b15e6bd7c0",
+  "summary": "104 passed, 1 skipped, 1 warning in 572.05s (0:09:32)",
+  "identity": "fe7d0915e9b8260bdd30f25c2f867d79eb75eb1b832569bc01f92276fbb7b121",
+  "generation": {
+    "ledger_line_count": 642,
+    "projection_generated_at": "2026-10-14T03:12:45.197758+00:00",
+    "queue_content_id": "grcq1-8f1cc489fdf1e14384e038c9",
+    "state_sha256": "2c889096175c738bb09c791f414b5acd08594735848ea0b822a7a7c01e58c9de"
+  },
+  "source_dependency_count": 7587,
+  "output_count": 109,
+  "proof_artifacts": "original sealed bytes copied without rewriting receipt",
+  "skip": "no unaccounted rows to exercise",
+  "prior_v11_proof": "preserved; correctly refused changed source dependencies after main integration",
+  "integration_base": "46cd92e0c213a4ba2c2f1423f147355fe9795983",
+  "browser_evidence": "unchanged V10/V11 local product evidence; new capacity fixture evidence isolated on preparation branch",
+  "independent_product_acceptance": false,
+  "production_publication": false,
+  "ci_packing": {
+    "introduced": 0,
+    "inherited": 2,
+    "head_and_base_jobs": {
+      "templates/index.html": 136,
+      "engine/prophet/plan_book.py": 130
+    },
+    "ceilings": {
+      "templates/index.html": 135,
+      "engine/prophet/plan_book.py": 129
+    },
+    "absolute_gate": "still red; inherited evidence is not permission to bypass hosted semantic/release controls",
+    "differential": "canonical comparison passed"
+  },
+  "next": "same draft PR9066 exact-head hosted CI, protected review/merge and ordered release"
+}

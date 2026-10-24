@@ -6554,3 +6554,22 @@ html[data-lang="zh"] #view .l-en { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .ios-evidence-band { transition: none; }
 }
+
+/* Research diagnostics: canonical tokens, section-local language and art direction. */
+.rf-diagnostics { margin:var(--sp-5,20px) 0; padding:var(--sp-4,16px); border-radius:var(--r-card,12px); background:var(--bg); color:var(--text); }
+.rf-diagnostics .rf-diagnostic-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--sp-3,12px); margin-bottom:var(--sp-4,16px); }
+.rf-diagnostics h2 { margin:0; font-size:var(--fs-lg,18px); }
+.rf-diagnostics .rf-mode-controls { display:flex; flex-wrap:wrap; gap:var(--sp-2,8px); }
+.rf-diagnostics button { border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:var(--sp-2,8px) var(--sp-3,12px); background:var(--panel); color:var(--text); font:inherit; cursor:pointer; }
+.rf-diagnostics button[aria-pressed="true"] { border-color:var(--link); text-decoration:underline; text-underline-offset:var(--sp-1,4px); }
+.rf-diagnostics .card { min-width:0; margin-bottom:var(--sp-3,12px); background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:var(--r-card,12px); box-shadow:none; }
+.rf-diagnostics[data-theme="light"] .card { box-shadow:var(--card-shadow); }
+.rf-diagnostics .sub, .rf-diagnostics .note { color:var(--muted); }
+.rf-diagnostics details { margin-top:var(--sp-3,12px); }
+.rf-diagnostics summary { color:var(--link); cursor:pointer; }
+.rf-diagnostics .kv { display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--sp-2,8px); padding:var(--sp-2,8px) 0; border-bottom:1px solid var(--line); }
+.rf-diagnostics .kv span { color:var(--muted); flex:1 1 12rem; }
+.rf-diagnostics .kv b { overflow-wrap:anywhere; max-width:100%; font-weight:500; }
+.rf-diagnostics .rf-identity { display:block; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:var(--fs-xs,12px); }
+
+.experiments-table-scroll { max-width:100%; overflow-x:auto; }

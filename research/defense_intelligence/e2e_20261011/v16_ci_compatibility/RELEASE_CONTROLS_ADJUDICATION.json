@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-10-14T13:37:38.684247+00:00",
+  "from": "9d8c7ce9f1729cbff8fbe34fbee949a8bb545bd2",
+  "current_head": "ef699bd38eea3ab818a26ea8d0c9f1d49428eae2",
+  "files": [
+    {
+      "path": ".github/workflows/government-revenue-live.yml",
+      "current_sha256": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+      "prior_source_sha256": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+      "changed_from_v15": false,
+      "matches_o7": false
+    },
+    {
+      "path": ".github/workflows/daily.yml",
+      "current_sha256": "ed25c015087e6bd29c7b6c5c02f1b15b7ddc1ffb31b94712f2cfa860dbeca9bb",
+      "prior_source_sha256": "ed25c015087e6bd29c7b6c5c02f1b15b7ddc1ffb31b94712f2cfa860dbeca9bb",
+      "changed_from_v15": false,
+      "matches_o7": false
+    },
+    {
+      "path": ".github/workflows/fms-acquire.yml",
+      "current_sha256": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e",
+      "prior_source_sha256": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "scripts/ci/govrev_publisher_preflight.py",
+      "current_sha256": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+      "prior_source_sha256": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "scripts/ci/govrev_candidate_proof.py",
+      "current_sha256": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+      "prior_source_sha256": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "scripts/publish_company_intelligence_r2.py",
+      "current_sha256": "2dfe3854dbacb6d085a35eb29fcb4b5f527853bcf970e33b0a2c529e2fdf6640",
+      "prior_source_sha256": "2dfe3854dbacb6d085a35eb29fcb4b5f527853bcf970e33b0a2c529e2fdf6640",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "scripts/restore_event_workspace_owner.py",
+      "current_sha256": "1a10ceb5917a40dc9fb87db826bc984d3cad8a8fda6eb7902f089c6ca2fab9b7",
+      "prior_source_sha256": "1a10ceb5917a40dc9fb87db826bc984d3cad8a8fda6eb7902f089c6ca2fab9b7",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "scripts/restore_defense_market_owner.py",
+      "current_sha256": "ff8b01c1711916ff42e6aaba8b21d29a64ab7e9d5e23c63b0c47a7bee56d6cab",
+      "prior_source_sha256": "ff8b01c1711916ff42e6aaba8b21d29a64ab7e9d5e23c63b0c47a7bee56d6cab",
+      "changed_from_v15": false,
+      "matches_o7": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "current_sha256": "db3e67a463900c60eeb4e07b132d118819fb44c3ce4c2ca22c2bb69ede8f078b",
+      "prior_source_sha256": "db3e67a463900c60eeb4e07b132d118819fb44c3ce4c2ca22c2bb69ede8f078b",
+      "changed_from_v15": false,
+      "matches_o7": false
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "current_sha256": "838d2927f1f05b120eceafd7dc42039dc5b3a17ad0402f985ee77aa3cc9077f5",
+      "prior_source_sha256": "6efe00005497c9890f886d4aef90de3b295bfaca441b89db34d6a4415f6b7189",
+      "changed_from_v15": true,
+      "matches_o7": false
+    },
+    {
+      "path": "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json",
+      "current_sha256": "323a69f640d1e9682d591449c8bc9f2c3f4359cd3c2e2f70fb13c1aa04982e01",
+      "prior_source_sha256": "323a69f640d1e9682d591449c8bc9f2c3f4359cd3c2e2f70fb13c1aa04982e01",
+      "changed_from_v15": false,
+      "matches_o7": true
+    }
+  ],
+  "parent_adjudication": {
+    "changed_control": "app/deploy/Caddyfile",
+    "delta": "Adds market_memory_intent.js, market_memory_retained.js and market_memory_retained.css to the existing four public asset matchers; inherited protected-main blobs. No GovRev route/cache/auth declaration changed.",
+    "scope": "Compatibility inspection only; no Market Memory implementation authored",
+    "baseline": "Full local read_baseline fails baseline_source_or_owner_not_qualified because the previous source closure predates live-workflow comments and inherited Daily jobs; must qualify current workflow semantics before any baseline update or publication."
+  }
+}

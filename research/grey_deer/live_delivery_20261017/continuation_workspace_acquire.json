@@ -1,0 +1,17 @@
+{
+  "schema": "grey_deer.continuation_workspace_reconciliation.v1",
+  "observed_at_utc": "2026-10-18T01:36:31.038217+00:00",
+  "operation_id": "risk-radar-meta-ceo-evidence-20261017-01a14837",
+  "repository": "macro",
+  "lane": "web",
+  "workspace_path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837",
+  "branch": "sol/web-risk-radar-meta-ceo-evidence-20261017-01a14837",
+  "original_native_acquire_base": "9b464c9d6ce9db60c7c86b3c6837fe2d5dfc05d6",
+  "native_acquire_effect": "APPLIED (retained October17 tool receipt)",
+  "current_head": "62a3f9ad070c7583687aef8c30d53fd1764c6aab",
+  "current_protected_procedure": "e77631490e5bddca7d40c8cf039ae7763ce17b99",
+  "required_procedures_identical_to_prior_verified_pin": true,
+  "prior_interrupted_write": "REJECTED_CATALOG_CHANGED; target absence verified before retry",
+  "tracked_programme_and_instruction_overlap_since_acquire": false,
+  "other_writer_release_inferred": false
+}

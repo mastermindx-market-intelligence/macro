@@ -61,6 +61,7 @@ from __future__ import annotations
 import html as _html
 import json
 import logging
+import math
 import re
 from html.parser import HTMLParser
 from datetime import date, datetime, timedelta
@@ -93,7 +94,9 @@ _NUM_RE = re.compile(
     r"(?P<cur>[$€£¥])?\s*"
     r"(?P<int>\d{1,3}(?:,\d{3})+|\d+)"
     r"(?:\.(?P<frac>\d+))?"
-    r"\s*(?P<suffix>%|bps|bn|tn|trn|[kKmMbBtT](?![a-zA-Z]))?",
+    r"\s*(?:,?\s*(?i:expressed\s+in)\s+)?"
+    r"(?P<suffix>%|(?i:thousands?|millions?|billions?|trillions?|bps|bn|tn|trn)"
+    r"(?![a-zA-Z])|[kKmMbBtT](?![a-zA-Z]))?",
 )
 
 # Quoted spans.  Straight and typographic double quotes.  Single quotes are NOT
@@ -261,16 +264,17 @@ class Num:
     """One numeric literal lifted out of prose."""
 
     __slots__ = ("raw", "value", "decimals", "is_pct", "has_currency",
-                 "has_suffix", "is_bare_int")
+                 "has_suffix", "is_bare_int", "magnitude")
 
     def __init__(self, raw: str, value: float, decimals: int, is_pct: bool,
-                 has_currency: bool, has_suffix: bool):
+                 has_currency: bool, has_suffix: bool, magnitude: float = 1):
         self.raw = raw
         self.value = value
         self.decimals = decimals
         self.is_pct = is_pct
         self.has_currency = has_currency
         self.has_suffix = has_suffix
+        self.magnitude = magnitude
         self.is_bare_int = (decimals == 0 and not is_pct and not has_currency
                             and not has_suffix)
 
@@ -292,6 +296,9 @@ def extract_numbers(text: str) -> list[Num]:
         except ValueError:
             continue
         suffix = (m.group("suffix") or "")
+        scale_name = suffix.lower()
+        if scale_name.endswith("ions") or scale_name == "thousands":
+            scale_name = scale_name.removesuffix("s")
         out.append(Num(
             raw=m.group(0).strip(),
             value=value,
@@ -299,6 +306,9 @@ def extract_numbers(text: str) -> list[Num]:
             is_pct=(suffix == "%"),
             has_currency=bool(m.group("cur")),
             has_suffix=bool(suffix and suffix != "%"),
+            magnitude={"k": 1e3, "thousand": 1e3, "m": 1e6, "million": 1e6,
+                       "b": 1e9, "bn": 1e9, "billion": 1e9, "t": 1e12,
+                       "tn": 1e12, "trn": 1e12, "trillion": 1e12}.get(scale_name, 1),
         ))
     return out
 
@@ -398,6 +408,36 @@ def source_number_pool(slot: dict) -> tuple[list[float], str]:
         for n in extract_quantities(text):
             vals.append(n.value)
     return vals, "\n".join(texts)
+
+
+def _fact_quantity_pool(slot: dict) -> list[Num]:
+    """Keep explicit source scales for anchoring without changing receipt credit.
+
+    Legacy facts often repeat a scaled text's coefficient in ``values``. That
+    duplicate must not also grant permission to drop the scale in the draft.
+    Bare values with no scaled counterpart retain the existing metric contract.
+    """
+    result: list[Num] = []
+    for fact in slot.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        text_nums = extract_quantities(str(fact.get("text") or ""))
+        result.extend(text_nums)
+        for value in fact.get("values") or []:
+            try:
+                number = float(str(value).replace(",", "").strip().rstrip("%"))
+            except (TypeError, ValueError):
+                continue
+            if any(n.magnitude != 1 and n.value == number for n in text_nums):
+                continue
+            result.append(Num(str(value), number, 0, False, False, False))
+    return result
+
+
+def _quantity_anchors(number: Num, sources: list[Num]) -> bool:
+    target = abs(number.value * number.magnitude)
+    tolerance = 0.5 * 10.0 ** -number.decimals * number.magnitude + 1e-9
+    return any(abs(target - abs(n.value * n.magnitude)) <= tolerance for n in sources)
 
 
 def fact_tier_index(slot: dict) -> list[tuple[float, str]]:
@@ -534,20 +574,36 @@ def check_markup_safety(draft: dict, slot: dict, cfg: dict) -> dict:
 
 
 def _prose_html(draft: dict, cfg: dict) -> str:
-    """Body with the byline and footer furniture removed.
+    """Exclude at most one genuine configured byline/footer, never classed prose.
 
-    Those two blocks are REQUIRED boilerplate; scoring them as paraphrase or
-    counting them toward our-value would measure the template, not the piece.
+    A class is mutable markup, not proof that its contents are boilerplate.
+    Unrecognized or repeated blocks stay visible to every prose validator.
     """
     v = _v(cfg)
-    body = _body(draft)
-    for cls in (str(v.get("byline_class") or "press-byline"),
-                str(v.get("footer_class") or "press-footer")):
-        body = re.sub(
-            rf"<(\w+)\b[^>]*class=\"[^\"]*\b{re.escape(cls)}\b[^\"]*\"[^>]*>.*?</\1>",
-            " ", body, flags=re.IGNORECASE | re.DOTALL,
-        )
-    return body
+    def normal(text):
+        return re.sub(r"\s+", " ", strip_tags(text)).strip().casefold()
+    bylines = {normal(d.get("byline", "")) for d in (cfg.get("desks") or {}).values()
+               if isinstance(d, dict) and d.get("byline")}
+    known = {
+        str(v.get("byline_class") or "press-byline"): bylines,
+        str(v.get("footer_class") or "press-footer"): {normal(v.get("footer_required_text") or
+            "Educational content — not investment advice. Markets involve risk.")},
+    }
+    removed: set[str] = set()
+
+    def furniture(match):
+        block = match.group(0)
+        opening = block[:block.index(">") + 1]
+        attr = re.search(r"""\bclass\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""",
+                         opening, re.IGNORECASE)
+        cls = next((x for x in attr.groups() if x is not None), "") if attr else ""
+        if cls in known and cls not in removed and normal(block) in known[cls]:
+            removed.add(cls)
+            return " "
+        return block
+
+    return re.sub(r"<p\b[^>]*>.*?</p\s*>", furniture, _body(draft),
+                  flags=re.IGNORECASE | re.DOTALL)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -560,6 +616,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
     v = _v(cfg)
     generic_max = int(v.get("generic_integer_max") or 12)
     pool, source_text = source_number_pool(slot)
+    quantities = _fact_quantity_pool(slot)
     prose = strip_tags(_prose_html(draft, cfg))
 
     unanchored: list[str] = []
@@ -576,7 +633,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
         if num.is_bare_int and 1900 <= num.value <= 2100 and str(int(num.value)) in source_text:
             continue
         checked += 1
-        if not _anchors(num, pool):
+        if not _quantity_anchors(num, quantities):
             unanchored.append(num.raw)
 
     # Attributed quotes must be findable in the sources too — a fabricated
@@ -874,11 +931,115 @@ def _anchored_values(text: str, pool: list[float], generic_max: int) -> list[flo
             continue
         if nm.is_bare_int and 1900 <= nm.value <= 2100:
             continue
-        for s in pool:
-            if _anchors(nm, [s]) and s not in hits:
-                hits.append(s)
-                break
+        # Resolve the anchor before deduplication. Skipping already-used values
+        # here lets repeated prose consume nearby unused values in the rounding
+        # window, so saying "14" twice can claim both 14 and 14.46 as receipts.
+        matches = [s for s in pool if _anchors(nm, [s])]
+        if matches:
+            source = min(matches, key=lambda s: (abs(abs(nm.value) - abs(s)), s))
+            if source not in hits:
+                hits.append(source)
     return hits
+
+
+def _native_clause_key(text: str) -> str:
+    return _claim_text_key(text).casefold().strip(' .;:')
+
+
+def _native_clauses(text: str) -> list[str]:
+    # Preserve decimal points and calendar dates with the incumbent splitter.
+    return [clause.strip() for sentence in sentences(text)
+            for clause in re.split(r'[;:]\s*', sentence) if clause.strip()]
+
+
+def _native_receipt_records(slot: dict, cfg: dict) -> dict[str, list[float]]:
+    """Exact quantitative clauses from the bound native lead/plan only.
+
+    Equality to a number in a different story is not receipt evidence. This
+    checks exact visible clauses, not the semantics of unrestricted commentary.
+    """
+    from engine.press.native_plan_scope import receipt_facts, scope_fragments, required_dossier
+
+    scope_fragments(slot)
+    required_dossier(slot)
+    scope = slot['native_plan_scope']
+    plan_ref = 'prophet_plan:' + scope['source_ref'].split(':', 1)[1]
+    facts = receipt_facts(slot)
+    plans = [fact for fact in facts if fact.get('ref') == plan_ref]
+    if (len(plans) != 1 or plans[0].get('native_plan_scope') != scope
+            or plans[0].get('dated') != scope['recorded_at']
+            or f"recorded {scope['recorded_at']}" not in str(plans[0].get('text') or '')
+            or f"price basis {scope['price_basis_date']}" not in str(plans[0].get('text') or '')
+            or (slot.get('story') or {}).get('event_date') != scope['close_date']):
+        raise ValueError('native plan scope does not match its bound facts or event clock')
+    quantities = scope.get('quantities')
+    if (not isinstance(quantities, dict) or not quantities
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   for value in quantities.values())):
+        raise ValueError('native plan quantities missing or invalid')
+    # Rounded aliases and repeated activation/entry values earn one receipt.
+    pool = list(dict.fromkeys(float(value) for value in quantities.values()))
+    generic_max = int(_v(cfg).get('generic_integer_max') or 12)
+    records = {}
+    for fact in facts:
+        if fact.get('tier') != 'first_party':
+            continue
+        for clause in _native_clauses(str(fact.get('text') or '')):
+            values = _anchored_values(clause, pool, generic_max)
+            if values:
+                records[_native_clause_key(clause)] = values
+    return records
+
+
+def _native_context_keys(slot: dict) -> set[str]:
+    """Known background statements cannot borrow a coincident plan value.
+
+    Unrestricted paraphrase/causality still needs semantic acceptance; this is
+    deliberately not a general subject-understanding classifier.
+    """
+    from engine.press.native_plan_scope import receipt_facts
+    bound = {id(fact) for fact in receipt_facts(slot)}
+    return {_native_clause_key(statement)
+            for fact in slot.get('facts') or [] if id(fact) not in bound
+            for statement in sentences(str(fact.get('text') or ''))}
+
+
+def native_plan_preflight(slot: dict, cfg: dict) -> dict:
+    """Require valid bound scope and enough distinct potential receipts.
+
+    No source-word-count law is introduced: the existing 40% metric measures
+    sentence-level anchoring, not verbatim source-word share.
+    """
+    from engine.press.native_plan_scope import is_native_plan_brief
+
+    if not is_native_plan_brief(slot):
+        return {'ok': True, 'active': False}
+    try:
+        records = _native_receipt_records(slot, cfg)
+        minimum = int(slot.get('min_anchored_receipts')
+                      or _v(cfg).get('min_anchored_receipts') or 0)
+        available = {value for values in records.values() for value in values}
+        ok = len(available) >= minimum
+        return {'ok': ok, 'active': True,
+                'reason': None if ok else 'native_plan_receipts_insufficient',
+                'available_receipts': len(available), 'minimum_receipts': minimum}
+    except (ValueError, TypeError, KeyError) as exc:
+        return {'ok': False, 'active': True, 'reason': 'native_plan_scope_invalid',
+                'detail': str(exc)}
+
+
+def check_native_plan_scope(draft: dict, slot: dict, cfg: dict) -> dict:
+    from engine.press.native_plan_scope import is_native_plan_brief, scope_problems
+
+    if not is_native_plan_brief(slot):
+        return _row('native_plan_scope', True, 'not a native plan Brief', active=False)
+    readiness = native_plan_preflight(slot, cfg)
+    problems = scope_problems(_prose_html(draft, cfg), slot)
+    if not readiness['ok']:
+        problems.append(str(readiness['reason']))
+    return _row('native_plan_scope', not problems,
+                'native plan disclosures and dossier present' if not problems else '; '.join(problems),
+                active=True, preflight=readiness, problems=problems)
 
 
 def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
@@ -902,7 +1063,15 @@ def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
     """
     v = _v(cfg)
     floor = float(v.get("our_value_min") or 0.40)
-    idx = fact_tier_index(slot)
+    from engine.press.native_plan_scope import is_native_plan_brief
+    native = is_native_plan_brief(slot)
+    from engine.press.native_plan_scope import receipt_facts
+    if native:
+        _native_receipt_records(slot, cfg)  # Validate binding before credit.
+    excluded_context = _native_context_keys(slot) if native else set()
+    idx = ([(float(value), 'first_party')
+            for value in slot['native_plan_scope']['quantities'].values()]
+           if native else fact_tier_index(slot))
     first = [val for val, tier in idx if tier == "first_party"]
     third = [val for val, tier in idx if tier != "first_party"]
     generic_max = int(v.get("generic_integer_max") or 12)
@@ -917,6 +1086,9 @@ def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
             if not wc:
                 continue
             total_words += wc
+            if native and _native_clause_key(sent) in excluded_context:
+                per_sentence.append({'words': wc, 'tier': 'neutral'})
+                continue
             nums = [nm for nm in extract_quantities(sent)
                     if not (nm.is_bare_int and nm.value <= generic_max)]
             if not nums:
@@ -958,8 +1130,22 @@ def check_receipts(draft: dict, slot: dict, cfg: dict) -> dict:
     generic_max = int(v.get("generic_integer_max") or 12)
     minimum = int(slot.get("min_anchored_receipts")
                   or v.get("min_anchored_receipts") or 0)
-    pool = [val for val, tier in fact_tier_index(slot) if tier == "first_party"]
-    found = _anchored_values(strip_tags(_prose_html(draft, cfg)), pool, generic_max)
+    from engine.press.native_plan_scope import is_native_plan_brief
+    if is_native_plan_brief(slot):
+        records = _native_receipt_records(slot, cfg)
+        excluded_context = _native_context_keys(slot)
+        found = []
+        for block in blocks(_prose_html(draft, cfg)):
+            for statement in sentences(block['text']):
+                if _native_clause_key(statement) in excluded_context:
+                    continue
+                for clause in _native_clauses(statement):
+                    for value in records.get(_native_clause_key(clause), []):
+                        if value not in found:
+                            found.append(value)
+    else:
+        pool = [val for val, tier in fact_tier_index(slot) if tier == "first_party"]
+        found = _anchored_values(strip_tags(_prose_html(draft, cfg)), pool, generic_max)
     ok = len(found) >= minimum
     return _row("receipts", ok,
                 f"{len(found)} distinct anchored receipt(s) "
@@ -1549,6 +1735,7 @@ _SUITE = (
     ("markup_safety", check_markup_safety, False),
     ("fact_anchor", check_fact_anchor, False),
     ("claim_scope", check_claim_scope, False),
+    ("native_plan_scope", check_native_plan_scope, False),
     ("close_paraphrase", check_close_paraphrase, False),
     ("our_value", check_our_value, False),
     ("receipts", check_receipts, False),

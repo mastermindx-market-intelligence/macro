@@ -12,6 +12,10 @@ sleep is a list append.  The suites pin three facts:
 3. ``live_fetchers`` routes both the submissions and the companyfacts fetch
    paths through one injected pacer, and concurrent acquires can never place
    two marks inside one interval.
+4. the A20 aggregate budget: 8 workers sharing ONE 0.5 s pacer never exceed
+   2 marks in any 1 s window, both FIF script floors/default stay at or
+   above 0.5 s, and the 3a2 capture helper acquires the pacer immediately
+   before every urlopen.
 """
 from __future__ import annotations
 
@@ -296,3 +300,103 @@ def test_the_pacer_module_imports_without_heavy_dependencies() -> None:
         text=True,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_n_workers_together_stay_at_or_below_two_requests_per_second():
+    clock = FakeClock()
+    pacer = SecRequestPacer(
+        min_interval_seconds=0.5, sleeper=clock.sleeper, monotonic=clock.monotonic
+    )
+    workers = 8
+    acquires_per_worker = 25
+    total = workers * acquires_per_worker
+    barrier = threading.Barrier(workers)
+
+    def worker() -> None:
+        barrier.wait()
+        for _ in range(acquires_per_worker):
+            pacer.acquire()
+
+    threads = [threading.Thread(target=worker) for _ in range(workers)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    # Same lock-serialisation segmentation as the 2-thread test above: the
+    # first acquire contributes exactly one monotonic read (its mark) and
+    # every later acquire exactly [wait-read, mark].
+    reads = clock.reads
+    assert len(reads) == 2 * total - 1
+    marks = reads[0::2]
+    assert len(marks) == total  # 200 acquires all landed
+
+    # Every consecutive pair of marks honors the 0.5 s interval...
+    for earlier, later in zip(marks, marks[1:]):
+        assert later - earlier >= 0.5 - 1e-9
+    # ...so every half-open [mark, mark + 1.0) window holds at most 2 marks:
+    # ONE shared budget, N workers, <= 2 requests/second in aggregate.
+    for mark in marks:
+        in_window = [m for m in marks if mark <= m < mark + 1.0]
+        assert len(in_window) <= 2
+
+
+def test_fif_scripts_floor_the_shared_pacer_at_two_requests_per_second():
+    import scripts.capture_fif_issuer_packages as issuer_packages
+    import scripts.publish_fif_production_datasets as publisher
+
+    assert issuer_packages.MIN_INTERVAL_FLOOR_SECONDS >= 0.5
+    assert publisher.MIN_INTERVAL_SECONDS_DEFAULT >= 0.5
+
+
+def test_capture_fif3a2_fetch_acquires_the_pacer_before_every_urlopen(monkeypatch):
+    import urllib.request
+
+    import scripts.capture_fif3a2_aapl_package as capture_3a2
+
+    events: list[str] = []
+    opened: list[str] = []
+
+    class _OrderRecordingPacer(_RecordingPacer):
+        def acquire(self) -> None:
+            events.append("acquire")
+            super().acquire()
+
+    class _MinimalResponse:
+        def __init__(self) -> None:
+            self.headers = {"Last-Modified": "Wed, 01 Jul 2026 00:00:00 GMT"}
+
+        def read(self) -> bytes:
+            return b"{}"
+
+        def __enter__(self) -> _MinimalResponse:
+            return self
+
+        def __exit__(self, *_exc) -> bool:
+            return False
+
+    def _fake_urlopen(request, timeout=None):
+        events.append("urlopen")
+        opened.append(request.full_url)
+        return _MinimalResponse()
+
+    monkeypatch.setattr(urllib.request, "urlopen", _fake_urlopen)
+    pacer = _OrderRecordingPacer()
+    first = capture_3a2._get(
+        "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/index.json",
+        pacer=pacer,
+    )
+    second = capture_3a2._get(
+        "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627_pre.xml",
+        pacer=pacer,
+    )
+
+    assert events == ["acquire", "urlopen", "acquire", "urlopen"]
+    assert pacer.acquires == 2
+    # Every urlopen landed in the fake, so no real network call happened.
+    assert opened == [
+        "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/index.json",
+        "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627_pre.xml",
+    ]
+    assert first == (b"{}", "Wed, 01 Jul 2026 00:00:00 GMT")
+    assert second == (b"{}", "Wed, 01 Jul 2026 00:00:00 GMT")

@@ -1,0 +1,401 @@
+{
+  "recorded_at": "2026-10-20T18:21:13.141577+00:00",
+  "window_start": "2026-10-20 18:15:30",
+  "window_end": "2026-10-20 18:22:00",
+  "macro_head": "281bc213c31201212e13cdc28240a0bd91f39606",
+  "services": {
+    "macro-api.service": {
+      "MainPID": "3265686",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Tue 2026-10-20 18:06:28 UTC",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "macro-ticker-news.service": {
+      "MainPID": "3227108",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Tue 2026-10-20 17:23:57 UTC",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "terminal.service": {
+      "MainPID": "3255147",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Tue 2026-10-20 17:56:50 UTC",
+      "ActiveState": "active",
+      "SubState": "running"
+    }
+  },
+  "caddy_stream_warnings": [
+    {
+      "utc": "2026-10-20T18:16:02.867088+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 1.277983011,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:16:23.822132+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 2.721675598,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:16:43.541143+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 1.535992069,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:17:03.232095+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.881664765,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:17:21.583779+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.175281668,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:17:39.919920+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.163936,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:17:58.200509+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.093604821,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:18:16.965595+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.593847104,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:18:35.351092+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.199683208,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:18:53.963961+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.107579528,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:19:12.247582+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.098248774,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:19:30.785335+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.361467629,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:19:49.103115+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.136043789,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:20:07.409857+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.115917322,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:20:25.804161+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.203941379,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:20:44.308119+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.323092125,
+      "status": null
+    },
+    {
+      "utc": "2026-10-20T18:21:03.296247+00:00",
+      "path": "/api/news/stream",
+      "protocol": "HTTP/1.1",
+      "level": "warn",
+      "logger": "http.handlers.reverse_proxy",
+      "message": "aborting with incomplete response",
+      "error": "reading: context canceled",
+      "header_duration": 0.797664687,
+      "status": null
+    }
+  ],
+  "api_news_requests": [
+    {
+      "utc": "2026-10-20T18:15:46.291147+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:15:47.401955+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:08.244017+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:11.688795+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:27.819159+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:32.083914+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:47.941287+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:16:49.338861+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:06.472882+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:07.057160+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:24.818844+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:25.251468+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:43.111300+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:17:43.470012+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:01.848987+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:02.305686+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:20.189235+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:20.782440+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:38.849147+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:39.229282+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:57.152799+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:18:57.491960+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:15.670603+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:16.227713+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:33.988919+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:34.546191+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:52.305943+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:19:52.705907+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:10.705970+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:11.679938+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:29.170931+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:29.668809+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:48.081713+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:20:48.846120+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:21:06.682744+00:00",
+      "path": "/api/ticker-news/AAPL/stream",
+      "status": 200
+    },
+    {
+      "utc": "2026-10-20T18:21:07.773036+00:00",
+      "path": "/api/ticker-news/AAPL",
+      "status": 200
+    }
+  ],
+  "api_exception_signals": {}
+}

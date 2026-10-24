@@ -1,0 +1,111 @@
+"""Add one dated descriptive snapshot from retained Git prices; no labels or fits.
+
+The accepted all-date census and its artifacts are never changed. This script
+executes only three inspected, pure observed-feature functions from its pinned
+source. It does not import the census module, its T12 dependency or any service.
+"""
+from __future__ import annotations
+
+import ast
+import hashlib
+import io
+import json
+import math
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pyarrow
+
+REPO = Path("/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-release-qualification-20261018-0304")
+CURRENT = "247677efade31ea32d6b6ef5b701de61c47392cd"
+PRIOR = "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+METHOD = "4a06cd4a6b323312d2a59d6130efdb60997fe149"
+METHOD_PATH = "scripts/research/grey_deer_exposure_census.py"
+METHOD_SHA256 = "d6240027cd15fadfec4511a3be42203dba6df87095bd65b50a049394abf6abce"
+ASOF = pd.Timestamp("2026-10-16")
+TICKERS = "SPY RSP DIA IWM QQQ XLK XLP XLV XLU XLF XLB XLC XLE XLI XLRE XLY SMH SOXX XBI IGV KRE ARKK HYG LQD TLT IEF BIL SGOV GLD FXI MCHI EWH EWC EWJ INDA EEM".split()
+FEATURES = ["obs_tr_return_1", "obs_tr_return_5", "obs_tr_return_20", "obs_price_dd_63", "obs_price_sma_gap_20", "obs_price_sma_gap_200", "obs_damage_5pct", "obs_stabilization_candidate"]
+
+
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def git_bytes(ref: str, path: str) -> bytes:
+    return subprocess.run(["git", "-C", str(REPO), "show", ref + ":" + path], capture_output=True, check=True, timeout=20).stdout
+
+
+def prices(data: bytes) -> pd.DataFrame:
+    frame = pd.read_parquet(io.BytesIO(data))
+    if "Date" in frame.columns:
+        frame = frame.set_index("Date")
+    assert frame.index.name == "Date"
+    assert isinstance(frame.index, pd.DatetimeIndex)
+    assert frame.index.tz is None and frame.index.equals(frame.index.normalize())
+    assert frame.index.is_unique and frame.index.is_monotonic_increasing
+    assert {"close", "close_price"}.issubset(frame.columns)
+    return frame[["close", "close_price"]]
+
+
+def number(value):
+    if pd.isna(value):
+        return None
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    return float(value)
+
+
+def main():
+    started = datetime.now(timezone.utc).isoformat()
+    source = git_bytes(METHOD, METHOD_PATH)
+    assert sha(source) == METHOD_SHA256
+    tree = ast.parse(source)
+    names = {"valid_price", "strict_return", "observed_features"}
+    nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]
+    assert {n.name for n in nodes} == names
+    scope = {"np": np, "pd": pd, "math": math}
+    exec(compile(ast.Module(body=nodes, type_ignores=[]), METHOD_PATH, "exec"), scope)
+    current_bytes = {t: git_bytes(CURRENT, "data/yahoo/" + t + ".parquet") for t in TICKERS}
+    frames = {t: prices(b) for t, b in current_bytes.items()}
+    dates = frames["SPY"].index
+    assert dates[-1] == ASOF
+    feature_frames = {t: scope["observed_features"](f.reindex(dates)) for t, f in frames.items()}
+    rows, identities = [], []
+    for ticker in TICKERS:
+        path = "data/yahoo/" + ticker + ".parquet"
+        b, frame = current_bytes[ticker], frames[ticker]
+        old_bytes = git_bytes(PRIOR, path)
+        old = prices(old_bytes)
+        common = old.index.intersection(frame.index)
+        revisions = {}
+        for col in ("close", "close_price"):
+            left, right = old.loc[common, col], frame.loc[common, col]
+            revisions[col] = int((~(left.eq(right) | (left.isna() & right.isna()))).sum())
+        identities.append({"ticker": ticker, "path": path, "bytes": len(b), "sha256": sha(b), "rows": len(frame), "min_date": str(frame.index[0].date()), "max_date": str(frame.index[-1].date()), "prior_bytes": len(old_bytes), "prior_sha256": sha(old_bytes), "prior_rows": len(old), "revised_common_rows": revisions, "prior_dates_missing": len(old.index.difference(frame.index)), "dates_added": [str(d.date()) for d in frame.index.difference(old.index)]})
+        valid = frame.loc[frame.index <= ASOF]
+        valid = valid.loc[np.isfinite(valid["close"]) & valid["close"].gt(0) & np.isfinite(valid["close_price"]) & valid["close_price"].gt(0)]
+        source_date = valid.index[-1] if len(valid) else None
+        anchor_present = ASOF in valid.index
+        result = {"ticker": ticker, "declared_asof": str(ASOF.date()), "observation_asof": str(source_date.date()) if source_date is not None else None, "status": "OBSERVED_AT_ASOF" if anchor_present else "NO_VALID_OBSERVATION_AT_ASOF", "source_sessions_behind": int(dates.get_loc(ASOF) - dates.get_loc(source_date)) if source_date in dates else None, "basis": {"returns": "source total-return close", "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"}}
+        for name in FEATURES:
+            result[name] = number(feature_frames[ticker].loc[source_date, name]) if source_date in dates else None
+        # Relative changes use the exposure's own date and identical SPY horizon.
+        for horizon in (5, 20):
+            name = "obs_tr_return_" + str(horizon)
+            own = result[name]
+            spy = number(feature_frames["SPY"].loc[source_date, name]) if source_date in dates else None
+            result["relative_to_spy_" + str(horizon)] = (1 + own) / (1 + spy) - 1 if own is not None and spy is not None else None
+        rows.append(result)
+    report = {"schema": "grey_deer.dated_observed_snapshot.v1", "started_at": started, "completed_at": datetime.now(timezone.utc).isoformat(), "declared_asof": str(ASOF.date()), "source_commit": CURRENT, "comparison_source_commit": PRIOR, "method_commit": METHOD, "method_path": METHOD_PATH, "method_sha256": METHOD_SHA256, "executed_functions": sorted(names), "script_sha256": sha(Path(__file__).read_bytes()), "runtime": {"python": sys.version, "pandas": pd.__version__, "numpy": np.__version__, "pyarrow": pyarrow.__version__}, "scope": "Descriptive observed features only; retained revised-history Git archives; fixed 36 ETF proxies", "point_in_time_eligible": False, "historical_available_at": None, "first_user_publication_at": None, "provider_calls": 0, "fitted_models": 0, "future_labels_computed": 0, "independent_episode_count": None, "source_purpose_change": False, "numerical_policy_authority": False, "rows": rows, "source_identities": identities}
+    dest = Path(sys.argv[1])
+    dest.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
+    selected = [r for r in rows if r["ticker"] in {"SPY", "RSP", "DIA", "IWM", "QQQ", "XLK", "SMH", "SOXX", "XLP", "XLV", "XLU", "HYG", "TLT", "BIL", "SGOV"}]
+    print(json.dumps({"path": str(dest), "bytes": dest.stat().st_size, "sha256": sha(dest.read_bytes()), "observations": len(rows), "selected": [{k: r[k] for k in ("ticker", "observation_asof", "status", "obs_tr_return_1", "obs_tr_return_5", "obs_tr_return_20", "obs_price_dd_63", "obs_price_sma_gap_200")} for r in selected], "revised_sources": [r for r in identities if any(r["revised_common_rows"].values()) or r["prior_dates_missing"]]}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

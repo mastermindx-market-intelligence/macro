@@ -1,0 +1,304 @@
+{
+  "started_at": "2026-10-20T19:52:43.051731+00:00",
+  "scope": "Read-only public authoritative DNS readiness for beta; no record edit, credential lookup, HTTP request or TLS bypass",
+  "queries": [
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "mastermind-x.com",
+        "NS"
+      ],
+      "exit": 0,
+      "stdout": "mastermind-x.com.\t86400\tIN\tNS\ta.dnspod.com.\nmastermind-x.com.\t86400\tIN\tNS\tb.dnspod.com.\nmastermind-x.com.\t86400\tIN\tNS\tc.dnspod.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "mastermind-x.com",
+        "CAA"
+      ],
+      "exit": 0,
+      "stdout": "mastermind-x.com.\t600\tIN\tCNAME\tmastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "mastermind-x.com.\t600\tIN\tCNAME\tmastermind-x.com.eo.dnse3.com.\nmastermind-x.com.eo.dnse3.com. 60 IN\tA\t43.159.99.101\nmastermind-x.com.eo.dnse3.com. 60 IN\tA\t43.159.98.106\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "www.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "www.mastermind-x.com.\t600\tIN\tCNAME\twww.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "www.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "www.mastermind-x.com.\t600\tIN\tCNAME\twww.mastermind-x.com.eo.dnse3.com.\nwww.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\nwww.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    }
+  ],
+  "authoritative": [
+    {
+      "command": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t599\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t599\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 59 IN A\t43.159.98.106\nbeta.mastermind-x.com.eo.dnse3.com. 59 IN A\t43.159.99.101\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t599\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "beta.mastermind-x.com",
+        "CAA"
+      ],
+      "exit": 0,
+      "stdout": "beta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-10-20T19:52:46.533201+00:00",
+  "expected_beta_origin": "146.190.142.17",
+  "production_records_not_changed": true,
+  "public_tls_or_browser_acceptance": false
+}

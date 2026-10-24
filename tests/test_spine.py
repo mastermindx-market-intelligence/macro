@@ -451,6 +451,46 @@ def test_chip_caveat_cites_the_record_once_measured(spine_root):
     assert "n=15" in en and "hit-rate" in en
 
 
+# --- chip channel-label slug leak (W17 SPEC 1) ------------------------------------------- #
+def test_chip_short_squeeze_does_not_leak_snake_case(spine_root):
+    """The squeeze-fuel slug must render its glance label, never the machine token.
+
+    KMB shape: committed squeeze-fuel names hit ``chip`` with ``short_squeeze``, a slug
+    missing from ``_CH``; both chip label sites must route through ``channel_display``.
+    """
+    from engine import altdata_signals as a
+    chip = a.chip({"channels": ["short_squeeze"], "convergence_score": 1,
+                   "trump_linked": False}, root=spine_root)
+    assert chip is not None
+    head = chip["headline"]
+    assert "short_squeeze" not in head["en"] and "short_squeeze" not in head["zh"]
+    assert (head["en"], head["zh"]) == a.channel_display("short_squeeze")
+    assert head["en"] == "Short squeeze fuel" and head["zh"] == "轧空燃料"
+    for lab in chip["channels"]:
+        assert "short_squeeze" not in lab["en"] and "short_squeeze" not in lab["zh"]
+    # routing law: ANY slug absent from _CH is prettified, never leaked snake_case —
+    # this pins the channel_display() call sites against a revert to _CH.get(c, (c, c)).
+    ghost = a.chip({"channels": ["weird_new_channel"], "convergence_score": 1,
+                    "trump_linked": False}, root=spine_root)
+    assert ghost is not None
+    assert "weird_new_channel" not in str(ghost["headline"]) + str(ghost["channels"])
+    assert ghost["headline"]["en"] == "weird new channel"
+
+
+def test_chip_short_squeeze_label_among_other_channels(spine_root):
+    """KMB shape: squeeze fuel among mapped channels; existing labels stay byte-identical."""
+    from engine import altdata_signals as a
+    chip = a.chip({"channels": ["material_8k", "short_squeeze", "special_situation"],
+                   "convergence_score": 3, "trump_linked": False}, root=spine_root)
+    assert chip is not None
+    en = [lab["en"] for lab in chip["channels"]]
+    assert "Short squeeze fuel" in en
+    assert "short_squeeze" not in en
+    assert "Material 8-K cluster" in en and "Special situation" in en
+    zh = [lab["zh"] for lab in chip["channels"]]
+    assert "轧空燃料" in zh and "特殊事件" in zh
+
+
 # --- badge passport (#41) ------------------------------------------------------------------ #
 def test_passport_states_and_earned_flag():
     from engine import passport

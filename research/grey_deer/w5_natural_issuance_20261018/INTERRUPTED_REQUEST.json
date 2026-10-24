@@ -1,0 +1,64 @@
+{
+  "schema": "w5_interrupted_lineage_request.v1",
+  "status": "RETURN_NOT_RECEIVED_DO_NOT_REPLAY",
+  "tool": "mcp__codex_apps__studio_direct_start_process",
+  "tool_arguments": {
+    "shell": "/bin/bash",
+    "origin": "llm",
+    "timeout_ms": 15000,
+    "command_prefix": "python3 -I -S <<'W5_READ_ONLY_METADATA'"
+  },
+  "action": "Read-only gh api queries; stdout metadata only; no source/ledger/runtime writes requested.",
+  "python_subprocess_timeout_seconds": 12,
+  "requested_reads": [
+    {
+      "label": "exact_blob_metadata",
+      "route": "gh api graphql",
+      "kind": "query only",
+      "objects": [
+        "3e31f5dc8b770d371eb859e2de3df0362fc7fa57:data/grey_deer_pullback/forward_log.jsonl",
+        "3e31f5dc8b770d371eb859e2de3df0362fc7fa57:data/grey_deer_pullback/forward_log_refusals.jsonl",
+        "3e31f5dc8b770d371eb859e2de3df0362fc7fa57:engine/grey_deer_pullback_forward.py",
+        "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa:engine/grey_deer_pullback_forward.py",
+        "3e31f5dc8b770d371eb859e2de3df0362fc7fa57:scripts/grey_deer_pullback_nightly.py",
+        "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa:scripts/grey_deer_pullback_nightly.py"
+      ],
+      "requested_fields": [
+        "oid",
+        "byteSize"
+      ]
+    },
+    {
+      "label": "issue_code_commit",
+      "route": "repos/mastermindx-market-intelligence/macro/commits/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa"
+    },
+    {
+      "label": "issue_path_publication_history",
+      "route": "repos/mastermindx-market-intelligence/macro/commits?sha=3e31f5dc8b770d371eb859e2de3df0362fc7fa57&path=data%2Fgrey_deer_pullback%2Fforward_log.jsonl&per_page=2"
+    },
+    {
+      "label": "nightly_runs_at_issue_code",
+      "route": "repos/mastermindx-market-intelligence/macro/actions/workflows/daily.yml/runs?head_sha=5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa&per_page=10"
+    },
+    {
+      "label": "W5_source_merge",
+      "route": "repos/mastermindx-market-intelligence/macro/pulls/9128"
+    }
+  ],
+  "returned_stdout": null,
+  "returned_stderr": null,
+  "returned_pid": null,
+  "returned_call_id": null,
+  "completion_status": null,
+  "client_result": "aborted by user after 2571.4s",
+  "backend_effect_or_completion_known": false,
+  "parent_observed_possible_process": {
+    "pid": 80180,
+    "blocked": true,
+    "remote_call": 1,
+    "observation_at": "2026-10-18T09:48:55Z",
+    "attributed_to_this_request": false
+  },
+  "recovery_owner": "root; exact outstanding request reconciliation",
+  "do_not_replay": true
+}

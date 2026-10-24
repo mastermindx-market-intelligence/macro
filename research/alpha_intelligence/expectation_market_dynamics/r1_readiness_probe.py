@@ -198,6 +198,42 @@ def blob_sha(rev: str, path: str) -> str:
     return git_text(["rev-parse", f"{rev}:{path}"])
 
 
+def as_text(value: object) -> str | None:
+    """Null-safe string pass-through (None/NaN/NaT -> None)."""
+    if value is None:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return str(value)
+
+
+def set_cutoff(cutoff: str) -> None:
+    """Rebind the module cutoff (ISO-8601 Z). Default stays the frozen constant."""
+    global CUTOFF, CUTOFF_DATE, CUTOFF_TS
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z", cutoff):
+        raise ValueError(f"cutoff must be ISO-8601 UTC with Z suffix, got {cutoff!r}")
+    CUTOFF = cutoff
+    CUTOFF_DATE = date.fromisoformat(cutoff[:10])
+    CUTOFF_TS = pd.Timestamp(cutoff)
+
+
+def set_owner_receipts_path(path: str) -> None:
+    """Rebind the owner-receipts blob path measured at --rev."""
+    global OWNER_RECEIPTS_PATH
+    OWNER_RECEIPTS_PATH = path
+
+
+def set_expected_universe_sha256(digest: str) -> None:
+    """Rebind the receipt-era universe digest the probe must reproduce."""
+    global EXPECTED_UNIVERSE_SHA256
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ValueError(f"universe digest must be 64 lowercase hex chars, got {digest!r}")
+    EXPECTED_UNIVERSE_SHA256 = digest
+
+
 def as_date(value: object) -> date | None:
     if value is None:
         return None
@@ -283,6 +319,14 @@ def alias_records(frame: pd.DataFrame) -> list[dict[str, object]]:
                 "security_id": row["security_id"],
                 "valid_from": as_date(row["valid_from"]),
                 "valid_to": as_date(row["valid_to"]),
+                # Native-reference (polygon) and option-root rows carry an
+                # explicit decision clock and an evidence seal; the identity
+                # library refuses to construct them without these fields.
+                # They are passed through verbatim, never minted here.
+                "known_at": as_text(row.get("known_at")),
+                "evidence_sha256": as_text(row.get("evidence_sha256")),
+                "binding_sha256": as_text(row.get("binding_sha256")),
+                "alias_kind": as_text(row.get("alias_kind")),
             }
         )
     return records
@@ -1092,6 +1136,8 @@ def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
         "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source_revision": source_revision,
         "cutoff": CUTOFF,
+        "owner_receipts_path": OWNER_RECEIPTS_PATH,
+        "expected_universe_sha256": EXPECTED_UNIVERSE_SHA256,
         "universe": {
             "names": len(names),
             "sha256": digest,
@@ -1254,11 +1300,41 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         type=Path,
         help="Census JSON receipt. Exit non-zero if any shared count differs.",
     )
+    parser.add_argument(
+        "--cutoff",
+        default=None,
+        help=(
+            "Measurement cutoff (ISO-8601 UTC, Z suffix). Default: the frozen "
+            f"{CUTOFF}. A later cutoff never re-labels rows at or before it."
+        ),
+    )
+    parser.add_argument(
+        "--expected-universe-sha256",
+        default=None,
+        help=(
+            "Receipt-era universe digest the measured universe must reproduce. "
+            "Default: the frozen 2026-10-03 universe digest."
+        ),
+    )
+    parser.add_argument(
+        "--owner-receipts",
+        default=None,
+        help=(
+            "Repository path of the owner-receipts JSON measured at --rev. "
+            f"Default: {OWNER_RECEIPTS_PATH}."
+        ),
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
+    if args.cutoff:
+        set_cutoff(args.cutoff)
+    if args.owner_receipts:
+        set_owner_receipts_path(args.owner_receipts)
+    if args.expected_universe_sha256:
+        set_expected_universe_sha256(args.expected_universe_sha256)
     try:
         receipt, headlines = build_receipt(args.rev)
     except ProbeError as exc:

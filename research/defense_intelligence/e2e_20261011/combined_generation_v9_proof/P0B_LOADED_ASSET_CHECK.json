@@ -1,0 +1,14 @@
+{
+  "mobile-layout.json": {
+    "pass": true,
+    "loaded_asset_count": 29,
+    "loaded_asset_mismatches": [],
+    "theme_sha256": "1cee2e7c89ab9235be9d73370c524bc837013f0eea9cc02fdf7184ba7ad1d18b"
+  },
+  "mobile-layout-canada.json": {
+    "pass": true,
+    "loaded_asset_count": 32,
+    "loaded_asset_mismatches": [],
+    "theme_sha256": "1cee2e7c89ab9235be9d73370c524bc837013f0eea9cc02fdf7184ba7ad1d18b"
+  }
+}

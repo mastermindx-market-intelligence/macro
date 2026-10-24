@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk10.v1.schema.json",
   "title": "Specialist pack PK10 v1 catalogue",
-  "description": "Proxy compensation and governance. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Proxy compensation and governance. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk10/v1",
   "pack_id": "PK10",
   "name": "Proxy compensation and governance",
@@ -16,10 +16,186 @@
     "production source trace",
     "DEF 14A package"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "ceo_total_comp",
+      "name": "Principal executive officer total compensation (summary compensation table)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "other_neo_total",
+      "name": "Other named executive officers total compensation",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "comp_actually_paid_peo",
+      "name": "Compensation actually paid to the principal executive officer (pay-versus-performance table)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "compensation_year",
+      "name": "Compensation fiscal year",
+      "type": "integer",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "total_shareholder_return",
+      "name": "Company total shareholder return",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "peer_group_tsr",
+      "name": "Peer group total shareholder return",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "table_cell"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "performance_measure_selected",
+      "name": "Company-selected performance measure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "director_independence_span",
+      "name": "Director independence disclosure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "related_party_span",
+      "name": "Related-party transactions disclosure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "say_on_pay_frequency",
+      "name": "Say-on-pay vote frequency",
+      "type": "enum",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "pvp_table_present",
+      "kind": "qualitative_presence",
+      "operands": [
+        "comp_actually_paid_peo",
+        "total_shareholder_return",
+        "peer_group_tsr"
+      ]
+    },
+    {
+      "check_id": "sct_table_present",
+      "kind": "qualitative_presence",
+      "operands": [
+        "ceo_total_comp",
+        "other_neo_total",
+        "compensation_year"
+      ]
+    },
+    {
+      "check_id": "sct_year_matches_fiscal",
+      "kind": "cross_statement",
+      "operands": [
+        "compensation_year"
+      ]
+    },
+    {
+      "check_id": "cap_vs_sct_total",
+      "kind": "qualitative_presence",
+      "operands": [
+        "comp_actually_paid_peo",
+        "ceo_total_comp"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    },
+    {
+      "code": "proxy_package_not_supplied",
+      "parameter": null,
+      "meaning": "no DEF 14A package is admitted for the issuer; a 10-K Item 11 incorporation by reference never substitutes"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

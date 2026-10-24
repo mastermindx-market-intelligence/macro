@@ -1,0 +1,24 @@
+{
+  "verified_pin": "065b7fe719bb07407eae965ffb15e300ae2395f6",
+  "current_protected_master": "b96dd69efb0588c3a678ee09ddd5408fa5a40b12",
+  "schema": "mastermind.sol_skillpack.v1",
+  "version": "1.0.1",
+  "minimum_bootstrap_major": 1,
+  "index_blob": "339c3d810f8c74ec157a793b143fde9aeb1e4fec",
+  "total_commits": 19,
+  "total_paths": 172,
+  "required_paths": [
+    "docs/sol_skills/INDEX.md",
+    "docs/sol_skills/COLD_START.md",
+    "docs/sol_skills/ACTIVE_EXECUTION.md",
+    "docs/sol_skills/SESSION_RELIABILITY.md",
+    "docs/sol_skills/WEB_CEO_DELEGATION.md",
+    "docs/sol_skills/REVIEW_RETURN.md",
+    "docs/sol_skills/RECONCILE_STATE.md",
+    "docs/sol_skills/CLOSEOUT.md",
+    "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+    "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+  ],
+  "changed_required_paths": [],
+  "current_agents_blob": "37420819cf25bb1a72289a990a4cc3483228ceee"
+}

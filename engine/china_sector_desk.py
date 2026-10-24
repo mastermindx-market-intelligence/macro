@@ -116,6 +116,8 @@ def _ladder(sw: pd.Series, high: pd.Series | None) -> dict | None:
         return {
             "state": lad.get("state"),
             "state_zh": lad.get("state_zh") or lad.get("state"),
+            "label": lad.get("label"),
+            "label_zh": lad.get("label_zh"),
             "score": lad.get("score"),
             "bottom_confidence": lad.get("bottom_confidence"),
         }

@@ -830,6 +830,13 @@ def _apply_numeric(
 
 
 def _direct_text(node: _Node, events: list[_TextEvent]) -> str:
+    if isinstance(events, _TextEvents):
+        # Built events are source ordered. Keep the identity check (including
+        # excluded text), but do not scan unrelated siblings for every context.
+        assert node.end is not None
+        left = bisect_left(events.starts, node.start_tag_end)
+        right = bisect_left(events.starts, node.end)
+        events = events[left:right]
     return "".join(event.value for event in events if event.owner is node)
 
 
@@ -1876,7 +1883,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             # is compatible because it is a strict UTF-8 subset, but accepting
             # UTF-8 multibyte bytes under an ASCII declaration would make this
             # admission policy silently contradict the source declaration.
-            if declared_encoding in {b"ascii", b"us-ascii"} and any(byte > 0x7F for byte in content):
+            if declared_encoding in {b"ascii", b"us-ascii"} and not content.isascii():
                 raise SecFilingParseError("XML declaration ASCII contradicts non-ASCII content")
 
     root, nodes, events = _TreeBuilder(content, limits).build()

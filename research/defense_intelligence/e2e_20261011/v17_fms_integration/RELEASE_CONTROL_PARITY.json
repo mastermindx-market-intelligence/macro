@@ -1,0 +1,9 @@
+{
+  ".github/workflows/government-revenue-live.yml": true,
+  ".github/workflows/daily.yml": true,
+  ".github/workflows/fms-acquire.yml": true,
+  "scripts/ci/govrev_publisher_preflight.py": true,
+  "scripts/ci/govrev_candidate_proof.py": true,
+  "app/deploy/Caddyfile": true,
+  "app/deploy/update.sh": true
+}

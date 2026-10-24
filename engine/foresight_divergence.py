@@ -26,6 +26,8 @@ the forward-graded ledger clears Phase-0 validation (house rule).
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -49,6 +51,26 @@ MIN_THEMES_FOR_RANK = 6
 # Candidate set: [0.50, 0.60, 0.70] — future shadow grid will promote the best.
 NARRATIVE_HI_THRESHOLD = 0.60
 MONEY_HI_THRESHOLD = 0.60
+
+# The incumbent catch-up claim uses calendar days, separately from return grading.
+CATCHUP_DAYS = 60
+
+
+def catchup_observed(flag_asof, theme_rows):
+    """The unchanged native catch-up predicate, without grading/price I/O.
+
+    Rows must already belong to the flag's theme. This intentionally retains the
+    grader's any()/short-circuit and timestamp behavior; it asserts no coverage,
+    episode independence, constant cohort, causality or calibrated prediction.
+    """
+    import pandas as pd
+    flag_ts = pd.Timestamp(flag_asof)
+    cutoff = flag_ts + pd.Timedelta(days=CATCHUP_DAYS)
+    return any(
+        e.get("quadrant") == "confirmed"
+        for e in theme_rows
+        if e.get("asof") and flag_ts < pd.Timestamp(e["asof"]) <= cutoff
+    )
 
 # Heartbeat: re-log for hidden-opportunity even when unchanged if this many days old.
 # Mirrors _HEARTBEAT_DAYS=7 in foresight_cascade.py.
@@ -330,6 +352,8 @@ def compute_divergence_board(
     *,
     write_ledger: bool = True,
     root: Path | None = None,
+    provenance_sink: dict | None = None,
+    capture_optional: bool = False,
 ) -> dict | None:
     """Compute the Narrative-to-Money Divergence board.
 
@@ -340,6 +364,12 @@ def compute_divergence_board(
                       legs from fused_obs_z and may be excluded from the cross-section.
         write_ledger: if True, append hidden-opportunity and transition rows to the ledger.
         root:         override data root (tests only).
+        provenance_sink: optional empty internal dict for same-call provenance.
+                      Never included in the board or written by this function.
+                      This is unqualified input/computation evidence, not a
+                      historical-availability, rights or eligibility receipt.
+        capture_optional: ordinary caller may withhold failed capture while
+                      preserving the one native board/ledger execution.
 
     Returns dict with:
         {
@@ -352,6 +382,51 @@ def compute_divergence_board(
         }
     or None on fatal error.
     """
+    capture_started = None
+    capture_inputs = None
+    if provenance_sink is not None:
+        if type(provenance_sink) is not dict or provenance_sink:
+            raise ValueError("same-run provenance requires an empty dict")
+        try:
+            capture_started = datetime.now(timezone.utc).isoformat()
+            if not isinstance(cascade, dict) or not isinstance(cascade.get("themes"), list) or not cascade["themes"]:
+                raise ValueError("same-run capture requires an attempted population")
+            if any(not isinstance(row, dict) for row in cascade["themes"]):
+                raise ValueError("same-run capture contains malformed population row")
+            # Only fields actually used by this native computation enter the private
+            # capture. Source prose and arbitrary upstream metadata are not retained.
+            field_names = ("theme", "name", "stage", "language_accel",
+                           "bottleneck_text_only", "bottleneck_band",
+                           "revision_breadth", "broadening_state")
+            projected_cascade = {
+                "themes": [{k: copy.deepcopy(row[k]) for k in field_names if k in row}
+                           for row in cascade["themes"]]}
+            if "asof" in cascade:
+                projected_cascade["asof"] = copy.deepcopy(cascade["asof"])
+            projected_activity = {}
+            for row in cascade["themes"]:
+                key = row.get("theme")
+                entry = (activity or {}).get(key) if key else None
+                if entry is not None:
+                    projected_activity[key] = {
+                        "fused_obs_z": copy.deepcopy(entry.get("fused_obs_z")),
+                        "sources": [{"name": "news_velocity", "z": copy.deepcopy(src.get("z"))}
+                                    for src in (entry.get("sources") or [])
+                                    if src.get("name") == "news_velocity"]}
+            capture_inputs = {"cascade": projected_cascade, "activity": projected_activity}
+            # Freeze the exact computation inputs. No re-read or later recomputation
+            # is used to manufacture a same-run observation.
+            raw = json.dumps(capture_inputs, sort_keys=True, ensure_ascii=False,
+                             allow_nan=False, separators=(",", ":")).encode()
+            if len(raw) > 8 * 1024 * 1024:
+                raise ValueError("same-run input capture resource bound exceeded")
+            cascade, activity = copy.deepcopy(projected_cascade), copy.deepcopy(projected_activity)
+            capture_input_sha256 = hashlib.sha256(raw).hexdigest()
+        except Exception as exc:
+            if not capture_optional: raise
+            log.warning("native input capture unavailable: %s", type(exc).__name__)
+            provenance_sink = None
+
     if not cascade:
         return None
 
@@ -364,7 +439,8 @@ def compute_divergence_board(
 
     # ── Pass 1: per-theme axis raw values ──────────────────────────────────
     per_theme: list[dict] = []
-    for r in themes_rows:
+    capture_axes = []
+    for source_position, r in enumerate(themes_rows):
         theme = r.get("theme")
         if not theme:
             continue
@@ -375,6 +451,20 @@ def compute_divergence_board(
 
         narrative_raw = _axis_raw(n_legs)
         money_raw = _axis_raw(m_legs)
+        if provenance_sink is not None:
+            try:
+                capture_axes.append({
+                    "source_position": source_position, "theme": theme,
+                    "narrative_legs": copy.deepcopy(n_legs),
+                    "money_legs": copy.deepcopy(m_legs),
+                    "narrative_native_values": copy.deepcopy(n_raw),
+                    "money_native_values": copy.deepcopy(m_raw),
+                    "narrative_raw": narrative_raw, "money_raw": money_raw,
+                })
+            except Exception as exc:
+                if not capture_optional: raise
+                log.warning("native axis capture unavailable: %s", type(exc).__name__)
+                provenance_sink = None
 
         per_theme.append({
             "theme": theme,
@@ -408,8 +498,23 @@ def compute_divergence_board(
     # Read last-known quadrant per theme from the ledger for transition detection.
     last_quadrant: dict[str, tuple[str, str]] = {}   # theme -> (asof, quadrant)
     ledger_path = (Path(root) if root else config.data_dir()) / "foresight" / "divergence_log.jsonl"
+    ledger_capture = {"state": "ABSENT_AT_CHECK", "sha256": None, "bytes": None}
     if ledger_path.exists():
-        for line in ledger_path.read_text().splitlines():
+        # One original predecessor read feeds the native computation. Capture
+        # size failure may withhold provenance, never rerun or drop the board.
+        ledger_raw = ledger_path.read_bytes()
+        ledger_text = ledger_raw.decode("utf-8")
+        if provenance_sink is not None:
+            try:
+                if len(ledger_raw) > 8 * 1024 * 1024:
+                    raise ValueError("same-run predecessor capture resource bound exceeded")
+                ledger_capture = {"state": "READ", "sha256": hashlib.sha256(ledger_raw).hexdigest(),
+                                  "bytes": len(ledger_raw)}
+            except Exception as exc:
+                if not capture_optional: raise
+                log.warning("native predecessor capture unavailable: %s", type(exc).__name__)
+                provenance_sink = None
+        for line in ledger_text.splitlines():
             try:
                 e = json.loads(line)
                 t, q, a = e.get("theme"), e.get("quadrant"), e.get("asof")
@@ -507,13 +612,6 @@ def compute_divergence_board(
                     "transition": transition,
                 })
 
-    if write_ledger and to_log:
-        try:
-            n_written = _append_divergence_ledger(to_log, root=root)
-            log.info("divergence_log: %d rows appended", n_written)
-        except Exception as e:  # noqa: BLE001
-            log.warning("divergence_log append failed (non-fatal): %s", e)
-
     # Sort: hidden-opportunity first (the claim), then confirmed, hype-risk, ignore
     _QUAD_RANK = {"hidden-opportunity": 0, "confirmed": 1, "hype-risk": 2, "ignore": 3}
     items.sort(key=lambda x: (
@@ -531,7 +629,7 @@ def compute_divergence_board(
         "Display-only. Ledger accrues to data/foresight/divergence_log.jsonl."
     )
 
-    return {
+    board = {
         "items": items,
         "n_cross_section": n_cross,
         "n_total": len(per_theme),
@@ -539,6 +637,65 @@ def compute_divergence_board(
         "thin_cross_section": thin,
         "note": " ".join(note_parts),
     }
+    if provenance_sink is not None:
+        try:
+            attempted = [{"source_position": i, "theme": row.get("theme"),
+                          "status": "ATTEMPTED" if row.get("theme") else "MISSING_NATIVE_KEY"}
+                         for i, row in enumerate(themes_rows)]
+            keys = [row["theme"] for row in attempted if row["theme"]]
+            record = {
+                "schema": "gmi.divergence_same_run_capture/v1",
+                "capture_started_at": capture_started,
+                "capture_completed_at": datetime.now(timezone.utc).isoformat(),
+                "effective_at": asof,
+                "effective_at_declared": bool(cascade.get("asof")),
+                "source_available_at": None,
+                "producer_revision": None,
+                "input_scope": "NATIVE_DIVERGENCE_FIELDS_NOT_UPSTREAM_PROVENANCE",
+                "input_sha256": capture_input_sha256,
+                "inputs": capture_inputs,
+                "attempted_population": attempted,
+                "n_input_rows": len(themes_rows),
+                "identity_status": ("UNQUALIFIED" if len(keys) != len(themes_rows)
+                                    or len(set(keys)) != len(keys) else "NATIVE_KEYS_UNIQUE"),
+                "axis_computations": capture_axes,
+                "cross_section_positions": [row["source_position"] for row in capture_axes
+                                           if row["narrative_raw"] is not None
+                                           and row["money_raw"] is not None],
+                "method": {"rank": "cross_section_average_ties_v1",
+                           "minimum_rank_population": MIN_THEMES_FOR_RANK,
+                           "narrative_high": NARRATIVE_HI_THRESHOLD,
+                           "money_high": MONEY_HI_THRESHOLD,
+                           "catchup_calendar_days": CATCHUP_DAYS,
+                           "provisional": True},
+                "predecessor_ledger": ledger_capture,
+                "last_quadrants_used": copy.deepcopy(last_quadrant),
+                "board": copy.deepcopy(board),
+                "member_identity_receipts": None,
+                "source_purpose_receipts": None,
+                "qualification": "UNQUALIFIED_NATIVE_COMPUTATION",
+                "publication_allowed": False,
+            }
+            # Commit the caller-visible result once, after complete finite encoding.
+            encoded = json.dumps(record, sort_keys=True, ensure_ascii=False,
+                                 allow_nan=False, separators=(",", ":")).encode()
+            if len(encoded) > 8 * 1024 * 1024:
+                raise ValueError("same-run provenance resource bound exceeded")
+            record["capture_sha256"] = hashlib.sha256(encoded).hexdigest()
+            provenance_sink.update(copy.deepcopy(record))
+        except Exception as exc:
+            if not capture_optional: raise
+            log.warning("native final capture unavailable: %s", type(exc).__name__)
+    # Optional capture failure cannot suppress the original ledger effect.
+    # Capture metadata never claims that append succeeded.
+    if write_ledger and to_log:
+        try:
+            n_written = _append_divergence_ledger(to_log, root=root)
+            log.info("divergence_log: %d rows appended", n_written)
+        except Exception as e:  # noqa: BLE001
+            log.warning("divergence_log append failed (non-fatal): %s", e)
+
+    return board
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -584,7 +741,6 @@ def grade_divergence_ledger(
             continue
 
     today_ts = pd.Timestamp(today) if today else pd.Timestamp.now(tz='UTC').tz_localize(None).normalize()
-    CATCHUP_DAYS = 60
     RETURN_DAYS = 90
 
     # Index all rows by theme for catch-up detection
@@ -614,13 +770,8 @@ def grade_divergence_ledger(
 
         # Catch-up grade (60-day horizon)
         if days_elapsed >= CATCHUP_DAYS:
-            cutoff = flag_ts + pd.Timedelta(days=CATCHUP_DAYS)
             theme_rows = by_theme.get(r["theme"], [])
-            caught_up = any(
-                e.get("quadrant") == "confirmed"
-                for e in theme_rows
-                if e.get("asof") and flag_ts < pd.Timestamp(e["asof"]) <= cutoff
-            )
+            caught_up = catchup_observed(flag_ts, theme_rows)
             catchup_results.append({
                 "theme": r["theme"],
                 "flag_date": r["asof"],

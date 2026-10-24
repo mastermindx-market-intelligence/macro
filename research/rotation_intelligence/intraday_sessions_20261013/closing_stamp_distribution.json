@@ -1,0 +1,14 @@
+{
+  "late_clock_counts": {
+    "(0,2]s": 419,
+    "(2,5]s": 104,
+    ">90s": 78,
+    "(5,60]s": 6,
+    "(60,90]s": 3
+  },
+  "late_clock_price_basis_counts": {
+    "regular": 610
+  },
+  "quote_snapshot_sha256": "ef51fdd92bccd72e721af7452f2379e107cb1131e677b9626319d6d3550b772b",
+  "regular_session_close_utc": "2026-10-14T20:00:00+00:00"
+}

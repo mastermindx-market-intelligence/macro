@@ -1,0 +1,25 @@
+{
+  "state": "PASS_EXACT_AST_EQUALITY",
+  "parser": "css-tree@3.1.0",
+  "options": {
+    "positions": false,
+    "parseCustomProperty": true
+  },
+  "comparison": "Exact complete parsed AST including selector combinators, strings, values, rule/declaration order and Raw nodes; no custom whitespace normalizer.",
+  "before": {
+    "source_sha256": "3da200c8bb0d73b4d3644434b2a134d5b8bfa7f81b58bd86fceb07a18a9188f5",
+    "ast_sha256": "af9c309d1d218e12632ce0c4c57318561eb9132d4112e59f2787f1c5996603bb",
+    "nodes": 35383,
+    "raw_nodes": 0,
+    "parse_errors": []
+  },
+  "after": {
+    "source_sha256": "e23757479625bb089e70a78c97789846ba202ac40bc4eec51913d8ab94d01ee0",
+    "ast_sha256": "af9c309d1d218e12632ce0c4c57318561eb9132d4112e59f2787f1c5996603bb",
+    "nodes": 35383,
+    "raw_nodes": 0,
+    "parse_errors": []
+  },
+  "negative_control_rejected": true,
+  "differences": []
+}

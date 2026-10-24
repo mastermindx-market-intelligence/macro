@@ -8,6 +8,37 @@ options tape data per root, runs the flow engine, and publishes JSON artifacts
 to Cloudflare R2.  The FastAPI app (`app/main.py`) serves those R2 objects to
 the Terminal UI with a 30s TTL cache.
 
+## EOD-252 baseline maintenance
+
+The existing `com.macro.thetadata-daily` job refreshes the display baseline after
+a healthy, unforced T1 update. Its wrapper passes the provisioned live-flow
+runtime to `topup_thetadata_day --baseline-runtime`. The child runs only
+`build_live_flow_baselines`, through that runtime's existing environment wrapper;
+it never starts or restarts the flow poller. Source-store agreement is checked
+before computation. `--poll-universe` uses the consumer's native configuration
+and resolver, including its configured names; there is no second static list.
+
+Theta's own `data/live_flow_baselines` is not the live-flow consumer directory.
+The child must execute in `liveflow-ops-wt` so its atomic output reaches the
+existing consumer. Every requested root must have finite positive statistics,
+120–252 observations, and a source-window end equal to the daily receipt's S.
+Missing, stale or future-dated roots refuse replacement of the previous artifact.
+This remains a display heuristic, not validated predictive evidence.
+
+The source-store lock remains held during this read-only computation. Source
+health, source completion time and source deadline are preserved in the original
+daily receipt; the separate `live_flow_baselines` result records its own clocks
+and has a 600-second bound. A downstream failure returns nonzero without changing
+healthy source coverage into a source failure. Existing later calendar fires can
+retry through the same path. No new schedule or forced invocation is needed.
+
+Release the merged builder to the existing live-flow tree before installing the
+merged top-up module and thin wrapper in the Theta tree. Verify source/dependency
+parity and retain the installed environment and data bindings. No plist reload
+is required. A green source check or a generated baseline is not consumer proof:
+the poller loads baselines at its next natural startup, which must be observed
+separately. Never restart a live session just to acquire this acceptance.
+
 ## Files written per cycle
 
 | R2 key | Schema | Contents |

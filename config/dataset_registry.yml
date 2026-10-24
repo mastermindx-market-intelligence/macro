@@ -167,6 +167,17 @@ datasets:
     timezone: America/New_York
     frequency: 1d
     adjustment: none
+    basis: raw
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        internal_computation: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        redistribution: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+    code_consumers:
+      - scripts/stock_liquidity_profile.py
     conflict_policy: PRIMARY_ONLY
     quality_checks: [uniqueness, validity, freshness]
     version: "1.0.0"
@@ -180,10 +191,22 @@ datasets:
         note: >
           MEASURED NVDA 2024-06-03 = 1150.00 — the price actually PRINTED, pre the 10:1
           split. Same column name as the two stores above, 10x the number.
+      volume:
+        dtype: int64
+        unit: shares
+        nullable: false
+        note: >
+          Native _parse_day normalizes missing source volume to zero. Non-null
+          storage does not certify source completeness; the F08 qualified
+          projection refuses a zero-volume window because missingness was erased.
     notes: >
       The only raw-print equity store here, and therefore the only lawful input for
       limit-price / tick-size / exchange-rule work — see DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT,
       where using an adjusted tape for exactly that stop-shipped a whole program.
+      Rights adopt the existing operator-confirmed enterprise record, not a new
+      grant. Currency and per-row publication/ingestion clocks are not declared
+      by these daily files; the F08 liquidity projection must qualify its window
+      separately and cannot infer USD or known_at from this registry entry.
 
   # ── Macro releases ─────────────────────────────────────────────────────────
   - dataset_id: macro.fred.observations
@@ -317,7 +340,9 @@ datasets:
           (issuer_id may be a retained legacy mint, or NULL for an evidence-less new
           row — both aggregation-forbidden) | AMBIGUOUS (current symbol maps to >1
           CIK; reserved, fail-closed) | EVIDENCE_CONFLICT (later evidence disagrees
-          with a committed assignment; recorded, never auto-executed) |
+          with a committed assignment; recorded, never auto-executed — except a
+          NULL-issuer allowlist refusal whose CIK is later ratified, re-examined
+          all-or-nothing per CIK, D2B1 AMENDMENT §7) |
           DEFERRED_IDENTITY_EXCEPTION (named in _receipt.json identity_exceptions —
           GOLD today; B never mints a row — excluded from grouping entirely).
       issuer_cik:
@@ -1368,9 +1393,11 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
@@ -1390,10 +1417,12 @@ datasets:
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity]
     version: "0.1.0"
-    licensing: chairman_attested_business_advanced_redistribution_runtime_mapping_unverified
+    licensing: chairman_attested_special_forex_r26_product_use_approved_2026_10_22
     code_consumers: [lib/dataos/tiingo_reader.py::read_research_view]
     inputs: [vendor.tiingo.raw.forex_bars]
     notes: >
+      Forex R26 licensing/product use is complete under Chairman special approval,
+      Macro PR 9996 comment 6331071428 (2026-10-22); technical admission remains pending.
       Research-only source history, not an active production dataset. Raw response
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
@@ -1651,8 +1680,9 @@ datasets:
       market: US
       venues: [XNYS, XNAS, XASE, ARCX]
       universe: US tickers present in the Macro deep store data/stocks/<T>.parquet
-        (this registry's equity.bars.daily.stocks universe), last MAX_BARS=3900
-        (~15y) daily bars kept per ticker
+        (last MAX_BARS=3900) and existing Terminal flagship daily histories whose
+        store and yahoo_fetch aliases resolve to the same supported US listing;
+        direct Yahoo history is bounded by the observed per-file coverage
     clocks: [derived]          # a DERIVED profile carries no clock of its own (D00.D1)
     point_in_time_corporate_actions: false
     rights:
@@ -1686,6 +1716,20 @@ datasets:
       the XASE difference is recorded as a GAP. No lineage edge in `inputs:`: the
       in-repo DAG is in-repo lineage, and a cross-repo build is named here, not
       graphed as an in-repo pipeline.
+      2026-10-19 direct-source integration: the existing Terminal producer
+      ingest/build_polygon_universe.py may bind its own fresh Yahoo max/1d
+      auto_adjust observation through lib/dataos/terminal_materialization.py.
+      This explicit source variant closes the basis gap only for its bound
+      per-symbol materializations, using the actual requested yahoo_fetch alias,
+      canonical store identity, source/module versions, exact reference-file
+      hashes and dataos.terminal_ohlc.rows.v1 digest of all published OHLCV rows.
+      It does not claim the Macro parquet as an upstream dependency. Reused
+      documents retain their original observation; any mixed-source append or
+      content change invalidates the active binding until a full rebind.
+      CURRENT TRADJ is a non-executable vendor total-return proxy; historical
+      availability, action revisions and unattested identity generations remain
+      explicit. No rights or PROPOSED status change is implied. Contract and
+      acceptance limits: research/TERMINAL_YAHOO_MATERIALIZATION_2026-10-19.md.
 
   # ── R00 consumer C (D00.D6, 2026-10-13): basket membership PIT histories ────
   # One row per suite — three suites, two lanes (engine/basket_membership_pit.py
@@ -1811,3 +1855,83 @@ datasets:
       bound on how PIT it is. PRODUCED evidence: committed blob at HEAD (last
       advanced by "engine: asia dashboards 2026-10-04", 63df61aa9a; re-scrape
       d337c379a3 the day before).
+
+  # ── BEA Global Value Chains — CEO-scoped data-purpose decision (2026-10-14) ───
+  # DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014 authorizes BEA first-party
+  # current descriptive use and assigns the existing macro-dashboard Data OS role.
+  # Both rows are PROPOSED. Neither ID represents a live native source producer,
+  # installed storage, original L0 source-byte custody, or valid historical PIT.
+  - dataset_id: bea.gvc.may2026.original_responses
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::bind_retained_responses"
+    storage: "data/bea/gvc/may2026/original_responses/{table_id}/{source_sha256}.json"
+    format: json
+    grain: [publisher_edition_date, source_table_id, original_response_sha256]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, completeness, temporal_integrity, source_revision]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    notes: >
+      PROPOSED ONLY, producer and storage path not installed. This is a stable
+      proposed source identity, not a claim that canonical original response bytes
+      have been authenticated or moved. Reuse the 64 previously retained BEA
+      research captures; do not reacquire them. Original response digest,
+      actual native ingested_at, original publication clock and correction chain
+      still require byte-evidenced admission. Publisher release is 2026-05-21
+      with DAY precision; do not invent an instant or backdate a 2017-2024
+      known_at. The CEO rights decision applies only to official BEA first-party
+      GVC statistics, with source attribution and no government endorsement.
+      The decision does not install a source producer or grant third-party rights.
+
+  - dataset_id: bea.gvc.may2026.industry_import_inputs
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::materialize_industry_inputs"
+    storage: "data/bea/gvc/may2026/industry_inputs/industry_{industry_code_exact}.jsonl"
+    format: jsonl
+    grain: [publisher_edition_date, accounting_year, industry_code_exact, commodity_code_exact]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, uniqueness, source_lineage, signed_accounting_reconciliation, temporal_integrity]
+    inputs: [bea.gvc.may2026.original_responses]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    notes: >
+      PROPOSED ONLY, not native produced or publicly served. The existing
+      separately retained 138 industry research JSONL views (eight annual years,
+      139 commodities each) have independently accepted research builder/lineage
+      receipts, but are not this proposed native L1 store. The GMI research
+      consumer is private and does not constitute an admitted Data OS product
+      reader. Source amounts are signed USD millions and geographic allocations
+      are imputed industry inputs, not observed bilateral supply transactions.
+      The May-21-2026 GVC edition revises 2017-2023; historical first-known
+      2017-2024 clocks are NULL. Native UTC ingest/revisions, exact 5241X vs
+      5241XX dated mapping and upstream response-byte/correction chain must be
+      verified before PRODUCED status. Rights approval covers first-party BEA
+      current-vintage descriptive industry display only, with attribution and
+      no endorsement. Public UI/browser/machine proof and independent source
+      review remain separate acceptance gates.

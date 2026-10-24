@@ -34,6 +34,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import re
+from datetime import datetime
+from urllib.parse import urlsplit
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
@@ -469,6 +473,201 @@ def _curated_events(curated_issuer: Mapping[str, Any] | None, key: str) -> list[
     return out
 
 
+def _context_clock(value: Any) -> datetime | None:
+    try:
+        stamp = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return stamp if stamp.tzinfo is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _context_visible(row: Mapping[str, Any], cutoff: datetime) -> bool:
+    known = _context_clock(row.get("known_at"))
+    start = _context_clock(row.get("valid_from")) if row.get("valid_from") else None
+    end = _context_clock(row.get("valid_to")) if row.get("valid_to") else None
+    return bool(
+        row.get("review_state") == "reviewed" and row.get("rights_state") != "denied"
+        and known is not None and known <= cutoff
+        and (not row.get("valid_from") or (start is not None and start <= cutoff))
+        and (not row.get("valid_to") or (end is not None and cutoff < end))
+    )
+
+
+def _context_evidence(rows: Any) -> list[dict[str, Any]]:
+    """Curated-owner source references only; never grant source-body rights."""
+    if not isinstance(rows, list) or not rows:
+        return []
+    out = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            return []
+        try:
+            url = urlsplit(str(row.get("url") or ""))
+        except ValueError:
+            return []
+        digest = str(row.get("content_sha256") or "")
+        if (url.scheme != "https" or not url.hostname or url.username or url.password
+                or re.fullmatch(r"[a-f0-9]{64}", digest) is None
+                or not _text(row.get("record_id"))):
+            return []
+        out.append({key: row.get(key) for key in (
+            "record_id", "publisher", "url", "content_sha256", "retained_representation"
+        )})
+    return out
+
+
+def _listing_research_identity(row: Mapping[str, Any], cutoff: datetime) -> dict[str, Any] | None:
+    """A named research consumer join; never mint or admit a global listing.
+
+    All three reviewed source roles must agree. SEC CIK is a filer axis;
+    depositary/underlying ISINs remain distinct and imply no award capture.
+    """
+    q = row.get("research_identity_qualification")
+    if (not isinstance(q, Mapping) or not _context_visible(q, cutoff)
+            or q.get("scope") != "government_revenue_identity_context"):
+        return None
+    native = row.get("native_identity") or {}
+    filer, mapping, program = (q.get(key) for key in
+                              ("filer", "ticker_cik_observation", "depositary_program"))
+    roles = q.get("source_record_ids")
+    evidence = _context_evidence(row.get("evidence"))
+    if not all(isinstance(item, Mapping) for item in (filer, mapping, program, roles)):
+        return None
+    ids = [roles.get(key) for key in ("filer", "ticker_cik_observation", "depositary_program")]
+    if (any(not isinstance(item, str) or not item.strip() for item in ids)
+            or len(set(ids)) != 3
+            or any(sum(e.get("record_id") == item for e in evidence) != 1 for item in ids)):
+        return None
+    cik = filer.get("cik")
+    if (re.fullmatch(r"[0-9]{10}", str(cik or "")) is None
+            or cik == "0000000000" or mapping.get("cik") != cik
+            or not _text(filer.get("legal_name")) or mapping.get("legal_name") != filer.get("legal_name")
+            or mapping.get("symbol") != native.get("symbol")
+            or program.get("symbol") != native.get("symbol")
+            or program.get("venue") != native.get("venue")
+            or program.get("security_kind") != native.get("security_kind")
+            or native.get("security_kind") != "adr"
+            or program.get("ordinary_shares_per_adr") != row.get("ordinary_shares_per_adr")
+            or isinstance(program.get("ordinary_shares_per_adr"), bool)):
+        return None
+    for key in ("security_isin", "underlying_isin"):
+        if re.fullmatch(r"[A-Z]{2}[A-Z0-9]{9}[0-9]", str(program.get(key) or "")) is None:
+            return None
+    if (program["security_isin"] == program["underlying_isin"]
+            or not all(_text(program.get(key)) for key in
+                       ("depositary_as_printed", "underlying_symbol_as_printed", "underlying_venue_as_printed"))
+            or re.fullmatch(r"data/symbol_directory/cik_map/[0-9]{4}-[0-9]{2}-[0-9]{2}\.parquet", str(mapping.get("owner_path") or "")) is None
+            or re.fullmatch(r"[a-f0-9]{64}", str(mapping.get("owner_sha256") or "")) is None
+            or _context_clock(str(mapping.get("snapshot") or "") + "T00:00:00+00:00") is None
+            or mapping["owner_path"].split("/")[-1] != mapping["snapshot"] + ".parquet"
+            or _context_clock(mapping["snapshot"] + "T00:00:00+00:00") > cutoff):
+        return None
+    return {"state": "source_supported_current_research", "scope": q["scope"],
+            "issuer_cik": cik, "filer_name_as_printed": filer["legal_name"],
+            "security_isin": program["security_isin"], "underlying_isin": program["underlying_isin"],
+            "underlying_symbol_as_printed": program["underlying_symbol_as_printed"],
+            "underlying_venue_as_printed": program["underlying_venue_as_printed"],
+            "depositary_as_printed": program["depositary_as_printed"],
+            "sponsorship_as_printed": program.get("sponsorship_as_printed"),
+            "mapping_owner_path": mapping["owner_path"], "mapping_owner_sha256": mapping["owner_sha256"],
+            "mapping_snapshot": mapping["snapshot"], "source_record_ids": ids,
+            "known_at": q["known_at"], "effective_interval_state": "current_observation_only"}
+
+
+def _archetype_context(
+    entities: list[dict[str, Any]], curated_issuer: Mapping[str, Any] | None,
+    *, analysis_as_of: str | None, public_security: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Derived context over existing owners, with no financial capture calculation.
+
+    A reviewed graph interest is an edge interest, not consolidated revenue or
+    issuer-level cash. A source-native listing observation is not Stock Identity
+    admission. All subjects use exact owner IDs; the ticker selects no behavior.
+    """
+    cutoff = _context_clock(analysis_as_of)
+    curated = curated_issuer or {}
+    ownership, listings, gaps = [], [], []
+    if cutoff is None:
+        return {"state": "unavailable", "ownership_cases": [], "listing_cases": [],
+                "gaps": ["invalid_analysis_cutoff"]}
+    for entity in entities:
+        if entity.get("relationship") not in {"joint_venture", "majority_owned", "partial_owned"}:
+            continue
+        visible = [row for row in curated.get("ownership_qualifications", []) or []
+                   if isinstance(row, Mapping) and row.get("entity_id") == entity["entity_id"]
+                   and _context_visible(row, cutoff)]
+        row = visible[0] if len(visible) == 1 else {}
+        evidence = _context_evidence(row.get("evidence"))
+        if (not evidence or isinstance(row.get("ownership_interest"), bool)
+                or row.get("ownership_interest") != entity.get("economic_share")):
+            row = {}
+            evidence = [{"record_id": item.get("evidence_id"), **item}
+                        for item in entity.get("evidence", [])]
+            gaps.append("accounting_basis_not_established")
+        if len(visible) > 1:
+            gaps.append("conflicting_ownership_qualifications")
+        basis = row.get("accounting_basis")
+        if basis not in {"equity_method", "consolidated", "not_established"}:
+            basis = "not_established"
+        ownership.append({
+            "entity_id": entity["entity_id"], "canonical_name": entity.get("canonical_name"),
+            "relationship": entity["relationship"], "ownership_interest": entity.get("economic_share"),
+            "interest_basis": "direct_edge_interest_not_issuer_capture",
+            "documentary_counterparties": [
+                {"name_as_printed": item["name_as_printed"],
+                 "ownership_interest": item["ownership_interest"], "identity_path": "not_established"}
+                for item in row.get("documentary_counterparties", []) or []
+                if isinstance(item, Mapping) and _text(item.get("name_as_printed"))
+                and isinstance(item.get("ownership_interest"), (int, float))
+                and not isinstance(item.get("ownership_interest"), bool)
+                and math.isfinite(item["ownership_interest"]) and 0 < item["ownership_interest"] <= 1
+            ],
+            "accounting_basis": basis, "source_as_of": row.get("source_as_of"),
+            "effective_interval_state": row.get("effective_interval_state", "not_established"),
+            "known_at": row.get("known_at") or entity.get("known_at"), "rights_state": row.get("rights_state", "unknown"),
+            "recipient_attribution": "reviewed_identifier_present" if entity.get("identifiers") else "not_established",
+            "revenue_capture": "not_established", "workshare": "not_established", "cash_capture": "not_established",
+            "evidence": evidence,
+        })
+    for row in curated.get("listing_qualifications", []) or []:
+        if not isinstance(row, Mapping) or not _context_visible(row, cutoff):
+            continue
+        evidence = _context_evidence(row.get("evidence"))
+        identity = row.get("native_identity")
+        if (not evidence or not isinstance(identity, Mapping)
+                or not all(_text(identity.get(key)) for key in
+                           ("issuer_registry", "issuer_native_id", "venue", "symbol", "security_kind"))
+                or identity.get("security_kind") not in {"ordinary_share", "adr"}):
+            gaps.append("source_native_listing_identity_incomplete")
+            continue
+        ratio = row.get("ordinary_shares_per_adr")
+        if identity["security_kind"] == "adr" and (
+                isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or not math.isfinite(ratio) or ratio <= 0):
+            gaps.append("adr_ratio_not_established")
+            continue
+        research_identity = _listing_research_identity(row, cutoff)
+        listing_case = {
+            "state": "source_observed", "native_identity": {key: identity.get(key) for key in
+                ("issuer_registry", "issuer_native_id", "issuer_name_as_printed", "venue", "symbol", "security_kind")},
+            "ordinary_shares_per_adr": ratio if identity["security_kind"] == "adr" else None,
+            "quote_currency": row.get("quote_currency"), "source_as_of": row.get("source_as_of"),
+            "effective_interval_state": row.get("effective_interval_state", "not_established"),
+            "known_at": row["known_at"], "rights_state": row.get("rights_state", "unknown"),
+            "dataos_listing_state": public_security.get("state", "not_in_si_universe"),
+            "listing_admission": "not_established", "price_comparability": "not_established",
+            "recipient_attribution": "not_established", "economic_capture": "not_established", "evidence": evidence,
+        }
+        if research_identity is not None:
+            listing_case["research_identity"] = research_identity
+        listings.append(listing_case)
+    if ownership:
+        gaps.append("ownership_interest_is_not_revenue_workshare_or_cash")
+    if listings:
+        gaps.append("source_listing_observation_is_not_dataos_admission")
+    return {"state": "partial" if ownership or listings or gaps else "not_asserted",
+            "ownership_cases": ownership, "listing_cases": listings, "gaps": sorted(set(gaps))}
+
+
 # ---------------------------------------------------------------------------
 # Per-issuer assembly
 # ---------------------------------------------------------------------------
@@ -487,6 +686,7 @@ def _build_issuer(
     backlog_by_ticker: Mapping[str, Mapping[str, Any]],
     dossier_awards: Iterable[Mapping[str, Any]],
     curated_issuers: Mapping[str, Mapping[str, Any]],
+    analysis_as_of: str | None,
 ) -> dict[str, Any]:
     company = companies_by_ticker.get(ticker)
     curated_issuer = curated_issuers.get(ticker)
@@ -612,6 +812,8 @@ def _build_issuer(
         "listing_events": listing_events,
         "separation_events": separation_events,
         "gaps": gaps,
+        "archetype_context": _archetype_context(entities, curated_issuer,
+            analysis_as_of=analysis_as_of, public_security=public_security),
     }
 
 
@@ -629,6 +831,7 @@ def build_identity_atlas(
     curated: Mapping[str, Any] | None = None,
     generated_at: str,
     graph_as_of: str | None = None,
+    context_as_of: str | None = None,
 ) -> dict[str, Any]:
     """Pure projector: reviewed graph + SI snapshot + backlog + dossier + curated -> Atlas.
 
@@ -640,6 +843,17 @@ def build_identity_atlas(
     is not what this projector is for. Callers replaying a historical
     ``as_of`` may still pass one explicitly.
     """
+    # Graph/plane admission and curated source review answer separate clock
+    # questions. A live builder supplies its frozen generation instant for
+    # source review; replay callers retain their explicit historical cutoff.
+    # Use the incumbent inclusive-day convention, never round precise times up.
+    from engine.government_revenue.point_in_time import analysis_clock
+
+    context_input = context_as_of if context_as_of is not None else (graph_as_of or generated_at)
+    try:
+        context_cutoff = analysis_clock(context_input)[1].isoformat()
+    except (TypeError, ValueError):
+        context_cutoff = None
     raw_graph = graph if isinstance(graph, Mapping) else None
     as_of = graph_as_of if graph_as_of is not None else (
         raw_graph.get("graph_known_at") if raw_graph is not None else None
@@ -677,6 +891,7 @@ def build_identity_atlas(
             backlog_by_ticker=backlog_by_ticker,
             dossier_awards=dossier_awards,
             curated_issuers=curated_issuers,
+            analysis_as_of=context_cutoff,
         )
         for ticker in tickers
     ]
@@ -689,6 +904,7 @@ def build_identity_atlas(
         "contract": CONTRACT,
         "schema_version": SCHEMA_VERSION,
         "generated_at": generated_at,
+        "context_as_of": context_cutoff,
         "graph_id": loaded.get("graph_id"),
         "graph_digest": loaded.get("graph_digest"),
         "graph_status": loaded.get("status"),
@@ -710,7 +926,8 @@ def _default_root() -> Path:
 
 
 def build_identity_atlas_payload(
-    *, root: Path | None = None, generated_at: str, graph_as_of: str | None = None
+    *, root: Path | None = None, generated_at: str, graph_as_of: str | None = None,
+    context_as_of: str | None = None
 ) -> dict[str, Any]:
     """Read the committed inputs from disk and build the Atlas payload.
 
@@ -758,6 +975,7 @@ def build_identity_atlas_payload(
         curated=curated,
         generated_at=generated_at,
         graph_as_of=graph_as_of,
+        context_as_of=context_as_of,
     )
 
 

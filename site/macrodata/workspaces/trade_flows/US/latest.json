@@ -139,7 +139,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       },
       {
@@ -151,7 +151,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-08-01",
+        "source_asof": "2026-09-01",
         "status": "PRESENT"
       }
     ],
@@ -166,44 +166,44 @@
     "deltas": [
       {
         "current_value": -105572.0,
-        "delta": -16996.0,
+        "delta": 0.0,
         "metric_id": "trade_balance_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": -88576.0
+        "prior_value": -105572.0
       },
       {
         "current_value": 315182.0,
-        "delta": 4459.0,
+        "delta": 0.0,
         "metric_id": "exports_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 310723.0
+        "prior_value": 315182.0
       },
       {
         "current_value": 420754.0,
-        "delta": 21455.0,
+        "delta": 0.0,
         "metric_id": "imports_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 399299.0
+        "prior_value": 420754.0
       },
       {
         "current_value": 0.7491,
-        "delta": -0.0291,
+        "delta": 0.0,
         "metric_id": "export_import_coverage_ratio",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.7782
+        "prior_value": 0.7491
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-07-01",
-    "prior_generation_id": "trade_flows-US-61dce61b98d938a8",
+    "prior_effective_date": "2026-08-01",
+    "prior_generation_id": "trade_flows-US-f93c28595c91aa31",
     "prior_method_version": "trade_flows.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "trade_flows-US-fe2ab206509a5eb3"
+    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
+    "predecessor_generation_id": "trade_flows-US-f93c28595c91aa31"
   },
   "drivers": {
     "balance_sheet": [
@@ -296,7 +296,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "import_price_index_level",
-        "impact_magnitude": 150.8,
+        "impact_magnitude": 152.2,
         "impact_sign": 1,
         "label": {
           "en": "Import price index",
@@ -305,12 +305,12 @@
         "note": "bucket reuse: published under drivers.rate_side because the contract's driver bucket pair is fixed as rate_side/balance_sheet and Trade Flows has no dedicated price-index bucket -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.IR.import_price_index",
         "unit": "index",
-        "value": 150.8
+        "value": 152.2
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "export_price_index_level",
-        "impact_magnitude": 166.2,
+        "impact_magnitude": 170.8,
         "impact_sign": 1,
         "label": {
           "en": "Export price index",
@@ -319,12 +319,12 @@
         "note": "bucket reuse: see import_price_index_level's note",
         "owner_field": "fred.IQ.export_price_index",
         "unit": "index",
-        "value": 166.2
+        "value": 170.8
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "terms_of_trade_proxy",
-        "impact_magnitude": 1.1021,
+        "impact_magnitude": 1.1222,
         "impact_sign": 1,
         "label": {
           "en": "Terms-of-trade proxy",
@@ -333,21 +333,21 @@
         "note": "bucket reuse: see import_price_index_level's note",
         "owner_field": "fred.IQ / fred.IR",
         "unit": "ratio",
-        "value": 1.1021
+        "value": 1.1222
       }
     ]
   },
   "generation": {
-    "built_at": "2026-10-15T05:14:07Z",
-    "calculation_as_of": "2026-08-01",
-    "code_version": "39d00535d992abc7b707b5b53695cbef0ae907ee",
-    "content_sha256": "e5c0bfbdc31c3fef27a7512ed5e2ee34c33e51dc2c119d7b0a8f8da5a9a86e23",
-    "generation_id": "trade_flows-US-e5c0bfbdc31c3fef",
+    "built_at": "2026-10-21T05:02:49Z",
+    "calculation_as_of": "2026-09-01",
+    "code_version": "6cc8cb019992e235d1db1c136e89d3300c2c5965",
+    "content_sha256": "b64dcd5d54b94ea5dab8e10d8f798b04b5566f55edda463daa4d0cded5fb92b3",
+    "generation_id": "trade_flows-US-b64dcd5d54b94ea5",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-08-01",
+    "effective_date": "2026-09-01",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -371,7 +371,7 @@
       "y_axis_id": null
     },
     "prior_state": {
-      "effective_date": "2026-07-01",
+      "effective_date": "2026-08-01",
       "method_version": "trade_flows.compose.v1",
       "state_id": null
     },
@@ -479,8 +479,8 @@
         "horizon": "current",
         "implication_id": "price_index_read",
         "text": {
-          "en": "Import prices 150.8 (+7.0% YoY); export prices 166.2 (+8.6% YoY); terms-of-trade proxy 1.1021.",
-          "zh": "进口价格150.8（同比+7.0%）；出口价格166.2（同比+8.6%）；贸易条件指标为1.1021。"
+          "en": "Import prices 152.2 (+8.1% YoY); export prices 170.8 (+11.6% YoY); terms-of-trade proxy 1.1222.",
+          "zh": "进口价格152.2（同比+8.1%）；出口价格170.8（同比+11.6%）；贸易条件指标为1.1222。"
         },
         "trace_ref": null
       },
@@ -1013,7 +1013,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IR.import_price_index",
@@ -1024,10 +1024,10 @@
         "metric_id": "import_price_index_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/IR.parquet",
         "reference_id": "mastermind.market_reference/v1#import_price_index_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1042,14 +1042,14 @@
           "value": null
         },
         "unit": "index_nsa",
-        "value": 150.8,
+        "value": 152.2,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IR.import_price_index",
@@ -1060,10 +1060,10 @@
         "metric_id": "import_price_index_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/IR.parquet",
         "reference_id": "mastermind.market_reference/v1#import_price_index_yoy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1078,14 +1078,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 6.9504,
+        "value": 8.0966,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ.export_price_index",
@@ -1096,10 +1096,10 @@
         "metric_id": "export_price_index_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/IQ.parquet",
         "reference_id": "mastermind.market_reference/v1#export_price_index_level",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1114,14 +1114,14 @@
           "value": null
         },
         "unit": "index_nsa",
-        "value": 166.2,
+        "value": 170.8,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ.export_price_index",
@@ -1132,10 +1132,10 @@
         "metric_id": "export_price_index_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "data/fred/IQ.parquet",
         "reference_id": "mastermind.market_reference/v1#export_price_index_yoy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1150,14 +1150,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 8.6275,
+        "value": 11.634,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_ratio",
-        "calculation_as_of": "2026-08-01",
+        "calculation_as_of": "2026-09-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ / fred.IR",
@@ -1168,10 +1168,10 @@
         "metric_id": "terms_of_trade_proxy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-01",
+        "observed_at": "2026-09-01",
         "owner_ref": "fred.IQ / fred.IR",
         "reference_id": "mastermind.market_reference/v1#terms_of_trade_proxy",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1187,7 +1187,7 @@
           "value": null
         },
         "unit": null,
-        "value": 1.1021,
+        "value": 1.1222,
         "value_type": "ratio"
       },
       {
@@ -1414,10 +1414,10 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "trade_flows-US-61dce61b98d938a8"
+      "generation_id": "trade_flows-US-f93c28595c91aa31"
     },
     "headline": {
-      "effective_date": "2026-07-01",
+      "effective_date": "2026-08-01",
       "hysteresis": {
         "applied": false,
         "band": 0.0,
@@ -1425,17 +1425,24 @@
         "note": "Trade Flows is a Chairman-authorized expansion added after the frozen Market Ontology architecture document's own twelve-workspace freeze, so no section of that document defines a headline model for it at all -- not even a note that none exists, the way monetary_policy/liquidity_central_banks each carry their own such note. There is accordingly no named axis pair here to attempt, and no dual-axis quadrant is asserted. A future architecture revision may ratify a genuine two-axis blueprint for this workspace, at which point this null becomes a real state the moment that blueprint is adopted. Until then, the real trade content -- balance, exports, imports, price indexes, the terms-of-trade proxy, and the balance-identity read -- lives in metrics, drivers, and implications instead. See the headline_unavailable implication for the reader-facing version."
       },
       "method_version": "trade_flows.compose.v1",
-      "movement_state": "NO_EARLIER_PUBLICATION",
+      "movement_state": null,
       "nearest_boundary": {
         "axis": null,
         "distance": null,
         "null_reason": "NOT_APPLICABLE"
       },
       "null_reason": "NOT_APPLICABLE",
-      "one_month_vector": null,
+      "one_month_vector": {
+        "dx": null,
+        "dy": null,
+        "null_reason": "NOT_APPLICABLE",
+        "status": "ABSENT",
+        "x_axis_id": null,
+        "y_axis_id": null
+      },
       "prior_state": {
-        "effective_date": null,
-        "method_version": null,
+        "effective_date": "2026-07-01",
+        "method_version": "trade_flows.compose.v1",
         "state_id": null
       },
       "quadrant": {
@@ -1462,7 +1469,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -1473,10 +1480,10 @@
           "metric_id": "trade_balance_level",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPGSTB.parquet",
           "reference_id": "mastermind.market_reference/v1#trade_balance_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1491,14 +1498,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": -88576.0,
+          "value": -105572.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_3m_average",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -1509,10 +1516,10 @@
           "metric_id": "trade_balance_avg_3m",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPGSTB.parquet",
           "reference_id": "mastermind.market_reference/v1#trade_balance_avg_3m",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1527,14 +1534,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": -78503.3333,
+          "value": -89860.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_level_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
@@ -1545,10 +1552,10 @@
           "metric_id": "trade_balance_yoy_change",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPGSTB.parquet",
           "reference_id": "mastermind.market_reference/v1#trade_balance_yoy_change",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1563,14 +1570,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": -13514.0,
+          "value": -45930.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPTEXP.exports_goods_services",
@@ -1581,10 +1588,10 @@
           "metric_id": "exports_level",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPTEXP.parquet",
           "reference_id": "mastermind.market_reference/v1#exports_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1599,14 +1606,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": 310723.0,
+          "value": 315182.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPTEXP.exports_goods_services",
@@ -1617,10 +1624,10 @@
           "metric_id": "exports_yoy",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPTEXP.parquet",
           "reference_id": "mastermind.market_reference/v1#exports_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1635,14 +1642,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 9.3433,
+          "value": 10.6908,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPTIMP.imports_goods_services",
@@ -1653,10 +1660,10 @@
           "metric_id": "imports_level",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPTIMP.parquet",
           "reference_id": "mastermind.market_reference/v1#imports_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1671,14 +1678,14 @@
             "value": null
           },
           "unit": "usd_millions_sa",
-          "value": 399299.0,
+          "value": 420754.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPTIMP.imports_goods_services",
@@ -1689,10 +1696,10 @@
           "metric_id": "imports_yoy",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/BOPTIMP.parquet",
           "reference_id": "mastermind.market_reference/v1#imports_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1707,14 +1714,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 11.1526,
+          "value": 22.1762,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_ratio",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPTEXP / fred.BOPTIMP",
@@ -1725,10 +1732,10 @@
           "metric_id": "export_import_coverage_ratio",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "fred.BOPTEXP / fred.BOPTIMP",
           "reference_id": "mastermind.market_reference/v1#export_import_coverage_ratio",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1744,14 +1751,14 @@
             "value": null
           },
           "unit": null,
-          "value": 0.7782,
+          "value": 0.7491,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IR.import_price_index",
@@ -1762,10 +1769,10 @@
           "metric_id": "import_price_index_level",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/IR.parquet",
           "reference_id": "mastermind.market_reference/v1#import_price_index_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1780,14 +1787,14 @@
             "value": null
           },
           "unit": "index_nsa",
-          "value": 149.6,
+          "value": 150.8,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IR.import_price_index",
@@ -1798,10 +1805,10 @@
           "metric_id": "import_price_index_yoy",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/IR.parquet",
           "reference_id": "mastermind.market_reference/v1#import_price_index_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1816,14 +1823,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 5.949,
+          "value": 6.9504,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IQ.export_price_index",
@@ -1834,10 +1841,10 @@
           "metric_id": "export_price_index_level",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/IQ.parquet",
           "reference_id": "mastermind.market_reference/v1#export_price_index_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1852,14 +1859,14 @@
             "value": null
           },
           "unit": "index_nsa",
-          "value": 165.4,
+          "value": 166.2,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IQ.export_price_index",
@@ -1870,10 +1877,10 @@
           "metric_id": "export_price_index_yoy",
           "model_version": "trade_flows.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/IQ.parquet",
           "reference_id": "mastermind.market_reference/v1#export_price_index_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1888,14 +1895,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 8.2461,
+          "value": 8.6275,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_ratio",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IQ / fred.IR",
@@ -1906,10 +1913,10 @@
           "metric_id": "terms_of_trade_proxy",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "fred.IQ / fred.IR",
           "reference_id": "mastermind.market_reference/v1#terms_of_trade_proxy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1925,14 +1932,14 @@
             "value": null
           },
           "unit": null,
-          "value": 1.1056,
+          "value": 1.1021,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_share",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
@@ -1943,10 +1950,10 @@
           "metric_id": "trade_balance_share_of_flows_pct",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
           "reference_id": "mastermind.market_reference/v1#trade_balance_share_of_flows_pct",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1963,14 +1970,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": -12.4751,
+          "value": -14.3453,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_identity_residual",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
@@ -1981,10 +1988,10 @@
           "metric_id": "trade_balance_identity_residual",
           "model_version": "trade_flows.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
           "reference_id": "mastermind.market_reference/v1#trade_balance_identity_residual",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2312,7 +2319,7 @@
         },
         "owner_ref": "collectors.fred[IR]",
         "provider": "US Bureau of Labor Statistics / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2333,7 +2340,7 @@
         },
         "owner_ref": "collectors.fred[IQ]",
         "provider": "US Bureau of Labor Statistics / FRED",
-        "reference_period": "2026-08-01",
+        "reference_period": "2026-09-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

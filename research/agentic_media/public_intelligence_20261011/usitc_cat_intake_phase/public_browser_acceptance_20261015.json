@@ -1,0 +1,27 @@
+{
+  "observed_date": "2026-10-15",
+  "browser": "retained Chrome Chris profile3",
+  "installed_head": "dfbd940e16f0fc80caf027e760946cbf5c1584e8",
+  "report_url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+  "viewer_url": "https://www.mastermind-x.com/research_vault.html?doc=usitc-2026-10-13-337-ta-1473",
+  "observed": [
+    "Dedicated report title/date/summary and original excerpt visible",
+    "Read link opened canonical source viewer",
+    "Actual PDF page1 rendered with USITC investigation337-TA-1473",
+    "Next page selected2/2 with second original page rendered",
+    "Download allowance stayed50/50; Download not clicked"
+  ],
+  "api_health": {
+    "status": 200,
+    "seconds": 0.015234,
+    "runtime_commit": "e55265c0785",
+    "checkout": "dfbd940e16f",
+    "pid": 2450971
+  },
+  "limitations": [
+    "No restart or repair installation; this is observed recovery only",
+    "No new signup/follow/write or Press publication",
+    "CAT remains not selected by real planner"
+  ],
+  "verification": "cua_repl reload + report Read link + DOM/screenshot + Next page; read-only loopback /api/health via existing SSH"
+}

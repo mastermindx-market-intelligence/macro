@@ -138,6 +138,38 @@ def _identity_parquet(read: IdentityArtifactRead, required: frozenset[str],
         raise IdentityResolutionError("identity artifact is not readable Parquet") from exc
 
 
+def _captured_option_security_target(security_id, on, *, decision_at, security_master):
+    """Validate an existing canonical target; resolves no vendor/root or alias."""
+    cutoff = _aware_utc(decision_at, "decision_at")
+    master_at = _identity_read(security_master, cutoff)
+    fields = frozenset({"security_id", "listing_key", "country", "mic", "inception_code",
+                        "effective_at", "ingested_at", "security_state", "superseded_by"})
+    records = _identity_parquet(security_master, fields,
+                                frozenset({"effective_at", "ingested_at"}))
+    ids = [r["security_id"] for r in records]
+    if any(not isinstance(s, str) or option_underlying_kind(s) != "security" for s in ids):
+        raise IdentityResolutionError("master contains noncanonical security ids")
+    if len(ids) != len(set(ids)):
+        raise IdentityResolutionError("master contains duplicate security ids")
+    master = IssuerMaster.from_records(records)
+    by_id = dict(zip(ids, records, strict=True))
+    state = _security_state(security_id, master, by_id)
+    row = by_id[security_id]
+    if state != "active" or row["security_state"] is not None or row["superseded_by"] is not None:
+        raise IdentityResolutionError("option underlying is retired or superseded")
+    listing = parse_listing_key(row["listing_key"])
+    if (listing.render() != row["listing_key"] or "SEC:" + listing.render() != security_id
+            or master.listing_key_of_security(security_id) != listing.render()
+            or (row["country"], row["mic"], row["inception_code"]) !=
+               (listing.country, listing.mic, listing.code)):
+        raise IdentityResolutionError("canonical security listing fields conflict")
+    effective = _identity_evidence_clock(row["effective_at"])
+    ingested = _identity_evidence_clock(row["ingested_at"])
+    if not effective <= ingested <= master_at or effective.date() > on:
+        raise IdentityResolutionError("canonical security evidence clocks conflict")
+    return listing.render(), master_at
+
+
 def resolve_option_underlying_security(
     vendor: str, root: str, on: date, *, decision_at: datetime | str,
     aliases: IdentityArtifactRead, security_master: IdentityArtifactRead,
@@ -177,32 +209,9 @@ def resolve_option_underlying_security(
         if max(binding.known_at, alias_ingested) > aliases_at or binding.known_at > source_at:
             raise IdentityResolutionError("option alias/source availability clocks conflict")
 
-        fields = frozenset({"security_id", "listing_key", "country", "mic", "inception_code",
-                            "effective_at", "ingested_at", "security_state", "superseded_by"})
-        records = _identity_parquet(security_master, fields,
-                                    frozenset({"effective_at", "ingested_at"}))
-        ids = [r["security_id"] for r in records]
-        if any(not isinstance(s, str) or option_underlying_kind(s) != "security" for s in ids):
-            raise IdentityResolutionError("master contains noncanonical security ids")
-        if len(ids) != len(set(ids)):
-            raise IdentityResolutionError("master contains duplicate security ids")
-        master = IssuerMaster.from_records(records)
-        by_id = dict(zip(ids, records, strict=True))
-        state = _security_state(binding.security_id, master, by_id)
-        row = by_id[binding.security_id]
-        if state != "active" or row["security_state"] is not None or row["superseded_by"] is not None:
-            raise IdentityResolutionError("option underlying is retired or superseded")
-        listing = parse_listing_key(row["listing_key"])
-        if (listing.render() != row["listing_key"] or "SEC:" + listing.render() != binding.security_id
-                or master.listing_key_of_security(binding.security_id) != listing.render()
-                or (row["country"], row["mic"], row["inception_code"]) !=
-                   (listing.country, listing.mic, listing.code)):
-            raise IdentityResolutionError("canonical security listing fields conflict")
-        effective = _identity_evidence_clock(row["effective_at"])
-        ingested = _identity_evidence_clock(row["ingested_at"])
-        if not effective <= ingested <= master_at or effective.date() > on:
-            raise IdentityResolutionError("canonical security evidence clocks conflict")
-        return OptionUnderlyingIdentity(binding, listing.render(), security_master.sha256,
+        listing_key, master_at = _captured_option_security_target(binding.security_id, on,
+            decision_at=cutoff, security_master=security_master)
+        return OptionUnderlyingIdentity(binding, listing_key, security_master.sha256,
                                         aliases.sha256, max(aliases_at, master_at, source_at))
     except IdentityError as exc:
         raise IdentityResolutionError(f"option identity contract invalid: {exc}") from exc

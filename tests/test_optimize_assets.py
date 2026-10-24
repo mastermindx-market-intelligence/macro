@@ -80,6 +80,39 @@ def test_already_queried_ref_left_alone():
     assert optimize_assets_text(tag, _hash_for) == tag
 
 
+def test_vps_runtime_logo_asset_never_gets_git_placeholder_hash() -> None:
+    """The browser-safe logo token is materialized by the VPS, not Git.
+
+    Its static Git placeholder and actual served bytes differ. The generic
+    optimizer intentionally leaves foreign queries alone, so the one shared
+    nav partial must use a non-hash URL and preserve explicit defer. A ?v=hash
+    URL is cached immutable for one year by the actual public edge.
+    """
+    nav = (Path(__file__).resolve().parents[1] / "templates" / "_navlinks.html.j2").read_text()
+    # The P0B browser receipts pin the shared nav.  An unrelated public
+    # Research Screener URL must never modify their construction input.
+    assert ('<script src="{{ NP }}logo_config.js"'
+            '{% if nav_defer_enhancements | default(false) %} defer fetchpriority="low"{% endif %}></script>') in nav
+    assert 'nav_runtime_logo_config' not in nav
+    for runtime_tag in (
+        '<script src="logo_config.js?runtime-config"></script>',
+        '<script src="logo_config.js?runtime-config" defer fetchpriority="low"></script>',
+    ):
+        assert optimize_assets_text(runtime_tag, lambda _: "b37d33d3") == runtime_tag
+        assert "?v=" not in runtime_tag
+
+    # Verify the actual Research Screener producer's Jinja/navigation +
+    # optimize_assets bake path, not just the shared partial string. This
+    # producer must never put a Git placeholder hash on runtime logo config.
+    from scripts.build_research_screener import bake_html, build_payload
+
+    root = Path(__file__).resolve().parents[1]
+    baked = bake_html(root, build_payload(root))
+    assert baked.count('logo_config.js?runtime-config') == 1
+    assert '<script src="logo_config.js?runtime-config" defer></script>' in baked
+    assert re.search(r'logo_config\.js\?v=[0-9a-f]{8}', baked) is None
+
+
 def test_missing_asset_gets_defer_but_no_version():
     out = optimize_assets_text('<script src="unknown.js"></script>', _hash_for)
     assert out == '<script src="unknown.js" defer></script>'  # defer safe; no hash to add

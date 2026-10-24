@@ -1,0 +1,22 @@
+{
+  "base": "b61fd844723ef8360a91729c161240eddba542b9",
+  "observed_main": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+  "upstream_paths_n": 4220,
+  "own_overlap": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh"
+  ],
+  "browser_source_overlap": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "upstream_relevant": [
+    "site/basket/defense.html",
+    "site/basket_china/cn_defense.html",
+    "site/basket_intl/intl_defense.html",
+    "site/subsector/aerospace-defense.html",
+    "site/subsector/b-defense.html",
+    "site/subsector_china/ths-defense.html",
+    "site/subsector_nasdaq/space-defense-tech.html",
+    "site/subsector_russell/aerospace-defense.html"
+  ]
+}

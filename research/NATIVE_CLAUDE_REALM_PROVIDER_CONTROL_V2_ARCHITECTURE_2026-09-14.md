@@ -391,6 +391,39 @@ Do **not** mutate `scripts/build_provider_capacity.py` semantics for existing V1
 
 Mastermind B2/B3/B5 target owners remain existing provider-realm, Claude preflight, Capacity source-acquisition and CF2 claim paths; exact source paths are selected at the later reviewed implementation child after current protected re-pin.
 
+The first source slice is `engine/provider_native_capabilities.py`, with an empty
+`config/provider_native_capabilities.v1.json`. It validates the closed registry,
+its transition against the preceding accepted registry, and deterministic single-row
+registration exports. Native Claude uses `attached_login`; the existing finite
+Claude-compatible MiniMax harness may use the separate `minimax` / `api_key`
+source vocabulary. Both retain `subscription` / `native_cli`. This vocabulary
+does not grant an authentication method, enroll a realm, or establish readiness.
+
+The registry now defines one source-issued MiniMax domain at generation 1 for the
+existing finite native proof. Its opaque company identifier carries no host,
+principal, Worker, provider-account or credential identity. Registration is a
+source fact; real realm enrollment, auth, availability and admission remain
+unproven. No Claude.ai domain or additional provider supply is inferred.
+The pure parser accepts only supplied
+source documents. `engine/provider_native_capability_source.py` adds fixed source
+acquisition and a separate V2 material census, reusing the V1 identity primitives
+without changing V1 files or its census. Its no-override entry derives HEAD, requires
+one available parent, reads both exact registry blobs and validates the transition.
+Missing prior source is a refusal, never an inferred empty registry. Material must
+match the exact current commit before and after collection. The CLI preserves the
+current commit, predecessor, material digest and closed registration receipts even
+when the registry is empty; it accepts only `--pretty`.
+
+This is source integrity, not accepted-release authentication. The existing Capacity
+source owner must qualify the immutable current release and bind the reported commit
+to that exact selection. Only for an admitted single-parent release does its derived
+parent represent the preceding accepted release; local HEAD, a branch name or a digest
+cannot grant that status. Ambiguous merge parents and unavailable history refuse.
+The old unaccepted #7583 prototype and its proposed registered identity are not adopted.
+No export alone is Capacity admission, a realm enrollment, a Worker availability fact,
+or a production B1/B2/B4 acceptance claim. B2/B3/B5 composition remains with the existing
+Mastermind realm/source/claim owners.
+
 ## 14. Acceptance falsifiers
 
 Independent review and later tests must kill at least:

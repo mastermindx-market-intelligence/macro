@@ -115,10 +115,11 @@ def test_real_shape_unrelated_filed_date_anomaly_cannot_poison_exact_b3_candidat
     """Pin AAPL's real UTC acceptance-date versus SEC filed-date shape.
 
     AAPL's retained history contains filings accepted around 22:00 UTC whose
-    Company Facts ``filed`` date is the following calendar day.  The ordinary
-    query invariant correctly rejects that metadata relationship.  B4 must
-    therefore bind only the metadata for the exact B3 candidate it is trying,
-    while continuing to query the complete committed ledger.
+    Company Facts ``filed`` date is the following calendar day.  That is
+    EDGAR's next-business-day rule for after-17:30-ET acceptance (Regulation
+    S-T Rule 13(a)), which the ordinary query invariant now admits.  B4 still
+    binds only the metadata for the exact B3 candidate it is trying, while
+    continuing to query the complete committed ledger.
     """
     helper = _b4_helpers()
     companyfacts = {
@@ -152,6 +153,17 @@ def test_real_shape_unrelated_filed_date_anomaly_cannot_poison_exact_b3_candidat
                                 "filed": "2019-10-31",
                                 "frame": "CY2018",
                             },
+                            {
+                                "start": "2017-01-01",
+                                "end": "2017-12-31",
+                                "val": 3,
+                                "accn": "0000000001-19-000120",
+                                "fy": 2017,
+                                "fp": "FY",
+                                "form": "10-K",
+                                "filed": "2019-10-31",
+                                "frame": "CY2017",
+                            },
                         ]
                     },
                 }
@@ -165,14 +177,16 @@ def test_real_shape_unrelated_filed_date_anomaly_cannot_poison_exact_b3_candidat
                 "accessionNumber": [
                     "0000000001-26-000001",
                     "0000000001-19-000119",
+                    "0000000001-19-000120",
                 ],
-                "form": ["10-K", "10-K"],
-                "filingDate": ["2026-02-20", "2019-10-31"],
+                "form": ["10-K", "10-K", "10-K"],
+                "filingDate": ["2026-02-20", "2019-10-31", "2019-10-31"],
                 "acceptanceDateTime": [
                     "2026-02-20T16:00:00.000000Z",
                     "2019-10-30T22:12:36.000000Z",
+                    "2019-10-30T16:00:00.000000Z",
                 ],
-                "primaryDocument": ["annual.htm", "historical.htm"],
+                "primaryDocument": ["annual.htm", "historical.htm", "anomaly.htm"],
             }
         },
     }
@@ -185,22 +199,35 @@ def test_real_shape_unrelated_filed_date_anomaly_cannot_poison_exact_b3_candidat
         submissions=submissions,
     )
 
-    with pytest.raises(
-        QueryValidationError, match="filing metadata filed_at follows source acceptance"
-    ):
-        target = next(
-            item.occurrence
-            for item in conversion.occurrences
-            if item.accession == "0000000001-26-000001"
-        )
-        BitemporalMetricQueryEngine(
+    full_target = next(
+        item.occurrence
+        for item in conversion.occurrences
+        if item.accession == "0000000001-26-000001"
+    )
+    anomaly_id = next(
+        item.occurrence.occurrence_id
+        for item in conversion.occurrences
+        if item.accession == "0000000001-19-000120"
+    )
+    full_metadata = filing_metadata_from_companyfacts(conversion)
+
+    def bind(filing_metadata):
+        return BitemporalMetricQueryEngine(
             conversion.ledger,
             build_attested_occurrence_governance_bundle(
-                occurrence=target, recorded_at=PILOT_CLOCK
+                occurrence=full_target, recorded_at=PILOT_CLOCK
             ),
             entities={"AAA": conversion.receipt.cik},
-            filing_metadata=filing_metadata_from_companyfacts(conversion),
+            filing_metadata=filing_metadata,
         )
+
+    # 16:00Z is 12:00 EDT, inside filing hours: a next-day filed date is a
+    # genuine anomaly, so the complete metadata still refuses to bind.
+    with pytest.raises(QueryValidationError, match="follows the EDGAR filing date"):
+        bind(full_metadata)
+    # 22:12:36Z is 18:12 EDT: past EDGAR's 17:30 cutoff, so the next-business-
+    # day filed date of the AAPL-shaped companion binds cleanly.
+    bind({key: value for key, value in full_metadata.items() if key != anomaly_id})
 
     result = _prepare(conversion=conversion, attestation=material.attestation)
     target = next(
@@ -208,7 +235,7 @@ def test_real_shape_unrelated_filed_date_anomaly_cannot_poison_exact_b3_candidat
         for item in conversion.occurrences
         if item.accession == "0000000001-26-000001"
     )
-    assert len(conversion.ledger.events) == 2
+    assert len(conversion.ledger.events) == 3
     assert result.selected_occurrence_id == target.occurrence_id
     assert result.prepared.matrix.cells[0].state.value == "value"
     assert {

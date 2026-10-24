@@ -1,0 +1,15 @@
+# G0-S reference excerpt. rights class: sec_edgar_public_filing
+# cap: 500 characters per span; personal data redacted (none present in these spans)
+# text_basis: SEC document HTML with tags removed, entities unescaped, whitespace runs collapsed to single spaces;
+#            the start/end offsets below index that rendering of the full document whose sha256 is in the header.
+accession: 0000919574-26-005806
+document_name: p15057625_f-3.htm
+canonical_url: https://www.sec.gov/Archives/edgar/data/1731388/000091957426005806/p15057625_f-3.htm
+full_document_sha256: d6050da3219bea1115b304a41ca92f6ea9780198a47a0b2ebaed3d11da6d6428
+retrieved_at: 2026-10-19T08:05:03Z
+http_status: 200
+spans:
+span: public_float 294 5648 5942 69b5a6438f2b3b1760d1b027ac194881175a5bd5063b6831abe17cf94ea47adc
+The aggregate market value of our outstanding common stock held by non-affiliates as of August 25, 2026 is $65,613,529, based on 2,866,591 shares of common stock outstanding, of which 1,222,081 are held by non-affiliates, and a closing price on the Nasdaq Capital Market of $53.69 on that date.
+span: ib5_trailing_sales 190 5943 6133 6180d65085523758971eecc212266417bfb97092c61c62c22408ad3d401b5320
+As of the date hereof, we have not offered any securities pursuant to General Instruction I.B.5 of Form F-3 during the twelve calendar month period that ends on and includes the date hereof.

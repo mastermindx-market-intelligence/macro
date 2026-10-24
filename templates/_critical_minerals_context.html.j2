@@ -1,0 +1,35 @@
+{# F09 annual physical-supply context. The native producer owns every sentence. #}
+{% set cm = critical_minerals|default({}, true) %}
+<section class="panel cm-context" id="critical-minerals" aria-labelledby="cm-heading">
+  <h2 id="cm-heading">{{ t('Critical-minerals supply', '关键矿产供应') }}</h2>
+  <p class="cm-deck">{{ t('Annual physical-supply context, not a live shortage indicator or a position recommendation.',
+                          '年度实物供应背景，不代表实时短缺，也不构成仓位建议。') }}</p>
+{% if cm.state|default('UNAVAILABLE') in ['AVAILABLE', 'PARTIAL'] %}
+  <p class="cm-meta">{{ t('USGS edition', 'USGS 版本') }} {{ cm.edition_year }} ·
+    {{ t('Published', '发布于') }} <time datetime="{{ cm.published }}">{{ cm.published }}</time></p>
+  <dl class="cm-rows">
+{% for row in cm.rows %}
+    <div class="cm-row">
+      <dt><span class="l-en">{{ row.label_en }}</span><span class="l-zh">{{ row.label_zh }}</span></dt>
+      <dd>
+{% if row.available %}
+        <p><span class="l-en">{{ row.read_en }}</span><span class="l-zh">{{ row.read_zh }}</span></p>
+        <p class="cm-period">{{ t('Observation period', '观测期间') }}: {{ row.observation_period }}</p>
+{% else %}
+        <p class="cm-meta">{{ t('No qualified annual read is available for this mineral.', '此矿产暂无经过核验的年度数据解读。') }}</p>
+{% endif %}
+      </dd>
+    </div>
+{% endfor %}
+  </dl>
+  <details class="cm-source">
+    <summary>{{ t('Source and timing', '来源与时间') }}</summary>
+    <p><a href="{{ cm.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('USGS Mineral Commodity Summaries data release', '美国地质调查局《矿产商品摘要》数据发布') }}</a></p>
+    <p class="cm-meta">{{ t('This product read was generated at', '本产品解读生成于') }} <time datetime="{{ cm.generated_at }}">{{ cm.generated_at }}</time>.
+      {{ t('Generation time does not change the observation period or publication date.', '生成时间不会改变观测期间或原始发布日期。') }}</p>
+  </details>
+{% else %}
+  <p class="cm-meta">{{ t('No verified annual source is available in this product build. Missing coverage is unknown, not zero.',
+                          '本次产品构建暂无经过核验的年度来源。缺失覆盖意味着未知，并不代表零。') }}</p>
+{% endif %}
+</section>

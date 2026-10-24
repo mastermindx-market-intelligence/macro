@@ -448,6 +448,33 @@
   html[data-lang="zh"] #theme-context-hero.tc-rotating { --tc-blob-a:rgba(69,184,115,.07); }
   /* zh 红涨绿跌 (operator ruling 2026-07-21): heat-pill.heating = bullish momentum → red bg in zh */
   html[data-lang="zh"] .heat-pill.heating { background:rgba(211,11,11,.09); }
+  /* intraday-observation:style-start */
+  .si-intra { margin:12px 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text); }
+  .si-intra-head { display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px; }
+  .si-intra h2 { font-size:18px;line-height:1.3;margin:0 0 4px;letter-spacing:-.02em; }
+  .si-intra-head p,.si-intra-foot,.si-intra-empty { font-size:12px;line-height:1.5;margin:0;color:var(--muted); }
+  .si-intra button { min-height:40px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);padding:8px 12px;font:inherit;font-size:12px;cursor:pointer; }
+  .si-intra-cols,.si-intra-row summary { display:grid;grid-template-columns:minmax(130px,1fr) repeat(3,minmax(72px,96px));align-items:center;gap:12px; }
+  .si-intra-cols { color:var(--muted);font-size:11px;padding:0 6px 8px; }
+  .si-intra-cols>span:not(:first-child) { text-align:right; }
+  .si-intra-row { border-top:1px solid var(--line); }
+  .si-intra-row summary { min-height:46px;list-style:none;cursor:pointer;padding:9px 6px;font-size:13px; }
+  .si-intra-row summary::-webkit-details-marker { display:none; }
+  .si-intra-name { overflow-wrap:anywhere;line-height:1.35; }
+  .si-intra-value { font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;font-size:12px; }
+  .si-intra .up { color:var(--up); }.si-intra .dn { color:var(--down); }
+  .si-intra-row summary:hover { background:var(--panel2); }.si-intra summary:focus-visible,.si-intra button:focus-visible { outline:2px solid var(--link);outline-offset:2px; }
+  .si-intra-detail { padding:2px 6px 14px;color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+  .si-intra-detail p { margin:4px 0; }.si-intra-foot { border-top:1px solid var(--line);margin-top:12px;padding-top:12px; }
+  .si-intra-missing { display:flex;justify-content:space-between;gap:12px;padding:11px 6px;border-top:1px solid var(--line);font-size:12px; }.si-intra-missing>span:last-child { color:var(--muted);text-align:right; }
+  html[data-theme="light"] .si-intra { background:var(--panel);box-shadow:var(--card-shadow); }
+  @media(max-width:640px) { .si-intra {padding:14px 12px;}.si-intra h2 {font-size:16px;}.si-intra-cols,.si-intra-row summary {grid-template-columns:minmax(80px,1fr) repeat(3,minmax(52px,64px));gap:6px;}.si-intra-value {font-size:11px;}.si-intra-missing {flex-direction:column;gap:4px;}.si-intra-missing>span:last-child {text-align:left;} }
+  .si-intra-name::before { content:"\203A";display:inline-block;margin-right:7px;color:var(--muted);transition:transform .12s; }
+  .si-intra-row[open] .si-intra-name::before { transform:rotate(90deg); }
+  .si-intra-sr { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+  @media(prefers-reduced-motion:reduce) { .si-intra-name::before {transition:none;} }
+  /* intraday-observation:style-end */
+
 </style>
 <style>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1672,6 +1699,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 </head>
 <body class="macro-desk page-baskets">
 <div class="rvx-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
+{% set all_tools_enabled = true %}
 {% include "_site_nav.html.j2" %}
 
   <!-- ── Shock de-escalation banner (FTR W1 / PS-R3, de-escalation only) ── -->
@@ -2119,30 +2147,131 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 
   // ── Main fetch + render ───────────────────────────────────────────────────
   function renderTapeBand(pulse){
+    // The shared fetch can now return denied/unavailable; clear BOTH views.
+    // Do this before the optional full-band guard, even if only the strip exists.
+    renderSlimStrip(pulse);
     var band = document.getElementById('ftr-tape-band');
     if(!band) return;
     if(!pulse){ band.classList.remove('visible'); return; }
 
     band.classList.add('visible');
-    // Slim strip: state token + top-3 leaders + top-3 laggards + expander
-    renderSlimStrip(pulse);
     // Full band: state token + ONE as-of + ranked two-column body
     renderTapeStrip(pulse);
 
   }
 
   // ── Fetch all three data sources (tolerant, fail-silent per FT-R8) ───────
-  var pulse=null;
-  function tryRender(){ renderTapeBand(pulse); }
-
-  function fetchJson(url, cb){
-    fetch(url,{cache:'no-cache'})
-      .then(function(r){if(!r.ok)throw 0;return r.json();})
-      .then(cb)
-      .catch(function(){/* absent/error → graceful no-op */});
+  /* intraday-observation:start */
+  var intradayExpanded=false, intradayExpiry=null;
+  var intradayDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'});
+  function readIntradayView(raw, nowMs){
+    function finite(v){return typeof v==='number'&&Number.isFinite(v);}
+    if(!raw||raw.schema!=='basket_intraday_comparison.v1'||raw.status!=='observed'||raw.benchmark!=='SPY'||raw.method!=='matched_member_equal_weight')return null;
+    var n=raw.matched_members,total=raw.total_members;
+    if(!Number.isSafeInteger(n)||!Number.isSafeInteger(total)||n<=0||n>total)return null;
+    var fields=['relative_change_pct','absolute_change_pct','benchmark_change_pct','coverage_pct','elapsed_minutes','max_clock_skew_seconds'];
+    if(fields.some(function(k){return !finite(raw[k]);}))return null;
+    if(fields.slice(0,3).some(function(k){return Math.abs(raw[k])>40;}))return null;
+    if(raw.coverage_pct<30||Math.abs(raw.coverage_pct-100*n/total)>.001)return null;
+    var zoned=/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)$/;
+    if(!zoned.test(raw.reference_asof)||!zoned.test(raw.source_asof))return null;
+    var start=Date.parse(raw.reference_asof),end=Date.parse(raw.source_asof),age=nowMs-end;
+    if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start||age<0||age>45*60000)return null;
+    if(Math.abs(raw.elapsed_minutes-(end-start)/60000)>1e-6||raw.max_clock_skew_seconds<0||raw.max_clock_skew_seconds>Math.min(60,(end-start)/10000))return null;
+    var expected=100*((1+raw.absolute_change_pct/100)/(1+raw.benchmark_change_pct/100)-1);
+    if(Math.abs(expected-raw.relative_change_pct)>3e-6)return null;
+    var kind=raw.observation_kind||'regular';
+    if(kind!=='regular'&&kind!=='settled_regular')return null;
+    if(kind==='settled_regular'&&raw.settlement_tolerance_seconds!==90)return null;
+    var day=intradayDateFormatter.format(new Date(end));
+    if(raw.session_date!==day)return null;
+    return {relative:raw.relative_change_pct,absolute:raw.absolute_change_pct,benchmark:raw.benchmark_change_pct,n:n,total:total,start:start,end:end,seconds:(end-start)/1000,skew:raw.max_clock_skew_seconds,closing:kind==='settled_regular'};
   }
+  function intradayPlainReason(raw, nowMs){
+    var status=raw&&raw.status;
+    if(status==='observed'&&Date.parse(raw.source_asof)>nowMs)return L('Source and device clocks disagree.','\u884c\u60c5\u4e0e\u8bbe\u5907\u65f6\u949f\u4e0d\u4e00\u81f4\u3002');
+    if(status==='observed'&&Date.parse(raw.source_asof)<nowMs-45*60000)return L('Observation is no longer current.','\u89c2\u6d4b\u5df2\u8fc7\u671f\u3002');
+    if(status==='observed')return L('Observation could not be verified.','\u65e0\u6cd5\u786e\u8ba4\u6b64\u89c2\u6d4b\u3002');
+    if(status==='baseline_missing'||status==='baseline_nonadvancing'||status==='benchmark_nonadvancing')return L('Waiting for another observation.','\u7b49\u5f85\u65b0\u7684\u89c2\u6d4b\u3002');
+    if(status==='membership_changed'||status==='session_boundary'||status==='benchmark_basis_changed'||status==='baseline_corrected')return L('Comparison reset after a source change.','\u6570\u636e\u53d8\u66f4\u540e\uff0c\u6b63\u5728\u91cd\u65b0\u5efa\u7acb\u6bd4\u8f83\u3002');
+    if(status==='unsupported_session'||status==='outside_regular_session')return L('No comparable regular-session interval.','\u6682\u65e0\u53ef\u6bd4\u8f83\u7684\u5e38\u89c4\u65f6\u6bb5\u533a\u95f4\u3002');
+    return L('Comparable observations are unavailable.','\u6682\u65e0\u53ef\u6bd4\u8f83\u7684\u89c2\u6d4b\u3002');
+  }
+  function renderIntradayComparisons(pulse,state){
+    var host=document.getElementById('si-intraday-body');if(!host)return;
+    var focused=null,active=document.activeElement;
+    if(active&&active.tagName==='SUMMARY'&&host.contains(active))focused=active.parentElement.getAttribute('data-group');
+    function paint(html){
+      if(host._intradayHTML===html)return;
+      host.innerHTML=html;host._intradayHTML=html;
+      if(focused){
+        var target=null;host.querySelectorAll('details').forEach(function(el){if(el.getAttribute('data-group')===focused)target=el.querySelector('summary');});
+        (target||host).focus({preventScroll:true});
+      }
+    }
+    if(intradayExpiry!==null){clearTimeout(intradayExpiry);intradayExpiry=null;}
+    var labels={loading:L('Loading interval observations...','\u6b63\u5728\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u2026'),denied:L('Sign in with access to view these observations.','\u8bf7\u4f7f\u7528\u6709\u6743\u9650\u7684\u8d26\u6237\u767b\u5f55\u67e5\u770b\u3002'),unavailable:L('Interval observations could not be loaded.','\u6682\u65f6\u65e0\u6cd5\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u3002'),invalid:L('Interval observations could not be verified.','\u6682\u65f6\u65e0\u6cd5\u786e\u8ba4\u533a\u95f4\u89c2\u6d4b\u3002')};
+    var more=document.getElementById('si-intraday-more');
+    if(state!=='ready'||!pulse||!Array.isArray(pulse.baskets)){
+      paint('<p class="si-intra-empty">'+(Object.prototype.hasOwnProperty.call(labels,state)?labels[state]:labels.invalid)+'</p>');if(more)more.hidden=true;return;
+    }
+    var now=Date.now(), seen=Object.create(null), rows=[];
+    pulse.baskets.forEach(function(b){
+      if(!b||typeof b.id!=='string'||!b.id||seen[b.id])return;
+      seen[b.id]=true;rows.push({id:b.id,day:typeof b.live_ew_chg_pct==='number'&&Number.isFinite(b.live_ew_chg_pct)&&Math.abs(b.live_ew_chg_pct)<=40?b.live_ew_chg_pct:null,view:readIntradayView(b.intraday_comparison,now),raw:b.intraday_comparison});
+    });
+    rows.sort(function(a,b){if(!!a.view!==!!b.view)return a.view?-1:1;return a.view?Math.abs(b.view.relative)-Math.abs(a.view.relative):a.id.localeCompare(b.id);});
+    var open=Object.create(null);
+    host.querySelectorAll('details[open]').forEach(function(el){open[el.getAttribute('data-group')]=true;});
+    function pct(value){if(value===null)return '\u2014';return (value>0?'+':value<0?'\u2212':'')+Math.abs(value).toFixed(2)+'%';}
+    function number(value,en,zh){return '<span class="si-intra-value '+(value>0?'up':value<0?'dn':'')+'"><span class="si-intra-sr">'+L(en,zh)+': </span>'+pct(value)+'</span>';}
+    function utc(ms){return new Date(ms).toISOString().replace('T',' ').replace('.000Z','Z');}
+    var shown=intradayExpanded?rows:rows.slice(0,6);
+    var html='<div class="si-intra-cols" aria-hidden="true"><span>'+L('Group','\u7ec4\u522b')+'</span><span>'+L('Day','\u5168\u5929')+'</span><span>'+L('Interval','\u533a\u95f4')+'</span><span>'+L('vs SPY','\u76f8\u5bf9SPY')+'</span></div>';
+    shown.forEach(function(row){
+      var v=row.view,name=L(esc(nameEn(row.id)),esc(nameZh(row.id))),key=esc(row.id);
+      if(!v){html+='<div class="si-intra-missing"><span>'+name+'</span><span>'+intradayPlainReason(row.raw,now)+'</span></div>';return;}
+      var clock=utc(v.start)+' \u2192 '+utc(v.end),count=v.n+'/'+v.total;
+      html+='<details class="si-intra-row" data-group="'+key+'"'+(open[row.id]?' open':'')+'><summary><span class="si-intra-name">'+name+'</span>'+number(row.day,'Day','\u5168\u5929')+number(v.absolute,'Interval','\u533a\u95f4')+number(v.relative,'vs SPY','\u76f8\u5bf9SPY')+'</summary><div class="si-intra-detail">'
+        +'<p>'+L('SPY source interval: ','SPY\u884c\u60c5\u533a\u95f4\uff1a')+esc(clock)+' ('+v.seconds+'s)</p>'
+        +'<p>'+L('Matched members: ','\u53ef\u6bd4\u6210\u5206\uff1a')+count+' \u00b7 '+L('SPY change: ','SPY\u6da8\u8dcc\uff1a')+pct(v.benchmark)+'</p>'
+        +'<p>'+L('Member timestamps may differ by up to ','\u6210\u5206\u884c\u60c5\u65f6\u95f4\u6bcf\u4e2a\u7aef\u70b9\u6700\u591a\u504f\u79bb ')+v.skew+'s'+L(' at each endpoint.','\u3002')+'</p>'
+        +'<p>'+L(v.closing?'Regular-session close, not an after-hours trade.':'Observed price interval, not a forecast.',v.closing?'\u5e38\u89c4\u65f6\u6bb5\u6536\u76d8\u89c2\u6d4b\uff0c\u975e\u76d8\u540e\u4ea4\u6613\u3002':'\u5df2\u89c2\u6d4b\u7684\u4ef7\u683c\u533a\u95f4\uff0c\u975e\u9884\u6d4b\u3002')+'</p></div></details>';
+    });
+    if(!rows.length)html='<p class="si-intra-empty">'+L('No interval observations yet.','\u6682\u65e0\u533a\u95f4\u89c2\u6d4b\u3002')+'</p>';
+    paint(html);
+    if(more){more.hidden=rows.length<=6;more.setAttribute('aria-expanded',intradayExpanded?'true':'false');more.innerHTML=intradayExpanded?L('Show fewer','\u6536\u8d77'):L('Show all groups','\u67e5\u770b\u5168\u90e8\u7ec4\u522b');more.onclick=function(){intradayExpanded=!intradayExpanded;tryRender();};}
+    var next=rows.filter(function(r){return !!r.view;}).map(function(r){return r.view.end+45*60000-now+1;});
+    if(next.length)intradayExpiry=setTimeout(function(){renderIntradayComparisons(pulse,pulseState);},Math.max(1,Math.min.apply(null,next)));
+  }
+  /* intraday-observation:end */
 
-  fetchJson('live/basket_pulse.json', function(d){ pulse=d; tryRender(); });
+  var pulse=null,pulseState='loading',pulseInFlight=false;
+  function tryRender(){ renderIntradayComparisons(pulse,pulseState);renderTapeBand(pulse); }
+  function fetchJson(url, cb){
+    fetch(url,{cache:'no-cache'}).then(function(r){
+      if(!r.ok)return {data:null,state:(r.status===401||r.status===403)?'denied':'unavailable'};
+      return r.json().then(function(d){return {data:d,state:'ready'};},function(){return {data:null,state:'invalid'};});
+    }).catch(function(){return {data:null,state:'unavailable'};}).then(function(value){cb(value.data,value.state);});
+  }
+  function refreshPulse(){
+    if(pulseInFlight)return;pulseInFlight=true;
+    var button=document.getElementById('si-intraday-refresh');if(button)button.disabled=true;
+    var host=document.getElementById('si-intraday-body');if(host)host.setAttribute('aria-busy','true');
+    fetchJson('live/basket_pulse.json',function(d,state){
+      pulseInFlight=false;pulseState=state;
+      if(state==='ready'&&(!d||d.schema!=='basket_pulse.v1'||!Array.isArray(d.baskets)||d.baskets.length>1000||(d.market&&d.market!=='us'))){pulseState='invalid';d=null;}
+      pulse=d;if(button)button.disabled=false;if(host)host.setAttribute('aria-busy','false');tryRender();
+    });
+  }
+  function bindIntradayRefresh(){
+    var button=document.getElementById('si-intraday-refresh');if(button)button.onclick=refreshPulse;tryRender();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindIntradayRefresh);else bindIntradayRefresh();
+  document.addEventListener('langchange',tryRender);
+  window.addEventListener('focus',refreshPulse);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshPulse();});
+  refreshPulse();
 
   /* Display names come from window.BASKETS, which the DEFERRED sector_central_data.js
      assigns via __siInitPage — and a same-origin basket_pulse.json fetch routinely
@@ -2448,6 +2577,15 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   </section>{# /si-view map #}
 
   <section class="si-view" data-view="moving">
+  <!-- intraday-observation:markup-start -->
+  <section id="si-intraday" class="si-intra" aria-labelledby="si-intraday-title">
+    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday relative moves</span><span class="l-zh">&#30424;&#20013;&#30456;&#23545;&#24378;&#24369;&#21464;&#21270;</span></h2><p><span class="l-en">Recent relative moves can differ from today's returns.</span><span class="l-zh">&#36817;&#26399;&#30456;&#23545;&#24378;&#24369;&#65292;&#21487;&#33021;&#19982;&#20840;&#22825;&#28072;&#36300;&#19981;&#21516;&#12290;</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
+    <div id="si-intraday-body" tabindex="-1" aria-live="polite"></div>
+    <button id="si-intraday-more" type="button" aria-controls="si-intraday-body" aria-expanded="false" hidden></button>
+    <p class="si-intra-foot"><span class="l-en">Watch, don't chase; measured price changes are not fund flows.</span><span class="l-zh">&#20808;&#35266;&#23519;&#65292;&#21247;&#36861;&#28072;&#65307;&#20215;&#26684;&#21464;&#21270;&#19981;&#31561;&#20110;&#36164;&#37329;&#27969;&#20837;&#12290;</span></p>
+  </section>
+  <!-- intraday-observation:markup-end -->
+
     <p class="si-view-read" id="si-read-moving" hidden></p>
   {# ══ MARKET INTERNALS (revamp) — compact breadth + money-flow strip ══ #}
   <section class="rvx-sec rvx-reveal" id="si-movement" style="animation-delay:.12s">
@@ -2778,7 +2916,7 @@ function renderBTable(){
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
-  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)) location.href='basket/'+id+'.html'; });
+  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)){ var _d='basket/'+id+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} } });
 }
 
 // ---- 02 chart -------------------------------------------------------------
@@ -2897,7 +3035,7 @@ function resolveThemeHash(){
   let id=location.hash.slice(7);          // '#theme-'.length
   try{ id=decodeURIComponent(id); }catch(e){}
   if(!id||!themeById(id)) return;         // unknown id → stay put rather than 404
-  location.replace('basket/'+encodeURIComponent(id)+'.html');
+  var _d='basket/'+encodeURIComponent(id)+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'replace')}else{location.replace(_d)}
 }
 
 // ---- Money flow: ETF style/risk tone + vol pill (Op 2) ----
@@ -3188,7 +3326,7 @@ function __siWireTrace(){
     var open=lanes.querySelector('.si-trace'); var was=row.nextElementSibling===open;
     if(open) open.remove();
     if(was) return;
-    var html=window.__siTrace(id); if(!html){ location.href=row.getAttribute('href'); return; }
+    var html=window.__siTrace(id); if(!html){ var _d=row.getAttribute('href'); var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} return; }
     var d=document.createElement('div'); d.className='si-trace'; d.innerHTML=html+
       '<div class="si-trace-foot"><a href="basket/'+encodeURIComponent(id)+'.html">'+
       (document.documentElement.getAttribute('data-lang')==='zh'?'打开成分页 →':'members →')+'</a></div>';

@@ -13,7 +13,14 @@ from __future__ import annotations
 
 import json
 import logging
+import hashlib
+import math
+import numbers
+import os
+import stat
+import tempfile
 from datetime import date
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -24,6 +31,196 @@ log = logging.getLogger(__name__)
 
 OUTLIER_SIGMA = 8
 OUTLIER_MIN_OBS = 60
+
+# Explicit Yahoo-runner opt-in only. These are observations of future captures,
+# not a replacement price store, Trial Ledger, or historical availability oracle.
+YAHOO_CAPTURE_COHORT = frozenset({"XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY"})
+_CAPTURE_IMAGE_LIMIT = 4 * 1024 * 1024
+_CAPTURE_ROW_LIMIT = 12_000
+
+
+def _availability_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _availability_clock(value: datetime) -> str:
+    if (not isinstance(value, datetime) or value.tzinfo is None
+            or value.utcoffset() != timezone.utc.utcoffset(value)):
+        raise ValueError("availability clock must be aware UTC")
+    return value.isoformat(timespec="microseconds")
+
+
+def _availability_json(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=True, allow_nan=False).encode("ascii")
+
+
+def _availability_image(frame: pd.DataFrame) -> bytes:
+    """Documented normalized JSON values, never vendor wire/parquet bytes.
+
+    Ordered naive midnight dates and fixed column order are preserved without
+    imputation. Missing numeric cells become JSON null; infinities are refused.
+    """
+    if (not isinstance(frame, pd.DataFrame) or frame.empty
+            or len(frame) > _CAPTURE_ROW_LIMIT or not frame.columns.is_unique
+            or "close" not in frame.columns
+            or not set(frame.columns) <= {"close", "close_price", "volume"}
+            or not isinstance(frame.index, pd.DatetimeIndex)
+            or frame.index.tz is not None or frame.index.hasnans
+            or not frame.index.is_unique or not frame.index.is_monotonic_increasing
+            or not frame.index.equals(frame.index.normalize())):
+        raise ValueError("availability frame contract refused")
+    columns = [c for c in ("close", "close_price", "volume") if c in frame.columns]
+    rows = []
+    for stamp, values in zip(frame.index, frame[columns].itertuples(index=False, name=None)):
+        cells = []
+        for value in values:
+            if value is None or value is pd.NA:
+                cells.append(None)
+            elif isinstance(value, (bool,)) or not isinstance(value, numbers.Real):
+                raise ValueError("availability cell must be numeric or missing")
+            elif isinstance(value, numbers.Integral):
+                if abs(int(value)) > 2**53 - 1:
+                    raise ValueError("availability integer exceeds exact JSON range")
+                cells.append(int(value))
+            elif math.isnan(float(value)):
+                cells.append(None)
+            elif not math.isfinite(float(value)):
+                raise ValueError("availability infinite value refused")
+            else:
+                cells.append(float(value))
+        rows.append([stamp.date().isoformat(), *cells])
+    data = _availability_json({"encoding": "dated_numeric_frame_json.v1",
+                               "columns": columns, "rows": rows})
+    if len(data) > _CAPTURE_IMAGE_LIMIT:
+        raise ValueError("availability image exceeds byte limit")
+    return data
+
+
+def _availability_fsync_dir(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _availability_dir(path: Path) -> None:
+    try:
+        path.mkdir(mode=0o700)
+    except FileExistsError:
+        pass
+    info = path.lstat()
+    if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
+            or stat.S_IMODE(info.st_mode) & 0o022):
+        raise ValueError("availability directory ownership or mode refused")
+    _availability_fsync_dir(path.parent)
+
+
+def _availability_verify_existing(path: Path, data: bytes) -> None:
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        before = os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode) or before.st_uid != os.getuid()
+                or stat.S_IMODE(before.st_mode) & 0o077 or before.st_size != len(data)):
+            raise ValueError("availability existing object refused")
+        with os.fdopen(descriptor, "rb", closefd=False) as source:
+            actual = source.read(len(data) + 1)
+        after = os.fstat(descriptor)
+        if (actual != data or (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+                != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)):
+            raise ValueError("availability immutable object collision")
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _availability_publish(directory: Path, data: bytes) -> str:
+    """Atomic no-clobber publication. Never remove an existing object on failure."""
+    digest = hashlib.sha256(data).hexdigest()
+    target = directory / (digest + ".json")
+    descriptor, temporary = tempfile.mkstemp(prefix=".partial-", dir=directory)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(temporary, target, follow_symlinks=False)
+        except FileExistsError:
+            _availability_verify_existing(target, data)
+        _availability_fsync_dir(directory)
+    finally:
+        # Only our exclusive temporary name is removed; any published object stays.
+        os.unlink(temporary)
+        _availability_fsync_dir(directory)
+    return digest
+
+
+def capture_yahoo_observation(ticker: str, provider_slice: pd.DataFrame,
+                              merged: pd.DataFrame, *, lineage: dict | None,
+                              adapter_return_known_by: datetime) -> dict:
+    """Retain two byte images after an explicitly requested Yahoo observation.
+
+    The trusted incumbent caller owns acquisition, clocks and serialization.
+    A lineage dictionary/hash is not authentication or a data-rights grant.
+    Returned receipt means this separate capture was published durably; it says
+    nothing about atomicity/durability of the existing canonical parquet write.
+    Failure can leave unaccepted images (or a receipt whose publication outcome
+    is uncertain); callers must reconcile those exact objects, never replay the
+    acquisition merely to manufacture a successful receipt.
+    """
+    expected = {"provider": "yahoo", "field": "Adj Close", "basis": "total_return", "ticker": ticker}
+    if type(ticker) is not str or ticker not in YAHOO_CAPTURE_COHORT or lineage != expected:
+        raise ValueError("availability Yahoo lineage refused")
+    known_by = _availability_clock(adapter_return_known_by)
+    provider_data = _availability_image(provider_slice)
+    merged_data = _availability_image(merged)
+    captured = _availability_now()
+    captured_text = _availability_clock(captured)
+    if captured < adapter_return_known_by:
+        raise ValueError("availability clock regression")
+    if any(f.index.max().date() > captured.date() for f in (provider_slice, merged)):
+        raise ValueError("availability future row refused")
+    # Explicitly retain under the existing Yahoo data owner. No hook in upsert.
+    yahoo = config.data_dir() / "yahoo"
+    if not yahoo.is_dir():
+        raise ValueError("availability incumbent Yahoo directory missing")
+    root = yahoo / ".availability_capture"
+    _availability_dir(root)
+    objects, receipts = root / "objects", root / "receipts"
+    _availability_dir(objects)
+    _availability_dir(receipts)
+    provider_digest = _availability_publish(objects, provider_data)
+    merged_digest = _availability_publish(objects, merged_data)
+    durable = _availability_now()
+    durable_text = _availability_clock(durable)
+    if durable < captured:
+        raise ValueError("availability publication clock regression")
+    receipt = {
+        "schema": "yahoo.availability_capture.v1", "ticker": ticker,
+        "provider_return_image": {
+            "sha256": provider_digest, "bytes": len(provider_data),
+            "object_ref": "objects/" + provider_digest + ".json",
+            "adapter_return_known_by_utc": known_by, "basis": "total_return",
+            "scope": "validated_session_filtered_adapter_output_not_vendor_wire"},
+        "merged_capture_image": {
+            "sha256": merged_digest, "bytes": len(merged_data),
+            "object_ref": "objects/" + merged_digest + ".json",
+            "captured_known_by_utc": captured_text,
+            "immutable_publication_durable_at_utc": durable_text,
+            "basis": "total_return", "scope": "separate_capture_of_returned_merged_values"},
+        "provider_available_at": None, "operation_identity": None,
+        "source_code_identity": None, "rights_reference": None,
+        "clock_attestation": None, "source_actor_authentication": None,
+        "calendar_verification": "UNQUALIFIED",
+        "upstream_revision_history_complete": False,
+        "historical_original_availability_proven": False,
+        "canonical_cache_transaction_durability": "UNQUALIFIED",
+    }
+    receipt_digest = _availability_publish(receipts, _availability_json(receipt))
+    return {"receipt_sha256": receipt_digest,
+            "receipt_ref": "receipts/" + receipt_digest + ".json", "receipt": receipt}
 
 
 def _path(group: str, name: str) -> Path:

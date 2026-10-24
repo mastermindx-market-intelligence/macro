@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-15T07:58:14.785296+00:00",
+  "source_base": "bc9e1f143d06bf33ca889babfe29653082107804",
+  "ordinary_pytest_cases": 210,
+  "subtests": 113,
+  "junit": {
+    "tests": 323,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_parameterized_cases": 53,
+  "native_xml_sha256": "548012aab5355ec8ec40223922cad0c7ab57feb29789bcdf3a0a24e7b3f804ec",
+  "module_sha256": "fe95aec53f8f8ea621eed85f6456185d53df81214861cf147f9ef7dccfca87b2",
+  "test_sha256": "e03afbef5b4f34330158ebfdd580fb967e1d98036cc1451a10e880b2ded634a9",
+  "unchanged_owners": {
+    "engine/entry_radar/replay/outcomes.py": true,
+    "engine/entry_radar/replay/prereg.py": true,
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": true,
+    "lib/dataos/identity.py": true,
+    "scripts/build_security_master.py": true
+  },
+  "market_labels_computed": false,
+  "product_ranking_authority": false,
+  "hosted_ci_pass": false,
+  "review_hardening": {
+    "at": "2026-10-15T08:18:49.962000+00:00",
+    "source_parent": "2ddd72433d9c1d3a1dd1775d02d3a2a2f13e8ff3",
+    "ordinary_pytest_cases": 221,
+    "subtests": 113,
+    "new_parameterized_cases": 64,
+    "junit": {
+      "tests": 334,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "native_xml_sha256": "e4d2a55429c2a73111f583b8225169702f040f5c5ab309ff2af871175767e03a",
+    "module_sha256": "9eb05440ec672ab54199f530ab309e003c45525ff8a643fc5547d4eac10b1f94",
+    "test_sha256": "dd7bfd7e2d8d9945b17d96aa3f2fba183fae7403e928cadc7cc866e9a3b1587d",
+    "changed_function": "_require_lossless_owner_clocks",
+    "code_or_data_admission_granted": false,
+    "initial_review_sha256": "5e0b76cd8a0e2dbc4cd679dbd265d0208b81a209cbd74348c9342ea96f520efe",
+    "mutation_result": {
+      "source_sha256": "9eb05440ec672ab54199f530ab309e003c45525ff8a643fc5547d4eac10b1f94",
+      "source_unchanged": true,
+      "variants": [
+        {
+          "name": "backdated_entry",
+          "test": "test_reference_open_is_strictly_after_issue",
+          "exit": 1,
+          "behavioral_failure": true
+        },
+        {
+          "name": "guessed_adverse_order",
+          "test": "test_same_bar_both_hits_retains_ambiguity",
+          "exit": 1,
+          "behavioral_failure": true
+        },
+        {
+          "name": "missing_prefix_ignored",
+          "test": "test_missing_before_hit_blocks_order_even_with_later_clear_hit",
+          "exit": 1,
+          "behavioral_failure": true
+        },
+        {
+          "name": "truncated_primary",
+          "test": "test_one_minute_short_is_remainder_not_a_full_horizon",
+          "exit": 1,
+          "behavioral_failure": true
+        },
+        {
+          "name": "unfinished_lowin_success",
+          "test": "test_missing_after_upper_does_not_erase_observed_first_event",
+          "exit": 1,
+          "behavioral_failure": true
+        },
+        {
+          "name": "precision_refusal_removed",
+          "test": "test_submicrosecond_clock_is_refused_instead_of_rounded_into_availability",
+          "exit": 1,
+          "behavioral_failure": true
+        }
+      ],
+      "native_test_rerun_claim": false
+    }
+  }
+}

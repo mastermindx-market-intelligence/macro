@@ -1,0 +1,9 @@
+{
+  "source_sha256": "4dcd91ae15ea37508d0d77b9fa67139c5dcf2e909b946b9339b9358cc217fd2f",
+  "source_url": "https://comptroller.war.gov/Portals/45/Documents/news/FY2026_Mandatory_Funding_Allocation_Plan.pdf",
+  "storage_key": "government-revenue/dod-budget/pdf/sha256/4dcd91ae15ea37508d0d77b9fa67139c5dcf2e909b946b9339b9358cc217fd2f.pdf",
+  "observed_at": "2026-10-13T03:16:09.406642+00:00",
+  "network_requests_in_tests": 0,
+  "licensing": "Public federal source bytes; producer extraction uses existing MIT pdfplumber, no PyMuPDF dependency",
+  "base_graph_sha256": "6a72fda76060d4b115b14d49182036b5f95bad4d0f8c5b4b81052b48bb0eb9c3"
+}

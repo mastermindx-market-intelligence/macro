@@ -290,6 +290,80 @@ class TestLeadLag:
             "never_crossed", "insufficient_data", "led", "lagged", "concurrent"
         )
 
+    def _crossing_log_rows(self, theme: str) -> list[dict]:
+        """Seven news_flow rows in the test_we_led shape: 04-20 is the crowd arrival."""
+        return self._make_log_rows(theme, [
+            ("2026-01-01", {"news_flow": 0.1}),
+            ("2026-02-01", {"news_flow": 0.2}),
+            ("2026-03-01", {"news_flow": 0.3}),
+            ("2026-03-15", {"news_flow": 0.4}),
+            ("2026-03-25", {"news_flow": 0.5}),
+            ("2026-04-20", {"news_flow": 10.0}),
+            ("2026-04-25", {"news_flow": 11.0}),
+        ])
+
+    def test_missing_asof_does_not_raise(self, tmp_path):
+        """W17 Spec 2: a flag row with NO asof key plus a real crowd crossing used to
+        die in int(NaT.days) (engine/foresight_leadlag.py:259-263). compute_earliness_
+        grades promises "Missing input -> honest null, never crashes" (:399)."""
+        from engine.foresight_leadlag import grade_flag
+
+        theme = "test_missing_asof"
+        log_rows = self._crossing_log_rows(theme)
+        flag = self._make_flag(theme=theme, stage="PRECIPICE (text)", members=["NVDA"])
+        flag.pop("asof")
+
+        result = grade_flag(flag, log_rows, spy=None, root=Path("/nonexistent"))
+
+        assert isinstance(result, dict)
+        news_leg = result["per_leg"]["news_flow"]
+        assert news_leg["arrival_date"] == "2026-04-20", (
+            "the crossing is still there — only the lead is unknowable"
+        )
+        assert news_leg["lead_days"] is None, (
+            f"no usable flag asof must give lead_days=None, got {news_leg['lead_days']!r}"
+        )
+        assert "asof" in str(news_leg.get("note")), (
+            f"leg note must name the unusable asof, got {news_leg.get('note')!r}"
+        )
+        assert "asof" in str(result.get("note")), (
+            f"grade note must name the unusable asof, got {result.get('note')!r}"
+        )
+
+    def test_empty_asof_does_not_raise(self, tmp_path):
+        """W17 Spec 2 (empty string): asof="" parses to NaT — same honest null, no
+        exception, lead_days is None (never 0, which would fake a concurrent grade)."""
+        from engine.foresight_leadlag import grade_flag
+
+        theme = "test_empty_asof"
+        log_rows = self._crossing_log_rows(theme)
+        flag = self._make_flag(theme=theme, asof="", stage="PRECIPICE (text)",
+                               members=["NVDA"])
+
+        result = grade_flag(flag, log_rows, spy=None, root=Path("/nonexistent"))
+
+        news_leg = result["per_leg"]["news_flow"]
+        assert news_leg["lead_days"] is None, (
+            f"empty asof must give lead_days=None, got {news_leg['lead_days']!r}"
+        )
+        assert "asof" in str(news_leg.get("note"))
+
+    def test_unparseable_asof_does_not_raise(self, tmp_path):
+        """A malformed asof makes pd.Timestamp itself raise (not NaT) — the except
+        path must turn that into the same honest null lead."""
+        from engine.foresight_leadlag import grade_flag
+
+        theme = "test_garbage_asof"
+        log_rows = self._crossing_log_rows(theme)
+        flag = self._make_flag(theme=theme, asof="2026-00-00",
+                               stage="PRECIPICE (text)", members=["NVDA"])
+
+        result = grade_flag(flag, log_rows, spy=None, root=Path("/nonexistent"))
+
+        news_leg = result["per_leg"]["news_flow"]
+        assert news_leg["lead_days"] is None
+        assert "asof" in str(news_leg.get("note"))
+
     def test_null_artifact_on_no_foresight_log(self, tmp_path):
         """Missing foresight log → honest null artifact, never crash."""
         from engine.foresight_leadlag import compute_earliness_grades

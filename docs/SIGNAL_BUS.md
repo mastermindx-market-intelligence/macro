@@ -17,7 +17,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | blocked-entry-override | 2 |
 | btc-vector | 6 |
 | capital-structure-intelligence | 20 |
-| causal-hypothesis-factory | 9 |
+| causal-hypothesis-factory | 10 |
 | cbf | 2 |
 | ccw | 10 |
 | china-alpha | 25 |
@@ -39,7 +39,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | fundamental-forensics | 3 |
 | gmi-theme-graph | 4 |
 | government-revenue-foresight | 42 |
-| grey-deer-risk-intelligence | 1 |
+| grey-deer-risk-intelligence | 3 |
 | hk-canada | 2 |
 | hk-pick-lab | 3 |
 | ignition-radar | 2 |
@@ -118,15 +118,15 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | tier | count |
 |---|---|
 | display | 379 |
-| infrastructure | 162 |
+| infrastructure | 163 |
 | scored | 5 |
-| shadow | 101 |
+| shadow | 103 |
 
 ### Artifacts by storage
 
 | storage | count |
 |---|---|
-| git | 607 |
+| git | 610 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -216,6 +216,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | causal-confluence-audit | `data/neuralweb/causal_confluence_audit.json` | json | daily-engine | shadow | 2 | 0 |
 | causal-nulls | `data/neuralweb/causal_nulls.jsonl` | jsonl | weekly | display | 2 | 0 |
 | causal-edges | `data/neuralweb/causal_edges.jsonl` | jsonl | weekly | display | 1 | 0 |
+| causal-filing-budget | `data/neuralweb/causal_filing_budget.jsonl` | jsonl | on-demand | infrastructure | 1 | 0 |
 | causal-frontier | `data/neuralweb/causal_frontier.json` | json | daily-engine | display | 1 | 0 |
 | causal-lab-state | `data/neuralweb/causal_lab_state.json` | json | daily-engine | display | 1 | 0 |
 | causal-llm-lane | `data/neuralweb/causal_llm_lane.json` | json | daily-engine | infrastructure | 1 | 0 |
@@ -365,10 +366,10 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | market-state-latest | `data/market_state/latest.json` | json | daily-engine | display | 8 | 0 |
 | risk-radar-forward-log | `data/risk_radar/forward_log.jsonl` | jsonl | daily-engine | display | 7 | 0 |
 | trial-ledger | `data/trial_ledger.jsonl` | jsonl | on-demand | infrastructure | 6 | 0 |
+| market-state-forward-log | `data/market_state/forward_log.jsonl` | jsonl | daily-engine | display | 5 | 0 |
 | regime-vector | `data/regime/regime_vector.parquet` | parquet | daily-engine | infrastructure | 4 | 0 |
 | site-regime-timeline | `site/regime_timeline.json` | json | daily-engine | display | 2 | 2 |
 | archetypes-history | `data/archetypes/history.parquet` | parquet | on-demand | display | 3 | 0 |
-| market-state-forward-log | `data/market_state/forward_log.jsonl` | jsonl | daily-engine | display | 3 | 0 |
 | regime-base-effect-fwd | `data/regime/base_effect_fwd.jsonl` | jsonl | daily-engine | display | 3 | 0 |
 | site-factors | `site/factordata/factors.json` | json | daily-engine | display | 3 | 0 |
 | data-risk-radar-scorecard | `data/risk_radar/scorecard.json` | json | daily-engine | display | 2 | 0 |
@@ -489,7 +490,9 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
-| risk-envelope-settled | `site/riskdata/risk_envelope.json` | json | daily-engine | display | 1 | 0 |
+| risk-envelope-settled | `site/riskdata/risk_envelope.json` | json | daily-engine | display | 6 | 2 |
+| grey-deer-pullback-forward-graded | `data/grey_deer_pullback/forward_log_graded.jsonl` | jsonl | daily-engine | shadow | 1 | 0 |
+| grey-deer-pullback-forward-log | `data/grey_deer_pullback/forward_log.jsonl` | jsonl | daily-engine | shadow | 1 | 0 |
 
 ### hk-canada
 
@@ -1105,9 +1108,9 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | site-marketdata-subsector-confluence | `site/marketdata/subsector_confluence.json` | json | daily-engine | display | 5 | 0 |
+| site-marketdata-rotation-events | `site/marketdata/rotation_events.json` | json | daily-engine | display | 3 | 0 |
 | site-marketdata-rotation-events-china | `site/marketdata/rotation_events_china.json` | json | daily-engine | display | 0 | 2 |
 | site-marketdata-rotation-events-hk | `site/marketdata/rotation_events_hk.json` | json | daily-engine | display | 0 | 2 |
-| site-marketdata-rotation-events | `site/marketdata/rotation_events.json` | json | daily-engine | display | 1 | 0 |
 | data-rotation-events-china-ledger | `data/rotation_events_china/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
 | data-rotation-events-hk-ledger | `data/rotation_events_hk/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
 | data-rotation-events-ledger | `data/rotation_events/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
@@ -1707,6 +1710,20 @@ Artifacts below have `known_extra_writers` — additional code paths that write 
 - **declared producer:** `engine/moat_falsifiers.py`
 - **extra writers:**
   - engine/stock_fundamentals.py — _compute_trap_block() calls great_company_trap() inside panels()
+
+### grey-deer-pullback-forward-graded
+
+- **path:** `data/grey_deer_pullback/forward_log_graded.jsonl`
+- **declared producer:** `engine/grey_deer_pullback_forward_grade.py`
+- **extra writers:**
+  - scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the grader
+
+### grey-deer-pullback-forward-log
+
+- **path:** `data/grey_deer_pullback/forward_log.jsonl`
+- **declared producer:** `engine/grey_deer_pullback_forward.py`
+- **extra writers:**
+  - scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the writer; holds no model, label, gate or clock logic
 
 ### hk-1d-velocity-desk-artifact
 

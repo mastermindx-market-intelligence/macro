@@ -1,0 +1,217 @@
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+_ TestMatchedIntradayComparison.test_daily_flat_can_contain_opposing_intraday_leadership _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x10977d310>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_daily_flat_can_contain_op0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fc0f1d0>
+
+    def test_daily_flat_can_contain_opposing_intraday_leadership(self, tmp_path, monkeypatch):
+        first, first_rows = self.build(tmp_path, monkeypatch, {'A':102, 'B':99, 'SPY':100}, self.FIRST)
+>       assert first_rows['ai_semiconductors']['intraday_comparison']['status'] == 'baseline_missing'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1182: KeyError
+______ TestMatchedIntradayComparison.test_coverage_swap_is_not_a_rotation ______
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x10977d450>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_coverage_swap_is_not_a_ro0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fd8a690>
+
+    def test_coverage_swap_is_not_a_rotation(self, tmp_path, monkeypatch):
+        groups = {'pair':['A','B']}
+        self.build(tmp_path, monkeypatch, {'A':104,'SPY':100}, self.FIRST, groups)
+        _, rows = self.build(tmp_path, monkeypatch, {'B':96,'SPY':100}, self.SECOND, groups)
+>       result = rows['pair']['intraday_comparison']
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1201: KeyError
+____ TestMatchedIntradayComparison.test_same_quote_is_not_a_new_observation ____
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1097703e0>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_same_quote_is_not_a_new_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fd8ae00>
+
+    def test_same_quote_is_not_a_new_observation(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        _, rows = self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+>       assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'baseline_nonadvancing'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1209: KeyError
+_ TestMatchedIntradayComparison.test_source_only_refresh_does_not_replay_an_interval _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x109770510>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_source_only_refresh_does_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fdfef50>
+
+    def test_source_only_refresh_does_not_replay_an_interval(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        def unchanged(qs):
+            for q in qs.values(): q['ts'] = _now_ms(self.FIRST)-60000
+        _, rows = self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.SECOND, alter=unchanged)
+>       assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'benchmark_nonadvancing'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1216: KeyError
+____________ TestMatchedIntradayComparison.test_no_overnight_splice ____________
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x10abeb2f0>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_no_overnight_splice0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fdff650>
+
+    def test_no_overnight_splice(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        tomorrow = datetime(2026,10,14,15,30,tzinfo=timezone.utc)
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, tomorrow)
+>       assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'session_boundary'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1222: KeyError
+_ TestMatchedIntradayComparison.test_membership_change_has_its_own_null_reason _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1097c4050>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_membership_change_has_its0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11001f980>
+
+    def test_membership_change_has_its_own_null_reason(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST, {'pair':['A']})
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.SECOND, {'pair':['A','B']})
+>       assert rows['pair']['intraday_comparison']['status'] == 'membership_changed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1227: KeyError
+_ TestMatchedIntradayComparison.test_source_or_reference_basis_change_is_not_return[source-other] _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1097c4270>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_source_or_reference_basis0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11001c5f0>
+field = 'source', value = 'other'
+
+    @pytest.mark.parametrize('field,value', [('source','other'),('basis','minute'),('prevClose',99)])
+    def test_source_or_reference_basis_change_is_not_return(self, tmp_path, monkeypatch, field, value):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        def alter(qs): qs['A'][field] = value
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.SECOND, alter=alter)
+>       c = rows['ai_semiconductors']['intraday_comparison']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1234: KeyError
+_ TestMatchedIntradayComparison.test_source_or_reference_basis_change_is_not_return[basis-minute] _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1096f4b50>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_source_or_reference_basis1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fdfac10>
+field = 'basis', value = 'minute'
+
+    @pytest.mark.parametrize('field,value', [('source','other'),('basis','minute'),('prevClose',99)])
+    def test_source_or_reference_basis_change_is_not_return(self, tmp_path, monkeypatch, field, value):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        def alter(qs): qs['A'][field] = value
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.SECOND, alter=alter)
+>       c = rows['ai_semiconductors']['intraday_comparison']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1234: KeyError
+_ TestMatchedIntradayComparison.test_source_or_reference_basis_change_is_not_return[prevClose-99] _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1096f4d50>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_source_or_reference_basis2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fdfaeb0>
+field = 'prevClose', value = 99
+
+    @pytest.mark.parametrize('field,value', [('source','other'),('basis','minute'),('prevClose',99)])
+    def test_source_or_reference_basis_change_is_not_return(self, tmp_path, monkeypatch, field, value):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        def alter(qs): qs['A'][field] = value
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.SECOND, alter=alter)
+>       c = rows['ai_semiconductors']['intraday_comparison']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1234: KeyError
+_ TestMatchedIntradayComparison.test_unsynchronized_member_is_not_evidence_for_spy_interval _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x109768f50>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_unsynchronized_member_is_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11003b2b0>
+
+    def test_unsynchronized_member_is_not_evidence_for_spy_interval(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, self.FIRST)
+        def skew(qs): qs['A']['ts'] -= 5*60000
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.SECOND, alter=skew)
+>       c = rows['ai_semiconductors']['intraday_comparison']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1242: KeyError
+___ TestMatchedIntradayComparison.test_relative_winner_can_still_be_falling ____
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x109768d70>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_relative_winner_can_still0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a21d190>
+
+    def test_relative_winner_can_still_be_falling(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, self.FIRST)
+        _, rows = self.build(tmp_path, monkeypatch, {'A':98,'B':97,'SPY':97}, self.SECOND)
+>       c = rows['ai_semiconductors']['intraday_comparison']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1249: KeyError
+_ TestMatchedIntradayComparison.test_missing_benchmark_never_falls_back_to_absolute_returns _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1097d33f0>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_missing_benchmark_never_f0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a21f710>
+
+    def test_missing_benchmark_never_falls_back_to_absolute_returns(self, tmp_path, monkeypatch):
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99}, self.FIRST)
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100}, self.SECOND)
+>       assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'benchmark_unavailable'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1258: KeyError
+_ TestMatchedIntradayComparison.test_early_close_does_not_acquire_an_after_hours_baseline _
+
+self = <tests.test_build_basket_pulse.TestMatchedIntradayComparison object at 0x1097d3770>
+tmp_path = PosixPath('/private/tmp/rotation-9196-comparison-red/test_early_close_does_not_acqu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109df5700>
+
+    def test_early_close_does_not_acquire_an_after_hours_baseline(self, tmp_path, monkeypatch):
+        # Existing calendar owner declares Nov 27, 2026 a 13:00 ET close.
+        first = datetime(2026,11,27,17,30,tzinfo=timezone.utc)
+        late = datetime(2026,11,27,18,30,tzinfo=timezone.utc)
+        self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, first)
+        _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, late)
+>       assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'outside_regular_session'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'intraday_comparison'
+
+tests/test_build_basket_pulse.py:1266: KeyError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_daily_flat_can_contain_opposing_intraday_leadership
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_coverage_swap_is_not_a_rotation
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_same_quote_is_not_a_new_observation
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_source_only_refresh_does_not_replay_an_interval
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_no_overnight_splice
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_membership_change_has_its_own_null_reason
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_source_or_reference_basis_change_is_not_return[source-other]
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_source_or_reference_basis_change_is_not_return[basis-minute]
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_source_or_reference_basis_change_is_not_return[prevClose-99]
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_unsynchronized_member_is_not_evidence_for_spy_interval
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_relative_winner_can_still_be_falling
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_missing_benchmark_never_falls_back_to_absolute_returns
+FAILED tests/test_build_basket_pulse.py::TestMatchedIntradayComparison::test_early_close_does_not_acquire_an_after_hours_baseline
+13 failed, 88 deselected in 7.81s

@@ -1,7 +1,7 @@
 {
-  "as_of": "2026-10-15",
+  "as_of": "2026-10-20",
   "state": "lean_out",
-  "dispersion_pctile": 0.23,
+  "dispersion_pctile": 0.27,
   "avg_corr": 0.07,
   "shadow_gross_mult": 0.75,
   "gross_mult_live": 1.0,
@@ -477,6 +477,24 @@
       "state": "lean_out",
       "dispersion_pctile": 0.23,
       "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-10-16",
+      "state": "lean_out",
+      "dispersion_pctile": 0.23,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-10-17",
+      "state": "lean_out",
+      "dispersion_pctile": 0.23,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-10-20",
+      "state": "lean_out",
+      "dispersion_pctile": 0.27,
+      "avg_corr": 0.07
     }
   ],
   "label": "Macro tape \u2014 selection muted",
@@ -485,9 +503,9 @@
     "basis": "trailing_252d_fixed",
     "n_names_used": 1472,
     "n_days_used": 252,
-    "dominant_equity_pc_share": 0.1668,
-    "effective_universe_bets_pr": 24.16,
-    "idio_dispersion_share": 0.8091,
+    "dominant_equity_pc_share": 0.1677,
+    "effective_universe_bets_pr": 23.89,
+    "idio_dispersion_share": 0.7378,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

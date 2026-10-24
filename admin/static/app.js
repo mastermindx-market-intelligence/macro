@@ -1390,11 +1390,96 @@ const EXP_DUE = (e) => {
   const soon = e.days_until <= 7;
   return `<span style="color:${soon ? "var(--warn)" : "var(--text)"}">${e.days_until}d</span> <span class="sub mono">${esc((e.come_back_on || "").slice(0, 10))}</span>`;
 };
+const RF_DIAGNOSTIC_COPY = {
+  en: {
+    title: "Research diagnostics", disabled: "No current diagnostic", unavailable: "Diagnostic unavailable",
+    measured: "Engineering measurement", refused: "Numerical result refused", details: "Measurement details",
+    identity: "Source receipt", dark: "Dark", light: "Light", missing: "Unavailable",
+    scope: "Synthetic engineering evidence. Research execution remains disabled; this result cannot be promoted.",
+    limit: "Equal-date, 25-session single-entry adverse excursion, including four sessions after exit. This is not a portfolio drawdown or a qualified inference.",
+    empty: "No owner-bound diagnostic is selected for this publication.",
+    failed: "The diagnostic collection could not be qualified. No partial results are shown.",
+    budget: "Search cost and production accounting: not recorded in this display receipt.",
+    scientific: "Scientific acceptance: unqualified. No qualified inference procedure.",
+  },
+  zh: {
+    title: "研究诊断", disabled: "暂无当前诊断", unavailable: "诊断暂不可用",
+    measured: "工程测量", refused: "数值结果已拒绝", details: "测量详情",
+    identity: "来源凭据", dark: "深色", light: "浅色", missing: "暂无",
+    scope: "仅为合成工程证据。研究执行仍处于禁用状态，此结果不能晋级。",
+    limit: "按形成日期等权计算的单次入场25个交易日不利波动，包含退出后的4个交易日；并非组合回撤或合格的统计推断。",
+    empty: "本次发布未选择具有所有者绑定的诊断。",
+    failed: "诊断集合未通过校验，不展示部分结果。",
+    budget: "搜索成本及生产记账：此展示凭据未记录。",
+    scientific: "科学验收未完成，尚无合格的推断程序。",
+  },
+};
+const RF_DIAGNOSTIC_METRICS = [
+  ["scheduled_formation_count", "Scheduled formations", "计划形成次数"],
+  ["source_excluded_formation_count", "Excluded by source", "因来源排除"],
+  ["source_qualified_formation_count", "Source-qualified formations", "来源合格形成次数"],
+  ["provided_formation_count", "Provided formations", "已提供形成次数"],
+  ["opportunity_formation_count", "Formations with opportunities", "存在机会的形成次数"],
+  ["no_opportunity_formation_count", "Formations without opportunities", "无机会形成次数"],
+  ["paired_formation_count", "Paired formations", "配对形成次数"],
+  ["provided_baseline_entry_count", "Baseline entries", "基准入场数"],
+  ["provided_selected_entry_count", "Selected entries", "选中入场数"],
+  ["provided_foregone_entry_count", "Foregone entries", "放弃入场数"],
+  ["paired_mean_baseline_adverse_loss", "Mean baseline adverse loss", "基准平均不利损失"],
+  ["paired_mean_selected_adverse_loss", "Mean selected adverse loss", "选中平均不利损失"],
+  ["paired_mean_improvement", "Mean paired difference", "平均配对差值"],
+  ["refusal_count", "Refusal count", "拒绝次数"],
+];
+function rfDiagnosticSection(data, language = "en", theme = "dark") {
+  const lang = language === "zh" ? "zh" : "en";
+  const mode = theme === "light" ? "light" : "dark";
+  const t = RF_DIAGNOSTIC_COPY[lang];
+  const rows = Array.isArray(data.research_diagnostics) ? data.research_diagnostics : [];
+  const value = (x, key) => {
+    if (typeof x !== "number" || !Number.isFinite(x)) return t.missing;
+    if (key === "paired_mean_improvement") return esc(`${x > 0 ? "+" : ""}${(x * 100).toFixed(2)} ${lang === "zh" ? "个百分点" : "pp"}`);
+    if (key.startsWith("paired_mean_")) return esc(`${(x * 100).toFixed(2)}%`);
+    return esc(Number.isInteger(x) ? x : x.toFixed(4));
+  };
+  const cards = rows.map(r => `<article class="card">
+    <h3>${r.status === "REFUSED" ? t.refused : t.measured}</h3>
+    <div class="rf-identity">${esc(r.diagnostic_id)}</div>
+    <p class="sub">${t.scope}</p><p class="note">${t.scientific}</p>
+    <details><summary>${t.details}</summary><p class="note">${t.limit}</p>
+      ${RF_DIAGNOSTIC_METRICS.map(([key, en, zh]) => `<div class="kv"><span>${lang === "zh" ? zh : en}</span><b>${value((r.aggregates || {})[key], key)}</b></div>`).join("")}
+      <p class="note">${t.budget}</p>
+    </details>
+    <details><summary>${t.identity}</summary>
+      ${["candidate_id", "created_at", "source_sha256", "config_sha256", "protocol_sha256", "input_policy_sha256", "runtime_sha256", "evaluator_sha256", "artifact_sha256"].map(key => `<div class="kv"><span>${esc(key)}</span><b class="rf-identity">${esc(r[key] || t.missing)}</b></div>`).join("")}
+    </details></article>`).join("");
+  const unavailable = data.research_diagnostics_state === "UNAVAILABLE";
+  return `<section class="rf-diagnostics" lang="${lang}" data-lang="${lang}" data-theme="${mode}" aria-label="${t.title}">
+    <div class="rf-diagnostic-toolbar"><h2>${t.title}</h2><div class="rf-mode-controls">
+      <button type="button" data-rf-lang="en" aria-pressed="${lang === "en"}">English</button>
+      <button type="button" data-rf-lang="zh" aria-pressed="${lang === "zh"}">中文</button>
+      <button type="button" data-rf-theme="dark" aria-pressed="${mode === "dark"}">${t.dark}</button>
+      <button type="button" data-rf-theme="light" aria-pressed="${mode === "light"}">${t.light}</button>
+    </div></div>${cards || `<article class="card"><h3>${unavailable ? t.unavailable : t.disabled}</h3><p class="sub">${unavailable ? t.failed : t.empty}</p><p class="note">${t.scope}</p></article>`}
+  </section>`;
+}
+function wireRfDiagnosticModes(view, data) {
+  const section = view.querySelector(".rf-diagnostics");
+  if (!section) return;
+  section.querySelectorAll("button[data-rf-lang], button[data-rf-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const language = button.dataset.rfLang || section.dataset.lang;
+      const theme = button.dataset.rfTheme || section.dataset.theme;
+      section.outerHTML = rfDiagnosticSection(data, language, theme);
+      wireRfDiagnosticModes(view, data);
+    });
+  });
+}
 RENDER.experiments = async () => {
   const v = $("#view");
   const d = await api("/api/experiments");
   if (!d.ok) {
-    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || "not available")}</div>`);
+    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || "not available")}</div>`) + rfDiagnosticSection(d);
+    wireRfDiagnosticModes(v, d);
     return;
   }
   const exps = d.experiments || [];
@@ -1405,6 +1490,7 @@ RENDER.experiments = async () => {
       ${card("Ready to review", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">need a decision</div>`)}
       ${card("Last updated", `<div class="big" style="font-size:18px" class="mono">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
     </div>`;
+  html += rfDiagnosticSection(d);
   if (ready.length) {
     html += `<div class="section">🔔 Ready for review <span class="cnt">${ready.length}</span></div>
       <div class="grid">${ready.map(e => `<div class="card ready"><h3>${esc(e.name)}</h3>
@@ -1416,7 +1502,7 @@ RENDER.experiments = async () => {
         ${e.surfaced ? `<div class="note mono muted">↳ ${esc(e.surfaced)}</div>` : ""}</div>`).join("")}</div>`;
   }
   html += `<div class="section">All experiments <span class="cnt">${exps.length}</span></div>
-    <table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
+    <div class="experiments-table-scroll"><table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
     ${exps.map(e => `<tr${e.ready ? ' class="hl"' : ""}>
       <td><b>${esc(e.name)}</b><div class="sub">${esc(e.what || "")}</div>${e.source ? `<details class="tech-details"><summary>Source</summary><span class="mono">${esc(e.source)}</span></details>` : ""}</td>
       <td class="sub">${esc(e.kind || "")}</td>
@@ -1435,9 +1521,10 @@ RENDER.experiments = async () => {
           </div>
         </details>
       </td></tr>`).join("")}
-    </tbody></table>
+    </tbody></table></div>
     ${d.note ? `<div class="sub" style="margin-top:10px">${esc(d.note)}</div>` : ""}`;
   v.innerHTML = html;
+  wireRfDiagnosticModes(v, d);
   // L4 action capture: wire up Acted/Dismiss/Snooze buttons (NW Rails PR-8)
   v.querySelectorAll(".exp-act-btn").forEach(btn => {
     btn.addEventListener("click", async () => {

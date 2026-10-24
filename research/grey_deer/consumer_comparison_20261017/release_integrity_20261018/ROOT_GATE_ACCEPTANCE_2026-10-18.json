@@ -1,0 +1,125 @@
+{
+  "schema": "risk_radar.continuation_gate_acceptance.v1",
+  "observed_at_utc": "2026-10-18 08:19:08 UTC",
+  "owner": {
+    "organizational_role": "Sol / Meta-CEO",
+    "execution_model": "GPT-6 Astra Pro",
+    "accountable_to": "Chairman Chris Wong"
+  },
+  "scope": "Frozen evidence checkpoint; source CI and complete release remain separately gated",
+  "helper": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "pr": 1610,
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610",
+    "head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+    "owned_paths": [
+      "scripts/deploy_code_to_vps.sh",
+      "tests/test_deploy_provenance.py"
+    ],
+    "source_sha256": {
+      "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+      "tests/test_deploy_provenance.py": "1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c"
+    },
+    "native_verification": {
+      "result": "PASS",
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "receipt": "native/rr-helper-native-pytest-receipt-20261018-run3.json",
+      "receipt_sha256": "f8341af197fc430ae23725af7741c822122d4a171c26b781b3a0bbbb5d0ade6e",
+      "log_sha256": "600984428ed7a81e2051270bd8e3bfbcf4ed9d6c9b02e1f85a5ac5b5d0125299"
+    },
+    "independent_reviews": [
+      {
+        "path": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+        "sha256": "da500f46c8e839e09cefa447fe60f9255c22866693f5c742aa6e3672fefaa18a"
+      },
+      {
+        "path": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+        "sha256": "f89128fbfaff4854e12974a3ea89e877d8d9343fc6fbad9770505f5388fc7971"
+      }
+    ],
+    "hosted": {
+      "previous_observation": "native/rr-helper-source-pr-state-20261018.json",
+      "run_id": 39109519443,
+      "ci": "FAILURE",
+      "required_test_gate": "FAILURE",
+      "required_test_completed_at_utc": "2026-10-18T08:20:34Z",
+      "codeql": "PASS",
+      "observer_pid": 2864,
+      "observer_status": "COMPLETED",
+      "observer_exit_code": 1,
+      "observer_completed_at_utc": "2026-10-18T08:22:04.981746Z",
+      "active_watchers": 0,
+      "source_landing": "NOT_OBSERVED",
+      "result": "native/rr-helper-ci-39109519443-result.json",
+      "draft_disposition": "native/rr-helper-ci-failure-draft-disposition-20261018.json",
+      "is_draft": true,
+      "queued": false,
+      "auto_merge": false,
+      "failed_contracts": [
+        "tests/test_datadog_vps_install.py::test_deploy_keeps_datadog_version_aligned_with_release_and_rollback",
+        "tests/test_forward_evaluation.py::test_deploy_transaction_closes_race_noop_and_failure_paths",
+        "tests/test_portfolio_archival.py::test_deploy_includes_reasoning_subagent_policies_and_rollback_state"
+      ],
+      "attribution": "Helper refactor exposed three wider static contract checks missed by the targeted selection. They are not classified as unrelated baseline failures; companion semantics and writer custody remain unresolved.",
+      "failed_log_bytes": 523775,
+      "failed_log_sha256": "2e22f2b14cde80f52f7d13ffea7425ec285468e9d50268a5557fe29f0278d9a3"
+    },
+    "production_deployed": false
+  },
+  "evidence": {
+    "original_packet_files": 56,
+    "original_packet_bytes": 1178368,
+    "manifest": "TRANSFER_MANIFEST_2026-10-18.json",
+    "manifest_sha256": "225b8edb14495194724e933607d7a6ec94684f299e11fcdf338060030130f717",
+    "review": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+    "review_sha256": "cadc5c5d4520c4164c087b9adf5414e1c473b9f4ed09512612b3b6f5a6f92c3e",
+    "prior_failures_preserved": true,
+    "old_44_case_receipt_not_reattributed_to_final_test": true,
+    "at_original_transfer_all_byte_exact": true,
+    "original_transfer_observed_at_utc": "2026-10-18T08:10:26.706646Z",
+    "publication_normalization": {
+      "receipt": "PUBLICATION_NORMALIZATION_2026-10-18.json",
+      "original_published_files_byte_identical": 55,
+      "one_original_retained_as_exact_utf8_text": "source/SETTLEMENT_DEPENDENCY_STATIC_NOTES_ORIGINAL_2026-10-18.json",
+      "presentation_space_bytes_removed": 4,
+      "substantive_text_changed": false
+    },
+    "review_addendum": "The later failed-CI/draft and publication-normalization frontier was independently reviewed; the earlier 7,231-byte review is retained verbatim."
+  },
+  "research": {
+    "amendment": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+    "sha256": "687bfed7c3cae90b350c7fd33f5301dc9c33bd09596553566790d131f77ebd67",
+    "status": "PROPOSED_NOT_ADMITTED",
+    "proposed_units": {
+      "exposure_constants": 504,
+      "pooled_constants": 14,
+      "pooled_ridge": 14,
+      "total": 532
+    },
+    "actual_fits": 0,
+    "source_purpose": "Existing Yahoo model-use UNKNOWN / not a source for this use",
+    "estimator_executable_runtime": "NOT_ACCEPTED",
+    "t13_h21": "REFUSE_NO_ESTABLISHED_MATCHED_SUPPORT",
+    "fred": "UNKNOWN_HOLD",
+    "trial_expenditure_t13_t14_t19": 0
+  },
+  "runtime": {
+    "last_health_observation_utc": "2026-10-18T02:42:26.352972Z",
+    "last_observed_commit": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+    "future_source_fix_1567_installed_at_that_observation": false,
+    "full_release_qualified": false,
+    "autonomous_production_deploy": "prohibited",
+    "numerical_policy_authority": "Existing Portfolio / Prophet owners",
+    "programme_accepted": false
+  },
+  "next_admitted_work": [
+    "Qualify exact companion-test guarantees, source hunks, current writer/lease and pending effects; prepare a reviewable repair while preserving #1586 and #642 intersections.",
+    "Land the failure-inclusive evidence through ordinary Macro source gates and exact readback.",
+    "Continue path-disjoint complete-release source qualification; preserve the reserved production decision and all empirical/user-delivery gates."
+  ],
+  "subsequent_ci_observation_utc": "2026-10-18T08:28:04.970897Z",
+  "final_documentary_checkpoint_utc": "2026-10-18 08:47:30 UTC"
+}

@@ -1,0 +1,9 @@
+{
+  "parent_head": "e652575ffd5162c62b4491585ff5ef632a97b064",
+  "integrating_main": "a6efa04a48e054d5e261f4a48339792dc982ba24",
+  "observed_at": "2026-10-14T11:44:51.879364+00:00",
+  "carrier": "PR9066",
+  "active_other_writer": false,
+  "strategy": "retain existing carrier; resolve generated artifacts through current builders, rerun affected compatibility browser proof, push source to overlap hosted CI and full candidate proof",
+  "performance": "V14 9/10 and V15 diagnostic 10/10 on identical product bytes; failed observation retained; no speculative product patch"
+}

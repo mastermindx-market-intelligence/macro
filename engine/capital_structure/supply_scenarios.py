@@ -48,8 +48,11 @@ from decimal import Decimal, localcontext
 from fractions import Fraction
 from typing import Any, Mapping, Sequence
 
+from engine.capital_structure import variable_terms
 from engine.capital_structure.issuer_state_contracts import (
+    ECONOMIC_TERM_STRUCTURE_NAMES,
     ECONOMIC_TERM_UNITS,
+    STRUCTURE_KINDS,
     ActionSelection,
     CalculationReceipt,
     CashEffect,
@@ -58,6 +61,7 @@ from engine.capital_structure.issuer_state_contracts import (
     FinancingScenario,
     Instrument,
     InstrumentSet,
+    PriceFormula,
     Quantity,
     ShareBasisResult,
     SupplyEnvelope,
@@ -65,6 +69,11 @@ from engine.capital_structure.issuer_state_contracts import (
     sha256_of,
     stable_id,
 )
+
+#: Every ``kind`` a structured term writes, including the nested ones that carry
+#: exact integers (SPEC_I2 §1.5).  Used to let an integer through the no-float
+#: gate inside a structure and nowhere else.
+_STRUCTURE_KIND_KEYS = frozenset(STRUCTURE_KINDS) | {"price_component", "reset_event", "rounding"}
 
 IMPLEMENTATION = "capital_structure.supply_scenarios.v1"
 TRACE_SCHEMA = "capital_structure.supply_trace.v1"
@@ -155,6 +164,9 @@ ROW_TERMS: Mapping[tuple[str, str], tuple[str, ...]] = {
     ("warrant_exercise", "pre_funded"): ("prefunded_residual_price",),
     ("conversion", "cashless"): (),
     ("conversion", "net_share"): (),
+    # I2 (SPEC_I2 §1.2, §3.4): reachable only through a settlement_branches term.
+    ("conversion", "physical"): (),
+    ("conversion", "cash"): (),
 }
 #: Price terms a row needs from the scenario rather than from a term record (D8).
 PRICE_SETTLEMENTS = ("cashless", "net_share")
@@ -172,6 +184,95 @@ GUARD_CLAIM_SURVIVES = "claim_survives_execution_limit"
 GUARD_NOTICE_LIMITS = "notice_period_limits_execution"
 GUARD_CAP_LIMITS = "holder_cap_limits_execution"
 GUARD_CAPPED_AT_CLAIM = "selection_capped_at_claim"
+#: I2 guards (SPEC_I2 §3).
+GUARD_EXCLUSIVE_BRANCHES = "exclusive_branches_never_summed"
+GUARD_EXCHANGE_CAP_LIMITS_DELIVERY = "exchange_cap_limits_delivery_not_claim"
+GUARD_NO_PRICE_AFTER_PRICING_DATE = "no_price_after_pricing_date"
+GUARD_NO_ASSUMED_FLOOR = "no_assumed_floor"
+GUARD_CONDITION_NOT_MET = "conversion_condition_not_met"
+
+#: Blockers and trace facts an I2 row raises (SPEC_I2 §2, §3).
+BLOCKER_CONDITION_ASSUMED_MET = "conversion_condition_assumed_met"
+TRACE_BLOCKED_BY_EXCHANGE_CAP = "blocked_by_exchange_cap"
+
+#: The fixed §3 order, recorded on every I2 row as ``evaluation_order``.
+EVALUATION_ORDER = (
+    "amount",
+    "price",
+    "condition",
+    "branch",
+    "exchange_cap",
+    "holder_cap_and_notice",
+)
+
+#: I2 term names.  An instrument carrying any of them, or any structured term,
+#: is evaluated through the §3 order.
+I2_VALUE_NAMES = ("exchange_cap_shares", "shares_issued_under_instrument", "accrued_amount_outstanding")
+I2_FLAG_NAMES = ("shareholder_approval_obtained",)
+I2_TERM_NAMES = tuple(ECONOMIC_TERM_STRUCTURE_NAMES) + I2_VALUE_NAMES + I2_FLAG_NAMES
+#: Names that LIMIT what a cap leaves deliverable, for ``maximum_issuable``.
+#: ``shares_issued_under_instrument`` is that cap's USAGE, not a second limit, so
+#: it stays in the trace and is never listed here; authorized-share headroom is
+#: joined later by the joint capacity model and the issuer state, not by I2
+#: (audit S2).
+MAXIMUM_ISSUABLE_LIMITS = ("exchange_cap_shares",)
+#: The flag term that lifts the exchange cap entirely.
+SHAREHOLDER_APPROVAL_NAME = "shareholder_approval_obtained"
+#: M3: the action I2 evaluates settlement branches for, and only that one.
+BRANCH_EVALUATED_ACTION = "conversion"
+
+#: The I2 rule rows (SPEC_I2 §3).  These are a SEPARATE table from
+#: ``SETTLEMENT_RULES``: the I1 table is pinned verbatim by
+#: ``tests/test_capital_structure_supply_scenarios.py``, and a receipt states
+#: the rules it ran under, so the extended digest is used only for a scenario
+#: that actually runs an I2 rule.
+VARIABLE_TERM_RULES: tuple[tuple[str, str, str], ...] = (
+    (
+        "i2|price_formula",
+        "price = combine(components) at the horizon end, then ceiling, then a STATED floor only, then rounding",
+        "no_assumed_floor: a formula with no stated floor is priced with none, and is never given a finite maximum",
+    ),
+    (
+        "i2|maximum_issuable",
+        "a stated floor bounds amount/floor; none_in_complete_agreement is unbounded_by_contract",
+        "not_established is a named Unknown: never a finite maximum and never infinity",
+    ),
+    (
+        "i2|price_reset",
+        "a past reset is a fact only if an admitted price term is dated on or after it; a horizon reset is priced at its own date",
+        "a reset beyond the horizon is never applied, and no price point after the pricing date is ever read",
+    ),
+    (
+        "i2|anti_dilution",
+        "full_ratchet, weighted_average_narrow or none; a broad base comes only from an UnknownResolution",
+        "the issuance is a scenario assumption, never a fact, and is never computed here",
+    ),
+    (
+        "i2|accrual_terms",
+        "amount = principal + accrual to the horizon end; simple accrual is on principal only",
+        "an evidenced accrued_amount_outstanding continues from its own date; converts_with_principal false converts principal only",
+    ),
+    (
+        "i2|conversion_condition",
+        "a condition met in the trading-day window delivers; not met delivers 0 and the claim survives",
+        "an unevaluable window is Unknown unless the action lists it in conditions_assumed_met",
+    ),
+    (
+        "i2|settlement_branches",
+        "conversion|branch: physical pays no cash, cash repays the conversion value, net_share repays min(amount, CV) and issues the surplus",
+        "exclusive_branches_never_summed: every branch is priced separately and only the elected one reaches the envelope",
+    ),
+    (
+        "i2|exchange_cap_shares",
+        "delivered shares are limited to cap - issued, or unlimited once shareholder approval is admitted true",
+        "exchange_cap_limits_delivery_not_claim: the as-converted claim is never reduced by the cap",
+    ),
+    (
+        "i2|floor_cash_make_whole",
+        "a floor that binds with floor_applies_with_cash_make_whole owes a repayment",
+        "the make-whole amount is an unknown repayment, never 0 and never a guess",
+    ),
+)
 
 AFFECTS_INCREMENTAL = ("incremental_issuance",)
 AFFECTS_CLAIMS = ("as_converted_claims",)
@@ -241,22 +342,52 @@ def _remainder_string(value: Fraction) -> str:
     return f"{remainder.numerator}/{remainder.denominator}"
 
 
-def _refuse_numbers(value: Any, path: str = "<root>") -> None:
-    """No float and no non-string number anywhere on the I1 path (§0 item 3)."""
+def _refuse_numbers(value: Any, path: str = "<root>", in_structure: bool = False) -> None:
+    """No float and no non-string number anywhere on the I1/I2 path (§0 item 3).
+
+    One narrow exception: a structured term's day counts, rounding places and
+    period lengths are exact integers BY CONTRACT (SPEC_I2 §1.5), so an ``int``
+    is admitted inside a structure subtree and nowhere else.  Every money and
+    rate figure inside a structure is still a ``Quantity`` carrying an exact
+    decimal string, and a float is refused at every depth either way.
+    """
     if value is None or isinstance(value, (bool, str)):
         return
-    if isinstance(value, (float, int, Decimal, complex, Fraction)):
+    if isinstance(value, (float, Decimal, complex, Fraction)):
+        raise ContractViolation(f"{path}: exact decimal strings only, a {type(value).__name__} is refused ({value!r})")
+    if isinstance(value, int):
+        if in_structure:
+            return
         raise ContractViolation(f"{path}: exact decimal strings only, a {type(value).__name__} is refused ({value!r})")
     if isinstance(value, Mapping):
+        nested = in_structure or value.get("kind") in _STRUCTURE_KIND_KEYS
         for key, item in value.items():
             _require(isinstance(key, str), f"{path}: non-string key {key!r}")
-            _refuse_numbers(item, f"{path}.{key}")
+            _refuse_numbers(item, f"{path}.{key}", nested)
         return
     if isinstance(value, (list, tuple)):
         for index, item in enumerate(value):
-            _refuse_numbers(item, f"{path}[{index}]")
+            _refuse_numbers(item, f"{path}[{index}]", in_structure)
         return
     raise ContractViolation(f"{path}: unsupported type {type(value).__name__}")
+
+
+def _money(value: Fraction) -> Decimal | None:
+    """Exact :class:`Decimal` money, or ``None`` when it does not terminate.
+
+    Money is never rounded: an amount that does not terminate in base 10 is an
+    unknown cash amount, not a guessed one.
+    """
+    reduced = value.denominator
+    while reduced % 2 == 0:
+        reduced //= 2
+    while reduced % 5 == 0:
+        reduced //= 5
+    if reduced != 1:
+        return None
+    with localcontext() as context:
+        context.prec = 60
+        return Decimal(value.numerator) / Decimal(value.denominator)
 
 
 # ---------------------------------------------------------------------------
@@ -382,6 +513,54 @@ def _price_currency_unknown(currency: str) -> Unknown:
     )
 
 
+def _conversion_condition_unknown(instrument_id: str) -> Unknown:
+    return _unknown(
+        f"conversion_condition_{instrument_id}",
+        f"the conversion condition of instrument {instrument_id} cannot be evaluated on this scenario's price path, "
+        "so neither meeting nor failing it is a fact",
+        f"a price path covering the condition's trading-day window, or an action listing "
+        f"conversion_condition_{instrument_id} in conditions_assumed_met",
+        AFFECTS_INCREMENTAL,
+    )
+
+
+def _settlement_branches_not_evaluated_unknown(instrument_id: str) -> Unknown:
+    """M3: a branches term on an action I2 does not price branches for.
+
+    The term is VALID — the contracts layer admits ``settlement_branches`` on any
+    instrument — it is simply not evaluated here, so the row names the fact that
+    would resolve it instead of going unknown anonymously (§0 item 4).
+    """
+    return _unknown(
+        f"settlement_branches_not_evaluated_{instrument_id}",
+        f"instrument {instrument_id} carries an admitted settlement_branches term, and I2 evaluates settlement "
+        f"branches for a {BRANCH_EVALUATED_ACTION} action only, so this action's branch is not evaluated here",
+        f"a {BRANCH_EVALUATED_ACTION} action for instrument {instrument_id}, or an evaluator that prices "
+        "settlement branches for this action",
+        AFFECTS_INCREMENTAL,
+    )
+
+
+def _floor_not_established_unknown(instrument_id: str) -> Unknown:
+    return _unknown(
+        f"floor_not_established_{instrument_id}",
+        f"the conversion price of instrument {instrument_id} floats and no floor is established, so the maximum "
+        "share count the contract itself bounds is unknown; it is never a finite maximum and never infinity",
+        f"a retained-byte floor price for instrument {instrument_id}, or the complete agreement's statement that there is none",
+        ("maximum_issuable",),
+    )
+
+
+def _inexact_cash_unknown(route_id: str) -> Unknown:
+    return _unknown(
+        f"cash_amount_not_exact_{route_id}",
+        f"the cash consequence of route {route_id} does not terminate in base 10, so it is reported as an unknown "
+        "amount rather than rounded",
+        "an exact stated cash amount for that route",
+        AFFECTS_CASH,
+    )
+
+
 def _fee_rate_unknown() -> Unknown:
     return _unknown(
         "fee_rate",
@@ -434,9 +613,14 @@ class _Row:
     fraction: str
     incremental: int | None
     cash_effect: CashEffect | None
+    #: I2 (SPEC_I2 §3).  Empty for a pre-I2 row, whose trace record therefore
+    #: keeps exactly its I1 keys.
+    evaluation_order: tuple[str, ...] = ()
+    blockers: tuple[str, ...] = ()
+    variable_terms: tuple[tuple[str, str], ...] = ()
 
     def as_trace_record(self) -> dict[str, Any]:
-        return {
+        record = {
             "route_id": self.route_id,
             "instrument_id": self.instrument_id,
             "action": self.action,
@@ -449,6 +633,37 @@ class _Row:
             "unknowns": list(self.unknowns),
             "fraction": self.fraction,
         }
+        if self.evaluation_order:
+            record["evaluation_order"] = list(self.evaluation_order)
+        if self.blockers:
+            record["blockers"] = list(self.blockers)
+        if self.variable_terms:
+            record["variable_terms"] = dict(self.variable_terms)
+        return record
+
+
+@dataclass(frozen=True)
+class _AmountOutcome:
+    """The §3 step 1 dollar amount of a conversion, before any limit."""
+
+    amount: Fraction | None
+    unknowns: tuple[Unknown, ...]
+    trace_items: tuple[tuple[str, str], ...]
+
+
+@dataclass(frozen=True)
+class _PriceOutcome:
+    """The §3 step 2 price after the formula, the resets and the anti-dilution."""
+
+    price: Fraction | None
+    count: Fraction | None
+    unknowns: tuple[Unknown, ...]
+    trace_items: tuple[tuple[str, str], ...]
+    blockers: tuple[str, ...]
+    formula: Any
+    #: Unknowns the envelope must NAME but that do not make the price unknown —
+    #: a make-whole whose amount no term states still leaves the price known.
+    extra_unknowns: tuple[Unknown, ...] = ()
 
 
 def _terms_by_name(instrument: Instrument) -> dict[str, Any]:
@@ -514,6 +729,19 @@ class _Evaluation:
         self.basis_unknown_id: str | None = None
         self._price_cache: Any = _UNSET
         self.existing, self.existing_value = self._existing_outstanding()
+        # I2 state (SPEC_I2 §2, §3): the path measure the scenario declares, the
+        # single pricing date every evaluator reads, and the memoised outcomes
+        # that keep one pass deterministic and one instrument priced once.
+        self.path_measure = variable_terms.path_measure_of(scenario.other_assumptions)
+        self.pricing_date = scenario.horizon_end
+        self.i2_active = any(self._carries_i2_term(item) for item in instruments.instruments)
+        self._assumptions = dict(scenario.other_assumptions)
+        self._base_cache: dict[str, Any] = {}
+        self._amount_cache: dict[str, Any] = {}
+        self._price_cache2: dict[Any, Any] = {}
+        self._maximum_issuable: dict[str, dict[str, Any]] = {}
+        self._alternatives: list[dict[str, Any]] = []
+        self._variable_trace: dict[str, dict[str, str]] = {}
 
     # -- share basis (§5.2) -------------------------------------------------
 
@@ -650,10 +878,325 @@ class _Evaluation:
             return Fraction(Decimal(assumed.value))
         return None
 
+    # -- I2 terms (SPEC_I2 §2, §3) -----------------------------------------
+
+    def _carries_i2_term(self, instrument: Instrument) -> bool:
+        """Whether any term of this instrument puts the row on the §3 order."""
+        return any(term.structure is not None or term.name in I2_TERM_NAMES for term in instrument.economic_terms)
+
+    def _admitted_term(self, instrument_id: str, name: str) -> tuple[Any, Unknown | None]:
+        """The admitted term of one name, or the Unknown that replaces it.
+
+        An absent term is ``(None, None)``: no such contractual fact exists.  A
+        term carried twice, contradicted, deferred or formula-only is
+        ``(None, Unknown)``: the fact exists but is not knowable, which is never
+        the same thing.
+        """
+        term = self._term(instrument_id, name)
+        if term is None:
+            return None, None
+        if not isinstance(term, EconomicTerm) or term.status != "admitted":
+            return None, _term_unknown(instrument_id, name)
+        return term, None
+
+    def _structure(self, instrument_id: str, name: str) -> Any:
+        term, _unknown = self._admitted_term(instrument_id, name)
+        return None if term is None else term.structure
+
+    def _structure_unknown(self, instrument_id: str, name: str) -> Unknown | None:
+        _term, unknown = self._admitted_term(instrument_id, name)
+        return unknown
+
+    def _register(self, unknowns: Sequence[Unknown], affects: Sequence[str]) -> list[str]:
+        return [self.unknowns.add(_retarget(item, affects)) for item in unknowns]
+
+    def _name_only(self, unknowns: Sequence[Unknown], affects: Sequence[str]) -> None:
+        """Register unknowns the envelope must name without blocking the row."""
+        for item in unknowns:
+            self.unknowns.add(_retarget(item, affects))
+
+    def _dilutive_issuance(self) -> dict[str, Fraction | None]:
+        """The anti-dilution issuance, read ONLY from scenario assumptions (§2.5).
+
+        Both figures are validated with the contracts module's exact-decimal rule
+        (audit S4): ``NaN``, an infinity, an exponent form, garbage text and a
+        negative are each refused with :class:`ContractViolation` and never with
+        another exception type.  An assumption is exact text or it is nothing.
+        """
+        shares_text = self._assumptions.get(variable_terms.DILUTIVE_ISSUANCE_SHARES)
+        shares = (
+            None
+            if shares_text is None
+            else variable_terms.exact_decimal(
+                shares_text, f"scenario.other_assumptions[{variable_terms.DILUTIVE_ISSUANCE_SHARES}]"
+            )
+        )
+        price_text = self._assumptions.get(variable_terms.DILUTIVE_ISSUANCE_PRICE)
+        if price_text is not None:
+            issued_price: Fraction | None = variable_terms.exact_decimal(
+                price_text, f"scenario.other_assumptions[{variable_terms.DILUTIVE_ISSUANCE_PRICE}]"
+            )
+        else:
+            horizon_price, _unknowns = self._price()
+            if horizon_price is not None and self.scenario.discount_rate is not None:
+                issued_price = horizon_price * (Fraction(1) - Fraction(Decimal(self.scenario.discount_rate)))
+            else:
+                issued_price = None
+        return {variable_terms.DILUTIVE_ISSUANCE_SHARES: shares, variable_terms.DILUTIVE_ISSUANCE_PRICE: issued_price}
+
+    def _broad_base(self, instrument_id: str) -> Fraction | None:
+        """The fully-diluted base a BROAD weighted average needs, if resolved."""
+        target = f"{variable_terms.BROAD_BASE_PREFIX}{instrument_id}"
+        for resolution in self.scenario.unknown_resolutions:
+            if resolution.unknown_id != target:
+                continue
+            assumed = resolution.assumed
+            _require(
+                assumed.unit == "shares" and assumed.status == "known" and assumed.value is not None,
+                f"supply: {target} must be resolved with a known share count",
+            )
+            return Fraction(Decimal(assumed.value))
+        return None
+
+    def _warrant_base(self, instrument: Instrument) -> tuple[Fraction | None, tuple[Unknown, ...]]:
+        """The unadjusted underlying-share count of a warrant (I1 §5.8)."""
+        cached = self._base_cache.get(instrument.instrument_id)
+        if cached is not None:
+            return cached
+        values: dict[str, Decimal] = {}
+        unknowns: list[Unknown] = []
+        for name in CLAIM_TERMS[instrument.kind]:
+            value, unknown = self._quantity(instrument.instrument_id, name)
+            if unknown is not None:
+                unknowns.append(unknown)
+            else:
+                assert value is not None
+                values[name] = value
+        outcome: tuple[Fraction | None, tuple[Unknown, ...]] = (
+            (None, tuple(unknowns))
+            if unknowns
+            else (Fraction(values["instruments_outstanding"]) * Fraction(values["shares_per_instrument"]), ())
+        )
+        self._base_cache[instrument.instrument_id] = outcome
+        return outcome
+
+    def _amount_outcome(self, instrument: Instrument) -> "_AmountOutcome":
+        """The dollar amount a conversion carries at the horizon end (§3 step 1)."""
+        instrument_id = instrument.instrument_id
+        cached = self._amount_cache.get(instrument_id)
+        if cached is not None:
+            return cached
+        value, unknown = self._quantity(instrument_id, "principal_outstanding")
+        if unknown is not None:
+            outcome = _AmountOutcome(None, (unknown,), ())
+        else:
+            assert value is not None
+            principal = Fraction(value)
+            trace_items: list[tuple[str, str]] = [("amount", _exact_string(principal))]
+            accrual = self._structure(instrument_id, "accrual_terms")
+            accrual_unknown = self._structure_unknown(instrument_id, "accrual_terms")
+            if accrual_unknown is not None:
+                outcome = _AmountOutcome(None, (accrual_unknown,), ())
+            elif accrual is None:
+                outcome = _AmountOutcome(principal, (), tuple(trace_items))
+            else:
+                accrued_term, accrued_unknown = self._admitted_term(instrument_id, "accrued_amount_outstanding")
+                if accrued_unknown is not None:
+                    outcome = _AmountOutcome(None, (accrued_unknown,), ())
+                else:
+                    result = variable_terms.accreted_amount(
+                        principal, accrual, accrued_term, self.scenario.horizon_end, instrument_id
+                    )
+                    trace_items.extend(result.trace_items)
+                    outcome = (
+                        _AmountOutcome(None, (result.unknown,), tuple(trace_items))
+                        if result.unknown is not None
+                        else _AmountOutcome(result.value, (), tuple(trace_items))
+                    )
+        self._amount_cache[instrument_id] = outcome
+        return outcome
+
+    def _price_outcome(
+        self, instrument: Instrument, name: str, base_count: Fraction | None, require_price: bool
+    ) -> "_PriceOutcome":
+        """§3 step 2: the I1 fixed term, or the formula, then resets, then anti-dilution."""
+        instrument_id = instrument.instrument_id
+        key = (instrument_id, name, bool(require_price))
+        cached = self._price_cache2.get(key)
+        if cached is not None:
+            return cached
+        outcome = self._compute_price_outcome(instrument, name, base_count, require_price)
+        self._price_cache2[key] = outcome
+        return outcome
+
+    def _compute_price_outcome(
+        self, instrument: Instrument, name: str, base_count: Fraction | None, require_price: bool
+    ) -> "_PriceOutcome":
+        instrument_id = instrument.instrument_id
+        unknowns: list[Unknown] = []
+        extra_unknowns: list[Unknown] = []
+        trace_items: list[tuple[str, str]] = []
+        blockers: list[str] = []
+        term, term_unknown = self._admitted_term(instrument_id, name)
+        formula = term.structure if isinstance(term, EconomicTerm) else None
+        formula = formula if isinstance(formula, PriceFormula) else None
+        price: Fraction | None = None
+        price_unknown: Unknown | None = None
+        stale = isinstance(term, EconomicTerm) and self._is_stale(name, term)
+        stated_value: str | None = None
+        if (
+            term is not None
+            and term.expression is None
+            and term.value is not None
+            and term.value.status == "known"
+            and term.value.value is not None
+        ):
+            stated_value = str(term.value.value)
+        if stale:
+            price_unknown = _stale_unknown(instrument_id, name)
+        elif formula is not None:
+            # S3: a formula is the contract's price rule even when every one of
+            # its components is fixed and the term also states a known value, so
+            # the §2.2 order — ceiling, then floor, then rounding — always runs.
+            # A fixed value never bypasses its own formula.
+            result = variable_terms.formula_price(
+                formula, self.scenario.price.path, self.pricing_date, self.path_measure, instrument_id
+            )
+            trace_items.extend(result.trace_items)
+            blockers.extend(result.blockers)
+            extra_unknowns.extend(result.extra_unknowns)
+            # A path is only ever read up to the pricing date, and a floor is
+            # only ever the one the contract states (SPEC_I2 §0 items 4 and 7).
+            self.guards.add(GUARD_NO_PRICE_AFTER_PRICING_DATE)
+            self.guards.add(GUARD_NO_ASSUMED_FLOOR)
+            if stated_value is not None:
+                trace_items.append(("price_term_also_states_a_value", stated_value))
+            if result.unknown is not None:
+                price_unknown = result.unknown
+            else:
+                price = result.value
+                trace_items.append(("price_source", "price_formula"))
+        elif stated_value is not None:
+            assert term is not None and term.value is not None and term.value.value is not None
+            price = Fraction(Decimal(term.value.value))
+            trace_items.append(("price_source", "fixed_term"))
+        elif term_unknown is not None:
+            price_unknown = term_unknown
+        else:
+            value, unknown = self._quantity(instrument_id, name)
+            if unknown is not None:
+                price_unknown = unknown
+            else:
+                assert value is not None
+                price = Fraction(value)
+                trace_items.append(("price_source", "fixed_term"))
+        if price_unknown is not None:
+            unknowns.append(price_unknown)
+        if price is not None:
+            trace_items.append(("price_term_name", name))
+            trace_items.append(("contract_price", _exact_string(price)))
+
+        count = base_count
+        schedule = self._structure(instrument_id, "price_reset")
+        if schedule is not None and schedule.applies_to == name:
+            schedule_unknown = self._structure_unknown(instrument_id, "price_reset")
+            if schedule_unknown is not None:
+                unknowns.append(schedule_unknown)
+            else:
+                result = variable_terms.apply_resets(
+                    schedule, price, count, self.terms.get(instrument_id, {}), self.scenario, instrument_id
+                )
+                trace_items.extend(result.trace_items)
+                if result.unknown is not None:
+                    unknowns.append(result.unknown)
+                    price = None
+                else:
+                    price = result.value
+                    count = result.count
+        elif self._structure_unknown(instrument_id, "price_reset") is not None:
+            unknowns.append(self._structure_unknown(instrument_id, "price_reset"))
+        anti_dilution = self._structure(instrument_id, "anti_dilution")
+        if anti_dilution is not None and anti_dilution.applies_to == name:
+            result = variable_terms.anti_dilution_price(
+                anti_dilution,
+                price,
+                self._dilutive_issuance(),
+                self.existing_value,
+                instrument_id,
+                broad_base=self._broad_base(instrument_id),
+                count=count,
+            )
+            trace_items.extend(result.trace_items)
+            blockers.extend(result.blockers)
+            if result.unknown is not None:
+                unknowns.append(result.unknown)
+                price = None
+            else:
+                price = result.value
+                count = result.count
+        elif self._structure_unknown(instrument_id, "anti_dilution") is not None:
+            unknowns.append(self._structure_unknown(instrument_id, "anti_dilution"))
+        if price is None and not require_price:
+            # The row does not need this price, so its absence is not a fact
+            # about the row: drop the price Unknowns and keep only the rest.
+            unknowns = [item for item in unknowns if item is not price_unknown]
+        if price is not None:
+            trace_items.append(("adjusted_price", _exact_string(price)))
+        if count is not None and base_count is not None and count != base_count:
+            trace_items.append(("adjusted_count", _exact_string(count)))
+        return _PriceOutcome(
+            price=price,
+            count=count,
+            unknowns=tuple(unknowns),
+            trace_items=tuple(trace_items),
+            blockers=tuple(sorted(set(blockers))),
+            formula=formula,
+            extra_unknowns=tuple(extra_unknowns),
+        )
+
+    def _record_maximum_issuable(
+        self, instrument: Instrument, amount: Fraction | None, formula: Any, price_name: str = "conversion_price"
+    ) -> None:
+        """§3: ``trace.maximum_issuable`` per instrument, a trace row and never a Quantity."""
+        if formula is None or amount is None:
+            return
+        instrument_id = instrument.instrument_id
+        # S2: a limit is listed only when it actually binds.  Shareholder
+        # approval lifts the exchange cap entirely, and the shares already issued
+        # under the instrument are that cap's usage — they stay in the trace.
+        approval_term, _approval_unknown = self._admitted_term(instrument_id, SHAREHOLDER_APPROVAL_NAME)
+        approval_obtained = (
+            isinstance(approval_term, EconomicTerm)
+            and approval_term.status == "admitted"
+            and approval_term.flag is True
+        )
+        limits = () if approval_obtained else tuple(
+            name for name in MAXIMUM_ISSUABLE_LIMITS if self._admitted_term(instrument_id, name)[0] is not None
+        )
+        # M4: the reported maximum must bound every delivered count, so it takes
+        # its bound from the LOWEST price any stated term can reach — the reset
+        # schedule applies the EVENT floor, and §2.5 anti-dilution applies none.
+        anti_dilution = self._structure(instrument_id, "anti_dilution")
+        if anti_dilution is not None and anti_dilution.applies_to != price_name:
+            anti_dilution = None
+        schedule = self._structure(instrument_id, "price_reset")
+        if schedule is not None and schedule.applies_to != price_name:
+            schedule = None
+        entry = variable_terms.maximum_issuable(
+            formula, amount, instrument_id, limits, anti_dilution=anti_dilution, schedule=schedule
+        )
+        self._maximum_issuable[instrument_id] = entry
+        if entry.get("state") == "unknown":
+            # §0 item 4: an unestablished floor is a NAMED Unknown, never a
+            # finite maximum and never infinity.
+            self.unknowns.add(_floor_not_established_unknown(instrument_id))
+
     # -- claims (§5.8, D4) --------------------------------------------------
 
     def _claim(self, instrument: Instrument, affects: Sequence[str]) -> tuple[Fraction | None, list[str]]:
         """The instrument's full underlying-share claim, exact and unfloored."""
+        if self._carries_i2_term(instrument):
+            return self._claim_i2(instrument, affects)
         values: dict[str, Decimal] = {}
         ids: list[str] = []
         for name in CLAIM_TERMS[instrument.kind]:
@@ -676,6 +1219,57 @@ class _Evaluation:
             return None, [self.unknowns.add(_retarget(unknown, affects))]
         return Fraction(values["principal_outstanding"]) / denominator, []
 
+    def _claim_i2(self, instrument: Instrument, affects: Sequence[str]) -> tuple[Fraction | None, list[str]]:
+        """The claim of an instrument on the §3 order, at the horizon price.
+
+        A25: this is the claim BEFORE the conversion condition, the exchange cap
+        and the holder cap or notice period are applied.  None of those limits
+        reaches it.
+        """
+        instrument_id = instrument.instrument_id
+        ids: list[str] = []
+        if instrument.kind in WARRANT_KINDS:
+            base, base_unknowns = self._warrant_base(instrument)
+            ids.extend(self._register(base_unknowns, affects))
+            schedule = self._structure(instrument_id, "price_reset")
+            anti_dilution = self._structure(instrument_id, "anti_dilution")
+            needs_price = (schedule is not None and schedule.applies_to == "exercise_price") or (
+                anti_dilution is not None and anti_dilution.applies_to == "exercise_price"
+            )
+            outcome = self._price_outcome(instrument, "exercise_price", base, needs_price)
+            ids.extend(self._register(outcome.unknowns, affects))
+            self._name_only(outcome.extra_unknowns, affects)
+            self._merge_variable_trace(instrument_id, outcome.trace_items)
+            if ids or base is None:
+                return None, ids
+            return (base if outcome.count is None else outcome.count), []
+        amount_outcome = self._amount_outcome(instrument)
+        ids.extend(self._register(amount_outcome.unknowns, affects))
+        self._merge_variable_trace(instrument_id, amount_outcome.trace_items)
+        outcome = self._price_outcome(instrument, "conversion_price", None, True)
+        ids.extend(self._register(outcome.unknowns, affects))
+        self._name_only(outcome.extra_unknowns, affects)
+        self._merge_variable_trace(instrument_id, outcome.trace_items)
+        self._record_maximum_issuable(instrument, amount_outcome.amount, outcome.formula, "conversion_price")
+        if outcome.price is not None and outcome.price == 0:
+            # A zero conversion price is not a price: neither zero shares nor
+            # infinitely many, so the claim stays unknown.
+            ids.append(self.unknowns.add(_retarget(_term_unknown(instrument_id, "conversion_price"), affects)))
+            outcome = _PriceOutcome(
+                None, None, outcome.unknowns, outcome.trace_items, outcome.blockers, outcome.formula,
+                outcome.extra_unknowns,
+            )
+        if ids or amount_outcome.amount is None or outcome.price is None:
+            return None, ids
+        return amount_outcome.amount / outcome.price, []
+
+    def _merge_variable_trace(self, instrument_id: str, items: Sequence[tuple[str, str]]) -> None:
+        """Keep the per-instrument I2 trace; a later key wins only if it differs."""
+        merged = dict(self._variable_trace.get(instrument_id, {}))
+        for key, value in items:
+            merged[key] = value
+        self._variable_trace[instrument_id] = merged
+
     # -- rows (§5.3, §5.4, §5.7) -------------------------------------------
 
     def _cash_effect(self, route_id: str, settlement: str, gross: Decimal | None, net: Decimal | None) -> CashEffect:
@@ -693,6 +1287,9 @@ class _Evaluation:
         unknown_ids: Sequence[str],
         guards: Sequence[str] = (),
         cash_effect: Any = _UNSET,
+        evaluation_order: Sequence[str] = (),
+        blockers: Sequence[str] = (),
+        variable_terms: Sequence[tuple[str, str]] = (),
     ) -> _Row:
         """An all-unknown row.
 
@@ -718,6 +1315,9 @@ class _Evaluation:
             fraction="0",
             incremental=None,
             cash_effect=cash_effect,
+            evaluation_order=tuple(evaluation_order),
+            blockers=tuple(sorted(set(blockers))),
+            variable_terms=tuple(variable_terms),
         )
 
     def _row(self, selection: ActionSelection) -> _Row:
@@ -749,7 +1349,34 @@ class _Evaluation:
                     f"action {action} does not apply to a {instrument.kind} instrument",
                 ),
             )
-        if settlement not in PERMITTED_SETTLEMENTS[instrument.kind]:
+        branches_unknown = (
+            self._structure_unknown(instrument.instrument_id, "settlement_branches") if action == "conversion" else None
+        )
+        if branches_unknown is not None:
+            return self._refused(instrument, selection, _retarget(branches_unknown, AFFECTS_INCREMENTAL))
+        branches = (
+            self._structure(instrument.instrument_id, "settlement_branches") if action == "conversion" else None
+        )
+        if branches is not None:
+            # SPEC_I2 §1.2, §3.4: an admitted settlement_branches term names the
+            # ONLY settlements this conversion may use, `physical` included.  An
+            # `automatic` term has exactly one branch (§1.5), so the contract
+            # elects it and no party does: whatever settlement the action names,
+            # that single branch is what applies (SPEC_I2 §3 step 4).
+            if branches.elected_by == "automatic":
+                _require(len(branches.branches) == 1,
+                         "supply: an automatic settlement_branches term names exactly one branch")
+            elif settlement not in branches.branches:
+                return self._refused(
+                    instrument,
+                    selection,
+                    _settlement_not_permitted_unknown(
+                        route_id,
+                        f"the settlement_branches term admits {list(branches.branches)} "
+                        f"and {settlement!r} is not one of them",
+                    ),
+                )
+        elif settlement not in PERMITTED_SETTLEMENTS[instrument.kind]:
             if settlement == "unknown":
                 return self._refused(instrument, selection, _settlement_unknown(route_id))
             return self._refused(
@@ -769,6 +1396,9 @@ class _Evaluation:
             _value, unknown, present = self._limiter(instrument, name)
             if present and unknown is not None:
                 return self._refused(instrument, selection, _retarget(unknown, AFFECTS_INCREMENTAL), guards)
+
+        if self._carries_i2_term(instrument):
+            return self._row_i2(instrument, selection, guards, ids)
 
         n_exact: Fraction | None = None
         quantity = selection.quantity
@@ -871,6 +1501,320 @@ class _Evaluation:
             fraction=fraction,
             incremental=whole,
             cash_effect=cash_effect,
+        )
+
+    def _row_i2(self, instrument: Instrument, selection: ActionSelection, guards: set[str], ids: list[str]) -> _Row:
+        """One row on the fixed SPEC_I2 §3 order: amount, price, condition, branch, cap, notice.
+
+        Every limit below — a failed condition, an exchange cap, a holder cap, a
+        notice period — limits what THIS SCENARIO delivers.  None of them is
+        allowed to touch ``as_converted_claims`` (A25), which ``_claim_i2``
+        computed before any of them ran.
+        """
+        route_id = selection.route_id
+        action = selection.action
+        settlement = selection.settlement
+        instrument_id = instrument.instrument_id
+        is_warrant = instrument.kind in WARRANT_KINDS
+        trace_items: list[tuple[str, str]] = []
+        blockers: list[str] = []
+
+        def unfinished(cash_effect: Any = _UNSET) -> _Row:
+            self.guards.update(guards)
+            self._merge_variable_trace(instrument_id, trace_items)
+            return self._unknown_row(
+                instrument_id,
+                selection,
+                ids,
+                guards,
+                cash_effect=cash_effect,
+                evaluation_order=EVALUATION_ORDER,
+                blockers=blockers,
+                variable_terms=trace_items,
+            )
+
+        # -- step 1: amount -------------------------------------------------
+        claim_exact, claim_ids = self._claim(instrument, AFFECTS_ROW_AND_CLAIMS)
+        ids.extend(claim_ids)
+        amount: Fraction | None = None
+        if not is_warrant:
+            amount_outcome = self._amount_outcome(instrument)
+            ids.extend(self._register(amount_outcome.unknowns, AFFECTS_ROW_AND_CLAIMS))
+            trace_items.extend(amount_outcome.trace_items)
+            amount = amount_outcome.amount
+        n_exact: Fraction | None = None
+        quantity = selection.quantity
+        if quantity is not None:
+            _require(
+                quantity.unit == "shares",
+                f"supply: the quantity selected for route {route_id} is an underlying share count, got unit {quantity.unit!r}",
+            )
+            if quantity.status != "known" or quantity.value is None:
+                ids.append(self.unknowns.add(_quantity_unknown(route_id)))
+            else:
+                n_exact = Fraction(Decimal(quantity.value))
+        if quantity is None:
+            # §5.3: selecting no quantity selects the whole remaining claim.
+            n_exact = claim_exact
+        elif n_exact is not None and claim_exact is not None and n_exact > claim_exact:
+            n_exact = claim_exact
+            guards.add(GUARD_CAPPED_AT_CLAIM)
+            guards.add(GUARD_CLAIM_SURVIVES)
+
+        # -- step 2: price --------------------------------------------------
+        price_name = "exercise_price" if is_warrant else "conversion_price"
+        base_count = self._warrant_base(instrument)[0] if is_warrant else None
+        branches = self._structure(instrument_id, "settlement_branches")
+        outcome = self._price_outcome(
+            instrument, price_name, base_count, True if not is_warrant else settlement != "pre_funded"
+        )
+        ids.extend(self._register(outcome.unknowns, AFFECTS_ROW_AND_CLAIMS))
+        self._name_only(outcome.extra_unknowns, AFFECTS_ROW_AND_CLAIMS)
+        trace_items.extend(outcome.trace_items)
+        blockers.extend(outcome.blockers)
+        contract_price = outcome.price
+        scenario_price: Fraction | None = None
+        if (action == "warrant_exercise" and settlement in PRICE_SETTLEMENTS) or branches is not None:
+            scenario_price, price_ids = self._price()
+            ids.extend(price_ids)
+        if ids or n_exact is None:
+            return unfinished()
+
+        # -- step 3: condition ----------------------------------------------
+        condition_state = "absent"
+        condition = self._structure(instrument_id, "conversion_condition")
+        if condition is not None:
+            met = variable_terms.condition_met(
+                condition, self.scenario.price.path, self.pricing_date, self.path_measure, contract_price, instrument_id
+            )
+            if met is None and f"conversion_condition_{instrument_id}" in selection.conditions_assumed_met:
+                # A scenario may assume a condition it cannot read, but it must
+                # say so, and the trace must carry it as an assumption.
+                met = True
+                condition_state = "assumed_met"
+                blockers.append(BLOCKER_CONDITION_ASSUMED_MET)
+                trace_items.append(("conversion_condition_assumed_met", "true"))
+                trace_items.append(("conversion_condition_is_a_scenario_assumption", "true"))
+            elif met is None:
+                condition_state = "not_evaluable"
+                trace_items.append(("conversion_condition", condition_state))
+                ids.append(
+                    self.unknowns.add(_retarget(_conversion_condition_unknown(instrument_id), AFFECTS_INCREMENTAL))
+                )
+                return unfinished()
+            elif met:
+                condition_state = "met"
+            else:
+                condition_state = "not_met"
+            trace_items.append(("conversion_condition", condition_state))
+        condition_failed = condition_state == "not_met"
+        if condition_failed:
+            guards.add(GUARD_CONDITION_NOT_MET)
+            guards.add(GUARD_CLAIM_SURVIVES)
+        # S5: a cash make-whole is owed only when the floor ACTUALLY bound and
+        # this scenario converts.  A row that delivers nothing books no repayment,
+        # and when the make-whole does apply it is named in the ROW's unknowns as
+        # well as the envelope's, so the two never disagree.
+        make_whole_ids = [
+            item.unknown_id
+            for item in outcome.extra_unknowns
+            if item.unknown_id == f"make_whole_amount_{instrument_id}"
+        ]
+        make_whole_applies = (
+            bool(make_whole_ids)
+            and variable_terms.BLOCKER_FLOOR_MAKE_WHOLE in blockers
+            and not condition_failed
+            and dict(trace_items).get("floor_reached") == "true"
+        )
+
+        # -- step 4: branch -------------------------------------------------
+        cash_kind: str | None = None
+        repayment: Fraction | None = None
+        delivered_exact: Fraction
+        if branches is not None:
+            if action != BRANCH_EVALUATED_ACTION:
+                # M3: I2 evaluates settlement branches for a conversion only
+                # (SPEC_I2 §3 step 4).  The term itself is valid, so nothing is
+                # raised — the row is unknown and NAMES the unknown, which is
+                # what tells a reader what would resolve it (§0 item 4).
+                ids.append(
+                    self.unknowns.add(
+                        _retarget(_settlement_branches_not_evaluated_unknown(instrument_id), AFFECTS_INCREMENTAL)
+                    )
+                )
+                return unfinished()
+            # A24 / §0 item 5: every admitted branch is priced on its own and
+            # recorded as an alternative; only the elected one is delivered.
+            guards.add(GUARD_EXCLUSIVE_BRANCHES)
+            self.guards.add(GUARD_EXCLUSIVE_BRANCHES)
+            if amount is None or contract_price is None or contract_price == 0 or scenario_price is None:
+                return unfinished()
+            elected_branch = branches.branches[0] if branches.elected_by == "automatic" else settlement
+            elected = None
+            for branch in branches.branches:
+                settled = variable_terms.settle_branch(branch, amount, contract_price, scenario_price)
+                self._alternatives.append(
+                    {
+                        "instrument_id": instrument_id,
+                        "route_id": route_id,
+                        "branch": branch,
+                        "elected": branch == elected_branch,
+                        "shares": str(settled.shares),
+                        "cash_kind": settled.cash_kind,
+                        "cash_amount": _exact_string(settled.cash_amount),
+                        "guard": GUARD_EXCLUSIVE_BRANCHES,
+                    }
+                )
+                if branch == elected_branch:
+                    elected = settled
+            assert elected is not None
+            delivered_exact = Fraction(0) if condition_failed else Fraction(elected.shares)
+            cash_kind = "no_cash" if condition_failed else elected.cash_kind
+            repayment = Fraction(0) if condition_failed else elected.cash_amount
+            trace_items.append(("settlement_branch_elected", elected_branch))
+            trace_items.append(("settlement_branch_alternatives", ",".join(branches.branches)))
+            trace_items.append(("settlement_branch_elected_by", branches.elected_by))
+            if elected_branch != settlement:
+                trace_items.append(("settlement_branch_named_by_the_action", settlement))
+        elif condition_failed:
+            delivered_exact = Fraction(0)
+            cash_kind = "no_cash"
+            repayment = Fraction(0)
+        elif action == "conversion" or settlement in ("cash", "pre_funded"):
+            delivered_exact = n_exact
+        elif scenario_price is not None and contract_price is not None and scenario_price > contract_price:
+            delivered_exact = n_exact * (scenario_price - contract_price) / scenario_price
+        else:
+            delivered_exact = Fraction(0)
+
+        # -- step 5: exchange cap -------------------------------------------
+        cap_term, cap_unknown = self._admitted_term(instrument_id, "exchange_cap_shares")
+        if cap_unknown is not None:
+            ids.append(self.unknowns.add(_retarget(cap_unknown, AFFECTS_INCREMENTAL)))
+            return unfinished()
+        if cap_term is not None:
+            issued_term, issued_unknown = self._admitted_term(instrument_id, "shares_issued_under_instrument")
+            approval_term, approval_unknown = self._admitted_term(instrument_id, "shareholder_approval_obtained")
+            if issued_unknown is not None:
+                ids.append(self.unknowns.add(_retarget(issued_unknown, AFFECTS_INCREMENTAL)))
+                return unfinished()
+            if approval_unknown is not None:
+                ids.append(self.unknowns.add(_retarget(approval_unknown, AFFECTS_INCREMENTAL)))
+                return unfinished()
+            remaining = variable_terms.exchange_cap_remaining(cap_term, issued_term, approval_term, instrument_id)
+            trace_items.extend(remaining.trace_items)
+            if remaining.unknown is not None:
+                ids.append(self.unknowns.add(_retarget(remaining.unknown, AFFECTS_INCREMENTAL)))
+                return unfinished()
+            blockers.extend(remaining.blockers)
+            if remaining.value is not None:
+                ceiling = Fraction(_floor(remaining.value))
+                if ceiling < delivered_exact:
+                    # A25: the cap limits delivery, never the claim.
+                    blocked = Fraction(_floor(delivered_exact)) - ceiling
+                    delivered_exact = ceiling
+                    guards.add(GUARD_EXCHANGE_CAP_LIMITS_DELIVERY)
+                    guards.add(GUARD_CLAIM_SURVIVES)
+                    self.guards.add(GUARD_EXCHANGE_CAP_LIMITS_DELIVERY)
+                    trace_items.append((TRACE_BLOCKED_BY_EXCHANGE_CAP, str(_floor(blocked))))
+
+        # -- step 6: I1 holder cap and notice period (§5.7), unchanged -------
+        whole = _floor(delivered_exact)
+        fraction = _remainder_string(delivered_exact)
+        notice_limited = False
+        notice_value, _notice_unknown, has_notice = self._limiter(instrument, NOTICE_NAME)
+        if has_notice and notice_value is not None and Fraction(self.horizon_days) < Fraction(notice_value):
+            whole = 0
+            notice_limited = True
+            guards.add(GUARD_NOTICE_LIMITS)
+            guards.add(GUARD_CLAIM_SURVIVES)
+        cap_value, _cap_unknown, has_cap = self._limiter(instrument, CAP_NAME)
+        if has_cap and cap_value is not None:
+            cap = Fraction(cap_value) / 100
+            if cap < 1:
+                position = self._holder_position(instrument_id)
+                if position is None:
+                    ids.append(self.unknowns.add(_holder_position_unknown(instrument_id)))
+                    return unfinished()
+                if self.existing_value is None:
+                    unknown_ids = list(ids)
+                    if self.basis_unknown_id is not None:
+                        unknown_ids.append(self.basis_unknown_id)
+                    ids[:] = unknown_ids
+                    return unfinished()
+                ceiling = max(0, _floor((cap * self.existing_value - position) / (1 - cap)))
+                if ceiling < whole:
+                    whole = ceiling
+                    guards.add(GUARD_CAP_LIMITS)
+                    guards.add(GUARD_CLAIM_SURVIVES)
+
+        # -- cash ------------------------------------------------------------
+        zero = Quantity.known("0", "usd")
+        if make_whole_applies:
+            # A make-whole is a repayment whose amount no admitted term states:
+            # unknown, never 0 and never a guess.
+            ids.extend(make_whole_ids)
+            cash_effect = CashEffect(route_id, "repayment", Quantity.unknown("usd"), Quantity.unknown("usd"))
+        elif cash_kind == "no_cash":
+            cash_effect = CashEffect(route_id, "no_cash", zero, Quantity.known("0", "usd"))
+        elif cash_kind == "repayment":
+            assert repayment is not None
+            money = _money(repayment)
+            if money is None:
+                ids.append(self.unknowns.add(_inexact_cash_unknown(route_id)))
+                cash_effect = CashEffect(route_id, "repayment", Quantity.unknown("usd"), Quantity.unknown("usd"))
+            else:
+                text = _decimal_string(money)
+                cash_effect = CashEffect(route_id, "repayment", Quantity.known(text, "usd"), Quantity.known(text, "usd"))
+        elif settlement in NO_CASH_SETTLEMENTS:
+            cash_effect = self._cash_effect(route_id, settlement, Decimal(0), Decimal(0))
+        else:
+            if settlement == "pre_funded":
+                residual, residual_unknown = self._quantity(instrument_id, "prefunded_residual_price")
+                if residual_unknown is not None:
+                    ids.append(self.unknowns.add(_retarget(residual_unknown, AFFECTS_INCREMENTAL)))
+                    return unfinished()
+                assert residual is not None
+                unit_price = Fraction(residual)
+            else:
+                unit_price = contract_price
+            if unit_price is None:
+                return unfinished()
+            gross = _money(Fraction(whole) * unit_price)
+            if gross is None:
+                ids.append(self.unknowns.add(_inexact_cash_unknown(route_id)))
+                cash_effect = CashEffect(route_id, "proceeds", Quantity.unknown("usd"), Quantity.unknown("usd"))
+            else:
+                net: Decimal | None
+                if notice_limited or gross == 0:
+                    # Zero issued is zero proceeds: no fee assumption is needed.
+                    net = Decimal(0)
+                elif self.scenario.fee_rate is None:
+                    self.unknowns.add(_fee_rate_unknown())
+                    net = None
+                else:
+                    net = gross * (Decimal(1) - Decimal(self.scenario.fee_rate))
+                cash_effect = self._cash_effect(route_id, settlement, gross, net)
+
+        self.guards.update(guards)
+        self._merge_variable_trace(instrument_id, trace_items)
+        return _Row(
+            route_id=route_id,
+            instrument_id=instrument_id,
+            action=action,
+            settlement=settlement,
+            underlying_shares=_exact_string(n_exact),
+            incremental_shares=str(whole),
+            gross_cash=cash_effect.gross.value if cash_effect.gross.status == "known" else "unknown",
+            net_cash=cash_effect.net.value if cash_effect.net.status == "known" else "unknown",
+            guards=tuple(sorted(guards)),
+            unknowns=tuple(sorted(set(ids))),
+            fraction=fraction,
+            incremental=whole,
+            cash_effect=cash_effect,
+            evaluation_order=EVALUATION_ORDER,
+            blockers=tuple(sorted(set(blockers))),
+            variable_terms=tuple(trace_items),
         )
 
     def _refused(
@@ -1021,9 +1965,12 @@ class _Evaluation:
             "scenario_id": self.scenario.scenario_id,
         }
         state_id = stable_id("state", inputs)
+        # A receipt states the rules it ran under.  A scenario with no I2 term
+        # ran only the I1 table, so its digest is unchanged (SPEC_I2 §0 item 2).
+        rules = SETTLEMENT_RULES + VARIABLE_TERM_RULES if self.i2_active else SETTLEMENT_RULES
         receipt = CalculationReceipt.build(
             inputs=inputs,
-            rule_digest=sha256_of(SETTLEMENT_RULES),
+            rule_digest=sha256_of(rules),
             implementation=IMPLEMENTATION,
             computed_at=self.scenario.as_of,
             scenario_id=self.scenario.scenario_id,
@@ -1055,6 +2002,12 @@ class _Evaluation:
             "unknowns": [item.unknown_id for item in unknowns],
             "guards": list(guards),
         }
+        if self.i2_active:
+            # I2 keys are added only when an instrument carries an I2 term, so a
+            # pre-I2 trace keeps exactly its I1 keys and digest.
+            trace["alternatives"] = list(self._alternatives)
+            trace["maximum_issuable"] = {key: self._maximum_issuable[key] for key in sorted(self._maximum_issuable)}
+            trace["variable_terms"] = {key: dict(self._variable_trace[key]) for key in sorted(self._variable_trace)}
         return trace, envelope
 
 
@@ -1077,6 +2030,14 @@ def evaluate_supply(instruments: InstrumentSet, basis: ShareBasisResult, scenari
 
 __all__ = [
     "CLAIM_TERMS",
+    "EVALUATION_ORDER",
+    "GUARD_CONDITION_NOT_MET",
+    "GUARD_EXCHANGE_CAP_LIMITS_DELIVERY",
+    "GUARD_EXCLUSIVE_BRANCHES",
+    "GUARD_NO_ASSUMED_FLOOR",
+    "GUARD_NO_PRICE_AFTER_PRICING_DATE",
+    "I2_TERM_NAMES",
+    "VARIABLE_TERM_RULES",
     "CONVERTIBLE_KINDS",
     "ELIGIBLE_STATUSES",
     "IMPLEMENTATION",

@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-10-14T17:36:02.948356+00:00",
+  "source_id": "usitc-2026-10-13-337-ta-1473",
+  "source_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+  "reads": [
+    {
+      "key": "research_vault/catalog.json",
+      "present": true,
+      "sha256": "1110664390f10984c498f73d381ccd1d1f2cfdd717faa5bc32af56ff997afae9"
+    },
+    {
+      "key": "research_inbox/_processed/usitc-2026-10-13-337-ta-1473.json",
+      "present": false,
+      "sha256": null
+    }
+  ],
+  "catalog_rows": 0,
+  "state": "PENDING_INCUMBENT_INGEST",
+  "writes": 0,
+  "provider_calls": 0,
+  "publication": false,
+  "stock_ticker": "CAT",
+  "press_draft_accepted": false,
+  "installed_head_before": "f92edf291bf2fdd4093e77a48e8fcb2d9757f5f2",
+  "installed_head_after": "f92edf291bf2fdd4093e77a48e8fcb2d9757f5f2",
+  "stable_installed_head": true,
+  "local_fixture": false
+}

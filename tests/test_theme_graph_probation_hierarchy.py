@@ -457,6 +457,7 @@ def test_mapping_curation_parity_when_subject_node_absent():
     mapping["status"] = "ratified"
     mapping["ratified_by"] = "curator:test"
     mapping["adjudicated_at"] = "2026-10-08T00:00:00Z"
+    mapping["created"] = "2026-10-07T00:00:00Z"
     edge = _ont_edge("exp:1", "EXPRESSES", basket, local)
     store = _store(edges=[edge], proposals=[mapping])
     result = compose_neighborhood(store, node_id=local, asof="2026-10-08")

@@ -71,7 +71,7 @@ def test_static_and_local_api_routes():
 def test_head_mirrors_public_get_without_response_body():
     httpd, port = _server()
     try:
-        for path in ("/", "/app.js", "/styles.css", "/healthz", "/api/session"):
+        for path in ("/", "/app.js", "/styles.css", "/research-diagnostic-tokens.css", "/healthz", "/api/session"):
             get_code, get_body, get_headers = _get_with_headers(port, path)
             head_code, head_body, head_headers = _head_with_headers(port, path)
             assert head_code == get_code == 200
@@ -787,3 +787,30 @@ def test_owner_snapshot_publication_invalidates_serialized_panel_and_detail(monk
             assert json.loads(body)['generation']==2 and header['X-Admin-Cache']=='MISS'
         assert len(calls)==4
     finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
+
+
+def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
+    from admin import research_diagnostic_tokens
+    httpd, port = _server()
+    try:
+        code, body, headers = _get_with_headers(port, "/research-diagnostic-tokens.css?path=/private/not-selected")
+        assert code == 200 and body == research_diagnostic_tokens.stylesheet()
+        assert headers["Cache-Control"] == "public, max-age=0, must-revalidate"
+        assert headers["X-Content-Type-Options"] == "nosniff"
+        request = urllib.request.Request(f"http://127.0.0.1:{port}/research-diagnostic-tokens.css", headers={"If-None-Match": headers["ETag"]})
+        try:
+            urllib.request.urlopen(request, timeout=10)
+            raise AssertionError("expected not modified")
+        except urllib.error.HTTPError as error:
+            assert error.code == 304 and not error.read()
+        def unavailable():
+            raise OSError("private path must not leak")
+        monkeypatch.setattr(research_diagnostic_tokens, "stylesheet", unavailable)
+        try:
+            _get(port, "/research-diagnostic-tokens.css")
+            raise AssertionError("expected unavailable")
+        except urllib.error.HTTPError as error:
+            assert error.code == 503
+            assert json.loads(error.read()) == {"error": "diagnostic presentation unavailable"}
+    finally:
+        httpd.shutdown(); httpd.server_close()

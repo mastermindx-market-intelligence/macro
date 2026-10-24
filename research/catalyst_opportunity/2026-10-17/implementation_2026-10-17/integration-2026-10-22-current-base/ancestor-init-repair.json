@@ -1,0 +1,58 @@
+{
+  "base": "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+  "adopted_github_merge": "71a2aec6283a9cc5ec3289edad2c1e2238814b9e",
+  "base_census_rows": 344,
+  "hosted_merge_census_rows": 355,
+  "after_import_scope_repair_rows": 358,
+  "after_initializer_repair_rows": 344,
+  "added_initializer_paths": {
+    "bea-gvc-current-descriptive-consumer": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "biocatalyst-history": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "biocatalyst-serving": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "c19-wp22-dhi-traversal": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "c19-wp32-integrated-answer-correction-denial-pins": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "crypto-assistant-context": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "defense-rail-laws": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "flow-surface": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "research-price-panel": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "unrun-government-revenue-grader": [
+      "engine/catalyst_opportunity/__init__.py"
+    ],
+    "catalyst-opportunity": [
+      "tests/__init__.py"
+    ]
+  },
+  "only_additive_initializer_paths": true,
+  "curated_job_registration": "catalyst-opportunity",
+  "census_ceilings_unchanged": [
+    344,
+    138
+  ]
+}

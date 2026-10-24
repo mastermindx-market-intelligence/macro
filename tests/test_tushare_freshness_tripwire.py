@@ -154,6 +154,7 @@ def test_latest_date_reads_wide_tz_aware_close_index(monkeypatch, tmp_path):
 
 
 def test_collect_asia_group_uses_the_binding_core_health_result(monkeypatch):
+    import ast
     import inspect
     import scripts.collect as collect
     import scripts.check_tushare_freshness as freshness
@@ -161,10 +162,37 @@ def test_collect_asia_group_uses_the_binding_core_health_result(monkeypatch):
     monkeypatch.setattr(freshness, "check_china_search_core", lambda now=None: 3)
     assert collect._required_group_health("asia") == 3
     assert collect._required_group_health("us") == 0
-    source = inspect.getsource(collect.main)
-    call = source.rindex("_required_group_health(")
-    assert call > source.index("_src_reg_run()"),         "required-store health must run after every post-collect task"
-    assert call < source.rindex("return 0 if ok > 0 else 1"),         "the binding result must decide the collect command's final exit"
+
+    # Bind the real main() entry calls rather than a private function that
+    # the scoped-QLedger writer fence correctly moved into its own helper.
+    # An unrelated --only command must not bypass that helper by importing
+    # source_registry directly from main().
+    tree = ast.parse(inspect.getsource(collect.main))
+    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)]
+
+    def named(name):
+        return [n for n in calls
+                if isinstance(n.func, ast.Name) and n.func.id == name]
+
+    shared = named("_run_shared_qledger_postcollect")
+    registry = named("_run_source_registry_postcollect")
+    required = named("_required_group_health")
+    assert len(shared) == len(registry) == len(required) == 1
+    assert not named("_src_reg_run"), "main must not bypass the scoped writer gate"
+    assert shared[0].lineno < registry[0].lineno < required[0].lineno, (
+        "required-store health must run after every shared post-collect task"
+    )
+    assert len(registry[0].keywords) == 1
+    kw = registry[0].keywords[0]
+    assert kw.arg == "only" and ast.dump(kw.value) == ast.dump(
+        ast.parse("args.only", mode="eval").body
+    ), "source-registry writer gate must receive the actual CLI --only scope"
+
+    exits = [n for n in ast.walk(tree) if isinstance(n, ast.Return)
+             and ast.unparse(n.value) == "0 if ok > 0 else 1"]
+    assert len(exits) == 1 and required[0].lineno < exits[0].lineno, (
+        "the binding result must decide the collect command's final exit"
+    )
 
 
 def test_mainland_session_clock_survives_utc_to_shanghai_midnight(monkeypatch, capsys):

@@ -1,0 +1,682 @@
+FFFFFFFFFFFFFFFF.                                                        [100%]
+=================================== FAILURES ===================================
+____ test_radar_receipt_preserves_probability_target_and_calibration_limits ____
+
+    def test_radar_receipt_preserves_probability_target_and_calibration_limits():
+        row = _qualified_radar_row()
+        before = copy.deepcopy(row)
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "at least 5%" in fact["text"] and "SPY closing prices" in fact["text"]
+E       AssertionError: assert ('at least 5%' in 'The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.')
+
+tests/test_press_planner.py:46: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path0-None] _
+
+path = ('drawdown_prob',), value = None
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability None as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path1-value1] _
+
+path = ('drawdown_prob',), value = []
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability None as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path2-None] _
+
+path = ('drawdown_prob', 'calibration_evidence'), value = None
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path3-unknown] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'schema'), value = 'unknown'
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path4-unknown] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'evidence_class')
+value = 'unknown'
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path5-True] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'precision_grade')
+value = True
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path6-0.1] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'target', 'depth'), value = 0.1
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path7-value7] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'target', 'horizons')
+value = [5, 10]
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path8-QQQ intraday lows] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'target', 'price_path')
+value = 'QQQ intraday lows'
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path9-False] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'horizons', 'h21', 'matched')
+value = False
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path10-0.2] _
+
+path = ('drawdown_prob', 'calibration_evidence', 'horizons', 'h21', 'displayed_probability')
+value = 0.2
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 0.19 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path11-True] _
+
+path = ('drawdown_prob', 'h21'), value = True
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability True as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path12-nan] _
+
+path = ('drawdown_prob', 'h21'), value = nan
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability nan as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path13--0.1] _
+
+path = ('drawdown_prob', 'h21'), value = -0.1
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability -0.1 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path14-1.1] _
+
+path = ('drawdown_prob', 'h21'), value = 1.1
+
+    @pytest.mark.parametrize("path,value", [
+        (("drawdown_prob",), None),
+        (("drawdown_prob",), []),
+        (("drawdown_prob", "calibration_evidence"), None),
+        (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+        (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+        (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+        (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+        (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+        (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+        (("drawdown_prob", "h21"), True),
+        (("drawdown_prob", "h21"), float("nan")),
+        (("drawdown_prob", "h21"), -0.1),
+        (("drawdown_prob", "h21"), 1.1),
+    ])
+    def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+        row = _qualified_radar_row()
+        cursor = row
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = value
+        fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+>       assert "probability" not in fact["text"]
+E       AssertionError: assert 'probability' not in 'The risk ra... 2026-10-12.'
+E         
+E         'probability' is contained here:
+E            drawdown probability 1.1 as of 2026-10-12.
+E         ?           +++++++++++
+
+tests/test_press_planner.py:82: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_idle_critical_mismatch_re0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-68704206-abae-489c-be38-33d8aa7a6b88'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-518f9327-4d5b-496b-bc55-aece6a32cc22'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_planner.py::test_radar_receipt_preserves_probability_target_and_calibration_limits
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path0-None]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path1-value1]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path2-None]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path3-unknown]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path4-unknown]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path5-True]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path6-0.1]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path7-value7]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path8-QQQ intraday lows]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path9-False]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path10-0.2]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path11-True]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path12-nan]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path13--0.1]
+FAILED tests/test_press_planner.py::test_radar_receipt_omits_unqualified_probabilities_without_losing_state[path14-1.1]
+16 failed, 1 passed, 31 deselected, 14 warnings in 3.65s

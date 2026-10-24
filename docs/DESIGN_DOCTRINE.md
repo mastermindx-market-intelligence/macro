@@ -103,6 +103,17 @@ spin words on tape rows (giveback / dead-cat / bounce — banned by adversarial 
 
 ## 3. Ratified patterns (case law — reuse, don't reinvent)
 
+**Chairman design direction — 2026-10-18: no colored container edges.**
+Do not use a colored left border, inset stripe, pseudo-element rail, or equivalent
+edge accent on cards, panels, callouts, rows, navigation selections, or banners.
+This replaces all earlier advice to add a 3px state rail. Containers use even,
+neutral borders; hierarchy comes from spacing, typography, surface depth, and
+concise labels. Selected items use a quiet fill and stronger text with an accessible
+selected/current state. Status may use a labeled icon or text in the semantic ink
+palette. Chart series, actual data marks, neutral dividers, and complete keyboard
+focus outlines retain their distinct jobs. Do not move the decorative stripe to
+another edge. Apply this rule to every new or touched design and shared primitive.
+
 - **Plain-English lanes** (#2206, us_stocks action board): 🟢 Buy now · 🔵 Almost ready ·
   🏃 In favour · 🟠 Take profits · ⚪ Stand aside. Lane names ARE stances. Unknown states
   route to the cautious lane.
@@ -168,7 +179,8 @@ upgrade).
    `html[data-theme="light"]` counterpart or be redesigned: glow/aurora backdrops
    (become pastel stains), blur-teasers over locked content (become dirty smudges —
    ghost them: `saturate(.35)`, opacity ≤ .5), accent-tinted highlight rows (become
-   highlighter smears — quiet tint + 3px rail + deepened ink), panel-on-canvas depth
+   highlighter smears — use a quiet neutral fill, even neutral border, and stronger
+   text; labeled semantic ink carries status, never a colored edge), panel-on-canvas depth
    (light needs white panels on a perceptibly deeper canvas — the shipped value is
    `--bg:#f7f8fa`, superseding this note's earlier `#e8ebf1`; panel≈bg is
    the flatness bug), and colored segment bars (neutral segments vanish on white; add

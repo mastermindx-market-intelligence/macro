@@ -1,0 +1,1917 @@
+{
+  "scope": "Actual source ASGI local test-principal; installed entitlement and real customer acceptance remain separate",
+  "stage_receipt_sha256": "13e164fd1efc95f8df389ade245109fde84179036bdd10d6b16f681d0a7035a3",
+  "server_receipt_sha256": "5cb43cc7e62231b4f6fee431acc799917ef64845c133f0bf59770a11fd086b24",
+  "url": "http://127.0.0.1:58753/government_revenue.html",
+  "samples": [
+    {
+      "ms": 2838.2999999970198,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 522.7999999970198,
+          "request_ms": 525.1999999880791,
+          "response_ms": 555.2999999970198,
+          "end_ms": 2008.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 522.8999999910593,
+          "request_ms": 525.3999999910593,
+          "response_ms": 555.0999999940395,
+          "end_ms": 1752.8999999910593,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 523.0999999940395,
+          "request_ms": 525.3999999910593,
+          "response_ms": 557,
+          "end_ms": 1392.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 523.0999999940395,
+          "request_ms": 1392.5999999940395,
+          "response_ms": 1398.5999999940395,
+          "end_ms": 1918.699999988079,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 523.2999999970198,
+          "request_ms": 525.2999999970198,
+          "response_ms": 554.5,
+          "end_ms": 1565.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 523.3999999910593,
+          "request_ms": 525.3999999910593,
+          "response_ms": 554,
+          "end_ms": 1796.8999999910593,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 555.0999999940395,
+          "request_ms": 680.0999999940395,
+          "response_ms": 684.5999999940395,
+          "end_ms": 1790,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 598.5,
+          "request_ms": 1566.0999999940395,
+          "response_ms": 1606.5999999940395,
+          "end_ms": 2075.199999988079,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 598.6999999880791,
+          "request_ms": 1753.2999999970198,
+          "response_ms": 1758.8999999910593,
+          "end_ms": 2278.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 598.6999999880791,
+          "request_ms": 1790.199999988079,
+          "response_ms": 1795.0999999940395,
+          "end_ms": 2299.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 598.6999999880791,
+          "request_ms": 1797.199999988079,
+          "response_ms": 1803.5,
+          "end_ms": 2390.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1833,
+          "request_ms": 1918.8999999910593,
+          "response_ms": 1922.3999999910593,
+          "end_ms": 2584.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1856.2999999970198,
+          "request_ms": 2008.5,
+          "response_ms": 2017.699999988079,
+          "end_ms": 2750.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2059.2999999970198,
+          "request_ms": 2075.2999999970198,
+          "response_ms": 2095.699999988079,
+          "end_ms": 2794.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 1,
+      "server_state": "fresh-process-cold-readers",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 27,
+      "first_ready_mutation_ms": 2807.5999999940395,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2793.1000000089407,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 522,
+          "request_ms": 524.1000000089407,
+          "response_ms": 554.4000000059605,
+          "end_ms": 2042.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 522.2000000029802,
+          "request_ms": 524.2000000029802,
+          "response_ms": 553.9000000059605,
+          "end_ms": 1076.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 522.2000000029802,
+          "request_ms": 524.2000000029802,
+          "response_ms": 554.6000000089407,
+          "end_ms": 1338.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 522.2000000029802,
+          "request_ms": 524,
+          "response_ms": 554.6000000089407,
+          "end_ms": 1481.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 522.2000000029802,
+          "request_ms": 524.1000000089407,
+          "response_ms": 552.7000000029802,
+          "end_ms": 1615.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 530.1000000089407,
+          "request_ms": 687.1000000089407,
+          "response_ms": 708.7000000029802,
+          "end_ms": 1795,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 559.2999999970198,
+          "request_ms": 1076.6000000089407,
+          "response_ms": 1115.2999999970198,
+          "end_ms": 1922.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 603.7999999970198,
+          "request_ms": 1338.7000000029802,
+          "response_ms": 1347,
+          "end_ms": 1856.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 603.9000000059605,
+          "request_ms": 1481.5,
+          "response_ms": 1489.7000000029802,
+          "end_ms": 2036.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 603.9000000059605,
+          "request_ms": 1615.7999999970198,
+          "response_ms": 1620.1000000089407,
+          "end_ms": 2125,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 604,
+          "request_ms": 1795.2999999970198,
+          "response_ms": 1804.2999999970198,
+          "end_ms": 2418,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1825.1000000089407,
+          "request_ms": 1856.2999999970198,
+          "response_ms": 1905.2999999970198,
+          "end_ms": 2613.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1836.7999999970198,
+          "request_ms": 1923,
+          "response_ms": 1998.2999999970198,
+          "end_ms": 2666.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2084.2999999970198,
+          "request_ms": 2084.7999999970198,
+          "response_ms": 2097,
+          "end_ms": 2763.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 2,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2771.7000000029802,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2778.7000000029802,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 522,
+          "request_ms": 524.7000000029802,
+          "response_ms": 540.8000000119209,
+          "end_ms": 2044.800000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 522.3000000119209,
+          "request_ms": 524.7000000029802,
+          "response_ms": 556.4000000059605,
+          "end_ms": 1631.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 522.4000000059605,
+          "request_ms": 524.7000000029802,
+          "response_ms": 549.7000000029802,
+          "end_ms": 1324.800000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 522.5,
+          "request_ms": 524.7000000029802,
+          "response_ms": 547.3000000119209,
+          "end_ms": 1084.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 522.5,
+          "request_ms": 524.6000000089407,
+          "response_ms": 541.3000000119209,
+          "end_ms": 1474.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 532.4000000059605,
+          "request_ms": 687.4000000059605,
+          "response_ms": 702,
+          "end_ms": 1789.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 560.6000000089407,
+          "request_ms": 1084.800000011921,
+          "response_ms": 1091.9000000059605,
+          "end_ms": 1924.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 604.7000000029802,
+          "request_ms": 1325.1000000089407,
+          "response_ms": 1335.4000000059605,
+          "end_ms": 1842.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 604.7000000029802,
+          "request_ms": 1474.6000000089407,
+          "response_ms": 1482.1000000089407,
+          "end_ms": 2029.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 604.7000000029802,
+          "request_ms": 1632.4000000059605,
+          "response_ms": 1650.5,
+          "end_ms": 2142.300000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 604.8000000119209,
+          "request_ms": 1790,
+          "response_ms": 1801.2000000029802,
+          "end_ms": 2419.300000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1813.2000000029802,
+          "request_ms": 1842.300000011921,
+          "response_ms": 1860.1000000089407,
+          "end_ms": 2592.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1825.4000000059605,
+          "request_ms": 1924.800000011921,
+          "response_ms": 1932,
+          "end_ms": 2667.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2083.6000000089407,
+          "request_ms": 2084.1000000089407,
+          "response_ms": 2101,
+          "end_ms": 2757.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 3,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2766.4000000059605,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2792.1000000089407,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 526.7000000029802,
+          "request_ms": 528.4000000059605,
+          "response_ms": 541.5,
+          "end_ms": 2044.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 526.7999999970198,
+          "request_ms": 528.4000000059605,
+          "response_ms": 542.1000000089407,
+          "end_ms": 1090.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 526.7999999970198,
+          "request_ms": 528.4000000059605,
+          "response_ms": 549.7999999970198,
+          "end_ms": 1346.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 526.7999999970198,
+          "request_ms": 528.4000000059605,
+          "response_ms": 541.9000000059605,
+          "end_ms": 1631.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 526.9000000059605,
+          "request_ms": 528.2999999970198,
+          "response_ms": 549.6000000089407,
+          "end_ms": 1496.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 529,
+          "request_ms": 686.6000000089407,
+          "response_ms": 692.4000000059605,
+          "end_ms": 1797.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 560.1000000089407,
+          "request_ms": 1091,
+          "response_ms": 1095.7999999970198,
+          "end_ms": 1930.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 604,
+          "request_ms": 1346.6000000089407,
+          "response_ms": 1363.6000000089407,
+          "end_ms": 1864.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 604,
+          "request_ms": 1496.5,
+          "response_ms": 1501.2000000029802,
+          "end_ms": 2051.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 604,
+          "request_ms": 1632.1000000089407,
+          "response_ms": 1636.9000000059605,
+          "end_ms": 2140.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 604.1000000089407,
+          "request_ms": 1797.2999999970198,
+          "response_ms": 1830.7999999970198,
+          "end_ms": 2410.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1817.7999999970198,
+          "request_ms": 1864.2000000029802,
+          "response_ms": 1872.7999999970198,
+          "end_ms": 2599.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1829.7000000029802,
+          "request_ms": 1930.2999999970198,
+          "response_ms": 1935.7000000029802,
+          "end_ms": 2674.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2085.1000000089407,
+          "request_ms": 2085.4000000059605,
+          "response_ms": 2098.2000000029802,
+          "end_ms": 2762.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 4,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2772.5,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2763.9000000059605,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 518.7000000029802,
+          "request_ms": 520.7999999970198,
+          "response_ms": 538.7000000029802,
+          "end_ms": 2043,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 518.7999999970198,
+          "request_ms": 520.7999999970198,
+          "response_ms": 532.5999999940395,
+          "end_ms": 1607.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 518.9000000059605,
+          "request_ms": 520.9000000059605,
+          "response_ms": 543.0999999940395,
+          "end_ms": 1089.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 518.9000000059605,
+          "request_ms": 520.9000000059605,
+          "response_ms": 543.5999999940395,
+          "end_ms": 1338.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 519,
+          "request_ms": 520.7999999970198,
+          "response_ms": 537.9000000059605,
+          "end_ms": 1472.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 521.7999999970198,
+          "request_ms": 678.9000000059605,
+          "response_ms": 683.5,
+          "end_ms": 1780.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 552.2999999970198,
+          "request_ms": 1089.7000000029802,
+          "response_ms": 1094.5,
+          "end_ms": 1923.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 595.9000000059605,
+          "request_ms": 1338.7999999970198,
+          "response_ms": 1344,
+          "end_ms": 1856,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 596.0999999940395,
+          "request_ms": 1475,
+          "response_ms": 1556.2000000029802,
+          "end_ms": 2027.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 596.0999999940395,
+          "request_ms": 1607.9000000059605,
+          "response_ms": 1667.4000000059605,
+          "end_ms": 2117.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 596.0999999940395,
+          "request_ms": 1781.2000000029802,
+          "response_ms": 1786.2999999970198,
+          "end_ms": 2387.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1801.2999999970198,
+          "request_ms": 1856.0999999940395,
+          "response_ms": 1862.7999999970198,
+          "end_ms": 2576.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1812.5999999940395,
+          "request_ms": 1923.5,
+          "response_ms": 1926,
+          "end_ms": 2657.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2077.7999999970198,
+          "request_ms": 2078.0999999940395,
+          "response_ms": 2089.4000000059605,
+          "end_ms": 2748.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 5,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2756.9000000059605,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2776.4000000059605,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 521.7999999970198,
+          "request_ms": 523.1000000089407,
+          "response_ms": 541.6000000089407,
+          "end_ms": 2036.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 521.9000000059605,
+          "request_ms": 523.2999999970198,
+          "response_ms": 532.5,
+          "end_ms": 1609.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 522.1000000089407,
+          "request_ms": 523.2999999970198,
+          "response_ms": 544.7000000029802,
+          "end_ms": 1100,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 522.1000000089407,
+          "request_ms": 523.2999999970198,
+          "response_ms": 541.5,
+          "end_ms": 1316.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 522.1000000089407,
+          "request_ms": 523.2000000029802,
+          "response_ms": 541.9000000059605,
+          "end_ms": 1489.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 531.7999999970198,
+          "request_ms": 688,
+          "response_ms": 694.4000000059605,
+          "end_ms": 1789.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 560.2999999970198,
+          "request_ms": 1100.2000000029802,
+          "response_ms": 1104.1000000089407,
+          "end_ms": 1932,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 605.2999999970198,
+          "request_ms": 1316.7999999970198,
+          "response_ms": 1319.9000000059605,
+          "end_ms": 1834.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 605.5,
+          "request_ms": 1490.2000000029802,
+          "response_ms": 1494.7999999970198,
+          "end_ms": 2045.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 605.5,
+          "request_ms": 1610.2000000029802,
+          "response_ms": 1612.7999999970198,
+          "end_ms": 2119.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 605.5,
+          "request_ms": 1789.7000000029802,
+          "response_ms": 1794.5,
+          "end_ms": 2426.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1809.7999999970198,
+          "request_ms": 1834.4000000059605,
+          "response_ms": 1836.9000000059605,
+          "end_ms": 2585,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1823.2000000029802,
+          "request_ms": 1932.4000000059605,
+          "response_ms": 1935,
+          "end_ms": 2673.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2075.4000000059605,
+          "request_ms": 2075.7000000029802,
+          "response_ms": 2084.5,
+          "end_ms": 2758.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 6,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2766.7000000029802,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2789.4000000059605,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 519.5,
+          "request_ms": 521.2000000029802,
+          "response_ms": 560.2999999970198,
+          "end_ms": 2042.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 519.5999999940395,
+          "request_ms": 521.2999999970198,
+          "response_ms": 544.0999999940395,
+          "end_ms": 1614.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 519.7000000029802,
+          "request_ms": 521.2999999970198,
+          "response_ms": 543.5,
+          "end_ms": 1068.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 519.7000000029802,
+          "request_ms": 521.2999999970198,
+          "response_ms": 543.7000000029802,
+          "end_ms": 1314.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 519.7999999970198,
+          "request_ms": 521.2999999970198,
+          "response_ms": 543.5999999940395,
+          "end_ms": 1464.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 532.5999999940395,
+          "request_ms": 687.2000000029802,
+          "response_ms": 715,
+          "end_ms": 1795.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 559,
+          "request_ms": 1068.5999999940395,
+          "response_ms": 1084.0999999940395,
+          "end_ms": 1914.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 601.5,
+          "request_ms": 1315.0999999940395,
+          "response_ms": 1329.2000000029802,
+          "end_ms": 1833,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 601.5999999940395,
+          "request_ms": 1466.2999999970198,
+          "response_ms": 1484.5,
+          "end_ms": 2019.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 601.5999999940395,
+          "request_ms": 1614.5999999940395,
+          "response_ms": 1624.2000000029802,
+          "end_ms": 2116.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 601.7000000029802,
+          "request_ms": 1796.2000000029802,
+          "response_ms": 1802.2999999970198,
+          "end_ms": 2446.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1819.2999999970198,
+          "request_ms": 1833.0999999940395,
+          "response_ms": 1837.5999999940395,
+          "end_ms": 2604.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1830.2000000029802,
+          "request_ms": 1914.5999999940395,
+          "response_ms": 1918.2999999970198,
+          "end_ms": 2671.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2078.5999999940395,
+          "request_ms": 2079,
+          "response_ms": 2110.7999999970198,
+          "end_ms": 2762.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 7,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2772,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2774.0999999940395,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 516.5999999940395,
+          "request_ms": 518,
+          "response_ms": 533.5999999940395,
+          "end_ms": 2038.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 516.7000000029802,
+          "request_ms": 518,
+          "response_ms": 533.5999999940395,
+          "end_ms": 1078.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 516.7000000029802,
+          "request_ms": 518,
+          "response_ms": 533.2000000029802,
+          "end_ms": 1311.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 516.7000000029802,
+          "request_ms": 518,
+          "response_ms": 537.7000000029802,
+          "end_ms": 1626.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 516.9000000059605,
+          "request_ms": 518,
+          "response_ms": 530.2999999970198,
+          "end_ms": 1461.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 528.2000000029802,
+          "request_ms": 682.2999999970198,
+          "response_ms": 690.7999999970198,
+          "end_ms": 1784.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 555.4000000059605,
+          "request_ms": 1078.5999999940395,
+          "response_ms": 1081,
+          "end_ms": 1919.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 598.4000000059605,
+          "request_ms": 1311.2999999970198,
+          "response_ms": 1313.4000000059605,
+          "end_ms": 1828.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 598.4000000059605,
+          "request_ms": 1461.4000000059605,
+          "response_ms": 1465.0999999940395,
+          "end_ms": 2016.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 598.4000000059605,
+          "request_ms": 1626.7000000029802,
+          "response_ms": 1643.5,
+          "end_ms": 2137,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 598.5999999940395,
+          "request_ms": 1785.4000000059605,
+          "response_ms": 1793.9000000059605,
+          "end_ms": 2420.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1803.5999999940395,
+          "request_ms": 1828.5999999940395,
+          "response_ms": 1833.9000000059605,
+          "end_ms": 2578.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1814.2000000029802,
+          "request_ms": 1919.2000000029802,
+          "response_ms": 1925.2000000029802,
+          "end_ms": 2662,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2073.2000000029802,
+          "request_ms": 2073.5999999940395,
+          "response_ms": 2085.0999999940395,
+          "end_ms": 2751.9000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 8,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2761,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2785.300000011921,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 522.5,
+          "request_ms": 524.1000000089407,
+          "response_ms": 548.8000000119209,
+          "end_ms": 2037.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 522.6000000089407,
+          "request_ms": 524.1000000089407,
+          "response_ms": 549.1000000089407,
+          "end_ms": 1632.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 522.7000000029802,
+          "request_ms": 524.2000000029802,
+          "response_ms": 544.7000000029802,
+          "end_ms": 1070.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 522.7000000029802,
+          "request_ms": 524.1000000089407,
+          "response_ms": 548.4000000059605,
+          "end_ms": 1308.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 522.7000000029802,
+          "request_ms": 524.1000000089407,
+          "response_ms": 549.6000000089407,
+          "end_ms": 1490.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 533.9000000059605,
+          "request_ms": 687.9000000059605,
+          "response_ms": 692.6000000089407,
+          "end_ms": 1797.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 560.2000000029802,
+          "request_ms": 1071,
+          "response_ms": 1090.1000000089407,
+          "end_ms": 1925,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 604.8000000119209,
+          "request_ms": 1309.1000000089407,
+          "response_ms": 1313.4000000059605,
+          "end_ms": 1827.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 604.8000000119209,
+          "request_ms": 1490.6000000089407,
+          "response_ms": 1498.800000011921,
+          "end_ms": 2044.800000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 604.9000000059605,
+          "request_ms": 1633,
+          "response_ms": 1640.300000011921,
+          "end_ms": 2142.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 605,
+          "request_ms": 1797.800000011921,
+          "response_ms": 1807.800000011921,
+          "end_ms": 2457.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1818.300000011921,
+          "request_ms": 1827.9000000059605,
+          "response_ms": 1834.6000000089407,
+          "end_ms": 2600,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1829.5,
+          "request_ms": 1925.6000000089407,
+          "response_ms": 1935,
+          "end_ms": 2682.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2075.5,
+          "request_ms": 2075.9000000059605,
+          "response_ms": 2090.7000000029802,
+          "end_ms": 2764.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 9,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 27,
+      "first_ready_mutation_ms": 2773,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    },
+    {
+      "ms": 2804.7000000029802,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 527.8999999910593,
+          "request_ms": 529.3999999910593,
+          "response_ms": 546.2999999970198,
+          "end_ms": 2053,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 70087,
+          "transferSize": 70387
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 528,
+          "request_ms": 529.5999999940395,
+          "response_ms": 546.3999999910593,
+          "end_ms": 1347,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 528,
+          "request_ms": 529.5,
+          "response_ms": 546,
+          "end_ms": 1625,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28998,
+          "transferSize": 29298
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 528.0999999940395,
+          "request_ms": 529.5999999940395,
+          "response_ms": 545.0999999940395,
+          "end_ms": 1078.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1735,
+          "transferSize": 2035
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 528.0999999940395,
+          "request_ms": 529.3999999910593,
+          "response_ms": 545.5,
+          "end_ms": 1474.2999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20211,
+          "transferSize": 20511
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 530.3999999910593,
+          "request_ms": 687.0999999940395,
+          "response_ms": 693.0999999940395,
+          "end_ms": 1798.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 32617,
+          "transferSize": 32917
+        },
+        {
+          "path": "/fonts/Inter-800.woff2",
+          "start_ms": 561.8999999910593,
+          "request_ms": 1078.5,
+          "response_ms": 1082.2999999970198,
+          "end_ms": 1924.3999999910593,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24406,
+          "transferSize": 24706
+        },
+        {
+          "path": "/logo_config.js",
+          "start_ms": 606.0999999940395,
+          "request_ms": 1347.3999999910593,
+          "response_ms": 1349.0999999940395,
+          "end_ms": 1865,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 202,
+          "transferSize": 502
+        },
+        {
+          "path": "/stock-logos.js",
+          "start_ms": 606.0999999940395,
+          "request_ms": 1474.7000000029802,
+          "response_ms": 1478.5,
+          "end_ms": 2030.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 5172,
+          "transferSize": 5472
+        },
+        {
+          "path": "/live_config.js",
+          "start_ms": 606.2000000029802,
+          "request_ms": 1625.3999999910593,
+          "response_ms": 1627.7999999970198,
+          "end_ms": 2134.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 367,
+          "transferSize": 667
+        },
+        {
+          "path": "/live.js",
+          "start_ms": 606.2000000029802,
+          "request_ms": 1798.3999999910593,
+          "response_ms": 1803.2000000029802,
+          "end_ms": 2413.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 16585,
+          "transferSize": 16885
+        },
+        {
+          "path": "/fonts/Inter-600.woff2",
+          "start_ms": 1819,
+          "request_ms": 1865.2000000029802,
+          "response_ms": 1867.8999999910593,
+          "end_ms": 2614.7999999970198,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 24443,
+          "transferSize": 24743
+        },
+        {
+          "path": "/fonts/Inter-400.woff2",
+          "start_ms": 1830.0999999940395,
+          "request_ms": 1924.7000000029802,
+          "response_ms": 1927.7000000029802,
+          "end_ms": 2668.0999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23666,
+          "transferSize": 23966
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2086.7999999970198,
+          "request_ms": 2087.0999999940395,
+          "response_ms": 2097.5,
+          "end_ms": 2764.5999999940395,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "sample": 10,
+      "server_state": "warm readers; fresh browser",
+      "content_encoding": "gzip",
+      "navigation_status": 200,
+      "geometry": {
+        "scrollY": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "value": {
+          "text": "4101 USD millions",
+          "x": 31,
+          "y": 797.859375,
+          "width": 328,
+          "height": 21.75,
+          "visible": true,
+          "fully_inside": true
+        },
+        "period": {
+          "text": "Reported segment sales · 2026Q2",
+          "x": 31,
+          "y": 775.734375,
+          "width": 328,
+          "height": 18.125,
+          "visible": true,
+          "fully_inside": true
+        },
+        "issuer": {
+          "text": "LMT",
+          "x": 31,
+          "y": 643.9375,
+          "width": 76,
+          "height": 44,
+          "visible": true,
+          "fully_inside": true
+        }
+      },
+      "mutation_batches": 28,
+      "first_ready_mutation_ms": 2773.2999999970198,
+      "http_errors": [],
+      "page_errors": [],
+      "meaningful_contract": true,
+      "pass_target": true
+    }
+  ],
+  "profile": {
+    "viewport": "390x844",
+    "latency_ms": 500,
+    "download_Bps": 200000,
+    "browser_cache": "disabled; new context per sample",
+    "measurement": "MutationObserver plus two consecutive rAF frames; numeric issuer value/unit/dated period fully visible at scrollY0",
+    "expected_issuer": "LMT",
+    "expected_reported_unit": "USD millions",
+    "expected_reported_value": "4101",
+    "expected_reported_period": "2026Q2"
+  },
+  "target_ms": 3000,
+  "measurement_complete": true,
+  "all_pass": true,
+  "median_ms": 2787.3500000089407,
+  "p95_ms": 2838.2999999970198,
+  "max_ms": 2838.2999999970198,
+  "observed_samples_n": 10,
+  "failed_samples_n": 0
+}

@@ -1,0 +1,159 @@
+{
+  "path": "/tmp/rr-action-snapshot-20261020.json",
+  "bytes": 51139,
+  "sha256": "ab28897bcae098669fb6f2391ce40fadebc64eb417bc2942815a87ba9470ef1d",
+  "observations": 36,
+  "selected": [
+    {
+      "ticker": "SPY",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.011065157971047346,
+      "obs_tr_return_5": -0.019677109547117544,
+      "obs_tr_return_20": 0.00204807408997576,
+      "obs_price_dd_63": -0.020331446058168168,
+      "obs_price_sma_gap_200": 0.05273742174639717
+    },
+    {
+      "ticker": "RSP",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.004232575172601782,
+      "obs_tr_return_5": 0.004928666376493807,
+      "obs_tr_return_20": 0.012269799667198988,
+      "obs_price_dd_63": -0.038963988724236676,
+      "obs_price_sma_gap_200": 0.03562727223980455
+    },
+    {
+      "ticker": "DIA",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "obs_tr_return_1": -0.0011236067979216724,
+      "obs_tr_return_5": 0.009021204587394971,
+      "obs_tr_return_20": 0.0031026061416641326,
+      "obs_price_dd_63": -0.050072756209408764,
+      "obs_price_sma_gap_200": 0.023148793500041398
+    },
+    {
+      "ticker": "IWM",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.016867763404664893,
+      "obs_tr_return_5": -0.030472502780541477,
+      "obs_tr_return_20": -0.04808167324407653,
+      "obs_price_dd_63": -0.11357302537743363,
+      "obs_price_sma_gap_200": -0.02596934268760409
+    },
+    {
+      "ticker": "QQQ",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.02500001676790009,
+      "obs_tr_return_5": -0.05519990237884931,
+      "obs_tr_return_20": -0.015122883912027651,
+      "obs_price_dd_63": -0.06563460905432783,
+      "obs_price_sma_gap_200": 0.05169693247106877
+    },
+    {
+      "ticker": "XLK",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.030234162201433712,
+      "obs_tr_return_5": -0.07701980909856154,
+      "obs_tr_return_20": -0.031201963525999465,
+      "obs_price_dd_63": -0.091732667224242,
+      "obs_price_sma_gap_200": 0.0952991517492714
+    },
+    {
+      "ticker": "XLP",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": 0.010844513591333316,
+      "obs_tr_return_5": 0.05022177185760257,
+      "obs_tr_return_20": 0.06517219861671264,
+      "obs_price_dd_63": 0.0,
+      "obs_price_sma_gap_200": 0.043059257931390205
+    },
+    {
+      "ticker": "XLV",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.002708932337747383,
+      "obs_tr_return_5": 0.034541357295257535,
+      "obs_tr_return_20": 0.05342540928380357,
+      "obs_price_dd_63": -0.002708932337747383,
+      "obs_price_sma_gap_200": 0.12188460076929486
+    },
+    {
+      "ticker": "XLU",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": 0.013445319041484272,
+      "obs_tr_return_5": 0.01931898671838672,
+      "obs_tr_return_20": 0.034558820435744986,
+      "obs_price_dd_63": -0.08814002485115757,
+      "obs_price_sma_gap_200": -0.04740305868584238
+    },
+    {
+      "ticker": "SMH",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.03408855470735972,
+      "obs_tr_return_5": -0.10531556074233595,
+      "obs_tr_return_20": -0.05795815352994105,
+      "obs_price_dd_63": -0.14846196996712246,
+      "obs_price_sma_gap_200": 0.055626831609225214
+    },
+    {
+      "ticker": "SOXX",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.041421395376193715,
+      "obs_tr_return_5": -0.11800144241103039,
+      "obs_tr_return_20": -0.0744367383844341,
+      "obs_price_dd_63": -0.1630506582159691,
+      "obs_price_sma_gap_200": 0.055075257767501995
+    },
+    {
+      "ticker": "HYG",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": -0.003500540032165489,
+      "obs_tr_return_5": -0.004790919726780141,
+      "obs_tr_return_20": -0.016911163913195915,
+      "obs_price_dd_63": -0.03828825861738794,
+      "obs_price_sma_gap_200": -0.03577093501231454
+    },
+    {
+      "ticker": "TLT",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "obs_tr_return_1": 0.001000398022177107,
+      "obs_tr_return_5": 0.02654526296118931,
+      "obs_tr_return_20": -0.010801195940635111,
+      "obs_price_dd_63": -0.049738781081021144,
+      "obs_price_sma_gap_200": -0.05765710438400584
+    },
+    {
+      "ticker": "BIL",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "obs_tr_return_1": 0.0,
+      "obs_tr_return_5": 0.0006559978044426984,
+      "obs_tr_return_20": 0.002987715025515092,
+      "obs_price_dd_63": -0.0017452406367448603,
+      "obs_price_sma_gap_200": 1.8540306651715355e-05
+    },
+    {
+      "ticker": "SGOV",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "obs_tr_return_1": 0.00019900789026050525,
+      "obs_tr_return_5": 0.0006967223447171822,
+      "obs_tr_return_20": 0.0028988068316253557,
+      "obs_price_dd_63": -0.0016879969267273864,
+      "obs_price_sma_gap_200": 6.068483846677353e-05
+    }
+  ],
+  "revised_sources": []
+}

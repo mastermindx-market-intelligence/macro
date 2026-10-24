@@ -58,6 +58,8 @@ def _fmt_int(v):
 def _status_badge(status: str | None) -> dict:
     """Return {css, label_en, label_zh} for a status string."""
     s = (status or "accruing").lower()
+    if "scoreable" in s:
+        return {"css": "badge-active", "label_en": "SCOREABLE", "label_zh": "可评分"}
     if "accruing" in s:
         return {"css": "badge-accruing", "label_en": "ACCRUING", "label_zh": "累积中"}
     if "active" in s or "pass" in s:
@@ -74,6 +76,10 @@ def _enrich_scoreboard_row(row: dict) -> dict:
     r["mfe_med_fmt"] = _fmt_pct(r.get("mfe_med"), signed=False)
     r["mae_med_fmt"] = _fmt_pct(r.get("mae_med"), signed=False)
     r["asym_fmt"] = _fmt_float(r.get("asym"), decimals=2, signed=False)
+    r["path25_med_mfe_fmt"] = _fmt_pct(r.get("path25_med_mfe"), signed=False)
+    r["path25_med_abs_mae_fmt"] = _fmt_pct(r.get("path25_med_abs_mae"), signed=False)
+    r["path25_asym_fmt"] = _fmt_float(r.get("path25_asym"), decimals=2, signed=False)
+    r["path25_n_fmt"] = _fmt_int(r.get("path25_n"))
     r["nav_excess_cum_fmt"] = _fmt_pct(r.get("nav_excess_cum"), signed=True)
     r["max_dd_fmt"] = _fmt_pct(r.get("max_dd"), signed=False)
     r["vs_random_lift_fmt"] = _fmt_pct(r.get("vs_random_lift"), signed=True)
@@ -99,6 +105,9 @@ def _enrich_pick(pick: dict) -> dict:
     """Add display fields to a pick card dict."""
     p = dict(pick)
     c = p.get("close")
+    if c is None:
+        # builder fire rows carry the pick price as close_at_fire (no "close" key)
+        c = p.get("close_at_fire")
     # CN prices in ¥
     p["close_fmt"] = f"¥{c:.2f}" if c is not None else "—"
     # board chip label for limit state
@@ -201,6 +210,8 @@ def _build_cn_accountability_vm(scoreboard: dict | None) -> dict:
             "process_fault_mix": process_fault_mix,
             "has_process_fault_mix": bool(process_fault_mix),
             "us_proxy_note": scoreboard.get("us_proxy_note") or "",
+            "total_matured": scoreboard.get("total_matured"),
+            "board_definition": scoreboard.get("board_definition") or "",
         }
     except Exception:  # noqa: BLE001
         return {"present": False}

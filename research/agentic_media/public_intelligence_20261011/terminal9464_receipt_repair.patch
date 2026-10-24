@@ -1,0 +1,62 @@
+From d527b2446c2f0f4a006992708a4af7c1402d0842 Mon Sep 17 00:00:00 2001
+From: Sol CEO <actions@users.noreply.github.com>
+Date: Thu, 15 Oct 2026 05:57:29 -0700
+Subject: [PATCH] Refresh stock dashboard receipts for Terminal recovery bundle
+
+---
+ mockups/evidence/prophet-p0b-zero-fouc/manifest.json          | 4 ++--
+ .../evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json  | 2 +-
+ mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json     | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/mockups/evidence/prophet-p0b-zero-fouc/manifest.json b/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+index 2cab29229911..5d14437bc618 100644
+--- a/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
++++ b/mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+@@ -534,7 +534,7 @@
+         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+         "primary_cases": 48,
+         "screenshots": 8,
+-        "sha256": "5d3b08c1b42200f8137f7a72359f9cf91f55fdbd0d710af36ee56184d31f024b"
++        "sha256": "49968009347acd8a1767ac2ce4cb6838b26f06adb5f291657ede70d29c7c3fb5"
+       },
+       "hk": {
+         "degraded_control_cases": 16,
+@@ -542,7 +542,7 @@
+         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+         "primary_cases": 48,
+         "screenshots": 8,
+-        "sha256": "806d1ebe55921585e3994790f972d56d3029288cc19217cbffc845df55e6c2aa"
++        "sha256": "42059ac5a60b92312c71a5487932b65212c5785397661a0f003fd5b95bb1d9f4"
+       }
+     },
+     "claims": {
+diff --git a/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json b/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+index fc928e6e027b..3f62f0e88a75 100644
+--- a/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
++++ b/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+@@ -314,7 +314,7 @@
+     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
+     "site/tablesort.js": "9a961fc8816e902a859bdbcd3873f719527a97e90524c92a4d5c22ea61916650",
+     "site/theme.css": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+-    "site/theme.js": "bd0a93b395ae963f7d2a873111735ab7b2e05e2f0a909fe58c2f3c40577e587c"
++    "site/theme.js": "fccb65772473dcaa8d8611661795aa3d2acdd8ba7fd57d475e6a9e0786071550"
+   },
+   "viewport": {
+     "width": 390,
+diff --git a/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json b/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+index a44599a1728d..1585254af10f 100644
+--- a/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
++++ b/mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+@@ -541,7 +541,7 @@
+     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
+     "site/tablesort.js": "9a961fc8816e902a859bdbcd3873f719527a97e90524c92a4d5c22ea61916650",
+     "site/theme.css": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+-    "site/theme.js": "bd0a93b395ae963f7d2a873111735ab7b2e05e2f0a909fe58c2f3c40577e587c"
++    "site/theme.js": "fccb65772473dcaa8d8611661795aa3d2acdd8ba7fd57d475e6a9e0786071550"
+   },
+   "viewport": {
+     "width": 390,
+-- 
+2.46.1
+
