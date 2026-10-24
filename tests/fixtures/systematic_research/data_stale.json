@@ -1,0 +1,74 @@
+{
+  "_fixture_note": "SYNTHETIC TEST DATA — invented numbers, not a measured result.",
+  "schema": "systematic_research.v1",
+  "generated_at": "2026-10-22T18:26:00Z",
+  "as_of": "2026-10-08T20:00:00Z",
+  "mode": "RESEARCH_ONLY",
+  "live_orders_enabled": false,
+  "status": "inputs_blocked",
+  "source": {
+    "code_revision": "synthetic0000",
+    "data_revision": "synthetic0003"
+  },
+  "summary": {
+    "candidate_count": 1,
+    "evaluated_count": 1,
+    "capital_eligible_count": 0
+  },
+  "strategies": [
+    {
+      "id": "tsmom_200",
+      "name": "200-session time-series momentum",
+      "family": "Trend following",
+      "horizon_sessions": 21,
+      "status": "research_only",
+      "stance": "Observe only",
+      "reason": "The past record is current, but the newest sessions have not been compiled.",
+      "historical": {
+        "state": "available",
+        "sample_start": "2010-01-04",
+        "sample_end": "2026-10-08",
+        "observations": 3972,
+        "net_sharpe": 0.38,
+        "net_cagr": 0.030,
+        "max_drawdown": -0.119,
+        "turnover": 2.6,
+        "cost_bps": 4.0,
+        "benchmark_sharpe": 0.27,
+        "limitations": [
+          "The sample ends ten sessions before the page was generated, so recent behaviour is not represented."
+        ]
+      },
+      "prospective": {
+        "state": "not_started",
+        "registered": 0,
+        "graded": 0
+      },
+      "paper": {
+        "state": "not_connected"
+      },
+      "capital_eligible": false,
+      "blockers": [
+        "Ten sessions of price history are missing from this build."
+      ],
+      "invalidation": [
+        "The edge disappears once realistic costs rise above six basis points per trade."
+      ],
+      "instruments": [
+        "Broad equity index futures"
+      ]
+    }
+  ],
+  "data_health": {
+    "state": "blocked",
+    "reasons": [
+      "Ten sessions of daily price history are missing; the compiled sample ends 2026-10-08.",
+      "The cost record used for this build is one revision behind the current one."
+    ],
+    "last_session": "2026-10-08"
+  },
+  "limitations": [
+    "The compiled sample is stale relative to the page's own generated time, so recent behaviour is not represented.",
+    "Nothing on this page is approved for capital, and this page cannot place an order."
+  ]
+}

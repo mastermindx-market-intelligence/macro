@@ -1,0 +1,118 @@
+{
+  "_fixture_note": "SYNTHETIC TEST DATA — invented numbers, not a measured result.",
+  "schema": "systematic_research.v1",
+  "generated_at": "2026-10-22T18:26:00Z",
+  "as_of": "2026-10-21T20:00:00Z",
+  "mode": "RESEARCH_ONLY",
+  "live_orders_enabled": false,
+  "status": "research_available",
+  "source": {
+    "code_revision": "synthetic0000",
+    "data_revision": "synthetic0001"
+  },
+  "summary": {
+    "candidate_count": 2,
+    "evaluated_count": 2,
+    "capital_eligible_count": 0
+  },
+  "strategies": [
+    {
+      "id": "tsmom_200",
+      "name": "200-session time-series momentum",
+      "family": "Trend following",
+      "horizon_sessions": 21,
+      "status": "research_only",
+      "stance": "Observe only",
+      "reason": "Past results are steady but thin, and no forward record exists yet.",
+      "historical": {
+        "state": "available",
+        "sample_start": "2010-01-04",
+        "sample_end": "2026-10-21",
+        "observations": 4021,
+        "net_sharpe": 0.41,
+        "net_cagr": 0.032,
+        "max_drawdown": -0.114,
+        "turnover": 2.6,
+        "cost_bps": 4.0,
+        "benchmark_sharpe": 0.28,
+        "limitations": [
+          "One instrument family only, so the record cannot be separated from that market's own drift.",
+          "Costs assume a fixed four basis points; real fills were not measured.",
+          "Surviving periods only — instruments that stopped trading were dropped."
+        ]
+      },
+      "prospective": {
+        "state": "not_started",
+        "registered": 0,
+        "graded": 0
+      },
+      "paper": {
+        "state": "not_connected"
+      },
+      "capital_eligible": false,
+      "blockers": [
+        "Forward records have not started, so nothing has been graded outside the past sample."
+      ],
+      "invalidation": [
+        "The edge disappears once realistic costs rise above six basis points per trade.",
+        "The result depends on a handful of sessions; dropping the best ten sessions removes it."
+      ],
+      "instruments": [
+        "Broad equity index futures"
+      ]
+    },
+    {
+      "id": "rsi2_oversold",
+      "name": "Two-session RSI oversold re-entry",
+      "family": "Short-horizon mean reversion",
+      "horizon_sessions": 2,
+      "status": "research_only",
+      "stance": "Observe only",
+      "reason": "The past record is short, wide and sensitive to the cost assumption.",
+      "historical": {
+        "state": "available",
+        "sample_start": "2016-01-04",
+        "sample_end": "2026-10-21",
+        "observations": 2691,
+        "net_sharpe": 0.22,
+        "net_cagr": 0.014,
+        "max_drawdown": -0.089,
+        "turnover": 41.3,
+        "cost_bps": 4.0,
+        "benchmark_sharpe": 0.28,
+        "limitations": [
+          "Turnover is high, so the result is dominated by the assumed cost.",
+          "Only two sessions of holding period, so one adverse session erases a run of gains."
+        ]
+      },
+      "prospective": {
+        "state": "not_started",
+        "registered": 0,
+        "graded": 0
+      },
+      "paper": {
+        "state": "not_connected"
+      },
+      "capital_eligible": false,
+      "blockers": [
+        "The edge is smaller than the assumed transaction cost at realistic fills."
+      ],
+      "invalidation": [
+        "Any cost above five basis points per trade removes the entire past result."
+      ],
+      "instruments": [
+        "Large-cap index constituents"
+      ]
+    }
+  ],
+  "data_health": {
+    "state": "ready",
+    "reasons": [],
+    "last_session": "2026-10-21"
+  },
+  "limitations": [
+    "These are past-record results only. No candidate has been graded on forward or live outcomes.",
+    "Nothing on this page is approved for capital, and this page cannot place an order.",
+    "The candidate list is fixed; the workspace shows what was compiled, not a search over alternatives."
+  ]
+}

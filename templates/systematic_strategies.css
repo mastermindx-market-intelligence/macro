@@ -1,0 +1,574 @@
+/* Systematic Strategies — research workspace.
+ *
+ * Restrained institutional research desk. Every colour is a shared theme token
+ * (templates/theme.css), so light and dark are one composed pair rather than an
+ * inverted one; there is no literal hex here.
+ *
+ * House rules this file obeys (docs/DESIGN_DOCTRINE.md, CLAUDE.md):
+ *   · No colored container edges or rails. Every container border is a neutral,
+ *     even 1px `--ss-line` on all four sides. Hierarchy comes from spacing,
+ *     surface depth and type, never from an accent stripe.
+ *   · No novelty gradients. Depth is a flat surface plus a hairline.
+ *   · Status is carried by TEXT ink inside a labelled chip, not by an edge.
+ *   · Body copy is 14px, small metadata never drops below 12px, the page title
+ *     is the shared 28px `--fs-h1` step.
+ *   · Focus outlines are complete and never clipped.
+ *
+ * Served beside the page by the builder's opt-in --copy-assets
+ * (scripts/render_systematic_strategies.py); see scripts/check_template_site_sync.py
+ * for the template->site plain-copy convention this follows.
+ */
+
+.ss-page {
+  /* 14px body on both planes. */
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* The shared header ships a language toggle, so every string this page authors
+   carries both languages through t(). This is the same visibility contract the
+   rest of the site uses: one language is shown, never both stacked, and the
+   default plane shows English. Without these rules the toggle does nothing on
+   this page and the control is dead markup. */
+html:not([data-lang="zh"]) .l-zh { display: none; }
+html[data-lang="zh"] .l-en { display: none; }
+html:not([data-lang="zh"]) .ss-page .l-en { display: inline; }
+html[data-lang="zh"] .ss-page .l-zh { display: inline; }
+
+/* Every descendant is allowed to shrink inside a grid/flex track; without this
+   a long reason or a long version string widens the page and forces a
+   horizontal scrollbar at 390px. */
+.ss-page *,
+.ss-page *::before,
+.ss-page *::after {
+  box-sizing: border-box;
+}
+
+.ss-workspace {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── header: title, deck, and the one prominent stance ────────────────────── */
+
+.ss-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px 32px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ss-line);
+}
+
+.ss-head-copy { min-width: 0; }
+
+.ss-eyebrow {
+  margin: 0 0 6px;
+  font-size: var(--fs-sm);           /* 12.5px — metadata floor */
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+
+.ss-title {
+  margin: 0;
+  font-size: var(--fs-h1);           /* 28px */
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.ss-deck {
+  margin: 6px 0 0;
+  font-size: var(--fs-md);           /* 15px */
+  color: var(--muted);
+}
+
+/* The stance is the loudest thing on the page after the title: bigger type,
+   quiet fill, an even neutral border. No colored edge anywhere. */
+.ss-stance {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 12px 18px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--ss-stance-fill);
+}
+
+.ss-stance-label {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.ss-stance-word {
+  margin: 2px 0 0;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.ss-stance-detail {
+  margin: 4px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  max-width: 34ch;
+}
+
+/* One as-of, one mode stamp, once per page. */
+.ss-meta {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+
+.ss-meta-mode {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ss-meta-dot { color: var(--ss-line-strong); }
+
+/* ── panels ──────────────────────────────────────────────────────────────── */
+
+.ss-panel {
+  padding: 20px 22px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.ss-panel-quiet { background: transparent; }
+
+.ss-panel-title {
+  margin: 0;
+  font-size: var(--fs-h2);           /* 17px */
+  font-weight: 650;
+}
+
+.ss-panel-lead {
+  margin: 8px 0 0;
+  color: var(--muted);
+  max-width: 72ch;
+}
+
+.ss-subtitle {
+  margin: 18px 0 0;
+  font-size: var(--fs-h3);           /* 14px */
+  font-weight: 650;
+}
+
+.ss-footnote {
+  margin: 16px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  max-width: 72ch;
+}
+
+.ss-section-title {
+  margin: 0 0 12px;
+  font-size: var(--fs-h2);
+  font-weight: 650;
+}
+
+.ss-missing,
+.ss-list {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-width: 80ch;
+}
+
+.ss-missing li,
+.ss-list li { overflow-wrap: anywhere; }
+
+.ss-list-inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ss-list-inline li {
+  padding: 3px 9px;
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+/* ── compact evidence summary ────────────────────────────────────────────── */
+
+.ss-stats {
+  margin: 0;
+  display: grid;
+  /* NOTE the real minimum. `repeat(auto-fit, minmax(0, 1fr))` maximises the
+     TRACK COUNT instead of filling the width: with a 0px minimum the browser
+     fits 500+ one-pixel tracks, and a short label ("Stance") then collapses to
+     one character per line inside a 1.3px cell. The minimum must be a width a
+     label can actually be read at. */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  padding: 1px;                       /* the 1px gap IS the divider */
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--ss-line);
+  overflow: hidden;
+}
+
+.ss-stat {
+  min-width: 0;
+  padding: 12px 16px;
+  background: var(--panel);
+}
+
+.ss-stat dt {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.ss-stat dd {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.ss-stat-text { font-size: var(--fs-md) !important; }
+
+/* The one number that carries the decision: nothing is approved. Kept in text
+   ink, not a sentiment colour — a zero here is not "bad news". */
+.ss-stat-key dd { font-weight: 700; }
+
+/* ── data-quality notes ──────────────────────────────────────────────────── */
+
+.ss-notes {
+  padding: 14px 18px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--panel2);
+}
+
+.ss-notes .ss-subtitle { margin-top: 0; }
+.ss-notes .ss-missing { font-size: var(--fs-sm); color: var(--muted); }
+
+/* Blocked inputs: the heading carries semantic ink as TEXT. The border stays
+   neutral and even — a colored edge here would be the retired house idiom. */
+.ss-notes-blocked .ss-subtitle { color: var(--ss-warn-ink); }
+
+/* ── candidate rows ──────────────────────────────────────────────────────── */
+
+.ss-candidates { display: flex; flex-direction: column; gap: 16px; }
+
+.ss-card {
+  min-width: 0;
+  padding: 18px 20px 16px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.ss-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.ss-card-head > div { min-width: 0; flex: 1 1 320px; }
+
+.ss-card-title {
+  margin: 0;
+  font-size: var(--fs-md);           /* 15px */
+  font-weight: 650;
+}
+
+.ss-card-why {
+  margin: 4px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  max-width: 76ch;
+  overflow-wrap: anywhere;
+}
+
+/* Status is labelled text ink inside a neutral chip — never a colored edge. */
+.ss-chip {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  background: var(--panel2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ss-chip--research_only { color: var(--text); }
+.ss-chip--blocked { color: var(--ss-warn-ink); }
+
+.ss-card-facts {
+  margin: 16px 0 0;
+  display: grid;
+  /* Explicit, not auto-fit: three items where the third spans the full row.
+     auto-fit would either leave the two short facts marooned in narrow tracks
+     or let them stretch arbitrarily wide. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ss-line);
+}
+
+.ss-fact { min-width: 0; }
+
+.ss-fact dt,
+.ss-kv dt {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.ss-fact dd,
+.ss-kv dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.ss-fact-wide { grid-column: 1 / -1; }
+.ss-fact-wide dd { color: var(--text); }
+
+/* ── the evidence disclosure — the only control on the page ──────────────── */
+
+.ss-evidence { margin-top: 14px; }
+
+.ss-evidence-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--ss-line-strong);
+  border-radius: 8px;
+  background: var(--panel2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+/* Safari still renders a native marker for <summary> in some versions. */
+.ss-evidence-toggle::-webkit-details-marker { display: none; }
+
+/* A real affordance: a rotating chevron drawn with borders, plus the word. */
+.ss-evidence-toggle::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform .16s ease;
+}
+
+.ss-evidence[open] .ss-evidence-toggle::after { transform: rotate(-135deg); }
+.ss-evidence[open] .ss-evidence-toggle { background: var(--panel); }
+
+.ss-evidence-body {
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ss-line);
+  display: grid;
+  /* Four detail sections read best as a 2x2 block; a third track would leave the
+     last one stranded beside empty space. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 32px;
+}
+
+.ss-detail { min-width: 0; }
+
+.ss-detail-title {
+  margin: 0;
+  font-size: var(--fs-h3);
+  font-weight: 650;
+}
+
+.ss-detail-subtitle {
+  margin: 16px 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.ss-detail-state {
+  margin: 4px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.ss-detail-note {
+  margin: 10px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  max-width: 68ch;
+}
+
+.ss-kv {
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px 20px;
+}
+
+.ss-kv > div { min-width: 0; }
+.ss-kv dd { font-size: var(--fs-sm); }
+
+.ss-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+/* Aligned numeric columns: tabular figures + a fixed right edge, so the decimal
+   points line up down the column at every viewport. */
+.ss-metrics {
+  width: 100%;
+  margin: 14px 0 0;
+  border-collapse: collapse;
+  /* Auto layout, not `table-layout: fixed`. A fixed table honours the numeric
+     column's `width: 1%` LITERALLY, so the nowrap header overflows its own
+     3px column and drags the document 19px wider than a 390px viewport. Auto
+     layout gives that column its content width and lets the measure take the
+     rest, which is what the fixed table was reaching for in the first place.
+     The CSS text alone never caught this: it needs a measured viewport. */
+  font-size: var(--fs-sm);
+}
+
+.ss-metrics th,
+.ss-metrics td {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ss-line);
+  text-align: left;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+/* The measure label takes the slack and the numeric column hugs the right edge,
+   so the decimals line up down the column instead of floating mid-table. */
+.ss-metrics th:first-child,
+.ss-metrics td:first-child { width: 100%; }
+
+.ss-metrics thead th {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  border-bottom-color: var(--ss-line-strong);
+}
+
+.ss-metrics tbody th { color: var(--text); }
+
+.ss-metrics .ss-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  padding-left: 16px;
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* An unavailable value is dimmed and never given a number-like colour. */
+.ss-metric-off td,
+.ss-metric-off th { color: var(--muted); }
+
+/* ── focus ───────────────────────────────────────────────────────────────── */
+
+.ss-page :focus-visible {
+  outline: 2px solid var(--ss-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── locally-scoped tokens ───────────────────────────────────────────────── */
+
+.ss-page {
+  /* Even, neutral borders derived from the text ink so the hairline sits in the
+     same perceptual band in both planes. */
+  --ss-line: color-mix(in srgb, var(--text) 14%, transparent);
+  --ss-line-strong: color-mix(in srgb, var(--text) 26%, transparent);
+  --ss-stance-fill: var(--panel2);
+  --ss-warn-ink: var(--warn);
+  --ss-focus: var(--info);
+}
+
+/* Light is composed, not inverted: the stance block needs to read as a raised
+   surface against the white panel, and the hairline needs the stronger mix the
+   light canvas washes out. */
+html[data-theme="light"] .ss-page {
+  --ss-line: color-mix(in srgb, var(--text) 18%, transparent);
+  --ss-line-strong: color-mix(in srgb, var(--text) 32%, transparent);
+  --ss-stance-fill: var(--panel2);
+  --ss-warn-ink: color-mix(in srgb, var(--warn) 80%, var(--text));
+}
+
+/* ── responsive ──────────────────────────────────────────────────────────── */
+
+/* Tablet: the header stacks, the stance sits under the title at full width. */
+@media (max-width: 860px) {
+  .ss-head { align-items: flex-start; }
+  .ss-stance { flex: 1 1 100%; }
+  .ss-stance-detail { max-width: none; }
+}
+
+/* 390px: every column collapses to one, padding tightens, and nothing is
+   allowed to establish a horizontal scroll. `min-width: 0` above is what makes
+   the grid tracks actually shrink; these rules keep the type legible. */
+@media (max-width: 560px) {
+  .ss-workspace { padding: 20px 16px 44px; gap: 18px; }
+
+  .ss-title { font-size: 24px; }
+  .ss-stance { padding: 12px 14px; }
+  .ss-stance-word { font-size: 21px; }
+
+  .ss-panel { padding: 16px 14px; }
+  .ss-card { padding: 16px 14px 14px; }
+  .ss-card-head > div { flex: 1 1 100%; }
+  .ss-evidence-body,
+  .ss-card-facts,
+  .ss-kv,
+  .ss-stats { grid-template-columns: minmax(0, 1fr); }
+
+  .ss-stat dd { font-size: 18px; }
+  .ss-metrics { font-size: var(--fs-sm); }
+  .ss-metrics th,
+  .ss-metrics td { padding: 7px 0; }
+}
+
+/* ── accessibility helpers ───────────────────────────────────────────────── */
+
+.ss-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-evidence-toggle::after { transition: none; }
+}
