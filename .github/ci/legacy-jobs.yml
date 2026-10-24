@@ -1234,6 +1234,19 @@ jobs:
       - "engine/k3e_eval1_forward.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
+      - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3167,6 +3180,19 @@ jobs:
       - "engine/k3e_eval1_forward.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
+      - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4169,6 +4195,19 @@ jobs:
       - "engine/k3e_eval1_forward.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
+      - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14593,6 +14632,19 @@ jobs:
       - "engine/k3e_eval1_forward.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
+      - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16384,6 +16436,123 @@ jobs:
     - tests/test_qledger_store_sources.py
     - tests/test_qledger_validity.py
     - tests/test_w6_readiness_monitor.py
+    - app/deploy/ohlc_origin_known_hosts
+    - collectors/equity_earnings.py
+    - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
+    - config/intelligence_workspace/datapoints.v1.json
+    - config/intl_global_universe_v1.json
+    - config/intl_source_rights_matrix_v1.json
+    - config/issuer_group_allowlist.yml
+    - contracts/capital_structure_ingestion_health.schema.json
+    - contracts/intelligence_workspace/datapoint_registry.schema.json
+    - contracts/intelligence_workspace/datapoint_value.schema.json
+    - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+    - contracts/theme_graph/activity_membership_history.v1.schema.json
+    - contracts/theme_graph/activity_membership_proposal.v1.schema.json
+    - contracts/theme_graph/edges.v1.schema.json
+    - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+    - engine/bond_issue_parser.py
+    - engine/bond_issue_terms.py
+    - engine/capital_structure/covenant_html.py
+    - engine/capital_structure/covenant_terms.py
+    - engine/capital_structure/ingestion_health.py
+    - engine/capital_structure/sec_discovery_clock.py
+    - engine/capital_structure/source_identity.py
+    - engine/capital_structure/source_ledger_io.py
+    - engine/capital_structure/source_store.py
+    - engine/classification_axes/__init__.py
+    - engine/classification_axes/business_model.py
+    - engine/classification_axes/cell.py
+    - engine/classification_axes/geography.py
+    - engine/classification_axes/lifecycle.py
+    - engine/classification_axes/registry.py
+    - engine/classification_axes/sic_industry.py
+    - engine/classification_axes/value_chain.py
+    - engine/company_intelligence/defense_cash_profiles.py
+    - engine/company_intelligence/defense_profiles.py
+    - engine/company_intelligence/defense_space_profiles.py
+    - engine/company_intelligence/gd_profile.py
+    - engine/company_intelligence/issuer_supplements.py
+    - engine/company_intelligence/rms_segment_profile.py
+    - engine/covenant_headroom.py
+    - engine/foresight_divergence.py
+    - engine/fundamental_forensics/issuer_sic.py
+    - engine/fundamental_forensics/not_presented.py
+    - engine/guidance_source_context.py
+    - engine/guidance_source_evidence.py
+    - engine/intelligence_workspace/adapters/base.py
+    - engine/intelligence_workspace/adapters/company_intelligence.py
+    - engine/intelligence_workspace/adapters/earnings.py
+    - engine/intelligence_workspace/adapters/industry.py
+    - engine/intelligence_workspace/adapters/quote.py
+    - engine/intelligence_workspace/adapters/stage.py
+    - engine/intelligence_workspace/adapters/technicals.py
+    - engine/intelligence_workspace/adapters/theme.py
+    - engine/intelligence_workspace/contracts.py
+    - engine/intelligence_workspace/entity.py
+    - engine/intelligence_workspace/projection.py
+    - engine/intelligence_workspace/registry.py
+    - engine/intelligence_workspace/resolver.py
+    - engine/intelligence_workspace/runtime.py
+    - engine/intl_global_observation.py
+    - engine/intl_global_universe.py
+    - engine/liquidity_currency.py
+    - engine/liquidity_profile.py
+    - engine/liquidity_source_availability.py
+    - engine/ma_agreement_context.py
+    - engine/quote_resolution.py
+    - engine/research_codegen/__init__.py
+    - engine/research_codegen/accounting_contract.py
+    - engine/research_codegen/admission.py
+    - engine/research_codegen/bridge.py
+    - engine/research_codegen/contracts.py
+    - engine/research_codegen/evaluation.py
+    - engine/research_codegen/input_contract.py
+    - engine/research_codegen/output_contract.py
+    - engine/theme_graph/capability.py
+    - engine/theme_graph/change_report.py
+    - engine/theme_graph/hierarchy_breadth_display.py
+    - engine/theme_graph/local_sources.py
+    - engine/theme_graph/materialize.py
+    - engine/theme_graph/micro_rs_proxy_display.py
+    - engine/theme_graph/structural_navigation.py
+    - engine/theme_graph/theme_state_gap.py
+    - engine/theme_graph/theme_state_owner_readers.py
+    - engine/theme_graph/theme_state_w2_qualification.py
+    - lib/dataos/sec_filing_identity.py
+    - lib/intl_global_observation_adapter.py
+    - lib/intl_gs_display.py
+    - lib/intl_gs_observations.py
+    - lib/intl_surveillance_mount.py
+    - lib/shared_shell.py
+    - lib/symbol_directory_receipts.py
+    - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+    - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+    - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+    - research/theme_graph/W2_EXPOSURE_AXES_PREREG.md
+    - scripts/build_expectation_surface.py
+    - scripts/build_security_master.py
+    - scripts/build_theme_tree_page.py
+    - scripts/calibrate_rate_inflation.py
+    - scripts/compile_capital_structure_covenant_terms.py
+    - scripts/probe_theme_exposure_axes.py
+    - scripts/publish_ohlc.py
+    - scripts/stock_liquidity_profile.py
+    - app/__init__.py
+    - engine/capital_structure/__init__.py
+    - engine/codex_lane/__init__.py
+    - engine/context_index/__init__.py
+    - engine/earnings_narrative/__init__.py
+    - engine/earnings_release/__init__.py
+    - engine/fundamental_forensics/__init__.py
+    - engine/government_revenue/__init__.py
+    - engine/intelligence_workspace/__init__.py
+    - engine/intelligence_workspace/adapters/__init__.py
+    - engine/market_os/__init__.py
+    - engine/press/__init__.py
+    - engine/research_vault/__init__.py
+    - engine/sector_intelligence/__init__.py
+    - engine/signal_foundry/__init__.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

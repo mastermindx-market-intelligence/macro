@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-24T03:09:45Z",
+  "action": "Two native global coordinate clicks intended to close our DevTools",
+  "actual_second_return": "UI element in Line Details | US Mobile - Google Chrome - Chris",
+  "conclusion": "Global foreground changed from retained admin window; unrelated click target effect UNKNOWN. No replay or further coordinate actions. Retained exact admin tab DOM remains usable. No claim of exclusive global browser custody.",
+  "resolution": "Preserve unrelated session; use only exact tab-bound reads/actions and avoid global keyboard/coordinate effects until exclusive surface is established."
+}
