@@ -10,17 +10,30 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from starlette.concurrency import run_in_threadpool
 
-from app.options_auth import resolve_authenticated_matrix_display, resolve_options_principal
 from engine.options_matrix_retention import SnapshotReference, parse_reference
-from engine.intelligence_workspace.entity import IdentityArtifactRead
-from engine.intelligence_workspace.options_matrix_delivery import MatrixDisplaySource
 from app.options_matrix_runtime import MatrixCaptureUnavailable
+
+if TYPE_CHECKING:
+    from engine.intelligence_workspace.entity import IdentityArtifactRead
+    from engine.intelligence_workspace.options_matrix_delivery import MatrixDisplaySource
+
+
+def resolve_options_principal(*args, **kwargs):
+    # Keep unrelated/unprovisioned app startup independent of the contract stack.
+    # Real requests still use the incumbent verifier; no optional-import fallback.
+    from app.options_auth import resolve_options_principal as resolve
+    return resolve(*args, **kwargs)
+
+
+def resolve_authenticated_matrix_display(*args, **kwargs):
+    from app.options_auth import resolve_authenticated_matrix_display as resolve
+    return resolve(*args, **kwargs)
 
 
 _HEADERS = {"Cache-Control": "private, no-store", "Vary": "Authorization, Cookie"}
@@ -62,6 +75,7 @@ def _serve(runtime, ref, selection, token):
     try:
         # No artifact/network capture is permitted before the actual verifier.
         resolve_options_principal(token)
+        from engine.intelligence_workspace.options_matrix_delivery import MatrixDisplaySource
         if type(runtime) is not MatrixHTTPRuntime or not callable(runtime.capture):
             return _error()
         captured = runtime.capture(ref)

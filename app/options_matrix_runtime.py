@@ -18,12 +18,6 @@ from urllib.parse import urlsplit
 from datetime import datetime, timezone
 
 from engine.options_matrix_retention import MAX_MATRIX_BYTES, SnapshotReference, verify_snapshot
-from engine.intelligence_workspace.entity import IdentityArtifactRead
-from engine.intelligence_workspace.options_matrix_context import MatrixDatasetBinding
-from engine.intelligence_workspace.options_matrix_delivery import (
-    MatrixDisplaySource, MatrixInputContract, bind_matrix_contracts, capture_matrix_provenance,
-)
-from lib.dataos.registry import DatasetContract, Registry, RIGHTS_KEYS
 
 
 class MatrixCaptureUnavailable(RuntimeError):
@@ -122,6 +116,8 @@ def _yaml(raw):
 
 
 def _configuration(config):
+    from lib.dataos.registry import RIGHTS_KEYS
+
     row = config.get("options_matrix_display")
     keys = {"source_mode", "root", "vendor", "dataset_id", "dataset_version", "source_family",
             "inputs", "required_rights_rationale", "evidence_sha256", "registry_revision", "registry_sha256"}
@@ -218,6 +214,13 @@ class DeployedMatrixCapture:
             self._slots.release()
 
     def _capture(self, ref):
+        # Contract/identity dependencies are mandatory at capture, not startup.
+        from engine.intelligence_workspace.entity import IdentityArtifactRead
+        from engine.intelligence_workspace.options_matrix_context import MatrixDatasetBinding
+        from engine.intelligence_workspace.options_matrix_delivery import (
+            MatrixDisplaySource, MatrixInputContract, bind_matrix_contracts, capture_matrix_provenance,
+        )
+        from lib.dataos.registry import DatasetContract, Registry
         from app.options_matrix_http import MatrixHTTPInputs
         from scripts.observe_options_matrix_publication import capture_spy_identity_inputs
 

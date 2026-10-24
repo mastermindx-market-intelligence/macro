@@ -220,3 +220,23 @@ def test_asgi_wire_fixture_for_actual_next_transport(native, tmp_path, env):
                'root': native['ref'].root, 'fingerprint': native['ref'].sha256,
                'version_ref': native['ref'].version_ref}
     (tmp_path / 'matrixDisplayASGIWire.json').write_text(json.dumps(fixture, indent=2)+'\n')
+
+
+def test_missing_lazy_auth_dependency_refuses_before_capture(monkeypatch):
+    import builtins
+    from app import options_matrix_http as H
+    original = builtins.__import__
+    captured = []
+
+    def unavailable(name, *args, **kwargs):
+        if name == 'app.options_auth':
+            raise ModuleNotFoundError('private dependency detail')
+        return original(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, '__import__', unavailable)
+    runtime = H.MatrixHTTPRuntime(lambda ref: captured.append(ref))
+    response = H._serve(runtime, None, b'{}', 'secret-token')
+    assert response.status_code == 503
+    assert response.body == b'{"error":"matrix_display_unavailable"}'
+    assert response.headers['cache-control'] == 'private, no-store'
+    assert captured == []

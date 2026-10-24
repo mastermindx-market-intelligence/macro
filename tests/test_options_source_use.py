@@ -6,7 +6,7 @@ test-owned trusted resolver that synthesizes the intended
 ``ServerUseContext`` from a captured intended request. Real registry
 vocabulary (``lib.dataos.registry``), no network, no repo policy rows, no
 persisted decisions. The composed-resolver tests need the repo's selection
-fixtures and skip cleanly where those are absent.
+fixtures as mandatory local test inputs.
 """
 from __future__ import annotations
 
@@ -1137,7 +1137,7 @@ def _composed_row(vendor, pointer=None):
 
 
 def test_composed_resolver_allows_with_real_policy(tmp_path):
-    F = pytest.importorskip("tests.test_options_selection_composition")
+    from tests import test_options_selection_composition as F
     f = F.inputs.__wrapped__()
     raw = F.encoded(f["doc"])
     kw = dict(f["kwargs"])
@@ -1175,7 +1175,7 @@ def test_composed_resolver_allows_with_real_policy(tmp_path):
 
 
 def test_composed_resolver_missing_production_row_is_rights_unavailable(tmp_path):
-    F = pytest.importorskip("tests.test_options_selection_composition")
+    from tests import test_options_selection_composition as F
     f = F.inputs.__wrapped__()
     raw = F.encoded(f["doc"])
     kw = dict(f["kwargs"])
@@ -1211,7 +1211,7 @@ def test_composed_resolver_missing_production_row_is_rights_unavailable(tmp_path
 
 
 def test_composed_resolver_denied_policy_maps_to_source_denied(tmp_path):
-    F = pytest.importorskip("tests.test_options_selection_composition")
+    from tests import test_options_selection_composition as F
     f = F.inputs.__wrapped__()
     raw = F.encoded(f["doc"])
     kw = dict(f["kwargs"])
