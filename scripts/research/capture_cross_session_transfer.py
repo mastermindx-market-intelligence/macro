@@ -245,6 +245,28 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _require_authoritative_source_day_provenance(
+    *, source_day_sha256: str, source_date: str
+) -> None:
+    """Require the incumbent source owner's authenticated full-day evidence.
+
+    A SHA-256 digest protects only integrity, NOT origin or completeness. The
+    Reuters/wire and UKMTO authenticated archive readers are not yet available
+    in this research harness. Until an existing authoritative source owner can
+    independently verify this exact day+digest, every production path must
+    refuse source-day certification, admission sealing and outcome transport.
+
+    This is a deliberately closed verification seam, not a caller-supplied
+    token, opt-in CLI flag, alternate source registry or live permission plane.
+    Unit tests may monkeypatch it to exercise downstream *synthetic* contracts;
+    such tests are never evidence of a real completed source day.
+    """
+    raise CaptureContractError(
+        "authenticated source-day provenance unavailable: "
+        "original Reuters/wire and UKMTO owner coverage cannot be verified"
+    )
+
+
 def certify_source_day(
     *,
     source_date: str,
@@ -429,7 +451,7 @@ def certify_source_day(
         "candidate_dispositions": candidates,
         "admitted_event_ids": sorted(admitted_ids),
     }
-    return _seal_receipt({
+    proposed = {
         "schema": SCHEMA_SOURCE_DAY,
         "authority": dict(AUTHORITY),
         "state": "COMPLETE",
@@ -439,7 +461,11 @@ def certify_source_day(
         **core,
         "hk_outcome_state": "NOT_READ",
         "persistence": "none_stdout_only",
-    })
+    }
+    _require_authoritative_source_day_provenance(
+        source_day_sha256=_payload_digest(proposed), source_date=day.isoformat()
+    )
+    return _seal_receipt(proposed)
 
 
 def seal_epoch2_admission(
@@ -486,6 +512,10 @@ def seal_epoch2_admission(
     if str(matched.get("available_at") or "") != _iso(available):
         raise CaptureContractError("source-day candidate clock mismatch")
 
+    # Even a perfectly rehashed caller-supplied COMPLETE census is not proof.
+    _require_authoritative_source_day_provenance(
+        source_day_sha256=source_day_sha256, source_date=available.date().isoformat()
+    )
     sealed = dict(admission)
     sealed["source_epoch"] = "EPOCH_2"
     sealed["source_admission_integrity"] = "SOURCE_DAY_COMPLETE"
@@ -564,6 +594,13 @@ def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
         raise CaptureContractError("Epoch-2 admitted_event_ids receipt is malformed")
     if event_id not in admitted_ids:
         raise CaptureContractError("Epoch-2 event is absent from its source-day receipt")
+
+    # Check again before transport. A caller can forge BOTH a census and a
+    # sealed admission with fresh unkeyed digests, bypassing the issuance CLI.
+    _require_authoritative_source_day_provenance(
+        source_day_sha256=str(receipt.get("sha256") or ""),
+        source_date=available.date().isoformat(),
+    )
 
 
 def admit_source_event(

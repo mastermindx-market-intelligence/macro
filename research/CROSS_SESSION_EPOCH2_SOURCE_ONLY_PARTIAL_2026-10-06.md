@@ -36,6 +36,12 @@ One further October 6 official-change candidate: Israel Katz detailed a conditio
 
 **Next independent lane:** exact-head adversarial review of the UTC source-day certification wall-clock guard and the sealed admission firewall. A CI-green PR without that review is not scientific acceptance. This ruling is also preserved on [PR #8012, October 24 evidence decision](https://github.com/mastermindx-market-intelligence/macro/pull/8012#issuecomment-6381542895).
 
+## October 24 receipt-provenance enforcement repair
+
+The research harness now refuses to promote a caller-asserted channel `COMPLETE` value or arbitrary nonempty `receipt` reference into scientific authorization. The newly introduced private `_require_authoritative_source_day_provenance` guard runs **before a completed-day receipt is sealed**, **before a synthetic/rehashed source-day receipt can seal an Epoch-2 admission**, and **again before the U.S./HSI outcome transport paths**. With no verified original Reuters/wire and UKMTO source-owner archive connected, it deliberately rejects the operation rather than minting a false `COMPLETE` certificate. A matching SHA-256 digest alone never authenticates origin or proves the all-channel negative-source census.
+
+The existing source owner's authoritative evidence verification must be connected and independently reviewed to reopen this guard. The code does not create a second source registry, runtime authentication path, or manual CLI override. Contract tests deliberately simulate the absent owner in narrowly marked synthetic fixtures to preserve proof that the remainder of the frozen protocol can operate **only after** that trust check; they do not establish a genuine Reuters or UKMTO completed-day census. The 26 October 6 candidates and 16 corrections remain untouched, with zero admissions and no market-outcome reads.
+
 ## Before any scientific outcome access
 
 1. Obtain verifiable full-day original Reuters/wire and UKMTO channel coverage with issue-time provenance, including negative searches and unresolved candidate dispositions. Do not infer completeness from a 100-item news index or the absence of a live warning-list row.

@@ -877,6 +877,20 @@ def test_capture_freeze_controls_requires_full_event_date_source_coverage():
             source_coverage_complete_through="2026-09-29T23:59:59Z",
         )
 
+@pytest.fixture
+def _synthetic_source_owner(monkeypatch):
+    """TEST ONLY: simulate the unavailable authoritative archive owner.
+
+    This is deliberately not a production override or evidence of any licensed
+    Reuters/UKMTO archive coverage. Real source-day certification fails closed.
+    """
+    def verify(*, source_day_sha256, source_date):
+        assert len(source_day_sha256) == 64
+        assert source_date == "2026-10-06"
+
+    monkeypatch.setattr(capture, "_require_authoritative_source_day_provenance", verify)
+
+
 def _epoch2_source_day(
     *,
     candidate_id="evt-prospective",
@@ -999,7 +1013,7 @@ def test_epoch2_source_day_rejects_future_dated_channel_sweep_after_midnight(mon
         )
 
 
-def test_epoch2_source_day_allows_completed_utc_day_with_honest_clock(monkeypatch):
+def test_epoch2_source_day_allows_completed_utc_day_with_honest_clock(monkeypatch, _synthetic_source_owner):
     monkeypatch.setattr(
         capture, "_utc_now", lambda: datetime.fromisoformat("2026-10-07T00:01:00+00:00")
     )
@@ -1011,6 +1025,76 @@ def test_epoch2_source_day_allows_completed_utc_day_with_honest_clock(monkeypatc
     )
     assert receipt["state"] == "COMPLETE"
     assert receipt["source_coverage_complete_through"] == "2026-10-07T00:00:00Z"
+
+
+def test_epoch2_complete_day_cannot_accept_caller_asserted_evidence_strings():
+    # Original trust exploit: past-midnight, arbitrary nonempty strings and
+    # syntactically admitted rows once yielded a hash-sealed COMPLETE certificate.
+    candidate = {
+        "candidate_id": "SYNTHETIC_NOT_A_REAL_EVENT",
+        "event_class": "official_policy_or_operational_change",
+        "disposition": "ADMIT",
+        "available_at": "2026-10-06T10:00:00Z",
+        "parent_cluster_id": "SYNTHETIC_TEST_ONLY",
+    }
+    with pytest.raises(capture.CaptureContractError, match="authenticated source-day provenance unavailable"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=_synthetic_completed_day_channels(),
+            candidate_dispositions=[candidate],
+        )
+
+
+def test_epoch2_forged_complete_census_fails_at_seal_even_when_digest_matches(monkeypatch):
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    with monkeypatch.context() as private_test:  # test-only simulated owner during construction
+        private_test.setattr(
+            capture, "_require_authoritative_source_day_provenance",
+            lambda **_: None,
+        )
+        census = _epoch2_source_day()
+    assert census["sha256"] == capture._payload_digest(capture._receipt_payload(census))
+    with pytest.raises(capture.CaptureContractError, match="authenticated source-day provenance unavailable"):
+        capture.seal_epoch2_admission(admission, census)
+
+
+def test_epoch2_forged_sealed_admission_fails_before_vendor_transport(monkeypatch):
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    with monkeypatch.context() as private_test:  # emulate old complete-path receipts only
+        private_test.setattr(
+            capture, "_require_authoritative_source_day_provenance",
+            lambda **_: None,
+        )
+        sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
+    calls = []
+
+    def vendor_transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="authenticated source-day provenance unavailable"):
+        capture.measure_us_response(sealed, transport=vendor_transport)
+    assert calls == []
+    with pytest.raises(capture.CaptureContractError, match="authenticated source-day provenance unavailable"):
+        capture.gate_hk_outcome_read(sealed, {}, {})
+
+
+def test_epoch2_certification_cli_refuses_untrusted_archives(tmp_path, capsys):
+    import json
+    channel_file = tmp_path / "unverified_channels.json"
+    candidate_file = tmp_path / "unverified_candidates.json"
+    channel_file.write_text(json.dumps(_synthetic_completed_day_channels()))
+    candidate_file.write_text("[]")
+    rc = capture.main([
+        "certify-source-day",
+        "--source-date", "2026-10-06",
+        "--source-coverage-complete-through", "2026-10-07T00:00:00Z",
+        "--channel-receipts-file", str(channel_file),
+        "--candidate-dispositions-file", str(candidate_file),
+    ])
+    assert rc == 2
+    assert "authenticated source-day provenance unavailable" in capsys.readouterr().out
 
 
 def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
@@ -1044,7 +1128,7 @@ def test_capture_epoch2_measurement_refuses_unsealed_admission_before_transport(
     assert calls == []
 
 
-def test_capture_epoch2_sealed_admission_allows_us_measurement():
+def test_capture_epoch2_sealed_admission_allows_us_measurement(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
     calls = []
@@ -1099,7 +1183,7 @@ def test_capture_late_recovered_event_refuses_us_measurement_before_transport():
     assert calls == []
 
 
-def test_capture_epoch2_seal_requires_candidate_admit_disposition():
+def test_capture_epoch2_seal_requires_candidate_admit_disposition(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     census = _epoch2_source_day(candidate_id="other-event")
     with pytest.raises(capture.CaptureContractError, match="not admitted"):
@@ -1190,7 +1274,7 @@ def _epoch2_integrity_chain():
     return sealed, census, controls, event_us, prior_us, next_us, calls, vendor_transport
 
 
-def test_capture_epoch2_rejects_mutated_certified_census_before_sealing():
+def test_capture_epoch2_rejects_mutated_certified_census_before_sealing(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     census = _epoch2_source_day()
     census["admitted_event_ids"].append("injected-after-certification")
@@ -1208,7 +1292,7 @@ def test_capture_epoch2_rejects_mutated_certified_census_before_sealing():
         capture.seal_epoch2_admission(admission, census)
 
 
-def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport():
+def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
     sealed["parent_cluster_id"] = "mutated-after-seal"
@@ -1223,7 +1307,7 @@ def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport():
     assert calls == []
 
 
-def test_capture_epoch2_rejects_clock_downgrade_before_us_transport():
+def test_capture_epoch2_rejects_clock_downgrade_before_us_transport(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
     # The epoch decision must not trust mutable clocks before authenticating the
@@ -1242,7 +1326,7 @@ def test_capture_epoch2_rejects_clock_downgrade_before_us_transport():
     assert calls == []
 
 
-def test_capture_epoch2_rejects_marker_stripping_clock_downgrade_before_transport():
+def test_capture_epoch2_rejects_marker_stripping_clock_downgrade_before_transport(_synthetic_source_owner):
     admission = _capture_admission("2026-10-06T13:45:00Z")
     sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
     for key in (
@@ -1280,7 +1364,7 @@ def test_capture_legacy_admission_digest_removal_fails_before_transport():
     assert calls == []
 
 
-def test_capture_epoch2_rejects_mutated_control_selection_before_control_transport():
+def test_capture_epoch2_rejects_mutated_control_selection_before_control_transport(_synthetic_source_owner):
     sealed, _, controls, *_ = _epoch2_integrity_chain()
     tampered = copy.deepcopy(controls)
     tampered["prior"]["control_date"] = "2026-10-04"
@@ -1298,7 +1382,7 @@ def test_capture_epoch2_rejects_mutated_control_selection_before_control_transpo
 
 
 @pytest.mark.parametrize("target", ["event", "prior_control"])
-def test_capture_epoch2_rejects_mutated_us_receipt_before_hsi_transport(target):
+def test_capture_epoch2_rejects_mutated_us_receipt_before_hsi_transport(target, _synthetic_source_owner):
     sealed, _, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
     event_us = copy.deepcopy(event_us)
     prior_us = copy.deepcopy(prior_us)
