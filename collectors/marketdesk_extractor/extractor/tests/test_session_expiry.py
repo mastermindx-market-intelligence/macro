@@ -73,6 +73,7 @@ class FakeRequest:
         self.blob_body = blob_body
         self.feed_payload = [] if feed_payload is None else feed_payload
         self.probe_calls = 0
+        self.consent_calls = 0
 
     def get(self, url, **kw):
         if url.endswith("/blob"):
@@ -80,6 +81,9 @@ class FakeRequest:
         return FakeResponse(payload=self.feed_payload)
 
     def post(self, url, **kw):
+        if url.endswith("/terms/consent"):
+            self.consent_calls += 1
+            return FakeResponse(payload={"success": True})
         if url.endswith("latest/latest"):
             self.probe_calls += 1
         return FakeResponse(payload=self.feed_payload)
@@ -343,11 +347,17 @@ class _ProvisionResponsesRequest(FakeRequest):
         super().__init__(feed_payload=[] if authenticated else LOGGED_OUT_PAYLOAD)
         self.responses = iter(responses)
         self.provision_calls = 0
+        self._last_provision = None
 
     def post(self, url, **kwargs):
         if url.endswith("items/provision"):
             self.provision_calls += 1
-            return FakeResponse(payload=next(self.responses))
+            try:
+                payload = next(self.responses)
+                self._last_provision = payload
+            except StopIteration:
+                payload = self._last_provision
+            return FakeResponse(payload=payload)
         return super().post(url, **kwargs)
 
 
@@ -367,8 +377,14 @@ def test_provision_rejection_uses_one_fresh_auth_control(
 
     assert type(error.value) is expected
     assert "items/provision" in str(error.value)
-    assert request.provision_calls == 1
-    assert request.probe_calls == 1
+    if authenticated:
+        assert request.consent_calls == 1
+        assert request.provision_calls == 2
+        assert request.probe_calls == 2
+    else:
+        assert request.consent_calls == 0
+        assert request.provision_calls == 1
+        assert request.probe_calls == 1
 
 
 @pytest.mark.parametrize("payload", [[], [{"pathId": "report-1", "name": "Report"}]])
@@ -398,8 +414,9 @@ def test_provision_later_chunk_rejection_does_not_return_partial_metadata(
         client.provision([f"report-{index}" for index in range(51)])
 
     assert type(error.value) is MarketDeskError
-    assert request.provision_calls == 2
-    assert request.probe_calls == 1
+    assert request.consent_calls == 1
+    assert request.provision_calls == 3
+    assert request.probe_calls == 2
 
 
 _ID_READERS = [
@@ -413,19 +430,37 @@ _ID_READERS = [
 
 
 class _EndpointControlRequest:
-    def __init__(self, endpoint_payload, *, authenticated=True, endpoint_status=200):
+    def __init__(
+        self, endpoint_payload, *, authenticated=True, endpoint_status=200,
+        retry_payload=None,
+    ):
         self.endpoint_payload = endpoint_payload
+        self.retry_payload = (
+            endpoint_payload if retry_payload is None else retry_payload
+        )
         self.control_payload = [] if authenticated else LOGGED_OUT_PAYLOAD
         self.endpoint_status = endpoint_status
         self.calls = []
+        self.consent_calls = 0
+        self._non_consent = 0
 
     def _response(self, method, url, kwargs):
         self.calls.append((method, url, kwargs))
-        if len(self.calls) == 1:
-            return FakeResponse(payload=self.endpoint_payload, status=self.endpoint_status)
-        assert method == "post" and url.endswith("latest/latest")
-        assert len(self.calls) == 2, "the rejected request must not be retried inline"
-        return FakeResponse(payload=self.control_payload)
+        if url.endswith("/terms/consent"):
+            self.consent_calls += 1
+            return FakeResponse(payload={"success": True})
+        self._non_consent += 1
+        n = self._non_consent
+        if n == 1:
+            return FakeResponse(
+                payload=self.endpoint_payload, status=self.endpoint_status,
+            )
+        if self.endpoint_status != 200:
+            raise AssertionError("HTTP error path must not continue after the first call")
+        if n % 2 == 0:
+            assert method == "post" and url.endswith("latest/latest")
+            return FakeResponse(payload=self.control_payload)
+        return FakeResponse(payload=self.retry_payload)
 
     def get(self, url, **kwargs):
         return self._response("get", url, kwargs)
@@ -449,10 +484,16 @@ def test_id_reader_rejection_classifies_one_fresh_control(
 
     assert type(error.value) is expected
     assert request.calls[0][1] == cfg.api(endpoint)
-    assert len(request.calls) == 2
-    assert request.calls[1][0:2] == ("post", cfg.api("latest/latest"))
     if authenticated:
+        assert request.consent_calls == 1
+        assert request._non_consent == 4
         assert "endpoint failure" in str(error.value)
+        assert request.calls[1][0:2] == ("post", cfg.api("latest/latest"))
+        assert request.calls[2][1] == cfg.terms_consent_url()
+    else:
+        assert request.consent_calls == 0
+        assert request._non_consent == 2
+        assert request.calls[1][0:2] == ("post", cfg.api("latest/latest"))
 
 
 @pytest.mark.parametrize("method,args,endpoint", _ID_READERS)
@@ -500,9 +541,160 @@ def test_discovery_rejection_parks_only_after_negative_control(
     trickle._refresh_queue(cfg, conn, [state])
 
     assert state.authed is authenticated
-    assert len(request.calls) == 2
-    # A rejected discovery pass is BLINDNESS, and it is now recorded as such:
-    # the backfill gate reads this to refuse spending quota on stale backlog
-    # while the feed cannot be seen.
+    if authenticated:
+        assert request.consent_calls == 1
+        assert request._non_consent == 4
+    else:
+        assert request.consent_calls == 0
+        assert request._non_consent == 2
     assert db.discovery_health(conn)["state"] == db.DISCOVERY_FAILED
     conn.close()
+
+
+def test_browse_terms_consent_heals_and_returns_ids(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(
+        LOGGED_OUT_PAYLOAD, retry_payload=["year-2026"],
+    )
+    client = MarketDeskClient(FakeContext(request), cfg)
+
+    assert client.browse_current() == ["year-2026"]
+    assert request.consent_calls == 1
+    assert request._non_consent == 3
+    assert request.calls[2][1] == cfg.terms_consent_url()
+
+
+def test_terms_consent_not_attempted_when_session_dead(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(LOGGED_OUT_PAYLOAD, authenticated=False)
+    client = MarketDeskClient(FakeContext(request), cfg)
+
+    with pytest.raises(SessionExpired):
+        client.browse_current()
+
+    assert request.consent_calls == 0
+    assert request._non_consent == 2
+
+
+def test_terms_consent_attempted_only_once(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _EndpointControlRequest(LOGGED_OUT_PAYLOAD)
+    client = MarketDeskClient(FakeContext(request), cfg)
+
+    with pytest.raises(MarketDeskError):
+        client.browse_current()
+    assert request.consent_calls == 1
+    with pytest.raises(MarketDeskError):
+        client.browse_current()
+    assert request.consent_calls == 1
+
+
+def test_provision_terms_consent_heals_metadata(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    healed = [{"pathId": "report-1", "name": "Healed", "type": "application/pdf"}]
+    request = _ProvisionResponsesRequest([LOGGED_OUT_PAYLOAD, healed])
+    client = MarketDeskClient(FakeContext(request), cfg)
+    monkeypatch.setattr("marketdesk_extractor.marketdesk.jitter_sleep", lambda: None)
+
+    assert client.provision(["report-1"]) == healed
+    assert request.consent_calls == 1
+    assert request.provision_calls == 2
+    assert request.probe_calls == 1
+
+
+def test_silent_relogin_is_noop_without_a_page(tmp_path, monkeypatch):
+    from marketdesk_extractor.auth import try_silent_relogin
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    assert try_silent_relogin(FakeContext(FakeRequest()), cfg) is False
+
+
+class _LibraryHealRequest:
+    """Browse starts rejected; latest/latest stays an ID array; consent unblocks browse."""
+
+    def __init__(self):
+        self.browse_calls = 0
+        self.consent_calls = 0
+
+    def get(self, url, **kwargs):
+        if url.endswith("library/browse/current"):
+            self.browse_calls += 1
+            if self.browse_calls == 1:
+                return FakeResponse(payload=LOGGED_OUT_PAYLOAD)
+            return FakeResponse(payload=["year-2026"])
+        return FakeResponse(payload=[])
+
+    def post(self, url, **kwargs):
+        if url.endswith("/terms/consent"):
+            self.consent_calls += 1
+            return FakeResponse(payload={"success": True})
+        return FakeResponse(payload=["latest-id"])
+
+
+def test_library_ready_true_after_terms_heal(tmp_path, monkeypatch):
+    from marketdesk_extractor.auth import library_ready
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    request = _LibraryHealRequest()
+    assert library_ready(FakeContext(request), cfg) is True
+    assert request.consent_calls == 1
+    assert request.browse_calls == 2
+
+
+def test_auth_parser_exposes_force_flag():
+    from marketdesk_extractor.cli import build_parser
+
+    args = build_parser().parse_args(["auth", "--force", "--timeout", "12"])
+    assert args.force is True
+    assert args.timeout == 12
+
+
+@pytest.mark.parametrize("restored,retry_expired", [(True, False), (False, False), (True, True)])
+def test_silent_relogin_discovery_records_health(tmp_path, monkeypatch, restored, retry_expired):
+    from types import SimpleNamespace
+    from marketdesk_extractor import auth
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    context = object()
+    state = trickle.AccountState(
+        profile=cfg.profiles[0], authed=True, client=object(),
+        session=SimpleNamespace(context=context),
+    )
+    calls = []
+    restores = []
+
+    def discovery(*args, **kwargs):
+        calls.append(kwargs)
+        if len(calls) == 1 or retry_expired:
+            raise SessionExpired("synthetic expired session")
+        return SimpleNamespace(discovered_new=7, summary=lambda: "seven new reports")
+
+    def restore(actual_context, actual_cfg):
+        assert actual_context is context and actual_cfg is cfg
+        restores.append(True)
+        return restored
+
+    monkeypatch.setattr(discover, "discover", discovery)
+    monkeypatch.setattr(auth, "try_silent_relogin", restore)
+    monkeypatch.setattr(trickle, "utc_now", lambda: NOW)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED,
+                            observed_at=(NOW - timedelta(minutes=1)).isoformat(),
+                            reason="PREVIOUS_FAILURE")
+    try:
+        trickle._refresh_queue(cfg, conn, [state])
+        health = db.discovery_health(conn)
+        assert restores == [True]
+        assert state.silent_relogin_attempted is True
+        assert len(calls) == (2 if restored else 1)
+        if restored and not retry_expired:
+            assert state.authed is True
+            assert health["state"] == db.DISCOVERY_HEALTHY
+            assert health["found_new"] == "7"
+        else:
+            assert state.authed is False
+            assert health["state"] == db.DISCOVERY_FAILED
+            assert health["reason"] == "SESSION_EXPIRED"
+    finally:
+        conn.close()
