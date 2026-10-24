@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T21:42:19Z",
+ "accession": "0001045810-26-000021",
+ "cik": "0001045810",
+ "doc_byte_length": 1967931,
+ "doc_sha256": "da9d303996fc11fe1e7d64c463bc3b338521fbf1291eacda3e269d446abfaa36",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "nvda-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 244017,
+  "byte_start": 243745,
+  "normalized": "We utilize CoWoS technology for semiconductor packaging. We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd., Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.",
+  "normalized_sha256": "ce20b23eeff6fa37b8ccc811bd3a02e5793f568764f828218c2f2b56b5807cf3",
+  "raw": " We utilize CoWoS technology for semiconductor packaging. We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd., Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.",
+  "raw_sha256": "e63afd82d8a8e0acb90815127ec3f837b81e8ed1c124630351cfc73d487add28"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+ "xbrl_contexts": []
+}
