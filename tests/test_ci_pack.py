@@ -4390,6 +4390,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
+    # Qledger suites retain all named imports; opaque fixture roots are audited.
+    "qledger-cluster-honest-ci",
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
@@ -5107,6 +5109,28 @@ def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
         assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
     selected, _ = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
     assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
+
+
+def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
+    """The tuple-joined seed is a real input even when AST inference misses it."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "qledger-cluster-honest-ci")
+    for dependency in (
+        "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+        "engine/qledger_validity.py",  # ci-trigger-closure: data
+        "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+        "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+    ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
+    assert not selected, reason
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:

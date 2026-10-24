@@ -13,9 +13,9 @@ committed artifact pinned by equality and then as counts pinned in this file.
 
 The exception is §LIVE INPUTS at the bottom. Those tests run the builder over the real
 tree and assert only that it does not crash and returns a WELL-FORMED structure — no count,
-no name, no value. Three of them simulate the volatility directly: a synthetic claim
-append, a MALFORMED claim append, and a synthetic synapse artifact, each asserting the
-derivation stays structurally valid and only the intended thing moves.
+no name, no value. The synthetic synapse append simulates live volatility. Both claim
+append cases now use the existing fixture root so streaming transport is exercised
+without loading the live corpus; each asserts only the intended thing moves.
 
 Anything needing an input with a KNOWN property — an unevidenced authority artifact, an
 excluded cell, a broken import — uses `check_intelligence_registry.write_fixture_root`, the
@@ -58,6 +58,7 @@ from engine.intelligence_registry import (
     ledger_shape,
     max_authority,
     partition_artifacts,
+    required_tier,
     placeholder_reason,
     resolve_qual_ladder_ref,
     scan_producer_source,
@@ -1389,41 +1390,29 @@ def _patched_read(monkeypatch, rel_to_patch, transform):
     return builder
 
 
-def test_a_nightly_CLAIM_APPEND_invalidates_nothing(monkeypatch):
-    """SIMULATION (a). `data/qledger/claims.jsonl` is append-only — 13 automated commits in
-    14 days — and round 1 pinned a value derived from it by equality, so main went red
-    daily for a property no PR author caused. Two appends at once: one more row on an
-    existing desk, and a row opening a brand-new desk."""
+def test_a_nightly_CLAIM_APPEND_invalidates_nothing(tmp_path):
+    """A complete streamed append changes the corpus, not authority findings."""
     import scripts.build_intelligence_registry as builder
+    import scripts.check_intelligence_registry as guard
     from engine.species_registry import VALID_VALIDATION_STATUSES
 
+    root = guard.write_fixture_root(tmp_path)
     builder._READ_CACHE.clear()
-    before, _ = builder.build(REPO)
+    before, _ = builder.build(root)
     extra = [
-        {"desk": "whitehouse", "horizon_d": 999, "direction": 1},
+        {"desk": "fixture_desk", "horizon_d": 999, "direction": 1},
         {"desk": "brand_new_desk_2026", "horizon_d": 21, "direction": 1},
     ]
-    try:
-        _patched_read(
-            monkeypatch,
-            builder.CLAIMS_REL,
-            lambda text: text + "".join(json.dumps(r) + "\n" for r in extra),
-        )
-        after, _ = builder.build(REPO)
-    finally:
-        builder._READ_CACHE.clear()
-
-    # The append must be REAL, or this test proves nothing.
+    with (root / builder.CLAIMS_REL).open("a") as handle:
+        handle.writelines(json.dumps(row) + "\n" for row in extra)
+    builder._READ_CACHE.clear()
+    after, _ = builder.build(root)
     assert after["meta"]["corpus"]["n_desks"] == before["meta"]["corpus"]["n_desks"] + 1
-
-    assert validate_structure(
-        after, valid_validation_statuses=VALID_VALIDATION_STATUSES
-    ) == []
+    assert validate_structure(after, valid_validation_statuses=VALID_VALIDATION_STATUSES) == []
     assert {r["engine_id"] for r in after["engines"]} == {r["engine_id"] for r in before["engines"]}
-    assert (
-        sorted((f.code, f.engine_id) for f in audit_content(after))
-        == sorted((f.code, f.engine_id) for f in audit_content(before))
-    ), "a nightly claim append changed the finding set — that is a scheduled fleet-wide red"
+    assert sorted((f.code, f.engine_id) for f in audit_content(after)) == sorted(
+        (f.code, f.engine_id) for f in audit_content(before)
+    )
 
 
 def test_a_MALFORMED_claim_append_flips_inputs_complete_to_False(tmp_path):
@@ -1587,3 +1576,299 @@ def test_the_qual_ladder_probe_answers_FILE_IN_THIS_REPO_only(path, expected):
     import scripts.build_intelligence_registry as builder
 
     assert builder._tracked_file_exists(REPO, path) is expected
+
+
+# T12's read-only requirement query uses canonical authority, never path policy.
+def test_required_tier_follows_derived_authority_not_path_name():
+    display = build_registry(synapse=_synapse({"a": _artifact()}))
+    gate = build_registry(synapse=_synapse({"a": _artifact(tier="scored")}))
+    assert required_tier(display, ["engine/a.py"])["required_tier"] == "T1"
+    assert required_tier(gate, ["engine/a.py"])["required_tier"] == "T3"
+    renamed = build_registry(synapse=_synapse({"a": _artifact(producer="other/renamed.py", tier="scored")}))
+    assert required_tier(renamed, ["other/renamed.py"])["required_tier"] == "T3"
+
+
+def test_required_tier_keeps_every_owner_and_distinguishes_partial_coverage():
+    registry = build_registry(synapse=_synapse({
+        "a": _artifact(owner_program="display-owner"),
+        "b": _artifact(owner_program="gate-owner", tier="scored"),
+    }))
+    before = copy.deepcopy(registry)
+    answer = required_tier(registry, ["engine/a.py", "unknown/path.py", "engine/a.py"])
+    assert answer["status"] == "partial"
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] == "T3"
+    assert {row["owner_program"] for row in answer["engines"]} == {"display-owner", "gate-owner"}
+    assert answer["unresolved"] == [{"path": "unknown/path.py", "reason": "unmatched_producer"}]
+    assert answer["scope"] == "exact_registered_producer_paths"
+    assert answer["evaluation_status"] == "not_assessed"
+    assert registry == before
+
+
+@pytest.mark.parametrize("authority_fixture", [
+    {"a": _artifact(scored_path_surfaces=["board_ordering"])},
+    {"a": _artifact(tier="shadow", consumers=["engine/gate.py"]),
+     "b": _artifact(producer="engine/gate.py", tier="scored")},
+])
+def test_required_tier_does_not_invent_unsupported_authority_policy(authority_fixture):
+    registry = build_registry(synapse=_synapse(authority_fixture))
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] is None
+    assert answer["status"] == "unresolved"
+    assert answer["engines"][0]["reason"] == "authority_policy_undefined"
+
+
+@pytest.mark.parametrize("damage", ["null_authority", "missing_evidence", "foreign_artifact", "wrong_rule", "understated_authority", "wrong_identity", "duplicate_identity"])
+def test_required_tier_refuses_unattributed_or_inconsistent_authority(damage):
+    registry = build_registry(synapse=_synapse({"a": _artifact(), "b": _artifact(tier="scored")}))
+    row = registry["engines"][0]
+    if damage == "null_authority":
+        row["authority"] = None
+    elif damage == "missing_evidence":
+        row.pop("authority_evidence")
+    elif damage == "foreign_artifact":
+        row["authority_evidence"]["artifact_ids"] = ["foreign"]
+    elif damage == "wrong_rule":
+        row["authority_evidence"]["rule"] = "d"
+    elif damage == "understated_authority":
+        row["authority"] = "display"
+        row["authority_evidence"].update(rule="d", artifact_ids=["a"])
+    elif damage == "wrong_identity":
+        row["owner_program"] = "different-owner"
+    else:
+        registry["engines"].append(copy.deepcopy(row))
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] is None
+    assert answer["status"] == "unresolved"
+
+
+def test_required_tier_exclusions_and_no_changes_are_not_integrity_passes():
+    registry = build_registry(synapse=_synapse({"a": _artifact(producer="<EXTERNAL>")}))
+    excluded = required_tier(registry, ["<EXTERNAL>"])
+    assert excluded["required_tier"] is None
+    assert excluded["unresolved"][0]["reason"] == "excluded_producer"
+    empty = required_tier(registry, [])
+    assert empty["required_tier"] is None
+    assert empty["status"] == "no_changes"
+    assert empty["evaluation_status"] == "not_assessed"
+
+
+def test_required_tier_is_independent_of_metrics_readiness_and_lifecycle():
+    registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored")}))
+    baseline = required_tier(registry, ["engine/a.py"])
+    registry["engines"][0].update(validation_state="validated", graded_by_design=None,
+        output_class=None, evidence_ref=["not-proof"], readiness={"ready": True}, A1_status="green")
+    registry["meta"]["workflow_state"] = "done"
+    assert required_tier(registry, ["engine/a.py"]) == baseline
+
+
+def test_required_tier_missing_registry_does_not_become_unmatched_or_ready():
+    for registry in (None, {}, {"schema": "wrong", "engines": [], "excluded": []}):
+        answer = required_tier(registry, ["engine/a.py"])
+        assert answer["required_tier"] is None
+        assert answer["unresolved"] == [{"path": "engine/a.py", "reason": "registry_unavailable"}]
+
+
+@pytest.mark.parametrize("paths", ["engine/a.py", ["/engine/a.py"], ["engine/../a.py"], ["./engine/a.py"], [None]])
+def test_required_tier_refuses_ambiguous_noncanonical_diff_paths(paths):
+    registry = build_registry(synapse=_synapse({"a": _artifact()}))
+    with pytest.raises(ValueError, match="canonical producer paths"):
+        required_tier(registry, paths)
+
+
+@pytest.mark.parametrize("other_owner", ["engine", "excluded"])
+def test_required_tier_refuses_shared_artifact_identity(other_owner):
+    registry = build_registry(synapse=_synapse({
+        "a": _artifact(),
+        "b": _artifact(producer="engine/other.py" if other_owner == "engine" else "<EXTERNAL>"),
+    }))
+    if other_owner == "engine":
+        other = next(row for row in registry["engines"] if row["producer"] == "engine/other.py")
+        other["artifacts"][0]["id"] = "a"
+        other["authority_evidence"]["artifact_ids"] = ["a"]
+    else:
+        registry["excluded"][0]["artifacts"] = ["a"]
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["status"] == "unresolved"
+
+
+@pytest.mark.parametrize("damage", ["gate_unweighted", "display_weighted", "display_ranked"])
+def test_required_tier_checks_supported_rule_premises(damage):
+    registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored" if damage == "gate_unweighted" else "display")}))
+    artifact = registry["engines"][0]["artifacts"][0]
+    if damage == "gate_unweighted":
+        artifact["tier"] = "display"
+    elif damage == "display_weighted":
+        artifact["tier"] = "scored"
+    else:
+        artifact["scored_path_surfaces"] = ["board_ordering"]
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["status"] == "unresolved"
+
+
+# Complete streaming claims: local synthetic sources only, no production corpus.
+@pytest.mark.parametrize("sparse", [False, True])
+def test_claims_stream_complete_parser_parity_and_no_eager_transport(tmp_path, monkeypatch, sparse):
+    import subprocess
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    raw = ('# comment\r\n{"desk":"a","horizon_d":true}\v'
+           '{"desk":"a","horizon_d":21}\u2028'
+           '[]\f{bad\x85{"horizon_d":9}\r'
+           '{"desk":"b","horizon_d":63}\n'
+           '{"desk":"a","horizon_d":5}')
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text(raw, encoding="utf-8", newline="")
+    if sparse:
+        for args in (("init", "-q"), ("add", "."),
+                     ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "fixture")):
+            subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+        path.unlink()
+    monkeypatch.setattr(builder, "read_tracked", lambda *a: pytest.fail("eager tracked text"))
+    monkeypatch.setattr(store, "read_tracked_claims_text", lambda *a, **k: pytest.fail("eager selected text"))
+    monkeypatch.setattr(Path, "read_text", lambda *a, **k: pytest.fail("eager file text"))
+    builder._READ_CACHE.clear()
+    result = builder._load_qledger(tmp_path)
+    assert result == builder.QLedgerRead({"a": 3, "b": 1}, {"a": [True, 5, 21], "b": [63]},
+                                         "git" if sparse else "worktree", 2, 7)
+    assert result.source_label.endswith("(2 unparseable line(s))")
+    assert (str(tmp_path), builder.CLAIMS_REL.as_posix()) not in builder._READ_CACHE
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_claims_stream_empty_and_cache_reset_keep_legacy_semantics(tmp_path, sparse):
+    import subprocess
+    from scripts import build_intelligence_registry as builder, build_output_health as health
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text("")
+    if sparse:
+        for args in (("init", "-q"), ("add", "."),
+                     ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "empty")):
+            subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+        path.unlink()
+    health.reset_caches()
+    before = builder._load_qledger(tmp_path)
+    assert before == (builder.QLedgerRead(None, None, "absent", 0, 0) if sparse else
+                      builder.QLedgerRead({}, {}, "worktree", 0, 0))
+    path.write_text('{"desk":"later","horizon_d":126}\n')
+    assert builder._load_qledger(tmp_path) == before
+    health.reset_caches()
+    assert builder._load_qledger(tmp_path).rows == {"later": 1}
+
+
+@pytest.mark.parametrize("failure", ["decode", "io"])
+def test_claims_stream_discards_late_worktree_failure_before_git_fallback(tmp_path, monkeypatch, failure):
+    import io
+    from contextlib import contextmanager
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.touch()
+    error = (UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture") if failure == "decode" else OSError("fixture late read"))
+    @contextmanager
+    def broken(*args, **kwargs):
+        def lines():
+            yield '{"desk":["invalid"],"horizon_d":999}\n'
+            raise error
+        yield lines()
+    class Child:
+        def __init__(self): self.stdout = io.StringIO('{"desk":"head","horizon_d":5}\n')
+        def wait(self): return 0
+        def poll(self): return 0
+    child = Child()
+    monkeypatch.setattr(store, "open_raw_lines", broken)
+    monkeypatch.setattr(builder.subprocess, "Popen", lambda *a, **k: child)
+    builder._READ_CACHE.clear()
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead({"head": 1}, {"head": [5]}, "git", 0, 1)
+    assert child.stdout.closed
+
+
+@pytest.mark.parametrize("failure", ["nonzero", "decode", "io", "launch"])
+def test_claims_stream_failed_git_never_publishes_partial_counts(tmp_path, monkeypatch, failure):
+    import io
+    from scripts import build_intelligence_registry as builder
+
+    class Stream(io.StringIO):
+        def __iter__(self):
+            yield '{"desk":["invalid"],"horizon_d":999}\n'
+            if failure == "decode": raise UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture")
+            if failure == "io": raise OSError("fixture read")
+    class Child:
+        def __init__(self): self.stdout = Stream(); self.returncode = None; self.terminated = False
+        def wait(self, timeout=None): self.returncode = 1; return 1
+        def poll(self): return self.returncode
+        def terminate(self): self.terminated = True
+        def kill(self): pytest.fail("normal termination suffices")
+    child = Child()
+    def launch(*args, **kwargs):
+        if failure == "launch": raise OSError("fixture launch")
+        return child
+    monkeypatch.setattr(builder.subprocess, "Popen", launch)
+    builder._READ_CACHE.clear()
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead(None, None, "absent", 0, 0)
+    if failure != "launch": assert child.stdout.closed
+    if failure in ("decode", "io"): assert child.terminated
+
+
+def test_claims_stream_honors_an_existing_tracked_text_snapshot(tmp_path):
+    from scripts import build_intelligence_registry as builder
+
+    builder._READ_CACHE.clear()
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text('{"desk":"cached","horizon_d":5}\r{"desk":"cached","horizon_d":63}\n')
+    assert builder.read_tracked(tmp_path, builder.CLAIMS_REL)[1] == "worktree"
+    path.write_text('{"desk":"later"}\n')
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead(
+        {"cached": 2}, {"cached": [5, 63]}, "worktree", 0, 2
+    )
+
+
+def test_claims_stream_cached_aggregates_are_not_mutable_by_callers(tmp_path):
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text('{"desk":"one","horizon_d":5}\n')
+    builder._READ_CACHE.clear()
+    result = builder._load_qledger(tmp_path)
+    result.rows["one"] = 999
+    result.horizons["one"].append(999)
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead({"one": 1}, {"one": [5]}, "worktree", 0, 1)
+
+
+def test_claims_stream_keeps_parser_failure_after_complete_read(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.touch()
+    consumed = []
+    @contextmanager
+    def stream(*args, **kwargs):
+        def lines():
+            yield '{"desk":["invalid"]}\n'
+            consumed.append("complete")
+            yield '{"desk":"tail"}\n'
+        try:
+            yield lines()
+        finally:
+            consumed.append("closed")
+    monkeypatch.setattr(store, "open_raw_lines", stream)
+    builder._READ_CACHE.clear()
+    with pytest.raises(TypeError):
+        builder._load_qledger(tmp_path)
+    assert consumed == ["complete", "closed"]
+    assert not builder._READ_CACHE

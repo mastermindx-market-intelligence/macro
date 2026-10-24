@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-24T04:19:05.173455+00:00",
+  "commit": "e09d782cb595407c00f3ab69b8a69de55c2e8b02",
+  "tree": "cf1a7329b40f59db1cfe51cecc52bc0064fe0325",
+  "sole_parent_verified": true,
+  "six_paths_verified": true,
+  "verdict": "SOURCE_ACCEPTED_PENDING_EXACT_HOSTED_CONTRACT_REPAIR_AND_RELEASE",
+  "runtime_report": {
+    "tests": 178,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "controls_report": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "remaining": "Original82c hosted manifest-document path parity failure. SameSol owns narrow source repair, no publication. A28 productionperformance remainsOPEN.",
+  "retained_XML_counts_verified": true,
+  "runtime_unique_union_verified": 203
+}
