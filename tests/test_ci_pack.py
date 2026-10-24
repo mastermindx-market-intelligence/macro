@@ -5310,9 +5310,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
 # probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_903),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_899),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_653),
+    ("templates/index.html", 138, 5_911),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_907),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_661),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5320,6 +5320,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 inert owner/engine component registration on2ab57a91:
+    four actual test-file tokens in the existing QLedger regression command
+    change its measured estimate68->76 (+8, with no length-bucket increase).
+    Existing selected-job memberships contain QLedger in all three probes;
+    the registration weights5903/5899/5653 become5911/5907/5661. Preserve
+    job ceilings138/137/130, ten packs and all runtime/storage limits.
 
     2026-10-24 ordinary publication-evidence adapter on accepted4e1be5f:
     one new test-file token changes the existing QLedger estimate66->68.
