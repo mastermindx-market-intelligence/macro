@@ -738,9 +738,12 @@ def main(argv: list[str] | None = None) -> int:
             len(sweep_result["errors"]),
         )
 
-    # F3(b): propose-branch reaper — gated on AUTONOMY_PAUSED='false' (write action).
-    # Runs alongside every GC invocation; always exits 0 on failure (never fatal).
-    propose_result = reap_propose_branches(repo_root, dry_run=args.dry_run)
+    # F3(b): remote-branch deletion is a DIFFERENT destructive operation.
+    # This generic GC CLI must not implicitly delete remote branches during a
+    # local worktree GC run. Remote prune requires a separate admitted owner
+    # with full-cycle completion, upstream and current-lease proof.
+    # Preserve the candidate audit without any remote git push --delete.
+    propose_result = reap_propose_branches(repo_root, dry_run=True)
     log.info(
         "GC propose-branch reaper: deleted=%d skipped=%d errors=%d",
         len(propose_result["deleted"]),
