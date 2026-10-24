@@ -5306,10 +5306,13 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Protected dfb1cfc7 registers the GovRev memo test: its already-selected job
+# weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
+# probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_899),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_895),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_649),
+    ("templates/index.html", 138, 5_901),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_897),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_651),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5317,6 +5320,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 accepted bootstrap composition with frozen main546f0acd:
+    canonical selected sets remain137/137/130 jobs, ten packs. The bootstrap
+    test token alone changes the selected QLedger job64->66, so exact weights
+    become5901/5897/5651 (+2 each). Incoming entry-radar6->10 and prospective
+    reference61->63 jobs are not selected by these probes. Protected GovRev
+    memo coverage is already included; do not fund it again. All32 affected
+    definition closures are covered. Preserve ceilings138/137/130, ten packs,
+    selectors, estimator, commands, timeouts and storage/runtime budgets.
 
     2026-10-24 inert host-gate composition with frozen main153fb1e3:
     one test-file token in the already-selected QLedger regression command
