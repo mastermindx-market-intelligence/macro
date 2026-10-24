@@ -6961,6 +6961,12 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "collectors/thetadata.py"
+      - "engine/options_intel_brief.py"
+      - "engine/options_universe.py"
+      - "ops/launchd/run_with_env.sh"
+      - "scripts/backfill_thetadata_eod.py"
+      - "scripts/topup_thetadata_day.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
