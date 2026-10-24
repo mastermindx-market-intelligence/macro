@@ -6953,6 +6953,16 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md"
+      - "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md"
+      - "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+      - "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md"
+      - "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
+      - "research/POLICY_AND_CONTRACT_CASES_2020_2022.md"
+      - "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md"
+      - "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md"
+      - "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md"
+      - "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
