@@ -27181,7 +27181,9 @@ jobs:
       - "tests/defense_o2_source_contracts"
       - "tests/test_govrev_push_observation.py"
       - "tests/test_govrev_publisher_preflight.py"
+      - "tests/test_govrev_source_binding.py"
       - "scripts/ci/govrev_publisher_preflight.py"
+      - "scripts/ci/govrev_source_binding.py"
       - "tests/test_financial_owner_symlink_guard.py"
       - "tests/test_lhx_reported_income.py"
       - "tests/test_defense_market_context.py"
@@ -27254,7 +27256,7 @@ jobs:
         with:
           node-version: "20"
       - name: Publication proof completeness and immutable evidence
-        run: python -m pytest tests/test_govrev_candidate_proof_gate.py tests/test_government_revenue_publisher_consumers.py tests/test_govrev_push_observation.py tests/test_govrev_publisher_preflight.py -q
+        run: python -m pytest tests/test_govrev_candidate_proof_gate.py tests/test_government_revenue_publisher_consumers.py tests/test_govrev_push_observation.py tests/test_govrev_publisher_preflight.py tests/test_govrev_source_binding.py -q
       - name: Complete owner snapshot restoration and mutation fences
         run: python -m pytest tests/test_restore_event_workspace_owner.py tests/test_restore_defense_market_owner.py tests/test_financial_owner_symlink_guard.py -q
       - name: Tenant isolation and immutable reader selection
