@@ -211,6 +211,61 @@ def test_absent_store_reports_null_findings_not_an_empty_list():
     assert clean["findings"] == []
 
 
+@pytest.mark.parametrize(
+    "claims,grades,expected_code,strict_exit",
+    [
+        ([_claim("mixed", "a", 1), _claim("mixed", "b", -1)],
+         [_grade("a", 5), _grade("b", 5)],
+         "SIGNED_EXCESS_POOLED_ACROSS_DIRECTIONS", 1),
+        ([_claim("salience", "a", 0)], [_grade("a", 5)],
+         "HIT_RATE_ON_A_SALIENCE_FAMILY", 1),
+        ([_claim("long", "a", 1, horizon=63)], [_grade("a", 21)],
+         "OFF_HORIZON_VERDICT", 0),
+        ([_claim("legal", "a", -1)], [_grade("a", 5)], None, 0),
+        ([], [], None, 0),
+    ],
+    ids=["mixed-direction", "salience-hit-rate", "immature-note", "legal-short", "empty"],
+)
+def test_metric_gate_strict_scope_preserves_owner_severity_and_warn_default(
+    tmp_path, monkeypatch, capsys, claims, grades, expected_code, strict_exit
+):
+    """Exercise the real CLI on synthetic stores, without activating fleet strictness.
+
+    An illegal metric is a strict failure; immature evidence retains the owner's
+    NOTE severity. Neither a clean store nor a lawful negative direction fails.
+    Both modes must audit identical inputs and leave the owner stores untouched.
+    """
+    import sys
+
+    cli = _load_cli()
+    store = tmp_path / "data" / "qledger"
+    store.mkdir(parents=True)
+    for name, rows in (("claims", claims), ("grades", grades)):
+        (store / f"{name}.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
+        )
+    before = {p.name: p.read_bytes() for p in store.iterdir()}
+    outputs = []
+    for strict in (False, True):
+        argv = ["check_qledger_metric_validity", "--root", str(tmp_path), "--json"]
+        monkeypatch.setattr(sys, "argv", argv + (["--strict"] if strict else []))
+        assert cli.main() == (strict_exit if strict else 0)
+        outputs.append(json.loads(capsys.readouterr().out))
+    assert outputs[0] == outputs[1]
+    assert outputs[0]["store_absent"] is False
+    assert outputs[0]["claims"] == len(claims)
+    assert outputs[0]["grades"] == len(grades)
+    codes = {finding["code"] for finding in outputs[0]["findings"]}
+    assert codes == ({expected_code} if expected_code else set())
+    assert {p.name: p.read_bytes() for p in store.iterdir()} == before
+
+
+def test_descriptive_no_metric_scope_does_not_invent_a_hit_rate():
+    """The existing auditor supports an explicit no-metric owner projection."""
+    claims = [_claim("description", "a", 0)]
+    assert audit(claims, [], reported_metrics={"description": set()}) == []
+
+
 # --------------------------------------------------------------------------- #
 # K3E EVAL-1 — accepted-main source admission fence
 # --------------------------------------------------------------------------- #
