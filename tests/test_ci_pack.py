@@ -5307,9 +5307,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
 PACKING_PROBES = (
-    ("templates/index.html", 138, 5_895),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 137, 5_891),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_645),
+    ("templates/index.html", 138, 5_897),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_893),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_647),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5317,6 +5317,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 protected maindfb1cfc7 adds the dossier-validation memo
+    suite to the already-selected unrun-government-revenue job:104->106
+    estimator units. Membership is unchanged on every retained probe;
+    exact weights become5897/5893/5647 (+2 each), with137/137/130 jobs and
+    ten packs. The memo dependency closure adds only its own test file.
+    Preserve job ceilings138/137/130, commands, selector, estimator,
+    timeouts and storage limits; only the three expectations change.
 
     2026-10-24 composition with protected maind8e8f1a4 adds only the
     qualified eval-os-a1 job (19 planning units) to free-content:136/5872
