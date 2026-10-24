@@ -41568,6 +41568,19 @@ jobs:
       - lib/symbol_directory_receipts.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - engine/intl_performance_charts.py
+      # Current International country/FX import closure (hosted full-tree contract).
+      - collectors/intl_country_sources.py
+      - collectors/intl_policy_sources.py
+      - collectors/intl_weo.py
+      - config/intl_country_baseline.json
+      - config/intl_country_commentary.json
+      - config/intl_country_releases.json
+      - lib/intl_country_assessment.py
+      - lib/intl_country_inputs.py
+      - lib/intl_country_outlook.py
+      - lib/intl_currency_observation.py
+      - lib/intl_forecast_vintages.py
+      - lib/intl_policy_evidence.py
       - lib/intl_chart_geometry.py
       - lib/intl_chart_mount.py
       - lib/intl_chart_publication.py
