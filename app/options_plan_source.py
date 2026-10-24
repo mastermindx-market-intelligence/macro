@@ -1,25 +1,17 @@
-"""One bounded, server-owned reference read for conditional Plan expiry math.
+"""Private fixed-reference consumer for conditional Plan expiry math.
 
-No quote request, source registry, persistence, retry, or broad chain crawl. The
-incumbent bounded reference adapter owns HTTPS/credential/response constraints.
-Browser snapshots supply an identity and authored assumptions, never source proof.
+No provider request, source registry, persistence or automatic refresh. Browser
+snapshots supply identity and authored assumptions; the server reads separately
+qualified original capture bytes under private, fixed installation custody.
 """
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from decimal import Decimal
-import threading
-from zoneinfo import ZoneInfo
 
 from engine.options_nbbo_cohort import canonical_occ_symbol, validate_contract
-from lib.options_source_receipts import BoundedRequestBudget
-from scripts.massive_entitlement_probe import RestProber
 
 MAX_BYTES = 64 * 1024
-_SOURCE_LOCK = threading.Lock()
-# A refusal/uncertain provider response closes this process's source lane. There
-# is deliberately no request/API reset or automatic alternate-origin fallback.
-_SOURCE_STOPPED = False
 
 
 class PlanSourceUnavailable(ValueError):
@@ -78,69 +70,115 @@ def plan_inputs(payload, *, known_by):
     return contexts
 
 
-def read_plan_reference(contexts, *, key, known_by, session=None):
-    """Use the existing selected-expiry adapter once; never a snapshot route.
 
-    The caller supplies the server's provisioned key, never a browser credential.
-    Returned digest/observed clocks come only from the actual bounded HTTPS read.
+
+
+
+def read_private_reference(path, expected_sha256):
+    """Read one installed original observation; no index, upload or acquisition.
+
+    The accepted original-source custody + private installation qualifies this
+    artifact. Its configured hash checks installed bytes, never provider identity.
+    Path/hash come solely from service configuration and are not browser inputs.
     """
-    global _SOURCE_STOPPED
-    if not key or not _SOURCE_LOCK.acquire(blocking=False):
+    import hashlib
+    import json
+    import os
+    from pathlib import Path
+    import re
+    import stat
+
+    if (not isinstance(path, Path) or not path.is_absolute() or ".." in path.parts
+            or not isinstance(expected_sha256, str) or not re.fullmatch("[a-f0-9]{64}", expected_sha256)):
         raise PlanSourceUnavailable("contract_terms_unavailable")
+    directory = file_fd = None
     try:
-        if _SOURCE_STOPPED:
-            raise PlanSourceUnavailable("contract_terms_unavailable")
-        contracts = [context["contract"] for context in contexts]
-        roots = {c["root"] for c in contracts}; expiries = {c["expiration"] for c in contracts}
-        if len(roots) != 1 or len(expiries) != 1:
-            raise ValueError("invalid_plan_request")
-        root, expiry = next(iter(roots)), next(iter(expiries))
-        today = datetime.fromisoformat(known_by.replace("Z", "+00:00")).astimezone(ZoneInfo("America/New_York")).date().isoformat()
-        params = dict(underlying_ticker=root, expiration_date=expiry, as_of=min(today, expiry),
-            **{"strike_price.gte": min(float(c["strike"]) for c in contracts),
-               "strike_price.lte": max(float(c["strike"]) for c in contracts)}, limit=100)
-        budget = BoundedRequestBudget(max_gets=1)
-        prober = RestProber(key, base_url="https://api.polygon.io", profile="selected_expiry",
-            timeout=8, max_bytes=262144, max_rows=100, request_budget=budget, session=session)
-        path = "/v3/reference/options/contracts"
-        payload = prober.probe("plan_selected_terms", path, params=params)
-        capability = prober.results["plan_selected_terms"]
-        if (capability.get("http_status") != 200 or capability.get("verdict") != "entitled"
-                or type(payload) is not dict or payload.get("status") != "OK"
-                or type(payload.get("results")) is not list):
-            _SOURCE_STOPPED = True
-            raise PlanSourceUnavailable("contract_terms_unavailable")
-        evidence = capability["evidence"]
-        observation = dict(schema="options_reference_capability_observation/v1",
-            state="response_observed", origin=prober.base_url, path=path, params=params,
-            capability=dict(http_status=200, verdict="entitled"), contracts=payload["results"],
-            payload_sha256=evidence["response_sha256"], completed_at=evidence["completed_at"],
-            historical_first_availability_established=False)
-        return observation
-    except PlanSourceUnavailable:
-        raise
+        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+        directory = os.open("/", flags)
+        for part in path.parts[1:-1]:
+            following = os.open(part, flags, dir_fd=directory)
+            os.close(directory); directory = following
+        parent = os.fstat(directory)
+        if parent.st_uid != os.getuid() or stat.S_IMODE(parent.st_mode) != 0o700:
+            raise ValueError("unqualified private directory")
+        file_fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+        before = os.fstat(file_fd)
+        if (not stat.S_ISREG(before.st_mode) or before.st_uid != os.getuid()
+                or stat.S_IMODE(before.st_mode) != 0o600 or before.st_nlink != 1
+                or not 0 < before.st_size <= 262144):
+            raise ValueError("unqualified private artifact")
+        parts, size = [], 0
+        while True:
+            chunk = os.read(file_fd, min(65536, 262145 - size))
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > 262144:
+                raise ValueError("artifact byte bound")
+            parts.append(chunk)
+        raw = b"".join(parts)
+        after = os.fstat(file_fd)
+        named = os.stat(path.name, dir_fd=directory, follow_symlinks=False)
+        identity = lambda info: (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns,
+                                  info.st_ctime_ns, info.st_uid, info.st_mode, info.st_nlink)
+        if (identity(before) != identity(after) or identity(after) != identity(named)
+                or len(raw) != before.st_size or hashlib.sha256(raw).hexdigest() != expected_sha256):
+            raise ValueError("installed artifact changed")
+        def unique(pairs):
+            out = {}
+            for key, value in pairs:
+                if key in out:
+                    raise ValueError("duplicate observation key")
+                out[key] = value
+            return out
+        observed = json.loads(raw, object_pairs_hook=unique,
+            parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite observation")))
+        if (type(observed) is not dict or observed.get("schema") != "options_reference_capability_observation/v1"
+                or observed.get("origin") != "https://api.polygon.io"
+                or observed.get("path") != "/v3/reference/options/contracts"
+                and not str(observed.get("path", "")).startswith("/v3/reference/options/contracts/O:")
+                or observed.get("state") != "response_observed"
+                or observed.get("capability", {}).get("http_status") != 200
+                or observed.get("capability", {}).get("verdict") != "entitled"
+                or not re.fullmatch("[a-f0-9]{64}", str(observed.get("payload_sha256", "")))):
+            raise ValueError("unqualified observation")
+        from lib.options_source_receipts import instant
+        if instant(observed.get("completed_at")) > datetime.now(timezone.utc):
+            raise ValueError("future observation")
+        return observed, hashlib.sha256(raw).hexdigest()
     except Exception:
-        _SOURCE_STOPPED = True
         raise PlanSourceUnavailable("contract_terms_unavailable") from None
     finally:
-        _SOURCE_LOCK.release()
+        if file_fd is not None:
+            os.close(file_fd)
+        if directory is not None:
+            os.close(directory)
 
 
-def prepare_authenticated_plan(payload, *, key, session=None, now=None):
-    """Compose trusted in-process source acquisition with the incumbent pure math."""
+def prepare_retained_plan(payload, *, reference_path, expected_sha256, now=None):
+    """Use a qualified dated reference exactly as retained, with no current claim."""
+    from copy import deepcopy
+    from datetime import date
     from engine.options_plan_expiry import prepare_plan_draft_expiry
 
     known_by = (now or datetime.now(timezone.utc)).isoformat()
     contexts = plan_inputs(payload, known_by=known_by)
-    observation = read_plan_reference(contexts, key=key, known_by=known_by, session=session)
+    observation, installed_sha = read_private_reference(reference_path, expected_sha256)
+    as_of = observation.get("params", {}).get("as_of")
+    try:
+        if date.fromisoformat(as_of).isoformat() != as_of:
+            raise ValueError("unknown reference basis")
+    except (ValueError, TypeError):
+        raise PlanSourceUnavailable("contract_terms_unavailable") from None
     for context in contexts:
-        context["reference_observation"] = observation
-    # Source completed_at may be later than request start; use that actual clock.
+        context["reference_observation"] = deepcopy(observation)
     result = prepare_plan_draft_expiry(payload["draft"], contexts, payload["spots"],
-        known_by=observation["completed_at"], payoff_basis=payload["payoff_basis"])
+        known_by=known_by, payoff_basis=payload["payoff_basis"])
     result["source_boundary"] = dict(selection="caller_authored_plan_identity",
-        terms="server_observed_bounded_https_reference", discovery_snapshot_authenticated=False,
-        historical_first_availability_established=False, current_quote_eligible=False,
-        reference_request_count=1, reference_sha256=observation["payload_sha256"],
-        reference_observed_at=observation["completed_at"])
+        terms="server_held_qualified_reference", terms_temporal_basis="dated_reference",
+        reference_as_of=as_of, reference_observed_at=observation["completed_at"],
+        reference_sha256=observation["payload_sha256"], installed_observation_sha256=installed_sha,
+        original_response_bytes_replayed=False, discovery_snapshot_authenticated=False,
+        historical_first_availability_established=False, current_terms_qualified=False,
+        current_quote_eligible=False, reference_request_count=0)
     return result

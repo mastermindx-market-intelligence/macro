@@ -25764,6 +25764,7 @@ jobs:
           tests/test_public_quote_projection.py
           tests/test_intelligence_hub_market_pulse_api.py
           tests/test_options_plan_api.py
+          tests/test_options_plan_install.py
           tests/test_status_live_projection_wiring.py
           -q
       # CCR-R0 (2026-08-28) belongs in this existing pre-launch security lane:

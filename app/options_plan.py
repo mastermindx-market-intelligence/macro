@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.options_auth import resolve_entitled_options_principal
-from app.options_plan_source import MAX_BYTES, PlanSourceUnavailable, prepare_authenticated_plan
+from app.options_plan_source import MAX_BYTES, PlanSourceUnavailable, prepare_retained_plan
 from engine.intelligence_workspace.options_use import OptionUseRefused
 
 router = APIRouter(prefix="/api/options/plan", tags=["options-plan"])
@@ -51,22 +52,20 @@ async def _payload(request):
         raise HTTPException(422, "invalid_plan_request", headers=HEADERS) from None
 
 
-def _server_key():
-    from lib import config
-    return config.secret("POLYGON_API_KEY") or config.secret("MASSIVE_API_KEY")
-
 
 @router.post("/expiry")
 async def plan_expiry(request: Request, _principal=Depends(require_plan_access)):
     payload = await _payload(request)
-    # Activation is an ordinary runtime configuration after source/access and
-    # independent auth review. No test or import ever acquires provider data.
+    # A qualified fixed artifact must be installed privately by its existing
+    # owner. This route never acquires provider data or creates that artifact.
     if os.environ.get("OPTIONS_PLAN_REFERENCE_ENABLED") != "1":
         return JSONResponse({"status": "UNAVAILABLE", "reason": "contract_terms_unavailable"},
                             status_code=503, headers=HEADERS)
     try:
         from starlette.concurrency import run_in_threadpool
-        result = await run_in_threadpool(prepare_authenticated_plan, payload, key=_server_key())
+        result = await run_in_threadpool(prepare_retained_plan, payload,
+            reference_path=Path(os.environ.get("OPTIONS_PLAN_REFERENCE_PATH", "")),
+            expected_sha256=os.environ.get("OPTIONS_PLAN_REFERENCE_SHA256", ""))
         return JSONResponse(result, headers=HEADERS)
     except PlanSourceUnavailable:
         return JSONResponse({"status": "UNAVAILABLE", "reason": "contract_terms_unavailable"},

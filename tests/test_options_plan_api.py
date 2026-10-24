@@ -27,32 +27,15 @@ def contract_row():
                 cfi="OCASPS", primary_exchange="BATO")
 
 
-class Response:
-    status_code = 200
-    def __init__(self, payload=None):
-        self.raw = json.dumps(payload or dict(status="OK", results=[contract_row()])).encode()
-        self.closed = False
-    def iter_content(self, chunk_size):
-        yield self.raw
-    def close(self):
-        self.closed = True
 
 
-class Session:
-    def __init__(self, response=None, fail=False):
-        self.headers = {}; self.calls = []; self.response = response or Response(); self.fail = fail
-    def get(self, url, **kwargs):
-        self.calls.append((url, kwargs))
-        if self.fail:
-            raise TimeoutError("secret vendor token must never escape")
-        return self.response
 
 
 @pytest.fixture(autouse=True)
 def isolate(monkeypatch):
-    monkeypatch.setattr(source, "_SOURCE_STOPPED", False)
     monkeypatch.setenv("OPTIONS_PLAN_REFERENCE_ENABLED", "1")
-    monkeypatch.setattr(api, "_server_key", lambda: "provisioned-test-key")
+    monkeypatch.setenv("OPTIONS_PLAN_REFERENCE_PATH", "/qualified/private/reference.json")
+    monkeypatch.setenv("OPTIONS_PLAN_REFERENCE_SHA256", "a" * 64)
 
 
 @pytest.fixture
@@ -67,7 +50,7 @@ def allow(monkeypatch):
 
 def test_absent_and_denied_auth_cannot_call_source(client, monkeypatch):
     calls = []
-    monkeypatch.setattr(api, "prepare_authenticated_plan", lambda *a, **k: calls.append(True))
+    monkeypatch.setattr(api, "prepare_retained_plan", lambda *a, **k: calls.append(True))
     assert client.post("/api/options/plan/expiry", json=plan()).status_code == 401
     for reason, expected in [("authentication_unavailable", 401), ("entitlement_unavailable", 403)]:
         def refuse(_):
@@ -82,14 +65,14 @@ def test_absent_and_denied_auth_cannot_call_source(client, monkeypatch):
 def test_private_success_uses_only_server_owned_source(client, monkeypatch):
     allow(monkeypatch)
     calls = []
-    def prepare(payload, *, key):
-        calls.append((payload, key)); return dict(status="PREPARED_EXPIRY_PAYOFF")
-    monkeypatch.setattr(api, "prepare_authenticated_plan", prepare)
+    def prepare(payload, *, reference_path, expected_sha256):
+        calls.append((payload, str(reference_path), expected_sha256)); return dict(status="PREPARED_EXPIRY_PAYOFF")
+    monkeypatch.setattr(api, "prepare_retained_plan", prepare)
     response = client.post("/api/options/plan/expiry", json=plan(), headers={"Authorization": "Bearer token"})
     assert response.status_code == 200
     assert response.headers["cache-control"] == "private, no-store"
     assert "Authorization" in response.headers["vary"]
-    assert calls == [(plan(), "provisioned-test-key")]
+    assert calls == [(plan(), "/qualified/private/reference.json", "a" * 64)]
 
 
 @pytest.mark.parametrize("mutation", ["contexts", "reference_observation", "reference_sha256", "extra"])
@@ -100,7 +83,7 @@ def test_caller_cannot_supply_source_evidence(mutation):
 
 
 @pytest.mark.parametrize("change", ["mixed_expiry", "missing_entry", "adjusted", "bad_spots", "wrong_basis"])
-def test_invalid_math_rejected_before_network(change, monkeypatch):
+def test_invalid_math_rejected_before_source(change, monkeypatch):
     payload = plan()
     if change == "mixed_expiry":
         payload["draft"]["legs"].append(copy.deepcopy(payload["draft"]["legs"][0]))
@@ -109,40 +92,13 @@ def test_invalid_math_rejected_before_network(change, monkeypatch):
     if change == "adjusted": payload["draft"]["legs"][0]["snapshot"]["identity"]["adjustedRootHint"] = True
     if change == "bad_spots": payload["spots"] = [float("nan")]
     if change == "wrong_basis": payload["payoff_basis"]["expiration"] = "2026-10-30"
-    session = Session()
+    monkeypatch.setattr(source, "read_private_reference", lambda *a, **k: pytest.fail("invalid math must not read source"))
     with pytest.raises((ValueError, TypeError)):
-        source.prepare_authenticated_plan(payload, key="test", session=session)
-    assert session.calls == []
+        source.prepare_retained_plan(payload, reference_path=None, expected_sha256="a" * 64)
 
 
-def test_exact_reference_get_is_bounded_no_retry_and_no_quote():
-    payload = plan(); contexts = source.plan_inputs(payload, known_by="2026-10-24T12:00:00Z")
-    session = Session()
-    observed = source.read_plan_reference(contexts, key="test", known_by="2026-10-24T12:00:00Z", session=session)
-    assert len(session.calls) == 1
-    url, kwargs = session.calls[0]
-    assert url == "https://api.polygon.io/v3/reference/options/contracts"
-    assert kwargs["params"] == dict(underlying_ticker="SPY", expiration_date="2026-10-23", as_of="2026-10-23",
-        **{"strike_price.gte": 763.0, "strike_price.lte": 763.0}, limit=100)
-    assert kwargs["allow_redirects"] is False and kwargs["stream"] is True
-    assert "apiKey" not in kwargs["params"]
-    assert observed["contracts"] == [contract_row()]
-    assert observed["historical_first_availability_established"] is False
-    assert session.response.closed
 
 
-@pytest.mark.parametrize("mode", ["timeout", "denied", "pagination", "oversize"])
-def test_failure_stops_source_lane_without_retry_or_fallback(mode):
-    response = Response()
-    if mode == "denied": response.status_code = 403
-    if mode == "pagination": response.raw = json.dumps(dict(status="OK", results=[contract_row()], next_url="https://elsewhere.test")).encode()
-    if mode == "oversize": response.raw = b" " * (262144 + 1)
-    session = Session(response=response, fail=mode == "timeout")
-    contexts = source.plan_inputs(plan(), known_by="2026-10-24T12:00:00Z")
-    for _ in range(2):
-        with pytest.raises(source.PlanSourceUnavailable, match="contract_terms_unavailable"):
-            source.read_plan_reference(contexts, key="test", known_by="2026-10-24T12:00:00Z", session=session)
-    assert len(session.calls) == 1
 
 
 def test_http_body_bounds_duplicate_nonfinite_and_errors_no_store(client, monkeypatch):
@@ -154,20 +110,12 @@ def test_http_body_bounds_duplicate_nonfinite_and_errors_no_store(client, monkey
         assert response.headers["cache-control"] == "private, no-store"
     def fail(*args, **kwargs):
         raise source.PlanSourceUnavailable("contract_terms_unavailable")
-    monkeypatch.setattr(api, "prepare_authenticated_plan", fail)
+    monkeypatch.setattr(api, "prepare_retained_plan", fail)
     response = client.post("/api/options/plan/expiry", json=plan(), headers={"Authorization": "Bearer token"})
     assert response.status_code == 503
     assert response.json() == dict(status="UNAVAILABLE", reason="contract_terms_unavailable")
 
 
-def test_actual_server_source_to_incumbent_curve_keeps_historical_context():
-    result = source.prepare_authenticated_plan(plan(), key="test", session=Session())
-    assert result["status"] == "PREPARED_EXPIRY_PAYOFF"
-    assert result["curve"]["pnl"] == [-200, -200, 0, 500]
-    assert result["source_boundary"]["terms"] == "server_observed_bounded_https_reference"
-    assert result["source_boundary"]["discovery_snapshot_authenticated"] is False
-    assert result["source_boundary"]["current_quote_eligible"] is False
-    assert result["temporal_context"]["historical_first_availability_established"] is False
 
 
 @pytest.mark.parametrize("access,expiry,allowed", [("feature", 9999999999, True), ("unlimited", 9999999999, True),
@@ -186,16 +134,68 @@ def test_existing_uncached_entitlement_rule_shared_by_private_read(monkeypatch, 
             auth.resolve_entitled_options_principal("token")
 
 
-def test_reference_constructor_pins_qualified_origin_profile_and_bounds(monkeypatch):
-    actual = source.RestProber
-    seen = []
-    def make(*args, **kwargs):
-        seen.append(kwargs.copy())
-        return actual(*args, **kwargs)
-    monkeypatch.setattr(source, "RestProber", make)
-    contexts = source.plan_inputs(plan(), known_by="2026-10-24T12:00:00Z")
-    source.read_plan_reference(contexts, key="test", known_by="2026-10-24T12:00:00Z", session=Session())
-    assert seen[0]["base_url"] == "https://api.polygon.io"
-    assert seen[0]["profile"] == "selected_expiry"
-    assert seen[0]["max_bytes"] == 262144 and seen[0]["max_rows"] == 100
-    assert seen[0]["request_budget"].max_gets == 1
+
+
+def retained_observation():
+    return dict(schema="options_reference_capability_observation/v1", state="response_observed",
+        origin="https://api.polygon.io", path="/v3/reference/options/contracts",
+        params=dict(underlying_ticker="SPY", expiration_date="2026-10-23", as_of="2026-10-19"),
+        capability=dict(http_status=200, verdict="entitled"), contracts=[contract_row()],
+        payload_sha256="b" * 64, completed_at="2026-10-20T08:43:25.307134+00:00",
+        historical_first_availability_established=False)
+
+
+def private_artifact(tmp_path, observation=None):
+    from hashlib import sha256
+    directory = tmp_path / "qualified-capture"; directory.mkdir(mode=0o700)
+    path = directory / "reference.json"
+    raw = json.dumps(observation or retained_observation()).encode()
+    path.write_bytes(raw); path.chmod(0o600)
+    return path, sha256(raw).hexdigest()
+
+
+def test_fixed_private_reference_to_curve_never_acquires_provider(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    path, digest = private_artifact(tmp_path)
+    monkeypatch.setattr("requests.Session.get", lambda *a, **k: pytest.fail("provider must never be called"))
+    result = source.prepare_retained_plan(plan(), reference_path=path, expected_sha256=digest,
+        now=datetime(2026, 10, 24, 12, tzinfo=timezone.utc))
+    assert result["status"] == "PREPARED_EXPIRY_PAYOFF"
+    assert result["curve"]["pnl"] == [-200, -200, 0, 500]
+    boundary = result["source_boundary"]
+    assert boundary["terms"] == "server_held_qualified_reference"
+    assert boundary["reference_as_of"] == "2026-10-19"
+    assert boundary["reference_observed_at"] == "2026-10-20T08:43:25.307134+00:00"
+    assert result["known_by"] == "2026-10-24T12:00:00+00:00"
+    assert boundary["reference_request_count"] == 0
+    assert boundary["current_terms_qualified"] is False
+    assert boundary["original_response_bytes_replayed"] is False
+
+
+@pytest.mark.parametrize("change", ["missing", "hash", "mode", "parent", "symlink", "duplicate", "nonfinite", "future", "denied"])
+def test_private_reader_rejects_unqualified_or_changed_artifact(tmp_path, change):
+    from hashlib import sha256
+    path, digest = private_artifact(tmp_path)
+    if change == "missing": path.unlink()
+    if change == "hash": digest = "c" * 64
+    if change == "mode": path.chmod(0o644)
+    if change == "parent": path.parent.chmod(0o755)
+    if change == "symlink":
+        other = path.with_name("original.json"); path.rename(other); path.symlink_to(other)
+    if change == "duplicate": path.write_bytes(b'{"schema":"x","schema":"y"}'); digest = sha256(path.read_bytes()).hexdigest()
+    if change == "nonfinite": path.write_bytes(b'{"value":NaN}'); digest = sha256(path.read_bytes()).hexdigest()
+    if change in {"future", "denied"}:
+        observed = retained_observation()
+        if change == "future": observed["completed_at"] = "2099-01-01T00:00:00Z"
+        if change == "denied": observed["capability"]["verdict"] = "not_entitled"
+        path.write_bytes(json.dumps(observed).encode()); digest = sha256(path.read_bytes()).hexdigest()
+    with pytest.raises(source.PlanSourceUnavailable): source.read_private_reference(path, digest)
+
+
+def test_mismatched_reference_does_not_substitute_another_contract(tmp_path):
+    observed = retained_observation(); observed["contracts"][0]["strike_price"] = 764
+    observed["contracts"][0]["ticker"] = "O:SPY261023C00764000"
+    path, digest = private_artifact(tmp_path, observed)
+    result = source.prepare_retained_plan(plan(), reference_path=path, expected_sha256=digest)
+    assert result["status"] == "UNPRICED" and result["curve"] is None
+    assert any(r["code"] == "TERMS_UNQUALIFIED" for r in result["reasons"])
