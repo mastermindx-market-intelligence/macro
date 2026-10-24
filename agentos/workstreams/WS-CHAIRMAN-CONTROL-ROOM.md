@@ -137,10 +137,11 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Consume the independent #1852/372a5500 review after actual START1792883050.322879
-      by bc-5990d16e. Author is stopped/frozen; CI40135201942 is SUCCESS.
-      Track disjoint topology source/readiness placement1792883195.455409; actual
-      source START/return is owed. No Docker journey or full acceptance is claimed.
+      Execute pinned same-author R3 after independent REQUEST_CHANGES5640555716:
+      correct the inverted approval-result label, freeze and return to same reviewer.
+      Retain independently proven R2 controls and old-head CI separately.
+      Consume topology source/readiness after START1792883822.186639 by bc-7072b0b1.
+      No Docker journey or full reference-app acceptance is claimed.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
@@ -289,11 +290,11 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, consume same-child HC-P6.T1.FIX1 after relay1792883042.424209:
-  real Executive mount, exact CI/D6 repair and mounted positive/fallback fresh proof.
-  Then require final-head independent review before placing prepared T2 UI scope.
-  Consume independent #1852/372a5500 review after START1792883050.322879; track
-  topology source/readiness placement1792883195.455409 without execution.
+  For Mastermind #1841, place pinned HC-P6.T1.R1 on frozen #1859/40d for source
+  challenge while reconciling same-child A1 fallback proof. Bind final head/delta
+  before PASS; only then place the prepared T2 UI slice. Execute pinned Rakazo R3
+  label correction on its original author, then same-reviewer delta review.
+  Consume topology source/readiness after START1792883822.186639 without execution.
   Reconcile only retained records of the one ambiguous #1790 Fabric request; no retry.
   Preserve #1853/0f433e8 and #1854/3be06cec independent source PASS and green CI.
   #1856/a9601a9c stays frozen with consumed refusal, no semantic verdict or retry.
@@ -2665,8 +2666,9 @@ lifecycle, task, provider routing, database owner or artifact-admission system.
   reviewed source and actual runner custody. No extra placement, route fallback,
   purchases, credential moves, account-policy changes, approval or merge.
 
-**State:** SOURCE_PLACEMENT_REQUESTED1792883195.455409. This task is disjoint from
-HC-P1B.T1.R2; actual child START and daemon eligibility are not yet observed.
+**State:** STARTED1792883822.186639 as bc-7072b0b1-6da7-57bf-9204-01336ea2ce46,
+Cursor-managed isolatedVM/defaultmodel/protected3095. Source head/return and actual
+runner readiness remain owed; no topology execution has been authorized.
 
 
 ### Independent Office source return and Rakazo R2 publication checkpoint
@@ -2885,8 +2887,9 @@ SOURCE_ASSOCIATED_READ_QUALIFIED remains unaccepted until those source gates pas
 No approval, merge, install, live provider/computer task, purchase, credentials,
 account-policy change, old-carrier reset or widened source ownership.
 
-**State:** SAME_CHILD_REPAIR_DELIVERED1792882937.627179; ACK/RELAY1792883042.424209
-retains bc-263fbf9e and run-09dc3b8a. Actual child preflight START/new head remain owed.
+**State:** SOURCE_REPAIR_RETURNED_FROZEN40d685dc935506455fe0342c5059afbd76354de1,
+RESULT1792883657.588829. Parent consumed1792885016.809679; A1 delivery reconciliation
+and final independent review remain open.
 
 
 ### HC-P1B.T1.R2.REVIEW — Independent review of the frozen Rakazo repair
@@ -2942,8 +2945,8 @@ action, purchases, credential moves, account-policy changes, installation or bro
 reruns. If admission/start is uncertain, retain the same child and report the concrete
 state; no duplicate or replacement placement.
 
-**State:** INDEPENDENT_REVIEW_STARTED1792883050.322879 after placement1792882960.991679,
-Cursor bc-5990d16e-c1bf-5c0f-a7c9-f84ec52816b6; semantic result pending.
+**State:** REQUEST_CHANGES_CONSUMED after COMMENT5640555716/RESULT1792883918.252499;
+reviewer bc-5990d16e stopped1792885016.258609. R3 correction is pinned below.
 
 
 ### Fleet continuation receipts — repair, independent review and new preparation
@@ -3102,3 +3105,129 @@ or adopt #1473. No T2 implementation placement or source write has occurred yet.
   or NOT_FOUND projection alone does not become an independent reviewer verdict.
 
 **State:** PLANNED_BEFORE_READ_ONLY_OWNER_INQUIRY.
+
+
+### HC-P1B.T1.R3 — Correct the independently found approval-result label
+
+- **Input:** independent non-author Cursor bc-5990d16e-c1bf-5c0f-a7c9-f84ec52816b6
+  returned REQUEST_CHANGES in COMMENT review5640555716/RESULT1792883918.252499
+  on immutable#1852/372a5500645d3300ef0867797696a47327ef95a7.
+  Root read the COMPLETE review and consumed/STOPPED reviewer1792885016.258609.
+  Independent documented launcher18cases passed; the three R2 source/launcher
+  controls hold. Those receipts remain valid for unchanged source, not a new head.
+- **Verified defect:** qualify.mjs stores toolRequiresApproval("write_file", false)
+  under owner_write_exempt; qualify.test.mjs expects false. Root read the pinned
+  action-approval.ts blob08e74f51d06582d57b31f078d63461c43912254c:
+  write_file belongs to APPROVAL_EXEMPT_TOOLS and the function returns false.
+  Thus the observed value means approval is NOT required; the existing label
+  communicates the opposite.
+- **Exact repair:** rename the published field to owner_write_requires_approval,
+  retaining its actual false value from the pinned function. Update the corresponding
+  assertion and require the old inverted field to be absent. Preserve the distinct
+  webhook_write_requires_approval=true, ask/allow/explicit-tool behavior and effect-key
+  meaning. Do not change donor source, behavior, policy or broader proof labels.
+- **Owner/scope:** same author child meta-ceo-harness-rakazo-cursor-20261024-01 /
+  bc-3aad7289-82db-5570-aef5-9bf911172fd3, branch cursor/rakazo-hc-p1b-qualification-2fd3,
+  original thread1792865049.365069. Reconfirm frozen372a custody. Only
+  integrations/rakazo_qualification/qualify.mjs and qualify.test.mjs may change.
+  The overall PR remains within its existing12paths; no new files/locks/config.
+- **Proof/return:** execute the corrected actual native report assertion through
+  the documented closed Python launcher; retain exact commands/counts/skips.
+  No unrelated broad suite or unchanged-CI rerun. Update the same DraftPR, freeze
+  exact new head/clean/no-in-flight writer, report author and CI evidence separately.
+  Then request changed-head/delta review from the SAME independent reviewer,
+  without pretending its old REQUEST_CHANGES is acceptance of the repair.
+
+No approve/merge, new placement, live provider/DB/Docker/computer task, purchase,
+credential/account/policy action or other source edit. This is a source-label
+correction, not Rakazo product-journey completion.
+**State:** PLANNED_BEFORE_SAME_AUTHOR_REPAIR.
+
+### HC-P6.T1.R1 — Independent review of the associated producer, with final-head binding
+
+- **Current immutable review input:** Draft#1859 head
+  40d685dc935506455fe0342c5059afbd76354de1, parentc748fcb84d72b5691f9e942150037a3c1e3562a0,
+  base3095d09f1789a5b8002503beae872774c297b1a5. FIX1 RESULT1792883657.588829
+  confirms clean remote-equal frozen source,19paths,+2904/-102. Root read PR and
+  one-commit delta: nine changed files, including only three server registrations.
+  Author121Python tests, typecheck, replay9passed/4skipped and fresh4passed/9skipped;
+  mounted body10024B SHA2569ca1a0a5522ce549950d5ea542ad6acd7345e298119dbebe2625676dce67a9f2,
+  provenance aacd587b9c45f62f1ea4d3ff80e68aee405d28bd624e2665454c9aab001d08b1,
+  Runtime identityc62fa75478a1fa12f8976b36c05b6588. Six-node joint read210/256statements.
+  OS40141839934SUCCESS; CI40141839874 still running at root observation.
+- **Placement:** one distinct independent Cursor reviewer,
+  meta-ceo-harness-office-join-review-cursor-20261024-01, existing common root
+  meta-ceo-open-harness-convergence-20261024-sol-001 and parent
+  meta-ceo-harness-implementation-20261024-web-001; account-default existing admission.
+  Reviewer must differ from authorbc-263fbf9e-a33b-50ba-90c3-46e88217d302.
+  Read-only immutable scratch, no author-carrier mutation, source write or PR approval.
+- **Why review may start now:** FIX1.A1 fallback proof is already requested on the
+  same author; its delivery/custody is being reconciled at1792885016.809679.
+  This review can challenge immutable40d source while that bounded proof finishes.
+  No mixed-head acceptance is permitted. Parent must bind the final frozen head and
+  actual final delta before this reviewer may issue the final PASS. Until then return
+  concrete findings or HOLD_FINAL_HEAD; do not treat40d as final if the author advances.
+
+#### Required source and semantic challenge
+
+Read all19paths in T1/FIX1, the original T1/A1 constraints and necessary unchanged
+Runtime/projection/auth/transport owners. Reuse this record instead of re-bootstrapping
+unrelated programme work. In particular:
+1. One true retained Runtime connection/selection, random owner identity, cumulative
+   256statements/512rows/8MiBcell/32MiBtotal/6nodes/200000VMsteps, including provenance/
+   creation-event/sizeSQL. No per-phase resets, caller SQL, reopen, synthetic receipt
+   or second selection. Receipt only after actual physical close and namespace custody.
+2. Existing canonical completion/current Attempt/root/digest/hierarchy/recursive closure
+   remains authoritative. Combined budgets/refusals and genuine six-node usable headroom
+   must be discriminated. Pure Fabric refactor must preserve standalone diagnostics
+   through projected["notes"], not merely satisfy the D6 structural test.
+3. Final MissionCURRENT, exact selected tuple in actual final index, same qualified
+   observation/runtime samples/identity/ControlRoom bracket, full nested WorkspaceResult
+   BODY and both-or-neither behavior. Correct typed reason on source/change/budget/
+   close failure; unchanged old closed frame grammars.
+4. Independent complete→CONTENT_OVER_BUDGET→refuse ladder, unchanged16384nested
+   and2000000compound canonical socket envelopes including LF. Incomplete content
+   may remain associated; no complete-content claim or fallback fabricated in transport.
+5. Actual literal mounted Executive route through SAME WorkspaceApp/AuditedWorkspaceApp/
+   Unix client and source owner. Preserve all path/method/query/body/host/Origin/bearer/
+   audit/permission/generation/expiry fences and absent mounts under both profiles.
+6. Actual full HTTP bytes exported/consumed unchanged through incumbent TS decoders and
+   projectOffice. Closed compound wrapper and exact selection; fresh identities/hashes
+   derived from supplied bytes; explicit bad input fails without committed substitution;
+   owned cleanup. Review/work/transport/acceptance/unknown session/binding stay distinct.
+
+Read first. Run only focused checks necessary to resolve a concrete risk. Once final
+source is bound, independently produce and consume one actual mounted positive export
+and the genuine fallback export if supplied by final A1; use reviewer-owned dependencies/
+temporary output, not inaccessible author directories. Report exact source/commands/
+counts/skips and uncertainty. Avoid duplicate broad suites or unchanged CI reruns.
+
+#### Two-stage return and custody
+
+Phase1: actual reviewer/model/carrier START, source findings on immutable40d, and
+HOLD_FINAL_HEAD if clean pending A1 binding. No passing final review on a moving head.
+Phase2: parent pins actual final frozen head and delta. Same reviewer checks that
+delta plus remaining producer/consumer proof and returns PASS/REQUEST_CHANGES/HOLD
+as a GitHub COMMENT bound to the exact final head. Hosted CI is separate. If a new
+source defect appears, report it; reviewer never fixes its own review subject.
+
+No approvals/merges/install/provider/computer/account/credential/purchase actions.
+This source review cannot accept UI/native/installed/P4/P5/fullP6/R2 or duration gates.
+If placement/start is uncertain, reconcile same child; no duplicate or alternate.
+**State:** PLANNED_BEFORE_INDEPENDENT_REVIEW_PLACEMENT.
+
+### New source returns and parent disposition
+
+- #1859 FIX1 returned frozen40d685dc935506455fe0342c5059afbd76354de1 at1792883657.588829.
+  Parent consumed author evidence at1792885016.809679 and requested exact A1 delivery
+  reconciliation before another follow-up: already-carried work may finish; only
+  confirmed non-delivery plus idle/frozen custody permits carrying it once. No duplicate.
+- #1852 independent review5640555716 is REQUEST_CHANGES, complete source/launcher
+  evidence retained; reviewer consumed/STOP1792885016.258609. R3 above pins the only
+  new author repair; no semantic PASS is claimed yet.
+- Topology source-preparation START1792883822.186639 identifies
+  bc-7072b0b1-6da7-57bf-9204-01336ea2ce46 on an isolated Cursor-managed VM, default
+  model/no override, protected3095 start, six additive paths. Branch/head awaited.
+  Its initial SOURCE_PREPARATION_AND_READINESS_ONLY restriction remains.
+- Commission thread interim1792883692.106129 describes monitoring of this active
+  session, not R5 reconciliation evidence or a task-completion RESULT.

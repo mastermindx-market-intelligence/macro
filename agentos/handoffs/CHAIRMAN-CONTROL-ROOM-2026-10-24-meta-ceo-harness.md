@@ -748,3 +748,28 @@ host capability and legacy ResultCard compatibility. T2 implementation remains
 blocked on final T1 proof/review and exact source base; no child placed.
 
 No approvals/merges/purchases/credentials/account changes; MISSION_COMPLETE=false.
+
+### Repair-return and independent-review checkpoint
+
+#1859 FIX1 returned frozen40d685dc935506455fe0342c5059afbd76354de1,19paths.
+Author121Python passes, mounted positive export/freshconsumer/typecheck and max
+six-node joint read210statements within256. Actual new bodySHA256
+9ca1a0a5522ce549950d5ea542ad6acd7345e298119dbebe2625676dce67a9f2.
+OS40141839934SUCCESS; generalCI40141839874 running. Parent consumed1792885016.809679
+while reconciling A1 message1792883644.762359, which had no carried receipt.
+Do not duplicate that continuation. HC-P6.T1.R1 now pins two-stage independent review:
+immutable40d source challenge can begin; final PASS requires parent's exact final
+head/delta binding after A1, with genuine reviewer producer/consumer proof.
+
+#1852 independent Cursor review5640555716/RESULT1792883918.252499 is REQUEST_CHANGES.
+All three R2 controls held and independently18Node cases passed. The blocker is
+owner_write_exempt=false labeling the raw approval-required answer backwards.
+Root personally verified donor action-approval.ts and source/test. Parent consumed/
+STOPPED reviewer1792885016.258609. HC-P1B.T1.R3 pins ONLY qualifier+test field rename
+to owner_write_requires_approval=false, preserving true observed behavior and all
+source-security controls, before same-author repair. No new placement/approval/merge.
+
+Topology preparation actual START1792883822.186639: bc-7072b0b1-6da7-57bf-9204-01336ea2ce46,
+isolatedCursorVM, defaultmodel, protected3095, sixnewpaths. No topology execution.
+Commission interim1792883692.106129 is session monitoring, not R5-reconciliation proof.
+MISSION_COMPLETE=false; no final RESULT.
