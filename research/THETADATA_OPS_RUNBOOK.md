@@ -446,3 +446,45 @@ Default None withholds; a mismatch refuses before local-source preflight/claim.
 The native receipt records `bound_session` and the computed exact operation_ref.
 This source interface does not activate a schedule or roll a two-attempt
 allocation into a recurring allowance.
+
+### Exact Oct26 observation entry binding (source only; default off)
+
+The existing `scripts/launchd/theta_daily_refresh.sh` remains a thin `exec`
+wrapper. Its inherited environment reaches the normal `--daily` CLI. With
+`THETADATA_D_SESSION_OBSERVATION` absent or empty, that CLI still supplies `None`;
+the existing four-cell maintenance, worker bounds and 65-minute default remain.
+No plist, timer or wrapper control flow is added.
+
+The only accepted nonempty value is
+`spy-2026-10-26-1730-observation-v1`. This binds SPY D=2026-10-26/S=2026-10-23,
+the natural 17:30 Eastern rung, original root
+`01a156f1-f450-7793-8951-bddadd4784c2`, assigning coordinator
+`01a15700-1ae2-7a73-9756-f1546da7ace8`, and the already provisioned private parent
+`/Users/chriswong/optionshub-ops-wt/.git/options-source-captures`. It is not an
+arbitrary date/root/budget setting or recurring allocation. Other values,
+legacy mode, `--force-run`, or a changed deadline refuse before source work.
+Wrong day/rung, weekend/pre-gate, missing local OI/baseline, unqualified native
+transport capacity, invalid journal parent or any existing operation claim
+cannot issue pilot requests. A retained unknown/refusal/completed claim is never
+reused. Capacity inspection is local timer/thread/origin/retry-adapter inspection,
+not a health query or proof of subscribed-account access.
+
+**Do not set this environment value as part of source installation.** Activation
+requires the accepted/protected source, exact preimage-guarded native installation,
+current subscribed-account/source admission, actual writer/host capacity and
+custody, compatible retained local OI[D]/OI[S], and a writable/fsync-qualified
+private journal. Existing explicit `THETADATA_DATED_GREEKS_V1_ROOTS=SPY` policy is
+also required; requested version1 is request provenance, never response model
+metadata. The Options owner's separately approved NEW two-attempt allocation is
+for this operation only, not old unused cap or a reset of earlier claims.
+
+The two actual pilot attempts are exact EOD[D], then full-order Greek EOD[D]
+requested version1: max16MiB/100000 raw rows per response (32MiB/200000 total),
+no probe/retry/redirect/page/fallback/extra OI. The existing absolute native
+main-thread timer and shared remaining 65-minute deadline remain mandatory;
+unknown consumes/holds an attempt. Raw response/actual clocks precede validation.
+Pilot data stays private and never enters canonical Parquet, `_ensure_one_cell`,
+`_merge_day`, Hub max-date promotion, or the historical catch-up helper. Ordinary
+four-cell maintenance remains independent; its existing requests are not financed
+by or counted as pilot attempts. No new model/expiry/PIT/market-completeness or
+publication claim follows from this observation.

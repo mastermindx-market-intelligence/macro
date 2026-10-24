@@ -47,6 +47,30 @@ def _same_source(row, plan):
     return row['id'] == plan['candidate_id'] or bool(refs & {plan['source_ref'], plan['snapshot_ref']})
 
 
+def _adjudicated_context_refs(plan, paths, exclusions_sha256):
+    """Resolve only exact reviewed historical-context scope; never edit holds."""
+    value = plan.get('historical_context_adjudication')
+    if value is None:
+        return set()
+    if value['exclusions_sha256'] != exclusions_sha256:
+        raise ValueError('adjudication exclusions snapshot mismatch')
+    historical = value['historical_stage']
+    # The candidate parser already restricts this to the original safe stage ID.
+    path = paths['staging'] / (historical['id'] + '.json')
+    obj = json.loads(_bound(path, historical['sha256'], 2_000_000))
+    refs = {row['ref'] for row in value['artifacts']}
+    if (not isinstance(obj, dict) or obj.get('id') != historical['id']
+            or obj.get('sources') != ['chronicle:TTWO-BULL-20261007']
+            or not isinstance(obj.get('slot'), dict)
+            or not isinstance(obj['slot'].get('primary_source'), dict)
+            or obj['slot']['primary_source'].get('ref') != 'chronicle:TTWO-BULL-20261007'
+            or not isinstance(obj.get('seed_refs'), list)
+            or any(not isinstance(ref, str) for ref in obj['seed_refs'])
+            or not refs <= set(obj['seed_refs'])):
+        raise ValueError('historical draft identity or context provenance mismatch')
+    return refs
+
+
 def stage_market_snapshot_candidate(root, cfg, *, qualification_path, qualification_sha256,
                                     exclusions_path, exclusions_sha256, now=None):
     """Requalify current sources and all ordinary accounting before one attempt.
@@ -75,7 +99,8 @@ def stage_market_snapshot_candidate(root, cfg, *, qualification_path, qualificat
         _annotate('warning', 'press_market_stage_refused', reason)
         return {'staged': False, 'reason': reason, 'rail': STAGE_RAIL,
                 'public_article_approved': False, 'allow_emit': False, **identity}
-    if (refs | context_refs) & held or refs & covered:
+    adjudicated = _adjudicated_context_refs(plan, paths, exclusions_sha256)
+    if refs & held or (context_refs & held) - adjudicated or refs & covered:
         return refuse('existing source hold or primary coverage; no alias/replay')
     if plan['blocked_by_existing_coverage'] or any(_same_source(r, plan) for r in staged + ledger):
         return refuse('existing source coverage or original attempt; replay refused')
@@ -99,6 +124,8 @@ def stage_market_snapshot_candidate(root, cfg, *, qualification_path, qualificat
                'private_staging_only': True, 'public_article_approved': False,
                'qualification_sha256': qualification_sha256, 'exclusions_sha256': exclusions_sha256,
                'observation_date': plan['observation_date'], 'planned_at': moment.isoformat(), **identity}
+    if 'historical_context_adjudication' in plan:
+        receipt['historical_context_adjudication'] = plan['historical_context_adjudication']
     llm = cfg.get('llm') or {}
     state = writer.RunState(token_budget=_env_int('PRESS_RUN_TOKEN_BUDGET',
         int(llm.get('run_token_budget') or 240_000)), breaker_threshold=_env_int(
@@ -116,6 +143,7 @@ def stage_market_snapshot_candidate(root, cfg, *, qualification_path, qualificat
         _exclusions(exclusions_path, exclusions_sha256)
         fresh = plan_market_snapshot_candidate(root=root, cfg=cfg, as_of=current.isoformat(),
             qualification_path=qualification_path, qualification_sha256=qualification_sha256)
+        _adjudicated_context_refs(fresh, paths, exclusions_sha256)
         if fresh['source_revisions'] != plan['source_revisions'] or fresh['as_of'] != plan['as_of']:
             raise ValueError('market packet changed before writer')
         return original
