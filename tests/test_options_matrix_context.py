@@ -216,3 +216,69 @@ def test_existing_composed_consumer_uses_native_context_or_rights_unavailable(ca
             resolve_authorized_option_selection(*args, **kwargs)
         assert e.value.code == 'rights_unavailable'
     assert len(calls) == 1
+
+
+# These checks exercise tracked native contracts with SYNTHETIC capture metadata.
+# They neither open the observed source stores nor reconstruct the Oct15 artifact.
+def _enrolled_matrix_contract_join():
+    from lib.dataos.registry import load_registry
+    from engine.intelligence_workspace import options_matrix_delivery as delivery
+    # Import locally: delivery fixtures already import this context test module.
+    from tests import test_options_matrix_delivery as fixtures
+
+    synthetic = fixtures.native.__wrapped__()
+    provenance = fixtures.capture(synthetic)
+    registry = load_registry()
+    row = registry.get('options.matrix.thetadata.derived')
+    binding = dataclasses.replace(
+        synthetic['binding'], snapshot=provenance.snapshot,
+        dataset_id=row.dataset_id, dataset_version=row.version,
+        source_family='thetadata.options.matrix',
+    )
+    inputs = tuple(delivery.MatrixInputContract(
+        role, 'options.thetadata.' + role + '.normalized', row.version,
+    ) for role in ('oi', 'eod', 'greeks'))
+    return delivery, provenance, binding, inputs, registry
+
+
+def test_enrolled_matrix_contracts_bind_synthetic_capture():
+    delivery, provenance, binding, inputs, registry = _enrolled_matrix_contract_join()
+    assert delivery.bind_matrix_contracts(
+        provenance, binding, inputs, registry,
+    ) == binding
+    # Native contract enrollment does not manufacture historical input-byte clocks.
+    assert not hasattr(provenance, 'input_sha256')
+    assert not hasattr(provenance, 'known_at')
+
+
+@pytest.mark.parametrize('defect,code', [
+    ('missing_eod', 'registry_contract_invalid'),
+    ('duplicate_role', 'context_unavailable'),
+])
+def test_enrolled_matrix_contract_join_refuses_changed_inputs(defect, code):
+    delivery, provenance, binding, inputs, registry = _enrolled_matrix_contract_join()
+    if defect == 'missing_eod':
+        registry = Registry(row for row in registry.all()
+                            if row.dataset_id != 'options.thetadata.eod.normalized')
+    else:
+        inputs = (*inputs[:2], dataclasses.replace(inputs[2], role='eod'))
+    with pytest.raises(S.SourceUseRefused) as failure:
+        delivery.bind_matrix_contracts(provenance, binding, inputs, registry)
+    assert failure.value.code == code
+
+
+def test_enrolled_commercial_provenance_cannot_activate_action_policy():
+    from lib.dataos.registry import load_registry, RIGHTS_KEYS
+
+    registry = load_registry()
+    row = S._resolve_contract(registry, 'options.matrix.thetadata.derived', 'thetadata')
+    for contract in [row, *(registry.get(dataset_id) for dataset_id in row.inputs)]:
+        assert all(contract.rights[right] == 'granted' for right in RIGHTS_KEYS)
+        assert all(contract.rights['evidence'][right] ==
+                   'DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023'
+                   for right in RIGHTS_KEYS)
+    # Exact policy-pointer binding is still required; a digest alone cannot
+    # turn these commercial DEC pointers into executable action evidence.
+    with pytest.raises(S.SourceUseRefused) as failure:
+        S._shared_evidence_pointer(row, RIGHTS_KEYS)
+    assert failure.value.code == 'evidence_unresolvable'
