@@ -20,8 +20,10 @@ answer: >
   point-in-time replay and forward promotion gauntlet is passed. No proprietary code,
   private corpus, copyrighted expression, assets, branding, or vendor-only data is
   to be copied: reproduce useful jobs independently with original Mastermind design
-  and lawful first-party/licensed/public data. No third MarketOntology workstream is
-  created. WS:MARKET-OS continues to own user-facing product composition and
+  and lawful first-party/licensed/public data. October 24, 2026 amendment:
+  WS:MARKETONTOLOGY is permitted solely for project continuity; no third product,
+  semantic or runtime authority is created. WS:MARKET-OS continues to own
+  user-facing product composition and
   WS:ALPHA-INTELLIGENCE-INTEGRATION continues to own shared semantic intelligence
   contracts; specialist source/model work routes through the existing canonical owner.
   Fable is delegated sustained COO/principal-builder ownership of the parity remainder
@@ -68,6 +70,7 @@ evidence:
   - "Authenticated P1 archive closure: 88/88 advertised paid capabilities mapped; seven-seat research fan-out completed before final adjudication."
   - "Chairman instruction 2026-08-26: integrate practically all useful Market Ontology features/data/context/sources/signals/engines, not only those useful now or already proven to provide alpha; stop serial Sol<->single-COO micromanagement and fan out the project."
 affects:
+  - "WS:MARKETONTOLOGY"
   - "WS:MARKET-OS"
   - "WS:ALPHA-INTELLIGENCE-INTEGRATION"
   - "research/market_intelligence_productization/MASTERMIND_MARKET_INTELLIGENCE_PRODUCTIZATION_MASTERPLAN_2026-08-23.md"
@@ -76,15 +79,15 @@ confidence: high
 reversibility: easy
 decided_by: chairman
 decided_at: 2026-08-26
-superseded_by: "DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024"
 ---
 
-> **Narrow supersession, October 24, 2026:** the current Chairman request permits
+> **Narrow amendment, October 24, 2026:** the current Chairman request permits
 > the dedicated `WS:MARKETONTOLOGY` project continuity record. Only this record's
-> no-separate-workstream clause is superseded. All other scope, parity,
-> canonical-owner, scientific, source-custody and acceptance obligations survive,
-> as explicitly preserved by
-> [DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024](DEC-MARKETONTOLOGY-PROJECT-CONTINUITY-20261024.md).
+> no-separate-project-record clause changes. This decision remains active for
+> every other scope, parity, canonical-owner, scientific, source-custody and
+> acceptance obligation. No whole-record supersession edge is used.
+> [DEC:MARKETONTOLOGY-PROJECT-CONTINUITY-20261024](DEC-MARKETONTOLOGY-PROJECT-CONTINUITY-20261024.md)
+> records the dated exception and preserves the original architecture.
 
 # Binding execution ruling
 

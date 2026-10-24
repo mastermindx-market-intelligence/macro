@@ -1,0 +1,481 @@
+{
+  "schema": "marketontology.adoption-qualification.v1",
+  "at": "2026-10-24T17:51:03.642024+00:00",
+  "source_head": "8f64a31460f75419eccc6bad09460e726efa3a66",
+  "root": "/tmp/marketontology-adoption-20261024-dg2wu97n",
+  "live_writes": false,
+  "commands": [
+    {
+      "label": "rebind",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case",
+        "rebind",
+        "--from",
+        "WS:MARKET-OS",
+        "--to",
+        "WS:MARKETONTOLOGY",
+        "--reason",
+        "Disposable qualification for Draft Macro PR 10165; no live adoption",
+        "--mirror",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/marketontology-census-20261024-c2"
+      ],
+      "rc": 0,
+      "output_tail": "rebind WS:MARKET-OS -> WS:MARKETONTOLOGY (macro 8f64a31460): 12 tasks and 13 waves rebound, all task ids/status/history/evidence preserved; merged 11 canonical waves from agentos/workstreams/WS-MARKETONTOLOGY.md. Reason: Disposable qualification for Draft Macro PR 10165; no live adoption\n"
+    },
+    {
+      "label": "repeated-import",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case",
+        "import",
+        "--mirror",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/marketontology-census-20261024-c2",
+        "--no-fetch"
+      ],
+      "rc": 0,
+      "output_tail": "imported (merge) WS:MARKETONTOLOGY: status active, 11 waves @ 8f64a31460\nlive writer codex:01a128b7-bd2b-7a91-891d-39d38f74ad55 wrote 121s ago: merge-only (no local task touched)\n"
+    },
+    {
+      "label": "export-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case",
+        "export",
+        "--session",
+        "sol/marketontology-disposable-qualification",
+        "--mission",
+        "Disposable preservation test for Draft 10165; not published"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/MARKETONTOLOGY-2026-10-24.md\nwave patch: /tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/WS-MARKETONTOLOGY.waves.patch\nagentos validate: rc=0\nagentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T17:51:05Z (advanced)\n(PREPARED ONLY — not published)\n"
+    },
+    {
+      "label": "export-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case",
+        "export",
+        "--session",
+        "sol/marketontology-disposable-qualification",
+        "--mission",
+        "Disposable preservation test for Draft 10165; not published"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/MARKETONTOLOGY-2026-10-24.md\nwave patch: /tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/WS-MARKETONTOLOGY.waves.patch\nagentos validate: rc=0\nagentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T17:51:06Z (advanced)\n(PREPARED ONLY — not published)\n"
+    },
+    {
+      "label": "failed-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/failed-validation-case",
+        "export",
+        "--session",
+        "sol/marketontology-disposable-qualification",
+        "--mission",
+        "Deliberately missing-record fixture for failed watermark validation"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-adoption-20261024-dg2wu97n/failed-validation-case/export/2026-10-24/MARKETONTOLOGY-QUALIFICATION-MISSING-2026-10-24.md\nwave patch: /tmp/marketontology-adoption-20261024-dg2wu97n/failed-validation-case/export/2026-10-24/WS-MARKETONTOLOGY-QUALIFICATION-MISSING.waves.patch\nagentos validate: rc=1 (expected: WS record pending — author it in the same PR)\n::error title=agentos-dangling-ref::/tmp/mmtask-validate-habd8xv0/agentos/handoffs/MARKETONTOLOGY-QUALIFICATION-MISSING-2026-10-24.md: [dangling-ref] workstream references unknown WS:MARKETONTOLOGY-QUALIFICATION-MISSING\nagentos: 1 records (0 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 1 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T17:51:06Z (NOT advanced: validation failed)\n(PREPARED ONLY — not published)\n"
+    },
+    {
+      "label": "live-writer-merge",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/live-writer-merge-case",
+        "import",
+        "--mirror",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/marketontology-census-20261024-c2",
+        "--no-fetch",
+        "--tasks",
+        "/tmp/marketontology-adoption-20261024-dg2wu97n/incoming-test-tasks.json"
+      ],
+      "rc": 0,
+      "output_tail": "imported (merge) WS:MARKET-OS: status active, 10 waves @ 8f64a31460\nlive writer codex:01a128b7-bd2b-7a91-891d-39d38f74ad55 wrote 219s ago: merge-only (no local task touched)\ntask merge: {\"kept_local\": [\"P1.T1\"], \"added\": [], \"skipped_known\": [], \"refused_live\": [\"QUALIFICATION_INCOMING_ONLY\"]}\n"
+    }
+  ],
+  "checks": {
+    "task_ids_preserved": true,
+    "task_fields_preserved_except_documented_binding_event": true,
+    "task_history_is_exact_prefix_plus_one_event": true,
+    "original_p_numbers_preserved": true,
+    "component_wave_identities_preserved": false,
+    "expected_latest_handoff": true,
+    "repeat_import_task_payload_unchanged": true,
+    "repeat_import_wave_payload_unchanged": true,
+    "first_export_validates": true,
+    "repeated_export_validates": true,
+    "accepted_evidence_survives_repeated_export": true,
+    "failed_validation_does_not_advance_watermark": true,
+    "installed_tool_unchanged_during_qualification": true,
+    "foreign_merge_preserves_all_local_tasks": false,
+    "live_writer_refuses_new_foreign_task": true
+  },
+  "snapshot_files": {
+    "TASKS.json": {
+      "sha256": "8facf4ebe92296507e001c45b467b65805bc5e3f3cab24d28255e3feb025b458",
+      "bytes": 46351
+    },
+    "TASKS.md": {
+      "sha256": "724e8416b9f41bc868bee0733c11af3ae4d1686a7a62fb623579fd4c18a0c325",
+      "bytes": 10388
+    },
+    "NORTH_STAR.md": {
+      "sha256": "6074a8bdf2ba683a3a6de0792c5a33b53dfe1a0d68b52e845c1624ad403746d2",
+      "bytes": 3297
+    },
+    "PLAN.md": {
+      "sha256": "be63659d434e758b50bd88771d513154f9f09dc42cac934eb07bf392176ba939",
+      "bytes": 5989
+    },
+    "HANDOFF.md": {
+      "sha256": "9583aeb7075ad9c851ddc76b81333f187414150ebc1ff64584bbe285ab188f6f",
+      "bytes": 6282
+    },
+    "STATE.md": {
+      "sha256": "b9a92988b5ab411c50ee69de14716ea7ce1ec58b3ad5ab535a243a4b70bf6850",
+      "bytes": 8697
+    },
+    "DECISIONS.md": {
+      "sha256": "a98601499da5582dd77b5a260737c1de9338a393e2d74ee015fa1e17daed959b",
+      "bytes": 6433
+    },
+    "PROGRESS.log": {
+      "sha256": "7ed8e820576a839576eb25377f9577d2cae5f0226cb00ab545db1031d2f39f65",
+      "bytes": 8383
+    },
+    "export/EXPORTS.jsonl": {
+      "sha256": "b40ae043f06364c48fce34fe8768c94dbe63f7a2fad7392e8459ffda762f281c",
+      "bytes": 240
+    },
+    "export/2026-10-24/EXPORT.json": {
+      "sha256": "1735b50c2140f332f998d5d2fb9e13529dea20a32bea9573f77d41fd5f6dfa19",
+      "bytes": 1941
+    }
+  },
+  "snapshot_stable_under_shared_lock": true,
+  "mmtask_sha256": "c417a2fddc2ebb8f9c5000289ab9defd72805e35765a3d3947bc0cb1856a0484",
+  "before": {
+    "workstream": "WS:MARKET-OS",
+    "task_count": 12,
+    "wave_count": 13,
+    "tasks": [
+      {
+        "id": "P1.T1",
+        "status": "ready",
+        "wave": "masterplan-adoption"
+      },
+      {
+        "id": "P2.T1",
+        "status": "accepted",
+        "wave": "b-delivery-continuation"
+      },
+      {
+        "id": "P2.T2",
+        "status": "in_progress",
+        "wave": "b-delivery-continuation"
+      },
+      {
+        "id": "T001",
+        "status": "ready",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T002",
+        "status": "accepted",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T003",
+        "status": "superseded",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T004",
+        "status": "in_progress",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T005",
+        "status": "ready",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T006",
+        "status": "ready",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T007",
+        "status": "ready",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "T008",
+        "status": "superseded",
+        "wave": "codex-session-plan"
+      },
+      {
+        "id": "P2.T2.S1",
+        "status": "accepted",
+        "wave": "b-delivery-continuation"
+      }
+    ],
+    "last_export": "2026-10-24T17:49:30Z"
+  },
+  "component_wave_result": [
+    {
+      "p": "P4",
+      "id": "M0",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P5",
+      "id": "A1A",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P6",
+      "id": "A1B",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P7",
+      "id": "A2-A6",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P8",
+      "id": "B1A",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P9",
+      "id": "B1B-B6",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P10",
+      "id": "C1-C6",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P11",
+      "id": "D1-D9",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P12",
+      "id": "E1-E3",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    },
+    {
+      "p": "P13",
+      "id": "F0-F5",
+      "before_workstream": "WS:MARKET-OS",
+      "after_workstream": "WS:MARKETONTOLOGY",
+      "after_source": "agentos-missing"
+    }
+  ],
+  "after_rebind": {
+    "workstream": "WS:MARKETONTOLOGY",
+    "task_count": 12,
+    "wave_count": 21,
+    "latest_handoff": "agentos/handoffs/MARKETONTOLOGY-2026-10-24.md"
+  },
+  "export_receipts": [
+    {
+      "schema": "mm.harness.export",
+      "schema_version": "2.0.0",
+      "at": "2026-10-24T17:51:05Z",
+      "workstream": "WS:MARKETONTOLOGY",
+      "handoff": "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/MARKETONTOLOGY-2026-10-24.md",
+      "wave_patch": "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/WS-MARKETONTOLOGY.waves.patch",
+      "wave_edits": [
+        {
+          "id": "masterplan-adoption",
+          "from": "in_progress",
+          "to": "todo"
+        }
+      ],
+      "new_waves": [],
+      "validate": {
+        "ran": true,
+        "rc": 0,
+        "output": "agentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)"
+      },
+      "validated": true,
+      "dry_run": false,
+      "verified_count": 3,
+      "verified_ids": [
+        "P2.T1",
+        "P2.T2.S1",
+        "T002"
+      ],
+      "since_last_successful_export": "2026-10-24T17:49:30Z",
+      "pending_record": false,
+      "published": false,
+      "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. Validation passed; last_export advanced."
+    },
+    {
+      "schema": "mm.harness.export",
+      "schema_version": "2.0.0",
+      "at": "2026-10-24T17:51:06Z",
+      "workstream": "WS:MARKETONTOLOGY",
+      "handoff": "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/MARKETONTOLOGY-2026-10-24.md",
+      "wave_patch": "/tmp/marketontology-adoption-20261024-dg2wu97n/rebind-case/export/2026-10-24/WS-MARKETONTOLOGY.waves.patch",
+      "wave_edits": [
+        {
+          "id": "masterplan-adoption",
+          "from": "in_progress",
+          "to": "todo"
+        }
+      ],
+      "new_waves": [],
+      "validate": {
+        "ran": true,
+        "rc": 0,
+        "output": "agentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)"
+      },
+      "validated": true,
+      "dry_run": false,
+      "verified_count": 3,
+      "verified_ids": [
+        "P2.T1",
+        "P2.T2.S1",
+        "T002"
+      ],
+      "since_last_successful_export": "2026-10-24T17:51:05Z",
+      "pending_record": false,
+      "published": false,
+      "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. Validation passed; last_export advanced."
+    }
+  ],
+  "accepted_evidence_ids": [
+    "P2.T1",
+    "P2.T2.S1",
+    "T002"
+  ],
+  "failure_receipt": {
+    "schema": "mm.harness.export",
+    "schema_version": "2.0.0",
+    "at": "2026-10-24T17:51:07Z",
+    "workstream": "WS:MARKETONTOLOGY-QUALIFICATION-MISSING",
+    "handoff": "/tmp/marketontology-adoption-20261024-dg2wu97n/failed-validation-case/export/2026-10-24/MARKETONTOLOGY-QUALIFICATION-MISSING-2026-10-24.md",
+    "wave_patch": "/tmp/marketontology-adoption-20261024-dg2wu97n/failed-validation-case/export/2026-10-24/WS-MARKETONTOLOGY-QUALIFICATION-MISSING.waves.patch",
+    "wave_edits": [],
+    "new_waves": [],
+    "validate": {
+      "ran": true,
+      "rc": 1,
+      "output": "::error title=agentos-dangling-ref::/tmp/mmtask-validate-habd8xv0/agentos/handoffs/MARKETONTOLOGY-QUALIFICATION-MISSING-2026-10-24.md: [dangling-ref] workstream references unknown WS:MARKETONTOLOGY-QUALIFICATION-MISSING\nagentos: 1 records (0 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 1 error(s), 0 warning(s)"
+    },
+    "validated": false,
+    "dry_run": false,
+    "verified_count": 3,
+    "verified_ids": [
+      "P2.T1",
+      "P2.T2.S1",
+      "T002"
+    ],
+    "since_last_successful_export": "2026-10-24T17:51:06Z",
+    "pending_record": true,
+    "published": false,
+    "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. last_export NOT advanced (validation failed). Workstream record does not exist yet: validate rc=1 (dangling WS ref) is EXPECTED until the WS record is authored in the same PR."
+  },
+  "live_file_readback": {
+    "TASKS.json": {
+      "same_as_snapshot": true,
+      "current_sha256": "8facf4ebe92296507e001c45b467b65805bc5e3f3cab24d28255e3feb025b458"
+    },
+    "TASKS.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "724e8416b9f41bc868bee0733c11af3ae4d1686a7a62fb623579fd4c18a0c325"
+    },
+    "NORTH_STAR.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "6074a8bdf2ba683a3a6de0792c5a33b53dfe1a0d68b52e845c1624ad403746d2"
+    },
+    "PLAN.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "be63659d434e758b50bd88771d513154f9f09dc42cac934eb07bf392176ba939"
+    },
+    "HANDOFF.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "9583aeb7075ad9c851ddc76b81333f187414150ebc1ff64584bbe285ab188f6f"
+    },
+    "STATE.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "b9a92988b5ab411c50ee69de14716ea7ce1ec58b3ad5ab535a243a4b70bf6850"
+    },
+    "DECISIONS.md": {
+      "same_as_snapshot": true,
+      "current_sha256": "a98601499da5582dd77b5a260737c1de9338a393e2d74ee015fa1e17daed959b"
+    },
+    "PROGRESS.log": {
+      "same_as_snapshot": true,
+      "current_sha256": "7ed8e820576a839576eb25377f9577d2cae5f0226cb00ab545db1031d2f39f65"
+    },
+    "export/EXPORTS.jsonl": {
+      "same_as_snapshot": true,
+      "current_sha256": "b40ae043f06364c48fce34fe8768c94dbe63f7a2fad7392e8459ffda762f281c"
+    },
+    "export/2026-10-24/EXPORT.json": {
+      "same_as_snapshot": true,
+      "current_sha256": "1735b50c2140f332f998d5d2fb9e13529dea20a32bea9573f77d41fd5f6dfa19"
+    }
+  },
+  "live_adoption_qualified": false,
+  "foreign_merge_observation": {
+    "report": {
+      "kept_local": [
+        "P1.T1"
+      ],
+      "added": [],
+      "skipped_known": [],
+      "refused_live": [
+        "QUALIFICATION_INCOMING_ONLY"
+      ]
+    },
+    "changed_field": "P1.T1.evidence",
+    "before": null,
+    "after": "DISPOSABLE CONFLICT MUST NOT REPLACE LOCAL",
+    "interpretation": "The tool refuses new foreign IDs during another live session but fills an empty existing evidence field from incoming data. Bare import/rebind preservation passed; foreign --tasks merge is not byte-preserving. This fixture changed only a disposable snapshot."
+  },
+  "known_limitations": [
+    "Generic rebind changes ten MARKET-OS component wave identities to MARKETONTOLOGY and marks them agentos-missing. A narrow supported mapping is required before live adoption.",
+    "Both prepared wave patches propose masterplan-adoption in_progress -> todo from the older local ready task. No generated patch was applied.",
+    "Failed validation is reported in EXPORT.json validated=false/validate.rc=1 even though the mmtask CLI returns zero. Read the receipt, not only process exit status.",
+    "No live buffer, mirror, platform tool or incumbent product workspace was modified by this qualification. All ten snapshot file hashes matched at immediate test readback."
+  ]
+}

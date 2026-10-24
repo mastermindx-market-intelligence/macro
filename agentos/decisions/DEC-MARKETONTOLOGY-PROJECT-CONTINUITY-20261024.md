@@ -6,7 +6,8 @@ question: >
 answer: >
   Create WS:MARKETONTOLOGY as the requested project continuity and acceptance
   umbrella in Macro Agent OS, with one schema-valid handoff and explicit waves.
-  Supersede only the earlier prohibition on this separate project record.
+  Amend only the earlier prohibition on this separate project record; both
+  historical decisions remain active for their other obligations.
   MARKET-OS retains product composition; ALPHA-INTELLIGENCE-INTEGRATION retains
   semantic contracts; existing domain, runtime, publication and user-state
   owners retain their authorities. A retains F01–F05/F00C and sole F00C CSV
@@ -49,6 +50,8 @@ evidence:
   - "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792862261842699"
   - "https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-5946068837"
   - "October 24 A/B self-evaluations and exact restored-root git status/rev-parse readbacks"
+  - agentos/decisions/DEC-MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM.md
+  - agentos/decisions/DEC-MARKET-ONTOLOGY-COMPLETE-CAPABILITY-PARITY-FABLE-COO-FANOUT.md
 affects:
   - "WS:MARKETONTOLOGY"
   - "WS:MARKET-OS"
@@ -59,17 +62,20 @@ confidence: high
 reversibility: easy
 decided_by: chairman
 decided_at: 2026-10-24
-supersedes:
-  - "DEC:MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM"
-  - "DEC:MARKET-ONTOLOGY-COMPLETE-CAPABILITY-PARITY-FABLE-COO-FANOUT"
 ---
 
-# Narrow supersession: project record only
+# Narrow amendment: project record only
 
-The `supersedes` links change **only** the no-separate-project-record clauses
-of the two named decisions. All other architecture, capability parity,
-canonical-owner, independent-implementation, lawful-data, source-custody and
-acceptance requirements survive. In particular:
+The dated exception in each historical answer changes **only** its
+no-separate-project-record clause. Both historical decisions remain active;
+there are no whole-record supersedes/superseded_by edges. The existing compiler
+treats such edges as exclusion of the entire predecessor, which would lose
+unamended obligations. This record therefore cites and narrowly amends the
+existing records through their text and evidence, within the current schema.
+
+All other architecture, capability parity, canonical-owner,
+independent-implementation, lawful-data, source-custody and acceptance
+requirements survive. In particular:
 
 - The 130 admitted IDs, including all 88 paid rows and 42 public deltas, remain
   intact. The broader public-family inventory is a separate obligation.

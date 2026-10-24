@@ -10,8 +10,8 @@ mission: >
   the summary, then execute the top lossless-adoption wave.
 state_before: >
   No dedicated MarketOntology workstream existed. Historical component records
-  used MARKET-OS/ALPHA-INTELLIGENCE-INTEGRATION; the local buffer referenced the
-  absent MARKET-ONTOLOGY key. A/B worktrees had been pruned and restored; task
+  used MARKET-OS/ALPHA-INTELLIGENCE-INTEGRATION; the initial 17:07 local stub
+  referenced absent MARKET-ONTOLOGY. A/B worktrees had been pruned and restored; task
   histories were recovered after a destructive import; an export failed validation.
 changed:
   - path: agentos/workstreams/WS-MARKETONTOLOGY.md
@@ -21,14 +21,16 @@ changed:
       checks and explicit task-identity mapping.
   - path: agentos/decisions/DEC-MARKETONTOLOGY-PROJECT-CONTINUITY-20261024.md
     what: >
-      Recorded the current explicit request as a narrow supersession of the
-      historical no-separate-record clauses, preserving all component authorities.
+      Recorded a dated clause-only amendment of the historical no-separate-record
+      clauses; both old decisions remain active, preserving all component authorities.
   - path: agentos/handoffs/MARKETONTOLOGY-2026-10-24.md
     what: Added this cumulative recovery frontier under the existing handoff schema.
+  - path: research/market_intelligence_productization/MARKETONTOLOGY_ADOPTION_QUALIFICATION_2026-10-24.json
+    what: Recorded actual disposable-snapshot preservation checks, passing cases and adoption blockers.
   - path: agentos/decisions/DEC-MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM.md
-    what: Added the reciprocal narrow supersession pointer; all other historical obligations remain.
+    what: Amended only the no-project-record clause with the dated exception; all other obligations remain active.
   - path: agentos/decisions/DEC-MARKET-ONTOLOGY-COMPLETE-CAPABILITY-PARITY-FABLE-COO-FANOUT.md
-    what: Added the same narrow project-record exception without changing the parity contract.
+    what: Added the same dated project-record exception; the entire parity contract remains active.
 verified:
   - claim: Protected procedure pin is compatible and all loaded laws share its SHA.
     command: >
@@ -77,26 +79,68 @@ verified:
       joins: sparse active_builds input and sibling strategic_state absent.
       The compiler reports 7,199 estimated tokens above 4,500; no budget compliance
       or live adoption is claimed.
+  - claim: Requested Draft, initial estate copy and initial Slack summary were published and read back.
+    command: >
+      Create/read Macro PR 10165; compare requested copy bytes and SHA-256;
+      send the authorized summary to C0CBC6AEAQZ thread 1792747724.730429.
+    result: >
+      Draft 10165 at 8f64a314, OPEN and mergeable. Initial copy SHA-256
+      fc8ec68c2960cf9ccd6eb6eba5e80c714dbae633f4331c0800d8b4df37449e67.
+      Slack message 1792863948.697289. Later checkpoint updates the same source/copy.
+  - claim: Existing mmtask preserves project tasks and fixes the historical export watermark defect.
+    command: >
+      Frozen installed mmtask c417a2fddc2ebb8f9c5000289ab9defd72805e35765a3d3947bc0cb1856a0484;
+      disposable locked snapshot; rebind, repeated import, repeated export and failed-validation fixture.
+    result: >
+      All 12 task identities/fields and existing history preserved; first and repeated
+      export retain P2.T1/P2.T2.S1/T002 and validate. Failed validation leaves last_export
+      unchanged. Exact commands and hashes are in the qualification receipt.
+  - claim: Generic rebind is not qualified to adopt this project without changing component identities.
+    command: >
+      Compare workstream plus wave ID for every original P4-P13 before/after
+      disposable rebind from MARKET-OS to MARKETONTOLOGY.
+    result: >
+      All ten component waves change to MARKETONTOLOGY and agentos-missing.
+      Generated export also proposes stale in_progress-to-todo for adoption.
+      No live adoption or generated patch was applied; ten live file hashes
+      matched at immediate test readback.
+  - claim: Original B source and CI advanced during the census without changing ownership.
+    command: >
+      GitHub PR1173 metadata and workflow runs for c1b4327a; original B git
+      rev-parse HEAD and status at 17:54:11Z.
+    result: >
+      Published c1b4327a remains OPEN/DRAFT; CI40113352611 completed/failure.
+      Original local branch is clean at 80f12e7ec006004d9d89fc075b532c6e4ffc99dc,
+      ahead five. P2.T2.S1 is accepted local CI-suite registration proof only.
+  - claim: Clause-only amendments retain both historical decisions in the compiled context.
+    command: "python3 scripts/agentos.py compile-context --workstream MARKETONTOLOGY --json --budget 32000"
+    result: >
+      Exit 0; explicit WS and latest handoff path, both historical decisions included.
+      Candidate preview estimate 32,918 exceeds 32,000; sparse active-build and
+      sibling strategic-state joins remain degraded. The excerpt is not the full handoff.
 unverified:
   - claim: Draft record is protected, imported into the live harness, or product accepted.
     what_would_verify: >
       Normal independent review/landing, exact protected readback, then existing
       conflict-safe adoption and consumer proof. Draft publication alone is insufficient.
-  - claim: Lossless adoption qualification and a complete recovery bundle are proven.
+  - claim: Live adoption and a complete budget-compliant recovery bundle are proven.
     what_would_verify: >
-      Actual validator/compiler output and disposable-buffer import/export
-      preservation checks, recorded as a subsequent checkpoint on this same branch.
+      Existing Operations supplies a narrow supported mapping preserving all ten
+      component wave identities; qualify it on a fresh locked snapshot after source
+      landing. Read the complete handoff; the compiler excerpt alone is insufficient.
   - claim: All nine F04 and all 79 B outcomes are complete.
     what_would_verify: >
       Per-obligation qualified data, source/scientific and real consumer results,
       joined journey, independent acceptance and canonical F00C reconciliation.
 unresolved:
   - >
-    Existing mmtask import/export defects and missing-key mapping; live buffer
-    must remain unchanged while the new record is only a Draft.
+    Operations corrected the stub to MARKET-OS at 17:46:22Z and repaired failed
+    export watermark handling. Generic rebind still moves ten component identities;
+    foreign --tasks can fill blank evidence under a live writer. Live adoption is blocked.
   - >
-    B PR #1173 published c1b4327a versus local 42d3caac; original CI 40113352611
-    remains the exact release dependency. No duplicate repair/push.
+    B PR #1173 published c1b4327a versus local 80f12e7e as of 17:54:11Z;
+    original CI40113352611 completed/failure. B owns nonforce successor publication,
+    successor checks, independent review and release. No duplicate repair/push.
   - >
     A rates/WTI natural publications and QLedger future-engine repair;
     old-run effects remain unknown.
@@ -105,13 +149,14 @@ unresolved:
     Chrome/key-consent holds remain separate from approved commercial rights.
 next_actions:
   - >
-    Current census principal validates the new records, publishes the requested
-    Draft PR, saves ~/gwcap/estate-census/marketontology-WS-2026-10-24.md
-    and posts the short result in the existing dotsandgroksecretary coordination thread.
+    Review the same Draft #10165 with the actual qualification receipt and latest
+    checkpoint. Keep the requested estate-census copy byte-identical and report
+    the material result in the same dotsandgroksecretary coordination thread.
   - >
-    Execute masterplan-adoption using the existing compiler/mmtask path on a
-    disposable copy; preserve all task IDs/history/evidence and record actual
-    success or defect without modifying the live buffer or platform code.
+    Existing Operations consumes the demonstrated component-identity failure and
+    supplies the narrow supported mapping. Preserve original P1/P2/P3 task aliases,
+    every task/evidence/history and all ten MARKET-OS component wave identities.
+    No live rebind, stale wave patch or parallel platform implementation.
   - >
     A and B continue their current independent product actions on original
     carriers. At source adoption, use the existing locked import path with a
@@ -123,7 +168,7 @@ do_not_redo:
   - "Do not retry Macro #10100, old QLedger/TXI, F08 MU403, F09 rc78 or spent EVAL1 effects."
   - "Do not create another task store, importer, watcher, engine or workstream alias file."
 danger_areas:
-  - "WS:MARKET-ONTOLOGY was an absent stub; WS:MARKET-OS was a valid historical component binding."
+  - "MARKET-ONTOLOGY was the absent initial stub; current live binding is MARKET-OS with 12 tasks/13 waves at the locked 17:51 snapshot."
   - "Source, CI, merge, installation, activation, consumer proof and acceptance are different facts."
   - "A/B TASKS and source carriers may change concurrently; candidate tests are not live adoption."
   - "Historical PR prose/CSV labels can be stale even when the source is correctly merged."
@@ -156,6 +201,21 @@ This source operation has no unresolved modifying effect at this checkpoint.
 The listed product uncertainties remain on their original carriers. A historical
 role name is not a new human-approval requirement; the current assigned receiver
 performs the next permitted action after checking real custody and effects.
+
+## Executed top wave and concrete remaining work
+
+The locked disposable snapshot at 17:51:03Z contained 12 tasks and 13 waves.
+Task/history preservation, repeated import, repeated accepted-evidence export,
+failed-validation watermark handling and new-foreign-task refusal were checked.
+The actual blocker is generic rebind moving P4-P13 from MARKET-OS to
+MARKETONTOLOGY and marking them missing. Foreign --tasks also fills a blank
+existing evidence field; no such merge is needed or qualified for adoption.
+
+The complete [qualification receipt](../../research/market_intelligence_productization/MARKETONTOLOGY_ADOPTION_QUALIFICATION_2026-10-24.json)
+has SHA-256 3542c718e01a64cfc35f1ac07de14dd10abeafec26e570467ba54ef1b1a9edee.
+The compiler resolves this handoff but includes only an excerpt; use this full
+record for recovery. The source wave remains in_progress with a clearly stated
+adoption blocker because the existing wave schema has no blocked value.
 
 ## Review and delegation
 
