@@ -70,7 +70,7 @@ SCHEMA_ID = "ontology_explorer_snapshot.v1"
 #: read byte-identical sources and still differ, because the meaning is produced
 #: by THIS code — so the method that read them is part of what the digest binds.
 #: It is still a read receipt, never a native owner generation.
-COMPOSER_METHOD = "ontology_explorer.compose.v5"
+COMPOSER_METHOD = "ontology_explorer.compose.v6"
 ERROR_SCHEMA_ID = "ontology_explorer_error.v1"
 DEFAULT_CHAIN = "oil_inflation_duration_derate"
 
@@ -104,6 +104,7 @@ _STATE_REL = "data/transmission/chain_state.json"
 _EPISODES_REL = "data/transmission/chain_episodes.jsonl"
 _ALIASES_REL = "data/reference/vendor_aliases.parquet"
 _CALIBRATION_REL = "data/transmission/calibration.json"
+_WTI_OBSERVATION_REL = "data/yahoo/CL_F.observation.json"
 
 
 class SourceUnavailable(RuntimeError):
@@ -131,6 +132,16 @@ def _read_source(path: Path) -> bytes:
     actually fires.
     """
     return path.read_bytes()
+
+
+def _read_wti_observation(path: Path) -> bytes:
+    # The native export is optional and bounded BEFORE read/decode. Its payload
+    # never enters X1; only its exact byte receipt enters the normal manifest.
+    with path.open("rb") as stream:
+        raw = stream.read(MAX_SOURCE_BYTES + 1)
+    if len(raw) > MAX_SOURCE_BYTES:
+        raise SourceIncoherent("wti_observation_exceeds_bound")
+    return raw
 
 
 def _digest(raw: bytes) -> str:
@@ -287,6 +298,18 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
         rels.append(_CALIBRATION_REL)
         digests[_CALIBRATION_REL] = _digest(calibration_raw)
 
+    # Capture/export is a prospective observation, never a retroactive clock or
+    # native calendar qualification. A changed generation changes the selected
+    # manifest; explicit POST still has to qualify every native owner input.
+    try:
+        wti_observation = _read_wti_observation(root / _WTI_OBSERVATION_REL)
+    except OSError:
+        pass
+    else:
+        raws[_WTI_OBSERVATION_REL] = wti_observation
+        rels.append(_WTI_OBSERVATION_REL)
+        digests[_WTI_OBSERVATION_REL] = _digest(wti_observation)
+
     try:
         definition = yaml.safe_load(raws[yaml_rel].decode("utf-8"))
     except (yaml.YAMLError, UnicodeDecodeError) as exc:
@@ -345,7 +368,8 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
     # by the digest, which is why both checks exist.
     for rel, expected in digests.items():
         try:
-            current = _digest(_read_source(root / rel))
+            reader = _read_wti_observation if rel == _WTI_OBSERVATION_REL else _read_source
+            current = _digest(reader(root / rel))
         except OSError as exc:
             raise SourceIncoherent(f"mid_read_mutation:{rel}:disappeared") from exc
         if current != expected:
