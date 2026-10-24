@@ -2127,6 +2127,9 @@
     _authReady = true;
     _emitAuth({ user: _curUser, event: evt });
     _renderAcct();
+    // Leave the SDK's auth callback before calling it again. One bounded pass
+    // on a real restored session; failures remain for the next genuine trigger.
+    if (_curUser && evt !== 'SIGNED_OUT') Promise.resolve().then(_deliverPendingPrefs);
   }
 
   window.MDXAuth = {
@@ -2134,6 +2137,8 @@
     user: function () { return _curUser; },
     hasSession: function () { return _hasSessionCookie(); },
     client: getSupabaseClient,
+    queueOnboardingPrefs: _queuePendingPrefs,
+    deliverOnboardingPrefs: _deliverPendingPrefs,
     // Opens the LANDING-NATIVE onboarding sheet (onboard.js), lazy-loaded on
     // demand — NOT the legacy in-file auth modal. Every gate on the estate
     // reaches auth through here (tier_preview.js's locked-container CTA, the
@@ -3358,9 +3363,104 @@
   var LS_PENDING_PREFS = 'mm.pendingPrefs';
   var _sdDesk = null;            // { market_focus:[], trade_types:[] } — live edit buffer
   var _sdDeskTimer = null;
+  var _pendingPrefsFlight = null;
+
+  function _pendingOwner(v) {
+    return typeof v === 'string' && v.length > 0 && v.length <= 128 && /^[A-Za-z0-9]/.test(v) && !/[^A-Za-z0-9_.:-]/.test(v);
+  }
+  function _pendingObject(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+  function _readPendingPrefsRecord() {
+    var raw, value;
+    try { raw = localStorage.getItem(LS_PENDING_PREFS); if (!raw) return null; value = JSON.parse(raw); } catch (e) { return null; }
+    if (Array.isArray(value)) {
+      if (value.length !== 1 || !_pendingObject(value[0]) || !Object.prototype.hasOwnProperty.call(value[0], 'owner_user_id')) return null;
+      value = value[0];
+    }
+    if (!_pendingObject(value)) return null;
+    var owned = Object.prototype.hasOwnProperty.call(value, 'owner_user_id');
+    if (owned && (!_pendingOwner(value.owner_user_id) || !_pendingObject(value.prefs))) return null;
+    var envelope = _pendingObject(value.prefs);
+    return { raw: raw, prefs: envelope ? value.prefs : value, envelope: envelope,
+      attempts: envelope && typeof value.attempts === 'number' && isFinite(value.attempts) ? Math.max(0, value.attempts) : 0,
+      owner_user_id: owned ? value.owner_user_id : null };
+  }
+  function _pendingBytes(record) {
+    var value = { prefs: record.prefs, attempts: record.attempts };
+    if (record.owner_user_id) { value.owner_user_id = record.owner_user_id; return JSON.stringify([value]); }
+    return JSON.stringify(record.envelope ? value : record.prefs);
+  }
+  function _pendingCAS(raw, next) {
+    try {
+      if (localStorage.getItem(LS_PENDING_PREFS) !== raw) return false;
+      if (next === null) localStorage.removeItem(LS_PENDING_PREFS); else localStorage.setItem(LS_PENDING_PREFS, next);
+      return true;
+    } catch (e) { return false; }
+  }
+  function _pendingPatch(value) {
+    var out = {};
+    if (!_pendingObject(value)) return out;
+    ['first_name', 'last_name'].forEach(function (k) { if (typeof value[k] === 'string' && value[k].length <= 200) out[k] = value[k]; });
+    [['market_focus', ['us', 'cn', 'hk', 'ca', 'global']], ['trade_types', ['stocks', 'options', 'crypto']]].forEach(function (spec) {
+      var v = value[spec[0]];
+      if (Array.isArray(v) && v.length <= spec[1].length && v.every(function (x) { return spec[1].indexOf(x) !== -1; })) out[spec[0]] = v.slice();
+    });
+    if (value.theme_pref === 'light' || value.theme_pref === 'dark') out.theme_pref = value.theme_pref;
+    if (typeof value.onboarded_at === 'string' && value.onboarded_at.length <= 40 && isFinite(Date.parse(value.onboarded_at))) out.onboarded_at = value.onboarded_at;
+    var markets = value.markets, all = ['us', 'cn', 'hk', 'ca', 'intl', 'crypto'];
+    if (_pendingObject(markets) && (markets.home === null || all.indexOf(markets.home) !== -1) && Array.isArray(markets.enabled)
+      && markets.enabled.length <= all.length && markets.enabled.every(function (x) { return all.indexOf(x) !== -1; }) && typeof markets.autoNarrowed === 'boolean') {
+      out.markets = { home: markets.home, enabled: markets.enabled.slice(), autoNarrowed: markets.autoNarrowed };
+    }
+    return out;
+  }
+  function _queuePendingPrefs(payload, owner) {
+    if (owner !== null && owner !== undefined && !_pendingOwner(owner)) return false;
+    var previous = _readPendingPrefsRecord(), raw;
+    try { raw = localStorage.getItem(LS_PENDING_PREFS); } catch (e) { return false; }
+    if (raw && !previous) return false;
+    if (previous && previous.owner_user_id && previous.owner_user_id !== owner) return false;
+    var patch = _pendingPatch(payload);
+    if (!Object.keys(patch).length) return false;
+    var merged = _pendingPatch(previous && previous.prefs);
+    Object.keys(patch).forEach(function (k) { merged[k] = patch[k]; });
+    return _pendingCAS(raw, _pendingBytes({ prefs: merged, attempts: 0, envelope: false, owner_user_id: owner || null }));
+  }
+  function _pendingActualSubject(sb) {
+    return sb.auth.getUser().then(function (r) { return r && !r.error && r.data && r.data.user && r.data.user.id || null; });
+  }
+  function _deliverPendingPrefs() {
+    if (_pendingPrefsFlight) return _pendingPrefsFlight;
+    var record = _readPendingPrefsRecord();
+    if (!record) return Promise.resolve({ status: 'nothing-pending' });
+    var patch = _pendingPatch(record.prefs), sb, subject;
+    if (!Object.keys(patch).length) return Promise.resolve({ status: 'held' });
+    function current() { try { return localStorage.getItem(LS_PENDING_PREFS) === record.raw; } catch (e) { return false; } }
+    var work = getSupabaseClient().then(function (client) {
+      sb = client;
+      if (!sb) throw new Error('auth-unavailable');
+      return _pendingActualSubject(sb);
+    }).then(function (id) {
+      subject = id;
+      if (!subject || !_curUser || _curUser.id !== subject || (record.owner_user_id && record.owner_user_id !== subject) || !current()) return { held: true };
+      return sb.auth.updateUser({ data: patch }).then(function (r) { return { ok: !!r && !r.error }; }, function () { return { ok: false }; });
+    }).then(function (result) {
+      if (result.held) return { status: 'held' };
+      return _pendingActualSubject(sb).then(function (id) {
+        if (id !== subject || !_curUser || _curUser.id !== subject || (record.owner_user_id && id !== record.owner_user_id) || !current()) return { status: 'held' };
+        if (result.ok) return _pendingCAS(record.raw, null) ? { status: 'delivered', data: patch } : { status: 'held' };
+        record.attempts += 1;
+        _pendingCAS(record.raw, _pendingBytes(record));
+        return { status: 'pending' };
+      });
+    }).catch(function () { return { status: 'pending' }; });
+    _pendingPrefsFlight = work.then(function (outcome) { _pendingPrefsFlight = null; return outcome; }, function () { _pendingPrefsFlight = null; return { status: 'pending' }; });
+    return _pendingPrefsFlight;
+  }
 
   function _sdPendingPrefs() {
-    try { var o = JSON.parse(localStorage.getItem(LS_PENDING_PREFS) || 'null'); return (o && typeof o === 'object') ? o : null; } catch (e) { return null; }
+    var record = _readPendingPrefsRecord();
+    if (!record || (record.owner_user_id && (!_curUser || record.owner_user_id !== _curUser.id))) return null;
+    return record.prefs;
   }
   function _sdArr(v) {
     if (!v || Object.prototype.toString.call(v) !== '[object Array]') return [];
@@ -3410,36 +3510,30 @@
 
   function _sdSaveDesk(msgEl) {
     clearTimeout(_sdDeskTimer);
-    var signedIn = !!(_curUser && _authEnabled && _curUser.email);
+    var owner = _curUser && _authEnabled && _curUser.email ? _curUser.id : null;
+    // Capture the actor and choices NOW, before the debounce or client promise.
+    var payload = { market_focus: _sdDesk.market_focus.slice(), trade_types: _sdDesk.trade_types.slice(),
+      markets: _sdMarketsFromChips(_sdDesk.market_focus) };
+    var queued = _queuePendingPrefs(payload, owner);
     _sdDeskTimer = setTimeout(function () {
-      var payload = {
-        market_focus: _sdDesk.market_focus,
-        trade_types: _sdDesk.trade_types,
-        markets: _sdMarketsFromChips(_sdDesk.market_focus)
-      };
-      try {
-        var pend = _sdPendingPrefs() || {};
-        pend.market_focus = payload.market_focus; pend.trade_types = payload.trade_types;
-        localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(pend));
-      } catch (e) {}
-      if (!signedIn) { _sdDeskMsg(msgEl, 'prefLocal', 'ok'); return; }
-      getSupabaseClient().then(function (sb) {
-        if (!sb || !_curUser) { _sdDeskMsg(msgEl, 'prefLocal', 'ok'); return null; }
-        return sb.auth.updateUser({ data: payload }).then(function (r) {
-          if (r && r.error) { _sdDeskMsg(msgEl, 'prefErr', 'err'); return; }
+      if (owner && (!_curUser || _curUser.id !== owner)) return;
+      if (!queued) { _sdDeskMsg(msgEl, 'prefErr', 'err'); return; }
+      if (!owner) { _sdDeskMsg(msgEl, 'prefLocal', 'ok'); return; }
+      _deliverPendingPrefs().then(function (result) {
+          if (!_curUser || _curUser.id !== owner) return;
+          if (result.status !== 'delivered') { _sdDeskMsg(msgEl, 'prefErr', 'err'); return; }
           // keep the in-memory user in step so a re-render shows the saved answer
           if (_curUser) {
             _curUser.user_metadata = _curUser.user_metadata || {};
-            _curUser.user_metadata.market_focus = payload.market_focus;
-            _curUser.user_metadata.trade_types = payload.trade_types;
-            _curUser.user_metadata.markets = payload.markets;
+            ['market_focus', 'trade_types', 'markets'].forEach(function (k) {
+              if (Object.prototype.hasOwnProperty.call(result.data, k)) _curUser.user_metadata[k] = result.data[k];
+            });
           }
           // Re-fold the country menus without a reload — the home market may have
           // just changed, and a nav that still shows the old one reads as a bug.
           try { window.dispatchEvent(new CustomEvent('mdx-auth', { detail: { user: _curUser, event: 'PREFS_SAVED' } })); } catch (e) {}
           _sdDeskMsg(msgEl, 'prefSaved', 'ok');
-        });
-      }).catch(function () { _sdDeskMsg(msgEl, 'prefErr', 'err'); });
+      }).catch(function () { if (_curUser && _curUser.id === owner) _sdDeskMsg(msgEl, 'prefErr', 'err'); });
     }, 500);
   }
   var _sdDeskMsgTimer = null;
