@@ -29,6 +29,7 @@ from scripts.ci import qledger_conversion_candidate as git_candidate
 from scripts.ci.qledger_publication import NativeOperationReceipt, classify_pending
 
 _SCHEMA = "qledger-original-result/v1"
+_CAUSAL_SCHEMA = "qledger-original-result/v2"
 _SEAL = object()
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
 _RESULT_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
@@ -55,6 +56,7 @@ class PreparedOriginalResult:
     manifest_digest: str
     objects: object
     _seal: object
+    predecessors: tuple = ()
 
 
 @dataclass(frozen=True, init=False)
@@ -70,6 +72,10 @@ class RetainedOriginalResult:
     commit_metadata: git_candidate.CandidateCommitMetadata
     target_ref: str
     limits: ProtocolLimits
+    predecessors: tuple
+    retained_bytes: int
+    retained_members: int
+    retained_visits: int
     _seal: object
 
 
@@ -80,10 +86,68 @@ def _target(path):
     return path
 
 
-def prepare_original_result(write, *, candidate, result_id, limits):
+def _descriptor(retained):
+    return dict(owner_root=str(retained.owner_root), result_path=str(retained.result_path),
+                result_id=retained.result_id, manifest_digest=retained.manifest_digest,
+                intent=asdict(retained.write.intent))
+
+
+def _prefix(predecessors, *, claims_path, intent, limits, accepted_tip_oid=None, target_ref=None):
+    """Check caller-named typed originals; never discover or follow disk paths."""
+    if type(limits) is not ProtocolLimits or type(intent) is not NativeClaimsIntent:
+        _fail("explicit original profile/intent required")
+    if type(predecessors) is not tuple or len(predecessors) >= limits.history_operations:
+        _fail("finite ordered typed predecessor originals required")
+    seen_paths, seen_ids = set(), {intent.transaction_id}
+    for index, previous in enumerate(predecessors):
+        if type(previous) is not RetainedOriginalResult or previous._seal is not _SEAL:
+            _fail("typed retained predecessor required")
+        if (previous.write.claims_path != claims_path or previous.limits != limits
+                or (previous.write.intent.operation_id, previous.write.intent.lane_id)
+                != (intent.operation_id, intent.lane_id)
+                or previous.result_path in seen_paths or previous.write.intent.transaction_id in seen_ids
+                or tuple(map(_descriptor, previous.predecessors)) != tuple(map(_descriptor, predecessors[:index]))
+                or (accepted_tip_oid is not None and previous.accepted_tip_oid != accepted_tip_oid)
+                or (target_ref is not None and previous.target_ref != target_ref)):
+            _fail("foreign, missing, duplicate or reordered causal predecessor")
+        if index and not _same_snapshot(predecessors[index - 1].write.plan.snapshot, previous.write.plan._before):
+            _fail("causal predecessor before-root differs")
+        seen_paths.add(previous.result_path)
+        seen_ids.add(previous.write.intent.transaction_id)
+
+
+def _same_snapshot(left, right):
+    return left.root_bytes == right.root_bytes and left._members == right._members
+
+
+def _receipt(write, predecessors, limits):
+    _prefix(predecessors, claims_path=write.claims_path, intent=write.intent, limits=limits)
+    if predecessors and not _same_snapshot(predecessors[-1].write.plan.snapshot, write.plan._before):
+        _fail("exact causal predecessor before-root required")
+    receipt = NativeOperationReceipt(write.intent.operation_id, write.intent.lane_id,
+        predecessors[0].write.plan._before if predecessors else write.plan._before,
+        write.plan.snapshot,
+        tuple(p.write.intent.transaction_id for p in predecessors) + (write.intent.transaction_id,), limits)
+    classify_pending(write.plan.snapshot, native_operation_receipt=receipt)
+    return receipt
+
+
+def _fresh_prefix(predecessors, *, claims_path, intent, limits):
+    _prefix(predecessors, claims_path=claims_path, intent=intent, limits=limits)
+    if not predecessors:
+        return ()
+    last = predecessors[-1]
+    checked = read_original_result(owner_root=last.owner_root, result_path=last.result_path,
+        expected_result_id=last.result_id, expected_manifest_digest=last.manifest_digest,
+        expected_claims_path=claims_path, expected_intent=last.write.intent, limits=limits,
+        predecessors=predecessors[:-1])
+    return checked.predecessors + (checked,)
+
+
+def prepare_original_result(write, *, candidate, result_id, limits, predecessors=()):
     """Read qualified Git inputs and prepare ONE causal write's original result.
 
-    This cannot retain/reclassify older tails, combine operations or mint IDs.
+    Explicit predecessors retain each original separately; no discovery or new IDs.
     Git readback verifies the source before the manifest binds its object ID.
     """
     if type(write) is not NativeClaimsWrite or type(write.intent) is not NativeClaimsIntent:
@@ -97,15 +161,20 @@ def prepare_original_result(write, *, candidate, result_id, limits):
         _fail("original plan/intent mismatch")
     if type(candidate) is not git_candidate.PreparedNativeOperationCandidate:
         _fail("explicit prepared native Git candidate required")
+    predecessors = _fresh_prefix(predecessors, claims_path=write.claims_path, intent=write.intent, limits=limits)
+    _prefix(predecessors, claims_path=write.claims_path, intent=write.intent, limits=limits,
+            accepted_tip_oid=candidate.continuity.accepted_tip_oid,
+            target_ref=candidate.continuity.publication.target_ref)
+    original = _receipt(write, predecessors, limits)
     receipt, _ = git_candidate.read_native_operation_candidate(
         write.claims_path.parents[2], candidate_oid=candidate.candidate_oid,
         accepted_tip_oid=candidate.continuity.accepted_tip_oid,
         operation_id=write.intent.operation_id, lane_id=write.intent.lane_id,
-        authorized_transaction_ids=(write.intent.transaction_id,),
+        authorized_transaction_ids=original.authorized_transaction_ids,
         commit_metadata=candidate.commit_metadata,
         target_ref=candidate.continuity.publication.target_ref, limits=limits)
-    if (receipt.original_base_snapshot.root_bytes != write.plan._before.root_bytes
-            or receipt.original_candidate_snapshot.root_bytes != write.plan.snapshot.root_bytes):
+    if (not _same_snapshot(receipt.original_base_snapshot, original.original_base_snapshot)
+            or not _same_snapshot(receipt.original_candidate_snapshot, write.plan.snapshot)):
         _fail("Git candidate differs from exact original write")
     objects = {}
     def object_id(payload):
@@ -127,12 +196,20 @@ def prepare_original_result(write, *, candidate, result_id, limits):
                 "accepted_tip_oid": candidate.continuity.accepted_tip_oid,
                 "target_ref": candidate.continuity.publication.target_ref,
                 "metadata": asdict(candidate.commit_metadata), "commit": object_id(commit)}}
+    if predecessors:
+        manifest["schema"] = _CAUSAL_SCHEMA
+        manifest["predecessors"] = list(map(_descriptor, predecessors))
     raw = _json(manifest)
-    if (len(objects) > limits.snapshot_members or sum(map(len, objects.values())) + len(raw) > limits.snapshot_bytes
+    if (len(objects) + sum(p.retained_members for p in predecessors) > limits.snapshot_members
+            or sum(map(len, objects.values())) + len(raw)
+            + sum(p.retained_bytes for p in predecessors) > limits.snapshot_bytes
             or len(raw) > _manifest_bound(limits)):
         _fail("original result exceeds existing inventory/byte bounds")
+    visits = write.plan._before.receipt.reference_visits + write.plan.snapshot.receipt.reference_visits
+    if visits + sum(p.retained_visits for p in predecessors) > limits.reference_visits:
+        _fail("aggregate original retention exceeds reference bound")
     return PreparedOriginalResult(result_id, write, limits, raw, sha256(raw).hexdigest(),
-                                  MappingProxyType(objects), _SEAL)
+                                  MappingProxyType(objects), _SEAL, predecessors)
 
 
 def _owner(root, path, result_id, claims_path):
@@ -228,6 +305,12 @@ def retain_original_result(*, owner_root, result_path, prepared):
     """
     if type(prepared) is not PreparedOriginalResult or prepared._seal is not _SEAL:
         _fail("prepared original result required")
+    predecessors = _fresh_prefix(prepared.predecessors, claims_path=prepared.write.claims_path,
+                                 intent=prepared.write.intent, limits=prepared.limits)
+    if (len(prepared.objects) + sum(p.retained_members for p in predecessors) > prepared.limits.snapshot_members
+            or len(prepared.manifest_bytes) + sum(map(len, prepared.objects.values()))
+            + sum(p.retained_bytes for p in predecessors) > prepared.limits.snapshot_bytes):
+        _fail("aggregate original retention exceeds existing bounds")
     root_fd = result_fd = members_fd = None
     try:
         root_fd = _owner(owner_root, result_path, prepared.result_id, prepared.write.claims_path)
@@ -252,11 +335,34 @@ def retain_original_result(*, owner_root, result_path, prepared):
                 os.close(fd)
     return read_original_result(owner_root=owner_root, result_path=result_path,
         expected_result_id=prepared.result_id, expected_manifest_digest=prepared.manifest_digest,
-        expected_claims_path=prepared.write.claims_path, expected_intent=prepared.write.intent, limits=prepared.limits)
+        expected_claims_path=prepared.write.claims_path, expected_intent=prepared.write.intent, limits=prepared.limits,
+        predecessors=predecessors)
 
 
 def read_original_result(*, owner_root, result_path, expected_result_id, expected_manifest_digest,
-                         expected_claims_path, expected_intent, limits):
+                         expected_claims_path, expected_intent, limits, predecessors=()):
+    """Read the explicit ordered prefix once, then this result under ONE budget.
+
+    No recursive disk discovery, mutable head or second retention store. Old v1
+    records require no predecessors and retain their exact original semantics.
+    """
+    _prefix(predecessors, claims_path=expected_claims_path, intent=expected_intent, limits=limits)
+    budget = dict(bytes=limits.snapshot_bytes, members=limits.snapshot_members, visits=limits.reference_visits)
+    checked = ()
+    for previous in predecessors:
+        item = _read_original_result_one(owner_root=previous.owner_root, result_path=previous.result_path,
+            expected_result_id=previous.result_id, expected_manifest_digest=previous.manifest_digest,
+            expected_claims_path=expected_claims_path, expected_intent=previous.write.intent,
+            limits=limits, predecessors=checked, budget=budget)
+        checked += (item,)
+    return _read_original_result_one(owner_root=owner_root, result_path=result_path,
+        expected_result_id=expected_result_id, expected_manifest_digest=expected_manifest_digest,
+        expected_claims_path=expected_claims_path, expected_intent=expected_intent,
+        limits=limits, predecessors=checked, budget=budget)
+
+
+def _read_original_result_one(*, owner_root, result_path, expected_result_id, expected_manifest_digest,
+                              expected_claims_path, expected_intent, limits, predecessors, budget):
     """Bounded exact readback/re-barrier of one explicit original result.
 
     No overwrite, root creation, Git requirement or automatic application.
@@ -273,16 +379,23 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
         result_fd = _open_child(root_fd, result_path.name)
         if _entries(result_fd, 2) != {"members", "manifest.json"}:
             _fail("incomplete or unexpected original-result entries")
-        raw = _read(result_fd, "manifest.json", _manifest_bound(limits), identities)
+        raw = _read(result_fd, "manifest.json", min(_manifest_bound(limits), budget["bytes"]), identities)
         if sha256(raw).hexdigest() != expected_manifest_digest:
             _fail("original manifest differs from expected immutable identity")
         manifest = json.loads(raw)
         if (type(manifest) is not dict or _json(manifest) != raw
-                or set(manifest) != {"schema", "result_id", "claims_path", "intent", "limits", "base", "candidate", "git"}
-                or manifest["schema"] != _SCHEMA or manifest["result_id"] != expected_result_id
+                or set(manifest) != ({"schema", "result_id", "claims_path", "intent", "limits", "base", "candidate", "git"}
+                                     | ({"predecessors"} if predecessors else set()))
+                or manifest["schema"] != (_CAUSAL_SCHEMA if predecessors else _SCHEMA)
+                or (predecessors and manifest["predecessors"] != list(map(_descriptor, predecessors)))
+                or manifest["result_id"] != expected_result_id
                 or manifest["claims_path"] != str(expected_claims_path)
                 or manifest["intent"] != asdict(expected_intent) or manifest["limits"] != asdict(limits)):
             _fail("foreign or noncanonical original-result manifest")
+        _prefix(predecessors, claims_path=expected_claims_path, intent=expected_intent, limits=limits,
+                accepted_tip_oid=manifest["git"]["accepted_tip_oid"], target_ref=manifest["git"]["target_ref"])
+        if any(p.result_path == result_path for p in predecessors):
+            _fail("duplicate original result location")
         maxima = {}
         def reference(digest, maximum):
             if type(digest) is not str or not _HASH.fullmatch(digest):
@@ -302,16 +415,16 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
             _fail("malformed original Git binding")
         reference(git["commit"], 4096)
         members_fd = _open_child(result_fd, "members")
-        names = _entries(members_fd, limits.snapshot_members)
-        if len(names) > limits.snapshot_members or set(names) != set(maxima):
+        names = _entries(members_fd, budget["members"])
+        if len(names) > budget["members"] or set(names) != set(maxima):
             _fail("incomplete or unexpected original object inventory")
         total = 0
         for digest in names:
             total += os.stat(digest, dir_fd=members_fd, follow_symlinks=False).st_size
-        if total + len(raw) > limits.snapshot_bytes:
+        if total + len(raw) > budget["bytes"]:
             _fail("original object inventory/manifest exceeds byte bound")
         objects = {}
-        remaining = limits.snapshot_bytes - len(raw)
+        remaining = budget["bytes"] - len(raw)
         for digest, maximum in maxima.items():
             # Metadata census is only an early refusal. Bound actual allocation
             # even if a member grows before its stable no-follow read begins.
@@ -320,6 +433,9 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
             if sha256(payload).hexdigest() != digest:
                 _fail("original member hash mismatch")
             objects[digest] = payload
+        retained_bytes = budget["bytes"] - remaining
+        budget["bytes"] = remaining
+        budget["members"] -= len(names)
         snapshots = []
         for label in ("base", "candidate"):
             desc = manifest[label]
@@ -330,6 +446,10 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
                 _fail("snapshot descriptor contains unreferenced native members")
             snapshots.append(snapshot)
         base, candidate = snapshots
+        retained_visits = base.receipt.reference_visits + candidate.receipt.reference_visits
+        if retained_visits > budget["visits"]:
+            _fail("aggregate original readback exceeds reference bound")
+        budget["visits"] -= retained_visits
         receipt = NativeOperationReceipt(expected_intent.operation_id, expected_intent.lane_id,
             base, candidate, (expected_intent.transaction_id,), limits)
         classify_pending(candidate, native_operation_receipt=receipt)
@@ -346,6 +466,7 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
             _fail("original operation-to-object binding mismatch")
         plan = restore_original_plan(base, candidate, transaction_id=expected_intent.transaction_id, limits=limits)
         write = NativeClaimsWrite(expected_intent, plan, expected_claims_path)
+        receipt = _receipt(write, predecessors, limits)
         _sync_dir(members_fd)
         _sync_dir(result_fd)
         _sync_dir(root_fd)
@@ -361,7 +482,8 @@ def read_original_result(*, owner_root, result_path, expected_result_id, expecte
         for key, value in dict(owner_root=owner_root, result_path=result_path, result_id=expected_result_id,
             manifest_digest=expected_manifest_digest, write=write, native_operation_receipt=receipt,
             candidate_oid=git["candidate_oid"], accepted_tip_oid=git["accepted_tip_oid"],
-            commit_metadata=metadata, target_ref=git["target_ref"], limits=limits, _seal=_SEAL).items():
+            commit_metadata=metadata, target_ref=git["target_ref"], limits=limits, predecessors=predecessors,
+            retained_bytes=retained_bytes, retained_members=len(names), retained_visits=retained_visits, _seal=_SEAL).items():
             object.__setattr__(retained, key, value)
         return retained
     except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
@@ -380,7 +502,8 @@ def require_retained_original(write, retained):
     validate_plan(write.plan, limits=retained.limits)
     checked = read_original_result(owner_root=retained.owner_root, result_path=retained.result_path,
         expected_result_id=retained.result_id, expected_manifest_digest=retained.manifest_digest,
-        expected_claims_path=write.claims_path, expected_intent=write.intent, limits=retained.limits)
+        expected_claims_path=write.claims_path, expected_intent=write.intent, limits=retained.limits,
+        predecessors=retained.predecessors)
     if (checked.write.plan._before.root_bytes != write.plan._before.root_bytes
             or checked.write.plan.snapshot.root_bytes != write.plan.snapshot.root_bytes
             or checked.write.plan.transaction != write.plan.transaction):
@@ -408,6 +531,7 @@ class OriginalResultTarget:
     accepted_ref: str
     target_ref: str
     commit_metadata: git_candidate.CandidateCommitMetadata
+    predecessor_intents: tuple = ()
 
 
 class OriginalResultClaimsBinding(_NativeClaimsBinding):
@@ -447,6 +571,18 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
                     or type(target.commit_metadata) is not git_candidate.CandidateCommitMetadata):
                 _fail("exact accepted source and fixed metadata required")
             target.commit_metadata.git_identity()
+            prefix = target.predecessor_intents
+            if type(prefix) is not tuple or len(prefix) >= limits.history_operations or len(set(prefix)) != len(prefix):
+                _fail("finite ordered predeclared predecessor intents required")
+            for index, predecessor in enumerate(prefix):
+                self._check_intent(predecessor)
+                if predecessor not in targets:
+                    _fail("predecessor must be an earlier predeclared original")
+                previous = targets[predecessor]
+                if (previous.predecessor_intents != prefix[:index]
+                        or previous.accepted_tip_oid != target.accepted_tip_oid
+                        or previous.accepted_ref != target.accepted_ref or previous.target_ref != target.target_ref):
+                    _fail("incomplete causal prefix or changed accepted source")
             targets[intent] = target
             paths.add(path)
         self.original_result_targets = MappingProxyType(targets)
@@ -467,20 +603,48 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
         except (KeyError, TypeError):
             _fail("write intent has no predeclared original-result target")
 
+    def _settled(self, write):
+        if os.getpid() != self.original_process_id or self.pre_attempt_failure is not None:
+            _fail("original process or pre-attempt evidence is unresolved")
+        attempts = [a for a in self.attempts if self._same_original_write(a.write, write)]
+        if not attempts or any(a.outcome is None or a.outcome.status not in ("materialized", "noop", "already_applied")
+                or a.outcome.clock_status == "uncertain" or a.outcome.durability_status == "uncertain"
+                or a.outcome.root_visibility == "unknown" for a in attempts):
+            _fail("causal predecessor native effect/clock remains unresolved")
+
+    def _predecessors_for(self, target):
+        if os.getpid() != self.original_process_id:
+            _fail("original process differs; inherited native binding cannot transfer")
+        predecessors = ()
+        for intent in target.predecessor_intents:
+            matches = [(w, p) for w, p in self.prepared_original_results if w.intent == intent]
+            if len(matches) != 1:
+                _fail("missing or duplicate original predecessor result")
+            write, _ = matches[0]
+            self._settled(write)
+            checked = self.read_original_write_result(write)
+            if tuple(map(_descriptor, checked.predecessors)) != tuple(map(_descriptor, predecessors)):
+                _fail("original predecessor result order differs")
+            predecessors += (checked,)
+        return predecessors
+
     def _admit(self, intent, *, original=None):
+        if os.getpid() != self.original_process_id:
+            _fail("original process differs; inherited native binding cannot transfer")
         super()._admit(intent, original=original)
-        self._target_for(intent)
+        target = self._target_for(intent)
+        self._predecessors_for(target)
 
     def _apply_original_write(self, session, write):
         target = self._target_for(write.intent)
-        receipt = NativeOperationReceipt(write.intent.operation_id, write.intent.lane_id,
-            write.plan._before, write.plan.snapshot, (write.intent.transaction_id,), self.limits)
+        predecessors = self._predecessors_for(target)
+        receipt = _receipt(write, predecessors, self.limits)
         candidate = git_candidate.prepare_native_operation_candidate(
             self.repo_root, accepted_tip_oid=target.accepted_tip_oid,
             accepted_ref=target.accepted_ref, native_operation_receipt=receipt,
             commit_metadata=target.commit_metadata, target_ref=target.target_ref, limits=self.limits)
         prepared = prepare_original_result(write, candidate=candidate,
-                                            result_id=target.result_id, limits=self.limits)
+                                            result_id=target.result_id, limits=self.limits, predecessors=predecessors)
         self._prepared_results.set(self.prepared_original_results + ((write, prepared),))
         retained = retain_original_result(owner_root=target.owner_root,
                                          result_path=target.result_path, prepared=prepared)
@@ -506,12 +670,35 @@ class OriginalResultClaimsBinding(_NativeClaimsBinding):
             retained_original = read_original_result(owner_root=target.owner_root,
                 result_path=target.result_path, expected_result_id=target.result_id,
                 expected_manifest_digest=prepared.manifest_digest,
-                expected_claims_path=self.claims_path, expected_intent=write.intent, limits=self.limits)
+                expected_claims_path=self.claims_path, expected_intent=write.intent, limits=self.limits,
+                predecessors=prepared.predecessors)
         checked = require_retained_original(write, retained_original)
         if (checked.owner_root != target.owner_root or checked.result_path != target.result_path
                 or checked.result_id != target.result_id or checked.accepted_tip_oid != target.accepted_tip_oid
                 or checked.commit_metadata != target.commit_metadata or checked.target_ref != target.target_ref):
             _fail("retained original differs from exact predeclared owner target/source")
+        if tuple(p.write.intent for p in checked.predecessors) != target.predecessor_intents:
+            _fail("retained original causal prefix differs from predeclared intents")
+        for previous in checked.predecessors:
+            expected = self._target_for(previous.write.intent)
+            if (previous.owner_root, previous.result_path, previous.result_id, previous.accepted_tip_oid,
+                    previous.target_ref, previous.commit_metadata) != (expected.owner_root, expected.result_path,
+                    expected.result_id, expected.accepted_tip_oid, expected.target_ref, expected.commit_metadata):
+                _fail("retained predecessor differs from predeclared original target")
+        return checked
+
+    def read_original_write_chain(self, writes, *, retained_original=None):
+        """Complete explicit same-process sequence; no automatic result aggregation."""
+        if type(writes) is not tuple or not writes or len(writes) > self.limits.history_operations:
+            _fail("complete ordered original writes required")
+        for write in writes:
+            if type(write) is not NativeClaimsWrite:
+                _fail("explicit original write required")
+            self._settled(write)
+        checked = self.read_original_write_result(writes[-1], retained_original=retained_original)
+        originals = tuple(p.write for p in checked.predecessors) + (checked.write,)
+        if len(writes) != len(originals) or not all(self._same_original_write(a, b) for a, b in zip(writes, originals)):
+            _fail("missing, duplicate, reordered or foreign original write chain")
         return checked
 
     def reconcile_original_write(self, write, *, retained_original=None):

@@ -1,4 +1,4 @@
-"""Inactive complete engine-tree composition for one settled native producer.
+"""Inactive complete engine-tree composition for explicitly ordered settled native originals.
 
 Only a process-local original binding/write and its existing retained result are
 accepted. Preparation writes unreferenced Git objects; it neither runs a producer
@@ -45,10 +45,13 @@ class EnginePublicationInvocation:
     binding is not this interface. The assigning bootstrap/controller must still
     qualify the process, original resources and ordinary same-origin push.
     """
-    def __init__(self, binding, write, *, retained_original=None):
+    def __init__(self, binding, write, *, retained_original=None, original_writes=None):
         _require(type(binding) is OriginalResultClaimsBinding,
                  'exact process-local retained-original producer binding required')
         self.binding, self.write, self.retained = binding, write, retained_original
+        self.writes = (write,) if original_writes is None else original_writes
+        _require(type(self.writes) is tuple and self.writes and self.writes[-1] is write,
+                 "explicit ordered chain must end with this original write")
         self.pid = binding.original_process_id
         checked = self._original()
         self.manifest_digest = checked.manifest_digest
@@ -58,15 +61,7 @@ class EnginePublicationInvocation:
         _require(os.getpid() == self.pid == b.original_process_id,
                  'original producer process differs; inherited evidence cannot transfer')
         _require(b.pre_attempt_failure is None, 'native producer has an unresolved pre-attempt failure')
-        attempts = [x for x in b.attempts if b._same_original_write(x.write, self.write)]
-        _require(attempts, 'actual original native attempt evidence required')
-        for attempt in attempts:
-            outcome = attempt.outcome
-            _require(outcome is not None and outcome.status in ('materialized', 'noop', 'already_applied')
-                     and outcome.clock_status != 'uncertain' and outcome.durability_status != 'uncertain'
-                     and outcome.root_visibility != 'unknown',
-                     'original native effect/clock is unresolved; no publication preparation or replay')
-        checked = b.read_original_write_result(self.write, retained_original=self.retained)
+        checked = b.read_original_write_chain(self.writes, retained_original=self.retained)
         _require(not hasattr(self, 'manifest_digest') or checked.manifest_digest == self.manifest_digest,
                  'original native retained result changed')
         return checked
@@ -87,7 +82,7 @@ class EnginePublicationInvocation:
         # render-sync output. This is a new private publication object, not a
         # rewrite of the source candidate or a claims-only substitute.
         payload = candidate._native_commit_bytes(expected_tree_oid, accepted_tip_oid,
-            self.write.intent.operation_id, self.write.intent.lane_id, checked.commit_metadata)
+            self.binding.operation_id, self.binding.lane_id, checked.commit_metadata)
         oid = candidate._write_git_object(self.binding.repo_root,
             ['hash-object', '-t', 'commit', '-w', '--stdin'], payload)
         _require(oid == candidate._commit_identity(payload, accepted_tip_oid), 'engine commit identity differs')
@@ -107,7 +102,7 @@ class EnginePublicationInvocation:
             _require(tuple(push_args) == ('origin', prepared.candidate_oid + ':refs/heads/main'),
                      'engine push must name the immutable complete publication candidate')
         payload = candidate._native_commit_bytes(prepared.tree_oid, prepared.accepted_tip_oid,
-            self.write.intent.operation_id, self.write.intent.lane_id, checked.commit_metadata)
+            self.binding.operation_id, self.binding.lane_id, checked.commit_metadata)
         actual, _ = candidate.publication._git(self.binding.repo_root,
             ['cat-file', 'commit', prepared.candidate_oid], output_limit=4096)
         _require(actual == payload, 'engine publication metadata or full tree changed')
