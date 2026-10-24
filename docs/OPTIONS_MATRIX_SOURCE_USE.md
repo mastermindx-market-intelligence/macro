@@ -299,20 +299,55 @@ publisher effect is performed. Tests use synthetic contracts and policy, the
 actual existing identity/auth/source-use code, and one actual Matrix builder
 invocation over synthetic local Parquets. They are not production acceptance.
 
-`app.options_matrix_http.matrix_display_response` is the unregistered native HTTP
-composition seam. An incumbent handler supplies the captured `SnapshotReference`,
-raw `IdentityArtifactRead`, semantic selection and trusted server inputs. It calls
-the real fresh-auth/source-use helper with `release_body=matrix.body` and emits
-`Response(content=result.body)` without parsing, JSON serialization or a stale
-flag. Both success and refusal carry `private, no-store`; refusal contains no
-artifact or private policy detail. It creates no route, capture reader or grant.
+`app.options_matrix_http.matrix_display_response` emits the actual helper result
+as `Response(content=result.body)` without JSON serialization or stale augmentation.
+Both success and refusal carry `private, no-store`; refusals reveal no artifact,
+token or policy detail.
 
-The scoped Macro application has no `/api/hub/matrix/{root}` serving handler.
-Terminal currently probes that backend path, then reads the published R2 key
-`options_structure/matrix/<ROOT>.json` through a JSON parser. The publisher retains
-exact history bytes before advancing that head. Qualified HTTP delivery still
-needs an actual handler to capture and bind those bytes and the chosen selection,
-genuine native contracts/policy/identity readers and an authenticated transport
-from Terminal to that handler. Neither ordinary product entitlement nor a snapshot
-digest alone supplies that source-use binding. This seam is source preparation;
-it does not make the existing Terminal display rights-qualified.
+The incumbent `app.main` now registers the narrow display-only
+`POST /api/options/matrix/display/{root}`. Its only query fields are the native
+`version_ref` and `fingerprint`; its `application/octet-stream` body is the exact
+selection (1–2048 bytes). Duplicate selectors/auth headers, request encoding and
+client source/configuration fields refuse. A real token/principal observation
+precedes the server capture; the final helper repeats fresh authentication,
+entitlement and source checks. The whole Matrix response remains bound to the
+existing final consumer channel `/api/flow?f=matrix:<ROOT>`; the private POST is
+transport, not another rights authority or an export/Save action.
+
+The sole installation binding is the deployment-owned
+`app.state.options_matrix_display_runtime = MatrixHTTPRuntime(capture=...)`.
+There is no production default or environment enrollment shortcut. The capture
+reader receives only the validated native `SnapshotReference`, and must return
+`MatrixHTTPInputs` containing independently retained raw Matrix, genuine identity
+captures and a genuine `MatrixDisplaySource`. The existing
+`engine.options_matrix_retention.load_snapshot` can read/verify the exact native
+immutable object. `scripts/observe_options_matrix_publication.py` has a
+SPY-specific identity capture procedure; this route does not broaden its source
+admission. No runtime binding, source contract, dataset ID, policy pin or grant is
+installed by this source change. An absent binding yields503.
+
+The prepared Terminal source POST path uses the existing verified session token
+and `BILLING_BASE`, restricted to the legitimate HTTPS Macro origin
+`https://www.mastermind-x.com`; it never sends that token to the Flow sidecar or
+R2 and never follows redirects. It first captures exact retained R2 bytes without
+JSON parsing. It then forwards only the selector and exact selection to the
+native display POST. Native reads its own source/configuration. Terminal compares
+returned bytes with the raw capture before emitting them verbatim. It refuses
+encoding, invalid/altered/partial data and every fixture/cache/stale/head fallback.
+Ordinary Matrix GET behavior remains unchanged. Qualified GET requests receive405
+with Allow POST; qualified SSE is unavailable.
+
+Terminal applies one10-second budget to authentication, incoming body, capture,
+transport and response reads, including abort/disconnect. Bounded readers allocate
+one buffer and do not await cancellation cleanup. Native bounds selection reads
+with5 seconds and response work with10 seconds. Native timeout drops late thread
+results; it cannot terminate a blocking reader thread. Installed readers must
+supply their own finite I/O deadlines and cleanup. Request timeout is not proof
+that their network read was cancelled.
+
+Local synthetic tests exercise the actual router using the exact extracted
+`app.main` registration statements and the real authorization helper. They do not
+exercise full `app.main` startup/dependency closure. Next tests execute its actual
+POST through synthetic fetch, including exact response bytes captured from the
+ASGI test. They establish source request composition, not deployed execution,
+rights enrollment, independent consequential review, release or production proof.
