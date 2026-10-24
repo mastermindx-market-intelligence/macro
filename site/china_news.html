@@ -315,18 +315,654 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>11</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>11</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>11</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">-0.5</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:9.8%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 134<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-24</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">10</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:20%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:20%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-tech">
+          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+          <span class="mx-bar"><i style="width:20%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 20 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 2</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">8</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 31</span><span class="l-zh">10月31日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://news.10jqka.com.cn/20261024/c681051966.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行将发行2027版熊猫贵金属纪念币 pboc to issue 2027 panda precious metal commemorative coins 中国人民银行将发行2027版熊猫贵金属纪念币 中国人民银行日前发布公告称，定于2026年10月30日发行2027版熊猫贵金属纪念币一套。这套贵金属纪念币共15枚，其中熊猫普制贵金属纪念币7枚、熊猫精制贵金属纪念币8枚，均为中华人民共和国法定货币。这套贵金属纪念币正面图案均为北京天坛祈年殿，并刊国名、年号；背面图案均为两只大熊猫相互依偎场景，并刊面额、重量及成色。（新华社） the people's bank of china recently announced that it will issue a set of 2027 panda precious metal commemorative coins on october 30, 2026. the set comprises 15 precious metal commemorative coins, including 7 panda standard precious metal commemorative coins and 8 panda proof precious metal commemorative coins, all of which are legal tender of the people's republic of china. the obverse of each coin features the hall of prayer for good harvests at the temple of heaven in beijing, along with the country name and year; the reverse features two giant pandas nestling together, along with the face value, weight and purity. (xinhua news agency) 中国人民银行日前发布公告称，定于2026年10月30日发行2027版熊猫贵金属纪念币一套。这套贵金属纪念币共15枚，其中熊猫普制贵金属纪念币7枚、熊猫精制贵金属纪念币8枚，均为中华人民共和国法定货币。这套贵金属纪念币正面图案均为北京天坛祈年殿，并刊国名、年号；背面图案均为两只大熊猫相互依偎场景，并刊面额、重量及成色。（新华社） 同花顺 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="2026-10-24T10:25:41+00:00" datetime="2026-10-24T10:25:41+00:00">10-24<br>10:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T10:25:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC to issue 2027 Panda precious metal commemorative coins</span><span class="l-zh">中国人民银行将发行2027版熊猫贵金属纪念币</span></h2>
+            <p class="tp-sum"><span class="l-en">The People's Bank of China recently announced that it will issue a set of 2027 Panda precious metal commemorative coins on October 30, 2026. The set comprises 15 precious metal commemorative coins, including 7 Panda standard precious metal commemorative coins and 8 Panda proof precious metal commemorative coins, all of which are legal tender of the People's Republic of China. The obverse of each coin features the Hall of Prayer for Good Harvests at the Temple of Heaven in Beijing, along with the country name and year; the reverse features two giant pandas nestling together, along with the face value, weight and purity. (Xinhua News Agency)</span><span class="l-zh">中国人民银行日前发布公告称，定于2026年10月30日发行2027版熊猫贵金属纪念币一套。这套贵金属纪念币共15枚，其中熊猫普制贵金属纪念币7枚、熊猫精制贵金属纪念币8枚，均为中华人民共和国法定货币。这套贵金属纪念币正面图案均为北京天坛祈年殿，并刊国名、年号；背面图案均为两只大熊猫相互依偎场景，并刊面额、重量及成色。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://baijiahao.baidu.com/s?id=1879928656991006433" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="王沪宁陪同朝鲜最高领导人金正恩访问丹东 wang huning accompanies north korea's top leader kim jong un on visit to dandong 王沪宁陪同朝鲜最高领导人金正恩访问丹东 金十数据10月24日讯，中共中央政治局常委、全国政协主席王沪宁24日陪同朝鲜劳动党总书记、国务委员会委员长金正恩访问丹东，转达习近平总书记、国家主席的亲切问候和良好祝愿。在双方会见中，王沪宁表示，中方愿同朝方一道，坚定不移贯彻落实两党两国最高领导人重要共识，以共同的社会主义事业为纽带，推动中朝关系进一步升华发展。以中朝新鸭绿江大桥开通为契机，拓展人员往来和经贸合作，更好造福两国人民。加强战略沟通协作，为捍卫各自主权、安全和发展利益营造和平稳定的外部环境。 jinshi data, october 24: wang huning, member of the standing committee of the political bureau of the cpc central committee and chairman of the national committee of the cppcc, accompanied kim jong un, general secretary of the workers' party of korea and chairman of the state affairs commission of the dprk, on a visit to dandong on the 24th, conveying the cordial greetings and best wishes of general secretary and president xi jinping. during their meeting, wang huning said that china is willing to work with the dprk to unswervingly implement the important consensus of the top leaders of the two parties and two countries, and, with the common cause of socialism as a bond, promote the further elevation and development of china-dprk relations. taking the opening of the new china-dprk yalu river bridge as an opportunity, the two sides should expand personnel exchanges and economic and trade cooperation to better benefit the people of both countries. they should strengthen strategic communication and coordination to foster a peaceful and stable external environment for safeguarding their respective sovereignty, security and development interests. 金十数据10月24日讯，中共中央政治局常委、全国政协主席王沪宁24日陪同朝鲜劳动党总书记、国务委员会委员长金正恩访问丹东，转达习近平总书记、国家主席的亲切问候和良好祝愿。在双方会见中，王沪宁表示，中方愿同朝方一道，坚定不移贯彻落实两党两国最高领导人重要共识，以共同的社会主义事业为纽带，推动中朝关系进一步升华发展。以中朝新鸭绿江大桥开通为契机，拓展人员往来和经贸合作，更好造福两国人民。加强战略沟通协作，为捍卫各自主权、安全和发展利益营造和平稳定的外部环境。 金十数据 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-24T19:02:37+08:00" datetime="2026-10-24T19:02:37+08:00">10-24<br>19:02</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T19:02:37+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wang Huning accompanies North Korea's top leader Kim Jong Un on visit to Dandong</span><span class="l-zh">王沪宁陪同朝鲜最高领导人金正恩访问丹东</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 24: Wang Huning, member of the Standing Committee of the Political Bureau of the CPC Central Committee and Chairman of the National Committee of the CPPCC, accompanied Kim Jong Un, General Secretary of the Workers' Party of Korea and Chairman of the State Affairs Commission of the DPRK, on a visit to Dandong on the 24th, conveying the cordial greetings and best wishes of General Secretary and President Xi Jinping. During their meeting, Wang Huning said that China is willing to work with the DPRK to unswervingly implement the important consensus of the top leaders of the two parties and two countries, and, with the common cause of socialism as a bond, promote the further elevation and development of China-DPRK relations. Taking the opening of the new China-DPRK Yalu River Bridge as an opportunity, the two sides should expand personnel exchanges and economic and trade cooperation to better benefit the people of both countries. They should strengthen strategic communication and coordination to foster a peaceful and stable external environment for safeguarding their respective sovereignty, security and development interests.</span><span class="l-zh">金十数据10月24日讯，中共中央政治局常委、全国政协主席王沪宁24日陪同朝鲜劳动党总书记、国务委员会委员长金正恩访问丹东，转达习近平总书记、国家主席的亲切问候和良好祝愿。在双方会见中，王沪宁表示，中方愿同朝方一道，坚定不移贯彻落实两党两国最高领导人重要共识，以共同的社会主义事业为纽带，推动中朝关系进一步升华发展。以中朝新鸭绿江大桥开通为契机，拓展人员往来和经贸合作，更好造福两国人民。加强战略沟通协作，为捍卫各自主权、安全和发展利益营造和平稳定的外部环境。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/topicDetail/804430" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="ai会带来什么？在外滩年会，全球央行热议最大未知变量 what will ai bring? at the bund summit, global central banks debate the biggest unknown variable ai会带来什么？在外滩年会，全球央行热议最大未知变量    上海证券报 pboc_liquidity tech_policy pboc & liquidity 央行与流动性 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">What will AI bring? At the Bund Summit, global central banks debate the biggest unknown variable</span><span class="l-zh">AI会带来什么？在外滩年会，全球央行热议最大未知变量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-10-24/doc-iniwhtfy2253506.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="操纵股价，香港证监会出手！严查三高管 hong kong sfc takes action over stock price manipulation! three executives under strict investigation 操纵股价，香港证监会出手！严查三高管    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-24" datetime="2026-10-24">10-24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong SFC takes action over stock price manipulation! Three executives under strict investigation</span><span class="l-zh">操纵股价，香港证监会出手！严查三高管</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3185077" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="黄仁勋：没有哪个国家在制造业方面比中国更强 jensen huang: no country is stronger than china in manufacturing 黄仁勋：没有哪个国家在制造业方面比中国更强 10月22日，英伟达ceo黄仁勋在德国柏林举办的英伟达gpu技术大会期间表示，到2029年内存供应过剩的可能性不大，“内存的一个真正好处是，你总是可以用得更多”。当被问及是否考虑与中国长鑫存储合作时，黄仁勋回应提到，对此持开放态度。他表示：“我们与中国公司合作，几乎整个世界都在供应链的某个环节与中国公司合作。中国在底层基础设施技术方面非常出色，没有哪个国家在制造业方面比中国更强。”（央视财经） on october 22, nvidia ceo jensen huang said during the nvidia gpu technology conference in berlin, germany, that memory oversupply is unlikely by 2029, and that "one of the really nice things about memory is you can always use more of it." when asked whether he would consider cooperating with china's changxin memory technologies, huang responded that he is open to it. he said: "we work with chinese companies; almost the whole world works with chinese companies at some point in the supply chain. china is very good at underlying infrastructure technology, and no country is stronger than china in manufacturing." (cctv finance) 10月22日，英伟达ceo黄仁勋在德国柏林举办的英伟达gpu技术大会期间表示，到2029年内存供应过剩的可能性不大，“内存的一个真正好处是，你总是可以用得更多”。当被问及是否考虑与中国长鑫存储合作时，黄仁勋回应提到，对此持开放态度。他表示：“我们与中国公司合作，几乎整个世界都在供应链的某个环节与中国公司合作。中国在底层基础设施技术方面非常出色，没有哪个国家在制造业方面比中国更强。”（央视财经） 华尔街见闻 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-23T23:53:13+00:00" datetime="2026-10-23T23:53:13+00:00">10-23<br>23:53</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23T23:53:13+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Jensen Huang: No country is stronger than China in manufacturing</span><span class="l-zh">黄仁勋：没有哪个国家在制造业方面比中国更强</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 22, Nvidia CEO Jensen Huang said during the Nvidia GPU Technology Conference in Berlin, Germany, that memory oversupply is unlikely by 2029, and that "one of the really nice things about memory is you can always use more of it." When asked whether he would consider cooperating with China's ChangXin Memory Technologies, Huang responded that he is open to it. He said: "We work with Chinese companies; almost the whole world works with Chinese companies at some point in the supply chain. China is very good at underlying infrastructure technology, and no country is stronger than China in manufacturing." (CCTV Finance)</span><span class="l-zh">10月22日，英伟达CEO黄仁勋在德国柏林举办的英伟达GPU技术大会期间表示，到2029年内存供应过剩的可能性不大，“内存的一个真正好处是，你总是可以用得更多”。当被问及是否考虑与中国长鑫存储合作时，黄仁勋回应提到，对此持开放态度。他表示：“我们与中国公司合作，几乎整个世界都在供应链的某个环节与中国公司合作。中国在底层基础设施技术方面非常出色，没有哪个国家在制造业方面比中国更强。”（央视财经）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://news.futunn.com/flash/1002195676/industrial-internet-operating-system-industry-alliance-established-in-shenzhen" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="工业互联网操作系统产业联盟在深成立 industrial internet operating system industry alliance established in shenzhen 工业互联网操作系统产业联盟在深成立 ceic2026消费电子创新大会22日至24日在深圳举行。其间，工业互联网操作系统产业联盟在2026消费电子创新大会·具身智能产业论坛上成立。中国科学院沈阳自动化所研究员李庆鑫分享工业互联网操作系统技术架构。他表示，具身智能落地工厂，需要打通设计域-制造域、管理域-控制域两条业务链路，实现人、机、料、工艺、环境全要素集成。工业互联网操作系统需要满足跨域跨平台设计、任务可信运行、模型迁移一致性、多硬件设备适配四大核心需求。（中新网） the ceic 2026 consumer electronics innovation conference was held in shenzhen from the 22nd to the 24th. during the event, the industrial internet operating system industry alliance was established at the embodied intelligence industry forum of the 2026 consumer electronics innovation conference. li qingxin, a researcher at the shenyang institute of automation of the chinese academy of sciences, shared the technical architecture of industrial internet operating systems. he said that for embodied intelligence to be deployed in factories, two business links must be connected: the design domain-manufacturing domain link and the management domain-control domain link, achieving full-factor integration of people, machines, materials, processes and environment. industrial internet operating systems need to meet four core requirements: cross-domain and cross-platform design, trusted task operation, model migration consistency, and adaptation to multiple hardware devices. (china news service) ceic2026消费电子创新大会22日至24日在深圳举行。其间，工业互联网操作系统产业联盟在2026消费电子创新大会·具身智能产业论坛上成立。中国科学院沈阳自动化所研究员李庆鑫分享工业互联网操作系统技术架构。他表示，具身智能落地工厂，需要打通设计域-制造域、管理域-控制域两条业务链路，实现人、机、料、工艺、环境全要素集成。工业互联网操作系统需要满足跨域跨平台设计、任务可信运行、模型迁移一致性、多硬件设备适配四大核心需求。（中新网） 富途牛牛 consumer industrial consumer 消费 industry & manufacturing 工业与制造业 kweb">
+          <time class="tp-when" data-t="2026-10-24T07:12:00+00:00" datetime="2026-10-24T07:12:00+00:00">10-24<br>07:12</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T07:12:00+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Industrial Internet Operating System Industry Alliance established in Shenzhen</span><span class="l-zh">工业互联网操作系统产业联盟在深成立</span></h2>
+            <p class="tp-sum"><span class="l-en">The CEIC 2026 Consumer Electronics Innovation Conference was held in Shenzhen from the 22nd to the 24th. During the event, the Industrial Internet Operating System Industry Alliance was established at the Embodied Intelligence Industry Forum of the 2026 Consumer Electronics Innovation Conference. Li Qingxin, a researcher at the Shenyang Institute of Automation of the Chinese Academy of Sciences, shared the technical architecture of industrial internet operating systems. He said that for embodied intelligence to be deployed in factories, two business links must be connected: the design domain-manufacturing domain link and the management domain-control domain link, achieving full-factor integration of people, machines, materials, processes and environment. Industrial internet operating systems need to meet four core requirements: cross-domain and cross-platform design, trusted task operation, model migration consistency, and adaptation to multiple hardware devices. (China News Service)</span><span class="l-zh">CEIC2026消费电子创新大会22日至24日在深圳举行。其间，工业互联网操作系统产业联盟在2026消费电子创新大会·具身智能产业论坛上成立。中国科学院沈阳自动化所研究员李庆鑫分享工业互联网操作系统技术架构。他表示，具身智能落地工厂，需要打通设计域-制造域、管理域-控制域两条业务链路，实现人、机、料、工艺、环境全要素集成。工业互联网操作系统需要满足跨域跨平台设计、任务可信运行、模型迁移一致性、多硬件设备适配四大核心需求。（中新网）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">KWEB</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/807410" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="引长钱更须稳长钱 持续壮大资本市场稳定力量 attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market 引长钱更须稳长钱 持续壮大资本市场稳定力量    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market</span><span class="l-zh">引长钱更须稳长钱 持续壮大资本市场稳定力量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/808477" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求 csrc seeks public comment on new rules for private equity fund-of-funds, sets differentiated investment ratio requirements for long-term capital 证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC seeks public comment on new rules for private equity fund-of-funds, sets differentiated investment ratio requirements for long-term capital</span><span class="l-zh">证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3185096" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="崔东树：9月我国动力和其它电池合计产量为237gwh，同比增长57% cui dongshu: china's combined output of power and other batteries reached 237gwh in september, up 57% year-on-year 崔东树：9月我国动力和其它电池合计产量为237gwh，同比增长57% 乘联分会会长崔东树发文分析新能源车锂电池市场：9月，我国动力和其它电池合计产量为237gwh，同比增长57%；1-9月，我国动力和其它电池合计产量为1833gwh，同比增长63%。今年电池增速从60%以上逐步下降，由于动力电池需求低迷，加之出口退税调整，电池需求逐步降速。 cui dongshu, president of the china passenger car association, wrote an article analyzing the new energy vehicle lithium battery market: in september, china's total output of power and other batteries was 237 gwh, up 57% year on year; from january to september, china's total output of power and other batteries was 1,833 gwh, up 63% year on year. this year, battery growth has gradually declined from above 60%, as weak demand for power batteries, combined with adjustments to export tax rebates, has gradually slowed battery demand. 乘联分会会长崔东树发文分析新能源车锂电池市场：9月，我国动力和其它电池合计产量为237gwh，同比增长57%；1-9月，我国动力和其它电池合计产量为1833gwh，同比增长63%。今年电池增速从60%以上逐步下降，由于动力电池需求低迷，加之出口退税调整，电池需求逐步降速。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 515030.ss">
+          <time class="tp-when" data-t="2026-10-24T03:23:05+00:00" datetime="2026-10-24T03:23:05+00:00">10-24<br>03:23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T03:23:05+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Cui Dongshu: China's combined output of power and other batteries reached 237GWh in September, up 57% year-on-year</span><span class="l-zh">崔东树：9月我国动力和其它电池合计产量为237GWh，同比增长57%</span></h2>
+            <p class="tp-sum"><span class="l-en">Cui Dongshu, president of the China Passenger Car Association, wrote an article analyzing the new energy vehicle lithium battery market: In September, China's total output of power and other batteries was 237 GWh, up 57% year on year; from January to September, China's total output of power and other batteries was 1,833 GWh, up 63% year on year. This year, battery growth has gradually declined from above 60%, as weak demand for power batteries, combined with adjustments to export tax rebates, has gradually slowed battery demand.</span><span class="l-zh">乘联分会会长崔东树发文分析新能源车锂电池市场：9月，我国动力和其它电池合计产量为237GWh，同比增长57%；1-9月，我国动力和其它电池合计产量为1833GWh，同比增长63%。今年电池增速从60%以上逐步下降，由于动力电池需求低迷，加之出口退税调整，电池需求逐步降速。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">515030.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://www.yicai.com/news/103407539.html" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="国家部署减缓ai就业替代；一线城市房价企稳｜一周热点回顾 三季度中国经济同比增长4.5%；多只科技牛股发声，宽基etf放量进场，a股深v反弹。 china moves to mitigate ai job displacement; first-tier city home prices stabilize | weekly highlights: china's economy grew 4.5% year-on-year in q3; several tech high-flyers speak out, broad-based etfs see surge in volume, a-shares stage v-shaped rebound. 国家部署减缓ai就业替代；一线城市房价企稳｜一周热点回顾 三季度中国经济同比增长4.5%；多只科技牛股发声，宽基etf放量进场，a股深v反弹。    第一财经 property markets tech_policy property 房地产 equity market 股票市场 tech policy 科技政策 512200.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China moves to mitigate AI job displacement; first-tier city home prices stabilize | Weekly highlights: China's economy grew 4.5% year-on-year in Q3; several tech high-flyers speak out, broad-based ETFs see surge in volume, A-shares stage V-shaped rebound.</span><span class="l-zh">国家部署减缓AI就业替代；一线城市房价企稳｜一周热点回顾 三季度中国经济同比增长4.5%；多只科技牛股发声，宽基ETF放量进场，A股深V反弹。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-23/doc-iniwfmnn1898456.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="外资券商队伍再“迎新”，花旗证券获准设立 foreign brokerage ranks welcome another newcomer as citigroup securities approved for establishment 外资券商队伍再“迎新”，花旗证券获准设立    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23" datetime="2026-10-23">10-23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Foreign brokerage ranks welcome another newcomer as Citigroup Securities approved for establishment</span><span class="l-zh">外资券商队伍再“迎新”，花旗证券获准设立</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/policy/article/3371666/china-moving-past-gdp-first-mindset-can-local-officials-get-programme" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china is moving past a gdp-first mindset. can local officials get with the programme?  中国正在摆脱gdp至上的思维模式。地方官员能否跟上这一转变？ plenary sessions of the central committee, the upper echelon of china’s ruling communist party, are major events on the country’s political calendar. this month’s edition, the fifth plenum, is attracting even more attention as the world’s second-largest economy takes on a more prominent role in global affairs. in the first part of this series, frank chen and alice li track the ways top-level policy decisions flow down to local officials – and the challenges those officials face in balancing a...  中央委员会全体会议，即中国执政的共产党的上层，是中国政治日程上的重大事件。本月举行的会议，即五中全会，吸引了更多关注，因为世界第二大经济体在全球事务中扮演着更突出的角色。在本系列的第一部分中，frank chen和 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21T22:00:07+00:00" datetime="2026-10-21T22:00:07+00:00">10-21<br>22:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T22:00:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China is moving past a GDP-first mindset. Can local officials get with the programme?</span><span class="l-zh">中国正在摆脱GDP至上的思维模式。地方官员能否跟上这一转变？</span></h2>
+            <p class="tp-sum"><span class="l-en">Plenary sessions of the Central Committee, the upper echelon of China’s ruling Communist Party, are major events on the country’s political calendar. This month’s edition, the fifth plenum, is attracting even more attention as the world’s second-largest economy takes on a more prominent role in global affairs. In the first part of this series, Frank Chen and Alice Li track the ways top-level policy decisions flow down to local officials – and the challenges those officials face in balancing a...</span><span class="l-zh">中央委员会全体会议，即中国执政的共产党的上层，是中国政治日程上的重大事件。本月举行的会议，即五中全会，吸引了更多关注，因为世界第二大经济体在全球事务中扮演着更突出的角色。在本系列的第一部分中，Frank Chen和</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-10-24/doc-iniwhtfw1522362.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="公募、外资密集出手！持续布局港股创新药 public funds and foreign institutions act intensively! continued build-up in hong kong innovative drug sector 公募、外资密集出手！持续布局港股创新药    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-24" datetime="2026-10-24">10-24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Public funds and foreign institutions act intensively! Continued build-up in Hong Kong innovative drug sector</span><span class="l-zh">公募、外资密集出手！持续布局港股创新药</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.caixinglobal.com/2026-10-19/chinas-third-quarter-gdp-growth-edges-up-to-45-102494770.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china’s third-quarter gdp growth edges up to 4.5%  中国第三季度gdp增长小幅升至4.5%    caixin global - economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-19" datetime="2026-10-19">10-19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-19"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">Caixin Global - Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s Third-Quarter GDP Growth Edges Up to 4.5%</span><span class="l-zh">中国第三季度GDP增长小幅升至4.5%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/808479" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="花旗证券（中国）获批设立 外资独资券商增至七家 citigroup securities (china) approved for establishment, bringing wholly foreign-owned brokerages to seven 花旗证券（中国）获批设立 外资独资券商增至七家    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Citigroup Securities (China) approved for establishment, bringing wholly foreign-owned brokerages to seven</span><span class="l-zh">花旗证券（中国）获批设立 外资独资券商增至七家</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.cnstock.com/commonDetail/808478" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作 ministry of finance to promptly proceed with pre-issuance of part of the 2027 new local government debt quota 财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作    上海证券报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance to promptly proceed with pre-issuance of part of the 2027 new local government debt quota</span><span class="l-zh">财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3185085" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="海关数据：2026年1—9月，我国摩托车进出口继续呈现增长态势 customs data: china's motorcycle imports and exports continued to grow in january-september 2026 海关数据：2026年1—9月，我国摩托车进出口继续呈现增长态势 据中国摩托车商会消息，根据海关数据统计分析，2026年1—9月，我国摩托车整车出口量为1516.36万辆，较去年同期增长11.76%，出口额为102.87亿美元，较去年同期增长21.19%。其中：非洲出口量最多，涨幅最大，出口量为572.21万辆，同比增长32.05%，出口额为31.95亿美元，同比增长38.60%。2026年1—9月，我国摩托车整车进口量为5.40万辆，较去年同期增长11.39%，进口额为2.93亿美元，较去年同期增长10.93%。 according to the china chamber of commerce for motorcycle, based on customs data analysis, from january to september 2026, china's exports of complete motorcycles totaled 15.1636 million units, up 11.76% from the same period last year, with export value of us$10.287 billion, up 21.19% from the same period last year. among them: africa had the largest export volume and the largest increase, with exports of 5.7221 million units, up 32.05% year on year, and export value of us$3.195 billion, up 38.60% year on year. from january to september 2026, china's imports of complete motorcycles totaled 54,000 units, up 11.39% from the same period last year, with import value of us$293 million, up 10.93% from the same period last year. 据中国摩托车商会消息，根据海关数据统计分析，2026年1—9月，我国摩托车整车出口量为1516.36万辆，较去年同期增长11.76%，出口额为102.87亿美元，较去年同期增长21.19%。其中：非洲出口量最多，涨幅最大，出口量为572.21万辆，同比增长32.05%，出口额为31.95亿美元，同比增长38.60%。2026年1—9月，我国摩托车整车进口量为5.40万辆，较去年同期增长11.39%，进口额为2.93亿美元，较去年同期增长10.93%。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-24T01:20:03+00:00" datetime="2026-10-24T01:20:03+00:00">10-24<br>01:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T01:20:03+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Customs data: China's motorcycle imports and exports continued to grow in January-September 2026</span><span class="l-zh">海关数据：2026年1—9月，我国摩托车进出口继续呈现增长态势</span></h2>
+            <p class="tp-sum"><span class="l-en">According to the China Chamber of Commerce for Motorcycle, based on customs data analysis, from January to September 2026, China's exports of complete motorcycles totaled 15.1636 million units, up 11.76% from the same period last year, with export value of US$10.287 billion, up 21.19% from the same period last year. Among them: Africa had the largest export volume and the largest increase, with exports of 5.7221 million units, up 32.05% year on year, and export value of US$3.195 billion, up 38.60% year on year. From January to September 2026, China's imports of complete motorcycles totaled 54,000 units, up 11.39% from the same period last year, with import value of US$293 million, up 10.93% from the same period last year.</span><span class="l-zh">据中国摩托车商会消息，根据海关数据统计分析，2026年1—9月，我国摩托车整车出口量为1516.36万辆，较去年同期增长11.76%，出口额为102.87亿美元，较去年同期增长21.19%。其中：非洲出口量最多，涨幅最大，出口量为572.21万辆，同比增长32.05%，出口额为31.95亿美元，同比增长38.60%。2026年1—9月，我国摩托车整车进口量为5.40万辆，较去年同期增长11.39%，进口额为2.93亿美元，较去年同期增长10.93%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3185080" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="资金借道宽基etf逆势布局，近20个交易日净流入超2300亿元 funds use broad-based etfs to position against the trend, with net inflows exceeding 230 billion yuan over the past 20 trading days 资金借道宽基etf逆势布局，近20个交易日净流入超2300亿元 近期，资金借道宽基etf（交易型开放式指数基金）积极布局a股市场。万得数据显示，10月22日，全市场宽基etf单日净流入516.55亿元。将时间拉长至近20个交易日（9月17日至10月22日）来看，股票型etf累计净流入2496.59亿元，其中宽基etf净流入2361.41亿元，占比达94.59%。从具体产品来看，资金主要流向沪深300、科创50、创业板等指数相关etf。（证券日报） recently, funds have actively positioned in the a-share market through broad-based etfs (exchange-traded funds). wind data shows that on october 22, broad-based etfs across the market saw a single-day net inflow of 51.655 billion yuan. looking at the past 20 trading days (september 17 to october 22), equity etfs recorded a cumulative net inflow of 249.659 billion yuan, of which broad-based etfs saw a net inflow of 236.141 billion yuan, accounting for 94.59%. by specific product, funds mainly flowed into etfs linked to indices such as the csi 300, star 50 and chinext. (securities daily) 近期，资金借道宽基etf（交易型开放式指数基金）积极布局a股市场。万得数据显示，10月22日，全市场宽基etf单日净流入516.55亿元。将时间拉长至近20个交易日（9月17日至10月22日）来看，股票型etf累计净流入2496.59亿元，其中宽基etf净流入2361.41亿元，占比达94.59%。从具体产品来看，资金主要流向沪深300、科创50、创业板等指数相关etf。（证券日报） 华尔街见闻 markets equity market 股票市场 510300.ss ashr 512880.ss">
+          <time class="tp-when" data-t="2026-10-24T00:51:12+00:00" datetime="2026-10-24T00:51:12+00:00">10-24<br>00:51</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T00:51:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Funds use broad-based ETFs to position against the trend, with net inflows exceeding 230 billion yuan over the past 20 trading days</span><span class="l-zh">资金借道宽基ETF逆势布局，近20个交易日净流入超2300亿元</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, funds have actively positioned in the A-share market through broad-based ETFs (exchange-traded funds). Wind data shows that on October 22, broad-based ETFs across the market saw a single-day net inflow of 51.655 billion yuan. Looking at the past 20 trading days (September 17 to October 22), equity ETFs recorded a cumulative net inflow of 249.659 billion yuan, of which broad-based ETFs saw a net inflow of 236.141 billion yuan, accounting for 94.59%. By specific product, funds mainly flowed into ETFs linked to indices such as the CSI 300, STAR 50 and ChiNext. (Securities Daily)</span><span class="l-zh">近期，资金借道宽基ETF（交易型开放式指数基金）积极布局A股市场。万得数据显示，10月22日，全市场宽基ETF单日净流入516.55亿元。将时间拉长至近20个交易日（9月17日至10月22日）来看，股票型ETF累计净流入2496.59亿元，其中宽基ETF净流入2361.41亿元，占比达94.59%。从具体产品来看，资金主要流向沪深300、科创50、创业板等指数相关ETF。（证券日报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">ASHR</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://flash.jin10.com/detail/20261024175812845800" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="市场消息：美国国务院将伊拉克的旅行警告维持在最高级别 market news: u.s. state department maintains iraq travel advisory at highest level 市场消息：美国国务院将伊拉克的旅行警告维持在最高级别 市场消息：美国国务院将伊拉克的旅行警告维持在最高级别。 market news: the u.s. state department has maintained its travel advisory for iraq at the highest level. 市场消息：美国国务院将伊拉克的旅行警告维持在最高级别。 金十数据 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-10-24T17:58:12+08:00" datetime="2026-10-24T17:58:12+08:00">10-24<br>17:58</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T17:58:12+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Market news: U.S. State Department maintains Iraq travel advisory at highest level</span><span class="l-zh">市场消息：美国国务院将伊拉克的旅行警告维持在最高级别</span></h2>
+            <p class="tp-sum"><span class="l-en">Market news: The U.S. State Department has maintained its travel advisory for Iraq at the highest level.</span><span class="l-zh">市场消息：美国国务院将伊拉克的旅行警告维持在最高级别。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261015_1965499.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="industrial producer price indexes in september 2026  2026年9月工业生产者价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-15" datetime="2026-10-15">10-15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in September 2026</span><span class="l-zh">2026年9月工业生产者价格指数</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-10-23/doc-iniweyws1989244.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="花旗拿下第7张外商独资券商牌照 citigroup secures 7th wholly foreign-owned brokerage license 花旗拿下第7张外商独资券商牌照    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23" datetime="2026-10-23">10-23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Citigroup secures 7th wholly foreign-owned brokerage license</span><span class="l-zh">花旗拿下第7张外商独资券商牌照</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-24/doc-iniwhxpu1439692.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="3只产品同日售罄，主动etf为何这么火？ 3 products sold out on the same day—why are active etfs so popular? 3只产品同日售罄，主动etf为何这么火？    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-24" datetime="2026-10-24">10-24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">3 products sold out on the same day—why are active ETFs so popular?</span><span class="l-zh">3只产品同日售罄，主动ETF为何这么火？</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-10-24/doc-iniwhtfy2272094.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="243家机构，“盯上”1家公司 243 institutions have "set their sights on" 1 company 243家机构，“盯上”1家公司    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-24" datetime="2026-10-24">10-24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">243 institutions have "set their sights on" 1 company</span><span class="l-zh">243家机构，“盯上”1家公司</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">8</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×8</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">KWEB</span><span class="nm"><span class="l-en">China internet</span><span class="l-zh">中概互联</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">515030.SS</span><span class="nm"><span class="l-en">EV & battery</span><span class="l-zh">新能源车</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 

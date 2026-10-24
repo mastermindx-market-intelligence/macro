@@ -1,0 +1,28 @@
+{
+  "schema": "eval_os.historical_text_tranche_qualification.v1",
+  "parent_head": "9c18ec900c93c38ff800114ce0397ff0a5b101f1",
+  "new_cases": [
+    "benchmark_healthcare_coherence_2026-07-13.json",
+    "benchmark_rotation_wiring_2026-07-16.json"
+  ],
+  "source_review": "assigning root exact source adjudication; independent review unavailable after Fabric prelaunch policy refusal",
+  "red_controls": 4,
+  "green_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "171",
+      "time": "5.904",
+      "timestamp": "2026-10-13T21:43:54.967191-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "existing_function_bodies_unchanged": true,
+  "source_and_excerpt_bindings_verified": true,
+  "case_count_scope": "six new supplied-text cases plus unchanged legacy bear; no independence, historical PIT, model reasoning performance or twenty/fifteen completion claim",
+  "publication": "pending commit",
+  "hosted_ci": "not yet run",
+  "production": "not installed"
+}
