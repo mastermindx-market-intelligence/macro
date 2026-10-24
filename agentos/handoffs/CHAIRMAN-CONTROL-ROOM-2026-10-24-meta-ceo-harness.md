@@ -590,3 +590,94 @@ Same child/17 paths/owners; no implementation acceptance or widened authority.
   and Office UI source steps from incumbent owners. These are planning inputs only;
   no downstream implementation placement, path expansion, source edit, installed action
   or acceptance is authorized by those advisory reads.
+
+
+### Fabric refusal reconciliation consumed — source distinctions retained
+
+Parent personally read protected 3095d09f owner inspect_run (fabric_task.py blob
+121a423f0760a359aa0dac5712f5c45b2c270ece), facade fabric-backend.mjs
+(89e6073ecb409cf1fb88c19cc3f0c08317c0671b), and continuation
+fabric_continuation.py (d9b40815fa53749e8ff2cb695e6472a0900a9963).
+
+The canonical owner checks the retained refusal against actual bounded request bytes,
+run/root/parent/digest, launch_attempted=false and absence of launch/log before exposing
+request-refusal absence. Executed-root/result lineage remains null and UNVERIFIED.
+The matching protected facade compares only the top-level executed root for
+root_verified, requires that root before result availability, and independently
+hardcodes outer execution_absence_proven=false. This corrects the earlier inference
+that outer absence was computed from null lineage. Matching protected behavior is
+not an attestation of the deployed loaded wrapper blob or an independent reread of
+the six on-host records.
+
+The continuation owner explicitly terminates this refusal without a successor or
+quota-replay evidence. The exact historical route/exception cause is UNKNOWN beyond
+prelaunch_FabricTaskError. No worker review occurred. Parent consumed/STOPPED the
+bounded reconciliation at 1792878056.730599. Do not reproduce routing, create a new
+review ID, switch pools, alter flags or infer absence of eligible providers.
+Any future diagnostic-source task requires a separate bounded plan preserving all
+request/execution/result distinctions and current no-replay guards. The three older
+terminal EFFECT_UNKNOWN subjects remain untouched.
+
+HC-P6.T2 and T2.CUSTODY are pinned in the workstream. The proposed twelve-path web
+consumer is gated on T1 exact-head independent review and UI source custody; no
+implementation placement yet. The existing Office hook currently receives no Result.
+The plan preserves actual atomic pair publication, auth/request races and native limits.
+
+
+HC-P1B.T2 is pinned before new source placement: six additive files for a bounded
+launcher/evidence contract around the pinned native real Rakazo topology. Initial
+scope is source preparation and read-only isolated-runner readiness; no Docker build,
+pull/up or topology execution before frozen-source independent review and explicit
+runner custody. Existing #1852 R2 remains separate. The real journey uses scripted
+runtime/PostgreSQL/HTTP/Graphile/Docker, with only controlled queued-work recovery
+as its acceptance scope; a shared daemon is not qualified by a project name.
+
+
+### Independent Office source return and Rakazo R2 publication checkpoint
+
+- #1854 remains frozen at 3be06ceccd2c82b603ccb834cd036b56cd88b862. Independent Cursor
+  bc-22460428-9083-5778-844a-fee5dc2a5c81 returned COMMENT review 5640139335
+  (21:43:01 UTC), RESULT 1792878217.606029, semantic PASS. Root read the complete
+  review and consumed/STOPPED it at 1792878601.691999. No author approval/merge.
+- Reviewer used scratch detached source /tmp/hc-p6-r1-src at that exact head;
+  its main workspace remained clean protected 3095d09f. The five-file scope,
+  two-file FIX1 delta, original three fixture blobs and unchanged actual decoder/
+  projector/exporter owners were verified. No source edit or new commit was made.
+- Actual independent proof: npm ci --ignore-scripts in scratch; replay Vitest
+  11 passed/6 skipped; ONE test_signed_result_and_mission_join_real_owners exporter
+  passed in 3.72s with test-owned dependencies; fresh Vitest 6 passed/11 skipped.
+  The independent new export was consumed unchanged, never substituted for the
+  author's unavailable retained directory.
+- Reviewer fresh runtime IDs: Mission 56f289e4d046108d5ecacee9cfe80e03, Result
+  922c2a8473c36e41a91998e531434a79. Full independent fresh hashes:
+  actual-result.json (3229B) f1c5a79b7becf4c9b85142210d26bed991803e569f65da9b6a0a9199a9f656a4;
+  actual-mission-v3.json (6452B) 84acb59c2245119c11f3c4ad5ed3f15f7443fb2d31cff43b9e96d644fdda0b8a;
+  fixture-provenance.json (433B) 6723330423d1e2ad7b2a35cf88d06c2e1abeb8735a31e363da5bad0c3137fb19.
+  FRESH_CONSUMED retained equal Control Room brackets, Mission CURRENT and Result
+  UNKNOWN/RESULT_OBSERVATION_UNQUALIFIED, with review/work/transport/acceptance and
+  unknown session/binding separate. This qualifies the negative source proof only.
+- #1854 exact-head OS CI 40134195121 is SUCCESS; general CI 40134195073 remains
+  in progress at 21:53 UTC. No rerun or broader reviewer suite was required.
+- #1852 published R2 head 372a5500645d3300ef0867797696a47327ef95a7 on the original
+  branch, still Draft/open/unmerged. Author body reports 18 Node cases and actual
+  outer pytest canary checks passing, with replacement/filter/fsmonitor suppression,
+  canonical realpath and ignored transitive-shadow rejection. These remain author
+  claims pending independent review. Parent source-freeze request 1792878602.944599
+  asks for exact no-in-flight-write custody without waiting solely for hosted CI.
+  No terminal R2 return has yet been observed.
+- HC-P6.T1 progress request 1792878855.173209 asks only for the existing worker's
+  actual stage/carrier/source/tests or concrete design question. It preserves the
+  same active child and permits source checkpoint before full CI, without interrupting
+  an in-flight write/test or creating another attempt.
+- User continuation received during this work: continue #1841 from latest checkpoint
+  and advance the next important work after the completion notification appeared idle.
+  The scheduled task remains notification-only; actual implementation continues here.
+
+
+HC-P3.DSH.R5 is pinned before a new Fabric request: immutable #1790/c4d2868 has
+material responses to F1–F4 after the prior terminal, tool-accepted but semantic
+REQUEST_CHANGES review on5741. Root re-read the complete original9001B response,
+SHA256186574a488e4e797295e190ca73fec4ff2d6b7d7290723737d6fd34661748f75.
+This is a distinct changed-source review, not a retry/replacement for any held
+P1A/P2/ACP subject. Default AUTO/C2, no routing override. Same source-only ceiling;
+exact-head CI is green but no current semantic PASS is yet observed.
