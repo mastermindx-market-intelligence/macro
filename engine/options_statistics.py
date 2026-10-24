@@ -44,7 +44,9 @@ def _valid(row):
     if not isinstance(row, Mapping):
         return False
     root, expiry = row.get("root"), row.get("expiration")
-    if type(root) is not str or re.fullmatch(r"[A-Z][A-Z0-9.]*", root) is None:
+    # Same canonical alphabet as the incumbent Flow source validator, including
+    # index aliases and punctuation-bearing roots; no silent universe narrowing.
+    if type(root) is not str or re.fullmatch(r"[A-Z0-9.^=-]+", root) is None:
         return False
     if type(expiry) is not str:
         return False
@@ -129,7 +131,7 @@ def _finish(bucket):
     return result
 
 
-def measure_observed_prints(rows):
+def measure_observed_prints(rows: list[dict] | None) -> dict:
     """Return JSON-safe totals and disjoint C/P, venue and location partitions.
 
     None is unavailable; [] is an observed empty population. Missing contract

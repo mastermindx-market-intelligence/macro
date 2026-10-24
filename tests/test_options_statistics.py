@@ -122,3 +122,8 @@ def test_underflow_is_missing_premium_not_known_zero():
     assert result["totals"]["print_count"] == 1
     assert result["totals"]["premium_qualified_print_count"] == 0
     assert result["totals"]["qualified_premium_usd"] is None
+
+
+@pytest.mark.parametrize("root", ["BRK-B", "^SPX", "ABC=", "123", "SPXW"])
+def test_incumbent_root_alphabet_is_preserved(root):
+    assert measure_observed_prints([row(root=root)])["totals"]["print_count"] == 1
