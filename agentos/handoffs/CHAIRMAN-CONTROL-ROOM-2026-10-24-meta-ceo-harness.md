@@ -681,3 +681,38 @@ SHA256186574a488e4e797295e190ca73fec4ff2d6b7d7290723737d6fd34661748f75.
 This is a distinct changed-source review, not a retry/replacement for any held
 P1A/P2/ACP subject. Default AUTO/C2, no routing override. Same source-only ceiling;
 exact-head CI is green but no current semantic PASS is yet observed.
+
+### Resume checkpoint — frozen source returns and planned repairs
+
+Parent resumed from efe94657158a0ba130118b79ba83c10a61ccc8a1 and confirmed the
+Macro carrier clean at that exact local/remote head. No original effect was replayed.
+
+#1859/c748fcb84d72b5691f9e942150037a3c1e3562a0 author RESULT1792879291.796349
+is source-frozen at17paths with actual compound export/fresh consumer receipts.
+T1.5 independent review is still owed despite the ACK's "all stages" shorthand.
+Root and read-only native advisors confirmed the existing Executive MCP front door
+still404s the route. CI40136712662/shard0/job120999652965 also fails only the
+existing Fabric D6 read-only AST guard on five new .append calls; other shards and
+OS40136712663 passed. Root read actual source and complete job log (failure22:32 UTC).
+
+HC-P6.T1.FIX1 is now pinned before same-child repair. It adds only server.py and
+test_executive_workspace_mount.py (19paths total), retains all existing guards,
+requires actual mounted signed HTTP/Unix export/fresh TS consumption, pure Fabric
+notes with legacy propagation, closed positive compound wrapper assertions and
+one actual maximum-chain joint-read proof. No author approval or merge.
+Native advisors were read-only GitHub source challenges, not independent fleet
+acceptance. They found no additional demonstrated Runtime/accounting/service leak.
+
+#1852/372a5500645d3300ef0867797696a47327ef95a7 actual freeze RESULT1792879388.125609
+confirms exact remote head, clean tree and no in-flight writer on the same carrier.
+CI40135201942 is SUCCESS. HC-P1B.T1.R2.REVIEW pins a separate independent Cursor
+reviewer and actual source/launcher/canary checks before placement. Source PASS and
+full reference journey remain unclaimed.
+
+#1854/3be06ceccd2c82b603ccb834cd036b56cd88b862 now has generalCI40134195073 and
+OS40134195121 SUCCESS, separately from already-consumed independent review5640139335.
+#1853 source preparation review remains consumed/PASS, not an evaluation run.
+#1790 changed-head Fabric review and Rakazo topology source-preparation tasks remain
+pinned but not yet requested. T2 UI remains gated on producer review/source custody.
+MISSION_COMPLETE=false; no final RESULT. Actual implementation continues here;
+the existing scheduled task remains a completion notifier only.

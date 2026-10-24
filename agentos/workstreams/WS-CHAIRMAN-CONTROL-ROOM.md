@@ -137,11 +137,11 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Obtain same-child frozen-custody return for #1852 R2 at 372a5500 after source
-      freeze request 1792878602.944599, then commission independent exact-head review.
-      The author reports 18 cases and the outer environment proof passed; current CI
-      remains separate. HC-P1B.T2 topology source/readiness is pinned as a disjoint task;
-      no actual Docker journey or full reference-app acceptance is claimed.
+      Consume frozen-custody RESULT1792879388.125609 for #1852/372a5500 and place
+      the pinned HC-P1B.T1.R2.REVIEW on a distinct non-author Cursor carrier.
+      CI40135201942 is SUCCESS; author18cases remain separate from semantic review.
+      HC-P1B.T2 topology source/readiness is pinned as a disjoint task; no Docker
+      journey or full reference-app acceptance is claimed.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
@@ -180,12 +180,13 @@ waves:
     status: in_progress
     depends_on: [HC-P4]
     next_action: >
-      Preserve #1854/3be06cec independent COMMENT review 5640139335 PASS and parent
-      consumption/STOP 1792878601.691999. General CI remains separate; OS CI passed.
-      Real standalone reads legitimately have distinct Runtime identities; do not force association.
-      Consume HC-P6.T1 builder return after START 1792877657.493229 and A1 receipt
-      1792877720.201799 on the same child. Full signed-in office, native chat and original
-      P6 product acceptance remain open.
+      Preserve #1854/3be06cec independent COMMENT review5640139335 PASS, parent
+      STOP1792878601.691999 and successful CI40134195073/OS40134195121.
+      Consume #1859/c748fcb author return with HC-P6.T1.FIX1 on the SAME child:
+      mount the real compound route, repair exact CI/D6 failure and strengthen
+      actual mounted proof. Nineteen-path amendment is pinned before edits.
+      Final-head CI and non-author review remain open; T2 UI is still gated.
+      Standalone Runtime identities remain distinct. Full signed-in/native/P6 is open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
     status: in_progress
@@ -289,14 +290,15 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, preserve #1853/0f433e8 and #1854/3be06cec independent source
-  PASS; obtain #1852/372a5500 frozen custody and non-author review. #1856/a9601a9c
-  publishes the tested ACP canonical gate; retain its consumed refusal disposition
-  without replay or a fabricated semantic verdict.
-  Consume HC-P6.T1 builder return and HC-P6.T0.R1 independent review after their
-  actual START receipts; Rakazo R2 remains on its same carrier after 1792877026.469489.
-  Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
-  Independent release, installed/live proof and the original R2 acceptance remain open.
+  For Mastermind #1841, execute the pinned same-child HC-P6.T1.FIX1 against
+  #1859/c748fcb: real Executive mount, exact CI/D6 repair and mounted fresh proof.
+  Place HC-P1B.T1.R2.REVIEW against frozen #1852/372a5500; successful CI is separate.
+  Advance already-pinned #1790 changed-head review and disjoint Rakazo topology
+  preparation, preserving all no-replay boundaries and no execution before gates.
+  Preserve #1853/0f433e8 and #1854/3be06cec independent source PASS and green CI.
+  #1856/a9601a9c stays frozen with consumed refusal, no semantic verdict or retry.
+  All three original Fabric EFFECT_UNKNOWN holds and #1850 source proof remain.
+  Independent release, installed/live proof and original R2 acceptance are open.
   This receiver must never approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
@@ -2788,3 +2790,152 @@ remaining limits and terminal no-write custody. Root will consume the semantic
 verdict explicitly; tool acceptance alone is not a PASS.
 
 **State:** PLANNED_BEFORE_FABRIC_REQUEST. No new reviewer start or verdict is claimed.
+
+
+### HC-P6.T1.FIX1 — Mount the associated read and close the exact CI regression
+
+- **Input:** Draft Mastermind #1859 is frozen at
+  c748fcb84d72b5691f9e942150037a3c1e3562a0, branch
+  cursor/associated-mission-result-read-d302, base
+  3095d09f1789a5b8002503beae872774c297b1a5. Author RESULT
+  1792879291.796349 and ACK 1792879347.790459 report 17 paths, 37 Python passes,
+  typecheck pass, replay 8 passed/4 skipped and fresh 4 passed/8 skipped.
+  Actual whole body is 10024 bytes, SHA256
+  027faefc46fb4def6f304330f20799ed886c42d72a8aa88ddbd95b7885c91dda,
+  shared Runtime identity d870e55698a78c2749750632bcf1b395. The later source export
+  has identity 26ecb537335dbff528700376b6d2d228 and SHA256
+  cc57ba8ba875d624a456ad17b02fde46f0486eea6d8f6f294dbe1c1361f65fa0.
+  These are author source receipts; T1.5 independent review is NOT complete.
+- **Actual gap:** root and read-only advisor verified that Executive MCP rejects
+  /workspace/mission-result/current before WorkspaceApp because its exact route is
+  absent from the existing path/query/outer-route lists. The positive exporter
+  currently enters WorkspaceApp directly. This does not fulfill the mounted path.
+- **Exact CI failure:** #1859/c748fcb CI40136712662 failed on Ubuntu24.04.5,
+  runner2.338.0; shard0 job120999652965, Run repository test shard, at22:32:28 UTC.
+  tests/test_fabric_job_view.py::test_d6_view_is_read_only reports five banned
+  .append() calls introduced in fabric_job_view.py. Shards1/2 and OS40136712663
+  succeeded. This is a source-structure regression, not evidence of an actual
+  external append effect. Do not rerun unchanged CI or weaken its read-only guard.
+- **Same implementation owner:** continue only child
+  meta-ceo-harness-office-join-cursor-20261024-01,
+  Cursor bc-263fbf9e-a33b-50ba-90c3-46e88217d302, original thread1792877325.877669.
+  Reconfirm the exact retained head and no in-flight write before editing.
+  This is a same-child repair after a frozen return, not a replacement attempt.
+- **Scope amendment, pinned before edits:** retain all seventeen HC-P6.T1 paths
+  and add ONLY integrations/executive_mcp/server.py and
+  tests/test_executive_workspace_mount.py, for a nineteen-path writable ceiling.
+  The server change is only the existing route registration and fences; no auth,
+  policy, provider-routing or installed entrypoint changes. Other original exclusions,
+  A1 invariants and limits remain. No #1854 or other carrier changes.
+
+#### Required repair and proof
+
+1. Add the literal GET /workspace/mission-result/current to the existing
+   _ExecutivePathFence._workspace_routes, _query_routes and _build_profile_mcp_app
+   outer_routes. Route to the SAME supplied WorkspaceApp and its existing lifecycle.
+   Preserve exact ASCII/raw-path/method, HTTPS/host/Origin, duplicate bearer,
+   audited verifier, independent WorkspaceApp verifier, strict selector/body,
+   permission/revocation and no-store fences. Absent mounts remain closed under
+   both existing profile selections. No second app, verifier, scope or grant.
+2. Extend existing mount tests for real dispatch, absent mounts and refusal before
+   dispatch. In the already-assigned test_workspace_mission_result_http.py, drive
+   the positive real signed source read through the actual Executive builder and
+   AuditedWorkspaceApp around the SAME WorkspaceApp/Unix client/test-owned Runtime.
+   A recording fake mount is useful for routing but is not positive acquisition proof.
+   Preserve one-read/source counters, real auth and Control Room observations,
+   size limits and owned cleanup. Exercise invalid path/method/transport/bearer,
+   invalid selector/body and audit/permission refusal without new authority.
+3. Restore locally pure notes composition in _project_retained_root_snapshot,
+   consistent with the incumbent notes = notes + [...] style; return the completed
+   notes explicitly. _observe_bounded_root MUST also consume projected["notes"]:
+   replacing append alone would silently drop legacy provenance/truncation warnings.
+   Preserve test_d6_view_is_read_only and all source-write bans unchanged. Use an
+   already-assigned new test file for a discriminating legacy diagnostic-preservation
+   case if incumbent coverage does not establish it; no extra test path is granted.
+4. In the already-assigned TypeScript fresh/replay consumer, require the closed six-key
+   compound wrapper, availability AVAILABLE, empty top-level reason_codes and the
+   exact selection before admitting a positive pair. Keep current genuine decoders/
+   projectOffice and fresh identity/hash derivation. Add an owned malformed-wrapper
+   challenge that cannot pass by consuming valid nested documents alone.
+5. Capture one fresh positive whole response from the mounted path, then consume
+   those unchanged bytes through the actual TypeScript fresh gate. Update the
+   assigned exporter provenance/README and PR claims to describe the actual path.
+   If committed fixture bytes change, replace them ONLY with actual captured bytes
+   and update their true hash/size receipt. Keep the older #1854 fixtures untouched.
+   The deliberately mutated TypeScript content-fallback case is consumer projection
+   coverage, not a second captured HTTP fallback; retain that distinction.
+6. Add one bounded joint-read case using the incumbent genuine six-node maximum-chain
+   fixture, to verify the added root-page work remains usable within unchanged
+   cumulative limits and agrees with canonical completion. Do not raise limits if
+   a legitimate combined budget refuses; report the exact measured boundary.
+7. Run the failing D6 check and relevant Fabric/projection/mount/compound tests,
+   typecheck and actual replay/fresh consumer proof; report exact results/skips.
+   Use bounded checks for concrete risks, not unrelated broad suites. Hosted CI
+   on the repaired head and independent non-author review remain separate gates.
+
+Return the same Draft PR, exact new head, nineteen-path census, real mounted export/
+consumer receipts, test/CI results and clean/no-in-flight-write custody; freeze again.
+T1.1–T1.4 have author-reported source proof but remain subject to this repair.
+T1.5 is pending successful final-head CI and separate independent review.
+SOURCE_ASSOCIATED_READ_QUALIFIED remains unaccepted until those source gates pass.
+No approval, merge, install, live provider/computer task, purchase, credentials,
+account-policy change, old-carrier reset or widened source ownership.
+
+**State:** PLANNED_BEFORE_SAME_CHILD_REPAIR. Parent must deliver this published pin
+on the original thread; delivery/START are recorded separately.
+
+
+### HC-P1B.T1.R2.REVIEW — Independent review of the frozen Rakazo repair
+
+- **Subject/custody:** Draft Mastermind #1852 head
+  372a5500645d3300ef0867797696a47327ef95a7, branch
+  cursor/rakazo-hc-p1b-qualification-2fd3, twelve changed paths. Actual freeze
+  RESULT1792879388.125609 confirms head equals remote tip, clean staged/unstaged
+  state, no in-flight source writer and retained original carrier. No new commit,
+  reset, push or CI rerun occurred for that freeze. CI40135201942 is SUCCESS.
+  Author source claims remain unaccepted until this independent judgment.
+- **Placement:** one independent Cursor cloud reviewer,
+  meta-ceo-harness-rakazo-review-cursor-20261024-01, root
+  meta-ceo-open-harness-convergence-20261024-sol-001, parent
+  meta-ceo-harness-implementation-20261024-web-001. Existing admitted fleet/default
+  model only; reviewer must differ from author bc-3aad7289-82db-5570-aef5-9bf911172fd3.
+  Use isolated immutable source, no write/checkout/reset in the author's carrier.
+  This new review is not a retry of any held Fabric subject.
+- **Read scope:** .gitignore; tests/test_rakazo_qualification.py; the ten files
+  integrations/rakazo_qualification/{README.md,db_client_stub.mjs,package-lock.json,
+  package.json,pinned_loader.mjs,qualify.mjs,qualify.test.mjs,register.mjs,
+  row_security_stub.mjs,run-tests.mjs}. Read necessary unchanged dependencies and
+  the actual Apache-2.0 Rakazo donor at c5e66e010ee3f3166d2ad216f928a75a0b9a2218.
+  No source writable paths, production topology or provider task is granted.
+
+#### Required independent judgment
+
+1. Assess all three pinned R2 findings against actual372a source: immutable Git
+   comparison independent of replacement refs/clean filters/executable repo config;
+   explicit environment BEFORE the first npm/Node process in the admitted Python
+   launcher; canonical-root/registered-loader association and ignored transitive
+   module-shadow rejection before donor import.
+2. Trace real commands, environment and source ownership, not only assertions of
+   intended argv. Verify synthetic replacement/filter/fsmonitor, outer NODE_OPTIONS/
+   npm-config, symlink-root and ignored-shadow canaries discriminate the defect;
+   owned-only cleanup must preserve caller-owned source and sentinels. No inspection
+   or copying of real credentials/configuration. The unmodified pin must still work.
+3. Reconfirm native source observations, stub boundaries, approval/effect-key meaning
+   and truthful ABSENT/NOT_RUN labels. A fabricated streaming/cancel projection,
+   transition or effect key is not a real journey, restart or committed-effect dedup.
+   Cordis is ABSENT; DB/API/Postgres/Graphile/Docker/provider/UI journeys are NOT_RUN.
+4. Use the documented Python launcher and bounded relevant canaries in reviewer-owned
+   scratch when needed to resolve actual uncertainty. Do not rely on ambient direct
+   npm startup or report author18cases as independently executed. Report installation/
+   test commands, exact counts/skips and any unavailable environment separately.
+5. Return PASS / REQUEST_CHANGES / HOLD on the immutable head with actual reviewer
+   identity, concrete source findings, commands/results and terminal no-write custody.
+   A GitHub COMMENT review is appropriate; do not approve or merge. Root will consume
+   the verdict explicitly. Green CI is mechanical evidence, not semantic acceptance.
+
+No source edits/commits/push, author carrier changes, live provider/computer/database
+action, purchases, credential moves, account-policy changes, installation or broad
+reruns. If admission/start is uncertain, retain the same child and report the concrete
+state; no duplicate or replacement placement.
+
+**State:** PLANNED_BEFORE_INDEPENDENT_REVIEW_PLACEMENT.
