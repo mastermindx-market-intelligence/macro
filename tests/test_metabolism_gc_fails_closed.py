@@ -122,10 +122,58 @@ class GCFailClosedTests(unittest.TestCase):
         self.assertNotIn('["git", "push", "origin", "--delete"', source)
         self.assertIn('current upstream/unique-commit/lease admission', source)
 
-    def test_no_force_flag_in_deletion_command(self):
+    def test_no_local_worktree_removal_even_if_prior_receipt_or_probe_would_admit(self):
+        """A stale release, reattachment or missing effect fence must never reap.
+
+        Each case represents a formerly plausible but unsafe admission path.
+        The current GC must not even ask _ready_for_delete: no atomic original
+        lease/attachment owner and PRE_EFFECT receipt are available.
+        """
+        scenarios = (
+            "released_receipt_reacquired_lease",
+            "process_reattached_after_liveness_read",
+            "unsigned_unbound_release_receipt",
+            "missing_original_owner_pre_effect",
+        )
+        with TemporaryDirectory() as t:
+            repo = Path(t) / "owner"
+            candidate_path = Path(t) / "wf_candidate"
+            repo.mkdir()
+            candidate_path.mkdir()
+            candidate = {"path": candidate_path, "branch": "wf_candidate", "locked": False}
+            for scenario in scenarios:
+                with self.subTest(scenario=scenario), \
+                     patch.object(gc_mod, "_list_worktrees", return_value=[candidate]), \
+                     patch.object(gc_mod, "_is_live_main_checkout", return_value=False), \
+                     patch.object(gc_mod, "_has_open_files", return_value=False), \
+                     patch.object(gc_mod, "_branch_merged_into_main", return_value=True), \
+                     patch.object(gc_mod, "_journal_is_terminal", return_value=True), \
+                     patch.object(gc_mod, "_ready_for_delete", return_value=True) as admission, \
+                     patch.object(gc_mod.subprocess, "run") as subprocess_call:
+                    result = gc_mod.gc(repo, dry_run=False)
+                    self.assertEqual(result["reaped"], [])
+                    self.assertEqual(result["skipped_safety"], [str(candidate_path)])
+                    admission.assert_not_called()
+                    subprocess_call.assert_not_called()
+
+    def test_release_receipt_cannot_grant_delete_without_canonical_owner(self):
+        """Even an otherwise 'perfect' self-described receipt is not authority."""
+        with TemporaryDirectory() as t:
+            repo = Path(t) / "owner"
+            candidate_path = Path(t) / "wf_candidate"
+            repo.mkdir()
+            candidate_path.mkdir()
+            self.assertFalse(gc_mod._ready_for_delete(
+                repo, candidate_path, "wf_candidate", locked=False
+            ))
+
+    def test_gc_has_no_local_worktree_remove_path(self):
         source = inspect.getsource(gc_mod.gc)
         self.assertNotIn('"remove", "--force"', source)
-        self.assertIn('"worktree", "remove", str(wt_path)', source)
+        self.assertNotIn('["git", "worktree", "remove"', source)
+        self.assertIn("local deletion DISABLED", source)
+        admission_source = inspect.getsource(gc_mod._ready_for_delete)
+        self.assertIn("return False", admission_source)
 
 
 if __name__ == "__main__":
