@@ -125,18 +125,20 @@ waves:
       proof or the refused ephemeral-token exchange. Begin HC-P1A and HC-P1B in isolated carriers.
   - id: HC-P1A
     title: DSH full-application reference journey
-    status: todo
+    status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Commission a bounded fleet implementation of the provider-free send, stream, cancel,
-      resume, schedule and restart journey against real pinned DSH modules; retain auth proof separately.
+      Reconcile original Fabric run meta-ceo-harness-dsh-reference-20261024-01 before any
+      replay: TERMINAL rc1, unverified effects, retry_allowed=false. Keep its qualification
+      paths held and preserve the separate authenticated-proof gate.
   - id: HC-P1B
     title: Rakazo challenger reference journey
-    status: todo
+    status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Place an independent Cursor cloud implementation of the same reference journey on pinned
-      Rakazo; report actual runnable proof or a precise platform blocker without importing a new queue.
+      Consume the existing Cursor placement request on C0CBC6AEAQZ/1792865049.365069.
+      Delivery is proven; agent identity and START are absent. Do not duplicate the child.
+      Direct Cursor browser access currently requires human sign-in.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: todo
@@ -272,9 +274,10 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For the Chairman's 2026-10-24 Meta-CEO harness commission (Mastermind #1841), execute HC-P1A
-  and HC-P1B from the pinned task records below through admitted fleet workers, then obtain
-  independent review. Preserve the existing R2 acceptance contract and unrelated legacy waves.
+  For Mastermind #1841, retain the two original terminal/unverified Fabric run identities
+  and the delivered Cursor child; reconcile effects before any replay. Advance only a
+  planned, path-disjoint source task while their original carriers remain held. Record actual
+  worker START and independent verdicts; neither is inferred from dispatch. Preserve R2.
   Source release requires independent action: this receiver must not approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
@@ -857,7 +860,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   Cleanup only processes created by this task and prove termination.
 - **Evidence:** returned commit/patch, tests/commands, donor SHA, retained result and true
   provider/model identity. These fields remain pending until actual execution.
-- **State:** ready. No worker START is claimed by this plan.
+- **State:** dispatched as meta-ceo-harness-dsh-reference-20261024-01; controller 7915.
+  TERMINAL rc1 / QWEN_FINAL_RESPONSE_UNCONFIRMED; acceptance UNVERIFIED;
+  execution_absence_proven=false, retry_allowed=false. No usable implementation return.
+  The assigned paths remain held pending original-run effect reconciliation.
 
 ### HC-P1B.T1 — Rakazo challenger with the same journey
 
@@ -876,7 +882,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **DONE_WHEN:** actual runnable observations or a precise reproducible platform blocker;
   independent source review; comparison identifies integration burden and missing proof.
 - **Risk / rollback:** disposable local fixture state, no account secrets or production writes.
-- **State:** ready; no delivery or START has yet occurred.
+- **State:** placement request delivered for meta-ceo-harness-rakazo-cursor-20261024-01
+  on C0CBC6AEAQZ/1792865049.365069. No ACK, agent ID, START or result at bounded readback.
+  Direct Cursor cloud-agent UI is at sign-in; no login or account change was performed.
 
 ### Accepted progress and outstanding gates
 
@@ -924,8 +932,38 @@ Advance SC1 as the current cross-session continuity frontier while leaving P0B a
 
 ### Cumulative recovery frontier
 
-Current P0 recovery is saved here and in the scoped handoff. HC-P1A.T1 and HC-P1B.T1
-are ready for admitted dispatch. Record actual run/agent IDs, START evidence, source
-revision and retained return before changing their execution claims. The next material
-action is fleet implementation followed by independent review. No watcher, native wake,
-provider route, merge or production acceptance is implied by these planning records.
+Checkpoint at 2026-10-24 18:19 UTC; MISSION_COMPLETE=false. Published planning carrier:
+Macro Draft PR #10167 at 86780e93a07343f3fc92ca6f16a9fc4b175f055e. No self-approval
+or merge is authorized.
+
+| Original child | Observed disposition | Continuation |
+|---|---|---|
+| meta-ceo-harness-dsh-reference-20261024-01 | Fabric controller 7915; TERMINAL rc1; QWEN_FINAL_RESPONSE_UNCONFIRMED; requested qwen3.8-flash, no served-model attestation; result SHA256 64a7cb32d7bb1cd691c2bf09f0b91010a20913892ff764e1409bc554413cc4dd | acceptance UNVERIFIED; execution_absence_proven=false; retry_allowed=false; continuation_evidence_unqualified. Reconcile this original run; do not duplicate or shadow its files |
+| meta-ceo-harness-plan-review-20261024-01 | Fabric controller 41389; TERMINAL rc1; QWEN_FINAL_RESPONSE_UNCONFIRMED; requested qwen3.8-max, no verdict; result SHA256 3c4da487de09b358d5ee3bddfae074aeb3b49f5ba78da551cef561e5ec1257a3 | Same unverified/absence-false/retry-false disposition; plan has no independent PASS |
+| meta-ceo-harness-rakazo-cursor-20261024-01 | Placement request delivered on C0CBC6AEAQZ/1792865049.365069; bounded readback contains no ACK, agent ID, START or result | Preserve original child and consume actual placement; direct Cursor browser is SIGN_IN_REQUIRED |
+
+The builder's retained provider outcome is kind=unknown, initial_rejection=false and
+complete_event_capture=true; the wrapper's 429 inference is not proof that execution
+was absent. Usage/model-served evidence is unknown. Its native session ID is
+01a16f11-a0da-7d23-9e69-efa94f8115cb, and retained capture SHA256 is
+ffcd6668092b19c93b1edf5265f39c0a4f7b9bf378be9f5d572d7de99daf8619.
+The review's native session ID is 01a16f1b-49fb-7643-8604-a4a4bd186a56.
+Read-only M1 inspection found the Qwen wrapper creates raw events in a task temporary
+directory and removes it on exit. No surviving native event proof has cleared either
+run. No new ID, forced route or policy change is authorized by the failed receipts.
+
+Canonical Mastermind source carrier is now APPLIED and clean:
+operation meta-ceo-harness-implementation-20261024-web-001, branch
+sol/web-meta-ceo-harness-implementation-20261024-web-001, path
+/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-harness-implementation-20261024-web-001,
+base e00e97b81a5d41cb8a570ad080316279a0f3853f. The initial NOT_APPLIED acquires were
+reconciled as unregistered. A targeted missing-blob read/fetch of
+78309020decb40626a60c125bddf9b674deff2e9 with command-local Git performance controls
+recovered the required object; acquisition then succeeded. No shared checkout edits,
+persistent configuration change or historical carrier adoption occurred.
+
+Current source census also establishes that the existing canonical GLM consumer is a
+sealed, model-only contract. Do not widen it to DSH tools or enable DSH automatic retries.
+A path-disjoint source task must be separately pinned before execution; P2 live acceptance
+still depends on P1 and actual incumbent admission. No watcher, live provider call,
+deployment, authenticated proof, 24-hour canary or seven-day observation is claimed.
