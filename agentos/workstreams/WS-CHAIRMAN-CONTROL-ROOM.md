@@ -128,18 +128,19 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Reconcile original Fabric run meta-ceo-harness-dsh-reference-20261024-01 before any
-      replay: TERMINAL rc1, unverified effects, retry_allowed=false. Keep its qualification
-      paths held and preserve the separate authenticated-proof gate.
+      Preserve original Fabric run meta-ceo-harness-dsh-reference-20261024-01 as terminal,
+      unverified and EFFECT_UNKNOWN after bounded reconciliation 1792871037.247739.
+      No retry; qualification paths stay held. Only genuinely new retained evidence may
+      support further forensics. The separate authenticated-proof gate remains.
   - id: HC-P1B
     title: Rakazo challenger reference journey
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Issue and consume same-child repair HC-P1B.T1.R1 for returned Draft #1852 at
-      b7b98450b4cb887c2e9097c47378624e157ed562 (CI 40123982918 SUCCESS).
-      Repair pre-import pin integrity, owned cleanup, ambient environment and proof
-      labels; then obtain independent review. Full reference-app journey remains open.
+      Consume same-child repair HC-P1B.T1.R1, sent at 1792871530.555359 for Draft #1852
+      at b7b98450b4cb887c2e9097c47378624e157ed562 (CI 40123982918 SUCCESS).
+      Require repaired pre-import integrity, owned cleanup, ambient-environment and proof
+      labels plus independent review; full reference-app journey remains open.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
@@ -154,10 +155,10 @@ waves:
     status: todo
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Reconcile the unpublished canonical-projection/materializer candidate in original
-      review carrier deepseek-current-bridge-acp-review-20261022-sol-001. The bounded
-      check found substantial T1a overlap; no new Cursor implementation was placed.
-      Preserve its dirt and all installed/source/currentness and original-parent gates.
+      Consume Secretary read-only ACP custody reconciliation PICKUP 1792871522.079479
+      for original dirty carrier deepseek-current-bridge-acp-review-20261022-sol-001.
+      No new T1a child was placed; preserve the unpublished overlapping candidate and
+      all source/currentness, installed-input and original-parent gates.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -174,20 +175,22 @@ waves:
       untrusted-content handling and per-effect authorization through incumbent owners.
   - id: HC-P6
     title: Signed-in Meta-CEO office acceptance
-    status: todo
+    status: in_progress
     depends_on: [HC-P4]
     next_action: >
-      Integrate the existing R2 office consumer and verify intent correction, audience/project
-      switching, stale results, logout and 320/390px layouts; preserve native Project Chat's separate gate.
+      Execute additive HC-P6.T0 producer-to-consumer qualification using unchanged
+      exports from the existing Result HTTP test and the real TypeScript Office projection.
+      Do not edit overlapping App/auth/source carriers. Full signed-in office, native chat,
+      intent correction, switching, stale data, logout and 320/390px acceptance remain open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
-    status: todo
+    status: in_progress
     depends_on: [HC-P1B, HC-P5, HC-P6]
     next_action: >
-      Obtain independent source review HC-P7.T0.R1 for Draft Mastermind #1853 at
-      8166837a7998f43a85040ec8bf2f9fd5b3bc5d88 and observe its hosted CI. T0 now contains
-      32 public cases, eight empty holdout slots and the exact 48-obligation R2 crosswalk.
-      Executable preregistration, private holdouts and actual observation remain gated.
+      Consume independent review HC-P7.T0.R1 on Draft #1853 at
+      8166837a7998f43a85040ec8bf2f9fd5b3bc5d88; Cursor reviewer START is
+      1792871518.772959. Hosted CI 40126167301 is still running. Preserve 32 public cases,
+      eight empty holdout slots and all 48 R2 obligations; executable and live proof remain gated.
   - id: HC-P8
     title: Optional model and local-inference evaluation
     status: todo
@@ -281,12 +284,12 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, review published evaluation preparation #1853 and consume the
-  original Rakazo child return. Reconcile the unpublished ACP candidate in its original
-  dirty review carrier before any T1a implementation placement. Preserve #1850's green CI
-  and all three terminal/unverified Fabric identities; reconcile effects before replay.
-  Independent review, installed/live proof and full R2 acceptance remain open.
-  Source release requires independent action: this receiver must not approve or merge.
+  For Mastermind #1841, execute the pinned additive Office producer-consumer task HC-P6.T0;
+  consume same-child Rakazo repair and the started independent #1853 review/CI.
+  Consume current ACP custody reconciliation before any overlapping source write.
+  Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
+  Independent release, installed/live proof and the original R2 acceptance remain open.
+  This receiver must never approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
   execution_commission_refs: []
@@ -943,9 +946,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   module cases pass; exact new head, changed paths, commands/results and hosted CI
   return on the original thread. Independent non-author fleet review remains owed
   after repair; no HC-P1B/full mission acceptance from this source-only result.
-- **State:** READY_FOR_SAME_CHILD_REPAIR; pinned before sending the explicit ruling.
-  The existing builder retains source custody pending that continuation or a concrete
-  same-carrier blocker. No terminal source-writer release has been inferred.
+- **State:** REQUEST_REPAIR_DELIVERED at 1792871530.555359 on the original child
+  thread, after exact-head plan readback at 05bcd879. Forward/START and repaired head
+  remain pending. The same builder retains source custody; no terminal release inferred.
 
 ### HC-P2.T0 — DSH sealed-analysis source boundary
 
@@ -1068,6 +1071,69 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   No original file was modified or tested; no fresh implementation was dispatched.
   This discovery is source evidence, not candidate acceptance or live custody transfer.
 
+### HC-P6.T0 — Qualify the existing Office Mission/Result producer-to-consumer join
+
+- **Objective / readiness:** resolve the existing Office README's named source prerequisite:
+  an unmodified producer-compatible Mission v3 / Result pair. This source task does not
+  require P3 installation, a new login or completion of P4's 24-hour campaign. Full signed-in
+  HC-P6 acceptance and its dependency on HC-P4 remain unchanged.
+- **Source:** Mastermind f93a807e278dd333650f02701318a5fc827c3b64. Read
+  tests/test_workspace_result_http.py::test_signed_result_and_mission_join_real_owners,
+  its transport, tests/test_workspace_result_service.py and test_fabric_result_projection.py;
+  production workspace_read_service.py; app/mastermind_os/src/result.ts, mission.ts,
+  meta-ceo/projection.ts and meta-ceo/mission-adapter.ts. The existing
+  mission-window-producer.test.ts is a consumption-mode pattern, not Result proof.
+- **Acquisition:** first reuse a retained source-qualified export if an exact location is known.
+  Otherwise run that ONE existing Python export test in an attempt-owned temporary directory.
+  Preserve actual-result.json, actual-mission-v3.json and fixture-provenance.json byte-for-byte.
+  It uses the actual production app/service/Runtime projection with test-owned records,
+  authentication and namespace. Its socket peer is the test process's effective UID,
+  not proof of installed UID458 custody or an Auth0 registration. No actual credentials.
+- **Implementation scope:** additive app/mastermind_os/src/meta-ceo/result-producer.test.ts
+  plus a new fixtures/result-producer/ directory beneath meta-ceo holding the unchanged
+  three exports and a concise provenance/usage README. No production App, auth, hook,
+  decoder, projector, runtime, policy, producer-test or dependency-lock edits in T0.
+- **Consumer proof:** run the actual decodeResultBytes/decodeResultEnvelope, decodeMissionv3
+  and projectOffice on the unchanged bytes and exact exported selection. Preserve
+  separate fresh observation identities; do not copy one observation into the other.
+  Presentation context must be explicitly test-owned, with absent session/binding
+  unknown and local acquisition time labelled LOCAL_ACQUISITION. No invented owner
+  timestamp/revision or fabricated CURRENT state. If production rejects the pair,
+  return the exact incompatibility before any production repair.
+- **Discriminating negatives:** supplied tuple/digest, Control Room identity and Runtime
+  generation mismatches must reduce/withhold association. Keep work completion,
+  rejecting review, transport return and acceptance distinct. Explicit supplied empty,
+  absent, malformed or unreadable fresh artifact input must fail, never substitute a
+  committed export. Ordinary committed replay is labelled separately from fresh
+  consumption, with exact byte hashes/paths reported by the consuming process.
+- **Bounded custody check:** cached census plus exact current status checked three R2
+  carriers. Loopback f4663e8c and read-continuity 4c2b4f09 are clean but have existing
+  App/MetaCeoOffice/web-auth deltas; preserve them. Dirty criteria carrier 28e3c692
+  changes orchestration/criteria visual paths, not this new test or producer.
+  Proposed result-producer.test.ts is absent in all three; the checked HTTP/service test, Result/Mission decoder and Office projection paths
+  match f93 in the two clean carriers. No retained
+  export location was established by the bounded unignored-path lookup. No old
+  carrier was modified, adopted or cleared.
+- **Fleet:** one new Cursor implementation child
+  meta-ceo-harness-office-result-cursor-20261024-01, original root
+  meta-ceo-open-harness-convergence-20261024-sol-001 and parent
+  meta-ceo-harness-implementation-20261024-web-001. Separate from the held P1A paths,
+  #1850, #1852, #1853 and unpublished ACP source. Independent non-author review follows
+  a frozen exact-head return; no native judgment agent supplies official acceptance.
+- **DONE_WHEN:** unchanged producer exports are consumed by actual TypeScript source,
+  positive association or exact reproducible incompatibility is reported, negatives
+  discriminate, and the child returns exact source/head/paths/commands/byte hashes,
+  source-test results, typecheck and hosted CI on its original thread. A new additive
+  draft PR is permitted after source verification. Do not run broad unchanged suites
+  unless a concrete remaining risk or required gate warrants them.
+- **Proof ceiling / exclusions:** SOURCE_PRODUCER_CONSUMER_QUALIFICATION, fixture custody.
+  No installed Office, authenticated real account, live worker, parent acceptance,
+  24-hour/seven-day or full P6/mission claim. No approval/merge, purchases, credential
+  moves, account-policy changes, service installation or live provider calls.
+- **State:** READY_FOR_NEW_CURSOR_PLACEMENT; pinned before implementation. Production
+  Result adapter/hook work remains a later bounded task after this observed join and
+  current source-custody reconciliation, not an implicit extension of T0.
+
 ### HC-P7.T0 — Prospective evaluation preparation
 
 - **Objective:** supply the existing Agent Evaluation owner with a concrete Meta-CEO
@@ -1130,9 +1196,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   original root/parent, existing Mastermind admission only. This is a new T0 subject,
   not a replay or replacement for any held Fabric/P2 review. Require actual agent ID,
   START, independent reviewer provenance and result on its original placement thread.
-- **State:** DELIVERY_SENT on C0CBC6AEAQZ/1792870956.550899; actual independent
-  reviewer identity/START/result remain pending. Source is frozen. HC-P7 and the
-  original mission stay incomplete regardless of this source verdict.
+- **State:** STARTED, Secretary receipt 1792871518.772959, independent Cursor
+  bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a on original thread 1792870956.550899.
+  Exact frozen subject is unchanged; semantic verdict remains pending. HC-P7 and
+  the original mission stay incomplete regardless of this source verdict.
 
 ### Accepted progress and outstanding gates
 
@@ -1338,3 +1405,32 @@ commission at 1792870984.522399; no new ACP child was placed.
 Secretary PICKUP 1792870556.368209 accepts the read-only original-run Fabric
 reconciliation role on m2studio for the three retained runs. This establishes accountable
 pickup, not execution absence, retry eligibility or a semantic verdict. All holds remain.
+
+
+#### Active fleet and newly ready Office source task
+
+Same-child Rakazo REQUEST_REPAIR was sent at 1792871530.555359 after published
+pin 05bcd879 and exact readback. Actual forward/START and a repaired head remain
+pending; the original builder retains source custody.
+
+Independent P7 review has actual PICKUP/START 1792871518.772959 with Cursor
+bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a on frozen #1853/8166837a. Hosted CI
+40126167301 is still running the repository shards; no semantic verdict is inferred.
+ACP custody has Secretary PICKUP 1792871522.079479, limited to read-only original
+carrier reconciliation. It is not permission to adopt or rewrite the dirty candidate.
+
+Fabric reconciliation RESULT 1792871037.247739 preserves all three terminal rc1,
+unverified, EFFECT_UNKNOWN runs. The new plan/P2 capture metadata (37,389 / 39,545
+bytes; prefixes ac30addb / 101399f2) does not identify retained content. The single-note
+readback provides no new exact forensic target; no prior M1 search is repeated.
+Parent STOP 1792871626.422239 closes only the bounded read-only reconciliation
+assignment, retaining every execution hold, retry=false and absence_proven=false.
+
+HC-P6.T0 is now pinned as a distinct additive source task: consume unchanged exports
+from the existing real Result HTTP/Unix/Runtime test through the existing TypeScript
+Office decoders and projection. The existing README admits this source prerequisite
+without a new login or installed P3. Exact read-only checks of the two clean R2
+carriers and one dirty criteria carrier found no overlap at the proposed new consumer
+test; existing App, auth, UI and orchestration differences are preserved. No producer
+bytes have yet been acquired/consumed for this task, no worker has yet been placed,
+and no P6 or mission acceptance is claimed.

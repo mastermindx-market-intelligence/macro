@@ -36,9 +36,9 @@ verified:
   - claim: Original Fabric outcomes reconciled to retained terminal receipts
     command: Same-root fabric_status and fabric_result for all three original run IDs
     result: Terminal rc1, no semantic verdict; execution absence false and retry false; exact IDs/digests below
-  - claim: Cursor carrier custody report exists
-    command: Original Slack child thread readback, receipt 1792868663.648029
-    result: Secretary reports old agent finished/archived with both publication attempts denied and no PR/handoff; full replacement bc-3aad7289-82db-5570-aef5-9bf911172fd3 running on Mastermind; branch/source/result pending
+  - claim: Cursor source return and explicit repair continuation
+    command: Read all 12 changed paths of Draft 1852 and hosted CI; publish HC-P1B.T1.R1 before same-child ruling 1792871530.555359
+    result: Source b7b98450b4cb887c2e9097c47378624e157ed562; CI 40123982918 SUCCESS; four bounded repairs required; carrier bc-3aad7289-82db-5570-aef5-9bf911172fd3 retained
   - claim: Native-event recovery probe was bounded
     command: Read installed M1 wrapper and search exact three session IDs in its observed persistent session/archive locations
     result: Leased native home is temporary and removed at exit; no matching retained session logs; task effect absence remains unproven
@@ -54,8 +54,8 @@ verified:
 unverified:
   - claim: Independent source acceptance
     what_would_verify: Qualified exact-head semantic verdict after original-run reconciliation; no retry by replacement identity
-  - claim: Cursor implementation and scope-ruling consumption
-    what_would_verify: Actual replacement branch/SHA, scoped paths, ruling consumption, source result or blocker, CI and independent review; accountable carrier report is recorded at 1792868663.648029
+  - claim: Cursor repair completion and independent acceptance
+    what_would_verify: Same-child actual repair START, exact new head, discriminating tests, hosted CI and a separate semantic review; full product journey remains open
   - claim: Installed/live and full mission acceptance
     what_would_verify: Authentic installed ACP inputs, admitted model route, original-parent consumption, independent release, authenticated office, real 24-hour and seven-day proof, original R2 obligations
 unresolved:
@@ -66,9 +66,10 @@ unresolved:
 next_actions:
   - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
-  - Obtain incumbent original-run effect reconciliation and qualified independent review without duplicating held attempts.
-  - Reconcile T1a's unpublished overlap in original review operation deepseek-current-bridge-acp-review-20261022-sol-001; no new implementation was placed.
-  - Obtain independent HC-P7.T0.R1 review and hosted CI for published Draft Mastermind 1853 at 8166837a7998f43a85040ec8bf2f9fd5b3bc5d88.
+  - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
+  - Consume Secretary ACP custody PICKUP 1792871522.079479 for the original dirty carrier; no new T1a implementation was placed.
+  - Consume independent reviewer bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a START 1792871518.772959 and hosted CI for Draft 1853 at 8166837a7998f43a85040ec8bf2f9fd5b3bc5d88.
+  - Execute pinned additive HC-P6.T0 with the existing unchanged Mission/Result exporter and real TypeScript Office consumers; preserve existing App/auth/source carriers.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
 do_not_redo:
   - PR 1717 accepted build/startup/401 cleanup and 43 native tests on unchanged source.
@@ -255,3 +256,32 @@ commission at 1792870984.522399; no new ACP child was placed.
 Secretary PICKUP 1792870556.368209 accepts the read-only original-run Fabric
 reconciliation role on m2studio for the three retained runs. This establishes accountable
 pickup, not execution absence, retry eligibility or a semantic verdict. All holds remain.
+
+
+#### Active fleet and newly ready Office source task
+
+Same-child Rakazo REQUEST_REPAIR was sent at 1792871530.555359 after published
+pin 05bcd879 and exact readback. Actual forward/START and a repaired head remain
+pending; the original builder retains source custody.
+
+Independent P7 review has actual PICKUP/START 1792871518.772959 with Cursor
+bc-e894c9b4-6e32-56f0-9fa6-2718058bfa8a on frozen #1853/8166837a. Hosted CI
+40126167301 is still running the repository shards; no semantic verdict is inferred.
+ACP custody has Secretary PICKUP 1792871522.079479, limited to read-only original
+carrier reconciliation. It is not permission to adopt or rewrite the dirty candidate.
+
+Fabric reconciliation RESULT 1792871037.247739 preserves all three terminal rc1,
+unverified, EFFECT_UNKNOWN runs. The new plan/P2 capture metadata (37,389 / 39,545
+bytes; prefixes ac30addb / 101399f2) does not identify retained content. The single-note
+readback provides no new exact forensic target; no prior M1 search is repeated.
+Parent STOP 1792871626.422239 closes only the bounded read-only reconciliation
+assignment, retaining every execution hold, retry=false and absence_proven=false.
+
+HC-P6.T0 is now pinned as a distinct additive source task: consume unchanged exports
+from the existing real Result HTTP/Unix/Runtime test through the existing TypeScript
+Office decoders and projection. The existing README admits this source prerequisite
+without a new login or installed P3. Exact read-only checks of the two clean R2
+carriers and one dirty criteria carrier found no overlap at the proposed new consumer
+test; existing App, auth, UI and orchestration differences are preserved. No producer
+bytes have yet been acquired/consumed for this task, no worker has yet been placed,
+and no P6 or mission acceptance is claimed.
