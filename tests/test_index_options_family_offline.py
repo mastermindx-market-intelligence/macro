@@ -97,3 +97,30 @@ def test_cli_explicit_offline_never_arms_scheduled_path(monkeypatch, tmp_path):
     ])
     assert hub.main() is None
     assert observed == [(ASOF, tmp_path / "store", tmp_path / "candidate")]
+
+
+def test_real_parquet_store_via_actual_cli_offline_only(monkeypatch, tmp_path):
+    """Qualify actual ThetaData-shaped Parquet loader, not only monkeypatched frames."""
+    for root, gamma, oi in (("NDX", 0.004, 100), ("NDXP", 0.010, 5)):
+        greek, interest = _frames(root)
+        greek["gamma"] = gamma
+        interest["open_interest"] = oi
+        for kind, frame in (("greeks", greek), ("oi", interest)):
+            path = tmp_path / "theta" / kind / root / "2026.parquet"
+            path.parent.mkdir(parents=True)
+            frame.to_parquet(path, index=False)
+    stage = tmp_path / "offline"
+    monkeypatch.setattr("sys.argv", [
+        "build_options_hub_nightly.py", "--ndx-family-offline", "--no-publish",
+        "--date", ASOF, "--theta-store", str(tmp_path / "theta"),
+        "--out", str(stage),
+    ])
+    assert hub.main() is None
+    result = json.loads((stage / "gex" / "NDX.json").read_text())
+    assert result["schema"] == "options_hub.gex/v1"
+    assert result["coverage"]["n_contracts"] == 2
+    assert result["net_gex_bn"] == pytest.approx(0.18, abs=0.0001)
+    assert result["family_source"]["source_roots"] == ["NDX", "NDXP"]
+    assert result["family_source"]["complete_chain_receipt"] is False
+    assert result["family_source"]["redistribution_grant"] is None
+    assert [p.name for p in stage.rglob("*.json")] == ["NDX.json"]
