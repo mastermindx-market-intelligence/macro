@@ -5306,9 +5306,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Protected dfb1cfc7 registers the GovRev memo test: its already-selected job
+# weighs 104 -> 106. Fund only the free-content excess 5873 -> 5875; the other
+# probe weights, every job ceiling, selectors and ten-pack bound stay unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_873),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_875),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
