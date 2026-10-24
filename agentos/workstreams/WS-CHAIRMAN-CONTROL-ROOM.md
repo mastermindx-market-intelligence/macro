@@ -137,10 +137,10 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Consume same-child repair HC-P1B.T1.R1, sent at 1792871530.555359 for Draft #1852
-      at b7b98450b4cb887c2e9097c47378624e157ed562 (CI 40123982918 SUCCESS).
-      Require repaired pre-import integrity, owned cleanup, ambient-environment and proof
-      labels plus independent review; full reference-app journey remains open.
+      Deliver and consume same-child HC-P1B.T1.R2 for Draft #1852 at 7c80eb33.
+      R1 source was published, but local Git behavior, the outer npm environment and
+      canonical-root/loader association still require bounded repair. Preserve the
+      same carrier, independent review and full reference-app acceptance gates.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
@@ -155,10 +155,10 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Implement HC-P3.T1a.PORT1 in the acquired current-base carrier: bind the active
-      ACP packet/prelaunch gate to the canonical projection and exact tools. Preserve
-      current guards and the immutable donor; materialization/native consumption,
-      separate review, installed proof and original-parent acceptance remain open.
+      Obtain HC-P3.T1a.PORT1.R1 independent review and CI for Draft #1856 at a9601a9c.
+      The canonical gate is active in construction and both prelaunch callbacks;
+      author tests passed. Preserve the frozen source/donor, materialization/native
+      consumption, installed proof and original-parent acceptance gates.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -285,8 +285,8 @@ do_not_redo:
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
   For Mastermind #1841, obtain same-carrier review of repaired #1853/0f433e8 and
-  same-child repairs of #1854 and #1852. The ACP donor is frozen; implement the
-  pinned active canonical packet/gate step HC-P3.T1a.PORT1 on qualified 3095d09f.
+  same-child repairs of #1854 and #1852 (R2). Draft #1856 at a9601a9c publishes the
+  tested ACP canonical gate; request its pinned new-subject independent review.
   Preserve all three Fabric EFFECT_UNKNOWN holds and #1850's source proof; no replay.
   Independent release, installed/live proof and the original R2 acceptance remain open.
   This receiver must never approve or merge.
@@ -1714,6 +1714,128 @@ was delivered at 1792874038.333279. Neither delivery is a START or acceptance.
   install, provider call, credential/account change, approval or merge. Source is
   unmerged and reversible through the same carrier. Do not touch original Fabric-held,
   P2, Rakazo, P6, P7, #1717 or #1790 source.
-- **State:** PLANNED_BEFORE_SOURCE_EDIT. Next action: implement only this active
-  canonical packet/gate join after source compatibility review; return exact source,
-  tests and review evidence without upgrading it to installed or full-mission proof.
+- **State:** SOURCE_PUBLISHED_REVIEW_PENDING in Draft #1856 at a9601a9c.
+  Source/guard tests and remote readback passed; next action is the separately pinned
+  PORT1.R1 fleet review and CI. Installed and full-mission proof remain open.
+
+
+#### ACP PORT1 source checkpoint
+
+HC-P3.T1a.PORT1 is SOURCE_PUBLISHED_REVIEW_PENDING in Draft Mastermind #1856 at
+a9601a9cf04eba9ed82b3c17995122f49c7a2603, base 3095d09f1789a5b8002503beae872774c297b1a5.
+Typed publication and exact GitHub blob readback succeeded; source carrier is clean.
+The factory suite passed 51 tests with one existing official-MCP-SDK-absent skip.
+Related native startup/admission/child, Attempt overlay, DSH projection and catalog
+suites passed 79 tests and 19 subtests. All original production AST is preserved apart
+from two inserted validation calls; 30 previous test functions remain unchanged.
+Exact two-path scope and whitespace checks passed. Initial catalog list/envelope wiring
+failure was corrected before the passing run; it is not hidden as successful evidence.
+
+- installed.py: blob 6c98683bda1234441b1eaac675cd1b88947df000, 26935 bytes,
+  SHA-256 56ec07ca129fc9607b762544e4ceca97fec4f9396cff7acf383ca823908f73fb.
+- test_acp_installed_factory.py: blob 279a56133811783a9893fe143fe11f0837a44e70, 38499 bytes,
+  SHA-256 82d149b0b010f06ce9641570d594208ef7d3446ad372b0a70610b488ea2ec3d4.
+
+The canonical singleton contract convention is compatible with the current generic
+receiver shape, but differs from the historical governed fixture's object hash and
+namespace. That fixture supplies no proof for this new installed join. Child activation,
+materialization/native consumption, live currentness/artifact admission, original-parent
+consumption, independent release and full T1a/T1/P3 remain open.
+
+
+### HC-P3.T1a.PORT1.R1 — Independent review of the new canonical ACP source gate
+
+- **Exact subject:** Draft Mastermind #1856, head
+  a9601a9cf04eba9ed82b3c17995122f49c7a2603 against base
+  3095d09f1789a5b8002503beae872774c297b1a5. Only installed.py and its factory test
+  changed (249 insertions, two fixture-line deletions). Root author has frozen the
+  registered source carrier; no parallel source writer.
+- **Fleet identity:** new bounded Fabric review
+  meta-ceo-harness-acp-port1-review-20261024-01; root
+  meta-ceo-open-harness-convergence-20261024-sol-001; parent
+  meta-ceo-harness-implementation-20261024-web-001; task_class review,
+  task_complexity C2_COMPLEX_BOUNDED; incumbent AUTO admission, no provider/pool override.
+  This new exact source subject is neither a replay nor replacement for any of the
+  three held DSH/plan/P2 runs. Their identities, uncertainty and retry prohibition persist.
+- **Review questions:** does the actual canonical profile/catalog projection bind the
+  gate's projection hash and exact qualified name-to-singleton-contract association?
+  Can missing/extra/foreign/swapped/aggregate contracts or catalog/profile drift pass?
+  Do both original native callbacks consume the check before confinement/spawn while
+  preserving every existing guard, v2 transport, six-field immutable overlay and receipt?
+  Are tests discriminating, and are source/installed proof limits accurately stated?
+- **Author evidence, to assess independently:** factory suite 51 passed/one SDK-absent
+  existing stdio test skipped; six related suites 79 passed and 19 subtests passed;
+  AST preservation check for all previous production behavior except two inserted
+  validation calls and 30 unchanged existing test functions; exact scope/whitespace
+  checks and remote blob readback passed. Exact-head DSH ACP Attempt Overlay CI
+  40132237065 succeeded; general CI 40132237175 remains in progress.
+- **Important boundary:** per-tool hashes reuse the canonical Python singleton digest
+  over raw contracts. The generic JS receiver accepts its shape and the grant compiler
+  separately compares actual discovered contracts; it does not independently derive
+  these hashes. Historical governed fixture namespace/hash conventions differ and
+  cannot qualify this new installed association unchanged.
+- **Read-only review scope:** exact source/diff and necessary canonical registry,
+  projection, catalog, native/admission and JS receiver owners. No source edits,
+  custody transfer, new branch/placement, installed probe, dependency installation,
+  service/provider activity, credential/config read, approval or merge. Existing
+  provider-free focused tests may be run only in an already admitted isolated
+  review context; otherwise state that the tests were not independently executed.
+- **Required return:** exact reviewed head/base and paths, substantive PASS_WITHIN_SCOPE,
+  REQUEST_CHANGES or UNVERIFIED with severity/path/evidence for each finding; actual
+  independently run checks versus author reports, limitations, model/usage only when
+  attested, and terminal review receipt. Do not accept full T1a/T1/P3 or the mission.
+  Parent will consume the actual result and explicitly STOP or REQUEST_REPAIR.
+- **State:** PLANNED_BEFORE_REQUEST. Capabilities are available but worker admission
+  and start remain unprobed. No review or model execution is claimed before receipt.
+
+
+### HC-P1B.T1.R2 — Close remaining source-pin and launcher gaps on the same repair carrier
+
+- **Input/custody:** Draft Mastermind #1852 advanced on its existing branch/child to
+  7c80eb3313303f6f4233758538d5e0ca0757ab1d. The PR author reports 15 Node cases and the
+  pytest entry passing; CI 40129509142 remains in progress at the latest read.
+  Parent source-freeze/STOP 1792875048.525709 preserves the carrier. No actual terminal
+  Slack repair receipt has been observed; no new placement is authorized.
+- **Finding 1, source identity:** qualify.mjs disables global/system Git configuration
+  but allows replacement refs when deriving the claimed pinned tree. Its hash-object
+  call permits filters, and index/status commands can invoke repository-local fsmonitor.
+  A caller checkout can therefore influence either compared bytes or executable
+  behavior before donor import. The ordinary tamper case does not cover these paths.
+- **Finding 2, environment boundary:** tests/test_rakazo_qualification.py invokes npm
+  without an explicit environment. That first npm and its Node runner inherit ambient
+  NODE_OPTIONS and npm settings before the JavaScript sanitizer exists. The helper
+  output canary does not exercise this actual outer entrypoint.
+- **Finding 3, canonical root:** assertImmutableSource accepts a symlink alias through
+  realpath equality but returns the original spelling; ensurePinCheckout repeats that
+  spelling. The registered loader compares real ESM parent paths lexically to this
+  alias, so its intended .js-to-.ts resolution can be skipped. An ignored transitive
+  shadow is not covered by the nine entry-sibling checks.
+- **Required repair:** make immutable comparison independent of replacement refs and
+  clean filters, prevent local executable Git configuration during validation without
+  changing caller configuration, and reject relevant ignored/untracked module shadows.
+  Establish the explicit environment before the first npm/Node invocation of the
+  admitted/documented launcher. Bind one canonical root consistently or reject aliases.
+  Preserve the revised NOT_RUN/ABSENT labels and owned-only removal behavior.
+- **Discriminating proof:** through the actual observation/registered-loader/launcher
+  paths, use attempt-owned replacement-tree, clean-filter/fsmonitor sentinel, outer
+  NODE_OPTIONS/npm-config sentinel, symlink-root and ignored transitive-shadow fixtures.
+  Modified/foreign source must be refused before donor import or sentinel execution;
+  caller-owned sentinels survive. Ordinary clean-pin qualification must still work.
+  Synthetic canaries only; do not inspect or move real credentials/configuration.
+- **Same scope/owner:** same child meta-ceo-harness-rakazo-cursor-20261024-01, Cursor
+  bc-3aad7289-82db-5570-aef5-9bf911172fd3, branch cursor/rakazo-hc-p1b-qualification-2fd3,
+  original thread 1792865049.365069. Remain within the existing twelve changed paths.
+  Reconcile any in-flight later write before editing; do not reset or replace a carrier.
+  No P2/P3/P6/P7, capability-policy, production database/API or installed-system edits.
+- **Done/return:** exact repaired head, meaningful commands/results, hosted CI and
+  terminal/custody receipt; then freeze for separate non-author fleet review. No author
+  approval/merge, provider call, purchase, credentials/account changes, database install
+  or full Rakazo journey claim. Source-flow findings above are not an executed exploit.
+- **State:** PLANNED_BEFORE_CONTINUATION. Next action: deliver explicit same-child
+  REQUEST_REPAIR after this record is published; independent review remains owed.
+
+Secretary receipt 1792875586.684559 confirms the Rakazo source-freeze/STOP was forwarded
+to the same still-running carrier; only exact-head CI observation remains authorized
+until the parent's pinned R2 continuation. No terminal/custody return is yet observed.
+ACP #1856 exact-head DSH ACP Attempt Overlay workflow 40132237065 is completed SUCCESS;
+general CI 40132237175 remains in progress. Neither result is semantic acceptance.

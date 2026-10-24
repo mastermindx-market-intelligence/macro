@@ -62,12 +62,12 @@ unresolved:
   - Original Fabric implementation and both reviews are terminal/unverified with retry forbidden.
   - Historical PR 1717 ephemeral-token exchange refusal and source-registration gap remain action-scoped holds.
   - PR 1790 c4d2868 removes the prior review blocker files but has no exact changed-head independent PASS.
-  - HC-P3.T1 installed inputs remain unqualified; the original dirty review carrier contains an unpublished projection/materializer candidate that overlaps T1a and requires custody/source reconciliation.
+  - HC-P3.T1 installed inputs/materialization/native consumption remain unqualified. The orphaned donor is frozen; Draft 1856 provides only the current active canonical gate and awaits separate review.
 next_actions:
-  - Consume same-child HC-P1B.T1.R1 repair on returned Draft Mastermind 1852; exact old head b7b98450 has green CI but four source/proof repairs are required.
+  - Deliver and consume pinned same-child HC-P1B.T1.R2 for Draft 1852 at 7c80eb33; local Git behavior, outer npm environment and canonical-root/loader gaps remain before independent review.
   - Preserve successful exact-head CI 40121353408 for Mastermind PR 1850; independent semantic review remains owed.
   - Preserve Secretary original-run reconciliation RESULT 1792871037.247739 and parent STOP 1792871626.422239; all three effects remain unknown and retry forbidden.
-  - Implement pinned HC-P3.T1a.PORT1 active canonical packet/gate join in the acquired 3095d09f source carrier; preserve current guards and immutable donor. Materialization/native consumption and installed proof remain separate; obtain non-author review and CI.
+  - Request pinned HC-P3.T1a.PORT1.R1 independent review of Draft 1856 at a9601a9c, then consume exact-head CI/review. Source tests passed; materialization/native consumption, installed and full mission proof remain open.
   - Obtain HC-P7.T0.R2 same-carrier independent review of repaired Draft 1853 at 0f433e869d3cd0a85df88c4a18c0dfe766d859dc; author checks passed, hosted CI pending.
   - Consume HC-P6.T0.FIX1 same-child repair of Draft 1854, preserving the observed Runtime identity incompatibility and exact original exporter bytes; independent review remains owed.
   - Preserve full R2 and live acceptance gates; send final RESULT only when actually finished.
@@ -368,3 +368,42 @@ host metadata command was read-only; the tool returned "aborted by user after 19
 without output, PID, handle or completion receipt. No helper/policy contents, GUI,
 services or effects were attempted. Execution absence/termination is unconfirmed;
 do not repeat that command blindly or infer an account-wide eligibility result.
+
+
+#### ACP PORT1 source checkpoint
+
+HC-P3.T1a.PORT1 is SOURCE_PUBLISHED_REVIEW_PENDING in Draft Mastermind #1856 at
+a9601a9cf04eba9ed82b3c17995122f49c7a2603, base 3095d09f1789a5b8002503beae872774c297b1a5.
+Typed publication and exact GitHub blob readback succeeded; source carrier is clean.
+The factory suite passed 51 tests with one existing official-MCP-SDK-absent skip.
+Related native startup/admission/child, Attempt overlay, DSH projection and catalog
+suites passed 79 tests and 19 subtests. All original production AST is preserved apart
+from two inserted validation calls; 30 previous test functions remain unchanged.
+Exact two-path scope and whitespace checks passed. Initial catalog list/envelope wiring
+failure was corrected before the passing run; it is not hidden as successful evidence.
+
+- installed.py: blob 6c98683bda1234441b1eaac675cd1b88947df000, 26935 bytes,
+  SHA-256 56ec07ca129fc9607b762544e4ceca97fec4f9396cff7acf383ca823908f73fb.
+- test_acp_installed_factory.py: blob 279a56133811783a9893fe143fe11f0837a44e70, 38499 bytes,
+  SHA-256 82d149b0b010f06ce9641570d594208ef7d3446ad372b0a70610b488ea2ec3d4.
+
+The canonical singleton contract convention is compatible with the current generic
+receiver shape, but differs from the historical governed fixture's object hash and
+namespace. That fixture supplies no proof for this new installed join. Child activation,
+materialization/native consumption, live currentness/artifact admission, original-parent
+consumption, independent release and full T1a/T1/P3 remain open.
+
+
+The next tasks are pinned before execution: HC-P3.T1a.PORT1.R1 is a new Fabric
+independent review of this exact new two-file ACP source, using incumbent AUTO admission.
+It is not a retry or substitute for any held DSH/plan/P2 task. HC-P1B.T1.R2 is a
+same-child repair of #1852/7c80eb33 for source-Git behavior, the unsanitized first npm
+entrypoint, and canonical-root/registered-loader consistency. Parent source freeze
+was delivered at 1792875048.525709; no terminal Slack receipt was observed.
+Both tasks remain PLANNED_BEFORE_REQUEST at this checkpoint.
+
+Secretary receipt 1792875586.684559 confirms the Rakazo source-freeze/STOP was forwarded
+to the same still-running carrier; only exact-head CI observation remains authorized
+until the parent's pinned R2 continuation. No terminal/custody return is yet observed.
+ACP #1856 exact-head DSH ACP Attempt Overlay workflow 40132237065 is completed SUCCESS;
+general CI 40132237175 remains in progress. Neither result is semantic acceptance.
