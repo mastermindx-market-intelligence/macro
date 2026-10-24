@@ -1017,7 +1017,7 @@ def test_reference_acknowledged_fragment_expansion_tracks_url_not_native_target(
     script = r'''
 const vm = require('node:vm');
 const make = id => { const classes = new Set(['rf-e']); const attrs = {};
-  return { id, attrs, classList: { contains: k => classes.has(k),
+  return { id, attrs, style:{}, classList: { contains: k => classes.has(k),
     toggle: (k, yes) => yes ? classes.add(k) : classes.delete(k) },
     querySelector: () => ({setAttribute: (k,v) => attrs[k]=v}), scrollIntoView() {},
     snapshot: () => ({id, open: classes.has('rf-open'), closed: classes.has('rf-closed'), expanded: attrs['aria-expanded']}) }; };
@@ -1025,7 +1025,7 @@ const entries = [make('evidence-matrix'), make('evidence-trend')];
 const missEl = {hidden:true, querySelectorAll:()=>[]};
 const location = {hash:'', pathname:'/reference.html', search:''};
 const context = {entries, missEl, location, reduceMotion:true,
-  root:{getElementById:id=>entries.find(e=>e.id===id)},
+  root:{getElementById:id=>entries.find(e=>e.id===id), querySelector:()=>({getBoundingClientRect:()=>({height:160})})},
   window:{requestAnimationFrame:fn=>fn()}, history:{replaceState:()=>{location.hash='';}}};
 vm.createContext(context);
 vm.runInContext(SOURCE, context);
@@ -1036,6 +1036,10 @@ for (const hash of ['', '#evidence-matrix', '#evidence-trend', '#%E0%A4%A', '#mi
 }
 vm.runInContext('clearHashToBrowse()',context);
 result.push({hash:location.hash,entries:entries.map(e=>e.snapshot())});
+result.push({mobileOffset:entries[0].style.scrollMarginTop});
+context.root.querySelector=()=>({getBoundingClientRect:()=>({height:0})});
+vm.runInContext("scrollEntryIntoView(entries[0], 'auto')",context);
+result.push({desktopOffset:entries[0].style.scrollMarginTop});
 console.log(JSON.stringify(result));
 '''.replace("SOURCE", json.dumps(helper + "\n" + clear))
     result = subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
@@ -1045,5 +1049,7 @@ console.log(JSON.stringify(result));
     assert all(not e["open"] and e["closed"] for e in steps[3]["entries"])
     assert steps[4]["missing"] and all(not e["open"] for e in steps[4]["entries"])
     assert steps[5]["entries"][0]["open"]
-    assert steps[-1]["hash"] == "" and all(e["closed"] and not e["open"] for e in steps[-1]["entries"])
+    assert steps[-3]["hash"] == "" and all(e["closed"] and not e["open"] for e in steps[-3]["entries"])
+    assert steps[-2]["mobileOffset"] == "172px"
+    assert steps[-1]["desktopOffset"] == "84px"
     assert ".rf-e:is(:target, .rf-open):not(.rf-closed) .rf-body" in source

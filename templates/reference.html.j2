@@ -851,7 +851,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       ev.preventDefault();
       var article = closeLink.closest(".rf-e");
       clearHashToBrowse();
-      if (article) article.scrollIntoView({ block: "start" });
+      if (article) scrollEntryIntoView(article, "auto");
       return;
     }
   });
@@ -892,6 +892,13 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       if (summary) summary.setAttribute("aria-expanded", open ? "true" : "false");
     });
   }
+  function scrollEntryIntoView(entry, behavior){
+    // The mobile controls can wrap or expand; measure their actual sticky height.
+    var bar = root.querySelector(".rf-bar");
+    var clearance = bar ? Math.ceil(bar.getBoundingClientRect().height) + 12 : 0;
+    entry.style.scrollMarginTop = Math.max(84, clearance) + "px";
+    entry.scrollIntoView({ block: "start", behavior: behavior });
+  }
   function handleHash(){
     // N6: decodeURIComponent throws URIError on a malformed percent-encoding
     // (an incomplete/invalid escape). Uncaught here it would abort THIS whole
@@ -916,7 +923,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
     if (entry){
       if (missEl) missEl.hidden = true;
       window.requestAnimationFrame(function(){
-        target.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+        scrollEntryIntoView(target, reduceMotion ? "auto" : "smooth");
       });
     } else {
       if (missEl){
