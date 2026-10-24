@@ -265,6 +265,7 @@ def test_ref_and_property_successes_share_one_bounded_fresh_lru(payload, monkeyp
     value["actions"] = [deepcopy(value["actions"][0]) for _ in range(4200)]
     for index, row in enumerate(value["actions"]):
         row["action_key"] = f"action:{index}"
+        row["description"] = f"distinct memo-eligible reference value {index}"
     assert not list(validator.iter_errors(value))
     assert first.evictions > 0
     assert len(first) == 4096
@@ -284,3 +285,47 @@ def test_ref_and_property_successes_share_one_bounded_fresh_lru(payload, monkeyp
     assert second.schema is not validator.schema
     assert caches[-1] is not first
     assert not caches[-1]
+
+
+def test_unique_cheap_primitives_keep_native_errors_without_memo_churn(payload, monkeypatch):
+    import collections
+
+    caches, primitive_key_calls = [], []
+    original_lru = collections.OrderedDict
+    original_key = dossiers._dossier_memo_value_key
+
+    class ObservedLRU(original_lru):
+        evictions = 0
+
+        def __init__(self):
+            super().__init__()
+            caches.append(self)
+
+        def popitem(self, *args, **kwargs):
+            self.evictions += 1
+            return super().popitem(*args, **kwargs)
+
+    def key(value):
+        if type(value) is str and value.startswith("unique-primitive:"):
+            primitive_key_calls.append(value)
+        return original_key(value)
+
+    monkeypatch.setattr(collections, "OrderedDict", ObservedLRU)
+    monkeypatch.setattr(dossiers, "_dossier_memo_value_key", key)
+    value = deepcopy(payload)
+    value["actions"] = [deepcopy(value["actions"][0]) for _ in range(4201)]
+    for index, row in enumerate(value["actions"]):
+        row["action_key"] = f"unique-primitive:key:{index}"
+        row["action_id"] = f"unique-primitive:id:{index}"
+        row["obligation"] = index + 0.25
+    # Valid singleton values come first. Cheap checks still reject the final
+    # length and type errors at their full native paths after all that traffic.
+    value["actions"][-1]["action_key"] = "x" * 801
+    value["actions"][-1]["action_id"] = True
+    native = list(dossiers._dossier_validator().iter_errors(value))
+    actual = list(dossiers._dossier_validation_validator().iter_errors(value))
+    assert native
+    assert [_error_signature(e) for e in actual] == [_error_signature(e) for e in native]
+    assert not primitive_key_calls
+    assert caches[-1].evictions == 0
+    assert len(caches[-1]) < 4096
