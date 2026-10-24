@@ -1890,11 +1890,11 @@ def test_sec_actual_acquisition_to_bound_source_row_retains_receipt(_sec_mock_tr
     if traced:
         assert trace[0]["source"]["acquisition_receipt"] == receipt
     tx, tx_sha = _transcript()
-    def build(selected):
+    def build(selected, prior_receipt=None):
         return build_event_workspace(registry=apple_registry(), ticker="AAPL", asof=AAPL_CALL_DATE,
             fiscal_period=flagship_fiscal_period(), exhibit_body=selected["exhibit_body"], filing=selected,
             transcript=tx, transcript_sha256=tx_sha, observed_at="2026-08-16T18:00:00Z",
-            source_available_at=ACCEPTANCE)
+            source_available_at=ACCEPTANCE, prior_acquisition_receipt=prior_receipt)
     workspace = build(filing)
     source = next(item for item in workspace["sources"] if item["kind"] == "issuer_release")
     assert json.loads(json.dumps(source))["acquisition_receipt"] == receipt
@@ -1905,6 +1905,11 @@ def test_sec_actual_acquisition_to_bound_source_row_retains_receipt(_sec_mock_tr
     assert workspace["facts"] == prior["facts"]
     prior_source = next(item for item in prior["sources"] if item["kind"] == "issuer_release")
     assert {k: v for k, v in source.items() if k != "acquisition_receipt"} == prior_source
+    offline = build(without, prior_receipt=receipt)
+    assert "acquisition_receipt" not in next(item for item in offline["sources"] if item["kind"] == "issuer_release")
+    for prior_receipt in ({**receipt, "source_sha256": "0" * 64}, {**receipt, "acquired_at": "9999-01-01T00:00:00Z"}):
+        refreshed = build(filing, prior_receipt=prior_receipt)
+        assert next(item for item in refreshed["sources"] if item["kind"] == "issuer_release")["acquisition_receipt"] == receipt
     for field, value in [("source_sha256", "0" * 64), ("final_url", "https://evil.test/body.htm")]:
         bad = deepcopy(filing)
         bad["acquisition_receipt"][field] = value
@@ -1978,3 +1983,24 @@ def test_sec_initial_ineligible_url_is_rejected_before_any_request(_sec_mock_tra
     with pytest.raises(ReceiptError):
         owner._http_get_sec_exhibit("https://foreign.example/ex991.htm", cik=AAPL_CIK, accession=AAPL_ACCESSION)
     assert calls == []
+
+
+def test_sec_real_acquisition_repeated_source_keeps_original_receipt_and_generation(_sec_mock_transport, tmp_path):
+    owner, _, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = plain(url)
+        responses[url] = lambda url=url, status=status, body=body: _sec_synthetic_response(url, status, body)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake, http_get=owner._http_get) == 0
+    first = _marker(tmp_path)
+    prior = json.loads((tmp_path / "event_workspaces" / "generations" / first["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    source = next(s for s in prior["sources"] if s["kind"] == "issuer_release")
+    original_receipt = source["acquisition_receipt"]
+    puts = len(fake.puts)
+    assert _refresh(tmp_path, fake, http_get=owner._http_get, prior_workspace=prior) == 0
+    second = _marker(tmp_path)
+    assert second["generation_id"] == first["generation_id"]
+    assert fake.puts[puts:] == []
+    current = json.loads((tmp_path / "event_workspaces" / "generations" / second["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    assert next(s for s in current["sources"] if s["kind"] == "issuer_release")["acquisition_receipt"] == original_receipt

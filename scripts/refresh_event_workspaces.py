@@ -927,6 +927,16 @@ def exhibit_source_sha256(workspace: Mapping[str, Any] | None) -> str | None:
     return None
 
 
+
+def prior_exhibit_acquisition_receipt(workspace: Mapping[str, Any] | None) -> object | None:
+    """Prior held fact only; the builder must replay it against the fresh body."""
+    if isinstance(workspace, Mapping):
+        for source in workspace.get("sources") or []:
+            if isinstance(source, Mapping) and source.get("kind") == "issuer_release":
+                return source.get("acquisition_receipt")
+    return None
+
+
 def prior_lifecycle_state(workspace: Mapping[str, Any] | None) -> str | None:
     """The prior published workspace's OWN ``lifecycle.state``, or ``None``.
 
@@ -1595,6 +1605,7 @@ def discover_new_homebuilder_revisions(
             prior_source_sha256=exhibit_source_sha256(prior_ws),
             prior_lifecycle_state=prior_lifecycle_state(prior_ws),
             prior_observed_at=prior_observed_at(prior_ws),
+            prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior_ws),
             profile=profile,
         )
         if payload.get("event_id") != event_id:
@@ -1793,6 +1804,7 @@ def refresh(
         prior_source_sha256=exhibit_source_sha256(prior),
         prior_lifecycle_state=prior_lifecycle_state(prior),
         prior_observed_at=prior_observed_at(prior),
+        prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior),
     )
     if payload.get("event_id") != FLAGSHIP_EVENT_ID:
         raise RefreshError(f"flagship event_id drifted: {payload.get('event_id')}")

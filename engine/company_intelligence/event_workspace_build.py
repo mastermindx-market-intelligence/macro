@@ -122,6 +122,7 @@ def build_event_workspace(
     prior_source_sha256: str | None = None,
     prior_lifecycle_state: str | None = None,
     prior_observed_at: object | None = None,
+    prior_acquisition_receipt: object | None = None,
     profile: IssuerProfile | None = None,
 ) -> dict[str, Any]:
     """Bind one issuer event from identity + 8-K exhibit + (if held) transcript.
@@ -199,6 +200,23 @@ def build_event_workspace(
             raise WorkspaceError(f"issuer release acquisition receipt is invalid: {exc}") from exc
         if acquisition_receipt["source_sha256"] != bound.revision.source_sha256:
             raise WorkspaceError("issuer release acquisition receipt does not bind the source body")
+        # A repeated acquisition is not a new source revision. Keep the first
+        # genuine, replayable acquisition fact when only its attempt clock changed.
+        # This never manufactures a receipt for an offline/missing-current input.
+        if prior_acquisition_receipt is not None:
+            try:
+                prior_acquisition = validate_sec_acquisition_receipt(
+                    prior_acquisition_receipt, cik=cik, accession=accession,
+                    source_url=filing.get("exhibit_url"), source_text=exhibit_body,
+                )
+            except ReceiptError:
+                prior_acquisition = None  # the valid fresh acquisition stands on its own
+            if (prior_acquisition is not None
+                    and {k: v for k, v in prior_acquisition.items() if k != "acquired_at"}
+                    == {k: v for k, v in acquisition_receipt.items() if k != "acquired_at"}
+                    and _utc(prior_acquisition["acquired_at"], field_name="prior acquired_at")
+                    <= _utc(acquisition_receipt["acquired_at"], field_name="acquired_at")):
+                acquisition_receipt = prior_acquisition
 
     if (
         prior_source_sha256
