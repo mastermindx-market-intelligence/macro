@@ -1,3 +1,15 @@
+## Hosted CI repair — 23 October 2026 (CDT)
+
+The published7818 hosted run40051334986 completed FAILURE. Its checkout was merge80206de87897fd538f202bbface211fef785ca92 against base1dafbb9634c3e77c03b06b3825eab63fadaa9430. Hosted contract-delta passed; packs1/6/8 failed. The original observer11080 is complete and consumed.
+
+Two source defects are repaired here. W4 introduced three undeclared package ancestors, taking the census from343 to346 against the unchanged344 ceiling. Declaring those exact existing __init__.py files returns the census to343; W4 now has1011 paths and all other manifest semantics remain unchanged. The existing census test passed. The R33 serving assertion now includes the accepted protective --exclude=/ohlc option; its other default-deny checks remain intact, and all three existing source-integration tests passed.
+
+The third failure is the genuine visual-evidence hold: owning EVIDENCE.yml is still absent for the duration and CDI templates. No visual gate, packing ceiling or test coverage was weakened. The original Browser context prerequisite and independent-review holds remain. The exact native page and supporting assets are unchanged; these manifest/test repairs do not justify regeneration.
+
+Details and hashes: evidence/hosted_ci_repair_20261024.json. A fresh exact-head contract and normal main integration remain the next source-publication steps. This source repair is not full CI, merge, deployment or visual acceptance.
+
+---
+
 ## Current main41e integration — 24 October 2026
 
 The exact 62-input W4 repair is complete in published child `2e05fe3a3ce5b6d0112d9ba4b05eacdc0fdc6774`. Its official contract against 93f passed **zero introduced / zero inherited** at 01:01:14 UTC, preserving all 906 baseline worktree registrations and existing directories. Normal publication completed at 01:03:19 UTC. Preserve the earlier b702 contract failure and its subsequent repair as separate evidence; neither is pending work.

@@ -21207,6 +21207,7 @@ jobs:
       - engine/neuralweb/brain_financial_views.py
       # Exact Catalyst imports introduced by the current-main app composition.
       - app/catalyst_opportunity.py
+      - engine/catalyst_opportunity/__init__.py
       - engine/catalyst_opportunity/projection.py
       - engine/catalyst_opportunity/reader.py
       - site/basketdata/sector_pulse.json
@@ -21240,6 +21241,7 @@ jobs:
       - engine/entry_radar/pack_spool.py
       - engine/entry_radar/quote_context.py
       - engine/entry_radar/readings.py
+      - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/entry_radar/research_priority.py
       - engine/entry_radar/research_read.py
@@ -21251,6 +21253,7 @@ jobs:
       - engine/ontology_scenario.py
       - engine/ontology_scenario_runtime.py
       - engine/ontology_theme.py
+      - engine/price_pressure/__init__.py
       - engine/price_pressure/research.py
       - engine/theme_graph/change_report.py
       - engine/theme_graph/native_disclosure_propagation.py
