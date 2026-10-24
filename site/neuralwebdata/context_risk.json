@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.context_risk.v1",
-  "as_of": "2026-10-22T09:53Z",
+  "as_of": "2026-10-23T20:10Z",
   "display_only": true,
   "available": true,
   "authority": {
@@ -12,70 +12,40 @@
     "survivorship_watermark": "223-name survivorship-biased deep corpus (larger/established names); commodity_sensitive absent; small-n caveat on quality_compounder (3 tickers) and dividend_defensive (4 tickers). Do not generalize to full 1,722-name universe."
   },
   "inputs": {
-    "us_standouts_as_of": "2026-10-21",
-    "stock_personality_as_of": "2026-10-21",
-    "regime_as_of": "2026-10-20",
+    "us_standouts_as_of": "2026-10-22",
+    "stock_personality_as_of": "2026-10-22",
+    "regime_as_of": "2026-10-22",
     "n_personality_tickers": 2948
   },
   "missing_inputs": [],
   "regime_context": {
     "quad": "Q2",
     "liq": "expanding",
-    "as_of": "2026-10-20"
+    "as_of": "2026-10-22"
   },
   "board_buy_lane": {
-    "n_members": 107,
+    "n_members": 105,
     "composition": {
-      "n_members": 107,
+      "n_members": 105,
       "n_unlabeled": 0,
       "archetype": {
         "distressed": {
-          "member_n": 22,
-          "member_share": 0.2136,
+          "member_n": 19,
+          "member_share": 0.1863,
           "universe_share": 0.0882,
-          "ratio": 2.422
-        },
-        "secular_growth": {
-          "member_n": 4,
-          "member_share": 0.0388,
-          "universe_share": 0.0376,
-          "ratio": 1.032
-        },
-        "dividend_defensive": {
-          "member_n": 1,
-          "member_share": 0.0097,
-          "universe_share": 0.0084,
-          "ratio": 1.155
-        },
-        "financial": {
-          "member_n": 9,
-          "member_share": 0.0874,
-          "universe_share": 0.1026,
-          "ratio": 0.852
+          "ratio": 2.112
         },
         "rate_sensitive": {
-          "member_n": 24,
-          "member_share": 0.233,
+          "member_n": 29,
+          "member_share": 0.2843,
           "universe_share": 0.1282,
-          "ratio": 1.817
+          "ratio": 2.218
         },
-        "speculative_unprofitable": {
-          "member_n": 8,
-          "member_share": 0.0777,
-          "universe_share": 0.3804,
-          "ratio": 0.204
-        },
-        "deep_value": {
+        "secular_growth": {
           "member_n": 1,
-          "member_share": 0.0097,
-          "universe_share": 0.0051,
-          "ratio": 1.902
-        },
-        "mixed": {
-          "member_n": 20,
-          "member_share": 0.1942,
-          "universe_share": 0.0882,
-          "ratio": 2.202
+          "member_share": 0.0098,
+          "universe_share": 0.0376,
+          "ratio": 0.261
         },
         "commodity_sensitive": {
           "member_n": 0,
@@ -83,93 +53,123 @@
           "universe_share": 0.0005,
           "ratio": 0.0
         },
+        "cyclical": {
+          "member_n": 10,
+          "member_share": 0.098,
+          "universe_share": 0.0906,
+          "ratio": 1.082
+        },
+        "financial": {
+          "member_n": 9,
+          "member_share": 0.0882,
+          "universe_share": 0.1026,
+          "ratio": 0.86
+        },
+        "broken_growth": {
+          "member_n": 0,
+          "member_share": 0.0,
+          "universe_share": 0.0279,
+          "ratio": 0.0
+        },
+        "dividend_defensive": {
+          "member_n": 0,
+          "member_share": 0.0,
+          "universe_share": 0.0074,
+          "ratio": 0.0
+        },
         "high_beta_momentum": {
           "member_n": 0,
           "member_share": 0.0,
-          "universe_share": 0.0149,
+          "universe_share": 0.0144,
           "ratio": 0.0
         },
+        "mixed": {
+          "member_n": 20,
+          "member_share": 0.1961,
+          "universe_share": 0.0887,
+          "ratio": 2.211
+        },
         "quality_compounder": {
-          "member_n": 4,
-          "member_share": 0.0388,
-          "universe_share": 0.0269,
-          "ratio": 1.442
+          "member_n": 5,
+          "member_share": 0.049,
+          "universe_share": 0.0274,
+          "ratio": 1.788
         },
-        "broken_growth": {
-          "member_n": 1,
-          "member_share": 0.0097,
-          "universe_share": 0.0283,
-          "ratio": 0.343
+        "deep_value": {
+          "member_n": 0,
+          "member_share": 0.0,
+          "universe_share": 0.006,
+          "ratio": 0.0
         },
-        "cyclical": {
+        "speculative_unprofitable": {
           "member_n": 9,
-          "member_share": 0.0874,
-          "universe_share": 0.0906,
-          "ratio": 0.965
+          "member_share": 0.0882,
+          "universe_share": 0.3804,
+          "ratio": 0.232
         }
       },
       "chart": {
-        "defensive_range_stock": {
-          "member_n": 1,
-          "member_share": 0.0093,
-          "universe_share": 0.0204,
-          "ratio": 0.456
-        },
-        "failed_breakout_trap": {
-          "member_n": 15,
-          "member_share": 0.1402,
-          "universe_share": 0.167,
-          "ratio": 0.84
-        },
-        "mean_reversion_rubber_band": {
-          "member_n": 8,
-          "member_share": 0.0748,
-          "universe_share": 0.0805,
-          "ratio": 0.929
-        },
-        "stair_step_leader": {
-          "member_n": 1,
-          "member_share": 0.0093,
-          "universe_share": 0.0324,
-          "ratio": 0.287
-        },
-        "mixed_chart": {
-          "member_n": 79,
-          "member_share": 0.7383,
-          "universe_share": 0.5431,
-          "ratio": 1.359
-        },
-        "volatile_momentum_vehicle": {
+        "smooth_compounder_grind": {
           "member_n": 0,
           "member_share": 0.0,
-          "universe_share": 0.0381,
+          "universe_share": 0.0019,
           "ratio": 0.0
         },
-        "smooth_compounder_grind": {
-          "member_n": 1,
-          "member_share": 0.0093,
-          "universe_share": 0.0016,
-          "ratio": 5.812
+        "mixed_chart": {
+          "member_n": 65,
+          "member_share": 0.619,
+          "universe_share": 0.4806,
+          "ratio": 1.288
         },
         "basing_accumulator": {
+          "member_n": 10,
+          "member_share": 0.0952,
+          "universe_share": 0.1675,
+          "ratio": 0.568
+        },
+        "failed_breakout_trap": {
+          "member_n": 17,
+          "member_share": 0.1619,
+          "universe_share": 0.1626,
+          "ratio": 0.996
+        },
+        "stair_step_leader": {
           "member_n": 2,
-          "member_share": 0.0187,
-          "universe_share": 0.117,
-          "ratio": 0.16
+          "member_share": 0.019,
+          "universe_share": 0.0502,
+          "ratio": 0.378
+        },
+        "mean_reversion_rubber_band": {
+          "member_n": 7,
+          "member_share": 0.0667,
+          "universe_share": 0.0725,
+          "ratio": 0.92
+        },
+        "defensive_range_stock": {
+          "member_n": 2,
+          "member_share": 0.019,
+          "universe_share": 0.0288,
+          "ratio": 0.66
+        },
+        "volatile_momentum_vehicle": {
+          "member_n": 2,
+          "member_share": 0.019,
+          "universe_share": 0.0359,
+          "ratio": 0.529
         }
       },
       "unlabeled_tickers": []
     },
     "weighted_risk_profile": {
       "available": true,
-      "n_archetypes_used": 11,
-      "labeled_weight_sum": 1.0,
+      "n_archetypes_used": 8,
+      "labeled_weight_sum": 0.9999,
       "note": "equal-weight aggregation of per-archetype fingerprints weighted by archetype share among board members; survivorship-biased deep corpus constants",
-      "weighted_vol_med": 0.26,
-      "weighted_beta_med": 0.9302,
-      "weighted_maxdd_med": -0.1884,
-      "weighted_pct_never_recover_1yr": 0.4975,
-      "weighted_disp": 0.2331,
+      "weighted_vol_med": 0.2605,
+      "weighted_beta_med": 0.9457,
+      "weighted_maxdd_med": -0.1891,
+      "weighted_pct_never_recover_1yr": 0.4904,
+      "weighted_disp": 0.2334,
       "label_trust_note": "Weighted dispersion reflects mix of high-trust (financial disp=0.162) and low-trust (speculative_unprofitable disp=0.544) types; high weighted_disp means label-level statistics explain little per-name outcome"
     },
     "regime_conditional": {
@@ -183,166 +183,118 @@
           "median_21d": 0.003,
           "p10_21d": -0.089,
           "n": 10823,
-          "share": 0.2136
-        },
-        "secular_growth": {
-          "median_21d": -0.002,
-          "p10_21d": -0.1,
-          "n": 6024,
-          "share": 0.0388
-        },
-        "dividend_defensive": {
-          "median_21d": 0.016,
-          "p10_21d": -0.061,
-          "n": 6185,
-          "share": 0.0097
-        },
-        "financial": {
-          "median_21d": 0.014,
-          "p10_21d": -0.071,
-          "n": 24034,
-          "share": 0.0874
+          "share": 0.1863
         },
         "rate_sensitive": {
           "median_21d": 0.013,
           "p10_21d": -0.075,
           "n": 49923,
-          "share": 0.233
+          "share": 0.2843
         },
-        "speculative_unprofitable": {
-          "median_21d": 0.014,
-          "p10_21d": -0.112,
-          "n": 33208,
-          "share": 0.0777
-        },
-        "deep_value": {
-          "median_21d": 0.013,
-          "p10_21d": -0.079,
-          "n": 8458,
-          "share": 0.0097
-        },
-        "mixed": {
-          "median_21d": 0.014,
-          "p10_21d": -0.063,
-          "n": 115044,
-          "share": 0.1942
-        },
-        "quality_compounder": {
-          "median_21d": 0.012,
-          "p10_21d": -0.067,
-          "n": 5233,
-          "share": 0.0388
-        },
-        "broken_growth": {
-          "median_21d": 0.003,
-          "p10_21d": -0.114,
-          "n": 3406,
-          "share": 0.0097
+        "secular_growth": {
+          "median_21d": -0.002,
+          "p10_21d": -0.1,
+          "n": 6024,
+          "share": 0.0098
         },
         "cyclical": {
           "median_21d": 0.014,
           "p10_21d": -0.071,
           "n": 43947,
-          "share": 0.0874
+          "share": 0.098
+        },
+        "financial": {
+          "median_21d": 0.014,
+          "p10_21d": -0.071,
+          "n": 24034,
+          "share": 0.0882
+        },
+        "mixed": {
+          "median_21d": 0.014,
+          "p10_21d": -0.063,
+          "n": 115044,
+          "share": 0.1961
+        },
+        "quality_compounder": {
+          "median_21d": 0.012,
+          "p10_21d": -0.067,
+          "n": 5233,
+          "share": 0.049
+        },
+        "speculative_unprofitable": {
+          "median_21d": 0.014,
+          "p10_21d": -0.112,
+          "n": 33208,
+          "share": 0.0882
         }
       },
       "note": "Weighted median/P10 computed only over archetype cells with n >= 887 (field guide adequacy floor). 0 cells printed as insufficient_n.",
       "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
       "covered_weight": 1.0,
-      "weighted_median_21d": 0.0106,
-      "weighted_p10_21d": -0.0788,
+      "weighted_median_21d": 0.0114,
+      "weighted_p10_21d": -0.0776,
       "liquidity_context": "Current liquidity state: expanding. Regime read is quad-only (ARCHETYPE_QUAD_MEDIAN); per-archetype liquidity-conditioned medians (ARCHETYPE_LIQUIDITY_MEDIAN) are available in constants but not yet aggregated in this block."
     },
     "flags": {
-      "n_members": 107,
-      "n_tinderbox": 16,
+      "n_members": 105,
+      "n_tinderbox": 18,
       "n_negative_gamma_trend": 0,
-      "n_event_override": 7,
-      "n_distribution_mode": 5,
-      "n_unlabeled_arch": 4,
-      "tinderbox_share": 0.1495,
+      "n_event_override": 13,
+      "n_distribution_mode": 1,
+      "n_unlabeled_arch": 3,
+      "tinderbox_share": 0.1714,
       "negative_gamma_trend_share": 0.0,
-      "event_override_share": 0.0654,
-      "distribution_mode_share": 0.0467,
-      "unlabeled_arch_share": 0.0374
+      "event_override_share": 0.1238,
+      "distribution_mode_share": 0.0095,
+      "unlabeled_arch_share": 0.0286
     },
     "top_overweights": [
       {
-        "archetype": "distressed",
-        "ratio": 2.422,
-        "member_share": 0.2136,
-        "universe_share": 0.0882,
-        "member_n": 22
+        "archetype": "rate_sensitive",
+        "ratio": 2.218,
+        "member_share": 0.2843,
+        "universe_share": 0.1282,
+        "member_n": 29
       },
       {
         "archetype": "mixed",
-        "ratio": 2.202,
-        "member_share": 0.1942,
-        "universe_share": 0.0882,
+        "ratio": 2.211,
+        "member_share": 0.1961,
+        "universe_share": 0.0887,
         "member_n": 20
       },
       {
-        "archetype": "deep_value",
-        "ratio": 1.902,
-        "member_share": 0.0097,
-        "universe_share": 0.0051,
-        "member_n": 1
+        "archetype": "distressed",
+        "ratio": 2.112,
+        "member_share": 0.1863,
+        "universe_share": 0.0882,
+        "member_n": 19
       }
     ]
   },
   "all_lanes": {
-    "n_members": 166,
+    "n_members": 164,
     "composition": {
-      "n_members": 166,
+      "n_members": 164,
       "n_unlabeled": 0,
       "archetype": {
         "distressed": {
-          "member_n": 25,
-          "member_share": 0.1572,
+          "member_n": 22,
+          "member_share": 0.1384,
           "universe_share": 0.0882,
-          "ratio": 1.782
-        },
-        "secular_growth": {
-          "member_n": 10,
-          "member_share": 0.0629,
-          "universe_share": 0.0376,
-          "ratio": 1.673
-        },
-        "dividend_defensive": {
-          "member_n": 1,
-          "member_share": 0.0063,
-          "universe_share": 0.0084,
-          "ratio": 0.75
-        },
-        "financial": {
-          "member_n": 23,
-          "member_share": 0.1447,
-          "universe_share": 0.1026,
-          "ratio": 1.41
+          "ratio": 1.569
         },
         "rate_sensitive": {
-          "member_n": 31,
-          "member_share": 0.195,
+          "member_n": 38,
+          "member_share": 0.239,
           "universe_share": 0.1282,
-          "ratio": 1.521
+          "ratio": 1.864
         },
-        "speculative_unprofitable": {
-          "member_n": 10,
-          "member_share": 0.0629,
-          "universe_share": 0.3804,
-          "ratio": 0.165
-        },
-        "deep_value": {
-          "member_n": 1,
-          "member_share": 0.0063,
-          "universe_share": 0.0051,
-          "ratio": 1.235
-        },
-        "mixed": {
-          "member_n": 29,
-          "member_share": 0.1824,
-          "universe_share": 0.0882,
-          "ratio": 2.068
+        "secular_growth": {
+          "member_n": 5,
+          "member_share": 0.0314,
+          "universe_share": 0.0376,
+          "ratio": 0.835
         },
         "commodity_sensitive": {
           "member_n": 0,
@@ -350,93 +302,123 @@
           "universe_share": 0.0005,
           "ratio": 0.0
         },
-        "high_beta_momentum": {
-          "member_n": 2,
-          "member_share": 0.0126,
-          "universe_share": 0.0149,
-          "ratio": 0.846
+        "cyclical": {
+          "member_n": 18,
+          "member_share": 0.1132,
+          "universe_share": 0.0906,
+          "ratio": 1.249
         },
-        "quality_compounder": {
-          "member_n": 5,
-          "member_share": 0.0314,
-          "universe_share": 0.0269,
-          "ratio": 1.167
+        "financial": {
+          "member_n": 22,
+          "member_share": 0.1384,
+          "universe_share": 0.1026,
+          "ratio": 1.349
         },
         "broken_growth": {
           "member_n": 1,
           "member_share": 0.0063,
-          "universe_share": 0.0283,
-          "ratio": 0.223
+          "universe_share": 0.0279,
+          "ratio": 0.226
         },
-        "cyclical": {
-          "member_n": 21,
-          "member_share": 0.1321,
-          "universe_share": 0.0906,
-          "ratio": 1.458
+        "dividend_defensive": {
+          "member_n": 0,
+          "member_share": 0.0,
+          "universe_share": 0.0074,
+          "ratio": 0.0
+        },
+        "high_beta_momentum": {
+          "member_n": 3,
+          "member_share": 0.0189,
+          "universe_share": 0.0144,
+          "ratio": 1.312
+        },
+        "mixed": {
+          "member_n": 25,
+          "member_share": 0.1572,
+          "universe_share": 0.0887,
+          "ratio": 1.772
+        },
+        "quality_compounder": {
+          "member_n": 9,
+          "member_share": 0.0566,
+          "universe_share": 0.0274,
+          "ratio": 2.066
+        },
+        "deep_value": {
+          "member_n": 0,
+          "member_share": 0.0,
+          "universe_share": 0.006,
+          "ratio": 0.0
+        },
+        "speculative_unprofitable": {
+          "member_n": 16,
+          "member_share": 0.1006,
+          "universe_share": 0.3804,
+          "ratio": 0.264
         }
       },
       "chart": {
-        "defensive_range_stock": {
-          "member_n": 1,
-          "member_share": 0.006,
-          "universe_share": 0.0204,
-          "ratio": 0.294
+        "smooth_compounder_grind": {
+          "member_n": 2,
+          "member_share": 0.0122,
+          "universe_share": 0.0019,
+          "ratio": 6.421
+        },
+        "mixed_chart": {
+          "member_n": 102,
+          "member_share": 0.622,
+          "universe_share": 0.4806,
+          "ratio": 1.294
+        },
+        "basing_accumulator": {
+          "member_n": 14,
+          "member_share": 0.0854,
+          "universe_share": 0.1675,
+          "ratio": 0.51
         },
         "failed_breakout_trap": {
-          "member_n": 27,
-          "member_share": 0.1627,
-          "universe_share": 0.167,
-          "ratio": 0.974
+          "member_n": 24,
+          "member_share": 0.1463,
+          "universe_share": 0.1626,
+          "ratio": 0.9
+        },
+        "stair_step_leader": {
+          "member_n": 6,
+          "member_share": 0.0366,
+          "universe_share": 0.0502,
+          "ratio": 0.729
         },
         "mean_reversion_rubber_band": {
           "member_n": 9,
-          "member_share": 0.0542,
-          "universe_share": 0.0805,
-          "ratio": 0.673
+          "member_share": 0.0549,
+          "universe_share": 0.0725,
+          "ratio": 0.757
         },
-        "stair_step_leader": {
-          "member_n": 1,
-          "member_share": 0.006,
-          "universe_share": 0.0324,
-          "ratio": 0.185
-        },
-        "mixed_chart": {
-          "member_n": 124,
-          "member_share": 0.747,
-          "universe_share": 0.5431,
-          "ratio": 1.375
+        "defensive_range_stock": {
+          "member_n": 5,
+          "member_share": 0.0305,
+          "universe_share": 0.0288,
+          "ratio": 1.059
         },
         "volatile_momentum_vehicle": {
-          "member_n": 0,
-          "member_share": 0.0,
-          "universe_share": 0.0381,
-          "ratio": 0.0
-        },
-        "smooth_compounder_grind": {
           "member_n": 2,
-          "member_share": 0.012,
-          "universe_share": 0.0016,
-          "ratio": 7.5
-        },
-        "basing_accumulator": {
-          "member_n": 2,
-          "member_share": 0.012,
-          "universe_share": 0.117,
-          "ratio": 0.103
+          "member_share": 0.0122,
+          "universe_share": 0.0359,
+          "ratio": 0.34
         }
       },
       "unlabeled_tickers": []
     },
     "weighted_risk_profile": {
       "available": true,
-      "n_archetypes_used": 12,
-      "labeled_weight_sum": 1.0001,
+      "n_archetypes_used": 10,
+      "labeled_weight_sum": 1.0,
       "note": "equal-weight aggregation of per-archetype fingerprints weighted by archetype share among board members; survivorship-biased deep corpus constants",
-      "weighted_vol_med": 0.2614,
-      "weighted_beta_med": 0.9665,
-      "weighted_maxdd_med": -0.1901,
-      "weighted_pct_never_recover_1yr": 0.4972,
-      "weighted_disp": 0.2301,
+      "weighted_vol_med": 0.267,
+      "weighted_beta_med": 0.9815,
+      "weighted_maxdd_med": -0.1941,
+      "weighted_pct_never_recover_1yr": 0.4928,
+      "weighted_disp": 0.2399,
       "label_trust_note": "Weighted dispersion reflects mix of high-trust (financial disp=0.162) and low-trust (speculative_unprofitable disp=0.544) types; high weighted_disp means label-level statistics explain little per-name outcome"
     },
     "regime_conditional": {
@@ -450,94 +432,82 @@
           "median_21d": 0.003,
           "p10_21d": -0.089,
           "n": 10823,
-          "share": 0.1572
-        },
-        "secular_growth": {
-          "median_21d": -0.002,
-          "p10_21d": -0.1,
-          "n": 6024,
-          "share": 0.0629
-        },
-        "dividend_defensive": {
-          "median_21d": 0.016,
-          "p10_21d": -0.061,
-          "n": 6185,
-          "share": 0.0063
-        },
-        "financial": {
-          "median_21d": 0.014,
-          "p10_21d": -0.071,
-          "n": 24034,
-          "share": 0.1447
+          "share": 0.1384
         },
         "rate_sensitive": {
           "median_21d": 0.013,
           "p10_21d": -0.075,
           "n": 49923,
-          "share": 0.195
+          "share": 0.239
         },
-        "speculative_unprofitable": {
+        "secular_growth": {
+          "median_21d": -0.002,
+          "p10_21d": -0.1,
+          "n": 6024,
+          "share": 0.0314
+        },
+        "cyclical": {
           "median_21d": 0.014,
-          "p10_21d": -0.112,
-          "n": 33208,
-          "share": 0.0629
+          "p10_21d": -0.071,
+          "n": 43947,
+          "share": 0.1132
         },
-        "deep_value": {
-          "median_21d": 0.013,
-          "p10_21d": -0.079,
-          "n": 8458,
+        "financial": {
+          "median_21d": 0.014,
+          "p10_21d": -0.071,
+          "n": 24034,
+          "share": 0.1384
+        },
+        "broken_growth": {
+          "median_21d": 0.003,
+          "p10_21d": -0.114,
+          "n": 3406,
           "share": 0.0063
-        },
-        "mixed": {
-          "median_21d": 0.014,
-          "p10_21d": -0.063,
-          "n": 115044,
-          "share": 0.1824
         },
         "high_beta_momentum": {
           "median_21d": 0.015,
           "p10_21d": -0.106,
           "n": 10733,
-          "share": 0.0126
+          "share": 0.0189
+        },
+        "mixed": {
+          "median_21d": 0.014,
+          "p10_21d": -0.063,
+          "n": 115044,
+          "share": 0.1572
         },
         "quality_compounder": {
           "median_21d": 0.012,
           "p10_21d": -0.067,
           "n": 5233,
-          "share": 0.0314
+          "share": 0.0566
         },
-        "broken_growth": {
-          "median_21d": 0.003,
-          "p10_21d": -0.114,
-          "n": 3406,
-          "share": 0.0063
-        },
-        "cyclical": {
+        "speculative_unprofitable": {
           "median_21d": 0.014,
-          "p10_21d": -0.071,
-          "n": 43947,
-          "share": 0.1321
+          "p10_21d": -0.112,
+          "n": 33208,
+          "share": 0.1006
         }
       },
       "note": "Weighted median/P10 computed only over archetype cells with n >= 887 (field guide adequacy floor). 0 cells printed as insufficient_n.",
       "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
       "covered_weight": 1.0,
-      "weighted_median_21d": 0.011,
-      "weighted_p10_21d": -0.0781,
+      "weighted_median_21d": 0.0116,
+      "weighted_p10_21d": -0.0789,
       "liquidity_context": "Current liquidity state: expanding. Regime read is quad-only (ARCHETYPE_QUAD_MEDIAN); per-archetype liquidity-conditioned medians (ARCHETYPE_LIQUIDITY_MEDIAN) are available in constants but not yet aggregated in this block."
     },
     "flags": {
-      "n_members": 166,
-      "n_tinderbox": 25,
+      "n_members": 164,
+      "n_tinderbox": 24,
       "n_negative_gamma_trend": 0,
-      "n_event_override": 17,
-      "n_distribution_mode": 6,
-      "n_unlabeled_arch": 7,
-      "tinderbox_share": 0.1506,
+      "n_event_override": 15,
+      "n_distribution_mode": 2,
+      "n_unlabeled_arch": 5,
+      "tinderbox_share": 0.1463,
       "negative_gamma_trend_share": 0.0,
-      "event_override_share": 0.1024,
-      "distribution_mode_share": 0.0361,
-      "unlabeled_arch_share": 0.0422
+      "event_override_share": 0.0915,
+      "distribution_mode_share": 0.0122,
+      "unlabeled_arch_share": 0.0305
     }
   },
   "universe": {
@@ -552,46 +522,16 @@
           "universe_share": 0.0882,
           "ratio": 1.0
         },
-        "secular_growth": {
-          "member_n": 81,
-          "member_share": 0.0376,
-          "universe_share": 0.0376,
-          "ratio": 1.0
-        },
-        "dividend_defensive": {
-          "member_n": 18,
-          "member_share": 0.0084,
-          "universe_share": 0.0084,
-          "ratio": 1.0
-        },
-        "financial": {
-          "member_n": 221,
-          "member_share": 0.1026,
-          "universe_share": 0.1026,
-          "ratio": 1.0
-        },
         "rate_sensitive": {
           "member_n": 276,
           "member_share": 0.1282,
           "universe_share": 0.1282,
           "ratio": 1.0
         },
-        "speculative_unprofitable": {
-          "member_n": 819,
-          "member_share": 0.3804,
-          "universe_share": 0.3804,
-          "ratio": 1.0
-        },
-        "deep_value": {
-          "member_n": 11,
-          "member_share": 0.0051,
-          "universe_share": 0.0051,
-          "ratio": 1.0
-        },
-        "mixed": {
-          "member_n": 190,
-          "member_share": 0.0882,
-          "universe_share": 0.0882,
+        "secular_growth": {
+          "member_n": 81,
+          "member_share": 0.0376,
+          "universe_share": 0.0376,
           "ratio": 1.0
         },
         "commodity_sensitive": {
@@ -600,22 +540,10 @@
           "universe_share": 0.0005,
           "ratio": 1.0
         },
-        "high_beta_momentum": {
-          "member_n": 32,
-          "member_share": 0.0149,
-          "universe_share": 0.0149,
-          "ratio": 1.0
-        },
-        "quality_compounder": {
-          "member_n": 58,
-          "member_share": 0.0269,
-          "universe_share": 0.0269,
-          "ratio": 1.0
-        },
-        "broken_growth": {
-          "member_n": 61,
-          "member_share": 0.0283,
-          "universe_share": 0.0283,
+        "financial": {
+          "member_n": 221,
+          "member_share": 0.1026,
+          "universe_share": 0.1026,
           "ratio": 1.0
         },
         "cyclical": {
@@ -623,56 +551,98 @@
           "member_share": 0.0906,
           "universe_share": 0.0906,
           "ratio": 1.0
+        },
+        "broken_growth": {
+          "member_n": 60,
+          "member_share": 0.0279,
+          "universe_share": 0.0279,
+          "ratio": 1.0
+        },
+        "dividend_defensive": {
+          "member_n": 16,
+          "member_share": 0.0074,
+          "universe_share": 0.0074,
+          "ratio": 1.0
+        },
+        "high_beta_momentum": {
+          "member_n": 31,
+          "member_share": 0.0144,
+          "universe_share": 0.0144,
+          "ratio": 1.0
+        },
+        "mixed": {
+          "member_n": 191,
+          "member_share": 0.0887,
+          "universe_share": 0.0887,
+          "ratio": 1.0
+        },
+        "quality_compounder": {
+          "member_n": 59,
+          "member_share": 0.0274,
+          "universe_share": 0.0274,
+          "ratio": 1.0
+        },
+        "deep_value": {
+          "member_n": 13,
+          "member_share": 0.006,
+          "universe_share": 0.006,
+          "ratio": 1.0
+        },
+        "speculative_unprofitable": {
+          "member_n": 819,
+          "member_share": 0.3804,
+          "universe_share": 0.3804,
+          "ratio": 1.0
         }
       },
       "chart": {
-        "defensive_range_stock": {
-          "member_n": 26,
-          "member_share": 0.0088,
-          "universe_share": 0.0204,
-          "ratio": 0.431
-        },
-        "failed_breakout_trap": {
-          "member_n": 531,
-          "member_share": 0.1806,
-          "universe_share": 0.167,
-          "ratio": 1.081
-        },
-        "mean_reversion_rubber_band": {
-          "member_n": 208,
-          "member_share": 0.0707,
-          "universe_share": 0.0805,
-          "ratio": 0.878
+        "smooth_compounder_grind": {
+          "member_n": 6,
+          "member_share": 0.002,
+          "universe_share": 0.0019,
+          "ratio": 1.053
         },
         "mixed_chart": {
-          "member_n": 1727,
-          "member_share": 0.5874,
-          "universe_share": 0.5431,
-          "ratio": 1.082
-        },
-        "volatile_momentum_vehicle": {
-          "member_n": 92,
-          "member_share": 0.0313,
-          "universe_share": 0.0381,
-          "ratio": 0.822
-        },
-        "stair_step_leader": {
-          "member_n": 103,
-          "member_share": 0.035,
-          "universe_share": 0.0324,
-          "ratio": 1.08
-        },
-        "smooth_compounder_grind": {
-          "member_n": 5,
-          "member_share": 0.0017,
-          "universe_share": 0.0016,
-          "ratio": 1.062
+          "member_n": 1552,
+          "member_share": 0.5279,
+          "universe_share": 0.4806,
+          "ratio": 1.098
         },
         "basing_accumulator": {
-          "member_n": 248,
-          "member_share": 0.0844,
-          "universe_share": 0.117,
-          "ratio": 0.721
+          "member_n": 378,
+          "member_share": 0.1286,
+          "universe_share": 0.1675,
+          "ratio": 0.768
+        },
+        "failed_breakout_trap": {
+          "member_n": 525,
+          "member_share": 0.1786,
+          "universe_share": 0.1626,
+          "ratio": 1.098
+        },
+        "stair_step_leader": {
+          "member_n": 162,
+          "member_share": 0.0551,
+          "universe_share": 0.0502,
+          "ratio": 1.098
+        },
+        "mean_reversion_rubber_band": {
+          "member_n": 188,
+          "member_share": 0.0639,
+          "universe_share": 0.0725,
+          "ratio": 0.881
+        },
+        "defensive_range_stock": {
+          "member_n": 44,
+          "member_share": 0.015,
+          "universe_share": 0.0288,
+          "ratio": 0.521
+        },
+        "volatile_momentum_vehicle": {
+          "member_n": 85,
+          "member_share": 0.0289,
+          "universe_share": 0.0359,
+          "ratio": 0.805
         }
       },
       "unlabeled_tickers": [

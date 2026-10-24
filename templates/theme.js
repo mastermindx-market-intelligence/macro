@@ -35,7 +35,8 @@
      `null` for a local-only build). A page that sets window.SUPABASE_CFG inline
      (e.g. watchlist.html) wins, so the value is identical either way. The
      publishable key is PUBLIC by design; per-user isolation is enforced by RLS. */
-  window.SUPABASE_CFG = window.SUPABASE_CFG || /*__SUPABASE_CFG__*/null;
+  var _bakedSupabaseCfg = /*__SUPABASE_CFG__*/null;
+  window.SUPABASE_CFG = window.SUPABASE_CFG || _bakedSupabaseCfg;
 
   /* ---- Google Analytics 4 (gtag.js) ---------------------------------------
      Injected once on EVERY page via this one shared script (every page loads
@@ -1913,10 +1914,96 @@
   };
 
   /* ---- lazy Supabase client (self-hosted SDK) --------------------------- */
+  var _botRecoveryMode = !!document.querySelector('meta[name="mm-bot-renew"]');
+  var _botRecovery = window.__MMBotSessionRecovery;
+  // Old theme bundles honor the disabled override and cannot auto-boot. Only
+  // this guarded broker may select the existing baked config during recovery.
   var _sbCfg = window.SUPABASE_CFG;
+  if (_botRecoveryMode && _sbCfg && _sbCfg.botRecoveryDisabled === true) {
+    _sbCfg = _botRecoveryOpen() ? _bakedSupabaseCfg : null;
+  }
   var _authEnabled = !!(_sbCfg && _sbCfg.url && _sbCfg.anonKey);
   var _sb = null, _sbLoading = null, _curUser = null, _authReady = false, _authBooted = false;
   var _SDK_URL = 'supabase.js';
+
+  // A Bot renewal document admits one bounded operation through this SAME
+  // broker/SDK/cookie codec. Missing or closed admission never falls back to
+  // ordinary auth boot. The controller is ephemeral and grants no entitlement.
+  var _botSessionKey = null, _botSessionValue = null;
+  var _botPrepared = false, _botRequested = false, _botWritten = false;
+  function _botRecoveryOpen() {
+    return !!(_botRecovery && _botRecovery.version === 1 &&
+      typeof _botRecovery.isOpen === 'function' &&
+      typeof _botRecovery.fail === 'function' && _botRecovery.signal &&
+      !_botRecovery.signal.aborted && _botRecovery.isOpen());
+  }
+  function _botRecoveryFail() {
+    if (_botRecovery && typeof _botRecovery.fail === 'function') _botRecovery.fail();
+    return false;
+  }
+  function _botRecoveryCheck() {
+    if (!_botRecoveryOpen()) return false;
+    // Best effort: document.cookie has no atomic compare-and-swap across hosts.
+    // Preserve a newer sign-in/out that is observable before our write.
+    if (_botPrepared && COOKIE_STORAGE.getItem(_botSessionKey) !== _botSessionValue) {
+      return _botRecoveryFail();
+    }
+    return true;
+  }
+  function _botRecoveryPrepare() {
+    if (!_botRecoveryCheck()) return false;
+    if (!_botPrepared) {
+      _botSessionKey = _storageKey();
+      _botSessionValue = COOKIE_STORAGE.getItem(_botSessionKey);
+      _botPrepared = true;
+      if (!_botSessionValue) return _botRecoveryFail();
+    }
+    return true;
+  }
+  var _botCookieStorage = {
+    getItem: function (key) {
+      // Hiding the code-verifier also disables the SDK's independent PKCE
+      // initialization path, which detectSessionInUrl:false alone does not do.
+      return _botRecoveryCheck() && key === _botSessionKey ? _botSessionValue : null;
+    },
+    setItem: function (key, value) {
+      if (!_botRecoveryCheck() || key !== _botSessionKey) throw new Error('recovery-closed');
+      if (_botWritten) {
+        if (value !== _botSessionValue) { _botRecoveryFail(); throw new Error('recovery-write-used'); }
+        return;
+      }
+      var session;
+      try { session = JSON.parse(value); } catch (e) { _botRecoveryFail(); throw new Error('recovery-session'); }
+      if (!session || !session.access_token ||
+          !Number.isFinite(Number(session.expires_at)) ||
+          Number(session.expires_at) <= Date.now() / 1000 + 15) {
+        _botRecoveryFail(); throw new Error('recovery-session');
+      }
+      if (!_botRecoveryCheck()) throw new Error('recovery-closed');
+      COOKIE_STORAGE.setItem(key, value);
+      if (COOKIE_STORAGE.getItem(key) !== value) { _botRecoveryFail(); throw new Error('recovery-cookie-write'); }
+      _botSessionValue = value;
+      _botWritten = true;
+    },
+    // Renewal is not the sign-out owner. Invalid-grant handling, aborted work,
+    // and late SDK cleanup must never delete a shared session.
+    removeItem: function () {}
+  };
+  function _botRecoveryFetch(input, init) {
+    var url = typeof input === 'string' ? input : input && input.url;
+    var expected = _sbCfg.url.replace(/\/+$/, '') + '/auth/v1/token?grant_type=refresh_token';
+    if (!_botRecoveryCheck() || _botRequested || url !== expected ||
+        !init || String(init.method).toUpperCase() !== 'POST') {
+      _botRecoveryFail();
+      // A terminal LOCAL result stops GoTrue's retry loop without another
+      // request. Throwing AbortError alone is retryable in the vendored SDK.
+      return Promise.resolve(new Response(
+        JSON.stringify({code:'bot_recovery_closed', message:'Recovery attempt ended'}),
+        {status:400, headers:{'Content-Type':'application/json'}}));
+    }
+    _botRequested = true;
+    return window.fetch(input, Object.assign({}, init, {signal:_botRecovery.signal}));
+  }
 
   function _loadSDK() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve();
@@ -1931,26 +2018,60 @@
   }
   function getSupabaseClient() {
     if (!_authEnabled) return Promise.reject(new Error('auth-disabled'));
+    if (_botRecoveryMode && !_botRecoveryPrepare()) return Promise.reject(new Error('recovery-closed'));
     if (_sb) return Promise.resolve(_sb);
     return _loadSDK().then(function () {
+      if (_botRecoveryMode && !_botRecoveryCheck()) throw new Error('recovery-closed');
       if (_sb) return _sb;
-      _sb = window.supabase.createClient(_sbCfg.url, _sbCfg.anonKey, {
+      var client = window.supabase.createClient(_sbCfg.url, _sbCfg.anonKey, {
+        global: _botRecoveryMode ? {fetch:_botRecoveryFetch} : {},
         auth: {
-          persistSession: true, autoRefreshToken: true, detectSessionInUrl: true,
+          persistSession: true, autoRefreshToken: !_botRecoveryMode, detectSessionInUrl: !_botRecoveryMode,
           // PKCE (not implicit): the return carries a one-time ?code= (NOT tokens)
           // that's useless without the code_verifier we stashed in storage before
           // redirecting — so tokens never touch the URL/history, and a pasted
           // #access_token link can't seed a session (no login-CSRF / fixation).
           flowType: 'pkce',
-          storage: COOKIE_STORAGE,         // permanent cookie session, shared cross-subdomain
+          storage: _botRecoveryMode ? _botCookieStorage : COOKIE_STORAGE,
           storageKey: _storageKey()        // sb-<ref>-auth-token — must match @supabase/ssr
         }
       });
-      _sb.auth.onAuthStateChange(function (evt, session) { _onAuth(evt, session); });
+      if (_botRecoveryMode) {
+        // The pinned GoTrue SDK has no public broadcast-disable option.
+        // Close this instance's channel synchronously, before async initialize
+        // resumes. A refused write/invalid grant must not broadcast a stale
+        // TOKEN_REFRESHED or SIGNED_OUT into another Bot tab.
+        try {
+          if (!('broadcastChannel' in client.auth)) throw new Error('recovery-sdk');
+          if (client.auth.broadcastChannel) client.auth.broadcastChannel.close();
+          client.auth.broadcastChannel = null;
+        } catch (e) {
+          _botRecoveryFail();
+          throw new Error('recovery-sdk');
+        }
+      }
+      _sb = client;
+      if (!_botRecoveryMode) _sb.auth.onAuthStateChange(function (evt, session) { _onAuth(evt, session); });
       return _sb;
     });
   }
   window.getSupabaseClient = getSupabaseClient;
+  if (_botRecoveryMode) {
+    getSupabaseClient.botRecoveryVersion = 1;
+    getSupabaseClient.acceptRecoverySession = function (session) {
+      if (!_botPrepared || !_botRecoveryCheck() || !session || !session.access_token ||
+          !Number.isFinite(Number(session.expires_at)) ||
+          Number(session.expires_at) <= Date.now() / 1000 + 15) return false;
+      var stored;
+      try { stored = JSON.parse(COOKIE_STORAGE.getItem(_botSessionKey)); }
+      catch (e) { return _botRecoveryFail(); }
+      return !!(stored && stored.access_token === session.access_token &&
+        Number(stored.expires_at) === Number(session.expires_at));
+    };
+    // No ordinary _authBoot, auth-event fan-out, UI, online/visibility handler,
+    // or SDK auto-refresh is allowed to escape the page's admission/deadline.
+    return;
+  }
 
   function _hasSessionCookie() {
     var map = _cookieMap();

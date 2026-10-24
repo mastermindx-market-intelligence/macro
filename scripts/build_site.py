@@ -5615,6 +5615,10 @@ def _plan_relations_for(
             "lifecycle_state": plan.get("lifecycle_state"),
             "formation_date": plan.get("formation_date"),
             "signal_date": plan.get("signal_date"),
+            "signal_date_basis": plan.get("signal_date_basis"),
+            "observed_date": plan.get("observed_date"),
+            "price_basis_date": plan.get("price_basis_date"),
+            "recorded_at": plan.get("recorded_at"),
             "plan_asof": plan.get("plan_asof"),
         })
     for grouped in by_ticker.values():
@@ -6227,7 +6231,7 @@ def main() -> int:
                   "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
-                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",
                   "account.js",
                   "market_memory.css", "market_memory.js", "market_memory_intent.js",
                   "market_memory_retained.css", "market_memory_retained.js",
