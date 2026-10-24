@@ -45,6 +45,12 @@ def _porcelain_rebase_at(lane: Path, source: str) -> int:
         rebase = source.index("git rebase --autostash -X theirs origin/main")
         assert source.index("push_fetch_main_for_rebase") < rebase
         return rebase
+    if lane.name == "engine-render.yml":
+        fetch = source.index("if ! push_fetch_main_for_rebase; then")
+        pin = source.index("COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1")
+        rebase = source.index('git rebase --autostash -X theirs "$COMMODITY_ACCEPTED"')
+        assert fetch < pin < rebase
+        return rebase
     return source.index("git pull --rebase --autostash -X theirs origin main")
 
 

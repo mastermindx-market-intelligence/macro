@@ -6956,6 +6956,10 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Exact Matrix/main serving import closure on the composed source tree.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
+      - "engine/seasonality/multiplicity.py"
       # Package initializers executed by the Matrix main-registration import closure.
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
@@ -28297,10 +28301,6 @@ jobs:
       # collector against live filings. The suite opens no socket (module-wide
       # socket fence) and reads only tests/fixtures/issuer_evidence/, so it needs
       # nothing beyond this job's existing install line.
-      - name: wave 9D — exact-identifier issuer graph expansion fences
-        run: python -m pytest tests/test_government_revenue_issuer_graph_expansion.py -q
-      - name: builder envelope + publication fence + dossier/subaward rails
-        run: python -m pytest tests/test_build_government_revenue.py tests/test_check_government_revenue_projection.py tests/test_government_revenue_dossiers.py tests/test_government_revenue_dossier_validation_memo.py tests/test_government_revenue_subaward_api.py -q
       # The prophet↔government-revenue context bridge. Named by NOTHING in
       # .github/ before this line — not this manifest, not any workflow, and not
       # even a ci.yml trigger path — so the one suite proving the Prophet side
@@ -28309,8 +28309,10 @@ jobs:
       # unrun-market-plumbing because it reads the v2 procurement contract, and
       # only this job installs jsonschema; without it workspace.py's validator
       # fails CLOSED and every payload reads invalid (the 2026-08-03 staging pass).
-      - name: prophet ↔ government-revenue context bridge
-        run: python -m pytest tests/test_prophet_government_revenue_context.py -q
+      # Run these seven suites in their existing order and dependency environment;
+      # share one pytest process to remove two redundant process-start weights.
+      - name: Issuer graph, builder/publication and Prophet government-revenue contracts
+        run: python -m pytest tests/test_government_revenue_issuer_graph_expansion.py tests/test_build_government_revenue.py tests/test_check_government_revenue_projection.py tests/test_government_revenue_dossiers.py tests/test_government_revenue_dossier_validation_memo.py tests/test_government_revenue_subaward_api.py tests/test_prophet_government_revenue_context.py -q
       # Waves 9E + 9F: the shadow cross-check packet and the Prophet
       # post-selection annotation — the two seams that connect the lobe to the
       # rest of the platform without giving it signal authority. Both suites
@@ -42436,6 +42438,20 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Exact Matrix/main serving import closure on the composed source tree.
+      - "app/options_auth.py"
+      - "app/options_matrix_http.py"
+      - "app/options_matrix_runtime.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_matrix_context.py"
+      - "engine/intelligence_workspace/options_matrix_delivery.py"
+      - "engine/intelligence_workspace/options_source_use.py"
+      - "engine/intelligence_workspace/options_use.py"
+      - "engine/options_matrix.py"
+      - "engine/options_matrix_retention.py"
+      - "engine/thetadata_store.py"
+      - "scripts/build_options_matrix.py"
+      - "scripts/observe_options_matrix_publication.py"
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - lib/symbol_directory_receipts.py
