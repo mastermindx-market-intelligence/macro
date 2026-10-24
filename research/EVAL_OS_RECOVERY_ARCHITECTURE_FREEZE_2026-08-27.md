@@ -192,6 +192,8 @@ Grow the existing Neural Web eval harness from its single benchmark case to the 
 
 Extend the existing contradiction detector with the healthy-tension/impossible-contradiction classification and the existing response-eval system with deterministic numeric-to-source verification. Neither may create a replacement detector/rubric.
 
+**2026-10-24 registration:** the already defined R1 objective above is now represented in [WS:EVAL-OS-RELIABILITY-EXTENSIONS](../agentos/workstreams/WS-EVAL-OS-RELIABILITY-EXTENSIONS.md), with current role ownership, in-progress status, source evidence and bounded acceptance. This registers existing work without changing the frozen objective. R1 native consumer proof is not an A1 completion prerequisite; shared-code writers and action-specific consent/effect boundaries remain protected.
+
 ### I1 — T12 narrow Agent OS evidence-tier interface
 
 After T1/T4/L4 contracts are stable: implement the planned derived `required_tier` interface and structured finding. It may never route/prioritize work itself.
@@ -222,3 +224,4 @@ Until then, the overall program remains `PARTIAL` even when individual substrate
 Freeze this architecture first. Then dispatch **E1** and **H1** to separate Fable COO main-loop carriers because their expected changed paths are disjoint. A Slack delivery is not execution: each carrier must return an explicit same-thread Fable ACK before its wave is considered started. If no main-loop Fable session ACKs, record `DELIVERY_ONLY / MANUAL_PICKUP_REQUIRED` and do not fabricate runtime execution.
 
 P1 is held until E1’s qledger-path movement is returned/reconciled. A1 is held until H1 production truth is known. G1/Q1/V1/F1/C1/R1/I1 remain owned downstream waves and require fresh owner/collision checks at dispatch. Sol reviews every returned PR/proof against this freeze and remains final acceptance owner.
+
