@@ -136,17 +136,19 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Consume the existing Cursor placement request on C0CBC6AEAQZ/1792865049.365069.
-      Delivery is proven; agent identity and START are absent. Do not duplicate the child.
-      Direct Cursor browser access currently requires human sign-in.
+      Consume the existing Cursor agent bc-d989996a-419b-5b6a-b684-19a2f61554da return on
+      C0CBC6AEAQZ/1792865049.365069; ACK/START is recorded at 1792866168.374309.
+      Retain the same child. Confirm consumption of the same-thread repository-scope ruling
+      1792867055.078839 before accepting code or starting independent review.
   - id: HC-P2
     title: Existing admitted model-route parity
     status: in_progress
     depends_on: [HC-P1A]
     next_action: >
-      Implement the pinned HC-P2.T0 path-disjoint, offline sealed-analysis boundary.
-      Live route admission, identity/metering and actual provider failures remain gated
-      on HC-P1A and the incumbent contract; no new tool authority or credentials.
+      Preserve Draft Mastermind #1850 at ff473a3a9cb6afd6002a8643489f125430f6a085:
+      46 native DSH fixture checks and 38 compiler regressions pass. Consume exact-head CI.
+      Source review meta-ceo-harness-p2-source-review-20261024-01 is terminal/unverified;
+      reconcile it without replay. HC-P2 live acceptance remains gated on P1 and admission.
   - id: HC-P3
     title: Existing Executive and Fabric contract integration
     status: todo
@@ -275,10 +277,10 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, retain the two original terminal/unverified Fabric run identities
-  and the delivered Cursor child; reconcile effects before any replay. Advance only a
-  planned, path-disjoint source task while their original carriers remain held. Record actual
-  worker START and independent verdicts; neither is inferred from dispatch. Preserve R2.
+  For Mastermind #1841, consume the original Cursor child return and its repository-scope
+  ruling, plus exact-head CI for source PR #1850. Retain all three terminal/unverified
+  Fabric identities; reconcile effects before any replay. The new source fixture is built
+  and locally qualified, with independent semantic review still missing. Preserve R2.
   Source release requires independent action: this receiver must not approve or merge.
 acceptance_contracts:
 - commission_id: meta-ceo-office-r2-20261012
@@ -883,9 +885,10 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
 - **DONE_WHEN:** actual runnable observations or a precise reproducible platform blocker;
   independent source review; comparison identifies integration burden and missing proof.
 - **Risk / rollback:** disposable local fixture state, no account secrets or production writes.
-- **State:** placement request delivered for meta-ceo-harness-rakazo-cursor-20261024-01
-  on C0CBC6AEAQZ/1792865049.365069. No ACK, agent ID, START or result at bounded readback.
-  Direct Cursor cloud-agent UI is at sign-in; no login or account change was performed.
+- **State:** Secretary ACK/START at 1792866168.374309 for the same child on
+  C0CBC6AEAQZ/1792865049.365069; agent bc-d989996a-419b-5b6a-b684-19a2f61554da.
+  Parent scope ruling 1792867055.078839 is delivered; actual consumption, source/PR and
+  retained result are pending. No duplicate worker or account change.
 
 ### HC-P2.T0 — DSH sealed-analysis source boundary
 
@@ -920,7 +923,9 @@ tier. Concrete provider/model/host identity remains the admitted route's returne
   PR; independent reviewer disposition consumed. Maximum claim before live owner integration
   is SOURCE_CONTRACT_QUALIFIED / FIXTURE_ONLY. No complete HC-P2/mission claim.
 - **Rollback:** remove this isolated optional source module; no runtime state is changed.
-- **State:** planned; execution may begin after this record validates and is committed.
+- **State:** source published in Draft Mastermind #1850 at ff473a3a9cb6afd6002a8643489f125430f6a085;
+  46 native DSH checks and 38 incumbent contract regressions pass. Independent review is
+  missing: its original Fabric child terminated unverified, with retry_allowed=false.
 
 ### Accepted progress and outstanding gates
 
@@ -1003,3 +1008,51 @@ sealed, model-only contract. Do not widen it to DSH tools or enable DSH automati
 A path-disjoint source task must be separately pinned before execution; P2 live acceptance
 still depends on P1 and actual incumbent admission. No watcher, live provider call,
 deployment, authenticated proof, 24-hour canary or seven-day observation is claimed.
+
+### HC-P2.T0 source checkpoint — 2026-10-24 18:34 UTC
+
+- Source published as Draft Mastermind PR #1850, commit
+  ff473a3a9cb6afd6002a8643489f125430f6a085, on the original registered
+  meta-ceo-harness-implementation-20261024-web-001 carrier; clean local/remote readback.
+- Four new paths only: provider_qualification/README.md, sealed_analysis_contract.mjs,
+  sealed_analysis_contract.test.mjs and tests/test_meta_ceo_dsh_provider_contract.py.
+  HC-P1A qualification and Rakazo paths were not modified.
+- Real pinned DSH runtime/assembler fixture: 46/46 passed, 0 skipped; donor tracked
+  source clean before/after. Existing Python compiler/client regression: 38/38 passed.
+  Exact scope and whitespace checks passed. Earlier ABI failures (retry code-list
+  configuration and Cordis fiber disposal) were repaired on this carrier and retested.
+- Current ceiling: SOURCE_CONTRACT_QUALIFIED / FIXTURE_ONLY; no provider calls,
+  usage/served-model attestation, admission, parent acceptance or production claim.
+- #1841 plan CI 40114679733 completed SUCCESS. #1850 CI 40121353408 is QUEUED.
+- Independent source review planned as meta-ceo-harness-p2-source-review-20261024-01,
+  task_class=review, C2_COMPLEX_BOUNDED, subject author pool=openai. Same original
+  root meta-ceo-open-harness-convergence-20261024-sol-001 and parent
+  meta-ceo-harness-implementation-20261024-web-001. Read-only exact four-file review;
+  actual semantic verdict and unavailable proof must be returned. No approval/merge.
+- This is a new source-review task, not a retry of the unverified plan review or P1
+  implementation. No START is claimed until its actual receipt is consumed.
+- Macro #10167 readback reports mergeable=false, but current main
+  4d471058826cd470ddf53e5c53d3086aec36d365 has no changes to the incumbent workstream
+  versus the original base. Local git merge-tree computed de81d5623fc63722f157268e81605848335e2c7e
+  with no conflict messages. No branch merge or overwrite was needed; GitHub disposition
+  remains a separate gate and this receiver must not merge.
+
+### Fleet and publication delta — 2026-10-24 18:38 UTC
+
+- Cursor HC-P1B child is now ACK/START, not unconsumed delivery: agent
+  bc-d989996a-419b-5b6a-b684-19a2f61554da, reply 1792866168.374309 on
+  C0CBC6AEAQZ/1792865049.365069. Secretary owns the existing agent return and its CI watch.
+  Same-thread parent ruling 1792867055.078839 clarifies Mastermind implementation paths
+  and Macro continuity ownership; no new child or duplicate dispatch. Ruling consumption
+  and actual source/result remain pending at this save.
+- P2 source review controller 90045 returned TERMINAL rc1 / EXECUTION_NOT_ELIGIBLE /
+  acceptance UNVERIFIED / execution_absence_proven=false / retry_allowed=false.
+  Original run meta-ceo-harness-p2-source-review-20261024-01 is retained; response digest
+  bcf0e0ca7330c578c5097b05396bab3417a4830ac989e459494bc3c4f9e532c8, 493 bytes.
+  QWEN_FINAL_RESPONSE_UNCONFIRMED, requested qwen3.8-max, native session
+  01a16f32-a94a-7e13-9fec-be88888b5f77. No semantic review verdict exists.
+  Wrapper 429 is not promoted to execution-absence proof. No replacement is authorized.
+- Mastermind #1850 is OPEN/DRAFT/unmerged, exact head ff473a3a9cb6afd6002a8643489f125430f6a085,
+  GitHub mergeable=true; CI 40121353408 is IN_PROGRESS. No approval/merge performed.
+- Source fixture is useful partial implementation. End-to-end mission, live route,
+  independent review/release, authenticated UI, 24-hour and seven-day obligations remain open.

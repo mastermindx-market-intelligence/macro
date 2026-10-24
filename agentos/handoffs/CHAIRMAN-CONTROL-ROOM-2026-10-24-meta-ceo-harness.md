@@ -37,14 +37,14 @@ verified:
     result: APPLIED and clean at e00e97b81a5d41cb8a570ad080316279a0f3853f; no source edits yet
 unverified:
   - claim: New implementation artifacts and independent verdict
-    what_would_verify: Original Fabric effect reconciliation and retained usable return; actual Cursor agent identity and START; separate exact-head semantic review
+    what_would_verify: Original Fabric effect reconciliation and a separate exact-head semantic verdict; actual Cursor source/result and scope-ruling consumption
   - claim: Authenticated full-app and integrated office behavior
     what_would_verify: Permitted signed-in proof with actual original-parent result consumption; do not replay the prior refused ephemeral-token exchange
   - claim: Production acceptance
     what_would_verify: Independent review, authorized separate release, real 24-hour continuity and seven-day evaluation observations, applicable original R2 obligations
 unresolved:
-  - Both new Fabric runs are TERMINAL rc1 with acceptance UNVERIFIED, execution_absence_proven=false and retry_allowed=false; preserve their original IDs.
-  - Cursor child placement is delivered but unconsumed; direct cloud-agent UI requires human sign-in.
+  - All three commissioned Fabric runs are TERMINAL rc1 with acceptance UNVERIFIED, execution_absence_proven=false and retry_allowed=false; preserve their original IDs.
+  - Cursor child has Secretary ACK/START and agent bc-d989996a-419b-5b6a-b684-19a2f61554da; actual source/result and repository-scope ruling consumption remain pending.
   - Historical DSH ephemeral-token exchange was tool-safety refused; the exact effect remains held.
   - PR 1717 original source carrier has a recorded publication-registration gap; new work stays path-disjoint.
   - PR 1790 c4d28680813898c9b0f7bd367d67cd7e873744c4 removes r4 blocker files, but no exact changed-head PASS is inferred.
@@ -52,7 +52,7 @@ unresolved:
 next_actions:
   - Publish this cumulative frontier on the existing registered Macro carrier after schema and preserved-contract checks.
   - Reconcile the two original unverified Fabric runs and consume the existing Cursor placement; do not replay by a new ID or route.
-  - Pin a path-disjoint preparatory source task before execution; preserve P1 and live-route acceptance dependencies.
+  - Preserve published P2 source PR 1850 and its 46 native/38 incumbent test proof; consume exact-head CI while independent semantic review remains held.
   - Consume actual implementation results, obtain separate independent reviews, and advance the next ready dependency.
 do_not_redo:
   - PR 1717 accepted 9/9 build, isolated startup/401 gate, exact process cleanup and 43/43 native tests without material source change.
@@ -114,3 +114,50 @@ sealed, model-only contract. Do not widen it to DSH tools or enable DSH automati
 A path-disjoint source task must be separately pinned before execution; P2 live acceptance
 still depends on P1 and actual incumbent admission. No watcher, live provider call,
 deployment, authenticated proof, 24-hour canary or seven-day observation is claimed.
+
+### HC-P2.T0 source checkpoint — 2026-10-24 18:34 UTC
+
+- Source published as Draft Mastermind PR #1850, commit
+  ff473a3a9cb6afd6002a8643489f125430f6a085, on the original registered
+  meta-ceo-harness-implementation-20261024-web-001 carrier; clean local/remote readback.
+- Four new paths only: provider_qualification/README.md, sealed_analysis_contract.mjs,
+  sealed_analysis_contract.test.mjs and tests/test_meta_ceo_dsh_provider_contract.py.
+  HC-P1A qualification and Rakazo paths were not modified.
+- Real pinned DSH runtime/assembler fixture: 46/46 passed, 0 skipped; donor tracked
+  source clean before/after. Existing Python compiler/client regression: 38/38 passed.
+  Exact scope and whitespace checks passed. Earlier ABI failures (retry code-list
+  configuration and Cordis fiber disposal) were repaired on this carrier and retested.
+- Current ceiling: SOURCE_CONTRACT_QUALIFIED / FIXTURE_ONLY; no provider calls,
+  usage/served-model attestation, admission, parent acceptance or production claim.
+- #1841 plan CI 40114679733 completed SUCCESS. #1850 CI 40121353408 is QUEUED.
+- Independent source review planned as meta-ceo-harness-p2-source-review-20261024-01,
+  task_class=review, C2_COMPLEX_BOUNDED, subject author pool=openai. Same original
+  root meta-ceo-open-harness-convergence-20261024-sol-001 and parent
+  meta-ceo-harness-implementation-20261024-web-001. Read-only exact four-file review;
+  actual semantic verdict and unavailable proof must be returned. No approval/merge.
+- This is a new source-review task, not a retry of the unverified plan review or P1
+  implementation. No START is claimed until its actual receipt is consumed.
+- Macro #10167 API reports mergeable=false. Read-only current-main comparison found no
+  workstream delta, and git merge-tree against 4d471058826cd470ddf53e5c53d3086aec36d365
+  completed exit 0 with no conflicts. No branch merge/overwrite was needed; GitHub release
+  disposition is separate and this receiver must not merge.
+
+### Fleet and publication delta — 2026-10-24 18:38 UTC
+
+- Cursor HC-P1B child is now ACK/START, not unconsumed delivery: agent
+  bc-d989996a-419b-5b6a-b684-19a2f61554da, reply 1792866168.374309 on
+  C0CBC6AEAQZ/1792865049.365069. Secretary owns the existing agent return and its CI watch.
+  Same-thread parent ruling 1792867055.078839 clarifies Mastermind implementation paths
+  and Macro continuity ownership; no new child or duplicate dispatch. Ruling consumption
+  and actual source/result remain pending at this save.
+- P2 source review controller 90045 returned TERMINAL rc1 / EXECUTION_NOT_ELIGIBLE /
+  acceptance UNVERIFIED / execution_absence_proven=false / retry_allowed=false.
+  Original run meta-ceo-harness-p2-source-review-20261024-01 is retained; response digest
+  bcf0e0ca7330c578c5097b05396bab3417a4830ac989e459494bc3c4f9e532c8, 493 bytes.
+  QWEN_FINAL_RESPONSE_UNCONFIRMED, requested qwen3.8-max, native session
+  01a16f32-a94a-7e13-9fec-be88888b5f77. No semantic review verdict exists.
+  Wrapper 429 is not promoted to execution-absence proof. No replacement is authorized.
+- Mastermind #1850 is OPEN/DRAFT/unmerged, exact head ff473a3a9cb6afd6002a8643489f125430f6a085,
+  GitHub mergeable=true; CI 40121353408 is IN_PROGRESS. No approval/merge performed.
+- Source fixture is useful partial implementation. End-to-end mission, live route,
+  independent review/release, authenticated UI, 24-hour and seven-day obligations remain open.
