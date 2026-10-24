@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STE-BULL-20261013",
-  "asof": "2026-10-23",
+  "asof": "2026-10-24",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 65.6,
-  "raw_confidence": 65.6,
-  "delta_vs_base": 5.6,
+  "management_confidence": 66.6,
+  "raw_confidence": 67.8,
+  "delta_vs_base": 6.6,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
-    "progress": 11.5,
+    "progress": 16.0,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.14,
-    "dist_to_t1_r": 1.36,
-    "dist_to_t2_r": 2.86,
-    "horizon_pct_used": 6.7,
-    "p1": 0.0933,
-    "p2": 0.0467,
+    "dist_to_stop_r": 1.219,
+    "dist_to_t1_r": 1.281,
+    "dist_to_t2_r": 2.781,
+    "horizon_pct_used": 8.9,
+    "p1": 0.1458,
+    "p2": 0.0729,
     "p3": null,
-    "move_r": 0.14,
+    "move_r": 0.219,
     "mfe_r": 0.221,
     "mae_r": -0.117
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 3,
-  "tau": 0.0667
+  "days_elapsed": 4,
+  "tau": 0.0889
 }
