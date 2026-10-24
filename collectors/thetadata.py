@@ -808,6 +808,7 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
         if frame is None or frame.empty:
             return frame
         raw_rows = len(frame)
+        _validate_bounded_eod_source(frame, start, end)
         normalized = _normalize_eod_df(frame, root)
         normalized.attrs["_bounded_raw_rows"] = raw_rows
         return normalized
@@ -856,6 +857,26 @@ def bulk_eod(root: str, exp: int | str | date, start_date: date | str | int,
             return pd.DataFrame()
 
     return _normalize_eod_df(df, root)
+
+
+def _validate_bounded_eod_source(df: pd.DataFrame, start: date, end: date) -> None:
+    """Require the native EOD last-trade clock; created is ingestion, not session.
+
+    This guard is only for the explicitly bounded route. Legacy normalization
+    retains its existing fallback behavior. No timezone/availability is inferred.
+    """
+    required = {"symbol", "expiration", "strike", "right", "last_trade", "close", "volume"}
+    if not required <= set(df.columns):
+        raise ValueError("EOD source schema requires last_trade and contract fields")
+    observed = pd.to_datetime(df["last_trade"], errors="coerce")
+    if (observed.isna().any() or observed.dt.tz is not None
+            or not observed.dt.date.between(start, end).all()):
+        raise ValueError("EOD source last_trade does not establish requested sessions")
+    if "_date" in df.columns:
+        supplied = pd.to_datetime(df["_date"], errors="coerce")
+        if (supplied.isna().any() or supplied.dt.tz is not None
+                or not supplied.eq(observed.dt.normalize()).all()):
+            raise ValueError("EOD source _date contradicts last_trade session")
 
 
 def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:

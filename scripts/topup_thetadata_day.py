@@ -454,6 +454,19 @@ def _eod_retain(path, data):
     _eod_sync_directory(path.parent)
 
 
+def _eod_sync_canonical(path, store):
+    """Make canonical bytes and their directory entries durable before receipt."""
+    import os
+    with path.open('rb') as stream:
+        os.fsync(stream.fileno())
+    parent = path.parent
+    while True:
+        _eod_sync_directory(parent)
+        if parent == store:
+            break
+        parent = parent.parent
+
+
 def _validate_eod_capture_frame(frame, root, days):
     import numpy as np
     required = {'root', 'expiration', 'strike', 'right', 'date', 'close', 'volume'}
@@ -586,7 +599,8 @@ def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
     receipt = capture_dir/'receipt.json'
     if not store.is_dir() or capture_dir.is_symlink() or receipt.is_symlink() or receipt.stat().st_size > 65536:
         raise ValueError("Oversize EOD receipt")
-    record = json.loads(receipt.read_text())
+    receipt_bytes = receipt.read_bytes()
+    record = json.loads(receipt_bytes)
     if (record.get('schema') != 'options.bounded_eod_catchup/v1' or record.get('state') != 'CAPTURED'
             or record.get('roots') != list(_EOD_CATCHUP_ROOTS) or record.get('attempts') != 4
             or record.get('store_ref') != str(store.resolve())
@@ -620,6 +634,7 @@ def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
             raise ValueError("EOD retained row bound")
         total_bytes += len(raw)
         total_rows += len(frame)
+        td._validate_bounded_eod_source(frame, start, end)
         frames[root] = td._normalize_eod_df(frame, root)
         _validate_eod_capture_frame(frames[root], root, days)
     if (total_bytes != record['response_bytes'] or total_rows != record['raw_rows']
@@ -630,6 +645,10 @@ def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
     with _writer_lock(store) as acquired:
         if not acquired:
             raise RuntimeError("Canonical store writer is occupied")
+        # A competing caller may have started an uncertain merge while these
+        # frames were validated. Zero written days does not make that retryable.
+        if receipt.is_symlink() or receipt.read_bytes() != receipt_bytes:
+            raise ValueError("EOD receipt changed before writer lock")
         if any(_tmp_path(store/'eod'/root/f'{start.year}.parquet').exists() for root in frames):
             raise ValueError("Unreconciled canonical EOD temporary file")
         if any(_has_day(store, 'eod', root, day) for root in frames for day in days):
@@ -642,6 +661,7 @@ def merge_bounded_eod_capture(store: Path, capture_dir: Path) -> dict:
                 written = _merge_day(store, 'eod', root, day, frame)
                 if written != int(frame['date'].eq(pd.Timestamp(day)).sum()):
                     raise RuntimeError("Canonical EOD merge count differs from retained capture")
+                _eod_sync_canonical(store/'eod'/root/f'{day.year}.parquet', store)
                 record['store_writes'] += 1
                 save()
         record['state'] = 'MERGED'

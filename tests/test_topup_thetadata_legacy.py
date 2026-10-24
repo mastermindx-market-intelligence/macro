@@ -508,3 +508,78 @@ def test_bounded_eod_refuses_different_collector_or_store(bounded_eod_case,field
     path.write_text(json.dumps(record))
     with pytest.raises(ValueError):topup.merge_bounded_eod_capture(c.store,c.directory)
     assert not topup._has_day(c.store,'eod','GLD',c.scope['start'])
+
+
+def test_bounded_eod_merge_rechecks_claim_under_writer_lock(bounded_eod_case, monkeypatch):
+    from contextlib import contextmanager
+    c = bounded_eod_case
+    topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    receipt = c.directory / 'receipt.json'
+    original_lock = topup._writer_lock
+    @contextmanager
+    def competing_merge(store):
+        # Another admitted caller started and failed before writing any day.
+        record = json.loads(receipt.read_text())
+        record['state'] = 'MERGE_STARTED'
+        receipt.write_text(json.dumps(record))
+        with original_lock(store) as acquired:
+            yield acquired
+    monkeypatch.setattr(topup, '_writer_lock', competing_merge)
+    with pytest.raises(ValueError, match='receipt changed'):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    assert json.loads(receipt.read_text())['state'] == 'MERGE_STARTED'
+    assert not topup._has_day(c.store, 'eod', 'GLD', c.scope['start'])
+    assert len(c.calls) == 4
+
+
+@pytest.mark.parametrize('clock', ['created_only', 'missing_last_trade', 'conflicting_date'])
+def test_bounded_eod_requires_raw_source_session_clock(bounded_eod_case, clock):
+    c = bounded_eod_case
+    if clock == 'created_only':
+        c.bodies['GLD'] = c.bodies['GLD'].replace(b'last_trade', b'created')
+    elif clock == 'missing_last_trade':
+        lines = c.bodies['GLD'].decode().splitlines()
+        c.bodies['GLD'] = ('\n'.join(','.join(line.split(',')[:4] + line.split(',')[5:])
+            for line in lines) + '\n').encode()
+    else:
+        # _date formerly hid source observations outside the requested window.
+        c.bodies['GLD'] = c.bodies['GLD'].replace(b'last_trade,', b'last_trade,_date,')
+        for day in range(19, 23):
+            c.bodies['GLD'] = c.bodies['GLD'].replace(
+                f'2020-10-{day}T16:00:00,'.encode(),
+                f'2020-10-16T16:00:00,2020-10-{day},'.encode())
+    with pytest.raises(ValueError, match='source'):
+        topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    record = json.loads((c.directory / 'receipt.json').read_text())
+    assert record['state'] == 'STOPPED' and record['requests'][0]['state'] == 'RAW_CAPTURED'
+    assert (c.directory / 'GLD.csv').read_bytes() == c.bodies['GLD']
+    assert record['store_writes'] == 0 and len(c.calls) == 1
+
+
+@pytest.mark.parametrize('failure', ['file', 'directory'])
+def test_bounded_eod_durability_failure_keeps_merge_started(bounded_eod_case, monkeypatch, failure):
+    import os
+    c = bounded_eod_case
+    topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    dest = c.store / 'eod' / 'GLD' / '2020.parquet'
+    real_fsync = os.fsync
+    real_directory_sync = topup._eod_sync_directory
+    def fail_file(fd):
+        if failure == 'file' and os.fstat(fd).st_ino == dest.stat().st_ino:
+            raise OSError('canonical file fsync failed')
+        return real_fsync(fd)
+    def fail_directory(path):
+        if failure == 'directory' and path == dest.parent:
+            raise OSError('canonical directory fsync failed')
+        return real_directory_sync(path)
+    monkeypatch.setattr(os, 'fsync', fail_file)
+    monkeypatch.setattr(topup, '_eod_sync_directory', fail_directory)
+    with pytest.raises(OSError, match='canonical'):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    record = json.loads((c.directory / 'receipt.json').read_text())
+    assert record['state'] == 'MERGE_STARTED' and record['store_writes'] == 0
+    # Bytes may already exist; no receipt is allowed to claim durable completion.
+    assert topup._has_day(c.store, 'eod', 'GLD', c.scope['start'])
+    with pytest.raises(ValueError):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    assert len(c.calls) == 4
