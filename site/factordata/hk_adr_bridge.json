@@ -10,12 +10,7 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "JD": {
-      "asof": "2026-10-22",
-      "lag_days": 1,
-      "state": "fresh"
-    },
-    "TCOM": {
+    "FXI": {
       "asof": "2026-10-22",
       "lag_days": 1,
       "state": "fresh"
@@ -25,12 +20,22 @@
       "lag_days": 1,
       "state": "fresh"
     },
+    "BABA": {
+      "asof": "2026-10-22",
+      "lag_days": 1,
+      "state": "fresh"
+    },
     "KWEB": {
       "asof": "2026-10-22",
       "lag_days": 1,
       "state": "fresh"
     },
-    "BABA": {
+    "JD": {
+      "asof": "2026-10-22",
+      "lag_days": 1,
+      "state": "fresh"
+    },
+    "TCOM": {
       "asof": "2026-10-22",
       "lag_days": 1,
       "state": "fresh"

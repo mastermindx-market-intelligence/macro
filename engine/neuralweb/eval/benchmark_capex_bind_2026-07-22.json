@@ -1,0 +1,78 @@
+{
+  "benchmark_id": "capex_bind_2026-07-22",
+  "frozen": true,
+  "source": "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-22",
+    "session_label": "after hours",
+    "adjudication_date": "2026-07-22",
+    "historical_source_availability": "unverified",
+    "source": {
+      "path": "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+      "sha256": "b344adc90871c5f04e26e723f96bab6b1b4e58ebe6fe025b25f2750060cbf147"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-22",
+        "source_lines": [
+          17,
+          24
+        ],
+        "text": "- **Index regime turned hostile ~4 weekly bars ago, and our own ledger dated it.**\n  `data/index_momentum/events.parquet` (W-FRI grid): **MAG7 carrier and SOXX weekly RSI-MACD\n  bearish crosses on 2026-06-26** (SOXX from 95th-pctile depth — crossed down from an extended\n  state; MAG7 from 26th-pctile depth — weak structure), **QQQ weekly bearish cross 2026-07-03**.\n  Since then: semis/memory sold off hard, then violent two-way chop; every day a see-saw\n  rotation among defensives ↔ Mag-7 hyperscalers ↔ AI hardware.\n- **The entry layer leaned bullish into it.** 2D/3D MACD-RSI bullish crossovers (the\n  `engine/confluence_tiers.py` T1/T2 constructions) fired across the Mag-7 cohort. We believed",
+        "sha256": "62d621c5ee67fa5b3eb852105908d22e3d8bb16cc28c9bdd3c1b3eedc45928e0"
+      },
+      {
+        "event_date": "2026-07-22",
+        "source_lines": [
+          25,
+          32
+        ],
+        "text": "  the hyperscalers were about to run, and NVDA with them.\n- **Resolution so far:** AAPL was the only clean outperformer. NVDA is constructive but\n  violently choppy — the *path*, not necessarily the terminal direction, is what failed.\n  GOOGL/AMZN/META/MSFT were weak and chopped hard.\n- **2026-07-22 AH:** Alphabet beat on every reported line, **raised FY26 capex guidance from\n  $180–190B to $195–205B**, and traded **−4% after hours**. AMZN/META/MSFT down in sympathy.\n  Hardware not up big AH — the capex raise that is nominally *their* revenue produced no loud\n  relief.",
+        "sha256": "c9a6b61e46f23c8a106232b4f902a6842409878532dab01096b90a7f1f9947ed"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        99,
+        111
+      ],
+      "text": "### L2 — A cohort with a structural bind must never be read as a monolith. (BUILD — display-tier)\n\nEvery Mag-7 member had the same bullish crossover; capex role, not the technical setup, was the\ndifferentiator. We already own the taxonomy — it's just not surfaced where members are read.\n\n- **Build:** a `capex_role` tag on the `mag7_regime.v1` member table\n  (`engine/mag7_regime.py`) — `spender` (MSFT/GOOGL/AMZN/META per `demand_capex.py` pool) |\n  `beneficiary` (NVDA) | `refuge` (AAPL) | `narrative` (TSLA) — rendered as a plain-word chip\n  wherever the member row or its tier fire is displayed (Mag-7 panel, Big Seven board,\n  us_stocks tier grids). Plain-word framing per DESIGN_DOCTRINE: \"spends the AI capex\" /\n  \"sells into the AI capex\" / \"cash refuge — outside the bind\".\n- **Epistemics:** pure re-expression of an existing calibrated taxonomy + a published memo.\n  Display-tier, ships freely. No new signal originated.",
+      "sha256": "e3171015006aa2bd6e08f4333819c2d791aa3b4767bd6ca723c03f1da65a36d7"
+    },
+    "dependence_group": "mag7-july-2026"
+  },
+  "question_en": "How should the supplied July 22 after-hours capex reaction and bullish short-horizon crossovers be read alongside the weekly regime?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-22 (after hours). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-22] - **Index regime turned hostile ~4 weekly bars ago, and our own ledger dated it.**\n  `data/index_momentum/events.parquet` (W-FRI grid): **MAG7 carrier and SOXX weekly RSI-MACD\n  bearish crosses on 2026-06-26** (SOXX from 95th-pctile depth — crossed down from an extended\n  state; MAG7 from 26th-pctile depth — weak structure), **QQQ weekly bearish cross 2026-07-03**.\n  Since then: semis/memory sold off hard, then violent two-way chop; every day a see-saw\n  rotation among defensives ↔ Mag-7 hyperscalers ↔ AI hardware.\n- **The entry layer leaned bullish into it.** 2D/3D MACD-RSI bullish crossovers (the\n  `engine/confluence_tiers.py` T1/T2 constructions) fired across the Mag-7 cohort. We believed\n[2026-07-22]   the hyperscalers were about to run, and NVDA with them.\n- **Resolution so far:** AAPL was the only clean outperformer. NVDA is constructive but\n  violently choppy — the *path*, not necessarily the terminal direction, is what failed.\n  GOOGL/AMZN/META/MSFT were weak and chopped hard.\n- **2026-07-22 AH:** Alphabet beat on every reported line, **raised FY26 capex guidance from\n  $180–190B to $195–205B**, and traded **−4% after hours**. AMZN/META/MSFT down in sympathy.\n  Hardware not up big AH — the capex raise that is nominally *their* revenue produced no loud\n  relief.",
+  "expected_properties": [
+    {
+      "tag": "horizon_scope",
+      "check": "Explain that bullish 2D/3D entries and bearish weekly cohort crosses can coexist because their horizons differ."
+    },
+    {
+      "tag": "dispersion",
+      "check": "Avoid treating the cohort as a monolithic buy; separate spender, beneficiary and refuge hypotheses, and ask for member-level evidence where absent."
+    },
+    {
+      "tag": "event_vs_cause",
+      "check": "Reconcile the reported beat, capex guidance increase and negative after-hours reaction without claiming a proved single cause."
+    },
+    {
+      "tag": "conditional_read",
+      "check": "Separate observed tape from conditional interpretation and name what would change the read; no invented July 23 information, odds or execution grant."
+    },
+    {
+      "tag": "source_limits",
+      "check": "Keep retrospective supplied-text replay distinct from a proven historically served snapshot."
+    }
+  ],
+  "known_failure_modes": [
+    "Promote instrument or short-horizon state into a world verdict.",
+    "Add later information or silently assume historical source availability.",
+    "Claim a causal or trading conclusion beyond the supplied observations."
+  ],
+  "gold_standard_sentence": "The short-horizon fires sit inside a hostile weekly regime, and the capex reaction calls for a member-specific conditional reading rather than a single bullish cohort verdict.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

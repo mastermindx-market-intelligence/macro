@@ -55,7 +55,7 @@
     "name_zh": "\u4e2d\u8d44\u6d88\u8d39\u54c1\u724c",
     "rank": 1,
     "reco": "hold",
-    "score": 62
+    "score": 63
   },
   "hk_dividend": {
     "label": "emerging",
@@ -63,7 +63,7 @@
     "name_zh": "\u9ad8\u80a1\u606f\u84dd\u7b79",
     "rank": 8,
     "reco": "enter",
-    "score": 39
+    "score": 41
   },
   "hk_energy": {
     "label": "neutral",
@@ -143,7 +143,7 @@
     "name_zh": "\u79d1\u6280\u786c\u4ef6\u4e0e\u534a\u5bfc\u4f53",
     "rank": 17,
     "reco": "avoid",
-    "score": 28
+    "score": 27
   },
   "hk_telco_util": {
     "label": "emerging",
@@ -151,6 +151,6 @@
     "name_zh": "\u7535\u4fe1\u4e0e\u516c\u7528\u4e8b\u4e1a",
     "rank": 7,
     "reco": "hold",
-    "score": 40
+    "score": 41
   }
 }
