@@ -445,7 +445,7 @@ def _read_json(path: Path) -> Any:
         raise SnapshotRefused("SOURCE_FAILED", f"{path.name} is not valid JSON: {exc}") from exc
 
 
-def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
+def read_workspace(data_root: Path, page: SuitePage, *, read_json=None) -> tuple[dict, dict]:
     """Load + validate one workspace artifact. Raises :class:`SnapshotRefused`.
 
     Order matters: the manifest is read FIRST (it is written LAST by the
@@ -454,8 +454,9 @@ def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
     that trusted either half alone could render one generation under another
     generation's header.
     """
+    reader = read_json if read_json is not None else _read_json
     manifest_path = data_root / "workspaces" / "manifest.json"
-    manifest, _ = _read_json(manifest_path)
+    manifest, _ = reader(manifest_path)
     if not isinstance(manifest, Mapping):
         raise SnapshotRefused("SOURCE_FAILED", "manifest.json is not a JSON object")
 
@@ -477,7 +478,7 @@ def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
         raise SnapshotRefused("SOURCE_FAILED", f"manifest path for {key!r} is not a safe relative path")
 
     body_path = data_root / relative
-    snapshot, byte_size = _read_json(body_path)
+    snapshot, byte_size = reader(body_path)
 
     try:
         contract.validate(snapshot)

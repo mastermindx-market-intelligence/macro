@@ -1,0 +1,116 @@
+{
+  "schema": "mastermind.shared_shell.r33_browser_proof.v1",
+  "status": "BUILT_NOT_PROVEN",
+  "production_release_accepted": false,
+  "implementation_commit": "7731fad48406fd3875cbf012b0665f0b9adf4580",
+  "pr": 7949,
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "82a0edf482e694ce6c619022bc2f54cddae50e35",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "environment": {
+    "captured_at_utc": "2026-09-30T08:01:00Z",
+    "browser": "Google Chrome 154.0.8037.58",
+    "playwright_test": "1.62.0",
+    "node": "v26.5.0",
+    "server": "python http.server against the committed site tree at 127.0.0.1:8877",
+    "navigation_css_digest": "791020aa"
+  },
+  "pilot_pages": [
+    "macro.html",
+    "sector_central.html",
+    "reports.html"
+  ],
+  "browser_matrix": {
+    "passed": 8,
+    "failed": 0,
+    "cases": [
+      "desktop dark English open/search/no-match/reset/Escape/focus-return on all three pilots",
+      "mobile 390x844 light Chinese heading-focus/translation/viewport/close on all three pilots",
+      "foreign live modal blocks All tools without disturbing the existing overlay",
+      "live source withdrawal removes href, disables projection and announces the change",
+      "desktop dialog footer width equals shell width; max-width none; margin-top zero",
+      "theme.js, account.js and nav_market.js observed with HTTP 200"
+    ]
+  },
+  "source_verification": {
+    "all_tools_integration": {
+      "passed": 10,
+      "failed": 0,
+      "includes_controller_node_tests": 97
+    },
+    "template_site_sync": {
+      "pairs_checked": 105,
+      "status": "PASS"
+    },
+    "targeted_product_chrome": {
+      "collected": 237,
+      "passed": 236,
+      "failed": 1,
+      "warnings": 4,
+      "failure": "test_start_hub_uses_canonical_product_navigation_and_demotes_clock",
+      "failure_classification": "current-main-identical baseline red; not branch-owned"
+    }
+  },
+  "regression": {
+    "observed": "sector_central.html generic footer rules capped and offset .mmx-tools-footer",
+    "root_cause": "host page footer { max-width:95ch; margin-top:30px } leaked into the dialog footer",
+    "repair": ".mmx-tools-footer now owns width:100%, max-width:none and margin:0",
+    "cache_contract": "all three committed pilots now reference navigation-refresh.css?v=791020aa in preload and stylesheet links",
+    "red_green": "new source-level isolation and pilot-stamp tests failed before the repair and passed after it"
+  },
+  "screenshots": {
+    "macro-desktop-dark-en.png": {
+      "bytes": 207854,
+      "sha256": "2cdbf1b4099a1d932947b137ef0a4c79f3b4d9ec96cef816e1dc3687decebb79",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "macro-mobile-light-zh.png": {
+      "bytes": 65693,
+      "sha256": "b0e912d05094247e3438185193bc285ee9bc7a246105967d53481078ff35bcb2",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    },
+    "reports-desktop-dark-en.png": {
+      "bytes": 182522,
+      "sha256": "16ab5aa642497cda876979af8cadf4ee7493bc194ae54c42fa08ea363ddc0dde",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "reports-mobile-light-zh.png": {
+      "bytes": 66329,
+      "sha256": "e74e915b53ad755ea5e287fcd97c3565c119c704c3394a58a44437ca7ec3661b",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    },
+    "sector_central-desktop-dark-en.png": {
+      "bytes": 199345,
+      "sha256": "96948309e9d0f0ab750656bf7c594dd836ce90ecaa3a8030c443092892219e24",
+      "viewport": "1440x1000",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "sector_central-mobile-light-zh.png": {
+      "bytes": 67565,
+      "sha256": "1c2e87b24626d12812e1efe2ce8f95b4acbf97a1f818a36463352ee1822d1792",
+      "viewport": "390x844",
+      "theme": "light",
+      "locale": "zh"
+    }
+  },
+  "limits": [
+    "local exact-tree browser proof, not deployed CDN or production-edge proof",
+    "no authenticated account, portfolio, watchlist, alert, order or saved-state mutation",
+    "no Safari, Firefox, physical-device, assistive-technology or 200-percent-text acceptance",
+    "PR remains draft and HOLD-FOR-SOL; merge and deployment are not authorized"
+  ]
+}

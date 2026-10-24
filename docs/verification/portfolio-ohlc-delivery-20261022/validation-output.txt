@@ -1,0 +1,75 @@
+
+===== root-core-final/pytest.log =====
+........................................................................ [ 92%]
+......                                                                   [100%]
+78 passed in 3.04s
+
+===== post-rebase-validation/0.log =====
+.........                                                                [100%]
+9 passed, 315 deselected in 1.47s
+
+===== rebased-integration/0.log =====
+....                                                                     [100%]
+4 passed, 122 deselected in 2.07s
+
+===== rebased-integration/1.log =====
+...                                                                      [100%]
+3 passed, 15 deselected in 1.03s
+
+===== rebased-integration/2.log =====
+
+SUSPECT drift (2) — undocumented, needs owner review:
+  [render, engine-render] cl_misc order differs from daily cl_misc: render has sectorcyc→countrycyc→cycle→ measurement→markets vs daily cycle→sect
+    note: UNDOCUMENTED drift inherited at W5a adoption — needs owner review (residual cosmetic order difference only; the build_markets half was resolved by #2728). Either document why the two lanes sequence cy
+  [engine-render] cl_misc omits build_sector_cycles, build_country_cycles, build_cycle, and build_markets vs both daily.yml and render.yml
+    note: UNDOCUMENTED drift inherited at W5a adoption — needs owner review. engine-render.yml cl_misc (lines 241-244) contains only: build_seasonality, build_reports, build_policy_watch, build_index_changes. T
+
+DAG conformance OK — 27 lane(s) checked, 2 suspect drift(s) visible above.
+
+===== ci-registration-final/pytest.log =====
+.F..............................                                         [100%]
+=================================== FAILURES ===================================
+_________ test_curated_exclusive_scopes_cover_their_own_import_closure _________
+tests/test_ci_pack.py:5063: in test_curated_exclusive_scopes_cover_their_own_import_closure
+    assert not misses, (
+E   AssertionError: curated exclusive scope(s) no longer cover their own import closure:
+E       biocatalyst-serving: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       cn-standout-audit: ['app/deploy/ohlc_origin_known_hosts']
+E       coiled-mtf-anchor-era: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       conviction-profile: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       crypto-vector-r2-organs: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       dashboard-render-contract: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       intelligence-registry: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       international-workspace-browser: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       international-workspace-foundation: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       itr-turn-rotation: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       nw-lobe-unfreeze: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       unrun-picks-boards: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E       washout-turn-organ: ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py']
+E     
+E     A new import reached a tree the declaration does not name, so that job silently stopped running for edits to it. Widen the job's `paths:` in .github/ci/legacy-jobs.yml to cover the listed files — widening is always the safe direction.
+E   assert not {'biocatalyst-serving': ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py'], 'cn-standout-audit': ['app/...cripts/publish_ohlc.py'], 'conviction-profile': ['app/deploy/ohlc_origin_known_hosts', 'scripts/publish_ohlc.py'], ...}
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure
+1 failed, 31 passed, 172 deselected in 146.28s (0:02:26)
+
+===== ci-registration-closure/pytest.log =====
+...............................F                                         [100%]
+=================================== FAILURES ===================================
+___________________ test_ancestor_init_census_does_not_grow ____________________
+tests/test_ci_pack.py:8066: in test_ancestor_init_census_does_not_grow
+    assert len(rows) <= _ANCESTOR_INIT_CENSUS_CEILING, _aic_ceiling_failure(
+E   AssertionError: ancestor-init blind spot GREW: total rows measured 353 against ceiling 344 (main 3a316a30) — 9 over. Remedy: declare the ancestor `__init__.py` in that job's `paths:` so the change that executes it selects the job. List every row with `python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --ancestor-init-census`; jobs currently covered: 115 (agentos-knowledge-contracts, am-edition-producer, biocatalyst-history, biocatalyst-serving, biocatalyst-worker, china-altdata-catalysts, china-radar-record, china-search-universe ...)
+E   assert 353 <= 344
+E    +  where 353 = len([('agentos-knowledge-contracts', 'engine/context_index/fusion.py', 'engine/__init__.py'), ('agentos-knowledge-contract...se/__init__.py'), ('biocatalyst-history', 'tests/test_biocatalyst_change_classification.py', 'tests/__init__.py'), ...])
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow - Asser...
+1 failed, 31 passed, 172 deselected in 164.16s (0:02:44)
+
+===== ci-ancestor-final/pytest.log =====
+.                                                                        [100%]
+1 passed in 6.85s

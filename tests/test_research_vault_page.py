@@ -586,3 +586,17 @@ def test_status_timestamp_is_rendered_per_language():
     assert "function fmtStamp(iso, useZh)" in js
     assert "fmtStamp(iso, false)" in js and "fmtStamp(iso, true)" in js
     assert "useZh ? p[0] + '年'" in js
+
+
+def test_hero_freshness_runtime_contract():
+    """Exercise the real hero function for stale, loading and entitled states."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required for the Research Vault hero contract"
+    result = subprocess.run(
+        [node, "--test", str(bld.ROOT / "tests/js/research_vault_hero_freshness.test.mjs")],
+        cwd=bld.ROOT, capture_output=True, text=True, timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

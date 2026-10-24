@@ -51,6 +51,27 @@
   // theme.js applies the signed-in account's saved theme/lang on SIGNED_IN (setTheme/setLang
   // inside the 'mdx-auth' dispatch). Those are not user edits, so they must not echo a save.
   var _authApplying = false;
+  // Shared Shell bridge: consulted at call time inside the synchronous event
+  // dispatch, never mirrored into a locally-lifted async fence (unlike
+  // _authApplying above, which keeps its original SIGNED_IN scope). There is no
+  // presented-state prerequisite: the bridge applies the parent's initial
+  // context synchronously BEFORE it marks itself presenting, so gating on that
+  // flag would leak legacy preference writes during the first apply.
+  // Candidate EXISTENCE is the qualified-embed signal — the bridge installs
+  // window.MMXSharedShell only behind its parent/frame-generation/referrer
+  // guards and deletes it on teardown — and the frozen `applyingContext` getter
+  // is true exactly while a bridge invocation of setTheme/setLang is running.
+  // No candidate => both helpers falsy => this file behaves exactly as before.
+  function _mmShellPresent() {
+    try {
+      var s = window.MMXSharedShell;
+      return !!(s && typeof s.openAuth === 'function');
+    } catch (e) { return false; }
+  }
+  function _mmShellApplying() {
+    if (!_mmShellPresent()) return false;
+    try { return !!window.MMXSharedShell.applyingContext; } catch (e) { return false; }
+  }
   // Pending-pref owner key. /api/account carries the stable Supabase user id, so the
   // fence keys on it; the email is the fallback only when the id is absent.
   function _acctKey(a) {
@@ -384,6 +405,11 @@
   // --------------------------------------------------- preference sync -------
   function applyPrefs(a) {
     if (!a || !a.authenticated || !a.prefs) return;
+    // Shared Shell candidate exists: late /api/account prefs must not override
+    // the theme or locale the native identity/Settings surface owns — before
+    // and after the first parent apply alike; the parent context is
+    // authoritative the moment the frame is qualified.
+    if (_mmShellPresent()) return;
     _hydrating = true;
     try {
       if (a.prefs.theme && (a.prefs.theme === 'light' || a.prefs.theme === 'dark') &&
@@ -402,7 +428,7 @@
   // sent single-flight; each field is marked queued -> sent -> acked|failed on the root.
   function _setPrefState(key, s) { _prefState[key] = s; if (_root) _root.setAttribute('data-pref-' + key, s); }
   function persistPref(key, val) {
-    if (_hydrating || _authApplying || !state.acct || !state.acct.authenticated) return;
+    if (_hydrating || _authApplying || _mmShellApplying() || !state.acct || !state.acct.authenticated) return;
     var owner = _acctKey(state.acct);
     if (_prefOwner !== owner) { _prefPending = {}; _prefOwner = owner; }
     _prefPending[key] = val; _setPrefState(key, 'queued');
@@ -1121,12 +1147,13 @@
   }
   // Single-owner handshake for the shared theme/lang atomics (see the header). True
   // exactly when persistPref would queue a write for `key`: the panel is mounted, the
-  // account read settled as signed-in, and no hydration or auth-apply fence is up.
+  // account read settled as signed-in, no hydration or auth-apply fence is up, and no
+  // Shared Shell bridge apply is in flight.
   // theme.js consults this before its own updateUser save and leaves those keys here.
   function claimsPref(key) {
     if (!_mounted) return false;
     if (key !== 'theme' && key !== 'lang') return false;
-    if (_hydrating || _authApplying) return false;
+    if (_hydrating || _authApplying || _mmShellApplying()) return false;
     return !!(state.loaded && !state.unavail && state.acct && state.acct.authenticated);
   }
   window.MMAccount = {
@@ -1253,7 +1280,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261015-mm-return-language';
+    s.src = pfx + 'nav_market.js?v=20261018-shared-shell-source-join';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();

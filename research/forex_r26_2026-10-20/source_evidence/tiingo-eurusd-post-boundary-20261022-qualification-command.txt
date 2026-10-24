@@ -1,0 +1,60 @@
+cd '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-source-qualification-20261022-sol-001' && /opt/homebrew/Caskroom/miniconda/base/bin/python3 - <<'PY'
+from pathlib import Path
+from datetime import datetime,timezone
+from decimal import Decimal
+import gzip,hashlib,json
+from urllib.parse import parse_qs,urlsplit
+from collectors.tiingo_archive import DEFAULT_ARCHIVE,receipt_identity
+from scripts.tiingo_materialize import materialize_one
+from lib.dataos.tiingo_reader import read_research_view
+from lib.dataos.tiingo_forex import reconcile_forex_intervals
+root=DEFAULT_ARCHIVE;evidence=Path('research/forex_r26_2026-10-20/source_evidence')
+capture=json.loads((evidence/'tiingo-eurusd-post-boundary-20261022-collect.json').read_text())
+prior=json.loads((evidence/'tiingo-eurusd-open-20261022-receipts.json').read_text())['source_records']
+assert capture['result']=={'attempted':2,'ok':2,'new':2,'failed':0,'row_hints':284,'bytes':32851,'errors':[]}
+code_before={p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in ['lib/dataos/tiingo_forex.py','lib/dataos/tiingo_reader.py','scripts/tiingo_materialize.py']}
+records={};views={};raw_data={};preserved={}
+for path in (root/'receipts/forex-bars/2026-10-22').glob('*.json'):
+ rec=json.loads(path.read_text())
+ if (rec.get('symbol')=='eurusd' and capture['started_at_utc']<=rec.get('observed_at_utc','')<=capture['completed_at_utc'] and rec.get('request_path') in [prior[f]['receipt']['request_path'] for f in ['1min','4hour']]):
+  frequency=parse_qs(urlsplit(rec['request_path']).query)['resampleFreq'][0]
+  rawpath=root/rec['raw_path'];raw=gzip.decompress(rawpath.read_bytes())
+  assert hashlib.sha256(raw).hexdigest()==rec['raw_sha256'] and len(raw)==rec['raw_bytes']
+  ident=receipt_identity(rec);data=json.loads(raw,parse_float=Decimal,parse_int=Decimal)
+  assert frequency not in records
+  materialized=materialize_one(root,rec)
+  view=read_research_view('forex-bars','2026-10-22',ident,root=root,purpose='INSPECTION',receipt_path=path,max_rows=20000)
+  records[frequency]={'receipt_path':str(path.relative_to(root)),'receipt_id':ident,'raw_sha256':rec['raw_sha256'],'request_path':rec['request_path'],'original_response_observed_at_utc':rec['observed_at_utc'],'raw_bytes':rec['raw_bytes'],'rows':len(data),'first_vendor_label':data[0]['date'] if data else None,'last_vendor_label':data[-1]['date'] if data else None,'materialization':materialized,'reader_authority':view.authority,'reader_purpose':view.purpose}
+  views[frequency]=view;raw_data[frequency]=data
+  for p in [path,rawpath]:preserved[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
+assert set(records)=={'1min','4hour'}
+diagnostic=reconcile_forex_intervals(views['1min'],views['4hour'],expected_pair='EURUSD',minute_receipt_id=records['1min']['receipt_id'],four_hour_receipt_id=records['4hour']['receipt_id'])
+def dt(label):return datetime.fromisoformat(label.replace('Z','+00:00'))
+fields=('open','high','low','close')
+raw_windows=[]
+for native in raw_data['4hour']:
+ start=dt(native['date']);end=start+__import__('datetime').timedelta(hours=4)
+ rows=sorted([r for r in raw_data['1min'] if start<=dt(r['date'])<end],key=lambda r:dt(r['date']))
+ agg={'open':rows[0]['open'],'high':max(r['high'] for r in rows),'low':min(r['low'] for r in rows),'close':rows[-1]['close']}
+ raw_windows.append({'native_label':native['date'],'candidate_start_utc':start.isoformat(),'candidate_end_utc':end.isoformat(),'observed_minute_rows':len(rows),'raw_decimal_equal_fields':{k:agg[k]==native[k] for k in fields}})
+vintages={}
+for frequency in ['1min','4hour']:
+ oldpath=root/prior[frequency]['receipt_path'];oldrec=json.loads(oldpath.read_text());oldrawpath=root/oldrec['raw_path'];oldraw=gzip.decompress(oldrawpath.read_bytes())
+ assert hashlib.sha256(oldraw).hexdigest()==oldrec['raw_sha256'] and receipt_identity(oldrec)==prior[frequency]['receipt']['receipt_id']
+ oldrows=json.loads(oldraw,parse_float=Decimal,parse_int=Decimal);newby={r['date']:r for r in raw_data[frequency]};changes=[]
+ for ordinal,row in enumerate(oldrows):
+  new=newby.get(row['date'])
+  if new is None or any(row[k]!=new[k] for k in fields):
+   changes.append({'prior_source_row_ordinal':ordinal,'vendor_label':row['date'],'present_in_new_capture':new is not None,'equal_fields':{k:row[k]==new[k] for k in fields} if new else None})
+ vintages[frequency]={'original_receipt_id':prior[frequency]['receipt']['receipt_id'],'original_raw_sha256':oldrec['raw_sha256'],'original_rows':len(oldrows),'new_rows':len(raw_data[frequency]),'prior_labels_compared':len(oldrows),'changed_prior_rows':len(changes),'changes':changes,'original_response_preserved':True}
+ for p in [oldpath,oldrawpath]:preserved[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
+safe_hypotheses=[]
+for hyp in diagnostic['hypotheses']:
+ safe_hypotheses.append({'name':hyp['name'],'summary':hyp['summary'],'windows':[{'native_source_row_ordinal':w['native_source_row_ordinal'],'candidate_start_utc':w['interval_start_utc'],'candidate_end_utc':w['interval_end_utc'],'coverage':{k:v for k,v in (w['coverage'] or {}).items() if k!='observed_source_row_ordinals'},'equal_fields':w['equal_fields'],'all_ohlc_equal':w['all_ohlc_equal'],'blocked_reasons':w['blocked_reasons']} for w in hyp['windows']]})
+assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in code_before.items())
+assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==h for p,h in preserved.items())
+result={'schema':'forex_r26.post_boundary_qualification.v1','verification_completed_at_utc':datetime.now(timezone.utc).isoformat(),'code_sha256':code_before,'source_records':records,'receipt_observation_clocks':diagnostic['receipt_observation_clocks'],'hypotheses':safe_hypotheses,'raw_decimal_start_label_windows':raw_windows,'vintage_comparisons':vintages,'raw_and_receipt_files_unchanged':preserved,'new_api_requests_in_verification':0,'eligible_observations':0,'monitoring_admitted':False,'vendor_immutability_proven':False,'boundary_latency_proven':False,'interpretation':'One observation about41minutes after04:00; retained prior open responses are compared without replacing their clocks or values. A post-boundary complete local grid is not a guarantee of immutable vendor finality or low-latency availability.'}
+target=evidence/'tiingo-eurusd-post-boundary-20261022-qualification.json'
+with target.open('x') as out:json.dump(result,out,indent=2,sort_keys=True,allow_nan=False);out.write('\n')
+print(json.dumps({'file':str(target),'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'verification_completed_at_utc':result['verification_completed_at_utc'],'source_records':records,'start_hypothesis':safe_hypotheses[0],'raw_decimal_start_label_windows':raw_windows,'vintage_comparisons':vintages,'eligible_observations':0}))
+PY

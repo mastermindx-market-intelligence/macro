@@ -22,8 +22,9 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from hashlib import sha256
+from math import isfinite
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -1177,12 +1178,17 @@ def _weakening_conditions(
         if r.get("novelty") == "corrected_fact" and r.get("record_kind") == "fact_revision"
     ]
     if corrections:
-        armed = _correction_reduces_magnitude(corrections, payload, owners)
+        live_corrections = [
+            r for r in live_attached
+            if r.get("novelty") == "corrected_fact"
+            and r.get("record_kind") == "fact_revision"
+        ]
+        evidence_ids = _magnitude_reduction_evidence(live_corrections, owners)
         out.append(
             {
                 "code": "source_correction_reduces_magnitude",
-                "armed": armed,
-                "evidence_fact_ids": sorted(r["fact_id"] for r in corrections) if armed else [],
+                "armed": bool(evidence_ids),
+                "evidence_fact_ids": evidence_ids,
             }
         )
 
@@ -1212,26 +1218,95 @@ def _weakening_conditions(
     return out
 
 
-def _correction_reduces_magnitude(
+def _finite_nonnegative_amount(value: Any) -> bool:
+    return (
+        type(value) in (int, float)
+        and (type(value) is int or isfinite(value))
+        and 0 <= value <= 1_000_000_000_000_000
+    )
+
+
+def _magnitude_reduction_evidence(
     corrections: Sequence[Mapping[str, Any]],
-    payload: Mapping[str, Any],
     owners: OwnerSnapshot,
-) -> bool:
+) -> list[str]:
+    """Current corrections with a lower exact amount than their direct predecessor.
+
+    Only producer-preserved canonical monetary points can qualify. Legacy scalar
+    leaves and fingerprints do not establish units, scope or numerical direction.
+    """
+    monetary_keys = {
+        "capital_allocation_event.v1": ("remaining", "incremental", "executed"),
+        "demand_guidance_contract_event.v1": ("stated_amount",),
+    }
+    candidates = []
     for rec in corrections:
         prior_id = rec.get("supersedes_fact_id")
-        prior_payload = _leaf_payload(owners, prior_id) if isinstance(prior_id, str) else {}
-        new_payload = _leaf_payload(owners, rec["fact_id"]) or payload
-        for key in ("remaining", "incremental", "executed", "stated_amount", "stated_quantity"):
-            old = prior_payload.get(key)
-            new = new_payload.get(key)
-            if isinstance(old, (int, float)) and isinstance(new, (int, float)) and new < old:
-                return True
-        # Fingerprint change without numeric payloads still counts as a
-        # restatement of magnitude (Case 3 placeholder hashes differ).
-        new_fp = rec.get("quantity_fingerprint") or {}
-        if new_fp.get("form") == "present":
-            return True
-    return False
+        if not isinstance(prior_id, str) or prior_id == rec["fact_id"]:
+            continue
+        prior = _leaf_payload(owners, prior_id)
+        current = _leaf_payload(owners, rec["fact_id"])
+        old_terms = prior.get("quantity_terms")
+        new_terms = current.get("quantity_terms")
+        if not isinstance(old_terms, Mapping) or not isinstance(new_terms, Mapping):
+            continue
+        if prior.get("negated") is not False or current.get("negated") is not False:
+            continue
+        # These existing leaf fields are negative evidence when inconsistent.
+        if prior.get("horizon_token") != current.get("horizon_token"):
+            continue
+        template = rec.get("payload_schema")
+        if prior.get("template") != template or current.get("template") != template:
+            continue
+        keys = monetary_keys.get(template, ())
+        for key in keys:
+            old, new = old_terms.get(key), new_terms.get(key)
+            if not isinstance(old, Mapping) or not isinstance(new, Mapping):
+                continue
+            candidates.append((rec["fact_id"], key, prior, current, old, new))
+    if not candidates:
+        return []
+
+    contract = load_schema("news_impact_event.v1.schema.json")
+    validator = Draft202012Validator({
+        "$defs": contract["$defs"],
+        "$ref": "#/$defs/quantity_point",
+    })
+    qualified: set[str] = set()
+    for fact_id, key, prior, current, old, new in candidates:
+        if not validator.is_valid(old) or not validator.is_valid(new):
+            continue
+        if old["bound"] != "exact" or new["bound"] != "exact":
+            continue
+        if old["negated"] is not False or new["negated"] is not False:
+            continue
+        values = (old["value"], new["value"], prior.get(key), current.get(key))
+        if not all(_finite_nonnegative_amount(value) for value in values):
+            continue
+        if prior[key] != old["value"] or current[key] != new["value"]:
+            continue
+        # Initial supported unit is the explicit base currency, e.g. USD.
+        # Scaled/free-text units need a separate qualified normalization policy.
+        currency = old["currency"]
+        if not re.fullmatch(r"[A-Z]{3}", currency) or old["unit"] != currency:
+            continue
+        if any(old[field] != new[field] for field in ("unit", "currency", "basis", "period")):
+            continue
+        if old["basis"] not in {"total", "incremental"}:
+            continue  # no rate, percentage or per-share denominator is inferred
+        period = old["period"]
+        if period.get("period_kind") not in {"fiscal_year", "quarter"}:
+            continue  # equal absences or partial windows do not establish scope
+        if "end_year" in period:
+            continue
+        if period["calendar_end"] is not None:
+            try:
+                date.fromisoformat(period["calendar_end"])
+            except ValueError:
+                continue
+        if new["value"] < old["value"]:
+            qualified.add(fact_id)
+    return sorted(qualified)
 
 
 def _display(
@@ -1244,33 +1319,22 @@ def _display(
     milestones: Sequence[Mapping[str, Any]],
     contrary: Sequence[str],
 ) -> dict[str, Any]:
-    armed = {w["code"] for w in weakening if w.get("armed")}
     slot = (live_prop.get("fact_key") or {}).get("slot") or {}
     horizon = str(slot.get("horizon_token") or "")
     year = horizon[2:] if horizon.startswith("FY") else horizon
     windows = _display_windows(next_obs, deadline, live_prop, year)
 
-    if "source_correction_reduces_magnitude" in armed or any(
-        w["code"] == "source_correction_reduces_magnitude" for w in weakening
-    ):
-        # Case 3 wording when this is a remaining-authorization restatement.
-        watching = (
-            "the issuer restated remaining authorization; the 28 September figure remains in the log"
+    if live_prop.get("novelty") == "corrected_fact":
+        subject = (
+            "the repurchase disclosure"
             if slot.get("action_type") == "share_repurchase"
-            else "the issuer restated the figure; the earlier figure remains in the log"
+            else "this disclosure"
         )
-        # Only use the restatement watching when the correction is the live fact.
-        if live_prop.get("novelty") == "corrected_fact":
-            status = (
-                "the issuer restated remaining authorization; the 28 September figure remains in the log"
-                if slot.get("action_type") == "share_repurchase"
-                else "the source now states a restated figure. the earlier figure remains in the log"
-            )
-            return {
-                "what_we_are_watching": watching,
-                "windows": windows,
-                "plain_status": status,
-            }
+        return {
+            "what_we_are_watching": "Review the corrected terms and their supporting source records.",
+            "windows": windows,
+            "plain_status": f"A source correction is available for {subject}.",
+        }
 
     if contrary:
         obj = slot.get("object_name") or "the stated object"
@@ -1396,10 +1460,21 @@ def _material_delta_triggers(
         # Restrict to records attached to this view's original proposition.
         if not _record_belongs(rec, view["original_proposition_fact_id"], log, as_of_utc):
             continue
+        gid = _provenance_group_id(rec)
+        known_group_reporting = (
+            rec.get("novelty") in {"new_reporting_of_old_fact", "commentary"}
+            and gid in prior_groups
+        )
         if rec.get("record_kind") == "fact_revision":
             fp = rec.get("quantity_fingerprint") or {}
-            if fp.get("form") == "present":
-                # Compare to prior live fingerprint if any.
+            # Contributions belong to this attached record. A milestone is not
+            # a numeric revision, and a mirror cannot erase another record's
+            # independently established contribution to the interval.
+            if (
+                fp.get("form") == "present"
+                and rec.get("novelty") != "independently_observed_milestone"
+                and not known_group_reporting
+            ):
                 fired.add("changed_numeric_terms")
             if rec.get("novelty") == "independently_observed_milestone":
                 fired.add("independently_observed_milestone")
@@ -1407,18 +1482,8 @@ def _material_delta_triggers(
                 fired.add("source_correction")
             if rec.get("polarity") == "contrary" and prior_supporting:
                 fired.add("contradiction")
-        gid = _provenance_group_id(rec)
         if gid and gid not in prior_groups:
             fired.add("new_independent_source")
-        # Cosmetic / mirror: same fingerprint, known group, manifestation.
-        if (
-            rec.get("novelty") in {"new_reporting_of_old_fact", "commentary"}
-            and _provenance_group_id(rec) in prior_groups
-        ):
-            fp = rec.get("quantity_fingerprint") or {}
-            # Do not treat as changed_numeric_terms.
-            fired.discard("changed_numeric_terms")
-            fired.discard("new_independent_source")
     # missed_deadline: armed now, not armed before
     now_missed = any(
         w.get("code") == "missed_stated_deadline" and w.get("armed")
@@ -1465,18 +1530,6 @@ def _material_delta_triggers(
         # caller named a prior_as_of (Case 2/3/4).
         if not records:
             return []
-    # Drop changed_numeric_terms if the only new revisions are milestones with
-    # form=absent fingerprints.
-    if "changed_numeric_terms" in fired:
-        numeric = False
-        for rec in records:
-            if rec.get("record_kind") != "fact_revision":
-                continue
-            fp = rec.get("quantity_fingerprint") or {}
-            if fp.get("form") == "present" and rec.get("novelty") != "independently_observed_milestone":
-                numeric = True
-        if not numeric:
-            fired.discard("changed_numeric_terms")
     return [t for t in TRIGGER_EMIT_ORDER if t in fired]
 
 

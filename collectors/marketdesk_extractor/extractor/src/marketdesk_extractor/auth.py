@@ -31,28 +31,44 @@ class BrowserSession(AbstractContextManager):
         self._pw: Any = None
         self.context: Any = None
 
+    def _release(self) -> None:
+        """Close partial or complete browser state without masking another error."""
+        try:
+            if self.context is not None:
+                try:
+                    self.context.close()
+                except Exception as e:  # noqa: BLE001 - cleanup is best-effort
+                    log.warning("browser context close failed: %s", e)
+        finally:
+            if self._pw is not None:
+                try:
+                    self._pw.stop()
+                except Exception as e:  # noqa: BLE001 - still clear both references
+                    log.warning("playwright driver stop failed: %s", e)
+            self.context = None
+            self._pw = None
+
     def __enter__(self) -> "BrowserSession":
         from playwright.sync_api import sync_playwright
 
-        self.cfg.profile_dir.mkdir(parents=True, exist_ok=True)
-        self._pw = sync_playwright().start()
-        self.context = self._pw.chromium.launch_persistent_context(
-            user_data_dir=str(self.cfg.profile_dir),
-            headless=self.headless,
-            user_agent=_UA,
-            viewport={"width": 1440, "height": 900},
-            args=["--disable-blink-features=AutomationControlled"],
-        )
-        self.context.set_default_timeout(30_000)
+        try:
+            self.cfg.profile_dir.mkdir(parents=True, exist_ok=True)
+            self._pw = sync_playwright().start()
+            self.context = self._pw.chromium.launch_persistent_context(
+                user_data_dir=str(self.cfg.profile_dir),
+                headless=self.headless,
+                user_agent=_UA,
+                viewport={"width": 1440, "height": 900},
+                args=["--disable-blink-features=AutomationControlled"],
+            )
+            self.context.set_default_timeout(30_000)
+        except Exception:
+            self._release()
+            raise
         return self
 
     def __exit__(self, *exc: Any) -> None:
-        try:
-            if self.context:
-                self.context.close()
-        finally:
-            if self._pw:
-                self._pw.stop()
+        self._release()
 
     # --- session check -----------------------------------------------------
     def is_authenticated(self) -> bool:

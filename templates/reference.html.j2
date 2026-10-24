@@ -919,6 +919,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
   }
   handleHash();
   window.addEventListener("hashchange", handleHash);
+  window.addEventListener("mmx:shell-location", handleHash);
 
   // 8 · Return bar.
   var returnEl = root.querySelector(".rf-return");

@@ -112,6 +112,19 @@ def test_research_desk_prompt_forbids_republishing_the_source():
 
 
 @pytest.mark.parametrize("desk", ["research_desk", "research_note"])
+def test_research_prompt_preserves_explicit_issuer_dossier_path(desk):
+    coverage = "https://www.mastermind-x.com/research/demo.html"
+    dossier = "https://www.mastermind-x.com/stocks/CNDT.html"
+    _, user = W.build_prompt(F.slot(
+        desk=desk, allowed_links=[coverage, dossier],
+        story={"tickers": ["CNDT"]}), F.config())
+    assert "link only the allowlisted coverage page" not in user
+    assert "use its allowlisted stock dossier" in user
+    assert "never infer an issuer or construct a missing link" in user
+    assert f"LINKING: {coverage}, {dossier}" in user
+
+
+@pytest.mark.parametrize("desk", ["research_desk", "research_note"])
 def test_research_coverage_does_not_claim_external_estimates_as_our_measurements(desk):
     """The actual USDA slot labels our annotations first_party, not its forecasts.
 
@@ -170,6 +183,36 @@ def test_research_dates_keep_supplied_iso_vintages_and_do_not_supply_receipts(de
     assert "(dated 2026-10-09)" in user and "(dated 2026-10-13)" in user
     assert "MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]" in user
     assert json.dumps(slot, sort_keys=True) == before
+
+
+def test_report_publication_is_not_presented_as_an_observation_clock():
+    source = {
+        "id": "vault_point_0", "ref": "research_vault:demo", "tier": "first_party",
+        "dated": "2026-10-13", "date_role": "publication", "values": [],
+        "text": "Publication was 2026-10-13; observations ended 2026-10-11. Harvest was 33%.",
+    }
+    slot = F.slot(desk="research_desk", as_of="2026-10-18", facts=[source, {
+        "id": "engine", "tier": "first_party", "values": [40],
+        "dated": "2026-10-16", "text": "The composite reads 40.",
+    }])
+    system, user = W.build_prompt(slot, F.config())
+    assert "(published 2026-10-13; observation date not implied)" in user
+    assert "(dated 2026-10-16)" in user
+    assert source["text"] in user
+    assert "A publication date is not an observation date" in user
+    assert "without quoting unrelated market statistics" in system
+    assert "Aggregate estimates do not establish" in system
+    assert "Relevant own comparisons are optional" in system
+    assert "each SOURCE FACT below carries its own observation date" not in user
+
+
+def test_missing_publication_clock_never_borrows_run_date():
+    _, user = W.build_prompt(F.slot(as_of="2026-10-18", facts=[{
+        "text": "The report supplies no observation date.", "tier": "third_party",
+        "dated": None, "date_role": "publication",
+    }]), F.config())
+    assert "(publication date: none supplied)" in user
+    assert "(published 2026-10-18" not in user
 
 
 def test_retry_prompt_names_the_specific_failures():

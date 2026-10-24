@@ -1906,3 +1906,194 @@ class TestPlanNativeSourceReadOwnership:
         assert result["read_status"] == "UNAVAILABLE"
         assert result["reason_codes"] == ["CANDIDATE_SNAPSHOT_UNAVAILABLE"]
         assert result["native_identity"] is None
+
+
+# Nightly publication reads the canonical ledger a second time after advancing it.
+# These tests live with the existing PlanNativeSourceRead producer contract
+# because that CI gate owns native source-read safety and runs this named subset
+# on every relevant code change (no new unregistered test suite).
+class TestPlanNativeSourceReadSameBuildLedger:
+    @staticmethod
+    def _open(plan_id="A-20261023"):
+        return {
+            "id": plan_id,
+            "closed": False,
+            "phase": "triggered",
+            "clock_age_days": 8,
+            "pulse": "8d · triggered",
+            "pulse_zh": "8天 · 已触发",
+            "what_to_do_now": ["Buy above trigger"],
+            "what_to_do_now_zh": ["突破触发价买入"],
+            "recommended_action": "buy",
+            "state": {"recommended_action": "buy", "phase": "triggered"},
+            "targets": [120.0, 140.0],
+            "profit_plan": [{
+                "level": 120.0, "label": "T1",
+                "action": "Scale out 40%", "status": "ACTIVE"
+            }],
+            "profit_plan_zh": [{
+                "level": 120.0, "label": "T1",
+                "action": "减仓 40%", "status": "ACTIVE"
+            }],
+        }
+
+    def test_new_close_withholds_all_live_action_in_both_languages(self):
+        entry = self._open()
+        bp._reconcile_same_build_closures([entry], {"A-20261023": "INVALIDATED"})
+        assert entry["closed"] is True
+        en, zh = bp._plan_pulse(
+            8, "triggered", None, closed=True, outcome="INVALIDATED"
+        )
+        assert (entry["pulse"], entry["pulse_zh"]) == (en, zh)
+        now_en, now_zh = bp._closed_state_lines("INVALIDATED")
+        assert (entry["what_to_do_now"], entry["what_to_do_now_zh"]) == (
+            now_en, now_zh
+        )
+        assert "Buy above" not in repr(entry)
+        assert entry["recommended_action"] is None
+        assert entry["state"]["recommended_action"] is None
+        assert entry["profit_plan"] == []
+        assert entry["profit_plan_zh"] == []
+        # Historical price levels remain available; no grading is rewritten.
+        assert entry["targets"] == [120.0, 140.0]
+
+    def test_open_unchanged_and_previously_closed_actions_withheld(self):
+        opened = self._open("OPEN")
+        closed = self._open("ALREADY")
+        closed.update(
+            closed=True,
+            pulse="existing historical pulse",
+            what_to_do_now=bp._closed_state_lines("T1_HIT")[0],
+            what_to_do_now_zh=bp._closed_state_lines("T1_HIT")[1],
+        )
+        opened_snapshot = json.loads(json.dumps(opened))
+        bp._reconcile_same_build_closures(
+            [opened, closed], {"ALREADY": "T1_HIT"}
+        )
+        assert opened == opened_snapshot
+        assert closed["pulse"] == "existing historical pulse"
+        assert closed["closed"] is True
+        assert closed["what_to_do_now"] == bp._closed_state_lines("T1_HIT")[0]
+        assert closed["profit_plan"] == []
+        assert closed["profit_plan_zh"] == []
+        assert closed["recommended_action"] is None
+        assert closed["state"]["recommended_action"] is None
+        assert closed["targets"] == [120.0, 140.0]
+
+    def test_missing_id_and_unnamed_outcome_withhold_action(self):
+        missing = self._open("")
+        fresh = self._open("NEW")
+        bp._reconcile_same_build_closures(
+            [missing, fresh], {"": "EXPIRED", "NEW": ""}
+        )
+        assert missing["closed"] is False
+        assert fresh["closed"] is True
+        assert fresh["what_to_do_now"] == bp._closed_state_lines("")[0]
+        assert fresh["what_to_do_now_zh"] == bp._closed_state_lines("")[1]
+        assert fresh["recommended_action"] is None
+        assert fresh["profit_plan"] == []
+
+    def test_no_entry_is_closed_without_suggesting_position_exits(self):
+        plan = self._open("NEVER-ENTERED")
+        bp._reconcile_same_build_closures([plan], {"NEVER-ENTERED": "NO_ENTRY"})
+        assert plan["closed"] is True
+        assert plan["profit_plan"] == []
+        assert plan["profit_plan_zh"] == []
+        assert plan["what_to_do_now"] == bp._closed_state_lines("NO_ENTRY")[0]
+        assert plan["recommended_action"] is None
+
+
+class TestClosedStateSidecarConsistency:
+    """A closed index row and its persisted state cannot disagree on action."""
+
+    @staticmethod
+    def _state(path: Path, plan_id: str) -> dict:
+        value = {
+            "schema": "prophet.management_state/v1",
+            "id": plan_id,
+            "asof": "2026-10-23",
+            "phase": "triggered_pre_t1",
+            "recommended_action": "buy",
+            "human_state": "Advancing Cleanly",
+            "components": {"progress": 45.0},
+            "geometry": {"dist_to_t1_r": 0.55},
+            "reliability": {"recommended_action": "display — unconfirmed"},
+            "_mfe": 9.0,
+        }
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return value
+
+    def test_nightly_new_close_reconciles_disk_sidecar_and_index(
+        self, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr(bp, "STATES_DIR", tmp_path)
+        plan_id = "A-20261023"
+        path = tmp_path / f"{plan_id}.json"
+        previous = self._state(path, plan_id)
+        entry = {
+            "id": plan_id, "closed": False, "clock_age_days": 8,
+            "phase": "triggered", "recommended_action": "buy",
+            "state": {"recommended_action": "buy"},
+            "profit_plan": [{"status": "ACTIVE"}],
+            "profit_plan_zh": [{"status": "ACTIVE"}],
+        }
+        closes = {plan_id: "INVALIDATED"}
+        bp._reconcile_same_build_closures([entry], closes)
+        bp._reconcile_closed_state_sidecars([entry], closes)
+        updated = json.loads(path.read_text(encoding="utf-8"))
+        assert entry["closed"] is True
+        assert entry["recommended_action"] is None
+        assert updated["closed"] is True
+        assert updated["outcome"] == "INVALIDATED"
+        assert updated["recommended_action"] is None
+        assert updated["human_state"] == "Closed"
+        assert "withheld" in updated["reliability"]["recommended_action"]
+        assert updated["components"] == previous["components"]
+        assert updated["geometry"] == previous["geometry"]
+        assert updated["_mfe"] == previous["_mfe"]
+        # Idempotent second projection: no gratuitous rewrite or new authority.
+        once = path.read_bytes()
+        bp._reconcile_closed_state_sidecars([entry], closes)
+        assert path.read_bytes() == once
+
+    def test_open_plan_sidecar_unchanged_and_no_entry_closes_without_action(
+        self, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr(bp, "STATES_DIR", tmp_path)
+        open_path = tmp_path / "OPEN.json"
+        original = self._state(open_path, "OPEN")
+        noentry_path = tmp_path / "NOENTRY.json"
+        self._state(noentry_path, "NOENTRY")
+        entries = [
+            {"id": "OPEN", "closed": False},
+            {"id": "NOENTRY", "closed": False},
+        ]
+        closes = {"NOENTRY": "NO_ENTRY"}
+        bp._reconcile_same_build_closures(entries, closes)
+        bp._reconcile_closed_state_sidecars(entries, closes)
+        assert json.loads(open_path.read_text(encoding="utf-8")) == original
+        noentry = json.loads(noentry_path.read_text(encoding="utf-8"))
+        assert noentry["closed"] and noentry["outcome"] == "NO_ENTRY"
+        assert noentry["recommended_action"] is None
+        assert noentry["human_state"] == "Closed"
+
+    def test_already_closed_and_missing_sidecars_degrade_without_minting(
+        self, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr(bp, "STATES_DIR", tmp_path)
+        closed_path = tmp_path / "ALREADY.json"
+        self._state(closed_path, "ALREADY")
+        entries = [
+            {"id": "ALREADY", "closed": True},
+            {"id": "MISSING", "closed": True},
+            {"id": "../TRAVERSAL", "closed": True},
+        ]
+        closes = {
+            "ALREADY": "T1_HIT", "MISSING": "EXPIRED",
+            "../TRAVERSAL": "EXPIRED",
+        }
+        bp._reconcile_closed_state_sidecars(entries, closes)
+        state = json.loads(closed_path.read_text(encoding="utf-8"))
+        assert state["recommended_action"] is None
+        assert state["closed"] is True and state["outcome"] == "T1_HIT"
+        assert sorted(p.name for p in tmp_path.glob("*.json")) == ["ALREADY.json"]

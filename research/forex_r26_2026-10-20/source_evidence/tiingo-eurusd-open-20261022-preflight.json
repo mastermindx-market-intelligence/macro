@@ -1,0 +1,11 @@
+{
+  "budget": 2,
+  "candidate_interval_end_utc": "2026-10-22T04:00:00+00:00",
+  "matching_receipts": [],
+  "observed_at_utc": "2026-10-22T02:48:55.737624+00:00",
+  "plan_sha256": "96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc",
+  "purpose": "Observe the open00:00\u201304:00UTC candidate interval once as a real incomplete-window control; no claim of finality or new live feed. No repeated or failed request is retried.",
+  "receipts_scanned": 28,
+  "schema": "forex_r26.open_interval_preflight.v1",
+  "truncated": false
+}

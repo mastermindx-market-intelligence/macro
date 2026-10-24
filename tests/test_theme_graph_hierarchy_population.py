@@ -17,6 +17,7 @@ import yaml
 from engine.market_ontology.exposure_map import to_json
 from engine.theme_graph import materialize, store
 from engine.theme_graph import rights
+from engine.theme_graph.membership_evidence import MICRO_EXPANSION_ASSERTED_ON
 from engine.theme_graph.selection_cohort import compose_selection_cohort
 from scripts import check_theme_graph_contracts as guard
 from tests.test_market_ontology_exposure_map import (
@@ -62,6 +63,18 @@ BASKET_NOTE_RE = re.compile(
 
 def _asserted_on() -> str:
     return DOC["hierarchy"]["categories"][0]["asserted_on"]
+
+
+#: The ratified 2026-10-21 micro-theme expansion (additive display tier;
+#: ratification receipts: research/theme_graph/micro_expansion_20261021/).
+#: Frozen R-C3/L17 assertions below run on rows asserted BEFORE
+#: MICRO_EXPANSION_ASSERTED_ON — the frozen acceptance table must stay exactly
+#: what it was — while the appended rows themselves are asserted in
+#: tests/test_theme_graph_micro_expansion_20261021.py.
+def _frozen(section: str) -> list:
+    """Hierarchy rows asserted before the 2026-10-21 expansion — the frozen table."""
+    return [row for row in DOC["hierarchy"][section]
+            if row["asserted_on"] < MICRO_EXPANSION_ASSERTED_ON]
 
 
 def _sub_asserted_on() -> str:
@@ -273,15 +286,19 @@ def production_build(tmp_path, monkeypatch):
 @pytest.mark.needs_full_checkout("data")
 def test_production_block_is_the_frozen_r_c3_table():
     hierarchy = DOC["hierarchy"]
-    assert len(hierarchy["categories"]) == 10
-    assert len(hierarchy["micro_themes"]) == 68
+    # Date-scoped (2026-10-21 micro expansion): the frozen R-C3 table is read
+    # from rows asserted before the expansion date; the appended display-tier
+    # rows are additive and asserted separately.
+    assert len(_frozen("categories")) == 10
+    assert len(_frozen("micro_themes")) == 68
+    assert len(hierarchy["micro_themes"]) > len(_frozen("micro_themes"))
     # R-C3 parents: dated at the incumbent asserted_on. The L17 sub_theme rows
     # (dated D) are counted separately — the R-C3 table itself is unchanged.
     rc3 = _asserted_on()
     rc3_parents = [row for row in hierarchy["parents"] if row["asserted_on"] == rc3]
     assert len(rc3_parents) == 93
-    assert len(hierarchy["parents"]) == 132
-    category_ids = {row["id"] for row in hierarchy["categories"]}
+    assert len(_frozen("parents")) == 132
+    category_ids = {row["id"] for row in _frozen("categories")}
     cat_to_theme = sum(1 for row in rc3_parents if row["parent"] in category_ids)
     assert cat_to_theme == 21
     assert len(rc3_parents) - cat_to_theme == 72
@@ -544,13 +561,18 @@ def test_checker_refuses_parent_of_endpoint_outside_theme_id_grammar(tmp_path):
 
 
 def test_l17_sub_theme_rows_match_the_frozen_table():
-    """YAML-only pin: the crosswalk's sub_theme block IS the frozen L17 table."""
+    """YAML-only pin: the crosswalk's frozen sub_theme block IS the frozen L17 table.
+
+    Date-scoped (2026-10-21 micro expansion): rows asserted on/after the
+    expansion date are the additive display tier, pinned in
+    tests/test_theme_graph_micro_expansion_20261021.py — every assertion here
+    reads the frozen subset."""
     hierarchy = DOC["hierarchy"]
-    sub_rows = hierarchy["sub_themes"]
+    sub_rows = _frozen("sub_themes")
     assert len(sub_rows) == 12
     assert {row["id"] for row in sub_rows} == set(SUB_THEME_IDS)
 
-    parents = hierarchy["parents"]
+    parents = _frozen("parents")
     rc3 = _asserted_on()
     assert {row["asserted_on"] for row in sub_rows} == {D}
     assert D > rc3
@@ -566,8 +588,8 @@ def test_l17_sub_theme_rows_match_the_frozen_table():
     assert s2m == set(SUB_TO_MICRO)
     assert len(t2s) + len(s2m) == 39  # the D-dated parents are exactly these
 
-    cat_ids = {row["id"] for row in hierarchy["categories"]}
-    micro_ids = {row["id"] for row in hierarchy["micro_themes"]}
+    cat_ids = {row["id"] for row in _frozen("categories")}
+    micro_ids = {row["id"] for row in _frozen("micro_themes")}
     canonical_theme_ids = {row["theme_node_id"] for row in DOC["themes"]}
     parents_of: dict[str, set[str]] = {}
     for row in dated_d:
@@ -586,7 +608,7 @@ def test_l17_sub_theme_rows_match_the_frozen_table():
     vcp = {
         row["id"]: row["value_chain_position"]
         for section in ("categories", "sub_themes", "micro_themes")
-        for row in hierarchy[section]
+        for row in _frozen(section)
         if "value_chain_position" in row
     }
     assert vcp == SUB_VCP
@@ -632,10 +654,21 @@ def test_l17_production_build_at_d_emits_the_full_132_edge_hierarchy(production_
         assert json.loads(node["source_meta"]) == expected, sub_id
         assert node["kind"] == "theme"
         assert node["provenance"] == "crosswalk:config/theme_crosswalk.yml"
-    for micro in hierarchy["micro_themes"]:
+    for micro in _frozen("micro_themes"):
         node = nodes_by_id[micro["id"]]
         assert json.loads(node["source_meta"]) == {
             "nominated_from": micro["nominated_from"]}, micro["id"]
+
+    # PIT law at the expansion boundary: no row asserted on/after the
+    # 2026-10-21 expansion date may appear in a build believed at D.
+    expansion_ids = {
+        row["id"]
+        for section in ("sub_themes", "micro_themes")
+        for row in hierarchy[section]
+        if row["asserted_on"] >= MICRO_EXPANSION_ASSERTED_ON
+    }
+    assert not (expansion_ids & set(nodes_by_id))
+    assert all(row["valid_from"] < MICRO_EXPANSION_ASSERTED_ON for row in parent_edges)
 
     for row in parent_edges:
         for endpoint in (row["src"], row["dst"]):
@@ -657,9 +690,22 @@ def test_l17_production_build_the_day_before_d_has_no_sub_themes(production_buil
 @pytest.mark.needs_full_checkout("data")
 def test_l17_sub_theme_population_is_additive_at_d(production_build, tmp_path):
     """Removing the L17 rows must change NOTHING except the 12 sub nodes and the
-    39 new PARENT_OF edges — the write-once store forbids anything subtler."""
+    39 new PARENT_OF edges — the write-once store forbids anything subtler.
+
+    Date-scoped (2026-10-21 micro expansion): the reduced document is the
+    FROZEN table (rows asserted before the expansion date) minus its L17 slice,
+    so no expansion parent endpoint dangles; at D the expansion rows are
+    PIT-invisible anyway, so the full-vs-reduced delta is still exactly the
+    L17 sub nodes and the 39 D-dated PARENT_OF edges."""
     reduced = copy.deepcopy(DOC)
-    reduced["hierarchy"].pop("sub_themes")
+    for section in ("categories", "sub_themes", "micro_themes", "parents"):
+        reduced["hierarchy"][section] = [
+            row for row in reduced["hierarchy"][section]
+            if row["asserted_on"] < MICRO_EXPANSION_ASSERTED_ON
+        ]
+    reduced["hierarchy"]["sub_themes"] = [
+        row for row in reduced["hierarchy"]["sub_themes"] if row["asserted_on"] != D
+    ]
     reduced["hierarchy"]["parents"] = [
         row for row in reduced["hierarchy"]["parents"] if row["asserted_on"] != D
     ]

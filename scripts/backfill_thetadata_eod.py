@@ -28,7 +28,7 @@ UNIVERSE
 --------
 engine.options_universe.gex_symbols() UNIONED with ETF_ANCHORS + INDEX_ROOTS.
 ETF anchors: SPY QQQ IWM DIA XLK XLF XLE XLI XLU XLV XLY XLP XLB XLC XLRE SMH SOXX
-             XBI KRE ARKK
+             XBI KRE ARKK GLD SLV TLT HYG
 Index roots: SPX, SPXW  (SPXW confirmed as distinct PM-settled weekly root — measured 2026-07-04)
 
 RESUMABILITY
@@ -106,6 +106,7 @@ ETF_ANCHORS = [
     "SPY", "QQQ", "IWM", "DIA",
     "XLK", "XLF", "XLE", "XLI", "XLU", "XLV", "XLY", "XLP", "XLB", "XLC", "XLRE",
     "SMH", "SOXX", "XBI", "KRE", "ARKK",
+    "GLD", "SLV", "TLT", "HYG",
 ]
 # SPXW confirmed as a distinct root in /v3/option/list/symbols (measured 2026-07-04).
 # Included alongside SPX for full PM-settled weekly + AM-settled coverage.

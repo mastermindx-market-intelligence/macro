@@ -74,13 +74,17 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-10-19"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-10-20"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-19",
+    "board_as_of": "2026-10-22",
     "coverage": {
       "identical": 0,
       "matured": 0,
@@ -108,7 +112,7 @@
       "written": 0
     },
     "reconstruction_refused": [
-      "2026-10-19",
+      "2026-10-22",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -125,9 +129,12 @@
       "2026-10-09",
       "2026-10-13",
       "2026-10-15",
-      "2026-10-16"
+      "2026-10-16",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21"
     ],
-    "require_stamp": "2026-10-19",
+    "require_stamp": "2026-10-22",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 30,
@@ -137,14 +144,23 @@
     }
   },
   "latest_session": {
-    "liveness": "degraded_or_unpaired",
-    "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
-    "stamp_date": "2026-10-19"
+    "liveness": "session_missing",
+    "reason": "candidate session missing from the durable store; not pulled from Pages",
+    "stamp_date": "2026-10-22"
   },
   "matured_h10_sessions": 1,
-  "missing_sessions": [],
-  "n_degraded_or_unpaired": 18,
-  "n_missing": 0,
+  "missing_sessions": [
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-10-21"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-10-22"
+    }
+  ],
+  "n_degraded_or_unpaired": 19,
+  "n_missing": 2,
   "paired_sessions_accrued": 30,
   "same_stamp_revisions_refused": [
     {

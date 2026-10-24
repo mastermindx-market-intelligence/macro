@@ -1105,6 +1105,21 @@ def test_denominator_has_no_hardcoded_universe_size():
         assert lit not in src, f"found hard-coded universe literal {lit!r} in topup module"
 
 
+# ── Live-flow anchor retention (native resolver regression) ─────────────────
+def test_daily_universe_keeps_live_flow_anchor_etfs_exactly_once(monkeypatch):
+    """Live-flow commodity/rate anchors survive the native daily resolver,
+    including case-normalized duplicates from the independently owned basket.
+    Existing index and basket members retain their first-seen ordering.
+    """
+    monkeypatch.setattr("engine.options_universe.gex_symbols",
+                        lambda: ["gld", "AAPL", "MSFT", "SPY"])
+    roots = topup._daily_universe()
+    for root in ("GLD", "SLV", "TLT", "HYG", "SPY", "SPX", "SPXW", "AAPL", "MSFT"):
+        assert roots.count(root) == 1
+    assert roots.index("HYG") < roots.index("SPX") < roots.index("SPXW")
+    assert roots.index("SPXW") < roots.index("AAPL") < roots.index("MSFT")
+
+
 # ═════════════════════════ DEADLINE (F2) ════════════════════════════════════
 def test_deadline_exceeded_stops_new_dispatch_and_drains(store, monkeypatch):
     import time as _time

@@ -356,7 +356,7 @@ def test_unadmitted_species_and_missing_curation_or_observation_are_refused():
         assert caught.value.code == code, (event["action"], code, caught.value)
 
 
-def test_fold_is_deterministic_pure_and_not_wired_into_build():
+def test_fold_is_deterministic_pure_and_wired_only_into_build():
     other_scope_target = "theme:advanced_packaging"
     events = [
         _append(),
@@ -387,10 +387,12 @@ def test_fold_is_deterministic_pure_and_not_wired_into_build():
     assert {row["reason"] for row in state["refused"]} == {"GRAPH_MEMBERSHIP_USE_NOT_GRANTED"}
     assert len(state["history"]) == 2  # the corrected original and the removed sibling
 
-    for wired in (materialize.build, materialize.apply_relation_events,
-                  materialize.changed_edges):
-        assert "apply_activity_membership_events" not in inspect.getsource(wired)
-        assert "activity_history" not in inspect.getsource(wired)
+    # Wired (2026-10-21 fold-seam lane): build() is the fold's ONLY consumer — the
+    # relation-event applier and the diffing path stay fold-free.
+    assert "apply_activity_membership_events" in inspect.getsource(materialize.build)
+    for unwired in (materialize.apply_relation_events, materialize.changed_edges):
+        assert "apply_activity_membership_events" not in inspect.getsource(unwired)
+        assert "activity_history" not in inspect.getsource(unwired)
 
 
 def _object_nodes(node, path="#"):
@@ -408,7 +410,7 @@ def test_history_contract_is_closed():
     schema = json.loads(CONTRACT.read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator.check_schema(schema)
     assert schema["properties"]["schema"]["const"] == ACTIVITY_HISTORY_EVENT_SCHEMA
-    assert schema["properties"]["species"]["enum"] == [SPECIES]
+    assert schema["properties"]["species"]["enum"] == [SPECIES, "principal_business_activity"]
     nodes = list(_object_nodes(schema))
     assert len(nodes) >= 10
     open_nodes = [path for path, node in nodes if node.get("additionalProperties") is not False]
@@ -428,3 +430,130 @@ def test_history_contract_is_closed():
         with pytest.raises(ActivityHistoryRefusal) as caught:
             validate_activity_history_event(extra)
         assert caught.value.code == "EVENT_SCHEMA_INVALID"
+
+
+# ---------------------------------------------------------------------------------------
+# 2026-10-21 additive amendment: the second admitted activity species
+# principal_business_activity (role operator, lifecycle current, segment-only scope,
+# activity: fact ids). The builders below digest through the module's own digest and
+# membership-id functions; no digest is ever hand-typed.
+# ---------------------------------------------------------------------------------------
+
+ACTIVITY_SPECIES = "principal_business_activity"
+
+
+def _principal_lineage() -> dict:
+    fact_id = "activity:" + _sha("principal-business-activity:" + MU_NODE)
+    proposal_id = "actprop:" + _sha(_canonical({
+        "fact_id": fact_id, "fact_revision": FACT["revision"],
+        "source_node_id": MU_NODE, "target_node_id": TARGET}))[:24]
+    return {
+        "proposal_id": proposal_id,
+        "fact_id": fact_id,
+        "fact_revision": FACT["revision"],
+        "source_sha256": EDITION["source_sha256"],
+        "span_text_sha256": FACT["span"]["text_sha256"],
+        "owner_bindings": OWNER_BINDINGS,
+    }
+
+
+def _principal_segment(value="Networking", *, state="KNOWN") -> dict:
+    return {"segment": {"value": value, "state": state}}
+
+
+def _principal_event(*, knowledge_at: str = T1, use: str = "GRANTED", role: str = "operator",
+                     lifecycle: str = "current", scope: dict | None = None,
+                     species: str = ACTIVITY_SPECIES, lineage=None) -> dict:
+    """An honestly digested principal-activity APPEND; overrides only for mix tests."""
+    body_scope = _principal_segment() if scope is None else scope
+    event = {
+        "schema": ACTIVITY_HISTORY_EVENT_SCHEMA,
+        "action": "APPEND",
+        "membership_id": activity_membership_id(
+            source_node_id=MU_NODE, target_node_id=TARGET, species=species, scope=body_scope),
+        "species": species,
+        "endpoints": {"source_node_id": MU_NODE, "target_node_id": TARGET,
+                      "direction": "SOURCE_TO_TARGET"},
+        "scope": body_scope,
+        "role": role,
+        "lifecycle": lifecycle,
+        "evidence_lineage": lineage or _principal_lineage(),
+        "use_qualification": {"graph_membership_use": use},
+        "curation": _curation(at=knowledge_at, tag=ACTIVITY_SPECIES),
+        "observation": None,
+        "supersedes_event_sha256": None,
+        "clocks": {"knowledge_at": knowledge_at,
+                   "effective_at": {"value": None, "state": "UNDISCLOSED"},
+                   "recorded_at": knowledge_at},
+    }
+    digest = activity_history_event_digest(event)
+    return {"event_id": "actevt:" + digest[:24], "event_sha256": digest, **event}
+
+
+def _rehashed(event: dict, **overrides) -> dict:
+    """A copy of ``event`` with overrides applied and its digest/id honestly recomputed."""
+    body = copy.deepcopy(event)
+    body.pop("event_id")
+    body.pop("event_sha256")
+    body.update(overrides)
+    body["membership_id"] = activity_membership_id(
+        source_node_id=body["endpoints"]["source_node_id"],
+        target_node_id=body["endpoints"]["target_node_id"],
+        species=body["species"], scope=body["scope"])
+    digest = activity_history_event_digest(body)
+    return {"event_id": "actevt:" + digest[:24], "event_sha256": digest, **body}
+
+
+def test_principal_activity_granted_accepted_append_folds_into_current():
+    granted = _principal_event(use="GRANTED")
+    validate_activity_history_event(granted)  # the amendment admits the shape
+    state = apply_activity_membership_events([granted], knowledge_cutoff=AFTER_ALL)
+    assert state["refused"] == [] and state["history"] == [] and state["retained"] == []
+    (belief,) = state["current"]
+    assert belief["species"] == ACTIVITY_SPECIES
+    assert belief["role"] == "operator" and belief["lifecycle"] == "current"
+    assert belief["scope"] == {"segment": {"value": "Networking", "state": "KNOWN"}}
+    assert belief["evidence_lineage"]["fact_id"].startswith("activity:")
+    assert (belief["knowledge_from"], belief["knowledge_to"]) == (T1, None)
+
+    # The same principal activity without a granted graph-membership use is refused.
+    state = apply_activity_membership_events([_principal_event(use="NOT_GRANTED")],
+                                             knowledge_cutoff=AFTER_ALL)
+    assert state["current"] == [] and state["history"] == []
+    assert [row["reason"] for row in state["refused"]] == ["GRAPH_MEMBERSHIP_USE_NOT_GRANTED"]
+
+
+def test_principal_segment_value_is_part_of_membership_identity():
+    networking = _principal_event()
+    automotive = _principal_event(scope=_principal_segment("Automotive"))
+    assert networking["membership_id"] != automotive["membership_id"]
+    state = apply_activity_membership_events([networking, automotive],
+                                             knowledge_cutoff=AFTER_ALL)
+    assert state["refused"] == []
+    assert sorted(b["membership_id"] for b in state["current"]) == sorted(
+        [networking["membership_id"], automotive["membership_id"]])
+
+    # A second, distinct APPEND event for the SAME membership identity is a duplicate.
+    dupe = _principal_event(knowledge_at=T2)
+    assert dupe["membership_id"] == networking["membership_id"]
+    assert dupe["event_sha256"] != networking["event_sha256"]
+    state = apply_activity_membership_events([networking, dupe], knowledge_cutoff=AFTER_ALL)
+    assert [row["reason"] for row in state["refused"]] == ["DUPLICATE_APPEND"]
+    assert [b["membership_id"] for b in state["current"]] == [networking["membership_id"]]
+
+
+def test_cross_species_mixing_is_refused_in_history_events():
+    mixes = [
+        _rehashed(_principal_event(), role="component_supplier"),
+        _rehashed(_principal_event(), lifecycle="planned"),
+        _rehashed(_principal_event(),
+                  scope={"product": FACT["product"],
+                         "segment": {"value": "Networking", "state": "KNOWN"}}),
+        _rehashed(_append(), role="operator"),
+    ]
+    for mixed in mixes:
+        with pytest.raises(ActivityHistoryRefusal) as caught:
+            validate_activity_history_event(mixed)
+        assert caught.value.code == "EVENT_SCHEMA_INVALID", mixed["event_id"]
+        with pytest.raises(ActivityHistoryRefusal):
+            apply_activity_membership_events([mixed], knowledge_cutoff=AFTER_ALL)

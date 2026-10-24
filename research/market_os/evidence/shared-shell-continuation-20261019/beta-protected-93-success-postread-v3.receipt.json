@@ -1,0 +1,17 @@
+{
+  "schema": "mastermind.attended.beta_postread_invocation_receipt.v1",
+  "started_at": "2026-10-20T01:37:44.235492+00:00",
+  "finished_at": "2026-10-20T01:37:46.379068+00:00",
+  "exit": 0,
+  "source_sha256": "b0b87c37bc3cdf07900b51fc60025f756ac40a6663bddbafda027dc30a51d899",
+  "binding_sha256": "6e89ce1ac148cfec9e26163c344f0986b2fb41955950030a5ee0bea3748ddf92",
+  "owner_result_sha256": "67a37686d231e063a9f06897bf755a9788605be874c85e6a10cb06cb15f6c51b",
+  "owner_log_sha256": "b4de2cac7cbc581a44a9ee7c46af7e250d0cb28c5be453bb81054a5c911b2afa",
+  "stdout_bytes": 39295,
+  "stdout_sha256": "d18c7b0ffe2c7dbe988a5fcdf96a66385df66b27ba0307d55e38360fb92286f2",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "all_checks_pass": true,
+  "acceptance_disposition": "ACCEPTED_RUNTIME_POSTREAD_PASS",
+  "bootstrap_retry_authorized": false
+}

@@ -1,0 +1,62 @@
+{
+  "rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 135,
+      "weight": 5796,
+      "packs": 10,
+      "max_jobs": 136,
+      "max_weight": 5803,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 135/329 jobs (2 unscoped always-on, 133 scoped matches)",
+      "same_selected_ids_and_order_as_prior_0f05": true,
+      "old_weight": 5793,
+      "actual_weight_delta": 3,
+      "incoming_command_weight_for_same_ids": 5789,
+      "shell_command_weight_delta": 7
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5671,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5664,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 134/329 jobs (2 unscoped always-on, 132 scoped matches)",
+      "same_selected_ids_and_order_as_prior_0f05": true,
+      "old_weight": 5668,
+      "actual_weight_delta": 3,
+      "incoming_command_weight_for_same_ids": 5664,
+      "shell_command_weight_delta": 7
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "weight": 5545,
+      "packs": 10,
+      "max_jobs": 130,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 128/329 jobs (2 unscoped always-on, 126 scoped matches)",
+      "same_selected_ids_and_order_as_prior_0f05": true,
+      "old_weight": 5542,
+      "actual_weight_delta": 3,
+      "incoming_command_weight_for_same_ids": 5538,
+      "shell_command_weight_delta": 7
+    }
+  ],
+  "all_job_weight_deltas": {
+    "data-base-shim": {
+      "incoming_manifest_weight": 7,
+      "candidate_weight": 12,
+      "delta": 5
+    },
+    "unrun-nav-chrome": {
+      "incoming_manifest_weight": 30,
+      "candidate_weight": 32,
+      "delta": 2
+    }
+  },
+  "scope": "actual producing merged-tree rows; same selected IDs/order independently compared with prior0f05; incoming weights are for these same candidate IDs, not a base-tree inference run"
+}

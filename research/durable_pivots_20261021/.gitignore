@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+data/raw/
+data/prices/
+*.parquet
+results/robustness/
+results/trial_ledger*
+source_census.json
+deliverables/*.pdf
+deliverables/*.zip
+deliverables/figures/*.png
+*.lock

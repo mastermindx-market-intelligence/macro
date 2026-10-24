@@ -102,6 +102,7 @@ from lib import growth_registry  # noqa: E402
 # from /etc/macro-api.env or when sentry_sdk is not installed in the venv — it
 # can neither raise nor block startup (see app/observability.py).
 from app.observability import init_sentry  # noqa: E402
+from app.live_status_projection import flow_pulse_fields, intraday_quotes_fields  # noqa: E402
 
 init_sentry("macro-api")
 
@@ -706,6 +707,7 @@ def status() -> dict:
         ("quotes", "quotes.json"),
         ("basket_pulse", "basket_pulse.json"),
         ("flow_pulse", "flow_pulse.json"),
+        ("intraday_quotes", "intraday_quotes.json"),
         ("release_publications", "release_publications.json"),
         ("orchestrator", "orchestrator_status.json"),
         ("breadth", "breadth.json"),
@@ -731,18 +733,9 @@ def status() -> dict:
                         }
                     )
                 elif key == "flow_pulse":
-                    rows = data.get("tickers") or []
-                    checks[key].update(
-                        {
-                            "mode": data.get("mode"),
-                            "n_tickers": data.get("n_tickers"),
-                            "with_bars": sum(
-                                1 for row in rows
-                                if isinstance(row, dict)
-                                and int(row.get("bars_today") or 0) > 0
-                            ),
-                        }
-                    )
+                    checks[key].update(flow_pulse_fields(data))
+                elif key == "intraday_quotes":
+                    checks[key].update(intraday_quotes_fields(data))
                 elif key == "release_publications":
                     event_status: dict[str, int] = {}
                     max_lag_min = 0.0
@@ -2465,6 +2458,10 @@ except Exception as _government_revenue_exc:  # noqa: BLE001
 from app.research import router as research_router  # noqa: E402
 app.include_router(research_router)
 
+# Registered-user Macro Command reads use the qualified served publication.
+from app.macro_command import router as macro_command_router  # noqa: E402
+app.include_router(macro_command_router)
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing
@@ -2496,10 +2493,15 @@ from app.company_disclosures import PrivateDisclosureReader  # noqa: E402
 from engine.company_intelligence.issuer_disclosure_owner import (  # noqa: E402
     CommittedDisclosureSource, CurrentDisclosureOwner, ReadOnlyLocalObjects,
 )
+from engine.company_intelligence import issuer_disclosures as company_disclosure_native  # noqa: E402
+from engine.company_intelligence.sec_supplier_adoption import SOURCE_PATHS as SEC_SUPPLIER_SOURCE_PATHS  # noqa: E402
 _company_private_root = Path('/var/lib/macro-company-intelligence')
 _company_disclosure_owner = CurrentDisclosureOwner(
     CommittedDisclosureSource(REPO, app.state.company_context_owner),
-    ReadOnlyLocalObjects(_company_private_root / 'state'))
+    ReadOnlyLocalObjects(_company_private_root / 'state'),
+    supplier_sources={company_disclosure_native.SUPPLIER_FACT_SCHEMA:
+        CommittedDisclosureSource(REPO, app.state.company_context_owner,
+            sec_supplier_paths=SEC_SUPPLIER_SOURCE_PATHS)})
 app.state.company_disclosure_reader = PrivateDisclosureReader(
     _company_disclosure_owner,
     lambda: ReadOnlyLocalObjects(_company_private_root / 'artifacts'),
@@ -2581,6 +2583,11 @@ app.include_router(medtech_router)
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
 
+# Same-box input only: public edge requests are denied before auth or file I/O.
+# Terminal retains holdings and computes derived risk metrics in its own compiler.
+from app.treasury_history import router as treasury_history_router  # noqa: E402
+app.include_router(treasury_history_router)
+
 # B03 reads the existing uncapped observation input only after site_full auth.
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402
 app.include_router(prophet_observations_router)
@@ -2588,6 +2595,10 @@ app.include_router(prophet_observations_router)
 # Read-only DailyBrief uses the original producer after site_full authentication.
 from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
 app.include_router(prophet_daily_brief_router)
+
+# Current research attention reuses the paid site-full owner boundary.
+from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
+app.include_router(catalyst_opportunity_router)
 
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not

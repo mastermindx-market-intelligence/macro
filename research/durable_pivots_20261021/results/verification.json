@@ -1,0 +1,18 @@
+{
+  "checks_passed": [
+    "prefix_invariance_1D",
+    "prefix_invariance_2D",
+    "prefix_invariance_3D",
+    "prefix_invariance_1W",
+    "prefix_invariance_2W",
+    "future_perturbation_no_signal_change",
+    "future_window_excludes_signal_and_requires_full_horizon",
+    "wilder_seed_arithmetic",
+    "bottom_frozen_candidate_and_tolerance_label_test",
+    "top_frozen_candidate_and_tolerance_label_test",
+    "split_boundary_purge",
+    "activation_and_cooldown",
+    "unique_trial_catalog"
+  ],
+  "count": 13
+}

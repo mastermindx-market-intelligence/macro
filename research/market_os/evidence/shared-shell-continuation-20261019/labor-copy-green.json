@@ -1,0 +1,181 @@
+{
+  "started_at": "2026-10-20T15:45:34.220019+00:00",
+  "source": "committed About candidate plus exact three recorded labor repair working changes",
+  "before": {
+    "head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+    "status": " M lib/macro_suite_labels.py\n M site/macro_labor_markets.html\n M tests/test_macro_command_copy_law.py\n",
+    "diff_sha256": "2e48adc5a04c5a0b06ef09dc49e8a3a3799a6a7d6d45a12aa4c3308988c764e4",
+    "index_tree": "242d08555cdc496f9da14056890e3961685ecc31",
+    "files": {
+      "lib/macro_suite_labels.py": {
+        "bytes": 110452,
+        "sha256": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2"
+      },
+      "site/macro_labor_markets.html": {
+        "bytes": 255252,
+        "sha256": "235aebe912ad705fd53d420cc44c273410468efe64b9f4634f47fd2863cb4d8c"
+      },
+      "tests/test_macro_command_copy_law.py": {
+        "bytes": 208465,
+        "sha256": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a"
+      }
+    }
+  },
+  "python": "Python 3.14.7",
+  "groups": [
+    {
+      "name": "rates",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_macro_rates_curves_route.py"
+      ],
+      "started_at": "2026-10-20T15:45:34.234759+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T15:45:46.421098+00:00",
+      "log_bytes": 4681,
+      "log_sha256": "cae5db984ec506bc6960eb0e0e37439d656ac897ede051bfa5ba3b87a467ff65",
+      "tail": [
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-984a4dda-1579-475b-9d7e-c3bfb2e703ad/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-984a4dda-1579-475b-9d7e-c3bfb2e703ad/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'",
+        "    warnings.warn(",
+        "",
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-984a4dda-1579-475b-9d7e-c3bfb2e703ad/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-984a4dda-1579-475b-9d7e-c3bfb2e703ad/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'",
+        "    warnings.warn(",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "57 passed, 6 warnings in 10.05s"
+      ]
+    },
+    {
+      "name": "suite",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_macro_suite_pages.py",
+        "tests/test_macro_workspace_prior_publication.py",
+        "tests/test_macro_command_shell.py",
+        "tests/test_macro_command_copy_law.py",
+        "tests/test_macro_command_read_strip.py",
+        "tests/test_macro_command_panels.py",
+        "tests/test_macro_command_empty_states.py",
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_capture_guards.py"
+      ],
+      "started_at": "2026-10-20T15:45:46.422450+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T15:47:23.752056+00:00",
+      "log_bytes": 5252,
+      "log_sha256": "ee75f658897dc0df2e0dea110e7800fb4223649a191e0c44df3b35ffe5d107df",
+      "tail": [
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-28c30353-a000-4905-af01-07b765590aaf/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-28c30353-a000-4905-af01-07b765590aaf/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'",
+        "    warnings.warn(",
+        "",
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-28c30353-a000-4905-af01-07b765590aaf/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-28c30353-a000-4905-af01-07b765590aaf/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'",
+        "    warnings.warn(",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "559 passed, 6 warnings in 95.55s (0:01:35)"
+      ]
+    },
+    {
+      "name": "hub",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_macro_monetary_hub.py"
+      ],
+      "started_at": "2026-10-20T15:47:23.753384+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T15:47:35.239202+00:00",
+      "log_bytes": 4681,
+      "log_sha256": "7a6d6ed56fc8d8d033ead546aef7b91c45d49a33bf3b127f0e3512fae3e24a23",
+      "tail": [
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dfc53967-956a-4931-901d-d05a7d17ffba/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dfc53967-956a-4931-901d-d05a7d17ffba/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'",
+        "    warnings.warn(",
+        "",
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-dfc53967-956a-4931-901d-d05a7d17ffba/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-dfc53967-956a-4931-901d-d05a7d17ffba/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'",
+        "    warnings.warn(",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "29 passed, 6 warnings in 10.33s"
+      ]
+    },
+    {
+      "name": "packing",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+      ],
+      "started_at": "2026-10-20T15:47:35.239986+00:00",
+      "exit": 0,
+      "finished_at": "2026-10-20T15:50:37.093740+00:00",
+      "log_bytes": 4691,
+      "log_sha256": "8ae99b86dbf698d9c618053ef4a0d3d94766668f5a987d39dd34fad88ba2faea",
+      "tail": [
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-db2ceb61-6511-4a3b-989d-cffe0009c188/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-db2ceb61-6511-4a3b-989d-cffe0009c188/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'",
+        "    warnings.warn(",
+        "",
+        "../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95",
+        "  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-db2ceb61-6511-4a3b-989d-cffe0009c188/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework",
+        "  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-db2ceb61-6511-4a3b-989d-cffe0009c188/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'",
+        "    warnings.warn(",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "4 passed, 6 warnings in 180.57s (0:03:00)"
+      ]
+    }
+  ],
+  "after": {
+    "head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+    "status": " M lib/macro_suite_labels.py\n M site/macro_labor_markets.html\n M tests/test_macro_command_copy_law.py\n",
+    "diff_sha256": "2e48adc5a04c5a0b06ef09dc49e8a3a3799a6a7d6d45a12aa4c3308988c764e4",
+    "index_tree": "242d08555cdc496f9da14056890e3961685ecc31",
+    "files": {
+      "lib/macro_suite_labels.py": {
+        "bytes": 110452,
+        "sha256": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2"
+      },
+      "site/macro_labor_markets.html": {
+        "bytes": 255252,
+        "sha256": "235aebe912ad705fd53d420cc44c273410468efe64b9f4634f47fd2863cb4d8c"
+      },
+      "tests/test_macro_command_copy_law.py": {
+        "bytes": 208465,
+        "sha256": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a"
+      }
+    }
+  },
+  "source_unchanged": true,
+  "passed": true,
+  "finished_at": "2026-10-20T15:50:40.090722+00:00"
+}

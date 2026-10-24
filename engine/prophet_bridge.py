@@ -4610,15 +4610,19 @@ def originate_plans(
             )
             continue
 
-        # Confidence from conviction score (0-100 → capped at 92 in engine)
-        try:
-            confidence = min(float(conv.get("score", 60)), 92.0)
-        except (TypeError, ValueError):
+        # A board conviction is an ORDINAL intake condition, not the
+        # independently defined Prophet management-confidence baseline. The
+        # scientific WP04 review found no calibration or estimand equivalence.
+        # Preserve this raw score on the existing _conviction_score provenance
+        # field; never inject it into plan.confidence or the management model.
+        source_conviction = conv.get("score", 60)
+        if (isinstance(source_conviction, bool)
+                or not isinstance(source_conviction, (int, float))
+                or not math.isfinite(float(source_conviction))
+                or not 0.0 <= float(source_conviction) <= 100.0):
             _record_failure(
-                ticker=ticker,
-                plan_id=plan_id,
-                stage="plan_inputs",
-                errors=[f"conviction.score {conv.get('score')!r} is not numeric"],
+                ticker=ticker, plan_id=plan_id, stage="plan_inputs",
+                errors=[f"conviction.score {source_conviction!r} is not a finite numeric 0..100"],
             )
             continue
 
@@ -4880,6 +4884,9 @@ def originate_plans(
             "horizon_days": plan_horizon_days,  # PSQ-TILT: 45 base × leash (45 or 56)
             "min_hold_days": MIN_HOLD_DAYS_DEFAULT,  # unchanged (10)
             "tranche": 1,
+            # WP04 scientific ruling: the board's ordinal _conviction_score
+            # remains independent from the established management 60 baseline.
+            # No uncalibrated plan.confidence is originated here.
             "option_contract": opt,
             # PSQ-TILT W1 provenance (provisional; display data field, not copy).
             "stage_tilt": stage_tilt,
