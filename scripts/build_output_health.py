@@ -163,11 +163,9 @@ def _head_blobs_uncached(root: Path) -> frozenset[str] | None:
     return frozenset(name for name in names if name)
 
 
-#: Blobs above this are left to the per-path ladder. The prewarm holds every body it
-#: reads until the observe loop consumes it, so the cap is a memory bound, not a policy:
-#: the live estate's watermark sources total ~256 MB and one of them is 44 MB, while the
-#: median is 22 kB. Capping at 1 MB warms ~90% of them for a few tens of MB and hands the
-#: fat tail back to the one-at-a-time path that was always going to read it.
+#: Only bodies at or below this size enter the prewarm cache. Larger bodies are
+#: drained in bounded chunks to preserve framing, then left to the per-path ladder.
+#: This bounds one retained body, not the total eligible cache or the later fallback.
 PREWARM_SIZE_CAP = 1024 * 1024
 
 
@@ -191,64 +189,92 @@ def _prewarm_head_contents(root: Path, rels: list[str]) -> int:
     wanted = sorted({r for r in rels if r and "\n" not in r})
     if not wanted:
         return 0
-    payload = "".join(f"HEAD:{rel}\n" for rel in wanted).encode("utf-8", "surrogateescape")
     try:
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             ["git", "cat-file", "--batch"],
             cwd=root,
-            input=payload,
-            capture_output=True,
-            check=False,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         )
     except (OSError, subprocess.SubprocessError, ValueError):
         return 0
-    if proc.returncode != 0:
-        return 0
 
-    out, pos, warmed = proc.stdout, 0, 0
-    for rel in wanted:
-        newline = out.find(b"\n", pos)
-        if newline < 0:
-            break
-        header, pos = out[pos:newline], newline + 1
-        parts = header.split(b" ")
-        if len(parts) == 2 and parts[1] in (b"missing", b"ambiguous"):
-            # The ladder's own answer for an object git cannot resolve is "absent", and
-            # 161 of these are envelope sidecars that simply do not exist. Caching the
-            # negative is what stops each of them costing a process to say so.
-            _READ_CACHE[(str(root), rel)] = (None, "absent")
-            warmed += 1
-            continue
-        if len(parts) != 3:
-            break  # protocol desync: stop reading rather than mis-attribute bodies
-        try:
+    # Publish only after the batch exits cleanly, just like the former run() path.
+    # Small eligible bodies still populate the existing cache; the large tail is
+    # drained in bounded chunks without ever joining it into an aggregate buffer.
+    pending: dict[tuple[str, str], tuple[str | None, str]] = {}
+    try:
+        if proc.stdin is None or proc.stdout is None:
+            return 0
+        for rel in wanted:
+            # One request/response at a time avoids filling both pipe directions.
+            proc.stdin.write(f"HEAD:{rel}\n".encode("utf-8", "surrogateescape"))
+            proc.stdin.flush()
+            header = proc.stdout.readline(4097)
+            if not header.endswith(b"\n") or len(header) > 4096:
+                return 0  # truncated/oversized framing: leave the ladder untouched
+            parts = header[:-1].split(b" ")
+            if len(parts) == 2 and parts[1] in (b"missing", b"ambiguous"):
+                if parts[0] != f"HEAD:{rel}".encode("utf-8", "surrogateescape"):
+                    return 0
+                pending[(str(root), rel)] = (None, "absent")
+                continue
+            if len(parts) != 3:
+                return 0
+            if len(parts[0]) not in (40, 64) or any(
+                c not in b"0123456789abcdef" for c in parts[0]
+            ):
+                return 0
             size = int(parts[2])
-        except ValueError:
-            break
-        body, pos = out[pos:pos + size], pos + size + 1
-        if parts[1] != b"blob" or size > PREWARM_SIZE_CAP:
-            continue
-        if not body:
-            # AN EMPTY BLOB READS AS ABSENT, because that is what the function this warms
-            # returns: `_read_tracked_uncached` gates on `returncode == 0 and stdout`, and
-            # empty stdout is falsy. Caching "" instead moved two live artifacts from
-            # `watermark_unread` to a JSON parse error — a reason code changed by a
-            # PERFORMANCE patch, which is exactly the class of drift this branch prevents.
-            _READ_CACHE[(str(root), rel)] = (None, "absent")
-            warmed += 1
-            continue
-        try:
-            text = body.decode("utf-8")
-        except UnicodeDecodeError:
-            continue
-        # subprocess(text=True) decodes with universal newlines; matching it is what makes
-        # a warmed read byte-identical to the read it replaces.
-        _READ_CACHE[(str(root), rel)] = (
-            text.replace("\r\n", "\n").replace("\r", "\n"),
-            "git",
-        )
-        warmed += 1
-    return warmed
+            if size < 0:
+                return 0
+            retain = parts[1] == b"blob" and size <= PREWARM_SIZE_CAP
+            body = bytearray() if retain else None
+            remaining = size
+            while remaining:
+                chunk = proc.stdout.read(min(remaining, 64 * 1024))
+                if not chunk or len(chunk) > remaining:
+                    return 0
+                remaining -= len(chunk)
+                if body is not None:
+                    body.extend(chunk)
+            if proc.stdout.read(1) != b"\n":
+                return 0  # never cache a body until its framing is complete
+            if body is None:
+                continue
+            if not body:
+                # The per-path ladder treats an empty blob as absent, too.
+                pending[(str(root), rel)] = (None, "absent")
+                continue
+            try:
+                text = body.decode("utf-8")
+            except UnicodeDecodeError:
+                continue
+            pending[(str(root), rel)] = (
+                text.replace("\r\n", "\n").replace("\r", "\n"), "git"
+            )
+        proc.stdin.close()
+        if proc.stdout.read(1) or proc.wait() != 0:
+            return 0
+        _READ_CACHE.update(pending)
+        return len(pending)
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return 0
+    finally:
+        for pipe in (proc.stdin, proc.stdout):
+            if pipe is not None:
+                try:
+                    pipe.close()
+                except OSError:
+                    pass
+        if proc.poll() is None:
+            proc.terminate()
+            try:
+                proc.wait(timeout=1)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()
 
 
 def _head_blobs(root: Path) -> frozenset[str] | None:

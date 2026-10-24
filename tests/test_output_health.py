@@ -13,6 +13,7 @@ THREE OF THESE TESTS ARE MUTATION TARGETS (18/19/20 of the commission). They are
 from __future__ import annotations
 
 import ast
+import io
 import json
 import subprocess
 import sys
@@ -1724,3 +1725,181 @@ def test_source_findings_rejects_malformed_source_reason_collection():
     view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof="2026-08-01T06:00:00")})
     next(r for r in view["outputs"] if r["artifact_id"] == "b")["reason_codes"] = "prefix_naive_watermark_coerced_utc_suffix"
     assert not any(x["classification"] == "stale_feature" for x in _source_findings(view)["observations"])
+
+
+class _PrewarmBoundedPipe(io.BytesIO):
+    """Reject aggregate/unbounded reads and optionally model short pipe reads."""
+
+    def __init__(self, body, *, short_reads=False):
+        super().__init__(body)
+        self.short_reads = short_reads
+        self.read_sizes = []
+
+    def read(self, size=-1):
+        assert 0 < size <= 64 * 1024, "prewarm retained an unbounded body read"
+        self.read_sizes.append(size)
+        return super().read(min(size, 3) if self.short_reads else size)
+
+    def readline(self, size=-1):
+        assert 0 < size <= 4097, "prewarm retained unbounded protocol framing"
+        return super().readline(size)
+
+
+class _PrewarmGitProcess:
+    def __init__(self, wire, *, code=0, short_reads=False, ignore_terminate=False):
+        self.stdin = io.BytesIO()
+        self.stdout = _PrewarmBoundedPipe(wire, short_reads=short_reads)
+        self.code = code
+        self.returncode = None
+        self.terminated = False
+        self.killed = False
+        self.ignore_terminate = ignore_terminate
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self, timeout=None):
+        if timeout is not None and self.ignore_terminate and not self.killed:
+            raise subprocess.TimeoutExpired("fixture git", timeout)
+        self.returncode = self.code
+        return self.code
+
+    def terminate(self):
+        self.terminated = True
+
+    def kill(self):
+        self.killed = True
+
+
+def _prewarm_blob_wire(body, kind=b"blob"):
+    return b"a" * 40 + b" " + kind + b" " + str(len(body)).encode() + b"\n" + body + b"\n"
+
+
+def _install_prewarm_process(monkeypatch, process):
+    def popen(command, **kwargs):
+        assert command == ["git", "cat-file", "--batch"]
+        assert kwargs["stdin"] == subprocess.PIPE
+        assert kwargs["stdout"] == subprocess.PIPE
+        assert kwargs["stderr"] == subprocess.DEVNULL
+        return process
+
+    def whole_capture_forbidden(*args, **kwargs):
+        raise AssertionError("whole batch capture is not a bounded prewarm")
+
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    monkeypatch.setattr(CLI.subprocess, "run", whole_capture_forbidden)
+    CLI.reset_caches()
+
+
+def test_prewarm_stream_drains_oversize_without_retaining_it_and_keeps_alignment(monkeypatch, tmp_path):
+    wire = (
+        _prewarm_blob_wire(b"L" * (2 * 64 * 1024 + 7))
+        + _prewarm_blob_wire(b"one\r\ntwo\rthree\n")
+        + b"HEAD:data/c-missing missing\n"
+        + _prewarm_blob_wire(b"")
+        + _prewarm_blob_wire(b"\xff")
+        + _prewarm_blob_wire(b"tree bytes", kind=b"tree")
+    )
+    process = _PrewarmGitProcess(wire)
+    _install_prewarm_process(monkeypatch, process)
+    monkeypatch.setattr(CLI, "PREWARM_SIZE_CAP", 32)
+    rels = ["data/a-large", "data/b-small", "data/c-missing", "data/d-empty", "data/e-binary", "data/f-tree"]
+    assert CLI._prewarm_head_contents(tmp_path, rels) == 3
+    assert CLI._READ_CACHE == {
+        (str(tmp_path), "data/b-small"): ("one\ntwo\nthree\n", "git"),
+        (str(tmp_path), "data/c-missing"): (None, "absent"),
+        (str(tmp_path), "data/d-empty"): (None, "absent"),
+    }
+    assert max(process.stdout.read_sizes) == 64 * 1024
+    assert process.stdin.closed and process.stdout.closed
+    assert process.returncode == 0 and not process.terminated
+
+
+def test_prewarm_stream_handles_short_reads(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"abc\r\ndef\rghi"), short_reads=True)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/small"]) == 1
+    assert CLI._READ_CACHE[(str(tmp_path), "data/small")] == ("abc\ndef\nghi", "git")
+
+
+@pytest.mark.parametrize("bad_wire", [
+    b"unterminated header",
+    b"x" * 4097 + b"\n",
+    b"not-an-oid blob 3\nabc\n",
+    b"a" * 40 + b" blob -1\n",
+    b"a" * 40 + b" blob nope\n",
+    b"a" * 40 + b" blob 5\nabc",
+    b"a" * 40 + b" blob 3\nabcX",
+    b"HEAD:different missing\n",
+])
+def test_prewarm_stream_declines_bad_framing_without_partial_cache(monkeypatch, tmp_path, bad_wire):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid") + bad_wire)
+    _install_prewarm_process(monkeypatch, process)
+    sentinel = (str(tmp_path), "already-cached")
+    CLI._READ_CACHE[sentinel] = ("keep", "worktree")
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a-valid", "data/b-bad"]) == 0
+    assert CLI._READ_CACHE == {sentinel: ("keep", "worktree")}
+    assert process.stdin.closed and process.stdout.closed
+    assert process.terminated and process.returncode is not None
+
+
+def test_prewarm_stream_nonzero_exit_publishes_nothing(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"), code=1)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert not CLI._READ_CACHE
+    assert process.returncode == 1
+    assert process.stdin.closed and process.stdout.closed
+
+
+def test_prewarm_stream_reaps_aborted_git_that_ignores_termination(monkeypatch, tmp_path):
+    process = _PrewarmGitProcess(b"bad\n", ignore_terminate=True)
+    _install_prewarm_process(monkeypatch, process)
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert process.terminated and process.killed and process.returncode is not None
+    assert process.stdin.closed and process.stdout.closed
+
+
+def test_prewarm_stream_real_git_preserves_the_per_path_results(monkeypatch, tmp_path):
+    root = _git_fixture_root(tmp_path)
+    bodies = {"a.json": b"L" * 129, "b.json": b"alpha\r\nbeta\rcharlie\n",
+              "empty.json": b"", "binary.json": b"\xff"}
+    for name, body in bodies.items():
+        (root / "data" / name).write_bytes(body)
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+    subprocess.run(["git", "-c", "user.name=t4", "-c", "user.email=t4@example.com",
+                    "commit", "-qm", "stream fixture"], cwd=root, check=True)
+    for name in bodies:
+        (root / "data" / name).unlink()
+    rels = [f"data/{name}" for name in bodies] + ["data/missing.json"]
+    CLI.reset_caches()
+    expected = {rel: CLI.read_tracked(root, Path(rel)) for rel in rels}
+    CLI.reset_caches()
+    monkeypatch.setattr(CLI, "PREWARM_SIZE_CAP", 64)
+    assert CLI._prewarm_head_contents(root, rels) == 3
+    assert (str(root), "data/a.json") not in CLI._READ_CACHE
+    assert (str(root), "data/binary.json") not in CLI._READ_CACHE
+    assert {rel: CLI.read_tracked(root, Path(rel)) for rel in rels} == expected
+
+
+@pytest.mark.parametrize("failure_at", ["launch", "write", "read"])
+def test_prewarm_stream_io_failure_leaves_cache_and_reaps_started_child(monkeypatch, tmp_path, failure_at):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"))
+    _install_prewarm_process(monkeypatch, process)
+
+    def unavailable(*args, **kwargs):
+        raise OSError("fixture I/O failure")
+
+    if failure_at == "launch":
+        monkeypatch.setattr(CLI.subprocess, "Popen", unavailable)
+    elif failure_at == "write":
+        monkeypatch.setattr(process.stdin, "write", unavailable)
+    else:
+        monkeypatch.setattr(process.stdout, "read", unavailable)
+    sentinel = (str(tmp_path), "already-cached")
+    CLI._READ_CACHE[sentinel] = ("keep", "worktree")
+    assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
+    assert CLI._READ_CACHE == {sentinel: ("keep", "worktree")}
+    if failure_at != "launch":
+        assert process.stdin.closed and process.stdout.closed
+        assert process.terminated and process.returncode is not None

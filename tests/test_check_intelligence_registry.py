@@ -746,14 +746,9 @@ _LIVE_INVOKING_ALLOWLIST = frozenset({
     # The shipped overlay must obey the four-key allowlist and name only real cells —
     # a property of the hand-edited file, not of the corpus it is keyed against.
     "test_the_shipped_overlay_is_structurally_valid_against_the_partition",
-    # THE VOLATILITY SIMULATIONS. Each builds the live view TWICE and asserts the two are
-    # equivalent across a synthetic append. Every assertion is a DIFFERENCE between the two
-    # builds — a new desk appeared; the engine set and the finding set did not move — so
-    # whatever the live corpus already holds appears on both sides and cancels. Neither
-    # asserts an ABSOLUTE property of the live tree; the malformed-append case did, and
-    # that is exactly why it moved to a fixture root (a truncated line in the live claim
-    # store must not be able to red a T1 test).
-    "test_a_nightly_CLAIM_APPEND_invalidates_nothing",
+    # The synapse volatility simulation builds the live view twice and asserts a
+    # difference without pinning live contents. Both claim append simulations now
+    # use fixture roots and are no longer allowed to reach the live corpus.
     "test_a_SIBLING_PR_adding_a_synapse_artifact_invalidates_nothing",
 })
 

@@ -13,9 +13,9 @@ committed artifact pinned by equality and then as counts pinned in this file.
 
 The exception is §LIVE INPUTS at the bottom. Those tests run the builder over the real
 tree and assert only that it does not crash and returns a WELL-FORMED structure — no count,
-no name, no value. Three of them simulate the volatility directly: a synthetic claim
-append, a MALFORMED claim append, and a synthetic synapse artifact, each asserting the
-derivation stays structurally valid and only the intended thing moves.
+no name, no value. The synthetic synapse append simulates live volatility. Both claim
+append cases now use the existing fixture root so streaming transport is exercised
+without loading the live corpus; each asserts only the intended thing moves.
 
 Anything needing an input with a KNOWN property — an unevidenced authority artifact, an
 excluded cell, a broken import — uses `check_intelligence_registry.write_fixture_root`, the
@@ -1390,41 +1390,29 @@ def _patched_read(monkeypatch, rel_to_patch, transform):
     return builder
 
 
-def test_a_nightly_CLAIM_APPEND_invalidates_nothing(monkeypatch):
-    """SIMULATION (a). `data/qledger/claims.jsonl` is append-only — 13 automated commits in
-    14 days — and round 1 pinned a value derived from it by equality, so main went red
-    daily for a property no PR author caused. Two appends at once: one more row on an
-    existing desk, and a row opening a brand-new desk."""
+def test_a_nightly_CLAIM_APPEND_invalidates_nothing(tmp_path):
+    """A complete streamed append changes the corpus, not authority findings."""
     import scripts.build_intelligence_registry as builder
+    import scripts.check_intelligence_registry as guard
     from engine.species_registry import VALID_VALIDATION_STATUSES
 
+    root = guard.write_fixture_root(tmp_path)
     builder._READ_CACHE.clear()
-    before, _ = builder.build(REPO)
+    before, _ = builder.build(root)
     extra = [
-        {"desk": "whitehouse", "horizon_d": 999, "direction": 1},
+        {"desk": "fixture_desk", "horizon_d": 999, "direction": 1},
         {"desk": "brand_new_desk_2026", "horizon_d": 21, "direction": 1},
     ]
-    try:
-        _patched_read(
-            monkeypatch,
-            builder.CLAIMS_REL,
-            lambda text: text + "".join(json.dumps(r) + "\n" for r in extra),
-        )
-        after, _ = builder.build(REPO)
-    finally:
-        builder._READ_CACHE.clear()
-
-    # The append must be REAL, or this test proves nothing.
+    with (root / builder.CLAIMS_REL).open("a") as handle:
+        handle.writelines(json.dumps(row) + "\n" for row in extra)
+    builder._READ_CACHE.clear()
+    after, _ = builder.build(root)
     assert after["meta"]["corpus"]["n_desks"] == before["meta"]["corpus"]["n_desks"] + 1
-
-    assert validate_structure(
-        after, valid_validation_statuses=VALID_VALIDATION_STATUSES
-    ) == []
+    assert validate_structure(after, valid_validation_statuses=VALID_VALIDATION_STATUSES) == []
     assert {r["engine_id"] for r in after["engines"]} == {r["engine_id"] for r in before["engines"]}
-    assert (
-        sorted((f.code, f.engine_id) for f in audit_content(after))
-        == sorted((f.code, f.engine_id) for f in audit_content(before))
-    ), "a nightly claim append changed the finding set — that is a scheduled fleet-wide red"
+    assert sorted((f.code, f.engine_id) for f in audit_content(after)) == sorted(
+        (f.code, f.engine_id) for f in audit_content(before)
+    )
 
 
 def test_a_MALFORMED_claim_append_flips_inputs_complete_to_False(tmp_path):
@@ -1720,3 +1708,167 @@ def test_required_tier_checks_supported_rule_premises(damage):
     answer = required_tier(registry, ["engine/a.py"])
     assert answer["required_tier"] is None
     assert answer["status"] == "unresolved"
+
+
+# Complete streaming claims: local synthetic sources only, no production corpus.
+@pytest.mark.parametrize("sparse", [False, True])
+def test_claims_stream_complete_parser_parity_and_no_eager_transport(tmp_path, monkeypatch, sparse):
+    import subprocess
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    raw = ('# comment\r\n{"desk":"a","horizon_d":true}\v'
+           '{"desk":"a","horizon_d":21}\u2028'
+           '[]\f{bad\x85{"horizon_d":9}\r'
+           '{"desk":"b","horizon_d":63}\n'
+           '{"desk":"a","horizon_d":5}')
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text(raw, encoding="utf-8", newline="")
+    if sparse:
+        for args in (("init", "-q"), ("add", "."),
+                     ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "fixture")):
+            subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+        path.unlink()
+    monkeypatch.setattr(builder, "read_tracked", lambda *a: pytest.fail("eager tracked text"))
+    monkeypatch.setattr(store, "read_tracked_claims_text", lambda *a, **k: pytest.fail("eager selected text"))
+    monkeypatch.setattr(Path, "read_text", lambda *a, **k: pytest.fail("eager file text"))
+    builder._READ_CACHE.clear()
+    result = builder._load_qledger(tmp_path)
+    assert result == builder.QLedgerRead({"a": 3, "b": 1}, {"a": [True, 5, 21], "b": [63]},
+                                         "git" if sparse else "worktree", 2, 7)
+    assert result.source_label.endswith("(2 unparseable line(s))")
+    assert (str(tmp_path), builder.CLAIMS_REL.as_posix()) not in builder._READ_CACHE
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_claims_stream_empty_and_cache_reset_keep_legacy_semantics(tmp_path, sparse):
+    import subprocess
+    from scripts import build_intelligence_registry as builder, build_output_health as health
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text("")
+    if sparse:
+        for args in (("init", "-q"), ("add", "."),
+                     ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "empty")):
+            subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+        path.unlink()
+    health.reset_caches()
+    before = builder._load_qledger(tmp_path)
+    assert before == (builder.QLedgerRead(None, None, "absent", 0, 0) if sparse else
+                      builder.QLedgerRead({}, {}, "worktree", 0, 0))
+    path.write_text('{"desk":"later","horizon_d":126}\n')
+    assert builder._load_qledger(tmp_path) == before
+    health.reset_caches()
+    assert builder._load_qledger(tmp_path).rows == {"later": 1}
+
+
+@pytest.mark.parametrize("failure", ["decode", "io"])
+def test_claims_stream_discards_late_worktree_failure_before_git_fallback(tmp_path, monkeypatch, failure):
+    import io
+    from contextlib import contextmanager
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.touch()
+    error = (UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture") if failure == "decode" else OSError("fixture late read"))
+    @contextmanager
+    def broken(*args, **kwargs):
+        def lines():
+            yield '{"desk":["invalid"],"horizon_d":999}\n'
+            raise error
+        yield lines()
+    class Child:
+        def __init__(self): self.stdout = io.StringIO('{"desk":"head","horizon_d":5}\n')
+        def wait(self): return 0
+        def poll(self): return 0
+    child = Child()
+    monkeypatch.setattr(store, "open_raw_lines", broken)
+    monkeypatch.setattr(builder.subprocess, "Popen", lambda *a, **k: child)
+    builder._READ_CACHE.clear()
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead({"head": 1}, {"head": [5]}, "git", 0, 1)
+    assert child.stdout.closed
+
+
+@pytest.mark.parametrize("failure", ["nonzero", "decode", "io", "launch"])
+def test_claims_stream_failed_git_never_publishes_partial_counts(tmp_path, monkeypatch, failure):
+    import io
+    from scripts import build_intelligence_registry as builder
+
+    class Stream(io.StringIO):
+        def __iter__(self):
+            yield '{"desk":["invalid"],"horizon_d":999}\n'
+            if failure == "decode": raise UnicodeDecodeError("utf-8", b"\xff", 0, 1, "fixture")
+            if failure == "io": raise OSError("fixture read")
+    class Child:
+        def __init__(self): self.stdout = Stream(); self.returncode = None; self.terminated = False
+        def wait(self, timeout=None): self.returncode = 1; return 1
+        def poll(self): return self.returncode
+        def terminate(self): self.terminated = True
+        def kill(self): pytest.fail("normal termination suffices")
+    child = Child()
+    def launch(*args, **kwargs):
+        if failure == "launch": raise OSError("fixture launch")
+        return child
+    monkeypatch.setattr(builder.subprocess, "Popen", launch)
+    builder._READ_CACHE.clear()
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead(None, None, "absent", 0, 0)
+    if failure != "launch": assert child.stdout.closed
+    if failure in ("decode", "io"): assert child.terminated
+
+
+def test_claims_stream_honors_an_existing_tracked_text_snapshot(tmp_path):
+    from scripts import build_intelligence_registry as builder
+
+    builder._READ_CACHE.clear()
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text('{"desk":"cached","horizon_d":5}\r{"desk":"cached","horizon_d":63}\n')
+    assert builder.read_tracked(tmp_path, builder.CLAIMS_REL)[1] == "worktree"
+    path.write_text('{"desk":"later"}\n')
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead(
+        {"cached": 2}, {"cached": [5, 63]}, "worktree", 0, 2
+    )
+
+
+def test_claims_stream_cached_aggregates_are_not_mutable_by_callers(tmp_path):
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.write_text('{"desk":"one","horizon_d":5}\n')
+    builder._READ_CACHE.clear()
+    result = builder._load_qledger(tmp_path)
+    result.rows["one"] = 999
+    result.horizons["one"].append(999)
+    assert builder._load_qledger(tmp_path) == builder.QLedgerRead({"one": 1}, {"one": [5]}, "worktree", 0, 1)
+
+
+def test_claims_stream_keeps_parser_failure_after_complete_read(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+    from engine import qledger_store as store
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / builder.CLAIMS_REL
+    path.parent.mkdir(parents=True)
+    path.touch()
+    consumed = []
+    @contextmanager
+    def stream(*args, **kwargs):
+        def lines():
+            yield '{"desk":["invalid"]}\n'
+            consumed.append("complete")
+            yield '{"desk":"tail"}\n'
+        try:
+            yield lines()
+        finally:
+            consumed.append("closed")
+    monkeypatch.setattr(store, "open_raw_lines", stream)
+    builder._READ_CACHE.clear()
+    with pytest.raises(TypeError):
+        builder._load_qledger(tmp_path)
+    assert consumed == ["complete", "closed"]
+    assert not builder._READ_CACHE
