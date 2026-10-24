@@ -309,6 +309,26 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(clean, allow_nan=False, default=str), encoding="utf-8")
 
 
+def capture_built_scenario_sources(descriptor, viewer, *, operation_id: str,
+                                  out_dir: Path, s3=None, bucket=None,
+                                  destination=None, source_save_decision=None,
+                                  retention_decision=None, current_viewer=None, clock=None):
+    """Deliberate PRIVATE capture of expected bytes already serialized by this producer.
+
+    This is not called by the nightly loop and does not build/recompute/fetch or
+    upload a public head. A native caller must supply current Save/retention and
+    private-destination bindings. No binding is configured by importing this file.
+    Browser bytes and arbitrary source paths are not accepted. The composer
+    checks exact expected identities before retention and emits metadata only;
+    it does not verify native TS scenario math or apply a canonical save.
+    """
+    from engine.options_scenario_capture import capture_built_scenario_sources as capture
+    return capture(descriptor, viewer, operation_id=operation_id, out_dir=out_dir,
+        s3=s3, bucket=bucket, destination=destination,
+        source_save_decision=source_save_decision, retention_decision=retention_decision,
+        current_viewer=current_viewer, clock=clock)
+
+
 def _publish_aggregates(
     roots_ok: list[str],
     asof: str,

@@ -3242,3 +3242,50 @@ def test_rio_claim_indices_valid_analysis_keeps_links_and_input_unchanged():
     assert result["claims"][1]["statement"] == original["claims"][1]["statement"]
     assert validate_rio(result) == result
 
+
+def test_runtime_real_private_store_transport_sends_one_put_on_redirect_or_error(monkeypatch):
+    """Actual boto3/store/adapter against loopback; no cloud or fixture policy."""
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    import threading
+    import pytest
+    from engine.research_vault import r2_store
+    from engine.options_hub_retention import PrivateScenarioObjects as _PrivateObjects
+    class Handler(BaseHTTPRequestHandler):
+        def do_PUT(self):
+            self.server.puts += 1
+            self.rfile.read(int(self.headers.get('Content-Length', '0')))
+            assert self.headers.get('If-None-Match') == '*'
+            raw = b'<Error><Code>SlowDown</Code></Error>' if self.server.status != 200 else b''
+            self.send_response(self.server.status)
+            if self.server.status == 301:
+                self.send_header('x-amz-bucket-region', 'us-east-1')
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers(); self.wfile.write(raw)
+        def do_HEAD(self):
+            self.server.heads += 1
+            self.send_response(500); self.send_header('Content-Length','0'); self.end_headers()
+        def log_message(self, *args): pass
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    server.puts = server.heads = 0
+    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    try:
+        monkeypatch.setenv('R2_RESEARCH_ENDPOINT', f'http://127.0.0.1:{server.server_port}')
+        monkeypatch.setenv('R2_RESEARCH_ACCESS_KEY_ID', 'controlled-local-key')
+        monkeypatch.setenv('R2_RESEARCH_SECRET_ACCESS_KEY', 'controlled-local-secret')
+        monkeypatch.setenv('R2_RESEARCH_BUCKET', 'controlled-private')
+        monkeypatch.setenv('R2_BUCKET', 'controlled-public')
+        monkeypatch.delenv('RESEARCH_LOCAL_STORE', raising=False)
+        store = r2_store.build_store(single_attempt_writes=True)
+        objects = _PrivateObjects(store, True)
+        for status in (200, 301, 503):
+            server.status = status
+            before = server.puts
+            args = dict(Bucket=store.bucket, Key='options_hub/gex_history/SPY/sha256/'+'a'*64+'.json', Body=b'{}',
+                        ContentType='application/json', IfNoneMatch='*')
+            if status == 200: objects.put_object(**args)
+            else:
+                with pytest.raises(Exception): objects.put_object(**args)
+            assert server.puts == before + 1 and server.heads == 0
+    finally:
+        server.shutdown(); server.server_close(); thread.join(timeout=5)
+        assert not thread.is_alive()

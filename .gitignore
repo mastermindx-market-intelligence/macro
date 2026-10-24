@@ -756,3 +756,8 @@ data/qledger/control_evidence_clock_start/
 
 # MedTech qualification receipts contain raw source bytes and a private SQLite store.
 /reports/medtech-r14-runtime/
+
+# Private Yahoo capture objects require0700/0600 and must never be Git checkout
+# inputs. WTI's bounded CL_F.observation.json export rides normal data publication.
+data/yahoo/.availability_capture/
+data/yahoo/.CL_F.observation-*
