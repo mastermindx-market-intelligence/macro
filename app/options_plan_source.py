@@ -170,6 +170,20 @@ def prepare_retained_plan(payload, *, reference_path, expected_sha256, now=None)
             raise ValueError("unknown reference basis")
     except (ValueError, TypeError):
         raise PlanSourceUnavailable("contract_terms_unavailable") from None
+    rows = observation.get("contracts") if "contracts" in observation else [observation.get("contract")]
+    try:
+        if (not isinstance(rows, list) or not 1 <= len(rows) <= 100
+                or any(not isinstance(row, dict) for row in rows)):
+            raise ValueError("coverage absent")
+        roots = {row["underlying_ticker"] for row in rows}
+        tickers = [row["ticker"] for row in rows]
+        expirations = sorted({row["expiration_date"] for row in rows})
+        if (len(roots) != 1 or not roots <= {"SPY", "QQQ"}
+                or len(set(tickers)) != len(tickers) or any(not isinstance(ticker, str) for ticker in tickers)
+                or any(date.fromisoformat(expiry).isoformat() != expiry for expiry in expirations)):
+            raise ValueError("coverage invalid")
+    except (ValueError, TypeError, KeyError):
+        raise PlanSourceUnavailable("contract_terms_unavailable") from None
     for context in contexts:
         context["reference_observation"] = deepcopy(observation)
     result = prepare_plan_draft_expiry(payload["draft"], contexts, payload["spots"],
@@ -177,6 +191,7 @@ def prepare_retained_plan(payload, *, reference_path, expected_sha256, now=None)
     result["source_boundary"] = dict(selection="caller_authored_plan_identity",
         terms="server_held_qualified_reference", terms_temporal_basis="dated_reference",
         reference_as_of=as_of, reference_observed_at=observation["completed_at"],
+        reference_root=next(iter(roots)), reference_contract_count=len(rows), reference_expirations=expirations,
         reference_sha256=observation["payload_sha256"], installed_observation_sha256=installed_sha,
         original_response_bytes_replayed=False, discovery_snapshot_authenticated=False,
         historical_first_availability_established=False, current_terms_qualified=False,

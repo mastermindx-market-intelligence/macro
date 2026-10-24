@@ -168,6 +168,8 @@ def test_fixed_private_reference_to_curve_never_acquires_provider(tmp_path, monk
     assert boundary["reference_observed_at"] == "2026-10-20T08:43:25.307134+00:00"
     assert result["known_by"] == "2026-10-24T12:00:00+00:00"
     assert boundary["reference_request_count"] == 0
+    assert boundary["reference_root"] == "SPY" and boundary["reference_contract_count"] == 1
+    assert boundary["reference_expirations"] == ["2026-10-23"]
     assert boundary["current_terms_qualified"] is False
     assert boundary["original_response_bytes_replayed"] is False
 
@@ -199,3 +201,6 @@ def test_mismatched_reference_does_not_substitute_another_contract(tmp_path):
     result = source.prepare_retained_plan(plan(), reference_path=path, expected_sha256=digest)
     assert result["status"] == "UNPRICED" and result["curve"] is None
     assert any(r["code"] == "TERMS_UNQUALIFIED" for r in result["reasons"])
+    assert result["source_boundary"]["reference_root"] == "SPY"
+    assert result["source_boundary"]["reference_contract_count"] == 1
+    assert result["source_boundary"]["reference_expirations"] == ["2026-10-23"]

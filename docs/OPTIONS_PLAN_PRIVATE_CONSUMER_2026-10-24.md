@@ -69,3 +69,8 @@ conditional intrinsic curve over hypothetical underlying prices. Early exercise,
 assignment and fees are excluded. It is not mark-to-market, fixing/settlement,
 a fill, trading authority or an actual outcome. The Investigation owner keeps
 the unchanged Plan payload for durable Save/reopen; no storage is added here.
+
+The private result also reports the exact retained reference root, contract count and
+expiry set. This bounded metadata remains available when an exact selection is
+unpriced, so the consumer can explain the dated pilot coverage without exporting
+paid contract rows or substituting another identity. It is not current-chain coverage.
