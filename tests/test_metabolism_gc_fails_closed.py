@@ -116,6 +116,12 @@ class GCFailClosedTests(unittest.TestCase):
                 self.assertEqual(gc_mod.main(["--root", str(root)]), 0)
                 remote.assert_called_once_with(root, dry_run=True)
 
+    def test_direct_remote_reaper_has_no_push_delete_path(self):
+        """Remote prune is blocked without authoritative upstream and lease proof."""
+        source = inspect.getsource(gc_mod.reap_propose_branches)
+        self.assertNotIn('["git", "push", "origin", "--delete"', source)
+        self.assertIn('current upstream/unique-commit/lease admission', source)
+
     def test_no_force_flag_in_deletion_command(self):
         source = inspect.getsource(gc_mod.gc)
         self.assertNotIn('"remove", "--force"', source)
