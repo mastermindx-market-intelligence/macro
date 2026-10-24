@@ -13297,6 +13297,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "templates/ticker_index.html.j2"
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/marketing/market_clock.py"
