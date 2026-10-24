@@ -1,0 +1,52 @@
+{
+  "schema": "eval_os.hosted_a1_pack_consumption.v1",
+  "observed_at": "2026-10-14T17:21:15.335077+00:00",
+  "identity": {
+    "workflow_run_id": "38601317870",
+    "workflow": "ci",
+    "event": "pull_request",
+    "role": "pr_head",
+    "subject_head_sha": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+    "base_sha": "9b8cb7526390830669ab6b563e1eaeab0bbb0d32",
+    "tested_tree_sha": "f4c3d4fb57701fad0c04f64b42b45acb0943aeff",
+    "plan_sha256": "d947437146ecab6c6179f191bf90bf042100b721e9c29883aa1fdf85b50b23b3",
+    "pack_index": 6
+  },
+  "artifact_id": 11915291369,
+  "artifact_zip_sha256": "18e70c6477dcd82a7241b685a2428c10432815672c42fa51f303ee0adb5e3fbe",
+  "artifact_digest_verified": true,
+  "member_sha256": "4cd99fd6a405c7f67fb238d9ad653c306a0e98ec5f62b04ded89d048a03d9dea",
+  "canonical_reconciler_source_sha256": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+  "planned_pack_jobs": 13,
+  "observed_pack_jobs": 13,
+  "all_pack_semantic_steps_passed": true,
+  "semantic_step_count": 45,
+  "a1_job": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 6,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "infrastructure": {
+      "outcome": "passed"
+    },
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06",
+        "outcome": "passed",
+        "failure_signature": null,
+        "classification": "passed"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb",
+        "outcome": "passed",
+        "failure_signature": null,
+        "classification": "passed"
+      }
+    ]
+  },
+  "scope": "Retained original pack6 facts validated against original plan with canonical reconciler. Only pack6 consumed; missing fragments in this local partial reconciliation are unobserved here, not a new hosted failure. Terminal full-run artifact and binding gate remain owed. No CI rerun or final artifact publication.",
+  "full_ci_proven": false,
+  "merged": false,
+  "production_proven": false
+}
