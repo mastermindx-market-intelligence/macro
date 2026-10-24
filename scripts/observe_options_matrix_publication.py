@@ -492,22 +492,23 @@ def _utc_now():
     return datetime.datetime.now(datetime.timezone.utc)
 
 
-def capture_spy_identity_inputs(repo, *, vendor):
+def capture_spy_identity_inputs(repo, *, vendor, read_bytes=None):
     """Capture existing canonical files for an optional identity join.
 
     The existing writer currently retains only a SPY source admission. Read
     clocks describe this capture, not historical availability or HTTP provenance.
-    Uses the observer's bounded local reader; no atomic snapshot or hostile
-    filesystem replacement guarantee is introduced.
+    Uses the observer's bounded local reader unless a deployment-owned bounded
+    reader is supplied; no atomic multi-file snapshot guarantee is introduced.
     """
     from engine.intelligence_workspace.entity import IdentityArtifactRead
     if vendor != "thetadata":
         raise ObservationRefused("SPY source receipt requires explicit thetadata namespace")
     retention = _retention()
     base = Path(repo) / "data/reference"
+    reader = read_local_bytes if read_bytes is None else read_bytes
 
     def captured(name):
-        raw = read_local_bytes(base / name, retention.MAX_MATRIX_BYTES)
+        raw = reader(base / name, retention.MAX_MATRIX_BYTES)
         return IdentityArtifactRead(raw, hashlib.sha256(raw).hexdigest(), _utc_now())
 
     try:

@@ -1935,3 +1935,279 @@ datasets:
       current-vintage descriptive industry display only, with attribution and
       no endorsement. Public UI/browser/machine proof and independent source
       review remain separate acceptance gates.
+
+  # Options Matrix: scoped native contracts; executable policy remains unbound.
+  - dataset_id: options.thetadata.oi.normalized
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/thetadata.py::_normalize_oi_df -> scripts/backfill_thetadata_eod.py::pull_root_year
+      / scripts/topup_thetadata_day.py
+    storage: '{THETADATA_STORE}/oi/SPY/2026.parquet'
+    format: parquet
+    grain:
+    - root
+    - expiration
+    - strike
+    - right
+    - date
+    temporal_profile: SNAPSHOT_SERIES
+    version: 1.0.0
+    vendor: thetadata
+    conflict_policy: PRIMARY_ONLY
+    inputs: []
+    code_consumers:
+    - engine/options_matrix.py
+    - engine/thetadata_store.py
+    licensing: APPROVED_BY_CHAIRMAN_ATTESTATION
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        internal_computation: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        redistribution: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+    schema:
+      root:
+        dtype: large_string
+      expiration:
+        dtype: timestamp[us]
+      strike:
+        dtype: double
+      right:
+        dtype: large_string
+      date:
+        dtype: timestamp[us]
+      open_interest:
+        dtype: int64
+    notes: Observed stable/nonempty SPY/2026 store and Arrow physical schema at 2026-10-24T06:14:36.281781+00:00.
+      Storage uses the existing THETADATA_STORE resolver; observed host root was /Users/chriswong/theta-ops-wt/data/thetadata_eod.
+      No historical input bytes, source version, first-availability clock or deployment
+      presence is asserted. Optional timestamp/acquisition columns in producer code
+      are not present in this observed store. The internal dataset ID and schema-contract
+      version are newly assigned. See docs/options_matrix_dataset_enrollment.md.
+  - dataset_id: options.thetadata.eod.normalized
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/thetadata.py::_normalize_eod_df -> scripts/backfill_thetadata_eod.py::pull_root_year
+      / scripts/topup_thetadata_day.py
+    storage: '{THETADATA_STORE}/eod/SPY/2026.parquet'
+    format: parquet
+    grain:
+    - root
+    - expiration
+    - strike
+    - right
+    - date
+    temporal_profile: SNAPSHOT_SERIES
+    version: 1.0.0
+    vendor: thetadata
+    conflict_policy: PRIMARY_ONLY
+    inputs: []
+    code_consumers:
+    - engine/options_matrix.py
+    - engine/thetadata_store.py
+    licensing: APPROVED_BY_CHAIRMAN_ATTESTATION
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        internal_computation: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        redistribution: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+    schema:
+      root:
+        dtype: large_string
+      expiration:
+        dtype: timestamp[us]
+      strike:
+        dtype: double
+      right:
+        dtype: large_string
+      date:
+        dtype: timestamp[us]
+      open:
+        dtype: double
+      high:
+        dtype: double
+      low:
+        dtype: double
+      close:
+        dtype: double
+      volume:
+        dtype: int64
+      count:
+        dtype: int64
+      bid:
+        dtype: double
+      ask:
+        dtype: double
+    notes: Observed stable/nonempty SPY/2026 store and Arrow physical schema at 2026-10-24T06:14:36.281781+00:00.
+      Storage uses the existing THETADATA_STORE resolver; observed host root was /Users/chriswong/theta-ops-wt/data/thetadata_eod.
+      No historical input bytes, source version, first-availability clock or deployment
+      presence is asserted. Optional timestamp/acquisition columns in producer code
+      are not present in this observed store. The internal dataset ID and schema-contract
+      version are newly assigned. See docs/options_matrix_dataset_enrollment.md.
+  - dataset_id: options.thetadata.greeks.normalized
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/thetadata.py::_normalize_greeks_df -> scripts/backfill_thetadata_eod.py::pull_root_year
+      / scripts/topup_thetadata_day.py
+    storage: '{THETADATA_STORE}/greeks/SPY/2026.parquet'
+    format: parquet
+    grain:
+    - root
+    - expiration
+    - strike
+    - right
+    - date
+    temporal_profile: SNAPSHOT_SERIES
+    version: 1.0.0
+    vendor: thetadata
+    conflict_policy: PRIMARY_ONLY
+    inputs: []
+    code_consumers:
+    - engine/options_matrix.py
+    - engine/thetadata_store.py
+    licensing: APPROVED_BY_CHAIRMAN_ATTESTATION
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        internal_computation: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        redistribution: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+    schema:
+      root:
+        dtype: large_string
+      expiration:
+        dtype: timestamp[us]
+      strike:
+        dtype: double
+      right:
+        dtype: large_string
+      date:
+        dtype: timestamp[us]
+      bid:
+        dtype: double
+      ask:
+        dtype: double
+      underlying_price:
+        dtype: double
+      delta:
+        dtype: double
+      theta:
+        dtype: double
+      vega:
+        dtype: double
+      rho:
+        dtype: double
+      epsilon:
+        dtype: double
+      lambda:
+        dtype: double
+      implied_vol:
+        dtype: double
+      iv_error:
+        dtype: double
+      gamma:
+        dtype: double
+      vanna:
+        dtype: double
+      charm:
+        dtype: double
+      vomma:
+        dtype: double
+      veta:
+        dtype: double
+      vera:
+        dtype: double
+      speed:
+        dtype: double
+      zomma:
+        dtype: double
+      color:
+        dtype: double
+      ultima:
+        dtype: double
+    notes: Observed stable/nonempty SPY/2026 store and Arrow physical schema at 2026-10-24T06:14:36.281781+00:00.
+      Storage uses the existing THETADATA_STORE resolver; observed host root was /Users/chriswong/theta-ops-wt/data/thetadata_eod.
+      No historical input bytes, source version, first-availability clock or deployment
+      presence is asserted. Optional timestamp/acquisition columns in producer code
+      are not present in this observed store. The internal dataset ID and schema-contract
+      version are newly assigned. See docs/options_matrix_dataset_enrollment.md.
+  - dataset_id: options.matrix.thetadata.derived
+    layer: L3
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/options_matrix.py::build_matrix -> scripts/build_options_matrix.py
+    storage: data/live_flow_out/options_matrix/history/{ROOT}/{sha256}.json
+    format: json
+    grain:
+    - root
+    - session
+    - sha256
+    temporal_profile: DERIVED
+    version: 1.0.0
+    vendor: thetadata
+    conflict_policy: COMPOSITE
+    inputs:
+    - options.thetadata.oi.normalized
+    - options.thetadata.eod.normalized
+    - options.thetadata.greeks.normalized
+    code_consumers:
+    - app/options_matrix_runtime.py
+    - engine/intelligence_workspace/options_matrix_delivery.py
+    licensing: APPROVED_BY_CHAIRMAN_ATTESTATION
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        internal_computation: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+        redistribution: DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023
+    schema:
+      schema:
+        type: string
+      asof:
+        type: string
+      session:
+        type: string
+      root:
+        type: string
+      spot:
+        type: number|null
+      expiries:
+        type: array
+      strikes:
+        type: array
+      cells:
+        type: array
+      levels:
+        type: object
+      heat_seeker:
+        type: object|null
+      authority_tier:
+        type: string
+      experimental:
+        type: boolean
+      reliability:
+        type: object
+      _build_meta:
+        type: object
+    notes: PRODUCED qualification is bounded to accepted SPY source session 2026-10-15,
+      SHA256 801db740f30aa95aa3613f26962d33cf4e7ccc240c38ddef554a110b2b699e8e, 643598
+      bytes, matched to native identity/selection. The static three-input DAG does not
+      reconstruct historical source bytes or known-at clocks. No current producer-health
+      or API installation claim. All three rights are explicit on this composite, not
+      inherited. DEC evidence is commercial provenance and intentionally cannot activate
+      the strict action-policy adapter. The internal dataset ID and schema-contract
+      version are newly assigned. See docs/options_matrix_dataset_enrollment.md.
+    clocks:
+    - derived

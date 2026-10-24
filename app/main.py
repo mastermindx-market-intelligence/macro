@@ -2754,6 +2754,13 @@ except Exception as _options_issue_desk_exc:  # noqa: BLE001
     )
 
 # ---------------------------------------------------------------------------
+# Matrix display has no default native enrollment. Its narrow POST always mounts
+# and refuses without deployment-owned readers/configuration; it is not Flow Hub.
+from app.options_matrix_http import router as options_matrix_display_router  # noqa: E402
+app.include_router(options_matrix_display_router)
+from app.options_matrix_runtime import install_matrix_display_runtime  # noqa: E402
+install_matrix_display_runtime(app, repo=REPO)
+
 # Lifecycle mail sweeper (SEE W3 — app/billing_emails.py): the behaviour-triggered
 # trial-ending T-2 reminder. DEFAULT OFF — register_lifecycle is a no-op unless the
 # operator sets MAIL_LIFECYCLE_ENABLED (docs/ops/email-support-setup.md §5b), so this is
