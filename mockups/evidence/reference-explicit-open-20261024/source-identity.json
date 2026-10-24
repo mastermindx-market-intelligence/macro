@@ -1,0 +1,34 @@
+{
+  "sourceHead": "f9ae97c0890226b7e42b0ab91990aaa4008b7efd",
+  "pageSha256": "7b551d4c7a601e75d4f1dc018750acf15ac95e9734c17db542997f7c29a8a2b1",
+  "assets": {
+    "account.js": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
+    "assets/css/b889eeca.css": "b889eecafe6f2c67ce1c36a05c42954ee06e4427246991768cba19f41b8561ec",
+    "fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "nav_market.js": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+    "navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "reference.html": "7b551d4c7a601e75d4f1dc018750acf15ac95e9734c17db542997f7c29a8a2b1",
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "theme.css": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "theme.js": "0d0e539655372cce40043ef2e89820a9fd87b137dcd08e0fc60276678a12e4c6"
+  },
+  "missingAssets": [],
+  "canonicalCaptureToolSha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+  "localDriverSha256": "c1f0481cd28e4e692c0ee0154050f720df9052ba3dcb6f9161095ff8106b746a",
+  "sourceFiles": {
+    "templates/reference.html.j2": "3b07b285d5451d5e2041b2a4a697a2057ba6883e8cc17c0035cf412285ab4434",
+    "scripts/build_market_reference.py": "3742f904f00043767966af1e3b7db7a94dba87cbbd96c8efff17154167b68f81"
+  },
+  "emissionReport": "emission.json; owner generated before final commit; normalized hash matches committed captured page",
+  "userAgent": "Canonical USER_AGENT explicitly applied to all final browser contexts; initial custom-driver default-UA metadata discrepancy retained outside final export"
+}
