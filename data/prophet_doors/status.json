@@ -2,14 +2,14 @@
   "appended": 2,
   "asof": "2026-10-23",
   "candidates": {
-    "R": 2,
-    "T": 25,
-    "W": 35
+    "R": 0,
+    "T": 24,
+    "W": 36
   },
   "deduped": {
-    "R": 2,
-    "T": 24,
-    "W": 34
+    "R": 0,
+    "T": 23,
+    "W": 35
   },
   "dry_run": false,
   "feature_source": {
@@ -27,21 +27,21 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 5
+        "ohlcv_absent": 15
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Defense & Aerospace": {
-          "theme_thrust_frac": 0.0526,
+        "Real Estate & REITs": {
+          "theme_thrust_frac": 0.1471,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 19,
-      "tickers_read": 24
+      "tickers_ok": 34,
+      "tickers_read": 49
     },
     "keys": [
       "relay_count_3d",
@@ -62,7 +62,7 @@
       "consulted": true,
       "high_lookback": 63,
       "members_indexed": 138,
-      "n_covered": 0,
+      "n_covered": 111,
       "reason": null,
       "window_sessions": 21
     },
@@ -108,10 +108,10 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "RTX"
+      "REXR"
     ],
     "W": [
-      "DD"
+      "XLU"
     ]
   },
   "n_universe": 1491,
@@ -120,8 +120,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-24 09:18:19",
-  "runtime_s": 107.4,
+  "run_utc": "2026-10-24 21:14:24",
+  "runtime_s": 109.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -163,19 +163,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 35,
+    "aligned": 36,
     "asof_max": "2026-10-23",
     "asof_mismatch": 0,
     "asof_run": "2026-10-23",
     "evaluated": 712,
-    "fresh": 37,
+    "fresh": 38,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.4,
+    "runtime_s": 23.0,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 65,
+    "state_turn": 66,
     "universe_n": 717
   }
 }

@@ -8503,6 +8503,7 @@ jobs:
       - "scripts/chain_snapshot_poller.py"
       - "scripts/ci/options_signal_nightly.sh"
       - "scripts/ci/options_index_lock_identity.py"
+      - "scripts/launchd/theta_daily_refresh.sh"
       - "scripts/launchd/theta_staleness_sentinel.sh"
       - "scripts/live_flow_poller.py"
       - "scripts/mirror_flow_idx.py"
@@ -37419,7 +37420,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema==4.26.0
       - name: EDGAR filing identity join + release binding (Wave 1B)
         run: >-
           python -m pytest

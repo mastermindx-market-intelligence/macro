@@ -2003,3 +2003,29 @@ def test_d_session_absolute_deadline_refuses_other_timer_or_thread_before_get(mo
     thread = threading.Thread(target=run); thread.start(); thread.join(1)
     assert len(errors) == 1 and isinstance(errors[0], ValueError)
     session.get.assert_not_called(); assert budget.attempts == 0
+
+
+@pytest.mark.parametrize('case',['ready','retry','active_alarm','background_thread','deadline','origin','spent','closed'])
+def test_pilot_preclaim_capacity_inspection_never_requests(monkeypatch,case):
+    import signal,threading
+    from types import SimpleNamespace
+    from collectors import thetadata as td
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    monkeypatch.setattr(td.time,'monotonic',lambda:10.)
+    adapter=td.bounded_spy_d_session_transport(date(2026,10,26))
+    seen=[]
+    class Session:
+        def get_adapter(self,url):
+            seen.append(url)
+            return SimpleNamespace(max_retries=SimpleNamespace(total=1 if case=='retry' else 0))
+        def get(self,*a,**kw):pytest.fail('Capacity inspection issued a physical GET')
+    monkeypatch.setattr(td,'_session',lambda:Session())
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('Capacity inspection probed source'))
+    monkeypatch.setattr(signal,'getitimer',lambda kind:(1.,0.) if case=='active_alarm' else (0.,0.))
+    if case=='background_thread':monkeypatch.setattr(threading,'current_thread',lambda:object())
+    if case=='origin':monkeypatch.setattr(td,'_base_url',lambda:'http://other.invalid')
+    if case=='spent':adapter._index=1
+    if case=='closed':adapter._closed=True
+    assert adapter.preflight(deadline_at=9. if case=='deadline' else 50.) is (case=='ready')
+    assert adapter._index==(1 if case=='spent' else 0) and adapter._budget is None
+    if case=='ready':assert seen==['http://127.0.0.1:25503/v3/option/history/eod','http://127.0.0.1:25503/v3/option/history/greeks/eod']
