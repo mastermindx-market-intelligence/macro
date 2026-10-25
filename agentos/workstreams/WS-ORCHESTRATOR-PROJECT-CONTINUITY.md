@@ -26,6 +26,7 @@ owns_paths:
   - agentos/discoveries/DSC-CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION.md
   - agentos/handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-*
   - research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
+  - research/ORCHESTRATOR_PROJECT_CONTINUITY_W3_NATIVE_EVIDENCE_BRIEF.md
 depends_on: []
 waves:
   - id: W0
@@ -39,23 +40,25 @@ waves:
     status: in_progress
     next_action: >
       Reuse Secretary-approved installation A and native startup, Tiingo resume,
-      compact and sibling-negative canaries. Verify the remaining changed-decision
-      behavior and current owner-source delivery; reconcile paired resume/compact
-      context with Secretary before any hook change.
+      compact and sibling-negative canaries. Changed-decision proof is blocked:
+      no later accepted Tiingo decision exists in main. Reconcile genuine project
+      source needs, then have its existing source-acquisition owner deliver an
+      accepted change before Secretary resumes the exact canary. Do not invent a test decision.
   - id: W2
     title: Publish the project plan and recoverable checkpoint in Agent OS
     status: in_progress
     next_action: >
-      Reuse merged Macro PR 9967. Observe the normal protected merge queue for
-      independently approved PR 1700 at 6846da09, admitted by non-author
-      mastermindx-3, then publish the current records through normal review.
+      Reuse merged Macro PR 9967 and Mastermind PR 1700 (a4525e3e).
+      Publish the current four-file checkpoint through independent changed-head
+      review and an eligible non-author release actor; PR 10181 is not yet canonical.
   - id: W3
     title: Compose and qualify full semantic continuation through existing owners
     status: in_progress
     next_action: >
       PR 1673 is incorporated and closed; obtain fresh independent review of
       PR 656 at a9c685a, then the PR 1676 aee76c3 / PR 1289 a1c213b composition.
-      Their current hosted CI is green. Preserve production HOLD and real custody.
+      Their current hosted CI is green. Qualify native input evidence before a
+      capsule ACK connection; preserve production HOLD and real custody.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo
@@ -80,12 +83,14 @@ landmines:
   - "This authored workstream and its owner field establish no live lease, runtime assignment or transfer of an older parent's workers (agentos/README.md)."
 artifacts:
   - research/ORCHESTRATOR_PROJECT_CONTINUITY_IMPLEMENTATION.md
+  - research/ORCHESTRATOR_PROJECT_CONTINUITY_W3_NATIVE_EVIDENCE_BRIEF.md
   - mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md
 next_action: >
-  Observe Mastermind PR 1700's protected merge queue at approved head 6846da09
-  (admitted 2026-10-25T11:26:51Z); require a merge receipt before calling it merged.
-  Then close W1 changed-decision evidence with the existing installation owner
-  and advance independent W3 review. W4 stays held on the unarmed runtime.
+  PR 1700 merged through the protected queue at 2026-10-25T12:08:55Z.
+  Consume the existing Secretary W1 changed-decision proof and W3 independent
+  review operations, now supplied with that merge receipt. Obtain changed-head
+  review and independent release for Macro PR 10181. W4 retains its source,
+  delivery, runtime arming and admission gates.
 ---
 
 ## Scope
@@ -122,11 +127,19 @@ this workstream and its dated handoff carry the current organizational frontier.
   was consumed: its identity cannot approve or merge. The current connector
   mastermindx-3 authored none of this PR's commits and submitted it to the normal
   protected controller. GitHub timeline event 34179003728 records merge-queue
-  admission at 2026-10-25T11:26:51Z. Queue admission is not completed merge.
+  admission at 2026-10-25T11:26:51Z. PR 1700 **merged at
+  2026-10-25T12:08:55Z** as `a4525e3e7e9251951567a9142392df962bd06ba2`.
+  Queue [CI 40188919977](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40188919977)
+  and [Mastermind OS 40188919976](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40188919976)
+  passed; protected master readback matched at 12:10:56Z. No self-approval occurred.
+  [Release STOP](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930293345659)
+  closed that release operation. This checkpoint remains proposed in Macro
+  [PR 10181](https://github.com/mastermindx-market-intelligence/macro/pull/10181)
+  until independent release; it is not accepted Agent OS state yet.
 - **W3:** #656, #1676 and #1289 remain source review/integration obligations. All
   three unchanged heads have green required checks. #1289 retains production HOLD.
 - **W4:** the installed Executive owner reported `ceo_submit_armed: false` at
-  2026-10-25T11:18:43Z. The native Codex target projection is empty. Staged
+  2026-10-25T12:07:42Z. The earlier caller Codex target projection was empty. Staged
   `f608f52f` lacks the W3 builder and Runtime/Harness PREPARE/ACK additions;
   even arming it does not qualify this canary. Require the later accepted installed
   and selected W3 source closure plus actual admitted delivery and consumption.
