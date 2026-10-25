@@ -52,13 +52,22 @@ def test_registered_special_cases_and_separate_arms(metadata):
         assert rows[key]["methods"][0]["constraint"] != rows[key]["methods"][1]["constraint"]
     for key in B:
         assert bases(key) == ["LOCKED_SPEC_BACKCAST"]
-        assert rows[key]["methods"][0]["required_spec_postdates_history"] is True
+        assert rows[key]["methods"][0]["spec_postdates_history_requirement"] == "ALWAYS"
         assert rows[key]["methods"][0]["preserve_registered_era_and_deviations"] is True
     for key in P:
         assert bases(key) == ["PROSPECTIVE_ONLY"]
         assert rows[key]["registry_identity"]["spec_hash"] is None
     assert bases("starter_signature") == ["PIT_RECOMPUTE"]
     assert "no STARTER licensing" in rows["starter_signature"]["methods"][0]["constraint"]
+
+
+def test_confirmed_buy_preledger_annotation_is_conditional_not_false(metadata):
+    row = next(r for r in project_registered_methods(metadata)["rows"]
+               if r["family_key"] == "confirmed_buy")
+    arms = {m["basis"]: m for m in row["methods"]}
+    assert arms["PIT_RECOMPUTE"]["spec_postdates_history_requirement"] == "PRE_LEDGER_RECOMPUTE"
+    assert arms["LEDGER_COVERAGE"]["spec_postdates_history_requirement"] == "NOT_APPLICABLE"
+    assert all(m["coverage_status"] is None for m in arms.values())
 
 
 @pytest.mark.parametrize("field,value", [

@@ -106,7 +106,11 @@ def project_registered_methods(families: list[dict[str, Any]]) -> dict[str, Any]
                 "coverage_status": False if expected_class == "P" else None,
                 "required_evidence_status": "PROSPECTIVE_ONLY" if expected_class == "P" else "UNMEASURED",
                 "constraint": _ARM_NOTES.get((key, basis)),
-                "required_spec_postdates_history": expected_class == "B",
+                "spec_postdates_history_requirement": (
+                    "ALWAYS" if expected_class == "B" else
+                    "PRE_LEDGER_RECOMPUTE" if (key, basis) == ("confirmed_buy", "PIT_RECOMPUTE") else
+                    "NOT_APPLICABLE"
+                ),
                 "preserve_registered_era_and_deviations": expected_class == "B",
             } for basis in methods],
         })
