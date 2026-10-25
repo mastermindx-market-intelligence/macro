@@ -182,7 +182,8 @@ waves:
     next_action: >
       Preserve #1854/3be06cec source PASS and green CI. Consume frozen #1859
       abcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb A1 actual mounted fallback and
-      advance SAME independent reviewer to pinned HC-P6.T1.R1.P2. Observe final CI.
+      reconcile original HC-P6.T1.R1.P2 delivery to the SAME independent reviewer
+      without duplicate follow-up. Observe final CI and exact-head review.
       T2 isolated draft START1792886827.454889 is confirmed on bc-28d187ca at
       fixed40d under A2. Final T1 binding/integration and
       independent UI review remain gates. Full signed-in/native/P6 is open.
@@ -289,15 +290,15 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, carry pinned HC-P6.T1.R1.P2 to SAME reviewer on final
-  frozen #1859/abcb8f8c; consume #1852/7d5528da R3 independent COMMENT PASS
-  and observe exact-head CI. Carry HC-P1B.T2.FIX1 to SAME #1860/95d author for
-  bounded readiness repair, then independent review. T2 START1792886827.454889
-  confirms one isolated40d UI draft; final reviewed T1 integration remains gated.
-  Place pinned HC-P3.CURRENTNESS.T1 for four-file controller observation source and
-  real Runtime proof, with independent review afterward; no dispatch authorization
-  or transport/activation changes. Preserve #1853/#1854 PASS, #1856 review hold
-  and #1790 ambiguous-request no-retry law. MISSION_COMPLETE remains false.
+  For Mastermind #1841, reconcile the original HC-P6.T1.R1.P2 delivery to the
+  SAME reviewer on frozen #1859/abcb8f8c without duplicate follow-up. Observe final
+  CI and consume the bound review. #1852/7d5528da independent source PASS is
+  consumed; final CI is separate. Consume same-author topology FIX1 after queued
+  carry1792887549.030979, then pin independent review. UI bc-28d187ca and ACP
+  controller-source bc-5f06f055 have actual STARTs; consume their frozen returns,
+  resolve final T1 integration and commission separate exact-head reviews.
+  Four-file ACP observations remain unarmed. Preserve #1853/#1854 PASS, #1856
+  review hold and #1790 no-retry law. MISSION_COMPLETE remains false.
   #1856/a9601a9c stays frozen with consumed refusal, no semantic verdict or retry.
   All three original Fabric EFFECT_UNKNOWN holds and #1850 source proof remain.
   Independent release, installed/live proof and original R2 acceptance are open.
@@ -3695,3 +3696,34 @@ refusal and #1790 R5 requestunknown/no-retry. No alternate review of either subj
   were executing test shards, with no observed completed failure. No rerun.
 - Macro#10167 body was updated to e74df943 checkpoint; it is not a final mission RESULT.
 MISSION_COMPLETE=false; the notification task remains notification-only.
+
+### Confirmed fleet custody — 2026-10-25 00:23 UTC
+
+- ACP source placement1792887433.515179 followed published a9cd9a2.
+  Actual START1792887544.796159: bc-5f06f055-73a7-55f1-8a24-73e6de5bf5a5,
+  status running, account-default/no override, isolated Cursor-managed VM, exact
+  protected3095 start, full four-file task carried, duplicate-account check clear.
+  Branch/head await the source return. dispatch_authorized remains false.
+- Topology FIX1 actual carry1792887549.030979 reports original authorbc-7072b0b1
+  idle/finished, Draft#1860 exact95d/base3095, no drift; queued ONCE as
+  run-bf3380e2-acdb-4811-9772-3322518747eb. This is CARRIED/QUEUED evidence, not
+  an independently observed edit/test result. Child rechecks head before edits.
+  The message's prose local time differs from its Slack timestamp; no precise
+  execution-start time is inferred. Same six paths and no-execution gate remain.
+- Final T1 reviewer phase2 request1792886757.194719 still has no observed carry
+  receipt. Commission reconciliation1792887466.256689 and fresh receipt-only
+  inquiry1792887587.602359 name the SAME original request/child; neither places
+  a replacement reviewer. Proven non-delivery plus idle custody is required
+  before carrying once; uncertain outcome permits no duplicate.
+- UI START1792886827.454889 remains current: one bc-28d187ca carrier on fixed40d,
+  exact12paths. No Draft/head return observed yet; final integration stays gated.
+- CI job readback: #1852/7d run40144548543 shards1/2 SUCCESS, shard0 running;
+  #1859/abcb run40144702324 shard1 SUCCESS, shards0/2 running, OS alreadySUCCESS;
+  #1860/95d run40144083593 shards1/2 SUCCESS, shard0 running. No observed failure
+  or rerun; aggregate success not inferred.
+- Read-only native advisors are specifying later controller/broker and native v3
+  continuations. No implementation of those future gates is placed. A substantive
+  source finding: continuing-channel faults after prompt admission must remain
+  sticky through original adapter collection/cleanup; one-shot v2 close behavior
+  cannot silently erase a late v3 fault and manufacture SUCCEEDED.
+MISSION_COMPLETE=false. No final RESULT or approval/merge/install/provider action.

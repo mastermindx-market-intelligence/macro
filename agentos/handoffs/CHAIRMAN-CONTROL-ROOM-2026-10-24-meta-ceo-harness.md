@@ -862,3 +862,34 @@ exact40d/12paths; abcb dependency drift NOTadopted. No duplicate.
 R5 status00:07UTC stillNOT_FOUND/absencefalse/retryfalse; no new request.
 All three current repository CI runs were actively executing shards at00:09UTC.
 MISSION_COMPLETE=false; no approval/merge/install/provider/finalRESULT.
+
+### Confirmed fleet custody — 2026-10-25 00:23 UTC
+
+- ACP source placement1792887433.515179 followed published a9cd9a2.
+  Actual START1792887544.796159: bc-5f06f055-73a7-55f1-8a24-73e6de5bf5a5,
+  status running, account-default/no override, isolated Cursor-managed VM, exact
+  protected3095 start, full four-file task carried, duplicate-account check clear.
+  Branch/head await the source return. dispatch_authorized remains false.
+- Topology FIX1 actual carry1792887549.030979 reports original authorbc-7072b0b1
+  idle/finished, Draft#1860 exact95d/base3095, no drift; queued ONCE as
+  run-bf3380e2-acdb-4811-9772-3322518747eb. This is CARRIED/QUEUED evidence, not
+  an independently observed edit/test result. Child rechecks head before edits.
+  The message's prose local time differs from its Slack timestamp; no precise
+  execution-start time is inferred. Same six paths and no-execution gate remain.
+- Final T1 reviewer phase2 request1792886757.194719 still has no observed carry
+  receipt. Commission reconciliation1792887466.256689 and fresh receipt-only
+  inquiry1792887587.602359 name the SAME original request/child; neither places
+  a replacement reviewer. Proven non-delivery plus idle custody is required
+  before carrying once; uncertain outcome permits no duplicate.
+- UI START1792886827.454889 remains current: one bc-28d187ca carrier on fixed40d,
+  exact12paths. No Draft/head return observed yet; final integration stays gated.
+- CI job readback: #1852/7d run40144548543 shards1/2 SUCCESS, shard0 running;
+  #1859/abcb run40144702324 shard1 SUCCESS, shards0/2 running, OS alreadySUCCESS;
+  #1860/95d run40144083593 shards1/2 SUCCESS, shard0 running. No observed failure
+  or rerun; aggregate success not inferred.
+- Read-only native advisors are specifying later controller/broker and native v3
+  continuations. No implementation of those future gates is placed. A substantive
+  source finding: continuing-channel faults after prompt admission must remain
+  sticky through original adapter collection/cleanup; one-shot v2 close behavior
+  cannot silently erase a late v3 fault and manufacture SUCCEEDED.
+MISSION_COMPLETE=false. No final RESULT or approval/merge/install/provider action.
