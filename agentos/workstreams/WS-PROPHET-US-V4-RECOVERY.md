@@ -40,6 +40,7 @@ owns_paths:
   - tests/test_us_candidate_episode_wiring.py
   - engine/prophet_b2_disposition.py
   - tests/test_prophet_b2_disposition.py
+  - tests/test_prophet_b17_frozen_input_recovery.py
   - research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md
 depends_on:
   - WS:PROPHET-US-AVAILABILITY
@@ -63,7 +64,7 @@ decisions:
   - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
   - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
-  - "RECOVERY 2026-10-24: current next_action and the dated wave census supersede
+  - "RECOVERY 2026-10-25: current next_action and the dated recovery handoffs supersede
     obsolete task instructions in dated title/history paragraphs. The original
     wave ids, dependencies, acceptance scope and accepted receipts remain. The
     current assigned recovery session owns the next bounded turn; historical
@@ -157,6 +158,7 @@ do_not_redo:
     absorbed it. Reconstructed rows remain unmarked and this authority does not extend
     to data-defect windows or a second replay."
 artifacts:
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md
   - research/prophet_v4/LAB0_B5_RECUT_OPERATOR_LAB_2026-08-18.md
   - research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md
@@ -252,23 +254,30 @@ waves:
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
     status: in_progress
-    pr: [6840, 10176]
+    pr: [6840, 10176, 10180]
     next_action: >
-      SOURCE BUILT / CI PASSED / INDEPENDENT REVIEW OPEN. Draft #10176 at
-      228c25d37617 preserves the one-snapshot B1 correction seam; 184 parent
-      focused tests, two metadata smoke tests and hosted run 40147024285 passed.
-      Current-owner takeover reconciled the original HTTP429 review without
-      acceptance. Fresh request -02 was refused before launch for capacity;
-      fresh non-authoring review prophet-v4-b2-withdrawal-review-20261025-03
-      launched after capacity cleared but returned HTTP403 AccessDenied class,
-      no confirmed response and retry_allowed=false. Qualify the provider-access
-      failure through the existing owner before admissible review continuation;
-      no self-approval, merge or denied-operation rerouting.
-      B-17's new input census verifies 33 immutable source blobs over 14 later
-      as-of dates, with zero overlap with the frozen bake-off cutoff. Recover
-      historical admission inputs and re-measure the actual shipped roster;
-      the naked-union claims remain suspended. Preserve #6840 audit closures,
-      #7264's composition boundary and legitimate production proof obligations.
+      B17 INPUTS RECOVERED / BOUNDED REPLAY BUILT / INDEPENDENT REVIEW OPEN.
+      Draft #10180 at 4e817e7a1b83 contains the research verifier, 27 passing tests,
+      immutable source receipts and original-cutoff point replay. All 241 signal
+      files and 240 price candidates were recovered; 57 complete buy snapshots
+      cover 32 source dates, but zero of 7918 C0 episodes has a complete
+      34-session admission-date window. B-17 remains STILL_LIVE with null full
+      coverage/lead. Recover historically bound full-population admission inputs
+      and availability clocks for the missing original dates, then measure the
+      actual union-and-gate roster with the frozen denominator and rulers.
+      The reproduced 60.62 percent / 12-session baseline is C1-relaxed, not a
+      measured union or shipped-roster result; preserve the price-vintage proof limit.
+      Correction Draft #10176 remains at 228c25d37617, with 184 focused tests,
+      two metadata smokes and CI 40147024285 passed. The current owner reconciled
+      original review -01 terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE.
+      Under the latest explicit directive, exactly one fresh non-Qwen request
+      prophet-v4-b2-withdrawal-review-20261025-04 was pinned to GLM and refused:
+      MANUAL_ROUTE_UNAVAILABLE, INVALID_ARGUMENT, execution_absence_proven=false,
+      retry_allowed=false; no controller or verdict returned. No further retry,
+      self-approval or merge. Retain ownership without an absent-owner ACK gate.
+      Preserve #6840 audit closures, #7264 composition/HOLD and production proof
+      obligations. Current receipts and implementation gaps are in the October 25
+      frozen-input handoff; the October 24 census remains historical evidence.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -805,34 +814,37 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
-  2026-10-24 America/Chicago continuation: this recovery session owns B2 under
-  the Chairman's no-owner-wait directive. Original review
-  prophet-v4-b2-withdrawal-review-20261025-01 was reconciled TERMINAL rc1/HTTP429,
-  STOP WITHOUT ACCEPTANCE; its no-retry and no-absence-proof facts are preserved.
-  Fresh request -02 was refused before launch for native host capacity. After
-  capacity changed and a no-effect preview offered an eligible non-author route,
-  fresh review prophet-v4-b2-withdrawal-review-20261025-03 launched through normal
-  Fabric admission, but returned rc1/HTTP403 AccessDenied class, no confirmed
-  review and no accepted verdict. Preserve that terminal operation; do not replay
-  or switch accounts/providers to route around the access denial.
-  TOP NEXT ACTION: qualify and repair the actual provider-access failure through
-  its existing owner, then obtain an admitted non-authoring review of source
-  Draft #10176 at 228c25d37617a7217c8f65f1613ade701a2fe01a. This session retains
-  the recovery action; there is no absent-owner ACK gate. Do not self-approve,
-  merge or deploy under this continuation.
-  B2 source CI 40147024285 passed all twelve packs and ci-gate. The full local
-  comparison against main 8bf2ff28e419 found no delta in the four review paths.
-  B-17 input census is committed under
-  research/prophet_v4/B17_SHIPPED_ROSTER_INPUT_CENSUS_2026-10-24.json: all 33
-  source hashes verify, but their 14 as-of dates start 2026-09-25, after the
-  frozen 240-name bake-off's 2026-08-10 price edge. Recover exact historical
-  admission inputs before re-measuring; later snapshots do not close B-17.
+  2026-10-25 continuation: the current recovery session owns B2 under Chris's
+  no-owner-wait directive. Continue from the original thirty-wave record and
+  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md.
+  New Draft #10180 at 4e817e7a1b83ffed1ae8ec22a3911c92ac541198 recovers the
+  original frozen inputs and implements a bounded canonical union-and-selector
+  replay. All 240 price candidates match recorded metadata and episode anchors;
+  241 signal files and 57 full buy snapshots were recovered. The sample covers
+  32 source dates but zero complete 34-session windows for the 7918 original
+  C0 episodes. B-17 remains STILL_LIVE; full coverage and lead remain null.
+  TOP IMPLEMENTATION ACTION: recover full-population historical admission inputs
+  and availability clocks for the missing original sessions; build a pure input
+  adapter only from qualified historical dependencies. Preserve the original
+  denominator and R2i rules, missing-as-unknown and upstream population caps.
+  Do not run the present-day producer as a historical reconstruction or infer
+  served/first-visibility proof from source dates. The reproduced 60.62 percent
+  / 12-session result belongs to C1-relaxed, not a measured union roster.
+  Correction Draft #10176 remains at 228c25d37617a7217c8f65f1613ade701a2fe01a.
+  Its CI 40147024285 and previous records CI 40158568747 at 90d11979dbb0 passed.
+  Original review -01 remains terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE;
+  -02 capacity refusal and -03 terminal HTTP403 AccessDenied class remain scoped.
+  The single newly authorized non-Qwen review -04, pinned to GLM with the
+  MiniMax author pool excluded, returned MANUAL_ROUTE_UNAVAILABLE /
+  INVALID_ARGUMENT, execution_absence_proven=false and retry_allowed=false.
+  No controller or verdict was returned. Record that exact refusal and continue
+  implementation; no further review attempt, self-approval, merge or deployment.
   Counts remain five done, six in_progress and nineteen todo. Preserve accepted
-  A1/B1, active #9634/#9610, #8444's design hold and #7264's carrier/HOLD under
-  the handoff's composition rule. The interrupted census-review request and
-  older unidentified request remain fenced. Resume the dated cumulative
-  handoff; no fresh masterplan, production acceptance or background review is
-  claimed. Both PRs remain Draft.
+  A1/B1, D5 source acceptance and D6 gate, active #9634/#9610, #8444's design
+  hold and #7264's carrier/HOLD under the existing composition rule. Interrupted
+  census-review and older unidentified-request effects remain fenced. All three
+  recovery/source PRs remain Draft; no new masterplan or production acceptance.
+
 ---
 
 ## Context
@@ -870,3 +882,12 @@ and the top bounded action. Dated title narratives above remain historical;
 the current status and next_action fields describe the recovery frontier.
 R6/R7 names such as B03, B04, B06 and P1a are separate namespaces and do not
 silently complete the similarly numbered original V4 waves.
+
+## B2 continuation — 2026-10-25
+
+The [frozen-input handoff](../handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md)
+records the one fresh non-Qwen Fabric refusal and the separately published
+[B-17 implementation Draft #10180](https://github.com/mastermindx-market-intelligence/macro/pull/10180).
+It advances the original B2 wave without changing its acceptance criteria or
+the thirty-wave census. B-17 remains open because the recovered source-date sample
+does not cover the original historical population's admission windows.
