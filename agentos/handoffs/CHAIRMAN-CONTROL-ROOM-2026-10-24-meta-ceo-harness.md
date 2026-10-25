@@ -941,3 +941,50 @@ and actual codec/controller. HC-P3.CURRENTNESS.T1.R1 pins one distinct Cursor re
 BEFORE placement, exact-head real Runtime/codec/authority evidence challenge; no
 source edits or false dispatch/session claims. This supersedes the active-author
 status above. New source subject, never alternate/retry of held #1856/#1790.
+
+### Task requests and ACP adverse proof after7c443ca
+
+Published7c443ca validated0errors and GitHubreadback confirmed. TopologyFIX2request
+1792889185.756329/UIINTEGRATE1request1792889186.622669/ACPR1placement
+1792889187.362879 follow that pin. Actualcarry/STARTunobserved00:51UTC; no duplicate.
+#1859review CONSUMED/STOP1792889188.031719. MacroPRbody updated.
+#1790R5freshstatus00:47UTCstillNOT_FOUND/rootunverified/absencefalse/retryfalse.
+
+Root exactcodecblob440a311c reproduced raw phaseTypeError, surrogateUnicodeEncodeError,
+escapedtoken acceptance and suppliedsynthetictoken in escapedtoken+surrogate error
+repr/object. Arbitrarydigest survives changedtool. Deep3001B input returned CLOSED
+error; rawrecursion failure is NOTexecutedproof. Initialartifactnewline hash failure
+occurred BEFORE import and is excluded; exactGitblob was restored before probes.
+Independentnative/root source reading also found missing initial Job/quota-to-loaded
+registry/profile generation join. Supplement1792889515.273159 belongs only to R1.
+
+HC-P3.CURRENTNESS.T1.FIX1 pins conditional SAMEauthor4file repair: closed/token-free
+parse beforeRuntime, canonical fullrequestdigest and explicitcorrelation/outputbound,
+originaldeclared sourcepins, real Runtime readfailure afterpositive. WAIT original
+R1finalverdict/STOP before carry; no author continuation has been placed yet.
+All dispatch=false and missingactualsession/model constraints remain. No transport/
+installed/fullP3 acceptance. UI carry also includes still-owned READ_CANCELLED
+PENDING settlement and actual freshAppfixture intake under originalscope.
+MISSION_COMPLETE=false. No finalRESULT/selfapproval/merge/prohibitedeffect.
+
+### Actual fleet carry/START receipts — 2026-10-25 00:54 UTC
+
+These supersede the unobserved delivery state above; each follows published7c443ca:
+- Topology FIX2 carry1792889620.830179: originalbc-7072b0b1 idle/finished,
+  exactDraft#1860/dae43dfd/base3095/sixpaths. Queued ONCE as
+  run-0039bf38-526e-4fac-be33-eca80a4d788d, accountdefault/no new author.
+  Actual edit/result remains awaited; return originalthread1792883195.455409.
+- UI INTEGRATE1 carry1792889623.750049: originalbc-28d187ca idle/finished,
+  exactDraft#1861/63069243/twelvepaths. Queued ONCE as
+  run-ae3664bf-1e7f-4b1d-be5a-71d8383e34ad, accountdefault/no new author.
+  Stacked base tipabcb was verified; tested branch dependency remains as reported
+  until the actual integration return. Return originalthread1792885833.554159.
+- ACP R1 actual START1792889628.879439: independent
+  bc-c1cc5530-11eb-5690-925c-06c471b011dc, separate CursorVM reviewer scratch,
+  accountdefault/nooverride, exact5f187aca/base3095/fourpaths verified.
+  Original request and root evidence supplement were included in ONE brief.
+  Reviewer is not authorbc-5f06f055. One COMMENT verdict thenSTOP; source immutable.
+  Actual return thread is1792887433.515179 (original ACP source thread), not the
+  top-level placement thread. No source edits or alternative heldsubject review.
+No duplicate run or uncertain effect was replayed. Final source/CI/custody returns
+remain required; MISSION_COMPLETE=false.

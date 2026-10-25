@@ -289,13 +289,13 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, carry pinned HC-P1B.T2.FIX2 to the SAME frozen #1860
-  author at dae43dfd, and HC-P6.T2.INTEGRATE1 to the SAME frozen #1861 author
-  at63069243. #1859/abcb8f8c independent COMMENT5640772935 PASS plus CI/OS
-  SUCCESS now bind the UI dependency. #1852/7d5528da source PASS and final CI
-  SUCCESS are consumed. Place pinned HC-P3.CURRENTNESS.T1.R1 on frozen
-  #1862/5f187aca, then bind distinct final-head reviews for repaired/integrated
-  topology and UI source when those same authors return.
+  For Mastermind #1841, consume same-author topology FIX2 run0039bf38 and UI
+  INTEGRATE1 runae3664bf after confirmed carries1792889620.830179/1792889623.750049.
+  Consume ACP R1 reviewerbc-c1cc5530 START1792889628.879439 on frozen
+  #1862/5f187aca before same-author FIX1. Its parser/correlation and
+  initial profile-generation gaps now have pinned repair obligations. Bind distinct
+  final-head topology/UI reviews after their frozen returns. #1859/abcb8f8c
+  source PASS/CI/OS SUCCESS and #1852/7d5528da source PASS/CI SUCCESS are consumed.
   Future ACP continuation design remains unplaced; all observations are unarmed.
   Preserve #1853/#1854 PASS, #1856 review hold and #1790 no-retry law.
   MISSION_COMPLETE remains false.
@@ -3988,3 +3988,142 @@ push, approval, merge, installation/provider/credential/account/purchase effects
 This is a NEW disjoint source subject; it never retries/replaces reviews of
 #1856/#1790 or the three held Fabric runs. FullP3 and all later transports stay open.
 State: REVIEW_PLANNED_BEFORE_PLACEMENT; SOURCE_ONLY.
+
+
+### Published task delivery and verified adverse evidence after7c443ca
+
+Macro7c443ca648a139dd71ae34abaffc4b91df9c2290 was validated, committed/pushed
+APPLIED and independently read back through GitHub#10167. Two exact files;
+1963records/0errors/187existingwarnings, acceptance_contracts and11legacywaves
+unchanged. PR body updated to this checkpoint. Subsequent task requests:
+- Topology FIX2:1792889185.756329, SAMEbc-7072b0b1, return originalthread1792883195.455409.
+- UI INTEGRATE1:1792889186.622669, SAMEbc-28d187ca, return originalthread1792885833.554159.
+- New ACP independent R1:1792889187.362879, authorfrozen5f187aca.
+Actual carry/START receipts were not observed at00:51UTC. Requests alone do not
+prove a run. No duplicate or alternative placement has been made.
+#1859 reviewer CONSUMED/STOP1792889188.031719; no further run.
+Same-run #1790R5 status00:47UTC remains NOT_FOUND/rootunverified/absencefalse/
+retryfalse. Original reconciliation thread has no new owner receipt. No retry.
+
+UI request additionally describes the existing current-request cancellation gap
+within pinned auth/method invalidation scope: after stale() returnsfalse, the
+6306 App catch ignores READ_CANCELLED, so a raw method replacement can strand the
+latest PENDING state. Superseded work must remain silent; still-owned refusal must
+settle withheld/unavailable and leave both Office halves empty. No auth policy change.
+The actual App proof loader must consume fresh directory bytes; merely running the
+separate fresh producer test alongside the hardcoded committed App fixture is false
+full-path proof. These are root/advisory findings, not final independent UI review.
+
+Root independently executed seven bounded synthetic-input probes against exact ACP
+codec blob440a311cbbad7d633d976914369b5f96c2ad2b4a (Git blob verified BEFORE import).
+The first local artifact had one extra newline: its hash guard stopped before any
+import. Removing only that extra byte recovered the exact Git blob; the failed
+artifact check is excluded from source proof. No Runtime/provider/credential used.
+- phase={} -> rawTypeError; escaped lone surrogate -> rawUnicodeEncodeError.
+- Fully JSON-escaped synthetic sentinel in raw_tool was ACCEPTED despite forbidden_exact.
+- Escaped sentinel+surrogate -> UnicodeEncodeError with supplied decoded sentinel
+  in repr/.object. This reflects supplied test data; it does not discover an unknown
+  token. It violates the pinned token-free error boundary.
+- Baseline arbitraryrequest_digest=b*64 and changedraw_tool with SAMEdigest both accepted.
+- Deep3001B nested-array input returned a CLOSED contract error, including the
+  owned process's recursionlimit1000 check. RawRecursionError was NOT reproduced;
+  keep it a source portability question, not an executed defect.
+Controller source also omits raw_tool/argument_digest/request_digest from the
+returned correlation. Independent source advisory and root inspection confirm
+initial Job/quota generationA can coexist with retained registryB; both later
+self-match without the required initial declared-to-loaded source join.
+Evidence supplement1792889515.273159 was sent to the EXISTING R1 thread, explicitly
+not a second placement/run. Independent reviewer must verify its own facts.
+
+#### HC-P3.CURRENTNESS.T1.FIX1 — conditional same-author four-file repair
+
+PLANNED BEFORE EXECUTION. This is an ordinary continuation of author
+bc-5f06f055-73a7-55f1-8a24-73e6de5bf5a5,
+childmeta-ceo-harness-acp-currentness-cursor-20261025-01,
+Draft#1862/branchcursor/acp-currentness-t1-f5a5, originalthread1792887433.515179.
+Do not start while R1 still owns review of frozen5f187aca. First consume its exact
+final verdict and frozen/STOP receipt, reconcile any additional findings, then
+carry ONCE to the same idle/clean author with exact-head preflight. No new author.
+No author task is placed by this plan text alone.
+
+Repair within the same FOUR NEW files:
+common/acp_continuing_authority_contract.py, control_plane/acp_current_authority.py,
+tests/test_acp_current_authority.py, docs/architecture/ACP_CONTINUING_AUTHORITY.md.
+No incumbent source/transport/adapter/profile/descriptor/heldsubject edits.
+
+1. Closed parser and token-free error boundary. Check input byte length BEFORE a
+   supported bytearray copy. Explicit phase type before setmembership. Malformed
+   Unicode, unsupported nesting/type and decoder failures must become a fixed
+   bounded contract refusal, never raw library exceptions/input text. Check decoded
+   keys/values for the forbidden token before any Runtime read, including JSONescaped
+   encodings. Do not leak original input through error args/repr/object/cause/context.
+   Keep exact schema/bounds, not a generic permissive parser. Test the actual proven
+   cases above, deep input on the author interpreter, invalid UTF8 and output fallback.
+   A closed error for deep input is the expected result; no need to manufacture a
+   RecursionError reproduction when that interpreter already refuses it.
+
+2. Canonical complete request correlation. Define a non-self-referential digest over
+   ALL validated request fields EXCEPT request_digest. Pin canonical UTF8 JSON with
+   sorted keys, compact separators, ensure_ascii=false, allow_nan=false, NO terminal
+   newline, SHA256 lowercasehex. The normalized closed request includes schema,
+   phase, invocation_id, raw_tool, argument_digest, original_identity and complete
+   child_correlation. Verify incoming request_digest before Runtime. Preserve its
+   verified digest and relevant tool/argument/invocation correlation in the returned
+   closed observation, explicitly labeled child-supplied correlation. It is not
+   evidence of actual arguments, connection ownership or a dispatch authorization.
+   No replay cache/registry/TTL. Test valid canonical request, encoding-equivalent
+   requests, stale digest after any bound-field change, and distinct valid requests
+   under fixedclock/sameinvocation yielding distinct returned correlation. Future
+   actual ToolExecution/argument join remains owed. Bound output bytes with an honest
+   static UNAVAILABLE refusal when the closed observation cannot fit; no truncation
+   that could preserve a positive while losing its correlation.
+
+3. Original declared source-generation join. Job/quota agreeing on generationA does
+   not admit currently loaded registryB. Use actual incumbent registry/resolver and
+   compare policy_version, policy_digest and resolvedprofile.profile_digest to the
+   original declared capability_policy_version/digest/execution_profile_digest before
+   a bound/current source claim. Retain original declared expectations and refuse
+   an initial mismatch; never adopt the newer loaded registry as originalexpected.
+   Recheck fresh source against those SAME expectations on every observation.
+   Add before-attachment mismatches for each of the3pins with Job/quota agreeing on
+   the wrongvalue, plus retain existing after-attachment drift cases.
+
+4. Fresh read failure proof. Obtain a real current observation, then inject failure
+   only at the actual Runtime transaction/read seam. A subsequent result must be
+   UNAVAILABLE with no cachedpositive or exception data and no ownership mutation.
+   Keep real Runtime positive/revocation/currentlinks/token/fence/quota/model/OHF
+   coverage; no mockCURRENT acceptance. Preserve source/expected/native/child
+   categories and orchestration/MCP digest separation. ALL responses keep
+   dispatch_authorized=false; actual session/model absent remains explicit refusal.
+
+Focused tests/new adverse reproductions plus relevant incumbent regression only.
+No broad duplicate suite, package install, provider, computer, daemon or account action.
+Record the existing writer-lock/policy-IO duration limitation before any later
+per-tool transport composition; do not create a new Runtime owner in this repair.
+Normal commits on same branch; no merge/rebase/reset/force. Return exact head/delta/
+blobs, actual counts/skips/limitations, CI, clean remote-equal freeze. Then SAME
+independent reviewer may receive a separately bound final-head follow-up; no autoPASS.
+State: CONDITIONAL_REPAIR_PLAN; WAIT_ORIGINAL_R1_DISPOSITION; SOURCE_ONLY.
+MISSION_COMPLETE=false. No final RESULT or prohibited action.
+
+### Actual fleet carry/START receipts — 2026-10-25 00:54 UTC
+
+These supersede the unobserved delivery state above; each follows published7c443ca:
+- Topology FIX2 carry1792889620.830179: originalbc-7072b0b1 idle/finished,
+  exactDraft#1860/dae43dfd/base3095/sixpaths. Queued ONCE as
+  run-0039bf38-526e-4fac-be33-eca80a4d788d, accountdefault/no new author.
+  Actual edit/result remains awaited; return originalthread1792883195.455409.
+- UI INTEGRATE1 carry1792889623.750049: originalbc-28d187ca idle/finished,
+  exactDraft#1861/63069243/twelvepaths. Queued ONCE as
+  run-ae3664bf-1e7f-4b1d-be5a-71d8383e34ad, accountdefault/no new author.
+  Stacked base tipabcb was verified; tested branch dependency remains as reported
+  until the actual integration return. Return originalthread1792885833.554159.
+- ACP R1 actual START1792889628.879439: independent
+  bc-c1cc5530-11eb-5690-925c-06c471b011dc, separate CursorVM reviewer scratch,
+  accountdefault/nooverride, exact5f187aca/base3095/fourpaths verified.
+  Original request and root evidence supplement were included in ONE brief.
+  Reviewer is not authorbc-5f06f055. One COMMENT verdict thenSTOP; source immutable.
+  Actual return thread is1792887433.515179 (original ACP source thread), not the
+  top-level placement thread. No source edits or alternative heldsubject review.
+No duplicate run or uncertain effect was replayed. Final source/CI/custody returns
+remain required; MISSION_COMPLETE=false.
