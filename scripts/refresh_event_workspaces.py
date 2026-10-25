@@ -108,6 +108,10 @@ class RefreshError(RuntimeError):
     """A required source is unavailable; the sibling marker must not move."""
 
 
+def _read_failure_context(exc: BaseException) -> str:
+    return json.dumps(ci_reader.read_failure_diagnostics(exc), sort_keys=True, separators=(",", ":"))
+
+
 HttpGet = Callable[[str], tuple[int, bytes]]
 FetchIndex = Callable[[str], object]
 FetchBody = Callable[[str, TranscriptRef], dict[str, Any]]
@@ -1035,18 +1039,19 @@ def load_prior_workspace(
     try:
         return fetcher(event_id)
     except _PriorWorkspaceNotPublished as exc:
-        log.debug("%s: prior workspace not published (%s)", event_id, exc)
+        log.debug("%s: prior workspace not published", event_id)
         return None
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
+        details = _read_failure_context(exc)
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: prior workspace fetch failed ({details}) — "
             "refusing to treat this as first-generation; this event's rebuild is skipped this cycle",
             flush=True,
         )
-        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, exc)
+        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, details)
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: prior workspace fetch failed ({details})"
         ) from exc
 
 
@@ -1107,7 +1112,8 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
     if issuer is None:
         return None
 
-    def _anomaly(detail: str) -> PriorWorkspaceFetchFailed:
+    def _anomaly(reason: str, exc: BaseException) -> PriorWorkspaceFetchFailed:
+        detail = f"{reason} ({_read_failure_context(exc)})"
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
             f"{ticker}: {detail} — refusing to treat this as no-prior-to-carry",
@@ -1120,9 +1126,9 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
             issuer.company_id, base_url=base_url,
         )
     except ci_reader.WorkspaceChainIntegrityError as exc:
-        raise _anomaly(str(exc)) from exc
+        raise _anomaly("current-generation contract read failed", exc) from exc
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
-        raise _anomaly(f"current-generation read failed ({type(exc).__name__}: {exc})") from exc
+        raise _anomaly("current-generation read failed", exc) from exc
 
     if matched_event_id is None:
         return None  # (i) no nest yet, or (ii) well-formed, no entry for this issuer
@@ -1325,12 +1331,12 @@ def _event_known_revisions(
     except Exception as exc:  # noqa: BLE001 - chain-state ambiguity must never read as "nothing represented"
         print(
             "::warning title=event-workspace-chain-read-failed::"
-            f"{event_id}: source-revision chain read failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: source-revision chain read failed {_read_failure_context(exc)} — "
             "refusing to treat this as no-prior-revision-represented",
             flush=True,
         )
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: chain read failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: chain read failed {_read_failure_context(exc)}"
         ) from exc
 
 
@@ -1778,7 +1784,7 @@ def refresh(
             # the flagship has no per-issuer loop to skip within —
             # refresh() produces exactly one flagship record, not N
             # independent ones.
-            raise RefreshError(f"flagship prior workspace fetch failed: {exc}") from exc
+            raise RefreshError(f"flagship prior workspace fetch failed: {_read_failure_context(exc)}") from exc
     else:
         prior = prior_workspace
     source_clock = filing["acceptance_datetime"]
@@ -1895,7 +1901,9 @@ def refresh(
     try:
         current_marker_raw = current_marker_loader()
     except Exception as exc:  # noqa: BLE001 - a genuine failure to read the current marker must abort
-        raise RefreshError(f"failed to read the current event workspace marker: {exc}") from exc
+        raise RefreshError(
+            f"failed to read the current event workspace marker {_read_failure_context(exc)}"
+        ) from exc
     if current_marker_raw is not None:
         current_marker_bytes, current_marker = current_marker_raw
     else:
@@ -1966,7 +1974,7 @@ def refresh(
             # "nothing to carry."
             raise RefreshError(
                 f"{ticker}: carry-forward lookup for the Phase 1 base snapshot failed — refusing to "
-                f"publish a nest that might silently drop a corrected event: {carry_exc}"
+                f"publish a nest that might silently drop a corrected event: {_read_failure_context(carry_exc)}"
             ) from carry_exc
         discovery_boundary: str | None = None
         if current_prior is not None:
@@ -1993,7 +2001,7 @@ def refresh(
             # discipline above).
             raise RefreshError(
                 f"{ticker}: source-revision discovery failed — refusing to publish a nest that "
-                f"might silently drop a corrected event: {exc}"
+                f"might silently drop a corrected event: {_read_failure_context(exc)}"
             ) from exc
         except Exception as exc:  # noqa: BLE001 - SEC access failure during discovery is fail-soft
             # The carry-forward read above ALREADY seeded workspaces[...]
@@ -2119,7 +2127,7 @@ def refresh(
     elif dry_run:
         print("event workspaces: dry-run validated; sibling marker not promoted")
     else:
-        print("event workspaces: immutable generation published and sibling marker promoted")
+        print("event workspaces: generation validated; publish step returned success")
     return publish_rc
 
 
