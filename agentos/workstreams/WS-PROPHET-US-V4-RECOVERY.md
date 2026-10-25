@@ -252,18 +252,24 @@ waves:
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
     status: in_progress
+    pr: [6840, 10176]
     next_action: >
-      TOP READY WAVE. #6840 / 86634cb89ad4 froze B2-0; B-15/16/18/19 are closed within that
-      dated packet, while B-17 shipped-roster measurement remains open. Execute the packet's
-      B2-1 reader seam: distinguish exact OPENED-event withdrawal from unknown episode using
-      one validated B1 snapshot; preserve observation-only retractions, auth and no-store.
-      Follow the dated handoff's narrow shared-path ruling; preserve #7264's original carrier
-      and holds. Prove real writer -> immutable generation -> private route; production
-      correction proof and B-17 remain separate.
+      TOP WAVE / BUILT, REVIEW BLOCKED. #6840 / 86634cb89ad4 froze B2-0 and its
+      B-15/16/18/19 audit closures. B2-1 source Draft #10176 at 228c25d37617 implements
+      exact-opening withdrawal versus unknown identity from one validated B1 snapshot;
+      parent real-writer/immutable-generation/private-route tests passed 184, with two
+      exact-HEAD metadata smoke tests also passing. Original independent review
+      prophet-v4-b2-withdrawal-review-20261025-01 returned provider 429 with no confirmed
+      verdict and retry_allowed=false. Reconcile that exact operation through its canonical
+      owner before admissible continuation; no retry, replacement or native review fallback.
+      Consume exact-head CI and qualified non-author review before normal source/release
+      and legitimate authenticated production proof. B-17 shipped-roster measurement and
+      full B2 acceptance remain open. Preserve #7264 and the dated shared-path ruling.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
     status: in_progress
+    pr: [7356, 7506]
     next_action: >
       SOURCE PARTIAL. #7356 / 71d46b1416e6 and identity-epoch repair #7506 / e016e96beef9
       merged; current engine/prophet_candidate_state.py retains orthogonal states and
@@ -274,6 +280,7 @@ waves:
     depends_on: [b2, b3]
     title: "V4-B4 — deterministic buyability/chase firewall (prophet.entry_availability/v1)"
     status: in_progress
+    pr: [7569, 7687]
     next_action: >
       SOURCE PARTIAL. Strategy-bound core #7569 / e0e89029db25 and structural overlay #7687 /
       b5cb845812a6 merged. Adopt current entry_availability and same-read sources; complete
@@ -716,6 +723,7 @@ waves:
       merge to main, deploy, and authenticated covered plus typed-unresolved live receipts
       remain pending. D6 and every other downstream wave remain gated."
     status: in_progress
+    pr: 6705
     next_action: >
       SOURCE MERGED. #6705 / f4fbfa19f4e8 landed the bounded private earnings intelligence
       vector on 2026-09-01; the old push/open-PR instruction is obsolete. Preserve B1
@@ -793,27 +801,30 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
-  2026-10-25 00:04 UTC continuation: Draft #10174 published; initial-head main CI
-  passed. B2 build prophet-v4-b2-withdrawal-build-20261025-01 was submitted on its
-  isolated carrier (controller 16039, START/result not yet proven). Consume that
-  exact run, inspect real-generation proof and obtain independent review; do not
-  duplicate it. Record-review request prophet-v4-census-review-20261024-01 has an
-  interrupted return and NOT_FOUND without absence/retry proof; preserve it.
-  2026-10-24 recovery census at macro 0684ab6922cf; relevant workstream/B1/Lab
-  source unchanged at refreshed main b46d17e99235. Resume the original 30 waves
-  from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md.
-  Five accepted waves remain done; B3/B4 move to in_progress because their cores
-  merged; D6 remains gated by the explicit D5-only scope of #6705. This recovery
-  conversation owns the stranded census and the next bounded B2 turn. Top action:
-  B2-1 known-withdrawn versus unknown episode on one validated B1 generation,
-  under the handoff's #7264 shared-path ruling; then source/real-reader proof
-  and independent exact-source review. B-17 shipped-roster measurement remains
-  owed. Preserve live #9634/#9610 writers, #8444's Draft/design hold and all real
-  STARTed/EFFECT_UNKNOWN custody. The interrupted prior census request has no
-  recovered run identity; absence from inspected records is not absence proof
-  and does not authorize replay. R7 remains the existing delivery decomposition.
-  Submit this dated record as Draft for review; source delivery never implies
-  full wave or production acceptance. No new masterplan or duplicate owner.
+  2026-10-25 00:40 UTC continuation: Draft #10174 preserves the original 30 waves.
+  B2-1 is implemented in source Draft #10176 at
+  228c25d37617a7217c8f65f1613ade701a2fe01a; parent verification passed 184 focused
+  tests and two exact-HEAD metadata smoke tests. The original builder artifact
+  was hash-verified and its return accepted for implementation/test evidence only.
+  Independent review prophet-v4-b2-withdrawal-review-20261025-01 ended with
+  provider 429, no confirmed verdict, continuation_evidence_unqualified and
+  retry_allowed=false. TOP NEXT OBLIGATION: reconcile that original review
+  operation through its canonical owner before any admissible continuation.
+  Do not retry, reroute or replace it. Consume exact-head CI and qualified
+  non-author review, then normal source/release gates and legitimate authenticated
+  production proof. B2 remains in_progress; B-17 shipped-roster measurement is open.
+  Detailed census and continuation receipts are in
+  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md.
+  Counts remain five done, six in_progress and nineteen todo; B3/B4 have merged
+  cores, and D6 remains gated by #6705's explicit D5-only scope. Preserve accepted
+  A1/B1 receipts, live #9634/#9610 writers, #8444's Draft/design hold and #7264's
+  native-Lab carrier/HOLD under the handoff's shared-path composition rule.
+  Record review prophet-v4-census-review-20261024-01 remains NOT_FOUND without
+  absence/retry proof; the prior interrupted census request has no recovered run
+  identity. Preserve all actual STARTed/EFFECT_UNKNOWN custody. Neither missing
+  status nor this checkpoint authorizes replay. R7 remains the existing delivery
+  decomposition. Both PRs stay Draft; no source merge, deployment, whole-wave
+  acceptance or background reviewer continuation is claimed.
 ---
 
 ## Context
