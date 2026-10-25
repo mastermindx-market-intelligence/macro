@@ -1,4 +1,31 @@
-## Clock precision repair — 25 October 2026
+## Numeric offset range repair — 25 October 2026
+
+Independent repair [review006](https://github.com/mastermindx-market-intelligence/macro/pull/10052#pullrequestreview-5641438013)
+authenticated parent `cbe30ec7ca5cef3c8fbda08f0c38b232a86325b9`.
+The unchanged original independent harness passed all 37 cases, while 40 of
+44 added probes passed. Its four failures exposed one remaining issue: pandas
+normalizes malformed offset minutes such as `+00:60` and `+0199`, allowing
+invalid caller clocks to satisfy both public candidate assessors.
+
+The explicit offset grammar now requires hours 00–23 and minutes 00–59 before
+pandas parsing, for either sign and both HH:MM and HHMM forms. Nanosecond
+normalization and chronology checks are unchanged. The added public regressions
+exercise invalid minutes and hours in both caller fields across single and
+batch assessors, plus valid positive and negative 23:59 boundary controls.
+
+Before this source repair, the 28 new cases produced **16 failures and 12 passes**
+on the parent parser. After repair, the complete source test file passed
+**303 tests with zero skips**, including the real PyArrow paths. The original
+independent 37/37 and 40/44 results remain attributed to cbe; independent repair
+recheck and exact-head contract/publication/CI are recorded on PR10052.
+
+Candidate policy remains unadopted, eligibility empty and admission false.
+The separate historical readback-digest target/serialization limitation is not
+silently repaired or converted into accepted provider provenance.
+
+---
+
+## Clock precision repair at cbe — retained qualification
 
 Independent source review 004 reproduced a precision-loss defect on parent
 `e2169fe462017d849b525c16dd44d2f45a69393a`: compact ISO clock strings with comma
@@ -17,7 +44,7 @@ nanoseconds, naive clocks and unsupported forms are refused rather than
 truncated. Valid compact/lowercase/offset forms preserve their represented
 nanoseconds, so chronology checks retain their original meaning.
 
-The affected source test file passes **275 tests**, including 24 new public-API
+At cbe, the affected source test file passed **275 tests**, including 24 new public-API
 cases across the single and batch assessors: lossy input refusals, one-nanosecond
 assessment inversions and accepted lossless ordered controls. The independent
 repair recheck and exact commit/CI binding are recorded on

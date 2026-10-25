@@ -53,7 +53,7 @@ def _clock(value: Any) -> pd.Timestamp | None:
     match = re.fullmatch(
         r"(?P<date>\d{4}-\d{2}-\d{2}|\d{8})[Tt ]"
         r"(?P<time>\d{2}:\d{2}:\d{2}|\d{6})"
-        r"(?P<fraction>\.\d{1,9})?(?P<zone>[Zz]|[+-]\d{2}:?\d{2})",
+        r"(?P<fraction>\.\d{1,9})?(?P<zone>[Zz]|[+-](?:[01]\d|2[0-3]):?[0-5]\d)",
         value,
     )
     if match is None:

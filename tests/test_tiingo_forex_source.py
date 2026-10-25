@@ -1080,6 +1080,50 @@ def test_candidate_families_accept_lossless_ordered_iso_caller_clocks(family, cl
     assert result["monitoring_admitted"] is False
 
 
+
+@pytest.mark.parametrize("family", ["single", "batch"])
+@pytest.mark.parametrize("field", ["verified_at_utc", "assessed_at_utc"])
+@pytest.mark.parametrize("clock", [
+    "2026-10-19T05:04:00.{fraction}+00:60",
+    "20261019t030400.{fraction}-0060",
+    "2026-10-19T06:43:00.{fraction}+01:99",
+    "20261019t012500.{fraction}-0199",
+    "2026-10-20T04:04:00.{fraction}+24:00",
+    "20261018t040400.{fraction}-2400",
+])
+def test_candidate_families_refuse_invalid_offset_components(family, field, clock):
+    assessor = candidate_assessment if family == "single" else (
+        lambda **kwargs: batch_assessment(count=1, **kwargs))
+    clocks = {
+        "verified_at_utc": "2026-10-19T04:04:00.000000001Z",
+        "assessed_at_utc": "2026-10-19T04:04:00.000000002Z",
+    }
+    clocks[field] = clock.format(
+        fraction="000000001" if field == "verified_at_utc" else "000000002")
+    with pytest.raises(TiingoViewRefusal):
+        assessor(**clocks)
+
+
+@pytest.mark.parametrize("family", ["single", "batch"])
+@pytest.mark.parametrize("clock", [
+    "2026-10-20T04:03:00.{fraction}+23:59",
+    "20261018t040500.{fraction}-2359",
+])
+def test_candidate_families_accept_valid_offset_boundaries(family, clock):
+    assessor = candidate_assessment if family == "single" else (
+        lambda **kwargs: batch_assessment(count=1, **kwargs))
+    result = assessor(
+        verified_at_utc=clock.format(fraction="000000001"),
+        assessed_at_utc=clock.format(fraction="000000002"),
+    )
+    satisfied = (result["windows"][0]["candidate_checks_satisfied"]
+                 if family == "single" else result["batch_checks_satisfied"])
+    assert satisfied is True
+    assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    assert result["eligible_observations"] == []
+    assert result["monitoring_admitted"] is False
+
+
 import gzip
 import io
 import json
