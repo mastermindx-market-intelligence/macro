@@ -1340,6 +1340,10 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - "engine/options_statistics.py"
+      - "engine/options_statistics_state.py"
+      - "tests/test_options_statistics.py"
+      - "tests/test_options_statistics_state.py"
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
       - engine/neuralweb/market_memory_episode_retrieval.py
@@ -1422,7 +1426,7 @@ jobs:
         # support the live-flow engine and pyyaml is imported by lib.config.
         run: pip install pytest pandas numpy pyyaml requests
       - name: live-flow WAL/cycle-recovery + sibling suites
-        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py -q
+        run: python -m pytest tests/test_options_statistics.py tests/test_options_statistics_state.py tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py -q
 
   integrated-answer-v0:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -8062,6 +8066,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
       - engine/entry_radar/replay/__init__.py
@@ -8745,7 +8750,7 @@ jobs:
       - name: W0b focused vendor-snapshot quote completion and no-repoll proofs
         run: python -m pytest tests/test_options_focused_quote.py -q
       - name: live-flow PIT producer (RTH admission, stable source IDs, root-scoped state, cycle WAL)
-        run: python -m pytest tests/test_live_flow.py tests/test_options_statistics.py -q
+        run: python -m pytest tests/test_live_flow.py -q
       - name: F03 catalyst-linkage read-model (typed unbound/ambiguous/stale states, fail-loud contract key, zero authority)
         run: python -m pytest tests/test_options_catalyst_link.py -q
       - name: flow derivative source clocks (enrich + chain heat, fail-closed provenance)
@@ -36019,6 +36024,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/options_statistics.py"
+      - "engine/options_statistics_state.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
