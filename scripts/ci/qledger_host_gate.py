@@ -16,6 +16,12 @@ import os
 from pathlib import Path
 import stat
 from threading import Lock, get_ident
+import sys
+
+# Ordinary file-path use resolves this repository. Under trusted_bootstrap this
+# path is the verified bundle; its finite finder still gates first-party imports.
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 
 class GateRefusal(RuntimeError):
@@ -162,6 +168,8 @@ class HostGate:
         self._native_ready_started = self._native_ready_replaced = False
         self._native_ready_fd = None
         self._native_checked = None
+        self._native_start_generation = self._native_data_anchor = self._native_anchor_live = None
+        self._native_anchor_handles = None
         binding = dict(repo=str(self.repo), owner_inode=self._root_identity, runner=runner_name,
             repository=repository, agent_id=agent_id, result=str(self.owner.target.result_path),
             manifest=invocation.manifest_digest, operation=self.owner.intent.operation_id,
@@ -464,7 +472,8 @@ class HostGate:
                  and binding.original_process_id == os.getpid() and not binding.attempts
                  and binding.pre_attempt_failure is None, 'fresh exact original native producer required')
         with self.lease('install'):
-            _require(self._native_ready_fd is None and self._native_checked is None,
+            _require(self._native_ready_fd is None and self._native_checked is None
+                     and self._native_anchor_live is None and self._native_anchor_handles is None,
                      'original native READY/completion operation remains unresolved')
             self._native_ready_started = self._native_ready_replaced = False
             self._native_transition = True
@@ -473,6 +482,8 @@ class HostGate:
             try:
                 record = None if current_generation is None else self._native_selection(current_generation)[0]
                 self._native_expected = record
+                self._native_start_generation = record
+                self._native_data_anchor = self.candidate_oid if record is None else None
                 context = dict(repo=self.repo, operation_id=binding.operation_id,lane_id=binding.lane_id,
                     budget_id=budget_id,retention_id=retention_id,commit_oid=self.candidate_oid,phase='before-native-generation')
                 self.assert_valid(**context)
@@ -511,6 +522,7 @@ class HostGate:
                 os.close(self._native_ready_fd)
                 self._native_ready_fd=None
                 self._native_checked=None
+                self._native_start_generation = self._native_data_anchor = self._native_anchor_live = None
             finally:
                 self._native_transition = False
                 self._native_owner_binding = None
@@ -627,6 +639,156 @@ class HostGate:
                         and not self._native_reader_call.uncertain):self._native_reader_call = None
                 self._native_expected = None
 
+
+
+    def _anchor_check(self, live):
+        import time
+        live.check('native-data-anchor')
+        _require(self._native_transition and self._mode=='install' and self._native_anchor_live is live
+                 and self._native_owner_binding is live.binding, 'actual exclusive original data-anchor context absent')
+        now=time.monotonic_ns()
+        _require(type(live.data_anchor_deadline) is int and live.data_anchor_last<=now<live.data_anchor_deadline,
+                 'unchanged original data-anchor endpoint expired or regressed')
+        live.data_anchor_last=now
+
+    def native_data_tip(self,binding,*,original_deadline_monotonic_ns):
+        from scripts.ci.qledger_owner_invocation import require_live_producer
+        live=require_live_producer(binding)
+        _require(self._native_transition and self._native_owner_binding is binding and live.gate is self,
+                 'original exclusive data anchor unavailable')
+        if self._native_start_generation is None and self._native_anchor_live is None:
+            return self.candidate_oid  # Existing direct first-generation interface.
+        self._anchor_check(live)
+        _require(live.data_anchor_deadline==original_deadline_monotonic_ns and self._native_data_anchor is not None,
+                 'actual original accepted data anchor/endpoint differs')
+        return self._native_data_anchor
+
+    def _tracking_namespace(self,control):
+        # Every component is opened once, descriptor-relative; Git metadata is
+        # never consulted to choose this prospective tracking-ref destination.
+        for name in ('commondir','gitdir','packed-refs'):
+            try:os.stat(name,dir_fd=control['git'],follow_symlinks=False)
+            except FileNotFoundError:pass
+            else:raise GateRefusal('standalone direct loose tracking namespace required')
+        for parent,name,child in ((control['repo'],'.git',control['git']),
+                (control['git'],'refs',control['refs']),(control['refs'],'remotes',control['remotes']),
+                (control['remotes'],'origin',control['origin'])):
+            info=os.stat(name,dir_fd=parent,follow_symlinks=False);pinned=os.fstat(child)
+            _require(stat.S_ISDIR(info.st_mode) and info.st_uid==os.geteuid() and not info.st_mode&0o022
+                     and (info.st_dev,info.st_ino)==(pinned.st_dev,pinned.st_ino),
+                     'original tracking parent changed or aliased')
+        root=_directory(self.repo)
+        try:
+            a,b=os.fstat(root),os.fstat(control['repo'])
+            _require((a.st_dev,a.st_ino)==(b.st_dev,b.st_ino),'original tracking repository changed')
+        finally:os.close(root)
+        for parent,name,expected in ((control['git'],'HEAD',b'ref: refs/heads/main\n'),
+                (control['heads'],'main',(self.candidate_oid+'\n').encode())):
+            raw,_=self._tracking_read(parent,name)
+            _require(raw==expected,'installed code/HEAD differs during accepted-data CAS')
+        info=os.stat('heads',dir_fd=control['refs'],follow_symlinks=False);pinned=os.fstat(control['heads'])
+        _require(stat.S_ISDIR(info.st_mode) and (info.st_dev,info.st_ino)==(pinned.st_dev,pinned.st_ino),
+                 'installed code ref parent changed')
+
+    @staticmethod
+    def _tracking_read(parent,name):
+        fd=os.open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,dir_fd=parent)
+        try:
+            a=os.fstat(fd)
+            identity=lambda v:(v.st_dev,v.st_ino,v.st_mode,v.st_size,v.st_mtime_ns,v.st_ctime_ns)
+            _require(stat.S_ISREG(a.st_mode) and a.st_uid==os.geteuid() and a.st_nlink==1
+                     and not a.st_mode&0o022 and a.st_size<=128,'direct original tracking metadata required')
+            raw=os.read(fd,129)
+            _require(len(raw)==a.st_size and not os.read(fd,1) and identity(a)==identity(os.fstat(fd))
+                     ==identity(os.stat(name,dir_fd=parent,follow_symlinks=False)),
+                     'original tracking metadata changed')
+            return raw,identity(a)
+        finally:os.close(fd)
+
+    def _tracking_data_cas(self,live,record):
+        control={'fds':[],'entered':False,'replaced':False}
+        self._native_anchor_handles=control
+        def opened(name,fd):control[name]=fd;control['fds'].append(fd);return fd
+        def check():self._anchor_check(live);self._tracking_namespace(control)
+        try:
+            opened('repo',_directory(self.repo))
+            opened('git',os.open('.git',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=control['repo']))
+            # Refuse alternate layouts before creating ANY tracking lock.
+            for name in ('commondir','gitdir','packed-refs'):
+                try:os.stat(name,dir_fd=control['git'],follow_symlinks=False)
+                except FileNotFoundError:pass
+                else:raise GateRefusal('standalone direct loose tracking namespace required')
+            parent=control['git']
+            for key,name in (('refs','refs'),('remotes','remotes'),('origin','origin')):
+                parent=opened(key,os.open(name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parent))
+            opened('heads',os.open('heads',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=control['refs']))
+            check()
+            before,identity=self._tracking_read(control['origin'],'main')
+            old=(record['accepted_tip']+'\n').encode();desired=(record['candidate']+'\n').encode()
+            _require(before in (old,desired),'stale or foreign accepted tracking ref')
+            control.update(before=before,identity=identity,desired=desired)
+            if before!=desired:
+                # O_EXCL is the incumbent Git ref-lock protocol. Foreign locks
+                # are never removed, and every entered uncertain call is kept.
+                control['entered']=True
+                fd=opened('lock',os.open('main.lock',os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,
+                    stat.S_IMODE(identity[2]),dir_fd=control['origin']))
+                control['lock_identity']=(os.fstat(fd).st_dev,os.fstat(fd).st_ino)
+                _require(os.write(fd,desired)==len(desired),'partial original tracking CAS write')
+                os.fsync(fd);os.fsync(control['origin']);check()
+                _require(self._tracking_read(control['origin'],'main')==(before,identity),
+                         'original accepted tracking ref changed before CAS')
+                named=os.stat('main.lock',dir_fd=control['origin'],follow_symlinks=False)
+                _require(stat.S_ISREG(named.st_mode) and named.st_nlink==1
+                         and (named.st_dev,named.st_ino)==control['lock_identity'], 'original tracking lock replaced')
+                os.replace('main.lock','main',src_dir_fd=control['origin'],dst_dir_fd=control['origin'])
+                control['replaced']=True
+                os.fsync(control['origin']);check()
+            raw,current=self._tracking_read(control['origin'],'main')
+            _require(raw==desired and (not control['entered'] or current[:2]==control['lock_identity']),
+                     'original accepted-data tracking CAS acknowledgement unavailable')
+            self._assert('assert_publication_readback',**self._anchor_context(live))
+            check()
+            _require(self._tracking_read(control['origin'],'main')[0]==desired,'accepted data tracking changed after readback')
+            for fd in reversed(control['fds']):os.close(fd)
+            control['fds'].clear();self._native_anchor_handles=None
+        except BaseException:
+            if not control['entered']:
+                for fd in reversed(control['fds']):os.close(fd)
+                control['fds'].clear();self._native_anchor_handles=None
+            raise  # No unknown cleanup/retry, even if the later ref matches.
+
+    def _anchor_context(self,live):
+        return dict(repo=self.repo,operation_id=live.binding.operation_id,lane_id=live.binding.lane_id,
+            budget_id=live.budget,retention_id=live.retention,commit_oid=self.candidate_oid,
+            phase='native-anchor-readback',native_anchor=live)
+
+    def establish_native_anchor(self,*,original_deadline_monotonic_ns):
+        from scripts.ci.qledger_owner_invocation import require_live_producer,native_anchor_assertion_scope
+        import time
+        live=require_live_producer(self._native_owner_binding)
+        _require(self._native_anchor_live is None,'original data anchor already entered; no replay')
+        self._native_anchor_live=live
+        live.data_anchor_deadline=original_deadline_monotonic_ns;live.data_anchor_last=time.monotonic_ns()
+        with native_anchor_assertion_scope(live):
+            self._anchor_check(live)
+            _require(not live.binding.attempts and not live.binding.prepared_original_results
+                     and live.binding.pre_attempt_failure is None,'data anchor cannot borrow earlier original writes')
+            record=self._native_start_generation
+            if record is None:
+                self._native_data_anchor=self.candidate_oid
+            else:
+                _require(all(t.accepted_ref=='refs/remotes/origin/main' and t.accepted_tip_oid==record['candidate']
+                    for t in live.binding.original_result_targets.values()),'different original accepted data target')
+                _require(live.binding.read_snapshot().receipt.root_digest==record['root'],
+                         'native root changed before accepted-data establishment')
+                self._assert('assert_publication_readback',**self._anchor_context(live))
+                self._anchor_check(live)
+                self._tracking_data_cas(live,record)
+                _require(live.binding.read_snapshot().receipt.root_digest==record['root'],
+                         'native root changed during accepted-data establishment')
+                self._native_data_anchor=record['candidate']
+            self._anchor_check(live)
 
 
 if __name__ == '__main__':

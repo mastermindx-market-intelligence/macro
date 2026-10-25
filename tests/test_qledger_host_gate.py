@@ -442,7 +442,7 @@ from tests.test_qledger_original_result import original  # noqa:F401
 from tests.test_qledger_causal_originals import causal,append  # noqa:F401
 
 
-def _native_cycle_case(causal,fixture,monkeypatch,tmp_path):
+def _native_cycle_case(causal,fixture,monkeypatch,tmp_path,*,future_producer=None,real_normalizer=False):
     import time
     from types import SimpleNamespace
     from engine import qledger_original_conversion as conversion
@@ -467,10 +467,17 @@ def _native_cycle_case(causal,fixture,monkeypatch,tmp_path):
         original_deadline_monotonic_ns=time.monotonic_ns()+180_000_000_000,candidate_oid=tip,
         operation_id=owner.intent.operation_id,budget_id=target.budget_id,retention_id=target.retention_id)
     class ControllerFixtureEvidence(FixtureEvidence):
-        def __init__(self):super().__init__();self.real=build_evidence(context,origin_binding_sha256=origin)
+        def __init__(self, original_context=context):
+            super().__init__()
+            self.context=original_context
+            self.real=build_evidence(original_context,origin_binding_sha256=origin)
         def assert_publication_readback(self,**ctx):
+            context=self.context
             self._assert('publication',**ctx)
-            if 'native_reader' in ctx:
+            if 'native_anchor' in ctx:
+                fresh=SimpleNamespace(**{**vars(context),'original_deadline_monotonic_ns':ctx['native_anchor'].data_anchor_deadline})
+                proof=build_evidence(fresh,origin_binding_sha256=origin)
+            elif 'native_reader' in ctx:
                 fresh=SimpleNamespace(**{**vars(context),'original_deadline_monotonic_ns':ctx['native_reader'].deadline})
                 proof=build_evidence(fresh,origin_binding_sha256=origin)
             else:proof=self.real
@@ -481,6 +488,13 @@ def _native_cycle_case(causal,fixture,monkeypatch,tmp_path):
     pins=[];source=Path(__file__).resolve().parents[1]
     for name in ('options_signal_nightly.sh','options_index_lock_identity.py'):
         path=root/name;path.write_bytes((source/'scripts/ci'/name).read_bytes());pins.append(CodePin(path,sha256(path.read_bytes()).hexdigest()))
+    if real_normalizer:
+        from lib import shared_shell
+        for relative in ('scripts/ci/daily_engine_commit_outputs.sh','scripts/ci/push_retry.sh',
+                'scripts/ci/strip_conflict_markers.sh','templates/shared_shell_bridge.js','templates/shared_shell.css'):
+            path=root/relative;path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes((source/relative).read_bytes());pins.append(CodePin(path,sha256(path.read_bytes()).hexdigest()))
+        monkeypatch.setattr(shared_shell,'ROOT',root)
     from scripts.ci import options_index_lock_identity as index_owner
     monkeypatch.setattr(index_owner,'__file__',str(root/'options_index_lock_identity.py'))
     args=dict(candidate_oid=tip,tree_oid=prepared.candidate.tree_oid,accepted_tip_oid=legacy,owner_code=tuple(pins),
@@ -488,6 +502,7 @@ def _native_cycle_case(causal,fixture,monkeypatch,tmp_path):
         producers={(binding.operation_id,binding.lane_id):('producer-budget','producer-retention'),
                    ('reader-original','reader-lane'):('reader-budget','reader-retention')},
         runner_name='fixture-native',repository='fixture/macro',agent_id=28,evidence=evidence)
+    if future_producer is not None:args['producers'][future_producer[0]]=future_producer[1]
     gate=HostGate(invocation,**args)
     # owner_bridge materializes its test-owned baseline before any original.
     # Restore only those known fixture members for the real initial checkout.
@@ -832,3 +847,172 @@ def test_caught_original_completion_failure_cannot_release_native_hold(causal,fi
         assert check(checked._index_lock.path,checked._index_lock.identity)==0
         assert gate._native_ready_fd is not None
     with pytest.raises(GateRefusal):gate.invoke_reader(lambda:pytest.fail('caught failure admitted reader'))
+
+
+# These are future test-owned operations/roots only. The first operation is
+# actually published locally; the second never adopts its creator outcomes.
+def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=False):
+    import time,json
+    from dataclasses import replace
+    from types import SimpleNamespace
+    from engine import qledger_original_result as originals,qledger_store_native as native
+    from scripts.ci import qledger_engine_publication as engine,qledger_engine_publisher as publisher
+    from scripts import build_allocation as allocation
+    from tests.test_qledger_engine_finalizer import stage
+    real_finalize=engine.finalize_daily_engine_outputs
+    operation,lane='operation:second','lane:second'
+    state=_native_cycle_case(causal,fixture,monkeypatch,tmp_path,
+        future_producer=((operation,lane),('second-budget','second-retention')),real_normalizer=real_normalizer)
+    gate=state['gate'];repo=gate.repo
+    risk=repo/'data/risk_radar/forward_log.jsonl'  # ci-trigger-closure: data — temporary test-owned ledger destination, not a repository data read
+    risk.parent.mkdir(parents=True,exist_ok=True)
+    opaque=b'{"test_owned":"forward-ledger"}\nopaque-original-tail\n\xff\n'
+    risk.write_bytes(opaque)
+    first_page=repo/'site/first-generation.html';first_page.parent.mkdir(exist_ok=True)
+    first_page.write_bytes(b'<!doctype html><html><head></head><body>first accepted generation</body></html>')
+    if real_normalizer:
+        from tests.test_qledger_daily_normalizer import dirty
+        def first_finalize(checked):
+            dirty(repo);prepared=real_finalize(checked)
+            state.update(checked=checked,prepared=prepared,index_before_freeze=(repo/'.git/index').read_bytes())
+            return prepared
+        monkeypatch.setattr(engine,'finalize_daily_engine_outputs',first_finalize)
+    first=state['run']();selection=_selection(state)
+    first_files={str(p.relative_to(causal[3])):p.read_bytes() for p in causal[3].rglob('*') if p.is_file()}
+    old_binding=state['binding'];intents=tuple(native.NativeClaimsIntent(operation,lane,'gen2-'+s) for s in ('one','two'))
+    template=next(iter(old_binding.original_result_targets.values()))
+    targets={intent:replace(template,result_path=template.owner_root/('gen2-'+s),result_id='gen2-'+s,
+        accepted_tip_oid=first.publication.candidate_oid,predecessor_intents=tuple(intents[:i]))
+        for i,(intent,s) in enumerate(zip(intents,('one','two')))}
+    binding=originals.OriginalResultClaimsBinding(old_binding.claims_path,operation_id=operation,lane_id=lane,
+        limits=old_binding.limits,original_result_targets=targets)
+    context=SimpleNamespace(**{**vars(state['context']),'original_deadline_monotonic_ns':time.monotonic_ns()+180_000_000_000})
+    # Each trusted_bootstrap invocation owns a fresh gate and one-use evidence
+    # provider. Keep the first original's provider intact; never reset its latch.
+    from scripts.ci.qledger_owner_invocation import load_conversion
+    evidence=type(state['args']['evidence'])(context)
+    second_args=dict(state['args'],evidence=evidence)
+    gate=HostGate(load_conversion(repo,result_path=context.result_path,
+        manifest_digest=context.manifest_digest),**second_args)
+    second_causal=(causal[0],binding,intents,causal[3]);second={}
+    def produce(*args,**kwargs):
+        assert gate.native_data_tip(binding,original_deadline_monotonic_ns=context.original_deadline_monotonic_ns)==first.publication.candidate_oid
+        append(second_causal,0);append(second_causal,1)
+        return {'us':'test-owned second original','ca':'test-owned causal successor'}
+    monkeypatch.setattr(allocation,'run_native_thematic_owner',produce)
+    def finalize(checked):
+        if real_normalizer:
+            from tests.test_qledger_daily_normalizer import dirty
+            dirty(repo)
+            first_page.write_bytes(b'<<<<<<< test-owned\nnot an accepted page\n>>>>>>> test-owned\n')
+            prepared=real_finalize(checked)
+        else:
+            stage(binding)
+            prepared=checked.prepare_engine_tree('test-owned second complete generation')
+        second.update(checked=checked,prepared=prepared,index_before_freeze=(repo/'.git/index').read_bytes())
+        return prepared
+    monkeypatch.setattr(engine,'finalize_daily_engine_outputs',finalize)
+    publication=publisher.NativePublicationFinalizer(**state['publication'].original)
+    def run():
+        with gate.native_cycle(binding,budget_id='second-budget',retention_id='second-retention',current_generation=selection):
+            def original():
+                gate.establish_native_anchor(original_deadline_monotonic_ns=context.original_deadline_monotonic_ns)
+                _,callback=engine.build_native_engine_producer(context,owner_binding=binding,regions=('us','ca'),
+                    native_intents={'us':intents[0],'ca':intents[1]},finalizer=publication,call=object())
+                second['callback']=callback
+                return callback()
+            return gate.invocation.invoke_producer(binding,gate=gate,installed_commit_oid=gate.candidate_oid,
+                budget_id='second-budget',retention_id='second-retention',producer=original)
+    second.update(gate=gate,binding=binding,context=context,run=run,publication=publication,args=second_args)
+    return state,second,first,selection,first_files,opaque
+
+
+def test_two_genuine_native_generations_preserve_code_originals_and_forward_ledger(causal,fixture,monkeypatch,tmp_path):
+    import json,time,inspect
+    from dataclasses import asdict
+    from engine import qledger_original_result as originals,qledger_store_protocol as protocol
+    state,second,first,selection,files,opaque=_second_native_case(causal,fixture,monkeypatch,tmp_path)
+    gate=state['gate'];repo=gate.repo;code=git(repo,'rev-parse','HEAD')
+    parent=first.publication.candidate_oid
+    old_first=git(repo,'show',parent+':site/first-generation.html')
+    value=second['run']()
+    assert value.status=='publication_confirmed' and value.publication.accepted_tip_oid==parent
+    assert git(repo,'rev-list','--parents','-n','1',value.publication.candidate_oid).decode()==value.publication.candidate_oid+' '+parent
+    assert git(repo,'rev-parse','HEAD')==code and git(repo,'rev-parse','refs/remotes/origin/main').decode()==parent
+    assert (repo/'.git/index').read_bytes()==second['index_before_freeze']
+    for rel,payload in files.items():assert (causal[3]/rel).read_bytes()==payload
+    for oid in (parent,value.publication.candidate_oid):
+        assert subprocess.check_output(['git','-C',str(repo),'show',oid+':data/risk_radar/forward_log.jsonl'])==opaque  # ci-trigger-closure: data — test-owned Git fixture output, not a repository source read
+        assert git(repo,'show',oid+':site/first-generation.html')==old_first
+    assert (repo/'data/risk_radar/forward_log.jsonl').read_bytes()==opaque  # ci-trigger-closure: data — temporary fixture ledger
+    selection2=_selection(second)
+    with protocol.open_logical_bytes(selection2[3].write.plan.snapshot) as raw:
+        assert raw.read()==fixture[3]+b'{"future":"0"}\n{"future":"1"}\n'*2
+    args={k:v for k,v in second['args'].items() if k!='evidence'}
+    for key in ('owner_code','runtime_code'):args[key]=[(str(p.path),p.digest) for p in args[key]]
+    args['producers']=[[*k,*v] for k,v in args['producers'].items()]
+    retained=selection2[3]
+    packet=dict(context={k:str(v) if isinstance(v,Path) else v for k,v in vars(second['context']).items()},args=args,
+        originals=[originals._descriptor(r) for r in (*retained.predecessors,retained)],limits=asdict(retained.limits),
+        selection=selection2[:3],publication=selection2[4])
+    program=('import json,sys,os\nfrom pathlib import Path\nsys.path.insert(0,sys.argv[1])\n'
+        'from scripts.ci.qledger_host_gate import HostGate,CodePin,GateRefusal\n'+inspect.getsource(FixtureEvidence)+'\n'
+        +inspect.getsource(_fresh_native_reader)+'\n_fresh_native_reader(json.loads(sys.stdin.read()))\n')
+    child=subprocess.run([sys.executable,'-I','-c',program,str(Path(__file__).resolve().parents[1])],
+        input=json.dumps(packet),text=True,capture_output=True,timeout=90)
+    assert child.returncode==0,child.stderr
+    assert not (gate.root/gate.HOLD).exists() and gate._native_anchor_handles is None
+    with pytest.raises(GateRefusal):_read_native(state,selection)
+    assert (gate.root/gate.HOLD).exists()  # Old and new generations cannot mix.
+
+
+@pytest.mark.parametrize('layout', ['packed', 'commondir', 'symbolic', 'alias', 'gitfile'])
+def test_second_generation_tracking_cas_refuses_noncanonical_layout_before_lock(host_gate, monkeypatch, tmp_path, layout):
+    """Isolate the ref namespace; mocked authorities grant no runtime admission."""
+    gate, _, _ = host_gate
+    repo=gate.repo; control=repo/'.git'
+    git(repo,'symbolic-ref','HEAD','refs/heads/main')
+    git(repo,'update-ref','refs/heads/main',gate.candidate_oid)
+    origin=control/'refs/remotes/origin';origin.mkdir(parents=True,exist_ok=True)
+    before=(gate.candidate_oid+'\n').encode();(origin/'main').write_bytes(before)
+    monkeypatch.setattr(gate,'_anchor_check',lambda live:None)
+    monkeypatch.setattr(gate,'_anchor_context',lambda live:{})
+    monkeypatch.setattr(gate,'_assert',lambda *a,**k:None)
+    if layout=='packed':(control/'packed-refs').write_text('# packed-refs\n')
+    elif layout=='commondir':(control/'commondir').write_text('../foreign\n')
+    elif layout=='symbolic':(origin/'main').write_text('ref: refs/heads/main\n')
+    elif layout=='alias':
+        (origin/'main').unlink();(origin/'main').symlink_to(control/'refs/heads/main')
+    else:
+        moved=repo/'.retained-test-git';control.rename(moved)
+        control.write_text('gitdir: '+str(moved)+'\n');origin=moved/'refs/remotes/origin'
+    original=(origin/'main').read_bytes()
+    with pytest.raises((GateRefusal,OSError)):
+        gate._tracking_data_cas(object(),{'accepted_tip':gate.candidate_oid,'candidate':'a'*40})
+    assert (origin/'main').read_bytes()==original and not (origin/'main.lock').exists()
+    assert gate._native_anchor_handles is None
+
+
+def test_second_generation_tracking_cas_lost_durability_keeps_original_handles(host_gate,monkeypatch):
+    """A matching ref after an uncertain original CAS never becomes success."""
+    from scripts.ci import qledger_host_gate as module
+    gate,_,_=host_gate;repo=gate.repo
+    git(repo,'symbolic-ref','HEAD','refs/heads/main')
+    git(repo,'update-ref','refs/heads/main',gate.candidate_oid)
+    origin=repo/'.git/refs/remotes/origin';origin.mkdir(parents=True,exist_ok=True)
+    (origin/'main').write_text(gate.candidate_oid+'\n')
+    monkeypatch.setattr(gate,'_anchor_check',lambda live:None)
+    monkeypatch.setattr(gate,'_anchor_context',lambda live:{})
+    readbacks=[];monkeypatch.setattr(gate,'_assert',lambda *a,**k:readbacks.append(a))
+    original_fsync=module.os.fsync
+    def lose_after_replace(fd):
+        if gate._native_anchor_handles and gate._native_anchor_handles['replaced']:
+            raise OSError('test-owned lost directory durability response')
+        return original_fsync(fd)
+    monkeypatch.setattr(module.os,'fsync',lose_after_replace)
+    with pytest.raises(OSError,match='lost directory durability'):
+        gate._tracking_data_cas(object(),{'accepted_tip':gate.candidate_oid,'candidate':'b'*40})
+    assert (origin/'main').read_text()=='b'*40+'\n'
+    assert gate._native_anchor_handles['entered'] and gate._native_anchor_handles['replaced']
+    assert gate._native_anchor_handles['fds'] and not readbacks
+    assert all(os.fstat(fd) for fd in gate._native_anchor_handles['fds'])

@@ -278,10 +278,14 @@ class OrdinaryPublicationEvidence:
                  and call.binding.tree_oid == call.record['tree']
                  and call.binding.read_snapshot().receipt.root_digest == call.record['root'],
                  'actual immutable native reader generation differs')
-        _require(call.record['publication']['origin'] == self.origin_digest, 'reader original publication origin differs')
+        self._native_origin_readback(call.record,call.check)
+
+    def _native_origin_readback(self,record,check):
+        self._check();check()
+        _require(record['publication']['origin'] == self.origin_digest, 'reader original publication origin differs')
         destination=self._origin().decode('utf-8',errors='strict')
         parsed=urlsplit(destination)
-        expected=(call.record['candidate']+'\n').encode()
+        expected=(record['candidate']+'\n').encode()
         if destination.startswith('/') and not parsed.scheme:
             from scripts.ci.qledger_host_gate import _directory
             import stat
@@ -290,9 +294,9 @@ class OrdinaryPublicationEvidence:
                 root=_directory(Path(destination))
                 refs=os.open('refs',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=root)
                 heads=os.open('heads',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=refs)
-                _require(call.record['publication']['transport'] == 'local_objects_and_loose_ref_cas'
+                _require(record['publication']['transport'] == 'local_objects_and_loose_ref_cas'
                          and [[os.fstat(h).st_dev,os.fstat(h).st_ino] for h in (root,refs,heads)]
-                             == call.record['publication']['layout'], 'reader original ref namespace differs')
+                             == record['publication']['layout'], 'reader original ref namespace differs')
                 fd=os.open('main',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=heads)
                 before=os.fstat(fd)
                 _require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and before.st_size == 41,
@@ -319,10 +323,31 @@ class OrdinaryPublicationEvidence:
                     if handle is not None:os.close(handle)
         else:
             raise EvidenceUnavailable('fresh native HTTPS/SSH reader carrier is not qualified; original writer auth cannot transfer')
-        self._origin();call.check();self._check()
+        self._origin();check();self._check()
+
+    def _assert_native_anchor(self,context):
+        from scripts.ci.qledger_owner_invocation import _LiveProducerInvocation,require_live_producer
+        from scripts.ci.qledger_host_gate import HostGate
+        live=context.get('native_anchor')
+        _require(type(live) is _LiveProducerInvocation and require_live_producer(live.binding) is live,
+                 'actual new original data-anchor invocation required')
+        self._check();gate=live.gate
+        _require(type(gate) is HostGate and gate._native_anchor_live is live
+                 and gate._native_owner_binding is live.binding and gate._mode=='install'
+                 and gate.repo==self.context.repo and gate.candidate_oid==self.context.candidate_oid
+                 and gate.invocation.manifest_digest==self.context.manifest_digest
+                 and live.pid==self._pid==os.getpid()
+                 and live.data_anchor_deadline==self.context.original_deadline_monotonic_ns
+                 and all(context.get(k)==v for k,v in gate._anchor_context(live).items()),
+                 'original data-anchor process/resources/code binding differs')
+        record=gate._native_start_generation
+        _require(record is not None and gate._native_expected==record,'current verified data generation absent')
+        self._native_origin_readback(record,lambda:gate._anchor_check(live))
 
     @_record_original_refusal
     def assert_publication_readback(self, **context):
+        if context.get('phase')=='native-anchor-readback' or 'native_anchor' in context:
+            return self._assert_native_anchor(context)
         if context.get('phase') == 'native-reader' or 'native_reader' in context:
             return self._assert_native_reader(context)
         if context.get('phase') in ('native-publication-readback', 'native-https-readback') or any(

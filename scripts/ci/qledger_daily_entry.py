@@ -40,6 +40,12 @@ def build_producer(context, *, owner_binding=None, regions=None, native_intents=
              'explicit finite original regions/intents required')
     from scripts.ci.qledger_owner_invocation import load_conversion
     conversion = load_conversion(context.repo, result_path=context.result_path, manifest_digest=context.manifest_digest)
+    accepted_data=context.candidate_oid
+    if any(owner_binding._target_for(intent).accepted_tip_oid!=accepted_data for intent in native_intents.values()):
+        from scripts.ci.qledger_owner_invocation import require_live_producer
+        live=require_live_producer(owner_binding)
+        accepted_data=live.gate.native_data_tip(owner_binding,
+            original_deadline_monotonic_ns=context.original_deadline_monotonic_ns)
     for intent in native_intents.values():
         owner_binding._check_intent(intent)
         target = owner_binding._target_for(intent)
@@ -48,7 +54,7 @@ def build_producer(context, *, owner_binding=None, regions=None, native_intents=
                  and not target.result_path.is_relative_to(context.result_path)
                  and not context.result_path.is_relative_to(target.result_path),
                  'original producer cannot borrow conversion identity/result')
-        _require(target.accepted_tip_oid == context.candidate_oid, 'original producer accepted source differs from installation')
+        _require(target.accepted_tip_oid == accepted_data, 'original producer accepted data differs from verified generation')
 
     from lib import config
     _require(config.ROOT == context.repo
@@ -72,7 +78,7 @@ def build_producer(context, *, owner_binding=None, regions=None, native_intents=
     inspection = SimpleNamespace(invocation=SimpleNamespace(binding=owner_binding), _deadline=deadline)
     deadline()
     owner_binding.read_snapshot()
-    _qualify_daily_destinations(inspection, accepted_tip_oid=context.candidate_oid)
+    _qualify_daily_destinations(inspection, accepted_tip_oid=accepted_data)
     deadline()
     return build_native_engine_producer(context, owner_binding=owner_binding, regions=regions,
         native_intents=native_intents, finalizer=finalize_daily_engine_outputs if publication is None else publication, call=call)

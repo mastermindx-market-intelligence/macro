@@ -50,9 +50,11 @@ class _LiveProducerInvocation:
         self.installed, self.budget, self.retention = installed, budget, retention
         self.pid, self.active = os.getpid(), True
         self.completed, self.failure = False, None
+        self.uncertain = False
+        self.data_anchor_deadline = None
 
     def check(self, phase):
-        if (not self.active or _LIVE_PRODUCER.get() is not self
+        if (not self.active or self.failure is not None or self.uncertain or _LIVE_PRODUCER.get() is not self
                 or os.getpid() != self.pid or self.pid != self.binding.original_process_id):
             _fail("same-process live producer invocation is absent")
         return self.invocation._gate(self.gate, phase, self.installed,
@@ -320,6 +322,8 @@ class ConversionInvocation:
                     _fail("producer returned with an unresolved original storage attempt")
             self._gate(gate, "producer-complete", installed_commit_oid, producer_binding=binding,
                        budget_id=budget_id, retention_id=retention_id)
+            if live.failure is not None or live.uncertain:
+                _fail("producer returned after an unresolved original live assertion")
             live.completed = True  # Actual original return, after every postcondition.
             return result
         except BaseException as exc:
@@ -351,6 +355,21 @@ def reader_assertion_scope(call):
     call.check()
     if _PUBLICATION_ASSERTION.get() is not None:_fail('nested reader assertion refused')
     token=_PUBLICATION_ASSERTION.set((call,call,os.getpid(),get_ident()))
+    try:
+        try:yield
+        except BaseException as exc:
+            record_publication_assertion_refusal(exc)
+            raise
+    finally:_PUBLICATION_ASSERTION.reset(token)
+
+
+@contextmanager
+def native_anchor_assertion_scope(live):
+    """Failure-only provenance for this actual new original, never old settlement."""
+    if require_live_producer(live.binding) is not live or live.gate._native_anchor_live is not live:
+        _fail('actual original accepted-data anchor scope absent')
+    if _PUBLICATION_ASSERTION.get() is not None:_fail('nested native anchor assertion refused')
+    token=_PUBLICATION_ASSERTION.set((live,live,os.getpid(),get_ident()))
     try:
         try:yield
         except BaseException as exc:

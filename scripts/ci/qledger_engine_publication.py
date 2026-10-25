@@ -193,6 +193,12 @@ class _LiveFinalCandidate:
         finally:
             os.close(fd)
 
+    def _data_tip(self):
+        gate=self.live.gate
+        if getattr(gate,'_native_transition',False):
+            return gate.native_data_tip(self.invocation.binding,original_deadline_monotonic_ns=self.original_deadline)
+        return self.live.installed
+
     def _assert_index(self):
         self._deadline()
         try:
@@ -202,7 +208,7 @@ class _LiveFinalCandidate:
         _require(self._index_fingerprint() == self._index_before, 'authoritative index changed after freeze')
         b = self.invocation.binding
         target = b._target_for(self.invocation.write.intent)
-        candidate._ref_matches(b.repo_root, 'refs/heads/main', target.accepted_tip_oid)
+        candidate._ref_matches(b.repo_root, 'refs/heads/main', self.live.installed)
         candidate._ref_matches(b.repo_root, target.accepted_ref, target.accepted_tip_oid)
 
     def _program(self, path=None, *, name=None):
@@ -290,8 +296,8 @@ class _LiveFinalCandidate:
             from scripts.ci import options_index_lock_identity as index_owner
             b = self.invocation.binding
             target = b._target_for(self.invocation.write.intent)
-            _require(target.accepted_ref == 'refs/remotes/origin/main' and target.accepted_tip_oid == self.live.installed,
-                     'ordinary original source/accepted anchor differs; no rebase equivalence')
+            _require(target.accepted_ref == 'refs/remotes/origin/main' and target.accepted_tip_oid == self._data_tip(),
+                     'ordinary original accepted data anchor differs; no rebase equivalence')
             program = self._program(name='options_signal_nightly.sh')
             helper = self._program(Path(index_owner.__file__).resolve())
             self._claims_context = claims_lock(b.repo_root / LOCK_RELATIVE_PATH, mode='shared', timeout=0)
@@ -312,7 +318,7 @@ class _LiveFinalCandidate:
                       +shlex.quote(helper.decode())+'\n').encode()
             self._prepare_uncertain = True
             raw = self._run_prepare(prefix+program, ['prepare-broad-candidate', message,
-                target.accepted_tip_oid, target.accepted_ref, self._index_lock.identity])
+                target.accepted_tip_oid, target.accepted_ref, self._index_lock.identity, self.live.installed])
             values = raw.decode('ascii').splitlines()
             _require(len(values) == 4, 'original finalizer response missing; index lock preserved')
             for oid in values:
@@ -352,6 +358,8 @@ class _LiveFinalCandidate:
     def _check(self):
         _require(self.active and self.failure is None, 'final-candidate callback closed or unresolved')
         self.live.check('engine-final-candidate')
+        target=self.invocation.binding._target_for(self.invocation.write.intent)
+        _require(target.accepted_tip_oid==self._data_tip(), 'original accepted data anchor changed')
         if self._index_lock is not None:
             self._assert_index()
         # Retained originals and a Git tree do not prove that an intervening
@@ -509,10 +517,10 @@ def finalize_daily_engine_outputs(checked):
         def check():
             checked._deadline()
             checked._check()
-            _require(target.accepted_tip_oid == checked.live.installed
+            _require(target.accepted_tip_oid == checked._data_tip()
                      and target.accepted_ref == 'refs/remotes/origin/main',
                      'unchanged ordinary accepted source required')
-            candidate._ref_matches(repo, 'refs/heads/main', target.accepted_tip_oid)
+            candidate._ref_matches(repo, 'refs/heads/main', checked.live.installed)
             candidate._ref_matches(repo, target.accepted_ref, target.accepted_tip_oid)
 
         check()
@@ -535,6 +543,29 @@ def finalize_daily_engine_outputs(checked):
         dispatch = 'if [ "${BASH_SOURCE[0]:-}" = "$0" ] || [ -z "${BASH_SOURCE[0]:-}" ]; then'
         _require(options.count(declaration) == options.count(dispatch) == 1, 'incumbent Options library seam changed')
         functions = declaration + options.split(declaration)[1].split(dispatch)[0]
+        if target.accepted_tip_oid != checked.live.installed:
+            # Only the qualified native snippets change baseline; the ordinary
+            # shell files/installing wrappers retain their exact HEAD behavior.
+            tip=target.accepted_tip_oid
+            def replace_exact(text,old,new,count):
+                _require(text.count(old)==count,'incumbent accepted-data restoration seam changed')
+                return text.replace(old,new)
+            stage=replace_exact(stage,'git checkout HEAD --','git checkout '+tip+' --',2)
+            stage=replace_exact(stage,'git reset -q --','git reset -q '+tip+' --',3)
+            stage=replace_exact(stage,'git diff --cached --quiet','git diff --cached '+tip+' --quiet',2)
+            functions=replace_exact(functions,'git cat-file -e "HEAD:$root"','git cat-file -e "'+tip+':$root"',1)
+            functions=replace_exact(functions,'git checkout HEAD -- "$root"','git checkout '+tip+' -- "$root"',1)
+            functions=replace_exact(functions,'git reset -q -- "${OIP_NARROW_ROOTS[@]}"','git reset -q '+tip+' -- "${OIP_NARROW_ROOTS[@]}"',1)
+            # Only the broad publisher compares its staged snapshot with the
+            # accepted DATA generation. The narrow checkpoint clean-index
+            # guard has the same diff spelling and retains its HEAD contract.
+            broad_start='oip_require_clean_broad_start() {\n  if ! git diff --cached --quiet; then\n'
+            functions=replace_exact(functions,broad_start,
+                broad_start.replace('git diff --cached --quiet','git diff --cached '+tip+' --quiet'),1)
+            retry=replace_exact(retry.decode(),'git checkout HEAD -- "$f"','git checkout '+tip+' -- "$f"',1)
+            retry=replace_exact(retry,'diff --cached --name-only --diff-filter=d --','diff --cached '+tip+' --name-only --diff-filter=d --',1).encode()
+            strip=replace_exact(strip.decode(),'git checkout HEAD -- "$f"','git checkout '+tip+' -- "$f"',1)
+            strip=replace_exact(strip,'git diff HEAD --name-only -z','git diff '+tip+' --name-only -z',1).encode()
         library = retry + b'\n' + functions.encode() + b'\nset -e\n'
         prefix = ('REPO_ROOT=' + shlex.quote(str(repo)) + '\n').encode()
         _require((repo/'site').is_dir() and not (repo/'site').is_symlink()

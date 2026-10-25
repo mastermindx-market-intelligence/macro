@@ -551,16 +551,17 @@ oip_freeze_locked_roots() {
 # install refs/index or remove this resource; only its creator may release it.
 # Frozen helper code is supplied by the qualified owner, not imported from checkout.
 oip_prepare_locked_roots() {
-  local message="$1" expected_parent="$2" accepted_ref="$3" lock_identity="$4"
+  local message="$1" expected_parent="$2" accepted_ref="$3" lock_identity="$4" installed_code="${5:-$2}"
   local reject_narrow=true validation_mode=native-prepare
   local -a allowed_roots=(data site reports templates)
   local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
   local diff_path="" tree="" candidate="" status path root matched rc=0 qledger_baseline=""
   [ -n "${OIP_NATIVE_INDEX_HELPER_CODE:-}" ] && [ -n "${OIP_NATIVE_PYTHON:-}" ] || return 1
   oip_require_main_branch || return 1
-  parent=$(git rev-parse 'refs/heads/main^{commit}') || return 1
+  [ "$(git rev-parse 'refs/heads/main^{commit}')" = "$installed_code" ] || return 1
+  parent=$(git rev-parse "$expected_parent^{commit}") || return 1
   parent_tree=$(git rev-parse "$parent^{tree}") || return 1
-  # No new source/rebase equivalence: both named anchors must remain exact.
+  # Installed code and accepted data are independently exact; no rebase equivalence.
   [ "$accepted_ref" = refs/remotes/origin/main ] || return 1
   qledger_baseline=$(git rev-parse "$accepted_ref^{commit}") || return 1
   [ "$parent" = "$expected_parent" ] && [ "$qledger_baseline" = "$expected_parent" ] || return 1
@@ -571,7 +572,7 @@ oip_prepare_locked_roots() {
   oip_freeze_locked_roots
   if [ "$rc" -eq 0 ]; then
     "$OIP_NATIVE_PYTHON" -I -c "$OIP_NATIVE_INDEX_HELPER_CODE" check "$lock_path" "$lock_identity" || rc=$?
-    [ "$(git rev-parse 'refs/heads/main^{commit}')" = "$expected_parent" ] || rc=1
+    [ "$(git rev-parse 'refs/heads/main^{commit}')" = "$installed_code" ] || rc=1
     [ "$(git rev-parse "$accepted_ref^{commit}")" = "$expected_parent" ] || rc=1
   fi
   [ -z "$snapshot" ] || rm -f -- "$snapshot" "$snapshot.lock"
@@ -669,8 +670,8 @@ assert_integrity() {
 if [ "${BASH_SOURCE[0]:-}" = "$0" ] || [ -z "${BASH_SOURCE[0]:-}" ]; then
   case "${1:-}" in
     prepare-broad-candidate)
-      [ "$#" -eq 5 ] || exit 64
-      oip_prepare_locked_roots "$2" "$3" "$4" "$5"
+      { [ "$#" -eq 5 ] || [ "$#" -eq 6 ]; } || exit 64
+      oip_prepare_locked_roots "$2" "$3" "$4" "$5" "${6:-$3}"
       ;;
     publish-episode) publish_episode ;;
     publish-campaign) publish_campaign ;;

@@ -123,6 +123,34 @@ def test_real_daily_normalizers_stage_complete_native_tree_without_installing_or
     assert binding.read_original_write_chain(value.original_writes).write.plan.snapshot.root_bytes==(binding.repo_root/p.ROOT_PATH).read_bytes()
 
 
+def test_second_daily_generation_restores_from_data_and_publishes_complete_tree(causal,fixture,monkeypatch,tmp_path):
+    """Real render/restore + two original publications + a fresh-process reader."""
+    from tests import test_qledger_host_gate as cases
+    original_case=cases._second_native_case
+    captured={}
+    def real_case(*args,**kwargs):
+        value=original_case(*args,**kwargs,real_normalizer=True)
+        captured['value']=value
+        return value
+    monkeypatch.setattr(cases,'_second_native_case',real_case)
+    # Retain the complete two-generation assertions, including immutable first
+    # results, installed CODE, exact DATA parent, opaque forward ledger and
+    # fresh-reader selection/refusal. This fixture supplies all render inputs.
+    cases.test_two_genuine_native_generations_preserve_code_originals_and_forward_ledger(
+        causal,fixture,monkeypatch,tmp_path)
+    state,second,first,_,_,_=captured['value']
+    repo=state['gate'].repo
+    oid=second['prepared'].candidate_oid
+    assert git(repo,'show',oid+':site/index.html')==git(repo,'show',oid+':templates/index.html')  # ci-trigger-closure: data — temporary rendered Git fixture, not a repository read
+    assert b'assets/css/' in git(repo,'show',oid+':site/native-normalizer.html')
+    assert git(repo,'show',oid+':data/prophet/ledger.jsonl')==b'accepted Prophet ledger'
+    assert git(repo,'show',oid+':data/options_signal_episode/accepted.json')==b'accepted narrow episode'
+    assert git(repo,'show',oid+':data/hk/accepted.json')==b'accepted Asia source'
+    assert (repo/'data/hk/accepted.json').read_text()=='unpublished sibling output'
+    assert git(repo,'show',oid+':site/first-generation.html')==git(repo,'show',first.publication.candidate_oid+':site/first-generation.html')
+    assert not git(repo,'ls-tree','-r','--name-only',oid,'--','data/qledger/control_evidence_clock_start')
+
+
 def test_native_integrity_failure_precedes_all_normalization_and_cleanup(causal,monkeypatch):
     from scripts import inject_data_base
     monkeypatch.setattr(inject_data_base,'inject',lambda *a:pytest.fail('corrupt original reached normalization'))
