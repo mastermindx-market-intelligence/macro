@@ -11,6 +11,16 @@ D5 detail read: it pins one atomic B1 generation and one exact episode, builds
 the canonical current ``IssuerMaster`` reader, then delegates the Earnings
 projection to the pure ``engine.prophet_lab.intelligence_vector`` adapter.
 
+The exact episode identity is resolved by the B1 owner itself
+(``engine.us_candidate_episode.lookup_candidate_episode_identity``) against
+that one validated generation, so a correction is visible on the same read: an
+episode whose exact opening event carries an owner retraction answers the
+private ``410 prophet_episode_withdrawn`` (owner facts only — no event
+payload, no free-text reason, no path, no issuer record, and no downstream
+read), an identity the generation never held keeps the incumbent private
+``404``, and an identity the generation cannot explain keeps the incumbent
+private ``503``. No second store, tombstone, clock or evidence owner exists.
+
 This router is a transport boundary only.  Every board is computed by
 ``engine/prophet_lab`` (a pure projection package — see its module docstrings)
 from data read off injectable filesystem roots; this file's only job is
@@ -141,6 +151,30 @@ def _source_integrity_failed(payload: Mapping[str, Any]) -> bool:
     )
 
 
+def _resolve_episode_identity(snapshot: Any, episode_id: str) -> Any:
+    """Classify one exact B1 episode identity through the pure owner lookup.
+
+    The B1 runtime (and its pyarrow dependency) stays outside macro-api's
+    import-time closure; this seam runs only for an authenticated intelligence
+    request, exactly like the snapshot loader it sits beside.
+
+    The lookup is B1-owned and pure: it reads the already-validated generation
+    this snapshot carries, answers with the owner's own event facts, and never
+    opens a second store, a second generation, or a second evidence owner. An
+    identity the generation cannot explain is a contract failure, never a
+    guess — the caller turns it into the existing private 503.
+    """
+    from engine.us_candidate_episode import (  # noqa: PLC0415
+        EpisodeContractError,
+        lookup_candidate_episode_identity,
+    )
+
+    try:
+        return lookup_candidate_episode_identity(snapshot, episode_id)
+    except EpisodeContractError as exc:
+        raise IntelligenceVectorContractError(str(exc)) from exc
+
+
 # Review N4: case-insensitive OFF set; anything NOT recognized as "off" is
 # treated as the switch being ACTIVE (fail TOWARD disabled — an operator
 # typo or an unexpected value takes the Lab down rather than silently
@@ -256,7 +290,15 @@ def episode_intelligence_v1(
     episode_id: str,
     _user: dict = Depends(require_site_full_user),
 ) -> JSONResponse:
-    """Project one exact B1 episode through the read-only D5 Earnings adapter."""
+    """Project one exact B1 episode through the read-only D5 Earnings adapter.
+
+    One atomic B1 generation is loaded per request, and the exact episode
+    identity is resolved against it by the B1 owner itself: a live episode
+    keeps the incumbent D5 response, an episode whose exact opening event
+    carries an owner retraction is the private ``410 prophet_episode_withdrawn``,
+    an identity this generation never held is the incumbent private ``404``, and
+    an identity the generation cannot explain is the incumbent private ``503``.
+    """
     if _kill_switch_active():
         return _response(
             {
@@ -277,31 +319,33 @@ def episode_intelligence_v1(
             raise IntelligenceVectorContractError("D5 read roots must be configured")
 
         snapshot = load_candidate_episode_store_snapshot(episode_store_root)
-        matching_episodes = [
-            episode
-            for episode in snapshot.generation.episodes
-            if episode.get("episode_id") == episode_id
-        ]
-        if not matching_episodes:
+        identity = _resolve_episode_identity(snapshot, episode_id)
+        if identity.is_withdrawn:
+            # The owner withdrew this exact episode's opening event. The
+            # withdrawal is the fact, and only the owner facts ride along:
+            # no event payload, no free-text reason, no path, no issuer record.
+            # Nothing downstream is loaded once this classification holds.
+            return _response(
+                {
+                    "error": "prophet_episode_withdrawn",
+                    "detail": "Episode was withdrawn by its owner correction",
+                    "episode_id": episode_id,
+                    "generation_id": snapshot.generation_id,
+                    "withdrawal": {
+                        "event_id": identity.withdrawal_event_id,
+                        "correction_of": identity.withdrawal_correction_of,
+                        "known_at": identity.withdrawal_known_at,
+                    },
+                },
+                status_code=410,
+            )
+        if identity.is_unknown:
             return _response({"error": "prophet_episode_not_found"}, status_code=404)
-        if len(matching_episodes) != 1:
-            raise IntelligenceVectorContractError("B1 generation contains duplicate episode identity")
-
-        opened_events = [
-            event
-            for event in snapshot.generation.events
-            if event.get("episode_id") == episode_id and event.get("event_type") == "OPENED"
-        ]
-        if len(opened_events) != 1:
-            raise IntelligenceVectorContractError("B1 episode must have exactly one OPENED event")
-        episode_known_at = opened_events[0].get("known_at")
-        if not isinstance(episode_known_at, str):
-            raise IntelligenceVectorContractError("B1 OPENED event known_at is invalid")
 
         payload = build_earnings_intelligence_vector(
-            episode=matching_episodes[0],
+            episode=identity.episode,
             episode_generation_id=snapshot.generation_id,
-            episode_known_at=episode_known_at,
+            episode_known_at=identity.opened_known_at,
             issuer_master=_load_issuer_master(security_master_path),
         )
         if _source_integrity_failed(payload):

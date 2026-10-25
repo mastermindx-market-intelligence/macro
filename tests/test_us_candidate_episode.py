@@ -10,7 +10,12 @@ import pytest
 
 from engine.stock_identity import fingerprint
 from engine.us_candidate_episode import (
+    CandidateEpisodeStoreSnapshot,
+    EPISODE_IDENTITY_CURRENT,
+    EPISODE_IDENTITY_UNKNOWN,
+    EPISODE_IDENTITY_WITHDRAWN,
     EpisodeContractError,
+    EpisodeIdentityError,
     ANCHOR_KINDS,
     anchor_token,
     apply_commands,
@@ -19,10 +24,12 @@ from engine.us_candidate_episode import (
     canonical_json,
     episode_id,
     load_all_candidates,
+    lookup_candidate_episode_identity,
     make_event,
     project_events,
     reconcile_observations,
     SUPPRESSION_REASONS,
+    ValidatedCandidateEpisodeGeneration,
     validate_events,
 )
 
@@ -1021,3 +1028,191 @@ def test_replay_grouping_preserves_interleaved_clock_ties_and_late_retractions()
     assert after[0]["last_observed_at"] == late_tie["known_at"]
     assert after[0]["source_event_ids"] == ["c-observed"]
     assert after[0]["expert_events"] == []
+
+
+# ---------------------------------------------------------------------------
+# B2-1 — exact-identity lookup against one validated B1 generation
+#
+# These are the pure owner-side unit tests: the events are built by the real
+# ``make_event`` and the rows by the real ``project_events``, so every fixture
+# here obeys the owner's own replay law. The impossible branches (a row that
+# vanished without a withdrawal, a duplicated identity, a withdrawal aimed at
+# another episode) are exactly the states a real validated generation can
+# never hold, and each must fail closed.
+# ---------------------------------------------------------------------------
+_EPISODE = episode_id(SECURITY_ID, "epoch_0", ANCHOR, 1)
+_OTHER_ANCHOR = {**ANCHOR, "price": 43.2}
+_OTHER_EPISODE = episode_id(SECURITY_ID, "epoch_0", _OTHER_ANCHOR, 1)
+
+
+def _opened_event(episode: str = _EPISODE, anchor: dict = ANCHOR) -> dict:
+    observation = _observation()
+    return _event(
+        "OPENED", episode,
+        payload={
+            "security_id": observation["security_id"],
+            "company_id": observation["company_id"],
+            "ticker_at_observation": observation["ticker_at_observation"],
+            "identity_epoch": observation["identity_epoch"],
+            "identity_epoch_state": observation["identity_epoch_state"],
+            "identity_spec_schema": observation["identity_spec_schema"],
+            "identity_spec_hash": observation["identity_spec_hash"],
+            "structural_anchor": anchor,
+            "intake_class": observation["intake_class"],
+            "opened_at": "2026-08-24T20:00:00Z",
+            "opened_session": "2026-08-24",
+        },
+        source_event_id="turn-watch:XYZ:2026-08-24",
+    )
+
+
+def _identity_snapshot(events, episodes) -> CandidateEpisodeStoreSnapshot:
+    return CandidateEpisodeStoreSnapshot(
+        generation_id="peg:" + "c" * 64,
+        generation=ValidatedCandidateEpisodeGeneration(
+            path=Path("/not/serialized/b1-generation"),
+            events=tuple(events),
+            suppressions=(),
+            episodes=tuple(episodes),
+            receipt={},
+        ),
+    )
+
+
+def test_exact_identity_lookup_reports_the_current_row():
+    opened = _opened_event()
+    snapshot = _identity_snapshot([opened], project_events([opened]))
+    lookup = lookup_candidate_episode_identity(snapshot, _EPISODE)
+    assert lookup.outcome == EPISODE_IDENTITY_CURRENT
+    assert lookup.is_current and not lookup.is_withdrawn and not lookup.is_unknown
+    assert lookup.episode["episode_id"] == _EPISODE
+    assert lookup.opened_known_at == "2026-08-24T20:00:00Z"
+    assert lookup.withdrawal_event_id is None
+    assert lookup.withdrawal_known_at is None
+
+
+def test_exact_identity_lookup_reports_an_opening_withdrawal():
+    opened = _opened_event()
+    retraction = _event(
+        "RETRACTED", _EPISODE, payload={"reason": "owner withdrew the opening"},
+        source_event_id="retract-1", correction_of=opened["event_id"],
+        known_at="2026-08-25T01:00:00Z",
+    )
+    events = [opened, retraction]
+    rows = project_events(events)
+    assert rows == [], "the owner removes an episode row only for a retracted opening"
+    lookup = lookup_candidate_episode_identity(_identity_snapshot(events, rows), _EPISODE)
+    assert lookup.outcome == EPISODE_IDENTITY_WITHDRAWN
+    assert lookup.is_withdrawn
+    assert lookup.episode is None
+    assert lookup.withdrawal_event_id == retraction["event_id"]
+    assert lookup.withdrawal_correction_of == opened["event_id"]
+    assert lookup.withdrawal_known_at == "2026-08-25T01:00:00Z"
+
+
+def test_exact_identity_lookup_does_not_withdraw_on_an_observation_retraction():
+    """A retracted OBSERVED event is not an opening withdrawal — the owner keeps it."""
+    opened = _opened_event()
+    observed = _event(
+        "OBSERVED", _EPISODE, payload={"intake_class": "technical_emergence"},
+        source_event_id="observed-1", known_at="2026-08-25T00:00:00Z",
+    )
+    retraction = _event(
+        "RETRACTED", _EPISODE, payload={"reason": "owner withdrew the observation"},
+        source_event_id="retract-2", correction_of=observed["event_id"],
+        known_at="2026-08-25T01:00:00Z",
+    )
+    events = [opened, observed, retraction]
+    rows = project_events(events)
+    assert [row["episode_id"] for row in rows] == [_EPISODE]
+    lookup = lookup_candidate_episode_identity(_identity_snapshot(events, rows), _EPISODE)
+    assert lookup.outcome == EPISODE_IDENTITY_CURRENT
+    assert lookup.withdrawal_known_at is None
+
+
+def test_exact_identity_lookup_reports_an_unknown_identity():
+    opened = _opened_event()
+    snapshot = _identity_snapshot([opened], project_events([opened]))
+    unknown = episode_id(SECURITY_ID, "epoch_0", ANCHOR, 7)
+    lookup = lookup_candidate_episode_identity(snapshot, unknown)
+    assert lookup.outcome == EPISODE_IDENTITY_UNKNOWN
+    assert lookup.is_unknown
+    assert lookup.episode is None
+    assert lookup.withdrawal_event_id is None
+
+
+def test_exact_identity_lookup_never_widens_to_the_same_security():
+    """One withdrawn episode must not silence another episode of the same security."""
+    first = _opened_event()
+    second = _opened_event(_OTHER_EPISODE, _OTHER_ANCHOR)
+    retraction = _event(
+        "RETRACTED", _EPISODE, payload={"reason": "owner withdrew the opening"},
+        source_event_id="retract-1", correction_of=first["event_id"],
+        known_at="2026-08-25T01:00:00Z",
+    )
+    events = [first, second, retraction]
+    rows = project_events(events)
+    assert [row["episode_id"] for row in rows] == [_OTHER_EPISODE]
+    snapshot = _identity_snapshot(events, rows)
+    assert lookup_candidate_episode_identity(snapshot, _EPISODE).is_withdrawn
+    survivor = lookup_candidate_episode_identity(snapshot, _OTHER_EPISODE)
+    assert survivor.is_current
+    assert survivor.episode["episode_id"] == _OTHER_EPISODE
+
+
+def test_exact_identity_lookup_refuses_an_unexplained_absent_projection():
+    opened = _opened_event()
+    with pytest.raises(EpisodeIdentityError, match="absent without an owner withdrawal"):
+        lookup_candidate_episode_identity(_identity_snapshot([opened], ()), _EPISODE)
+
+
+def test_exact_identity_lookup_refuses_a_duplicate_identity():
+    opened = _opened_event()
+    row = project_events([opened])[0]
+    with pytest.raises(EpisodeIdentityError, match="duplicate episode identity"):
+        lookup_candidate_episode_identity(
+            _identity_snapshot([opened], (row, dict(row))), _EPISODE,
+        )
+
+
+def test_exact_identity_lookup_refuses_events_without_their_opened_event():
+    observed = _event(
+        "OBSERVED", _EPISODE, payload={"intake_class": "technical_emergence"},
+        source_event_id="observed-1",
+    )
+    with pytest.raises(EpisodeIdentityError, match="events without their OPENED event"):
+        lookup_candidate_episode_identity(_identity_snapshot([observed], ()), _EPISODE)
+
+
+def test_exact_identity_lookup_refuses_a_withdrawal_aimed_at_another_episode():
+    opened = _opened_event()
+    retraction = _event(
+        "RETRACTED", _OTHER_EPISODE, payload={"reason": "owner withdrew the opening"},
+        source_event_id="retract-1", correction_of=opened["event_id"],
+        known_at="2026-08-25T01:00:00Z",
+    )
+    with pytest.raises(EpisodeIdentityError, match="targets another episode"):
+        lookup_candidate_episode_identity(
+            _identity_snapshot([opened, retraction], ()), _EPISODE,
+        )
+
+
+def test_exact_identity_lookup_refuses_a_live_row_beside_its_opening_withdrawal():
+    opened = _opened_event()
+    retraction = _event(
+        "RETRACTED", _EPISODE, payload={"reason": "owner withdrew the opening"},
+        source_event_id="retract-1", correction_of=opened["event_id"],
+        known_at="2026-08-25T01:00:00Z",
+    )
+    row = project_events([opened])[0]
+    with pytest.raises(EpisodeIdentityError, match="live episode row beside its opening withdrawal"):
+        lookup_candidate_episode_identity(
+            _identity_snapshot([opened, retraction], (row,)), _EPISODE,
+        )
+
+
+def test_exact_identity_lookup_refuses_an_empty_episode_identity():
+    opened = _opened_event()
+    snapshot = _identity_snapshot([opened], project_events([opened]))
+    with pytest.raises(EpisodeIdentityError, match="non-empty string"):
+        lookup_candidate_episode_identity(snapshot, "")
