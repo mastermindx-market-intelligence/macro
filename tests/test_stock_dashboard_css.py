@@ -503,3 +503,60 @@ def test_stylesheet_is_token_clean():
         "as theme.css tokens, not mixed inline. If you RETIRED mixes, lower "
         "the ceiling to the new count instead."
     )
+
+
+# HK/Canada sparse Prophet gallery — do not inherit the shared ~246px compressed track.
+@pytest.mark.parametrize(
+    ("selector", "track"),
+    (
+        (
+            ".mx-stockdash--ca .ca-v36-card-grid #standouts .cards",
+            "repeat(auto-fill, minmax(280px, 320px))",
+        ),
+        (
+            ".mx-stockdash--hk .hk-v37-card-grid #standouts .nbgrid",
+            "repeat(auto-fill, minmax(260px, 300px))",
+        ),
+    ),
+)
+def test_sparse_prophet_owner_grids_bound_desktop_card_width(selector: str, track: str):
+    text = _css_text()
+    match = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", text)
+    assert match, f"missing governed owner-grid rule for {selector}"
+    block = re.sub(r"\s+", "", match.group(1))
+    assert "display:grid" in block
+    assert "grid-template-columns:" + track.replace(" ", "") + "!important" in block
+    assert "justify-content:start" in block
+
+
+def test_sparse_prophet_owner_grids_return_to_full_width_on_mobile():
+    text = _css_text()
+    pattern = r"@media\s*\(\s*max-width:\s*680px\s*\)\s*\{"
+    blocks = []
+    for marker in re.finditer(pattern, text):
+        start = marker.end()
+        depth, i = 1, start
+        while i < len(text) and depth:
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+            i += 1
+        assert depth == 0, "a 680px media block never closed"
+        blocks.append(text[start:i - 1])
+    assert len(blocks) >= 2, "expected separate Canada and HK 680px media blocks"
+
+    selectors = (
+        ".mx-stockdash--ca .ca-v36-card-grid #standouts .cards",
+        ".mx-stockdash--hk .hk-v37-card-grid #standouts .nbgrid",
+    )
+    for selector in selectors:
+        matches = [
+            re.search(re.escape(selector) + r"\s*\{([^}]*)\}", block)
+            for block in blocks
+        ]
+        match = next((candidate for candidate in matches if candidate), None)
+        assert match, f"680px blocks lost the mobile owner-grid reset for {selector}"
+        declarations = re.sub(r"\s+", "", match.group(1))
+        assert "grid-template-columns:1fr!important" in declarations
+        assert "justify-content:stretch" in declarations
