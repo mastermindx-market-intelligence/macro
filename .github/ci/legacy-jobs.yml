@@ -13567,6 +13567,16 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
