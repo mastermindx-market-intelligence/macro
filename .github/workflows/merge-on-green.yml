@@ -160,7 +160,11 @@ jobs:
     #
     # The job needs only Python, network, a sparse checkout, and PyYAML; no
     # setup-python step or persistent workspace is load-bearing.
-    runs-on: ubuntu-latest
+    # 2026-10-19 documented route-only rollback: hosted sweeps remain queued
+    # without a runner while accepted source heads await canonical judgment.
+    # Reuse registered mac-builder-4; keep main(), serialization and every gate.
+    # This is the existing rollback route above, not a second controller.
+    runs-on: [self-hosted, macOS, ARM64, merge-control]
     timeout-minutes: 15
 
     steps:
