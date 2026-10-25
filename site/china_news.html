@@ -315,18 +315,654 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>11</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>11</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>11</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">-0.5</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:9.8%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 134<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-24</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">10</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:40%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:30%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:10%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 19 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 3 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">8</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 31</span><span class="l-zh">10月31日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-growth lead" href="https://news.10jqka.com.cn/20261025/c681055741.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="中欧瑞博吴伟志：中国股市重估窗口已打开 china europe ruibo's wu weizhi: the revaluation window for chinese stocks has opened 中欧瑞博吴伟志：中国股市重估窗口已打开 当前全球宏观与资本市场环境复杂多变，中欧瑞博投资管理股份公司、董事长兼首席投资官吴伟志认为，短期扰动掩盖了结构性优势。中国经济正经历从“量的扩张”向“质的跃升”的关键切换，中国股市则处于全球配置显著低估、盈利预期改善与政策托底共振的有利窗口。中长期竞争力方面，ai与能源双轮驱动，构筑差异化全球护城河。产业结构方面，制造业压舱石稳固，出口韧性持续强化。从资本市场改革与上市公司质量提升方面来看，当前制度红利与蓝筹业绩共振。从估值与配置层面看，中国股票前瞻估值更便宜，且中国股票资产在msci全球指数中的权重显著低于经济体量占比，外资长线基金大幅低配，构成历史性 in the current complex and rapidly changing global macro and capital market environment, wu weizhi, chairman and chief investment officer of china europe ruibo investment management co., ltd., believes that short-term disturbances are masking structural advantages. the chinese economy is undergoing a key transition from "quantitative expansion" to "qualitative leap," while the chinese stock market is in a favorable window of significant undervaluation in global allocation, improving earnings expectations, and policy support. in terms of medium- to long-term competitiveness, ai and energy are dual drivers building a differentiated global moat. in terms of industrial structure, manufacturing serves as a stable ballast, and export resilience continues to strengthen. from the perspective of capital market reform and improvement in the quality of listed companies, current institutional dividends and blue-chip performance are reinforcing each other. from the valuation and allocation perspective, chinese equities are cheaper on forward valuations, and the weight of chinese equity assets in the msci global index is significantly lower than china's share of the global economy, with long-only foreign funds substantially underweight, constituting a historic 当前全球宏观与资本市场环境复杂多变，中欧瑞博投资管理股份公司、董事长兼首席投资官吴伟志认为，短期扰动掩盖了结构性优势。中国经济正经历从“量的扩张”向“质的跃升”的关键切换，中国股市则处于全球配置显著低估、盈利预期改善与政策托底共振的有利窗口。中长期竞争力方面，ai与能源双轮驱动，构筑差异化全球护城河。产业结构方面，制造业压舱石稳固，出口韧性持续强化。从资本市场改革与上市公司质量提升方面来看，当前制度红利与蓝筹业绩共振。从估值与配置层面看，中国股票前瞻估值更便宜，且中国股票资产在msci全球指数中的权重显著低于经济体量占比，外资长线基金大幅低配，构成历史性 同花顺 industrial fiscal_trade tech_policy industry & manufacturing 工业与制造业 fiscal & trade 财政与贸易 tech policy 科技政策 fxi">
+          <time class="tp-when" data-t="2026-10-25T09:01:33+00:00" datetime="2026-10-25T09:01:33+00:00">10-25<br>09:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T09:01:33+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>86</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China Europe Ruibo's Wu Weizhi: The revaluation window for Chinese stocks has opened</span><span class="l-zh">中欧瑞博吴伟志：中国股市重估窗口已打开</span></h2>
+            <p class="tp-sum"><span class="l-en">In the current complex and rapidly changing global macro and capital market environment, Wu Weizhi, Chairman and Chief Investment Officer of China Europe Ruibo Investment Management Co., Ltd., believes that short-term disturbances are masking structural advantages. The Chinese economy is undergoing a key transition from "quantitative expansion" to "qualitative leap," while the Chinese stock market is in a favorable window of significant undervaluation in global allocation, improving earnings expectations, and policy support. In terms of medium- to long-term competitiveness, AI and energy are dual drivers building a differentiated global moat. In terms of industrial structure, manufacturing serves as a stable ballast, and export resilience continues to strengthen. From the perspective of capital market reform and improvement in the quality of listed companies, current institutional dividends and blue-chip performance are reinforcing each other. From the valuation and allocation perspective, Chinese equities are cheaper on forward valuations, and the weight of Chinese equity assets in the MSCI global index is significantly lower than China's share of the global economy, with long-only foreign funds substantially underweight, constituting a historic</span><span class="l-zh">当前全球宏观与资本市场环境复杂多变，中欧瑞博投资管理股份公司、董事长兼首席投资官吴伟志认为，短期扰动掩盖了结构性优势。中国经济正经历从“量的扩张”向“质的跃升”的关键切换，中国股市则处于全球配置显著低估、盈利预期改善与政策托底共振的有利窗口。中长期竞争力方面，AI与能源双轮驱动，构筑差异化全球护城河。产业结构方面，制造业压舱石稳固，出口韧性持续强化。从资本市场改革与上市公司质量提升方面来看，当前制度红利与蓝筹业绩共振。从估值与配置层面看，中国股票前瞻估值更便宜，且中国股票资产在MSCI全球指数中的权重显著低于经济体量占比，外资长线基金大幅低配，构成历史性</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">FXI</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.gelonghui.com/live/2728131" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="下周大事提醒丨超级议息周重磅袭来！中美重磅经济数据与科技巨头财报密集炸场 next week's key events: a super central bank week looms! major china and u.s. economic data and tech giant earnings to flood the market 下周大事提醒丨超级议息周重磅袭来！中美重磅经济数据与科技巨头财报密集炸场 随着10月进入尾声，全球金融市场与科技行业迎来今年最为关键的“超级大周”。从中国政经大事到美欧日四大央行密集决议，从美国三季度gdp、核心pce等重量级经济数据发布，到科技巨头财报与苹果秋季发布会的重磅登场，未来一周的信息量将迎来全面爆发。以下是格隆汇为您梳理未来一周(10月26日—10月31日(不可错过的核心大事件与重要日程，助您提前布局、精准把握市场脉搏。 <u>10月26日(周一)：</u> 上交所/中证指数修订上证系列指数正式实施； 第二十届中央委员会第五次全体会议召开； 欧洲多国开始实施冬令时，欧股交易时间为北京时间16:00-次日00:30； as october draws to a close, global financial markets and the technology industry usher in this year's most critical "super week." from major chinese political and economic events to intensive decisions by four major central banks in the us, europe, and japan, from the release of heavyweight economic data such as us third-quarter gdp and core pce to the high-profile appearances of tech giant earnings and apple's fall launch event, the coming week will see a full-scale explosion of information. below are the core must-see events and important schedules for the coming week (october 26-31) compiled by gelonghui to help you plan ahead and accurately grasp the market pulse. <u>october 26 (monday):</u> the revised sse series indices by the shanghai stock exchange/china securities index co. officially take effect; the fifth plenary session of the 20th central committee is convened; multiple european countries begin implementing winter time, with european stock trading hours at beijing time 16:00-00:30 the next day; 随着10月进入尾声，全球金融市场与科技行业迎来今年最为关键的“超级大周”。从中国政经大事到美欧日四大央行密集决议，从美国三季度gdp、核心pce等重量级经济数据发布，到科技巨头财报与苹果秋季发布会的重磅登场，未来一周的信息量将迎来全面爆发。以下是格隆汇为您梳理未来一周(10月26日—10月31日(不可错过的核心大事件与重要日程，助您提前布局、精准把握市场脉搏。 <u>10月26日(周一)：</u> 上交所/中证指数修订上证系列指数正式实施； 第二十届中央委员会第五次全体会议召开； 欧洲多国开始实施冬令时，欧股交易时间为北京时间16:00-次日00:30； 格隆汇 pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-10-25T11:30:54+00:00" datetime="2026-10-25T11:30:54+00:00">10-25<br>11:30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T11:30:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Next week's key events: A super central bank week looms! Major China and U.S. economic data and tech giant earnings to flood the market</span><span class="l-zh">下周大事提醒丨超级议息周重磅袭来！中美重磅经济数据与科技巨头财报密集炸场</span></h2>
+            <p class="tp-sum"><span class="l-en">As October draws to a close, global financial markets and the technology industry usher in this year's most critical "super week." From major Chinese political and economic events to intensive decisions by four major central banks in the US, Europe, and Japan, from the release of heavyweight economic data such as US third-quarter GDP and core PCE to the high-profile appearances of tech giant earnings and Apple's fall launch event, the coming week will see a full-scale explosion of information. Below are the core must-see events and important schedules for the coming week (October 26-31) compiled by Gelonghui to help you plan ahead and accurately grasp the market pulse. <u>October 26 (Monday):</u> The revised SSE series indices by the Shanghai Stock Exchange/China Securities Index Co. officially take effect; the Fifth Plenary Session of the 20th Central Committee is convened; multiple European countries begin implementing winter time, with European stock trading hours at Beijing time 16:00-00:30 the next day;</span><span class="l-zh">随着10月进入尾声，全球金融市场与科技行业迎来今年最为关键的“超级大周”。从中国政经大事到美欧日四大央行密集决议，从美国三季度GDP、核心PCE等重量级经济数据发布，到科技巨头财报与苹果秋季发布会的重磅登场，未来一周的信息量将迎来全面爆发。以下是格隆汇为您梳理未来一周(10月26日—10月31日(不可错过的核心大事件与重要日程，助您提前布局、精准把握市场脉搏。 <u>10月26日(周一)：</u> 上交所/中证指数修订上证系列指数正式实施； 第二十届中央委员会第五次全体会议召开； 欧洲多国开始实施冬令时，欧股交易时间为北京时间16:00-次日00:30；</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.10jqka.com.cn/20261025/c681055739.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="北京乐瑞资产：对中国市场和中国资产的长期价值保持信心 beijing le rui asset management: maintain confidence in the long-term value of the chinese market and chinese assets 北京乐瑞资产：对中国市场和中国资产的长期价值保持信心 近期，全球资本市场波动加大。北京乐瑞资产管理有限公司表示，对于资本市场而言，中国制造业的全球竞争力，是优质企业持续创造价值的重要基础；宏观政策的保驾护航，则有助于扩大有效需求，为经济提供更强的支撑。该机构强调，“在市场短期波动的过程中，更应该坚定的以更长期的视角看待经济和市场。看到中国不断提升的产业竞争力、持续成长的经济新动能和积极有为的宏观政策，我们有充分理由保持定力、着眼长远，对中国市场和中国资产的长期价值保持信心。”（财联社） recently, global capital market volatility has increased. beijing lerui asset management co., ltd. stated that for capital markets, the global competitiveness of china's manufacturing industry is an important foundation for high-quality enterprises to continuously create value; macroeconomic policy support helps expand effective demand and provides stronger support for the economy. the institution emphasized that "during short-term market fluctuations, one should firmly view the economy and market from a longer-term perspective. seeing china's continuously improving industrial competitiveness, growing new economic drivers, and proactive and effective macro policies, we have ample reason to maintain resolve, focus on the long term, and remain confident in the long-term value of the chinese market and chinese assets." (cailianshe) 近期，全球资本市场波动加大。北京乐瑞资产管理有限公司表示，对于资本市场而言，中国制造业的全球竞争力，是优质企业持续创造价值的重要基础；宏观政策的保驾护航，则有助于扩大有效需求，为经济提供更强的支撑。该机构强调，“在市场短期波动的过程中，更应该坚定的以更长期的视角看待经济和市场。看到中国不断提升的产业竞争力、持续成长的经济新动能和积极有为的宏观政策，我们有充分理由保持定力、着眼长远，对中国市场和中国资产的长期价值保持信心。”（财联社） 同花顺 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-25T09:01:27+00:00" datetime="2026-10-25T09:01:27+00:00">10-25<br>09:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T09:01:27+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Beijing Le Rui Asset Management: Maintain confidence in the long-term value of the Chinese market and Chinese assets</span><span class="l-zh">北京乐瑞资产：对中国市场和中国资产的长期价值保持信心</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, global capital market volatility has increased. Beijing LeRui Asset Management Co., Ltd. stated that for capital markets, the global competitiveness of China's manufacturing industry is an important foundation for high-quality enterprises to continuously create value; macroeconomic policy support helps expand effective demand and provides stronger support for the economy. The institution emphasized that "during short-term market fluctuations, one should firmly view the economy and market from a longer-term perspective. Seeing China's continuously improving industrial competitiveness, growing new economic drivers, and proactive and effective macro policies, we have ample reason to maintain resolve, focus on the long term, and remain confident in the long-term value of the Chinese market and Chinese assets." (Cailianshe)</span><span class="l-zh">近期，全球资本市场波动加大。北京乐瑞资产管理有限公司表示，对于资本市场而言，中国制造业的全球竞争力，是优质企业持续创造价值的重要基础；宏观政策的保驾护航，则有助于扩大有效需求，为经济提供更强的支撑。该机构强调，“在市场短期波动的过程中，更应该坚定的以更长期的视角看待经济和市场。看到中国不断提升的产业竞争力、持续成长的经济新动能和积极有为的宏观政策，我们有充分理由保持定力、着眼长远，对中国市场和中国资产的长期价值保持信心。”（财联社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3185139" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="商务部新闻发言人就美发布新版对外投资限制拟议规则答记者问 mofcom spokesperson answers questions on the u.s. release of proposed rules for new outbound investment restrictions 商务部新闻发言人就美发布新版对外投资限制拟议规则答记者问 问：10月23日，美财政部发布新版对外投资限制拟议规则，征求公众评论意见。请问中方对此有何评论？ 答：中方注意到有关情况。该拟议规则歧视性扩大对华投资限制范围，加大限制力度，是典型的泛化国家安全做法，违背两国元首达成的重要共识，干扰中美两国企业正常经贸合作，破坏国际经贸秩序。中方对此表示严重关切、坚决反对，将密切关注事态后续发展，保留采取相应措施的权利。 中国拥有超大规模市场，蕴含巨大消费和投资潜力，投资中国就是投资未来。美方限制对华投资，既不利于中美经贸合作，也会损害美国企业自身利益。中方敦促美方尊重市场经济规律，停止泛化国家安全概念，停止将经贸问题政 q: on october 23, the us treasury department released a new proposed rule on outbound investment restrictions and solicited public comments. what is china's comment on this? a: china has noted the situation. the proposed rule discriminatorily expands the scope of investment restrictions on china and increases the intensity of restrictions. it is a typical practice of overgeneralizing national security, violates the important consensus reached by the two heads of state, disrupts normal economic and trade cooperation between chinese and us enterprises, and undermines the international economic and trade order. china expresses serious concern and firm opposition, will closely follow the subsequent development of the situation, and reserves the right to take corresponding measures. china has a super-large market with huge consumption and investment potential; investing in china is investing in the future. us restrictions on investment in china are neither conducive to china-us economic and trade cooperation nor in the interest of us companies themselves. china urges the us to respect the laws of the market economy, stop overgeneralizing the concept of national security, and stop turning economic and trade issues into political 问：10月23日，美财政部发布新版对外投资限制拟议规则，征求公众评论意见。请问中方对此有何评论？ 答：中方注意到有关情况。该拟议规则歧视性扩大对华投资限制范围，加大限制力度，是典型的泛化国家安全做法，违背两国元首达成的重要共识，干扰中美两国企业正常经贸合作，破坏国际经贸秩序。中方对此表示严重关切、坚决反对，将密切关注事态后续发展，保留采取相应措施的权利。 中国拥有超大规模市场，蕴含巨大消费和投资潜力，投资中国就是投资未来。美方限制对华投资，既不利于中美经贸合作，也会损害美国企业自身利益。中方敦促美方尊重市场经济规律，停止泛化国家安全概念，停止将经贸问题政 华尔街见闻 consumer fiscal_trade consumer 消费 fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-24T11:43:45+00:00" datetime="2026-10-24T11:43:45+00:00">10-24<br>11:43</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T11:43:45+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">MOFCOM spokesperson answers questions on the U.S. release of proposed rules for new outbound investment restrictions</span><span class="l-zh">商务部新闻发言人就美发布新版对外投资限制拟议规则答记者问</span></h2>
+            <p class="tp-sum"><span class="l-en">Q: On October 23, the US Treasury Department released a new proposed rule on outbound investment restrictions and solicited public comments. What is China's comment on this? A: China has noted the situation. The proposed rule discriminatorily expands the scope of investment restrictions on China and increases the intensity of restrictions. It is a typical practice of overgeneralizing national security, violates the important consensus reached by the two heads of state, disrupts normal economic and trade cooperation between Chinese and US enterprises, and undermines the international economic and trade order. China expresses serious concern and firm opposition, will closely follow the subsequent development of the situation, and reserves the right to take corresponding measures. China has a super-large market with huge consumption and investment potential; investing in China is investing in the future. US restrictions on investment in China are neither conducive to China-US economic and trade cooperation nor in the interest of US companies themselves. China urges the US to respect the laws of the market economy, stop overgeneralizing the concept of national security, and stop turning economic and trade issues into political</span><span class="l-zh">问：10月23日，美财政部发布新版对外投资限制拟议规则，征求公众评论意见。请问中方对此有何评论？ 答：中方注意到有关情况。该拟议规则歧视性扩大对华投资限制范围，加大限制力度，是典型的泛化国家安全做法，违背两国元首达成的重要共识，干扰中美两国企业正常经贸合作，破坏国际经贸秩序。中方对此表示严重关切、坚决反对，将密切关注事态后续发展，保留采取相应措施的权利。 中国拥有超大规模市场，蕴含巨大消费和投资潜力，投资中国就是投资未来。美方限制对华投资，既不利于中美经贸合作，也会损害美国企业自身利益。中方敦促美方尊重市场经济规律，停止泛化国家安全概念，停止将经贸问题政</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/topicDetail/804430" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="ai会带来什么？在外滩年会，全球央行热议最大未知变量 what will ai bring? at the bund summit, global central banks debate the biggest unknown variable ai会带来什么？在外滩年会，全球央行热议最大未知变量    上海证券报 pboc_liquidity tech_policy pboc & liquidity 央行与流动性 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">What will AI bring? At the Bund Summit, global central banks debate the biggest unknown variable</span><span class="l-zh">AI会带来什么？在外滩年会，全球央行热议最大未知变量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/807410" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="引长钱更须稳长钱 持续壮大资本市场稳定力量 attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market 引长钱更须稳长钱 持续壮大资本市场稳定力量    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Attracting long-term capital requires stabilizing long-term capital: continuously strengthening the stabilizing forces of the capital market</span><span class="l-zh">引长钱更须稳长钱 持续壮大资本市场稳定力量</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/808477" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求 csrc seeks public comment on new rules for private equity fund-of-funds, sets differentiated investment ratio requirements for long-term capital 证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC seeks public comment on new rules for private equity fund-of-funds, sets differentiated investment ratio requirements for long-term capital</span><span class="l-zh">证监会就私募投资母基金新规征求意见 对长期资金投资设置差异化投资比例要求</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-23/doc-iniwfmnn1898456.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="外资券商队伍再“迎新”，花旗证券获准设立 foreign brokerage ranks welcome another newcomer as citigroup securities approved for establishment 外资券商队伍再“迎新”，花旗证券获准设立    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-23" datetime="2026-10-23">10-23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-23"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Foreign brokerage ranks welcome another newcomer as Citigroup Securities approved for establishment</span><span class="l-zh">外资券商队伍再“迎新”，花旗证券获准设立</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/policy/article/3371666/china-moving-past-gdp-first-mindset-can-local-officials-get-programme" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china is moving past a gdp-first mindset. can local officials get with the programme?  中国正在摆脱gdp至上的思维模式。地方官员能否跟上这一转变？ plenary sessions of the central committee, the upper echelon of china’s ruling communist party, are major events on the country’s political calendar. this month’s edition, the fifth plenum, is attracting even more attention as the world’s second-largest economy takes on a more prominent role in global affairs. in the first part of this series, frank chen and alice li track the ways top-level policy decisions flow down to local officials – and the challenges those officials face in balancing a...  中央委员会全体会议，即中国执政的共产党的上层，是中国政治日程上的重大事件。本月举行的会议，即五中全会，吸引了更多关注，因为世界第二大经济体在全球事务中扮演着更突出的角色。在本系列的第一部分中，frank chen和 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21T22:00:07+00:00" datetime="2026-10-21T22:00:07+00:00">10-21<br>22:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21T22:00:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China is moving past a GDP-first mindset. Can local officials get with the programme?</span><span class="l-zh">中国正在摆脱GDP至上的思维模式。地方官员能否跟上这一转变？</span></h2>
+            <p class="tp-sum"><span class="l-en">Plenary sessions of the Central Committee, the upper echelon of China’s ruling Communist Party, are major events on the country’s political calendar. This month’s edition, the fifth plenum, is attracting even more attention as the world’s second-largest economy takes on a more prominent role in global affairs. In the first part of this series, Frank Chen and Alice Li track the ways top-level policy decisions flow down to local officials – and the challenges those officials face in balancing a...</span><span class="l-zh">中央委员会全体会议，即中国执政的共产党的上层，是中国政治日程上的重大事件。本月举行的会议，即五中全会，吸引了更多关注，因为世界第二大经济体在全球事务中扮演着更突出的角色。在本系列的第一部分中，Frank Chen和</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.caixinglobal.com/2026-10-19/chinas-third-quarter-gdp-growth-edges-up-to-45-102494770.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china’s third-quarter gdp growth edges up to 4.5%  中国第三季度gdp增长小幅升至4.5%    caixin global - economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-19" datetime="2026-10-19">10-19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-19"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">Caixin Global - Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s Third-Quarter GDP Growth Edges Up to 4.5%</span><span class="l-zh">中国第三季度GDP增长小幅升至4.5%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/808479" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="花旗证券（中国）获批设立 外资独资券商增至七家 citigroup securities (china) approved for establishment, bringing wholly foreign-owned brokerages to seven 花旗证券（中国）获批设立 外资独资券商增至七家    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Citigroup Securities (China) approved for establishment, bringing wholly foreign-owned brokerages to seven</span><span class="l-zh">花旗证券（中国）获批设立 外资独资券商增至七家</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.cnstock.com/commonDetail/808478" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作 ministry of finance to promptly proceed with pre-issuance of part of the 2027 new local government debt quota 财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作    上海证券报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance to promptly proceed with pre-issuance of part of the 2027 new local government debt quota</span><span class="l-zh">财政部将抓紧做好提前下达2027年部分新增地方政府债务限额工作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261025190104482800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="澳洲联储助理主席亨特：抗击通胀的加息进程“尚未结束” rba assistant governor hunter: the rate hike process to fight inflation is "not over yet" 澳洲联储助理主席亨特：抗击通胀的加息进程“尚未结束” 金十数据10月25日讯，澳洲联储助理主席亨特表示，该行抗击通胀的进程“尚未结束”。这释放出一个信号：在下月初的政策会议上，澳洲联储很可能会再次加息。在周日的节目采访中，亨特谈及了高利率对消费者及房价的影响。她表示：“为了持续应对这一挑战，理事会今年已经实施了四次加息。”当被问及澳洲联储是否已采取足够措施来抑制通胀时，她回答道：“很遗憾，还没有。”本周早些时候，市场对11月3日会议上再次加息的预期已有所升温。此前，澳洲联储副主席豪泽在周三表示，当前的通胀前景较该行8月份的评估结果“明显恶化”。9月下旬，澳洲联储将利率上调至4.6%，创下15年来的最高水平。 jinshi data, october 25: rba assistant governor hunter said the bank's fight against inflation is "not over." this sends a signal that the rba is likely to raise rates again at next month's policy meeting. in a sunday program interview, hunter discussed the impact of high interest rates on consumers and housing prices. she said: "to continue addressing this challenge, the board has implemented four rate hikes this year." when asked whether the rba has done enough to curb inflation, she replied: "unfortunately, not yet." earlier this week, market expectations for another rate hike at the november 3 meeting had already increased. previously, rba deputy governor hauser said on wednesday that the current inflation outlook has "deteriorated markedly" compared with the bank's august assessment. in late september, the rba raised rates to 4.6%, a 15-year high. 金十数据10月25日讯，澳洲联储助理主席亨特表示，该行抗击通胀的进程“尚未结束”。这释放出一个信号：在下月初的政策会议上，澳洲联储很可能会再次加息。在周日的节目采访中，亨特谈及了高利率对消费者及房价的影响。她表示：“为了持续应对这一挑战，理事会今年已经实施了四次加息。”当被问及澳洲联储是否已采取足够措施来抑制通胀时，她回答道：“很遗憾，还没有。”本周早些时候，市场对11月3日会议上再次加息的预期已有所升温。此前，澳洲联储副主席豪泽在周三表示，当前的通胀前景较该行8月份的评估结果“明显恶化”。9月下旬，澳洲联储将利率上调至4.6%，创下15年来的最高水平。 金十数据 property consumer property 房地产 consumer 消费 512200.ss">
+          <time class="tp-when" data-t="2026-10-25T19:01:04+08:00" datetime="2026-10-25T19:01:04+08:00">10-25<br>19:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T19:01:04+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>49</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">RBA Assistant Governor Hunter: The rate hike process to fight inflation is "not over yet"</span><span class="l-zh">澳洲联储助理主席亨特：抗击通胀的加息进程“尚未结束”</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 25: RBA Assistant Governor Hunter said the bank's fight against inflation is "not over." This sends a signal that the RBA is likely to raise rates again at next month's policy meeting. In a Sunday program interview, Hunter discussed the impact of high interest rates on consumers and housing prices. She said: "To continue addressing this challenge, the Board has implemented four rate hikes this year." When asked whether the RBA has done enough to curb inflation, she replied: "Unfortunately, not yet." Earlier this week, market expectations for another rate hike at the November 3 meeting had already increased. Previously, RBA Deputy Governor Hauser said on Wednesday that the current inflation outlook has "deteriorated markedly" compared with the bank's August assessment. In late September, the RBA raised rates to 4.6%, a 15-year high.</span><span class="l-zh">金十数据10月25日讯，澳洲联储助理主席亨特表示，该行抗击通胀的进程“尚未结束”。这释放出一个信号：在下月初的政策会议上，澳洲联储很可能会再次加息。在周日的节目采访中，亨特谈及了高利率对消费者及房价的影响。她表示：“为了持续应对这一挑战，理事会今年已经实施了四次加息。”当被问及澳洲联储是否已采取足够措施来抑制通胀时，她回答道：“很遗憾，还没有。”本周早些时候，市场对11月3日会议上再次加息的预期已有所升温。此前，澳洲联储副主席豪泽在周三表示，当前的通胀前景较该行8月份的评估结果“明显恶化”。9月下旬，澳洲联储将利率上调至4.6%，创下15年来的最高水平。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3185173" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="重要调整！修订后的上证系列综合指数26日起实施 important adjustment! the revised sse composite series indices take effect from the 26th 重要调整！修订后的上证系列综合指数26日起实施 26日，上交所将实施修订后的上证系列综合指数编制方案，修订指数包括上证指数、上证a股指数、上证流通指数、科创综指及衍生指数等。此次上证系列综合指数修订的主要内容包括：增加单个样本权重不超过15%的权重上限规则，将风险警示证券的剔除时间从“风险警示实施日次月第二个星期五的下一交易日”调整为“风险警示公告日次月第二个星期五的下一交易日”。指数编制方案其余部分保持不变。（央视） on the 26th, the shanghai stock exchange will implement the revised compilation plan for the sse series composite indices. the revised indices include the sse index, sse a-share index, sse free float index, star composite index, and derivative indices. the main contents of this revision to the sse series composite indices include: adding a weight cap rule that no single constituent may exceed 15%; and adjusting the removal timing for risk-warning securities from "the next trading day after the second friday of the month following the implementation date of the risk warning" to "the next trading day after the second friday of the month following the announcement date of the risk warning." the rest of the index compilation plan remains unchanged. (cctv) 26日，上交所将实施修订后的上证系列综合指数编制方案，修订指数包括上证指数、上证a股指数、上证流通指数、科创综指及衍生指数等。此次上证系列综合指数修订的主要内容包括：增加单个样本权重不超过15%的权重上限规则，将风险警示证券的剔除时间从“风险警示实施日次月第二个星期五的下一交易日”调整为“风险警示公告日次月第二个星期五的下一交易日”。指数编制方案其余部分保持不变。（央视） 华尔街见闻 markets equity market 股票市场 510300.ss 512880.ss">
+          <time class="tp-when" data-t="2026-10-25T03:27:08+00:00" datetime="2026-10-25T03:27:08+00:00">10-25<br>03:27</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T03:27:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Important adjustment! The revised SSE Composite series indices take effect from the 26th</span><span class="l-zh">重要调整！修订后的上证系列综合指数26日起实施</span></h2>
+            <p class="tp-sum"><span class="l-en">On the 26th, the Shanghai Stock Exchange will implement the revised compilation plan for the SSE series composite indices. The revised indices include the SSE Index, SSE A-Share Index, SSE Free Float Index, STAR Composite Index, and derivative indices. The main contents of this revision to the SSE series composite indices include: adding a weight cap rule that no single constituent may exceed 15%; and adjusting the removal timing for risk-warning securities from "the next trading day after the second Friday of the month following the implementation date of the risk warning" to "the next trading day after the second Friday of the month following the announcement date of the risk warning." The rest of the index compilation plan remains unchanged. (CCTV)</span><span class="l-zh">26日，上交所将实施修订后的上证系列综合指数编制方案，修订指数包括上证指数、上证A股指数、上证流通指数、科创综指及衍生指数等。此次上证系列综合指数修订的主要内容包括：增加单个样本权重不超过15%的权重上限规则，将风险警示证券的剔除时间从“风险警示实施日次月第二个星期五的下一交易日”调整为“风险警示公告日次月第二个星期五的下一交易日”。指数编制方案其余部分保持不变。（央视）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-25/doc-iniwkwff3532016.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="券商称“市场可以修复，规避短期扰动”，关注物理ai、固态电池、创新药等投资机会 "the market can recover; avoid short-term disturbances," brokers say, focusing on investment opportunities in physical ai, solid-state batteries, innovative drugs and more 券商称“市场可以修复，规避短期扰动”，关注物理ai、固态电池、创新药等投资机会    新浪财经股票 tech_policy tech policy 科技政策 512880.ss 515030.ss">
+          <time class="tp-when" data-t="2026-10-25" datetime="2026-10-25">10-25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">"The market can recover; avoid short-term disturbances," brokers say, focusing on investment opportunities in physical AI, solid-state batteries, innovative drugs and more</span><span class="l-zh">券商称“市场可以修复，规避短期扰动”，关注物理AI、固态电池、创新药等投资机会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span><span class="cn-tk">515030.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3185156" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="华福证券陈兴：a股估值已充分消化谨慎预期，权益资产配置价值逐步凸显 huafu securities' chen xing: a-share valuations have fully priced in cautious expectations, and the allocation value of equity assets is gradually emerging 华福证券陈兴：a股估值已充分消化谨慎预期，权益资产配置价值逐步凸显 华福证券宏观首席分析师陈兴表示，当前a股核心资产估值已较充分反映市场谨慎预期，权益市场配置价值逐步凸显，后续只要盈利端边际企稳、流动性预期温和修复，权益资产便具备向上修复弹性。他建议投资者规避短期情绪干扰，避免恐慌式离场，聚焦业绩与估值匹配度较好的优质标的，保持理性、耐心布局。 chen xing, chief macro analyst at huafu securities, stated that the valuation of a-share core assets has already fully reflected cautious market expectations, and the allocation value of the equity market is gradually becoming prominent. as long as earnings stabilize at the margin and liquidity expectations recover moderately, equity assets will have upward repricing elasticity. he advises investors to avoid short-term sentiment interference, avoid panic selling, focus on high-quality names with good earnings-valuation matching, and maintain rational and patient positioning. 华福证券宏观首席分析师陈兴表示，当前a股核心资产估值已较充分反映市场谨慎预期，权益市场配置价值逐步凸显，后续只要盈利端边际企稳、流动性预期温和修复，权益资产便具备向上修复弹性。他建议投资者规避短期情绪干扰，避免恐慌式离场，聚焦业绩与估值匹配度较好的优质标的，保持理性、耐心布局。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-24T13:53:54+00:00" datetime="2026-10-24T13:53:54+00:00">10-24<br>13:53</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-24T13:53:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Huafu Securities' Chen Xing: A-share valuations have fully priced in cautious expectations, and the allocation value of equity assets is gradually emerging</span><span class="l-zh">华福证券陈兴：A股估值已充分消化谨慎预期，权益资产配置价值逐步凸显</span></h2>
+            <p class="tp-sum"><span class="l-en">Chen Xing, Chief Macro Analyst at Huafu Securities, stated that the valuation of A-share core assets has already fully reflected cautious market expectations, and the allocation value of the equity market is gradually becoming prominent. As long as earnings stabilize at the margin and liquidity expectations recover moderately, equity assets will have upward repricing elasticity. He advises investors to avoid short-term sentiment interference, avoid panic selling, focus on high-quality names with good earnings-valuation matching, and maintain rational and patient positioning.</span><span class="l-zh">华福证券宏观首席分析师陈兴表示，当前A股核心资产估值已较充分反映市场谨慎预期，权益市场配置价值逐步凸显，后续只要盈利端边际企稳、流动性预期温和修复，权益资产便具备向上修复弹性。他建议投资者规避短期情绪干扰，避免恐慌式离场，聚焦业绩与估值匹配度较好的优质标的，保持理性、耐心布局。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261015_1965499.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="industrial producer price indexes in september 2026  2026年9月工业生产者价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-15" datetime="2026-10-15">10-15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in September 2026</span><span class="l-zh">2026年9月工业生产者价格指数</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.scmp.com/business/china-evs/article/3372001/byd-build-new-factories-europe-combat-strict-trade-barriers-targeting-chinese-evs" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="byd to build new factories in europe to combat strict trade barriers targeting chinese evs  比亚迪将在欧洲新建工厂，以应对针对中国电动汽车的严格贸易壁垒 china’s byd will build new factories in europe for a bigger market share, as the world’s largest electric vehicle (ev) maker faces fiscal support pullback at home and rising trade barriers overseas, according to an executive.
+“europe is a very important regional market for byd. we will not let tariff increases affect local consumers’ choice of byd,” said liu xueliang, vice-president at the shenzhen-based carmaker, in a recent interview.
+liu also reaffirmed that byd was actively expanding its...  比亚迪高管表示，作为全球最大的电动汽车制造商，比亚迪将在欧洲新建工厂以扩大市场份额，原因是公司在国内面临财政支持退坡，在海外面临贸易壁垒上升。
+“欧洲对比亚迪来说是非常重要的区域市场。我们不会让关税上调影响当地消费者选择比亚迪，”刘说。 scmp - business consumer fiscal_trade consumer 消费 fiscal & trade 财政与贸易 515030.ss">
+          <time class="tp-when" data-t="2026-10-25T08:00:09+00:00" datetime="2026-10-25T08:00:09+00:00">10-25<br>08:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T08:00:09+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">BYD to build new factories in Europe to combat strict trade barriers targeting Chinese EVs</span><span class="l-zh">比亚迪将在欧洲新建工厂，以应对针对中国电动汽车的严格贸易壁垒</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s BYD will build new factories in Europe for a bigger market share, as the world’s largest electric vehicle (EV) maker faces fiscal support pullback at home and rising trade barriers overseas, according to an executive.
+“Europe is a very important regional market for BYD. We will not let tariff increases affect local consumers’ choice of BYD,” said Liu Xueliang, vice-president at the Shenzhen-based carmaker, in a recent interview.
+Liu also reaffirmed that BYD was actively expanding its...</span><span class="l-zh">比亚迪高管表示，作为全球最大的电动汽车制造商，比亚迪将在欧洲新建工厂以扩大市场份额，原因是公司在国内面临财政支持退坡，在海外面临贸易壁垒上升。
+“欧洲对比亚迪来说是非常重要的区域市场。我们不会让关税上调影响当地消费者选择比亚迪，”刘说。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">515030.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://news.futunn.com/flash/1002219828/xia-fanjie-china-securities-earnings-improvement-supports-economic-resilience-three" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="low"
+           data-search="中信建投夏凡捷：业绩改善支撑经济韧性，三季报三大主线积蓄市场信心 csc's xia fanjie: earnings improvement supports economic resilience; three main themes in q3 reports build market confidence 中信建投夏凡捷：业绩改善支撑经济韧性，三季报三大主线积蓄市场信心 随着上市公司三季报披露逐步推进，a股市场正处在情绪修复与盈利验证交织的阶段。日前，中信建投证券首席策略分析师夏凡捷指出，当前市场调整主要是内外部因素共振下的估值与交易结构调整，而非基本面系统性恶化，三季报中ai算力链、资源品、高端制造出海三大方向的业绩亮点，正为市场注入信心。（每经网） as listed companies gradually disclose their third-quarter reports, the a-share market is in a phase where sentiment repair and earnings verification are intertwined. recently, xia fanjie, chief strategy analyst at csc financial, pointed out that the current market adjustment is mainly a valuation and trading structure adjustment under the resonance of internal and external factors, rather than a systemic deterioration in fundamentals. the performance highlights in the third-quarter reports in three major directions—the ai computing power chain, resource products, and high-end manufacturing going global—are injecting confidence into the market. (national business daily) 随着上市公司三季报披露逐步推进，a股市场正处在情绪修复与盈利验证交织的阶段。日前，中信建投证券首席策略分析师夏凡捷指出，当前市场调整主要是内外部因素共振下的估值与交易结构调整，而非基本面系统性恶化，三季报中ai算力链、资源品、高端制造出海三大方向的业绩亮点，正为市场注入信心。（每经网） 富途牛牛 markets tech_policy equity market 股票市场 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-10-25T08:13:16+00:00" datetime="2026-10-25T08:13:16+00:00">10-25<br>08:13</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25T08:13:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-low"><b>46</b> <span class="l-en">low</span><span class="l-zh">低</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSC's Xia Fanjie: Earnings improvement supports economic resilience; three main themes in Q3 reports build market confidence</span><span class="l-zh">中信建投夏凡捷：业绩改善支撑经济韧性，三季报三大主线积蓄市场信心</span></h2>
+            <p class="tp-sum"><span class="l-en">As listed companies gradually disclose their third-quarter reports, the A-share market is in a phase where sentiment repair and earnings verification are intertwined. Recently, Xia Fanjie, Chief Strategy Analyst at CSC Financial, pointed out that the current market adjustment is mainly a valuation and trading structure adjustment under the resonance of internal and external factors, rather than a systemic deterioration in fundamentals. The performance highlights in the third-quarter reports in three major directions—the AI computing power chain, resource products, and high-end manufacturing going global—are injecting confidence into the market. (National Business Daily)</span><span class="l-zh">随着上市公司三季报披露逐步推进，A股市场正处在情绪修复与盈利验证交织的阶段。日前，中信建投证券首席策略分析师夏凡捷指出，当前市场调整主要是内外部因素共振下的估值与交易结构调整，而非基本面系统性恶化，三季报中AI算力链、资源品、高端制造出海三大方向的业绩亮点，正为市场注入信心。（每经网）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-10-25/doc-iniwmxst3034230.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="军工蓄势待发？中证军工指数连续10周吸金！军工etf华宝（512810）获关注 defense sector poised to move? the csi military industry index has attracted inflows for 10 consecutive weeks! military industry etf huabao (512810) draws attention 军工蓄势待发？中证军工指数连续10周吸金！军工etf华宝（512810）获关注    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-25" datetime="2026-10-25">10-25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Defense sector poised to move? The CSI Military Industry Index has attracted inflows for 10 consecutive weeks! Military Industry ETF Huabao (512810) draws attention</span><span class="l-zh">军工蓄势待发？中证军工指数连续10周吸金！军工ETF华宝（512810）获关注</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-25/doc-iniwmtkq3053116.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="东山精密：预计10月28日在港上市，发售价为每股86.80港元 dongshan precision: expected to list in hong kong on october 28, with an offer price of hk$86.80 per share 东山精密：预计10月28日在港上市，发售价为每股86.80港元    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-25" datetime="2026-10-25">10-25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Dongshan Precision: Expected to list in Hong Kong on October 28, with an offer price of HK$86.80 per share</span><span class="l-zh">东山精密：预计10月28日在港上市，发售价为每股86.80港元</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/s/2026-10-25/doc-iniwmtkv3157949.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="千亿a股公司，抛87亿元并购！ a hundred-billion-yuan a-share company launches an 8.7 billion yuan acquisition! 千亿a股公司，抛87亿元并购！    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-25" datetime="2026-10-25">10-25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A hundred-billion-yuan A-share company launches an 8.7 billion yuan acquisition!</span><span class="l-zh">千亿A股公司，抛87亿元并购！</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-25/doc-iniwmtkt6378977.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="又一a股宣布，筹划重大重组 another a-share company announces it is planning a major restructuring 又一a股宣布，筹划重大重组    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-25" datetime="2026-10-25">10-25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-25"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Another A-share company announces it is planning a major restructuring</span><span class="l-zh">又一A股宣布，筹划重大重组</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">8</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×10</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">515030.SS</span><span class="nm"><span class="l-en">EV & battery</span><span class="l-zh">新能源车</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">FXI</span><span class="nm"><span class="l-en">China large-cap</span><span class="l-zh">中国大盘</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
