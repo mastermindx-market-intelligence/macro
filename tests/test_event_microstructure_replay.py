@@ -884,11 +884,19 @@ def _synthetic_source_owner(monkeypatch):
     This is deliberately not a production override or evidence of any licensed
     Reuters/UKMTO archive coverage. Real source-day certification fails closed.
     """
+    observed = []
+
     def verify(*, source_day_sha256, source_date):
+        # This only checks contract wiring for ONE synthetic census, not
+        # authenticated archive origin or legitimate source-day coverage.
         assert len(source_day_sha256) == 64
+        assert all(char in "0123456789abcdef" for char in source_day_sha256)
         assert source_date == "2026-10-06"
+        observed.append((source_date, source_day_sha256))
+        assert (source_date, source_day_sha256) == observed[0]
 
     monkeypatch.setattr(capture, "_require_authoritative_source_day_provenance", verify)
+    return observed
 
 
 def _epoch2_source_day(
@@ -1095,6 +1103,97 @@ def test_epoch2_certification_cli_refuses_untrusted_archives(tmp_path, capsys):
     ])
     assert rc == 2
     assert "authenticated source-day provenance unavailable" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("surface", ["freeze-controls", "measure-control-us", "score-hsi"])
+def test_epoch2_forged_admission_refuses_remaining_outcome_surfaces(surface, monkeypatch):
+    # Construct old-style fully consistent *synthetic* receipts under a
+    # test-local owner stub; then return to production fail-closed behavior.
+    with monkeypatch.context() as fake_owner:
+        fake_owner.setattr(
+            capture, "_require_authoritative_source_day_provenance", lambda **_: None
+        )
+        sealed, census, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
+    calls = []
+
+    def spy_transport(*args, **kwargs):
+        calls.append(args)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="authenticated source-day provenance unavailable"):
+        if surface == "freeze-controls":
+            capture.freeze_matched_controls(
+                sealed,
+                observed_session_dates=["2026-10-05", "2026-10-06", "2026-10-07"],
+                admitted_event_dates=["2026-10-06"],
+                source_coverage_complete_through="2026-10-08T00:00:00Z",
+            )
+        elif surface == "measure-control-us":
+            capture.measure_control_us_response(
+                sealed, controls, side="prior", transport=spy_transport
+            )
+        else:
+            capture.score_hsi_outcome(
+                sealed, controls, event_us,
+                prior_control_measurement=prior_us,
+                next_control_measurement=next_us,
+                transport=spy_transport,
+            )
+    assert calls == []
+
+
+@pytest.mark.parametrize("command", [
+    "seal-epoch2-admission", "measure-us", "gate-hk-outcome", "score-hsi",
+])
+def test_epoch2_forged_admission_cli_paths_fail_closed(command, monkeypatch, tmp_path, capsys):
+    import json
+
+    # Files emulate forged digest-consistent receipts, NOT an authenticated
+    # Reuters/UKMTO archive. No transport is invoked in these CLI calls.
+    with monkeypatch.context() as fake_owner:
+        fake_owner.setattr(
+            capture, "_require_authoritative_source_day_provenance", lambda **_: None
+        )
+        sealed, census, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
+    unsealed = _capture_admission("2026-10-06T13:45:00Z")
+    payloads = {
+        "admission": unsealed if command == "seal-epoch2-admission" else sealed,
+        "source-day-census": census,
+        "control-selection": controls,
+        "us-measurement": event_us,
+        "prior-control-measurement": prior_us,
+        "next-control-measurement": next_us,
+    }
+    for name, obj in payloads.items():
+        (tmp_path / f"{name}.json").write_text(json.dumps(obj))
+    args = [command, "--admission-file", str(tmp_path / "admission.json")]
+    if command == "seal-epoch2-admission":
+        args += ["--source-day-census-file", str(tmp_path / "source-day-census.json")]
+    elif command in {"gate-hk-outcome", "score-hsi"}:
+        for name in (
+            "control-selection", "us-measurement",
+            "prior-control-measurement", "next-control-measurement",
+        ):
+            args += [f"--{name}-file", str(tmp_path / f"{name}.json")]
+    assert capture.main(args) == 2
+    assert "authenticated source-day provenance unavailable" in capsys.readouterr().out
+
+
+def test_epoch2_synthetic_owner_receives_exact_census_digest(monkeypatch):
+    observed = []
+
+    def synthetic_verify(*, source_day_sha256, source_date):
+        observed.append((source_date, source_day_sha256))
+        assert source_date == "2026-10-06"
+
+    with monkeypatch.context() as fake_owner:
+        fake_owner.setattr(
+            capture, "_require_authoritative_source_day_provenance", synthetic_verify
+        )
+        sealed, census, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
+    assert len(observed) >= 4  # issuance, seal, control freeze and measurement calls
+    assert all(item == ("2026-10-06", census["sha256"]) for item in observed)
+    assert sealed["source_day_census_receipt"]["sha256"] == census["sha256"]
 
 
 def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
