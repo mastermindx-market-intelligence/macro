@@ -296,8 +296,8 @@
         "label": "Inflation / commodities",
         "label_zh": "\u901a\u80c0/\u5927\u5b97",
         "family": "inflation",
-        "projection": -0.58,
-        "strength": 0.58,
+        "projection": -0.59,
+        "strength": 0.59,
         "direction": "upstream disinflation \u2014 PPI, coal, nonferrous & oil lead down"
       },
       {
@@ -305,8 +305,8 @@
         "label": "Stimulus tape",
         "label_zh": "\u523a\u6fc0\u884c\u60c5",
         "family": "growth",
-        "projection": -0.47,
-        "strength": 0.47,
+        "projection": -0.48,
+        "strength": 0.48,
         "direction": "stimulus-off \u2014 CSI300, brokers, property & copper/rebar lead down"
       },
       {
@@ -341,8 +341,8 @@
         "label": "Yuan (CNH) shock",
         "label_zh": "\u4eba\u6c11\u5e01(CNH)\u51b2\u51fb",
         "family": "fx",
-        "projection": -0.05,
-        "strength": 0.05,
+        "projection": -0.03,
+        "strength": 0.03,
         "direction": "yuan firming \u2014 CNH down, capital-inflow relief, equities supported"
       }
     ],
@@ -350,10 +350,10 @@
   },
   "conditions": {
     "roro": {
-      "roro": -0.478,
-      "roro_raw": -0.52,
+      "roro": -0.481,
+      "roro_raw": -0.524,
       "roro_state": "risk-off",
-      "china_roro_copper_gold": 1.749,
+      "china_roro_copper_gold": 1.72,
       "china_roro_breadth": -0.37,
       "china_roro_southbound": -0.457,
       "china_roro_m1_m2": -0.628,
@@ -367,7 +367,7 @@
           "key": "copper_gold",
           "name_en": "Copper / Gold",
           "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-          "value": 1.749,
+          "value": 1.72,
           "lean": "risk-on"
         },
         {
@@ -2090,7 +2090,7 @@
           -0.503,
           -0.622,
           -0.733,
-          -0.478
+          -0.481
         ]
       },
       "recession": {
@@ -6830,7 +6830,7 @@
           12.0,
           5.1,
           2.7,
-          13.9
+          13.8
         ]
       }
     },
@@ -6841,15 +6841,15 @@
     "fe_score": 14,
     "band": "Fear",
     "band_zh": "\u6050\u60e7",
-    "roro": -0.478,
+    "roro": -0.481,
     "roro_state": "risk-off",
     "legs": [
       {
         "key": "copper_gold",
         "name_en": "Copper / Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 1.749,
-        "pct": 97,
+        "value": 1.72,
+        "pct": 96,
         "lean": "risk-on"
       },
       {

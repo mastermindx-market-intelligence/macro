@@ -71,36 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "ARLO-BULL-20261021",
-      "ATMU-BULL-20261016",
-      "CCK-BULL-20261016",
-      "FND-BULL-20261021",
-      "JKHY-BULL-20261021",
-      "MEDP-BULL-20260917",
-      "MSI-BULL-20261021",
-      "REZI-BULL-20261021",
-      "RH-BULL-20261021",
-      "SJM-BULL-20261021",
-      "SLB-BULL-20261021",
-      "WLK-BULL-20261021",
-      "ZBH-BULL-20261021"
-    ],
-    "live_plan_ids": [
-      "ARLO-BULL-20261021",
-      "ATMU-BULL-20261016",
-      "CCK-BULL-20261016",
-      "FND-BULL-20261021",
-      "JKHY-BULL-20261021",
-      "MEDP-BULL-20260917",
-      "MSI-BULL-20261021",
-      "REZI-BULL-20261021",
-      "RH-BULL-20261021",
-      "SJM-BULL-20261021",
-      "SLB-BULL-20261021",
-      "WLK-BULL-20261021",
-      "ZBH-BULL-20261021"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -342,7 +314,7 @@
     "asof": "2026-10-24",
     "standouts_as_of": "2026-10-23",
     "price_through": "2026-10-23",
-    "observed_at_utc": "2026-10-24T16:38:26.936138+00:00",
+    "observed_at_utc": "2026-10-25T04:43:14.679832+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -382,7 +354,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 16.1
+        "runtime_s": 16.0
       }
     },
     "policies": {
@@ -465,22 +437,8 @@
           "CLX",
           "MZTI"
         ],
-        "plan_ids": [
-          "ARLO-BULL-20261021",
-          "ATMU-BULL-20261016",
-          "CCK-BULL-20261016",
-          "FND-BULL-20261021",
-          "JKHY-BULL-20261021",
-          "MEDP-BULL-20260917",
-          "MSI-BULL-20261021",
-          "REZI-BULL-20261021",
-          "RH-BULL-20261021",
-          "SJM-BULL-20261021",
-          "SLB-BULL-20261021",
-          "WLK-BULL-20261021",
-          "ZBH-BULL-20261021"
-        ],
-        "n_plans": 13,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 76,
           "cap": null,
@@ -490,13 +448,13 @@
         },
         "origination": {
           "offered": 76,
-          "skipped_duplicate_id": 48,
+          "skipped_duplicate_id": 61,
           "skipped_open_plan": 5,
           "skipped_clock_provenance": 10,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -581,11 +539,11 @@
               ]
             }
           ],
-          "originated": 13,
+          "originated": 0,
           "validation_failed": 10
         },
-        "ledger_rows_appended": 13,
-        "ledger_closures_appended": 1
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
@@ -602,11 +560,8 @@
           "KNTK",
           "FITB"
         ],
-        "plan_ids": [
-          "MEDP-BULL-20260917",
-          "REZI-BULL-20261021"
-        ],
-        "n_plans": 2,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 76,
           "cap": 12,
@@ -616,13 +571,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 5,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -675,10 +630,10 @@
               ]
             }
           ],
-          "originated": 2,
+          "originated": 0,
           "validation_failed": 6
         },
-        "ledger_rows_appended": 2,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
@@ -699,11 +654,9 @@
         "plan_ids": [
           "ATO-BULL-20261023",
           "LHX-BULL-20261023",
-          "MEDP-BULL-20260917",
-          "REZI-BULL-20261021",
           "ROL-BULL-20261023"
         ],
-        "n_plans": 5,
+        "n_plans": 3,
         "selection": {
           "admitted": 76,
           "cap": 12,
@@ -716,13 +669,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 4,
           "skipped_open_plan": 2,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -751,10 +704,10 @@
               ]
             }
           ],
-          "originated": 5,
+          "originated": 3,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 5,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
@@ -766,11 +719,8 @@
           "KHC",
           "RELY"
         ],
-        "plan_ids": [
-          "MEDP-BULL-20260917",
-          "REZI-BULL-20261021"
-        ],
-        "n_plans": 2,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 76,
           "cap": 6,
@@ -778,13 +728,13 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 1,
+          "skipped_duplicate_id": 3,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -805,10 +755,10 @@
               ]
             }
           ],
-          "originated": 2,
+          "originated": 0,
           "validation_failed": 2
         },
-        "ledger_rows_appended": 2,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
@@ -826,10 +776,8 @@
           "NFG",
           "MZTI"
         ],
-        "plan_ids": [
-          "MEDP-BULL-20260917"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 76,
           "cap": 12,
@@ -846,13 +794,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 9,
+          "skipped_duplicate_id": 10,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 1,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -865,10 +813,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 1
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
@@ -950,22 +898,8 @@
           "CLX",
           "MZTI"
         ],
-        "plan_ids": [
-          "ARLO-BULL-20261021",
-          "ATMU-BULL-20261016",
-          "CCK-BULL-20261016",
-          "FND-BULL-20261021",
-          "JKHY-BULL-20261021",
-          "MEDP-BULL-20260917",
-          "MSI-BULL-20261021",
-          "REZI-BULL-20261021",
-          "RH-BULL-20261021",
-          "SJM-BULL-20261021",
-          "SLB-BULL-20261021",
-          "WLK-BULL-20261021",
-          "ZBH-BULL-20261021"
-        ],
-        "n_plans": 13,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 76,
           "cap": null,
@@ -975,13 +909,13 @@
         },
         "origination": {
           "offered": 76,
-          "skipped_duplicate_id": 48,
+          "skipped_duplicate_id": 61,
           "skipped_open_plan": 5,
           "skipped_clock_provenance": 10,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -1066,11 +1000,11 @@
               ]
             }
           ],
-          "originated": 13,
+          "originated": 0,
           "validation_failed": 10
         },
-        "ledger_rows_appended": 13,
-        "ledger_closures_appended": 1
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
@@ -1088,11 +1022,9 @@
           "TDS"
         ],
         "plan_ids": [
-          "MEDP-BULL-20260917",
-          "REZI-BULL-20261021",
           "TDS-BULL-20261021"
         ],
-        "n_plans": 3,
+        "n_plans": 1,
         "selection": {
           "admitted": 76,
           "cap": 12,
@@ -1105,13 +1037,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 5,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-24",
+          "recorded_at": "2026-10-25",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -1156,10 +1088,10 @@
               ]
             }
           ],
-          "originated": 3,
+          "originated": 1,
           "validation_failed": 5
         },
-        "ledger_rows_appended": 3,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       }
     }
