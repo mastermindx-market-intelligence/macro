@@ -3739,7 +3739,7 @@ jobs:
         if: always() && steps.options_signal_episode.outcome == 'success'
         timeout-minutes: 10
         continue-on-error: true
-        run: python -m scripts.build_options_signal_campaign
+        run: python -m scripts.build_options_signal_campaign --correction-activation-receipt research/options_estate/options_signal_campaign_correction_activation_receipt_v1.json
       - name: OIP PIT — checkpoint the five durable episode ledgers
         id: options_signal_episode_publish
         if: always() && steps.options_signal_episode.outcome == 'success'
