@@ -156,11 +156,11 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Review frozen #1862/5f187aca under HC-P3.CURRENTNESS.T1.R1 using a distinct
-      Cursor reviewer: four new files for original-run controller observations.
-      Author26tests are not independent acceptance. Dispatch is always false;
-      actual session/model association remains absent. Leave broker/native/DSH
-      activation and #1856/#1790 held subjects untouched. Installed/live P3 is open.
+      Consume #1862/5f187aca independent COMMENT5640870358 REQUEST_CHANGES and
+      reviewer STOP; carry previously pinned HC-P3.CURRENTNESS.T1.FIX1 to the SAME
+      frozen author. Five reproduced parser/token/correlation/source-join defects
+      remain. Then bind same-reviewer final-head review. Dispatch stays false and
+      actual session/model absent. Held #1856/#1790 and installed/live gates remain.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -291,9 +291,9 @@ do_not_redo:
 next_action: >
   For Mastermind #1841, consume same-author topology FIX2 run0039bf38 and UI
   INTEGRATE1 runae3664bf after confirmed carries1792889620.830179/1792889623.750049.
-  Consume ACP R1 reviewerbc-c1cc5530 START1792889628.879439 on frozen
-  #1862/5f187aca before same-author FIX1. Its parser/correlation and
-  initial profile-generation gaps now have pinned repair obligations. Bind distinct
+  Consume ACP R1 RESULT1792890213.695379/COMMENT5640870358 REQUEST_CHANGES,
+  then carry pinned FIX1 to originalbc-5f06f055 at frozen#1862/5f187aca.
+  Reviewerbc-c1cc5530 is stopped; all five confirmed findings fit the pinned repair. Bind distinct
   final-head topology/UI reviews after their frozen returns. #1859/abcb8f8c
   source PASS/CI/OS SUCCESS and #1852/7d5528da source PASS/CI SUCCESS are consumed.
   Future ACP continuation design remains unplaced; all observations are unarmed.
@@ -4127,3 +4127,94 @@ These supersede the unobserved delivery state above; each follows published7c443
   top-level placement thread. No source edits or alternative heldsubject review.
 No duplicate run or uncertain effect was replayed. Final source/CI/custody returns
 remain required; MISSION_COMPLETE=false.
+
+
+### ACP R1 disposition and protected-source readback — 2026-10-25 01:04 UTC
+
+Root read full independent GitHub COMMENT5640870358 and Slack
+RESULT1792890213.695379 for exact#1862/5f187aca744fbad46e6f7738ee355c118c1f6300.
+Verdict REQUEST_CHANGES; reviewerbc-c1cc5530-11eb-5690-925c-06c471b011dc,
+actualmodelgrok-4.7-high-fast/default, before/after head equal, no source writer,
+scratch removed and STOPPED. No approval/merge. This satisfies FIX1's wait for
+original R1 disposition; the conditional repair was published atf236ff6 before
+this verdict. All five required findings fit that existing four-file repair:
+raw phaseTypeError, raw surrogateUnicodeEncodeError, escaped synthetic-token
+acceptance/error reflection, unverified/dropped complete request correlation,
+initial declared generationA vs loaded registryB falsely reportedCURRENT.
+
+Independent execution: focused12new+14incumbent=26pass/0fail/0skip;29recorded
+codec/Runtime adversarial cases plus bounded follow-ups. Realcurrent→readfailure
+returned NEW UNAVAILABLE with no error text/ownership mutation; originalfence
+revocation was not adopted; matchingpersistedprocess still missingactualsession;
+ALL observations dispatch=false. Deepframes up to4096B failed CLOSED on Python3.12.3
+with recursionlimit1000; noRecursionError was reproduced. Do not retain it as a
+proven bug. Measured positive observation3103B, no explicitoutputcap yet.
+Reviewer used pytest9.1.1 installed only under/tmp; initial defaultconftest import
+failed on absentpandas before subject execution and was excluded. The successful
+focused command used --noconftest with no source mutation/productinstall/provider/
+credential/account/purchase effect. No CI rerun; finalheadCI40147517062 then pending.
+Parent disposition: CONSUME_REQUEST_CHANGES; SAME_AUTHOR_FIX1_NEXT, followed by a
+separately bound same-reviewer final-head return. No autoPASS or installed/fullP3 claim.
+
+Protected master advanced to ca6007536466b53ff9a342d8d6b0d995929d3187,
+independently read at01:00:55UTC. #1858 merged externally at00:56:10UTC.
+Root compared3095→ca600: exactly1commit and ONLY:
+ops/native_fabric/patches/native_generation_manual_preview_20261022.patch,
+ops/native_fabric/qualification/native_manual_preview_fixture.py,
+ops/native_fabric/verify_native_manual_preview_20261022.py,
+tests/test_native_manual_auto_source_20261024.py.
+No active ACP/Office/Rakazo/CI-workflow path changed. Current continuations remain
+on their fixed heads without automatic rebase/import. Future new tasks must start
+from newly qualified protected source. #1858 normalizes native manual modelAUTO
+before effects; protected source does NOT attest a newly installed native generation,
+resolve old request absence or authorize retry.
+
+Receipt-only follow-up1792890245.975729 asks whether the ORIGINAL R5.RECON inquiry
+1792883653.509129 was actually delivered. Proven non-delivery plus original idle
+custody permits carrying that EXISTING read-only inquiry once, not repeating done
+forensics. Previously delivered work must return its existing state. No newreview,
+Fabricrequest/ID/pool, provider/account access or policy/install change is authorized.
+
+### Future native continuation: bounded design/custody facts, NO placement
+
+Separate native advisory identifies a useful first v3 slice with turn.py READONLY:
+an explicit native continuation retained by original _NativeRun/admission_channel,
+optional typedAcpRunResources capability, exact _run_for(ref) accessor, and an adapter
+gate BEFORE invoking the ACP driver. This proves a narrow pre-driver cancellation
+case without inventing an ACP cancelled terminal. After driverentry, incumbent
+unknown/uncertain RPC rules remain; the first slice does not promise uniform
+confirmed cancellation throughout initialize/new_session.
+
+Keep open_run/start attach-send-only; return ProcessRef before readiness/durable
+waits. Separate phase futures from lifetime readpump. Durable/readiness ACK can
+release the adapter gate only after exact owner binding. Existingturn supplies
+actualsession/model privately to prepare_prompt. One pending source query may
+not block the readpump from receiving cancellation/close. Repeat native process/
+artifact/deadline/correlation checks afterawait. All observations remain dispatchfalse.
+Stickyfault survives explicitclose/nativefinish/adaptercollection; normalclose
+distinguished fromEOF. The original _opening slot must retain abandoned start+
+one late settlement task: resources arrivinglate are finished once, never published
+as active or used to call ACP; unresolvedopening remainsUNKNOWN/quarantined.
+No secondrunregistry/listener/retry; firstfaultreason owns one settlement.
+
+Candidate7ownedpaths (NOT YET an executable task):
+integrations/acp_worker/{native.py,tool_admission.py,adapter.py,dsh_native_attempt.mjs,README.md},
+newtests/test_acp_native_continuation.py, existingtests/test_acp_native_dsh_child.py.
+32KiBincludingLF outerframe and tighter reviewedcodec limits, onependingquery,
+boundedsequence/duration, realownedprovider-free child/inertRuntime tests.
+Broker/Supervisor/installed/turn/profile/DSHgrant/patch/manifest paths stay readonly.
+Existing v1/v2 behavior remains unchanged. Future fullasyncDSH consumer/materializer/
+activation is not delivered by this slice. Final reviewed #1862 dependency and
+source/custody binding must precede implementation.
+
+Read-only census found no7path overlap in held #1790's10changedpaths or #1856's2.
+#1790 is olderbase5616ed2,8ahead/52behind3095 and lacks incumbentv2 child/test files;
+its historical supply, patch and proof cannot be adopted. #1856 is3095+1 and owns
+installed.py/test_acp_installed_factory only; its held canonical-installed-gate
+repair is NOT present/accepted merely because future native source has otherpaths.
+Root read retained16file orphan manifestSHA60902b125caf1401aeff47b0b02f1f52aa306a4ca577d6d99a0ab0e37a57318a:
+operationdeepseek-current-bridge-acp-review-20261022-sol-001 at810c025e has a DIRECT
+native.py overlap, frozenblobe424a76b8632b3a4a6ff25851a524927e3bbe0f0. This input
+remains preserved, not adopted or overwritten; its custody must be explicitly
+qualified before any overlapping new writer. No native transport task is placed.
+MISSION_COMPLETE=false; no finalRESULT/selfapproval/merge/prohibitedeffect.
