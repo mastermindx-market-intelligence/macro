@@ -23,77 +23,100 @@ waves:
     status: done
     next_action: >
       Terminal architecture boundary. Mastermind PR #275 is merged and protected at
-      c544e837d8d704e81f1c7ddfe0ebada830abf3df with F0 through controlling F0G. Macro PR #6690
+      c544e8378b447bb69515666e539d6a4da24e4d27 with F0 through controlling F0G. Macro PR #6690
       is the sole durable Agent OS projection and must be protected after exact current-base CI
       review. F0 remains SPEC_ONLY / RECORDS_ONLY and creates no live allocator, queue, Wake route,
       action authority, target transfer, lifecycle transition or Control Room ranking.
   - id: A1
     title: Pure deterministic Executive Attention Frontier v1 engine
-    status: todo
+    status: done
     depends_on: [F0]
     next_action: >
-      The source-law gates are clear: controlling F0G is protected through Mastermind PR #275 and
-      the corrected pure Executive Steward is protected through PR #228 at merge
-      dcce6f7ab6efad360f4854d748ad0d65dc9e0f7c. After Macro PR #6690 is protected, fresh-read
-      current protected Mastermind/Macro and commission exactly one bounded CAPACITY_SELECTABLE CTO
-      Sol implementation carrier: explicit valid attention demand plus caller-supplied corrected
-      Steward/source-attributed context -> deterministic authority x attention-pressure x
-      serviceability result, exact bundles/projection receipts, genuine partial-order frontier,
-      fairness/concurrent-demand truth and point-in-time evidence semantics. No source effect or
-      QUEUED claim exists until the canonical Capacity/runtime owner binds a receiver.
+      Built as control_plane/executive_attention_frontier.py: pure explicit-demand -> authority x
+      attention-pressure x serviceability x projection transform with exact bundles, a genuine
+      partial-order frontier, fairness sentinels, concurrent-demand truth and explanation receipts.
+      No gather layer, no persistence, no clock, no scheduling, no Wake mutation, no placement, no
+      target transfer, no scalar score. Identity/freshness vocabulary is imported from the protected
+      Steward, never re-declared. 102 tests across the S0 adversarial corpus and the partial-order /
+      fairness / concurrency matrix. Permutation stability and the interrupt-visibility invariant each
+      hold over 1500-snapshot fuzzing with zero violations.
   - id: A1R
     title: Independent adversarial semantics review
-    status: todo
+    status: done
     depends_on: [A1]
     next_action: >
-      Independently attack priority/authority leakage, pressure/serviceability conflation,
-      exact-Sol-target fallback, stale/unknown handling, exact-only fan-in, hidden totalization,
-      option-to-wait, Cost-of-Delay misuse, fairness, concurrent interrupts, permutation
-      stability, point-in-time replay and EFFECT_UNKNOWN before any product promotion.
+      Independent adversarial review broke 5 of 14 attacks with running repros; all are repaired and
+      each repair is verified against the reviewer's own repro. SEVERE: serviceability ignored freshness
+      so a STALE RuntimeBinding was emitted as the exact current action target with actor_can_act=True;
+      fan-in was not authority-partitioned so a CHAIRMAN emergency could render nowhere while its own
+      frontier claimed one interrupt (342/3000 fuzzed snapshots hid an interrupt); the dominance cleanup
+      loop's second clause was dead code, letting a receipt resolve to an omitted demand and letting
+      demand-id spelling decide visibility. Further fixes from the corpus lane: a STALE authority source
+      no longer grounds the class it claims; a CONFLICTED resolved target blocks again; conflict and
+      staleness no longer collapse into one cause; ready-age accounting no longer contradicts its own
+      items.
   - id: A2
     title: Real-portfolio report-only shadow adaptor and forensic projection
-    status: todo
+    status: done
     depends_on: [A1R]
     next_action: >
-      Consume real current owners through corrected Steward and Agent OS, expose EAF v1 in a
-      report-only machine/Control Room read seam, and measure source/admission coverage,
-      degraded states, exact receipts and baseline executive interruption. No notifications,
-      Wake mutation, target transfer, scheduling, lifecycle or raw-fact suppression.
+      Built as control_plane/executive_attention_shadow.py and run against live sources. Admission is
+      explicit and source-owned; workstream prose never manufactures demand. Consuming only
+      get_attention().data was found to DELETE a live ceo_decision_pending obligation, so admission now
+      reads the obligation facts and takes the resolver verdict alongside them, marking unjoinable or
+      conflicted obligations BLOCKED rather than dropping them. See
+      DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND. Real measurement: 69 work cards, 0
+      attention obligations, 0 runtime jobs, both backing stores absent from the host — admitted demand
+      is 0 because the source plane is dark, not because load is zero. The projection reports
+      admission_confidence NO_SOURCE/GATES_ONLY/SOURCED so an unanswered source plane can never render as
+      a calm empty desk. See DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK.
   - id: A3
     title: Control Room Attention Frontier experience
-    status: todo
+    status: in_progress
     depends_on: [A2]
     next_action: >
-      Add the compact Attention Frontier composition to the existing Control Room, preserving
-      pressure vs authority vs can-act-now separation, valid waits, exact bundles, concurrent
-      executive pressure, raw forensic drilldown and responsive browser proof. Route bounded
-      product implementation through Terra unless later capacity/complexity evidence justifies
-      another avenue.
+      Python compositor seam is wired and green: an additive attention_frontier key on the EXISTING
+      Control Room through the same optional-module fence autonomy uses, degrading by name when not
+      shipped, with no second cockpit and no second truth store; the remote projector's allowlist drops
+      the key unchanged. 224 Control Room and remote tests pass. REMAINING: the browser section itself
+      (compact grouped surface, pressure-vs-authority-vs-can-act separation, forensic receipt drilldown,
+      responsive proof).
   - id: A4
     title: Chat-native Meta-CEO and Program-CEO frontier consumer
-    status: todo
+    status: done
     depends_on: [A2]
     next_action: >
-      Project the same read-only EAF result into the accepted Chat-native CEO context/query
-      path without creating session identity, a stored inbox or new action authority. Current
-      actor actionability remains governed by existing exact target/runtime law.
+      Built as render_chat_snapshot() in control_plane/executive_attention_shadow.py: the SAME read-only
+      frontier as compact chat-native context. Stores nothing, creates no session identity, confers no
+      action or routing authority; acting still passes the existing authority and runtime gates. When
+      admission_confidence is not SOURCED the render says so first, so an empty section cannot be
+      misread as "nothing needs you".
   - id: A5
     title: Point-in-time prospective multi-program calibration and promotion
-    status: todo
+    status: in_progress
     depends_on: [A3, A4]
     next_action: >
-      Establish a real baseline, then run prospective report-only multi-program shadow at
-      decision time. Require high enough source/admission coverage, zero accepted severe-
-      interrupt misses, zero priority-driven authority escalation, zero independent-interrupt
-      suppression, zero semantic suppression, preserved waits, truthful unknowns, exact omission
-      receipts, bounded starvation/fairness debt and materially reduced executive scanning/
-      interruption with no harmful severe-decision latency regression before default promotion.
+      Harness built as control_plane/executive_attention_calibration.py: point-in-time evaluation that
+      raises HindsightLeak on any source observed after the decision boundary, computes the F0G section
+      15 metric families and returns a promotion verdict against the hard zero-violation laws. Proven on
+      a labelled episode: zero severe-interrupt misses, zero authority escalations, zero independent-
+      interrupt suppressions, zero semantic suppressions, zero invented waits — and it correctly returned
+      NOT_PROMOTABLE for lack of a scanning reduction rather than promoting itself. Real baseline
+      measured: 69 cards presented, 69 requiring a manual read. BLOCKED: prospective real-data
+      calibration cannot run while admitted demand is 0. The binding constraint is source population,
+      not the allocator.
 next_action: >
-  Review, current-base join, validate and protect Macro PR #6690 as the sole ten-record Agent OS
-  projection of protected F0G. Then fresh-read current protected Mastermind/Macro and ask the
-  canonical Capacity/runtime owner to bind exactly one bounded A1 implementation carrier using the
-  frozen mission and non-goals above. Do not call A1 QUEUED, STARTED or in progress until that live
-  owner records the exact Job/Attempt/Worker/receiver binding.
+  A1, A1R, A2 and A4 are built and evidenced; A3's compositor seam is green with its browser section
+  outstanding; A5's harness is proven but its real calibration is BLOCKED. The binding constraint is
+  no longer the allocator — it is that the lawful admission sources have zero live coverage
+  (DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK). Two items need a decision from the standing
+  owner, and neither belongs to a worker: (1) whether to populate the Executive Inbox/Wake and Agent
+  OS state planes on a fleet host so prospective calibration can run at all, and (2) whether any
+  additional structured signal — for example Agent OS `state: blocked` with `unmet_dependencies` —
+  becomes an accepted admission source, which is a versioned architecture change under F0G section
+  4. Until one of those lands, EAF remains correct, honest and empty. Also amend F0G section 17: the
+  Steward integrity defect it names as an A1 gate is already repaired on the protected bytes
+  (DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND).
 decisions:
   - DEC:EXECUTIVE-ATTENTION-FRONTIER-ARCHITECTURE
   - DEC:EXECUTIVE-ATTENTION-CONCURRENT-DEMAND-LAW
@@ -104,6 +127,8 @@ decisions:
 discoveries:
   - DSC:EXECUTIVE-ATTENTION-DEMAND-IS-FEDERATED-NOT-ALLOCATED
   - DSC:EXECUTIVE-ATTENTION-INPUTS-ARE-NOT-UNIFORMLY-STRUCTURED
+  - DSC:STEWARD-ATTENTION-JOIN-DROPS-REAL-EXECUTIVE-DEMAND
+  - DSC:EXECUTIVE-ATTENTION-ADMISSION-SOURCES-ARE-DARK
 artifacts:
   - mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0G_CONSOLIDATED_V1_CONTRACT_2026-08-30.md
   - mastermind:research/MASTERMIND_EXECUTIVE_ATTENTION_ECONOMICS_F0_ARCHITECTURE_2026-08-30.md
@@ -148,7 +173,7 @@ do_not_redo:
 ## Current controlling architecture
 
 The controlling implementation contract is protected F0G at Mastermind merge
-`c544e837d8d704e81f1c7ddfe0ebada830abf3df`:
+`c544e8378b447bb69515666e539d6a4da24e4d27`:
 
 `explicit valid demand -> authority requirement -> source-backed attention pressure -> independent serviceability -> exact root/projection relation -> genuine partial-order frontier -> local context/fairness service -> read-only Control Room / Chat-native projection`.
 
