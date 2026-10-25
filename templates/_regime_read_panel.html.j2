@@ -1,9 +1,0 @@
-{# Macro dashboard: the HMM probability read was retired because the base-effect
-   path answers the more useful forward question directly. #}
-{% set _has_be = latest.base_effect and latest.base_effect.growth and latest.base_effect.inflation %}
-{% if _has_be %}
-<div class="panel span12 bfwd rr-combined" id="regime-read">
-  {% set _embedded = true %}
-  {% include "_base_effect_strip.html.j2" %}
-</div>
-{% endif %}

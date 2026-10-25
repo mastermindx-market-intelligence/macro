@@ -1,7 +1,0 @@
-# 2026-09-19 h4_7127: receipt reduced to the three permitted keys; provenance moved to manifest.json honesty (one evidence plane)
-schema: mastermind.page_evidence_receipt.v1
-changed_paths:
-  - engine/covenant_headroom.py
-  - templates/capital_structure.html.j2
-  - tests/test_covenant_headroom.py
-manifest: mockups/evidence/b-f09-13-covenant-headroom/manifest.json
