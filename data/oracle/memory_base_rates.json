@@ -1,1 +1,0 @@
-{"out_onset":{"false_start_rate":0.3811,"onset_to_confirmed":0.9974,"source":"gauntlet/p3_results.json s3_error_rates","note":"Descriptive \u2014 measured on Tier-S 1998-2026 episodes."},"in_onset":{"false_start_rate":0.3427,"onset_to_confirmed":0.9972,"source":"gauntlet/p3_results.json s3_error_rates","note":"Descriptive \u2014 measured on Tier-S 1998-2026 episodes."}}
