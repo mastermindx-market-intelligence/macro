@@ -22,6 +22,13 @@ changed:
       Record source pins, every-wave census, actual merged and open carriers,
       proof limits, recovery custody and the bounded B2 continuation contract.
 verified:
+  - claim: Applicable hosted main CI concluded successfully for the initial published census head.
+    command: GET /repos/mastermindx-market-intelligence/macro/commits/fd0a57af36781ee624453f6a3c1cf8f09ff1d3d0/check-runs?per_page=100
+    result: >
+      Run 40140020416 passed ci-gate and all three selected packs; plan, contract,
+      fence, broker and main authority checks passed. The separate inactive
+      codex/merge-queue-pilot context rejected inactive_base_context; it is not
+      a claim that every check context is green.
   - claim: AgentOS schema and original wave graph validate after the census.
     command: python3 scripts/agentos.py validate; git diff --check; compare original and updated wave ids/dependencies with yaml.safe_load.
     result: >
@@ -49,8 +56,8 @@ verified:
       Recorded path absent and no matching host-visible process CWD. This is a
       bounded observation, not global process absence, abandonment or custody transfer.
 unverified:
-  - claim: Hosted validation, independent review and source adoption of this new census.
-    what_would_verify: Exact Draft head, concluded applicable hosted checks and an independent source-bound review.
+  - claim: Independent review and source adoption of this new census.
+    what_would_verify: Independent source-bound review and a later authorized source adoption; Draft status remains intentional.
   - claim: B2-1 correction visibility through the real private reader.
     what_would_verify: >
       A bounded source patch plus real B1 writer/reader integration tests, independent
@@ -294,3 +301,37 @@ Independent review is not self-attested. A local copy under
 `~/gwcap/estate-census/` is a recovery copy; the Git workstream/handoff remains
 canonical. After publishing, continue the B2 slice within the boundaries above.
 Do not terminate the broader program merely because a dated checkpoint exists.
+
+## Attended continuation — 2026-10-25 00:04 UTC
+
+Draft [#10174](https://github.com/mastermindx-market-intelligence/macro/pull/10174)
+was published with initial head `fd0a57af36781ee624453f6a3c1cf8f09ff1d3d0`;
+readback confirmed Draft, open, two changed files and mergeable=true. Main CI
+run [40140020416](https://github.com/mastermindx-market-intelligence/macro/actions/runs/40140020416)
+passed. That CI receipt binds the initial head, not a later records-only child.
+The two files were copied byte-for-byte under
+`/Users/chriswong/gwcap/estate-census/prophet-v4-2026-10-24/` with the canonical PR pointer.
+
+The new exact-record review request `prophet-v4-census-review-20261024-01`
+was interrupted before a receipt returned. Same-run status reports NOT_FOUND,
+execution_absence_proven=false and retry_allowed=false. This is distinct from
+the original conversation's unidentified request. It is not accepted or retried.
+
+The B2 source operation `prophet-v4-b2-withdrawal-20261024` has an isolated,
+clean workspace at
+`/Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-v4-b2-withdrawal-20261024`,
+branch `sol/web-prophet-v4-b2-withdrawal-20261024`, base
+`6a386e18c06a14490a4a9ef909042801fce52f0f`. Its initially unqualified allocation
+was reconciled on the same operation using publisher status and worktree inventory.
+
+A distinct bounded implementation commission uses the existing Fabric:
+`prophet-v4-b2-withdrawal-build-20261025-01`, original root
+`6adce1ef-c13c-83e9-9510-983a2249a6a0`, actual parent
+`6add20f6-3e20-83ea-81f8-b324d9f6cfbb`, controller PID `16039`.
+The controller reports a minimax lease and an M1 launch attempt. Same-run status
+is ACTIVE_OR_WAITING with START not yet proven and no result. This is new B2
+implementation, not replacement census/review labor. No source effect, test pass
+or acceptance is inferred from controller creation. Next: observe and consume
+this exact run, inspect its patch and real-generation proof, then obtain
+independent review excluding the author pool. Do not launch a replacement or
+claim background wake. The parent remains the attended owner.

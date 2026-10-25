@@ -793,6 +793,12 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
+  2026-10-25 00:04 UTC continuation: Draft #10174 published; initial-head main CI
+  passed. B2 build prophet-v4-b2-withdrawal-build-20261025-01 was submitted on its
+  isolated carrier (controller 16039, START/result not yet proven). Consume that
+  exact run, inspect real-generation proof and obtain independent review; do not
+  duplicate it. Record-review request prophet-v4-census-review-20261024-01 has an
+  interrupted return and NOT_FOUND without absence/retry proof; preserve it.
   2026-10-24 recovery census at macro 0684ab6922cf; relevant workstream/B1/Lab
   source unchanged at refreshed main b46d17e99235. Resume the original 30 waves
   from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md.
