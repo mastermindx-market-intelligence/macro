@@ -1,7 +1,7 @@
 {
   "schema": "china_validation.v1",
   "is_context_only": true,
-  "generated_utc": "2026-10-24T15:00:39.787492+00:00",
+  "generated_utc": "2026-10-25T12:27:24.950661+00:00",
   "fdr_alpha": 0.1,
   "horizons": [
     5,
@@ -15,42 +15,42 @@
       "status": "validated",
       "tier": "confirmer",
       "proven": false,
-      "n_obs": 28,
+      "n_obs": 27,
       "n_weeks": 5,
       "n_indep": 3,
       "by_horizon": {
         "5": {
-          "mean_ic": 0.2166,
-          "ic_ir": 0.62,
-          "t_hac": 2.696,
-          "p_hac": 0.007,
-          "hit": 0.786,
-          "n": 28,
+          "mean_ic": 0.2132,
+          "ic_ir": 0.599,
+          "t_hac": 2.578,
+          "p_hac": 0.0099,
+          "hit": 0.778,
+          "n": 27,
           "n_weeks": 8,
           "n_indep": 7,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 0.654,
-            "ic_delta": -0.0749
+            "surviving_frac": 0.663,
+            "ic_delta": -0.0718
           }
         },
         "10": {
-          "mean_ic": 0.2958,
-          "ic_ir": 0.834,
-          "t_hac": 5.225,
+          "mean_ic": 0.294,
+          "ic_ir": 0.805,
+          "t_hac": 4.863,
           "p_hac": 0.0,
-          "hit": 0.842,
-          "n": 19,
+          "hit": 0.833,
+          "n": 18,
           "n_weeks": 7,
           "n_indep": 5,
           "sampling_step_td": 1.0,
           "hac_lags": 10,
           "overlap_ratio": 10.0,
           "incremental": {
-            "surviving_frac": 0.481,
-            "ic_delta": -0.1535
+            "surviving_frac": 0.519,
+            "ic_delta": -0.1413
           }
         },
         "21": {

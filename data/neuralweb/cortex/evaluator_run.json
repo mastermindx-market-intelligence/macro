@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-10-24",
+  "as_of": "2026-10-25",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-09-26-when-the-liquidity-overlay-is-expanding-fd6d5d",
+      "id": "cortex-2026-09-27-when-a-newly-displayed-us-q2-regime-coin-ed2a30",
       "claim_shape": "conditional_regime",
       "verdict": "insufficient-n",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "metric_space": "contrast",
+        "metric_space": "absolute",
         "query_axes_applied": [
           "symbol"
         ],
@@ -23,12 +23,12 @@
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "excess_mean_difference",
-        "threshold": -0.01,
+        "metric": "hit_rate",
+        "threshold": 0.178,
         "min_n": 25,
         "horizon_d": 21,
         "direction_expected": -1,
-        "clamped_from": 20
+        "clamped_from": 12
       },
       "note": null
     }
