@@ -2645,3 +2645,162 @@ def test_invalid_single_mode_cannot_construct_provider(inputs, monkeypatch, prov
     out = W.write(slot, inputs['cfg'], single_attempt=True,
                   single_provider_attempt=provider_mode, attempt=attempt)
     assert out['reason'] == 'invalid_single_attempt_mode'
+
+
+@pytest.fixture
+def adjudicated_inputs(inputs):
+    """Synthetic caller decision, never a live qualification or approval."""
+    i = inputs
+    rel = 'site/basketdata/fear_greed.json'
+    fh = dump(i['root'] / rel, {'as_of': '2026-10-23', 'dial': 44,
+        'label_en': 'Neutral', 'n_legs_qualifying': 11})
+    change(i, lambda q: q['first_party_context'].append({
+        'id': 'fear_greed', 'artifact': rel, 'sha256': fh,
+        'relevance': 'Dated descriptive sentiment, not a forecast.'}))
+    q = json.loads(i['qualification_path'].read_text())
+    grouped = {}
+    for row in q['first_party_context']:
+        ref = 'artifact:' + row['artifact']
+        grouped.setdefault(ref, {'ref': ref, 'sha256': row['sha256'], 'fact_ids': []})['fact_ids'].append(row['id'])
+    refs = sorted(grouped)
+    change(i, lambda e: e.update(held_refs=refs + ['research_vault:unrelated-held']), 'exclusions')
+    original = {'id': 'press-brief-2026-10-11-6cf53bdfd11a', 'desk': 'brief',
+        'as_of': '2026-10-11', 'status': 'quarantined',
+        'sources': ['chronicle:TTWO-BULL-20261007'], 'seed_refs': refs,
+        'slot': {'primary_source': {'ref': 'chronicle:TTWO-BULL-20261007'}}}
+    original_path = i['root'] / 'data/press/staging' / (original['id'] + '.json')
+    original_hash = dump(original_path, original)
+    value = {'schema': 'press.market_context_hold_adjudication.v1',
+        'decision': 'historical_context_no_replay_only_for_bound_snapshot',
+        'adjudication_ref': 'fixture:calling-principal-reviewed-decision',
+        'exclusions_sha256': i['exclusions_sha256'],
+        'proposition_id': 'participation-distribution', 'observation_date': '2026-10-23',
+        'purpose': 'dated_market_participation_analysis',
+        'historical_stage': {'id': original['id'], 'sha256': original_hash},
+        'artifacts': list(grouped.values())}
+    change(i, lambda q: q.update(historical_context_adjudication=value))
+    return i
+
+
+def test_adjudication_resolves_only_bound_context_without_mutation(adjudicated_inputs, monkeypatch):
+    i = adjudicated_inputs
+    before = {str(p): p.read_bytes() for p in i['root'].rglob('*') if p.is_file()}
+    exclusions = i['exclusions_path'].read_bytes()
+    calls = []
+    def rail(root, cfg, **kw):
+        calls.append(kw)
+        assert kw['prepare_slot'](kw['slots'][0]) == kw['slots'][0]
+        return {'planned': 1}
+    monkeypatch.setattr(S, '_stage_preplanned_slots', rail)
+    p = invoke(i)
+    assert stage(i)['staged']
+    assert calls[0]['admission_receipt']['historical_context_adjudication'] == p['historical_context_adjudication']
+    assert 'historical_context_adjudication' not in p['validation_context']
+    assert not calls[0]['admission_receipt']['public_article_approved']
+    assert i['exclusions_path'].read_bytes() == exclusions
+    assert before == {str(p): p.read_bytes() for p in i['root'].rglob('*') if p.is_file()}
+    # The same evidence has identical facts/identity with no adjudication, but
+    # its held context retains the default refusal.
+    change(i, lambda q: q.pop('historical_context_adjudication'))
+    plain = invoke(i)
+    assert plain['validation_context'] == p['validation_context']
+    assert plain['candidate_id'] == p['candidate_id'] and plain['snapshot_ref'] == p['snapshot_ref']
+    assert stage(i)['staged'] is False
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda a: a.update(unexpected=True),
+    lambda a: a.pop('purpose'),
+    lambda a: a.update(schema='other'),
+    lambda a: a.update(decision='release_all'),
+    lambda a: a.update(adjudication_ref=' '),
+    lambda a: a.update(exclusions_sha256='not-a-hash'),
+    lambda a: a.update(proposition_id='other'),
+    lambda a: a.update(observation_date='2026-10-22'),
+    lambda a: a.update(purpose='issuer_story'),
+    lambda a: a.update(historical_stage={'id': '../escape', 'sha256': '0' * 64}),
+    lambda a: a['historical_stage'].update(extra=True),
+    lambda a: a.update(artifacts=None),
+    lambda a: a['artifacts'].pop(),
+    lambda a: a['artifacts'].append(copy.deepcopy(a['artifacts'][0])),
+    lambda a: a['artifacts'][0].update(ref='artifact:data/gex/latest.json'),
+    lambda a: a['artifacts'][0].update(ref=a['artifacts'][1]['ref']),
+    lambda a: a['artifacts'][0].update(sha256='0' * 64),
+    lambda a: a['artifacts'][0]['fact_ids'].pop(),
+    lambda a: a['artifacts'][0]['fact_ids'].append('market_state_trend'),
+    lambda a: a['artifacts'][0]['fact_ids'].append(a['artifacts'][0]['fact_ids'][0]),
+    lambda a: a['artifacts'][0].update(fact_ids='market_state_score'),
+    lambda a: a['artifacts'][0].update(extra=True),
+])
+def test_adjudication_bad_scope_refuses_before_rail(adjudicated_inputs, monkeypatch, mutation):
+    change(adjudicated_inputs, lambda q: mutation(q['historical_context_adjudication']))
+    monkeypatch.setattr(S, '_stage_preplanned_slots', lambda *a, **k: pytest.fail('no rail'))
+    with pytest.raises(ValueError):
+        stage(adjudicated_inputs)
+
+
+@pytest.mark.parametrize('value', [None, [], 'approved', True])
+def test_adjudication_wrong_type_is_not_absent(adjudicated_inputs, value):
+    change(adjudicated_inputs, lambda q: q.update(historical_context_adjudication=value))
+    with pytest.raises(ValueError): invoke(adjudicated_inputs)
+
+
+@pytest.mark.parametrize('kind', ['missing', 'changed', 'symlink', 'wrong_id', 'wrong_primary', 'wrong_slot_primary', 'missing_context'])
+def test_adjudication_binds_canonical_original_draft(adjudicated_inputs, monkeypatch, kind):
+    i = adjudicated_inputs
+    q = json.loads(i['qualification_path'].read_text())
+    path = i['root'] / 'data/press/staging' / (q['historical_context_adjudication']['historical_stage']['id'] + '.json')
+    if kind == 'missing': path.unlink()
+    elif kind == 'changed': path.write_text(path.read_text() + ' ')
+    elif kind == 'symlink':
+        target = path.with_suffix('.retained'); path.rename(target); path.symlink_to(target)
+    else:
+        o = json.loads(path.read_text())
+        if kind == 'wrong_id': o['id'] = 'different'
+        elif kind == 'wrong_primary': o['sources'] = ['chronicle:other']
+        elif kind == 'wrong_slot_primary': o['slot']['primary_source']['ref'] = 'chronicle:other'
+        else: o['seed_refs'].pop()
+        h = dump(path, o)
+        change(i, lambda q: q['historical_context_adjudication']['historical_stage'].update(sha256=h))
+    monkeypatch.setattr(S, '_stage_preplanned_slots', lambda *a, **k: pytest.fail('no rail'))
+    with pytest.raises(ValueError): stage(i)
+
+
+def test_adjudication_changed_exclusions_refuses(adjudicated_inputs, monkeypatch):
+    i = adjudicated_inputs
+    change(i, lambda e: e['held_refs'].append('another:hold'), 'exclusions')
+    monkeypatch.setattr(S, '_stage_preplanned_slots', lambda *a, **k: pytest.fail('no rail'))
+    with pytest.raises(ValueError, match='exclusions'): stage(i)
+
+
+@pytest.mark.parametrize('kind', ['primary', 'snapshot', 'covered', 'checkpoint', 'duplicate', 'cadence'])
+def test_adjudication_cannot_release_other_admission_guards(adjudicated_inputs, monkeypatch, kind):
+    i = adjudicated_inputs; p = invoke(i)
+    if kind in ('primary', 'snapshot', 'covered'):
+        key = 'covered_refs_separate_from_holds' if kind == 'covered' else 'held_refs'
+        change(i, lambda e: e[key].append(p['snapshot_ref'] if kind == 'snapshot' else p['source_ref']), 'exclusions')
+        change(i, lambda q: q['historical_context_adjudication'].update(exclusions_sha256=i['exclusions_sha256']))
+    elif kind in ('checkpoint', 'duplicate'):
+        dump(i['root'] / 'data/press/staging' / ((p['candidate_id'] if kind == 'checkpoint' else 'other') + '.json'),
+             {'id': p['candidate_id'] if kind == 'checkpoint' else 'other', 'desk': 'brief',
+              'as_of': '2026-10-24', 'status': 'in_progress', 'sources': [p['source_ref']]})
+    else:
+        for n in range(2):
+            dump(i['root'] / f'data/press/staging/used{n}.json', {'id': f'used{n}', 'desk': 'brief',
+                'as_of': '2026-10-24', 'status': 'quarantined', 'sources': [f'other:{n}']})
+    monkeypatch.setattr(S, '_stage_preplanned_slots', lambda *a, **k: pytest.fail('no rail'))
+    assert stage(i)['staged'] is False
+
+
+def test_adjudication_historical_drift_at_final_prepare_never_reaches_writer(adjudicated_inputs, monkeypatch):
+    i = adjudicated_inputs
+    def rail(root, cfg, **kw):
+        old = kw['admission_receipt']['historical_context_adjudication']['historical_stage']['id']
+        p = root / 'data/press/staging' / (old + '.json')
+        p.write_text(p.read_text() + ' ')
+        kw['prepare_slot'](kw['slots'][0])
+        pytest.fail('no writer after historical stage drift')
+    monkeypatch.setattr(S, '_stage_preplanned_slots', rail)
+    out = stage(i)
+    assert out['effect_unknown'] and out['retry_allowed'] is False

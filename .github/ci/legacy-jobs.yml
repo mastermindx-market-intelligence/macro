@@ -8498,6 +8498,7 @@ jobs:
       - "scripts/chain_snapshot_poller.py"
       - "scripts/ci/options_signal_nightly.sh"
       - "scripts/ci/options_index_lock_identity.py"
+      - "scripts/launchd/theta_daily_refresh.sh"
       - "scripts/launchd/theta_staleness_sentinel.sh"
       - "scripts/live_flow_poller.py"
       - "scripts/mirror_flow_idx.py"
