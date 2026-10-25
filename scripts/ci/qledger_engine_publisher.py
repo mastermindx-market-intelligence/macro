@@ -1034,6 +1034,11 @@ class NativePublicationFinalizer:
         from scripts.ci.qledger_engine_publication import finalize_daily_engine_outputs
         prepared = finalize_daily_engine_outputs(checked)
         self.generation = publish(checked, prepared, reader=self.reader, **self.original)
+        gate=checked.live.gate
+        if getattr(gate,'_native_transition',False):
+            from scripts.ci.qledger_host_gate import HostGate
+            require(type(gate) is HostGate,'actual native generation controller required')
+            gate.confirm_native_generation(checked,self.generation)
         return prepared
 
     def __reduce__(self):

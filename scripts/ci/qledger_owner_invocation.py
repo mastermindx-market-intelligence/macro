@@ -13,6 +13,7 @@ from threading import get_ident
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 # Ordinary file-path imports pin this source tree. In a qualified bootstrap,
@@ -48,6 +49,7 @@ class _LiveProducerInvocation:
         self.invocation, self.binding, self.gate = invocation, binding, gate
         self.installed, self.budget, self.retention = installed, budget, retention
         self.pid, self.active = os.getpid(), True
+        self.completed, self.failure = False, None
 
     def check(self, phase):
         if (not self.active or _LIVE_PRODUCER.get() is not self
@@ -289,6 +291,7 @@ class ConversionInvocation:
                              budget_id=budget_id, retention_id=retention_id)
         if self._git_oid("HEAD") != installed_commit_oid:
             _fail("producer version differs from admitted installation")
+        live = None
         try:
             failure_before = binding.pre_attempt_failure
             live = _LiveProducerInvocation(self, binding, gate, installed_commit_oid, budget_id, retention_id)
@@ -317,7 +320,40 @@ class ConversionInvocation:
                     _fail("producer returned with an unresolved original storage attempt")
             self._gate(gate, "producer-complete", installed_commit_oid, producer_binding=binding,
                        budget_id=budget_id, retention_id=retention_id)
+            live.completed = True  # Actual original return, after every postcondition.
             return result
         except BaseException as exc:
+            if live is not None and live.failure is None:
+                live.failure = exc
             gate.hold(**context, cause=exc)
             raise
+
+
+class NativeReaderInvocation:
+    """Actual one-process immutable read request; no producer outcome/admission."""
+    def __init__(self,gate,binding,record,context,deadline,first):
+        self.gate,self.binding,self.record,self.context = gate,binding,record,dict(context)
+        self.pid,self.thread,self.deadline,self.last = os.getpid(),get_ident(),deadline,first
+        self.active,self.failure,self.uncertain = True,None,False
+    def check(self):
+        now=time.monotonic_ns()
+        if (not self.active or self.failure is not None or (os.getpid(),get_ident()) != (self.pid,self.thread)
+                or now<self.last or now>=self.deadline or self.gate._native_reader_call is not self):
+            _fail('original native reader process/endpoint is absent, expired or unresolved')
+        self.last=now
+        self.gate._check()
+        return (self.deadline-now)/1e9
+    def __reduce__(self):raise TypeError('native reader invocation cannot transfer')
+
+
+@contextmanager
+def reader_assertion_scope(call):
+    call.check()
+    if _PUBLICATION_ASSERTION.get() is not None:_fail('nested reader assertion refused')
+    token=_PUBLICATION_ASSERTION.set((call,call,os.getpid(),get_ident()))
+    try:
+        try:yield
+        except BaseException as exc:
+            record_publication_assertion_refusal(exc)
+            raise
+    finally:_PUBLICATION_ASSERTION.reset(token)

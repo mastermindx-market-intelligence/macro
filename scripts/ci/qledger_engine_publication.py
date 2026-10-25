@@ -154,6 +154,13 @@ class _LiveFinalCandidate:
         self.unsettled_preparation = None
         self.publication_guard = Lock()
         self.publication_attempt = None
+        self._finish_completed = self._close_completed = False
+
+    def _record_failure(self, exc):
+        if self.failure is None:
+            self.failure = exc
+        if self.publication_attempt is not None:
+            self.publication_attempt.uncertain = True
 
     def _deadline(self):
         _require(type(self.original_deadline) is int and time.monotonic_ns() < self.original_deadline,
@@ -326,8 +333,7 @@ class _LiveFinalCandidate:
             if self.publication_attempt is not None:
                 try:self.publication_attempt.close_known()
                 except BaseException as exc:
-                    self.publication_attempt.uncertain = True
-                    self.failure = exc
+                    self._record_failure(exc)
                     raise
             if self._index_lock is not None:
                 try:
@@ -339,6 +345,9 @@ class _LiveFinalCandidate:
             if self._claims_entered:
                 self._claims_entered = False
                 self._claims_context.__exit__(None,None,None)
+        self._close_completed = (self.failure is None and not self._prepare_uncertain
+            and self.unsettled_preparation is None
+            and (self.publication_attempt is None or not self.publication_attempt.uncertain))
 
     def _check(self):
         _require(self.active and self.failure is None, 'final-candidate callback closed or unresolved')
@@ -383,12 +392,17 @@ class _LiveFinalCandidate:
             raise
 
     def finish(self, returned):
-        self._check()
-        _require(returned is self.prepared and returned is not None,
-                 'incumbent must return its actual checked final candidate')
-        self.invocation.check(returned)
-        self._check()
-        return returned
+        try:
+            self._check()
+            _require(returned is self.prepared and returned is not None,
+                     'incumbent must return its actual checked final candidate')
+            self.invocation.check(returned)
+            self._check()
+            self._finish_completed = True
+            return returned
+        except BaseException as exc:
+            self._record_failure(exc)
+            raise
 
     def __reduce__(self):
         raise TypeError('live final-candidate callback cannot transfer')
@@ -670,10 +684,21 @@ class _NativeEngineProducer:
         final = self.finalization = _LiveFinalCandidate(native, live, self.original_deadline)
         try:
             prepared = final.finish(self.finalizer(final))
+            _require(final._finish_completed and final.failure is None,
+                     'actual original finalizer completion is unavailable')
             status = 'publication_confirmed' if native_publisher.confirmed(final) else 'candidate_verified'
             return NativeEngineRun(MappingProxyType(dict(results)), writes, prepared, status)
+        except BaseException as exc:
+            # Record before close: an outer wrapper cannot hide the failure or
+            # cause uncertain original handles to be disposed as known success.
+            final._record_failure(exc)
+            raise
         finally:
-            final.close()
+            try:
+                final.close()
+            except BaseException as exc:
+                final._record_failure(exc)
+                raise
 
     def __reduce__(self):
         raise TypeError('original engine producer cannot transfer')

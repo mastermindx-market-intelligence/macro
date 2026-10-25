@@ -261,8 +261,70 @@ class OrdinaryPublicationEvidence:
             checked.invocation.binding._settled(write)
         self._check()
 
+    def _assert_native_reader(self, context):
+        from scripts.ci.qledger_owner_invocation import NativeReaderInvocation
+        call = context.get('native_reader')
+        _require(type(call) is NativeReaderInvocation, 'actual fresh native reader invocation required')
+        self._check();call.check()
+        gate=call.gate
+        _require(context.get('gate') is gate and gate.repo == self.context.repo
+                 and gate.invocation.manifest_digest == self.context.manifest_digest
+                 and gate.candidate_oid == self.context.candidate_oid
+                 and call.pid == self._pid == os.getpid()
+                 and call.deadline == self.context.original_deadline_monotonic_ns
+                 and all(context.get(k) == v for k,v in call.context.items()),
+                 'original native reader process/resources/code binding differs')
+        _require(gate._native_expected == call.record and call.binding.commit_oid == call.record['candidate']
+                 and call.binding.tree_oid == call.record['tree']
+                 and call.binding.read_snapshot().receipt.root_digest == call.record['root'],
+                 'actual immutable native reader generation differs')
+        _require(call.record['publication']['origin'] == self.origin_digest, 'reader original publication origin differs')
+        destination=self._origin().decode('utf-8',errors='strict')
+        parsed=urlsplit(destination)
+        expected=(call.record['candidate']+'\n').encode()
+        if destination.startswith('/') and not parsed.scheme:
+            from scripts.ci.qledger_host_gate import _directory
+            import stat
+            root=refs=heads=fd=None
+            try:
+                root=_directory(Path(destination))
+                refs=os.open('refs',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=root)
+                heads=os.open('heads',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=refs)
+                _require(call.record['publication']['transport'] == 'local_objects_and_loose_ref_cas'
+                         and [[os.fstat(h).st_dev,os.fstat(h).st_ino] for h in (root,refs,heads)]
+                             == call.record['publication']['layout'], 'reader original ref namespace differs')
+                fd=os.open('main',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=heads)
+                before=os.fstat(fd)
+                _require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and before.st_size == 41,
+                         'reader original direct loose ref required')
+                raw=os.read(fd,42)
+                after=os.fstat(fd)
+                _require((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)
+                         == (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns)
+                         and raw == expected
+                         and (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)
+                             == (lambda info:(info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns,info.st_ctime_ns))(
+                                 os.stat('main',dir_fd=heads,follow_symlinks=False)),
+                         'native reader original ref differs')
+                _require((os.fstat(refs).st_dev,os.fstat(refs).st_ino)
+                         == (os.stat('refs',dir_fd=root,follow_symlinks=False).st_dev,os.stat('refs',dir_fd=root,follow_symlinks=False).st_ino)
+                         and (os.fstat(heads).st_dev,os.fstat(heads).st_ino)
+                         == (os.stat('heads',dir_fd=refs,follow_symlinks=False).st_dev,os.stat('heads',dir_fd=refs,follow_symlinks=False).st_ino),
+                         'reader ref namespace changed')
+                _require((os.fstat(root).st_dev,os.fstat(root).st_ino)
+                         == (os.stat(destination,follow_symlinks=False).st_dev,os.stat(destination,follow_symlinks=False).st_ino),
+                         'reader original endpoint changed')
+            finally:
+                for handle in (fd,heads,refs,root):
+                    if handle is not None:os.close(handle)
+        else:
+            raise EvidenceUnavailable('fresh native HTTPS/SSH reader carrier is not qualified; original writer auth cannot transfer')
+        self._origin();call.check();self._check()
+
     @_record_original_refusal
     def assert_publication_readback(self, **context):
+        if context.get('phase') == 'native-reader' or 'native_reader' in context:
+            return self._assert_native_reader(context)
         if context.get('phase') in ('native-publication-readback', 'native-https-readback') or any(
                 name in context for name in ('native_checked', 'native_prepared', 'native_attempt')):
             try:

@@ -121,7 +121,7 @@ class HostGate:
         self.candidate_oid, self.tree_oid, self.accepted_tip_oid = candidate_oid, tree_oid, accepted_tip_oid
         self.owner_code, self.runtime_code = tuple(owner_code), tuple(runtime_code)
         self.workflow_oids = tuple(workflow_oids)
-        self.producers = dict(producers)  # (operation,lane) -> original (budget,retention)
+        self.producers = dict(producers)  # Existing original (operation,lane)->(budget,retention), including explicit readers.
         self.evidence = evidence
         _require(type(runner_name) is str and 0 < len(runner_name) <= 128
                  and type(repository) is str and repository.count('/') == 1
@@ -156,6 +156,12 @@ class HostGate:
         self._lease_owner = None
         self._hold_identity = None
         self._installing = False
+        self._native_transition = self._native_confirmed = False
+        self._native_expected = self._native_reader_call = self._native_owner_binding = None
+        self._native_old_ready = self._native_old_identity = None
+        self._native_ready_started = self._native_ready_replaced = False
+        self._native_ready_fd = None
+        self._native_checked = None
         binding = dict(repo=str(self.repo), owner_inode=self._root_identity, runner=runner_name,
             repository=repository, agent_id=agent_id, result=str(self.owner.target.result_path),
             manifest=invocation.manifest_digest, operation=self.owner.intent.operation_id,
@@ -285,16 +291,25 @@ class HostGate:
         held = self._read(self.HOLD)
         if self._mode == 'install':
             self._assert('assert_bootstrap_exclusion', **context)
-            if self._hold_identity is None:
+            if self._native_transition:
+                if self._hold_identity is None:
+                    _require(held is None and self._read(self.READY) == self._expected_native_ready(self._native_expected),
+                             'native cycle previous READY is absent or held')
+                else:
+                    _require(held == self._held and (os.stat(self.HOLD,dir_fd=self._dir_fd,follow_symlinks=False).st_dev,
+                             os.stat(self.HOLD,dir_fd=self._dir_fd,follow_symlinks=False).st_ino) == self._hold_identity
+                             and self._read(self.READY) == (self._expected_native_ready(self._native_expected) if self._native_confirmed
+                                 else self._native_old_ready), 'native cycle original state changed')
+            elif self._hold_identity is None:
                 _require(held is None and self._read(self.READY) is None, "installation already has original state; reconcile it")
             else:
                 info = os.stat(self.HOLD, dir_fd=self._dir_fd, follow_symlinks=False)
                 _require(held == self._held and (info.st_dev, info.st_ino) == self._hold_identity,
                          "original install hold changed")
         else:
-            _require(held is None and self._read(self.READY) == self._ready,
+            _require(held is None and self._read(self.READY) == self._expected_native_ready(self._native_expected),
                      "durable install admission is absent or held")
-        if self._mode == 'entry' or phase in ('verify-installation', 'before-process-release'):
+        if self._mode == 'entry' or self._native_transition or phase in ('verify-installation', 'before-process-release'):
             _require(self.invocation._git_oid('HEAD') == self.candidate_oid, "running checkout version differs")
             for pin in self.runtime_code:
                 pin.check()
@@ -381,6 +396,237 @@ class HostGate:
                 operation_id=binding.operation_id, lane_id=binding.lane_id,
                 budget_id=budget_id, retention_id=retention_id))
             return value
+
+    def _native_selection(self, selection, *, verify=False):
+        from engine import qledger_original_result as originals
+        from engine.qledger_store import NativeGitClaimsBinding
+        from scripts.ci import qledger_publication as publication
+        from scripts.ci import qledger_conversion_candidate as candidate
+        _require(type(selection) is tuple and len(selection) == 5, 'explicit immutable native selection required')
+        oid, tree, source, retained, publication_pin = selection
+        for value in (oid, tree, source):publication._oid(value)
+        _require(type(publication_pin) is dict and set(publication_pin) == {'origin','transport','layout'}
+                 and type(publication_pin['origin']) is str and len(publication_pin['origin']) == 64
+                 and all(c in '0123456789abcdef' for c in publication_pin['origin'])
+                 and publication_pin['transport'] in ('local_objects_and_loose_ref_cas','checkout_https'),
+                 'explicit actual publication carrier binding required')
+        layout=publication_pin['layout']
+        _require((publication_pin['transport'] == 'checkout_https' and layout is None) or
+                 (publication_pin['transport'] == 'local_objects_and_loose_ref_cas'
+                  and type(layout) in (tuple,list) and len(layout)==3
+                  and all(type(x) in (tuple,list) and len(x)==2 and all(type(v) is int and v>=0 for v in x) for x in layout)),
+                 'actual original publication namespace binding required')
+        _require(type(retained) is originals.RetainedOriginalResult and retained._seal is originals._SEAL
+                 and retained.write.claims_path == self.repo/'data/qledger/claims.jsonl'
+                 and retained.limits == self.owner.limits and retained.target_ref == 'refs/heads/main',
+                 'exact retained native generation/profile required')
+        if verify:
+            retained = originals.require_retained_original(retained.write, retained)
+            binding = publication.NativePublicationBinding(retained.write.intent.operation_id,
+                retained.write.intent.lane_id, retained.target_ref, retained.accepted_tip_oid,
+                retained.write.plan.snapshot.receipt.root_digest)
+            witness = publication.check_native_operation_candidate(self.repo, candidate_oid=oid,
+                accepted_baseline_oids=(retained.accepted_tip_oid,), target_ref=retained.target_ref,
+                binding=binding, native_operation_receipt=retained.native_operation_receipt, limits=retained.limits)
+            _require(witness.publication.tree_oid == tree, 'native reader full tree differs')
+            raw, _ = publication._git(self.repo, ['cat-file','commit',oid], output_limit=4096)
+            expected = candidate._native_commit_bytes(tree, retained.accepted_tip_oid,
+                retained.write.intent.operation_id, retained.write.intent.lane_id, retained.commit_metadata)
+            _require(raw == expected, 'native reader immutable commit metadata differs')
+        record = dict(candidate=oid, tree=tree, source=source, accepted_tip=retained.accepted_tip_oid,
+            publication=json.loads(_json(publication_pin)),
+            root=retained.write.plan.snapshot.receipt.root_digest,
+            operation=retained.write.intent.operation_id, lane=retained.write.intent.lane_id,
+            original=dict(owner_root=str(retained.owner_root), result_path=str(retained.result_path),
+                result_id=retained.result_id, manifest=retained.manifest_digest))
+        immutable = None if not verify else NativeGitClaimsBinding(self.repo, commit_oid=oid,
+            expected_root_digest=record['root'], limits=retained.limits)
+        return record, immutable
+
+    def _expected_native_ready(self, record):
+        if record is None:return self._ready
+        value = json.loads(self._ready)
+        value['native_generation'] = record
+        payload = _json(value)
+        _require(len(payload) <= self.MAX_STATE, 'native ready descriptor exceeds existing bound')
+        return payload
+
+    @staticmethod
+    def _state_identity(info):
+        _regular(info)
+        return (info.st_dev,info.st_ino,info.st_mode,info.st_size,info.st_mtime_ns,info.st_ctime_ns)
+
+    @contextmanager
+    def native_cycle(self, binding, *, budget_id, retention_id, current_generation=None):
+        """Existing EX barrier BEFORE the original producer; no nested upgrade."""
+        from engine.qledger_original_result import OriginalResultClaimsBinding
+        _require(type(binding) is OriginalResultClaimsBinding and binding.repo_root == self.repo
+                 and binding.original_process_id == os.getpid() and not binding.attempts
+                 and binding.pre_attempt_failure is None, 'fresh exact original native producer required')
+        with self.lease('install'):
+            _require(self._native_ready_fd is None and self._native_checked is None,
+                     'original native READY/completion operation remains unresolved')
+            self._native_ready_started = self._native_ready_replaced = False
+            self._native_transition = True
+            self._native_owner_binding = binding
+            self._native_confirmed = False
+            try:
+                record = None if current_generation is None else self._native_selection(current_generation)[0]
+                self._native_expected = record
+                context = dict(repo=self.repo, operation_id=binding.operation_id,lane_id=binding.lane_id,
+                    budget_id=budget_id,retention_id=retention_id,commit_oid=self.candidate_oid,phase='before-native-generation')
+                self.assert_valid(**context)
+                expected_tip = self.candidate_oid if record is None else record['candidate']
+                _require(all(t.accepted_tip_oid == expected_tip for t in binding.original_result_targets.values()),
+                         'native original accepted data anchor differs from installed generation')
+                if current_generation is not None:self._native_selection(current_generation, verify=True)
+                old_root = (self.owner.readback(self.invocation.manifest_digest).snapshot.receipt.root_digest
+                            if record is None else record['root'])
+                _require(binding.read_snapshot().receipt.root_digest == old_root,
+                         'current native root differs before production')
+                self._native_old_ready = self._read(self.READY)
+                self._native_old_identity = self._state_identity(os.stat(self.READY,dir_fd=self._dir_fd,follow_symlinks=False))
+                _require(self._native_old_ready == self._expected_native_ready(record), 'native old READY differs')
+                self._hold_identity = self._create(self.HOLD,self._held)
+                self._check()
+                yield self
+                _require(self._native_confirmed and self._read(self.HOLD) == self._held
+                         and self._read(self.READY) == self._expected_native_ready(self._native_expected),
+                         'native generation was not durably confirmed; retain hold')
+                checked = self._native_checked
+                _require(checked is not None and checked.live.binding is binding
+                         and checked.live.gate is self and checked.live.invocation is self.invocation
+                         and checked.live.pid == os.getpid() and not checked.live.active
+                         and checked.live.completed and checked.live.failure is None
+                         and checked._finish_completed and checked._close_completed
+                         and not checked.active and checked.failure is None,
+                         'original native completion remains unresolved; retain hold')
+                self.assert_valid(**dict(context,phase='after-native-generation'))
+                self._assert('assert_descendants_settled',**context)
+                info=os.stat(self.HOLD,dir_fd=self._dir_fd,follow_symlinks=False)
+                _require((info.st_dev,info.st_ino) == self._hold_identity, 'original native HOLD changed before release')
+                os.unlink(self.HOLD,dir_fd=self._dir_fd)
+                os.fsync(self._dir_fd)
+                self._hold_identity=None
+                os.close(self._native_ready_fd)
+                self._native_ready_fd=None
+                self._native_checked=None
+            finally:
+                self._native_transition = False
+                self._native_owner_binding = None
+                self._native_expected = None
+
+    def _replace_native_ready(self,payload):
+        _require(not self._native_ready_started, 'native READY update already entered; no replay')
+        self._native_ready_started = True
+        _require(len(payload) <= self.MAX_STATE, 'native READY exceeds existing bound')
+        _require(self._read(self.READY) == self._native_old_ready
+                 and self._state_identity(os.stat(self.READY,dir_fd=self._dir_fd,follow_symlinks=False)) == self._native_old_identity,
+                 'old READY bytes/inode changed; preserve foreign state')
+        name = self.READY+'.lock'
+        fd = os.open(name,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600,dir_fd=self._dir_fd)
+        self._native_ready_fd = fd
+        identity = self._state_identity(os.fstat(fd))[:2]
+        _require(os.write(fd,payload) == len(payload), 'partial native READY write; preserve original handle')
+        os.fsync(fd)
+        self._check()
+        _require(self._read(self.READY) == self._native_old_ready
+                 and self._state_identity(os.stat(self.READY,dir_fd=self._dir_fd,follow_symlinks=False)) == self._native_old_identity,
+                 'old READY changed before CAS; preserve foreign state')
+        _require(self._state_identity(os.stat(name,dir_fd=self._dir_fd,follow_symlinks=False))[:2] == identity,
+                 'owned native READY lock replaced; preserve foreign state')
+        os.replace(name,self.READY,src_dir_fd=self._dir_fd,dst_dir_fd=self._dir_fd)
+        self._native_ready_replaced = True
+        os.fsync(self._dir_fd)
+        _require(self._read(self.READY) == payload
+                 and self._state_identity(os.stat(self.READY,dir_fd=self._dir_fd,follow_symlinks=False))[:2] == identity,
+                 'native READY acknowledgement unavailable')
+
+    def confirm_native_generation(self, checked, generation):
+        from scripts.ci import qledger_engine_publication as engine
+        from scripts.ci import qledger_engine_publisher as publisher
+        _require(self._native_transition and self._mode == 'install' and self._hold_identity is not None,
+                 'same exclusive native cycle must own durable HOLD')
+        _require(type(checked) is engine._LiveFinalCandidate and type(generation) is publisher.NativePublishedGeneration
+                 and checked.live.gate is self and checked.live.binding is self._native_owner_binding
+                 and generation._attempt is checked.publication_attempt,
+                 'actual live native publication generation required')
+        attempt = generation._attempt
+        try:
+            self._native_checked = checked  # Preserve this actual original on failure.
+            _require(publisher.confirmed(checked) and attempt.remote_confirmed and not attempt.uncertain
+                     and checked._claims_entered and checked._index_lock is not None,
+                     'known original publication and live claims/index/auth lifetime required')
+            checked._check()
+            prepared = checked.prepared
+            retained = checked.invocation._original()
+            network=type(attempt) is publisher._HTTPSPublicationAttempt
+            pin=dict(origin=attempt.origin_digest,transport='checkout_https' if network else 'local_objects_and_loose_ref_cas',
+                layout=None if network else [[os.fstat(fd).st_dev,os.fstat(fd).st_ino] for fd in
+                    (attempt.origin_fd,attempt.origin_refs_fd,attempt.origin_heads_fd)])
+            record = self._native_selection((prepared.candidate_oid,prepared.tree_oid,prepared.source_candidate_oid,retained,pin))[0]
+            attempt.readback(prepared.candidate_oid)
+            checked._check()
+            context = dict(repo=self.repo,operation_id=checked.live.binding.operation_id,lane_id=checked.live.binding.lane_id,
+                budget_id=checked.live.budget,retention_id=checked.live.retention,commit_oid=self.candidate_oid,phase='confirm-native-generation')
+            self.assert_valid(**context)
+            self._assert('assert_descendants_settled',**context)
+            self._replace_native_ready(self._expected_native_ready(record))
+            self._native_expected = record
+            self._native_confirmed = True
+        except BaseException as exc:
+            if checked.failure is None:checked.failure = exc
+            attempt.uncertain = True
+            self.hold()
+            raise
+
+    def invoke_native_reader(self, selection, consumer, *, operation_id,lane_id,budget_id,retention_id,
+                             original_deadline_monotonic_ns):
+        from engine.qledger_store import ClaimsBindingScope,ClaimsReadScope,has_process_local_claims_selection
+        from scripts.ci.qledger_owner_invocation import NativeReaderInvocation,reader_assertion_scope
+        import time
+        first = time.monotonic_ns()
+        _require(all(type(value) is str and value for value in (operation_id,lane_id,budget_id,retention_id))
+                 and self.producers.get((operation_id,lane_id)) == (budget_id,retention_id),
+                 'actual separate native reader operation/resources required')
+        _require(type(original_deadline_monotonic_ns) is int and first < original_deadline_monotonic_ns,
+                 'actual original reader endpoint absent or expired')
+        _require(not has_process_local_claims_selection(), 'inherited/conflicting reader selection cannot transfer')
+        with self.lease('entry'):
+            _require(self._native_reader_call is None, 'original native reader outcome remains unresolved')
+            try:
+                record,_ = self._native_selection(selection)
+                self._native_expected = record
+                context = dict(repo=self.repo,operation_id=operation_id,lane_id=lane_id,budget_id=budget_id,
+                    retention_id=retention_id,commit_oid=self.candidate_oid,phase='native-reader')
+                self.assert_valid(**context)
+                self._assert('assert_resources',**context,original_reader_pid=os.getpid(),
+                    original_reader_deadline_monotonic_ns=original_deadline_monotonic_ns,native_generation=record)
+                record,immutable = self._native_selection(selection,verify=True)
+                call = NativeReaderInvocation(self,immutable,record,context,original_deadline_monotonic_ns,first)
+                self._native_reader_call = call
+                call.check()
+                with reader_assertion_scope(call):
+                    self._assert('assert_publication_readback',**context,native_reader=call)
+                call.check()
+                with ClaimsBindingScope(immutable),ClaimsReadScope(self.repo):
+                    result = consumer()
+                call.check()
+                self.assert_valid(**context)
+                self._assert('assert_descendants_settled',**context,native_reader=call)
+                call.check()
+                return result
+            except BaseException as exc:
+                if self._native_reader_call is not None:
+                    if self._native_reader_call.failure is None:self._native_reader_call.failure=exc
+                    self._native_reader_call.uncertain=True
+                raise
+            finally:
+                if self._native_reader_call is not None:self._native_reader_call.active = False
+                if (self._native_reader_call is not None and self._native_reader_call.failure is None
+                        and not self._native_reader_call.uncertain):self._native_reader_call = None
+                self._native_expected = None
+
 
 
 if __name__ == '__main__':

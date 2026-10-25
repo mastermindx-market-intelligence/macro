@@ -354,6 +354,37 @@ class LoadedBootstrap:
             return value
 
 
+    def native_producer(self, *, owner_binding, regions, native_intents, publication,
+                        current_generation=None, call=None):
+        """Explicit controller route; EX is acquired before builder/native work."""
+        original=self.config['producer_context']
+        _require(type(original) is dict and set(original)=={'operation_id','lane_id','budget_id','retention_id'},
+                 'actual original native process context required')
+        from scripts.ci.qledger_engine_publisher import NativePublicationFinalizer
+        _require(owner_binding is not None and type(publication) is NativePublicationFinalizer
+                 and publication.pid == os.getpid(), 'actual native owner/finalizer inputs required')
+        # This new explicit transition currently has a qualified local reader.
+        # Never publish a network generation expecting to borrow writer auth.
+        _require('https_carrier' not in publication.original,
+                 'native HTTPS installed-reader join is not qualified before production')
+        with self.gate.native_cycle(owner_binding,budget_id=original['budget_id'],retention_id=original['retention_id'],
+                                   current_generation=current_generation):
+            builder=self.bundle.callable(self.entry.build_producer)
+            binding,callback=builder(self.context,owner_binding=owner_binding,regions=regions,
+                native_intents=native_intents,call=call,publication=publication)
+            _require((binding.operation_id,binding.lane_id)==(original['operation_id'],original['lane_id']),
+                     'native producer differs from original admitted context')
+            self.bundle.callable(callback)
+            return self.gate.invocation.invoke_producer(binding,gate=self.gate,installed_commit_oid=self.gate.candidate_oid,
+                budget_id=original['budget_id'],retention_id=original['retention_id'],producer=callback)
+
+    def native_reader(self, selection, *, operation_id,lane_id,budget_id,retention_id):
+        callback=self.bundle.callable(self.entry.reader)
+        return self.gate.invoke_native_reader(selection,lambda:callback(self.context),operation_id=operation_id,
+            lane_id=lane_id,budget_id=budget_id,retention_id=retention_id,
+            original_deadline_monotonic_ns=self.context.original_deadline_monotonic_ns)
+
+
 class _FactsClock:
     """Monotonic inspection only; no operation deadline or native admission."""
     def __init__(self):
