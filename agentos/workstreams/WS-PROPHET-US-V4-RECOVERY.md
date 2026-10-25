@@ -257,7 +257,7 @@ waves:
     pr: [6840, 10176, 10180]
     next_action: >
       B17 INPUTS RECOVERED / BOUNDED REPLAY BUILT / INDEPENDENT REVIEW OPEN.
-      Draft #10180 at 4e817e7a1b83 contains the research verifier, 27 passing tests,
+      Draft #10180 at 0bcc11b27cd8 contains the research verifier, 28 passing tests,
       immutable source receipts and original-cutoff point replay. All 241 signal
       files and 240 price candidates were recovered; 57 complete buy snapshots
       cover 32 source dates, but zero of 7918 C0 episodes has a complete
@@ -817,7 +817,7 @@ next_action: >
   2026-10-25 continuation: the current recovery session owns B2 under Chris's
   no-owner-wait directive. Continue from the original thirty-wave record and
   agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md.
-  New Draft #10180 at 4e817e7a1b83ffed1ae8ec22a3911c92ac541198 recovers the
+  New Draft #10180 at 0bcc11b27cd884165af61841e0e59b90fd27f124 recovers the
   original frozen inputs and implements a bounded canonical union-and-selector
   replay. All 240 price candidates match recorded metadata and episode anchors;
   241 signal files and 57 full buy snapshots were recovered. The sample covers

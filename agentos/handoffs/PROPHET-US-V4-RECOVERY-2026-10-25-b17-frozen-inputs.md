@@ -31,7 +31,7 @@ changed:
       union replay through canonical engine functions. No runtime writer.
   - path: tests/test_prophet_b17_frozen_input_recovery.py
     what: >
-      Separately published in Draft 10180: 27 focused cases covering actual
+      Separately published in Draft 10180: 28 focused cases covering actual
       selector behavior, missing and denied inputs, time leakage, source
       identity, ruler boundaries, first eligible surface and cutoff replay.
   - path: research/prophet_v4/B17_ADMISSION_ARCHIVE_INDEX_2026-10-25.json
@@ -88,7 +88,7 @@ verified:
       absence from every archive or completeness of intraday/served history.
   - claim: The original-cutoff input intersection was replayed through existing canonical owners.
     command: >
-      replay_cutoff_intersection at rule ref a6c9b8e2208b10da978868024e17e2a90f991175,
+      replay_cutoff_intersection at rule ref 4e817e7a1b83ffed1ae8ec22a3911c92ac541198,
       cutoff source cac3c23880f869bb3d63708e8814841c5811593b,
       select_candidates(n=None) and union_admission(asof=2026-08-10).
     result: >
@@ -104,8 +104,8 @@ verified:
       research/prophet_v4/B17_ADMISSION_ARCHIVE_INDEX_2026-10-25.json
       --github-fallback --report research/prophet_v4/B17_FROZEN_INPUT_RECOVERY_2026-10-25.json
     result: >
-      27 passed in 1.19 seconds. Recovery exited 0 in 103.69 seconds. Report
-      SHA-256 dec30102dd1ea08f14a7aedebf43010735f600dc7aef17fd6cab7823bdf6e4bd;
+      28 passed in 1.10 seconds. Recovery exited 0 in 107.86 seconds. Report
+      SHA-256 7bd9c2c081b9c5f0c2223cfc12915bc4514fb91b5e410a5a63dbfb4020d981e0;
       its implementation digest matches the committed Python bytes.
       New-file whitespace checks passed for all five files.
   - claim: The separate research implementation is published as an unmerged Draft with exact source custody.
@@ -114,7 +114,7 @@ verified:
       for prophet-v4-b17-frozen-inputs-20261025; GitHub Draft creation and
       changed-file readback for 10180.
     result: >
-      APPLIED at 4e817e7a1b83ffed1ae8ec22a3911c92ac541198, clean local and
+      APPLIED at 0bcc11b27cd884165af61841e0e59b90fd27f124, clean local and
       matching remote head, exactly five research/test files. Base remained
       a6c9b8e2208b10da978868024e17e2a90f991175 at publication.
       Correction Draft 10176 remains unchanged at 228c25d37617, four files.
@@ -149,8 +149,8 @@ unverified:
       frozen measurement and independent scientific adjudication before seq2.
   - claim: Hosted CI success for the new research and records children.
     what_would_verify: >
-      Exact-head hosted conclusions after publication. Research run 40187654026
-      was in progress at the first read; neither pending checks nor old-head
+      Exact-head hosted conclusions after publication. Initial research run 40187654026 at 4e817e7a1b83
+      was in progress at the first read; corrected head 0bcc11b27cd8 needs its own result; neither pending checks nor old-head
       success is acceptance. Later observed results belong on the PRs and
       final recovery source receipt.
   - claim: Production correction visibility and full original V4 acceptance.
@@ -213,7 +213,7 @@ next action under Chris's standing no-owner-wait rule.
 |---|---|---|
 | [Recovery Draft #10174](https://github.com/mastermindx-market-intelligence/macro/pull/10174) | Prior validated head `90d11979dbb009070b3b1a45e2438b382d4019c7`; this handoff is its next records child | Workstream and dated recovery evidence |
 | [Correction Draft #10176](https://github.com/mastermindx-market-intelligence/macro/pull/10176) | `228c25d37617a7217c8f65f1613ade701a2fe01a` | Four-file B1 correction-to-reader seam |
-| [Research Draft #10180](https://github.com/mastermindx-market-intelligence/macro/pull/10180) | `4e817e7a1b83ffed1ae8ec22a3911c92ac541198` | Five-file frozen-input recovery and bounded replay |
+| [Research Draft #10180](https://github.com/mastermindx-market-intelligence/macro/pull/10180) | `0bcc11b27cd884165af61841e0e59b90fd27f124` | Five-file frozen-input recovery and bounded replay |
 
 Original conversation: `6adce1ef-c13c-83e9-9510-983a2249a6a0`.
 Actual parent: `6add20f6-3e20-83ea-81f8-b324d9f6cfbb`.
@@ -260,9 +260,9 @@ No fifth attempt, same-run replay, acceptance or approval was made.
 
 ## B17 recovered inputs and concrete implementation
 
-The [research explanation](https://github.com/mastermindx-market-intelligence/macro/blob/4e817e7a1b83ffed1ae8ec22a3911c92ac541198/research/prophet_v4/B17_FROZEN_INPUT_RECOVERY_2026-10-25.md)
+The [research explanation](https://github.com/mastermindx-market-intelligence/macro/blob/0bcc11b27cd884165af61841e0e59b90fd27f124/research/prophet_v4/B17_FROZEN_INPUT_RECOVERY_2026-10-25.md)
 contains the full source mapping and reproduction commands. The
-[machine report](https://github.com/mastermindx-market-intelligence/macro/blob/4e817e7a1b83ffed1ae8ec22a3911c92ac541198/research/prophet_v4/B17_FROZEN_INPUT_RECOVERY_2026-10-25.json)
+[machine report](https://github.com/mastermindx-market-intelligence/macro/blob/0bcc11b27cd884165af61841e0e59b90fd27f124/research/prophet_v4/B17_FROZEN_INPUT_RECOVERY_2026-10-25.json)
 binds each input and the five canonical rule files.
 
 The missing old study worktree was not the end of the recovery. The original
@@ -292,16 +292,27 @@ the historical full buy population and its non-price/availability inputs,
 not another OHLC fetch, study-name-only reconstruction, or present-day producer
 run with a historical date parameter.
 
+## Provenance guard added before closeout
+
+The optional repository argument could previously point the Git reader at a
+different checkout while canonical engine imports still resolved from the
+implementation checkout. The recovery now refuses that mismatch before binding
+a rule ref. The new regression passes. The regenerated report's evidence
+matches the prior report exactly after excluding implementation and rule-ref
+provenance fields; the recovered populations, prices, baseline, cutoff replay,
+unknown states and STILL_LIVE disposition are unchanged.
+
 ## Verification and remaining gates
 
-The focused suite passed **27 tests**. The complete recovery run exited **0**;
+The focused suite passed **28 tests**. The complete recovery run exited **0**;
 the report SHA-256 is
-`dec30102dd1ea08f14a7aedebf43010735f600dc7aef17fd6cab7823bdf6e4bd`.
+`7bd9c2c081b9c5f0c2223cfc12915bc4514fb91b5e410a5a63dbfb4020d981e0`.
 Published #10180 readback confirms the exact five-file scope and head.
 
 Previously pending source and records CI completed successfully at their own
-heads. New research CI run [40187654026](https://github.com/mastermindx-market-intelligence/macro/actions/runs/40187654026)
-was active at the first post-publication check. Later exact-head CI observations
+heads. Initial research CI run [40187654026](https://github.com/mastermindx-market-intelligence/macro/actions/runs/40187654026)
+was active at the first publication of 4e817e7a1b83. After the provenance guard,
+current research head 0bcc11b27cd8 needs its own hosted conclusion. Later exact-head CI observations
 belong in the PR bodies and final copied SOURCE receipt; this handoff does not
 pretend an old green result certifies a new commit.
 
