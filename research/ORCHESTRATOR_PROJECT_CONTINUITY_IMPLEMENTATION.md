@@ -588,6 +588,28 @@ This is a dependency reference, not authorization to run those root actions or
 a claim that the staged release was installed. The existing root/host-chain
 writer and source/effect fences remain intact.
 
+**Arming f608f52f alone is not W4 readiness.** Immutable source comparisons prove
+that it lacks the W3 source builder and Runtime/Harness PREPARE/ACK additions:
+
+- [e00e97b to f608f52f](https://github.com/mastermindx-market-intelligence/Mastermind/compare/e00e97b81a5d41cb8a570ad080316279a0f3853f...f608f52f35384dcfa8e4305dc594f1fbe823d5ec)
+  changes only three Studio-reader cleanup diagnostic files, none of the W3 paths.
+- [f608f52f to #656](https://github.com/mastermindx-market-intelligence/Mastermind/compare/f608f52f35384dcfa8e4305dc594f1fbe823d5ec...a9c685a18ddba73d5d1b4efc529d8db2409393a0)
+  adds the source builder and its tests from the shared e00e97b ancestor.
+- [f608f52f to #1289](https://github.com/mastermindx-market-intelligence/Mastermind/compare/f608f52f35384dcfa8e4305dc594f1fbe823d5ec...a1c213b2779539687de1fe9c64368d06b1e0e55c)
+  adds prepare_operator_continuation and acknowledge_operator_continuation to
+  Runtime and the existing Harness port.
+
+After independent acceptance and normal integration of #656 and #1676 into
+#1289, the existing release owner must supply readback of a later accepted,
+installed **and selected** release containing that W3 closure. Separately identify
+and qualify the existing admitted path that delivers the exact prepared capsule
+to the intended successor and records ACK only after actual consumption.
+The [#1289 runbook](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a1c213b2779539687de1fe9c64368d06b1e0e55c/docs/runbooks/portable-agent-continuity.md)
+explicitly adds neither delivery nor an uncertain-effect reconciliation writer;
+its Runtime methods are internal, not newly published external tools. #1676's
+synthetic PREPARE test does not close those boundaries. Runtime arming, accepted
+source installation, and the real delivery/consumption path are separate gates.
+
 After the actual owning runtime satisfies those prerequisites, select one
 bounded project under that owner's admitted root/grant and prove the original
 completion sequence: actual paid START, retained result, independent review,

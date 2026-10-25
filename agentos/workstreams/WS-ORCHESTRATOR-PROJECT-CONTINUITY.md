@@ -61,10 +61,10 @@ waves:
     status: todo
     depends_on: [W0, W1, W2, W3]
     next_action: >
-      Keep the real continuation canary held while ceo_submit_armed is false.
-      After the existing runtime owner arms the accepted release and supplies
-      exact admission/custody, prove START, retained return, review, acceptance,
-      compaction and a second substantive phase, then controlled interruption.
+      Require the accepted W3 composition in the installed and selected release,
+      a real admitted capsule delivery/consumption path, and runtime arming plus
+      exact admission/custody readback. Arming staged f608f52f alone is insufficient.
+      Then prove START, return, review, acceptance, two phases and interruption.
 discoveries:
   - DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION
 do_not_redo:
@@ -126,8 +126,10 @@ this workstream and its dated handoff carry the current organizational frontier.
 - **W3:** #656, #1676 and #1289 remain source review/integration obligations. All
   three unchanged heads have green required checks. #1289 retains production HOLD.
 - **W4:** the installed Executive owner reported `ceo_submit_armed: false` at
-  2026-10-25T11:18:43Z. The current native Codex target projection is empty.
-  Neither the installed hook nor this record creates admission or a return path.
+  2026-10-25T11:18:43Z. The native Codex target projection is empty. Staged
+  `f608f52f` lacks the W3 builder and Runtime/Harness PREPARE/ACK additions;
+  even arming it does not qualify this canary. Require the later accepted installed
+  and selected W3 source closure plus actual admitted delivery and consumption.
 
 The complete latest recovery record is
 [the 2026-10-25 handoff](../handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-2026-10-25.md).
