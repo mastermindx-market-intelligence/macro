@@ -836,3 +836,29 @@ and native-to-child boundaries; neither one-shot v2 nor async-wrapper cached
 positive supplies it. Native design advice only, no new ACP implementation task.
 #1790R5 requestunknown/no-retry; #1856reviewhold unchanged.
 MISSION_COMPLETE=false, no final RESULT/approval/merge/install/provider/account action.
+
+### ACP original-controller source task and confirmed UI START
+
+HC-P3.CURRENTNESS.T1 is now planned BEFORE placement: exactly four NEW files
+(common/acp_continuing_authority_contract.py, control_plane/acp_current_authority.py,
+tests/test_acp_current_authority.py, docs/architecture/ACP_CONTINUING_AUTHORITY.md).
+One original-run attachment reuses actual _leased_row/current_authority_snapshot
+in one fresh Runtime transaction. Token stays controller-only; closed bounded
+observation reports CURRENT/NOT_CURRENT/UNAVAILABLE but ALWAYS
+dispatch_authorized=false. Child correlation/expected native binding are not
+attested native facts. No cache/TTL/secondregistry/listener/launch/lease mutation.
+Real Runtime revocation and mismatch proof, then independent exact-head review.
+All broker/native/DSH async-v2 transport/materializer/activation work stays separately
+gated; v1 semantics and #1856/#1790 held subjects are untouched. Protected master
+readback3095 is current. Root read the actual Runtime owners and supervisor boundary.
+
+T1 phase2 request1792886757.194719 follows published e74df943; actual carry awaited.
+Author STOP1792886774.305149. R3 author/reviewer STOP1792886774.896089/
+1792886775.488469 retain exact7d source PASS/CI separate.
+Topology FIX1 request1792886776.960869 follows task pin; carry awaited.
+UI inquiry1792886797.857289 resolved by START1792886827.454889:
+bc-28d187ca-f434-59fe-86ce-cf262b75de10, one isolatedCursorVM/defaultmodel,
+exact40d/12paths; abcb dependency drift NOTadopted. No duplicate.
+R5 status00:07UTC stillNOT_FOUND/absencefalse/retryfalse; no new request.
+All three current repository CI runs were actively executing shards at00:09UTC.
+MISSION_COMPLETE=false; no approval/merge/install/provider/finalRESULT.

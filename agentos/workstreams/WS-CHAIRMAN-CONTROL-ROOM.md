@@ -156,11 +156,11 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Preserve #1856/a9601a9c frozen and its consumed Fabric review refusal; no retry
-      or alternate. Reconcile only retained records of ambiguous #1790 R5 request.
-      Specify continuing authority across BOTH controller-to-native and native-to-child
-      boundaries before source implementation; startup receipts and cached booleans
-      are insufficient. Semantic review, materialization and installed proof stay open.
+      Implement pinned HC-P3.CURRENTNESS.T1: four new files for one original-run
+      controller currentness observation using actual Runtime owners, never a full
+      dispatch permit. Independent frozen-head review follows. Leave broker/native/
+      DSH activation and #1856/#1790 held subjects untouched. Preserve their review
+      and ambiguous-request no-retry boundaries; installed/live P3 remains open.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -183,8 +183,8 @@ waves:
       Preserve #1854/3be06cec source PASS and green CI. Consume frozen #1859
       abcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb A1 actual mounted fallback and
       advance SAME independent reviewer to pinned HC-P6.T1.R1.P2. Observe final CI.
-      T2 isolated draft placement1792885833.554159 is authorized under A2 against
-      fixed40d; actual START is still unobserved. Final T1 binding/integration and
+      T2 isolated draft START1792886827.454889 is confirmed on bc-28d187ca at
+      fixed40d under A2. Final T1 binding/integration and
       independent UI review remain gates. Full signed-in/native/P6 is open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
@@ -292,11 +292,12 @@ next_action: >
   For Mastermind #1841, carry pinned HC-P6.T1.R1.P2 to SAME reviewer on final
   frozen #1859/abcb8f8c; consume #1852/7d5528da R3 independent COMMENT PASS
   and observe exact-head CI. Carry HC-P1B.T2.FIX1 to SAME #1860/95d author for
-  bounded readiness repair, then independent review. Reconcile T2 placement
-  1792885833.554159 without duplication; its isolated40d draft is authorized while
-  final reviewed T1 integration remains gated. Preserve #1853/#1854 source PASS.
-  Specify the actual two-boundary ACP currentness contract; preserve #1856 review
-  hold and #1790 ambiguous-request no-retry law. MISSION_COMPLETE remains false.
+  bounded readiness repair, then independent review. T2 START1792886827.454889
+  confirms one isolated40d UI draft; final reviewed T1 integration remains gated.
+  Place pinned HC-P3.CURRENTNESS.T1 for four-file controller observation source and
+  real Runtime proof, with independent review afterward; no dispatch authorization
+  or transport/activation changes. Preserve #1853/#1854 PASS, #1856 review hold
+  and #1790 ambiguous-request no-retry law. MISSION_COMPLETE remains false.
   #1856/a9601a9c stays frozen with consumed refusal, no semantic verdict or retry.
   All three original Fabric EFFECT_UNKNOWN holds and #1850 source proof remain.
   Independent release, installed/live proof and original R2 acceptance are open.
@@ -3504,3 +3505,193 @@ fail-closed loss/cancel/timeout/duplicate/generation law, and precise send order
 Preserve already-sent attribution/uncertainty without replay. v1/v2 remain unchanged.
 A read-only native design advisory is active; no ACP source/activation task placed.
 #1856 review hold and ambiguous #1790 R5 no-retry state are unchanged.
+
+### HC-P3.CURRENTNESS.T1 — original-controller observation, unarmed source slice
+
+**Planned before implementation placement.** This task implements the controller
+half of the missing ACP continuing-authority contract; it is not a replacement
+review, retry, materializer or activation of held #1856/#1790.
+WorkstreamWS:CHAIRMAN-CONTROL-ROOM, WaveHC-P3, Authorityimplementation,
+Completionproof-required/source-only. Child
+meta-ceo-harness-acp-currentness-cursor-20261025-01,
+rootmeta-ceo-open-harness-convergence-20261024-sol-001,
+parentmeta-ceo-harness-implementation-20261024-web-001.
+One new isolated Cursor cloud implementation carrier, admitted account-default
+model/no override. No production/provider/installation/account action.
+
+#### Basis and useful exit
+
+Protected Mastermind master was independently read back as
+3095d09f1789a5b8002503beae872774c297b1a5 on2026-10-25. Root read actual broker
+one-request direction, v2 readiness closure, supervisor durable process boundary,
+and Runtime blob9ab0ec14adacb5382ba455effb937af303db0774.
+Non-author native controller and consumer advisories agree on the boundaries below.
+The four proposed files are new. Exact common/control-plane directories contain no
+name collision; exact test-file read is404 (directory listing was capped at1000 and
+is not an absence proof). docs/architecture is new if absent. Author must verify
+current protected base and full local custody/path census before edits; report a
+collision or relevant source drift rather than adopting another writer.
+
+Useful deliverable: an exact original controller attachment can obtain a NEW,
+bounded, token-free observation from the actual incumbent Runtime for each request.
+No lookup/adoption of whichever Attempt is now latest; no copied currentness law,
+boolean mock as production authority, listener, scheduler, run registry, persistence,
+launch method or lease mutation. The observation must explicitly say that it is
+only controller evidence and **dispatch_authorized=false** in this source-only slice.
+Native process liveness/artifact/session ownership and child connection/definition
+facts are not established merely by constructor values or echoed request fields.
+
+#### Exact four NEW writable paths
+
+1. common/acp_continuing_authority_contract.py
+2. control_plane/acp_current_authority.py
+3. tests/test_acp_current_authority.py
+4. docs/architecture/ACP_CONTINUING_AUTHORITY.md
+
+No existing source, tests, __init__, locks, policies, descriptor, broker, supervisor,
+adapter, installed.py, tool_admission.py, donor patch/manifest/build or #1790/#1856
+path edits. No silent ceiling widening; precise blocker if a real dependency cannot
+be expressed under this slice. Publish one Draft from protected base; freeze for a
+distinct non-author reviewer. New directories for these exact files are allowed.
+
+#### Real caller and data/authority contract
+
+Eventual caller (NOT implemented here): original RemoteAcpWorkerAdapter.start
+(spec,lease=lease), through ExecutiveSupervisor._start_claimed_job's incumbent
+requires_attempt_lease seam. Retain the attachment with that original run.
+Current supervisor calls start, then record_process, mark_running and launch
+checkpoint. Current ACP adapter starts _execute before returning its process;
+future dispatch must wait for that durable controller binding. There is currently
+no ACP remote facade, descriptor remains implemented=false, and supervisor sealed
+profile constraints remain unchanged. This slice is test-owned/source only.
+
+Retain the actual original AttemptLease and WorkerLaunchSpec, private lease token,
+exactjob/Attempt/worker/quota/fence and fixed source/profile/realm expectations.
+The token NEVER enters repr, exception, wire record, logs or observations.
+Retained expected WorkerProcessRef/launch attestation/session-model association
+must come from trusted incumbent owner composition when that later exists; request
+data cannot replace them. Compare persisted fields now, without claiming actual
+native liveness or attesting child-owned fields. Missing required associations
+remain NOT_CURRENT/UNAVAILABLE, not inferred. No generic callback returningtrue
+may substitute for an incumbent authority owner.
+
+On EACH observation, take ONE controller-owned Runtime transaction and fresh
+store.now_ms(). Use exact actual AttemptRegistry._leased_row(connection,
+attempt_id,fence_generation,lease_token,timestamp,statuses) for original-token
+ownership, and current_authority_snapshot in the SAME transaction for exact
+job/Attempt/fence and current links/quota/lease/ONLINE worker/SEALED_WORKER.
+Use existing policy functions and canonical capability/profile/projection owners
+for any authority/source fact reported current; re-read current inputs and compare
+against retained expected generation, never adopt changed policy. Keep MCP
+grant_digest distinct from orchestration effective_grant_digest. Do not add a
+new authorization predicate that sidesteps incumbent policy. If an authority
+fact cannot be freshly obtained, its state is UNAVAILABLE; never carry priorpositive.
+All fresh failures clear positive observation. Use fixed selectors from original
+attachment, not caller SQL or request-chosen runtime/path/profile.
+Any read-only observation must not heartbeat/adopt/extend/reassign/release the lease.
+
+Closed bounded schema may use mastermind.acp_control_currentness/v1 with
+CURRENT/NOT_CURRENT/UNAVAILABLE for the controller-observed facts. This is NOT a
+tool permit, no reusable positive/permissionTTL/cache, and no flag may arm dispatch.
+Require explicit evidence categories: controller-observed Runtime/persisted facts;
+expected source/native bindings; child-supplied correlation; unverified joins.
+For startup/discovery, currentCLAIMED may be observed only under that phase.
+Dispatch-phase observation requires RUNNING/CHECKPOINTED and the exact persisted
+process plus trusted attached session/model association; startup cannot be promoted.
+Even a CURRENT dispatch-phase controller observation retains dispatch_authorized=false.
+
+The closed request binds original identity, phase, opaque invocationid, rawtool,
+immutable-argument digest, request digest, and child connection/catalog/definition
+correlation. Reject duplicate/nonfinite/unknownfields, wrongtypes, excesslength/
+collection/nesting and a documented finite overall byte ceiling before parsing.
+Source-selected ceiling must fit this narrow contract, not become an unbounded
+general envelope. A child-provided generation is correlation only; echo does not
+attest observation. Invocationid must later map to actual ToolExecution.token,
+not model-reusablecallId. No token/newcontroller/alternatepath/profile/target/
+already-current/permissionTTL field. Canonical correlation uses exact bytes/closed
+canonicalization; no ambiguous stringify equality or unbounded attacker objects.
+
+#### Focused meaningful proof
+
+Read actual incumbent owners first. Tests use a fresh test-owned real Runtime and
+existing canonical registration/claim/record_process/status/authority owners, with
+inert local source-policy fixtures clearly labeled; no live Runtime, provider, OS
+process or installed-state changes. Prove:
+- two queries on original attachment, fresh current then actual revocation/fence/
+  ownership change -> refusal; replacement Attempt/process is never adopted;
+- wrong original token, expiry, quota/current-link drift, offline worker, foreign
+  job/worker/fence, OPERATOR_HARNESS mode -> refusal through actual Runtime laws;
+- CLAIMED startup does not qualify dispatch; missing/changed durable process,
+  session/model/source/profile/realm joins fail closed, never request-adopted;
+- fresh Runtime/policy read failure -> UNAVAILABLE, no reused priorpositive;
+- malformed/oversized/duplicate/nonfinite/unknown request and crossed correlation
+  fail; explicit token sentinel absent from response/repr/error;
+- reported child correlation never becomes controller-observed liveness; every
+  observation keeps dispatch_authorized=false.
+Do not use mocks returningCURRENT/true as the acceptance proof. Inject failure only
+to exercise exact unavailable paths, not replace successful Runtime acquisition.
+Verify original lease and database ownership are unchanged by observation.
+Run focused new tests and relevant incumbent current-authority regression only;
+no broad duplicate suite or unchanged CI rerun. Use existing dependencies.
+
+#### Future continuation gates — explicitly NOT implemented by this task
+
+Controller->worker currently has only authenticated Control-to-worker one-request
+RPC; before_write is OHF-specific. No reverse query source exists. Freshness does
+not logically require a permanent connection, but macOS peer identity supplies
+UID/GID, not original process identity. A new bounded pull/decision protocol needs
+original owner attachment proof; an explicitly versioned original-run connection
+is a candidate, not a selected/present capability. No new listener/store/token
+exposure is authorized. Native v2 remains one-shot; any continuing path is a new
+version under AcpNativeProcessOwner/_NativeRun.admission_channel, not another registry.
+
+A later DSH v2 needs core-owned async admission in dispatchToolBody after wrappers/
+scheduling and before bodyInvoked=true. After await, repeat global/scoped guards,
+exact prepared-definition/execution restriction, fused cancellation, Attempt/deadline,
+connection/catalog and owner-local revocation checks. Original MCP closure consumes
+one exact invocation's authorization once in the same JS turn as SDK invocation.
+Awaiting only in the MCP body would bypass the earlier core guard boundary.
+Keep v1 literaltrue/Promise-refusal behavior unchanged. Startup/discovery need
+their own explicit v2 owner admissions and post-await checks, not always-true
+adapters or borrowed dispatchpositives. Require actual v2 patched artifact; nofallback.
+Core/MCP patch/manifest/preflight/build proof and child materialization are separate.
+
+Full future positive decision linearizes authorization at the controller decision
+point for one invocation, NOT instantaneous currentness at physical wire send.
+Later remote revocation can race with an already-authorized invocation. Locally
+observed cancellation/drift before SDK invocation refuses; after invocation preserve
+original result ownership/uncertainty and never resend. Nonces, timestamps or sockets
+alone cannot eliminate that race. Runtime/WorkspaceReadGateway directory/deadline
+checks do not themselves supply this live authority contract.
+
+#### Return, independent review and stop
+
+Return actual model/carrier/base/branch/head; exactly four new paths with hashes;
+complete focused commands/counts/skips; actual positive and adverse observations,
+fixed source-only limitations, CI, clean remote-equal freeze/no writer.
+A distinct Cursor reviewer will challenge the exact final source, real Runtime
+proof and all authority/evidence claims before any next composition task.
+No self-approval/merge or installed/fullP3 claim. Preserve #1856's independent-review
+refusal and #1790 R5 requestunknown/no-retry. No alternate review of either subject.
+**State:** PLANNED_BEFORE_NEW_SOURCE_PLACEMENT, SOURCE_ONLY/PRODUCTION_INERT.
+
+### Actual delivery and source-custody receipts after e74df943
+
+- T1 final review phase2 requested1792886757.194719 after published e74df943.
+  Actual carried receipt is still unobserved; no duplicate reviewer.
+- #1859 author consumed/STOP1792886774.305149; source stays frozenabcb8f8c.
+- #1852 author consumed/STOP1792886774.896089 and reviewer consumed/STOP1792886775.488469;
+  source7d5528da and COMMENT5640667276 PASS remain separate from pending CI.
+- #1860 same-author FIX1 requested1792886776.960869 after pinned task; actual carry
+  still unobserved. No new author and no topology execution.
+- UI delivery inquiry1792886797.857289 received actual START1792886827.454889:
+  bc-28d187ca-f434-59fe-86ce-cf262b75de10, accountdefault/nooverride, isolatedCursorVM,
+  original12path task, exact40d unmergeddependency. Secretary checked no duplicate
+  existed. Newbranch/head awaited; abcb drift explicitly NOTadopted. This resolves
+  the earlier unobservedSTART status, not final source/installed acceptance.
+- Same-run #1790R5 status at00:07UTC remains NOT_FOUND/rootunverified/absencefalse/
+  retryfalse/resultfalse. No request repeat, newID or alternate pool.
+- At00:09UTC all three repository CI runs40144548543,40144702324,40144083593
+  were executing test shards, with no observed completed failure. No rerun.
+- Macro#10167 body was updated to e74df943 checkpoint; it is not a final mission RESULT.
+MISSION_COMPLETE=false; the notification task remains notification-only.
