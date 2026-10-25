@@ -2386,3 +2386,34 @@ def test_p1_t5_invalid_context_clears_stale_output_without_publishing(tmp_path, 
 def _p1_t5_offline(monkeypatch):
     import socket
     monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("P1.T5 offline: network forbidden"))
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("mode", ["source", "symlink", "hardlink", "artifact", "missing"])
+def test_p1_t5_newready_sink_cannot_corrupt_input_or_artifact(tmp_path, monkeypatch, mode):
+    import os
+    from scripts import refresh_event_workspaces as owner
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    if mode == "source":
+        ready = marker
+    elif mode == "symlink":
+        ready.symlink_to(marker)
+    elif mode == "hardlink":
+        os.link(marker, ready)
+    elif mode == "artifact":
+        ready = artifact
+    monkeypatch.setattr(owner, "refresh", lambda *a, **k: 0)
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(output),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "a" * 40, "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    assert marker.read_bytes() == original
+    json.loads(artifact.read_text())
+    assert "sec_evidence_ready=true" not in artifact.read_text()
+    if mode == "missing":
+        assert not ready.exists()

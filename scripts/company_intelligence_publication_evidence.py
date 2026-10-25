@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import tempfile
 from typing import Any, Mapping
 
@@ -277,6 +278,7 @@ class PublicationEvidence:
             _fail("invalid_context")
         self.path = Path(path)
         self._source_roots: tuple[Path, Path] | None = None
+        self._final_serialized = False
         self.context = {"repository": "mastermindx-market-intelligence/macro", "checkout": checkout,
                         "run_id": run_id, "run_attempt": run_attempt}
         self.candidates: list[dict[str, Any]] = []
@@ -308,6 +310,7 @@ class PublicationEvidence:
         return True
 
     def begin(self, out_dir: Path) -> int | None:
+        self._final_serialized = False
         if not self._bind_output(out_dir):
             return None
         try:
@@ -321,6 +324,7 @@ class PublicationEvidence:
         return token
 
     def outcome(self, token: int | None, outcome: str) -> None:
+        self._final_serialized = False
         if outcome not in _OUTCOMES:
             _fail("invalid_outcome")
         if token is not None:
@@ -330,6 +334,7 @@ class PublicationEvidence:
         self._write("incomplete", None)
 
     def finish(self, out_dir: Path, refresh_outcome: str) -> bool:
+        self._final_serialized = False
         if not self._bind_output(out_dir):
             return False
         if refresh_outcome not in {"returned_success", "returned_conflict", "failed"}:
@@ -343,7 +348,39 @@ class PublicationEvidence:
                 final = {"snapshot": snapshot, "candidate_sequence": matches[-1] if matches else None}
             except EvidenceValidationError as exc:
                 self.unavailable.append(exc.code)
-        return self._write(refresh_outcome, final)
+        self._final_serialized = self._write(refresh_outcome, final)
+        return self._final_serialized
+
+    def mark_ready(self, path: Path) -> bool:
+        """Append only to an existing, distinct, current-owned step-output sink."""
+        if not self._final_serialized or not self._safe_destination(path):
+            return False
+        try:
+            if path.resolve() == self.path.resolve():
+                return False
+            preliminary = path.lstat()
+            if (not stat.S_ISREG(preliminary.st_mode) or preliminary.st_nlink != 1
+                    or preliminary.st_uid != os.getuid()):
+                return False
+            descriptor = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK)
+        except (OSError, RuntimeError):
+            return False
+        try:
+            sink = os.fstat(descriptor)
+            artifact = self.path.stat()
+            if (not stat.S_ISREG(sink.st_mode) or sink.st_nlink != 1 or sink.st_uid != os.getuid()
+                    or (sink.st_dev, sink.st_ino) == (artifact.st_dev, artifact.st_ino)
+                    or not self._safe_destination(path)):
+                return False
+            line = b"sec_evidence_ready=true\n"
+            return os.write(descriptor, line) == len(line)
+        except OSError:
+            return False
+        finally:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
     def _write(self, refresh_outcome: str, final: Any) -> bool:
         if not self._safe_destination(self.path):

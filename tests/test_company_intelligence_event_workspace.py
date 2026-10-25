@@ -1599,3 +1599,16 @@ def test_p1_t5_newrisk_failure_cleanup_cannot_unlink_publication_input(tmp_path,
     monkeypatch.setattr(retention.os, "replace", fail)
     evidence.outcome(token, "already_current")
     assert marker.exists() and marker.read_bytes() == original
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_readiness_rejects_special_sink_before_open(tmp_path, monkeypatch):
+    from scripts import company_intelligence_publication_evidence as retention
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    evidence = retention.PublicationEvidence(tmp_path / "evidence.json", checkout="a" * 40, run_id="123", run_attempt="1")
+    assert evidence.finish(output, "returned_success")
+    fifo = tmp_path / "not-a-step-output"
+    retention.os.mkfifo(fifo)
+    monkeypatch.setattr(retention.os, "open", lambda *a, **k: pytest.fail("must not open a special sink"))
+    assert evidence.mark_ready(fifo) is False

@@ -120,3 +120,9 @@ Every write/replacement/cleanup rechecks the destination boundary. Latin-1
 fallback metadata must satisfy entity_length < source_utf8_length <= 2*entity_length;
 both declared lengths must be positive JavaScript-safe integers. These are
 structural impossibility checks, not invented missing-preimage verification.
+
+Readiness uses the same source-directory guard and cannot alias the evidence
+file. It appends only after final safe serialization, through an existing
+non-symlink regular singly-linked file owned by the current process user (the
+normal GITHUB_OUTPUT sink). It never creates a missing sink. Symlink and hardlink
+aliases to source inputs, and the artifact itself, are refused without mutation.

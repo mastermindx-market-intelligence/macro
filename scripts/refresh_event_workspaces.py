@@ -2177,11 +2177,7 @@ def main(argv: list[str] | None = None) -> int:
         if evidence is not None:
             ready = evidence.finish(args.out_dir, refresh_outcome)
             if ready and args.evidence_ready_output is not None:
-                try:
-                    with args.evidence_ready_output.open("a", encoding="ascii") as output:
-                        output.write("sec_evidence_ready=true\n")
-                except OSError:
-                    pass  # No readiness output means the workflow must not upload.
+                evidence.mark_ready(args.evidence_ready_output)
 
 
 
