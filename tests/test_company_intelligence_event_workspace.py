@@ -1344,7 +1344,7 @@ def test_this_module_imports_without_the_chain_suite() -> None:
 # P1.T5 fixtures are SYNTHETIC provenance; no response/acquisition is performed.
 def _p1_t5_case(tmp_path, *, receipt=True):
     from copy import deepcopy
-    from engine.company_intelligence.publication_evidence import build_sec_snapshot
+    from scripts.company_intelligence_publication_evidence import build_sec_snapshot
     filing = _filing()
     body = EXHIBIT.read_text(encoding="utf-8").encode("utf-8")
     source_url = filing["exhibit_url"]
@@ -1436,7 +1436,7 @@ def test_p1_t5_old_absence_is_not_backfilled(tmp_path):
 ])
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_invalid_binding_retains_no_candidate(tmp_path, mutation):
-    from engine.company_intelligence.publication_evidence import EvidenceValidationError
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
     build, raw, wires, _, _ = _p1_t5_case(tmp_path)
     raw, wires = _p1_t5_mutate_wire(raw, wires, mutation)
     with pytest.raises(EvidenceValidationError) as caught:
@@ -1446,7 +1446,7 @@ def test_p1_t5_invalid_binding_retains_no_candidate(tmp_path, mutation):
 
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_wire_hash_and_json_fail_closed(tmp_path):
-    from engine.company_intelligence.publication_evidence import EvidenceValidationError
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
     build, raw, wires, _, _ = _p1_t5_case(tmp_path)
     name = next(iter(wires))
     for manifest_body, rows in [(raw, {name: wires[name] + b" "}),
@@ -1457,7 +1457,7 @@ def test_p1_t5_wire_hash_and_json_fail_closed(tmp_path):
 
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_local_symlink_has_safe_absence_not_file_contents(tmp_path):
-    from engine.company_intelligence.publication_evidence import PublicationEvidence
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
     _, _, wires, _, generation = _p1_t5_case(tmp_path / "output")
     name = next(iter(wires))
     path = generation / name
@@ -1477,7 +1477,7 @@ def test_p1_t5_local_symlink_has_safe_absence_not_file_contents(tmp_path):
 
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_local_only_and_invalid_candidate_do_not_claim_complete_publication(tmp_path):
-    from engine.company_intelligence.publication_evidence import PublicationEvidence
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
     _, _, wires, _, generation = _p1_t5_case(tmp_path / "output")
     artifact = tmp_path / "evidence.json"
     evidence = PublicationEvidence(artifact, checkout="a" * 40, run_id="123", run_attempt="1")
@@ -1504,7 +1504,7 @@ def test_p1_t5_local_only_and_invalid_candidate_do_not_claim_complete_publicatio
 ])
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_context_is_closed_not_environment_or_actor_dump(tmp_path, context):
-    from engine.company_intelligence.publication_evidence import EvidenceValidationError, PublicationEvidence
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
     artifact = tmp_path / "evidence.json"
     artifact.write_text("SYNTHETIC_SECRET stale artifact")
     with pytest.raises(EvidenceValidationError) as caught:

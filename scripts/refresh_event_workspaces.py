@@ -2148,7 +2148,7 @@ def main(argv: list[str] | None = None) -> int:
     publisher = publish_event_workspaces
     if args.evidence_out is not None:
         from functools import partial
-        from engine.company_intelligence.publication_evidence import EvidenceValidationError, PublicationEvidence
+        from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
         try:
             evidence = PublicationEvidence(args.evidence_out, checkout=args.evidence_checkout,
                 run_id=args.evidence_run_id, run_attempt=args.evidence_run_attempt)

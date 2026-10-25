@@ -51,6 +51,7 @@ jobs:
             scripts/build_company_intelligence.py
             scripts/fetch_earnings_scores.py
             scripts/publish_company_intelligence_r2.py
+            scripts/company_intelligence_publication_evidence.py
             scripts/refresh_company_intelligence.py
             scripts/refresh_event_workspaces.py
             config/fundamental_forensics_disclosure_diff.v1.json

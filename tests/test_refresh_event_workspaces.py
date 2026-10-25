@@ -2218,7 +2218,7 @@ def test_sec_redirect_rejects_index_and_raw_normalization_before_follow(_sec_moc
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_actual_publisher_outcomes_do_not_infer_effect_from_rc0(tmp_path, monkeypatch, mode, expected, rc):
     import socket
-    from engine.company_intelligence.publication_evidence import PublicationEvidence
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
     from scripts import publish_company_intelligence_r2 as publisher
     from tests.test_company_intelligence_event_workspace import _p1_t5_case
     out = tmp_path / "output"
@@ -2328,12 +2328,14 @@ def test_p1_t5_workflow_upload_is_one_metadata_file_without_new_permissions():
     assert upload["if"] == "always() && steps.publication.outputs.sec_evidence_ready == 'true'"
     assert any(s.get("id") == "publication" and 'sec_evidence_ready=false' in s.get("run", "") for s in steps)
     assert workflow["permissions"] == {"contents": "read"}
+    checkout = next(s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@"))
+    assert "scripts/company_intelligence_publication_evidence.py" in checkout["with"]["sparse-checkout"]
 
 
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_serialization_failure_cannot_enable_stale_artifact_upload(tmp_path, monkeypatch):
     from scripts import refresh_event_workspaces as owner
-    from engine.company_intelligence import publication_evidence as retention
+    from scripts import company_intelligence_publication_evidence as retention
     from tests.test_company_intelligence_event_workspace import _p1_t5_case
     _p1_t5_case(tmp_path / "output")
     fake = _FakeR2()

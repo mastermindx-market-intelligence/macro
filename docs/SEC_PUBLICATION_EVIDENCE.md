@@ -99,7 +99,7 @@ are incomplete/returned_success/returned_conflict/failed. Neither field grants
 source access or means a fresh acquisition, immutable CREATE or serving proof.
 `final_local_selection` is null on refresh failure, otherwise a validated snapshot
 with a matching candidate_sequence or explicit null when publication was not
-observed. Candidate outcomes are closed in publication_evidence.py at actual
+observed. Candidate outcomes are closed in scripts/company_intelligence_publication_evidence.py at actual
 publisher decision sites, including partial/effect-UNKNOWN distinctions.
 
 Selected denotes the issuer-release/SEC metadata subset, not a document-purpose
@@ -107,3 +107,8 @@ authorization. Document IDs are the exact canonical-shaped values in the hashed
 wire; missing original filing/body preimages are not reconstructed to claim an
 independent document-identity replay. No omitted dependency or chain is treated
 as verified by this metadata artifact.
+
+The helper stays beside the existing publication scripts. This metadata-only
+change does not modify engine/** or the accepted SEC producer, and therefore
+does not add an engine-render push trigger. The existing publication checkout
+explicitly includes the new script in its sparse source list.
