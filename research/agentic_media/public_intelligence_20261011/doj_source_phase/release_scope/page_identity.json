@@ -1,8 +1,0 @@
-{
-  "unchanged": {
-    "blog/index.html": true,
-    "learn/index.html": true,
-    "tools/calculators/position-size.html": true
-  },
-  "scope": "exact committed page bytes; not a new browser verification"
-}
