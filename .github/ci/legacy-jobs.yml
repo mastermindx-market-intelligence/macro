@@ -262,6 +262,15 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -2227,6 +2236,15 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -3239,6 +3257,15 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -7004,6 +7031,17 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Plan private-reader/installer suites belong to this scoped CODE lane.
+      - "tests/test_options_plan_api.py"
+      - "tests/test_options_plan_install.py"
+      - "scripts/install_options_plan_reference.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
@@ -8047,7 +8085,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -10539,6 +10577,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -14369,6 +14416,15 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -24337,6 +24393,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -25121,6 +25182,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -27321,6 +27387,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -29918,6 +29993,11 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -35506,6 +35586,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -36024,6 +36109,13 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_statistics.py"
       - "engine/options_statistics_state.py"
       - "app/options_auth.py"
@@ -39208,6 +39300,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -43847,6 +43948,15 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"
