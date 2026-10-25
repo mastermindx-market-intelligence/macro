@@ -1029,6 +1029,57 @@ def test_batch_refuses_ambiguous_clocks_future_captures_or_unknown_policy(field,
 
 
 
+@pytest.mark.parametrize("family", ["single", "batch"])
+@pytest.mark.parametrize("field", ["verified_at_utc", "assessed_at_utc"])
+@pytest.mark.parametrize("clock", [
+    "2026-10-19T040400,9Z",
+    "20261019t040400,5z",
+    "2026-10-19T040400.0000000001Z",
+])
+def test_candidate_families_refuse_lossy_compact_caller_clocks(family, field, clock):
+    assessor = candidate_assessment if family == "single" else (
+        lambda **kwargs: batch_assessment(count=1, **kwargs))
+    with pytest.raises(TiingoViewRefusal):
+        assessor(**{field: clock})
+
+
+@pytest.mark.parametrize("family", ["single", "batch"])
+@pytest.mark.parametrize("clock", [
+    "2026-10-19T040400.{fraction}Z",
+    "20261019t040400.{fraction}z",
+    "2026-10-19 05:04:00.{fraction}+0100",
+])
+def test_candidate_families_preserve_compact_caller_nanosecond_order(family, clock):
+    assessor = candidate_assessment if family == "single" else (
+        lambda **kwargs: batch_assessment(count=1, **kwargs))
+    with pytest.raises(TiingoViewRefusal):
+        assessor(
+            verified_at_utc=clock.format(fraction="000000002"),
+            assessed_at_utc=clock.format(fraction="000000001"),
+        )
+
+
+@pytest.mark.parametrize("family", ["single", "batch"])
+@pytest.mark.parametrize("clock", [
+    "2026-10-19T040400.{fraction}Z",
+    "20261019t040400.{fraction}z",
+    "2026-10-19 05:04:00.{fraction}+0100",
+])
+def test_candidate_families_accept_lossless_ordered_iso_caller_clocks(family, clock):
+    assessor = candidate_assessment if family == "single" else (
+        lambda **kwargs: batch_assessment(count=1, **kwargs))
+    result = assessor(
+        verified_at_utc=clock.format(fraction="000000001"),
+        assessed_at_utc=clock.format(fraction="000000002"),
+    )
+    satisfied = (result["windows"][0]["candidate_checks_satisfied"]
+                 if family == "single" else result["batch_checks_satisfied"])
+    assert satisfied is True
+    assert result["policy_state"] == "CANDIDATE_NOT_ADOPTED"
+    assert result["eligible_observations"] == []
+    assert result["monitoring_admitted"] is False
+
+
 import gzip
 import io
 import json

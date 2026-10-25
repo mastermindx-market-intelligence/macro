@@ -1,3 +1,36 @@
+## Clock precision repair — 25 October 2026
+
+Independent source review 004 reproduced a precision-loss defect on parent
+`e2169fe462017d849b525c16dd44d2f45a69393a`: compact ISO clock strings with comma
+fractions could collapse to whole seconds in pandas 2.2.3. A readback at
+`2026-02-16T160200,9Z` and assessment at `2026-02-16T160200,5Z` then appeared
+equal, hiding the actual 400 ms inversion in both exported candidate assessors.
+The original review's 35 passing and two failing independent cases remain
+retained; the failure is not relabeled as a passing original test.
+
+The shared clock parser now admits an explicit lossless subset: extended or
+basic calendar dates and second-resolution clocks, separated by T/t or a space;
+an optional dot fraction of one through nine digits; and Z/z or a whole-minute
+numeric UTC offset in HH:MM or HHMM form. It normalizes that syntax to extended
+ISO before pandas parsing and UTC conversion. Comma fractions, precision beyond
+nanoseconds, naive clocks and unsupported forms are refused rather than
+truncated. Valid compact/lowercase/offset forms preserve their represented
+nanoseconds, so chronology checks retain their original meaning.
+
+The affected source test file passes **275 tests**, including 24 new public-API
+cases across the single and batch assessors: lossy input refusals, one-nanosecond
+assessment inversions and accepted lossless ordered controls. The independent
+repair recheck and exact commit/CI binding are recorded on
+[PR10052](https://github.com/mastermindx-market-intelligence/macro/pull/10052).
+The actual census emits canonical ISO clocks; the original reproduction does
+not demonstrate that historical census outputs were affected.
+
+This repair does not adopt the candidate policy, admit an observation, acquire
+provider data, renew the expired October 22 evidence, or activate monitoring.
+`CANDIDATE_NOT_ADOPTED`, empty eligibility and false admission flags remain.
+
+---
+
 ## Follow-on enqueue design — 24 October 2026
 
 The selected full delivery-vintage encoding, source eligibility-generation fence, invalidate-first publication, atomic enqueue and account lifecycle proposal is now specified in [OWNER_INTEGRATION.md](OWNER_INTEGRATION.md#selected-source-fence-and-lifecycle-protocol--24-october-2026). The observation identity and revision decisions below are unchanged. That follow-on owner design remains uninstalled and subject to incumbent acceptance and qualified review; it does not adopt this candidate policy or renew the expired October22 evidence.

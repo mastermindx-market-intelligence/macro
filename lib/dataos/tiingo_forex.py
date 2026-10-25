@@ -46,13 +46,30 @@ INTERVAL_HYPOTHESES = (
 
 
 def _clock(value: Any) -> pd.Timestamp | None:
-    # pandas can silently truncate comma fractions and fractions beyond 9 digits.
-    # Refuse those forms; preserve supported dot-fraction nanoseconds exactly.
-    if (not isinstance(value, str)
-            or re.search(r"[T ]\d{2}:\d{2}:\d{2}(?:\.\d{10,}|,\d+)", value)):
+    # Parse only lossless, aware ISO clock forms. pandas can discard comma
+    # fractions, excess precision, or nanoseconds in lowercase compact times.
+    if not isinstance(value, str):
         return None
+    match = re.fullmatch(
+        r"(?P<date>\d{4}-\d{2}-\d{2}|\d{8})[Tt ]"
+        r"(?P<time>\d{2}:\d{2}:\d{2}|\d{6})"
+        r"(?P<fraction>\.\d{1,9})?(?P<zone>[Zz]|[+-]\d{2}:?\d{2})",
+        value,
+    )
+    if match is None:
+        return None
+    day = match["date"].replace("-", "")
+    clock = match["time"].replace(":", "")
+    zone = match["zone"]
+    zone = "+00:00" if zone in ("Z", "z") else zone
+    if len(zone) == 5:
+        zone = zone[:3] + ":" + zone[3:]
+    canonical = (
+        f"{day[:4]}-{day[4:6]}-{day[6:]}T"
+        f"{clock[:2]}:{clock[2:4]}:{clock[4:]}{match['fraction'] or ''}{zone}"
+    )
     try:
-        stamp = pd.Timestamp(value)
+        stamp = pd.Timestamp(canonical)
         if pd.isna(stamp) or stamp.tzinfo is None:
             return None
         stamp = stamp.tz_convert("UTC")
