@@ -10,6 +10,7 @@ carry it, and the listener degrades to nothing by design.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -338,3 +339,112 @@ class TestShippedConfig:
         for rule in rules:
             assert len(rule["value"]) <= 255
             assert 0.1 <= float(rule["interval_seconds"]) <= 86400
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Non-consuming stream snapshots (WEB-P1 G1; same incumbent spool)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _snapshot_spool(root: Path) -> Path:
+    return root / "data" / "marketing" / "press" / "stream_spool.jsonl"
+
+
+def _snapshot_ids(batch: object) -> list[str]:
+    return [row["id"] for row in batch.items]
+
+
+def test_peek_is_non_consuming_and_recovers_after_unacknowledged_crash(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "event-1", "headline": "Source A"}])
+    first = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(first) == ["event-1"]
+    assert _snapshot_spool(tmp_path).stat().st_size > 0
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["event-1"]
+    assert ps.ack_spool(tmp_path, first) is True
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == []
+
+
+def test_ack_exact_prefix_preserves_arrivals_appended_during_acceptance(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "event-before"}])
+    before = ps.peek_spool(tmp_path)
+    ps.append_spool(tmp_path, [{"id": "event-during"}])
+    assert ps.ack_spool(tmp_path, before) is True
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["event-during"]
+
+
+def test_ack_refuses_modified_prefix_without_deleting_data(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "original"}])
+    original = ps.peek_spool(tmp_path)
+    path = _snapshot_spool(tmp_path)
+    path.write_text('{"id":"replacement"}' + chr(10), encoding="utf-8")
+    assert ps.ack_spool(tmp_path, original) is False
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["replacement"]
+
+
+def test_ack_refuses_stale_batch_after_inode_replacement_even_if_bytes_match(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    original = ps.peek_spool(tmp_path)
+    path = _snapshot_spool(tmp_path)
+    replacement = path.with_name("stream_spool.pending")
+    replacement.write_bytes(path.read_bytes())
+    os.replace(replacement, path)
+    assert ps.ack_spool(tmp_path, original) is False
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["A"]
+
+
+def test_failed_ack_replace_keeps_the_original_unconsumed(tmp_path, monkeypatch):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    snapshot = ps.peek_spool(tmp_path)
+    before = _snapshot_spool(tmp_path).read_bytes()
+
+    def fail_replace(src, dest):
+        raise OSError("controlled replacement failure")
+
+    monkeypatch.setattr(ps.os, "replace", fail_replace)
+    assert ps.ack_spool(tmp_path, snapshot) is False
+    assert _snapshot_spool(tmp_path).read_bytes() == before
+
+
+def test_ack_keeps_spool_file_permissions_after_atomic_replace(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    path = _snapshot_spool(tmp_path)
+    path.chmod(0o640)
+    before = ps.peek_spool(tmp_path)
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.stat().st_mode & 0o777 == 0o640
+
+
+def test_pending_partial_tail_is_preserved_on_ack(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "complete"}])
+    path = _snapshot_spool(tmp_path)
+    with path.open("ab") as fh:
+        fh.write(b'{"id":"unfinished"')
+    before = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(before) == ["complete"]
+    assert before.blocked_reason == "partial_trailing_row"
+    assert before.byte_count < path.stat().st_size
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.read_bytes() == b'{"id":"unfinished"'
+
+
+def test_pending_malformed_complete_row_blocks_later_items(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "complete"}])
+    path = _snapshot_spool(tmp_path)
+    with path.open("ab") as fh:
+        fh.write(b'not-json\n{"id":"later"}\n')
+    before = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(before) == ["complete"]
+    assert before.blocked_reason == "malformed_complete_row"
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.read_bytes() == b'not-json\n{"id":"later"}\n'
+
+
+def test_ack_denies_when_entire_spool_is_torn_row(tmp_path):
+    path = _snapshot_spool(tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b'{"id":"unfinished"')
+    snapshot = ps.peek_spool(tmp_path)
+    assert snapshot.items == ()
+    assert snapshot.byte_count == 0
+    assert snapshot.blocked_reason == "partial_trailing_row"
+    assert ps.ack_spool(tmp_path, snapshot) is False
+    assert path.read_bytes() == b'{"id":"unfinished"'
