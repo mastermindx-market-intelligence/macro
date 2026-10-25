@@ -1,3 +1,19 @@
+## Reviewed accessibility repair and fresh native image — 25 October 2026 (UTC)
+
+This checkpoint supersedes the current-state paragraphs below while preserving their historical evidence. The published87aed desktop observations found four accessibility defects: absent duration keyboard focus outline, low-contrast dark duration labels, low-contrast light warning labels, and weak credit filter field boundaries. The original measurements cover actual1363×936 CSS pixels/DPR1, not canonical mobile/desktop cells.
+
+The accepted patch changes five local CSS rules across templates/_bonds_duration.html.j2 and templates/_credit_dislocation.html.j2. It supplies an existing focus-color token, uses dark text-grade information ink, darkens only the two light warning labels, and strengthens only credit input/select borders. The independent reviewer008 authenticated the exact before/after files, independently applied the patch, checked all non-style bytes and the credit script unchanged, and recalculated14 affected opaque-surface contrast cases. Source review passed; predicted contrast is separate from actual browser verification.
+
+Guarded native generation completed2026-10-25T10:23:02.873915Z:14/14 checks passed, no observed effect-guard denials, original inputs/pinned source/private copies unchanged. Exactly2of56 source pins changed; the same562 retained inputs/58,515,774bytes were used with actual clocks and no provider acquisition. The new page is728,312bytes, SHA25613a9e1c9fb8b916555e6cc327e9f69caf046ff6eebf4648f43a4d2a416c57381. Its complete active30-file closure contains2new CSS assets and27 unchanged non-page assets. The generated CSS bodies match the two reviewed template style blocks; the page references their content hashes. Old unreferenced assets remain preserved.
+
+The generated data retains the original limits: October15source, six-session staleness,18issuers,311single-date instruments,0paired comparisons, no5-/21-session history, and unavailable CDS. Same-date clean-price validation passes with2.4bp LQD median error. Unconfirmed current corporate-credit data remains withheld; source generation grants no live-data or predictive authority.
+
+The compact evidence receipt is evidence/accessibility_native_qualification_20261025.json. It binds reviewer008, patch/source pins, native result, generated CSS and all30active static files. Normal final-head contract, publication, hosted CI and actual served-build verification are recorded in the canonical PR9590 checkpoint as they complete. Separate CI repair PR10179/ed534549 addresses International canonical-main acquisition; its independent review and local contract pass, and its actual hosted International job has passed all three downstream suites. Remaining hosted repair gates and fresh-main compatibility must conclude before normal merge.
+
+PR9590 remains Draft/HOLD. The earlier87aed screenshots and quantitative findings retain that head and viewport only. Post-fix browser measurements and the canonical1440/390 viewport plus interaction matrix remain open. No evidence dimensions, visual verdict, deployment acceptance, source adoption or activation are inferred. CONTRACT_DELTA_NO_REAP=1 remains mandatory; no force push, global worktree reaping or GC.
+
+---
+
 ## Main0f integration preserves the qualified Bonds image — 25 October 2026 (UTC)
 
 The normal b673 integration was committed as be9dd85ec8103e6f7f2ec8788e54b65961b1837a. The subsequent integration with main0f61f3013c37a34f7b6c46c73d52ac33363598b2 is conflict-free. Its native comparison preserves all56source pins,556Git-bound inputs and30static files exactly. The 14/14 guarded native result and the 728,312-byte page below remain applicable; no new generation or provider acquisition was needed.

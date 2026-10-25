@@ -44,12 +44,14 @@
 .bonds-duration-dialog .duration-edit{order:2}
 .bonds-duration-dialog .duration-footer-note{font-size:var(--fs-micro,10px);line-height:1.5;color:var(--muted);margin:var(--sp-3,12px) 0 0}
 .bonds-duration-dialog button{font-family:var(--font-ui);min-height:44px}
-.bonds-duration-dialog :focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.bonds-duration-dialog :focus-visible{outline:2px solid var(--info,var(--blue));outline-offset:3px}
 .bonds-duration-dialog button:disabled,.bonds-duration-dialog input:disabled{opacity:.65;cursor:not-allowed}
+html[data-theme="dark"] .bonds-duration-dialog .duration-eyebrow,html[data-theme="dark"] .bonds-duration-dialog .duration-shock strong{color:var(--ink-info,var(--info,var(--blue)))}
 html[data-theme="light"] .bonds-duration-dialog{background:var(--panel);border-inline-start:1px solid var(--line);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .bonds-duration-dialog::backdrop{background:var(--glass-brd);backdrop-filter:none}
 html[data-theme="light"] .bonds-duration-dialog .duration-position{background:var(--panel);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .bonds-duration-dialog .duration-editor,html[data-theme="light"] .bonds-duration-dialog .duration-limit{background:var(--panel2);box-shadow:none}
+html[data-theme="light"] .bonds-duration-dialog .duration-missing strong{color:color-mix(in srgb,var(--ink-warn,var(--warn)) 60%,var(--text))}
 html[data-lang="zh"] .bonds-duration-dialog h2,html[data-lang="zh"] .bonds-duration-dialog .duration-eyebrow{letter-spacing:0;text-transform:none}
 @media(min-width:641px) and (max-width:900px){.bonds-duration-dialog{inset:auto 0 0;width:100%;height:80vh;height:80dvh;max-height:100dvh;border:1px solid var(--line);border-radius:var(--r-panel,14px) var(--r-panel,14px) 0 0}}
 @media(max-width:640px){.bonds-duration-dialog{width:100%;border:0}.bonds-duration-dialog .duration-header{padding:var(--sp-4,16px);padding-top:max(var(--sp-4,16px),env(safe-area-inset-top))}.bonds-duration-dialog .duration-body{padding:0 var(--sp-4,16px) var(--sp-4,16px)}.bonds-duration-dialog .duration-footer{padding-inline:var(--sp-4,16px)}.bonds-duration-dialog .duration-results{grid-template-columns:1fr}.bonds-duration-dialog .duration-position{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--sp-3,12px);align-items:center}.bonds-duration-dialog .duration-position-label{grid-column:1}.bonds-duration-dialog .duration-value,.bonds-duration-dialog .duration-empty{grid-column:2;grid-row:1 / 3;font-size:var(--fs-num-lg,22px);margin:0}.bonds-duration-dialog .duration-position .duration-small{grid-column:1;margin:var(--sp-1,4px) 0 0}.bonds-duration-dialog .duration-percent{grid-column:2;text-align:end}.bonds-duration-dialog .duration-footer-actions{flex-direction:column}.bonds-duration-dialog .duration-edit{order:0}.bonds-duration-dialog .duration-footer-actions button{width:100%}}
