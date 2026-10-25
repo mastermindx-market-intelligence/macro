@@ -1,5 +1,9 @@
 # Orchestrator project continuity implementation
 
+The original engineering narrative through Sources is the 2026-10-21 record.
+The dated reconciliation below carries later evidence; current wave status and
+next action belong to the workstream and its latest handoff.
+
 ## Intended outcome
 
 The 2026-10-21 assignment is to give Astra and the other currently assigned
@@ -575,40 +579,67 @@ Data task, or wait for an archived owner. An actual accepted update and its
 existing source-acquisition owner readback must precede steps 3–4. Return on the
 same thread and [Macro #10181](https://github.com/mastermindx-market-intelligence/macro/pull/10181).
 
+A separate read-only Tiingo source census at Macro main 6ffbfa8f confirmed the
+workstream and accepted commercial-rights decision are byte-identical to the
+configured 11f88c73 source. The quote/data canary and conditional three-job
+activation already have authorization; the separate News #10136 Draft/HOLD
+does not revoke it. Cosmetic stale-date or superseded-PR corrections cannot
+stand in for the required substantive changed-decision proof. No Tiingo
+activation was performed by this workstream.
+
 ### W3 source integration acceptance
 
-The original #1673 repair is now incorporated in #656.
+The original #1673 repair is incorporated in #656.
 [Cursor's incorporation receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1673#issuecomment-6387208534)
-and [fresh review request](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656#issuecomment-6387679790)
-supersede the old instruction to merge #1673 into #656.
-#1673 is closed and has zero independent diff. Preserve it as superseded.
+supersedes the old instruction to merge #1673 into #656. #1673 is closed and has
+zero independent diff. Preserve it as superseded.
 
-| Existing carrier | Qualified source head | Exact-head successful CI | Remaining source gate |
+| Existing carrier | Qualified source | Review / integration result | Remaining gate |
 |---|---|---|---|
-| [#656](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656) | `a9c685a18ddba73d5d1b4efc529d8db2409393a0` | [40115485649](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40115485649) | Fresh non-authoring review resolving the old Git-identity REQUEST_CHANGES |
-| [#1676](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676) | `aee76c3ecc81c9a5748f445551701e2f80f6857c` | [40115487613](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40115487613) | Independent stacked-composition review; reconcile accepted #656 |
-| [#1289](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289) | `a1c213b2779539687de1fe9c64368d06b1e0e55c` | [40115487628](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40115487628) | Draft / production HOLD; independent review and authentic consumer qualification |
+| [#656](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656) | `a9c685a18ddba73d5d1b4efc529d8db2409393a0` | Fresh Cursor PASS 5643182746; non-author APPROVED 5643188322; head CI 40115485649 passed | Protected queue event 34181749523 admitted at 12:36:22Z; final merge readback owed |
+| [#1676](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676) | `aee76c3ecc81c9a5748f445551701e2f80f6857c` | Fresh composition PASS 5643238757; non-author approval 5643253430; CI 40115487613 passed; merged into #1289 at 12:47:12Z | Completed bounded source integration; no production acceptance inferred |
+| [#1289](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289) | `0b0eac4f2aa2030f58e8a90e2724e5dfb2f3f6b8` | Integrated tree `b8e530589d4ef32541189007dd230ec84fe7fbc7` equals reviewed stack; fresh CI 40194668383 running | Draft / production HOLD; correct stale source-status docs, qualify actual consumer evidence, independently review changes and release |
 
-#656 and #1676 have identical builder blob
-`4a73e78b28299fee98a130aa9d54510804d60f96` and test blob
-`9ec7bdfbbdc5397f76bfba3f1e61b2959fa1d2be`. Reuse that composition evidence
-rather than replaying the dependency repair. #1676 is now ready; its historical
-body still describing draft status is stale. #1289 remains draft.
+The #656 and #1676 builder blob `4a73e78b28299fee98a130aa9d54510804d60f96`
+and test blob `9ec7bdfbbdc5397f76bfba3f1e61b2959fa1d2be` match exactly.
+The #1676 lifecycle blob is `917656eece21fb8481c987ee6b1fc775fdbd9fba`.
+The current principal authored none of #656's or #1676's delta commits. It
+reviewed those changes, recorded non-author approvals, and used normal GitHub
+release routes. It authored #1289 and does not approve or self-release it.
 
-The refreshed source had no evidenced live mutation, but PR prose does not prove
-a writer lease released. A read-only independent review may proceed without
-displacing the writer. Reconcile the existing source-custody owner before a later
-mutation/merge. Do not wait for a specific old reviewer; a fresh eligible
-non-authoring reviewer may assess the outstanding findings.
+[The actual source-custody return](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656#issuecomment-6397696251)
+reports source-refresh Cursor agent bc-a45b1785 finished, run complete and VM
+terminated, with a clean last workspace and matching remote heads. This is
+actual owner readback, not a lease inferred from PR authorship or status.
+The custody operation's [terminal STOP](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792931770495089)
+was sent and read back; its exact child watcher was disabled and verified.
 
-The existing `continuity-w3-656-review-20261025-c3` operation received
-the verified #1700 merge in its
-[same-carrier CONTINUE](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930284728909).
-The Secretary [placed one fresh non-author Cursor reviewer](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930634303739),
-[bc-19c23799-de88-541d-ad6e-d0b78f696d73](https://cursor.com/agents/bc-19c23799-de88-541d-ad6e-d0b78f696d73),
-for COMMENT-only technical review of the unchanged #656 head. Placement was
-consumed by RULING 1792930804.862679; no completed verdict has yet been observed.
-The Secretary's standing approval/merge restriction remains in force.
+#656's current queue candidate is
+`6d7f652ca1de478a1732c4829063baa220062352`. Queue
+[CI 40193870548](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40193870548)
+and Mastermind OS 40193870577 were running on admission. The separate
+[final release-readback operation](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932062104879)
+requests only final merged SHA / master / checks or exact queue failure; it
+does not repeat the merge request. The original #656 review operation is closed
+by STOP 1792931158.458859.
+
+The fresh stack reviewer bc-c248f76b returned
+[PASS on #1676](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676#pullrequestreview-5643238757)
+and [PASS on prior #1289 a1c213b](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289#pullrequestreview-5643238830),
+with 92 focused composed-tree tests passing. These used --noconftest because
+the standalone checkout lacked vendor/macro_src and shared conftest imported
+pandas. They are focused reviewer results, not full-suite or native proof.
+The composition merged cleanly with master a4525e3e, preserved #1666's hook
+blobs, and already contained the full #656 delta.
+
+[RULING 1792932401.375569](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932401375569)
+consumed PASS and authorized bounded integration. The repository permits
+squash merges; #1676's exact-head squash result and #1289 branch readback
+confirm 0b0eac4f and identical reviewed tree b8e53058. This closes the requested
+#1676-to-#1289 source integration. The existing runbook's absent-builder sentence
+and historical Git-identity finding need correction on that same carrier.
+The same reviewer remains the changed-source return route; Secretary's
+approval/merge restriction and #1289 production HOLD remain intact.
 
 #### Next W3 slice: qualify native input evidence
 
@@ -649,6 +680,49 @@ unwritten. Exact retained input, model use, useful work and original-parent
 acceptance remain distinct proof levels. After independent review of a concrete
 evidence producer, any production connection belongs on the existing
 #1676 to #1289 integration side, with actual source custody reconciled first.
+
+The bounded read-only build/schema census returned
+**CONSUMPTION_EVIDENCE_UNAVAILABLE**: no current installed binary identity or
+existing native input schema was retrieved. A historical Tiingo checkpoint
+records codex-cli 0.163.0; that is not a current build readback or RuntimeBinding.
+The child submitted only a read-only hostname probe; it was interrupted with no
+output, PID or exit status and was not retried. No native launch, RPC, provider
+turn, resume/compact, schema generation, transcript read, or persistent change
+was requested. Its execution/termination is unobserved, with no persistent or
+native effect requested. Keep the next action on the existing native evidence
+owner: qualify a current readable build/schema artifact first. Do not infer an
+input-retention capability from generic transport or assistant-result evidence.
+
+The current native owner received the
+[bounded evidence action](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289#issuecomment-6397884159)
+on [its own return thread](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932795434119),
+operation continuity-w3-native-evidence-20261025-c3. The action requests only
+existing readable build/schema evidence and returns the exact missing artifact
+if insufficient. Its canonical hourly watcher 6addfbde54c081918e3c9d29bdd35f4f
+was created and read back with exact prompt equality; delivery is not pickup.
+
+### Checkpoint release and return continuity
+
+Fresh non-author review
+[5643229107](https://github.com/mastermindx-market-intelligence/macro/pull/10181#pullrequestreview-5643229107)
+passed the preceding 4a001017 checkpoint. This subsequent delta requires review
+on that same operation. Macro main 6ffbfa8f is **unprotected** and its normal
+release path is the existing merge-on-green workflow, not Mastermind's protected
+queue. The authoring mastermindx-3 receiver and restricted Secretary do not arm
+or self-release #10181. An eligible independent admission actor remains required;
+the [source-linked handoff](https://github.com/mastermindx-market-intelligence/macro/pull/10181#issuecomment-6397682990)
+identifies the concrete controller and main readback requirement.
+
+Canonical watcher prompts were rendered and validated from protected module blob
+b275ad19e2be9223103125f0909ceb8d78abbdd5 and read back after installation:
+checkpoint task 6addf60cc8f48191938ce039360a978a; stack review task
+6addf60dc81481919d38148cc0d20c08; #656 final release-readback task
+6addfa862b6081918c14d0f9224ec021. The native-evidence watch above has the same schedule. Their exact Slack carriers and handled baselines
+belong in the dated handoff. They recur hourly from 13:30Z on October 25.
+The closed custody task 6addf60f3998819196a049657c747005 was disabled after
+verified STOP. Configuration readback proves the watches exist; the stack watch
+has one recorded no-update run, and action-required return consumption is not
+yet proven. No scheduled task grants runtime or release authority.
 
 ### W4 runtime prerequisites and proof boundary
 

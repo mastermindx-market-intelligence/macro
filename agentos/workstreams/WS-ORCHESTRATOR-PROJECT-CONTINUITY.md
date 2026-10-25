@@ -55,10 +55,11 @@ waves:
     title: Compose and qualify full semantic continuation through existing owners
     status: in_progress
     next_action: >
-      PR 1673 is incorporated and closed; obtain fresh independent review of
-      PR 656 at a9c685a, then the PR 1676 aee76c3 / PR 1289 a1c213b composition.
-      Their current hosted CI is green. Qualify native input evidence before a
-      capsule ACK connection; preserve production HOLD and real custody.
+      PR 1673 is incorporated and closed. PR 656 passed fresh review and entered
+      the protected queue; consume its final release readback. PR 1676 passed
+      independent composition review and merged into PR 1289 as 0b0eac4f.
+      Correct the existing source-status docs and qualify native input evidence
+      before a capsule ACK connection; keep PR 1289 Draft/production HOLD.
   - id: W4
     title: Prove normal and interrupted long-project execution across providers
     status: todo
@@ -87,10 +88,11 @@ artifacts:
   - mastermind:integrations/session_bridge/AGENTOS_SESSION_START.md
 next_action: >
   PR 1700 merged through the protected queue at 2026-10-25T12:08:55Z.
-  Consume the existing Secretary W1 changed-decision proof and W3 independent
-  review operations, now supplied with that merge receipt. Obtain changed-head
-  review and independent release for Macro PR 10181. W4 retains its source,
-  delivery, runtime arming and admission gates.
+  Consume PR 656's protected-queue result and advance the integrated PR 1289
+  source/evidence frontier on its existing carrier. Keep W1's real changed-decision
+  proof open. Obtain changed-head review and independent merge-on-green release
+  for Macro PR 10181. Exact-thread return watchers are verified; W4 retains its
+  source, delivery, runtime arming and admission gates.
 ---
 
 ## Scope
@@ -136,8 +138,21 @@ this workstream and its dated handoff carry the current organizational frontier.
   closed that release operation. This checkpoint remains proposed in Macro
   [PR 10181](https://github.com/mastermindx-market-intelligence/macro/pull/10181)
   until independent release; it is not accepted Agent OS state yet.
-- **W3:** #656, #1676 and #1289 remain source review/integration obligations. All
-  three unchanged heads have green required checks. #1289 retains production HOLD.
+- **W3:** Fresh Cursor [review 5643182746](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656#pullrequestreview-5643182746)
+  passed #656 at a9c685a; non-author approval 5643188322 followed. Actual cloud
+  writer custody was reconciled before protected-queue admission 34181749523
+  at 12:36:22Z. Queue CI 40193870548 is running; admission is not merge.
+  Fresh stack [review 5643238757](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676#pullrequestreview-5643238757)
+  passed the #1676/#1289 composition. #1676 **merged into #1289 at 12:47:12Z**
+  as `0b0eac4f2aa2030f58e8a90e2724e5dfb2f3f6b8`; its tree exactly matches the
+  reviewed stack. New #1289 CI 40194668383 is running. #1289 remains Draft /
+  production HOLD; this receiver does not approve or self-release it.
+- **Checkpoint:** Independent review 5643229107 passed previous source head
+  4a001017. This newer delta needs review on the same operation. Macro main is
+  unprotected and uses its existing merge-on-green controller; an eligible
+  non-author admission actor is still required for authored PR 10181. The
+  [release-route correction](https://github.com/mastermindx-market-intelligence/macro/pull/10181#issuecomment-6397682990)
+  records that boundary. The dated handoff records exact-thread watch receipts.
 - **W4:** the installed Executive owner reported `ceo_submit_armed: false` at
   2026-10-25T12:07:42Z. The earlier caller Codex target projection was empty. Staged
   `f608f52f` lacks the W3 builder and Runtime/Harness PREPARE/ACK additions;
