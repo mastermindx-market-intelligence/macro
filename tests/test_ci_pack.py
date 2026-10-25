@@ -4390,6 +4390,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
+    # Qledger suites retain all named imports; opaque fixture roots are audited.
+    "qledger-cluster-honest-ci",
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
@@ -5110,6 +5112,28 @@ def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
 
 
+def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
+    """The tuple-joined seed is a real input even when AST inference misses it."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "qledger-cluster-honest-ci")
+    for dependency in (
+        "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+        "engine/qledger_validity.py",  # ci-trigger-closure: data
+        "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+        "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+    ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
+    assert not selected, reason
+
+
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
     """The recovered MarketDesk owner must not become a whole-tree CI rider."""
     manifest = _yaml(MANIFEST)
@@ -5307,12 +5331,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Retained histories below describe their original qualified compositions.
+# Main's 5877 already includes the memo's inherited two units; do not count them twice.
 # 2026-10-24: retain PR #10125's memo regression suite in its incumbent job.
 # The same-tree measurement adds two weight units, with identical selected IDs.
 # Fund only free-content 5873 -> 5875; the dated entry below records attribution.
+# Preserve protected GovRev memo coverage (+2 in its existing selected job).
+# App-parent bridge coverage retains its existing Node command in data-base-shim.
+# Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
+# all ten packs. Protected ceilings already cover this tree: no extra funding.
+# Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_875),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5321,6 +5352,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-24 frozen-node canonical account reader (#10145): enroll the
+    two-test suite once in incumbent CODE billing-emails/account-preferences,
+    not DATA support-email-spine. Hosted 40073480536 measured base 5,875
+    against the stale 5,873 free-content ceiling, then head 5,877 (+2).
+    After moving to the proper owner and composing main 153fb1e318c7,
+    native measurements remain index 135/5,881, free-content 135/5,877,
+    plan-book 128/5,631, all ten packs, no new selected job. Fund the exact
+    four-unit excess (two inherited, two new); other ceilings stay unchanged.
+    Fresh main 9227e34f3a62 now owns the inherited GovRev baseline 5,875;
+    this composition retains only the two reader-test units above it: 5,877.
 
     2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
     ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.

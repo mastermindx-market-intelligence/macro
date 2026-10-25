@@ -1,3 +1,19 @@
+## Current b673 integration, native qualification and CI closure repair — 25 October 2026 (UTC)
+
+This checkpoint supersedes the earlier f3f integration state below. The source candidate incorporates main b6734410d05e9396347f6e711e6b6184a4582185 into bfc9a8c9560fa6534bbff1dbae508935084a652d. All three conflicts are resolved: both CI histories and coverage additions are preserved, and site/bonds.html is the freshly qualified native output.
+
+Current main changed 3 of 56 source pins, 492 of 556 Git-bound inputs and 2 supporting assets. The new finite image contains 562 retained inputs / 58,515,774 bytes, including the same six private files. The existing guarded native runner completed at 2026-10-25T04:28:12Z: 14/14 checks passed, no guard denials, original inputs and pinned source unchanged. No provider acquisition occurred. The adopted page is 728,312 bytes, SHA256 8821b27652dc196241cdb5a6e1b6be6adf31af4d418cc7f221928d31afc5ac29; the full 29-asset closure is retained.
+
+The generated evidence remains bounded: October15 source, six-session staleness, 18 issuers, 311 single-date instruments, zero paired comparisons and no 5-/21-session history. Same-date clean-price validation passed with LQD median error2.4bp. Unconfirmed current corporate-credit data is withheld. The process used its actual UTC/local clocks; no timestamp replacement or additional predictive authority is claimed.
+
+The integrated page/style and packing checks initially returned 7 passed / 1 failed. The sole failure was the canonical import-closure check for ccw-w4-credit-desk. Its complete retained census identified 23 paths (10 Python,13 research documents). Adding exactly those literals raises that job's paths from1,014 to1,037; all355 jobs, commands, scopes, weights, existing YAML bytes and test assertions remain unchanged. Both affected checks now pass: canonical exclusive closure and all three canonical packing probes. The other seven prior passes and 14 native checks are retained. Main's existing free-content ceiling5,877 and ten-pack maximum are unchanged; there is no extra budget or native rebuild for this CI-only insertion.
+
+Exact evidence is in evidence/main_b673_native_qualification_20261025.json. It binds the native result, input manifest,56 source pins,30 static files, the original failed test result and successful repair result. Normal commit/contract/hosted-CI and candidate-preview outcomes are recorded in the canonical PR9590 checkpoint. CONTRACT_DELTA_NO_REAP=1 remains mandatory; no global worktree reaping or GC.
+
+Independent review005 retains its original template/dependency scope; the separately reviewed store/shared-shell/theme deltas add no repository pins. The older bfc9 screenshots remain attributable only to that candidate. Current exact-candidate dual-theme/language/viewport evidence and broader product acceptance remain open. PR9590 remains Draft/HOLD until its release gates are satisfied; this source checkpoint grants no production or activation authority.
+
+---
+
 ## Current mainf3f integration and packing repair — 24 October 2026 (UTC)
 
 The exact main f3f622a42e002f3cb3503f8ac3fe95485e523129 caused one generated-page collision in site/bonds.html. All 56 producer/template pins, 556 Git-bound inputs and 29 supporting assets match the completed main94d native qualification. The conflict therefore retains that exact 728,415-byte page, SHA256 1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8. No new native generation was needed or claimed.

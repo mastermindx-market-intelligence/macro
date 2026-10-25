@@ -5,8 +5,8 @@
     "may_originate": false,
     "may_escalate": false
   },
-  "built": "2026-10-23T12:35:50.049406+00:00",
-  "asof": "2026-10-23",
+  "built": "2026-10-24T14:57:14.794840+00:00",
+  "asof": "2026-10-24",
   "policy_impulse": "neutral",
   "transmission_channel": [],
   "recent_events": [
@@ -122,10 +122,10 @@
   ],
   "staleness": {
     "per_source_days": {
-      "lpr": 3,
-      "rrr": 534,
-      "fr007": 0,
-      "communiques": 178
+      "lpr": 4,
+      "rrr": 535,
+      "fr007": 1,
+      "communiques": 179
     }
   },
   "priced_in_check": {

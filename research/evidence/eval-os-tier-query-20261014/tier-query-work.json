@@ -1,0 +1,20 @@
+{
+  "schema": "eval_os.t12_tier_query_work.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449",
+  "base": "3e5b68f3468b029205bbb30d2c855022d37bdb66",
+  "source_sha256": {
+    "engine/intelligence_registry.py": "73f171baba1eee069eca1ed8ec9a3eeccdeed246ffcf35ea9ca10b763a781630",
+    "tests/test_intelligence_registry.py": "5c8e582893bd344fe0d6ec4ffa9884106f87e1d859f1b5b323343b22efc3be90"
+  },
+  "scope": "Read-only original T12 authority-derived tier query; no issue emission, evaluation execution, routing, priority or promotion effect.",
+  "targeted_tests": {
+    "passed": 24,
+    "failed": 0,
+    "duration_seconds": 3.8
+  },
+  "regression": "218 passed before the narrow provenance repair; unchanged existing registry code",
+  "independent_review": "ACCEPTED, no findings; assurance/t12-tier-query-final-review.json",
+  "publication": "Containing local commit will bind source; PR6651 unchanged; no new PR yet",
+  "review_witnesses": "5 failures reproduced before repair; all 5 pass after repair"
+}

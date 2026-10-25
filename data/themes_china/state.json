@@ -95,11 +95,11 @@
     "score": 37
   },
   "cn_defense": {
-    "label": "neutral",
+    "label": "fading",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
     "rank": 15,
-    "reco": "hold",
+    "reco": "trim",
     "score": 35
   },
   "cn_food_bev": {
