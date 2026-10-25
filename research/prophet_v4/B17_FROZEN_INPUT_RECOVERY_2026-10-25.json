@@ -16051,7 +16051,7 @@
     "sha256": "35ea5c7030550956943e7eefc15b25d12373b09f4c042ffdc2aca5e0d8604d10",
     "transport": "git_object"
   },
-  "implementation_sha256": "40ee371506e9bffd976d5aac7b7a72302b5ebdfb787488f2ffe1fa73fdb2753d",
+  "implementation_sha256": "3d423e7cc8b1823a5a184b21b16b79741219bbb269e1e5efae87d70ff75c8d58",
   "measurement_readiness": {
     "b17_disposition": "STILL_LIVE",
     "c0_denominator": 7918,
@@ -22800,13 +22800,13 @@
     },
     "total": 240
   },
-  "rule_ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+  "rule_ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
   "rule_sources": [
     {
       "bytes": 249820,
       "git_blob": "0c351d6a8ece4b56450255595718e6e6c330b7f3",
       "path": "engine/prophet_bridge.py",
-      "ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+      "ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
       "sha256": "e9aac3b3d790ef1c2c179bb4911882000500a818c168307df2b7981ade594caf",
       "transport": "git_object"
     },
@@ -22814,7 +22814,7 @@
       "bytes": 60458,
       "git_blob": "91e9d75e367c2314c6a9b3c95f55588d775b5a5f",
       "path": "engine/us_early_turn.py",
-      "ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+      "ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
       "sha256": "ef4ac79facb4c57e8a60bd4c89e2e5a5a97e17b74ffe45df391f5f6b59b96a99",
       "transport": "git_object"
     },
@@ -22822,7 +22822,7 @@
       "bytes": 58981,
       "git_blob": "004eda921766922e146d35acc6ee2bc646e96854",
       "path": "engine/confluence_tiers.py",
-      "ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+      "ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
       "sha256": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65",
       "transport": "git_object"
     },
@@ -22830,7 +22830,7 @@
       "bytes": 9996,
       "git_blob": "0cfc9857cd240788542f1dc6d94eb55d4a68a513",
       "path": "engine/session_anchor.py",
-      "ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+      "ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
       "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
       "transport": "git_object"
     },
@@ -22838,7 +22838,7 @@
       "bytes": 56987,
       "git_blob": "5ce36ebf40066363f542db0e67be9772dca0927b",
       "path": "engine/signal_quality.py",
-      "ref": "a6c9b8e2208b10da978868024e17e2a90f991175",
+      "ref": "4e817e7a1b83ffed1ae8ec22a3911c92ac541198",
       "sha256": "7191d7adef0942465465bd83baf5b02ea14a9465626089415987ed35763252ef",
       "transport": "git_object"
     }

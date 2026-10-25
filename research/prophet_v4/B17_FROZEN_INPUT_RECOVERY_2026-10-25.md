@@ -19,7 +19,7 @@ The implementation calls the existing `engine.prophet_bridge.select_candidates(n
 | Study code recorded by the original artifact | `ef43e77997659ace2534232c015e96179d0f3fba` |
 | Original signal-store origin/main | `45dae5dba0a252ceaef05a8ab8c17decb73d99d8` |
 | Frozen result and episode artifact read ref | `228c25d37617a7217c8f65f1613ade701a2fe01a` |
-| Current rule source ref used by this run | `a6c9b8e2208b10da978868024e17e2a90f991175` |
+| Current rule source ref used by this run | `4e817e7a1b83ffed1ae8ec22a3911c92ac541198` |
 | Signal files recovered | 241, with immutable Git blob identities and SHA-256 receipts |
 | Primary priced panel | 240; SATS remains unpriced/excluded; HL and UEC remain separate add-ons |
 | Frozen episode artifact | 39,877 rows; original C0 denominator 7,918 |
@@ -82,9 +82,9 @@ The next bounded implementation step is to recover a historically bound full-pop
 
 ## Validation and reproduction
 
-The focused suite completed **27 passed in 1.19 seconds**. It checks canonical selector behavior, unknown versus known refusal, incomplete reconstruction, legacy defaults, source/availability clocks, future input poisoning, immutable object identity, exact ruler boundaries and deduplication, delayed gates, missing liveness evidence, unavailable union results, and refusal propagation. Explicit source-access denial stops the read operation rather than falling through to another client.
+The focused suite completed **28 passed in 1.10 seconds**. It checks canonical selector behavior, unknown versus known refusal, incomplete reconstruction, legacy defaults, source/availability clocks, future input poisoning, immutable object identity, exact ruler boundaries and deduplication, delayed gates, missing liveness evidence, unavailable union results, and refusal propagation. Explicit source-access denial stops the read operation rather than falling through to another client. The recovery also refuses a reader pointed at a different checkout: canonical imports and the recorded rule ref must bind the same implementation checkout. The focused suite includes that provenance regression.
 
-The complete recovery run exited **0** in 103.69 seconds, qualified all 240 price candidates, read all 57 snapshots, reproduced the C1 baseline, and emitted the bounded cutoff replay.
+The complete recovery run exited **0** in 107.86 seconds, qualified all 240 price candidates, read all 57 snapshots, reproduced the C1 baseline, and emitted the bounded cutoff replay.
 
 Run from an isolated checkout with the original Git objects available:
 
@@ -101,10 +101,10 @@ The report binds the checkout HEAD as `rule_ref` and receipts for the five canon
 
 | Artifact | SHA-256 of committed file bytes |
 |---|---|
-| `b17_frozen_input_recovery.py` | `40ee371506e9bffd976d5aac7b7a72302b5ebdfb787488f2ffe1fa73fdb2753d` |
-| `test_prophet_b17_frozen_input_recovery.py` | `88d99bdf1536c00de699975304658e71e8f3dc6475b95ff922877927e924a666` |
+| `b17_frozen_input_recovery.py` | `3d423e7cc8b1823a5a184b21b16b79741219bbb269e1e5efae87d70ff75c8d58` |
+| `test_prophet_b17_frozen_input_recovery.py` | `3309c9064a7b647b789bc65d408a8ed7cbf5fc7326292b81a72ba77aa42a5d48` |
 | `B17_ADMISSION_ARCHIVE_INDEX_2026-10-25.json` | `cbccb07847f70b854692db594c84ba5b8c251de25d6e38ae2ca67c6406179584` |
-| `B17_FROZEN_INPUT_RECOVERY_2026-10-25.json` | `dec30102dd1ea08f14a7aedebf43010735f600dc7aef17fd6cab7823bdf6e4bd` |
+| `B17_FROZEN_INPUT_RECOVERY_2026-10-25.json` | `7bd9c2c081b9c5f0c2223cfc12915bc4514fb91b5e410a5a63dbfb4020d981e0` |
 
 The report's `history_index_sha256` separately hashes the parsed index serialized with sorted JSON keys; it is a semantic-input digest, not the pretty-printed index file digest in this table.
 

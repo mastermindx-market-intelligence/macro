@@ -246,3 +246,11 @@ def test_missing_original_cutoff_snapshot_does_not_substitute_a_later_window():
     result = replay_cutoff_intersection(
         [{"state": "known_snapshot_selection", "source_asof": "2026-10-23"}], {})
     assert result["state"] == "unknown_input"
+
+
+def test_recovery_cannot_bind_another_checkouts_head_to_local_rules(tmp_path):
+    from research.prophet_v4.b17_frozen_input_recovery import (
+        FROZEN_REF, SOURCE_REF, GitReader, recover,
+    )
+    with pytest.raises(InputUnavailable, match="reader must match the implementation checkout"):
+        recover(GitReader(tmp_path), frozen_ref=FROZEN_REF, source_ref=SOURCE_REF)

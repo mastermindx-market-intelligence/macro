@@ -330,6 +330,10 @@ def recover(
     archive_index: dict[str, Any] | None = None,
     report_progress: bool = False,
 ) -> dict[str, Any]:
+    # Imports below resolve from this implementation's checkout. A different
+    # reader checkout could otherwise advertise a rule_ref it never executed.
+    if reader.repo.resolve() != REPO.resolve():
+        raise InputUnavailable("Recovery reader must match the implementation checkout")
     rule_ref = reader.command(["rev-parse", "HEAD"]).decode().strip()
     reader.command(["diff", "--exit-code", rule_ref, "--", "engine", "config"])
     rule_sources = [reader.read(rule_ref, path).receipt() for path in
