@@ -1,0 +1,85 @@
+{
+  "CI_named_native_suites": [
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_quote_study.py",
+    "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ],
+  "CI_workflow_sha256": "fbe64e1220a6955c301b15e64f5b3ebd0c3ca667570cb369cd0667de5f12068a",
+  "TDD_missing_implementation_red": true,
+  "accepted_source": {
+    "session2/SOURCE_BRIDGE_PROTOCOL.md": {
+      "bytes": 6137,
+      "sha256": "8f3f90b8ac404a703090504d41ba5916bb1cde99d5ac46f40ce4ac5745be7428"
+    },
+    "session2/evidence/source_bridge_synthetic_witness.json": {
+      "bytes": 1333,
+      "sha256": "1d1b7c43e1ae71c9fdada525c4e777fd7446de6b15201657003972a669f26928"
+    },
+    "session2/prototype/intake_bridge.py": {
+      "bytes": 6423,
+      "sha256": "2c3ff10736696d7ff23c56d0b9effdf42d82b2e662eb513f871ee6a9bb823dff"
+    },
+    "session2/prototype/test_intake_bridge.py": {
+      "bytes": 12632,
+      "sha256": "cd79fe2022169d8282e1ce7a656d2a97c0b3b0e9489ee412d67b5c2a7735540d"
+    }
+  },
+  "customer_trading_publication_authority": false,
+  "exact_predecessor_head": "cb622ddaad4005113285990321373271fb0e8ac7",
+  "full_twelve_suite_local_passed": 357,
+  "market_pilot_executed": false,
+  "negative_real_source_class": "OWNER_ADMISSION_REQUIRED_WITHOUT_COMPUTATION",
+  "new_native_tests_passed": 32,
+  "owner_rights_authenticated": false,
+  "prepared_at_utc": "2026-10-11T08:51:44.442776+00:00",
+  "previous_head_factor_atlas": {
+    "conclusion": "success",
+    "run": 37988289624
+  },
+  "previous_head_fences": {
+    "conclusion": "success",
+    "run": 37988289632
+  },
+  "previous_head_full_ci": {
+    "conclusion": "failure",
+    "owner": "washout-turn-organ",
+    "reason": "board cap 320/320 and eight uncovered tier-price badges (unrelated live quote surface)",
+    "run": 37988289925
+  },
+  "proof_logs": {
+    "intake-bridge-adversarial.txt": {
+      "bytes": 99,
+      "sha256": "b3fbc58656e0d87a6d5702a9450a905a2d35c880600326b1f05854f3baf02f46"
+    },
+    "intake-bridge-full-green.txt": {
+      "bytes": 421,
+      "sha256": "5fdb7ea625b89bf02bf598f403e9b9dccd04c50965fcff5243640fea123556cb"
+    },
+    "intake-bridge-red.txt": {
+      "bytes": 2348,
+      "sha256": "73325aac6972b8de1b84fc52092836846121b383bb09a482d77410db707a9a99"
+    }
+  },
+  "protected_mastermind": "8d62a8571d2a6ad9da9d50e5e4624de6eecaac4c",
+  "python": "3.12",
+  "research_class": "SYNTHETIC_OWNER_SHAPED_SOURCE_ONLY",
+  "runtime_versions": {
+    "numpy": "2.5.1",
+    "pytest": "9.1.1",
+    "scipy": "1.18.0"
+  },
+  "schema": "factor_atlas.native_intake_bridge_receipt.v1",
+  "skillpack_version": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_data_admitted": false,
+  "source_receipts_coarse_precision": "ceil actual purported ns reader receipt to full seconds",
+  "uncommitted_rejected_red_source_excluded": true
+}

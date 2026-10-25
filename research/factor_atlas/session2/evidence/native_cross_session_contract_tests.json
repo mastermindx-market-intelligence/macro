@@ -1,0 +1,74 @@
+{
+  "accepted_files": {
+    "session2/S1_S2_METHOD_BOUNDARY.md": {
+      "bytes": 7071,
+      "sha256": "61109e4fe0be6410dbaeebd59d95b71819f3f41011003c896f3c0e25ec5fca87"
+    },
+    "session2/evidence/s1_s2_native_boundary_synthetic.json": {
+      "bytes": 6795,
+      "sha256": "a3d5089bd0edcc9de9548c04ceb30ad9ee4e66b6ad26ec8e7618c71b86395cad"
+    },
+    "session2/prototype/cross_session_contract.py": {
+      "bytes": 8654,
+      "sha256": "90487ca134318fd3eea69f6c07dacc6775b8a19eacd7cce7ad76b565533135bd"
+    },
+    "session2/prototype/test_cross_session_contract.py": {
+      "bytes": 11723,
+      "sha256": "78a1a6e612064ae255ac8b463f953da4e9a747fcde29e1bd4c2f13519ef4552c"
+    }
+  },
+  "blocked_S2_P4_and_S2_P6_edits_attempted": false,
+  "created_at_utc": "2026-10-11T11:07:10.327255+00:00",
+  "customer_publication_allowed": false,
+  "full_fourteen_suite_local_tests_passed": 449,
+  "local_evidence_logs": {
+    "focused_cross_session": {
+      "bytes": 99,
+      "sha256": "855b38acb0fdbf476ca482a3930442e1f563fe7f14e4a17bac58533d88ee7c86"
+    },
+    "fourteen_suite_green": {
+      "bytes": 580,
+      "sha256": "b346fe63e12db9dfe22c83151581d6042f4eca26754e1f9a41c836a516e87d06"
+    }
+  },
+  "native_source_authority_authenticates_real_PIT": false,
+  "new_native_tests_passed": 29,
+  "original_s1_fixture_not_committed_into_S2": true,
+  "original_source_parent": "d4b18bbc8b41e208209b06be41922077a35af033",
+  "price_basis_joint_numeric_arithmetic_allowed": false,
+  "protected_mastermind": "26b6acd3a17fdea65cc1d27c7344ef2c85549deb",
+  "s1_native_result_digest_checked": true,
+  "s1_original_fixture": {
+    "bytes": 5333,
+    "sha256": "6860786ee663c394e0d33b18e241592879501a6bc5335a09faed6d66b0b42626"
+  },
+  "s1_original_fixture_blob": "3590dc40e3116834b79ae17628b399d4be01a18f",
+  "s1_original_fixture_source": "research/factor_atlas/session1/evidence/native_round_trip.v1.json",
+  "s1_original_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+  "s1_original_pr": "mastermindx-market-intelligence/macro#8680",
+  "s1_price_basis": "tradj",
+  "s2_original_branch": "claude/factor-atlas-capital-pressure-20261008",
+  "s2_required_price_volume_basis": "unadjusted/USD",
+  "schema": "factor_atlas.s1_s2_method_compatibility_receipt.v1",
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_rights_or_real_minute_data_admitted": false,
+  "trading_authority_allowed": false,
+  "uncommitted_red_model_files_included": false,
+  "workflow_sha256": "74dbb7e426359432d20afeb10ac21dc8d9e0490f5c421af6a12a93ec9094b5a0",
+  "workflow_suites": [
+    "research/factor_atlas/session2/prototype/test_cross_session_contract.py",
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+    "research/factor_atlas/session2/prototype/test_owner_reader_abi.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_quote_study.py",
+    "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "canonical_identity_written": false,
+  "change": "Strict original vendor minute ISO text validation, including at most 9 all-zero fractional digits; original capture/decision clocks untouched",
+  "customer_publishable": false,
+  "dataset_rights_admitted": false,
+  "fail_first": "1 failed / 70 deselected (expected ValueError not raised)",
+  "invalid_clock_variants": 3,
+  "issue": "Python datetime.fromisoformat truncates nanoseconds; unaligned vendor timestamps could be counted as valid minute cells",
+  "market_pilot_admitted": false,
+  "may_trade_or_rank": false,
+  "new_market_flow_computed": false,
+  "new_test_functions": 3,
+  "original_scientific_reviewer_effect": "EFFECT_UNKNOWN",
+  "prepared_at_utc": "2026-10-12T03:47:57.751611+00:00",
+  "protected_mastermind_pin": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+  "real_vendor_source_reread": false,
+  "schema": "factor_atlas.session2.native_tiingo_minute_clock_tests.v1",
+  "source_files": {
+    "session2/prototype/test_tiingo_source_fitness.py": {
+      "bytes": 36094,
+      "sha256": "2641ec7be07de7fae90c0d8a7819a64f6c60972c3fa6c18572a7ba681e4d1a66"
+    },
+    "session2/prototype/tiingo_source_fitness.py": {
+      "bytes": 27655,
+      "sha256": "9a7a5a9e3bdcc0673c7d13266a6ae5b965bb3d8d6097932745733228f46cb3cd"
+    }
+  },
+  "source_parent": "6857e56c708cbd40e6287334447d3a4d05df6160",
+  "source_pr": "mastermindx-market-intelligence/macro#8677",
+  "test_logs": {
+    "full": {
+      "bytes": 661,
+      "exit_code": 0,
+      "passed": 573,
+      "path": ".session2-proof/nanosecond-full-20261012.log",
+      "sha256": "b9e7ab3b7a40d2c47be978a21d9dc2fe768630bf0a821e7d9bfbe812be7aa024"
+    },
+    "targeted": {
+      "bytes": 179,
+      "exit_code": 0,
+      "passed": 99,
+      "path": ".session2-proof/nanosecond-targeted-20261012.log",
+      "sha256": "9d45b3789d5f537619720ca71c39a652ebffe13e723b33e926060c6a3e1030fa"
+    }
+  }
+}
