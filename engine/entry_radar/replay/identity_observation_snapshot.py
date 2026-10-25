@@ -207,30 +207,33 @@ def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
 
 
 def _read_reference_bytes(directory: str | Path, *, legacy: bool = False):
-    """Cooperate with the incumbent root-directory EX writer, without writes.
+    """Capture existing bytes; only the LEGACY seam adds cooperative root SH.
 
-    This assumes working local POSIX flock and cooperating participants. It does
-    not fence old/noncooperating writers, other hosts, or Git publication.
+    Native acquisition preserves its incumbent behavior, including writer-owned
+    EX readback. LEGACY assumes local POSIX flock and cooperating participants;
+    it does not fence old/noncooperating writers, other hosts or Git publication.
     """
     if not isinstance(directory, (str, Path)):
         raise IdentityError("identity snapshot: an absolute local directory is required")
     root = Path(directory)
     if not root.is_absolute() or ".." in root.parts:
         raise IdentityError("identity snapshot: an absolute local directory is required")
-    try:
-        import fcntl
-    except ImportError as exc:
-        raise IdentityError("identity snapshot locking unsupported on this host") from exc
+    if legacy:
+        try:
+            import fcntl
+        except ImportError as exc:
+            raise IdentityError("identity snapshot locking unsupported on this host") from exc
     try:
         fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
                      | getattr(os, "O_CLOEXEC", 0))
     except OSError as exc:
         raise IdentityError("identity snapshot directory unavailable") from exc
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise IdentityError("identity snapshot writer busy") from exc
+        if legacy:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise IdentityError("identity snapshot writer busy") from exc
         held = os.fstat(fd)
         def check_target():
             now = os.stat(root, follow_symlinks=False)

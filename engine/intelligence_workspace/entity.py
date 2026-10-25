@@ -219,6 +219,18 @@ def resolve_option_underlying_security(
         raise IdentityResolutionError(f"option identity contract invalid: {exc}") from exc
 
 
+def _records(path: Path) -> list[dict[str, Any]]:
+    """Compatibility reader for existing non-IW callers; no coherent-set claim."""
+    if not path.is_file():
+        raise IdentityResolutionError(f"required Data OS identity artifact missing: {path}")
+    try:
+        import pandas as pd
+
+        return pd.read_parquet(path).to_dict("records")
+    except Exception as exc:  # noqa: BLE001
+        raise IdentityResolutionError(f"Data OS identity artifact unreadable: {path}: {exc}") from exc
+
+
 def _security_sources(root: Path) -> tuple[IssuerMaster, VendorAliasTable, dict[str, dict[str, Any]]]:
     """One coherent LEGACY acquisition for this call, with no process cache.
 

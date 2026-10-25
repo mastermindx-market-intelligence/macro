@@ -18278,6 +18278,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Native LP card import/source closure, measured after consumer adoption.
@@ -43275,6 +43276,7 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - ".github/workflows/engine-render.yml"
       - ".github/workflows/render.yml"
       - "scripts/ci/daily_engine_commit_outputs.sh"
@@ -43721,6 +43723,7 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "collectors/__init__.py"

@@ -105,6 +105,18 @@ def test_legacy_consumer_decodes_one_captured_pair_without_latest_reopens(tmp_pa
     assert calls == [root / "data/reference"]
 
 
+def test_records_compatibility_helper_remains_available_for_existing_non_iw_callers(tmp_path):
+    from engine.intelligence_workspace.entity import _records
+    path = tmp_path / "synthetic.parquet"
+    pd.DataFrame([{"retained": "compatibility"}]).to_parquet(path, index=False)
+    assert _records(path) == [{"retained": "compatibility"}]
+    with pytest.raises(IdentityResolutionError, match="missing"):
+        _records(tmp_path / "missing.parquet")
+    path.write_bytes(b"synthetic invalid parquet")
+    with pytest.raises(IdentityResolutionError, match="unreadable"):
+        _records(path)
+
+
 def test_current_resolver_lifetime_uses_one_captured_map_then_new_request_refreshes(tmp_path):
     root = _write_identity_root(tmp_path)
     resolver = current_symbol_resolver(root, "yahoo_fetch", on=date(2026, 8, 23))

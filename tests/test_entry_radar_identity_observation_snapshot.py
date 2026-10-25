@@ -422,6 +422,21 @@ def test_legacy_root_shared_lock_excludes_incumbent_writer_and_covers_every_read
         os.close(fd)
 
 
+def test_native_readback_preserves_incumbent_writer_owned_lock_behavior(prepared):
+    import fcntl
+    # The actual writer performs native readback while holding EX on a separate
+    # descriptor. Native acquisition must not introduce a competing SH lock.
+    fd = os.open(prepared, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        observed = adapter.read_identity_snapshot(prepared)
+        assert lookup(observed).security_id == "SEC:US-XNAS-MU"
+        with pytest.raises(IdentityError, match="busy"):
+            adapter.read_reference_generation(prepared)
+    finally:
+        os.close(fd)
+
+
 @pytest.mark.parametrize("defect", ["missing", "symlink", "oversize", "fifo", "torn", "root_replaced"])
 def test_legacy_acquisition_refuses_incomplete_or_unstable_input(legacy, monkeypatch, defect):
     member = legacy / NAMES[0]
