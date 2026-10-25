@@ -1,0 +1,10 @@
+{
+  "canonical_checker": "scripts.run_ci_pack.curated_exclusive_closure_findings",
+  "findings": {},
+  "full_contract_delta_run": false,
+  "hosted_execution": false,
+  "schema": "factor_atlas.s3.scoped_ci_closure/v1",
+  "scope": [
+    "options-skew-engine"
+  ]
+}
