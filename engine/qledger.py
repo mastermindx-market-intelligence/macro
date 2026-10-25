@@ -1731,7 +1731,7 @@ def record_control_clock_start(family: str, *, horizon_d: Any,
                                horizon_unit: Any, control: Any,
                                git_sha: str | None = None,
                                root: Path | str | None = None,
-                               now: str | None = None) -> dict:
+                               now: str | None = None, strict: bool = False) -> dict:
     """WRITE-ONCE record of when a family's matched-control evidence began (C3.1).
 
     Written by the REGISTRAR — never by a producer — so no producer wiring can be
@@ -1749,6 +1749,12 @@ def record_control_clock_start(family: str, *, horizon_d: Any,
     `os.replace` itself, and the record is re-read from disk before returning, so
     the value a caller gets is always the value that actually persisted.)
     Never raises — a clock-write failure must not take down a registration."""
+    if strict:
+        from engine.qledger_evidence_clock import _install_strict_clock
+        record = dict(claim_family=str(family), first_controlled_prospective_registration_utc=now or _now_iso(),
+                      declared_horizon_d=horizon_d, horizon_unit=horizon_unit, control=control, git_sha=git_sha)
+        return _install_strict_clock(_control_clock_path(family, root), record,
+                                     "first_controlled_prospective_registration_utc")
     existing = read_control_clock_start(family, root)
     if existing is not None:
         return existing
@@ -2002,6 +2008,196 @@ def _prepare_claim(claim: dict) -> dict:
     return stored
 
 
+def _control_clock_inputs(new_rows, ref, read_existing):
+    """The registrar's single unchanged family/cohort decision path."""
+    seen, existing_by_family = set(), {}
+    for stored in new_rows:
+        if (not isinstance(stored, dict) or stored.get("status") != STATUS_OPEN
+                or stored.get("is_placebo") or stored.get("direction") not in (1, -1)):
+            continue
+        family = _family_key(stored, "family")
+        if (not family or family in seen or family_control_policy(family)[0] != CONTROL_POLICY_REQUIRED
+                or not control_leg_is_valid(stored) or claim_horizon_unit(stored) is None):
+            continue
+        if family not in existing_by_family:
+            existing_by_family[family] = read_existing(family)
+        existing = existing_by_family[family]
+        if existing is not None or _cohort_prospective(stored, ref):
+            seen.add(family)
+            yield family, stored, existing
+
+
+def _require_original_clock(prior, family, field):
+    if prior is None:
+        return
+    record = prior[2]
+    stamp = datetime.fromisoformat(record[field].replace("Z", "+00:00"))
+    if record.get("claim_family") != family or stamp.tzinfo is None or stamp.utcoffset() is None:
+        raise ValueError("foreign or malformed prebound original clock")
+
+
+class _NativeFamilyClock:
+    """Live, nonserializable caller-owned P3 obligation, never an admission."""
+    def __init__(self, binding, intent, family, horizon_d, horizon_unit, git_sha):
+        binding._check_intent(intent)
+        if os.getpid() != binding.original_process_id or type(family) is not str or not family:
+            raise ValueError("exact native family original/process required")
+        self.binding, self.intent, self.pid = binding, intent, os.getpid()
+        self.inputs = (family, horizon_d, horizon_unit, git_sha)
+        self.sequence = None
+
+    def require_complete(self):
+        if os.getpid() != self.pid:
+            raise ValueError("family clock original process changed")
+        if self.sequence is not None:
+            self.sequence.require_complete()
+
+    @property
+    def record(self):
+        self.require_complete()
+        return self.sequence.family_record if self.sequence else None
+
+
+class _NativeRegistrationClocks:
+    """One live original's prebound complete clock sequence; no restart grant."""
+    def __init__(self, writer, serialized_rows, today, family):
+        from engine.qledger_store_protocol import SnapshotIntegrityError
+        from engine import qledger_evidence_clock as clock
+        self.writer_id, self.write, self.pid = id(writer), writer.write, os.getpid()
+        self.binding, self.root = writer.binding, writer.binding.repo_root
+        self.rows = tuple(json.loads(raw) for raw in serialized_rows)
+        self.serialized_rows = serialized_rows
+        self.ref = today or datetime.now(timezone.utc).date()
+        self.control_done = self.done = self.started = False
+        self.observed = []
+        self.family_record = None
+        tx = self.write.plan.transaction
+        digest = hashlib.sha256()
+        for raw in serialized_rows:
+            digest.update(raw)
+        if (sum(map(len, serialized_rows)) + self.write.plan._before.receipt.retained_bytes
+                + self.write.plan.snapshot.receipt.retained_bytes > self.binding.limits.snapshot_bytes):
+            raise SnapshotIntegrityError("LIMIT", "original clock input retention budget")
+        if (self.pid != self.binding.original_process_id or tx.kind != "append"
+                or tx.payload_size != sum(map(len, serialized_rows))
+                or tx.payload_digest != digest.hexdigest()):
+            raise SnapshotIntegrityError("CLOCK_UNPROVEN", "clock rows differ from exact original native write")
+        self.control = []
+        def before(fam):
+            value = clock._strict_clock_snapshot(_control_clock_path(fam, self.root),
+                                                 "first_controlled_prospective_registration_utc")
+            return value
+        for fam, row, prior in _control_clock_inputs(self.rows, self.ref, before):
+            _require_original_clock(prior, fam, "first_controlled_prospective_registration_utc")
+            record = dict(claim_family=fam, first_controlled_prospective_registration_utc=row.get("timestamp"),
+                declared_horizon_d=row.get("horizon_d"), horizon_unit=row.get("horizon_unit"),
+                control=row.get("control"), git_sha=os.environ.get("GITHUB_SHA") or None)
+            if prior is None and (not isinstance(record["first_controlled_prospective_registration_utc"], str)
+                                  or not record["first_controlled_prospective_registration_utc"]):
+                raise ValueError("original triggering timestamp unavailable")
+            self.control.append((fam, record, prior))
+        self.family_plan = None
+        if family is not None:
+            if (type(family) is not _NativeFamilyClock or family.binding is not self.binding
+                    or family.intent != self.write.intent or family.pid != self.pid or family.sequence is not None):
+                raise ValueError("foreign or reused original family clock scope")
+            family.sequence = self
+            if any(row.get("status") == STATUS_OPEN for row in self.rows):
+                fam, horizon, unit, git_sha = family.inputs
+                path = clock._clock_path(fam, self.root)
+                prior = clock._strict_clock_snapshot(path, "first_prospective_registration_utc")
+                _require_original_clock(prior, fam, "first_prospective_registration_utc")
+                record = dict(claim_family=fam, first_prospective_registration_utc=clock._now_iso(),
+                              declared_horizon_d=int(horizon), horizon_unit=unit, git_sha=git_sha)
+                self.family_plan = (path, record, prior)
+        records = [(record, prior) for _, record, prior in self.control]
+        if self.family_plan is not None:
+            records.append((self.family_plan[1], self.family_plan[2]))
+        clock_charge = 0
+        for record, prior in records:
+            payload = json.dumps(record, ensure_ascii=False, default=_json_default).encode("utf-8")
+            if len(payload) > 65536:
+                raise ValueError("original clock descriptor exceeds readback bound")
+            clock_charge += 2 * len(payload) + (len(prior[0]) if prior is not None else 0)
+        if (clock_charge + sum(map(len, serialized_rows)) + self.write.plan._before.receipt.retained_bytes
+                + self.write.plan.snapshot.receipt.retained_bytes > self.binding.limits.snapshot_bytes):
+            raise SnapshotIntegrityError("LIMIT", "aggregate original clock input retention budget")
+
+    def _check(self):
+        if (os.getpid() != self.pid or self.pid != self.binding.original_process_id
+                or not self.binding.attempts or self.binding.attempts[-1].write is not self.write or self.done):
+            raise ValueError("original clock process/write changed or completion reused")
+
+    def _one(self, path, record, prior, field, perform):
+        from engine import qledger_evidence_clock as clock
+        before = clock._strict_clock_snapshot(path, field)
+        if before != prior:
+            raise ValueError("prebound original clock changed before hook")
+        if prior is not None and prior[2].get("claim_family") != record["claim_family"]:
+            raise ValueError("foreign existing family clock")
+        returned = perform()
+        after = clock._strict_clock_snapshot(path, field)
+        expected = prior[2] if prior is not None else record
+        if (type(returned) is not clock._StrictClockRecord or returned.pid != self.pid
+                or returned.path != path or after is None or returned.observation != after
+                or returned != expected or after[2] != expected
+                or (prior is not None and after != prior)):
+            raise ValueError("original clock completion/readback differs")
+        self.observed.append((path, field, after))
+        return after[2]
+
+    def control_hook(self, rows, root, today):
+        self._check()
+        encoded = tuple((json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8") for row in rows)
+        if (encoded != self.serialized_rows or Path(root) != self.root
+                or (today or self.ref) != self.ref or self.control_done):
+            raise ValueError("control hook differs from prebound original rows/date")
+        for family, record, prior in self.control:
+            self._one(_control_clock_path(family, self.root), record, prior,
+                "first_controlled_prospective_registration_utc", lambda family=family, record=record:
+                record_control_clock_start(family, horizon_d=record["declared_horizon_d"],
+                    horizon_unit=record["horizon_unit"], control=record["control"], git_sha=record["git_sha"],
+                    root=self.root, now=record["first_controlled_prospective_registration_utc"], strict=True))
+        self.control_done = True  # Includes explicit proved no-control-required.
+
+    def run(self):
+        self._check()
+        if self.started:
+            raise ValueError("original clock attempt cannot be replayed")
+        self.started = True
+        _start_control_clocks_for(self.rows, self.root, today=self.ref)
+        if self.family_plan is not None:
+            from engine import qledger_evidence_clock as clock
+            path, record, prior = self.family_plan
+            self.family_record = self._one(path, record, prior, "first_prospective_registration_utc",
+                lambda: clock.record_start(record["claim_family"], horizon_d=record["declared_horizon_d"],
+                    horizon_unit=record["horizon_unit"], git_sha=record["git_sha"], root=self.root,
+                    now=record["first_prospective_registration_utc"], strict=True))
+        if not self.control_done:
+            raise ValueError("original control hook completion unavailable")
+        from engine import qledger_evidence_clock as clock
+        for path, field, observed in self.observed:
+            if clock._strict_clock_snapshot(path, field) != observed:
+                raise ValueError("earlier original clock changed during complete sequence")
+        from engine.qledger_original_result import OriginalResultClaimsBinding
+        if type(self.binding) is not OriginalResultClaimsBinding:
+            raise ValueError("retained original owner required for clock completion")
+        self.binding.read_original_write_result(self.write)
+        self._check()
+        self.done = True
+
+    def require_complete(self, writer=None):
+        if (not self.done or os.getpid() != self.pid or self.pid != self.binding.original_process_id
+                or (writer is not None and (id(writer) != self.writer_id or writer.write is not self.write))):
+            raise ValueError("original complete clock sequence is unresolved")
+        if writer is None:
+            attempts = [a for a in self.binding.attempts if a.write is self.write]
+            if not attempts or any(a.outcome is None or a.outcome.clock_status != "confirmed"
+                    or a.outcome.durability_status == "uncertain" or a.outcome.root_visibility == "unknown"
+                    for a in attempts):
+                raise ValueError("original clock/native completion remains unresolved")
+
+
 def _start_control_clocks_for(new_rows: Iterable[dict],
                               root: Path | str | None = None,
                               today: date | None = None) -> None:
@@ -2033,44 +2229,28 @@ def _start_control_clocks_for(new_rows: Iterable[dict],
 
     NEVER RAISES INTO REGISTRATION. A ledger write that a clock bookkeeping
     failure could abort would be a worse defect than the one this closes."""
+    from engine.qledger_store import _selected_claims_binding, _NativeClaimsBinding
+    selected = _selected_claims_binding(_root(root).joinpath(*_CLAIMS_FILE))
+    if isinstance(selected, _NativeClaimsBinding):
+        sequence = selected._active_registration_clock.get()
+        if type(sequence) is not _NativeRegistrationClocks:
+            raise ValueError("native control hook lacks live prebound original")
+        sequence.control_hook(new_rows, _root(root), today)
+        return
     try:
         # UTC, matching the gate's `ts.astimezone(utc).date()` side — a local
         # date would disagree with it for several hours a day.
         ref = today or datetime.now(timezone.utc).date()
         git_sha = os.environ.get("GITHUB_SHA") or None
-        started: dict[str, bool] = {}
-        for stored in new_rows:
-            if not isinstance(stored, dict):
-                continue
-            if stored.get("status") != STATUS_OPEN or stored.get("is_placebo"):
-                continue
-            if stored.get("direction") not in (1, -1):
-                continue
-            fam = _family_key(stored, "family")
-            if not fam:
-                continue
-            policy, _classified = family_control_policy(fam)
-            if policy != CONTROL_POLICY_REQUIRED:
-                continue
-            if not control_leg_is_valid(stored):
-                continue
-            if claim_horizon_unit(stored) is None:
-                continue
-            if fam not in started:          # ONE store read per family per batch
-                started[fam] = read_control_clock_start(fam, root) is not None
-            if started[fam]:
-                # Cheapest possible short-circuit: once a family's clock exists,
-                # nothing below can change it, so skip the calendar work for
-                # every remaining row of a nightly batch.
-                continue
-            if not _cohort_prospective(stored, ref):
+        for fam, stored, existing in _control_clock_inputs(new_rows, ref,
+                lambda family: read_control_clock_start(family, root)):
+            if existing is not None:
                 continue
             rec = record_control_clock_start(
                 fam, horizon_d=stored.get("horizon_d"),
                 horizon_unit=stored.get("horizon_unit"),
                 control=stored.get("control"), git_sha=git_sha, root=root,
                 now=stored.get("timestamp") or None)
-            started[fam] = True
             log.info("control evidence clock STARTED for claim_family=%s at %s "
                      "(control=%s, horizon_d=%s %s)", fam,
                      rec.get("first_controlled_prospective_registration_utc"),
@@ -2082,9 +2262,13 @@ def _start_control_clocks_for(new_rows: Iterable[dict],
 
 
 def register(claim: dict, root: Path | str | None = None,
-             *, dedupe: bool = True, today: date | None = None) -> dict:
+             *, dedupe: bool = True, today: date | None = None, native_intent=None) -> dict:
     """Register ONE claim. Validates against the schema, stamps `claim_id`,
     `timestamp`, and `status`, then appends to data/qledger/claims.jsonl.
+
+    `native_intent` is an explicit caller-owned storage write identity for an
+    already-bound native owner. It is never inferred from a claim or a clock.
+    Recover an original native write through its retained plan, not this API.
 
     Returns the stored claim dict (with `status` in {open, rejected}). Rejected
     claims ARE persisted (audit trail for the D4 dark-fraction report) but never
@@ -2101,7 +2285,7 @@ def register(claim: dict, root: Path | str | None = None,
     root = _root(root)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(root.joinpath(*_CLAIMS_FILE)) as storage:
+    with _claims_mutation(root.joinpath(*_CLAIMS_FILE), native_intent=native_intent) as storage:
         stored = _prepare_claim(claim)
         cid = stored["claim_id"]
 
@@ -2118,6 +2302,7 @@ def register(claim: dict, root: Path | str | None = None,
             with p.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps(stored, ensure_ascii=False, default=_json_default) + "\n")
         else:
+            storage.bind_registration_clocks([stored], today=today)
             outcome = storage.append_serialized_rows(
                 (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
                 for row in [stored]
@@ -2126,14 +2311,18 @@ def register(claim: dict, root: Path | str | None = None,
         # only — a dedupe hit above returns before this, so re-registering a claim can
         # never restart or re-stamp a clock.
         if storage is None or outcome.status == "materialized":
-            if storage is not None:
-                storage.mark_clock_attempt()
-            _start_control_clocks_for([stored], root, today=today)
+            if storage is None:
+                _start_control_clocks_for([stored], root, today=today)
+            else:
+                try:
+                    storage.complete_registration_clocks()
+                except Exception as exc:
+                    log.error("native original clock sequence remains uncertain: %s", exc)
         return stored
 
 
 def register_batch(claims: Iterable[dict], root: Path | str | None = None,
-                   *, dedupe: bool = True, today: date | None = None) -> list[dict]:
+                   *, dedupe: bool = True, today: date | None = None, native_intent=None) -> list[dict]:
     """Register MANY claims with ONE store read and ONE append write
     (§5.1 sub-task 3 / §5.2 — required before any volume increase).
 
@@ -2148,13 +2337,15 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
     valid ones — schema-invalid claims don't raise, they persist as
     status="rejected" exactly as register() does).
 
-    Returns one stored dict per input claim, in input order.
+    Returns one stored dict per input claim, in input order. `native_intent`
+    identifies this batch's one actual storage write, not each claim. An empty
+    or fully deduped batch consumes no storage transaction or clock.
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(p) as storage:
+    with _claims_mutation(p, native_intent=native_intent) as storage:
         if storage is None:
             p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -2187,6 +2378,7 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
                     for row in new_rows:
                         fh.write(json.dumps(row, ensure_ascii=False, default=_json_default) + "\n")
             else:
+                storage.bind_registration_clocks(new_rows, today=today)
                 outcome = storage.append_serialized_rows(
                     (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
                     for row in new_rows
@@ -2194,16 +2386,23 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
             # P0d C3.1: NEW rows only. A batch that deduped entirely against the
             # store appends nothing and starts nothing.
             if storage is None or outcome.status == "materialized":
-                if storage is not None:
-                    storage.mark_clock_attempt()
-                _start_control_clocks_for(new_rows, root, today=today)
+                if storage is None:
+                    _start_control_clocks_for(new_rows, root, today=today)
+                else:
+                    try:
+                        storage.complete_registration_clocks()
+                    except Exception as exc:
+                        log.error("native original clock sequence remains uncertain: %s", exc)
         return results
 
 
-def backfill_regime_stamps(root: Path | str | None = None) -> dict:
+def backfill_regime_stamps(root: Path | str | None = None, *, native_intent=None) -> dict:
     """§3.4 backfill: fill missing regime stamps on existing claim rows ONLY
     from the persisted daily vector for dates it covers (PIT-safe by
     construction) — never reconstructed from latest-state sources.
+
+    `native_intent` identifies one changed native view; unchanged calls consume
+    no transaction. Reconcile the retained original replacement for recovery.
 
     Fill-null-only (keep-FIRST): an existing non-null value is never altered.
     Atomic rewrite, and only when at least one row gained a stamp. Returns
@@ -2222,7 +2421,7 @@ def backfill_regime_stamps(root: Path | str | None = None) -> dict:
     p = root.joinpath(*_CLAIMS_FILE)
     from engine.qledger_store import _claims_mutation
 
-    with _claims_mutation(p) as storage:
+    with _claims_mutation(p, native_intent=native_intent) as storage:
         claims = _read_jsonl(p) if storage is None else storage.read_rows()
         if not claims:
             return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}

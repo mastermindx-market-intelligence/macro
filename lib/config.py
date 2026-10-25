@@ -8,6 +8,12 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
+if getattr(__loader__, '_qledger_bootstrap_active', False):
+    # The accepted outside-checkout loader supplies its actual qualified repo
+    # BEFORE dotenv or config reads; __file__ remains the trusted code bundle.
+    ROOT = __loader__.runtime_root(__name__)
+_LOAD_ROOT = None
+_LOAD_DIGEST = None
 
 
 def _load_dotenv() -> None:
@@ -28,8 +34,19 @@ _load_dotenv()
 
 @lru_cache(maxsize=1)
 def load() -> dict:
-    with open(ROOT / "config.yml") as f:
-        return yaml.safe_load(f)
+    global _LOAD_ROOT, _LOAD_DIGEST
+    source_root = ROOT
+    digest = None
+    if getattr(__loader__, '_qledger_bootstrap_active', False):
+        if source_root != __loader__.runtime_root(__name__):
+            __loader__.reject('actual original ROOT or cached configuration differs')
+        raw, digest = __loader__.runtime_config(__name__)
+        value = yaml.safe_load(raw)
+    else:
+        with open(source_root / "config.yml") as f:
+            value = yaml.safe_load(f)
+    _LOAD_ROOT, _LOAD_DIGEST = source_root, digest
+    return value
 
 
 def data_dir() -> Path:
