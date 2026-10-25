@@ -23,11 +23,13 @@ from lib.dataos.identity import (
     XNAS,
     XNYS,
     AliasRow,
+    _CLOCKED_ALIAS_VENDORS,
     _aware_utc,
     option_underlying_kind,
     parse_id,
     parse_listing_key,
 )
+from engine.entry_radar.replay.identity_observation_snapshot import read_reference_generation
 
 from .contracts import CanonicalEntity, EntityRequest
 
@@ -218,6 +220,7 @@ def resolve_option_underlying_security(
 
 
 def _records(path: Path) -> list[dict[str, Any]]:
+    """Compatibility reader for existing non-IW callers; no coherent-set claim."""
     if not path.is_file():
         raise IdentityResolutionError(f"required Data OS identity artifact missing: {path}")
     try:
@@ -229,16 +232,24 @@ def _records(path: Path) -> list[dict[str, Any]]:
 
 
 def _security_sources(root: Path) -> tuple[IssuerMaster, VendorAliasTable, dict[str, dict[str, Any]]]:
-    master_rows = _records(root / SECURITY_MASTER)
+    """One coherent LEGACY acquisition for this call, with no process cache.
+
+    Explicitly project whole unrelated clocked namespaces through their owner's
+    legacy API; never strip revision keys to reinterpret their rows as legacy.
+    This does not provide native resolution or cross-adapter request pinning.
+    """
+    try:
+        captured = read_reference_generation(root / SECURITY_MASTER.parent)
+        master_rows = captured.records(SECURITY_MASTER.name)
+        alias_rows = captured.records(VENDOR_ALIASES.name)
+        legacy_rows = VendorAliasTable.legacy_only_records(alias_rows)
+        issuer_master = IssuerMaster.from_records(master_rows)
+        aliases = VendorAliasTable.from_records(legacy_rows)
+    except IdentityError as exc:
+        raise IdentityResolutionError(f"Data OS identity contract invalid: {exc}") from exc
     ids = [str(row.get("security_id") or "") for row in master_rows]
     if not all(ids) or len(ids) != len(set(ids)):
         raise IdentityResolutionError("security master contains missing or duplicate security_id")
-    alias_rows = _records(root / VENDOR_ALIASES)
-    try:
-        issuer_master = IssuerMaster.from_records(master_rows)
-        aliases = VendorAliasTable.from_records(alias_rows)
-    except IdentityError as exc:
-        raise IdentityResolutionError(f"Data OS identity contract invalid: {exc}") from exc
     return issuer_master, aliases, {security_id: row for security_id, row in zip(ids, master_rows, strict=True)}
 
 
@@ -297,12 +308,9 @@ def load_current_symbol_map(
     deliberately carries no process cache: W1-A owns no cross-request identity or
     value cache.
     """
-    root_path = Path(root)
-    rows = _records(root_path / VENDOR_ALIASES)
-    try:
-        table = VendorAliasTable.from_records(rows)
-    except IdentityError as exc:
-        raise IdentityResolutionError(f"Data OS alias table invalid: {exc}") from exc
+    if vendor in _CLOCKED_ALIAS_VENDORS:
+        raise IdentityResolutionError("clocked alias vendor requires native observation proof")
+    _issuer_master, table, _master_rows = _security_sources(Path(root))
     current = on or date.today()
     security_ids = sorted({row.security_id for row in table.rows if row.vendor == vendor})
     result: dict[str, str] = {}
