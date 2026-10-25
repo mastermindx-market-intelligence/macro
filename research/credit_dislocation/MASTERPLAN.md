@@ -1,3 +1,15 @@
+## Main0f integration preserves the qualified Bonds image — 25 October 2026 (UTC)
+
+The normal b673 integration was committed as be9dd85ec8103e6f7f2ec8788e54b65961b1837a. The subsequent integration with main0f61f3013c37a34f7b6c46c73d52ac33363598b2 is conflict-free. Its native comparison preserves all56source pins,556Git-bound inputs and30static files exactly. The 14/14 guarded native result and the 728,312-byte page below remain applicable; no new generation or provider acquisition was needed.
+
+Main's Options Plan change adds a reachable import through app/options_auth.py -> app/main.py -> app/hub.py. Exactly eight further literal dependencies were added to CCW, preserving the prior23-path repair and increasing that job's declaration1,037 ->1,045. All355jobs and both parents' changes remain. The Options job's main-owned weight34 ->39 is retained; it remains unselected by all three canonical packing probes. No packing ceiling, test assertion, command or gate was relaxed.
+
+Both affected composed checks passed at2026-10-25T06:36:57Z: the canonical exclusive import closure and all three canonical packing probes (2pytest tests). Result log SHA256 b36e5223dead077ad4b3335d074087dd66ca3672e25b1062a67cbd35b786e7f5. Final manifest SHA256 ef62505d358766233f122f3701c9778ccfba11764e1fabe321bc59ed05f2c409. The earlier page/style, scope and ancestor checks remain accepted; no native/source pin was altered by either CI insertion.
+
+Evidence: evidence/main_0f_compatibility_20261025.json and the preceding native qualification receipt. The canonical PR9590 checkpoint records publication, normal exact-head contract, hosted CI and exact-candidate preview outcomes. Draft/HOLD continues while the required visual evidence and broader acceptance are incomplete. Historical bfc9 captures are not relabeled as evidence of this candidate.
+
+---
+
 ## Current b673 integration, native qualification and CI closure repair — 25 October 2026 (UTC)
 
 This checkpoint supersedes the earlier f3f integration state below. The source candidate incorporates main b6734410d05e9396347f6e711e6b6184a4582185 into bfc9a8c9560fa6534bbff1dbae508935084a652d. All three conflicts are resolved: both CI histories and coverage additions are preserved, and site/bonds.html is the freshly qualified native output.

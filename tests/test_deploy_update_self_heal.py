@@ -822,6 +822,15 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Private dated-reference Plan: load-time identity/terms plus request-time math.
+    "app/options_plan.py",
+    "app/options_plan_source.py",
+    "engine/options_nbbo_cohort.py",
+    "lib/options_source_receipts.py",
+    "engine/options_plan_expiry.py",
+    "engine/options_payoff.py",
+    "engine/greeks.py",
+    "engine/intraday_greeks.py",
     # Native supplier conditional research imports and cached K3 validators.
     'app/company_supplier_research.py',
     'engine/company_intelligence/h20_reported_event.py',
