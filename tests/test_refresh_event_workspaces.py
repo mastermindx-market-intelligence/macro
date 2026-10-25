@@ -340,7 +340,7 @@ def test_corrected_lifecycle_state_is_sticky_across_an_unchanged_source_rebuild(
 def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     """Unit-level: any failure OTHER than a clean not-published 404 raises
     PriorWorkspaceFetchFailed, never returns None, and emits a line-start
-    ::warning naming the event and the error class."""
+    ::warning naming the event and the closed failure category."""
 
     def boom(event_id: str) -> dict:
         raise TimeoutError("connection timed out")
@@ -353,7 +353,7 @@ def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     assert any(line.startswith("::warning title=event-workspace-prior-fetch-failed::") for line in lines), out
     warning_line = next(line for line in lines if line.startswith("::warning title=event-workspace-prior-fetch-failed::"))
     assert "evt_boom" in warning_line
-    assert "TimeoutError" in warning_line
+    assert '"exception_category":"timeout"' in warning_line
 
 
 def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> None:
@@ -371,6 +371,144 @@ def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> Non
 def test_load_prior_workspace_returns_the_workspace_on_a_hit() -> None:
     payload = {"event_id": "evt_x", "lifecycle": {"state": "complete"}}
     assert load_prior_workspace("evt_x", fetch=lambda eid: payload) == payload
+
+
+def test_p1_caught_read_failure_does_not_disclose_exception_text(capsys, caplog):
+    secret = "https://private.invalid/?signed=SECRET headers=SECRET body=SECRET"
+    original = TimeoutError(secret)
+    def fail(_event_id):
+        raise original
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace("evt_fixture", fetch=fail)
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"exception_category":"timeout"' in rendered
+
+
+def test_p1_clean_absence_keeps_debug_output_free_of_exception_text(capsys, caplog):
+    import logging
+    def absent(_event_id):
+        raise _PriorWorkspaceNotPublished("SECRET signed URL and response body")
+    with caplog.at_level(logging.DEBUG):
+        assert load_prior_workspace("evt_fixture", fetch=absent) is None
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text
+    assert "event-workspace-prior-fetch-failed" not in output.out
+
+
+@pytest.mark.parametrize("kind", [reader.WorkspaceChainIntegrityError, RuntimeError])
+def test_p1_current_generation_lookup_sanitizes_failures_without_fallback(monkeypatch, capsys, caplog, kind):
+    original = kind("SECRET signed URL and response body")
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(reader, "find_current_event_id_for_company", fail)
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace_for_ticker("DHI", base_url="https://fixture.invalid/company_intelligence")
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text + str(caught.value)
+
+
+def test_p1_body_failure_keeps_stage_through_phase1_without_any_publication(monkeypatch, tmp_path, capsys, caplog):
+    import requests
+    import socket
+    base = "https://fixture.invalid/company_intelligence"
+    event_id = "evt_cik0000795266_2026q3_results"
+    response = requests.Response()
+    response.status_code = 503
+    original = requests.HTTPError("https://private.invalid/?secret=SECRET body=SECRET", response=response)
+    def get(url, **kwargs):
+        if url == base + "/event_workspaces/manifest.json":
+            ok = requests.Response()
+            ok.status_code, ok.url = 200, url
+            ok._content = json.dumps({"generation_id": "a" * 24}).encode()
+            ok._content_consumed = True
+            return ok
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(reader.requests, "get", get)
+    def carry(ticker):
+        return load_prior_workspace(event_id, base_url=base) if ticker == "KBH" else None
+    fake = _FakeR2()
+    with pytest.raises(RefreshError) as caught:
+        _refresh(tmp_path, fake, homebuilder_carry_forward_loader=carry)
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    details = reader.read_failure_diagnostics(caught.value)
+    assert details == {"request_stage": "immutable_workspace_body", "exception_category": "http_error", "http_status": 503}
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"request_stage":"immutable_workspace_body"' in rendered
+
+
+@pytest.mark.parametrize("site", ["chain", "current_marker"])
+@pytest.mark.parametrize("category", ["timeout", "http_error"])
+def test_p1_chain_and_current_marker_failures_are_closed(monkeypatch, tmp_path, capsys, caplog, site, category):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    secret = "SYNTHETIC_SECRET https://private.invalid/?signed=SYNTHETIC_SECRET"
+    if category == "http_error":
+        response = requests.Response()
+        response.status_code = 503
+        original = requests.HTTPError(secret, response=response)
+    else:
+        original = TimeoutError(secret)
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    fake = _FakeR2()
+    if site == "chain":
+        monkeypatch.setattr(owner.ci_reader, "read_event_source_revisions", fail)
+        with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+            owner._event_known_revisions(FLAGSHIP_EVENT_ID)
+    else:
+        with pytest.raises(RefreshError) as caught:
+            _refresh(tmp_path, fake, current_marker_loader=fail)
+    assert caught.value.__cause__ is original
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    expected = {"request_stage": None, "exception_category": category,
+                "http_status": 503 if category == "http_error" else None}
+    assert reader.read_failure_diagnostics(caught.value) == expected
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SYNTHETIC_SECRET" not in rendered and "private.invalid" not in rendered
+    assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in str(caught.value)
+    if site == "chain":
+        assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in output.out
+
+
+@pytest.mark.parametrize("already_current", [True, False])
+def test_p1_sibling_publish_noop_never_claims_new_promotion(tmp_path, monkeypatch, capsys, already_current):
+    import socket
+    from scripts import publish_company_intelligence_r2 as publisher
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    def no_write_publish(path, **kwargs):
+        kwargs.pop("s3")
+        kwargs.pop("bucket")
+        class CurrentStore:
+            def get_object(self, *, Bucket, Key):
+                assert Key == WS_MARKER
+                return {"Body": io.BytesIO((path / "event_workspaces" / "manifest.json").read_bytes()), "ETag": "fixture"}
+            def put_object(self, **kwargs):
+                pytest.fail("already-current generation must not CREATE or promote anything")
+        return publisher.publish_event_workspaces(path, s3=CurrentStore() if already_current else None,
+                                                  bucket="fixture", **kwargs)
+    monkeypatch.setitem(globals(), "publish_event_workspaces", no_write_publish)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    assert fake.puts == []
+    output = capsys.readouterr().out
+    assert "immutable generation published" not in output
+    assert "sibling marker promoted" not in output
+    assert "event workspaces: generation validated; publish step returned success" in output
 
 
 class _FakeRequestsResponse:

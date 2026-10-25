@@ -673,6 +673,7 @@ class _DSessionObservation:
     assigning_parent: str
     transport: Callable | None = None
     session_day: _date | None = None  # one prospective operation, never a daily allowance
+    capacity_preflight: Callable | None = None  # configured native lane only; no GET
 
 
 def _d_session_coverage(eod, greeks, oi_d, oi_s, *, D, S, requested_version):
@@ -793,7 +794,8 @@ def _d_session_local_oi(store, D, S):
 def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, request_options):
     """Inert until an incumbent bounded transport is supplied after qualification.
 
-    The callable seam is used by hermetic tests. No CLI/env/plist supplies one.
+    The ordinary CLI binds only the exact separately approved Oct26 operation
+    when its explicit configuration is present; absent configuration stays None.
     Its budget must wrap actual transport, not merely count bulk API calls.
     Pilot payloads never enter _ensure_one_cell/_merge_day/canonical parquet.
     """
@@ -824,6 +826,13 @@ def _observe_spy_d_session(store, ctx, entered_at, deadline_at, config, *, reque
     for identity in [config.original_root, config.assigning_parent]:
         if str(uuid.UUID(identity)) != identity:
             raise ValueError('Exact source custody identities required')
+    if config.capacity_preflight is not None:
+        try:
+            capable = config.capacity_preflight(deadline_at=deadline_at)
+        except Exception:
+            capable = False
+        if capable is not True:
+            return dict(outcome, reason='native_transport_capacity_unavailable')
     parent = config.retention_parent
     if (not parent.is_dir() or parent.is_symlink()
             or parent.resolve().is_relative_to(store.resolve())):
@@ -1559,6 +1568,37 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
         lock_cm.__exit__(None, None, None)
 
 
+# One commissioned observation; this is not a daily/date/budget registry.
+_SPY_20261026_OPERATION = 'spy-2026-10-26-1730-observation-v1'
+_SPY_20261026_RETENTION_PARENT = Path('/Users/chriswong/optionshub-ops-wt/.git/options-source-captures')
+
+
+def _configured_d_session_observation(*, daily, forced, deadline_min):
+    """Bind the existing CLI/wrapper to one default-off, source-qualified pilot.
+
+    The host owner must qualify/install this source and actual account/capacity
+    before setting the exact operation token. Configuration is not evidence of
+    entitlement, first availability, model semantics, or a new provider budget.
+    No network, claim, directory creation or schedule change occurs here.
+    """
+    import os
+    selected = os.environ.get('THETADATA_D_SESSION_OBSERVATION')
+    if selected in (None, ''):
+        return None
+    if (selected != _SPY_20261026_OPERATION or not daily or forced
+            or deadline_min != _DEFAULT_DEADLINE_MIN):
+        raise ValueError('Observation supports only exact Oct26 natural daily operation with65min deadline')
+    from collectors import thetadata as td
+    transport = td.bounded_spy_d_session_transport(_date(2026,10,26))
+    if transport.origin != 'http://127.0.0.1:25503' or not callable(getattr(transport, 'preflight', None)):
+        raise ValueError('Observation native source/capacity contract is unqualified')
+    return _DSessionObservation(
+        _SPY_20261026_RETENTION_PARENT,
+        '01a156f1-f450-7793-8951-bddadd4784c2',
+        '01a15700-1ae2-7a73-9756-f1546da7ace8',
+        transport, session_day=_date(2026,10,26), capacity_preflight=transport.preflight)
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────
 def _build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
@@ -1602,10 +1642,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.workers is not None and args.workers > _MAX_WORKERS:
         ap.error(f"--workers must be <= {_MAX_WORKERS} (hard vendor-safety cap)")
 
+    try:
+        observation = _configured_d_session_observation(
+            daily=args.daily, forced=args.force_run, deadline_min=args.deadline_min)
+    except ValueError as exc:
+        ap.error(str(exc))
+
     if args.daily:
         workers = args.workers if args.workers is not None else _DAILY_WORKERS_DEFAULT
         return _daily_main(workers=workers, deadline_min=args.deadline_min,
-                           forced=args.force_run, baseline_runtime=args.baseline_runtime)
+                           forced=args.force_run, baseline_runtime=args.baseline_runtime,
+                           d_session_observation=observation)
 
     # ---- legacy / @universe bounded mode ----
     try:
