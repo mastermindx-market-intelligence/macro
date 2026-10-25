@@ -3669,3 +3669,417 @@ def test_bea_original_installer_proof_cannot_satisfy_new_blocking_setup_plan(tmp
     forged["plan_sha256"] = plans[1].plan_sha256
     with pytest.raises(SEMANTIC.SemanticProofError, match="job digest mismatch"):
         SEMANTIC.reconcile_evidence(plans[1].to_dict(), [forged])
+
+
+import ast as _cm_ast
+import json as _cm_json
+from pathlib import Path as _CMPath
+import re as _cm_re
+import shlex as _cm_shlex
+import subprocess as _cm_subprocess
+import sys as _cm_sys
+import tempfile as _cm_tempfile
+import unittest as _cm_unittest
+from unittest import mock as _cm_mock
+
+_CM_FROZEN_PATHS = (
+    'templates/theme.css',
+    'templates/_navlinks.html.j2',
+    'engine/intl_global_universe.py',
+    'engine/intl_global_observation.py',
+    'lib/intl_global_observation_adapter.py',
+)
+
+
+def _cm_git(root, *args):
+    return _cm_subprocess.run(
+        ['git', '-C', str(root), *map(str, args)], check=True,
+        capture_output=True, text=True,
+    ).stdout.strip()
+
+
+def _cm_commit(root, path, content, message):
+    target = root / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding='utf-8')
+    _cm_git(root, 'add', '--', path)
+    _cm_git(root, 'commit', '-qm', message)
+    return _cm_git(root, 'rev-parse', 'HEAD')
+
+
+def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False):
+    """main is ahead of tested's first parent; tested itself diverges from main.
+
+    Both tested parents meet at main-2, 22 first-parent edges behind main-24.
+    A depth-one checkout therefore requires multiple completed deepen fetches.
+    Plain local-path clone is intentionally avoided: it ignores --depth.
+    """
+    source = parent / 'source'
+    source.mkdir()
+    _cm_git(source, 'init', '-q', '--initial-branch=main')
+    _cm_git(source, 'config', 'user.name', 'Canonical Fixture')
+    _cm_git(source, 'config', 'user.email', 'canonical@example.invalid')
+    for path in _CM_FROZEN_PATHS:
+        dest = source / path
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text('frozen baseline\n', encoding='utf-8')
+    _cm_git(source, 'add', '.')
+    _cm_git(source, 'commit', '-qm', 'frozen baseline')
+    if old_history:
+        for number in range(32):
+            _cm_commit(source, 'older.txt', f'{number}\n', f'older-{number}')
+    commits = []
+    for number in range(36):
+        commits.append(_cm_commit(source, 'main.txt', f'{number}\n', f'main-{number}'))
+    canonical = commits[-1]
+    _cm_git(source, 'switch', '-qc', 'feature', commits[2])
+    for number in range(4):
+        _cm_commit(source, 'feature.txt', f'{number}\n', f'feature-{number}')
+    if changed_frozen:
+        _cm_commit(source, _CM_FROZEN_PATHS[0], 'changed by feature\n', 'change frozen file')
+    feature = _cm_git(source, 'rev-parse', 'HEAD')
+    _cm_git(source, 'switch', '-qc', 'tested', commits[24])
+    _cm_git(source, 'merge', '--no-ff', '-qm', 'synthetic tested merge', 'feature')
+    tested = _cm_git(source, 'rev-parse', 'HEAD')
+    _cm_git(source, 'switch', '-q', 'main')
+    remote = source
+    if shallow_remote:
+        remote = parent / 'shallow.git'
+        _cm_git(parent, 'clone', '-q', '--bare', '--no-tags', '--depth=2',
+                '--single-branch', '--branch=tested', source.as_uri(), remote)
+        # Canonical main deliberately shares the tested tip in this source.
+        # Parent history is genuinely capped, so fetches can complete without
+        # ever satisfying the tested-parent merge-base requirement.
+        _cm_git(remote, 'update-ref', 'refs/heads/main', tested)
+        canonical = tested
+    checkout = parent / 'checkout'
+    args = ['clone', '-q', '--no-tags', '--single-branch', '--branch=tested']
+    if not full_checkout:
+        args.append('--depth=1')
+    _cm_git(parent, *args, remote.as_uri(), checkout)
+    return {'source': source, 'remote': remote, 'checkout': checkout,
+            'tested': tested, 'canonical': canonical, 'commits': commits,
+            'parents': (commits[24], feature), 'fetches': []}
+
+
+def _cm_prepare(fixture, *, hook=None, tested=None, base_ref='main'):
+    """Observe real fetches; hook only injects a boundary mutation/exception.
+
+    All normal commands run through the original subprocess.run. No fetch result
+    or readiness probe is replaced with a mocked successful response.
+    """
+    real_run = _cm_subprocess.run
+    fixture['fetches'] = []
+
+    def observed(argv, *args, **kwargs):
+        command = list(argv) if isinstance(argv, (list, tuple)) else []
+        is_fetch = bool(command and command[0] == 'git' and 'fetch' in command)
+        if is_fetch:
+            fixture['fetches'].append(command)
+            if hook:
+                hook('before', fixture, command, len(fixture['fetches']))
+        result = real_run(argv, *args, **kwargs)
+        if is_fetch and hook:
+            hook('after', fixture, command, len(fixture['fetches']))
+        return result
+
+    with _cm_mock.patch.object(PACK.subprocess, 'run', side_effect=observed):
+        return PACK.prepare_canonical_main(
+            fixture['checkout'], tested_tree_sha=tested or fixture['tested'],
+            base_ref=base_ref,
+        )
+
+
+def _cm_python_environment(parent, executable):
+    """Bind literal python privately without resolving away its runtime context."""
+    environment = os.environ.copy()
+    interpreter_bin = parent / "interpreter-bin"
+    interpreter_bin.mkdir()
+    wrapper = interpreter_bin / "python"
+    wrapper.write_text(
+        '#!/bin/sh\nexec ' + _cm_shlex.quote(executable) + ' "$@"\n',
+        encoding="utf-8",
+    )
+    wrapper.chmod(0o755)
+    environment["PATH"] = str(interpreter_bin) + os.pathsep + environment.get("PATH", "")
+    return environment
+
+
+def _cm_frozen_namespace(checkout):
+    """Compile the two ORIGINAL guard bodies, dropping only pytest decoration."""
+    source = ROOT / 'tests' / 'test_intl_gs_foundation.py'
+    parsed = _cm_ast.parse(source.read_text(encoding='utf-8'), filename=str(source))
+    names = {'_frozen_base', 'test_frozen_files_unchanged_vs_origin_main'}
+    functions = [node for node in parsed.body
+                 if isinstance(node, _cm_ast.FunctionDef) and node.name in names]
+    if {node.name for node in functions} != names:
+        raise AssertionError('original frozen-file functions are missing')
+    for node in functions:
+        node.decorator_list = []
+    namespace = {'REPO': checkout, 'subprocess': _cm_subprocess,
+                 're': _cm_re, 'pytest': pytest}
+    exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
+                 str(source), 'exec'), namespace)
+    return namespace
+
+
+class CanonicalMainPreparationTests(_cm_unittest.TestCase):
+    def test_manifest_step_runs_actual_helper_with_replay_identity_precedence(self):
+        f = self.fixture()
+        definition = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"][
+            "international-workspace-browser"
+        ]
+        step = next(item for item in definition["steps"] if item.get("name") ==
+                    "canonical base for the frozen-file guard (fail closed)")
+        command = PACK.render_command(step["run"], base_ref="main", head_ref="feature")
+        # Keep the actual manifest command and the current interpreter's exact
+        # path, including the venv/relocatable runtime context it identifies.
+        environment = _cm_python_environment(self.parent, _cm_sys.executable)
+        environment.update({
+            "PYTHONPATH": str(ROOT),
+            # Base replay has its own exact tree; inherited parent-run identity
+            # must not replace it. Neither event-base value is canonical main.
+            "CI_TESTED_TREE_SHA": f["tested"],
+            "TESTED_TREE_SHA": "f" * 40,
+            "CI_BASE_SHA": f["parents"][0],
+            "TESTED_BASE_SHA": f["parents"][0],
+        })
+        result = _cm_subprocess.run(
+            ["bash", "-e", "-o", "pipefail", "-c", command],
+            cwd=f["checkout"], env=environment, capture_output=True, text=True,
+            timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(_cm_git(f["checkout"], "rev-parse", "origin/main"), f["canonical"])
+        self.assertIn(f["canonical"], result.stdout)
+        self.assert_head(f)
+
+    def test_private_python_binding_preserves_venv_context_and_arguments(self):
+        venv_root = self.parent / "driver's isolated venv"
+        _cm_subprocess.run(
+            [_cm_sys.executable, "-m", "venv", "--without-pip", str(venv_root)],
+            check=True, capture_output=True, text=True, timeout=30,
+        )
+        probe = (
+            "import json,sys,sysconfig; "
+            "print(json.dumps({'executable':sys.executable,'prefix':sys.prefix,"
+            "'base_prefix':sys.base_prefix,'purelib':sysconfig.get_path('purelib')}))"
+        )
+        direct = _cm_subprocess.run(
+            [str(venv_root / "bin" / "python"), "-c", probe],
+            capture_output=True, text=True, timeout=30,
+        )
+        self.assertEqual(direct.returncode, 0, direct.stdout + direct.stderr)
+        driver = _cm_json.loads(direct.stdout)
+        site_packages = _CMPath(driver["purelib"])
+        self.assertEqual(_CMPath(driver["prefix"]).resolve(), venv_root.resolve())
+        self.assertTrue(site_packages.resolve().is_relative_to(venv_root.resolve()))
+        (site_packages / "canonical_fixture_venv_only.py").write_text(
+            "VALUE = 'available only inside the fresh driver venv'\n", encoding="utf-8",
+        )
+        environment = _cm_python_environment(self.parent, driver["executable"])
+        environment["PYTHONPATH"] = str(ROOT)
+        environment["PYTHONNOUSERSITE"] = "1"
+        child_probe = (
+            "import json,sys,canonical_fixture_venv_only as marker; "
+            "print(json.dumps({'executable':sys.executable,'prefix':sys.prefix,"
+            "'base_prefix':sys.base_prefix,'marker':marker.VALUE,'arguments':sys.argv[1:]}))"
+        )
+        arguments = ["argument with spaces", "argument's apostrophe"]
+        child = _cm_subprocess.run(
+            ["python", "-c", child_probe, *arguments], env=environment,
+            capture_output=True, text=True, timeout=30,
+        )
+        self.assertEqual(child.returncode, 0, child.stdout + child.stderr)
+        actual = _cm_json.loads(child.stdout)
+        for key in ("executable", "prefix", "base_prefix"):
+            self.assertEqual(actual[key], driver[key])
+        self.assertEqual(actual["marker"], "available only inside the fresh driver venv")
+        self.assertEqual(actual["arguments"], arguments)
+
+    def setUp(self):
+        self.temporary = _cm_tempfile.TemporaryDirectory(prefix='canonical-main-test-')
+        self.addCleanup(self.temporary.cleanup)
+        self.parent = _CMPath(self.temporary.name)
+
+    def fixture(self, **kwargs):
+        case = self.parent / f'case-{len(list(self.parent.iterdir()))}'
+        case.mkdir()
+        return _cm_fixture(case, **kwargs)
+
+    def assert_head(self, fixture):
+        self.assertEqual(_cm_git(fixture['checkout'], 'rev-parse', 'HEAD'), fixture['tested'])
+
+    def assert_fetch_contract(self, fixture):
+        fetches = fixture['fetches']
+        self.assertTrue(fetches)
+        self.assertLessEqual(len(fetches), 6)
+        increments = (2, 6, 24, 96, 384, 1536)
+        for index, command in enumerate(fetches):
+            self.assertIn('--no-tags', command)
+            self.assertIn('--no-recurse-submodules', command)
+            self.assertIn(f'--deepen={increments[index]}', command)
+            self.assertIn(fixture['tested'], command)
+            self.assertFalse(any(arg.startswith('--depth=') for arg in command))
+            if index == 0:
+                self.assertIn('+refs/heads/main:refs/remotes/origin/main', command)
+            else:
+                self.assertIn(fixture['canonical'], command)
+                self.assertFalse(any('refs/heads/main' in arg for arg in command))
+
+    def test_missing_origin_main_acquires_actual_canonical_tip(self):
+        f = self.fixture()
+        absent = _cm_subprocess.run(
+            ['git', '-C', str(f['checkout']), 'show-ref', '--verify', 'refs/remotes/origin/main'],
+            capture_output=True, text=True,
+        )
+        self.assertNotEqual(absent.returncode, 0)
+        self.assertEqual(_cm_prepare(f), f['canonical'])
+        self.assertEqual(_cm_git(f['checkout'], 'rev-parse', 'origin/main'), f['canonical'])
+        self.assert_head(f)
+        self.assert_fetch_contract(f)
+        self.assertGreater(len(f['fetches']), 1)
+        self.assertEqual(_cm_git(f['checkout'], 'merge-base', *f['parents']), f['commits'][2])
+        self.assertEqual(_cm_git(f['checkout'], 'merge-base', 'origin/main', 'HEAD'), f['parents'][0])
+
+    def test_pre_ready_tested_ancestry_is_retained_by_canonical_fetch(self):
+        f = self.fixture(old_history=True)
+        _cm_git(f['checkout'], 'fetch', '--no-tags', '--no-recurse-submodules',
+                '--deepen=24', 'origin', f['tested'])
+        self.assertEqual(_cm_git(f['checkout'], 'rev-parse', '--is-shallow-repository'), 'true')
+        before = set(_cm_git(f['checkout'], 'rev-list', 'HEAD').splitlines())
+        before_base = _cm_git(f['checkout'], 'merge-base', *f['parents'])
+        self.assertEqual(_cm_prepare(f), f['canonical'])
+        after = set(_cm_git(f['checkout'], 'rev-list', 'HEAD').splitlines())
+        self.assertLessEqual(before, after)
+        self.assertEqual(_cm_git(f['checkout'], 'merge-base', *f['parents']), before_base)
+        self.assert_head(f)
+        self.assert_fetch_contract(f)
+        self.assertEqual(len(f['fetches']), 1)
+
+    def test_first_fetched_tip_remains_pinned_when_remote_main_moves(self):
+        f = self.fixture()
+        moved = []
+
+        def move(phase, fixture, command, count):
+            if phase == 'after' and count == 1:
+                moved.append(_cm_commit(fixture['source'], 'main.txt', 'later main\n', 'main moves'))
+
+        self.assertEqual(_cm_prepare(f, hook=move), f['canonical'])
+        self.assertNotEqual(moved[0], f['canonical'])
+        self.assertEqual(_cm_git(f['source'], 'rev-parse', 'main'), moved[0])
+        self.assertEqual(_cm_git(f['checkout'], 'rev-parse', 'origin/main'), f['canonical'])
+        self.assertGreater(len(f['fetches']), 1)
+        self.assert_fetch_contract(f)
+        self.assert_head(f)
+
+    def test_failed_named_acquisition_is_terminal_despite_stale_origin_main(self):
+        for failure in ('missing-remote', 'missing-main'):
+            with self.subTest(failure=failure):
+                f = self.fixture()
+                _cm_git(f['checkout'], 'update-ref', 'refs/remotes/origin/main', f['tested'])
+                if failure == 'missing-remote':
+                    _cm_git(f['checkout'], 'remote', 'set-url', 'origin',
+                            (f['source'].parent / 'absent.git').as_uri())
+                else:
+                    _cm_git(f['source'], 'update-ref', '-d', 'refs/heads/main')
+                with self.assertRaises((RuntimeError, _cm_subprocess.CalledProcessError)):
+                    _cm_prepare(f)
+                self.assertEqual(len(f['fetches']), 1)
+                self.assert_head(f)
+
+    def test_later_nonzero_fetch_is_terminal_and_does_not_repin(self):
+        f = self.fixture()
+
+        def break_remote(phase, fixture, command, count):
+            if phase == 'after' and count == 1:
+                _cm_git(fixture['checkout'], 'remote', 'set-url', 'origin',
+                        (fixture['source'].parent / 'absent-after-first.git').as_uri())
+
+        with self.assertRaises((RuntimeError, _cm_subprocess.CalledProcessError)):
+            _cm_prepare(f, hook=break_remote)
+        self.assertEqual(len(f['fetches']), 2)
+        self.assert_fetch_contract(f)
+        self.assert_head(f)
+
+    def test_unknown_fetch_settlement_is_terminal(self):
+        f = self.fixture()
+
+        def unknown(phase, fixture, command, count):
+            # This command really completed; the injected lost-settlement signal
+            # must still prohibit the helper from launching another acquisition.
+            if phase == 'after' and count == 1:
+                raise OSError('fixture: acquisition settlement unavailable')
+
+        with self.assertRaises((OSError, RuntimeError)):
+            _cm_prepare(f, hook=unknown)
+        self.assertEqual(len(f['fetches']), 1)
+        self.assert_head(f)
+
+    def test_shallow_remote_cap_exhausts_completed_fetch_ladder(self):
+        f = self.fixture(shallow_remote=True)
+        self.assertEqual(_cm_git(f['remote'], 'rev-parse', '--is-shallow-repository'), 'true')
+        with self.assertRaises(RuntimeError):
+            _cm_prepare(f)
+        self.assertEqual(len(f['fetches']), 6)
+        self.assert_fetch_contract(f)
+        self.assert_head(f)
+
+    def test_nonshallow_unrelated_canonical_main_fails_without_ladder(self):
+        f = self.fixture(full_checkout=True)
+        _cm_git(f['source'], 'switch', '--orphan', 'unrelated')
+        unrelated = _cm_commit(f['source'], 'unrelated.txt', 'unrelated\n', 'unrelated root')
+        _cm_git(f['source'], 'update-ref', 'refs/heads/main', unrelated)
+        self.assertEqual(_cm_git(f['checkout'], 'rev-parse', '--is-shallow-repository'), 'false')
+        with self.assertRaises(RuntimeError):
+            _cm_prepare(f)
+        self.assertLessEqual(len(f['fetches']), 1)
+        self.assert_head(f)
+
+    def test_wrong_tested_head_and_wrong_base_fail_before_fetch(self):
+        for option in ('head', 'base', 'malformed-sha'):
+            with self.subTest(option=option):
+                f = self.fixture()
+                kwargs = ({'tested': f['canonical']} if option == 'head' else
+                          {'tested': 'not-an-exact-sha'} if option == 'malformed-sha' else
+                          {'base_ref': 'feature'})
+                with self.assertRaises(RuntimeError):
+                    _cm_prepare(f, **kwargs)
+                self.assertEqual(f['fetches'], [])
+                self.assert_head(f)
+
+    def test_mutated_head_ref_or_fetch_head_fails_after_actual_fetch(self):
+        for mutation in ('head', 'origin-main', 'fetch-head'):
+            with self.subTest(mutation=mutation):
+                f = self.fixture()
+
+                def mutate(phase, fixture, command, count):
+                    if phase != 'after' or count != 1:
+                        return
+                    if mutation == 'head':
+                        _cm_git(fixture['checkout'], 'update-ref', 'HEAD', fixture['parents'][0])
+                    elif mutation == 'origin-main':
+                        _cm_git(fixture['checkout'], 'update-ref', 'refs/remotes/origin/main', fixture['tested'])
+                    else:
+                        (fixture['checkout'] / '.git' / 'FETCH_HEAD').write_text(
+                            fixture['tested'] + '\t\tfixture wrong binding\n', encoding='utf-8')
+
+                with self.assertRaises(RuntimeError):
+                    _cm_prepare(f, hook=mutate)
+                self.assertEqual(len(f['fetches']), 1)
+
+    def test_original_frozen_file_guard_passes_unchanged_and_rejects_change(self):
+        for changed in (False, True):
+            with self.subTest(changed=changed):
+                f = self.fixture(changed_frozen=changed)
+                self.assertEqual(_cm_prepare(f), f['canonical'])
+                guards = _cm_frozen_namespace(f['checkout'])
+                self.assertEqual(guards['_frozen_base'](), f['parents'][0])
+                guard = guards['test_frozen_files_unchanged_vs_origin_main']
+                for path in _CM_FROZEN_PATHS:
+                    if changed and path == _CM_FROZEN_PATHS[0]:
+                        with self.assertRaisesRegex(AssertionError, 'changed vs merge-base'):
+                            guard(path)
+                    else:
+                        guard(path)
+                self.assert_head(f)
