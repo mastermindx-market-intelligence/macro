@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-25T02:06:57.283069+00:00",
+  "generated_utc": "2026-10-25T13:44:24.938107+00:00",
   "as_of": "2026-10-25",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -1320,233 +1320,233 @@
       "emoji": "\ud83d\udcdc",
       "label_en": "Government contracts",
       "label_zh": "\u653f\u5e9c\u5408\u540c",
-      "rows": 22940,
-      "last_seen": "2026-10-23",
+      "rows": 23009,
+      "last_seen": "2026-10-24",
       "recent": [
         {
-          "Ticker": "BAH",
-          "Date": "2026-10-23",
-          "Description": "TASK ORDER 204 - ADVANCED RESEARCH AND TECHNOLOGY DIVISION DIGITAL OPERATIONS AND INSIGHTS ASSESSMENT",
-          "Agency": "National Aeronautics and Space Administration",
-          "Amount": "265781.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "HOLX",
-          "Date": "2026-10-23",
-          "Description": "MODALITY PO# 546B60032 STATION: MIAMI, FL REQUIREMENTS: UPGRADE HOLOGIC",
-          "Agency": "Department of Veterans Affairs",
-          "Amount": "82000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X2 VAN WAGON, FULL SIZE, 15 PASSENGER",
+          "Ticker": "DNOW",
+          "Date": "2026-10-24",
+          "Description": "CARTRIDGE,TONER",
           "Agency": "General Services Administration",
-          "Amount": "54707.0",
+          "Amount": "1400.6",
           "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP, FULL SIZE, EXTENDED CAB, MIN 8501 LBS GVWR",
-          "Agency": "General Services Administration",
-          "Amount": "43388.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP,FULLSIZE,CREW CAB, POLICE USE",
-          "Agency": "General Services Administration",
-          "Amount": "49004.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP, FULL SIZE, EXT CAB, SRW, MIN 9201 LBS GVWR",
-          "Agency": "General Services Administration",
-          "Amount": "44451.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "FY27 B1 FSA MCKESSON FSA MOUD MEDS ANNUAL OCT 26 PR 0015",
+          "Agency": "Department of Justice",
+          "Amount": "5919.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
           "Ticker": "GM",
-          "Date": "2026-10-23",
+          "Date": "2026-10-24",
           "Description": "4X4 SUV, FULL SIZE, 4 DR, 8 PASS, MIN 7000 LBS GVWR",
           "Agency": "General Services Administration",
           "Amount": "60673.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
           "Ticker": "GM",
-          "Date": "2026-10-23",
-          "Description": "4X4 SUV, INTERMEDIATE, 4 DR, 5 PASS, MIN 7000 GVWR",
+          "Date": "2026-10-24",
+          "Description": "4X4 SUV, COMPACT, 4 DR, 5 PASS, MIN 4500 LBS GVWR",
           "Agency": "General Services Administration",
-          "Amount": "56030.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "Amount": "27735.0",
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
-          "Ticker": "ITW",
-          "Date": "2026-10-23",
-          "Description": "HYDRAULIC WEDGE GRIPS FOR INSTRON 68TM50B26981 TEST FRAME",
-          "Agency": "National Aeronautics and Space Administration",
-          "Amount": "70693.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "MCK",
-          "Date": "2026-10-23",
-          "Description": "PRIME VENDOR PHARMACEUTICAL FOR DANBURY INMATE POPULATION  IN ACCORDANCE WITH EO 14398 PROHIBITS FEDERAL CONTRACTORS AND SUBCONTRACTORS FROM ENGAGING IN RACIALLY DISCRIMINATORY DEI ACTIVITIES.",
+          "Ticker": "HSIC",
+          "Date": "2026-10-24",
+          "Description": "DENTAL COMPRESSOR AND TRANSFORMER",
           "Agency": "Department of Justice",
-          "Amount": "150000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "Amount": "8056.74",
+          "action_date": "2026-09-17",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
-          "Ticker": "JLL",
-          "Date": "2026-10-23",
-          "Description": "REAL ESTATE SERVICES FOR INTERNATIONAL PROPERTIES.",
-          "Agency": "Department of State",
-          "Amount": "11000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "Ticker": "ILMN",
+          "Date": "2026-10-24",
+          "Description": "R499 - SERVICE MAINTENANCE AGREEMENT FOR NEXTSEQ 500 SILVER SUPPORT PLAN AND HEALTH CHECK",
+          "Agency": "Environmental Protection Agency",
+          "Amount": "51609.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
-          "Ticker": "JLL",
-          "Date": "2026-10-23",
-          "Description": "CLEVELAND - BLANKET COST FROM O&M FOR VANDALISM CLOGS, ANTHONY J. CELEBREZZE FEDERAL BUILDING 1240 E. 9TH STREET, SUITE 769CLEVELAND, OH. MECHANICALLY SNAKE DESIGNATED DRAIN LINES AS REQUIRED. HAND JET AND FLUSH DESIG\u2026",
-          "Agency": "General Services Administration",
-          "Amount": "21748.7",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "LEE",
-          "Date": "2026-10-23",
-          "Description": "GENERAL LEE ENTERPRISES, INC CALPF002271 E1004",
-          "Agency": "Department of Agriculture",
-          "Amount": "100257.0",
-          "action_date": "2026-09-22",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "MCK",
-          "Date": "2026-10-23",
-          "Description": "MCKESSON MAT MEDS FY 27 \"EO 14398\"",
-          "Agency": "Department of Justice",
-          "Amount": "14293.42",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "MCK",
-          "Date": "2026-10-23",
-          "Description": "MCKESSON NON-CONTRACT MEDICATION 10/1/2026 THROUGH 9/30/2027. ACCOUNT NUMBER: 321045",
-          "Agency": "Department of Justice",
-          "Amount": "315879.48",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "MCK",
-          "Date": "2026-10-23",
-          "Description": "MCKESSON CONTRACT - ACCT 677508 - CONTROLLED AND NON-CONTROLLED MEDICATION PURCHASE FOR INMATE USE FOR OPIOID USE DISORDER TREATMENT (MAT THERAPY) - 90F MEDICATIONS/ 1060ADB -- MULTIPLE INVOICES PURCHASED FOR FY27 1-3\u2026",
-          "Agency": "Department of Justice",
-          "Amount": "19336.5",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP, FULL SIZE, REGULAR CAB, MIN 6000 LBS GVWR",
-          "Agency": "General Services Administration",
-          "Amount": "39542.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP, FULL SIZE, CREW CAB, 6700 - 7500 LBS GVWR",
-          "Agency": "General Services Administration",
-          "Amount": "42992.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "F",
-          "Date": "2026-10-23",
-          "Description": "4X4 PICKUP, FULL SIZE, CREW CAB, 6700 - 7500 LBS GVWR",
-          "Agency": "General Services Administration",
-          "Amount": "43548.0",
-          "action_date": "2026-10-20",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "EW",
-          "Date": "2026-10-23",
-          "Description": "PROSTHETICS:IMPLANT",
-          "Agency": "Department of Veterans Affairs",
-          "Amount": "34000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "EW",
-          "Date": "2026-10-23",
-          "Description": "PASCAL",
-          "Agency": "Department of Veterans Affairs",
-          "Amount": "114600.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "EW",
-          "Date": "2026-10-23",
-          "Description": "IMPLANT",
-          "Agency": "Department of Veterans Affairs",
-          "Amount": "34000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "EW",
-          "Date": "2026-10-23",
-          "Description": "CUSTOM SURGICAL IMPLANT",
-          "Agency": "Department of Veterans Affairs",
-          "Amount": "34000.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
-        },
-        {
-          "Ticker": "CTKB",
-          "Date": "2026-10-23",
-          "Description": "SERVICE MAINTENANCE FOR THE CYTEK AURORA FLOW CYTOMETER (AMBIS 2278150)",
+          "Ticker": "ILMN",
+          "Date": "2026-10-24",
+          "Description": "NIAAA: SERVICE AGREEMENT: CATALOG SV1212001 FOR ILLUMINA PRODUCT CARE LIHA 1 PREVENTATIVE MAINTENANCE PLAN - PERIOD OF PERFORMANCE: 12/01/2026 TO 11/30/2027. SEVERABLE",
           "Agency": "Department of Health and Human Services",
-          "Amount": "40229.0",
-          "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "Amount": "25841.0",
+          "action_date": "2026-10-20",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         },
         {
-          "Ticker": "CMCSA",
-          "Date": "2026-10-23",
-          "Description": "CONTRACTOR TO PROVIDE CABLE TELEVISION SERVICE FOR INMATE POPULATION HOUSED AT FCI, FORT DIX.",
+          "Ticker": "LHX",
+          "Date": "2026-10-24",
+          "Description": "THIS TASK ORDER IS FOR THE REPAIR OF EFI-550 AND COMPONENTS FOR THE LONG-RANGE SURVEILLANCE AIRCRAFT.",
+          "Agency": "Department of Homeland Security",
+          "Amount": "15882.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "FY26 (B1) MCKESSON MAT FUNDING",
           "Agency": "Department of Justice",
-          "Amount": "3900.0",
+          "Amount": "3079.34",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "F",
+          "Date": "2026-10-24",
+          "Description": "4X4 PICKUP, FULL SIZE, CREW CAB, 6700 - 7500 LBS GVWR",
+          "Agency": "General Services Administration",
+          "Amount": "45360.0",
           "action_date": "2026-10-21",
-          "_first_seen": "2026-10-24T01:58:20.116619+00:00"
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "MEDICATIONS FOR FCI LORETTO OCT FY27",
+          "Agency": "Department of Justice",
+          "Amount": "90000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "FCI THREE RIVERS REGULAR INMATE MEDICATION FY27",
+          "Agency": "Department of Justice",
+          "Amount": "9000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "MCKESSON PHARMACEUTICALS NOVEMBER 26 FY27 36W79720D0001",
+          "Agency": "Department of Justice",
+          "Amount": "100000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "GENERAL MEDICATION ORDER",
+          "Agency": "Department of Justice",
+          "Amount": "14502.77",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "MEDICATIONS FOR  FCI LORETTO FOR NOVEMBER FY 27",
+          "Agency": "Department of Justice",
+          "Amount": "90000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "FY27 B1 MCKESSON BT OPEN MARKET  OCT 26",
+          "Agency": "Department of Justice",
+          "Amount": "10000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "F",
+          "Date": "2026-10-24",
+          "Description": "4X4 PICKUP, FULL SIZE, EXT CAB, SRW, MIN 9201 LBS GVWR",
+          "Agency": "General Services Administration",
+          "Amount": "45203.0",
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "F",
+          "Date": "2026-10-24",
+          "Description": "4X4 PICKUP, FULL SIZE, CREW CAB, SRW, MIN 11,001 LBS GVWR",
+          "Agency": "General Services Administration",
+          "Amount": "62485.0",
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MCK",
+          "Date": "2026-10-24",
+          "Description": "\"EO 14398\" FCC TUCSON FY27 MCKESSON-AIC PHARMACEUTICALS",
+          "Agency": "Department of Justice",
+          "Amount": "244200.09",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "MEDICAL SYRINGES FOR INMATES FOR A SERVICE PERIOD OF FY'2027, OCTOBER 1, 2026-SEPTEMBER 30, 2027.",
+          "Agency": "Department of Justice",
+          "Amount": "4000.0",
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "MEDICAL SUPPLIES FOR INMATES AT FCI TEXARKANA FROM OCTOBER 1, 2026 THROUGH SEPTEMBER 30, 2027.",
+          "Agency": "Department of Justice",
+          "Amount": "10000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "MEDICAL SUPPLIES UNDER MEDICAL SURGICAL PRIME VENDOR PROGRAM. EO 14398",
+          "Agency": "Department of Justice",
+          "Amount": "30000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "MEDICAL AND SURGICAL SUPPLIES IN ACCORDANCE WITH EO 14398 PROHIBITS FEDERAL CONTRACTORS AND SUBCONTRACTORS FROM ENGAGING IN RACIALLY DISCRIMINATORY DEI ACTIVITIES",
+          "Agency": "Department of Justice",
+          "Amount": "10000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "FY27 MEDICAL/SURGICAL SUPPLIES  CONTRACT # 36C10X23D0032 'EO 14398'",
+          "Agency": "Department of Justice",
+          "Amount": "12000.0",
+          "action_date": "2026-10-22",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
+        },
+        {
+          "Ticker": "MDLN",
+          "Date": "2026-10-24",
+          "Description": "FCC FORREST CITY LOW INSTITUTION FOR MEDICAL SUPPLIES PERIOD OF OCTOBER 1, 2026- SEPTEMBER 30, 2027.",
+          "Agency": "Department of Justice",
+          "Amount": "21000.0",
+          "action_date": "2026-10-21",
+          "_first_seen": "2026-10-25T01:23:57.084411+00:00"
         }
       ]
     },
@@ -3224,9 +3224,63 @@
       "emoji": "\ud83d\udcfa",
       "label_en": "CNBC stock picks",
       "label_zh": "CNBC\u9009\u80a1",
-      "rows": 2845,
+      "rows": 2851,
       "last_seen": "2026-10-24",
       "recent": [
+        {
+          "Ticker": "NOC",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Final Trade",
+          "Traders": "Guy Adami",
+          "Upload_Time": "2026-10-24T14:45:14.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
+        {
+          "Ticker": "SNAP",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Final Trade",
+          "Traders": "Dan Nathan",
+          "Upload_Time": "2026-10-24T14:44:33.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
+        {
+          "Ticker": "DELL",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Final Trade",
+          "Traders": "Karen Finerman",
+          "Upload_Time": "2026-10-24T14:42:58.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
+        {
+          "Ticker": "GM",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Final Trade",
+          "Traders": "Tim Seymour",
+          "Upload_Time": "2026-10-24T14:41:51.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
+        {
+          "Ticker": "XLV",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Bullish",
+          "Traders": "Tim Seymour",
+          "Upload_Time": "2026-10-24T14:26:38.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
+        {
+          "Ticker": "SPCX",
+          "Date": "2026-10-20T00:00:00.000",
+          "Notes": null,
+          "Direction": "Bearish",
+          "Traders": "Dan Nathan",
+          "Upload_Time": "2026-10-24T14:16:53.000",
+          "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+        },
         {
           "Ticker": "NFLX",
           "Date": "2026-10-20T00:00:00.000",
@@ -3397,60 +3451,6 @@
           "Traders": "Josh Brown",
           "Upload_Time": "2026-10-23T18:46:04.000",
           "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "PHM",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Not Recommending",
-          "Traders": "Joe Terranova",
-          "Upload_Time": "2026-10-23T18:44:29.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "HD",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Long",
-          "Traders": "Kevin Simpson",
-          "Upload_Time": "2026-10-23T18:43:51.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "RKT",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Sell",
-          "Traders": "Josh Brown",
-          "Upload_Time": "2026-10-23T18:42:48.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "LLY",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Bullish",
-          "Traders": "Joe Terranova",
-          "Upload_Time": "2026-10-23T18:38:53.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "UNH",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Buy",
-          "Traders": "Kevin Simpson",
-          "Upload_Time": "2026-10-23T18:38:02.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-        },
-        {
-          "Ticker": "WEST",
-          "Date": "2026-10-20T00:00:00.000",
-          "Notes": null,
-          "Direction": "Bullish",
-          "Traders": "Joe Terranova",
-          "Upload_Time": "2026-10-23T18:37:26.000",
-          "_first_seen": "2026-10-24T01:58:35.544388+00:00"
         }
       ]
     },
@@ -3458,183 +3458,183 @@
       "emoji": "\ud83e\udd8d",
       "label_en": "WallStreetBets",
       "label_zh": "WSB\u70ed\u5ea6",
-      "rows": 30086,
-      "last_seen": "2026-10-24",
+      "rows": 30393,
+      "last_seen": "2026-10-25",
       "recent": [
         {
           "Ticker": "VC",
           "Count": "1",
           "Sentiment": "0.1093",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "LIVE",
           "Count": "1",
           "Sentiment": "0.7359",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "ANET",
           "Count": "15",
           "Sentiment": "0.14191333333333336",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "OKLO",
           "Count": "21",
           "Sentiment": "-0.04873333333333334",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "EU",
           "Count": "9",
           "Sentiment": "0.06314444444444448",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "SE",
           "Count": "4",
           "Sentiment": "0.2897",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "EPS",
           "Count": "5",
           "Sentiment": "0.6384799999999999",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "SEDG",
           "Count": "6",
           "Sentiment": "-0.04284999999999999",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "GO",
           "Count": "6",
           "Sentiment": "-0.06998333333333333",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "FSLR",
           "Count": "2",
           "Sentiment": "0.2673",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "PR",
           "Count": "1",
           "Sentiment": "-0.34",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "BOIL",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "HR",
           "Count": "4",
           "Sentiment": "-0.030925000000000008",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "XLV",
           "Count": "1",
           "Sentiment": "-0.8074",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "TDOC",
           "Count": "2",
           "Sentiment": "0.0",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "HOOD",
           "Count": "19",
           "Sentiment": "-0.039557894736842104",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "DIS",
           "Count": "3",
           "Sentiment": "-0.11896666666666667",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "NKLA",
           "Count": "11",
           "Sentiment": "-0.02502727272727273",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "ETSY",
           "Count": "5",
           "Sentiment": "0.3463",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "BKSY",
           "Count": "6",
           "Sentiment": "0.16961666666666667",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "PPT",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "DJT",
           "Count": "6",
           "Sentiment": "-0.013500000000000007",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "AB",
           "Count": "1",
           "Sentiment": "-0.3182",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "WELL",
           "Count": "3",
           "Sentiment": "0.6257333333333333",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Ticker": "DATS",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-10-24T01:58:31.163195+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:08.313045+00:00",
+          "_collected": "2026-10-25"
         }
       ]
     },
@@ -4467,9 +4467,45 @@
       "emoji": "\ud83d\udcf0",
       "label_en": "Quiver news feed",
       "label_zh": "Quiver\u65b0\u95fb",
-      "rows": 3505,
-      "last_seen": "2026-10-24",
+      "rows": 3509,
+      "last_seen": "2026-10-25",
       "recent": [
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Hakeem+Jeffries+Blasts+Trump%E2%80%99s+Attack+on+Ilhan+Omar",
+          "time": "2026-10-25 00:21:13",
+          "headline": "Press Release: Hakeem Jeffries Blasts Trump\u2019s Attack on Ilhan Omar",
+          "category": "legislation_automated",
+          "summary": "<p>Jeffries condemns Trump\u2019s attacks on Ilhan Omar, calling them xenophobic and politically dangerous.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Jeffries criticiz\u2026",
+          "image": "https://www.quiverquant.com/images/J000294_congress.png",
+          "_first_seen": "2026-10-25T01:24:16.879886+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Shomari+Figures+Calls+for+Major+Disaster+Declaration+After+Hurricane+Isaias+Damage",
+          "time": "2026-10-25 00:21:13",
+          "headline": "Press Release: Shomari Figures Calls for Major Disaster Declaration After Hurricane Isaias Damage",
+          "category": "legislation_automated",
+          "summary": "<p>Congressman Figures urged federal approval of Alabama\u2019s disaster declaration request after Hurricane Isaias caused flooding, outages, and damage.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong styl\u2026",
+          "image": "https://www.quiverquant.com/images/F000481_congress.png",
+          "_first_seen": "2026-10-25T01:24:16.879886+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Climb+Bio+Reports+Encouraging+Early+PrisMN+Data+for+Budoprutug+in+Primary+Membranous+Nephropathy+and+Steroid-Free+Remission+in+MCD+Case+Study",
+          "time": "2026-10-24 23:40:18",
+          "headline": "Climb Bio Reports Encouraging Early PrisMN Data for Budoprutug in Primary Membranous Nephropathy and Steroid-Free Remission in MCD Case Study",
+          "category": "press_release_summary",
+          "summary": "<p>Climb Bio's budoprutug shows promising results for pMN and MCD, with B-cell depletion and remission reported in recent studies.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Climb Bio, Inc. has announced \u2026",
+          "image": "https://www.quiverquant.com/images/clym_rect_new.png",
+          "_first_seen": "2026-10-25T01:24:16.879886+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Bacon%2C+Fitzpatrick+and+Gluesenkamp+Perez+Introduce+Bill+to+Block+Russian+Oil+Imports+and+Support+Ukraine",
+          "time": "2026-10-24 18:21:01",
+          "headline": "Press Release: Bacon, Fitzpatrick and Gluesenkamp Perez Introduce Bill to Block Russian Oil Imports and Support Ukraine",
+          "category": "legislation_automated",
+          "summary": "<p>Bipartisan lawmakers propose a bill to block Russian oil imports, enforce sanctions, and maintain intelligence support for Ukraine.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(\u2026",
+          "image": "https://www.quiverquant.com/images/B001298_congress.png",
+          "_first_seen": "2026-10-25T01:24:16.879886+00:00"
+        },
         {
           "url": "https://www.quiverquant.com/news/Parabilis+Medicines+Reports+72.2%25+Objective+Response+Rate+for+Zolucatetide+in+Desmoid+Tumors+and+Announces+Phase+3+Development+Plan",
           "time": "2026-10-24 12:50:20",
@@ -4516,15 +4552,6 @@
           "_first_seen": "2026-10-24T13:38:42.311561+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/Lucky+Strike+Entertainment+Corp+%28%24LUCK%29+CEO+2026+Pay+Revealed",
-          "time": "2026-10-23 22:25:29",
-          "headline": "Lucky Strike Entertainment Corp ($LUCK) CEO 2026 Pay Revealed",
-          "category": "insiders_automated",
-          "summary": "<p>We estimate that the CEO of Lucky Strike Entertainment Corp ($LUCK), Thomas F. Shannon, received a compensation of <strong>$1,935,416</strong> in 2026. This is a decrease of -32.25% from an estimated <strong>$2,559\u2026",
-          "image": "https://www.quiverquant.com/images/luck_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
           "url": "https://www.quiverquant.com/news/Affirm+Holdings%2C+Inc.+%28%24AFRM%29+CEO+2026+Pay+Revealed",
           "time": "2026-10-23 22:25:29",
           "headline": "Affirm Holdings, Inc. ($AFRM) CEO 2026 Pay Revealed",
@@ -4540,6 +4567,15 @@
           "category": "insiders_automated",
           "summary": "<p>We estimate that the CEO of PELOTON INTERACTIVE, INC. ($PTON), Peter Stern, received a compensation of <strong>$32,966,539</strong> in 2026. This is an increase of 44.68% from an estimated <strong>$18,236,835</stro\u2026",
           "image": "https://www.quiverquant.com/images/pton_rect_new.png",
+          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Lucky+Strike+Entertainment+Corp+%28%24LUCK%29+CEO+2026+Pay+Revealed",
+          "time": "2026-10-23 22:25:29",
+          "headline": "Lucky Strike Entertainment Corp ($LUCK) CEO 2026 Pay Revealed",
+          "category": "insiders_automated",
+          "summary": "<p>We estimate that the CEO of Lucky Strike Entertainment Corp ($LUCK), Thomas F. Shannon, received a compensation of <strong>$1,935,416</strong> in 2026. This is a decrease of -32.25% from an estimated <strong>$2,559\u2026",
+          "image": "https://www.quiverquant.com/images/luck_rect_new.png",
           "_first_seen": "2026-10-24T01:58:36.943107+00:00"
         },
         {
@@ -4615,21 +4651,21 @@
           "_first_seen": "2026-10-24T01:58:36.943107+00:00"
         },
         {
+          "url": "https://www.quiverquant.com/news/Axsome+Therapeutics+Slides+as+Investors+Await+Q3+Results+Amid+Ongoing+Biotech+Pullback",
+          "time": "2026-10-23 21:20:30",
+          "headline": "Axsome Therapeutics Slides as Investors Await Q3 Results Amid Ongoing Biotech Pullback",
+          "category": "prices_automated",
+          "summary": "<p>Axsome Therapeutics (AXSM) is down 7.1% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely explanation is a mix of pre-earnings caution and \u2026",
+          "image": "https://www.quiverquant.com/images/axsm_rect_new.png",
+          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
+        },
+        {
           "url": "https://www.quiverquant.com/news/Weatherford+gains+as+strong+Q3+results%2C+higher+cash+flow+outlook+lift+sentiment",
           "time": "2026-10-23 21:20:30",
           "headline": "Weatherford gains as strong Q3 results, higher cash flow outlook lift sentiment",
           "category": "prices_automated",
           "summary": "<p>Weatherford International (WFRD) is up 6.2% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely catalyst was a strong third-quarter update th\u2026",
           "image": "https://www.quiverquant.com/images/wfrd_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Kinsale+Capital+Falls+as+Premium+Contraction+and+Lower+GAAP+Profit+Overshadow+Solid+Underwriting",
-          "time": "2026-10-23 21:20:30",
-          "headline": "Kinsale Capital Falls as Premium Contraction and Lower GAAP Profit Overshadow Solid Underwriting",
-          "category": "prices_automated",
-          "summary": "<p>Kinsale Capital Group (KNSL) is down 6.7% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The selloff appears tied to the company\u2019s third-quarter results\u2026",
-          "image": "https://www.quiverquant.com/images/knsl_rect_new.png",
           "_first_seen": "2026-10-24T01:58:36.943107+00:00"
         },
         {
@@ -4651,48 +4687,12 @@
           "_first_seen": "2026-10-24T01:58:36.943107+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/Axsome+Therapeutics+Slides+as+Investors+Await+Q3+Results+Amid+Ongoing+Biotech+Pullback",
+          "url": "https://www.quiverquant.com/news/Kinsale+Capital+Falls+as+Premium+Contraction+and+Lower+GAAP+Profit+Overshadow+Solid+Underwriting",
           "time": "2026-10-23 21:20:30",
-          "headline": "Axsome Therapeutics Slides as Investors Await Q3 Results Amid Ongoing Biotech Pullback",
+          "headline": "Kinsale Capital Falls as Premium Contraction and Lower GAAP Profit Overshadow Solid Underwriting",
           "category": "prices_automated",
-          "summary": "<p>Axsome Therapeutics (AXSM) is down 7.1% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely explanation is a mix of pre-earnings caution and \u2026",
-          "image": "https://www.quiverquant.com/images/axsm_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/SS%26C+Technologies+Falls+After+Soft+Q4+Revenue+Outlook+Overshadows+Q3+Results",
-          "time": "2026-10-23 21:20:30",
-          "headline": "SS&C Technologies Falls After Soft Q4 Revenue Outlook Overshadows Q3 Results",
-          "category": "prices_automated",
-          "summary": "<p>SS&C Technologies Holdings (SSNC) is down 7.3% today. Here is some analysis on what might have caused this price movement. ([investor.ssctech.com](https://investor.ssctech.com/static-files/12944b82-a76d-4c20-b2d2-8\u2026",
-          "image": "https://www.quiverquant.com/images/ssnc_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Instacart+Jumps+on+Report+It+Is+Exploring+a+Sale",
-          "time": "2026-10-23 21:20:30",
-          "headline": "Instacart Jumps on Report It Is Exploring a Sale",
-          "category": "prices_automated",
-          "summary": "<p>Instacart (CART) is up 8.4% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The sharp move appears tied to a report that Instacart is exploring a possibl\u2026",
-          "image": "https://www.quiverquant.com/images/cart_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/SentinelOne+Shares+Climb+as+Analyst+Optimism+Builds+on+AI+Security+Momentum",
-          "time": "2026-10-23 21:20:30",
-          "headline": "SentinelOne Shares Climb as Analyst Optimism Builds on AI Security Momentum",
-          "category": "prices_automated",
-          "summary": "<p>SentinelOne (S) is up 7.0% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely driver appears to be a fresh bullish analyst price-target incr\u2026",
-          "image": "https://www.quiverquant.com/images/s_rect_new.png",
-          "_first_seen": "2026-10-24T01:58:36.943107+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Tenable+shares+climb+as+investors+weigh+AI+product+momentum+and+upcoming+earnings",
-          "time": "2026-10-23 21:20:30",
-          "headline": "Tenable shares climb as investors weigh AI product momentum and upcoming earnings",
-          "category": "prices_automated",
-          "summary": "<p>Tenable Holdings, Inc. (TENB) is up 6.2% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The move appears tied to improving investor sentiment rather tha\u2026",
-          "image": "https://www.quiverquant.com/images/tenb_rect_new.png",
+          "summary": "<p>Kinsale Capital Group (KNSL) is down 6.7% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The selloff appears tied to the company\u2019s third-quarter results\u2026",
+          "image": "https://www.quiverquant.com/images/knsl_rect_new.png",
           "_first_seen": "2026-10-24T01:58:36.943107+00:00"
         }
       ]
@@ -4701,183 +4701,183 @@
       "emoji": "\ud83d\udcc1",
       "label_en": "Congress holdings",
       "label_zh": "\u56fd\u4f1a\u6301\u4ed3",
-      "rows": 20286,
-      "last_seen": "2026-10-24",
+      "rows": 20493,
+      "last_seen": "2026-10-25",
       "recent": [
         {
           "Politician": "Zoe Lofgren",
           "Holdings": "{\"MMM\": -8000, \"BABA\": 0, \"CB\": 0, \"CMA\": 0, \"ECL\": -8000, \"TXN\": -8000, \"ACN\": 16000, \"ADBE\": 0, \"ALLY\": 16000, \"AMZN\": 0, \"AEP\": 0, \"AWK\": 0, \"AON\": 32000, \"AMAT\": 8000, \"ARCC\": 0, \"ASML\": 8000, \"T\": 0, \"AGR\": 0, \"B\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Kathy Manning",
           "Holdings": "{\"APD\": 40500, \"GOOGL\": -16000, \"GOOG\": -8000, \"AMGN\": -16000, \"AAPL\": -16000, \"CAT\": 8000, \"CNC\": 16000, \"CB\": 16000, \"CFG\": -8000, \"CME\": 8000, \"EL\": 8000, \"EXPD\": 8000, \"GIS\": 8000, \"HD\": 8000, \"INTC\": -40500, \"INT\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Greg Steube",
           "Holdings": "{\"SNV\": 56500}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Greg Murphy",
           "Holdings": "{\"NYMX\": -75000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Greg Gianforte",
           "Holdings": "{\"ATLKY\": 92000, \"FMX\": 292500, \"OSW\": 553000, \"PEGA\": 742000, \"TSM\": -422500, \"YNDX\": -67500, \"CSGP\": -408000, \"GDDY\": 250000, \"NSRGY\": -315000, \"PRLB\": 0, \"RBA\": -183000, \"FIVE\": -75000, \"IAC\": 175000, \"IFF\": -10000\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Grace Meng",
           "Holdings": "{\"LHX\": 75000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Gilbert Cisneros",
           "Holdings": "{\"ADBE\": 40500, \"LNT\": 40000, \"AMZN\": 49000, \"AAPL\": 232000, \"CRNC\": 8000, \"CNS\": 0, \"CYRX\": 8000, \"EBS\": 32000, \"DAVA\": 32000, \"ERIC\": 65000, \"FIVE\": -24000, \"GDDY\": 122500, \"HELE\": -8000, \"INTU\": 0, \"IQV\": -64500, \"\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Gerald E. Connolly",
           "Holdings": "{\"PG\": -8000, \"DIS\": -8000, \"D\": -49000, \"LDOS\": -64500, \"SAIC\": -24000, \"CI\": -16000, \"ERH\": 8000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Gary Palmer",
           "Holdings": "{\"ABBV\": 16000, \"AMZN\": 0, \"CTL\": 0, \"EL\": -8000, \"IDTI\": -16000, \"NTRS\": 0, \"REGN\": -8000, \"TJX\": 48000, \"GOOGL\": -8000, \"UHAL\": 16000, \"AMP\": 8000, \"AMGN\": 0, \"AAPL\": -8000, \"APTV\": 8000, \"ASND\": 8000, \"ASML\": 8000,\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Garret Graves",
           "Holdings": "{\"CRNC\": -8000, \"NUAN\": -8000, \"C\": -8000, \"DDD\": -8000, \"GOLD\": 8000, \"PSTH\": 8000, \"ABNB\": 16000, \"AMZN\": 8000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Frank Pallone Jr.",
           "Holdings": "{\"CVX\": -8000, \"C\": -8000, \"D\": -8000, \"PM\": -24000, \"EL\": -32500, \"GE\": -16000, \"TXN\": -32500, \"DIS\": -8000, \"MO\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Frank A. Lobiondo",
           "Holdings": "{\"BLK\": 8000, \"AAPL\": 16000, \"IBM\": -8000, \"QCOM\": -16000, \"GIS\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Feinstein, Dianne",
           "Holdings": "{\"ALLO\": -3000000, \"NVS\": 575000, \"GOOGL\": 400000, \"AMAT\": -175000, \"BA\": 25000, \"BAM\": 57500, \"CHTR\": 575000, \"CCI\": 275500, \"DHR\": -725000, \"DLR\": -350000, \"FDX\": -267500, \"FEYE\": -175000, \"INFO\": -575000, \"MSFT\": -\u2026",
           "Type": "Senator",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Enzi, Michael B.",
           "Holdings": "{\"KEY\": -8000}",
           "Type": "Senator",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Elizabeth Fletcher",
           "Holdings": "{\"MMM\": -8000, \"ABT\": -8000, \"ACN\": -16000, \"ANTM\": 8000, \"BDX\": -24000, \"CACI\": 0, \"CCL\": 0, \"CERN\": -16000, \"CTSH\": -16000, \"COST\": -8000, \"DRI\": 0, \"DLTR\": -16000, \"ECL\": -8000, \"FDX\": 0, \"FISV\": -32000, \"HD\": -800\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Elaine Luria",
           "Holdings": "{\"BABA\": -625000, \"QS\": 8000, \"TSLA\": 8000, \"UBER\": 625000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Ed Perlmutter",
           "Holdings": "{\"BABA\": 0, \"AMZN\": 8000, \"COST\": 0, \"MSFT\": 0, \"NEM\": -8000, \"KR\": 0, \"BRK.B\": 8000, \"COIN\": 8000, \"GOOG\": 0, \"VZ\": 8000, \"AAPL\": -8000, \"GILD\": 0, \"KMI\": 0, \"HD\": -8000, \"WBA\": 0, \"SWK\": -48500, \"USB\": -81000, \"FB\":\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Ed Case",
           "Holdings": "{\"MRIN\": 8000, \"MO\": -75000, \"GE\": -8000, \"KMI\": -8000, \"MSFT\": 75000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Earl Blumenauer",
           "Holdings": "{\"ERJ\": 24000, \"F\": 16000, \"ICE\": 16000, \"NWN\": 37000, \"POR\": 8000, \"USB\": 0, \"DANOY\": 0, \"KR\": -8000, \"ALL\": 8000, \"AAPL\": 0, \"FDX\": 16000, \"GILD\": 16000, \"HHC\": -16000, \"TEL\": 16000, \"BRK.B\": 8000, \"CAT\": 8000, \"CBS\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Dwight Evans",
           "Holdings": "{\"APO\": 16000, \"HII\": -16000, \"KMI\": -8000, \"CG\": 16000, \"BABA\": 16000, \"GOOGL\": 16500, \"AMZN\": -48500, \"AEP\": 0, \"T\": 0, \"BRK.B\": -16000, \"DEO\": 8000, \"HASI\": -8000, \"INTC\": 0, \"TMO\": -8000, \"AWK\": 0, \"XOM\": 8000, \"N\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Duckworth, Tammy",
           "Holdings": "{\"DVMT\": -8000, \"BBL\": 0, \"DWDP\": -16000, \"ABT\": -8000, \"JNJ\": -8000, \"CC\": -8000, \"GME\": -8000, \"CAT\": -16000, \"POT\": -8000, \"MCD\": -8000, \"NEE\": -32500, \"VZ\": -32500, \"ITW\": -8000, \"DIS\": -8000, \"GS\": -8000, \"SOUHY\"\u2026",
           "Type": "Senator",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Donna Shalala",
           "Holdings": "{\"TGNA\": -105500, \"AOS\": 8000, \"ABM\": -8000, \"AYI\": -16000, \"ADUS\": -8000, \"ADDYY\": 0, \"AMD\": 0, \"AGCO\": -8000, \"AAGIY\": -40500, \"ALK\": -16000, \"ALFVY\": -8000, \"ALLE\": 16000, \"AGN\": 0, \"AZSEY\": -32500, \"AIMC\": -8000, \u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Donald Sternoff Beyer Jr.",
           "Holdings": "{\"AAGIY\": -8000, \"CVS\": 8000, \"FVRR\": -8000, \"GH\": -8000, \"IXJ\": 8000, \"IYZ\": 8000, \"NDAQ\": 8000, \"NVS\": -8000, \"BBH\": 8000, \"VZ\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Donald Sternoff Beyer Jr",
           "Holdings": "{\"CONE\": -8000, \"DAIUF\": -8500, \"MSFT\": -24500, \"MSCI\": -32500, \"TDOC\": -16500, \"PEP\": 0, \"ASML\": 0, \"FLIR\": 24000, \"ACN\": 24000, \"GOOG\": -500, \"AMZN\": -24500, \"AAPL\": 40000, \"BRK.B\": 0, \"C\": -16500, \"CGNX\": 16000, \"C\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         },
         {
           "Politician": "Donald Sternoff  Beyer Jr",
           "Holdings": "{\"GOOG\": 8000, \"AAPL\": -16000, \"ASML\": 16000, \"BRK.B\": 24000, \"DAIUF\": -24000, \"ECL\": 0, \"FNV\": 8000, \"MSFT\": -16000, \"NEE\": -32500, \"REGN\": 24000, \"TDOC\": -32000, \"AAIGF\": 8000, \"EL\": 0, \"FVRR\": -8000, \"GS\": 56000, \"\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-10-24T01:58:37.683334+00:00",
-          "_collected": "2026-10-24"
+          "_first_seen": "2026-10-25T01:24:17.602356+00:00",
+          "_collected": "2026-10-25"
         }
       ]
     },
@@ -5219,58 +5219,98 @@
       "emoji": "\ud83d\udcf1",
       "label_en": "App ratings",
       "label_zh": "\u5e94\u7528\u8bc4\u5206",
-      "rows": 242030,
-      "last_seen": "2026-10-23",
+      "rows": 243830,
+      "last_seen": "2026-10-24",
       "recent": [
         {
-          "Ticker": "MCHP",
-          "App": "Microchip MASTERs EU",
-          "Created": "2024-09-09",
-          "Publisher": "Microchip Technology Inc.",
-          "Rating": "0.0",
-          "Count": "0",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Ticker": "VIAB",
+          "App": "BET Experience 2026",
+          "Created": "2013-05-31",
+          "Publisher": "Viacom International Inc.",
+          "Rating": "4.51851",
+          "Count": "27",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
-          "Ticker": "GTN",
-          "App": "WSAZ News",
-          "Created": "2011-02-10",
-          "Publisher": "Gray Television Group, Inc.",
-          "Rating": "2.89538",
-          "Count": "650",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Ticker": "HAL",
+          "App": "Halliburton eRedBook\u00ae Mobile",
+          "Created": "2012-03-15",
+          "Publisher": "Halliburton",
+          "Rating": "3.78125",
+          "Count": "32",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
+        },
+        {
+          "Ticker": "GOOGL",
+          "App": "Google",
+          "Created": "2019-02-12",
+          "Publisher": "Google LLC",
+          "Rating": "4.64567",
+          "Count": "5265491",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
+        },
+        {
+          "Ticker": "GNTX",
+          "App": "HomeLink\u00ae",
+          "Created": "2019-08-18",
+          "Publisher": "Gentex Corporation",
+          "Rating": "3.47059",
+          "Count": "34",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
+        },
+        {
+          "Ticker": "GME",
+          "App": "GameStop",
+          "Created": "2011-06-13",
+          "Publisher": "GameStop",
+          "Rating": "4.77898",
+          "Count": "153600",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
+        },
+        {
+          "Ticker": "GM",
+          "App": "myBuick",
+          "Created": "2010-11-04",
+          "Publisher": "General Motors",
+          "Rating": "4.84157",
+          "Count": "117378",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GM",
           "App": "myCadillac",
           "Created": "2010-10-27",
           "Publisher": "General Motors",
-          "Rating": "4.8346",
-          "Count": "164954",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Rating": "4.8345",
+          "Count": "165201",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GM",
           "App": "myGMC",
           "Created": "2010-11-04",
           "Publisher": "General Motors",
-          "Rating": "4.82143",
-          "Count": "437336",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Rating": "4.82138",
+          "Count": "438095",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GM",
           "App": "myChevrolet",
           "Created": "2010-10-27",
           "Publisher": "General Motors",
-          "Rating": "4.81992",
-          "Count": "983790",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Rating": "4.81989",
+          "Count": "985076",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GLW",
@@ -5279,8 +5319,8 @@
           "Publisher": "Owens Corning Sales, LLC",
           "Rating": "5.0",
           "Count": "2",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GLW",
@@ -5289,8 +5329,8 @@
           "Publisher": "Corning Federal Credit Union",
           "Rating": "4.82148",
           "Count": "13321",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GL",
@@ -5299,8 +5339,8 @@
           "Publisher": "Globe Life And Accident Insurance Company",
           "Rating": "2.90099",
           "Count": "101",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GIS",
@@ -5309,8 +5349,8 @@
           "Publisher": "General Mills Inc.",
           "Rating": "0.0",
           "Count": "0",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GIS",
@@ -5318,9 +5358,9 @@
           "Created": "2016-09-07",
           "Publisher": "General Mills Inc.",
           "Rating": "4.68356",
-          "Count": "148268",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Count": "148287",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GILD",
@@ -5329,8 +5369,8 @@
           "Publisher": "Gilead Sciences, Inc.",
           "Rating": "4.33333",
           "Count": "3",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GILD",
@@ -5339,8 +5379,8 @@
           "Publisher": "Gilead Sciences, Inc.",
           "Rating": "0.0",
           "Count": "0",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GIL",
@@ -5349,8 +5389,8 @@
           "Publisher": "Gildan Activewear Inc",
           "Rating": "4.73529",
           "Count": "34",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GIGM",
@@ -5359,8 +5399,8 @@
           "Publisher": "Hoshin GigaMedia Center Inc., FunTown Branch.",
           "Rating": "3.5",
           "Count": "8",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GIGM",
@@ -5369,8 +5409,8 @@
           "Publisher": "Hoshin GigaMedia Center Inc., FunTown Branch.",
           "Rating": "4.06667",
           "Count": "60",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GH",
@@ -5379,8 +5419,8 @@
           "Publisher": "Guardant Health, Inc",
           "Rating": "2.8",
           "Count": "5",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GGG",
@@ -5389,8 +5429,8 @@
           "Publisher": "Graco Inc.",
           "Rating": "4.33333",
           "Count": "6",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GGG",
@@ -5399,8 +5439,8 @@
           "Publisher": "Graco Inc.",
           "Rating": "3.66667",
           "Count": "3",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GGG",
@@ -5409,8 +5449,8 @@
           "Publisher": "Graco Inc.",
           "Rating": "4.7",
           "Count": "10",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GE",
@@ -5419,58 +5459,18 @@
           "Publisher": "Portland General Electric Company",
           "Rating": "4.20598",
           "Count": "602",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         },
         {
           "Ticker": "GE",
           "App": "General Electric Credit Union",
           "Created": "2017-07-03",
           "Publisher": "General Electric Credit Union",
-          "Rating": "4.76923",
-          "Count": "7670",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
-        },
-        {
-          "Ticker": "GDOT",
-          "App": "Walmart MoneyCard\u00ae",
-          "Created": "2025-05-17",
-          "Publisher": "Green Dot Corporation",
-          "Rating": "4.25047",
-          "Count": "7354",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
-        },
-        {
-          "Ticker": "GDOT",
-          "App": "Amazon Flex Debit Card",
-          "Created": "2020-11-02",
-          "Publisher": "Green Dot Corporation",
-          "Rating": "4.71993",
-          "Count": "12190",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
-        },
-        {
-          "Ticker": "GDOT",
-          "App": "Green Dot - Mobile Banking",
-          "Created": "2011-05-17",
-          "Publisher": "Green Dot Corporation",
-          "Rating": "3.42032",
-          "Count": "11979",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
-        },
-        {
-          "Ticker": "GDDY",
-          "App": "GoDaddy: Websites & Marketing",
-          "Created": "2012-07-05",
-          "Publisher": "GoDaddy Mobile LLC",
-          "Rating": "4.82646",
-          "Count": "107426",
-          "Time": "2026-10-23",
-          "_first_seen": "2026-10-24T01:58:40.475271+00:00"
+          "Rating": "4.76938",
+          "Count": "7684",
+          "Time": "2026-10-24",
+          "_first_seen": "2026-10-25T01:24:21.094879+00:00"
         }
       ]
     },
@@ -5478,183 +5478,183 @@
       "emoji": "\ud83c\udfdb\ufe0f",
       "label_en": "Top shareholders",
       "label_zh": "\u4e3b\u8981\u80a1\u4e1c",
-      "rows": 489922,
-      "last_seen": "2026-10-24",
+      "rows": 494850,
+      "last_seen": "2026-10-25",
       "recent": [
         {
           "ticker": "BRK.B",
-          "owner_name": "VESTOR CAPITAL, LLC",
+          "owner_name": "CIBC Private Wealth Group LLC",
           "owner_title": "Institution",
-          "shares": "512871",
-          "_collected": "2026-10-24"
+          "shares": "394127",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "PNC FINANCIAL SERVICES GROUP, INC.",
+          "owner_name": "MACKENZIE FINANCIAL CORP",
           "owner_title": "Institution",
-          "shares": "589444",
-          "_collected": "2026-10-24"
+          "shares": "713175",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "SCHRODER INVESTMENT MANAGEMENT GROUP",
+          "owner_name": "RAYMOND JAMES & ASSOCIATES",
           "owner_title": "Institution",
-          "shares": "644987",
-          "_collected": "2026-10-24"
+          "shares": "785980",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "Assenagon Asset Management S.A.",
+          "owner_title": "Institution",
+          "shares": "767698",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "FIFTH THIRD BANCORP",
+          "owner_title": "Institution",
+          "shares": "753434",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "ING GROEP NV",
+          "owner_title": "Institution",
+          "shares": "752018",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "Aberdeen Group plc",
+          "owner_title": "Institution",
+          "shares": "748775",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "CREDIT AGRICOLE S A",
+          "owner_title": "Institution",
+          "shares": "735946",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "Alecta Tjanstepension Omsesidigt",
+          "owner_title": "Institution",
+          "shares": "735500",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "JANE STREET GROUP, LLC",
+          "owner_title": "Institution",
+          "shares": "696641",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
           "owner_name": "Salehpour Ali",
           "owner_title": "SVP, Srv., Dspl. & Flex.",
           "shares": "607029",
-          "_collected": "2026-10-24"
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "NEOS Investment Management LLC",
+          "owner_name": "APG Asset Management N.V.",
           "owner_title": "Institution",
-          "shares": "605023",
-          "_collected": "2026-10-24"
+          "shares": "695240",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "JONES FINANCIAL COMPANIES LLLP",
+          "owner_name": "STIFEL FINANCIAL CORP",
           "owner_title": "Institution",
-          "shares": "601051",
-          "_collected": "2026-10-24"
+          "shares": "688877",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "Blue Whale Capital LLP",
+          "owner_name": "STATE BOARD OF ADMINISTRATION OF FLORIDA RETIREMENT SYSTEM",
           "owner_title": "Institution",
-          "shares": "599538",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "NEW YORK STATE TEACHERS RETIREMENT SYSTEM",
-          "owner_title": "Institution",
-          "shares": "597830",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "CIBC WORLD MARKET INC.",
-          "owner_title": "Institution",
-          "shares": "592211",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "Korea Investment CORP",
-          "owner_title": "Institution",
-          "shares": "580859",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "Quantinno Capital Management LP",
-          "owner_title": "Institution",
-          "shares": "514748",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "MARSHALL WACE, LLP",
-          "owner_title": "Institution",
-          "shares": "579156",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "NATIONAL BANK OF CANADA /FI/",
-          "owner_title": "Institution",
-          "shares": "575240",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "US BANCORP \\DE\\",
-          "owner_title": "Institution",
-          "shares": "570378",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "PFA Pension, Forsikringsaktieselskab",
-          "owner_title": "Institution",
-          "shares": "561108",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "Glenmede Investment Management, LP",
-          "owner_title": "Institution",
-          "shares": "549199",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "MIRAE ASSET GLOBAL ETFS HOLDINGS Ltd.",
-          "owner_title": "Institution",
-          "shares": "546348",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "1832 Asset Management L.P.",
-          "owner_title": "Institution",
-          "shares": "518623",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "ADAGE CAPITAL PARTNERS GP, L.L.C.",
-          "owner_title": "Institution",
-          "shares": "666026",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "BROWN BROTHERS HARRIMAN & CO",
-          "owner_title": "Institution",
-          "shares": "667312",
-          "_collected": "2026-10-24"
-        },
-        {
-          "ticker": "AMAT",
-          "owner_name": "Creative Planning",
-          "owner_title": "Institution",
-          "shares": "667761",
-          "_collected": "2026-10-24"
+          "shares": "682788",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
           "owner_name": "LSV ASSET MANAGEMENT",
           "owner_title": "Institution",
           "shares": "677323",
-          "_collected": "2026-10-24"
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "NEW YORK STATE COMMON RETIREMENT FUND",
+          "owner_name": "Creative Planning",
           "owner_title": "Institution",
-          "shares": "847919",
-          "_collected": "2026-10-24"
+          "shares": "667761",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
-          "owner_name": "DekaBank Deutsche Girozentrale",
+          "owner_name": "BROWN BROTHERS HARRIMAN & CO",
           "owner_title": "Institution",
-          "shares": "816742",
-          "_collected": "2026-10-24"
+          "shares": "667312",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "ADAGE CAPITAL PARTNERS GP, L.L.C.",
+          "owner_title": "Institution",
+          "shares": "666026",
+          "_collected": "2026-10-25"
         },
         {
           "ticker": "AMAT",
           "owner_name": "Qube Research & Technologies Ltd",
           "owner_title": "Institution",
           "shares": "796497",
-          "_collected": "2026-10-24"
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "DekaBank Deutsche Girozentrale",
+          "owner_title": "Institution",
+          "shares": "816742",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "NEW YORK STATE COMMON RETIREMENT FUND",
+          "owner_title": "Institution",
+          "shares": "847919",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "AVIVA PLC",
+          "owner_title": "Institution",
+          "shares": "850706",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "NATIXIS ADVISORS, LLC",
+          "owner_title": "Institution",
+          "shares": "990105",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "ENVESTNET ASSET MANAGEMENT INC",
+          "owner_title": "Institution",
+          "shares": "987556",
+          "_collected": "2026-10-25"
+        },
+        {
+          "ticker": "AMAT",
+          "owner_name": "Mirae Asset Global Investments Co., Ltd.",
+          "owner_title": "Institution",
+          "shares": "975112",
+          "_collected": "2026-10-25"
         }
       ]
     },
@@ -6238,10 +6238,10 @@
       },
       {
         "ticker": "MDLN",
-        "total_usd": 83412351.0,
-        "contracts": 27,
+        "total_usd": 83520351.0,
+        "contracts": 34,
         "agencies": 2,
-        "accel_x": 9.68,
+        "accel_x": 9.7,
         "top_agency": "Department of Veterans Affairs"
       },
       {
@@ -6270,10 +6270,10 @@
       },
       {
         "ticker": "GM",
-        "total_usd": 54514977.0,
-        "contracts": 65,
+        "total_usd": 54603385.0,
+        "contracts": 67,
         "agencies": 2,
-        "accel_x": 16.33,
+        "accel_x": 16.36,
         "top_agency": "Department of Homeland Security"
       },
       {
@@ -6302,8 +6302,8 @@
       },
       {
         "ticker": "UPS",
-        "total_usd": 30931344.0,
-        "contracts": 102,
+        "total_usd": 30933844.0,
+        "contracts": 103,
         "agencies": 9,
         "accel_x": 15.81,
         "top_agency": "Department of Veterans Affairs"
@@ -27875,9 +27875,9 @@
       },
       {
         "ticker": "NFLX",
-        "bull_ratio": 0.85,
+        "bull_ratio": 0.73,
         "messages": 30,
-        "watchers": 523129,
+        "watchers": 523163,
         "hot": true
       },
       {
@@ -27889,9 +27889,9 @@
       },
       {
         "ticker": "DIS",
-        "bull_ratio": 0.71,
+        "bull_ratio": 1.0,
         "messages": 30,
-        "watchers": 289883,
+        "watchers": 289866,
         "hot": true
       },
       {
@@ -27912,7 +27912,7 @@
         "ticker": "F",
         "bull_ratio": 0.75,
         "messages": 30,
-        "watchers": 186222,
+        "watchers": 186226,
         "hot": true
       },
       {
@@ -27938,9 +27938,9 @@
       },
       {
         "ticker": "NKE",
-        "bull_ratio": 0.93,
-        "messages": 29,
-        "watchers": 142054,
+        "bull_ratio": 0.89,
+        "messages": 30,
+        "watchers": 142055,
         "hot": true
       },
       {
@@ -28034,7 +28034,7 @@
       {
         "ticker": "VOYG",
         "bull_ratio": 0.88,
-        "articles": 33,
+        "articles": 34,
         "hot": true
       },
       {
@@ -28234,25 +28234,25 @@
     "github": [
       {
         "ticker": "NET",
-        "stars": 16232,
-        "wow_pct": 0.59,
+        "stars": 16233,
+        "wow_pct": 0.6,
         "hot": true
       },
       {
         "ticker": "IBM",
-        "stars": 7923,
-        "wow_pct": 0.46,
+        "stars": 7925,
+        "wow_pct": 0.48,
         "hot": true
       },
       {
         "ticker": "MSFT",
-        "stars": 194263,
-        "wow_pct": 0.34,
+        "stars": 194257,
+        "wow_pct": 0.33,
         "hot": true
       },
       {
         "ticker": "META",
-        "stars": 251748,
+        "stars": 251753,
         "wow_pct": 0.29,
         "hot": true
       },
@@ -28275,32 +28275,32 @@
         "hot": false
       },
       {
-        "ticker": "GOOGL",
-        "stars": 201215,
-        "wow_pct": 0.12,
-        "hot": false
-      },
-      {
         "ticker": "U",
-        "stars": 19788,
-        "wow_pct": 0.12,
+        "stars": 19792,
+        "wow_pct": 0.14,
         "hot": false
       },
       {
         "ticker": "ESTC",
-        "stars": 78357,
-        "wow_pct": 0.11,
+        "stars": 78370,
+        "wow_pct": 0.13,
+        "hot": false
+      },
+      {
+        "ticker": "GOOGL",
+        "stars": 201229,
+        "wow_pct": 0.13,
         "hot": false
       },
       {
         "ticker": "PLTR",
-        "stars": 22157,
-        "wow_pct": 0.09,
+        "stars": 22158,
+        "wow_pct": 0.1,
         "hot": false
       },
       {
         "ticker": "MDB",
-        "stars": 28659,
+        "stars": 28660,
         "wow_pct": 0.07,
         "hot": false
       },
@@ -28318,14 +28318,14 @@
       },
       {
         "ticker": "CRM",
-        "stars": 11255,
-        "wow_pct": -0.03,
+        "stars": 11256,
+        "wow_pct": -0.02,
         "hot": false
       },
       {
         "ticker": "GTLB",
-        "stars": 24538,
-        "wow_pct": -0.05,
+        "stars": 24542,
+        "wow_pct": -0.03,
         "hot": false
       },
       {
@@ -28655,20 +28655,20 @@
           "sellers": 0
         },
         {
-          "ticker": "COE",
-          "buy_usd": 105231196.0,
-          "sell_usd": 0.0,
-          "net_usd": 105231196.0,
-          "buyers": 28,
-          "sellers": 0
-        },
-        {
           "ticker": "SCTH",
           "buy_usd": 100000000.0,
           "sell_usd": 0.0,
           "net_usd": 100000000.0,
           "buyers": 1,
           "sellers": 0
+        },
+        {
+          "ticker": "BBD",
+          "buy_usd": 104303593.0,
+          "sell_usd": 5567116.0,
+          "net_usd": 98736477.0,
+          "buyers": 55,
+          "sellers": 10
         }
       ],
       "sells": [
@@ -29869,6 +29869,60 @@
     ],
     "cnbc": [
       {
+        "Ticker": "NOC",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Final Trade",
+        "Traders": "Guy Adami",
+        "Upload_Time": "2026-10-24T14:45:14.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
+        "Ticker": "SNAP",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Final Trade",
+        "Traders": "Dan Nathan",
+        "Upload_Time": "2026-10-24T14:44:33.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
+        "Ticker": "DELL",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Final Trade",
+        "Traders": "Karen Finerman",
+        "Upload_Time": "2026-10-24T14:42:58.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
+        "Ticker": "GM",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Final Trade",
+        "Traders": "Tim Seymour",
+        "Upload_Time": "2026-10-24T14:41:51.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
+        "Ticker": "XLV",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Bullish",
+        "Traders": "Tim Seymour",
+        "Upload_Time": "2026-10-24T14:26:38.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
+        "Ticker": "SPCX",
+        "Date": "2026-10-20T00:00:00.000",
+        "Notes": null,
+        "Direction": "Bearish",
+        "Traders": "Dan Nathan",
+        "Upload_Time": "2026-10-24T14:16:53.000",
+        "_first_seen": "2026-10-25T01:24:14.989281+00:00"
+      },
+      {
         "Ticker": "NFLX",
         "Date": "2026-10-20T00:00:00.000",
         "Notes": null,
@@ -30038,130 +30092,76 @@
         "Traders": "Josh Brown",
         "Upload_Time": "2026-10-23T18:46:04.000",
         "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "PHM",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Not Recommending",
-        "Traders": "Joe Terranova",
-        "Upload_Time": "2026-10-23T18:44:29.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "HD",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Long",
-        "Traders": "Kevin Simpson",
-        "Upload_Time": "2026-10-23T18:43:51.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "RKT",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Sell",
-        "Traders": "Josh Brown",
-        "Upload_Time": "2026-10-23T18:42:48.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "LLY",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Bullish",
-        "Traders": "Joe Terranova",
-        "Upload_Time": "2026-10-23T18:38:53.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "UNH",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Buy",
-        "Traders": "Kevin Simpson",
-        "Upload_Time": "2026-10-23T18:38:02.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
-      },
-      {
-        "Ticker": "WEST",
-        "Date": "2026-10-20T00:00:00.000",
-        "Notes": null,
-        "Direction": "Bullish",
-        "Traders": "Joe Terranova",
-        "Upload_Time": "2026-10-23T18:37:26.000",
-        "_first_seen": "2026-10-24T01:58:35.544388+00:00"
       }
     ],
     "app_ratings": [
       {
         "ticker": "UBER",
         "rating": 4.84,
-        "reviews": 30694772,
+        "reviews": 30713843,
         "apps": 6,
         "top_app": "Uber - Rides, Eats, Hotels",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0006,
         "lean": "strong"
       },
       {
         "ticker": "GOOGL",
         "rating": 4.7,
-        "reviews": 27007331,
+        "reviews": 27032559,
         "apps": 5,
         "top_app": "Google Drive",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0009,
         "lean": "strong"
       },
       {
         "ticker": "MSFT",
         "rating": 4.77,
-        "reviews": 20382554,
+        "reviews": 20396867,
         "apps": 9,
         "top_app": "Microsoft Outlook",
-        "review_velocity": 0.0001,
+        "review_velocity": 0.0007,
         "lean": "strong"
       },
       {
         "ticker": "WMT",
         "rating": 4.81,
-        "reviews": 19652187,
+        "reviews": 19673570,
         "apps": 5,
         "top_app": "Walmart: Shopping & Savings",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0011,
         "lean": "strong"
       },
       {
         "ticker": "LYFT",
         "rating": 4.91,
-        "reviews": 18236897,
+        "reviews": 18246710,
         "apps": 3,
         "top_app": "Lyft",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0005,
         "lean": "strong"
       },
       {
         "ticker": "SBUX",
         "rating": 4.89,
-        "reviews": 8414053,
+        "reviews": 8421899,
         "apps": 4,
         "top_app": "Starbucks",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0009,
         "lean": "strong"
       },
       {
         "ticker": "ETSY",
         "rating": 4.92,
-        "reviews": 7402572,
+        "reviews": 7405818,
         "apps": 2,
         "top_app": "Etsy: Shop from Real People",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0004,
         "lean": "strong"
       },
       {
         "ticker": "Z",
         "rating": 4.8,
-        "reviews": 7645885,
+        "reviews": 7646080,
         "apps": 4,
         "top_app": "Zillow Real Estate & Rentals",
         "review_velocity": 0.0,
@@ -30170,64 +30170,64 @@
       {
         "ticker": "LUV",
         "rating": 4.84,
-        "reviews": 7249308,
+        "reviews": 7252579,
         "apps": 1,
         "top_app": "Southwest Airlines: Travel App",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0005,
         "lean": "strong"
       },
       {
         "ticker": "NFLX",
         "rating": 4.75,
-        "reviews": 7486351,
+        "reviews": 7495931,
         "apps": 2,
         "top_app": "Netflix",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0013,
         "lean": "strong"
       },
       {
         "ticker": "SHOP",
         "rating": 4.81,
-        "reviews": 7274650,
+        "reviews": 7278966,
         "apps": 4,
         "top_app": "Shop: Track, Pay, Discover",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0006,
         "lean": "strong"
       },
       {
         "ticker": "DAL",
         "rating": 4.85,
-        "reviews": 7003840,
+        "reviews": 7003827,
         "apps": 3,
         "top_app": "Fly Delta",
-        "review_velocity": 0.0,
+        "review_velocity": -0.0,
         "lean": "strong"
       },
       {
         "ticker": "ROKU",
         "rating": 4.72,
-        "reviews": 6315418,
+        "reviews": 6324304,
         "apps": 2,
         "top_app": "Roku Remote (Official)",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0014,
         "lean": "strong"
       },
       {
         "ticker": "PINS",
         "rating": 4.78,
-        "reviews": 5802853,
+        "reviews": 5804904,
         "apps": 1,
         "top_app": "Pinterest",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0004,
         "lean": "strong"
       },
       {
         "ticker": "SNAP",
         "rating": 4.51,
-        "reviews": 5974849,
+        "reviews": 6006021,
         "apps": 1,
         "top_app": "Snapchat",
-        "review_velocity": 0.0,
+        "review_velocity": 0.0052,
         "lean": "strong"
       }
     ],
@@ -30507,804 +30507,804 @@
     ],
     "congress_holdings": {
       "ICE": {
-        "position_usd": 4675923000.0,
-        "holders": 1176
+        "position_usd": 4723636500.0,
+        "holders": 1188
       },
       "MSFT": {
-        "position_usd": 2097837000.0,
-        "holders": 6762
+        "position_usd": 2119243500.0,
+        "holders": 6831
       },
       "AAPL": {
-        "position_usd": 1741460000.0,
-        "holders": 7742
+        "position_usd": 1759230000.0,
+        "holders": 7821
       },
       "AMZN": {
-        "position_usd": 971719000.0,
-        "holders": 5488
+        "position_usd": 981634500.0,
+        "holders": 5544
       },
       "SPY": {
-        "position_usd": 816879000.0,
-        "holders": 882
+        "position_usd": 825214500.0,
+        "holders": 891
       },
       "FB": {
-        "position_usd": 795025000.0,
-        "holders": 3430
+        "position_usd": 803137500.0,
+        "holders": 3465
       },
       "GOOGL": {
-        "position_usd": 518224000.0,
-        "holders": 3724
+        "position_usd": 523512000.0,
+        "holders": 3762
       },
       "V": {
-        "position_usd": 377104000.0,
-        "holders": 3234
+        "position_usd": 380952000.0,
+        "holders": 3267
       },
       "NFLX": {
-        "position_usd": 367157000.0,
-        "holders": 1862
+        "position_usd": 370903500.0,
+        "holders": 1881
       },
       "CHTR": {
-        "position_usd": 365687000.0,
-        "holders": 784
+        "position_usd": 369418500.0,
+        "holders": 792
       },
       "NVDA": {
-        "position_usd": 328986000.0,
-        "holders": 2744
+        "position_usd": 332343000.0,
+        "holders": 2772
       },
       "PYPL": {
-        "position_usd": 318451000.0,
-        "holders": 2352
+        "position_usd": 321700500.0,
+        "holders": 2376
       },
       "CRM": {
-        "position_usd": 310513000.0,
-        "holders": 1666
+        "position_usd": 313681500.0,
+        "holders": 1683
       },
       "DDOG": {
-        "position_usd": 297185000.0,
-        "holders": 196
+        "position_usd": 300217500.0,
+        "holders": 198
       },
       "XON": {
-        "position_usd": 294784000.0,
-        "holders": 294
+        "position_usd": 297792000.0,
+        "holders": 297
       },
       "BRP": {
-        "position_usd": 294784000.0,
-        "holders": 196
+        "position_usd": 297792000.0,
+        "holders": 198
       },
       "BXS": {
-        "position_usd": 294196000.0,
-        "holders": 294
+        "position_usd": 297198000.0,
+        "holders": 297
       },
       "ALLO": {
-        "position_usd": 294000000.0,
-        "holders": 98
+        "position_usd": 297000000.0,
+        "holders": 99
       },
       "XOM": {
-        "position_usd": 284543000.0,
-        "holders": 3920
+        "position_usd": 287446500.0,
+        "holders": 3960
       },
       "JPM": {
-        "position_usd": 261905000.0,
-        "holders": 4312
+        "position_usd": 264577500.0,
+        "holders": 4356
       },
       "JNJ": {
-        "position_usd": 261366000.0,
-        "holders": 4312
+        "position_usd": 264033000.0,
+        "holders": 4356
       },
       "TFX": {
-        "position_usd": 254604000.0,
-        "holders": 392
+        "position_usd": 257202000.0,
+        "holders": 396
       },
       "T": {
-        "position_usd": 245588000.0,
-        "holders": 4312
+        "position_usd": 248094000.0,
+        "holders": 4356
       },
       "DIS": {
-        "position_usd": 237454000.0,
-        "holders": 4606
+        "position_usd": 239877000.0,
+        "holders": 4653
       },
       "TRUP": {
-        "position_usd": 232750000.0,
-        "holders": 196
+        "position_usd": 235125000.0,
+        "holders": 198
       },
       "A": {
-        "position_usd": 230986000.0,
-        "holders": 490
+        "position_usd": 233343000.0,
+        "holders": 495
       },
       "ET": {
-        "position_usd": 225890000.0,
-        "holders": 980
+        "position_usd": 228195000.0,
+        "holders": 990
       },
       "AB": {
-        "position_usd": 220500000.0,
-        "holders": 98
+        "position_usd": 222750000.0,
+        "holders": 99
       },
       "MA": {
-        "position_usd": 220255000.0,
-        "holders": 2450
+        "position_usd": 222502500.0,
+        "holders": 2475
       },
       "LHCG": {
-        "position_usd": 203203000.0,
-        "holders": 490
+        "position_usd": 205276500.0,
+        "holders": 495
       },
       "VZ": {
-        "position_usd": 199283000.0,
-        "holders": 3234
+        "position_usd": 201316500.0,
+        "holders": 3267
       },
       "SHLX": {
-        "position_usd": 186249000.0,
-        "holders": 490
+        "position_usd": 188149500.0,
+        "holders": 495
       },
       "NEE": {
-        "position_usd": 180712000.0,
-        "holders": 2156
+        "position_usd": 182556000.0,
+        "holders": 2178
       },
       "FDX": {
-        "position_usd": 178311000.0,
-        "holders": 2254
+        "position_usd": 180130500.0,
+        "holders": 2277
       },
       "USAC": {
-        "position_usd": 175861000.0,
-        "holders": 196
+        "position_usd": 177655500.0,
+        "holders": 198
       },
       "LEN": {
-        "position_usd": 174734000.0,
-        "holders": 196
+        "position_usd": 176517000.0,
+        "holders": 198
       },
       "BABA": {
-        "position_usd": 173656000.0,
-        "holders": 2548
+        "position_usd": 175428000.0,
+        "holders": 2574
       },
       "CAPL": {
-        "position_usd": 172284000.0,
-        "holders": 294
+        "position_usd": 174042000.0,
+        "holders": 297
       },
       "WMT": {
-        "position_usd": 172088000.0,
-        "holders": 3332
+        "position_usd": 173844000.0,
+        "holders": 3366
       },
       "AM": {
-        "position_usd": 171794000.0,
-        "holders": 686
+        "position_usd": 173547000.0,
+        "holders": 693
       },
       "HD": {
-        "position_usd": 171157000.0,
-        "holders": 3136
+        "position_usd": 172903500.0,
+        "holders": 3168
       },
       "ENBL": {
-        "position_usd": 166208000.0,
-        "holders": 196
+        "position_usd": 167904000.0,
+        "holders": 198
       },
       "GE": {
-        "position_usd": 160720000.0,
-        "holders": 4018
+        "position_usd": 162360000.0,
+        "holders": 4059
       },
       "CVX": {
-        "position_usd": 155379000.0,
-        "holders": 3234
+        "position_usd": 156964500.0,
+        "holders": 3267
       },
       "TXN": {
-        "position_usd": 154301000.0,
-        "holders": 1666
+        "position_usd": 155875500.0,
+        "holders": 1683
       },
       "UNH": {
-        "position_usd": 151067000.0,
-        "holders": 2940
+        "position_usd": 152608500.0,
+        "holders": 2970
       },
       "UBS": {
-        "position_usd": 148568000.0,
-        "holders": 490
+        "position_usd": 150084000.0,
+        "holders": 495
       },
       "DFS": {
-        "position_usd": 148225000.0,
-        "holders": 1078
+        "position_usd": 149737500.0,
+        "holders": 1089
       },
       "RGC": {
-        "position_usd": 147784000.0,
-        "holders": 196
+        "position_usd": 149292000.0,
+        "holders": 198
       },
       "COST": {
-        "position_usd": 146216000.0,
-        "holders": 3136
+        "position_usd": 147708000.0,
+        "holders": 3168
       },
       "PG": {
-        "position_usd": 141071000.0,
-        "holders": 3234
+        "position_usd": 142510500.0,
+        "holders": 3267
       },
       "INFO": {
-        "position_usd": 137249000.0,
-        "holders": 686
+        "position_usd": 138649500.0,
+        "holders": 693
       },
       "LIN": {
-        "position_usd": 136563000.0,
-        "holders": 1666
+        "position_usd": 137956500.0,
+        "holders": 1683
       },
       "CRWD": {
-        "position_usd": 136367000.0,
-        "holders": 882
+        "position_usd": 137758500.0,
+        "holders": 891
       },
       "HON": {
-        "position_usd": 134701000.0,
-        "holders": 1960
+        "position_usd": 136075500.0,
+        "holders": 1980
       },
       "WFC": {
-        "position_usd": 134652000.0,
-        "holders": 2548
+        "position_usd": 136026000.0,
+        "holders": 2574
       },
       "BAYRY": {
-        "position_usd": 133819000.0,
-        "holders": 392
+        "position_usd": 135184500.0,
+        "holders": 396
       },
       "BAC": {
-        "position_usd": 132692000.0,
-        "holders": 2842
+        "position_usd": 134046000.0,
+        "holders": 2871
       },
       "ALK": {
-        "position_usd": 128037000.0,
-        "holders": 490
+        "position_usd": 129343500.0,
+        "holders": 495
       },
       "MCD": {
-        "position_usd": 127792000.0,
-        "holders": 2352
+        "position_usd": 129096000.0,
+        "holders": 2376
       },
       "SPG": {
-        "position_usd": 127547000.0,
-        "holders": 1176
+        "position_usd": 128848500.0,
+        "holders": 1188
       },
       "BRK.B": {
-        "position_usd": 123529000.0,
-        "holders": 2646
+        "position_usd": 124789500.0,
+        "holders": 2673
       },
       "SBUX": {
-        "position_usd": 121716000.0,
-        "holders": 3332
+        "position_usd": 122958000.0,
+        "holders": 3366
       },
       "PBFX": {
-        "position_usd": 119413000.0,
-        "holders": 196
+        "position_usd": 120631500.0,
+        "holders": 198
       },
       "LUV": {
-        "position_usd": 118776000.0,
-        "holders": 1568
+        "position_usd": 119988000.0,
+        "holders": 1584
       },
       "AMZA": {
-        "position_usd": 117600000.0,
-        "holders": 196
+        "position_usd": 118800000.0,
+        "holders": 198
       },
       "ACN": {
-        "position_usd": 116473000.0,
-        "holders": 2254
+        "position_usd": 117661500.0,
+        "holders": 2277
       },
       "FTAI": {
-        "position_usd": 115885000.0,
-        "holders": 98
+        "position_usd": 117067500.0,
+        "holders": 99
       },
       "INTC": {
-        "position_usd": 114023000.0,
-        "holders": 3626
+        "position_usd": 115186500.0,
+        "holders": 3663
       },
       "PODD": {
-        "position_usd": 112553000.0,
-        "holders": 392
+        "position_usd": 113701500.0,
+        "holders": 396
       },
       "EMR": {
-        "position_usd": 112161000.0,
-        "holders": 1372
+        "position_usd": 113305500.0,
+        "holders": 1386
       },
       "CSCO": {
-        "position_usd": 112112000.0,
-        "holders": 3038
+        "position_usd": 113256000.0,
+        "holders": 3069
       },
       "ZAYO": {
-        "position_usd": 111867000.0,
-        "holders": 294
+        "position_usd": 113008500.0,
+        "holders": 297
       },
       "CAT": {
-        "position_usd": 108437000.0,
-        "holders": 2548
+        "position_usd": 109543500.0,
+        "holders": 2574
       },
       "DHR": {
-        "position_usd": 108437000.0,
-        "holders": 1960
+        "position_usd": 109543500.0,
+        "holders": 1980
       },
       "WMB": {
-        "position_usd": 108290000.0,
-        "holders": 980
+        "position_usd": 109395000.0,
+        "holders": 990
       },
       "CEQP": {
-        "position_usd": 106428000.0,
-        "holders": 294
+        "position_usd": 107514000.0,
+        "holders": 297
       },
       "QCOM": {
-        "position_usd": 105742000.0,
-        "holders": 2940
+        "position_usd": 106821000.0,
+        "holders": 2970
       },
       "RCKY": {
-        "position_usd": 105350000.0,
-        "holders": 98
+        "position_usd": 106425000.0,
+        "holders": 99
       },
       "TSLA": {
-        "position_usd": 104174000.0,
-        "holders": 2254
+        "position_usd": 105237000.0,
+        "holders": 2277
       },
       "MMM": {
-        "position_usd": 103684000.0,
-        "holders": 2058
+        "position_usd": 104742000.0,
+        "holders": 2079
       },
       "RPM": {
-        "position_usd": 103341000.0,
-        "holders": 588
+        "position_usd": 104395500.0,
+        "holders": 594
       },
       "BKCC": {
-        "position_usd": 102900000.0,
-        "holders": 98
+        "position_usd": 103950000.0,
+        "holders": 99
       },
       "BMY": {
-        "position_usd": 102361000.0,
-        "holders": 1764
+        "position_usd": 103405500.0,
+        "holders": 1782
       },
       "ZBRA": {
-        "position_usd": 101185000.0,
-        "holders": 294
+        "position_usd": 102217500.0,
+        "holders": 297
       },
       "AJRD": {
-        "position_usd": 98784000.0,
-        "holders": 196
+        "position_usd": 99792000.0,
+        "holders": 198
       },
       "PEP": {
-        "position_usd": 98000000.0,
-        "holders": 3136
+        "position_usd": 99000000.0,
+        "holders": 3168
       },
       "ABBV": {
-        "position_usd": 97118000.0,
-        "holders": 2254
+        "position_usd": 98109000.0,
+        "holders": 2277
       },
       "PM": {
-        "position_usd": 96089000.0,
-        "holders": 1372
+        "position_usd": 97069500.0,
+        "holders": 1386
       },
       "TMO": {
-        "position_usd": 95403000.0,
-        "holders": 2058
+        "position_usd": 96376500.0,
+        "holders": 2079
       },
       "RTX": {
-        "position_usd": 95011000.0,
-        "holders": 980
+        "position_usd": 95980500.0,
+        "holders": 990
       },
       "IBM": {
-        "position_usd": 94864000.0,
-        "holders": 2548
+        "position_usd": 95832000.0,
+        "holders": 2574
       },
       "CB": {
-        "position_usd": 94668000.0,
-        "holders": 1960
+        "position_usd": 95634000.0,
+        "holders": 1980
       },
       "ADBE": {
-        "position_usd": 93835000.0,
-        "holders": 1372
+        "position_usd": 94792500.0,
+        "holders": 1386
       },
       "IHRT": {
-        "position_usd": 91385000.0,
-        "holders": 98
+        "position_usd": 92317500.0,
+        "holders": 99
       },
       "DGRO": {
-        "position_usd": 91042000.0,
-        "holders": 196
+        "position_usd": 91971000.0,
+        "holders": 198
       },
       "REZI": {
-        "position_usd": 90160000.0,
-        "holders": 686
+        "position_usd": 91080000.0,
+        "holders": 693
       },
       "VEEV": {
-        "position_usd": 88886000.0,
-        "holders": 392
+        "position_usd": 89793000.0,
+        "holders": 396
       },
       "UPS": {
-        "position_usd": 87171000.0,
-        "holders": 1666
+        "position_usd": 88060500.0,
+        "holders": 1683
       },
       "LLY": {
-        "position_usd": 87024000.0,
-        "holders": 1176
+        "position_usd": 87912000.0,
+        "holders": 1188
       },
       "CVS": {
-        "position_usd": 85701000.0,
-        "holders": 2940
+        "position_usd": 86575500.0,
+        "holders": 2970
       },
       "KO": {
-        "position_usd": 84672000.0,
-        "holders": 2744
+        "position_usd": 85536000.0,
+        "holders": 2772
       },
       "BIDU": {
-        "position_usd": 83300000.0,
-        "holders": 784
+        "position_usd": 84150000.0,
+        "holders": 792
       },
       "MCHP": {
-        "position_usd": 82957000.0,
-        "holders": 490
+        "position_usd": 83803500.0,
+        "holders": 495
       },
       "MIC": {
-        "position_usd": 82369000.0,
-        "holders": 294
+        "position_usd": 83209500.0,
+        "holders": 297
       },
       "NSRGY": {
-        "position_usd": 82271000.0,
-        "holders": 1764
+        "position_usd": 83110500.0,
+        "holders": 1782
       },
       "PXD": {
-        "position_usd": 82124000.0,
-        "holders": 588
+        "position_usd": 82962000.0,
+        "holders": 594
       },
       "ULTI": {
-        "position_usd": 80752000.0,
-        "holders": 196
+        "position_usd": 81576000.0,
+        "holders": 198
       },
       "LH": {
-        "position_usd": 79919000.0,
-        "holders": 490
+        "position_usd": 80734500.0,
+        "holders": 495
       },
       "UBER": {
-        "position_usd": 78057000.0,
-        "holders": 882
+        "position_usd": 78853500.0,
+        "holders": 891
       },
       "CTSH": {
-        "position_usd": 77567000.0,
-        "holders": 980
+        "position_usd": 78358500.0,
+        "holders": 990
       },
       "LOW": {
-        "position_usd": 76244000.0,
-        "holders": 1960
+        "position_usd": 77022000.0,
+        "holders": 1980
       },
       "NS": {
-        "position_usd": 75950000.0,
-        "holders": 196
+        "position_usd": 76725000.0,
+        "holders": 198
       },
       "PEGA": {
-        "position_usd": 75901000.0,
-        "holders": 196
+        "position_usd": 76675500.0,
+        "holders": 198
       },
       "HALO": {
-        "position_usd": 75852000.0,
-        "holders": 294
+        "position_usd": 76626000.0,
+        "holders": 297
       },
       "ROK": {
-        "position_usd": 75705000.0,
-        "holders": 588
+        "position_usd": 76477500.0,
+        "holders": 594
       },
       "TIP": {
-        "position_usd": 75656000.0,
-        "holders": 294
+        "position_usd": 76428000.0,
+        "holders": 297
       },
       "GOOG": {
-        "position_usd": 75215000.0,
-        "holders": 2646
+        "position_usd": 75982500.0,
+        "holders": 2673
       },
       "TSM": {
-        "position_usd": 75019000.0,
-        "holders": 1568
+        "position_usd": 75784500.0,
+        "holders": 1584
       },
       "ABT": {
-        "position_usd": 74872000.0,
-        "holders": 2156
+        "position_usd": 75636000.0,
+        "holders": 2178
       },
       "DD": {
-        "position_usd": 74480000.0,
-        "holders": 1470
+        "position_usd": 75240000.0,
+        "holders": 1485
       },
       "STT": {
-        "position_usd": 74480000.0,
-        "holders": 1470
+        "position_usd": 75240000.0,
+        "holders": 1485
       },
       "PFE": {
-        "position_usd": 74088000.0,
-        "holders": 3234
+        "position_usd": 74844000.0,
+        "holders": 3267
       },
       "TWOU": {
-        "position_usd": 73500000.0,
-        "holders": 98
+        "position_usd": 74250000.0,
+        "holders": 99
       },
       "RNR": {
-        "position_usd": 73500000.0,
-        "holders": 98
+        "position_usd": 74250000.0,
+        "holders": 99
       },
       "AMLP": {
-        "position_usd": 73500000.0,
-        "holders": 98
+        "position_usd": 74250000.0,
+        "holders": 99
       },
       "EFA": {
-        "position_usd": 73500000.0,
-        "holders": 98
+        "position_usd": 74250000.0,
+        "holders": 99
       },
       "NVS": {
-        "position_usd": 72275000.0,
-        "holders": 1470
+        "position_usd": 73012500.0,
+        "holders": 1485
       },
       "CL": {
-        "position_usd": 71932000.0,
-        "holders": 1470
+        "position_usd": 72666000.0,
+        "holders": 1485
       },
       "AMGN": {
-        "position_usd": 71687000.0,
-        "holders": 2058
+        "position_usd": 72418500.0,
+        "holders": 2079
       },
       "LMT": {
-        "position_usd": 70952000.0,
-        "holders": 1862
+        "position_usd": 71676000.0,
+        "holders": 1881
       },
       "DEO": {
-        "position_usd": 69580000.0,
-        "holders": 1666
+        "position_usd": 70290000.0,
+        "holders": 1683
       },
       "BA": {
-        "position_usd": 68894000.0,
-        "holders": 2548
+        "position_usd": 69597000.0,
+        "holders": 2574
       },
       "NGL": {
-        "position_usd": 68649000.0,
-        "holders": 294
+        "position_usd": 69349500.0,
+        "holders": 297
       },
       "XLE": {
-        "position_usd": 68404000.0,
-        "holders": 196
+        "position_usd": 69102000.0,
+        "holders": 198
       },
       "MO": {
-        "position_usd": 68208000.0,
-        "holders": 2058
+        "position_usd": 68904000.0,
+        "holders": 2079
       },
       "F": {
-        "position_usd": 67718000.0,
-        "holders": 2352
+        "position_usd": 68409000.0,
+        "holders": 2376
       },
       "IWN": {
-        "position_usd": 66836000.0,
-        "holders": 490
+        "position_usd": 67518000.0,
+        "holders": 495
       },
       "PAA": {
-        "position_usd": 66787000.0,
-        "holders": 490
+        "position_usd": 67468500.0,
+        "holders": 495
       },
       "ORCL": {
-        "position_usd": 65660000.0,
-        "holders": 1372
+        "position_usd": 66330000.0,
+        "holders": 1386
       },
       "TJX": {
-        "position_usd": 64533000.0,
-        "holders": 2548
+        "position_usd": 65191500.0,
+        "holders": 2574
       },
       "RMD": {
-        "position_usd": 64386000.0,
-        "holders": 490
+        "position_usd": 65043000.0,
+        "holders": 495
       },
       "AMAT": {
-        "position_usd": 63651000.0,
-        "holders": 1372
+        "position_usd": 64300500.0,
+        "holders": 1386
       },
       "NKE": {
-        "position_usd": 63602000.0,
-        "holders": 1372
+        "position_usd": 64251000.0,
+        "holders": 1386
       },
       "MDY": {
-        "position_usd": 62818000.0,
-        "holders": 196
+        "position_usd": 63459000.0,
+        "holders": 198
       },
       "VMC": {
-        "position_usd": 62524000.0,
-        "holders": 784
+        "position_usd": 63162000.0,
+        "holders": 792
       },
       "KHC": {
-        "position_usd": 62279000.0,
-        "holders": 1862
+        "position_usd": 62914500.0,
+        "holders": 1881
       },
       "TTWO": {
-        "position_usd": 62034000.0,
-        "holders": 196
+        "position_usd": 62667000.0,
+        "holders": 198
       },
       "EPD": {
-        "position_usd": 61446000.0,
-        "holders": 686
+        "position_usd": 62073000.0,
+        "holders": 693
       },
       "AMN": {
-        "position_usd": 61446000.0,
-        "holders": 196
+        "position_usd": 62073000.0,
+        "holders": 198
       },
       "VTV": {
-        "position_usd": 61250000.0,
-        "holders": 98
+        "position_usd": 61875000.0,
+        "holders": 99
       },
       "GLP": {
-        "position_usd": 60907000.0,
-        "holders": 196
+        "position_usd": 61528500.0,
+        "holders": 198
       },
       "MRK": {
-        "position_usd": 60662000.0,
-        "holders": 2646
+        "position_usd": 61281000.0,
+        "holders": 2673
       },
       "CCI": {
-        "position_usd": 60564000.0,
-        "holders": 1568
+        "position_usd": 61182000.0,
+        "holders": 1584
       },
       "PRU": {
-        "position_usd": 60123000.0,
-        "holders": 1274
+        "position_usd": 60736500.0,
+        "holders": 1287
       },
       "MDLZ": {
-        "position_usd": 59780000.0,
-        "holders": 1372
+        "position_usd": 60390000.0,
+        "holders": 1386
       },
       "DXCM": {
-        "position_usd": 59388000.0,
-        "holders": 784
+        "position_usd": 59994000.0,
+        "holders": 792
       },
       "IWD": {
-        "position_usd": 58114000.0,
-        "holders": 196
+        "position_usd": 58707000.0,
+        "holders": 198
       },
       "SQ": {
-        "position_usd": 57477000.0,
-        "holders": 1176
+        "position_usd": 58063500.0,
+        "holders": 1188
       },
       "HHC": {
-        "position_usd": 56938000.0,
-        "holders": 392
+        "position_usd": 57519000.0,
+        "holders": 396
       },
       "D": {
-        "position_usd": 56546000.0,
-        "holders": 1666
+        "position_usd": 57123000.0,
+        "holders": 1683
       },
       "ARNA": {
-        "position_usd": 56007000.0,
-        "holders": 294
+        "position_usd": 56578500.0,
+        "holders": 297
       },
       "DAL": {
-        "position_usd": 55958000.0,
-        "holders": 1274
+        "position_usd": 56529000.0,
+        "holders": 1287
       },
       "TTD": {
-        "position_usd": 55468000.0,
-        "holders": 294
+        "position_usd": 56034000.0,
+        "holders": 297
       },
       "DOCU": {
-        "position_usd": 55419000.0,
-        "holders": 392
+        "position_usd": 55984500.0,
+        "holders": 396
       },
       "CUTR": {
-        "position_usd": 54684000.0,
-        "holders": 98
+        "position_usd": 55242000.0,
+        "holders": 99
       },
       "KEYS": {
-        "position_usd": 54586000.0,
-        "holders": 490
+        "position_usd": 55143000.0,
+        "holders": 495
       },
       "C": {
-        "position_usd": 54243000.0,
-        "holders": 1960
+        "position_usd": 54796500.0,
+        "holders": 1980
       },
       "OSW": {
-        "position_usd": 54194000.0,
-        "holders": 196
+        "position_usd": 54747000.0,
+        "holders": 198
       },
       "TCEHY": {
-        "position_usd": 54096000.0,
-        "holders": 588
+        "position_usd": 54648000.0,
+        "holders": 594
       },
       "PNR": {
-        "position_usd": 53900000.0,
-        "holders": 294
+        "position_usd": 54450000.0,
+        "holders": 297
       },
       "CTL": {
-        "position_usd": 53753000.0,
-        "holders": 784
+        "position_usd": 54301500.0,
+        "holders": 792
       },
       "ADP": {
-        "position_usd": 53410000.0,
-        "holders": 882
+        "position_usd": 53955000.0,
+        "holders": 891
       },
       "TFC": {
-        "position_usd": 52528000.0,
-        "holders": 1470
+        "position_usd": 53064000.0,
+        "holders": 1485
       },
       "PGR": {
-        "position_usd": 52087000.0,
-        "holders": 1274
+        "position_usd": 52618500.0,
+        "holders": 1287
       },
       "IFNNY": {
-        "position_usd": 51205000.0,
-        "holders": 294
+        "position_usd": 51727500.0,
+        "holders": 297
       },
       "AVGO": {
-        "position_usd": 50519000.0,
-        "holders": 1274
+        "position_usd": 51034500.0,
+        "holders": 1287
       },
       "MSM": {
-        "position_usd": 50470000.0,
-        "holders": 294
+        "position_usd": 50985000.0,
+        "holders": 297
       },
       "SLB": {
-        "position_usd": 50323000.0,
-        "holders": 2842
+        "position_usd": 50836500.0,
+        "holders": 2871
       },
       "BRK-B": {
-        "position_usd": 50323000.0,
-        "holders": 490
+        "position_usd": 50836500.0,
+        "holders": 495
       },
       "IR": {
-        "position_usd": 50225000.0,
-        "holders": 686
+        "position_usd": 50737500.0,
+        "holders": 693
       },
       "AZO": {
-        "position_usd": 50078000.0,
-        "holders": 784
+        "position_usd": 50589000.0,
+        "holders": 792
       },
       "UNP": {
-        "position_usd": 49833000.0,
-        "holders": 1666
+        "position_usd": 50341500.0,
+        "holders": 1683
       },
       "BBVA": {
-        "position_usd": 49833000.0,
-        "holders": 392
+        "position_usd": 50341500.0,
+        "holders": 396
       },
       "CMCSA": {
-        "position_usd": 49637000.0,
-        "holders": 2646
+        "position_usd": 50143500.0,
+        "holders": 2673
       },
       "SU": {
-        "position_usd": 49343000.0,
-        "holders": 882
+        "position_usd": 49846500.0,
+        "holders": 891
       },
       "USB": {
-        "position_usd": 49000000.0,
-        "holders": 2058
+        "position_usd": 49500000.0,
+        "holders": 2079
       },
       "MIDD": {
-        "position_usd": 48853000.0,
-        "holders": 294
+        "position_usd": 49351500.0,
+        "holders": 297
       },
       "GS": {
-        "position_usd": 47971000.0,
-        "holders": 1764
+        "position_usd": 48460500.0,
+        "holders": 1782
       },
       "DG": {
-        "position_usd": 47530000.0,
-        "holders": 1078
+        "position_usd": 48015000.0,
+        "holders": 1089
       },
       "MPLX": {
-        "position_usd": 47481000.0,
-        "holders": 588
+        "position_usd": 47965500.0,
+        "holders": 594
       },
       "MS": {
-        "position_usd": 47383000.0,
-        "holders": 1470
+        "position_usd": 47866500.0,
+        "holders": 1485
       },
       "TDOC": {
-        "position_usd": 47187000.0,
-        "holders": 490
+        "position_usd": 47668500.0,
+        "holders": 495
       },
       "GLW": {
-        "position_usd": 46942000.0,
-        "holders": 588
+        "position_usd": 47421000.0,
+        "holders": 594
       },
       "RAND": {
-        "position_usd": 46893000.0,
-        "holders": 98
+        "position_usd": 47371500.0,
+        "holders": 99
       },
       "CSGP": {
-        "position_usd": 46207000.0,
-        "holders": 490
+        "position_usd": 46678500.0,
+        "holders": 495
       },
       "CME": {
-        "position_usd": 46060000.0,
-        "holders": 1176
+        "position_usd": 46530000.0,
+        "holders": 1188
       },
       "BP": {
-        "position_usd": 45864000.0,
-        "holders": 980
+        "position_usd": 46332000.0,
+        "holders": 990
       },
       "UTX": {
-        "position_usd": 45472000.0,
-        "holders": 1960
+        "position_usd": 45936000.0,
+        "holders": 1980
       },
       "OKE": {
-        "position_usd": 45031000.0,
-        "holders": 882
+        "position_usd": 45490500.0,
+        "holders": 891
       }
     },
     "flights": [
@@ -33377,7 +33377,7 @@
           "insider_mspr",
           "patent_cluster"
         ],
-        "why": "github_momentum: +0.46% stars \u00b7 gov_contract_accel: $166,945,124, 29.2x accel \u00b7 hf_model_momentum: +5.9% model downloads \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 798 grants, 60 IPC classes"
+        "why": "github_momentum: +0.48% stars \u00b7 gov_contract_accel: $166,945,124, 29.2x accel \u00b7 hf_model_momentum: +5.9% model downloads \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 798 grants, 60 IPC classes"
       },
       {
         "ticker": "MU",
@@ -33403,7 +33403,7 @@
           "patent_cluster",
           "trump"
         ],
-        "why": "app_demand: 4.77\u2605 \u00d7 20,382,554 reviews \u00b7 github_momentum: +0.34% stars \u00b7 lobbying: $3,360,000 lobbied \u00b7 patent_cluster: 510 grants, 50 IPC classes \u00b7 trump: MICROSOFT CORP"
+        "why": "app_demand: 4.77\u2605 \u00d7 20,396,867 reviews \u00b7 github_momentum: +0.33% stars \u00b7 lobbying: $3,360,000 lobbied \u00b7 patent_cluster: 510 grants, 50 IPC classes \u00b7 trump: MICROSOFT CORP"
       },
       {
         "ticker": "NVDA",
@@ -33451,6 +33451,17 @@
           "unusual_options"
         ],
         "why": "patent_cluster: 317 grants, 53 IPC classes \u00b7 trump: APPLIED MATERIALS \u00b7 unusual_options: 4.12\u00d7 vol/OI, balanced"
+      },
+      {
+        "ticker": "GM",
+        "score": 3,
+        "weighted_score": 1.45,
+        "channel_list": [
+          "cnbc_pick",
+          "gov_contract_accel",
+          "lobbying"
+        ],
+        "why": "cnbc_pick: Tim Seymour \u00b7 gov_contract_accel: $54,603,385, 16.4x accel \u00b7 lobbying: $4,270,000 lobbied"
       },
       {
         "ticker": "BA",
@@ -33518,16 +33529,6 @@
           "patent_cluster"
         ],
         "why": "congress_cluster: 3 members net +6 \u00b7 patent_cluster: 955 grants, 58 IPC classes"
-      },
-      {
-        "ticker": "GM",
-        "score": 2,
-        "weighted_score": 1.2,
-        "channel_list": [
-          "gov_contract_accel",
-          "lobbying"
-        ],
-        "why": "gov_contract_accel: $54,514,977, 16.3x accel \u00b7 lobbying: $4,270,000 lobbied"
       },
       {
         "ticker": "GPI",

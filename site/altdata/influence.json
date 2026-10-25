@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-25T02:07:09.846558+00:00",
+  "generated_utc": "2026-10-25T13:44:37.510281+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -1739,15 +1739,15 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020582.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020087.htm"
     },
     {
       "date": "2026-09-30",
-      "form": "S-4",
+      "form": "8-K",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
+      "items": "1.01,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
     },
     {
       "date": "2026-09-30",
@@ -1771,7 +1771,7 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/ex_1020866.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031600/djt20260930c_425.htm"
     }
   ]
 }
