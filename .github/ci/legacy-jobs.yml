@@ -16728,6 +16728,8 @@ jobs:
       - scripts/ci/qledger_engine_publication.py
       - scripts/ci/qledger_engine_publisher.py
       - templates/data_base.js
+      - site/commodities.html
+      - site/start.html
       - scripts/ci/qledger_daily_entry.py
       - scripts/ci/qledger_host_gate.py
       - scripts/ci/qledger_owner_evidence.py

@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from hashlib import sha256
 from contextvars import ContextVar
+from contextlib import contextmanager
+from threading import get_ident
 import json
 import os
 import sys
@@ -37,6 +39,7 @@ def _fail(message, code="OWNER_INVOCATION_UNPROVEN"):
 
 
 _LIVE_PRODUCER = ContextVar("qledger_live_producer_invocation", default=None)
+_PUBLICATION_ASSERTION = ContextVar("qledger_original_publication_assertion", default=None)
 
 
 class _LiveProducerInvocation:
@@ -64,6 +67,47 @@ def require_live_producer(binding):
         _fail("same-process live producer invocation is absent")
     live.check("engine-owner-entry")
     return live
+
+
+@contextmanager
+def publication_assertion_scope(attempt, method):
+    """Failure-only caller provenance; never provider input or admission.
+
+    Bind the actual original before provider code can drop/mangle its argument
+    dictionary. The scope cannot authorize a write or be transferred to another
+    process/thread; it only preserves a refusal on this already-live caller.
+    """
+    if method != 'assert_publication_readback':
+        yield
+        return
+    checked = attempt.checked
+    live = require_live_producer(checked.invocation.binding)
+    if (checked.live is not live or checked.publication_attempt is not attempt
+            or not checked.active or checked.failure is not None or attempt.confirmed
+            or attempt.pid != os.getpid() or _PUBLICATION_ASSERTION.get() is not None):
+        _fail('actual original publication assertion caller is absent or nested')
+    token = _PUBLICATION_ASSERTION.set((attempt, checked, os.getpid(), get_ident()))
+    try:
+        try:
+            yield
+        except BaseException as exc:
+            record_publication_assertion_refusal(exc)
+            raise
+    finally:
+        _PUBLICATION_ASSERTION.reset(token)
+
+
+def record_publication_assertion_refusal(exc):
+    """Record against caller-owned provenance, independent of provider kwargs."""
+    scope = _PUBLICATION_ASSERTION.get()
+    if scope is None:
+        return  # Ordinary conversion assertions preserve their existing path.
+    attempt, checked, pid, thread = scope
+    if (os.getpid(), get_ident()) != (pid, thread):
+        return  # Inherited/copied context is never another caller's authority.
+    if checked.failure is None:
+        checked.failure = exc
+    attempt.uncertain = True
 
 
 def load_conversion(repo, *, result_path, manifest_digest):

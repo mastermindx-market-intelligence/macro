@@ -183,3 +183,140 @@ def test_remote_query_cannot_follow_mutable_origin_aba(publication, redirect):
     assert git(repo,'remote','get-url','origin')==str(remote).encode()
     assert git(alternate,'rev-parse','refs/heads/main').decode()==config['gate']['candidate_oid']
     assert git(remote,'for-each-ref','--format=%(objectname)','refs/heads/main')==b''
+
+# Native fixtures are future, test-owned original operations. This provider
+# branch test supplies the typed caller context explicitly; production caller
+# registration remains separate while publisher bytes are under review.
+from tests.test_qledger_conversion_candidate import native_fixture,prepare_native  # noqa:F401
+from tests.test_qledger_original_result import original  # noqa:F401
+from tests.test_qledger_causal_originals import causal,append  # noqa:F401
+from tests.test_qledger_native_publication import https_origin  # noqa:F401
+
+
+@pytest.mark.parametrize('fault',['positive','creator','lease','order','tree','root','lost-response','readback','manifest','missing-context','caught-lost-response','https-positive','caught-missing-context','caught-invalid-context','caught-provider-check','caught-legacy-route'])
+def test_native_readback_evidence_requires_actual_live_original(causal,fixture,monkeypatch,tmp_path,request,fault):
+    from dataclasses import replace
+    from types import SimpleNamespace
+    import os,time
+    from engine import qledger_original_conversion as conversion
+    from engine import qledger_store_protocol as protocol
+    from scripts.ci import qledger_engine_publication as engine,qledger_engine_publisher as publisher
+    from scripts.ci.qledger_owner_evidence import build_evidence,EvidenceUnavailable
+    from scripts.ci.qledger_owner_invocation import load_conversion
+    from tests.test_qledger_native_publication import prepare_case,Authority
+    from tests.test_qledger_engine_finalizer import stage
+    from scripts import build_allocation as allocation
+    state={}
+    def final(checked):
+        stage(binding);prepared=checked.prepare_engine_tree('test-owned real native evidence');state.update(checked=checked,prepared=prepared)
+        engine.publish_native_engine(checked,prepared,**args)
+        return prepared
+    binding,_,gate,remote,args=prepare_case(causal,monkeypatch,tmp_path,final)
+    repo,legacy_tip,blob,_,limits=fixture;tip=next(iter(binding.original_result_targets.values())).accepted_tip_oid
+    if fault=='https-positive':
+        remote,url,cert,header,network=request.getfixturevalue('https_origin')
+        subprocess.check_call(['git','-C',str(repo),'push','--quiet',str(remote),tip+':refs/heads/main'])
+        subprocess.check_call(['git','-C',str(repo),'remote','set-url','origin',url])
+        subprocess.check_call(['git','-C',str(repo),'config','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader','AUTHORIZATION: '+header])
+        carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+        args.update(origin_binding_sha256=sha256(url.encode()).hexdigest(),original_origin_inode=None,https_carrier=carrier)
+    # Retain the same accepted conversion using its actual deterministic inputs.
+    # A separate named original ref preserves the native producer's accepted ref.
+    subprocess.check_call(['git','-C',str(repo),'update-ref','refs/remotes/fixture/legacy',legacy_tip])
+    owner_root=tmp_path/'retained-initial';owner_root.mkdir(mode=0o700)
+    target=conversion.ConversionOwnerTarget(owner_root,owner_root/'original','original',legacy_tip,
+        'refs/remotes/fixture/legacy',blob,
+        engine.candidate.CandidateCommitMetadata('Synthetic preparation','fixture@example.invalid',1700000000),
+        'test-conversion-budget','test-conversion-retention')
+    owner=conversion.OriginalConversionOwner(repo,intent=conversion.OriginalConversionIntent('operation:one','lane:one','convert:one'),target=target,limits=limits)
+    prepared_conversion=owner.prepare();owner.retain(prepared_conversion)
+    assert prepared_conversion.candidate.candidate_oid==tip
+    loaded=load_conversion(repo,result_path=target.result_path,manifest_digest=prepared_conversion.manifest_digest)
+    context=SimpleNamespace(repo=repo,owner_root=owner_root,result_path=target.result_path,
+        manifest_digest=prepared_conversion.manifest_digest,original_deadline_monotonic_ns=time.monotonic_ns()+90_000_000_000,
+        candidate_oid=tip,operation_id=owner.intent.operation_id,budget_id=target.budget_id,retention_id=target.retention_id)
+    real=build_evidence(context,origin_binding_sha256=args['origin_binding_sha256'])
+    gate.repo,gate.owner,gate.invocation,gate.candidate_oid=repo,loaded.owner,loaded,tip
+    gate.producers={(binding.operation_id,binding.lane_id):('fixture-original-budget','fixture-original-retention')}
+    class NativeFixtureAuthority(Authority):
+        def assert_resources(self,**ctx):
+            if fault=='https-positive':
+                assert ctx['publication_transport']=='checkout_https' and ctx['original_origin_inode'] is None
+                assert (ctx['original_attempt'],ctx['original_max_attempts'],ctx['original_alarm_seconds'])==(1,20,420)
+            else:super().assert_resources(**ctx)
+        def assert_publication_readback(self,**ctx):
+            checked=state['checked'];attempt=checked.publication_attempt
+            assert ctx['native_checked'] is checked and ctx['native_prepared'] is state['prepared']
+            assert ctx['native_attempt'] is attempt
+            ctx.update(bootstrap_pid=os.getpid(),original_deadline_monotonic_ns=context.original_deadline_monotonic_ns,
+                conversion_result_path=context.result_path,conversion_manifest_digest=context.manifest_digest)
+            if fault=='creator':
+                child=os.fork()
+                if child==0:
+                    try:real.assert_publication_readback(**ctx)
+                    except EvidenceUnavailable:os._exit(0)
+                    os._exit(4)
+                assert os.waitpid(child,0)[1]==0
+                raise EvidenceUnavailable('test-owned child cannot credit original creator')
+            if fault=='lease':checked.live.active=False
+            if fault=='order':checked.invocation.writes=(checked.invocation.writes[-1],)
+            if fault=='tree':ctx['native_prepared']=replace(state['prepared'],tree_oid='0'*40)
+            if fault=='root':(repo/protocol.ROOT_PATH).write_bytes(b'test-owned corrupt current root')
+            old_response=attempt.push_response
+            if fault in ('lost-response','caught-lost-response'):attempt.push_response=None
+            if fault=='readback':subprocess.check_call(['git','-C',str(remote),'update-ref','refs/heads/main',tip])
+            if fault=='manifest':ctx['original_manifest_digest']='0'*64
+            if fault in ('missing-context','caught-missing-context'):ctx.pop('native_attempt')
+            if fault=='caught-invalid-context':ctx['native_checked']=None
+            if fault=='caught-provider-check':real._failed=True
+            if fault=='caught-legacy-route':
+                for key in ('native_checked','native_prepared','native_attempt'):ctx.pop(key)
+                ctx['phase']='fixture-wrong-conversion-route'
+            try:return real.assert_publication_readback(**ctx)
+            except EvidenceUnavailable as exc:
+                if fault in ('caught-missing-context','caught-invalid-context','caught-provider-check','caught-legacy-route'):
+                    return None  # Intentionally swallow an EARLY refusal before provider binding.
+                if fault in ('lost-response','caught-lost-response'):
+                    assert checked.failure is exc and attempt.uncertain
+                    if fault=='caught-lost-response':
+                        attempt.push_response=old_response
+                        return None  # Buggy fixture wrapper; the caller must retain original failure.
+                if fault=='lost-response':
+                    attempt.push_response=old_response
+                    with pytest.raises(EvidenceUnavailable,match='already entered'):
+                        real.assert_publication_readback(**ctx)
+                raise
+    gate.evidence=NativeFixtureAuthority(remote)
+    def produce(*a,**kw):
+        append(causal,0);append(causal,1)
+        return {'us':'test-owned two originals'}
+    monkeypatch.setattr(allocation,'run_native_thematic_owner',produce)
+    intents=causal[2]
+    _,callback=engine.build_native_engine_producer(context,owner_binding=binding,regions=('us','ca'),
+        native_intents={'us':intents[0],'ca':intents[1]},finalizer=final,call=object())
+    def run():
+        with gate.lease():
+            return loaded.invoke_producer(binding,gate=gate,installed_commit_oid=tip,budget_id='fixture-original-budget',
+                retention_id='fixture-original-retention',producer=callback)
+    if fault in ('positive','https-positive'):
+        assert run().status=='publication_confirmed' and not gate.held
+        assert len(binding.attempts)==2
+        if fault=='https-positive':assert network['received']==1 and carrier._closed
+    else:
+        messages={'creator':'child cannot credit original','lease':'same-process live producer',
+            'order':'missing, duplicate, reordered','tree':'live installed owner/candidate',
+            'lost-response':'actual original successful Git response','readback':'full candidate not confirmed',
+            'manifest':'resources, chain, full tree','missing-context':'actual typed live native',
+            'caught-lost-response':'final-candidate callback closed or unresolved',
+            **{key:'final-candidate callback closed or unresolved' for key in
+               ('caught-missing-context','caught-invalid-context','caught-provider-check','caught-legacy-route')}}
+        with pytest.raises((EvidenceUnavailable,protocol.SnapshotIntegrityError),match=messages.get(fault)):run()
+        assert gate.held and not callback.finalization.publication_attempt.confirmed
+        if fault in ('caught-lost-response','caught-missing-context','caught-invalid-context','caught-provider-check','caught-legacy-route'):
+            attempt=callback.finalization.publication_attempt
+            assert attempt.uncertain and not attempt.remote_confirmed and attempt.control.exists()
+            assert attempt.push_process.returncode==0 and os.fstat(attempt.origin_heads_fd)
+            assert isinstance(callback.finalization.failure,EvidenceUnavailable)
+            if fault=='caught-lost-response':assert 'successful Git response unavailable' in str(callback.finalization.failure)
+    # This concrete partial provider still issues no host/resource admission.
+    with pytest.raises(EvidenceUnavailable):real.assert_resources()

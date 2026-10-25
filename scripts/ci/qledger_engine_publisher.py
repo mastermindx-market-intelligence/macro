@@ -1,7 +1,7 @@
 """Opt-in one-original-Git-attempt native publication through an isolated Git control context.
 
-Only explicit local origins are supported. This module supplies no production
-network authentication, resource authority, installer or retry loop. Control
+Explicit local origins and an explicitly supplied checkout HTTPS header carrier
+are supported. This module supplies no credential, resource authority, installer or retry loop. Control
 files reference the incumbent object database; no claims/result store is copied.
 """
 from hashlib import sha256
@@ -372,8 +372,9 @@ class _OriginalPublicationAttempt:
         self.ordinal, self.maximum, self.alarm = original_attempt, original_max_attempts, original_alarm_seconds
         require(type(self.origin_digest) is str and len(self.origin_digest) == 64
                 and all(c in '0123456789abcdef' for c in self.origin_digest), 'original origin binding absent')
-        require(type(self.origin_inode) is tuple and len(self.origin_inode) == 2
-                and all(type(x) is int and x >= 0 for x in self.origin_inode), 'original origin incarnation absent')
+        require((type(self) is _HTTPSPublicationAttempt and self.origin_inode is None)
+                or (type(self.origin_inode) is tuple and len(self.origin_inode) == 2
+                    and all(type(x) is int and x >= 0 for x in self.origin_inode)), 'original origin incarnation absent')
         require(all(type(x) is int for x in (self.ordinal,self.maximum,self.alarm))
                 and 1 <= self.ordinal <= self.maximum < 2**31 and 0 <= self.alarm < 2**31,
                 'actual original ordinal/max/alarm required; no retry initialization')
@@ -439,8 +440,12 @@ class _OriginalPublicationAttempt:
             original_origin_inode=self.origin_inode,origin_binding_sha256=self.origin_digest,
             original_attempt=self.ordinal,original_max_attempts=self.maximum,original_alarm_seconds=self.alarm,
             git_executable=self.git,publication_transport='local_objects_and_loose_ref_cas',git_pid=self.push_process.pid if self.push_process is not None else None,
-            verification_pid=self.verification_process.pid if self.verification_process is not None else None)
-        require(assertion(**context) is None, 'authority returned an admission flag')
+            verification_pid=self.verification_process.pid if self.verification_process is not None else None,
+            native_checked=self.checked,native_prepared=self.prepared,native_attempt=self)
+        from scripts.ci.qledger_owner_invocation import publication_assertion_scope
+        with publication_assertion_scope(self, method):
+            require(assertion(**context) is None, 'authority returned an admission flag')
+        self.check()  # Caught evidence failure cannot rehabilitate this original.
 
     def origin_bytes(self):
         values=[]
@@ -719,6 +724,274 @@ class _OriginalPublicationAttempt:
                 ==_inode(os.stat(self.control,follow_symlinks=False)),'owned Git control replaced; preserved')
 
 
+# checkout/v4 persists one HTTP token header in .git/config. Only the Git
+# authentication child consumes it; no credential is copied to argv, control
+# files, parent state, reports or output. This is not host/controller admission.
+def _file_stamp(info):
+    return (info.st_dev,info.st_ino,info.st_mode,info.st_nlink,info.st_size,info.st_mtime_ns,info.st_ctime_ns)
+
+
+class CheckoutHTTPSCarrier:
+    """Original process-local checkout header descriptor; never a serialized grant."""
+    def __init__(self, repo, destination, *, tls_ca_file=None):
+        from urllib.parse import urlsplit
+        import re
+        parsed=urlsplit(destination)
+        require(type(repo) is type(Path()) and repo.is_absolute() and type(destination) is str
+                and parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password
+                and not parsed.query and not parsed.fragment and '%' not in destination
+                and re.fullmatch(r'/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\.git',parsed.path)
+                and all(x not in ('.','..') for x in parsed.path.split('/')),
+                'finite literal HTTPS repository destination required')
+        import threading
+        self._use_lock=threading.Lock();self._attempt=None;self._closed=False
+        self.pid,self.repo,self.destination=os.getpid(),repo,destination
+        self.key='http.'+parsed.scheme+'://'+parsed.netloc+'/.extraheader'
+        self.git_dir=self.config_fd=self.ca_fd=None
+        self.ca_path=self.ca_stamp=None
+        try:
+            self.git_dir=_open_directory(repo/'.git')
+            self.config_fd=os.open('config',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=self.git_dir)
+            info=os.fstat(self.config_fd)
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink==1 and 0<info.st_size<=1048576,
+                    'original finite checkout configuration required')
+            self.config_stamp=_file_stamp(info)
+            if tls_ca_file is not None:
+                require(type(tls_ca_file) is type(Path()) and tls_ca_file.is_absolute(),'explicit TLS trust file required')
+                self.ca_path=tls_ca_file
+                self.ca_fd=os.open(tls_ca_file,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+                info=os.fstat(self.ca_fd)
+                require(stat.S_ISREG(info.st_mode) and info.st_nlink==1 and 0<info.st_size<=1048576,
+                        'finite original TLS trust file required')
+                self.ca_stamp=_file_stamp(info)
+            self.check()
+        except BaseException:
+            for fd in (self.ca_fd,self.config_fd,self.git_dir):
+                if fd is not None:os.close(fd)
+            self._closed=True
+            raise
+
+    def check(self):
+        require(not self._closed and os.getpid()==self.pid,'original HTTPS authentication carrier closed or transferred')
+        require(_inode(os.fstat(self.git_dir))==_inode(os.stat(self.repo/'.git',follow_symlinks=False))
+                and _file_stamp(os.fstat(self.config_fd))==self.config_stamp
+                ==_file_stamp(os.stat('config',dir_fd=self.git_dir,follow_symlinks=False)),
+                'original checkout authentication carrier changed')
+        if self.ca_fd is not None:
+            require(_file_stamp(os.fstat(self.ca_fd))==self.ca_stamp
+                    ==_file_stamp(os.stat(self.ca_path,follow_symlinks=False)), 'original TLS trust carrier changed')
+
+    def close_known(self,attempt):
+        require(self._attempt is attempt and not attempt.uncertain,'uncertain authentication carrier retained')
+        self.check()
+        for fd in (self.config_fd,self.git_dir,self.ca_fd):
+            if fd is not None:os.close(fd)
+        self._closed=True;self._use_lock.release()
+
+    def __reduce__(self):raise TypeError('HTTPS authentication carrier cannot transfer')
+
+
+# Reads precisely one checkout header with includes disabled and checks its
+# original file incarnation around that read. Subsequent Git uses only the
+# consumed value and a literal destination; mutable checkout config is never
+# consulted again. Error output is suppressed; no secret leaves this child.
+_HTTPS_EXEC = r'''import base64,json,os,signal,stat,subprocess,sys,time
+fd=int(sys.argv[1]);stamp=tuple(json.loads(sys.argv[2]));key=sys.argv[3];git=sys.argv[4]
+endpoint=int(sys.argv[5]);alarm_endpoint=int(sys.argv[6]);control=int(sys.argv[7]);ca=int(sys.argv[8]);args=sys.argv[9:]
+def ident(i):return (i.st_dev,i.st_ino,i.st_mode,i.st_nlink,i.st_size,i.st_mtime_ns,i.st_ctime_ns)
+def check():
+ if time.monotonic_ns()>=endpoint or ident(os.fstat(fd))!=stamp:raise RuntimeError('original authentication unavailable')
+check();os.fchdir(control);os.lseek(fd,0,os.SEEK_SET)
+if ca>=0:os.lseek(ca,0,os.SEEK_SET)
+env={k:v for k,v in os.environ.items() if not k.startswith('GIT_') and k.upper() not in
+ ('HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY','CURL_CA_BUNDLE','SSL_CERT_FILE','SSL_CERT_DIR',
+  'NETRC','SSLKEYLOGFILE','CURL_SSL_BACKEND')}
+env.update(HOME=os.getcwd(),XDG_CONFIG_HOME=os.getcwd(),GIT_CONFIG_NOSYSTEM='1',
+ GIT_CONFIG_SYSTEM=os.devnull,GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_COUNT='0',
+ GIT_DIR='.',GIT_COMMON_DIR='.',GIT_TERMINAL_PROMPT='0',GIT_NO_LAZY_FETCH='1',GIT_NO_REPLACE_OBJECTS='1')
+read=subprocess.Popen([git,'config','--no-includes','--file=/dev/fd/'+str(fd),'--get-all',key],
+ stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,env=env,pass_fds=(fd,))
+# The original configuration is finite. No returned credential is ever logged.
+header=read.stdout.read(16385);read.stdout.close()
+rc=read.wait(timeout=max(0.001,(endpoint-time.monotonic_ns())/1e9));check()
+if rc or len(header)>16384 or not header.endswith(b'\n') or b'\n' in header[:-1] or b'\r' in header:sys.exit(2)
+header=header[:-1]
+if not header.lower().startswith(b'authorization: basic '):sys.exit(2)
+try:decoded=base64.b64decode(header.split(b' ',2)[2],validate=True)
+except Exception:sys.exit(2)
+if not decoded.startswith(b'x-access-token:') or len(decoded)<=15:sys.exit(2)
+settings=[('protocol.allow','never'),('protocol.https.allow','always'),('http.followRedirects','false'),
+ ('http.sslVerify','true'),('http.proxy',''),('credential.helper',''),('gc.auto','0'),
+ ('maintenance.auto','false'),(key,header.decode('ascii'))]
+if ca>=0:settings.append(('http.sslCAInfo','/dev/fd/'+str(ca)))
+env['GIT_CONFIG_COUNT']=str(len(settings))
+for i,(k,v) in enumerate(settings):env['GIT_CONFIG_KEY_'+str(i)]=k;env['GIT_CONFIG_VALUE_'+str(i)]=v
+check()
+remaining=(min(endpoint,alarm_endpoint or endpoint)-time.monotonic_ns())//1000000000
+if remaining<=0:sys.exit(2)
+signal.alarm(remaining)
+os.execve(git,[git,'--git-dir=.','--bare',*args],env)
+'''
+
+
+def _require_https_update_ack(data, *, destination, candidate_oid, accepted_tip_oid):
+    """Credit only this Git push's one exact fast-forward update response.
+
+    A matching ref is not effect attribution: another writer may have installed
+    the identical candidate before our push. Up-to-date/new/forced/partial or
+    ambiguous porcelain responses remain unresolved on their original attempt.
+    """
+    import re
+    require(type(data) is bytes and data.endswith(b'\n') and b'\r' not in data,
+            'original HTTPS update acknowledgement incomplete')
+    lines=data.split(b'\n')
+    require(len(lines)==4 and lines[0]==b'To '+destination.encode() and lines[2:]==[b'Done',b''],
+            'original HTTPS update acknowledgement missing or ambiguous')
+    fields=lines[1].split(b'\t')
+    require(len(fields)==3 and fields[0]==b' '
+            and fields[1]==(candidate_oid+':refs/heads/main').encode(),
+            'original HTTPS exact ref update not acknowledged; matching readback is insufficient')
+    endpoints=fields[2].split(b'..')
+    require(len(endpoints)==2 and all(re.fullmatch(b'[0-9a-f]{7,40}',part) for part in endpoints)
+            and accepted_tip_oid.encode().startswith(endpoints[0])
+            and candidate_oid.encode().startswith(endpoints[1]),
+            'original HTTPS update does not acknowledge the exact accepted-to-candidate transition')
+
+
+class _HTTPSPublicationAttempt(_OriginalPublicationAttempt):
+    def __init__(self,checked,prepared,*,https_carrier,**original):
+        require(type(https_carrier) is CheckoutHTTPSCarrier,'exact original checkout HTTPS carrier required')
+        self.carrier=https_carrier;self.carrier.check()
+        require(self.carrier._use_lock.acquire(blocking=False),'nested or concurrent authentication carrier refused')
+        try:
+            require(self.carrier._attempt is None,'original authentication carrier already used')
+            super().__init__(checked,prepared,**original)
+            require(self.origin_inode is None and self.carrier.repo==self.repo,'network origin is not a local directory inode')
+            require(sha256(self.carrier.destination.encode()).hexdigest()==self.origin_digest,'original HTTPS destination differs')
+            self.carrier._attempt=self
+        except BaseException:
+            self.carrier._use_lock.release()
+            raise
+
+    def check(self,*,full=False):
+        super().check(full=full)
+        self.carrier.check()
+
+    def authority(self,method,phase):
+        evidence=getattr(self.checked.live.gate,'evidence',None);assertion=getattr(evidence,method,None)
+        require(callable(assertion),'actual original HTTPS publication authority unavailable')
+        live=self.checked.live
+        context=dict(gate=live.gate,repo=self.repo,commit_oid=live.installed,
+            operation_id=live.binding.operation_id,lane_id=live.binding.lane_id,budget_id=live.budget,
+            retention_id=live.retention,phase=phase,publication_candidate_oid=self.prepared.candidate_oid,
+            publication_tree_oid=self.prepared.tree_oid,original_manifest_digest=self.checked.invocation.manifest_digest,
+            original_origin_inode=None,origin_binding_sha256=self.origin_digest,original_attempt=self.ordinal,
+            original_max_attempts=self.maximum,original_alarm_seconds=self.alarm,git_executable=self.git,
+            publication_transport='checkout_https',authentication_config_identity=self.carrier.config_stamp,
+            git_pid=self.push_process.pid if self.push_process is not None else None,
+            native_checked=self.checked,native_prepared=self.prepared,native_attempt=self)
+        from scripts.ci.qledger_owner_invocation import publication_assertion_scope
+        with publication_assertion_scope(self, method):
+            require(assertion(**context) is None,'authority returned an admission flag')
+        self.check()  # Caught evidence failure cannot rehabilitate this original.
+
+    def setup(self):
+        self.check(full=True)
+        require(self.origin_bytes()==self.carrier.destination.encode(),'original HTTPS origin changed')
+        self.authority('assert_resources','native-https-intent');self.authority('assert_process_version','native-https-intent')
+        root=self.checked.invocation._original().owner_root
+        self.control=Path(tempfile.mkdtemp(prefix='.qledger-git-control-',dir=root))
+        self.control_fd=_open_directory(self.control);self.control_identity=_inode(os.fstat(self.control_fd))
+        self.directories['']=self.control_fd
+        for name in ('refs','objects','objects/info','objects/pack'):
+            parent,_,leaf=name.rpartition('/');os.mkdir(leaf,mode=0o700,dir_fd=self.directories[parent])
+            self.directories[name]=os.open(leaf,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=self.directories[parent])
+        raw,_=candidate.publication._git(self.repo,['rev-parse','--git-path','objects'],output_limit=4096)
+        objects=Path(os.fsdecode(raw.rstrip(b'\n')))
+        if not objects.is_absolute():objects=self.repo/objects
+        self.objects_fd=_open_directory(objects);self.objects_path=objects
+        self._file('HEAD',b'ref: refs/heads/unused\n');self._file('config',b'[core]\n bare = true\n repositoryformatversion = 0\n')
+        self._file('objects/info/alternates',(str(objects)+'\n').encode())
+        raw,_=candidate.publication._git(self.repo,['rev-parse','--git-path','shallow'],output_limit=4096)
+        shallow=Path(os.fsdecode(raw.rstrip(b'\n')))
+        if not shallow.is_absolute():shallow=self.repo/shallow
+        if shallow.exists():
+            fd=os.open(shallow,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+            try:payload=os.read(fd,1048577)
+            finally:os.close(fd)
+            require(len(payload)<=1048576 and all(len(x)==40 and all(c in b'0123456789abcdef' for c in x) for x in payload.splitlines()),'unqualified shallow metadata')
+            self._file('shallow',payload)
+        self.check()
+
+    def run_git(self,args,*,effect=False):
+        import json
+        self.check(full=effect)
+        if effect:
+            require(not self.effect_started,'original HTTPS attempt already entered; no replay')
+            self.alarm_started_ns=time.monotonic_ns();self.uncertain=True;self.effect_started=True
+            command=['push','--porcelain','--force-with-lease=refs/heads/main:'+self.prepared.accepted_tip_oid,
+                     '--',self.carrier.destination,self.prepared.candidate_oid+':refs/heads/main']
+        else:
+            command=['ls-remote','--refs','--exit-code','--',self.carrier.destination,'refs/heads/main']
+        alarm_endpoint=0
+        if self.alarm_started_ns is not None and self.alarm:
+            alarm_endpoint=self.alarm_started_ns+self.alarm*1_000_000_000
+            require(time.monotonic_ns()<alarm_endpoint,'unchanged original HTTPS attempt alarm exhausted')
+        fds=[self.carrier.config_fd,self.control_fd,self.objects_fd]
+        if self.carrier.ca_fd is not None:fds.append(self.carrier.ca_fd)
+        child=subprocess.Popen([sys.executable,'-I','-c',_HTTPS_EXEC,str(self.carrier.config_fd),
+            json.dumps(self.carrier.config_stamp),self.carrier.key,self.git,
+            str(self.checked.original_deadline),str(alarm_endpoint),str(self.control_fd),
+            str(self.carrier.ca_fd if self.carrier.ca_fd is not None else -1),*command],
+            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=tuple(fds))
+        self.process=child
+        if effect:self.push_process=child
+        self.uncertain=True
+        data=self.wait_network(child)
+        self.last_response=(data,b'',child.returncode)
+        if effect:self.push_response=self.last_response
+        require(child.returncode==0,'original authenticated Git completion unproven; no retry or guessed cleanup')
+        if effect:_require_https_update_ack(data,destination=self.carrier.destination,
+            candidate_oid=self.prepared.candidate_oid,accepted_tip_oid=self.prepared.accepted_tip_oid)
+        self.check()
+        self.uncertain=self.effect_started and not self.remote_confirmed
+        return data
+
+    def wait_network(self,child):
+        data=bytearray()
+        with selectors.DefaultSelector() as selector:
+            selector.register(child.stdout,selectors.EVENT_READ)
+            while selector.get_map():
+                self.check();ready=selector.select(min(self.checked._deadline(),0.25));self.check()
+                for key,_ in ready:
+                    part=os.read(key.fd,min(65536,16385-len(data)))
+                    if not part:selector.unregister(key.fileobj)
+                    data.extend(part);require(len(data)<=16384,'HTTPS protocol output exceeds original bound; process retained')
+            child.wait(timeout=self.checked._deadline())
+        child.stdout.close();return bytes(data)
+
+    def readback(self,oid):
+        raw=self.run_git(['rev-parse','--verify','refs/heads/main'])
+        require(raw==(oid+'\trefs/heads/main\n').encode(),'exact authenticated original-origin full candidate not confirmed')
+        self.check()
+
+    def close_known(self):
+        if self.uncertain:return
+        super().close_known()
+        self.carrier.close_known(self)
+
+    def perform(self,reader):
+        self.setup();self.readback(self.prepared.accepted_tip_oid)
+        self.run_git([],effect=True);self.readback(self.prepared.candidate_oid)
+        self.origin_bytes();self.check(full=True)
+        self.authority('assert_publication_readback','native-https-readback')
+        self.authority('assert_descendants_settled','native-https-readback')
+        self.remote_confirmed=True;self.uncertain=False
+        generation=NativePublishedGeneration(self,_SEAL)
+        if reader is not None:generation.reader_result=generation.invoke_reader(reader)
+        self.check();self.confirmed=True;return generation
+
+
 def publish(checked,prepared,*,reader=None,**original):
     from scripts.ci.qledger_engine_publication import _LiveFinalCandidate
     require(type(checked) is _LiveFinalCandidate,'actual live finalizer required')
@@ -726,11 +999,12 @@ def publish(checked,prepared,*,reader=None,**original):
     try:
         checked._check()
         require(checked.publication_attempt is None,'original publication already entered; no replay')
-        attempt=_OriginalPublicationAttempt(checked,prepared,**original)
+        factory=_HTTPSPublicationAttempt if 'https_carrier' in original else _OriginalPublicationAttempt
+        attempt=factory(checked,prepared,**original)
         checked.publication_attempt=attempt
         return attempt.perform(reader)
     except BaseException as exc:
-        checked.failure=exc
+        checked.failure=checked.failure or exc
         raise
     finally:checked.publication_guard.release()
 
@@ -738,7 +1012,7 @@ def publish(checked,prepared,*,reader=None,**original):
 def confirmed(checked):
     value=checked.publication_attempt
     if value is None:return False
-    require(type(value) is _OriginalPublicationAttempt and value._seal is _SEAL and value.checked is checked,
+    require(type(value) in (_OriginalPublicationAttempt,_HTTPSPublicationAttempt) and value._seal is _SEAL and value.checked is checked,
             'original publication state cannot be substituted')
     return value.confirmed and not value.uncertain
 
@@ -746,12 +1020,13 @@ def confirmed(checked):
 class NativePublicationFinalizer:
     """Opt-in actual daily prepare/update/readback; no authority is issued here."""
     def __init__(self, *, reader=None, origin_binding_sha256, original_origin_inode,
-                 original_attempt, original_max_attempts, original_alarm_seconds):
+                 original_attempt, original_max_attempts, original_alarm_seconds, https_carrier=None):
         self.pid = os.getpid()
         self.reader = reader
         self.original = dict(origin_binding_sha256=origin_binding_sha256,
             original_origin_inode=original_origin_inode, original_attempt=original_attempt,
             original_max_attempts=original_max_attempts, original_alarm_seconds=original_alarm_seconds)
+        if https_carrier is not None:self.original['https_carrier']=https_carrier
         self.generation = None
 
     def __call__(self, checked):

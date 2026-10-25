@@ -491,3 +491,203 @@ def test_actual_publication_cannot_replace_missing_primary_object_with_external_
     assert gate.held and attempt.uncertain and not attempt.origin_ref_installed and not attempt.confirmed
     assert state['link'].is_symlink() and git(origin,'rev-parse','refs/heads/main')==before
     assert (origin/'refs/heads/main.lock').exists() and (binding.repo_root/'.git/index.lock').exists()
+
+# All transport credentials, TLS keys and origins below are freshly test-owned.
+@pytest.fixture
+def https_origin(tmp_path):
+    import base64,http.server,ssl,subprocess,threading
+    root=tmp_path/'https-owned';(root/'owner').mkdir(parents=True)
+    remote=root/'owner/repo.git';git(tmp_path,'init','--bare','-q',str(remote))
+    cert=tmp_path/'owned-cert.pem';key=tmp_path/'owned-key.pem'
+    subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+        '-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost',
+        '-keyout',str(key),'-out',str(cert)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    expected='Basic '+base64.b64encode(b'x-access-token:test-owned-not-production').decode()
+    state={'redirect':False,'requests':0,'received':0}
+    backend=str(Path(subprocess.check_output(['git','--exec-path']).decode().strip())/'git-http-backend')
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def log_message(self,*args):pass
+        def do_GET(self):self.serve()
+        def do_POST(self):self.serve()
+        def serve(self):
+            from urllib.parse import urlsplit
+            state['requests']+=1
+            state.setdefault('protocol',[]).append((self.command,self.path,self.headers.get('Transfer-Encoding'),self.headers.get('Content-Length')))
+            if self.headers.get('Authorization')!=expected:
+                self.send_response(401);self.end_headers();return
+            if state['redirect']:
+                self.send_response(307);self.send_header('Location',url+'/foreign/repo.git');self.end_headers();return
+            parsed=urlsplit(self.path);length=int(self.headers.get('Content-Length','0'))
+            if length>16*1024*1024:self.send_error(413);return
+            body=self.rfile.read(length)
+            if parsed.path.endswith('/git-receive-pack'):state['received']+=1
+            env={**os.environ,'GIT_PROJECT_ROOT':str(root),'GIT_HTTP_EXPORT_ALL':'1',
+                 'PATH_INFO':parsed.path,'QUERY_STRING':parsed.query,'REQUEST_METHOD':self.command,
+                 'CONTENT_TYPE':self.headers.get('Content-Type',''),'CONTENT_LENGTH':str(length),
+                 'REMOTE_USER':'test-owned','GIT_PROTOCOL':self.headers.get('Git-Protocol','')}
+            reply=subprocess.run([backend],input=body,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,env=env,check=True).stdout
+            header,sep,data=reply.partition(b'\r\n\r\n')
+            if not sep:header,sep,data=reply.partition(b'\n\n')
+            headers=[line.decode().split(':',1) for line in header.splitlines()]
+            status=next((int(v.strip().split()[0]) for k,v in headers if k.lower()=='status'),200)
+            self.send_response(status)
+            for k,v in headers:
+                if k.lower()!='status':self.send_header(k,v.strip())
+            self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
+    server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler)
+    tls=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);tls.load_cert_chain(cert,key);server.socket=tls.wrap_socket(server.socket,server_side=True)
+    url=f'https://localhost:{server.server_port}'
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    try:yield remote,url+'/owner/repo.git',cert,expected,state
+    finally:server.shutdown();server.server_close();thread.join(timeout=2)
+
+
+@pytest.mark.parametrize('fault',['positive','config-aba','config-after-admission','missing-header','transferred','redirect','contention','wrong-readback','lost-response','expired-endpoint','carrier-in-use','environment','same-candidate'])
+def test_checkout_https_original_transport(causal,monkeypatch,tmp_path,https_origin,fault):
+    from scripts.ci import qledger_engine_publication as engine,qledger_engine_publisher as publisher
+    remote,url,cert,header,network=https_origin
+    saved={}
+    if fault=='environment':
+        monkeypatch.setenv('https_proxy','https://localhost:1')
+        monkeypatch.setenv('SSLKEYLOGFILE',str(tmp_path/'unapproved-tls-log'))
+        monkeypatch.setenv('GIT_TRACE_CURL',str(tmp_path/'unapproved-git-trace'))
+        monkeypatch.setenv('NETRC',str(tmp_path/'foreign-auth-source'))
+    class HTTPSAuthority:
+        def assert_resources(self,**ctx):
+            assert ctx['publication_transport']=='checkout_https'
+            assert ctx['original_origin_inode'] is None
+            assert (ctx['original_attempt'],ctx['original_max_attempts'],ctx['original_alarm_seconds'])==(1,20,420)
+        def assert_process_version(self,**ctx):assert ctx['git_executable']
+        def assert_publication_readback(self,**ctx):assert ctx['git_pid']>0
+        def assert_descendants_settled(self,**ctx):assert ctx['git_pid']>0
+    def final(checked):
+        stage(binding);saved['refs']=git(binding.repo_root,'show-ref');saved['index']=(binding.repo_root/'.git/index').read_bytes()
+        prepared=checked.prepare_engine_tree('test-owned authenticated native candidate');saved['prepared']=prepared
+        if fault=='redirect':network['redirect']=True
+        if fault=='expired-endpoint':
+            import time
+            checked.original_deadline=time.monotonic_ns()-1
+        saved['generation']=engine.publish_native_engine(checked,prepared,reader=lambda x:x.commit_oid,**args)
+        return prepared
+    binding,callback,gate=setup(causal,monkeypatch,final);gate.evidence=HTTPSAuthority()
+    repo=binding.repo_root;tip=next(iter(binding.original_result_targets.values())).accepted_tip_oid
+    git(repo,'push','-q',str(remote),tip+':refs/heads/main');git(repo,'remote','add','origin',url)
+    # Mirrors checkout/v4's HTTP token carrier, using only a test-owned header.
+    git(repo,'config','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader','AUTHORIZATION: '+header)
+    if fault=='missing-header':git(repo,'config','--unset-all','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader')
+    carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+    if fault=='transferred':carrier.pid=-1
+    if fault=='carrier-in-use':carrier._use_lock.acquire()
+    args=dict(origin_binding_sha256=sha256(url.encode()).hexdigest(),original_origin_inode=None,
+              original_attempt=1,original_max_attempts=20,original_alarm_seconds=420,https_carrier=carrier)
+    if fault=='same-candidate':
+        real=publisher._HTTPSPublicationAttempt.run_git
+        def competing_same(a,command,*,effect=False):
+            if effect:git(repo,'push','-q',str(remote),a.prepared.candidate_oid+':refs/heads/main')
+            return real(a,command,effect=effect)
+        monkeypatch.setattr(publisher._HTTPSPublicationAttempt,'run_git',competing_same)
+    if fault=='contention':
+        real=publisher._HTTPSPublicationAttempt.run_git
+        def compete(a,command,*,effect=False):
+            if effect:
+                saved['competing']=git(remote,'rev-parse',tip+'^').decode()
+                git(remote,'update-ref','refs/heads/main',saved['competing'])
+            return real(a,command,effect=effect)
+        monkeypatch.setattr(publisher._HTTPSPublicationAttempt,'run_git',compete)
+    if fault=='config-aba':
+        real=publisher._HTTPSPublicationAttempt.run_git
+        def aba(a,command,*,effect=False):
+            if effect:
+                before=(repo/'.git/config').read_bytes()
+                git(repo,'config','url.https://localhost:1/.insteadOf',url)
+                (repo/'.git/config').write_bytes(before)
+            return real(a,command,effect=effect)
+        monkeypatch.setattr(publisher._HTTPSPublicationAttempt,'run_git',aba)
+    if fault=='config-after-admission':
+        real=publisher.subprocess.Popen
+        def changed(command,*a,**kw):
+            if publisher._HTTPS_EXEC in command and 'push' in command:
+                before=(repo/'.git/config').read_bytes()
+                (repo/'.git/config').write_bytes(before+b'\n# test-owned intervening mutation\n')
+                (repo/'.git/config').write_bytes(before)
+            return real(command,*a,**kw)
+        monkeypatch.setattr(publisher.subprocess,'Popen',changed)
+    if fault=='wrong-readback':
+        real=publisher._HTTPSPublicationAttempt.readback
+        def wrong(a,oid):
+            if a.effect_started:git(remote,'update-ref','refs/heads/main',tip)
+            return real(a,oid)
+        monkeypatch.setattr(publisher._HTTPSPublicationAttempt,'readback',wrong)
+    if fault=='lost-response':
+        real=publisher._HTTPSPublicationAttempt.wait_network
+        def lost(a,child):
+            value=real(a,child)
+            if child is a.push_process:raise RuntimeError('test-owned lost HTTPS response')
+            return value
+        monkeypatch.setattr(publisher._HTTPSPublicationAttempt,'wait_network',lost)
+    if fault in ('positive','environment'):
+        result=invoke(binding,callback,gate)
+        assert result.status=='publication_confirmed' and not gate.held
+        assert git(remote,'rev-parse','refs/heads/main').decode()==saved['prepared'].candidate_oid
+        assert git(remote,'show',saved['prepared'].candidate_oid+':site/render.html')==b'actual final normalized render'
+        assert network['received']==1 and carrier._closed and not carrier._use_lock.locked()
+        if fault=='environment':
+            assert not (tmp_path/'unapproved-tls-log').exists()
+            assert not (tmp_path/'unapproved-git-trace').exists()
+    else:
+        with pytest.raises((p.SnapshotIntegrityError,RuntimeError)):invoke(binding,callback,gate)
+        attempt=callback.finalization.publication_attempt
+        assert gate.held and (attempt is None or not attempt.confirmed)
+        if fault in ('wrong-readback','lost-response'):assert attempt.uncertain and attempt.control.exists()
+        if fault=='lost-response':
+            assert git(remote,'rev-parse','refs/heads/main').decode()==saved['prepared'].candidate_oid
+            assert carrier._use_lock.locked() and os.fstat(carrier.config_fd)
+        if fault=='same-candidate':
+            assert git(remote,'rev-parse','refs/heads/main').decode()==saved['prepared'].candidate_oid
+            assert network['received']==0 and attempt.push_process.returncode==0
+            assert attempt.push_response[2]==0 and b'=\t' in attempt.push_response[0]
+            assert attempt.uncertain and not attempt.remote_confirmed and attempt.control.exists()
+            assert carrier._use_lock.locked() and os.fstat(carrier.config_fd)
+        if fault=='contention':assert git(remote,'rev-parse','refs/heads/main').decode()==saved['competing']
+        if fault in ('config-aba','config-after-admission','missing-header','transferred','redirect'):assert git(remote,'rev-parse','refs/heads/main').decode()==tip
+    assert git(repo,'show-ref')==saved['refs'] and (repo/'.git/index').read_bytes()==saved['index']
+    assert not store.uses_native_claims(binding.claims_path)
+
+
+@pytest.mark.parametrize('fault',['nonregular-config','missing-ca'])
+def test_https_carrier_construction_refusal_closes_only_owned_descriptors(fixture,monkeypatch,tmp_path,fault):
+    from scripts.ci import qledger_engine_publisher as publisher
+    repo=fixture[0];live=set();real_open=os.open;real_close=os.close
+    if fault=='nonregular-config':
+        (repo/'.git/config').rename(repo/'.git/config-retained-test-owned')
+        (repo/'.git/config').mkdir()
+    def opened(*args,**kwargs):
+        fd=real_open(*args,**kwargs);live.add(fd);return fd
+    def closed(fd):
+        real_close(fd);live.discard(fd)
+    monkeypatch.setattr(publisher.os,'open',opened);monkeypatch.setattr(publisher.os,'close',closed)
+    with pytest.raises((p.SnapshotIntegrityError,FileNotFoundError)):
+        publisher.CheckoutHTTPSCarrier(repo,'https://localhost/owner/repo.git',
+            tls_ca_file=tmp_path/'absent-test-owned-ca')
+    assert not live
+
+
+@pytest.mark.parametrize('kind',['valid','up-to-date','missing','ambiguous','other-ref','forced','new-ref','other-source','wrong-range','partial'])
+def test_https_original_update_ack_is_exact_and_unambiguous(fixture,kind):
+    from scripts.ci.qledger_engine_publisher import _require_https_update_ack
+    old,new='a'*40,'b'*40;destination='https://localhost/owner/repo.git'
+    record=b' \t'+(new+':refs/heads/main').encode()+b'\taaaaaaa..bbbbbbb'
+    if kind=='up-to-date':record=record.replace(b' \t',b'=\t').replace(b'aaaaaaa..bbbbbbb',b'[up to date]')
+    if kind=='other-ref':record=record.replace(b'refs/heads/main',b'refs/heads/other')
+    if kind=='forced':record=record.replace(b' \t',b'+\t')
+    if kind=='new-ref':record=record.replace(b' \t',b'*\t')
+    if kind=='other-source':record=record.replace(new.encode(),old.encode())
+    if kind=='wrong-range':record=record.replace(b'aaaaaaa',b'ccccccc')
+    data=('To '+destination+'\n').encode()+record+b'\nDone\n'
+    if kind=='missing':data=b''
+    if kind=='ambiguous':data=data.replace(b'Done',record+b'\nDone')
+    if kind=='partial':data=data.replace(b'Done\n',b'')
+    args=dict(destination=destination,candidate_oid=new,accepted_tip_oid=old)
+    if kind=='valid':_require_https_update_ack(data,**args)
+    else:
+        with pytest.raises(p.SnapshotIntegrityError):_require_https_update_ack(data,**args)

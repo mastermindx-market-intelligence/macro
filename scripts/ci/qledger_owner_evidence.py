@@ -8,6 +8,7 @@ Unsupported host/resource assertions name the missing authority and refuse.
 from __future__ import annotations
 
 from hashlib import sha256
+from functools import wraps
 import os
 import sys
 from pathlib import Path
@@ -24,7 +25,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT))
 
 from scripts.ci.qledger_host_gate import GateRefusal
-from scripts.ci.qledger_owner_invocation import load_conversion
+from scripts.ci.qledger_owner_invocation import load_conversion, record_publication_assertion_refusal
 from scripts.ci import qledger_publication as publication
 
 
@@ -35,6 +36,19 @@ class EvidenceUnavailable(GateRefusal):
 def _require(value, message):
     if not value:
         raise EvidenceUnavailable(message)
+
+
+def _record_original_refusal(method):
+    @wraps(method)
+    def guarded(self, **context):
+        try:
+            return method(self, **context)
+        except BaseException as exc:
+            # Includes missing/malformed context, early _check and even a wrong
+            # dispatch branch; provider-local binding may not exist yet.
+            record_publication_assertion_refusal(exc)
+            raise
+    return guarded
 
 
 class OrdinaryPublicationEvidence:
@@ -50,6 +64,7 @@ class OrdinaryPublicationEvidence:
                  and all(x in '0123456789abcdef' for x in origin_binding_sha256),
                  'original normal-push origin binding required')
         self.context, self.origin_digest = context, origin_binding_sha256
+        self._native_readback_attempt = None  # One live original; never a restart/admission receipt.
         self._pid, self._last, self._failed = os.getpid(), time.monotonic_ns(), False
         _require(type(context.original_deadline_monotonic_ns) is int,
                  'original absolute monotonic endpoint required; wall-clock PUSH_DEADLINE is not that endpoint')
@@ -160,7 +175,106 @@ class OrdinaryPublicationEvidence:
                  'original normal-push origin changed or is ambiguous')
         return fetch[0]
 
+    def _native_bound(self, context):
+        _require(all(context.get(name) is not None for name in
+                     ('native_checked', 'native_prepared', 'native_attempt')),
+                 'actual typed live native invocation/preparation/original attempt required')
+        # Native-only qualified dependencies; legacy conversion bundles keep
+        # their original finite inventory. Static closure still follows these.
+        from scripts.ci import qledger_engine_publication as native_engine
+        from scripts.ci import qledger_engine_publisher as native_publisher
+        self._check()
+        checked, prepared, attempt = (context.get(name) for name in
+            ('native_checked', 'native_prepared', 'native_attempt'))
+        _require(type(checked) is native_engine._LiveFinalCandidate
+                 and type(prepared) is native_engine.CompleteEnginePublication
+                 and type(attempt) in (native_publisher._OriginalPublicationAttempt,
+                                       native_publisher._HTTPSPublicationAttempt),
+                 'actual typed live native invocation/preparation/original attempt required')
+        _require(self._native_readback_attempt is None,
+                 'original native readback already entered; uncertain response cannot be retried')
+        self._native_readback_attempt = attempt
+        gate, live, invocation = context.get('gate'), checked.live, checked.invocation
+        _require(type(invocation) is native_engine.EnginePublicationInvocation
+                 and gate is live.gate and live.invocation is gate.invocation
+                 and gate.invocation.manifest_digest == self.context.manifest_digest
+                 and gate.owner.target == self.invocation.owner.target
+                 and gate.owner.intent == self.invocation.owner.intent
+                 and gate.repo == self.context.repo == context.get('repo')
+                 and gate.candidate_oid == self.context.candidate_oid == live.installed == context.get('commit_oid')
+                 and checked.prepared is prepared and prepared._owner is invocation
+                 and checked.publication_attempt is attempt and attempt.checked is checked
+                 and attempt.prepared is prepared,
+                 'native original differs from the live installed owner/candidate')
+        _require(context.get('phase') in ('native-publication-readback', 'native-https-readback')
+                 and context.get('bootstrap_pid') == os.getpid() == self._pid == invocation.pid == attempt.pid
+                 and context.get('original_deadline_monotonic_ns') == self.context.original_deadline_monotonic_ns
+                 and context.get('conversion_result_path') == self.context.result_path
+                 and context.get('conversion_manifest_digest') == self.context.manifest_digest,
+                 'native readback creator or original bootstrap endpoint differs')
+        binding = invocation.binding
+        _require((context.get('operation_id'), context.get('lane_id')) == (binding.operation_id, binding.lane_id)
+                 and (context.get('budget_id'), context.get('retention_id')) == (live.budget, live.retention)
+                 and gate.producers.get((binding.operation_id, binding.lane_id)) == (live.budget, live.retention)
+                 and context.get('publication_candidate_oid') == prepared.candidate_oid
+                 and context.get('publication_tree_oid') == prepared.tree_oid
+                 and context.get('original_manifest_digest') == prepared.original_manifest_digest == invocation.manifest_digest
+                 and context.get('origin_binding_sha256') == self.origin_digest == attempt.origin_digest
+                 and (context.get('original_attempt'), context.get('original_max_attempts'), context.get('original_alarm_seconds'))
+                     == (attempt.ordinal, attempt.maximum, attempt.alarm),
+                 'native original resources, chain, full tree or original transport differs')
+        checked._check()
+        native_binding, witness = invocation.check(prepared)
+        _require(witness.publication.candidate_oid == prepared.candidate_oid
+                 and witness.publication.tree_oid == prepared.tree_oid
+                 and native_binding.expected_root_digest == invocation.write.plan.snapshot.receipt.root_digest
+                 and native_binding.accepted_tip_oid == prepared.accepted_tip_oid
+                 and native_binding.target_ref == witness.publication.target_ref
+                     == self.invocation.owner.target.target_ref == 'refs/heads/main',
+                 'complete immutable native publication differs')
+        return checked, prepared, attempt
+
+    def _assert_native_publication_readback(self, context):
+        checked, prepared, attempt = self._native_bound(context)
+        from scripts.ci import qledger_engine_publisher as native_publisher
+        response = attempt.push_response
+        _require(attempt.effect_started and attempt.push_process is not None
+                 and attempt.push_process.returncode == 0
+                 and type(response) is tuple and len(response) == 3 and response[2] == 0,
+                 'actual original successful Git response unavailable; matching ref cannot settle it')
+        if type(attempt) is native_publisher._HTTPSPublicationAttempt:
+            native_publisher._require_https_update_ack(response[0], destination=attempt.carrier.destination,
+                candidate_oid=prepared.candidate_oid, accepted_tip_oid=prepared.accepted_tip_oid)
+            expected = (prepared.candidate_oid + '\trefs/heads/main\n').encode()
+        else:
+            _require(attempt.origin_ref_installed and response[0] == b'objects-ready\n',
+                     'original local object ingestion and ref CAS unproven')
+            expected = (prepared.candidate_oid + '\n').encode()
+        _require(attempt.last_response == (expected, b'', 0),
+                 'known original candidate readback unavailable; no lost-response substitution')
+        # Full immutable candidate/chain proof was checked above. Recheck
+        # the live transport/root without repeating that same whole proof.
+        attempt.check()
+        attempt.readback(prepared.candidate_oid)
+        checked._check()
+        for write in checked.invocation.writes:
+            checked.invocation.binding._settled(write)
+        self._check()
+
+    @_record_original_refusal
     def assert_publication_readback(self, **context):
+        if context.get('phase') in ('native-publication-readback', 'native-https-readback') or any(
+                name in context for name in ('native_checked', 'native_prepared', 'native_attempt')):
+            try:
+                return self._assert_native_publication_readback(context)
+            except BaseException as exc:
+                attempt = self._native_readback_attempt
+                checked = context.get('native_checked')
+                if (attempt is not None and attempt is context.get('native_attempt')
+                        and attempt.checked is checked and checked.active and not attempt.confirmed):
+                    checked.failure = checked.failure or exc
+                    attempt.uncertain = True
+                raise
         gate = self._bound(context)
         owner = self.invocation.owner
         _require(gate.accepted_tip_oid == owner.target.accepted_tip_oid,
