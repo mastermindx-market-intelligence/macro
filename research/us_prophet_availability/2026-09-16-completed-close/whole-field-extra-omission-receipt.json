@@ -1,0 +1,37 @@
+{
+  "schema": "prophet.us_breadth_whole_field_extra_omission.v1",
+  "observed_at": "2026-09-16T10:54:28Z",
+  "preimage_head": "664add61942e8cf7c678705ee5d6c60ee90e1ce6",
+  "review_return_comment": 5696266993,
+  "expected_session": "2026-09-15",
+  "production": false,
+  "provider_calls": 0,
+  "production_writes": 0,
+  "planted_shapes": [
+    {"omitted_field": "High", "cached_same_session_value": 999.0},
+    {"omitted_field": "Low", "cached_same_session_value": 1.0},
+    {"omitted_field": "Volume", "cached_same_session_value": 999999.0}
+  ],
+  "red": {
+    "test": "test_absent_completed_session_extra_quarantines_existing_current_cache",
+    "returncode": 1,
+    "result": "3 failed",
+    "failure": "The omitted field key never entered _last_extras, so its existing cache file retained all five same-session values."
+  },
+  "repair": "For US completed-session groups, persistence considers each existing High/Low/Volume cache even when the fresh response omitted that field, then masks the requested universe on the expected-session row before rewriting the bounded cache window.",
+  "green": {
+    "whole_field_and_missing_cell_controls": "6 passed, 6 warnings in 3.27s",
+    "owning_suites": "82 passed, 38 warnings in 4.21s"
+  },
+  "preserved": [
+    "missing-field absence remains absence",
+    "prior historical rows",
+    "requested-universe boundaries",
+    "existing 80 percent completed-close floor",
+    "valid partial availability",
+    "regional calendar behavior",
+    "Russell behavior",
+    "ranking rules"
+  ],
+  "acceptance_boundary": "Independent re-verification, exact-head CI/security, current-base composition, merge, and real source-to-browser production proof remain open."
+}

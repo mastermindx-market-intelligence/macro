@@ -1,0 +1,31 @@
+{
+  "proof_class": "read_only_recorded_input_compatibility",
+  "production": false,
+  "prior_real_provider_receipt_sha256": "351e1e5a6fc01ab157264c8021185e35e1a3924ba6b833b4434dada95d880ead",
+  "collector_source_sha256": "5496261d02517b44369e59a4e3f806052c3d19dd62035310c25b2328c954c778",
+  "tests_returncode": 0,
+  "test_summary": "65 passed, 19 warnings in 7.70s",
+  "groups": [
+    {
+      "group": "breadth",
+      "current_price_count": 500,
+      "requested_members": 503,
+      "output_sha256_unchanged": true
+    },
+    {
+      "group": "smallcap_breadth",
+      "current_price_count": 599,
+      "requested_members": 602,
+      "output_sha256_unchanged": true
+    },
+    {
+      "group": "midcap_breadth",
+      "current_price_count": 400,
+      "requested_members": 400,
+      "output_sha256_unchanged": true
+    }
+  ],
+  "provider_calls": 0,
+  "production_writes": 0,
+  "peer_source_writes": 0
+}

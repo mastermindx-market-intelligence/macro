@@ -1,0 +1,19 @@
+{
+  "returncode": 0,
+  "summary": "105 passed in 6.24s",
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/Users/chriswong/.cache/mastermind-proof/prophet-7200-seam-repair-20260917T1940/final-native-tmp",
+    "tests/test_us_breadth_completed_close.py",
+    "tests/test_breadth_split_seam.py",
+    "tests/test_russell_breadth.py",
+    "tests/test_universe_split_seam.py"
+  ],
+  "source_sha256": "371a1cc464ef17c58d9d41db315de0d26828dcbb32861adc44daad24f4046e84",
+  "test_sha256": "a7bfdb90ed78d5b852140006ea3baa7d30c02283b5d63da31ae4ae429323f175",
+  "production": false,
+  "provider_calls": 0
+}
