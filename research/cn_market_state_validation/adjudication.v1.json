@@ -1,0 +1,311 @@
+{
+  "schema": "cn_market_state_p3_adjudication.v1",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "prereg_payload_sha256": "0533cb7add838e65553756e9f21b59b9ff1ae058f347dac0d946da4e977671d8",
+  "result_sha256": "9427843f2809827ba1ea9866500f28ffbe1f93808ff758d4e11ad531d75a2843",
+  "evidence_class": "A_RECONSTRUCTED_HISTORICAL",
+  "rulings": {
+    "CURRENT_WEIGHTS": "INSUFFICIENT",
+    "CUT_42": "PRODUCT_ONLY",
+    "CUT_60": "PRODUCT_ONLY",
+    "SCORE_0_100": "DESCRIPTIVE_ONLY",
+    "COMPONENTS": {
+      "trend": "NEED_MORE_DATA",
+      "risk": "KEEP",
+      "vol": "DISPLAY_ONLY",
+      "breadth": "DISPLAY_ONLY",
+      "liquidity": "NEED_MORE_DATA",
+      "stress": "DISPLAY_ONLY"
+    }
+  },
+  "basis": {
+    "current_model": {
+      "auc_dd21": {
+        "point": 0.5089557471693537,
+        "ci95": [
+          0.437425345781675,
+          0.5788092614859262
+        ]
+      },
+      "auc_dd42": {
+        "point": 0.49488403155836974,
+        "ci95": [
+          0.34986133715264145,
+          0.6419474648474378
+        ]
+      },
+      "spearman_ret21": {
+        "point": 0.0029504223806461095,
+        "ci95": [
+          -0.10527941771170514,
+          0.1155822869691528
+        ]
+      },
+      "spearman_ret42": {
+        "point": -0.026663924324173156,
+        "ci95": [
+          -0.18358824499939308,
+          0.12524179361391713
+        ]
+      },
+      "effective_n": {
+        "dd21": 162.52373702939192,
+        "dd42": 80.92976524848972
+      },
+      "event_episodes": {
+        "dd21": 106,
+        "dd42": 30
+      }
+    },
+    "equal_weight": {
+      "delta_auc_dd21_vs_current": {
+        "point": 0.006839150861705945,
+        "ci95": [
+          -0.003556610894506021,
+          0.017990579196398397
+        ]
+      },
+      "delta_auc_dd42_vs_current": {
+        "point": -0.0054172799987538545,
+        "ci95": [
+          -0.023205085202470502,
+          0.015443539268275719
+        ]
+      },
+      "conclusion": "No robust improvement over current hand weights."
+    },
+    "cut_42": {
+      "riskoff_point_lift": {
+        "dd21": 1.09824983674154,
+        "dd42": 1.1018804695691504
+      },
+      "riskoff_minus_nonriskoff": {
+        "dd21": {
+          "point": 0.02712084602330833,
+          "ci95": [
+            -0.050133712381077715,
+            0.10705491959934166
+          ]
+        },
+        "dd42": {
+          "point": 0.013629900057484587,
+          "ci95": [
+            -0.057107456630100834,
+            0.09548874179590398
+          ]
+        }
+      },
+      "conclusion": "Risk-off partition has only modest point lift and no dependence-aware separation. No neighboring preregistered lower cut clears zero either."
+    },
+    "cut_60": {
+      "riskon_minus_mixed": {
+        "dd21": {
+          "point": 0.0035263123550162423,
+          "ci95": [
+            -0.0815213701531627,
+            0.07722176673719386
+          ]
+        },
+        "dd42": {
+          "point": 0.020345191778921023,
+          "ci95": [
+            -0.06044084514720743,
+            0.10349393236573591
+          ]
+        },
+        "ret21": {
+          "point": -0.0008587615611699538,
+          "ci95": [
+            -0.014432034996230688,
+            0.012322374331640266
+          ]
+        },
+        "ret42": {
+          "point": -0.007156845914050159,
+          "ci95": [
+            -0.026709133727607925,
+            0.012871548804288256
+          ]
+        }
+      },
+      "conclusion": "Risk-on vs Mixed is not separated on either tail or return horizon. No neighboring upper cut clears zero."
+    },
+    "components": {
+      "trend": {
+        "loco_delta_auc_dd21": {
+          "point": 0.03400297536295671,
+          "ci95": [
+            0.00692263287950356,
+            0.06253825081954249
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": 0.009091431263970329,
+          "ci95": [
+            -0.04803452527692697,
+            0.06746237290932904
+          ]
+        },
+        "stability": "21d improvement survives both chronological halves and all frozen crisis exclusions by point estimate, but 42d reverses in the recent half, near-current slice, and production-reference sensitivity.",
+        "ruling_reason": "Conflicting horizons forbid a REMOVE_CANDIDATE ruling."
+      },
+      "risk": {
+        "loco_delta_auc_dd21": {
+          "point": -0.022435709016070005,
+          "ci95": [
+            -0.03758639648368188,
+            -0.008158159566332679
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": -0.030871535160478802,
+          "ci95": [
+            -0.06182456827826282,
+            0.00009275059345811634
+          ]
+        },
+        "stability": "Removing risk worsens 21d AUC in both halves, post-2016, near-current, every frozen crisis exclusion, production-reference, and CN-anchor sensitivity.",
+        "ruling_reason": "Only top-level leg with clear incremental 21d discrimination under the preregistered paired interval."
+      },
+      "vol": {
+        "loco_delta_auc_dd21": {
+          "point": -0.005900412727011806,
+          "ci95": [
+            -0.012486599495606394,
+            0.0008406086764449221
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": -0.008891854949881983,
+          "ci95": [
+            -0.018423326047024437,
+            0.002522357933518919
+          ]
+        },
+        "ruling_reason": "No robust incremental forecast value; descriptive volatility/crowding context remains coherent."
+      },
+      "breadth": {
+        "loco_delta_auc_dd21": {
+          "point": -0.0021285125886240097,
+          "ci95": [
+            -0.02477244783476482,
+            0.020055820895175987
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": 0.007191562108148919,
+          "ci95": [
+            -0.04561729875568211,
+            0.06797538191254726
+          ]
+        },
+        "ruling_reason": "No robust incremental forecast value; current-universe/survivorship limitation makes promotion inappropriate, while participation remains useful descriptive context."
+      },
+      "liquidity": {
+        "loco_delta_auc_dd21": {
+          "point": 0.007298589694906155,
+          "ci95": [
+            -0.009524963722776354,
+            0.023792432599259717
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": 0.02027987414036153,
+          "ci95": [
+            -0.014553897791758254,
+            0.05287537051661293
+          ]
+        },
+        "stability": "Removal improves point AUC in both halves and all frozen crisis exclusions, especially 42d in recent data, but paired intervals include zero and macro history is release-lagged current-vintage rather than true PIT.",
+        "ruling_reason": "Potential drag is not strong enough for removal; timing provenance prevents confident KEEP/DISPLAY_ONLY predictive adjudication."
+      },
+      "stress": {
+        "loco_delta_auc_dd21": {
+          "point": -0.0044797272283843,
+          "ci95": [
+            -0.015089842251637033,
+            0.004851391512819601
+          ]
+        },
+        "loco_delta_auc_dd42": {
+          "point": 0.00030277187161692476,
+          "ci95": [
+            -0.013602654787447639,
+            0.013467512552102998
+          ]
+        },
+        "ruling_reason": "Stress removal or halving does not robustly improve results. It should remain descriptive only; no OOS case exists to downweight/remove it for forecast purposes."
+      }
+    },
+    "era_instability": {
+      "current_half1": {
+        "auc_dd21": 0.4824,
+        "auc_dd42": 0.4505
+      },
+      "current_half2": {
+        "auc_dd21": 0.5466,
+        "auc_dd42": 0.6188
+      },
+      "current_post2016": {
+        "auc_dd21": 0.5474,
+        "auc_dd42": 0.598
+      },
+      "current_near_current": {
+        "auc_dd21": 0.5764,
+        "auc_dd42": 0.78
+      },
+      "note": "The apparent edge is concentrated in later eras; full-sample inference is non-significant and crisis exclusions materially move the point estimates."
+    },
+    "timing_sensitivity": {
+      "release_lagged_current": {
+        "auc_dd21": 0.5089557471693537,
+        "auc_dd42": 0.49488403155836974
+      },
+      "production_reference": {
+        "auc_dd21": 0.48933360449492713,
+        "auc_dd42": 0.45695576999462606
+      },
+      "cn_session_anchor": {
+        "auc_dd21": 0.5098706527420951,
+        "auc_dd42": 0.4955830354291767
+      },
+      "conclusion": "Macro availability timing materially changes the result; CN-vs-US 3-session anchor does not materially change aggregate P3 results."
+    }
+  },
+  "today": {
+    "artifact_asof": "2026-09-24",
+    "production_score": 38,
+    "release_lagged_score": 37,
+    "production_band": "RISK_OFF",
+    "distance_to_cut_42": {
+      "production": -4,
+      "release_lagged": -5
+    },
+    "frozen_scenarios_release_lagged": {
+      "equal": 38,
+      "stress_half": 36,
+      "stress_zero": 34,
+      "loco_trend": 39,
+      "loco_risk": 35,
+      "loco_vol": 33,
+      "loco_breadth": 42,
+      "loco_liquidity": 41
+    },
+    "meaning": "A low weighted confirmation score from already-turned China tape/risk/vol/breadth/liquidity/stress inputs. It is not a probability of loss, expected return, or validated forecast. The current Risk-off label is product semantics and is near enough to the 42 boundary that dropping breadth changes the release-lagged reconstruction to Mixed."
+  },
+  "recommendation": {
+    "production_change": "NONE from P3.",
+    "use_now": "Keep the 0-100 score and 42/60 bands as descriptive/product context only. Do not use them to size capital or assert forecast odds.",
+    "next_evidence": "If predictive authority is still desired, accrue a same-model prospective issue cohort using the existing forward-log/issue-receipt discipline, with no second ledger. Resolve China macro publication/vintage provenance and breadth membership PIT before promotion.",
+    "specific_followup": "Investigate trend interaction and liquidity timing as research candidates, but do not reweight/remove either from this retrospective result."
+  },
+  "forbidden_claims": [
+    "42 is an empirically validated drawdown threshold.",
+    "60 identifies a reliably safer or higher-return Risk-on state.",
+    "38 means a 62% chance of drawdown or any other probability interpretation.",
+    "The current hand weights are optimized or forecast-validated.",
+    "Equal weights are superior.",
+    "Stress should be downweighted or removed based on this study.",
+    "Class-A reconstructed evidence authorizes capital sizing, policy, or production changes."
+  ]
+}
