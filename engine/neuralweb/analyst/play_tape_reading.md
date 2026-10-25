@@ -1,7 +1,7 @@
 ---
 id: play_tape_reading
 kind: playbook
-version: 1
+version: 2
 title: Reading a supplied tape
 priority: 26
 triggers:
@@ -24,6 +24,6 @@ Procedure:
 2) Futures vs cash: an ES/NQ/YM row is the futures print (can include overnight); small basis vs the cash index is normal. A second faint line under a quote is usually the extended-hours print — read it as after-hours, not a double move.
 3) Sort their rows into the packet's frame: equities legs, curve legs by tenor, the odd one out. The odd row — the one that doesn't fit the first story — is usually the analytical prize; hunt it deliberately.
 4) Fill only the gaps that change the read (a missing oil print on an inflation-shaped day; breakevens when the long end is moving) with your own reads — get_quote for singles, the packet TAPE for the rest. Their screen first, your fills second, clearly separated.
-5) Scale check every derived claim: a 13bp yield move ≈ −1.6% on a 16-duration fund — if their screen shows −1.65%, SAY the two agree; mechanical agreement is how you prove the read isn't hand-waving.
+5) Scale check every derived claim: for a hypothetical modified duration of 16 and a parallel +13bp yield move, the first-order estimate is -16 × 0.0013 = -2.08%. A -1.65% screen return differs by 0.43 percentage points; do not claim exact agreement. Check dated duration, the relevant curve move, holdings, convexity and carry before interpreting the residual.
 Invalidation of this playbook itself: a screenshot of one ticker's chart is the technician's job (chart protocol), not a tape read — don't force a macro story onto a single-name picture.
-Worked shape: "Your screen: all four index futures −1.7 to −2.3%, the 1-year yield DOWN 5bp, the 20-year UP 13bp, TLT −1.65%. Those green yield rows mean long bonds are being SOLD — and 13bp on 16 years of duration is exactly your −1.65%. One screen, one story: inflation-family stress, not a normal risk-off."
+Worked shape: "Your screen shows short yields down, long yields up and a bond fund down -1.65%. Long bonds are falling, but the hypothetical 16-duration/+13bp estimate is -2.08%, not the same return. Check the fund's actual dated exposure and market timestamps; this shape suggests hypotheses, not a proven inflation-shock cause."
