@@ -1610,5 +1610,6 @@ def test_p1_t5_readiness_rejects_special_sink_before_open(tmp_path, monkeypatch)
     assert evidence.finish(output, "returned_success")
     fifo = tmp_path / "not-a-step-output"
     retention.os.mkfifo(fifo)
-    monkeypatch.setattr(retention.os, "open", lambda *a, **k: pytest.fail("must not open a special sink"))
-    assert evidence.mark_ready(fifo) is False
+    with monkeypatch.context() as guard:
+        guard.setattr(retention.os, "open", lambda *a, **k: pytest.fail("must not open a special sink"))
+        assert evidence.mark_ready(fifo) is False
