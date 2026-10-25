@@ -134,10 +134,13 @@ def _receipt(value: Any, source: dict[str, Any], cutoff: str) -> dict[str, Any]:
             if type(value[field]) is not str or not _SHA.fullmatch(value[field]):
                 _fail("invalid_receipt")
         for field in ("entity_length", "source_utf8_length"):
-            if type(value[field]) is not int or value[field] < 1:
+            if type(value[field]) is not int or not 1 <= value[field] <= 2 ** 53 - 1:
                 _fail("invalid_receipt")
         if value["decoder"] == "utf-8" and (value["entity_sha256"] != value["source_sha256"]
                 or value["entity_length"] != value["source_utf8_length"]):
+            _fail("invalid_receipt")
+        if value["decoder"] == "latin-1" and not (
+                value["entity_length"] < value["source_utf8_length"] <= 2 * value["entity_length"]):
             _fail("invalid_receipt")
         if _utc(value["acquired_at"]) > _utc(cutoff):
             _fail("invalid_receipt")
@@ -267,22 +270,46 @@ def local_sec_snapshot(out_dir: Path) -> dict[str, Any]:
 class PublicationEvidence:
     """One local attempt, with real decision-site outcomes, not rc0 inference."""
     def __init__(self, path: Path, *, checkout: str, run_id: str, run_attempt: str):
-        self.path = Path(path)
-        try:
-            self.path.unlink(missing_ok=True)
-        except OSError:
-            raise EvidenceValidationError("output_unavailable") from None
         if (any(type(value) is not str for value in (checkout, run_id, run_attempt))
                 or not re.fullmatch(r"[0-9a-f]{40}", checkout)
                 or not re.fullmatch(r"[1-9][0-9]*", run_id)
                 or not re.fullmatch(r"[1-9][0-9]*", run_attempt)):
             _fail("invalid_context")
+        self.path = Path(path)
+        self._source_roots: tuple[Path, Path] | None = None
         self.context = {"repository": "mastermindx-market-intelligence/macro", "checkout": checkout,
                         "run_id": run_id, "run_attempt": run_attempt}
         self.candidates: list[dict[str, Any]] = []
         self.unavailable: list[str] = []
 
+    def _safe_destination(self, path: Path) -> bool:
+        if self._source_roots is None:
+            return False
+        try:
+            destinations = (Path(os.path.abspath(path)), path.resolve())
+            return not path.is_symlink() and all(
+                not destination.is_relative_to(root)
+                for destination in destinations for root in self._source_roots
+            )
+        except (OSError, RuntimeError):
+            return False
+
+    def _bind_output(self, out_dir: Path) -> bool:
+        try:
+            roots = (Path(os.path.abspath(out_dir)), Path(out_dir).resolve())
+        except (OSError, RuntimeError):
+            self.unavailable.append("unsafe_local_path")
+            return False
+        if self._source_roots is None:
+            self._source_roots = roots
+        if self._source_roots != roots or not self._safe_destination(self.path):
+            self.unavailable.append("unsafe_local_path")
+            return False
+        return True
+
     def begin(self, out_dir: Path) -> int | None:
+        if not self._bind_output(out_dir):
+            return None
         try:
             snapshot = local_sec_snapshot(out_dir)
         except EvidenceValidationError as exc:
@@ -303,6 +330,8 @@ class PublicationEvidence:
         self._write("incomplete", None)
 
     def finish(self, out_dir: Path, refresh_outcome: str) -> bool:
+        if not self._bind_output(out_dir):
+            return False
         if refresh_outcome not in {"returned_success", "returned_conflict", "failed"}:
             _fail("invalid_outcome")
         final = None
@@ -317,6 +346,8 @@ class PublicationEvidence:
         return self._write(refresh_outcome, final)
 
     def _write(self, refresh_outcome: str, final: Any) -> bool:
+        if not self._safe_destination(self.path):
+            return False
         status = "unavailable" if not self.candidates and final is None else (
             "partial" if self.unavailable or refresh_outcome != "returned_success" or final is None
             or not self.candidates or final["candidate_sequence"] is None else "metadata_complete")
@@ -335,17 +366,20 @@ class PublicationEvidence:
             with tempfile.NamedTemporaryFile(dir=self.path.parent, prefix=self.path.name + ".tmp.", delete=False) as dest:
                 temporary = Path(dest.name)
                 dest.write(body)
+            if not self._safe_destination(self.path):
+                return False
             os.replace(temporary, self.path)
             return True
         except (OSError, ValueError):
             # No unvalidated fallback or exception text may become an artifact.
-            try:
-                self.path.unlink(missing_ok=True)
-            except OSError:
-                pass
+            if self._safe_destination(self.path):
+                try:
+                    self.path.unlink(missing_ok=True)
+                except OSError:
+                    pass
             return False
         finally:
-            if temporary is not None:
+            if temporary is not None and self._safe_destination(temporary):
                 try:
                     temporary.unlink(missing_ok=True)
                 except OSError:

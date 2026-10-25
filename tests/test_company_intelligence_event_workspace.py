@@ -1509,7 +1509,7 @@ def test_p1_t5_context_is_closed_not_environment_or_actor_dump(tmp_path, context
     artifact.write_text("SYNTHETIC_SECRET stale artifact")
     with pytest.raises(EvidenceValidationError) as caught:
         PublicationEvidence(artifact, **context)
-    assert not artifact.exists()
+    assert artifact.read_text() == "SYNTHETIC_SECRET stale artifact"
     assert "SYNTHETIC_SECRET" not in str(caught.value)
 
 
@@ -1517,3 +1517,85 @@ def test_p1_t5_context_is_closed_not_environment_or_actor_dump(tmp_path, context
 def _p1_t5_offline(monkeypatch):
     import socket
     monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("P1.T5 offline: network forbidden"))
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("mode", ["equal_latin1", "oversize_latin1", "unsafe_utf8", "unsafe_latin1"])
+def test_p1_t5_newrisk_impossible_or_unsafe_lengths_are_rejected(tmp_path, mode):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path)
+    def mutate(row):
+        receipt = row["sources"][0]["acquisition_receipt"]
+        if mode != "unsafe_utf8":
+            receipt.update(decoder="latin-1", decode_policy="utf8_strict_then_latin1_strict")
+        if mode == "equal_latin1":
+            receipt["entity_length"] = receipt["source_utf8_length"]
+        elif mode == "oversize_latin1":
+            receipt["entity_length"] = 1
+        elif mode == "unsafe_utf8":
+            receipt["entity_length"] = receipt["source_utf8_length"] = 2 ** 53
+        else:
+            receipt["entity_length"], receipt["source_utf8_length"] = 2 ** 53, 2 ** 53 + 1
+    raw, wires = _p1_t5_mutate_wire(raw, wires, mutate)
+    with pytest.raises(EvidenceValidationError):
+        build(raw, wires)
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_newrisk_real_synthetic_latin1_transform_is_preserved(tmp_path):
+    from scripts.company_intelligence_publication_evidence import build_sec_snapshot
+    _, _, _, receipt, _ = _p1_t5_case(tmp_path / "old")
+    text = EXHIBIT.read_text().encode("latin-1", "xmlcharrefreplace").decode("latin-1") + "\n<cafe>café</cafe>"
+    entity = text.encode("latin-1")
+    receipt.update(decoder="latin-1", decode_policy="utf8_strict_then_latin1_strict",
+        content_type="text/html; charset=iso-8859-1", declared_charset="iso-8859-1",
+        entity_sha256=sha256(entity).hexdigest(), entity_length=len(entity),
+        source_sha256=sha256(text.encode()).hexdigest(), source_utf8_length=len(text.encode()))
+    row = _build_flagship(exhibit_body=text, filing_overrides={"acquisition_receipt": receipt})
+    generation = write_workspace_generation(tmp_path / "new", {row["event_id"]: row})
+    raw = (generation / "manifest.json").read_bytes()
+    wires = {name: (generation / name).read_bytes() for name in json.loads(raw)["files"]}
+    result = build_sec_snapshot(raw, wires)
+    assert result["selected"][0]["source"]["acquisition_receipt"] == receipt
+    assert receipt["entity_length"] < receipt["source_utf8_length"] <= 2 * receipt["entity_length"]
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("flow", ["invalid_context", "begin", "finish", "unbound_outcome"])
+def test_p1_t5_newrisk_output_must_never_mutate_publication_input(tmp_path, flow):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    if flow == "invalid_context":
+        with pytest.raises(EvidenceValidationError):
+            PublicationEvidence(marker, checkout="invalid", run_id="123", run_attempt="1")
+    else:
+        evidence = PublicationEvidence(marker, checkout="a" * 40, run_id="123", run_attempt="1")
+        if flow == "begin":
+            assert evidence.begin(output) is None
+            evidence.outcome(None, "not_attempted_no_client")
+        elif flow == "finish":
+            evidence.finish(output, "returned_success")
+        else:
+            evidence.outcome(None, "not_attempted_no_client")
+    assert marker.exists() and marker.read_bytes() == original
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_newrisk_failure_cleanup_cannot_unlink_publication_input(tmp_path, monkeypatch):
+    from scripts import company_intelligence_publication_evidence as retention
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    evidence = retention.PublicationEvidence(tmp_path / "evidence.json", checkout="a" * 40, run_id="123", run_attempt="1")
+    token = evidence.begin(output)
+    assert token == 1
+    def fail(*_args):
+        evidence.path = marker
+        raise OSError("synthetic serialization destination failure")
+    monkeypatch.setattr(retention.os, "replace", fail)
+    evidence.outcome(token, "already_current")
+    assert marker.exists() and marker.read_bytes() == original

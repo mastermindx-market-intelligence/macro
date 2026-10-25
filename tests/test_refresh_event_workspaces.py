@@ -2278,12 +2278,14 @@ def test_p1_t5_actual_refresh_chain_and_skipped_closing_write_are_retained(tmp_p
     def offline(_work, **kwargs):
         with monkeypatch.context() as nested:
             nested.setitem(globals(), "publish_event_workspaces", kwargs["publish_generation"])
-            test_refresh_publishes_original_and_amendment_as_two_chained_generations(tmp_path)
+            test_refresh_publishes_original_and_amendment_as_two_chained_generations(tmp_path / "output")
         return 0
     monkeypatch.setattr(owner, "refresh", offline)
     artifact = tmp_path / "evidence.json"
-    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path),
-        "--evidence-out", str(artifact), "--evidence-checkout", "a" * 40,
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
         "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
     payload = json.loads(artifact.read_text())
     assert len(payload["candidates"]) == 2
@@ -2292,27 +2294,33 @@ def test_p1_t5_actual_refresh_chain_and_skipped_closing_write_are_retained(tmp_p
     assert payload["retention_status"] == "metadata_complete"
     assert "closing write skipped" in capsys.readouterr().out
 
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
+
 
 @pytest.mark.usefixtures("_p1_t5_offline")
 def test_p1_t5_main_later_failure_never_relabels_prior_candidate_as_final(tmp_path, monkeypatch):
     import socket
     from scripts import refresh_event_workspaces as owner
     from tests.test_company_intelligence_event_workspace import _p1_t5_case
-    _p1_t5_case(tmp_path)
+    _p1_t5_case(tmp_path / "output")
     fake = _FakeR2()
     monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
     def offline(_work, **kwargs):
-        assert kwargs["publish_generation"](tmp_path, s3=fake, bucket="fixture") == 0
+        assert kwargs["publish_generation"](tmp_path / "output", s3=fake, bucket="fixture") == 0
         raise RefreshError("synthetic later refresh failure")
     monkeypatch.setattr(owner, "refresh", offline)
     artifact = tmp_path / "evidence.json"
-    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path),
-        "--evidence-out", str(artifact), "--evidence-checkout", "a" * 40,
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
         "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
     payload = json.loads(artifact.read_text())
     assert payload["candidates"][0]["publish_outcome"] == "marker_put_acknowledged"
     assert payload["refresh_outcome"] == "failed" and payload["retention_status"] == "partial"
     assert payload["final_local_selection"] is None
+
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
 
 
 @pytest.mark.usefixtures("_p1_t5_offline")
@@ -2368,7 +2376,8 @@ def test_p1_t5_invalid_context_clears_stale_output_without_publishing(tmp_path, 
     assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path),
         "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
         "--evidence-checkout", "SYNTHETIC_SECRET", "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
-    assert not artifact.exists() and ready.read_text() == "sec_evidence_ready=false\n"
+    assert artifact.read_text() == "SYNTHETIC_SECRET stale data"
+    assert ready.read_text() == "sec_evidence_ready=false\n"
     captured = capsys.readouterr()
     assert "SYNTHETIC_SECRET" not in captured.out + captured.err
 

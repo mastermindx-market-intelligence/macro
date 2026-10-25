@@ -112,3 +112,11 @@ The helper stays beside the existing publication scripts. This metadata-only
 change does not modify engine/** or the accepted SEC producer, and therefore
 does not add an engine-render push trigger. The existing publication checkout
 explicitly includes the new script in its sparse source list.
+
+Output is bound outside the lexical and resolved publication source directory
+before any evidence write or cleanup. Constructor/context rejection performs no
+file deletion; source inputs and unrelated stale files are not an upload gate.
+Every write/replacement/cleanup rechecks the destination boundary. Latin-1
+fallback metadata must satisfy entity_length < source_utf8_length <= 2*entity_length;
+both declared lengths must be positive JavaScript-safe integers. These are
+structural impossibility checks, not invented missing-preimage verification.
