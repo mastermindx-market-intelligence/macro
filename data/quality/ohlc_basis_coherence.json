@@ -467,14 +467,14 @@
     "russell_breadth": {
       "status": "split",
       "split_tickers": 1,
-      "noise_tickers": 89,
+      "noise_tickers": 90,
       "findings": [
         {
           "ticker": "ETD",
           "verdict": "split",
           "bad_bars": 467,
-          "bars": 519,
-          "bad_share": 0.8998,
+          "bars": 524,
+          "bad_share": 0.8912,
           "worst_excess": 0.169815,
           "worst_date": "2025-11-12",
           "inverted_bars": 0
@@ -573,7 +573,7 @@
           "ticker": "FLNG",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 519,
+          "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.013093,
           "worst_date": "2026-08-04",
@@ -633,7 +633,7 @@
           "ticker": "INN",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 519,
+          "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.010544,
           "worst_date": "2026-07-21",
@@ -653,7 +653,7 @@
           "ticker": "JCAP",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 335,
+          "bars": 330,
           "bad_share": 0.003,
           "worst_excess": 0.009896,
           "worst_date": "2026-07-27",
@@ -813,7 +813,7 @@
           "ticker": "IMMR",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 519,
+          "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.006411,
           "worst_date": "2026-09-18",
@@ -877,6 +877,16 @@
           "bad_share": 0.0038,
           "worst_excess": 0.005556,
           "worst_date": "2026-09-15",
+          "inverted_bars": 0
+        },
+        {
+          "ticker": "LAND",
+          "verdict": "noise",
+          "bad_bars": 2,
+          "bars": 519,
+          "bad_share": 0.0039,
+          "worst_excess": 0.00537,
+          "worst_date": "2026-10-12",
           "inverted_bars": 0
         },
         {
@@ -956,16 +966,6 @@
           "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.003332,
-          "worst_date": "2026-07-21",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "DLX",
-          "verdict": "noise",
-          "bad_bars": 1,
-          "bars": 524,
-          "bad_share": 0.0019,
-          "worst_excess": 0.003198,
           "worst_date": "2026-07-21",
           "inverted_bars": 0
         }
@@ -1271,5 +1271,5 @@
   },
   "splits": 2,
   "status": "split",
-  "noise_tickers": 162
+  "noise_tickers": 163
 }
