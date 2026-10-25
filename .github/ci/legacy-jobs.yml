@@ -5649,6 +5649,7 @@ jobs:
     paths:
       - "engine/__init__.py"
       - "engine/local_projections.py"
+      - "engine/panel_did.py"
       - "engine/seasonality/__init__.py"
       - "engine/seasonality/contracts.py"
       - "engine/seasonality/event_study.py"
@@ -5661,6 +5662,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_local_projections.py"
+      - "tests/test_panel_did.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -5669,9 +5671,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
-      - name: local projections IRF estimator (MO-DELTA-015 acceptance)
-        run: python -m pytest tests/test_local_projections.py -q
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+      - name: local projections and common-adoption panel DiD (MO-DELTA-015 acceptance)
+        run: python -m pytest tests/test_local_projections.py tests/test_panel_did.py -q
 
   breakdown-control-seed-determinism:
     if: ${{ false }}
