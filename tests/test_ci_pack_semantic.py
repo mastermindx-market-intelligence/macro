@@ -3717,6 +3717,10 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     source = parent / 'source'
     source.mkdir()
     _cm_git(source, 'init', '-q', '--initial-branch=main')
+    # These disposable repositories must not leave housekeeping writers behind
+    # after the real Git commands return and TemporaryDirectory cleanup begins.
+    _cm_git(source, 'config', '--local', 'gc.auto', '0')
+    _cm_git(source, 'config', '--local', 'maintenance.auto', 'false')
     _cm_git(source, 'config', 'user.name', 'Canonical Fixture')
     _cm_git(source, 'config', 'user.email', 'canonical@example.invalid')
     for path in _CM_FROZEN_PATHS:
@@ -3746,6 +3750,7 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     if shallow_remote:
         remote = parent / 'shallow.git'
         _cm_git(parent, 'clone', '-q', '--bare', '--no-tags', '--depth=2',
+                '--config=gc.auto=0', '--config=maintenance.auto=false',
                 '--single-branch', '--branch=tested', source.as_uri(), remote)
         # Canonical main deliberately shares the tested tip in this source.
         # Parent history is genuinely capped, so fetches can complete without
@@ -3753,7 +3758,8 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
         _cm_git(remote, 'update-ref', 'refs/heads/main', tested)
         canonical = tested
     checkout = parent / 'checkout'
-    args = ['clone', '-q', '--no-tags', '--single-branch', '--branch=tested']
+    args = ['clone', '-q', '--no-tags', '--single-branch', '--branch=tested',
+            '--config=gc.auto=0', '--config=maintenance.auto=false']
     if not full_checkout:
         args.append('--depth=1')
     _cm_git(parent, *args, remote.as_uri(), checkout)
