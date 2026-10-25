@@ -86,8 +86,6 @@ jobs:
           # secrets already provisioned on this account reach a phone with no new
           # setup. DISCORD_WEBHOOK_WATCHLIST is the fallback transport that is
           # actually wired; the script prefers DISCORD_WEBHOOK_URL when present.
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         # No venv and no pip: the responder is stdlib-only plus lib.nyse_calendar,
