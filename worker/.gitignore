@@ -1,3 +1,0 @@
-# wrangler/npm install artifacts — never commit these (the lockfile is committed).
-node_modules/
-.wrangler/
