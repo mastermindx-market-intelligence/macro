@@ -2,6 +2,36 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-25",
+      "tickers": [
+        "AA",
+        "AWK",
+        "BRX",
+        "CRAFX",
+        "ECG",
+        "ELAN",
+        "EWY",
+        "GEHC",
+        "ICHR",
+        "KRG",
+        "MCHP",
+        "MKSI",
+        "MYRG",
+        "NJR",
+        "NWE",
+        "NXG",
+        "NXST",
+        "PEGA",
+        "PINS",
+        "REZI",
+        "SGI",
+        "TD",
+        "WDFC",
+        "WGS",
+        "XPO"
+      ]
+    },
+    {
       "as_of": "2026-10-24",
       "tickers": [
         "AKR",
@@ -133,27 +163,6 @@
         "OKLO",
         "QDEL",
         "SMR"
-      ]
-    },
-    {
-      "as_of": "2026-10-17",
-      "tickers": [
-        "ACMR",
-        "CACI",
-        "COKE",
-        "CVX",
-        "EMR",
-        "FMC",
-        "MRSH",
-        "NWS",
-        "PBR.A",
-        "POWI",
-        "PPLI",
-        "RRX",
-        "TGT",
-        "ULS",
-        "VNO",
-        "ZTS"
       ]
     }
   ]
