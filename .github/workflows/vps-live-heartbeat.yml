@@ -12,6 +12,21 @@ on:
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
       - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/corpus.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_service.py"
+      - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      - "engine/research_intelligence/vault_adapter.py"
+      - "engine/qual_extraction.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "tests/test_research_vault_source_clock_providers.py"
       - "tests/test_research_vault_fulltext.py"
       - "tests/test_research_pinned_producer_workflow.py"
       - "app/research.py"
@@ -49,15 +64,33 @@ jobs:
             /engine/research_vault/catalog.py
             /engine/research_vault/sidecar.py
             /engine/research_vault/fulltext.py
+            /engine/research_vault/corpus.py
+            /engine/research_vault/r2_store.py
+            /engine/research_vault/read_port.py
+            /engine/research_vault/read_service.py
+            /engine/research_intelligence/__init__.py
+            /engine/research_intelligence/store.py
+            /engine/research_intelligence/extractor.py
+            /engine/research_intelligence/schema.py
+            /engine/research_intelligence/selection.py
+            /engine/research_intelligence/projection.py
+            /engine/research_intelligence/vault_adapter.py
+            /engine/qual_extraction.py
+            /lib/__init__.py
+            /lib/config.py
             /tests/test_research_vault_fulltext.py
             /tests/test_research_pinned_producer_workflow.py
             /.github/workflows/research-ingest.yml
+            /tests/test_research_vault_source_clock_providers.py
             /app/research.py
       - name: Install Research Vault contract test dependency
         run: python -m pip install --quiet pytest pyyaml
 
       - name: Research Vault exact full-text and pinned producer contracts
         run: python -m pytest -q tests/test_research_vault_fulltext.py tests/test_research_pinned_producer_workflow.py
+
+      - name: Research Vault MarketDesk provider freshness contract
+        run: python -m pytest -q tests/test_research_vault_source_clock_providers.py
 
       - name: Research Vault source-freshness guard self-test
         run: python -m scripts.check_research_vault_source_freshness --selftest
@@ -116,24 +149,64 @@ jobs:
               before = copy.deepcopy(p)
               clock = catalog_mod.public_summary(p, now=datetime(2026,9,5,0,tzinfo=timezone.utc)).get("source_clock")
               require(isinstance(clock, dict), clock)
-              require(set(clock) == {"schema","complete","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at"}, clock)
+              require(set(clock) == {"schema","complete","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at","providers"}, clock)
               require(clock["complete"] is True and clock["report_count"] == 1 and clock["valid_clock_count"] == 1, clock)
               require("PRIVATE" not in json.dumps(clock), clock)
               require(p == before, "public summary mutated input")
+              # The per-provider clock is additive and private-safe too: a
+              # namespace, counts and a maximum only.
+              provider = clock["providers"]["marketdesk"]
+              require(set(provider) == {"id_prefix","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at"}, provider)
+              require(provider["report_count"] == 0, provider)
           check("real public_summary owns a complete private-safe clock", aggregate_contract)
 
           def preview_parity():
               p = payload("2026-09-04T18:00:00Z")
+              # A MarketDesk row placed at index 0 so preview truncation removes
+              # it entirely: the provider clock must still be graded from the
+              # complete catalog the summary was built from.
+              p["items"].insert(0, {"id":"marketdesk-zarzrnqfgu6-29437b","published_at":"2026-09-04T18:00:00Z"})
               p["items"] += [{"id":str(i),"published_at":"2026-08-25T12:00:00Z","summary_points":["ready"]} for i in range(3)]
-              p["count"] = 4
+              p["count"] = 5
               now = datetime(2026,9,5,0,tzinfo=timezone.utc)
               summary = catalog_mod.public_summary(p, now=now)
               preview = dict(p, items=p["items"][1:], summary=summary, preview=True)
+              require(all(it["id"] != "marketdesk-zarzrnqfgu6-29437b" for it in preview["items"]),
+                      "parity fixture must truncate the provider row away")
               full = guard.evaluate(p, now=now)
               short = guard.evaluate(preview, now=now)
-              for key in ("status","latest_report_at","source_deadline_at","count","invalid_published_at"):
+              require(full["status"] == "SOURCE_FRESH", full)
+              require(full["marketdesk_report_count"] == 1, full)
+              for key in ("status","latest_report_at","source_deadline_at","count","invalid_published_at",
+                          "marketdesk_latest_at","marketdesk_deadline_at","marketdesk_report_count"):
                   require(full.get(key) == short.get(key), (key, full, short))
           check("summary-ready preview agrees with complete catalog", preview_parity)
+
+          def provider_cannot_report_source_fresh():
+              # The hosted dead-man must see a MarketDesk outage even while an
+              # internal desk keeps the vault-wide max young, and the generic
+              # producer acknowledgement must not soften it.
+              now = datetime(2026,9,5,0,tzinfo=timezone.utc)
+              p = dict(payload(), count=2, items=[
+                  {"id":"mastermind-research-2026-09-04-cndt-settlement","published_at":"2026-09-04T18:00:00Z"},
+                  {"id":"marketdesk-zarzrnqfgu6-29437b","published_at":"2026-08-25T16:47:24Z"}])
+              stale = guard.evaluate(p, now=now)
+              require(stale["status"] == guard.MARKETDESK_STALE, stale)
+              require(stale["ok"] is not True, stale)
+              require(guard._acknowledges_producer_stale(stale, True) is False, stale)
+              json.dumps(stale, allow_nan=False)
+              # Absent provider rows fail closed rather than borrow the global clock.
+              # payload()'s default stamp is already globally stale, which would
+              # short-circuit at PRODUCER_STALE, so pin a FRESH internal row.
+              internal = payload("2026-09-04T18:00:00Z")
+              missing = guard.evaluate(internal, now=now)
+              require(missing["status"] == guard.MARKETDESK_CLOCK_MISSING, missing)
+              # A pre-slice summary (no "providers" key) stays readable and red.
+              clock = catalog_mod.public_summary(internal, now=now)["source_clock"]
+              legacy = {k:v for k,v in clock.items() if k != "providers"}
+              old = guard.evaluate(dict(internal, preview=True, summary={"source_clock":legacy}), now=now)
+              require(old["status"] == guard.MARKETDESK_CLOCK_MISSING, old)
+          check("MarketDesk provider clock gates the hosted verdict", provider_cannot_report_source_fresh)
 
           def annotation():
               out = io.StringIO()
@@ -188,6 +261,13 @@ jobs:
   # this PR's app/engine before treating CATALOG_UNAVAILABLE as a producer
   # signal. Outage ack is delegated to the typed guard and can soften only
   # PRODUCER_STALE; every other nonzero verdict remains red (same as ingest).
+  # The MarketDesk provider clock grades on top of that: MARKETDESK_STALE and
+  # MARKETDESK_CLOCK_MISSING are hard reds that RESEARCH_VAULT_SOURCE_OUTAGE_ACK
+  # cannot soften, because the whole-vault max can stay young while one provider
+  # is silent. Those two verdicts arrive only once a VPS running this slice's
+  # app/engine serves summary.source_clock.providers; until then the guard reads
+  # an absent provider clock and fails closed as MARKETDESK_CLOCK_MISSING, which
+  # is the intended ordering (deploy the engine, then let the provider gate).
   research-vault-source-url:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest

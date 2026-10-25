@@ -567,6 +567,18 @@ def test_public_summary_describes_the_full_catalog_not_a_preview_slice():
             "valid_clock_count": 4,
             "invalid_clock_count": 0,
             "latest_report_published_at": "2026-07-31T10:00:00+00:00",
+            # Additive per-provider clock. This catalog carries no MarketDesk
+            # row (ids are a1/a2/b/c), so the provider is present but empty —
+            # a reader can tell "graded, zero rows" from "never graded".
+            "providers": {
+                "marketdesk": {
+                    "id_prefix": "marketdesk-",
+                    "report_count": 0,
+                    "valid_clock_count": 0,
+                    "invalid_clock_count": 0,
+                    "latest_report_published_at": None,
+                }
+            },
         },
         "total": 4,
         "new_this_week": 3,

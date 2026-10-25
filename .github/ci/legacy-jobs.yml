@@ -9986,8 +9986,24 @@ jobs:
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
+          # A full unfiltered base fetch took 367s on two independent CI heads,
+          # consuming the entire browser-test budget. Fetch a bounded, blobless
+          # history first; never omit the base or soften the frozen-file guard.
+          base_ref="${{ github.base_ref || 'main' }}"
+          if ! git fetch --no-tags --filter=blob:none --depth=512 origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"; then
+            echo "::error title=international-workspace-browser::canonical bounded origin/$base_ref fetch failed; the frozen-file comparison must not be skipped."
+            exit 1
+          fi
+          if ! git merge-base "origin/$base_ref" HEAD >/dev/null; then
+            # Older PRs may need more ancestry. One bounded deepening preserves
+            # the required real merge base without refetching every R2/data blob.
+            if ! git fetch --no-tags --filter=blob:none --deepen=512 origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"; then
+              echo "::error title=international-workspace-browser::canonical base deepening failed."
+              exit 1
+            fi
+          fi
+          if ! git merge-base "origin/$base_ref" HEAD >/dev/null; then
+            echo "::error title=international-workspace-browser::no exact merge base after bounded fetch; frozen-file guard unavailable, failing closed."
             exit 1
           fi
       - name: Actual International builder and template contracts
@@ -15641,7 +15657,10 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
-    timeout-minutes: 10
+    # Prospective Ontology-only grant: portfolio ruling6375835730.
+    # Setup stays <=600 inside this original absolute720 total; every
+    # existing semantic/browser assertion remains required.
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

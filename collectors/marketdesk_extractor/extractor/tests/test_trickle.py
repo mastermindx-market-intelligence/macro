@@ -15,7 +15,8 @@ import pytest
 from marketdesk_extractor import db, trickle
 from marketdesk_extractor.config import Config
 from marketdesk_extractor.marketdesk import (
-    DownloadCapExhausted, MarketDeskClient, MarketDeskError, TransientHTTPError,
+    DownloadCapExhausted, MarketDeskClient, MarketDeskError,
+    ProviderBlobRefused, UnsupportedBlobError, TransientHTTPError,
 )
 from marketdesk_extractor.schemas import Status
 
@@ -744,7 +745,7 @@ def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
     class UnsupportedClient(FakeClient):
         def download_blob(self, blob_id):
             self.downloaded.append(blob_id)
-            raise MarketDeskError("blob unsupported: not a PDF")
+            raise UnsupportedBlobError("blob unsupported: confirmed non-PDF binary")
 
     _patch_sessions(monkeypatch, client_cls=UnsupportedClient)
     state = trickle.AccountState(profile=cfg.profiles[0])
@@ -757,6 +758,165 @@ def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
         assert db.get_by_blob_id(conn, "unsupported")["status"] == (
             Status.SKIPPED_UNSUPPORTED.value
         )
+    finally:
+        trickle._close_sessions([state]);conn.close()
+
+
+@pytest.mark.parametrize("status", [401, 403, 404, 429])
+def test_blob_http_access_rejection_does_not_prove_unsupported(
+    tmp_path, monkeypatch, status,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Rejected:
+        ok = False
+
+        def __init__(self):
+            self.status = status
+
+    class Request:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Rejected()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(ProviderBlobRefused, match="no PDF delivered"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+@pytest.mark.parametrize("body", [b'{"success":false}', b'', b'partial-pdf'])
+def test_blob_unqualified_200_response_preserves_source_identity(
+    tmp_path, monkeypatch, body,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Response:
+        status = 200
+        ok = True
+
+        def body(self):
+            return body
+
+    class Request:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Response()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(ProviderBlobRefused, match="unqualified"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+def test_blob_known_zip_container_is_explicitly_unsupported(
+    tmp_path, monkeypatch,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class Response:
+        status = 200
+        ok = True
+
+        def body(self):
+            return b"PK\x03\x04" + b"spreadsheet archive"
+
+    class Request:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return Response()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(UnsupportedBlobError, match="confirmed non-PDF"):
+        MarketDeskClient(Context(), cfg).download_blob("known_non_pdf_report")
+    assert Context.request.calls == 1
+
+
+def test_persistently_refused_top_paper_cannot_starve_other_new_reports(
+    tmp_path, monkeypatch,
+):
+    """A vendor denial must remain retryable without pinning the entire queue."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "poison", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "good_a", published_at=NOW - timedelta(minutes=2))
+    _seed(conn, "good_b", published_at=NOW - timedelta(minutes=3))
+
+    class SelectiveRefusal(FakeClient):
+        def download_blob(self, blob_id):
+            if blob_id == "poison":
+                self.downloaded.append(blob_id)
+                raise ProviderBlobRefused("access denied; PDF not delivered")
+            return super().download_blob(blob_id)
+
+    _patch_sessions(monkeypatch, client_cls=SelectiveRefusal)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        for minute in (0, 6, 12, 18, 24, 30):
+            trickle.run_tick(
+                cfg, conn, [state], NOW + timedelta(minutes=minute),
+                dry_run=False,
+            )
+        assert state.client.downloaded.count("poison") == 1
+        assert {"good_a", "good_b"} <= set(state.client.downloaded)
+        assert db.get_by_blob_id(conn, "poison")["status"] == Status.FAILED.value
+        assert db.get_by_blob_id(conn, "good_a")["status"] == Status.COMPLETE.value
+        assert db.get_by_blob_id(conn, "good_b")["status"] == Status.COMPLETE.value
+        # FAILED is deliberately not terminal: the incumbent wide-pass retry
+        # is the sole existing requeue mechanism (no new backoff database).
+        assert trickle._reset_failed(conn) == 1
+        assert db.get_by_blob_id(conn, "poison")["status"] == Status.DISCOVERED.value
+    finally:
+        trickle._close_sessions([state]); conn.close()
+
+
+def test_provider_refusal_is_retryable_without_permanent_skip_or_inline_retry(
+    tmp_path, monkeypatch,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "first", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "second", published_at=NOW - timedelta(minutes=2))
+
+    class RejectedClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise ProviderBlobRefused(f"blob {blob_id} access rejected")
+
+    _patch_sessions(monkeypatch, client_cls=RejectedClient)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        tick = trickle.run_tick(cfg, conn, [state], NOW, dry_run=False)
+        assert tick.provider_refusals == 1
+        assert tick.unsupported == tick.errors == tick.downloaded_new == 0
+        assert state.client.downloaded == ["first"]
+        assert state.transient_retry_after == NOW + timedelta(minutes=5)
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.FAILED.value
+        assert db.get_by_blob_id(conn, "first")["error_message"] == (
+            "PROVIDER_PDF_UNQUALIFIED:ProviderBlobRefused"
+        )
+        assert db.trailing_24h_count(conn, state.name, NOW) == 0
+        before = trickle.run_tick(
+            cfg, conn, [state], NOW + timedelta(minutes=4), dry_run=False
+        )
+        assert before.provider_refusals == 0
+        assert state.client.downloaded == ["first"]
     finally:
         trickle._close_sessions([state]);conn.close()
 
@@ -958,3 +1118,204 @@ def test_browser_exit_stops_driver_and_is_idempotent(
 
     assert events == ["close", "stop"]
     assert session.context is None and session._pw is None
+
+
+# ---------------------------------------------------------------------------
+# bounded, evidence-driven backfill admission (end to end)
+# ---------------------------------------------------------------------------
+# M1 at 2026-10-22T07:16:48Z: cap=70/24h, BACKFILL_RESERVE_HOURS=24 (a raw
+# forecast of 206.5 papers — larger than the whole allowance, so the old
+# ``quota > reserve`` gate could never fire), 0 known-new, 7,386 backfill
+# pending. Backfill is now admitted only when an operator has granted a budget
+# AND discovery is recent+healthy AND the feasible reserve is covered.
+M1_NOW = datetime(2026, 10, 22, 7, 16, 48, tzinfo=timezone.utc)  # Thursday 03:16 ET
+
+
+def _loop_cfg(tmp_path, monkeypatch, **over) -> Config:
+    env = {
+        "DATABASE_URL": str(tmp_path / "db" / "t.sqlite"),
+        "OUTPUT_DIR": str(tmp_path / "data"),
+        "RAW_PDF_DIR": str(tmp_path / "data" / "raw_pdfs"),
+        "MARKDOWN_DIR": str(tmp_path / "data" / "markdown"),
+        "METADATA_DIR": str(tmp_path / "data" / "metadata"),
+        "MANIFEST_DIR": str(tmp_path / "data" / "manifests"),
+        "LOG_DIR": str(tmp_path / "logs"),
+        "MARKETDESK_PROFILE_DIR": str(tmp_path / "prof"),
+        "R2_ENABLED": "false",
+        "DROPBOX_ENABLED": "false",
+        "VAULT_ENABLED": "false",
+        "PARSER_BACKEND": "none",
+        "DOWNLOAD_CAP_PER_ACCOUNT_24H": "70",
+        "NEW_WINDOW_HOURS": "48",
+        # M1's reserve horizon — the value that made the stall permanent.
+        "BACKFILL_RESERVE_HOURS": "24",
+    }
+    env.update({k: str(v) for k, v in over.items()})
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    cfg = Config.from_env()
+    cfg.ensure_dirs()
+    return cfg
+
+
+def _run_once(cfg):
+    return trickle.run_trickle(
+        cfg, once=True, dry_run=False, now_fn=lambda: M1_NOW, sleep_fn=lambda _s: None,
+    )
+
+
+def _seed_backlog(conn, count, *, prefix="old"):
+    for i in range(count):
+        _seed(conn, f"{prefix}{i}", published_at=M1_NOW - timedelta(hours=400 + i))
+    conn.commit()
+
+
+def test_backfill_pulls_when_the_operator_grants_a_budget_and_discovery_is_healthy(
+    tmp_path, monkeypatch
+):
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="5")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 3)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_new == 0
+    assert results[0].downloaded_backfill == 3
+
+
+def test_no_backfill_is_spent_when_discovery_has_failed(tmp_path, monkeypatch):
+    """The upstream-outage case, end to end: quota is preserved, nothing drains."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="50")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 25)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 0
+    assert results[0].plans[0].backfill_reason == "DISCOVERY_FAILED"
+    assert results[0].plans[0].allow_backfill is False
+
+    conn = db.connect(cfg.database_url)
+    assert db.counts_by_status(conn).get(Status.DISCOVERED.value, 0) == 25
+    conn.close()
+
+
+def test_backfill_stays_off_with_no_budget_even_on_healthy_discovery(tmp_path, monkeypatch):
+    """The default ships disabled: healthy discovery must not create backfill."""
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 5)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 0
+    assert results[0].plans[0].backfill_reason == "BUDGET_DISABLED"
+
+
+def test_backfill_budget_stops_the_drain_instead_of_draining_the_backlog(
+    tmp_path, monkeypatch
+):
+    """A 7,386-row backlog is trickled at the granted rate, not emptied."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="2")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 40)
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_backfill == 2
+
+    # A second tick spends nothing more: the ceiling is per trailing 24h.
+    results2 = _run_once(cfg)
+    assert results2[0].downloaded_backfill == 0
+    assert results2[0].plans[0].backfill_reason == "BUDGET_SPENT"
+
+
+def test_fresh_research_still_drains_before_backfill_end_to_end(tmp_path, monkeypatch):
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="10")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    # A high-scoring stale row must not jump ahead of a low-scoring fresh one.
+    _seed_backlog(conn, 1, prefix="stale_high")
+    conn.execute(
+        "UPDATE papers SET local_priority_score=99 WHERE blob_id='stale_high0'"
+    )
+    _seed(conn, "fresh_low", published_at=M1_NOW - timedelta(hours=1))
+    conn.execute("UPDATE papers SET local_priority_score=0 WHERE blob_id='fresh_low'")
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW))
+    conn.commit()
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    results = _run_once(cfg)
+    assert results[0].downloaded_new == 1        # the fresh one went first
+    assert results[0].downloaded_backfill == 1    # then the stale one
+
+    conn = db.connect(cfg.database_url)
+    assert db.get_by_blob_id(conn, "fresh_low")["account"] is not None
+    conn.close()
+
+
+def test_the_plan_line_names_why_backfill_is_refused(tmp_path, monkeypatch, capsys):
+    """Operators read this line; the stall must never be silent again."""
+    cfg = _loop_cfg(tmp_path, monkeypatch, BACKFILL_BUDGET_PER_ACCOUNT_24H="5")
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed_backlog(conn, 2)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED, observed_at=_iso(M1_NOW))
+    conn.close()
+    _patch_sessions(monkeypatch)
+
+    trickle.run_trickle(cfg, once=True, dry_run=True, now_fn=lambda: M1_NOW,
+                        sleep_fn=lambda _s: None)
+    out = capsys.readouterr().out
+    assert "DISCOVERY_FAILED" in out
+    # Both numbers are visible, so a clamped reserve can never hide the real demand.
+    assert "forecast=206.5" in out
+    assert "reserve=35.0" in out
+
+
+def test_discovery_outcomes_are_recorded_by_the_refresh_pass(tmp_path, monkeypatch):
+    """The evidence the gate reads is actually written by the loop."""
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    state = trickle.AccountState(
+        profile=cfg.profiles[0], authed=True, client=FakeClient(object(), cfg)
+    )
+
+    def exploding_discover(*a, **k):
+        raise RuntimeError("provider is down")
+
+    monkeypatch.setattr("marketdesk_extractor.discover.discover", exploding_discover)
+    trickle._refresh_queue(cfg, conn, [state])
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_FAILED
+
+    class _Result:
+        discovered_new = 7
+
+        def summary(self):
+            return "scanned=7 new=7"
+
+    monkeypatch.setattr(
+        "marketdesk_extractor.discover.discover", lambda *a, **k: _Result()
+    )
+    trickle._refresh_queue(cfg, conn, [state])
+    healthy = db.discovery_health(conn)
+    assert healthy["state"] == db.DISCOVERY_HEALTHY
+    assert healthy["found_new"] == "7"
+    conn.close()
+
+
+def test_no_authenticated_account_records_blindness(tmp_path, monkeypatch):
+    cfg = _loop_cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    trickle._refresh_queue(cfg, conn, [])
+    health = db.discovery_health(conn)
+    assert health["state"] == db.DISCOVERY_UNKNOWN
+    assert "NO_AUTHENTICATED_ACCOUNT" in health["reason"]
+    conn.close()

@@ -65,6 +65,19 @@ class MarketDeskError(RuntimeError):
     pass
 
 
+class ProviderBlobRefused(MarketDeskError):
+    """A PDF was NOT delivered and the vendor did not prove a non-PDF file.
+
+    Access denials, JSON errors and ambiguous payloads must retain their source
+    row: treating them as an unsupported attachment permanently loses papers.
+    No immediate retry, entitlement bypass or second browser request is implied.
+    """
+
+
+class UnsupportedBlobError(MarketDeskError):
+    """The received bytes positively identify a non-PDF binary container."""
+
+
 class TransientHTTPError(MarketDeskError):
     """Raised on 5xx / network errors so tenacity retries."""
 
@@ -414,7 +427,11 @@ class MarketDeskClient:
         if resp.status >= 500:
             raise TransientHTTPError(f"blob {blob_id} -> {resp.status}")
         if not resp.ok:
-            raise MarketDeskError(f"blob {blob_id} -> {resp.status}")
+            # Authentication/entitlement/backend rejection is not evidence
+            # that this source item is a ZIP or other unsupported document.
+            raise ProviderBlobRefused(
+                f"blob {blob_id}: provider HTTP {resp.status}; no PDF delivered"
+            )
         data = resp.body()
         if not data or data[:5] != b"%PDF-":
             head = (data or b"")[:64]
@@ -435,9 +452,19 @@ class MarketDeskClient:
                     f"blob {blob_id}: got the HTML app-shell instead of a PDF "
                     f"({len(data or b'')} bytes) — account download cap reached"
                 )
-            raise MarketDeskError(
-                f"blob {blob_id}: not a PDF (got {len(data or b'')} bytes, "
-                f"head={data[:16]!r})"
+            # Only known binary file signatures prove an unsupported document.
+            # JSON 200 {"success":false}, blank responses, truncated PDFs and
+            # text errors remain unqualified provider results; preserve the row.
+            if data and data.startswith((
+                b"PK\x03\x04", b"PK\x05\x06",
+                b"\xd0\xcf\x11\xe0",
+            )):
+                raise UnsupportedBlobError(
+                    f"blob {blob_id}: confirmed non-PDF binary container"
+                )
+            raise ProviderBlobRefused(
+                f"blob {blob_id}: PDF not delivered ({len(data or b'')} bytes); "
+                "provider response unqualified"
             )
         return data
 

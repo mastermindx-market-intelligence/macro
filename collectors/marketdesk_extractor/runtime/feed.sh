@@ -8,10 +8,11 @@
 # This script therefore no longer opens MarketDesk at all — two processes
 # sharing one Chromium profile would deadlock.
 #
-# Its one remaining job: watch the DB for freshly vaulted papers and trigger
-# the dashboard ingest workflow the moment something new lands (the hourly
-# research-ingest cron remains the backstop). Run every ~15 min by launchd
-# (com.mastermindx.research-feed).
+# Its one remaining job: watch the DB for freshly vaulted papers and attempt
+# to trigger the existing dashboard ingest workflow when something new lands.
+# The hourly research-ingest schedule is NOT a dependable backstop while that
+# workflow remains intentionally disabled by the R2 publication recovery owner.
+# Run every ~15 min by launchd (com.mastermindx.research-feed).
 # ============================================================================
 DEST="$HOME/mastermind-research"
 APP="$DEST/marketdesk_paper_extractor"
@@ -38,7 +39,7 @@ if ! PROBE="$(cd "$APP" 2>>"$LOG" &&   ./.venv/bin/python -m marketdesk_extracto
   echo "$(ts) feed: vault-state probe failed — retrying next tick" >>"$LOG"
   exit 0
 fi
-IFS='|' read -r DB NEWEST COUNT AUTH_STATE AUTH_OBSERVED AUTH_REQUIRED_AT AUTH_REASON <<<"$PROBE"
+IFS='|' read -r DB NEWEST COUNT AUTH_STATE AUTH_OBSERVED AUTH_REQUIRED_AT AUTH_REASON DISCOVERY_STATE DISCOVERY_OBSERVED DISCOVERY_REASON <<<"$PROBE"
 case "$COUNT" in
   ''|*[!0-9]*)
     echo "$(ts) feed: malformed vault-state probe output" >>"$LOG"
@@ -60,14 +61,34 @@ case "$AUTH_STATE" in
     ;;
 esac
 
+# Authentication and discovery are distinct: a session may still return the
+# latest feed while its library browse and metadata endpoints reject access.
+# Project the existing collector's typed discovery result, not another probe,
+# browser owner, scheduler or retry mechanism.
+case "${DISCOVERY_STATE:-UNKNOWN}" in
+  HEALTHY)
+    ;;
+  FAILED)
+    echo "$(ts) feed: ERROR producer discovery FAILED observed_at=${DISCOVERY_OBSERVED:-unknown} reason=${DISCOVERY_REASON:-DISCOVERY_ERROR}; authenticated feed access alone does not prove usable MarketDesk report metadata" >>"$LOG"
+    ;;
+  UNKNOWN|'')
+    echo "$(ts) feed: WARNING producer discovery state UNKNOWN; no successful browse/metadata pass verified" >>"$LOG"
+    ;;
+  *)
+    echo "$(ts) feed: malformed discovery state: ${DISCOVERY_STATE:-empty}" >>"$LOG"
+    exit 0
+    ;;
+esac
+
 if [ -n "$NEWEST" ] && [ "${COUNT:-0}" -gt 0 ] 2>/dev/null; then
   echo "$(ts) feed: $COUNT new vault publish(es) since $LAST → triggering ingest" >>"$LOG"
   if command -v gh >/dev/null 2>&1 && gh workflow run research-ingest.yml -R "$REPO" >>"$LOG" 2>&1; then
     echo "$NEWEST" > "$WATERMARK"
     echo "$(ts) feed: ingest triggered (watermark → $NEWEST)" >>"$LOG"
   else
-    # leave the watermark so the next tick retries; hourly cron is the backstop
-    echo "$(ts) feed: gh trigger unavailable — hourly cron will ingest within the hour" >>"$LOG"
+    # Preserve the watermark and do not promise an hourly ingest: the
+    # canonical workflow may be intentionally disabled under a publication hold.
+    echo "$(ts) feed: ERROR ingest dispatch unavailable; watermark retained; publication NOT confirmed (check existing workflow hold)" >>"$LOG"
   fi
 else
   echo "$(ts) feed: nothing new" >>"$LOG"

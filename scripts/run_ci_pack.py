@@ -599,9 +599,11 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     return capture_commands()
 
 
-# Native activation is closed to these existing owners and their original
-# TOTAL grants. Each setup still shares that total and its finite setup bound.
-NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+# Native activation is closed to these existing owners and their scoped
+# TOTAL grants. Each setup shares that total and its finite setup bound.
+# Prospective Ontology-only720 grant: portfolio ruling6375835730.
+# Its setup still receives min(original job deadline, setup start+600).
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 12
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
 NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
 NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
