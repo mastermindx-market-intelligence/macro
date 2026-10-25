@@ -1143,18 +1143,40 @@ def test_epoch2_forged_admission_refuses_remaining_outcome_surfaces(surface, mon
 
 
 @pytest.mark.parametrize("command", [
-    "seal-epoch2-admission", "measure-us", "gate-hk-outcome", "score-hsi",
+    "seal-epoch2-admission", "freeze-controls", "measure-us",
+    "measure-control-us", "gate-hk-outcome", "score-hsi",
 ])
 def test_epoch2_forged_admission_cli_paths_fail_closed(command, monkeypatch, tmp_path, capsys):
     import json
 
     # Files emulate forged digest-consistent receipts, NOT an authenticated
-    # Reuters/UKMTO archive. No transport is invoked in these CLI calls.
+    # Reuters/UKMTO archive. Hard-stub both provider paths so a future
+    # guard regression cannot accidentally make live paid or HK data calls.
     with monkeypatch.context() as fake_owner:
         fake_owner.setattr(
             capture, "_require_authoritative_source_day_provenance", lambda **_: None
         )
         sealed, census, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
+    # The stub *factory* is monitored too: even allocating an entitled
+    # Polygon/Massive REST client must not occur before source attestation.
+    forbidden_provider_calls = []
+
+    def polygon_factory():
+        forbidden_provider_calls.append("polygon_transport_factory")
+
+        def get(path, params):
+            forbidden_provider_calls.append((path, dict(params)))
+            return []
+
+        return get
+
+    def hsi_transport(start, end):
+        forbidden_provider_calls.append(("hsi", start, end))
+        return []
+
+    monkeypatch.setattr(capture.replay, "default_transport", polygon_factory)
+    monkeypatch.setattr(capture, "_default_hsi_transport", hsi_transport)
+
     unsealed = _capture_admission("2026-10-06T13:45:00Z")
     payloads = {
         "admission": unsealed if command == "seal-epoch2-admission" else sealed,
@@ -1163,12 +1185,25 @@ def test_epoch2_forged_admission_cli_paths_fail_closed(command, monkeypatch, tmp
         "us-measurement": event_us,
         "prior-control-measurement": prior_us,
         "next-control-measurement": next_us,
+        "session-calendar": ["2026-10-05", "2026-10-06", "2026-10-07"],
+        "admitted-event-dates": ["2026-10-06"],
     }
     for name, obj in payloads.items():
         (tmp_path / f"{name}.json").write_text(json.dumps(obj))
     args = [command, "--admission-file", str(tmp_path / "admission.json")]
     if command == "seal-epoch2-admission":
         args += ["--source-day-census-file", str(tmp_path / "source-day-census.json")]
+    elif command == "freeze-controls":
+        args += [
+            "--session-calendar-file", str(tmp_path / "session-calendar.json"),
+            "--admitted-event-dates-file", str(tmp_path / "admitted-event-dates.json"),
+            "--source-coverage-complete-through", "2026-10-08T00:00:00Z",
+        ]
+    elif command == "measure-control-us":
+        args += [
+            "--control-selection-file", str(tmp_path / "control-selection.json"),
+            "--side", "prior",
+        ]
     elif command in {"gate-hk-outcome", "score-hsi"}:
         for name in (
             "control-selection", "us-measurement",
@@ -1177,6 +1212,7 @@ def test_epoch2_forged_admission_cli_paths_fail_closed(command, monkeypatch, tmp
             args += [f"--{name}-file", str(tmp_path / f"{name}.json")]
     assert capture.main(args) == 2
     assert "authenticated source-day provenance unavailable" in capsys.readouterr().out
+    assert forbidden_provider_calls == []
 
 
 def test_epoch2_synthetic_owner_receives_exact_census_digest(monkeypatch):
