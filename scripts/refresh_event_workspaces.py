@@ -54,9 +54,10 @@ from engine.company_intelligence.event_workspace import (
     FLAGSHIP_EVENT_ID,
     LIVE_NARRATIVE_ALIAS,
     MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     apple_registry,
     flagship_fiscal_period,
-    preview_generation_identity,
+    preview_generation_identity_v3,
     production_registry,
     write_workspace_generation,
 )
@@ -68,6 +69,10 @@ from engine.company_intelligence.issuer_profiles import (
     profile_for_ticker,
 )
 from engine.earnings_release.binding import submissions_rows
+from engine.earnings_release.receipts import (
+    ReceiptError, SEC_ACQUISITION_SCHEMA, SEC_REDIRECT_POLICY, sec_declared_charset,
+    resolve_sec_acquisition_location, validate_sec_acquisition_receipt, validate_sec_acquisition_url,
+)
 from engine.earnings_transcript_intake import (
     TranscriptRef,
     fetch_body,
@@ -94,12 +99,17 @@ _ARCHIVES = "https://www.sec.gov/Archives/edgar/data"
 _PACE_S = 0.12
 _RETRIES = 3
 _TIMEOUT = 30
+_TRACE_CANDIDATE_LIMIT = 24
 _EX99_TYPE = re.compile(r"^EX-99\.1(?:\b|$)", re.I)
 _EX99_NAME = re.compile(r"ex[-_]?99[-_.]?1", re.I)
 
 
 class RefreshError(RuntimeError):
     """A required source is unavailable; the sibling marker must not move."""
+
+
+def _read_failure_context(exc: BaseException) -> str:
+    return json.dumps(ci_reader.read_failure_diagnostics(exc), sort_keys=True, separators=(",", ":"))
 
 
 HttpGet = Callable[[str], tuple[int, bytes]]
@@ -138,6 +148,108 @@ def _http_get(url: str) -> tuple[int, bytes]:
     raise RefreshError(f"SEC request failed: {url}: {last}")
 
 
+
+class _SecHttpResult(tuple):
+    """Two-item HTTP result retaining actual selected-exhibit transport metadata.
+
+    Legacy/custom HttpGet tuples remain valid inputs but carry no acquisition
+    claim. The generic HTTP helper and its other consumers are unchanged.
+    """
+
+    def __new__(cls, status: int, body: bytes, metadata: dict[str, Any]):
+        result = super().__new__(cls, (status, body))
+        result.acquisition_metadata = metadata
+        return result
+
+
+def _http_get_sec_exhibit(url: str, *, cik: object, accession: object) -> _SecHttpResult:
+    """Selected SEC exhibit only: check each target BEFORE following a redirect."""
+    import requests
+
+    requested = validate_sec_acquisition_url(url, cik=cik, accession=accession)
+    key = {"cik": str(cik).zfill(10), "accession": str(accession)}
+    headers = {"User-Agent": _SEC_UA, "Accept-Encoding": "gzip, deflate"}
+    last: Exception | None = None
+    for attempt in range(_RETRIES):
+        current, hops, visited = requested, [], {requested}
+        try:
+            while True:
+                # No implicit requests redirect can leave the admitted filing.
+                response = requests.get(current, headers=headers, timeout=_TIMEOUT, allow_redirects=False)
+                try:
+                    if response.history or response.url != current:
+                        raise RefreshError("selected SEC transport followed an unobserved redirect")
+                    validate_sec_acquisition_url(response.url, **key)
+                    status = response.status_code
+                    if status in {301, 302, 303, 307, 308}:
+                        location = response.headers.get("Location")
+                        next_url = resolve_sec_acquisition_location(current, location, **key)
+                        if len(hops) >= 5 or next_url in visited:
+                            raise RefreshError("selected SEC redirect limit or cycle")
+                        hops.append({"url": current, "status": status, "location": location, "next_url": next_url})
+                        visited.add(next_url)
+                        current = next_url
+                        continue
+                    # requests.content has already handled HTTP Content-Encoding.
+                    # It is an entity body, not a raw-wire or compressed-byte claim.
+                    body = response.content
+                    metadata = {
+                        "schema": SEC_ACQUISITION_SCHEMA, "filing_key": key,
+                        "requested_url": requested, "final_url": response.url,
+                        "redirect_policy": SEC_REDIRECT_POLICY, "redirects": hops,
+                        "http_status": status,
+                        "body_representation": "requests.content_after_content_decoding",
+                        "content_type": response.headers.get("Content-Type"),
+                        "content_encoding": response.headers.get("Content-Encoding"),
+                        "declared_charset": sec_declared_charset(response.headers.get("Content-Type")),
+                        "entity_sha256": sha256(body).hexdigest(), "entity_length": len(body),
+                        # This clock belongs only to this actual response acquisition.
+                        "acquired_at": datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z"),
+                    }
+                    result = _SecHttpResult(status, body, metadata)
+                    break
+                finally:
+                    response.close()
+            if status in {429, 500, 502, 503, 504} and attempt < _RETRIES - 1:
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            return result
+        except ReceiptError as exc:
+            raise RefreshError(f"selected SEC acquisition refused: {exc}") from exc
+        except requests.RequestException as exc:
+            last = exc
+            if attempt < _RETRIES - 1:
+                time.sleep(1.5 * (attempt + 1))
+    raise RefreshError(f"selected SEC request failed: {requested}: {last}")
+
+
+def _get_selected_exhibit(http_get: HttpGet, url: str, *, cik: object, accession: object) -> tuple[int, bytes]:
+    if isinstance(http_get, _RecordingHttpGet):
+        return http_get.selected_exhibit(url, cik=cik, accession=accession)
+    if http_get is _http_get:
+        return _http_get_sec_exhibit(url, cik=cik, accession=accession)
+    # A custom/offline two-item transport does not acquire new provenance.
+    return http_get(url)
+
+
+def _acquisition_receipt(response: tuple[int, bytes], *, cik: object, accession: object,
+                         url: str, text: str, decode_policy: str) -> dict[str, Any] | None:
+    if not isinstance(response, _SecHttpResult):
+        return None
+    metadata = dict(response.acquisition_metadata)
+    body = response[1]
+    try:
+        body.decode("utf-8", errors="strict")
+        decoder = "utf-8"
+    except UnicodeDecodeError:
+        decoder = "latin-1"
+    metadata.update({"decoder": decoder, "decode_errors": "strict", "decode_policy": decode_policy,
+                     "source_sha256": sha256(text.encode("utf-8")).hexdigest(),
+                     "source_utf8_length": len(text.encode("utf-8"))})
+    return validate_sec_acquisition_receipt(metadata, cik=cik, accession=accession,
+                                           source_url=url, source_text=text, entity_body=body)
+
+
 def _parse_sgml_manifest(text: str) -> list[tuple[str, str]]:
     """[(TYPE, FILENAME)] from a filing's SGML ``-index-headers.html``.
 
@@ -168,8 +280,16 @@ def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
     prefixed = [name for kind, name in textish if _EX99_TYPE.match(kind)]
     if prefixed:
         return prefixed[0]
+    # RTX/NOC publish their Item-2.02 earnings release as a generic EX-99.
+    # Multiple generic exhibits remain ambiguous even when a filename hints
+    # at 99.1; document order or name similarity cannot resolve them.
+    generic = [name for kind, name in textish if kind == "EX-99"]
+    if len(generic) > 1:
+        return None
     hinted = [name for _, name in textish if _EX99_NAME.search(name)]
-    return hinted[0] if hinted else None
+    if hinted:
+        return hinted[0]
+    return generic[0] if len(generic) == 1 else None
 
 
 def _parallel_row(block: Mapping[str, Any], accession: str, *, cik: str) -> dict[str, Any] | None:
@@ -233,7 +353,7 @@ def _select_newest_results_rows(rows: list[Mapping[str, Any]]) -> list[dict[str,
     return candidates
 
 
-def acquire_results_filing(
+def _acquire_results_filing_legacy(
     *, cik: str, http_get: HttpGet = _http_get, accession: str | None = None
 ) -> dict[str, Any]:
     """Resolve one issuer's results 8-K + EX-99.1 through the submissions + SGML seam.
@@ -330,7 +450,8 @@ def acquire_results_filing(
             continue
         exhibit_url = f"{archive_base}/{filename}"
         time.sleep(_PACE_S)
-        exhibit_status, exhibit_body = http_get(exhibit_url)
+        exhibit_response = _get_selected_exhibit(http_get, exhibit_url, cik=cik, accession=row_accession)
+        exhibit_status, exhibit_body = exhibit_response
         if exhibit_status != 200 or not exhibit_body.strip():
             message = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
             if accession is not None:
@@ -348,7 +469,7 @@ def acquire_results_filing(
             last_error = message
             continue
         acceptance = _iso_z(row["acceptance_datetime"])
-        return {
+        filing = {
             "cik": cik,
             "accession": row_accession,
             # NEW-2 fix (Opus red-team round 2, 2026-08-23): never
@@ -362,7 +483,377 @@ def acquire_results_filing(
             "exhibit_body": exhibit_text,
             "items": row["items"],
         }
+        acquisition = _acquisition_receipt(exhibit_response, cik=cik, accession=row_accession,
+                                           url=exhibit_url, text=exhibit_text,
+                                           decode_policy="utf8_strict_then_latin1_strict")
+        if acquisition is not None:
+            filing["acquisition_receipt"] = acquisition
+        return filing
     raise RefreshError(last_error or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
+
+
+class _RecordingHttpGet:
+    def __init__(self, http_get: HttpGet):
+        self._http_get = http_get
+        self.responses: dict[str, tuple[int, bytes]] = {}
+
+    def __call__(self, url: str) -> tuple[int, bytes]:
+        response = self._http_get(url)
+        self.responses[url] = response
+        return response
+
+    def selected_exhibit(self, url: str, *, cik: object, accession: object) -> tuple[int, bytes]:
+        response = _get_selected_exhibit(self._http_get, url, cik=cik, accession=accession)
+        self.responses[url] = response
+        return response
+
+
+def _manifest_exhibit_count(header_body: bytes) -> int:
+    manifest = _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+    return sum(
+        1 for kind, filename in manifest
+        if filename.lower().endswith((".htm", ".html", ".txt")) and (_EX99_TYPE.match(kind) or kind == "EX-99")
+    )
+
+
+def _trace_row(row: Mapping[str, Any], *, exhibit_url: str | None, outcome: str,
+               failure: str | None = None, receipt: dict[str, Any] | None = None,
+               decode: str | None = None, declared_encoding: str | None = None) -> dict[str, Any]:
+    return {
+        "accession": str(row.get("accessionNumber") or row.get("accession") or ""),
+        "form": row.get("form") or "",
+        "acceptance_datetime": row.get("acceptanceDateTime") or row.get("acceptance_datetime") or "",
+        "report_date": row.get("reportDate") or row.get("report_date") or "",
+        "exhibit_url": exhibit_url,
+        "outcome": outcome,
+        **({"failure": failure} if failure else {}),
+        **({"received_bytes": receipt} if receipt else {}),
+        "decode": decode,
+        "declared_encoding": declared_encoding,
+    }
+
+
+def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body: bytes,
+                          exhibit_text: str, *, currentness: str | None = None,
+                          checked_at: str | None = None,
+                          response: tuple[int, bytes] | None = None) -> dict[str, Any]:
+    receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+    acquisition = {
+        "cik": str(row.get("cik") or ""),
+        "accession": str(row.get("accessionNumber") or row.get("accession") or ""),
+        "form": row.get("form") or "",
+        "filing_date": row.get("filingDate") or row.get("filing_date") or "",
+        "acceptance_datetime": _iso_z(row.get("acceptanceDateTime") or row.get("acceptance_datetime")),
+        "report_date": row.get("reportDate") or row.get("report_date") or "",
+        "exhibit_url": exhibit_url,
+        "exhibit_body": exhibit_text,
+        "items": row.get("items") or "",
+        "received_bytes": receipt,
+        "declared_encoding": "utf-8",
+    }
+    if currentness is not None:
+        acquisition["currentness"] = {"state": currentness, "checked_at": checked_at}
+    if response is not None:
+        transport = _acquisition_receipt(response, cik=acquisition["cik"], accession=acquisition["accession"],
+                                         url=exhibit_url, text=exhibit_text, decode_policy="utf8_strict")
+        if transport is not None:
+            acquisition["acquisition_receipt"] = transport
+    return acquisition
+
+
+def _archived_row(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "cik": str(row.get("cik") or ""),
+        "accession": str(row.get("accession") or row.get("accessionNumber") or ""),
+        "form": str(row.get("form") or ""),
+        "filing_date": str(row.get("filingDate") or row.get("filing_date") or ""),
+        "acceptance_datetime": str(row.get("acceptanceDateTime") or row.get("acceptance_datetime") or ""),
+        "report_date": str(row.get("reportDate") or row.get("report_date") or ""),
+        "primary_document": str(row.get("primaryDocument") or ""),
+        "items": str(row.get("items") or ""),
+    }
+
+
+def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
+                                    accession: str | None) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    recorder = _RecordingHttpGet(http_get)
+    trace_rows: list[dict[str, Any]] = []
+    selected: dict[str, Any] | None = None
+    last_error: str | None = None
+    fatal_error: str | None = None
+    selected_target_accession: str | None = None
+    typed_handling: dict[str, str] = {}
+
+    pending = False
+    if accession is not None:
+        submissions_status, submissions_body = recorder(
+            _SUBMISSIONS_URL.format(cik=int(cik))
+        )
+        try:
+            submissions = json.loads(submissions_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RefreshError(f"SEC submissions JSON invalid: {exc}") from exc
+        row = _archived_row(_parallel_row(
+            (submissions.get("filings") or {}).get("recent") or {}, accession, cik=cik
+        ) or {"accession": accession, "cik": cik})
+        if row.get("accession") != accession:
+            row = {"accession": accession, "cik": cik}
+        if row.get("accession") == accession and row.get("form"):
+            try:
+                selected = _acquire_results_filing_legacy(
+                    cik=cik, http_get=recorder, accession=accession
+                )
+            except Exception as exc:
+                last_error = str(exc)
+        else:
+            resolved = _resolve_exhibit_for_row(row, cik=cik, http_get=recorder)
+            if resolved is not None:
+                row = _archived_row(resolved)
+        newer_rows = [
+            item for item in _select_newest_results_rows(submissions_rows(submissions, block="recent"))
+            if str(item.get("accessionNumber") or item.get("accession") or "") != accession
+            and str(item.get("acceptanceDateTime") or item.get("acceptance_datetime") or "")
+            >= str(row.get("acceptance_datetime") or row.get("acceptanceDateTime") or "")
+        ]
+        for newer in newer_rows:
+            newer_row = _archived_row(newer)
+            newer_accession = newer_row["accession"]
+            newer_archive = f"{_ARCHIVES}/{int(cik)}/{newer_accession.replace('-', '')}"
+            newer_header_url = f"{newer_archive}/{newer_accession}-index-headers.html"
+            newer_status, newer_header = recorder(newer_header_url)
+            if newer_status == 200 and _select_exhibit_99_1(_parse_sgml_manifest(newer_header.decode("utf-8", errors="replace"))) is not None:
+                pending = True
+                break
+    else:
+        candidates = list(reversed(_fetch_submissions_candidates(cik, http_get=recorder)))
+        submissions_url = _SUBMISSIONS_URL.format(cik=int(cik))
+        status, body = recorder.responses[submissions_url]
+        payload = json.loads(body.decode("utf-8"))
+        excluded = [
+            item for item in submissions_rows(payload, block="recent")
+            if item not in candidates
+        ]
+        merged = sorted(
+            [*excluded, *candidates],
+            key=lambda item: (
+                str(item.get("acceptanceDateTime") or ""),
+                str(item.get("filingDate") or ""),
+            ),
+            reverse=True,
+        )
+        trace_rows.extend(
+            _trace_row(item, exhibit_url=None, outcome="excluded_non_results")
+            for item in excluded[:_TRACE_CANDIDATE_LIMIT]
+        )
+        for row in candidates:
+            merged_item = next(
+                (item for item in merged if item.get("accessionNumber") == row.get("accessionNumber")),
+                row,
+            )
+            row_accession = str(row.get("accessionNumber") or "")
+            archive = f"{_ARCHIVES}/{int(cik)}/{row_accession.replace('-', '')}"
+            header_url = f"{archive}/{row_accession}-index-headers.html"
+            resolved = _resolve_exhibit_for_row(row, cik=cik, http_get=recorder)
+            if resolved is not None:
+                row = _archived_row(resolved)
+                merged_item = row
+            header_response = recorder.responses.get(header_url)
+            header_status = 0 if header_response is None else header_response[0]
+            header_body = b"" if header_response is None else header_response[1]
+            filename = _select_exhibit_99_1(
+                _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+            )
+            exhibit_url = None if filename is None else f"{archive}/{filename}"
+            exhibit_response = (
+                None if exhibit_url is None else recorder.responses.get(exhibit_url)
+            )
+
+            if header_status != 200:
+                failure = f"SEC filing document map unavailable for {row_accession}: HTTP {header_status}"
+                trace_rows.append(_trace_row(row, exhibit_url=header_url, outcome="fetch_failure", failure=failure))
+                last_error = failure
+                continue
+            if filename is None or exhibit_response is None:
+                failure = f"EX-99.1 is absent from the SGML document map for {row_accession}"
+                if exhibit_response is not None:
+                    failure = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_response[0]}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url or header_url, outcome="no_exhibit", failure=failure))
+                last_error = failure
+                continue
+
+            exhibit_status, exhibit_body = exhibit_response
+            if exhibit_status != 200 or not exhibit_body.strip():
+                failure = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url, outcome="fetch_failure", failure=failure))
+                last_error = failure
+                if accession is not None:
+                    fatal_error = failure
+                    break
+                continue
+
+            receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+            if _manifest_exhibit_count(header_body) > 1:
+                failure = f"ambiguous EX-99.1 document map for {row_accession}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url, outcome="no_exhibit", failure=failure))
+                last_error = fatal_error = failure
+                break
+            try:
+                exhibit_text = exhibit_body.decode("utf-8")
+                decode_label, declared = "utf-8", "utf-8"
+            except UnicodeDecodeError:
+                failure = f"Exhibit 99.1 at {exhibit_url} does not decode as UTF-8"
+                trace_rows.append(_trace_row(
+                    row, exhibit_url=exhibit_url, outcome="decode_failure", failure=failure,
+                    receipt=receipt, decode="latin-1-fallback", declared_encoding="latin-1",
+                ))
+                last_error = fatal_error = failure
+                break
+
+            typed_handling = {
+                key: "missing" for key in ("report_date", "acceptance_datetime")
+                if not str(merged_item.get(key) or "").strip()
+            }
+            trace_rows.append(_trace_row(
+                row, exhibit_url=exhibit_url, outcome="selected", receipt=receipt,
+                decode=decode_label, declared_encoding=declared,
+            ) | {"typed_handling": typed_handling})
+            selected_target_accession = row_accession
+            if "acceptance_datetime" in typed_handling:
+                failure = "filing acceptance_datetime is required as the source clock"
+                last_error = fatal_error = failure
+                break
+            selected = _selected_acquisition(
+                row, exhibit_url, exhibit_body, exhibit_text, response=exhibit_response,
+                currentness="up_to_date", checked_at=datetime.now(
+                    timezone.utc
+                ).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            )
+            selected["cik"] = cik
+            break
+
+    if accession is not None and row is not None:
+        row_accession = str(row.get("accession") or accession)
+        archive = f"{_ARCHIVES}/{int(cik)}/{row_accession.replace('-', '')}"
+        header_url = f"{archive}/{row_accession}-index-headers.html"
+        header_response = recorder.responses.get(header_url)
+        header_status = 0 if header_response is None else header_response[0]
+        header_body = b"" if header_response is None else header_response[1]
+        filename = _select_exhibit_99_1(
+            _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+        )
+        exhibit_url = None if filename is None else f"{archive}/{filename}"
+        exhibit_response = None if exhibit_url is None else recorder.responses.get(exhibit_url)
+        receipt = None
+        decode_label = None
+        declared = None
+        outcome = "selected"
+        failure = last_error
+        if header_status != 200:
+            outcome = "fetch_failure"
+            failure = failure or f"SEC filing document map unavailable for {row_accession}: HTTP {header_status}"
+        elif filename is None:
+            outcome = "no_exhibit"
+            failure = failure or f"EX-99.1 is absent from the SGML document map for {row_accession}"
+        elif exhibit_response is None:
+            outcome = "fetch_failure"
+            failure = failure or f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP 0"
+        else:
+            exhibit_status, exhibit_body = exhibit_response
+            if exhibit_status != 200 or not exhibit_body.strip():
+                outcome = "fetch_failure"
+                failure = failure or f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
+            else:
+                receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+                if _manifest_exhibit_count(header_body) > 1:
+                    outcome = "no_exhibit"
+                    failure = f"ambiguous EX-99.1 document map for {row_accession}"
+                else:
+                    try:
+                        exhibit_body.decode("utf-8")
+                        decode_label, declared = "utf-8", "utf-8"
+                    except UnicodeDecodeError:
+                        outcome = "decode_failure"
+                        failure = f"Exhibit 99.1 at {exhibit_url} does not decode as UTF-8"
+        trace_rows.append(_trace_row(
+            row, exhibit_url=exhibit_url or header_url, outcome=outcome, failure=failure,
+            receipt=receipt, decode=decode_label, declared_encoding=declared,
+        ))
+        if outcome != "selected":
+            selected = None
+        if outcome == "selected":
+            selected_target_accession = row_accession
+            selected = _selected_acquisition(
+                row, exhibit_url or header_url, exhibit_body, exhibit_body.decode("utf-8"), response=exhibit_response,
+                currentness="newer_source_pending" if pending else "up_to_date",
+                checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            )
+        fatal_error = fatal_error or failure or last_error
+
+    newest_relevant = next((item["accession"] for item in trace_rows if item["outcome"] != "excluded_non_results"), None)
+    selected_accession = None if selected is None else str(selected["accession"])
+    if selected is None and selected_target_accession is not None:
+        selected_accession = selected_target_accession
+    if accession is None:
+        pending = any(item["outcome"] not in {"selected", "excluded_non_results"} and item["accession"] != selected_accession for item in trace_rows)
+    currentness = (
+        "newer_source_pending" if selected is not None and pending
+        else "up_to_date" if selected is not None
+        else "currentness_unverified"
+    )
+    if selected is not None:
+        selected["currentness"] = {"state": currentness, "checked_at": selected["currentness"]["checked_at"]}
+    decoded_digest = None if selected is None else {"sha256": sha256(selected["exhibit_body"].encode("utf-8")).hexdigest(), "length": len(selected["exhibit_body"].encode("utf-8"))}
+    selected_receipt = None if selected is None else selected["received_bytes"]
+    terminal = next((item for item in reversed(trace_rows) if item["outcome"] != "excluded_non_results"), None)
+    provenance = selected_receipt if selected_receipt is not None else None if terminal is None else terminal.get("received_bytes")
+    trace = {
+        "cik": cik,
+        "candidates": trace_rows[:_TRACE_CANDIDATE_LIMIT],
+        "newest_relevant_accession": newest_relevant,
+        "selected_accession": selected_accession,
+        "received_bytes": provenance,
+        "decoded_text": decoded_digest,
+        "decode": "utf-8" if selected is not None else None if terminal is None else terminal.get("decode"),
+        "declared_encoding": "utf-8" if selected is not None else None if terminal is None else terminal.get("declared_encoding"),
+        "observed_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z") if selected is not None else None,
+        "source": None if selected is None else {key: selected.get(key) for key in ("accession", "report_date", "acceptance_datetime", "exhibit_url")},
+        "currentness": currentness,
+        "candidate_limit": _TRACE_CANDIDATE_LIMIT,
+        "excluded_non_results": sum(item["outcome"] == "excluded_non_results" for item in trace_rows),
+        "typed_handling": typed_handling,
+    }
+    if selected is not None and "acquisition_receipt" in selected:
+        trace["source"]["acquisition_receipt"] = selected["acquisition_receipt"]
+    if fatal_error:
+        trace["failure"] = fatal_error
+    elif last_error and selected is None:
+        trace["failure"] = last_error
+    return selected, trace
+
+
+_TRACED_ACQUISITION_BACKSTOP = (TypeError, ValueError, ArithmeticError, LookupError, AttributeError, RecursionError)
+
+
+def acquire_results_filing(
+    *, cik: str, http_get: HttpGet = _http_get, accession: str | None = None,
+    trace: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
+    if trace is None:
+        return _acquire_results_filing_legacy(cik=cik, http_get=http_get, accession=accession)
+    try:
+        selected, completed_trace = _acquire_results_filing_traced(
+            cik=cik, http_get=http_get, accession=accession
+        )
+    except RefreshError:
+        raise
+    except _TRACED_ACQUISITION_BACKSTOP as exc:
+        raise RefreshError(
+            f"results filing acquisition met a malformed response ({type(exc).__name__})"
+        ) from exc
+    trace(completed_trace)
+    if selected is None:
+        raise RefreshError(completed_trace.get("failure") or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
+    return selected
 
 
 def acquire_flagship_filing(*, http_get: HttpGet = _http_get) -> dict[str, Any]:
@@ -434,6 +925,16 @@ def exhibit_source_sha256(workspace: Mapping[str, Any] | None) -> str | None:
         if isinstance(source, Mapping) and source.get("kind") == "issuer_release":
             sha = str(source.get("source_sha256") or "").strip().lower()
             return sha or None
+    return None
+
+
+
+def prior_exhibit_acquisition_receipt(workspace: Mapping[str, Any] | None) -> object | None:
+    """Prior held fact only; the builder must replay it against the fresh body."""
+    if isinstance(workspace, Mapping):
+        for source in workspace.get("sources") or []:
+            if isinstance(source, Mapping) and source.get("kind") == "issuer_release":
+                return source.get("acquisition_receipt")
     return None
 
 
@@ -538,18 +1039,19 @@ def load_prior_workspace(
     try:
         return fetcher(event_id)
     except _PriorWorkspaceNotPublished as exc:
-        log.debug("%s: prior workspace not published (%s)", event_id, exc)
+        log.debug("%s: prior workspace not published", event_id)
         return None
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
+        details = _read_failure_context(exc)
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: prior workspace fetch failed ({details}) — "
             "refusing to treat this as first-generation; this event's rebuild is skipped this cycle",
             flush=True,
         )
-        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, exc)
+        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, details)
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: prior workspace fetch failed ({details})"
         ) from exc
 
 
@@ -603,11 +1105,15 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
     # genuine fetch failure — into this module's own
     # ``PriorWorkspaceFetchFailed`` with the same line-start ``::warning``,
     # preserving the exact NEW-6/NEW-7 anomaly discipline byte-for-byte.
-    issuer = issuer_for_ticker(ticker)
+    # Discovery already admits this cohort through its registered source owner.
+    # The same identity must seed quiet cycles, even when no new filing exists.
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, source_owner_issuer
+    issuer = source_owner_issuer(ticker) if ticker in SOURCE_OWNER_TICKERS else issuer_for_ticker(ticker)
     if issuer is None:
         return None
 
-    def _anomaly(detail: str) -> PriorWorkspaceFetchFailed:
+    def _anomaly(reason: str, exc: BaseException) -> PriorWorkspaceFetchFailed:
+        detail = f"{reason} ({_read_failure_context(exc)})"
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
             f"{ticker}: {detail} — refusing to treat this as no-prior-to-carry",
@@ -620,9 +1126,9 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
             issuer.company_id, base_url=base_url,
         )
     except ci_reader.WorkspaceChainIntegrityError as exc:
-        raise _anomaly(str(exc)) from exc
+        raise _anomaly("current-generation contract read failed", exc) from exc
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
-        raise _anomaly(f"current-generation read failed ({type(exc).__name__}: {exc})") from exc
+        raise _anomaly("current-generation read failed", exc) from exc
 
     if matched_event_id is None:
         return None  # (i) no nest yet, or (ii) well-formed, no entry for this issuer
@@ -825,12 +1331,12 @@ def _event_known_revisions(
     except Exception as exc:  # noqa: BLE001 - chain-state ambiguity must never read as "nothing represented"
         print(
             "::warning title=event-workspace-chain-read-failed::"
-            f"{event_id}: source-revision chain read failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: source-revision chain read failed {_read_failure_context(exc)} — "
             "refusing to treat this as no-prior-revision-represented",
             flush=True,
         )
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: chain read failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: chain read failed {_read_failure_context(exc)}"
         ) from exc
 
 
@@ -936,13 +1442,43 @@ def discover_new_homebuilder_revisions(
     fail — B4) via a bare line-start ``::warning``, without orphaning any
     later row.
     """
-    issuer = issuer_for_ticker(ticker)
-    profile = profile_for_ticker(ticker)
+    from engine.company_intelligence.industrial_sources import (
+        SOURCE_OWNER_TICKERS, source_owner_issuer, source_owner_profile, source_owner_fiscal_period,
+    )
+    is_defense = ticker in SOURCE_OWNER_TICKERS
+    issuer = source_owner_issuer(ticker) if is_defense else issuer_for_ticker(ticker)
+    profile = source_owner_profile(ticker) if is_defense else profile_for_ticker(ticker)
     if issuer is None or profile is None:
-        raise RefreshError(f"{ticker} has no registered A5A homebuilder identity/profile")
+        raise RefreshError(f"{ticker} has no registered issuer identity/profile")
 
     loader = chain_state_loader or (lambda event_id: _event_known_revisions(event_id, base_url=base_url))
     candidates = _fetch_submissions_candidates(issuer.cik, http_get=http_get)
+
+    initial_resolved = {}
+    if is_defense and discovery_boundary is None:
+        # Initial context means the newest QUALIFIED release revision. A
+        # newer Item-2.02 filing without an addressable segment/period must
+        # not hide the latest usable results exhibit. No historical backfill.
+        from engine.earnings_release.binding import bind_release_document
+        selected_candidates = []
+        for candidate in reversed(candidates):
+            try:
+                resolved = _resolve_exhibit_for_row(candidate, cik=issuer.cik, http_get=http_get)
+                if resolved is None:
+                    continue
+                bound = bind_release_document(body=str(resolved['exhibit_body']),
+                    **{k:resolved[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                period = source_owner_fiscal_period(bound, ticker)
+                current_year = (today if today is not None else datetime.now(timezone.utc).date()).year
+                if period.year not in {current_year-1,current_year}:
+                    continue
+            except Exception as exc:
+                print(f"::warning title=event-workspaces-discovery-skip::{ticker}: candidate did not qualify ({type(exc).__name__})", flush=True)
+                continue
+            selected_candidates = [candidate]
+            initial_resolved[str(candidate.get('accessionNumber') or '')] = resolved
+            break
+        candidates = selected_candidates
 
     resolved_today = today if today is not None else datetime.now(timezone.utc).date()
     # First-ever-discovery bound: current + immediately prior fiscal year,
@@ -980,8 +1516,19 @@ def discover_new_homebuilder_revisions(
             if row_accepted_normalized <= discovery_boundary:
                 continue  # outside the discovery window BY LAW -- not a fail, no warning
 
+        resolved_row = initial_resolved.get(row_accession)
         try:
-            fiscal_period = fiscal_period_for_report_date(report_date, issuer.fiscal_year_end_month)
+            if is_defense:
+                resolved_row = resolved_row or _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
+                if resolved_row is None:
+                    print(f"::warning title=event-workspaces-discovery-skip::{ticker}: no usable primary exhibit", flush=True)
+                    continue
+                from engine.earnings_release.binding import bind_release_document
+                bound = bind_release_document(body=str(resolved_row['exhibit_body']),
+                    **{k:resolved_row[k] for k in ('cik','accession','form','filing_date','acceptance_datetime','report_date','exhibit_url')})
+                fiscal_period = source_owner_fiscal_period(bound, ticker)
+            else:
+                fiscal_period = fiscal_period_for_report_date(report_date, issuer.fiscal_year_end_month)
         except Exception as exc:  # noqa: BLE001 - an unresolvable period is a per-row skip, not a refusal
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1010,7 +1557,8 @@ def discover_new_homebuilder_revisions(
         if row_accession in represented_accessions:
             continue  # B2: already represented in the chain
 
-        resolved_row = _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
+        if resolved_row is None:
+            resolved_row = _resolve_exhibit_for_row(row, cik=issuer.cik, http_get=http_get)
         if resolved_row is None:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
@@ -1020,7 +1568,7 @@ def discover_new_homebuilder_revisions(
             continue
 
         stated_end = _stated_period_end(str(resolved_row["exhibit_body"]))
-        if stated_end != fiscal_period.calendar_end:
+        if not is_defense and stated_end != fiscal_period.calendar_end:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
                 f"{ticker}: accession {row_accession} computed fiscal quarter end "
@@ -1060,6 +1608,7 @@ def discover_new_homebuilder_revisions(
             prior_source_sha256=exhibit_source_sha256(prior_ws),
             prior_lifecycle_state=prior_lifecycle_state(prior_ws),
             prior_observed_at=prior_observed_at(prior_ws),
+            prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior_ws),
             profile=profile,
         )
         if payload.get("event_id") != event_id:
@@ -1235,7 +1784,7 @@ def refresh(
             # the flagship has no per-issuer loop to skip within —
             # refresh() produces exactly one flagship record, not N
             # independent ones.
-            raise RefreshError(f"flagship prior workspace fetch failed: {exc}") from exc
+            raise RefreshError(f"flagship prior workspace fetch failed: {_read_failure_context(exc)}") from exc
     else:
         prior = prior_workspace
     source_clock = filing["acceptance_datetime"]
@@ -1258,6 +1807,7 @@ def refresh(
         prior_source_sha256=exhibit_source_sha256(prior),
         prior_lifecycle_state=prior_lifecycle_state(prior),
         prior_observed_at=prior_observed_at(prior),
+        prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior),
     )
     if payload.get("event_id") != FLAGSHIP_EVENT_ID:
         raise RefreshError(f"flagship event_id drifted: {payload.get('event_id')}")
@@ -1351,7 +1901,9 @@ def refresh(
     try:
         current_marker_raw = current_marker_loader()
     except Exception as exc:  # noqa: BLE001 - a genuine failure to read the current marker must abort
-        raise RefreshError(f"failed to read the current event workspace marker: {exc}") from exc
+        raise RefreshError(
+            f"failed to read the current event workspace marker {_read_failure_context(exc)}"
+        ) from exc
     if current_marker_raw is not None:
         current_marker_bytes, current_marker = current_marker_raw
     else:
@@ -1410,7 +1962,9 @@ def refresh(
     # unchanged.
     discover = homebuilder_discovery or discover_new_homebuilder_revisions
     sequences: dict[str, list[tuple[str, dict[str, Any]]]] = {}
-    for ticker in HOMEBUILDER_TICKERS:
+    from engine.company_intelligence.industrial_sources import SOURCE_OWNER_TICKERS, refresh_lhx_supplements
+    refresh_tickers = (*HOMEBUILDER_TICKERS, *SOURCE_OWNER_TICKERS)
+    for ticker in refresh_tickers:
         try:
             current_prior = homebuilder_carry_forward_loader(ticker)
         except Exception as carry_exc:  # noqa: BLE001
@@ -1420,7 +1974,7 @@ def refresh(
             # "nothing to carry."
             raise RefreshError(
                 f"{ticker}: carry-forward lookup for the Phase 1 base snapshot failed — refusing to "
-                f"publish a nest that might silently drop a corrected event: {carry_exc}"
+                f"publish a nest that might silently drop a corrected event: {_read_failure_context(carry_exc)}"
             ) from carry_exc
         discovery_boundary: str | None = None
         if current_prior is not None:
@@ -1447,7 +2001,7 @@ def refresh(
             # discipline above).
             raise RefreshError(
                 f"{ticker}: source-revision discovery failed — refusing to publish a nest that "
-                f"might silently drop a corrected event: {exc}"
+                f"might silently drop a corrected event: {_read_failure_context(exc)}"
             ) from exc
         except Exception as exc:  # noqa: BLE001 - SEC access failure during discovery is fail-soft
             # The carry-forward read above ALREADY seeded workspaces[...]
@@ -1463,6 +2017,23 @@ def refresh(
             log.info("%s: discovery failed; carry-forward already applied above (%s)", ticker, exc)
             continue
 
+        if ticker == 'LHX':
+            # Supplemental source observation can advance a generation even
+            # when no NEW EX99 revision exists. Original EX99 clocks remain.
+            target_revision = new_revisions[-1] if new_revisions else None
+            supplement_base = target_revision[1] if target_revision else current_prior
+            if supplement_base is not None:
+                try:
+                    enriched = refresh_lhx_supplements(supplement_base, http_get=http_get, prior=current_prior)
+                    if enriched != supplement_base:
+                        if target_revision:
+                            new_revisions[-1] = (target_revision[0], enriched)
+                        else:
+                            new_revisions = [(enriched['event_id'], enriched)]
+                except Exception as exc:
+                    print(f"::warning title=event-workspaces-supplement::LHX: qualified source carry-forward preserved ({type(exc).__name__})", flush=True)
+                    if current_prior and not new_revisions:
+                        workspaces[current_prior['event_id']] = dict(current_prior)
         if new_revisions:
             sequences[ticker] = new_revisions
 
@@ -1477,13 +2048,12 @@ def refresh(
     # OTHER ticker's slot, the very FIRST write below already contains a
     # complete nest — no promoted marker can ever transiently omit a
     # ticker Phase 1 has already resolved (NEW-BLOCKER-16).
-    for ticker in HOMEBUILDER_TICKERS:
+    for ticker in refresh_tickers:
         for event_id, hb_payload in sequences.get(ticker, []):
             workspaces[event_id] = hb_payload
             generation_dir = write_workspace_generation(
                 target,
                 dict(workspaces),
-                generated_at=source_clock,
                 previous_generation_id=chain_previous_id,
                 previous_manifest_sha256=chain_previous_sha,
             )
@@ -1528,12 +2098,12 @@ def refresh(
     if (
         chain_previous_id == original_current_generation_id
         and current_marker is not None
-        and current_marker.get("schema") == MANIFEST_SCHEMA_V2
+        and current_marker.get("schema") in (MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3)
     ):
         candidate_previous_id = current_marker.get("previous_generation_id")
         candidate_previous_sha = current_marker.get("previous_manifest_sha256")
-        candidate_id = preview_generation_identity(
-            workspaces, source_clock, previous_generation_id=candidate_previous_id,
+        candidate_id = preview_generation_identity_v3(
+            workspaces, previous_generation_id=candidate_previous_id,
         )
         if candidate_id == original_current_generation_id:
             final_previous_id, final_previous_sha = candidate_previous_id, candidate_previous_sha
@@ -1541,7 +2111,6 @@ def refresh(
     generation_dir = write_workspace_generation(
         target,
         workspaces,
-        generated_at=source_clock,
         previous_generation_id=final_previous_id,
         previous_manifest_sha256=final_previous_sha,
     )
@@ -1558,7 +2127,7 @@ def refresh(
     elif dry_run:
         print("event workspaces: dry-run validated; sibling marker not promoted")
     else:
-        print("event workspaces: immutable generation published and sibling marker promoted")
+        print("event workspaces: generation validated; publish step returned success")
     return publish_rc
 
 

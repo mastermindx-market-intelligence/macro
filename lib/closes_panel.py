@@ -137,8 +137,11 @@ def merge_close_caches(
     corrupt restored cache cannot blank a page (CSP-R1).
 
     Returns ``(panel, meta)``. ``meta`` carries:
-      ``tip``      -- panel-wide max index (pd.Timestamp) or None,
-      ``behind``   -- {ticker: calendar days its chosen column lags ``tip``},
+      ``raw_tip``  -- maximum source index label, even when no ticker was observed there,
+      ``tip``      -- latest returned row with at least one actual observation, or None,
+      ``all_null_rows`` -- source-calendar rows where the merged population is wholly null,
+      ``dropped_all_null_tail_rows`` -- the all-null suffix removed from the panel,
+      ``behind``   -- {ticker: calendar days its chosen column lags effective ``tip``},
       ``source``   -- {ticker: tier the chosen column came from},
       ``rescued``  -- {ticker: (dead_tier, dead_days, live_tier)} for every ticker
                       where freshness overrode tier order — i.e. the columns this
@@ -170,10 +173,12 @@ def merge_close_caches(
         frames[grp] = d.sort_index()
 
     if not frames:
-        return pd.DataFrame(), {"tip": None, "behind": {}, "source": {}, "rescued": {}}
+        return pd.DataFrame(), {"raw_tip": None, "tip": None, "all_null_rows": [],
+                                "dropped_all_null_tail_rows": [], "behind": {},
+                                "source": {}, "rescued": {}, "stitched": {}}
 
     lasts = {g: _last_valid(d) for g, d in frames.items()}
-    tip = max(d.index.max() for d in frames.values())
+    raw_tip = max(d.index.max() for d in frames.values())
     index = pd.to_datetime(sorted({i for d in frames.values() for i in d.index}))
 
     # Choose a source tier per ticker: freshest last-valid bar wins; ties (including
@@ -226,40 +231,326 @@ def merge_close_caches(
                                if g in frames and tk in frames[g].columns), None)
         if first_by_order is not None and first_by_order != grp:
             prev = lasts[first_by_order].get(tk)
-            rescued[tk] = (first_by_order,
-                           int((tip - prev).days) if pd.notna(prev) else None, grp)
+            # The lag is filled after the effective panel tip is known. A raw source
+            # calendar can contain a terminal all-null row, which is not a trading
+            # observation and must not add a phantom day to the rescue receipt.
+            rescued[tk] = (first_by_order, None, grp)
 
     out = pd.DataFrame(cols, index=index).sort_index()
+    all_null_rows = list(out.index[out.isna().all(axis=1)]) if len(out.index) else []
+    observed_rows = out.notna().any(axis=1) if len(out.index) else pd.Series(dtype=bool)
+    if bool(observed_rows.any()):
+        last_observed_pos = int(observed_rows.to_numpy().nonzero()[0][-1])
+        dropped_tail = list(out.index[last_observed_pos + 1:])
+        if dropped_tail:
+            out = out.iloc[: last_observed_pos + 1]
+        tip = out.index[-1]
+    else:
+        dropped_tail = list(out.index)
+        out = out.iloc[0:0]
+        tip = None
+
+    for tk, (dead_tier, _dead_days, live_tier) in list(rescued.items()):
+        prev = lasts[dead_tier].get(tk)
+        rescued[tk] = (
+            dead_tier,
+            int((tip - prev).days) if tip is not None and pd.notna(prev) else None,
+            live_tier,
+        )
 
     behind: dict[str, int] = {}
     for tk in chosen:
-        lv = out[tk].last_valid_index()
-        behind[tk] = int((tip - lv).days) if pd.notna(lv) else -1  # -1 = never populated
-    return out, {"tip": tip, "behind": behind, "source": chosen,
+        lv = out[tk].last_valid_index() if tk in out.columns else None
+        behind[tk] = int((tip - lv).days) if tip is not None and pd.notna(lv) else -1
+    return out, {"raw_tip": raw_tip, "tip": tip,
+                 "all_null_rows": all_null_rows,
+                 "dropped_all_null_tail_rows": dropped_tail,
+                 "behind": behind, "source": chosen,
                  "rescued": rescued, "stitched": stitched}
+
+
+def _date_text(value) -> str | None:
+    """ISO date for an index label, or None without inventing a clock."""
+    if value is None or pd.isna(value):
+        return None
+    return pd.Timestamp(value).strftime("%Y-%m-%d")
+
+
+def _normalise_frame_index(panel: pd.DataFrame) -> pd.DataFrame:
+    out = panel.copy()
+    out.index = pd.to_datetime(out.index)
+    out = out.loc[~out.index.duplicated(keep="last")]
+    return out.sort_index()
+
+
+def _normalise_series_index(series: pd.Series) -> pd.Series:
+    out = series.copy()
+    out.index = pd.to_datetime(out.index)
+    out = out.loc[~out.index.duplicated(keep="last")]
+    return out.sort_index()
+
+
+def align_latest_common_observation(
+    panel: pd.DataFrame,
+    benchmark_close: pd.Series,
+) -> tuple[pd.DataFrame, pd.Series, dict]:
+    """Trim a panel and benchmark to their latest EXACT shared observation.
+
+    The benchmark must carry a real close on the selected date. We deliberately do
+    not terminal-forward-fill it: a calendar label present only in one input is not
+    a common market observation. Historical holes inside the retained window remain
+    holes for the caller's incumbent return construction to handle.
+    """
+    p = _normalise_frame_index(panel)
+    b = _normalise_series_index(benchmark_close)
+    panel_raw_tip = p.index.max() if len(p.index) else None
+    benchmark_raw_tip = b.index.max() if len(b.index) else None
+    panel_obs = p.notna().any(axis=1) if len(p.index) else pd.Series(dtype=bool)
+    panel_observed_tip = panel_obs[panel_obs].index.max() if bool(panel_obs.any()) else None
+    b_valid = b.dropna()
+    benchmark_observed_tip = b_valid.index.max() if not b_valid.empty else None
+
+    common = p.index.intersection(b_valid.index)
+    if len(common):
+        valid = panel_obs.reindex(common).fillna(False)
+        candidates = common[valid.to_numpy(dtype=bool)]
+    else:
+        candidates = common
+    effective = candidates.max() if len(candidates) else None
+
+    if effective is None:
+        aligned = p.iloc[0:0]
+        bench = b.reindex(aligned.index)
+        dropped = list(p.index)
+        status = "unavailable"
+    else:
+        aligned = p.loc[p.index <= effective].copy()
+        bench = b.reindex(aligned.index)
+        dropped = list(p.index[p.index > effective])
+        status = "ok"
+
+    meta = {
+        "status": status,
+        "panel_raw_tip": _date_text(panel_raw_tip),
+        "panel_observed_tip": _date_text(panel_observed_tip),
+        "benchmark_raw_tip": _date_text(benchmark_raw_tip),
+        "benchmark_observed_tip": _date_text(benchmark_observed_tip),
+        "effective_as_of": _date_text(effective),
+        "dropped_panel_rows_after_effective": [_date_text(x) for x in dropped],
+        "basis": "latest_exact_panel_and_benchmark_observation",
+    }
+    return aligned, bench, meta
+
+
+def resolve_thematic_close_panel(
+    primary: pd.DataFrame,
+    supplemental: pd.DataFrame | None,
+    tickers,
+) -> tuple[pd.DataFrame, dict]:
+    """Resolve thematic member closes on the already-frozen primary calendar.
+
+    Source selection is whole-column: the source with the later actual observation
+    wins, with ``baskets_extras`` winning exact ties.  The losing source may donate
+    older history only when :func:`_stitch_ok` proves both columns are the same
+    measured series on a sufficient overlap.  Supplemental rows outside the primary
+    calendar are discarded before selection, so this helper can widen population but
+    can never advance the desk clock.
+    """
+    p = _normalise_frame_index(primary)
+    if supplemental is None or supplemental.empty:
+        s = pd.DataFrame(index=p.index)
+    else:
+        s = _normalise_frame_index(supplemental).reindex(p.index)
+
+    names = list(dict.fromkeys(str(t) for t in tickers if t))
+    cols: dict[str, pd.Series] = {}
+    price_source: dict[str, str] = {}
+    reason: dict[str, str] = {}
+    source_last: dict[str, dict[str, str | None]] = {}
+    stitched: dict[str, dict] = {}
+    unresolved: list[str] = []
+    counts = {"primary_breadth": 0, "baskets_extras": 0}
+
+    for ticker in names:
+        ps = p[ticker] if ticker in p.columns else None
+        ss = s[ticker] if ticker in s.columns else None
+        p_ok = ps is not None and bool(ps.notna().any())
+        s_ok = ss is not None and bool(ss.notna().any())
+        p_last = ps.last_valid_index() if p_ok else None
+        s_last = ss.last_valid_index() if s_ok else None
+        source_last[ticker] = {
+            "primary_breadth": _date_text(p_last),
+            "baskets_extras": _date_text(s_last),
+        }
+
+        if not p_ok and not s_ok:
+            unresolved.append(ticker)
+            continue
+        if s_ok and not p_ok:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "supplemental_only", None, None)
+        elif p_ok and not s_ok:
+            winner, winner_source, why, donor, donor_source = (
+                ps.copy(), "primary_breadth", "primary_only", None, None)
+        elif s_last > p_last:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "supplemental_fresher", ps, "primary_breadth")
+        elif p_last > s_last:
+            winner, winner_source, why, donor, donor_source = (
+                ps.copy(), "primary_breadth", "primary_fresher", ss, "baskets_extras")
+        else:
+            winner, winner_source, why, donor, donor_source = (
+                ss.copy(), "baskets_extras", "tie_supplemental", ps, "primary_breadth")
+
+        if donor is not None and donor.notna().sum() > winner.notna().sum():
+            ok, n_overlap, rel = _stitch_ok(donor, winner)
+            if ok:
+                winner = winner.combine_first(donor)
+                stitched[ticker] = {
+                    "donor_source": donor_source,
+                    "n_overlap": int(n_overlap),
+                    "max_rel_diff": float(rel),
+                }
+
+        cols[ticker] = winner.reindex(p.index)
+        price_source[ticker] = winner_source
+        reason[ticker] = why
+        counts[winner_source] += 1
+
+    out = pd.DataFrame(cols, index=p.index)
+    receipt = {
+        "effective_as_of": _date_text(p.index.max()) if len(p.index) else None,
+        "calendar_basis": "primary_panel_only_supplement_cannot_advance",
+        "requested_n": len(names),
+        "resolved_n": len(cols),
+        "unresolved_n": len(unresolved),
+        "unresolved_tickers": unresolved,
+        "chosen_counts": counts,
+        "price_source": price_source,
+        "selection_reason": reason,
+        "source_last_observation": source_last,
+        "stitched": stitched,
+        "source_basis": {
+            "primary_breadth": "closes_cache_UNADJUSTED",
+            "baskets_extras": "tradj",
+        },
+        "adjustment_vintage": "unrecorded",
+        "authority": "measurement_only",
+    }
+    return out, receipt
+
+
+def population_observation(
+    panel: pd.DataFrame,
+    members: list[dict],
+    as_of,
+    *,
+    min_members: int = 3,
+    min_coverage: float = 0.60,
+) -> dict:
+    """Observation receipt for one dated basket population at ``as_of``.
+
+    Membership eligibility, column presence and an actual close are intentionally
+    separate counts. This is measurement admission only; it carries no market or
+    recommendation authority.
+    """
+    p = _normalise_frame_index(panel)
+    when = pd.Timestamp(as_of)
+    configured: list[str] = []
+    seen: set[str] = set()
+    for member in members or []:
+        ticker = member.get("ticker") or member.get("symbol")
+        if not ticker or ticker in seen:
+            continue
+        added = member.get("added")
+        removed = member.get("removed")
+        if added and when < pd.Timestamp(added):
+            continue
+        if removed and when >= pd.Timestamp(removed):
+            continue
+        seen.add(str(ticker))
+        configured.append(str(ticker))
+
+    in_panel = [ticker for ticker in configured if ticker in p.columns]
+    missing_columns = [ticker for ticker in configured if ticker not in p.columns]
+    if when in p.index:
+        row = p.loc[when]
+        if isinstance(row, pd.DataFrame):
+            row = row.iloc[-1]
+        observed = [ticker for ticker in in_panel if pd.notna(row.get(ticker))]
+    else:
+        observed = []
+    missing_at_asof = [ticker for ticker in in_panel if ticker not in set(observed)]
+
+    configured_n = len(configured)
+    observed_n = len(observed)
+    coverage = (observed_n / configured_n) if configured_n else None
+    eligible = bool(configured_n and observed_n >= int(min_members)
+                    and coverage is not None and coverage >= float(min_coverage))
+    if configured_n and observed_n == configured_n:
+        status = "complete"
+    elif eligible:
+        status = "partial"
+    else:
+        status = "insufficient"
+
+    return {
+        "effective_as_of": _date_text(when),
+        "configured_members": configured,
+        "configured_n": configured_n,
+        "in_panel_members": in_panel,
+        "in_panel_n": len(in_panel),
+        "observed_members": observed,
+        "observed_n": observed_n,
+        "missing_columns": missing_columns,
+        "missing_at_asof": missing_at_asof,
+        "coverage": round(float(coverage), 4) if coverage is not None else None,
+        "status": status,
+        "aggregate_eligible": eligible,
+        "min_members": int(min_members),
+        "min_coverage": float(min_coverage),
+        "basis": "exact_close_at_effective_as_of",
+        "authority": "measurement_only",
+    }
 
 
 _DISCLOSED: set = set()
 
 
 def disclose_merge(meta: dict, label: str) -> None:
-    """Line-start ``::warning`` disclosure of what the merge had to rescue.
+    """Emit line-start Actions warnings for material merge corrections, once each.
 
     Bare print, never the logger: every builder here logs with a prefixing format,
     so ``log.warning("::warning ...")`` emits ``WARNING ::warning ...`` and GitHub
     silently drops it (repo annotation law, tests/test_gh_annotation_line_start.py).
 
-    Deduplicated per (label, rescued set) for the life of the process: `_closes()` is
-    called by equity_factors, residual_alpha and the board grader within one build, and
-    three identical annotations read as three separate incidents.
+    Calendar-tail correction and stale-tier rescue are independent facts. Each gets a
+    separate dedupe identity so an all-null terminal session is disclosed even when no
+    ticker needed source-tier rescue, and callers that share `_closes()` do not repeat it.
     """
+    dropped_tail = tuple(meta.get("dropped_all_null_tail_rows") or ())
+    if dropped_tail:
+        raw_tip = meta.get("raw_tip")
+        tip = meta.get("tip")
+        calendar_key = (label, "observation_calendar", raw_tip, tip, dropped_tail)
+        if calendar_key not in _DISCLOSED:
+            _DISCLOSED.add(calendar_key)
+            dates = ", ".join(_date_text(d) or "unknown" for d in dropped_tail[:6])
+            more = "" if len(dropped_tail) <= 6 else f" (+{len(dropped_tail) - 6} more)"
+            print(
+                f"::warning title={label} observation calendar::"
+                f"raw source calendar reached {_date_text(raw_tip) or 'unknown'}, but "
+                f"{dates}{more} carried no prices; effective {_date_text(tip) or 'unavailable'}",
+                flush=True,
+            )
+
     rescued = meta.get("rescued") or {}
     if not rescued:
         return
-    key = (label, tuple(sorted(rescued)))
-    if key in _DISCLOSED:
+    rescue_key = (label, "stale_tier", tuple(sorted(rescued)))
+    if rescue_key in _DISCLOSED:
         return
-    _DISCLOSED.add(key)
+    _DISCLOSED.add(rescue_key)
     names = ", ".join(f"{t}({d[0]}->{d[2]})" for t, d in sorted(rescued.items())[:12])
     more = "" if len(rescued) <= 12 else f" (+{len(rescued) - 12} more)"
     print(f"::warning title={label} stale-tier column overridden::{len(rescued)} ticker(s) "

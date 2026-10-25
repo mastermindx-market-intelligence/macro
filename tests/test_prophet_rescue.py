@@ -274,12 +274,93 @@ def test_the_top_level_asof_is_never_read():
             == verdicts(RESCUE.decide(state(main_index=restamped, **base))))
 
 
-def test_the_cohort_counts_per_plan_recorded_at_not_the_index_stamp():
+def test_the_cohort_uses_legacy_recorded_at_only_when_session_fields_are_absent():
     payload = index(source_asof=THU.isoformat(), cohort_date="2026-08-10",
                     cohort_n=25)
     assert RESCUE.cohort_size(payload, THU) == 0
     assert RESCUE.cohort_size(payload, date(2026, 8, 10)) == 25
     assert RESCUE.intake_eligible(payload) == 40
+
+
+def test_cohort_date_precedence_is_price_basis_then_entry_then_legacy_recorded_at():
+    payload = {
+        "plans": [
+            {
+                "id": "PRICE-BASIS-WINS",
+                "price_basis_date": THU.isoformat(),
+                "entry_date": WED.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "ENTRY-FALLBACK",
+                "entry_date": THU.isoformat(),
+                "recorded_at": WED.isoformat(),
+            },
+            {
+                "id": "LEGACY-RECORDED-AT",
+                "recorded_at": THU.isoformat(),
+            },
+        ],
+    }
+    assert RESCUE.cohort_size(payload, THU) == 3
+    assert RESCUE.cohort_size(payload, WED) == 0
+
+
+def _delayed_publication_payload() -> tuple[date, dict]:
+    friday = date(2026, 9, 11)
+    sunday = "2026-09-13"
+    return friday, {
+        "schema": "prophet.index/v1",
+        "asof": sunday,
+        "recorded_at": sunday,
+        "source_asof": friday.isoformat(),
+        "gate_go": False,
+        "plans": [
+            {
+                "id": f"P{i}",
+                "asset": "AAPL",
+                "recorded_at": sunday,
+                "entry_date": friday.isoformat(),
+                "price_basis_date": friday.isoformat(),
+            }
+            for i in range(20)
+        ],
+        "intake": {
+            "eligible_after_skips": 21,
+            "originated": 20,
+            "validation_failed": 1,
+            "unaccounted": 0,
+            "lossless": True,
+        },
+    }
+
+
+def test_delayed_publication_counts_the_source_session_cohort():
+    """A weekend catch-up keeps publication and market-session clocks separate."""
+    friday, payload = _delayed_publication_payload()
+    assert RESCUE.cohort_size(payload, friday) == 20
+
+
+def test_delayed_publication_does_not_emit_a_false_no_cohort_alert():
+    """Friday plans published Sunday remain Friday's cohort on Monday morning."""
+    friday, payload = _delayed_publication_payload()
+    monday_morning = datetime(2026, 9, 14, 13, 40, tzinfo=UTC)
+    snapshot = state(
+        now=monday_morning,
+        session=friday,
+        main_index=payload,
+        r2_health=index(source_asof=friday.isoformat()),
+        runs=[run_row(
+            created=datetime(2026, 9, 13, 13, 59, tzinfo=UTC),
+            conclusion="success",
+        )],
+    )
+
+    actions = RESCUE.decide(snapshot)
+    assert RESCUE.NO_COHORT not in verdicts(actions), actions
+    assert RESCUE.HEALTHY in verdicts(actions), actions
+    assert all("recorded_at=" not in action.message for action in actions)
+    assert any("assigned to that market session" in action.message for action in actions)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1160,9 +1241,42 @@ def test_the_repo_slug_matches_the_git_remote():
                             capture_output=True, text=True, timeout=60)
     if remote.returncode != 0 or not remote.stdout.strip():
         pytest.skip("no origin remote in this checkout")
-    slug = re.sub(r"^.*github\.com[:/]", "", remote.stdout.strip())
-    slug = re.sub(r"\.git$", "", slug)
-    assert fallback.group(1) == slug, (
+    origin = remote.stdout.strip()
+    # Exact-base CI replay intentionally uses a pinned local bare origin and
+    # strips external repository metadata from the child environment. That
+    # transport has no GitHub repository identity to compare. Keep this one
+    # checkout-identity assertion explicitly not applicable; the watchdog's
+    # dispatch/cancellation/budget tests and the transport matrix still execute.
+    if Path(origin).is_absolute() or origin.startswith("file://"):
+        pytest.skip("local origin has no GitHub repository identity")
+    from urllib.parse import urlsplit
+
+    # GitHub Actions workflows may deliberately use authenticated HTTPS origins.
+    # Userinfo does not change the repository identity and must never be echoed
+    # in a failed assertion. Keep all malformed-origin diagnostics constant.
+    if re.match(r"^git@github\.com:", origin, flags=re.IGNORECASE):
+        repository_path = "/" + origin.split(":", 1)[1]
+    else:
+        try:
+            parsed = urlsplit(origin)
+            supported = (
+                parsed.scheme in {"https", "ssh"}
+                and parsed.hostname is not None
+                and parsed.hostname.casefold() == "github.com"
+                and not parsed.query
+                and not parsed.fragment
+            )
+        except ValueError:
+            supported = False
+        assert supported, "unsupported or ambiguous repository origin (raw URL redacted)"
+        repository_path = parsed.path
+    match = re.fullmatch(
+        r"/([A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*?)(?:\.git)?/?",
+        repository_path,
+    )
+    assert match, "unsupported repository path (raw URL redacted)"
+    slug = match.group(1)
+    assert fallback.group(1).casefold() == slug.casefold(), (
         f"DEFAULT_REPO fallback {fallback.group(1)!r} != origin {slug!r}"
     )
 
@@ -2236,3 +2350,54 @@ def test_main_wires_the_mined_anchors_into_the_state_it_hands_to_execute(monkeyp
         "main() must carry the CURRENT title through, or execute() re-PATCHes "
         "an already-escalated title on every hourly wake")
     assert seen["number"] == 7
+
+
+@pytest.mark.parametrize("remote_url", [
+    "/home/runner/work/_temp/ci-base-replay-example/origin.git",
+    "file:///home/runner/work/_temp/ci-base-replay-example/origin.git",
+])
+def test_local_replay_origin_is_not_compared_with_a_github_slug(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    with pytest.raises(pytest.skip.Exception, match="no GitHub repository identity"):
+        test_the_repo_slug_matches_the_git_remote()
+
+
+@pytest.mark.parametrize("remote_url", [
+    "https://github.com/mastermindx-market-intelligence/macro.git",
+    "git@github.com:mastermindx-market-intelligence/macro.git",
+    "ssh://git@github.com/mastermindx-market-intelligence/macro.git",
+])
+def test_remote_identity_pin_accepts_supported_github_transports(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    test_the_repo_slug_matches_the_git_remote()
+
+
+@pytest.mark.parametrize("remote_url", [
+    "https://github.com/other/project.git",
+    "git@github.com:other/project.git",
+    "https://github.com.example.invalid/mastermindx-market-intelligence/macro.git",
+])
+def test_remote_identity_pin_does_not_excuse_a_different_or_lookalike_repository(monkeypatch, remote_url):
+    from types import SimpleNamespace
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=remote_url))
+    with pytest.raises(AssertionError):
+        test_the_repo_slug_matches_the_git_remote()
+
+
+def test_authenticated_https_origin_remains_a_valid_github_identity(monkeypatch):
+    from types import SimpleNamespace
+    origin = "https://x-access-token:SYNTHETIC_TEST_TOKEN@github.com/mastermindx-market-intelligence/macro.git"
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=origin))
+    test_the_repo_slug_matches_the_git_remote()
+
+
+def test_unsupported_origin_failure_does_not_include_userinfo(monkeypatch):
+    from types import SimpleNamespace
+    origin = "https://x-access-token:SYNTHETIC_TEST_TOKEN@github.com.example.invalid/other/project.git"
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=origin))
+    with pytest.raises(AssertionError) as failure:
+        test_the_repo_slug_matches_the_git_remote()
+    assert "SYNTHETIC_TEST_TOKEN" not in str(failure.value)
+    assert "x-access-token" not in str(failure.value)

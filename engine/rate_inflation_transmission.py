@@ -21,11 +21,17 @@ from __future__ import annotations
 
 import json
 import logging
+import ast
+import hashlib
+import inspect
+from datetime import UTC, datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from lib import config
+from engine.yield_momentum import build_yield_momentum
 
 log = logging.getLogger(__name__)
 
@@ -83,7 +89,7 @@ DRIVERS_META = {
     "be10y": ("10y breakeven (inflation comp.)", "10年期盈亏平衡通胀", "level"),
     "be10y_chg63": ("10y breakeven — 63d change", "10年期盈亏平衡—63日变动", "change"),
     "be5y5y": ("5y5y forward breakeven (anchor)", "5年5年远期盈亏平衡（锚）", "level"),
-    "curve_tp_adj": ("TP-adjusted 2s10s curve", "期限溢价调整后的2-10年曲线", "level"),
+    "curve_tp_adj": ("Legacy TP10 curve heuristic", "旧版TP10曲线启发式", "level"),
     "policy_gap": ("us2y − funds (cut/hike pricing)", "2年期−联邦基金（降/加息定价）", "level"),
     "corepce_gap": ("Core PCE YoY − 2% target", "核心PCE同比−2%目标", "level"),
     "infl_accel": ("Inflation re-acceleration (3m−12m)", "通胀再加速（3月−12月）", "change"),
@@ -220,13 +226,24 @@ def _bil(en: str, zh: str) -> dict:
 # current STATE
 # --------------------------------------------------------------------------- #
 def current_state(f: pd.DataFrame) -> dict:
+    def _num(col: str) -> float | None:
+        # None when the column is absent OR its tail observation is missing;
+        # a real zero observation still returns 0.0.
+        if col not in f:
+            return None
+        v = _last(f.get(col, pd.Series(dtype=float)))
+        return round(v, 2) if v is not None else None
+
     real = _last(f.get("us10y_real", pd.Series(dtype=float)))
     real_pct = _pctile(f["us10y_real"]) if "us10y_real" in f else None
     real_chg = (_last(f["us10y_real"]) - _last(f["us10y_real"].shift(63))
                 if "us10y_real" in f and len(f["us10y_real"].dropna()) > 63 else None)
-    rate_regime = ("restrictive" if (real_pct or 0) >= 0.70 else
-                   "accommodative" if (real_pct is not None and real_pct <= 0.30) else "neutral")
-    rate_dir = ("rising" if (real_chg or 0) > 0.1 else "falling" if (real_chg or 0) < -0.1 else "stable")
+    rate_regime = (None if real_pct is None else
+                   "restrictive" if real_pct >= 0.70 else
+                   "accommodative" if real_pct <= 0.30 else "neutral")
+    rate_dir = (None if real_chg is None else
+                "rising" if real_chg > 0.1 else
+                "falling" if real_chg < -0.1 else "stable")
 
     # TURN WATCH (display-tier). The 63d `direction` key certifies a fresh turn LAST by
     # construction — a peak forming at a restrictive extreme still reads "rising" for weeks.
@@ -248,52 +265,83 @@ def current_state(f: pd.DataFrame) -> dict:
     core_pce = _last(f.get("core_pce_yoy", pd.Series(dtype=float)))
     core_pce_3m = _last(f.get("core_pce_3m_ann", pd.Series(dtype=float)))
     accel = (core_pce_3m - core_pce) if (core_pce is not None and core_pce_3m is not None) else None
-    infl_regime = ("above target" if (core_pce or 0) > 2.3 else
-                   "at target" if (core_pce is not None and core_pce <= 2.3 and core_pce >= 1.7) else "below target")
-    infl_dir = ("re-accelerating" if (accel or 0) > 0.2 else "cooling" if (accel or 0) < -0.2 else "steady")
+    infl_regime = (None if core_pce is None else
+                   "above target" if core_pce > 2.3 else
+                   "at target" if core_pce >= 1.7 else "below target")
+    infl_dir = (None if accel is None else
+                "re-accelerating" if accel > 0.2 else
+                "cooling" if accel < -0.2 else "steady")
 
     be10 = _last(f.get("breakeven_10y", pd.Series(dtype=float)))
     be55 = _last(f.get("breakeven_5y5y", pd.Series(dtype=float)))
     model5 = _last(f.get("infl_exp_5y", pd.Series(dtype=float)))
     survey1 = _last(f.get("umich_infl_exp", pd.Series(dtype=float)))
     wedge = (be55 - model5) if (be55 is not None and model5 is not None) else None
-    anchoring = ("drifting up" if (wedge or 0) > 0.3 else "drifting down" if (wedge or 0) < -0.3 else "anchored")
+    anchoring = (None if wedge is None else
+                 "drifting up" if wedge > 0.3 else
+                 "drifting down" if wedge < -0.3 else "anchored")
+
+    # bracket = the non-None tokens, in order, joined by ", "
+    rate_words = [w for w in (rate_regime, rate_dir) if w is not None]
+    infl_words = [w for w in (infl_regime, infl_dir) if w is not None]
+
+    if real is None:
+        rates_label_en = "—"
+        rates_label_zh = "—"
+    elif turn_watch == "rolldown_forming":
+        rates_label_en = f"Real 10y {real:.2f}% (restrictive — rolling down from the extreme)"
+        rates_label_zh = f"实际10年期 {real:.2f}%（偏紧，自极值回落）"
+    elif turn_watch == "extreme_watch":
+        rates_label_en = (f"Real 10y {real:.2f}% ({', '.join(rate_words)} — at a 5y extreme)"
+                          if rate_words else f"Real 10y {real:.2f}% (at a 5y extreme)")
+        rates_label_zh = (f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }，处于5年极值）"
+                          if rate_regime is not None else f"实际10年期 {real:.2f}%（处于5年极值）")
+    else:
+        rates_label_en = (f"Real 10y {real:.2f}% ({', '.join(rate_words)})"
+                          if rate_words else f"Real 10y {real:.2f}%")
+        rates_label_zh = (f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }）"
+                          if rate_regime is not None else f"实际10年期 {real:.2f}%")
+
+    if core_pce is None:
+        infl_label_en = "—"
+        infl_label_zh = "—"
+    else:
+        infl_label_en = (f"Core PCE {core_pce:.1f}% ({', '.join(infl_words)})"
+                         if infl_words else f"Core PCE {core_pce:.1f}%")
+        infl_label_zh = (f"核心PCE {core_pce:.1f}%（{ {'above target':'高于目标','at target':'达标','below target':'低于目标'}.get(infl_regime, infl_regime) }）"
+                         if infl_regime is not None else f"核心PCE {core_pce:.1f}%")
+
+    if be55 is None or model5 is None or anchoring is None:
+        exp_label_en = "—"
+        exp_label_zh = "—"
+    else:
+        exp_label_en = f"5y5y breakeven {be55:.2f}% vs model {model5:.2f}% ({anchoring})"
+        exp_label_zh = f"5年5年盈亏平衡 {be55:.2f}% vs 模型 {model5:.2f}%（{ {'drifting up':'上行脱锚','drifting down':'下行','anchored':'锚定'}.get(anchoring, anchoring) }）"
 
     return {
         "rates": {
             "real_10y": round(real, 2) if real is not None else None,
             "real_10y_pctile": real_pct,
             "real_10y_chg_63d_bp": round(real_chg * 100, 0) if real_chg is not None else None,
-            "nominal_10y": round(_last(f.get("us10y", pd.Series(dtype=float))) or 0, 2) if "us10y" in f else None,
-            "curve_2s10s": round(_last(f.get("spread_2s10s", pd.Series(dtype=float))) or 0, 2) if "spread_2s10s" in f else None,
-            "curve_tp_adj": round(_last(f.get("curve_tp_adj", pd.Series(dtype=float))) or 0, 2) if "curve_tp_adj" in f else None,
-            "policy_gap": round(_last(f.get("rate_expectations_proxy", pd.Series(dtype=float))) or 0, 2) if "rate_expectations_proxy" in f else None,
+            "nominal_10y": _num("us10y"),
+            "curve_2s10s": _num("spread_2s10s"),
+            "curve_tp_adj": _num("curve_tp_adj"),
+            "policy_gap": _num("rate_expectations_proxy"),
             "regime": rate_regime, "direction": rate_dir,
             "real_10y_chg_22d_bp": round(real_chg22 * 100, 0) if real_chg22 is not None else None,
             "turn_watch": turn_watch,
-            "label": _bil(
-                (f"Real 10y {real:.2f}% (restrictive — rolling down from the extreme)"
-                 if turn_watch == "rolldown_forming" else
-                 f"Real 10y {real:.2f}% ({rate_regime}, {rate_dir} — at a 5y extreme)"
-                 if turn_watch == "extreme_watch" else
-                 f"Real 10y {real:.2f}% ({rate_regime}, {rate_dir})") if real is not None else "—",
-                (f"实际10年期 {real:.2f}%（偏紧，自极值回落）"
-                 if turn_watch == "rolldown_forming" else
-                 f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }，处于5年极值）"
-                 if turn_watch == "extreme_watch" else
-                 f"实际10年期 {real:.2f}%（{ {'restrictive':'偏紧','accommodative':'宽松','neutral':'中性'}.get(rate_regime, rate_regime) }）") if real is not None else "—"),
+            "label": _bil(rates_label_en, rates_label_zh),
         },
         "inflation": {
             "core_pce_yoy": round(core_pce, 2) if core_pce is not None else None,
-            "core_cpi_yoy": round(_last(f.get("core_cpi_yoy", pd.Series(dtype=float))) or 0, 2) if "core_cpi_yoy" in f else None,
-            "headline_cpi_yoy": round(_last(f.get("headline_cpi_yoy", pd.Series(dtype=float))) or 0, 2) if "headline_cpi_yoy" in f else None,
+            "core_cpi_yoy": _num("core_cpi_yoy"),
+            "headline_cpi_yoy": _num("headline_cpi_yoy"),
             "core_pce_3m_ann": round(core_pce_3m, 2) if core_pce_3m is not None else None,
-            "ppi_core_yoy": round(_last(f.get("ppi_core_yoy", pd.Series(dtype=float))) or 0, 2) if "ppi_core_yoy" in f else None,
-            "eci_comp_yoy": round(_last(f.get("eci_comp_yoy", pd.Series(dtype=float))) or 0, 2) if "eci_comp_yoy" in f else None,
+            "ppi_core_yoy": _num("ppi_core_yoy"),
+            "eci_comp_yoy": _num("eci_comp_yoy"),
             "vs_target_pp": round(core_pce - 2.0, 2) if core_pce is not None else None,
             "regime": infl_regime, "direction": infl_dir,
-            "label": _bil(f"Core PCE {core_pce:.1f}% ({infl_regime}, {infl_dir})" if core_pce is not None else "—",
-                          f"核心PCE {core_pce:.1f}%（{ {'above target':'高于目标','at target':'达标','below target':'低于目标'}.get(infl_regime, infl_regime) }）" if core_pce is not None else "—"),
+            "label": _bil(infl_label_en, infl_label_zh),
         },
         "expectations": {
             "breakeven_10y": round(be10, 2) if be10 is not None else None,
@@ -302,8 +350,7 @@ def current_state(f: pd.DataFrame) -> dict:
             "survey_1y": round(survey1, 2) if survey1 is not None else None,
             "market_minus_model_bp": round(wedge * 100, 0) if wedge is not None else None,
             "anchoring": anchoring,
-            "label": _bil(f"5y5y breakeven {be55:.2f}% vs model {model5:.2f}% ({anchoring})" if (be55 is not None and model5 is not None) else "—",
-                          f"5年5年盈亏平衡 {be55:.2f}% vs 模型 {model5:.2f}%（{ {'drifting up':'上行脱锚','drifting down':'下行','anchored':'锚定'}.get(anchoring, anchoring) }）" if (be55 is not None and model5 is not None) else "—"),
+            "label": _bil(exp_label_en, exp_label_zh),
         },
     }
 
@@ -563,6 +610,168 @@ def scenarios(f: pd.DataFrame, cal: dict, cfg: dict) -> list:
     return out
 
 
+# Additive producer receipts for the EXISTING scalar betas above. These do not
+# fit a model, create a market calendar, confer a data licence or change scoring.
+SCENARIO_METADATA_SCHEMA = 'rate_inflation_scenario_metadata.v1'
+SCENARIO_METHOD = 'rate_inflation.same_window_beta.v1'
+
+
+def scenario_content_hash(value) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+    return 'sha256:' + hashlib.sha256(raw).hexdigest()
+
+
+def scenario_method_versions() -> dict:
+    """Bind relevant method source, without importing/running a calibrator."""
+    path = Path(__file__).resolve().parents[1] / 'scripts/calibrate_rate_inflation.py'
+    source = path.read_text()
+    tree = ast.parse(source)
+    estimator = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'scenario_betas')
+    return {'estimator': scenario_content_hash(ast.get_source_segment(source, estimator).strip()),
+            'display': scenario_content_hash(inspect.getsource(scenarios).strip()),
+            'receipt': scenario_content_hash([inspect.getsource(f).strip() for f in
+                                              [scenario_cell_metadata, scenario_calibration_metadata]]),
+            'pandas': pd.__version__, 'numpy': np.__version__}
+
+
+def scenario_cell_metadata(j: pd.DataFrame, beta: float) -> dict:
+    """Describe the actual native paired sample, never reconstruct a lost N."""
+    try:
+        pairs = [[str(i), float(x), float(r)] for i, x, r in zip(j.index, j['x'], j['r'])]
+        if not pairs or not np.isfinite(beta) or not all(np.isfinite([p[1], p[2]]).all() for p in pairs):
+            raise ValueError('nonfinite native sample')
+        if not j.index.is_unique or not j.index.is_monotonic_increasing: raise ValueError('native index order')
+        return {'state': 'available', 'beta': beta, 'n': len(j), 'start': str(j.index[0]),
+                'end': str(j.index[-1]), 'paired_sample_sha256': scenario_content_hash(pairs),
+                'sample_count_kind': 'overlapping_paired_observations', 'effective_n': None}
+    except (ValueError, TypeError, OverflowError):
+        return {'state': 'unavailable', 'reason': 'native_sample_not_reproducible'}
+
+
+def scenario_calibration_metadata(f: pd.DataFrame, betas: dict, cells: dict, *,
+                                  generated_at: str | None = None,
+                                  horizon_sessions: int = 63, minimum_n: int = 504) -> dict:
+    """Receipt over this producer run. Observation labels are NOT future dates.
+
+    The digest describes actual derived estimator inputs, not unrecorded raw
+    vendor files or historical PIT availability. Existing owner display policy
+    is a publication scope, never an invented licensing/rights receipt.
+    """
+    try:
+        if f.empty or not f.index.is_unique or not f.index.is_monotonic_increasing:
+            raise ValueError('native feature index')
+        labels = [str(i) for i in f.index]
+        return {'schema': SCENARIO_METADATA_SCHEMA, 'state': 'available', 'method': SCENARIO_METHOD,
+                'generated_at': generated_at or datetime.now(UTC).isoformat(),
+                'effective_at': str(f.index[-1].date()), 'horizon_sessions': horizon_sessions, 'minimum_n': minimum_n,
+                'driver_unit': 'percentage_points', 'response_unit': 'return_fraction',
+                'alignment': 'asset_ffill_to_native_feature_index',
+                'calendar': {'owner_ref': 'engine.inputs.build_features.index',
+                             'unit': 'native_feature_index_positions', 'count': len(labels),
+                             'start': labels[0], 'end': labels[-1],
+                             'sha256': scenario_content_hash(labels)},
+                'method_versions': scenario_method_versions(),
+                'scalar_betas_sha256': scenario_content_hash(betas), 'cells': cells,
+                'publication_contract': 'engine.rate_inflation_transmission.scenarios:display_only',
+                'historical_vintage_claim': False}
+    except (ValueError, TypeError, OverflowError, OSError, StopIteration, SyntaxError):
+        # A receipt failure must not change the incumbent scalar calibration.
+        return {'schema': SCENARIO_METADATA_SCHEMA, 'state': 'unavailable',
+                'reason': 'native_metadata_not_reproducible'}
+
+
+class ScenarioMetadataUnavailable(ValueError):
+    """A constant native admission reason, safe to display without raw inputs."""
+
+
+def evaluate_scenario_beta(cal: dict, *, shock_bp: float, horizon: str,
+                           path_shape: str, effective_at: str, knowledge_cutoff: str) -> dict:
+    """Read the producer's receipt and call the existing display method exactly.
+
+    No calibration, historical-cutoff substitution, future calendar or raw series
+    read occurs here. Old scalar artifacts remain valid for their old consumer;
+    they cannot acquire missing sample/clock identities through this adapter.
+    """
+    def refuse(reason): raise ScenarioMetadataUnavailable(reason)
+    def stamp(value):
+        if not isinstance(value, str): raise ValueError('instant')
+        result = datetime.fromisoformat(value.replace(' UTC', '+00:00').replace('Z', '+00:00'))
+        if result.tzinfo is None: raise ValueError('timezone')
+        return result
+    def digest(value):
+        return isinstance(value, str) and len(value) == 71 and value.startswith('sha256:') and all(c in '0123456789abcdef' for c in value[7:])
+    if horizon != '63d': refuse('HORIZON_INCOMPATIBLE')
+    if path_shape != 'terminal_only': refuse('NUMERIC_PATH_SHAPE_UNSUPPORTED')
+    if isinstance(shock_bp, bool) or not isinstance(shock_bp, (int, float)) or not np.isfinite(shock_bp):
+        refuse('NUMERIC_SHOCK_UNAVAILABLE')
+    try:
+        m = cal['scenario_beta_metadata']; betas = cal['scenario_betas']; cells = m['cells']['real10y_chg63']
+        row = betas['real10y_chg63']; calendar = m['calendar']; methods = m['method_versions']
+        if (m['schema'] != SCENARIO_METADATA_SCHEMA or m['state'] != 'available' or m['method'] != SCENARIO_METHOD
+                or m['horizon_sessions'] != 63 or m['minimum_n'] != 504
+                or m['driver_unit'] != 'percentage_points' or m['response_unit'] != 'return_fraction'
+                or m['alignment'] != 'asset_ffill_to_native_feature_index'
+                or m['historical_vintage_claim'] is not False
+                or m['publication_contract'] != 'engine.rate_inflation_transmission.scenarios:display_only'
+                or m['scalar_betas_sha256'] != scenario_content_hash(betas)):
+            raise ValueError('metadata contract')
+        current = scenario_method_versions()
+        if any(methods[k] != current[k] for k in ['estimator', 'display', 'receipt']):
+            refuse('NUMERIC_METHOD_VERSION_UNAVAILABLE')
+        if any(not isinstance(methods[k], str) or not methods[k] for k in ['pandas', 'numpy']):
+            raise ValueError('producer versions')
+        generated = stamp(m['generated_at']); cutoff = stamp(knowledge_cutoff)
+        effective = datetime.fromisoformat(effective_at).date()
+        observed = datetime.fromisoformat(m['effective_at']).date()
+        if (generated > cutoff or observed > effective or observed > generated.date()
+                or cal['meta']['asof'] != m['effective_at'] or cal['meta']['horizon_d'] != 63):
+            refuse('NUMERIC_OWNER_CLOCK_UNAVAILABLE')
+        if (calendar['owner_ref'] != 'engine.inputs.build_features.index'
+                or calendar['unit'] != 'native_feature_index_positions'
+                or not digest(calendar['sha256']) or type(calendar['count']) is not int
+                or calendar['count'] < 63 + 504
+                or datetime.fromisoformat(calendar['end']).date() != observed):
+            raise ValueError('native observation index')
+        calendar_start = datetime.fromisoformat(calendar['start'])
+        calendar_end = datetime.fromisoformat(calendar['end'])
+        if calendar_start >= calendar_end or not isinstance(row, dict) or not row or len(row) > 128:
+            raise ValueError('coverage')
+        if set(cells) != set(row): raise ValueError('metadata coverage')
+        for asset, beta in row.items():
+            cell = cells[asset]
+            if (asset not in ASSETS_META or isinstance(beta, bool) or not isinstance(beta, (int, float))
+                    or not np.isfinite(beta) or cell['state'] != 'available' or isinstance(cell['beta'], bool) or cell['beta'] != beta
+                    or type(cell['n']) is not int or not 504 <= cell['n'] <= calendar['count'] - 63
+                    or not digest(cell['paired_sample_sha256']) or cell['effective_n'] is not None
+                    or cell['sample_count_kind'] != 'overlapping_paired_observations'
+                    or not calendar_start <= datetime.fromisoformat(cell['start']) <= datetime.fromisoformat(cell['end']) <= calendar_end):
+                raise ValueError('cell metadata')
+        # No copied coefficient arithmetic: preserve the owner's filter, order,
+        # five-per-side coverage and one-decimal rounding, including empty output.
+        cfg = {'scenarios': [{'key': 'ontology_explicit_real10y', 'driver': 'real10y_chg63',
+            'shock_bp': shock_bp, 'label_en': 'Assumed real 10Y change — same-window illustration',
+            'label_zh': '假设实际10年期收益率变化—同窗示意'}]}
+        native = scenarios(None, cal, cfg)[0]
+        displayed = [v['asset'] for k in ['headwinds', 'tailwinds'] for v in native[k]]
+        if any(not np.isfinite(v['implied_move_pct']) for k in ['headwinds', 'tailwinds'] for v in native[k]):
+            raise ValueError('nonfinite illustration')
+        return {'status': 'NUMERIC_ILLUSTRATION', 'method_class': 'EMPIRICAL_SAME_WINDOW_BETA',
+                'node_ref': 'transmission:real10y_chg63', 'confirmed': None, 'scenario': native,
+                'horizon': {'label': '63d', 'unit': 'native_feature_index_positions', 'count': 63},
+                'coverage': {'calibrated_assets': list(row), 'displayed_assets': displayed,
+                    'not_displayed': [{'asset': a, 'reason': 'native_display_floor_or_five_per_side_limit'}
+                                      for a in row if a not in displayed]},
+                'samples': {a: cells[a] for a in row}, 'caveats': CAVEATS,
+                'uncertainty': 'not_provided_by_native_owner',
+                'calibration': {'generated_at': m['generated_at'], 'effective_at': m['effective_at'],
+                    'calendar': calendar, 'method_versions': methods,
+                    'publication_contract': m['publication_contract'], 'historical_vintage_claim': False}}
+    except ScenarioMetadataUnavailable:
+        raise
+    except (KeyError, TypeError, ValueError, OverflowError, OSError, StopIteration, SyntaxError):
+        refuse('NUMERIC_OWNER_METADATA_UNAVAILABLE')
+
+
 CAVEATS = [
     _bil("Display-only — never scored. The repricing of rates/inflation is REACTIVE; the curve moves after the data and the Fed, it does not lead them.",
          "仅供展示，从不计入评分。利率/通胀的重新定价是被动的；曲线在数据与美联储之后变动，而非领先。"),
@@ -591,6 +800,7 @@ def snapshot(f: pd.DataFrame) -> dict | None:
     return {
         "asof": str(f.index[-1].date()),
         "state": state,
+        "yield_momentum": build_yield_momentum(f),
         "breakeven_decomp": breakeven_decomposition(f),
         "inflation_decomposition": inflation_decomposition(f),
         "transmission": read,
@@ -604,4 +814,43 @@ def snapshot(f: pd.DataFrame) -> dict | None:
             f"仅供展示。可计分腿检验：{'，'.join(elig) if elig else '没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性'}（详见校准报告）。"),
         "caveats": CAVEATS,
         "calibrated": cal is not None,
+        "curve_accounting": _curve_accounting_or_shell(f),
     }
+
+
+# --- RIC Y1b: curve accounting producer (display-only, additive) -------------
+def _curve_accounting_or_shell(f: pd.DataFrame) -> dict:
+    """Y1 curve accounting for the transmission snapshot, fail-open.
+
+    Never None and never silent: any failure -- including the lazy import --
+    returns the curve_accounting.v1 shell with status "unavailable" and the
+    exception named in ``reason``; every number stays null. Display-only."""
+    try:
+        from engine.yield_momentum import build_curve_accounting
+
+        out = build_curve_accounting(f)
+        if not isinstance(out, dict):
+            raise TypeError(f"build_curve_accounting returned {type(out).__name__}")
+        return out
+    except Exception as exc:  # noqa: BLE001 -- fail-open by contract
+        reason = f"{type(exc).__name__}: {' '.join(str(exc).split())}"[:240]
+        log.warning("transmission: curve_accounting unavailable (%s)", reason)
+        return {
+            "schema": "curve_accounting.v1",
+            "calculation_version": "ric_y1_curve_accounting.v1",
+            "basis_schema": None,
+            "cutoff": None,
+            "asof": None,
+            "status": "unavailable",
+            "reason": reason,
+            "display_only": True,
+            "authority": False,
+            "can_score": False,
+            "can_size": False,
+            "can_trade": False,
+            "law": [],
+            "observations": {},
+            "comparisons": {},
+            "accounting_views": [],
+            "views_are_alternatives_never_summed": True,
+        }

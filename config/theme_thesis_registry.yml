@@ -9,7 +9,11 @@
 #   driver            — {type, description}
 #   winner_classes    — CLASS-level beneficiaries [{class, why}]
 #   loser_classes     — AVOID-framed, CLASS-level [{class, why}]
-#   falsifiers        — [{id, rule_en, check: {kind, source_artifact, field, op, threshold, window_d} | null, qualitative}]
+#   falsifiers        — machine checks may add consecutive_prints,
+#                       prior_stage_in, watch_prior_stage_in,
+#                       watch_deterioration_field, and watch_deterioration_in.
+#                       History checks consume the dated producer tape plus
+#                       the current projection, never page-render repetitions.
 #   evidence_refs     — existing artifact paths (display-only witnesses)
 #
 # FENCES (R-TIL-1):
@@ -21,10 +25,10 @@
 # Curation sources: data/baskets/membership.json thesis fields,
 # site/basketdata/foresight_cascade.json stage+rationale, research/ docs.
 #
-# Version: 1 (2026-07-09, TIL W1 PR-C)
+# Version: 3 (2026-09-20, Lane B claim integration)
 
-version: 1
-date: "2026-07-09"
+version: 3
+date: "2026-09-20"
 note: >
   All 18 canonical themes covered. Falsifiers use machine-checkable checks against
   existing artifacts (foresight_cascade, theme_state) where data exists; the rest
@@ -40,81 +44,91 @@ theses:
     theme_id: ai_semiconductors
     status: active
     variant_perception_en: >
-      Consensus treats AI capex as a 1-2 year budget cycle and prices semis
-      accordingly. The market underestimates how infrastructure sovereignty
-      (on-shore AI stacks, allied-nation data-center builds) has created a
-      second, policy-anchored demand wave that is structurally less cyclical
-      than prior server upgrades.
+      Current AI infrastructure spending is visible, but aggregate customer capex
+      does not identify which supplier or product captures it. Issuer results show
+      broad data-center compute growth with CPU and accelerator participation while
+      the exact CPU/GPU and memory product split remains unknown. The opportunity is
+      product-specific and cycle-specific, not a permanent winner/loser claim.
     variant_perception_zh: >
-      市场将AI资本支出视为1-2年周期，并以此定价半导体板块。市场低估了"基础设施主权"需求
-      （国内AI栈建设及盟国数据中心）所形成的第二波需求浪潮——该波浪潮受政策锚定，比
-      历史服务器升级周期的周期性更弱。
+      当前AI基础设施支出清晰可见，但客户总资本支出本身无法识别由哪个供应商或产品兑现。
+      发行人业绩显示数据中心计算整体增长，CPU与加速器均有参与，但CPU/GPU及内存产品
+      的具体拆分仍未知。因此机会必须按产品与周期分别判断，而不能固化为永久赢家/输家。
     mechanism_en: >
-      AI model training and inference require massive parallel matrix multiply;
-      only a handful of chip architectures serve that demand today. Hyperscaler
-      and sovereign buyers commit multi-year purchase agreements, turning
-      episodic chip demand into annuity-like backlog. Equipment node-lock effects
-      (leading-edge process requires specific WFE toolsets) create a 3-5 year
-      replacement window, giving pricing power to the supply chain even as
-      unit volumes eventually normalize.
+      Training and inference raise demand for compute, memory bandwidth, networking
+      and packaging. Realized beneficiaries depend on qualified architectures,
+      product shipments, allocation, yield, inventory and customer mix. Customer
+      capex is context, not supplier/product exposure confirmation; capacity
+      expansion can strengthen equipment/content demand while eventually loosening
+      chip availability and pricing.
     mechanism_zh: >
-      AI模型训练与推理需要大规模并行矩阵乘法运算，目前仅少数芯片架构能满足该需求。
-      超大规模云服务商与主权买家签订多年采购协议，将阶段性芯片需求转化为类年金式积压订单。
-      先进制程设备锁定效应（最新制程需指定WFE工具组合）形成3-5年更换窗口，
-      即使出货量最终正常化，供应链仍能维持定价权。
+      训练与推理提升对计算、内存带宽、网络和先进封装的需求。实际受益者取决于架构认证、
+      产品出货、分配、良率、库存和客户结构。客户资本支出只是背景，并不等于供应商/产品
+      暴露确认；扩产既可能增强设备与内容需求，也可能最终缓解芯片供应并改变价格。
     driver:
       type: technology
       description: >
-        GPU/ASIC architecture dominance for parallel matrix workloads; AI sovereign
-        capex commitments from hyperscalers and allied governments.
+        AI compute, memory-bandwidth, interconnect and packaging demand; customer
+        capex remains contextual until supplier/product exposure is established by
+        dated operating evidence.
     winner_classes:
       - class: gpu_asic_monopolists
         why: >
-          Pricing power from architecture lock-in; long multi-year purchase agreements
-          provide revenue visibility well beyond typical semi cycles.
+          Architecture and product qualification can support pricing and backlog
+          visibility, but require direct supplier shipment/backlog and customer
+          deployment evidence rather than aggregate capex.
       - class: advanced_packaging_and_hbm_suppliers
         why: >
-          HBM bandwidth is the binding constraint for large-model inference; very few
-          suppliers; capacity additions take 18-24 months.
+          HBM4 production and shipments are an active product-cycle signal; scarcity
+          and pricing duration require dated allocation, yield, inventory or
+          contract-price evidence.
       - class: high_bandwidth_networking_and_silicon_photonics
         why: >
-          Scaling GPU clusters requires ultra-low-latency interconnect; incumbents
-          control standards and supply in a concentrated market.
+          Cluster scaling increases interconnect demand, but winner status remains
+          supplier/product-specific and must follow direct shipment, backlog or
+          customer deployment evidence.
     loser_classes:
       - class: legacy_cpu_centric_datacenter_builders
         why: >
-          AVOID — x86 server refresh cycles are being crowded out by GPU capex;
-          ASP compression likely as AI hardware commands a larger budget share.
+          AVOID — treating CPU-centric data-center exposure as an automatic loser or
+          winner from aggregate AI capex. Current issuer disclosures show CPU
+          participation; require CPU-specific shipment/revenue, inventory or
+          deployment evidence.
       - class: commodity_memory_undifferentiated
         why: >
-          AVOID — commodity DRAM exposed to pricing cycles; only HBM-capable
-          suppliers capture the AI-related pricing premium.
+          AVOID — blanket treatment of DRAM/NAND as one permanent loser class.
+          Current evidence shows HBM, broad DRAM and enterprise-SSD activity
+          together; require product-specific shipment, inventory and pricing evidence.
     falsifiers:
       - id: ai_semi_f1
         rule_en: >
-          If revision_breadth for ai_semiconductors turns negative (net earnings
-          downgrades exceed upgrades), the thesis that AI demand is above-cycle
-          durable is weakening — watch for two consecutive negative breadth prints.
+          If revision_breadth for ai_semiconductors is below -0.05 on two
+          distinct dated producer prints, net earnings downgrades exceed upgrades
+          persistently and the above-cycle demand thesis is weakening.
         check:
-          kind: threshold
+          kind: consecutive_threshold
           source_artifact: site/basketdata/foresight_cascade.json
           field: revision_breadth
           op: lt
           threshold: -0.05
           window_d: 60
+          consecutive_prints: 2
         qualitative: false
       - id: ai_semi_f2
         rule_en: >
-          If foresight stage degrades from RE-RATING to GLUT-RISK or WATCH,
-          the above-cycle demand narrative is broken (supply caught up or
-          demand pulled forward).
+          If foresight moves from RE-RATING to GLUT-RISK, or to WATCH while the
+          independently observed bottleneck band turns LOOSE, supply caught up
+          or demand was pulled forward and the above-cycle narrative is broken.
         check:
           kind: stage_regression
           source_artifact: site/basketdata/foresight_cascade.json
           field: stage
           op: in
           threshold: ["GLUT-RISK", "WATCH"]
-          window_d: null
+          prior_stage_in: ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"]
+          watch_prior_stage_in: ["RE-RATING"]
+          watch_deterioration_field: bottleneck_band
+          watch_deterioration_in: ["LOOSE"]
+          window_d: 60
         qualitative: false
       - id: ai_semi_f3
         rule_en: >
@@ -131,8 +145,10 @@ theses:
         qualitative: false
       - id: ai_semi_f4
         rule_en: >
-          If major hyperscaler commentary shifts from "capacity constrained" to
-          "right-sized" or "digesting," multi-year backlog narrative breaks.
+          If CPU/GPU/HBM/DRAM/NAND product-specific shipments, backlog, inventory,
+          allocation or realized pricing deteriorate across dated observations, the
+          affected product-cycle thesis weakens; management commentary alone remains
+          a claim.
         check: null
         qualitative: true
     evidence_refs:
@@ -144,57 +160,62 @@ theses:
     theme_id: memory_storage
     status: active
     variant_perception_en: >
-      Consensus models memory as a commodity cycle and prices HBM producers as
-      commodity-like. The asymmetric opportunity is that HBM3/HBM4 supply is
-      controlled by two producers and capacity takes 18-24 months to add, making
-      the margin profile of HBM-capable producers structurally different from
-      commodity DRAM/NAND for 2-3 years.
+      Memory should not be collapsed into a single commodity-versus-HBM verdict.
+      Direct issuer evidence shows active HBM4 production and shipments alongside
+      DDR5, LPDDR5X, enterprise SSD and other DRAM/NAND activity. The opportunity is
+      product-specific: scarcity/pricing duration, supplier exposure and cycle state
+      must be re-established from dated operating and physical-supply evidence.
     variant_perception_zh: >
-      市场将内存视为商品周期，并以此估值HBM生产商。不对称机会在于：HBM3/HBM4供应
-      仅由两家生产商掌控，新增产能需18-24个月，使具备HBM能力的生产商利润率
-      在未来2-3年内具有结构性差异。
+      内存不应被压缩成单一的“商品内存对HBM”结论。发行人直接证据显示HBM4已进入生产与
+      出货阶段，同时DDR5、LPDDR5X、企业级SSD及其他DRAM/NAND产品也在活动。
+      机会必须按产品区分：稀缺性/定价持续时间、供应商暴露和周期状态都需由带日期的
+      经营与实物供应证据重新确认。
     mechanism_en: >
-      HBM stacks are manufactured by bonding DRAM dies — a costly, yield-sensitive
-      process mastered by only two players. GPU vendors are contractually obligated
-      to qualify specific HBM sources. A single AI accelerator chip consumes 6-8x
-      the silicon content of a prior-generation server DRAM slot. NAND storage at
-      AI inference nodes is secondary; HBM is the binding constraint.
+      HBM stacking and qualification make yield and allocation important, while broad
+      server/client DRAM and enterprise NAND are also active. Capacity additions can
+      support packaging/equipment demand and later loosen memory availability and
+      pricing. Treat HBM, DRAM and NAND as separate product/cycle paths rather than
+      assuming fixed supplier counts or fixed lead times.
     mechanism_zh: >
-      HBM采用键合DRAM颗粒的工艺制造——成本高、良率敏感，目前仅两家厂商掌握该技术。
-      GPU供应商需合同指定特定HBM来源，改供需18-24个月资质认证。单块AI加速器
-      消耗的硅含量是上一代服务器DRAM插槽的6-8倍。AI推理节点的NAND存储居次，HBM是
-      真正的瓶颈。
+      HBM堆叠与认证使良率和分配尤为重要，但服务器/客户端DRAM及企业级NAND同样存在
+      实际活动。扩产可支持封装和设备需求，也可能随后缓解内存供应并改变价格。
+      HBM、DRAM与NAND应作为独立产品/周期路径处理，而非假设固定供应商数量或固定提前期。
     driver:
       type: supply_constraint
       description: >
-        HBM3/HBM4 manufacturing yield-gate; two-supplier oligopoly with 18-24
-        month capacity lead times; GPU design lock-in to qualified HBM sources.
+        HBM4 shipment/qualification transition plus product-specific DRAM/NAND
+        shipment, inventory and pricing evidence; no permanent scarcity or fixed
+        supplier-count assumption.
     winner_classes:
       - class: hbm_capable_dram_producers
         why: >
-          Oligopolistic supply with multi-year demand visibility; ASP 6-8x standard
-          DRAM; margin profile decoupled from commodity DRAM cycle.
+          Active HBM4 production and shipments can support product-cycle strength;
+          durability requires dated allocation, yield, contract-price and inventory
+          evidence.
       - class: advanced_packaging_foundries
         why: >
-          HBM stacking is manufactured at packaging foundries; limited competition;
-          capacity fully allocated.
+          HBM stacking demand can support advanced-packaging utilization; capacity,
+          yield and allocation evidence determine whether that advantage persists.
     loser_classes:
       - class: commodity_nand_and_standard_dram_producers
         why: >
-          AVOID — commoditized, cyclical pricing; no AI pricing premium; oversupply
-          risk from demand shifting away from conventional data-center footprint.
+          AVOID — blanket conventional-memory loser framing. Broad DRAM and
+          enterprise-SSD activity is currently visible; cyclicality, inventory and
+          pricing must be assessed product-specifically.
     falsifiers:
       - id: mem_f1
         rule_en: >
-          If revision_breadth for memory_storage turns negative two consecutive prints,
-          the HBM margin thesis is weakening — capacity may be catching demand.
+          If revision_breadth for memory_storage is negative on two distinct
+          dated producer prints, the HBM margin thesis is weakening — capacity
+          may be catching demand.
         check:
-          kind: threshold
+          kind: consecutive_threshold
           source_artifact: site/basketdata/foresight_cascade.json
           field: revision_breadth
           op: lt
           threshold: 0.0
           window_d: 60
+          consecutive_prints: 2
         qualitative: false
       - id: mem_f2
         rule_en: >
@@ -210,8 +231,9 @@ theses:
         qualitative: false
       - id: mem_f3
         rule_en: >
-          If a third HBM producer achieves volume qualification at a major GPU vendor,
-          pricing power of the two-player oligopoly is structurally impaired.
+          If HBM qualifications or shipments stall, allocations loosen, or
+          product-specific inventory/ASP evidence turns adverse across dated
+          observations, the active HBM product-cycle thesis is weakened.
         check: null
         qualitative: true
     evidence_refs:

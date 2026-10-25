@@ -17,6 +17,7 @@ import sys
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -24,6 +25,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
+from lib.intl_library_mount import render_international_pages  # noqa: E402
+from lib.intl_macro_mount import attach_macros  # noqa: E402
+from lib.intl_risk_mount import attach_risks  # noqa: E402
+from lib.intl_history_mount import attach_history  # noqa: E402
+from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
+from lib.intl_gs_observations import build_observation_set  # noqa: E402
+from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_intl")
@@ -31,7 +40,194 @@ log = logging.getLogger("build_intl")
 ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "dashboard-icons.js", "theme.js",
           "mtf.js", "chart_i18n.js", "charts.js",
-          "tablesort.js", "stockdata.js", "stockview.js")
+          "tablesort.js", "stockdata.js", "stockview.js",
+          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
+          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js",
+          "intl_workspace_surveillance.css")
+
+
+def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+    """Issue this owner's adopted, byte-bound ECB decision, then qualify it.
+
+    The reviewed purchase notices and per-access source notice are publication
+    conditions in INTERNATIONAL_MACRO_DATA_CONTRACT. This trusted build path is
+    their issuance owner; a supplied data object is never an approval service.
+    """
+    import math
+    import numpy as np
+    from engine.intl_inputs import admit_ecb_deposit_field
+
+    unavailable = {
+        "quality": "missing" if materialized["status"] == "missing" else "failed",
+        "reason": "not_supplied" if materialized["status"] == "missing" else "source_failed",
+        "metadata": "unknown", "value_permission": "unknown", "value": None,
+        "unit": None, "instrument": None, "period": None, "observation_at": None,
+        "calculation_at": None, "source_reference": None, "evidence_key": None,
+    }
+    if materialized["status"] != "ready":
+        return unavailable
+    try:
+        series = materialized["series"]
+        if series.empty:
+            return {**unavailable, "quality": "missing", "reason": "not_supplied"}
+        endpoint = series.iloc[-1]
+        if type(endpoint) in {np.int8, np.int16, np.int32, np.int64,
+                              np.uint8, np.uint16, np.uint32, np.uint64,
+                              np.float32, np.float64}:
+            endpoint = endpoint.item()
+        # An invalid scalar stays invalid in the original Series. Use a null
+        # binding so the helper can return its source-failure verdict without
+        # putting a non-JSON scalar in the decision envelope.
+        if type(endpoint) not in {int, float} or (type(endpoint) is float and not math.isfinite(endpoint)):
+            endpoint = None
+        identity = materialized["materialized_identity"]
+        decision = {
+            "owner_ref": "scripts/build_intl.py",
+            "policy_ref": "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission",
+            "decision_ref": generation + ":EZ.policy_rate",
+            "metadata": "allowed", "value_permission": "allowed",
+            "binding": {
+                "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
+                "source_id": "D.U2.EUR.4F.KR.DFR.LEV",
+                "artifact_sha256": identity["artifact_sha256"],
+                "provenance_sha256": identity["provenance_sha256"],
+                "observation_at": series.index[-1].date().isoformat(),
+                "value": endpoint, "unit": "percent",
+            },
+        }
+        return admit_ecb_deposit_field(
+            series, provenance=materialized["provenance"],
+            materialized_identity=identity, evaluated_at=evaluated_at,
+            publication_decision=decision,
+        )
+    except Exception as exc:  # Keep a malformed owned snapshot out of the page.
+        log.error("International ECB evidence unavailable (%s)", type(exc).__name__)
+        return unavailable
+
+
+def _history_publication_sources(receipts):
+    """Reuse the country render's typed reads without conferring disclosure."""
+    from engine import international_macro_dashboard as owner
+    from lib.intl_history_mount import _unknown_source
+
+    if type(receipts) is not dict or any(type(key) is not str for key in receipts):
+        raise ValueError("invalid_history_receipts")
+    sources = {}
+    for market, receipt in receipts.items():
+        if market not in owner.REGIONS:
+            continue
+        try:
+            projected = owner.project_history_read(receipt)
+            if projected["market_id"] != market:
+                raise ValueError("history market mismatch")
+            source = _unknown_source()
+            source["history_read"] = projected
+            sources[market] = source
+        except Exception as exc:  # One malformed read cannot suppress other markets.
+            log.error("International History receipt unavailable (%s)", type(exc).__name__)
+    return sources
+
+
+def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
+                           history_sources=None, chart_source_sink=None):
+    """Compose independent evidence-qualified views under the narrow EOD grant."""
+    from engine.intl_inputs import countries
+
+    if chart_source_sink is not None and (
+            type(chart_source_sink) is not dict or chart_source_sink):
+        raise ValueError("invalid_international_chart_sink")
+    generation = "im-workspace-generation:" + str(uuid4())
+    publication_inputs = None
+    eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
+    try:
+        from lib.intl_eod_publication import build_eod_inputs
+        admitted = build_eod_inputs(
+            closes, data_root=Path(data_root), evaluated_at=evaluated_at,
+            rights=eod_rights,
+        )
+        if admitted is not None:
+            closes, publication_inputs = admitted
+            log.info("International EOD source evidence admitted for review")
+        else:
+            log.warning("International EOD evidence withheld; no current qualified returns")
+    except Exception as exc:
+        # A failed input binding cannot authorize financial values, nor may
+        # it suppress the remaining, independently mounted research views.
+        log.error("International EOD evidence unavailable (%s)", type(exc).__name__)
+    workspace = _workspace_overviews(
+        closes, production_inputs=publication_inputs,
+        workspace_generation=generation,
+    )
+    if workspace is None:
+        return None
+    if publication_inputs is not None:
+        # Publication owns the delayed-price notice. A content-hash prefix
+        # never implies a clock policy; keep it outside view-switching panels.
+        workspace["eod_snapshot"] = {
+            "as_of": closes.index[-1].date().isoformat(),
+            "policy": "intl-conservative-observed-eod-tplus2-v1",
+        }
+        if chart_source_sink is not None:
+            # Private, transient source-bound pair: templates never receive
+            # the dataframe, saved evidence or disclosure decisions.
+            chart_source_sink["sources"] = (closes, publication_inputs)
+    registry = {
+            "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
+                        for cc, row in countries().items()],
+            "horizons": workspace["config"]["horizons"],
+            "bases": workspace["config"]["bases"],
+    }
+    try:
+        measure = _ecb_publication_measure(
+            read_ecb_deposit_materialization(data_root=data_root),
+            evaluated_at=evaluated_at, generation=generation,
+        )
+        mounted = attach_macros(
+            workspace, registry=registry, measures={"EZ.policy_rate": measure},
+            cycle_evidence={}, destinations={},
+            source_notice={
+                "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
+                "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",
+            },
+        )
+        mounted["macro_registry"] = registry
+        workspace = mounted
+    except Exception as exc:  # Macro failure must preserve the existing workspace.
+        log.error("International Macro panel unavailable (%s)", type(exc).__name__)
+    try:
+        # Existing packets supply context, never disclosure or source grants.
+        workspace = attach_risks(
+            workspace, registry=registry, risk_desk=risk_desk, cgl=cgl,
+            measures={}, field_support={}, summary_eligibility={}, destinations={},
+        )
+    except Exception as exc:
+        log.error("International Risk panel unavailable (%s)", type(exc).__name__)
+    try:
+        workspace = attach_history(
+            workspace, registry=registry,
+            sources={} if history_sources is None else history_sources,
+        )
+    except Exception as exc:
+        log.error("International History panel unavailable (%s)", type(exc).__name__)
+    observation_set = None
+    try:
+        # W2F-X X2/X4: the incumbent chain as Wave 1 observations, built from
+        # the SAME admitted frame and the SAME eod grant object as the page.
+        # A failure withholds observations; it never suppresses the page.
+        observation_set = build_observation_set(
+            closes, publication_inputs=publication_inputs, evaluated_at=evaluated_at,
+            data_root=Path(data_root), rights=eod_rights)
+    except Exception as exc:
+        log.error("International Surveillance observations unavailable (%s)", type(exc).__name__)
+        observation_set = None
+    try:
+        # W2F seam: surveillance views mount independently; a missing or failed
+        # builder only disables its own sub-tab and never the page.
+        workspace = attach_surveillance(workspace, observations=observation_set)
+    except Exception as exc:
+        log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
+    return workspace
+
 
 # quad colour keys (match the .q-Qn CSS) — uniform with the other verticals
 QUAD_MEANING = {
@@ -146,6 +342,8 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
     }
 
 
+
+
 def main() -> int:
     try:
         from engine.intl_run import run
@@ -162,7 +360,8 @@ def main() -> int:
     try:
         from scripts.build_international_macro import build_all as _build_country_macro
 
-        _build_country_macro(latest)
+        _intl_history_receipts = {}
+        _build_country_macro(latest, history_receipts=_intl_history_receipts)
     except Exception as e:  # noqa: BLE001
         print(
             f"::error title=international country dashboards failed::{e}",
@@ -868,6 +1067,15 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 — additive
             log.error("intl stock library failed (%s)", e)
 
+        # Per-candidate Added / 入榜 date (engine/prophet_board_since.py): NOT
+        # re-stamped here (S5, 2026-09-01 repair round — dead code removed).
+        # build_intl_library.main() is the artifact's single owner: it already
+        # reads the prior committed site/factordata/intl_setups.json and stamps
+        # `setups` BEFORE writing that same file and returning it, so `setups`
+        # above already carries `added_date`. A second call here always read
+        # back the file build_intl_library.main() had just written with this
+        # exact `setups` content — a provable no-op, never doing real work.
+
         for r in latest["records"]:
             r["quad_meaning"] = QUAD_MEANING.get(r.get("quad_name"))
 
@@ -876,7 +1084,21 @@ def main() -> int:
         if isinstance(perf, dict):
             perf.pop("bench", None)
 
+        workspace = None
+        chart_source_sink = {}
+        try:
+            workspace = _publication_workspace(
+                _wr_intl_raw, data_root=config.data_dir(),
+                evaluated_at=datetime.now(timezone.utc).isoformat(),
+                risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
+                history_sources=_history_publication_sources(_intl_history_receipts),
+                chart_source_sink=chart_source_sink,
+            )
+        except Exception as exc:  # Preserve all incumbent views on adapter failure.
+            log.error("International workspace unavailable (%s)", type(exc).__name__)
+
         vm = {
+            "intl_workspace": workspace,
             "latest": latest,
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "records": latest["records"],
@@ -906,9 +1128,23 @@ def main() -> int:
         from engine import i18n
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
 
+        # Consume the existing Macro producer's snapshot; never rerun its engines.
+        from lib.global_regime_fragment import read_global_regime_fragment
+        vm["global_regime_html"] = read_global_regime_fragment(site)
+
         tmpl = env.get_template("intl.html.j2")
-        write_page(site / "intl.html", tmpl.render(**vm, mode="macro"))
-        write_page(site / "intl_stocks.html", tmpl.render(**vm, mode="stocks"))
+        catalogue = None
+        try:
+            catalogue = json.loads((Path(__file__).resolve().parent.parent /
+                                    "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            log.error("International Library copy unavailable (%s)", type(exc).__name__)
+        macro_html, stocks_html = render_international_pages(
+            tmpl, vm, catalogue=catalogue,
+            chart_sources=chart_source_sink.get("sources"),
+        )
+        write_page(site / "intl.html", macro_html)
+        write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",
                  vm["summary"]["n"], len((setups or {}).get("buy") or []))
 

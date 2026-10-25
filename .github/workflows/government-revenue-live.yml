@@ -40,6 +40,10 @@ on:
         default: false
   workflow_call:
     inputs:
+      source_sha:
+        description: "Qualified settled caller commit for this projection"
+        required: true
+        type: string
       projection_only:
         description: "Fold committed evidence without polling SAM"
         required: true
@@ -92,6 +96,13 @@ on:
       - "collectors/fms_notifications.py"
       - "collectors/fms_notifications_live.py"
       - "engine/government_revenue/**"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/noc_adverse_profile.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/industrial_sources.py"
+      - "engine/earnings_release/**"
       - "config/government_revenue/budget_program_reviewed_edges.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -99,7 +110,32 @@ on:
       - "lib/pages.py"
       - "scripts/ci/validate_government_revenue_award_event_bundle.py"
       - "scripts/build_government_revenue.py"
+      - "app/government_revenue.py"
+      - "config/government_revenue/**"
+      - "scripts/ci/govrev_candidate_proof.py"
+      - "scripts/ci/govrev_publisher_preflight.py"
+      - "scripts/restore_event_workspace_owner.py"
+      - "scripts/restore_defense_market_owner.py"
+      - "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json"
+      - "data/government_revenue/identity_atlas_curated.json"
+      - "data/government_revenue/program_ontology.json"
+      - "data/government_revenue/dod_budget_allocation_context_receipt.json"
+      - "engine/stock_technicals.py"
+      - "lib/nyse_calendar.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/price.py"
+      - "config/dataset_registry.yml"
+      - "engine/company_intelligence/identity.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "data/reference/security_master.parquet"
+      - "data/reference/vendor_aliases.parquet"
+      - "data/reference/issuer_master.parquet"
+      - "data/reference/_receipt.json"
+      - "templates/government-revenue-theme-context.js"
+      - "templates/government-revenue-theme-context.css"
       - "scripts/build_government_revenue_candidates.py"
+      - "scripts/build_government_revenue_research_state.py"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - "scripts/collect.py"
       - "templates/_interfonts.html.j2"
       - "templates/_navlinks.html.j2"
@@ -107,10 +143,25 @@ on:
       - "templates/_site_nav.html.j2"
       - "templates/data_base.js"
       - "templates/government-revenue-candidate-radar.js"
+      - "templates/government-revenue-investor.js"
+      - "templates/government-revenue-investor-start.js"
+      - "templates/government-revenue-page.js.j2"
+      - "templates/theme.js"
+      - "templates/theme.css"
+      - "templates/product-nav-icons.css"
+      - "templates/navigation-refresh.css"
+      - "templates/government-revenue-investor.css"
+      - "templates/government-revenue-sbir.js"
+      - "templates/government-revenue-sbir.css"
+      - "templates/government-revenue-briefcase.js"
+      - "templates/government-revenue-briefcase-ui.js"
+      - "templates/government-revenue-parity.css"
+      - "templates/government-revenue-dossiers.js"
       - "templates/government_revenue.html.j2"
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   # A completed first-seen observation must not be discarded halfway through a
@@ -121,14 +172,32 @@ concurrency:
 jobs:
   refresh:
     runs-on: [self-hosted, macstudio-light]
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
-          # workflow_call follows a daily data push; always begin from the current
-          # production ref rather than the caller's checkout-time SHA.
-          ref: main
+          # Load the binding selector from the immutable native event/caller.
+          ref: ${{ github.sha }}
           fetch-depth: 1
+
+      - name: select immutable publication source
+        id: source_binding
+        env:
+          GOVREV_CALL_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: python3 scripts/ci/govrev_source_binding.py
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.source_binding.outputs.source_sha }}
+          fetch-depth: 1
+
+      - name: reconcile retained GovRev publication outcomes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GOVREV_CALL_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          /opt/homebrew/bin/python3.12 scripts/ci/govrev_publisher_preflight.py \
+            --root . --out-dir "$RUNNER_TEMP"
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |
@@ -400,7 +469,9 @@ jobs:
               "$historical_suppression_path" \
               "$historical_suppression_schema_path" \
               "$issuance_correction_path" \
-              "$issuance_correction_schema_path"
+              "$issuance_correction_schema_path" \
+              config/government_revenue/program_theme_assignments.v1.json \
+              config/government_revenue/reviews/nato_policy_20250625.json
           }
 
           write_reviewed_controls_fingerprint() {
@@ -481,12 +552,225 @@ jobs:
               return 1
             fi
           }
+          assert_subaward_bundle() {
+            local present=0 tracked=0 path
+            for path in "${subaward_bundle_paths[@]}"; do
+              [ -f "$path" ] && present=$((present + 1))
+              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
+            done
+            if [ "$present" -eq 0 ]; then
+              if [ "$tracked" -ne 0 ]; then
+                echo "::error title=subaward bundle missing::tracked receipt-bound subaward artifacts disappeared from the checkout; refusing a partial projection"
+                return 1
+              fi
+              # Empty-first is an explicit public state until the daily collector
+              # establishes its first complete receipt-bound generation.
+              SUBAWARD_BUNDLE_PRESENT=false
+              echo "receipt-bound subaward bundle not initialized yet; publishing an unavailable zero-row dossier"
+              return 0
+            fi
+            if [ "$present" -ne "${#subaward_bundle_paths[@]}" ] || [ "$tracked" -ne "${#subaward_bundle_paths[@]}" ]; then
+              echo "::error title=subaward bundle incomplete::subaward snapshots, receipts, activation state, and ingest status must arrive as one committed bundle"
+              return 1
+            fi
+            python - \
+              data/government_revenue/subaward_projection_state.json \
+              data/government_revenue/subaward_snapshots.parquet <<'PY'
+          from __future__ import annotations
+
+          import json
+          import sys
+          from pathlib import Path
+
+          import pandas as pd
+
+          from collectors.usaspending_subawards import subaward_projection_generation_matches
+
+          try:
+              state = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+              snapshots = pd.read_parquet(Path(sys.argv[2]))
+          except Exception as exc:
+              raise SystemExit("subaward source generation could not be read") from exc
+          if not isinstance(state, dict) or not subaward_projection_generation_matches(state, snapshots):
+              raise SystemExit("subaward source snapshot does not match its activation generation")
+          PY
+            SUBAWARD_BUNDLE_PRESENT=true
+          }
+
+          assert_idv_bundle() {
+            local present=0 tracked=0 path
+            for path in "${idv_bundle_paths[@]}"; do
+              [ -f "$path" ] && present=$((present + 1))
+              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
+            done
+            if [ "$present" -eq 0 ]; then
+              if [ "$tracked" -ne 0 ]; then
+                echo "::error title=idv bundle missing::tracked receipt-bound IDV artifacts disappeared from the checkout; refusing a partial projection"
+                return 1
+              fi
+              echo "receipt-bound IDV bundle not initialized yet; publishing an unavailable relationship dossier"
+              return 0
+            fi
+            if [ "$present" -ne "${#idv_bundle_paths[@]}" ] || [ "$tracked" -ne "${#idv_bundle_paths[@]}" ]; then
+              echo "::error title=idv bundle incomplete::IDV snapshots, receipts, activation state, and ingest status must arrive as one committed bundle"
+              return 1
+            fi
+            python - \
+              data/government_revenue/idv_projection_state.json \
+              data/government_revenue/idv_relationship_snapshots.parquet <<'PY'
+          from __future__ import annotations
+
+          import json
+          import sys
+          from pathlib import Path
+
+          import pandas as pd
+
+          from collectors.usaspending_idv_graph import idv_projection_generation_matches
+
+          try:
+              state = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+              snapshots = pd.read_parquet(Path(sys.argv[2]))
+          except Exception as exc:
+              raise SystemExit("IDV source generation could not be read") from exc
+          if not isinstance(state, dict) or not idv_projection_generation_matches(state, snapshots):
+              raise SystemExit("IDV source snapshot does not match its activation generation")
+          PY
+          }
+
+          assert_award_event_bundle() {
+            local present=0 tracked=0 path
+            for path in "${award_event_bundle_paths[@]}"; do
+              [ -f "$path" ] && present=$((present + 1))
+              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
+            done
+            if [ "$present" -eq 0 ]; then
+              if [ "$tracked" -ne 0 ]; then
+                echo "::error title=award-event bundle missing::tracked receipt-bound award artifacts disappeared from the checkout; refusing a partial projection"
+                return 1
+              fi
+              # Initial deployment before the collector establishes its first baseline.
+              AWARD_EVENT_BUNDLE_PRESENT=false
+              echo "receipt-bound award-event bundle not initialized yet; keeping forward events unavailable"
+              return 0
+            fi
+            if [ "$present" -ne "${#award_event_bundle_paths[@]}" ] || [ "$tracked" -ne "${#award_event_bundle_paths[@]}" ]; then
+              echo "::error title=award-event bundle incomplete::receipt-bound award artifacts must arrive as one committed bundle; refusing a partial projection"
+              return 1
+            fi
+            if [ ! -f "$award_event_receipt_path" ] || ! git ls-files --error-unmatch -- "$award_event_receipt_path" >/dev/null 2>&1; then
+              echo "::error title=award-event receipts missing::a receipt-bound award bundle requires the committed canonical receipt ledger"
+              return 1
+            fi
+            # Positional contract is STATE SNAPSHOTS ACTIONS — NOT the bundle
+            # array order (snapshots, actions, state): passing the array fed the
+            # snapshots parquet to json.loads and killed the lane with
+            # "activation state is unreadable" (first surfaced 2026-08-08, the
+            # first run ever to reach this step). Wiring pinned by
+            # tests/test_government_revenue_award_validator_wiring.py.
+            python scripts/ci/validate_government_revenue_award_event_bundle.py \
+              data/government_revenue/award_event_projection_state.json \
+              data/government_revenue/award_event_snapshots.parquet \
+              data/government_revenue/award_action_versions.parquet
+            AWARD_EVENT_BUNDLE_PRESENT=true
+          }
+
+          assert_dod_budget_bundle() {
+            local present=0 tracked=0 path
+            for path in "${dod_budget_bundle_paths[@]}"; do
+              [ -f "$path" ] && present=$((present + 1))
+              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
+            done
+            if [ "$present" -eq 0 ]; then
+              if [ "$tracked" -ne 0 ]; then
+                echo "::error title=dod-budget bundle missing::tracked DoD budget source artifacts disappeared from the checkout; refusing a partial graph"
+                return 1
+              fi
+              echo "DoD budget source bundle not initialized yet; keeping the optional graph unavailable"
+              return 0
+            fi
+            if [ "$present" -ne "${#dod_budget_bundle_paths[@]}" ] || [ "$tracked" -ne "${#dod_budget_bundle_paths[@]}" ]; then
+              echo "::error title=dod-budget bundle incomplete::DoD budget lines, receipts, and projection state must arrive as one committed bundle"
+              return 1
+            fi
+            python - "${dod_budget_bundle_paths[@]}" <<'PY'
+          from __future__ import annotations
+
+          import json
+          import sys
+          from pathlib import Path
+
+          from collectors.dod_budget import projection_state_matches
+
+          try:
+              lines = [json.loads(row) for row in Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()]
+              receipts = [json.loads(row) for row in Path(sys.argv[2]).read_text(encoding="utf-8").splitlines()]
+              state = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
+          except Exception as exc:
+              raise SystemExit("DoD budget source generation could not be read") from exc
+          if not lines or not receipts or not isinstance(state, dict) or not projection_state_matches(state, lines, receipts):
+              raise SystemExit("DoD budget source ledgers do not match their projection generation")
+          PY
+          }
+
+          restore_market_owner_snapshot() {
+            python -m scripts.restore_defense_market_owner --root .
+          }
+
+          restore_financial_owner_snapshot() {
+            python -m scripts.restore_event_workspace_owner --root . \
+              --require-ticker LMT --require-ticker RTX --require-ticker NOC \
+              --require-ticker LHX --require-ticker GD \
+              --receipt "$RUNNER_TEMP/govrev-financial-owner-receipt.json"
+          }
+
+          govrev_push_same_carrier() {
+            push_on_main_ok || return 76
+            local rc=0 outcome_rc=0
+            local prefix="$RUNNER_TEMP/govrev-candidate-proof.push-${PUSH_ATTEMPT}"
+            GOVREV_PUSH_OBSERVATION="$prefix.observation.json"
+            GOVREV_PUSH_STATUS=successful
+            python scripts/ci/govrev_candidate_proof.py push-identity \
+              --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
+              --attempt "$PUSH_ATTEMPT" --out "$prefix.identity.json" || return 75
+            local raw_response
+            raw_response="$(umask 077; mktemp "$RUNNER_TEMP/govrev-private-push-response.XXXXXX")" || return 75
+            push_do origin HEAD:main > "$raw_response" 2>&1 || rc=$?
+            local outcome_arg=""
+            if [ "${PUSH_TERMINAL_RC:-0}" -ne 0 ]; then outcome_arg=--terminal-refusal; fi
+            python scripts/ci/govrev_candidate_proof.py push-outcome --root . \
+              --exit-code "$rc" --log "$raw_response" --out "$prefix.outcome.json" ${outcome_arg:+--terminal-refusal} || outcome_rc=$?
+            rm -f -- "$raw_response"
+            case "$outcome_rc" in
+              0) return 0 ;;
+              1) return 1 ;;
+              76) return 76 ;;
+            esac
+            if python scripts/ci/govrev_candidate_proof.py observe-push --root . \
+              --identity "$prefix.identity.json" --out "$GOVREV_PUSH_OBSERVATION"; then
+              GOVREV_PUSH_STATUS=successful_after_same_carrier_observation
+              return 0
+            fi
+            return 75
+          }
+
+          prepare_candidate_research_state() {
+            local generated_at
+            generated_at="$(python -c 'import json; print(json.load(open("data/government_revenue/candidate_projection_state.json"))["generated_at"])')"
+            python -m scripts.build_government_revenue_research_state --root . --generated-at "$generated_at"
+          }
+
           SH
           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
           snapshot_reviewed_controls
 
       - name: build Government Revenue projection
         if: ${{ steps.gate.outputs.publish == 'yes' }}
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
           set -euo pipefail
           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
@@ -494,7 +778,10 @@ jobs:
           assert_historical_suppression_source_clean
           assert_issuance_correction_source_clean
           assert_reviewed_controls_unchanged
+          restore_financial_owner_snapshot
+          restore_market_owner_snapshot
           python -m scripts.build_government_revenue --live-materialization
+          prepare_candidate_research_state
           assert_recipient_graph_source_clean
           assert_historical_suppression_source_clean
           assert_issuance_correction_source_clean
@@ -554,75 +841,23 @@ jobs:
       # If a spurious red ever blocks a nightly here: set this back to "0" in a
       # same-day PR, record why, and fix the assertion — do not leave it disarmed
       # silently, and do not invent a new precondition without writing it down.
+      - name: provision the candidate HTTP proof dependencies
+        if: ${{ steps.gate.outputs.publish == 'yes' }}
+        run: python -m pip install 'fastapi>=0.115,<1.0' httpx
+
       - name: prove the candidate projection before publishing it
         if: ${{ steps.gate.outputs.publish == 'yes' }}
         env:
           GOVREV_CANDIDATE_PROOF_FATAL: "1"
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
-          set -uo pipefail
-          candidate_paths=(
-            data/government_revenue/candidate_ledger.jsonl
-            data/government_revenue/candidate_queue.json
-            data/government_revenue/candidate_projection_state.json
-            data/government_revenue/candidate_projection_status.json
-          )
-          if [ -z "$(git status --porcelain -- "${candidate_paths[@]}")" ]; then
-            echo "govrev candidate proof: candidate artifacts unchanged this run — nothing to prove." \
-              >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          # An absent prover is NOT a pass. Say so at the same volume as a failure.
-          # requirements.txt carries no pytest -- this venv is the collector's, not
-          # a pack's -- so probe each import rather than assuming the pair.  xdist
-          # absent must degrade to a SERIAL run, never to `-n 2` failing and being
-          # reported as a broken projection: a tooling gap is not a data defect.
-          have() { python -c "import $1" >/dev/null 2>&1; }
-          have pytest || pip install --quiet pytest >/dev/null 2>&1 || true
-          have xdist  || pip install --quiet pytest-xdist >/dev/null 2>&1 || true
-          if ! have pytest; then
-            echo "::warning title=govrev candidate proof unavailable::pytest could not be installed on this runner; tonight's candidate projection is publishing UNPROVEN"
-            exit 0
-          fi
-          parallel=""
-          if have xdist; then
-            parallel="-n 2 --dist load --max-worker-restart=0"
-          else
-            echo "govrev candidate proof: pytest-xdist unavailable — running serially." \
-              >> "$GITHUB_STEP_SUMMARY"
-          fi
-          # `-p no:cacheprovider`: never let the prover leave a .pytest_cache in a
-          # tree that is about to be inspected and committed by the next step.
-          before="$(git status --porcelain -- data/government_revenue)"
-          log="${RUNNER_TEMP}/govrev-candidate-proof.log"
-          set +e
-          # shellcheck disable=SC2086 -- $parallel is an intentional argument list
-          python -m pytest -p no:cacheprovider ${parallel} \
-            tests/test_government_revenue_candidates.py \
-            tests/test_government_revenue_candidate_projection.py \
-            tests/test_government_revenue_candidate_fixture.py \
-            -q >"$log" 2>&1
-          status=$?
-          set -e
-          tail -n 40 "$log" >> "$GITHUB_STEP_SUMMARY" || true
-          # The prover must not become a writer. `data/` writes belong to the
-          # builder above, never to a test run.
-          after="$(git status --porcelain -- data/government_revenue)"
-          if [ "$before" != "$after" ]; then
-            echo "::warning title=govrev candidate proof mutated the tree::the proof step changed data/government_revenue; a prover that writes what it checks cannot prove it"
-          fi
-          if [ "$status" -eq 0 ]; then
-            echo "govrev candidate proof: PASSED against the artifacts about to be committed." \
-              >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          summary="$(grep -E '^[0-9]+ (failed|error)|failed,|error' "$log" | tail -n 1)"
-          echo "::warning title=govrev candidate proof failed::the candidate projection about to be published does not pass its own suites (${summary:-see step summary}) — this is the break that would otherwise surface days later on an unrelated pull request"
-          if [ "${GOVREV_CANDIDATE_PROOF_FATAL}" = "1" ]; then
-            echo "::error title=govrev candidate proof failed::refusing to publish an unproven candidate projection"
-            exit 1
-          fi
-          exit 0
+          set -euo pipefail
+          # dag: scripts.ci.govrev_candidate_proof
+          python scripts/ci/govrev_candidate_proof.py prove \
+            --root . \
+            --install-missing \
+            --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
+            --log "$RUNNER_TEMP/govrev-candidate-proof.log"
 
       # Checkout is pinned to main, every collector-owned source bundle is
       # verified and kept clean, and only governed source/output paths may be
@@ -630,11 +865,16 @@ jobs:
       # evidence commit cannot be overwritten by a mixed generation.
       - name: commit complete evidence projection
         if: ${{ steps.gate.outputs.publish == 'yes' }}
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
           set -euo pipefail
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
-          # The sourced guards prove collectors and projection builders cannot write or stage reviewed inputs.
+          # Guard inputs.
           PUSH_LABEL="government-revenue evidence"
           if ! push_on_main_ok; then exit 0; fi
           git config user.name "dashboard-bot"
@@ -666,43 +906,6 @@ jobs:
           )
           fq() { python scripts/check_fms_bundle.py "$1"; }
 
-          assert_award_event_bundle() {
-            local present=0 tracked=0 path
-            for path in "${award_event_bundle_paths[@]}"; do
-              [ -f "$path" ] && present=$((present + 1))
-              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
-            done
-            if [ "$present" -eq 0 ]; then
-              if [ "$tracked" -ne 0 ]; then
-                echo "::error title=award-event bundle missing::tracked receipt-bound award artifacts disappeared from the checkout; refusing a partial projection"
-                return 1
-              fi
-              # Initial deployment before the collector establishes its first baseline.
-              AWARD_EVENT_BUNDLE_PRESENT=false
-              echo "receipt-bound award-event bundle not initialized yet; keeping forward events unavailable"
-              return 0
-            fi
-            if [ "$present" -ne "${#award_event_bundle_paths[@]}" ] || [ "$tracked" -ne "${#award_event_bundle_paths[@]}" ]; then
-              echo "::error title=award-event bundle incomplete::receipt-bound award artifacts must arrive as one committed bundle; refusing a partial projection"
-              return 1
-            fi
-            if [ ! -f "$award_event_receipt_path" ] || ! git ls-files --error-unmatch -- "$award_event_receipt_path" >/dev/null 2>&1; then
-              echo "::error title=award-event receipts missing::a receipt-bound award bundle requires the committed canonical receipt ledger"
-              return 1
-            fi
-            # Positional contract is STATE SNAPSHOTS ACTIONS — NOT the bundle
-            # array order (snapshots, actions, state): passing the array fed the
-            # snapshots parquet to json.loads and killed the lane with
-            # "activation state is unreadable" (first surfaced 2026-08-08, the
-            # first run ever to reach this step). Wiring pinned by
-            # tests/test_government_revenue_award_validator_wiring.py.
-            python scripts/ci/validate_government_revenue_award_event_bundle.py \
-              data/government_revenue/award_event_projection_state.json \
-              data/government_revenue/award_event_snapshots.parquet \
-              data/government_revenue/award_action_versions.parquet
-            AWARD_EVENT_BUNDLE_PRESENT=true
-          }
-
           assert_award_event_source_clean() {
             if ! git diff --quiet -- "${award_event_bundle_paths[@]}" "$award_event_receipt_path"; then
               echo "::error title=award-event source mutation::the SAM fast path cannot publish a locally changed USAspending award-event source bundle"
@@ -712,51 +915,6 @@ jobs:
               echo "::error title=award-event source staged::the SAM fast path cannot stage a USAspending award-event source mutation"
               return 1
             fi
-          }
-
-          assert_subaward_bundle() {
-            local present=0 tracked=0 path
-            for path in "${subaward_bundle_paths[@]}"; do
-              [ -f "$path" ] && present=$((present + 1))
-              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
-            done
-            if [ "$present" -eq 0 ]; then
-              if [ "$tracked" -ne 0 ]; then
-                echo "::error title=subaward bundle missing::tracked receipt-bound subaward artifacts disappeared from the checkout; refusing a partial projection"
-                return 1
-              fi
-              # Empty-first is an explicit public state until the daily collector
-              # establishes its first complete receipt-bound generation.
-              SUBAWARD_BUNDLE_PRESENT=false
-              echo "receipt-bound subaward bundle not initialized yet; publishing an unavailable zero-row dossier"
-              return 0
-            fi
-            if [ "$present" -ne "${#subaward_bundle_paths[@]}" ] || [ "$tracked" -ne "${#subaward_bundle_paths[@]}" ]; then
-              echo "::error title=subaward bundle incomplete::subaward snapshots, receipts, activation state, and ingest status must arrive as one committed bundle"
-              return 1
-            fi
-            python - \
-              data/government_revenue/subaward_projection_state.json \
-              data/government_revenue/subaward_snapshots.parquet <<'PY'
-          from __future__ import annotations
-
-          import json
-          import sys
-          from pathlib import Path
-
-          import pandas as pd
-
-          from collectors.usaspending_subawards import subaward_projection_generation_matches
-
-          try:
-              state = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-              snapshots = pd.read_parquet(Path(sys.argv[2]))
-          except Exception as exc:
-              raise SystemExit("subaward source generation could not be read") from exc
-          if not isinstance(state, dict) or not subaward_projection_generation_matches(state, snapshots):
-              raise SystemExit("subaward source snapshot does not match its activation generation")
-          PY
-            SUBAWARD_BUNDLE_PRESENT=true
           }
 
           assert_subaward_source_clean() {
@@ -770,47 +928,6 @@ jobs:
             fi
           }
 
-          assert_idv_bundle() {
-            local present=0 tracked=0 path
-            for path in "${idv_bundle_paths[@]}"; do
-              [ -f "$path" ] && present=$((present + 1))
-              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
-            done
-            if [ "$present" -eq 0 ]; then
-              if [ "$tracked" -ne 0 ]; then
-                echo "::error title=idv bundle missing::tracked receipt-bound IDV artifacts disappeared from the checkout; refusing a partial projection"
-                return 1
-              fi
-              echo "receipt-bound IDV bundle not initialized yet; publishing an unavailable relationship dossier"
-              return 0
-            fi
-            if [ "$present" -ne "${#idv_bundle_paths[@]}" ] || [ "$tracked" -ne "${#idv_bundle_paths[@]}" ]; then
-              echo "::error title=idv bundle incomplete::IDV snapshots, receipts, activation state, and ingest status must arrive as one committed bundle"
-              return 1
-            fi
-            python - \
-              data/government_revenue/idv_projection_state.json \
-              data/government_revenue/idv_relationship_snapshots.parquet <<'PY'
-          from __future__ import annotations
-
-          import json
-          import sys
-          from pathlib import Path
-
-          import pandas as pd
-
-          from collectors.usaspending_idv_graph import idv_projection_generation_matches
-
-          try:
-              state = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-              snapshots = pd.read_parquet(Path(sys.argv[2]))
-          except Exception as exc:
-              raise SystemExit("IDV source generation could not be read") from exc
-          if not isinstance(state, dict) or not idv_projection_generation_matches(state, snapshots):
-              raise SystemExit("IDV source snapshot does not match its activation generation")
-          PY
-          }
-
           assert_idv_source_clean() {
             if ! git diff --quiet -- "${idv_bundle_paths[@]}" "$idv_heartbeat_path"; then
               echo "::error title=idv source mutation::the SAM fast path cannot publish a locally changed USAspending IDV source bundle"
@@ -820,44 +937,6 @@ jobs:
               echo "::error title=idv source staged::the SAM fast path cannot stage a USAspending IDV source mutation"
               return 1
             fi
-          }
-
-          assert_dod_budget_bundle() {
-            local present=0 tracked=0 path
-            for path in "${dod_budget_bundle_paths[@]}"; do
-              [ -f "$path" ] && present=$((present + 1))
-              git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 && tracked=$((tracked + 1))
-            done
-            if [ "$present" -eq 0 ]; then
-              if [ "$tracked" -ne 0 ]; then
-                echo "::error title=dod-budget bundle missing::tracked DoD budget source artifacts disappeared from the checkout; refusing a partial graph"
-                return 1
-              fi
-              echo "DoD budget source bundle not initialized yet; keeping the optional graph unavailable"
-              return 0
-            fi
-            if [ "$present" -ne "${#dod_budget_bundle_paths[@]}" ] || [ "$tracked" -ne "${#dod_budget_bundle_paths[@]}" ]; then
-              echo "::error title=dod-budget bundle incomplete::DoD budget lines, receipts, and projection state must arrive as one committed bundle"
-              return 1
-            fi
-            python - "${dod_budget_bundle_paths[@]}" <<'PY'
-          from __future__ import annotations
-
-          import json
-          import sys
-          from pathlib import Path
-
-          from collectors.dod_budget import projection_state_matches
-
-          try:
-              lines = [json.loads(row) for row in Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()]
-              receipts = [json.loads(row) for row in Path(sys.argv[2]).read_text(encoding="utf-8").splitlines()]
-              state = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
-          except Exception as exc:
-              raise SystemExit("DoD budget source generation could not be read") from exc
-          if not lines or not receipts or not isinstance(state, dict) or not projection_state_matches(state, lines, receipts):
-              raise SystemExit("DoD budget source ledgers do not match their projection generation")
-          PY
           }
 
           assert_dod_budget_source_clean() {
@@ -942,6 +1021,9 @@ jobs:
             data/government_revenue/dossiers.json
             data/government_revenue/subaward_dossiers.json
             data/government_revenue/idv_dossiers.json
+            data/government_revenue/sbir_progression.json
+            data/government_revenue/identity_atlas.json
+            data/government_revenue/program_dossier.json
             data/government_revenue/budget_program_graph.json
             data/government_revenue/fms_case_graph.json
             data/government_revenue/recipient_resolution_coverage.json
@@ -954,9 +1036,35 @@ jobs:
             site/government-revenue-data/dossiers.json
             site/government-revenue-data/subaward-dossiers.json
             site/government-revenue-data/idv-dossiers.json
+            site/government-revenue-data/sbir-progression.json
+            site/government-revenue-data/identity-atlas.json
+            site/government-revenue-data/program-dossier.json
             site/government-revenue-data/budget-program.json
             site/government-revenue-data/fms-cases.json
             site/government-revenue-data/candidates.json
+            data/government_revenue/defense_economics.json
+            data/government_revenue/program_theme_context.json
+            data/government_revenue/program_theme_public_disclosure.json
+            site/government-revenue-data/program-theme-context.json
+            site/government-revenue-data/theme-context.json
+            data/government_revenue/candidate_research_state.json
+            site/government-revenue-data/defense-economics.json
+            site/government-revenue-data/research-state.json
+            site/government-revenue-investor.js
+            site/government-revenue-investor-start.js
+            site/government-revenue-page.js
+            site/government-revenue-critical-theme.css
+            site/theme.js
+            site/government-revenue-investor.css
+            site/government-revenue-theme-context.js
+            site/government-revenue-theme-context.css
+            site/government-revenue-sbir.js
+            site/government-revenue-sbir.css
+            site/government-revenue-briefcase.js
+            site/government-revenue-briefcase-ui.js
+            site/government-revenue-parity.css
+            site/government-revenue-dossiers.js
+            site/government-revenue-candidate-radar.js
             site/government_revenue.html
           )
           if [ "$AWARD_EVENT_BUNDLE_PRESENT" = true ]; then
@@ -973,6 +1081,9 @@ jobs:
             echo "no material Government Revenue artifacts to publish"
             exit 0
           fi
+          # Seal outputs.
+          python scripts/ci/govrev_candidate_proof.py verify \
+            --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"
           push_staged_clean \
             data/government_revenue/opportunities.parquet \
             data/government_revenue/opportunity_revisions.parquet \
@@ -987,6 +1098,9 @@ jobs:
             data/government_revenue/dossiers.json \
             data/government_revenue/subaward_dossiers.json \
             data/government_revenue/idv_dossiers.json \
+            data/government_revenue/sbir_progression.json \
+            data/government_revenue/identity_atlas.json \
+            data/government_revenue/program_dossier.json \
             data/government_revenue/budget_program_graph.json \
             data/government_revenue/fms_case_graph.json \
             data/government_revenue/recipient_resolution_coverage.json \
@@ -999,14 +1113,41 @@ jobs:
             site/government-revenue-data/dossiers.json \
             site/government-revenue-data/subaward-dossiers.json \
             site/government-revenue-data/idv-dossiers.json \
+            site/government-revenue-data/sbir-progression.json \
+            site/government-revenue-data/identity-atlas.json \
+            site/government-revenue-data/program-dossier.json \
             site/government-revenue-data/budget-program.json \
             site/government-revenue-data/fms-cases.json \
             site/government-revenue-data/candidates.json \
+            data/government_revenue/defense_economics.json \
+            data/government_revenue/program_theme_context.json \
+            data/government_revenue/program_theme_public_disclosure.json \
+            site/government-revenue-data/program-theme-context.json \
+            site/government-revenue-data/theme-context.json \
+            data/government_revenue/candidate_research_state.json \
+            site/government-revenue-data/defense-economics.json \
+            site/government-revenue-data/research-state.json \
+            site/government-revenue-investor.js \
+            site/government-revenue-investor-start.js \
+            site/government-revenue-page.js \
+            site/government-revenue-critical-theme.css \
+            site/theme.js \
+            site/government-revenue-investor.css \
+            site/government-revenue-theme-context.js \
+            site/government-revenue-theme-context.css \
+            site/government-revenue-sbir.js \
+            site/government-revenue-sbir.css \
+            site/government-revenue-briefcase.js \
+            site/government-revenue-briefcase-ui.js \
+            site/government-revenue-parity.css \
+            site/government-revenue-dossiers.js \
+            site/government-revenue-candidate-radar.js \
             site/government_revenue.html
           git commit -m "govrev: SAM opportunity evidence $(date -u +%FT%H:%MZ)"
 
-          PUSH_MAX_ATTEMPTS=8
-          PUSH_BUDGET_SECS=300
+          GOVREV_REPROOFS=0
+          PUSH_MAX_ATTEMPTS=2
+          PUSH_BUDGET_SECS=2700
           PUSH_ALARM=90
           push_retry_init "government-revenue evidence"
           while push_attempt; do
@@ -1014,11 +1155,11 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            # Append-only base freshness (why: scripts/ci/push_retry.sh). --amend:
-            # this loop amends. Non-zero ONLY when a proven withhold failed.
+            # Recheck freshness.
+            # Refuse proven withholding.
             if ! push_append_only_fence origin/main --amend; then push_backoff; continue; fi
             if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              # Rebuild AFTER every successful rebase; retry loops do the same.
+              # Rebuild after rebase.
               assert_award_event_bundle
               assert_award_event_source_clean
               assert_subaward_bundle
@@ -1032,7 +1173,10 @@ jobs:
               assert_historical_suppression_source_clean
               assert_issuance_correction_source_clean
               assert_reviewed_controls_unchanged
+              restore_financial_owner_snapshot
+              restore_market_owner_snapshot
               python -m scripts.build_government_revenue --live-materialization
+              prepare_candidate_research_state
               assert_recipient_graph_source_clean
               assert_historical_suppression_source_clean
               assert_issuance_correction_source_clean
@@ -1047,6 +1191,9 @@ jobs:
                 data/government_revenue/dossiers.json \
                 data/government_revenue/subaward_dossiers.json \
                 data/government_revenue/idv_dossiers.json \
+                data/government_revenue/sbir_progression.json \
+                data/government_revenue/identity_atlas.json \
+                data/government_revenue/program_dossier.json \
                 data/government_revenue/recipient_resolution_coverage.json \
                 data/government_revenue/candidate_ledger.jsonl \
                 data/government_revenue/candidate_queue.json \
@@ -1057,12 +1204,50 @@ jobs:
                 site/government-revenue-data/dossiers.json \
                 site/government-revenue-data/subaward-dossiers.json \
                 site/government-revenue-data/idv-dossiers.json \
+                site/government-revenue-data/sbir-progression.json \
+                site/government-revenue-data/identity-atlas.json \
+                site/government-revenue-data/program-dossier.json \
                 site/government-revenue-data/candidates.json \
+                data/government_revenue/defense_economics.json \
+                data/government_revenue/program_theme_context.json \
+                data/government_revenue/program_theme_public_disclosure.json \
+                site/government-revenue-data/program-theme-context.json \
+                site/government-revenue-data/theme-context.json \
+                data/government_revenue/candidate_research_state.json \
+                site/government-revenue-data/defense-economics.json \
+                site/government-revenue-data/research-state.json \
+                site/government-revenue-investor.js \
+                site/government-revenue-investor-start.js \
+                site/government-revenue-page.js \
+                site/government-revenue-critical-theme.css \
+                site/theme.js \
+                site/government-revenue-investor.css \
+                site/government-revenue-theme-context.js \
+                site/government-revenue-theme-context.css \
+                site/government-revenue-sbir.js \
+                site/government-revenue-sbir.css \
+                site/government-revenue-briefcase.js \
+                site/government-revenue-briefcase-ui.js \
+                site/government-revenue-parity.css \
+                site/government-revenue-dossiers.js \
+                site/government-revenue-candidate-radar.js \
                 site/government_revenue.html
               if [ -f data/government_revenue/budget_program_graph.json ]; then
                 git add -- \
                   data/government_revenue/budget_program_graph.json \
                   site/government-revenue-data/budget-program.json
+              fi
+              if ! python scripts/ci/govrev_candidate_proof.py verify \
+                --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"; then
+                if [ "$GOVREV_REPROOFS" -ge 1 ]; then
+                  echo "::error::changed generation exceeds the bounded reproof budget; refusing publication"
+                  exit 1
+                fi
+                GOVREV_REPROOFS=$((GOVREV_REPROOFS + 1))
+                python scripts/ci/govrev_candidate_proof.py prove \
+                  --root . --install-missing \
+                  --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
+                  --log "$RUNNER_TEMP/govrev-candidate-proof.log"
               fi
               fq s
               push_staged_clean \
@@ -1074,6 +1259,9 @@ jobs:
                 data/government_revenue/dossiers.json \
                 data/government_revenue/subaward_dossiers.json \
                 data/government_revenue/idv_dossiers.json \
+                data/government_revenue/sbir_progression.json \
+                data/government_revenue/identity_atlas.json \
+                data/government_revenue/program_dossier.json \
                 data/government_revenue/budget_program_graph.json \
                 data/government_revenue/fms_case_graph.json \
                 data/government_revenue/recipient_resolution_coverage.json \
@@ -1086,17 +1274,55 @@ jobs:
                 site/government-revenue-data/dossiers.json \
                 site/government-revenue-data/subaward-dossiers.json \
                 site/government-revenue-data/idv-dossiers.json \
+                site/government-revenue-data/sbir-progression.json \
+                site/government-revenue-data/identity-atlas.json \
+                site/government-revenue-data/program-dossier.json \
                 site/government-revenue-data/budget-program.json \
                 site/government-revenue-data/fms-cases.json \
                 site/government-revenue-data/candidates.json \
+                data/government_revenue/defense_economics.json \
+                data/government_revenue/program_theme_context.json \
+                data/government_revenue/program_theme_public_disclosure.json \
+                site/government-revenue-data/program-theme-context.json \
+                site/government-revenue-data/theme-context.json \
+                data/government_revenue/candidate_research_state.json \
+                site/government-revenue-data/defense-economics.json \
+                site/government-revenue-data/research-state.json \
+                site/government-revenue-investor.js \
+                site/government-revenue-investor-start.js \
+                site/government-revenue-page.js \
+                site/government-revenue-critical-theme.css \
+                site/theme.js \
+                site/government-revenue-investor.css \
+                site/government-revenue-theme-context.js \
+                site/government-revenue-theme-context.css \
+                site/government-revenue-sbir.js \
+                site/government-revenue-sbir.css \
+                site/government-revenue-briefcase.js \
+                site/government-revenue-briefcase-ui.js \
+                site/government-revenue-parity.css \
+                site/government-revenue-dossiers.js \
+                site/government-revenue-candidate-radar.js \
                 site/government_revenue.html
               if ! git diff --cached --quiet; then
                 git commit --amend --no-edit
               fi
-              if push_do origin HEAD:main; then
+              python scripts/ci/govrev_candidate_proof.py verify --committed \
+                --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"
+              govrev_push_rc=0
+              govrev_push_same_carrier || govrev_push_rc=$?
+              if [ "$govrev_push_rc" -eq 0 ]; then
+                python scripts/ci/govrev_candidate_proof.py publication-witness \
+                  --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json" \
+                  --commit "$(git rev-parse HEAD)" --push-status "$GOVREV_PUSH_STATUS" \
+                  --push-observation "$GOVREV_PUSH_OBSERVATION" \
+                  --out "$RUNNER_TEMP/govrev-candidate-proof.publication.json"
                 echo "pushed Government Revenue evidence on attempt ${PUSH_ATTEMPT}"
                 push_won
                 exit 0
+              elif [ "$govrev_push_rc" -ne 1 ]; then
+                echo "::error title=government-revenue-live::original push refused or effect unknown; same-carrier reconciliation required before any new publication"
+                exit "$govrev_push_rc"
               fi
             fi
             push_abort_rebase
@@ -1105,3 +1331,13 @@ jobs:
           push_lost
           echo "::warning title=government-revenue-live::could not publish complete evidence after ${PUSH_ATTEMPT} attempts; prior live projection remains authoritative"
           exit 0
+
+      - name: retain bounded candidate proof failure evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: govrev-candidate-proof-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/govrev-candidate-proof*
+          if-no-files-found: ignore
+          retention-days: 7

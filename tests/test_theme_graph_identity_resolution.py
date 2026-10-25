@@ -93,13 +93,75 @@ def _resolve(node_id: str, master_inputs: ir.MasterInputs, etf_symbols: frozense
 
 
 # ---------------------------------------------------------------------------
-# §2 — row scope: 2,806 company nodes at pin, every one gets a row
+# §2 — row scope: 2,806 company nodes at pin + post-freeze merged duplicates (DEC)
+#      + post-freeze new listings that collide with no incumbent
 # ---------------------------------------------------------------------------
 
+# DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE — enumerated D2A re-pin.
+POST_FREEZE_MERGED_DUPLICATES = frozenset({"co:us:VMRK"})
+FROZEN_COMPANY_NODE_COUNT = 2806
+# Company nodes whose first-mint `computed_at` (nodes.parquet is keep-first, write-once)
+# is strictly before this cutoff are the frozen population. Later nodes are organic
+# nightly growth; they are admitted only if they duplicate no incumbent security
+# (test_post_freeze_company_nodes_are_not_rename_remints). First admitted: co:us:HONA,
+# co:us:P (membership_doc:baskets, minted 2026-10-14T08:53:46Z).
+FREEZE_CUTOFF = "2026-10-14T00:00:00Z"
+POST_FREEZE_NEW_LISTINGS_SEEN = frozenset({"co:us:HONA", "co:us:P"})
+
+
+def _pre_cutoff(company_nodes: pd.DataFrame) -> pd.DataFrame:
+    return company_nodes[company_nodes["computed_at"].astype(str) < FREEZE_CUTOFF]
+
+
+def _post_cutoff_ids(company_nodes: pd.DataFrame) -> set[str]:
+    post = company_nodes[company_nodes["computed_at"].astype(str) >= FREEZE_CUTOFF]
+    return set(post["node_id"].astype(str))
+
+
 def test_the_committed_graph_carries_exactly_2806_company_nodes(company_nodes):
-    """The contract's own pinned count (§1/§9) — if this drifts, the graph moved under
-    the frozen contract and the fixture table below needs re-pinning, not silent trust."""
-    assert len(company_nodes) == 2806
+    """Physical company count = frozen pin + lifecycle-merged duplicates (DEC re-pin)."""
+    expected = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
+    assert len(_pre_cutoff(company_nodes)) == expected
+    dups = POST_FREEZE_MERGED_DUPLICATES
+    assert dups <= set(company_nodes["node_id"].astype(str))
+    lc = store.read_node_lifecycle(latest=True)
+    for dup in dups:
+        hit = lc[lc["node_id"].astype(str) == dup]
+        assert len(hit) == 1, f"{dup} must have exactly one latest lifecycle row"
+        row = hit.iloc[0]
+        assert row["status"] == "merged"
+        merged_into = str(row["merged_into"])
+        assert merged_into in set(company_nodes["node_id"].astype(str))
+        if merged_into in set(lc["node_id"].astype(str)):
+            target_lc = lc[lc["node_id"].astype(str) == merged_into].iloc[0]
+            assert target_lc["status"] not in store.RETIRED_LIKE_STATUSES
+
+
+def test_post_freeze_company_nodes_are_not_rename_remints(company_nodes, baked_idres):
+    """Organic growth after FREEZE_CUTOFF is admitted only when it duplicates no
+    incumbent: a post-cutoff node whose latest resolved security_id is already held by
+    another company node is a rename re-mint (DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-
+    INCUMBENT-NODE) and must be merged + enumerated in POST_FREEZE_MERGED_DUPLICATES."""
+    post = _post_cutoff_ids(company_nodes) - POST_FREEZE_MERGED_DUPLICATES
+    assert POST_FREEZE_NEW_LISTINGS_SEEN <= post, (
+        "the listings that motivated FREEZE_CUTOFF must still be post-cutoff nodes")
+    latest = (baked_idres.sort_values("computed_at")
+              .groupby("node_id", as_index=False).tail(1))
+    latest = latest[latest["node_id"].astype(str).isin(set(company_nodes["node_id"].astype(str)))]
+    holders: dict[str, set[str]] = {}
+    for nid, sec in zip(latest["node_id"].astype(str), latest["security_id"]):
+        if sec is None or (isinstance(sec, float) and pd.isna(sec)) or str(sec) == "":
+            continue
+        holders.setdefault(str(sec), set()).add(nid)
+    collisions = {}
+    for sec, ids in holders.items():
+        hit = ids & post
+        if hit and len(ids) > 1:
+            collisions[sec] = sorted(ids)
+    assert not collisions, (
+        f"post-freeze company nodes duplicate an incumbent security: {collisions} — "
+        "merge the re-mint into the incumbent per the DEC and add it to "
+        "POST_FREEZE_MERGED_DUPLICATES")
 
 
 def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_symbols):
@@ -111,9 +173,15 @@ def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_
     rows = ir.derive_rows(
         nodes.to_dict("records"), resolution_asof="2026-08-14",
         computed_at="2026-08-18T00:00:00Z", engine_version=store.ENGINE_VERSION)
-    assert len(rows) == len(company_nodes) == 2806
+    expected_count = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
+    assert len(rows) == len(company_nodes)
+    assert len(_pre_cutoff(company_nodes)) == expected_count
     assert {r["node_id"] for r in rows} == set(company_nodes["node_id"].astype(str))
     by_id = {r["node_id"]: r for r in rows}
+    vmrk_row = by_id.get("co:us:VMRK")
+    assert vmrk_row is not None, "co:us:VMRK derive_rows row for EVIDENCE"
+    assert vmrk_row["resolution_state"] == "RESOLVED"
+    assert vmrk_row["security_id"] == "SEC:US-XNYS-EQR"
     assert by_id["co:us:IBIT"]["resolution_state"] == "ENTITY_TYPE_CONFLICT", (
         "rule 4 must be LIVE in this derivation — the etf:IBIT node is in the full "
         "list passed to derive_rows")
@@ -161,24 +229,34 @@ class TestSection6HostileCases:
         # SAME issuer now (V4-D2B1) — still distinct security_id (mint-once/§D2).
         assert goog["issuer_id"] == googl["issuer_id"] == "ISS:US-XNAS-GOOG"
 
-    def test_aep_resolves_with_a_null_issuer_id_because_the_master_has_no_evidence(
+    def test_no_evidence_row_resolves_with_a_null_issuer_id(
         self, master_inputs, etf_symbols,
     ):
-        """V4-D2B1 FIX 8 (m3): AEP is a measured NO_ISSUER_EVIDENCE row in the
-        committed master (its ticker missed the 08-18 CIK map) — the sidecar's
-        RESOLVED state and security_id/listing_key are UNAFFECTED (exact
-        security/listing identity never depended on the issuer axis), but issuer_id
-        must be null because the master itself has no CIK evidence backing it."""
-        master_row = master_inputs.master_by_code.get("AEP")
-        assert master_row is not None, "AEP must be a resolvable master row for this probe"
-        row = _resolve("co:us:AEP", master_inputs, etf_symbols)
+        """V4-D2B1 FIX 8 (m3): a measured NO_ISSUER_EVIDENCE row in the committed
+        master — the sidecar's RESOLVED state and security_id/listing_key are
+        UNAFFECTED (exact security/listing identity never depended on the issuer
+        axis), but issuer_id must be null because the master itself has no CIK
+        evidence backing it.  Probe was AEP until 2026-08, when AEP's promised
+        §11 self-heal landed (a later CIK map carries it, issuer_state RESOLVED
+        — asserted below); TPH is the current measured no-evidence exemplar."""
+        master_row = master_inputs.master_by_code.get("TPH")
+        assert master_row is not None, "TPH must be a resolvable master row for this probe"
+        # If the issuer_id assertion below ever fails with a non-null value, TPH
+        # gained issuer evidence (the §11 self-heal) — re-point this probe at a
+        # master row still measured NO_ISSUER_EVIDENCE, as was done for AEP.
+        row = _resolve("co:us:TPH", master_inputs, etf_symbols)
         assert row["resolution_state"] == "RESOLVED"
-        assert row["security_id"] == "SEC:US-XNAS-AEP"
-        assert row["listing_key"] == "US-XNAS-AEP"
+        assert row["security_id"] == "SEC:US-XNYS-TPH"
+        assert row["listing_key"] == "US-XNYS-TPH"
         assert row["issuer_id"] is None, (
-            "the master's issuer_state for AEP is NO_ISSUER_EVIDENCE — issuer_id must "
+            "the master's issuer_state for TPH is NO_ISSUER_EVIDENCE — issuer_id must "
             "be null in the sidecar, never the legacy master value"
         )
+        # AEP, the original probe, in its healed end-state: evidence arrived, so
+        # the sidecar rightly carries the evidenced issuer id.
+        aep = _resolve("co:us:AEP", master_inputs, etf_symbols)
+        assert aep["resolution_state"] == "RESOLVED"
+        assert aep["issuer_id"] == "ISS:US-XNAS-AEP"
 
     def test_share_class_equiv_is_never_consulted(self):
         """Structural proof: the resolver's only inputs are the master + alias table +
@@ -240,10 +318,26 @@ class TestSection6HostileCases:
         assert row["resolution_state"] == "RESOLVED"
         assert row["security_id"] == "SEC:US-XNYS-CTRA"
 
+    def test_admitted_bats_name_resolves_from_master(self, master_inputs, etf_symbols):
+        """BATS admission replaces CBOE's former zero-master-row fixture premise."""
+        row = _resolve("co:us:CBOE", master_inputs, etf_symbols)
+        assert row["resolution_state"] == "RESOLVED"
+        assert row["security_id"] == "SEC:US-BATS-CBOE"
+        assert row["issuer_id"] == "ISS:US-BATS-CBOE"
+        assert row["listing_key"] == "US-BATS-CBOE"
+        assert row["join_method"] == "master_inception_exact"
+        assert row["refusal_reason"] is None
+        assert json.loads(row["source_receipts"]) == {
+            "master_inception_code": "CBOE", "security_id": "SEC:US-BATS-CBOE",
+        }
+        assert row["master_generated_at"] == master_inputs.generated_at
+        assert row["master_symbol_directory_snapshot"] == master_inputs.symbol_directory_snapshot
+        assert row["master_code_version"] == master_inputs.code_version
+
     @pytest.mark.parametrize("symbol", [
-        "ANGPY", "BLD", "CBOE", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
+        "ANGPY", "BLD", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
     ])
-    def test_the_eight_not_in_master_names(self, symbol, master_inputs, etf_symbols):
+    def test_remaining_not_in_master_names(self, symbol, master_inputs, etf_symbols):
         row = _resolve(f"co:us:{symbol}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER", row
         assert row["security_id"] is None
@@ -406,8 +500,9 @@ class TestMutations:
         MUST land NOT_IN_MASTER, never RESOLVED-by-coincidence."""
         bogus = "ZZZNOSUCHTICKERXYZ"
         assert bogus not in master_inputs.master_by_code
-        assert not any(master_inputs.alias_table.resolve(v, bogus, on=date(2026, 8, 14))
-                       for v in master_inputs.vendors)
+        assert not any(master_inputs.alias_table.resolve(
+            v, bogus, on=date(2026, 8, 14), decision_at="2026-08-14T23:59:59Z")
+            for v in master_inputs.vendors)
         row = _resolve(f"co:us:{bogus}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER"
         assert row["security_id"] is None
@@ -795,9 +890,27 @@ def test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parque
     assert avb["resolution_state"] == "RESOLVED"
     assert avb["security_id"] == "SEC:US-XNYS-AVB"
 
-    # 3. NO co:us:VMRK node is created — graph node minting is the theme graph's
-    #    own lane, forbidden to this bridge.
-    assert "co:us:VMRK" not in by_node
+    # 3. co:us:VMRK is lifecycle-merged into co:us:EQR; sidecar resolves to EQR security;
+    #    VMRK has no open MEMBER_OF; EQR has exactly one open us_sector_realestate edge.
+    vmrk = by_node.get("co:us:VMRK")
+    assert vmrk is not None, "co:us:VMRK must have a sidecar row after duplicate_mint merge"
+    assert vmrk["security_id"] == eqr["security_id"] == "SEC:US-XNYS-EQR"
+    assert vmrk["security_id"] != "SEC:US-XNYS-VMRK"
+    lc = store.read_node_lifecycle(latest=True)
+    vmrk_lc = lc[lc["node_id"].astype(str) == "co:us:VMRK"].iloc[0]
+    assert vmrk_lc["status"] == "merged" and str(vmrk_lc["merged_into"]) == "co:us:EQR"
+    live_edges = store.read_edges(latest_belief=True)
+    vmrk_open = live_edges[
+        (live_edges["type"].astype(str) == "MEMBER_OF")
+        & (live_edges["src"].astype(str) == "co:us:VMRK")
+        & (live_edges["valid_to"].isna())]
+    assert len(vmrk_open) == 0
+    eqr_open = live_edges[
+        (live_edges["type"].astype(str) == "MEMBER_OF")
+        & (live_edges["src"].astype(str) == "co:us:EQR")
+        & (live_edges["dst"].astype(str) == "basket:baskets:us_sector_realestate")
+        & (live_edges["valid_to"].isna())]
+    assert len(eqr_open) == 1
 
     # 4. Zero sidecar cells reference the superseded SEC:US-XNYS-VMRK id at all.
     assert not (current_view["security_id"] == "SEC:US-XNYS-VMRK").any()
@@ -923,13 +1036,17 @@ class TestD2B2US:
         )
 
     def test_cn_hk_resolution_unchanged_by_the_us_admission(self, baked_idres):
-        """The D2B2-US wave touches only `market_scope=us` seeds (§0) — CN/HK's own
-        CURRENT resolution counts must stay exactly what D2B2-CN-HK left them at."""
+        """The D2B2-US wave touches only `market_scope=us` seeds (§0) — the US
+        admission must never REMOVE a CN/HK resolution.  Floors since 2026-08-28
+        (984 had already rotted to 1002 on main): the CN seed lanes kept lawfully
+        admitting names after the D2B2-CN-HK bake, so an exact era count cannot
+        hold; a floor still fails on the defect this pins — CN/HK resolutions
+        silently disappearing."""
         current = baked_idres.loc[baked_idres.groupby("node_id")["computed_at"].idxmax()]
-        for market, expected in (("cn", 984), ("hk", 147)):
+        for market, floor in (("cn", 1005), ("hk", 147)):
             rows = current[current["market_scope"] == market]
             resolved = rows[rows["resolution_state"] == "RESOLVED"]
-            assert len(resolved) == expected
+            assert len(resolved) >= floor
 
     def test_gold_b_deferred_identity_exception_unchanged(self, master_inputs, etf_symbols):
         """The D2B2-US wave never touches the registered identity-exception codes
@@ -939,3 +1056,27 @@ class TestD2B2US:
         gold = _resolve("co:us:GOLD", master_inputs, etf_symbols)
         assert b["resolution_state"] == "DEFERRED_IDENTITY_EXCEPTION"
         assert gold["resolution_state"] == "DEFERRED_IDENTITY_EXCEPTION"
+
+
+def test_dated_current_catalog_rows_are_never_historical_evidence():
+    """Two-clock law, vendor-identity form (2026-08-28): the exclusion of the
+    current-catalog spaces from HISTORICAL mode used to be implemented as a row-shape
+    test (both bounds null), which was equivalent only while `store`/`yahoo_fetch`
+    could emit nothing but open rows. Since the EQR->VMRK key migration the `store`
+    space carries a DATED family, so a shape test would admit repo-catalog rows as
+    historical-naming evidence — the exact repeal the law forbids. Pin the boundary:
+    a dated `store` row never answers, an identically-dated `yahoo` row does."""
+    from lib.dataos.identity import VendorAliasTable
+
+    table = VendorAliasTable.from_records([
+        {"vendor": "store", "vendor_symbol": "OLD", "security_id": "SEC:US-XNYS-OLD",
+         "valid_from": None, "valid_to": "2026-08-18"},
+        {"vendor": "store", "vendor_symbol": "NEW", "security_id": "SEC:US-XNYS-OLD",
+         "valid_from": "2026-08-18", "valid_to": None},
+        {"vendor": "yahoo", "vendor_symbol": "OLD", "security_id": "SEC:US-XNYS-OLD",
+         "valid_from": None, "valid_to": "2026-08-18"},
+    ])
+    on = date(2026, 1, 2)
+    assert ir._historical_alias_resolve(table, "store", "OLD", on) is None
+    assert ir._historical_alias_resolve(table, "yahoo_fetch", "OLD", on) is None
+    assert ir._historical_alias_resolve(table, "yahoo", "OLD", on) == "SEC:US-XNYS-OLD"

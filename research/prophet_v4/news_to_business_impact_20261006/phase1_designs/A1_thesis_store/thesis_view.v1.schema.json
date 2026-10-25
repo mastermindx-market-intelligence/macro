@@ -1,0 +1,444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/news_impact/thesis_view.v1.schema.json",
+  "title": "News-impact thesis view v1 — derived fold over the fact log and existing owners",
+  "description": "Pure projection. Identity is (company_id, original_proposition_fact_id). as_of_utc is an input snapshot copied onto the payload; the projector never reads a clock. Weakening conditions are internal. Display uses windows and what-we-are-watching wording. No confidence, probability, score, target, fair value, rating, likelihood, or thesis score field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "prophet_flags",
+    "unsolicited_instruction_detected",
+    "company_id",
+    "original_proposition_fact_id",
+    "decision_cut",
+    "as_of_utc",
+    "original_proposition",
+    "supporting_claim_ids",
+    "contrary_claim_ids",
+    "root_source_families",
+    "exposure_paths",
+    "required_assumptions",
+    "current_milestone_evidence",
+    "next_expected_observation",
+    "deadline",
+    "weakening_conditions",
+    "display",
+    "live_fact_ids",
+    "cluster_ids",
+    "provenance_group_ids",
+    "material_delta_triggers",
+    "log_sha256",
+    "owners_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "thesis_view.v1",
+      "maxLength": 16
+    },
+    "authority": {
+      "type": "string",
+      "const": "context_only",
+      "maxLength": 16
+    },
+    "prophet_flags": {
+      "$ref": "#/$defs/prophet_flags"
+    },
+    "unsolicited_instruction_detected": {
+      "const": false
+    },
+    "company_id": { "$ref": "#/$defs/company_id" },
+    "original_proposition_fact_id": { "$ref": "#/$defs/fact_id" },
+    "decision_cut": { "$ref": "#/$defs/date_time" },
+    "as_of_utc": { "$ref": "#/$defs/date_time" },
+    "original_proposition": { "$ref": "#/$defs/proposition" },
+    "supporting_claim_ids": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/claim_id" }
+    },
+    "contrary_claim_ids": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/claim_id" }
+    },
+    "root_source_families": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/root_family" }
+    },
+    "exposure_paths": {
+      "oneOf": [
+        {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/exposure_path" }
+        },
+        { "$ref": "#/$defs/field_absence.v1" }
+      ]
+    },
+    "required_assumptions": {
+      "type": "array",
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/field_absence.v1" }
+    },
+    "current_milestone_evidence": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/milestone_evidence" }
+    },
+    "next_expected_observation": {
+      "oneOf": [
+        { "$ref": "#/$defs/watch_item" },
+        { "$ref": "#/$defs/field_absence.v1" }
+      ]
+    },
+    "deadline": {
+      "oneOf": [
+        { "$ref": "#/$defs/date_time" },
+        { "$ref": "#/$defs/field_absence.v1" }
+      ]
+    },
+    "weakening_conditions": {
+      "type": "array",
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/weakening_condition" }
+    },
+    "display": { "$ref": "#/$defs/display" },
+    "live_fact_ids": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/fact_id" }
+    },
+    "cluster_ids": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/cluster_id" }
+    },
+    "provenance_group_ids": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 128 }
+    },
+    "material_delta_triggers": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/material_delta_trigger" }
+    },
+    "log_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "owners_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "text_safe": {
+      "type": "string",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "(?i)\\b(ignore|disregard|forget|override)\\s+(all\\s+|any\\s+|the\\s+|every\\s+)?(previous|prior|above|preceding|earlier)\\b"
+          },
+          {
+            "pattern": "(?i)(^|[\\n\\r>\\\"'\\]\\[}{|])\\s*(system|assistant|developer|user|tool|function)\\s*[:：]"
+          },
+          {
+            "pattern": "(?i)system\\s*prompt"
+          },
+          {
+            "pattern": "(?i)\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:"
+          },
+          {
+            "pattern": "(?i)(~\\/\\.|/(etc|usr|bin|sbin|tmp|var|root|home|opt|dev|proc|lib)\\b|\\$\\(|`|\\brm\\s+-rf\\b|\\bcurl\\b|\\bwget\\b|\\bchmod\\b|\\bbash\\s+-c\\b|\\bsh\\s+-c\\b|\\bpowershell\\b|\\bnc\\s+-e\\b|\\|\\s*sh\\b)"
+          }
+        ]
+      }
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 14,
+      "maxLength": 14,
+      "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+    },
+    "fact_id": {
+      "type": "string",
+      "minLength": 29,
+      "maxLength": 29,
+      "pattern": "^fact_[0-9a-f]{24}$"
+    },
+    "cluster_id": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 20,
+      "pattern": "^ev2_[0-9a-f]{16}$"
+    },
+    "claim_id": {
+      "$ref": "#/$defs/text_safe",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "date_time": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 40,
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "prophet_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["may_rank", "may_size", "may_gate", "prophet_authority"],
+      "properties": {
+        "may_rank": { "const": false },
+        "may_size": { "const": false },
+        "may_gate": { "const": false },
+        "prophet_authority": { "const": false }
+      }
+    },
+    "field_absence.v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "authority", "reason", "subject", "detail", "missing_fields"],
+      "properties": {
+        "schema": { "const": "field_absence.v1" },
+        "authority": { "const": "context_only" },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "not_stated",
+            "stated_without_number",
+            "range_only",
+            "redacted_rights",
+            "parse_failed"
+          ]
+        },
+        "subject": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 64 },
+        "detail": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 240 },
+        "missing_fields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 64 }
+        }
+      }
+    },
+    "proposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["payload_schema", "plain_statement", "channel_hint", "commitment_status", "negated"],
+      "properties": {
+        "payload_schema": {
+          "type": "string",
+          "enum": [
+            "capital_allocation_event.v1",
+            "demand_guidance_contract_event.v1",
+            "strategic_product_partnership_event.v1"
+          ]
+        },
+        "plain_statement": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "channel_hint": {
+          "type": "string",
+          "enum": [
+            "revenue_demand",
+            "margin_cost",
+            "capital_allocation",
+            "moat_duration",
+            "strategic_option",
+            "financial_incentives_survival",
+            "market_only"
+          ]
+        },
+        "commitment_status": {
+          "type": "string",
+          "enum": [
+            "authorized",
+            "announced",
+            "planned",
+            "executed",
+            "completed",
+            "withdrawn",
+            "conditional"
+          ]
+        },
+        "negated": { "type": "boolean" }
+      }
+    },
+    "root_family": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_family_id", "origin_document_id", "source_family", "member_count"],
+      "properties": {
+        "root_family_id": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 128 },
+        "origin_document_id": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 128 },
+        "source_family": {
+          "type": "string",
+          "enum": [
+            "issuer_primary",
+            "regulator_filing",
+            "exchange_notice",
+            "wire_reprint",
+            "secondary_outlet",
+            "independent_measurement",
+            "unknown"
+          ]
+        },
+        "member_count": { "type": "integer", "minimum": 1, "maximum": 10000 }
+      }
+    },
+    "exposure_path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_company_id", "role", "direction", "mechanism_or_absence"],
+      "properties": {
+        "target_company_id": { "$ref": "#/$defs/company_id" },
+        "role": {
+          "type": "string",
+          "enum": ["subject", "counterparty", "competitor", "supplier", "customer", "incidental"]
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["inward", "outward", "undirected", "unknown"]
+        },
+        "mechanism_or_absence": {
+          "oneOf": [
+            { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 80 },
+            { "$ref": "#/$defs/field_absence.v1" }
+          ]
+        }
+      }
+    },
+    "milestone_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fact_id", "milestone_name", "observed_at", "provenance_group_id"],
+      "properties": {
+        "fact_id": { "$ref": "#/$defs/fact_id" },
+        "milestone_name": {
+          "type": "string",
+          "enum": [
+            "announcement",
+            "artifact_available",
+            "license_stated",
+            "hardware_support_stated",
+            "independent_deployment",
+            "repeated_active_use",
+            "paid_bookings",
+            "reported_economics",
+            "executed_repurchase",
+            "net_dilution_reported",
+            "other_stated_milestone"
+          ]
+        },
+        "observed_at": { "$ref": "#/$defs/date_time" },
+        "provenance_group_id": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "watch_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["milestone_name"],
+      "properties": {
+        "milestone_name": {
+          "type": "string",
+          "enum": [
+            "announcement",
+            "artifact_available",
+            "license_stated",
+            "hardware_support_stated",
+            "independent_deployment",
+            "repeated_active_use",
+            "paid_bookings",
+            "reported_economics",
+            "executed_repurchase",
+            "net_dilution_reported",
+            "other_stated_milestone"
+          ]
+        },
+        "window_start": { "$ref": "#/$defs/date_time" },
+        "window_end": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "weakening_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "armed", "evidence_fact_ids"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "missed_stated_deadline",
+            "contrary_independent_measurement",
+            "source_correction_reduces_magnitude",
+            "commitment_withdrawn",
+            "exposure_path_removed",
+            "expected_observation_absent"
+          ]
+        },
+        "armed": { "type": "boolean" },
+        "evidence_fact_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/fact_id" }
+        }
+      }
+    },
+    "material_delta_trigger": {
+      "type": "string",
+      "enum": [
+        "changed_numeric_terms",
+        "new_independent_source",
+        "independently_observed_milestone",
+        "contradiction",
+        "missed_deadline",
+        "source_correction",
+        "exposure_change",
+        "market_state_change"
+      ]
+    },
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what_we_are_watching", "windows", "plain_status"],
+      "properties": {
+        "what_we_are_watching": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "windows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "start", "end"],
+            "properties": {
+              "label": { "$ref": "#/$defs/text_safe", "minLength": 1, "maxLength": 80 },
+              "start": { "$ref": "#/$defs/date_time" },
+              "end": { "$ref": "#/$defs/date_time" }
+            }
+          }
+        },
+        "plain_status": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 280
+        }
+      }
+    }
+  }
+}

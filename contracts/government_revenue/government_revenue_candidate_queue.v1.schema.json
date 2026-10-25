@@ -13,7 +13,7 @@
     "contract": {"const": "government_revenue_candidate_queue.v1"}, "schema_version": {"const": "1.0.0"},
     "as_of": {"type": "string", "format": "date-time"}, "known_at": {"type": "string", "format": "date-time"},
     "generated_at": {"type": "string", "format": "date-time"}, "content_id": {"type": "string", "pattern": "^grcq1-[a-f0-9]{24}$"},
-    "candidates": {"type": "array", "maxItems": 250, "items": {"$ref": "https://mastermind-x.com/contracts/government_revenue/government_revenue_candidate.v1.schema.json"}},
+    "candidates": {"type": "array", "description": "Complete eligible candidate collection for the source snapshot, not an HTTP page. Every row remains validated; the API independently limits responses to 100 items with generation-bound cursors. Do not truncate source candidates to a presentation limit.", "items": {"$ref": "https://mastermind-x.com/contracts/government_revenue/government_revenue_candidate.v1.schema.json"}},
     "mapping_backlog": {"type": "array", "maxItems": 250, "items": {"$ref": "#/$defs/mappingBacklog"}},
     "recently_matured": {"type": "array", "maxItems": 100, "items": {"$ref": "https://mastermind-x.com/contracts/government_revenue/government_revenue_candidate.v1.schema.json"}},
     "counts": {"$ref": "#/$defs/counts"},

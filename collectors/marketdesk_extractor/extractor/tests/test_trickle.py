@@ -1,0 +1,960 @@
+"""Tests for the trickle runner (trickle.py) with a fake client + fake session.
+
+NO network, NO auth, NO Playwright. We monkeypatch ``BrowserSession`` /
+``MarketDeskClient`` / ``discover`` inside the ``trickle`` module so the loop
+exercises its real orchestration (planning, per-account quota, newest-first,
+cap-bounce cooldown, offline drain) against a seeded temp DB.
+"""
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import pytest
+
+from marketdesk_extractor import db, trickle
+from marketdesk_extractor.config import Config
+from marketdesk_extractor.marketdesk import (
+    DownloadCapExhausted, MarketDeskClient, MarketDeskError, TransientHTTPError,
+)
+from marketdesk_extractor.schemas import Status
+
+NOW = datetime(2026, 7, 27, 12, 0, 0, tzinfo=timezone.utc)  # Monday 08:00 ET
+
+
+# ---------------------------------------------------------------------------
+# fakes
+# ---------------------------------------------------------------------------
+class FakeSession:
+    """Stand-in for BrowserSession: authed, no browser, context is a sentinel."""
+
+    def __init__(self, cfg, headless=None):
+        self.cfg = cfg
+        self.context = object()
+        self.entered = False
+        self.exited = False
+
+    def __enter__(self):
+        self.entered = True
+        return self
+
+    def __exit__(self, *exc):
+        self.exited = True
+
+    def is_authenticated(self):
+        return True
+
+
+class FakeClient:
+    """Serves valid PDFs; records which blob_ids it was asked to download."""
+
+    def __init__(self, context, cfg):
+        self.cfg = cfg
+        self.downloaded: list[str] = []
+
+    def download_blob(self, blob_id: str) -> bytes:
+        self.downloaded.append(blob_id)
+        return b"%PDF-1.4\n" + blob_id.encode() + b"\n%%EOF\n"
+
+
+class CappedClient(FakeClient):
+    """Bounces every download with the over-cap HTML app-shell signal."""
+
+    def download_blob(self, blob_id: str) -> bytes:
+        self.downloaded.append(blob_id)
+        raise DownloadCapExhausted(f"blob {blob_id}: HTML app-shell — cap reached")
+
+
+def _iso(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).isoformat()
+
+
+def _cfg(tmp_path, monkeypatch, *, profiles: str = "") -> Config:
+    env = {
+        "DATABASE_URL": str(tmp_path / "db" / "t.sqlite"),
+        "OUTPUT_DIR": str(tmp_path / "data"),
+        "RAW_PDF_DIR": str(tmp_path / "data" / "raw_pdfs"),
+        "MARKDOWN_DIR": str(tmp_path / "data" / "markdown"),
+        "METADATA_DIR": str(tmp_path / "data" / "metadata"),
+        "MANIFEST_DIR": str(tmp_path / "data" / "manifests"),
+        "LOG_DIR": str(tmp_path / "logs"),
+        "MARKETDESK_PROFILE_DIR": str(tmp_path / "prof"),
+        "R2_ENABLED": "false",
+        "DROPBOX_ENABLED": "false",
+        "VAULT_ENABLED": "false",
+        "PARSER_BACKEND": "none",
+        "DOWNLOAD_CAP_PER_ACCOUNT_24H": "70",
+        "NEW_WINDOW_HOURS": "48",
+        "MARKETDESK_PROFILES": profiles,
+    }
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    cfg = Config.from_env()
+    cfg.ensure_dirs()
+    return cfg
+
+
+def _seed(conn, blob_id, *, published_at, status=Status.DISCOVERED):
+    conn.execute(
+        "INSERT INTO papers (blob_id, article_url, blob_url, title, institution, "
+        "published_at, status) VALUES (?,?,?,?,?,?,?)",
+        (
+            blob_id,
+            f"https://marketdesk.ai/library/browse?item={blob_id}",
+            f"https://marketdesk.ai/files/{blob_id}/blob",
+            f"Title {blob_id}", "JPM",
+            _iso(published_at), status.value,
+        ),
+    )
+    conn.commit()
+
+
+def _patch_sessions(monkeypatch, client_cls=FakeClient, session_cls=FakeSession):
+    monkeypatch.setattr(trickle, "BrowserSession", session_cls)
+    monkeypatch.setattr(trickle, "MarketDeskClient", client_cls)
+    # never hit the network for discovery in these tests
+    monkeypatch.setattr(trickle, "_refresh_queue", lambda *a, **k: None)
+
+
+# ---------------------------------------------------------------------------
+# dry-run smoke: prints a plan, downloads NOTHING
+# ---------------------------------------------------------------------------
+def test_dry_run_once_prints_plan_and_downloads_nothing(tmp_path, monkeypatch, capsys):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "fresh1", published_at=NOW - timedelta(hours=1))
+    _seed(conn, "fresh2", published_at=NOW - timedelta(hours=3))
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    results = trickle.run_trickle(
+        cfg, once=True, dry_run=True, now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None,
+    )
+    out = capsys.readouterr().out
+    assert "quota=70" in out          # a real per-account plan line was printed
+    assert "next=new:fresh1" in out   # newest-first candidate identified
+    assert len(results) == 1
+
+    # NOTHING downloaded: no paper advanced past DISCOVERED, no PDF on disk
+    conn = db.connect(cfg.database_url)
+    counts = db.counts_by_status(conn)
+    conn.close()
+    assert counts.get(Status.DOWNLOADED.value, 0) == 0
+    assert counts.get(Status.COMPLETE.value, 0) == 0
+    assert not any(Path(cfg.raw_pdf_dir).glob("*.pdf"))
+
+
+# ---------------------------------------------------------------------------
+# real tick: downloads newest-first, records account, completes local-only
+# ---------------------------------------------------------------------------
+def test_tick_downloads_newest_first_and_records_account(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "older_new", published_at=NOW - timedelta(hours=10))
+    _seed(conn, "newest_new", published_at=NOW - timedelta(hours=1))
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    # single tick, cap the per-tick burst to 1 so we can assert the FIRST pick
+    results = trickle.run_trickle(
+        cfg, once=True, dry_run=False, per_tick_cap=1,
+        now_fn=lambda: NOW, sleep_fn=lambda _s: None,
+    )
+    assert results[0].downloaded_new == 1
+
+    conn = db.connect(cfg.database_url)
+    newest = db.get_by_blob_id(conn, "newest_new")
+    older = db.get_by_blob_id(conn, "older_new")
+    acct_name = cfg.profiles[0].name
+    conn.close()
+
+    # newest was pulled first, marked COMPLETE (R2/vault off -> local-only),
+    # and stamped with the account + downloaded_at
+    assert newest["status"] == Status.COMPLETE.value
+    assert newest["account"] == acct_name
+    assert newest["downloaded_at"]
+    assert newest["sha256"]
+    # the older new paper was NOT touched this single-pull tick
+    assert older["status"] == Status.DISCOVERED.value
+
+
+def test_tick_records_ledger_and_quota_decrements(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    for i in range(3):
+        _seed(conn, f"p{i}", published_at=NOW - timedelta(hours=i + 1))
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    trickle.run_trickle(
+        cfg, once=True, dry_run=False, now_fn=lambda: NOW, sleep_fn=lambda _s: None,
+    )
+    conn = db.connect(cfg.database_url)
+    acct = cfg.profiles[0].name
+    used = db.trailing_24h_count(conn, acct, NOW)
+    conn.close()
+    # default per-tick burst is 3 -> all three drained in one tick
+    assert used == 3
+
+
+# ---------------------------------------------------------------------------
+# cap bounce -> account cooldown + paper reset (self-calibrating)
+# ---------------------------------------------------------------------------
+def test_cap_bounce_sets_cooldown_and_resets_paper(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    # a prior in-window download establishes the "oldest ages out" cooldown target
+    conn.execute(
+        "INSERT INTO papers (blob_id, article_url, blob_url, title, published_at, "
+        "status, downloaded_at, account) VALUES (?,?,?,?,?,?,?,?)",
+        ("prior", "u", "b", "prior", _iso(NOW - timedelta(days=3)),
+         Status.COMPLETE.value, _iso(NOW - timedelta(hours=20)),
+         (tmp_path / "prof").name),
+    )
+    conn.commit()
+    _seed(conn, "wants_download", published_at=NOW - timedelta(hours=1))
+    conn.close()
+
+    _patch_sessions(monkeypatch, client_cls=CappedClient)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    trickle._open_sessions(cfg, states)
+    tick = trickle.run_tick(cfg, conn, states, NOW, dry_run=False)
+
+    # the bounce was recorded, the paper was put BACK to DISCOVERED (not FAILED),
+    # and the account is cooled down until its oldest in-window download ages out
+    assert tick.cap_bounces == 1
+    row = db.get_by_blob_id(conn, "wants_download")
+    assert row["status"] == Status.DISCOVERED.value
+    assert states[0].cooldown_until is not None
+    expected_free = (NOW - timedelta(hours=20)) + timedelta(hours=24)
+    assert abs((states[0].cooldown_until - expected_free).total_seconds()) < 1
+    # and while cooled down, a later plan reports no candidate for that account
+    later = NOW + timedelta(minutes=1)
+    plan = trickle.plan_account(cfg, conn, states[0], later)
+    assert plan.next_blob_id is None
+    trickle._close_sessions(states)
+    conn.close()
+
+
+# ---------------------------------------------------------------------------
+# unauthenticated profile is skipped, not crashed
+# ---------------------------------------------------------------------------
+def test_unauthenticated_account_is_skipped(tmp_path, monkeypatch, capsys):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "fresh", published_at=NOW - timedelta(hours=1))
+    conn.close()
+
+    class Unauthed(FakeSession):
+        def is_authenticated(self):
+            return False
+
+    _patch_sessions(monkeypatch, session_cls=Unauthed)
+    results = trickle.run_trickle(
+        cfg, once=True, dry_run=True, now_fn=lambda: NOW, sleep_fn=lambda _s: None,
+    )
+    out = capsys.readouterr().out
+    assert "NOT AUTHENTICATED" in out
+    # nothing pulled
+    assert results[0].downloaded_new == 0
+
+
+# ---------------------------------------------------------------------------
+# FAILED papers are reset to DISCOVERED at loop start (cap-failures, retryable)
+# ---------------------------------------------------------------------------
+def test_reset_failed_requeues_cap_failures(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "was_failed", published_at=NOW - timedelta(hours=2),
+          status=Status.FAILED)
+    n = trickle._reset_failed(conn)
+    assert n == 1
+    assert db.get_by_blob_id(conn, "was_failed")["status"] == Status.DISCOVERED.value
+    conn.close()
+
+
+# ---------------------------------------------------------------------------
+# reserve gating: when quota <= expected near-term new arrivals, no backfill
+# ---------------------------------------------------------------------------
+def test_reserve_holds_back_backfill_when_quota_scarce(tmp_path, monkeypatch):
+    # cap=1 so quota is tiny; only backfill candidates exist. At Monday 08:00 ET
+    # the next-4h demand is large, so reserve > quota => allow_backfill False =>
+    # the loop pulls nothing (holds the last slot for the expected new arrivals).
+    cfg = _cfg(tmp_path, monkeypatch)
+    monkeypatch.setenv("DOWNLOAD_CAP_PER_ACCOUNT_24H", "1")
+    cfg = Config.from_env(); cfg.ensure_dirs()
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "backfill_only", published_at=NOW - timedelta(hours=100))
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    results = trickle.run_trickle(
+        cfg, once=True, dry_run=False, now_fn=lambda: NOW, sleep_fn=lambda _s: None,
+    )
+    assert results[0].downloaded_new == 0
+    assert results[0].downloaded_backfill == 0
+    conn = db.connect(cfg.database_url)
+    assert db.get_by_blob_id(conn, "backfill_only")["status"] == Status.DISCOVERED.value
+    conn.close()
+
+
+# ---------------------------------------------------------------------------
+# WIDE discover pass: heals papers OLDER than the narrow refresh window
+# ---------------------------------------------------------------------------
+class _RefreshRecorder:
+    """Stands in for _refresh_queue; records the (since_hours, heal_limit, limit)
+    of every refresh so a test can tell a WIDE pass from a narrow one."""
+
+    def __init__(self):
+        self.calls: list[tuple[int | None, int | None, int | None]] = []
+
+    def __call__(self, cfg, conn, states, *, since_hours=None, heal_limit=None,
+                 limit=None):
+        self.calls.append((since_hours, heal_limit, limit))
+
+
+class _FakeMonotonic:
+    """Injectable monotonic clock: advances a fixed step per read."""
+
+    def __init__(self, step: float, start: float = 0.0):
+        self.t = start
+        self.step = step
+        self.reads = 0
+
+    def __call__(self) -> float:
+        self.reads += 1
+        v = self.t
+        self.t += self.step
+        return v
+
+
+def test_wide_discover_runs_on_first_refresh_then_only_after_the_interval(
+    tmp_path, monkeypatch
+):
+    """A restart must heal IMMEDIATELY (first refresh is wide), then daily. The
+    narrow refresh only re-examines its own window, so anything older can be
+    healed by nothing else."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    rec = _RefreshRecorder()
+    monkeypatch.setattr(trickle, "_refresh_queue", rec)
+    # each tick advances the monotonic clock by one discover interval, so EVERY
+    # tick refreshes; only the wide cadence should gate wide-vs-narrow.
+    mono = _FakeMonotonic(step=cfg.discover_every_sec)
+
+    trickle.run_trickle(
+        cfg, max_iterations=4, dry_run=False, now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None, monotonic_fn=mono,
+    )
+
+    assert len(rec.calls) == 4, "every tick crossed the narrow discover interval"
+    # tick 1: WIDE (first refresh after start). The scan budget must be the WIDE
+    # limit: walk_papers caps SCANNED items, and the narrow default (300) covers
+    # ~1.5 days — a wide pass truncated by it heals nothing older.
+    assert rec.calls[0] == (
+        cfg.trickle_wide_discover_hours, cfg.trickle_wide_heal_limit,
+        cfg.trickle_wide_discover_limit,
+    )
+    # ticks 2-4: NARROW (the 24h wide interval has not elapsed)
+    assert rec.calls[1:] == [(None, None, None)] * 3
+
+
+def test_wide_discover_repeats_once_the_wide_interval_elapses(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    rec = _RefreshRecorder()
+    monkeypatch.setattr(trickle, "_refresh_queue", rec)
+    # a full wide interval per tick -> every refresh is due to be wide again
+    mono = _FakeMonotonic(step=cfg.trickle_wide_discover_every_sec)
+
+    trickle.run_trickle(
+        cfg, max_iterations=3, dry_run=False, now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None, monotonic_fn=mono,
+    )
+    wide = (cfg.trickle_wide_discover_hours, cfg.trickle_wide_heal_limit,
+            cfg.trickle_wide_discover_limit)
+    assert rec.calls == [wide, wide, wide]
+
+
+def test_wide_pass_resets_failed_rows_daily(tmp_path, monkeypatch):
+    """Cap-FAILED papers must re-enter the pool on every wide pass, not only at
+    process start — a daemon that runs for weeks otherwise strands them."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "ok", published_at=NOW - timedelta(hours=2))
+    conn.close()
+
+    _patch_sessions(monkeypatch)
+    rec = _RefreshRecorder()
+    monkeypatch.setattr(trickle, "_refresh_queue", rec)
+
+    # A row that goes FAILED *after* the loop-start reset: only the wide pass can
+    # rescue it. Mark it between tick 1 and tick 2 via the injected clock hook.
+    marked: list[bool] = []
+
+    def mono_fn(_c=_FakeMonotonic(step=cfg.trickle_wide_discover_every_sec)):
+        if not marked:
+            marked.append(True)
+        else:
+            c = db.connect(cfg.database_url)
+            db.set_status(c, "ok", Status.FAILED, error_message="cap")
+            c.close()
+        return _c()
+
+    trickle.run_trickle(
+        cfg, max_iterations=2, dry_run=False, per_tick_cap=0,
+        now_fn=lambda: NOW, sleep_fn=lambda _s: None, monotonic_fn=mono_fn,
+    )
+
+    conn = db.connect(cfg.database_url)
+    assert db.get_by_blob_id(conn, "ok")["status"] == Status.DISCOVERED.value
+    conn.close()
+    assert len(rec.calls) == 2 and all(c[0] == cfg.trickle_wide_discover_hours
+                                       for c in rec.calls)
+
+
+# ---------------------------------------------------------------------------
+# dead-driver watchdog: recycle the session, then exit(1) for the supervisor
+# ---------------------------------------------------------------------------
+DRIVER_DEAD_MSG = (
+    "APIRequestContext.get: Connection closed while reading from the driver"
+)
+
+
+class DeadDriverClient(FakeClient):
+    """Every download dies on the Playwright transport (the observed wedge)."""
+
+    def download_blob(self, blob_id: str) -> bytes:
+        self.downloaded.append(blob_id)
+        raise Exception(DRIVER_DEAD_MSG)
+
+
+def test_is_driver_dead_recognises_transport_failures():
+    assert trickle._is_driver_dead(Exception(DRIVER_DEAD_MSG))
+    assert trickle._is_driver_dead(Exception("Target closed"))
+    assert trickle._is_driver_dead(
+        Exception("Target page, context or browser has been closed")
+    )
+    # a normal bad-paper failure is NOT a transport failure
+    assert not trickle._is_driver_dead(Exception("blob abc -> 404"))
+    assert not trickle._is_driver_dead(ValueError("not a pdf"))
+
+
+def test_driver_dead_requeues_the_paper_and_ends_the_account_tick(tmp_path, monkeypatch):
+    """The transport died, not the paper: it must go back to DISCOVERED (never
+    FAILED) and the account must stop pulling this tick — spinning the whole
+    queue into FAILED is exactly what the 17h wedge did."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    for i in range(3):
+        _seed(conn, f"p{i}", published_at=NOW - timedelta(hours=i + 1))
+    conn.close()
+
+    _patch_sessions(monkeypatch, client_cls=DeadDriverClient)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    trickle._open_sessions(cfg, states)
+    tick = trickle.run_tick(cfg, conn, states, NOW, dry_run=False)
+
+    assert tick.driver_dead == 1, "exactly ONE attempt, then the tick ended"
+    assert states[0].client.downloaded == ["p0"]
+    assert db.get_by_blob_id(conn, "p0")["status"] == Status.DISCOVERED.value
+    assert states[0].driver_dead_ticks == 1
+    trickle._close_sessions(states)
+    conn.close()
+
+
+def test_session_is_recycled_after_three_consecutive_dead_ticks(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "p", published_at=NOW - timedelta(hours=1))
+    conn.close()
+
+    opened: list[int] = []
+
+    class CountingSession(FakeSession):
+        def __enter__(self):
+            opened.append(1)
+            return super().__enter__()
+
+    _patch_sessions(monkeypatch, client_cls=DeadDriverClient,
+                    session_cls=CountingSession)
+
+    results = trickle.run_trickle(
+        cfg, max_iterations=3, dry_run=False, now_fn=lambda: NOW,
+        sleep_fn=lambda _s: None, monotonic_fn=lambda: 0.0,
+    )
+    # 3 dead ticks -> one recycle (the initial open + exactly one re-open)
+    assert [r.driver_dead for r in results] == [1, 1, 1]
+    assert len(opened) == 2, "session opened once at start, re-opened once"
+
+
+def test_healthy_tick_resets_the_dead_driver_counter(tmp_path, monkeypatch):
+    """Only CONSECUTIVE all-dead ticks count — an intermittent blip must not
+    accumulate into a needless session recycle."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "a", published_at=NOW - timedelta(hours=1))
+    _seed(conn, "b", published_at=NOW - timedelta(hours=2))
+    conn.close()
+
+    class FlakyClient(FakeClient):
+        calls = 0
+
+        def download_blob(self, blob_id: str) -> bytes:
+            FlakyClient.calls += 1
+            if FlakyClient.calls == 1:
+                raise Exception(DRIVER_DEAD_MSG)
+            return super().download_blob(blob_id)
+
+    _patch_sessions(monkeypatch, client_cls=FlakyClient)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    trickle._open_sessions(cfg, states)
+
+    trickle.run_tick(cfg, conn, states, NOW, dry_run=False, per_tick_cap=1)
+    assert states[0].driver_dead_ticks == 1
+    trickle.run_tick(cfg, conn, states, NOW, dry_run=False, per_tick_cap=1)
+    assert states[0].driver_dead_ticks == 0, "a successful tick clears the streak"
+    trickle._close_sessions(states)
+    conn.close()
+
+
+def test_two_failed_reopens_exit_1_for_the_supervisor(tmp_path, monkeypatch):
+    """When even the re-open fails, the process is unrecoverable in place: exit(1)
+    so launchd's KeepAlive gives us a clean one."""
+    cfg = _cfg(tmp_path, monkeypatch)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    states[0].driver_dead_ticks = trickle.DRIVER_DEAD_TICKS_BEFORE_REOPEN
+    states[0].reopen_failures = trickle.REOPEN_FAILURES_BEFORE_EXIT - 1
+
+    def boom(_cfg, _state):
+        _state.authed = False
+        return False
+
+    monkeypatch.setattr(trickle, "_open_session", boom)
+    with pytest.raises(SystemExit) as ei:
+        trickle._recycle_dead_sessions(cfg, states)
+    assert ei.value.code == 1
+
+
+def test_successful_reopen_clears_the_failure_streak(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    states[0].driver_dead_ticks = trickle.DRIVER_DEAD_TICKS_BEFORE_REOPEN
+    states[0].reopen_failures = 1
+
+    def ok(_cfg, _state):
+        _state.authed = True
+        return True
+
+    monkeypatch.setattr(trickle, "_open_session", ok)
+    trickle._recycle_dead_sessions(cfg, states)
+    assert states[0].reopen_failures == 0
+    assert states[0].driver_dead_ticks == 0
+
+
+def test_a_healthy_account_is_never_recycled(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    states[0].driver_dead_ticks = trickle.DRIVER_DEAD_TICKS_BEFORE_REOPEN - 1
+    calls: list[str] = []
+    monkeypatch.setattr(
+        trickle, "_open_session", lambda c, s: calls.append(s.name) or True
+    )
+    trickle._recycle_dead_sessions(cfg, states)
+    assert calls == []
+
+
+# ---------------------------------------------------------------------------
+# Production post-recovery regression: transient server/TLS failure must NEVER
+# be mistaken for an unsupported PDF, nor burn a second request in the tick.
+# ---------------------------------------------------------------------------
+def test_blob_request_pre_tls_disconnect_is_typed_transient(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class NeverConnectedRequest:
+        def __init__(self):
+            self.calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            raise RuntimeError(
+                "APIRequestContext.get: Client network socket disconnected "
+                "before secure TLS connection was established"
+            )
+
+    class Context:
+        request = NeverConnectedRequest()
+
+    client = MarketDeskClient(Context(), cfg)
+    with pytest.raises(TransientHTTPError, match="before TLS establishment"):
+        client.download_blob("known_valid_report")
+    assert Context.request.calls == 1, "do not replay uncertain vendor GET effects"
+
+
+def test_blob_request_http_503_is_transient_not_unsupported(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class ServerError:
+        status = 503
+        ok = False
+
+    class Request:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            return ServerError()
+
+    class Context:
+        request = Request()
+
+    with pytest.raises(TransientHTTPError, match="503"):
+        MarketDeskClient(Context(), cfg).download_blob("known_valid_report")
+    assert Context.request.calls == 1
+
+
+def test_blob_request_unknown_post_handshake_failure_is_not_retried(
+    tmp_path, monkeypatch
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class AmbiguousRequest:
+        calls = 0
+
+        def get(self, _url, **_kwargs):
+            self.calls += 1
+            raise RuntimeError("stream socket broke after headers")
+
+    class Context:
+        request = AmbiguousRequest()
+
+    with pytest.raises(RuntimeError, match="after headers"):
+        MarketDeskClient(Context(), cfg).download_blob("unknown_effect")
+    assert Context.request.calls == 1
+
+
+def test_transient_503_requeues_with_five_minute_account_backoff(
+    tmp_path, monkeypatch
+):
+    """No permanent SKIPPED_UNSUPPORTED or FAILED on server 503; after one
+    attempt the account waits five minutes while preserving its source row.
+    It also spends a pacing token without a confirmed-download ledger entry.
+    """
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    _seed(conn, "first", published_at=NOW - timedelta(minutes=1))
+    _seed(conn, "second", published_at=NOW - timedelta(minutes=2))
+
+    class OneTransient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            if len(self.downloaded) == 1:
+                raise TransientHTTPError("blob first -> 503")
+            return b"%PDF-1.4\n" + blob_id.encode() + b"\n%%EOF\n"
+
+    _patch_sessions(monkeypatch, client_cls=OneTransient)
+    states = [trickle.AccountState(profile=p) for p in cfg.profiles]
+    trickle._open_sessions(cfg, states)
+    try:
+        first = trickle.run_tick(cfg, conn, states, NOW, dry_run=False)
+        assert first.transient_errors == 1
+        assert first.unsupported == first.errors == first.downloaded_new == 0
+        assert states[0].client.downloaded == ["first"]
+        assert states[0].transient_retry_after == NOW + timedelta(minutes=5)
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.DISCOVERED.value
+        assert db.trailing_24h_count(conn, states[0].name, NOW) == 0
+        assert "transient_errors=1" in first.summary()
+
+        second = trickle.run_tick(
+            cfg, conn, states, NOW + timedelta(minutes=4), dry_run=False
+        )
+        assert second.downloaded_new == second.transient_errors == 0
+        assert states[0].client.downloaded == ["first"]
+        assert trickle.plan_account(
+            cfg, conn, states[0], NOW + timedelta(minutes=4)
+        ).next_blob_id is None
+
+        recovered = trickle.run_tick(
+            cfg, conn, states, NOW + timedelta(minutes=6),
+            dry_run=False, per_tick_cap=1
+        )
+        assert recovered.downloaded_new == 1
+        assert db.get_by_blob_id(conn, "first")["status"] == Status.COMPLETE.value
+        assert db.trailing_24h_count(
+            conn, states[0].name, NOW + timedelta(minutes=6)
+        ) == 1
+        assert states[0].client.downloaded == ["first", "first"]
+    finally:
+        trickle._close_sessions(states);conn.close()
+
+
+def test_transient_one_account_does_not_pause_other_authorized_account(
+    tmp_path, monkeypatch
+):
+    cfg = _cfg(
+        tmp_path, monkeypatch,
+        profiles=f"first:{tmp_path / 'p1'},second:{tmp_path / 'p2'}",
+    )
+    conn = db.connect(cfg.database_url);db.init_db(conn)
+    _seed(conn, "high_priority", published_at=NOW - timedelta(minutes=1))
+
+    class DownClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise TransientHTTPError("blob high_priority -> 502")
+
+    first_state, second_state = [
+        trickle.AccountState(profile=p, authed=True)
+        for p in cfg.profiles
+    ]
+    first_state.client = DownClient(object(), cfg)
+    second_state.client = FakeClient(object(), cfg)
+    first_state.tokens = second_state.tokens = float(cfg.trickle_burst)
+    first_state.last_refill = second_state.last_refill = NOW
+    try:
+        tick = trickle.run_tick(
+            cfg, conn, [first_state, second_state], NOW, dry_run=False
+        )
+        assert tick.transient_errors == 1
+        assert tick.downloaded_new == 1
+        assert first_state.transient_retry_after == NOW + timedelta(minutes=5)
+        assert second_state.transient_retry_after is None
+        assert db.get_by_blob_id(conn, "high_priority")["status"] == Status.COMPLETE.value
+        assert db.trailing_24h_count(conn, second_state.name, NOW) == 1
+        assert db.trailing_24h_count(conn, first_state.name, NOW) == 0
+    finally:
+        conn.close()
+
+
+def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url);db.init_db(conn)
+    _seed(conn, "unsupported", published_at=NOW - timedelta(minutes=1))
+
+    class UnsupportedClient(FakeClient):
+        def download_blob(self, blob_id):
+            self.downloaded.append(blob_id)
+            raise MarketDeskError("blob unsupported: not a PDF")
+
+    _patch_sessions(monkeypatch, client_cls=UnsupportedClient)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+    trickle._open_sessions(cfg, [state])
+    try:
+        tick = trickle.run_tick(cfg, conn, [state], NOW, dry_run=False)
+        assert tick.unsupported == 1
+        assert tick.transient_errors == 0
+        assert state.transient_retry_after is None
+        assert db.get_by_blob_id(conn, "unsupported")["status"] == (
+            Status.SKIPPED_UNSUPPORTED.value
+        )
+    finally:
+        trickle._close_sessions([state]);conn.close()
+
+
+@pytest.mark.parametrize("phase", ["construct", "enter", "probe", "client"])
+def test_session_failure_classifies_only_browser_entry_as_unknown(
+    tmp_path, monkeypatch, phase,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    class FailingSession(FakeSession):
+        def __init__(self, cfg):
+            events.append("construct")
+            if phase == "construct":
+                raise RuntimeError("construct failed")
+            super().__init__(cfg)
+
+        def __enter__(self):
+            events.append("enter")
+            if phase == "enter":
+                raise RuntimeError("enter failed")
+            return super().__enter__()
+
+        def is_authenticated(self):
+            events.append("probe")
+            if phase == "probe":
+                raise RuntimeError("probe failed")
+            return True
+
+        def __exit__(self, *exc):
+            events.append("close")
+
+    def make_client(context, cfg):
+        events.append("client")
+        if phase == "client":
+            raise RuntimeError("client failed")
+        return FakeClient(context, cfg)
+
+    monkeypatch.setattr(trickle, "BrowserSession", FailingSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", make_client)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+
+    assert trickle._open_session(cfg, state) is False
+    assert state.browser_start_failed is (phase in {"construct", "enter"})
+    assert state.authed is False
+    assert state.session is None and state.client is None
+    assert events.count("close") == (0 if phase == "construct" else 1)
+
+
+@pytest.mark.parametrize("authenticated", [True, False])
+def test_successful_browser_reopen_clears_startup_unknown(
+    tmp_path, monkeypatch, authenticated,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class ReopenedSession(FakeSession):
+        def is_authenticated(self):
+            return authenticated
+
+    monkeypatch.setattr(trickle, "BrowserSession", ReopenedSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", FakeClient)
+    state = trickle.AccountState(profile=cfg.profiles[0], browser_start_failed=True)
+    try:
+        assert trickle._open_session(cfg, state) is authenticated
+        assert state.browser_start_failed is False
+        assert state.authed is authenticated
+    finally:
+        trickle._close_session(state)
+
+
+@pytest.mark.parametrize(
+    "flags,expected,reason",
+    [
+        ([], db.AUTH_UNKNOWN, "NO_CONFIGURED_PROFILE"),
+        ([(False, False)], db.AUTH_REQUIRED, "NO_AUTHENTICATED_PROFILE"),
+        ([(False, True)], db.AUTH_UNKNOWN, "BROWSER_START_FAILED"),
+        ([(False, False), (False, True)], db.AUTH_UNKNOWN, "BROWSER_START_FAILED"),
+        ([(False, True), (True, False)], db.AUTHENTICATED, ""),
+    ],
+)
+def test_producer_health_retains_unknown_until_authentication_is_observed(
+    tmp_path, monkeypatch, flags, expected, reason,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    states = [
+        trickle.AccountState(
+            profile=cfg.profiles[0], authed=authed, browser_start_failed=failed,
+        )
+        for authed, failed in flags
+    ]
+    try:
+        trickle._record_producer_auth_health(conn, states, NOW)
+        health = db.producer_auth_health(conn)
+        assert health["state"] == expected
+        assert health["reason"] == reason
+        if states and states[0].browser_start_failed:
+            plan = trickle.plan_account(cfg, conn, states[0], NOW)
+            assert "UNKNOWN" in plan.describe()
+            assert "BROWSER_START_FAILED" in plan.describe()
+            assert "NOT AUTHENTICATED" not in plan.describe()
+    finally:
+        conn.close()
+
+
+def test_dry_run_browser_start_failure_prints_unknown(tmp_path, monkeypatch, capsys):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class CannotStart(FakeSession):
+        def __enter__(self):
+            raise RuntimeError("browser executable missing")
+
+    monkeypatch.setattr(trickle, "BrowserSession", CannotStart)
+    trickle.run_trickle(
+        cfg, once=True, dry_run=True, now_fn=lambda: NOW, sleep_fn=lambda _: None,
+    )
+    output = capsys.readouterr().out
+    assert "UNKNOWN" in output and "BROWSER_START_FAILED" in output
+    assert "NOT AUTHENTICATED" not in output
+
+
+@pytest.mark.parametrize("phase", ["launch", "setup"])
+@pytest.mark.parametrize("cleanup_fails", [False, True])
+def test_partial_browser_entry_releases_resources_and_preserves_original_error(
+    tmp_path, monkeypatch, phase, cleanup_fails,
+):
+    from types import SimpleNamespace
+
+    import playwright.sync_api
+    from marketdesk_extractor.auth import BrowserSession
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    def close():
+        events.append("close")
+        if cleanup_fails:
+            raise RuntimeError("cleanup close failed")
+
+    def stop():
+        events.append("stop")
+        if cleanup_fails:
+            raise RuntimeError("cleanup stop failed")
+
+    def setup(timeout):
+        raise RuntimeError("setup original")
+
+    context = SimpleNamespace(close=close, set_default_timeout=setup)
+
+    def launch(**kwargs):
+        if phase == "launch":
+            raise RuntimeError("launch original")
+        return context
+
+    driver = SimpleNamespace(
+        chromium=SimpleNamespace(launch_persistent_context=launch), stop=stop,
+    )
+    monkeypatch.setattr(
+        playwright.sync_api, "sync_playwright",
+        lambda: SimpleNamespace(start=lambda: driver),
+    )
+    session = BrowserSession(cfg)
+    with pytest.raises(RuntimeError, match=f"{phase} original"):
+        session.__enter__()
+
+    assert events == (["stop"] if phase == "launch" else ["close", "stop"])
+    assert session.context is None and session._pw is None
+    session.__exit__(None, None, None)
+    assert events == (["stop"] if phase == "launch" else ["close", "stop"])
+
+
+@pytest.mark.parametrize("close_fails,stop_fails", [(False, False), (True, False), (True, True)])
+def test_browser_exit_stops_driver_and_is_idempotent(
+    tmp_path, monkeypatch, close_fails, stop_fails,
+):
+    from types import SimpleNamespace
+    from marketdesk_extractor.auth import BrowserSession
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    def close():
+        events.append("close")
+        if close_fails:
+            raise RuntimeError("context close failed")
+
+    def stop():
+        events.append("stop")
+        if stop_fails:
+            raise RuntimeError("driver stop failed")
+
+    session = BrowserSession(cfg)
+    session.context = SimpleNamespace(close=close)
+    session._pw = SimpleNamespace(stop=stop)
+    session.__exit__(None, None, None)
+    session.__exit__(None, None, None)
+
+    assert events == ["close", "stop"]
+    assert session.context is None and session._pw is None

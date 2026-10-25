@@ -85,11 +85,37 @@ overlay compares against).
 
 Never fatal: any missing/unreadable input degrades to MISSING coverage the same way the
 settled builder does.
+
+R3 GAP-1 — MATERIALITY FIRING LEDGER (additive, Grey-Deer-coordinated)
+------------------------------------------------------------------------
+`_advance_transition` (the dwell/debounce state machine below) is UNCHANGED by this
+addition: every branch, condition, and returned field it already published is byte-
+identical. The only addition is that the two points where it ACCEPTS a stage change
+(a debounce-confirmed escalation or de-escalation actually adopted into
+`live_transition.stable_stage`) now also record that acceptance in an internal-only
+`_accepted` key, popped off by `build()` before the transition dict is persisted to
+`site/live/risk_envelope.json` — the published wrapper shape is unchanged.
+
+When `build()` sees an acceptance, it emits exactly one
+`engine.neuralweb.reflexes.record_firing("risk_envelope_materiality", …)` row —
+`is_context_only=True` telemetry (Article 2 perimeter: annotates the spine index,
+feeds no score/allocation/ranking surface), never a graded forward ledger and never a
+market verdict (instrument-verdict law: this is telemetry about a state READ). The
+call is wrapped in try/except and logged at debug on failure — a firing-ledger error
+must never break the envelope build. No firing on a repeated/frozen observation, a
+non-accepted (still-pending) tick, or a `precedence != "live"` supersede/settle.
+
+This DOES add a second file write (`data/reflexes/risk_envelope_materiality/
+firings.jsonl`) on the (rare — debounce-gated) fires where a transition is actually
+accepted; `tests/test_live_risk_envelope.py::TestNoLedger` fixtures never reach an
+acceptance in one shot (default `debounce_ticks=3`, cold-start ticks start at 1), so
+that guard's "only write" assertion is unaffected by this addition.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -102,19 +128,25 @@ from typing import Any
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
-from engine.risk_envelope import compose_envelope, canonical_json  # noqa: E402
+from engine.risk_envelope import (
+    compose_envelope, canonical_json, live_market_freshness,
+    LIVE_MARKET_FUTURE_TOLERANCE_S as _FUTURE_TOLERANCE_S,
+)  # noqa: E402
 from lib import config  # noqa: E402
 from lib import nyse_calendar  # noqa: E402
 from scripts.build_risk_envelope import (  # noqa: E402
     _leadership_crack_read,
     _market_state_read,
     _risk_radar_read,
+    _rotation_read,
+    _recorded_market_transition,
+    _CONTEXT_NOT_PROVIDED,
+    _NATIVE_MARKET_FIELDS,
 )
 
 log = logging.getLogger(__name__)
 
 MARKET = "US"
-_FUTURE_TOLERANCE_S = 120.0
 
 _DEBOUNCE_TICKS_DEFAULT = 3
 _STALE_AFTER_MIN_DEFAULT = 5.0
@@ -126,7 +158,8 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     try:
         if not path.exists():
             return None
-        return json.loads(path.read_text(encoding="utf-8"))
+        parsed = json.loads(path.read_text(encoding="utf-8"))
+        return parsed if isinstance(parsed, dict) else None
     except Exception as e:  # noqa: BLE001 — a bad source becomes a missing one
         log.warning("live_risk_envelope: source unreadable %s (%s)", path, e)
         return None
@@ -222,9 +255,12 @@ def _normalize_event_time(raw: Any, now: datetime) -> str | None:
         return None
     if dt.tzinfo is None:
         return None  # F5: naive clock -> never assumed UTC, dropped
-    if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
-        return None  # F6: defense-in-depth future-clock guard
-    return _iso_z(dt)
+    try:
+        if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
+            return None  # F6: defense-in-depth future-clock guard
+        return _iso_z(dt)
+    except (ValueError, OverflowError):
+        return None  # malformed offset must not abort the source projection
 
 
 def _live_session(built_dt: datetime | None) -> str | None:
@@ -247,16 +283,11 @@ def market_freshness(
     never drift apart. `usable` folds live_active, the stale_after_min horizon, and
     a wall-clock skew guard on the carrying artifact's own `built` clock (>120s
     ahead of wall-clock is refused, same as the general clock law)."""
-    live_active = bool((risk_state_doc or {}).get("live_active"))
-    built_dt = _parse_built((risk_state_doc or {}).get("built"))
-    fresh_enough = bool(built_dt) and (now - built_dt).total_seconds() <= stale_after_min * 60.0
-    future_artifact = bool(built_dt) and (built_dt - now).total_seconds() > _FUTURE_TOLERANCE_S
-    usable = live_active and fresh_enough and not future_artifact
-    return {
-        "live_active": live_active, "built_dt": built_dt,
-        "fresh_enough": fresh_enough, "future_artifact": future_artifact,
-        "usable": usable,
-    }
+    return live_market_freshness(
+        live_active=bool((risk_state_doc or {}).get("live_active")),
+        built_dt=_parse_built((risk_state_doc or {}).get("built")),
+        stale_after_min=stale_after_min, now=now,
+    )
 
 
 def _is_future(as_of: str | None, ceiling: str | None, wall_now: datetime) -> bool:
@@ -287,6 +318,8 @@ def build_live_sources(
     live_session: str | None,
     market_usable: bool,
     now: datetime,
+    rotation_doc: Any = _CONTEXT_NOT_PROVIDED,
+    market_transition: dict[str, Any] | None = None,
 ) -> list:
     """Reshape the live plane's own artifacts into the SETTLED adapters' doc shapes
     and call them with an explicit `stale_override`. Field re-housing only — no
@@ -299,6 +332,7 @@ def build_live_sources(
     too, so source-level usability and the wrapper's `live_active` can never
     disagree with each other."""
     L, S = live_session, settled_source_session
+    context_enabled = rotation_doc is not _CONTEXT_NOT_PROVIDED
 
     market_stale_override = not market_usable
     # "radar live read carries the same freshness verdict as its carrying artifact"
@@ -331,6 +365,16 @@ def build_live_sources(
                 "capped": False,
                 "freshness": {"stale": market_stale_override},
             }
+            if context_enabled:
+                # Source-native attribution survives the fast-lane adapter. Missing
+                # provenance stays absent; 'live_fast_lane' is a delivery path, not
+                # evidence that the native score was uncapped or blend-derived.
+                for key in _NATIVE_MARKET_FIELDS:
+                    if key in live_blk:
+                        ms_doc[key] = live_blk[key]
+                for key in ("score_source", "capped"):
+                    if key not in live_blk:
+                        ms_doc.pop(key, None)
             radar_raw = live_blk.get("radar") or {}
             if radar_raw.get("state") is not None:
                 radar_doc = {
@@ -343,9 +387,12 @@ def build_live_sources(
                 }
 
     measured = (
-        _market_state_read(ms_doc, L, stale_override=market_stale_override)
+        _market_state_read(ms_doc, L, stale_override=market_stale_override,
+                           context_enabled=context_enabled, transition_context=market_transition,
+                           now=now)
         if ms_doc is not None
-        else _market_state_read(None, L)
+        else _market_state_read(None, L, context_enabled=context_enabled,
+                                transition_context=market_transition, now=now)
     )
     radar = (
         _risk_radar_read(radar_doc, L, L, stale_override=radar_stale_override)
@@ -369,7 +416,10 @@ def build_live_sources(
             S, stale_override=True,
         )
 
-    return [measured, leadership, radar]
+    sources = [measured, leadership, radar]
+    if context_enabled:
+        sources.append(_rotation_read(rotation_doc, L, now=now))
+    return sources
 
 
 def _advance_transition(
@@ -412,6 +462,12 @@ def _advance_transition(
       candidate must never read as a de-escalation toward calm.
     * otherwise -> normal debounce, symmetric for escalation and de-escalation —
       the logic below does not special-case direction at all.
+
+    R3 GAP-1 (additive, changes no branch/condition above): the two points where
+    this function ACCEPTS a debounce-confirmed stage change also stash that fact
+    in the returned dict's `_accepted` key (`None` everywhere else) — internal-only,
+    popped off by `build()` before `live_transition` is persisted, so the published
+    artifact shape is unchanged. See the module docstring's R3 GAP-1 section.
     """
     prev = prev or {}
     prev_session = prev.get("session")
@@ -419,6 +475,7 @@ def _advance_transition(
     prev_pending = prev.get("pending") or {}
     prev_observed_built = prev.get("last_observed_built")
     last_observed_built = prev_observed_built
+    accepted: dict[str, Any] | None = None
 
     if precedence != "live":
         stable_stage, pending = settled_stage, None
@@ -428,6 +485,10 @@ def _advance_transition(
             last_observed_built = observed_built
             ticks = 1
             if ticks >= max(1, debounce_ticks):
+                accepted = {
+                    "stage_from": stable_stage, "stage_to": candidate_stage,
+                    "confirmations": ticks,
+                }
                 stable_stage, pending = candidate_stage, None
             else:
                 pending = {"stage": candidate_stage, "ticks": ticks, "needs": debounce_ticks}
@@ -451,6 +512,10 @@ def _advance_transition(
             ticks = 1
         last_observed_built = observed_built
         if ticks >= max(1, debounce_ticks):
+            accepted = {
+                "stage_from": prev_stable, "stage_to": candidate_stage,
+                "confirmations": ticks,
+            }
             stable_stage, pending = candidate_stage, None
         else:
             stable_stage = prev_stable
@@ -462,7 +527,80 @@ def _advance_transition(
         "stable_stage": stable_stage,
         "pending": pending,
         "last_observed_built": last_observed_built,
+        "_accepted": accepted,
     }
+
+
+# ── R3 GAP-1: materiality firing ledger (additive; see module docstring) ────────
+
+def _materiality_fingerprint(risk_state_doc: dict[str, Any] | None,
+                              observed_built: str | None) -> str:
+    """sha256 hex digest of the DISTINCT-observation key `_advance_transition`
+    already discriminates on (`observed_built`), combined with the spliced live
+    leg values that key stands in for (`risk_state.json["live"]` — the same RAW
+    block `build_live_sources` reads, never `display`). Explicit + deterministic:
+    `canonical_json` (sorted keys, tight separators) makes byte-identical inputs
+    hash byte-identical, and any leg value change inside `live` changes the
+    fingerprint even when `observed_built` itself is reused."""
+    payload = {
+        "observed_built": observed_built,
+        "live": (risk_state_doc or {}).get("live") or {},
+    }
+    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def _emit_materiality_firing(
+    *,
+    root: Path | None,
+    accepted: dict[str, Any],
+    precedence: str,
+    live_session: str | None,
+    envelope_asof: str | None,
+    risk_state_doc: dict[str, Any] | None,
+    observed_built: str | None,
+    source_event_time: str | None,
+    recompute_time: str,
+) -> None:
+    """One `record_firing("risk_envelope_materiality", …)` row for THIS accepted
+    dwell transition (R3 GAP-1). Reads only the dwell machine's OWN decision
+    (`accepted`, already computed by `_advance_transition`) — never re-derives or
+    second-guesses it. Fields follow the frozen R3 contract's GAP-1 paragraph
+    (trigger_type, fingerprint, stage_from/to, confirmations, source_event_time,
+    recompute_time, precedence, asof) plus the base claim-shape conventions
+    `engine.neuralweb.reflexes.record_firing` documents and
+    `scripts/refresh_regime_if_stale.py`'s existing caller already follows
+    (ts/trigger_key/action_taken/scope_type/scope_key/direction/horizon_d).
+    `direction`/`horizon_d` stay 0/None — infrastructure telemetry about a state
+    read, never a directional bet (instrument-verdict law: no verdict language in
+    these fields). Caller wraps this in try/except — never raises here on
+    purpose; any failure the import/write path hits is the caller's to swallow."""
+    from engine.neuralweb.reflexes import record_firing  # noqa: PLC0415 — lazy, optional dep
+
+    fingerprint = _materiality_fingerprint(risk_state_doc, observed_built)
+    stage_from = accepted["stage_from"]
+    stage_to = accepted["stage_to"]
+    confirmations = accepted["confirmations"]
+    trigger_key = f"{live_session}:{stage_from}->{stage_to}:{fingerprint[:16]}"
+
+    record_firing("risk_envelope_materiality", {
+        "ts": recompute_time,
+        "trigger_type": "materiality_dwell",
+        "trigger_key": trigger_key,
+        "action_taken": "stage_transition_published",
+        "scope_type": "macro",
+        "scope_key": "risk_envelope",
+        "direction": 0,
+        "horizon_d": None,
+        "asof": envelope_asof,
+        "fingerprint": fingerprint,
+        "stage_from": stage_from,
+        "stage_to": stage_to,
+        "confirmations": confirmations,
+        "source_event_time": source_event_time,
+        "recompute_time": recompute_time,
+        "precedence": precedence,
+        "live_session": live_session,
+    }, root=root)
 
 
 # ── build / write ────────────────────────────────────────────────────────────────
@@ -494,6 +632,8 @@ def build(root: Path | None = None, now: datetime | None = None,
     risk_state_doc = _read_json(risk_state_path(root))
     leadership_doc = _read_json(leadership_crack_path(root))
     settled = _read_json(settled_envelope_path(root)) or {}
+    rotation_doc = _read_json(root / "site" / "marketdata" / "rotation_events.json")
+    market_state_doc = _read_json(root / "data" / "market_state" / "latest.json")
     S = settled.get("source_session")
     B = settled.get("bundle_id")
     settled_stage = (settled.get("hazard_summary") or {}).get("stage")
@@ -520,6 +660,11 @@ def build(root: Path | None = None, now: datetime | None = None,
         live_session=L,
         market_usable=fresh["usable"],
         now=now,
+        rotation_doc=rotation_doc,
+        market_transition=_recorded_market_transition(
+            root / "data" / "market_state" / "forward_log.jsonl", S,
+            now=now, current=market_state_doc,
+        ),
     )
 
     # OBSERVATION CLOCK: `now`, captured/injected above. PRODUCTION CLOCK: sampled
@@ -578,6 +723,7 @@ def build(root: Path | None = None, now: datetime | None = None,
         stale_reason = "not live"
 
     prev = _read_json(out_path(root)) or {}
+    observed_built = (risk_state_doc or {}).get("built")
     live_transition = _advance_transition(
         prev.get("live_transition"),
         live_session=L,
@@ -586,8 +732,11 @@ def build(root: Path | None = None, now: datetime | None = None,
         candidate_stage=candidate_stage,
         settled_stage=settled_stage,
         debounce_ticks=debounce_ticks,
-        observed_built=(risk_state_doc or {}).get("built"),
+        observed_built=observed_built,
     )
+    # R3 GAP-1: pop the internal-only acceptance marker BEFORE `live_transition`
+    # is published — the persisted/published shape is unchanged by this addition.
+    _accepted = live_transition.pop("_accepted", None)
 
     out = dict(envelope)
     out.update({
@@ -623,6 +772,26 @@ def build(root: Path | None = None, now: datetime | None = None,
             "produced_at": produced_stamp,
         },
     })
+
+    # R3 GAP-1: one durable ledger row per ACCEPTED dwell transition. Fail-open —
+    # a firing-ledger error must never break the envelope build.
+    if _accepted is not None:
+        try:
+            _emit_materiality_firing(
+                root=root,
+                accepted=_accepted,
+                precedence=precedence,
+                live_session=L,
+                envelope_asof=envelope_session,
+                risk_state_doc=risk_state_doc,
+                observed_built=observed_built,
+                source_event_time=out["clocks"]["event_time"],
+                recompute_time=produced_stamp,
+            )
+        except Exception as e:  # noqa: BLE001 — additive telemetry, never breaks the build
+            log.debug("live_risk_envelope: materiality firing skipped (non-fatal): %s", e,
+                      exc_info=True)
+
     return out
 
 

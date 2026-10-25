@@ -1,0 +1,113 @@
+{
+  "stage": "primary",
+  "params": {
+    "PRE_N": 40,
+    "POST_N": 40,
+    "MIN_VALID": 30,
+    "MIN_LOG_RATIO": 0.4054651081081644,
+    "BAR": 0.22314355131420976,
+    "N_BOOT": 10000,
+    "SEED": 3003,
+    "TRAIN_FRAC": 0.4,
+    "MIN_CONTROLS": 5
+  },
+  "coverage": {
+    "panel_tickers": 1642,
+    "attested_joined_tickers": 404,
+    "controls_pool": 390,
+    "unattested_tickers_with_incumbent_break": 19,
+    "unattested_break_names": [
+      "AZN",
+      "AZO",
+      "BKNG",
+      "DD",
+      "FAST",
+      "KEY",
+      "MLI",
+      "MSTR",
+      "MTH",
+      "NVO",
+      "RF",
+      "SOXX",
+      "WMT",
+      "XLB",
+      "XLE",
+      "XLI",
+      "XLK",
+      "XLU",
+      "XLY"
+    ]
+  },
+  "honest_n": {
+    "all": {
+      "events": 11,
+      "tickers": 11,
+      "quarter_blocks": 7
+    },
+    "train": {
+      "events": 4,
+      "tickers": 4,
+      "quarter_blocks": 4
+    },
+    "holdout": {
+      "events": 7,
+      "tickers": 7,
+      "quarter_blocks": 4
+    }
+  },
+  "training_diagnostic_A1": {
+    "median_E_raw": 2.2225497670598697,
+    "median_log_ratio": 2.302585092994046,
+    "A1_consistent": true
+  },
+  "holdout_bootstrap": {
+    "median_E_corr": 0.03823325885485307,
+    "ci95_E_corr": [
+      0.0013463356486309586,
+      0.046847255520188424
+    ],
+    "median_E_raw": 1.6476711712889531,
+    "ci95_E_raw": [
+      1.1064934660077048,
+      2.7093965367508415
+    ],
+    "share_abs_E_corr_le_bar": 1.0,
+    "share_abs_E_raw_le_bar": 0.0,
+    "blocks": [
+      "2024Q4",
+      "2025Q2",
+      "2025Q4",
+      "2026Q2"
+    ]
+  },
+  "gates": {
+    "a_ci_within_bar": true,
+    "b_share_within_bar": true,
+    "c_controls_identity": true,
+    "d_panel_unchanged_no_short_columns": true
+  },
+  "control_identity_ok": true,
+  "incumbent_comparator": {
+    "holdout_raw_fire_pm3_rate": 0.0,
+    "holdout_raw_fire_post_rate": 1.0,
+    "holdout_corr_fire_pm3_rate": 0.0,
+    "holdout_corr_fire_post_rate": 0.0,
+    "all_raw_fire_post_rate": 1.0,
+    "all_corr_fire_post_rate": 0.0
+  },
+  "attrition_counts": {
+    "R4_SUPPORT": 1,
+    "R1_KIND_AMBIGUOUS": 1,
+    "CONTROLS_1_LT_5": 1
+  },
+  "verdict_pre_integrity": null,
+  "panel_sha_before": {
+    "panel.parquet": "63c69080d88baf4bbc039d1906995e37fa7c5078f6370cac46d1a03a7df4f6f4",
+    "panel_deep.parquet": "12cc30a28547c30d7effd0991c6dab773b419f36b2fc4cc2133069fc444d5d9f"
+  },
+  "panel_sha_after": {
+    "panel.parquet": "63c69080d88baf4bbc039d1906995e37fa7c5078f6370cac46d1a03a7df4f6f4",
+    "panel_deep.parquet": "12cc30a28547c30d7effd0991c6dab773b419f36b2fc4cc2133069fc444d5d9f"
+  },
+  "verdict": "KEEP"
+}

@@ -1,0 +1,71 @@
+{
+  "activate": true,
+  "importance": 68,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "US bars Canadian goods from federal procurement — domestic suppliers win, Canada-linked contractors hit",
+  "banner_title_zh": "美国联邦采购排除加拿大产品——本土供应商受益，涉加承包商受损",
+  "summary": "A White House memorandum directs OMB and USTR to remove Canadian-origin items from the $280B+ federal civil procurement system in response to Canada's 'Buy Canadian' policy. This shifts procurement share toward domestic alternatives, penalizing Canadian suppliers and US contractors relying on Canadian content.",
+  "summary_zh": "白宫备忘录指示管理与预算办公室和美国贸易代表将加拿大原产产品从超2800亿美元的联邦民用采购体系中移除，以回应加拿大“买加拿大货”政策。此举将采购份额转向本土替代品，对加拿大供应商及依赖加拿大内容的美国承包商构成打击。",
+  "analysis": "The memorandum targets Canada's 'Buy Canadian' preferences and provincial procurement restrictions, ordering OMB and USTR to identify and remove Canadian-origin items from the federal civil procurement system — a market exceeding $280 billion annually under WTO GPA commitments. Agencies will be directed toward domestic alternatives where legally permissible. This is a tit-for-tat procurement restriction rather than a tariff or import ban on the broader economy.\n\nThe transmission mechanism is direct federal spending reallocation: Canadian manufacturers and US distributors of Canadian-made goods lose access to federal contracts, while domestic producers of substitutes gain incremental share. The practical impact depends heavily on how aggressively OMB and the FAR Council define 'Canadian origin' and how many contracts are actually reversed — the memo is deliberately open-ended on both.\n\nFor markets, the most exposed names are those with meaningful Canadian content in federal-facing segments: construction materials, IT hardware, vehicles, and specialized equipment where cross-border supply chains are common. Domestic pure-plays in these categories could see incremental wins, but the total dollar value is a fraction of the $280B since much procurement is services or already domestic.\n\nKey uncertainty: whether Canada retaliates by formally excluding US companies from its own federal and provincial procurement (beyond existing 'Buy Canadian' preferences), which would amplify the damage to US multinationals with Canadian public-sector business. The Trade Representative retains discretion to restore items if Canada changes course, making this a negotiating lever as much as a permanent bar.",
+  "sectors": [
+    {
+      "name": "US defense & federal IT contractors",
+      "impact": "headwind",
+      "rationale": "Companies with Canadian-sourced components or Canadian subsidiaries in federal supply chains face contract displacement and compliance costs."
+    },
+    {
+      "name": "Domestic construction & building materials",
+      "impact": "tailwind",
+      "rationale": "Canadian lumber, steel, and fabricated materials displaced from federal projects favor US producers with Buy America-compliant offerings."
+    },
+    {
+      "name": "US manufacturing (federal suppliers)",
+      "impact": "tailwind",
+      "rationale": "Domestic manufacturers competing against Canadian-origin goods for federal contracts gain incremental share."
+    },
+    {
+      "name": "Canadian industrials & exporters",
+      "impact": "headwind",
+      "rationale": "Loss of access to a $280B+ procurement market disproportionately hurts Canadian firms with significant US federal exposure."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "CAT",
+      "direction": "benefit",
+      "rationale": "Domestic heavy equipment manufacturer positioned to fill federal procurement gaps left by Canadian-origin alternatives."
+    },
+    {
+      "symbol": "NUE",
+      "direction": "benefit",
+      "rationale": "US steel producer likely to gain share in federal construction and infrastructure contracts displacing Canadian steel."
+    },
+    {
+      "symbol": "VMC",
+      "direction": "benefit",
+      "rationale": "Domestic aggregates and building materials supplier with direct exposure to federal infrastructure procurement."
+    },
+    {
+      "symbol": "STLD",
+      "direction": "benefit",
+      "rationale": "US steel fabricator benefiting from procurement rules favoring domestic content over Canadian imports."
+    },
+    {
+      "symbol": "CGI",
+      "direction": "hurt",
+      "rationale": "Canada-based IT and consulting firm with significant US federal government contract exposure under threat from the procurement directive."
+    },
+    {
+      "symbol": "MGA",
+      "direction": "hurt",
+      "rationale": "Canadian auto parts manufacturer with Canadian-origin components in vehicles purchased by US federal agencies."
+    },
+    {
+      "symbol": "WSP",
+      "direction": "hurt",
+      "rationale": "Canadian engineering and professional services firm active in US federal infrastructure and environmental contracts."
+    }
+  ],
+  "confidence": "medium"
+}

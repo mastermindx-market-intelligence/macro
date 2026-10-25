@@ -98,11 +98,15 @@
   var CATALOG_PREVIEW = false;
   var CATALOG_SOURCE = 'loading'; // 'loading' | 'live' | 'snapshot' | 'unavailable'
   var CATALOG_FRESH = false; // did the painted copy clear the freshness threshold?
+  var CATALOG_OBJECT = null; // selected copy only; never borrow live metadata for a snapshot
   var CATALOG_GENERATED = '';// producer clock (generated_at) of the painted copy
   var CATALOG_REQ = 0;       // newest-request-wins guard for auth/bootstrap refresh races
   var CATALOG_ABORT = null;
   var LANE = 'latest';
   var FILT = { inst: '', side: '', theme: '', q: '' };
+  var SEARCH_REQ = 0;
+  var SEARCH_STATE = 'metadata'; // metadata | loading | server | unavailable
+  var SEARCH_RESPONSE = null;
   var SEARCH_HITS = null;    // set of ids from the live search API, or null (no server search)
   // Teaser gate: reading full PDFs is Pro-only. Every non-Pro visitor sees the
   // same fixed latest-three preview, and the app starts locked while auth resolves
@@ -138,8 +142,8 @@
     var date = (pub.split('T')[0]) || '';
     return {
       id: x.id || '',
-      inst: (x.institution || '').trim() || 'Unknown',
-      logo: logoFor(x.institution),
+      inst: canonInst((x.institution || '').trim()) || 'Unknown',
+      logo: logoFor(canonInst((x.institution || '').trim())),
       desk: x.desk || '',
       side: (x.side || 'independent').toLowerCase(),
       date: date,
@@ -173,9 +177,46 @@
     return isFinite(n) && n >= 0 ? Math.floor(n) : null;
   }
 
-  /* side stamp */
-  function stampLabel(side) { return side === 'buy' ? T('BUY', '看多') : (side === 'sell' ? T('SELL', '看空') : T('IND', '独立')); }
-  function stampClass(side) { return side === 'buy' ? 'buy' : (side === 'sell' ? 'sell' : 'indep'); }
+  /* desk-type chip — `side` is buy-side/sell-side institution type, never a rating */
+  var INST_CANON = { blackrock: 'BlackRock', scotiabank: 'Scotiabank', commbank: 'CommBank',
+                     'commonwealth bank': 'CommBank', ing: 'ING', 'ing econ': 'ING', 'ing direct': 'ING',
+                     'sg prime': 'Société Générale' };
+  var NON_DESK = { 'new folder': 1, 's&t': 1, other: 1, prime: 1, pb: 1,
+                   'week ahead': 1, 'weekly preview': 1, '13f summary': 1, 'greed and fear': 1,
+                   nuclear: 1, 'zh ai': 1 };
+  function canonInst(name) {
+    var s = String(name || '').trim();
+    if (!s) return s;
+    return INST_CANON[s.toLowerCase()] || s;
+  }
+  function isDeskInst(name) {
+    var s = String(name || '').trim();
+    if (!s || s === 'Unknown') return false;
+    return !NON_DESK[s.toLowerCase()];
+  }
+  function instDisplay(name) {
+    var s = canonInst(name);
+    if (!s || s === 'Unknown') return T('Unknown', '未知');
+    if (!isDeskInst(s)) return T('Institutional desk', '机构研究台');
+    return s;
+  }
+  function displayTitle(t) {
+    var s = String(t || '').replace(/\s+/g, ' ').trim();
+    if (!s) return s;
+    var words = s.split(' '), n = words.length, k, i, same;
+    for (k = Math.floor(n / 2); k >= 2; k--) {
+      same = true;
+      for (i = 0; i < k; i++) { if (words[i] !== words[k + i]) { same = false; break; } }
+      if (same) { s = words.slice(0, k).concat(words.slice(2 * k)).join(' '); break; }
+    }
+    var stripped = s.replace(/\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*$/i, '');
+    stripped = stripped.replace(/\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\s*$/i, '').trim();
+    if (stripped !== s) stripped = stripped.replace(/[ ,]+$/, '');
+    if (stripped && stripped !== s && stripped.split(/\s+/).length >= 2) s = stripped;
+    return s;
+  }
+  function stampLabel(side) { return side === 'buy' ? T('Buy-side', '买方') : (side === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立')); }
+  function stampClass(side) { return side === 'buy' ? 'buy-side buy' : (side === 'sell' ? 'sell-side sell' : 'indep'); }
   function fmtDate(d) {
     if (!d) return T('date pending', '日期待定');
     var p = d.split('-');
@@ -233,6 +274,9 @@
   }
 
   function isFresh(catalog) {
+    var health = catalog && catalog.catalog_health;
+    if (!catalog || catalog.stale === true) return false;
+    if (health && (health.state !== 'fresh' || health.reason)) return false;
     var t = genMs(catalog);
     return t !== null && (Date.now() - t) <= FRESH_MAX_AGE_MS;
   }
@@ -309,9 +353,27 @@
       $('v-zh-lead').textContent = '无法载入研报目录。这是加载问题，并非研报库为空。';
       return;
     }
+
+    // Language can change while the first catalog request is still pending.
+    // Preserve the loading shell until an actual catalog source has settled.
+    if (CATALOG_SOURCE === 'loading') return;
+
+    // Saved weekly figures cannot describe current activity. Retain the
+    // archive total; the status line already carries the saved timestamp.
+    if (!CATALOG_FRESH) {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = TOTAL_COUNT;
+      buildWeb();
+      $('v-en-lead').textContent =
+        'Research updates are delayed. Showing the saved catalog.';
+      $('v-zh-lead').textContent = '研报更新延迟，正在显示已保存的目录。';
+      return;
+    }
     var wk = ITEMS.filter(isThisWeek);
     var derivedNewN = wk.length;
-    var desks = {}; wk.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') desks[x.inst] = 1; });
+    var desks = {}; wk.forEach(function (x) { if (isDeskInst(x.inst)) desks[x.inst] = 1; });
     var derivedDeskN = Object.keys(desks).length;
     // most-covered theme this week (falls back to all-time if none this week)
     var pool = wk.length ? wk : ITEMS;
@@ -376,12 +438,12 @@
     var rosterUnknown = CATALOG_PREVIEW && !summaryHasRoster;
     var counts = {};
     if (!rosterUnknown && !summaryHasRoster) {
-      ITEMS.forEach(function (x) { var n = x.inst; if (n && n !== 'Unknown') counts[n] = (counts[n] || 0) + 1; });
+      ITEMS.forEach(function (x) { var n = x.inst; if (isDeskInst(n)) counts[n] = (counts[n] || 0) + 1; });
     }
     var roster = summaryHasRoster
       ? CATALOG_SUMMARY.institutions.map(function (x) {
           return { name: String(x && x.name || '').trim(), count: Math.max(0, Number(x && x.count) || 0) };
-        }).filter(function (x) { return x.name && x.name !== 'Unknown'; })
+        }).filter(function (x) { return isDeskInst(x.name); })
       : Object.keys(counts).map(function (n) { return { name: n, count: counts[n] }; });
     roster.sort(function (a, b) { return b.count - a.count || a.name.localeCompare(b.name); });
     var N = roster.length;
@@ -557,7 +619,7 @@
     // keep the "All" button; rebuild the rest from the catalog institutions (top 6 by count)
     grp.querySelectorAll('.aff:not([data-v=""])').forEach(function (b) { b.remove(); });
     var counts = {}; ITEMS.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') counts[x.inst] = (counts[x.inst] || 0) + 1; });
-    Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
+    Object.keys(counts).filter(isDeskInst).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
       var b = doc.createElement('button'); b.className = 'aff'; b.setAttribute('data-f', 'inst'); b.setAttribute('data-v', inst); b.textContent = inst;
       grp.appendChild(b);
     });
@@ -638,14 +700,21 @@
     } else if (!ITEMS.length) {
       feed.innerHTML = emptyState(
         T('Institutional research is being onboarded', '机构研报正在接入'),
-        T('New buy-side and sell-side desk reports arrive hourly — check back shortly.', '买方与卖方研究每小时更新 —— 请稍后再来查看。'));
+        T('New reports appear after publication — check back later.', '新研报发布后陆续收录 —— 可稍后再查看。'));
     } else if (picksGate) {
       feed.innerHTML = picksUpgradePanel();          // Top Picks is Pro-only
     } else if (!rows.length) {
       var savedLane = LANE === 'saved';
       feed.innerHTML = emptyState(
-        savedLane ? T('Nothing saved yet', '还没有收藏') : T('No reports match', '没有匹配的研报'),
+        savedLane ? T('Nothing saved yet', '还没有收藏')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('No matches in searchable text', '可搜索正文中未找到匹配')
+            : T('No title or summary matches', '标题或摘要中未找到匹配'))
+          : T('No reports match', '没有匹配的研报'),
         savedLane ? T('Tap the bookmark on any report to keep it here for later.', '点击任意报告上的书签，即可收藏到此处。')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('Search may cover only part of a report. Open the PDF to check the rest.', '搜索可能仅覆盖部分研报。可打开 PDF 核对其余内容。')
+            : T('Report text search is not verified. Try clearing a filter or opening the PDF.', '研报正文搜索尚未核验。可清除筛选或打开 PDF 核对。'))
           : T('Try clearing a filter or widening your search.', '试试清除筛选或放宽搜索条件。'));
     } else if (feedUnlocked()) {
       // Pro: paged — show the first shownN, then a "Show more" button
@@ -662,6 +731,18 @@
     }
     $('cnt-n').textContent = picksGate ? 0 : (feedUnlocked() ? Math.min(shownN, rows.length) : previewRows.length);
     $('cnt-t').textContent = feedUnlocked() ? rows.length : TOTAL_COUNT;
+    var note = $('rv-coverage-note');
+    if (note) note.textContent = !feedUnlocked()
+      ? T('Search is limited to the public preview.', '搜索仅限公开预览。')
+      : SEARCH_STATE === 'unavailable' && FILT.q
+        ? T('Text search unavailable; showing title and summary matches.', '正文搜索暂不可用；显示标题与摘要匹配。')
+        : T('Search coverage unverified.', '搜索覆盖尚未核验。');
+    if (note) {
+      var clocks = CATALOG_SUMMARY && CATALOG_SUMMARY.source_clock;
+      var latest = clocks && clocks.complete && clocks.latest_report_published_at;
+      note.setAttribute('data-tip-en', 'Catalog published: ' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, false) : 'Unknown') + '. Latest report: ' + (latest ? fmtStamp(latest, false) : 'Unknown') + '. Search index generation: Unknown. Searchable body coverage: Unknown. Current full report text: Unknown. Current analysis: Unknown. PDF access follows your plan.');
+      note.setAttribute('data-tip-zh', '目录发布：' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, true) : '未知') + '。最新研报：' + (latest ? fmtStamp(latest, true) : '未知') + '。搜索索引版本：未知。正文搜索覆盖：未知。当前完整正文：未知。当前版本分析：未知。PDF 访问依照订阅权限。');
+    }
     renderActiveChips();
   }
   function emptyState(h, p) {
@@ -728,13 +809,13 @@
       + '<div class="rep-top">'
         + '<span class="rep-logo">' + esc(x.logo) + '</span>'
         + '<span class="rep-unread" aria-hidden="true"></span>'
-        + '<span class="rep-inst">' + esc(x.inst) + '</span>' + deskBits
+        + '<span class="rep-inst">' + esc(instDisplay(x.inst)) + '</span>' + deskBits
         + '<span class="stamp ' + stampClass(x.side) + '"><span class="dt"></span>' + stampLabel(x.side) + '</span>' + pinBadge
         + '<button class="rep-savebtn' + (saved ? ' on' : '') + '" aria-pressed="' + (saved ? 'true' : 'false') + '" aria-label="' + T('Save report', '收藏报告') + '" data-act="save">' + BOOK_SVG + '</button>'
       + '</div>'
       + '<h3>' + (x.slug && feedUnlocked()
-          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(x.title) + '</a>'
-          : esc(x.title)) + '</h3>'
+          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(displayTitle(x.title)) + '</a>'
+          : esc(displayTitle(x.title))) + '</h3>'
       + ptsHtml + moreBtn
       + '<div class="rep-foot"><div class="rep-meta">'
         + '<span class="rep-date">' + CAL_SVG + esc(fmtWhen(x.at, x.date)) + '</span>'
@@ -748,7 +829,7 @@
 
   /* active-filter chips */
   function labelFor(dim, val) {
-    if (dim === 'side') return val === 'buy' ? T('Buy-side', '看多') : (val === 'sell' ? T('Sell-side', '看空') : T('Independent', '独立'));
+    if (dim === 'side') return val === 'buy' ? T('Buy-side', '买方') : (val === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立'));
     return val;
   }
   function renderActiveChips() {
@@ -763,8 +844,18 @@
 
   /* ═══════════ live search (debounced → /api/research/search) ═══════════ */
   var _searchTimer = null;
+  function invalidateSearchContext() {
+    ++SEARCH_REQ;
+    clearTimeout(_searchTimer);
+    SEARCH_HITS = null;
+    SEARCH_RESPONSE = null;
+    SEARCH_STATE = 'metadata';
+  }
   function onSearchInput() {
     FILT.q = $('q').value.trim();
+    var searchReq = ++SEARCH_REQ;
+    SEARCH_STATE = FILT.q ? 'loading' : 'metadata';
+    SEARCH_RESPONSE = null;
     SEARCH_HITS = null;              // fall back to instant client match while the server call is in flight
     renderFeed();
     clearTimeout(_searchTimer);
@@ -776,11 +867,18 @@
       withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include' }); })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (!j || FILT.q !== q) return;      // stale response
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          if (!j || !Array.isArray(j.items)) throw new Error('invalid search response');      // stale response
+          SEARCH_RESPONSE = j;
+          if (j.available !== true) { SEARCH_STATE = 'unavailable'; SEARCH_HITS = null; renderFeed(); return; }
+          SEARCH_STATE = 'server';
           var hits = {}; (j.items || []).forEach(function (it) { if (it && it.id) hits[it.id] = 1; });
           SEARCH_HITS = hits; renderFeed();
         })
-        .catch(function () { /* keep the client-side fallback result */ });
+        .catch(function () {
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          SEARCH_STATE = 'unavailable'; SEARCH_RESPONSE = null; SEARCH_HITS = null; renderFeed();
+        });
     }, 280);
   }
 
@@ -836,6 +934,7 @@
   function setUserTier(t) {
     t = (t || 'free');
     if (t === USER_TIER) return;
+    invalidateSearchContext();
     USER_TIER = t;
     if (USER_TIER === 'pro') refreshFromApi();
     else renderFeed();
@@ -861,10 +960,10 @@
 
     // header
     $('vh-logo').textContent = x.logo;
-    $('vh-inst').textContent = x.inst;
+    $('vh-inst').textContent = instDisplay(x.inst);
     var dk = $('vh-desk'); dk.textContent = x.desk || '';
     $('vh-desk-sep').style.display = x.desk ? '' : 'none';
-    $('vh-title').textContent = x.title;
+    $('vh-title').textContent = displayTitle(x.title);
     var st = $('vh-stamp'); st.className = 'stamp ' + stampClass(x.side); st.innerHTML = '<span class="dt"></span>' + stampLabel(x.side);
     buildRelated(x);
 
@@ -1281,6 +1380,9 @@
   }
 
   /* ═══════════ unread count ═══════════ */
+  function savedBadgeText(n) {
+    return n > 0 ? String(n) : T('none yet', '暂无');
+  }
   function updateUnread() {
     var n = ITEMS.filter(function (x) { return !DocState.isRead(x.id); }).length;
     var unknown = CATALOG_SOURCE === 'unavailable';   // no catalog → no counts
@@ -1289,14 +1391,15 @@
     var picks = summaryNumber('highlighted');
     $('badge-picks').textContent = unknown ? '—'
       : (picks !== null ? picks : (CATALOG_PREVIEW ? '—' : ITEMS.filter(function (x) { return x.top; }).length));
-    $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+    $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
   }
 
   /* ═══════════ hydrate + refresh ═══════════ */
-  function finishCatalogPaint(source, generatedAt) {
+  function finishCatalogPaint(source, catalog) {
     CATALOG_SOURCE = source;
-    CATALOG_GENERATED = generatedAt || '';
-    CATALOG_FRESH = source === 'live' && isFresh({ generated_at: CATALOG_GENERATED, items: [] });
+    CATALOG_OBJECT = catalog || null;
+    CATALOG_GENERATED = catalog && catalog.generated_at || '';
+    CATALOG_FRESH = source === 'live' && isFresh(catalog);
     doc.documentElement.classList.remove('rv-awaiting-live');
     if (window.__rvShellTimer) { clearTimeout(window.__rvShellTimer); window.__rvShellTimer = null; }
     var shell = $('feed-shell'); if (shell) shell.setAttribute('aria-busy', 'false');
@@ -1309,8 +1412,8 @@
       if (en) en.textContent = 'Live research unavailable · try again shortly';
       if (cn) cn.textContent = '实时研报暂不可用 · 请稍后重试';
     } else if (CATALOG_FRESH) {
-      if (en) en.textContent = 'This week · Updated hourly';
-      if (cn) cn.textContent = '本周 · 每小时更新';
+      if (en) en.textContent = 'Catalog recently updated';
+      if (cn) cn.textContent = '目录近期已更新';
     } else {
       var iso = CATALOG_GENERATED;
       if (en) en.textContent = 'Saved snapshot · live update delayed'
@@ -1320,6 +1423,8 @@
     }
   }
   function ingest(catalog, source) {
+    // A selected catalog is a new search context, even when the query is unchanged.
+    invalidateSearchContext();
     var items = (catalog && Array.isArray(catalog.items)) ? catalog.items : [];
     ITEMS = items.map(normItem);
     CATALOG_SUMMARY = catalog && catalog.summary && typeof catalog.summary === 'object' ? catalog.summary : null;
@@ -1330,7 +1435,7 @@
     // Source + freshness BEFORE the feed paints: renderFeed's empty state has to
     // be able to tell an unavailable catalog from a vault that genuinely holds
     // zero reports, and those two must never render as the same screen.
-    finishCatalogPaint(source || 'live', catalog && catalog.generated_at);
+    finishCatalogPaint(source || 'live', catalog);
     buildTree(); updateHero(); updateUnread(); renderFeed();
     openDeepLink();
   }
@@ -1390,7 +1495,13 @@
     });
     return Promise.race([request, deadline])
       .catch(function () {
-        if (req === CATALOG_REQ && CATALOG_SOURCE === 'loading') hydrateFromBake();
+        if (req === CATALOG_REQ) {
+          if (CATALOG_SOURCE === 'loading') hydrateFromBake();
+          else if (CATALOG_OBJECT) {
+            finishCatalogPaint('snapshot', CATALOG_OBJECT);
+            updateHero(); renderFeed();
+          }
+        }
         return false;
       })
       .then(function (ok) {
@@ -1456,7 +1567,7 @@
       var save = e.target.closest('[data-act="save"]');
       if (save) {
         var on = DocState.toggleSaved(id); save.classList.toggle('on', on); save.setAttribute('aria-pressed', on ? 'true' : 'false');
-        $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+        $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
         if (LANE === 'saved') renderFeed();
         return;
       }
@@ -1511,6 +1622,9 @@
     mo.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
     // re-render feed on auth resolve so the teaser + quota/gate reflect the real session
     function onAuthResolved() {
+      // Same-tier account switches must fence responses before new reads settle.
+      invalidateSearchContext();
+      renderFeed();
       resolveTier();   // sets USER_TIER → re-renders the feed (teaser for non-Pro)
       refreshFromApi(); // auth may change the catalog from the 3-item preview to full Pro
       if ($('overlay').classList.contains('open')) { refreshQuota(); if (!V.pdf) loadDocument(V.item); }

@@ -30,6 +30,8 @@ discoveries:
   - DSC:GD1-EWY-IS-NOT-KOSPI-CASH
   - DSC:GD1C-PIT-MEMBERSHIP-PREHISTORY-ABSENT
 decisions:
+  - DEC:ROTATION-RISK-CONTEXT-REUSES-OBSERVATIONS
+  - DEC:RISK-ENVELOPE-IN-RADAR-NOT-DASHBOARD-PANEL
   - DEC:RISK-STATE-HAZARD-POLICY-SEPARATION
   - DEC:RISK-ENVELOPE-IS-CANONICAL-DERIVED-PROJECTION
   - DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES
@@ -39,6 +41,24 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
+  - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
+  - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
+  - research/grey_deer/risk_radar_architecture_contract_20261017.md
+  - research/grey_deer/risk_radar_research_protocol_20261017.md
+  - research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json
+  - research/grey_deer/all_date_census/v1/manifest.json
+  - research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md
+  - research/grey_deer/live_delivery_20261017/9573_source_landing.json
+  - research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md
+  - research/ROTATION_RISK_CONFLUENCE_IMPLEMENTATION_2026-10-08.md
+  - research/ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md
   - research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md
   - research/grey_deer/GREY_DEER_FABLE_EXECUTION_COMMAND_PACKET_2026-08-19.md
   - research/grey_deer/GREY_DEER_WAVE_GRAPH_AND_PR_ACCEPTANCE_MATRIX_2026-08-19.md
@@ -48,12 +68,14 @@ landmines:
   - "The CI control-plane program's operator grant does NOT extend to Grey Deer: never admin-merge a Grey Deer PR over red main on that precedent."
   - "site/riskdata/ sits under market-regime-risk's implementation roots in config/mastermind_programs.yml — Grey Deer owns only risk_envelope.json inside it; raw regime/market-state artifacts stay with market-regime-risk."
   - "Session worktrees are sparse: site/ and data/ writes require scripts/worktree_sparse.py opt-in before any GD-2+ build touches them."
+  - "The pullback forward log (data/grey_deer_pullback/forward_log*.jsonl, PR 9128) is a research-tier prospective test of the frozen grey_deer_pullback prereg, of the same kind as data/risk_radar/forward_log.jsonl. It records no hazard-episode transitions or reflex firings, so it is not the risk-episode store that DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES forbids. Promoting any pullback output to authority routes its graded outcomes through QLedger/Evaluation OS under that decision; widening the log into episode lifecycle state is a Sol architecture act."
 do_not_redo:
   - "No universal fused risk score in scored/authority paths (see DEC:RISK-STATE-HAZARD-POLICY-SEPARATION; legacy engine/risk_state.py is frozen compatibility, not a template)."
   - "No new event store / forward ledger for risk episodes — Chronicle + Reflex Registry + QLedger own durable history (DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES)."
   - "No Prophet rank/population mutation, ever — actionability sidecar only (DEC:PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR)."
   - "No arming Portfolio brain/posture_decider.py as a shortcut; no LLM probability_rolldown in any authoritative consumer."
   - "No automatic held-position exits in v1 (DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1)."
+  - "Never re-run pullback stage-1 (PR 8938) or stage-1b (PR 9122) on real data, and never edit a blob-pinned prereg, manifest or results file after its freeze; corrections ship as dated addenda."
 waves:
   - id: GD-0A
     title: Durable program landing — freeze, workstream, 8 decisions, handoff, registry, system map
@@ -284,8 +306,12 @@ waves:
     depends_on: [GD-0A]
   - id: GD-4C
     title: PBOC liquidity-composition read (display/context)
-    status: todo
+    status: in_progress
     depends_on: [GD-0A]
+    # 2026-10-14: the display-tier engine read engine/china_pboc_liquidity.py, its tests
+    # and research/grey_deer/PBOC_LIQUIDITY_COMPOSITION_2026-10-13.md merged in PR 9208
+    # (squash ed1497887c99; Grok lane GD-W7-PBOCLIQ plus a seat NaN/inf guard). No surface
+    # consumes it yet; wiring it into a display surface is uncommissioned.
   - id: GD-5A
     title: Long-end duration shock expert (shadow)
     status: todo
@@ -325,6 +351,10 @@ waves:
     title: Portfolio envelope shadow adapter (zero book mutation)
     status: todo
     depends_on: [GD-3]
+    # 2026-10-14: the read-only census of the Mastermind Portfolio consumer seams
+    # (research/grey_deer/PORTFOLIO_SHADOW_ADAPTER_CENSUS_2026-10-13.md, Grok lane
+    # GD-W7-MMCENSUS) merged in PR 9208 (squash ed1497887c99). The census is not the adapter,
+    # and the adapter build is still uncommissioned.
   - id: GD-10
     title: Portfolio market-truth cutover (Sol + Chairman)
     status: todo
@@ -333,15 +363,134 @@ waves:
     title: Promotion scorecard and learning loop
     status: todo
     depends_on: [GD-5A, GD-6A, GD-8A]
+  - id: GD-UI-RADAR-1
+    title: Remove standalone Risk Envelope and integrate in existing Risk Radar
+    status: done
+    pr: 7467
+    # 96d3ddf6d500: merged, exact VPS assets and 8 public browser cells proven.
+  - id: GD-UI-RADAR-2
+    title: Source-backed risk-button causes and truthful live provisional context
+    status: in_progress
+    depends_on: [GD-UI-RADAR-1]
+  - id: GD-PB-W0
+    title: Pullback operation - Fable seat W0 reconcile and admit (records)
+    status: done
+    depends_on: [GD-3]
+  - id: GD-PB-T02
+    title: Pullback source-clock-basis-rights qualification (O1/T02)
+    status: done
+    depends_on: [GD-PB-W0]
+  - id: GD-PB-T03
+    title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
+    status: done
+    # merged f1ae1e0365fc (PR 8835); PRODUCTION_PROOF 2026-10-13: open stalled_since survived the same-day re-run ed391bf44d44.
+    depends_on: [GD-PB-W0]
+  - id: GD-PB-T22
+    title: Observed-move preregistration, frozen before outcome inspection (O8/T22)
+    status: done
+    # research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md sha256 b50ab2430b3450900d87f42d71b8accd61c30f0a326a795a9b2856a4115b07ee
+    # git blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e; Opus read-only audit before freeze. Execution is W2/W3.
+    depends_on: [GD-PB-T02]
+  - id: GD-PB-W2
+    title: Observed-move primitives (PIT, basis-correct, off the render path)
+    status: done
+    pr: 8854
+    # squash 21088b534599.
+    depends_on: [GD-PB-T02, GD-PB-T22]
+  - id: GD-PB-W3
+    title: Consumer qualification under the frozen prereg (PR 8721 read-only)
+    status: done
+    pr: 8938
+    # squash 6a6f7b05c6bb: stage-1 frozen run, SPY-only, null; INC deviation logged. Never re-run on real data.
+    depends_on: [GD-PB-W2, GD-PB-T03]
+  - id: GD-PB-W4-DOCS
+    title: Prospective lane design, G3 CN rights evidence, partial-day diagnosis, stage-1 red team
+    status: done
+    pr: 9082
+    # squash 6b4bb403e4f9.
+    depends_on: [GD-PB-W3]
+  - id: GD-PB-W4-GHB
+    title: Heartbeat flags opt-in ledgers that fall behind the expected NYSE session (G-HB)
+    status: done
+    pr: 9070
+    # squash 8f25c9b54852; PRODUCTION_PROOF 2026-10-13: ed391bf44d44 (after merge) carries expected_session + sessions_behind; 3a6071006ade (before) does not.
+    depends_on: [GD-PB-T03]
+  - id: GD-PB-W4-S1B
+    title: Stage-1 repairs, stage-1b pooled-panel runner, prereg v1.1 + manifest v1.1.0 frozen
+    status: done
+    pr: [9091, 9114]
+    # 9091 squash bb8da347eca1 (runner, prereg DRAFT); 9114 squash c36e57ec65b4 (freeze + pins).
+    depends_on: [GD-PB-W3]
+  - id: GD-PB-W4-S1B-RUN
+    title: Stage-1b frozen run on the 14-ETF panel (12 claims) plus red-team addendum
+    status: done
+    pr: 9122
+    # results 0 of 12 claims pass; Opus-class red team CHANGES_REQUIRED (F1-F7), answered by an addendum, never by editing results.
+    # MERGED 2026-10-14T01:41:15Z, squash 1e9364f5ab8c (head da0f01841a7c); landing verified by per-path blob compare.
+    depends_on: [GD-PB-W4-S1B]
+  - id: GD-PB-W5
+    title: Prospective SPY pullback lane in the nightly (writer, grader, readiness floor, heartbeat, grading-closure audit)
+    status: done
+    pr: 9128
+    # MERGED 2026-10-14T02:07:20Z, squash af468522ab6e (head 3e4fecb7fa24); FWDREVIEW's 10 findings repaired on the head (FWDFIX, FWDAUDIT) before merge.
+    # PRODUCTION_PROOF pending: the first daily.yml run whose head descends from af468522ab6e must write SPY rows to data/grey_deer_pullback/forward_log.jsonl with no grey-deer-pullback-*-error annotation.
+    depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
+  - id: GD-PB-W7
+    title: W7 Grok fan-out - power-floor projection, episode-rule options v1.2, T12 episode samples, T13/T14/T19 prereg drafts, prospective panel addendum, W5 review, GD-4C, GD-9A census
+    status: done
+    pr: 9208
+    # squash ed1497887c99. 13 grok-4.7 lanes over ssh on mmx-ubuntu0/1/2/3, all judged by artifact (lane receipts: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md). T13/T14/T19 prereg drafts and the panel addendum are DRAFTS: not frozen, no trial budget spent.
+    depends_on: [GD-PB-W4-S1B-RUN, GD-PB-W5]
+  - id: GD-PB-W8
+    title: W8 research follow-up - readiness-floor projection (exploratory) and panel episode-rule options for a v1.2 prereg (draft memo)
+    status: done
+    pr: 9215
+    # squash 54195c10bbeb. Reads only the committed stage-1/1b results (blob-pinned); no re-run, no price store, no trial ledger. FLOORPROJ: median years until every floor holds, SPY 12.48/7.01/5.54, panel 3.45/9.32/not reachable (h5/h10/h21). D9ALT: panel h21 collapses because the window reach (42 sessions) exceeds the largest event-date gap (38); candidates C1/C2/C3 named by rule structure, none frozen.
+    depends_on: [GD-PB-W4-S1B-RUN]
+  - id: GD-RR-CENSUS-20261017
+    title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
+    status: done
+    pr: 9515
+    # Normal squash eaf418862bdd,2026-10-17T14:01:10Z; reviewed head646cc093,all 12 packs and active native gates green.
+    # Separate main fetch9b464c9d:51owned blobs exact; shared CI owned job semantically identical. Source landing accepted.
+    # 36ETFs/8486sessions/305496rows, original prereg/outcome ancestry and failed studies preserved; zero new fits/promotions.
+    # Existing9517 workspace is delivered and independently accepted at bounded desktop scope; exact forecast qualifiers still missing.
+    # Copilot failed one real question; five finalization and six classifier controls reproduce the caveat-only mechanism. No source repair.
+    # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
+    # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
+    # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
+    # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
+    # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
+    depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  2026-08-27: GD-3 DONE. The authenticated-browser four-clock production
-  acceptance passed on the first natural qualifying US-session source event;
-  the complete receipt is
-  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-08-27-GD3-DONE.md. This
-  acceptance seat does not commission follow-on work: GD-8A/GD-8B/GD-9A remain
-  unstarted pending an explicit new commission; GD-5A/B/C stay closed;
-  GD-4B/4C open and uncommissioned; GD-6/7 and Portfolio cutover are not
-  authorized.
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
+
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection

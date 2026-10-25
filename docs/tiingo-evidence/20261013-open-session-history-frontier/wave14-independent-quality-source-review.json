@@ -1,0 +1,33 @@
+{
+  "schema": "tiingo.wave14_exact_quality_reconciliation_source_adjudication/v1",
+  "recorded_at_utc": "2026-10-13T00:50:00.345831+00:00",
+  "reviewer": "/root/tiingo_contract_adjudication",
+  "conclusion": "PASS",
+  "methods": {
+    "qualification": {
+      "path": "/private/tmp/tiingo-wave14-settled-quality-reconciliation-candidate-01a12ab6.py",
+      "sha256": "cc5cfab5ee198d81b274f940ea89b081bb7e01e90a7b766659c1c458a96985b0"
+    },
+    "coverage": {
+      "path": "/private/tmp/tiingo-wave14-settled-quality-coverage-candidate-01a12ab6.py",
+      "sha256": "7a00a1cc10be5387c21a94a7957dd063dff9f8ccabb31fd0ad7510ba9b73d4cf"
+    },
+    "accounting": {
+      "path": "/private/tmp/tiingo-wave14-original-two-phase-quality-accounting-candidate-01a12ab6.py",
+      "sha256": "116e3826b712ecd7262f62aa4cf2696e41c8e3221dd1523d68d24177a3728cea"
+    }
+  },
+  "actual_diagnosis_sha256": "72ed522bf0c81fe29bde3a61078886627f04c0616487870afc5778a72e01e7cf",
+  "remaining_partition": {
+    "valid": 1569,
+    "whole_receipt_quality_quarantine": 1,
+    "retained_partial_projections": 758
+  },
+  "one_original_writer_only": true,
+  "unchanged_producer_guard_and_exists_verification": true,
+  "prior_accepted_qualification_not_rebuilt": true,
+  "all_1516_partial_file_hashes_preserved": true,
+  "coverage_after_actual_qualification_success_only": true,
+  "accounting_requires_actual_consumed_parent_acceptance": true,
+  "provider_requests_by_review": 0
+}

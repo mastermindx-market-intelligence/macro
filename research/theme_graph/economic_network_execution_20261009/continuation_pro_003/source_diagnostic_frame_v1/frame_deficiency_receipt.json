@@ -1,0 +1,806 @@
+{
+  "schema": "gmi.wp02.frame_deficiency_receipt/v1",
+  "status": "NOT_READY_NO_120_ISSUER_SELECTION",
+  "scope": "Bounded source-diagnostic research frame inspection; not dataset registration or predictive/production admission.",
+  "repository": "mastermindx-market-intelligence/macro",
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "observed_table_reads_utc": {
+    "first": "2026-10-09T10:31:47.590938+00:00",
+    "last": "2026-10-09T10:36:22.826197+00:00"
+  },
+  "basis": "Actual committed Git object bytes parsed as Parquet/JSON; no source-producer execution.",
+  "planned_sample_size": 120,
+  "selected_issuer_count": 0,
+  "selected_issuers": [],
+  "selection_frozen": false,
+  "selection_cutoff": null,
+  "market_cap_valuation_cutoff": null,
+  "market_cap_thresholds": null,
+  "eligible_global_frame_issuer_count": null,
+  "eligible_issuer_count_by_stratum": {
+    "US": null,
+    "CN_MAINLAND": null,
+    "HK": null,
+    "CA": null,
+    "INT": null
+  },
+  "diagnostic_completed": false,
+  "source_coverage": null,
+  "conditional_precision": null,
+  "verified_support_yield": null,
+  "recall": null,
+  "unknown_rate": null,
+  "accepted_quota_shape": {
+    "strata": [
+      {
+        "stratum": "US",
+        "required": 24
+      },
+      {
+        "stratum": "CN_MAINLAND",
+        "required": 24
+      },
+      {
+        "stratum": "HK",
+        "required": 24
+      },
+      {
+        "stratum": "CA",
+        "required": 24
+      },
+      {
+        "stratum": "INT",
+        "required": 24
+      }
+    ],
+    "sector_groups": [
+      "semiconductor/cloud",
+      "industrials",
+      "consumer",
+      "energy/materials",
+      "financials",
+      "healthcare"
+    ],
+    "issuer_count_per_stratum_sector": 4,
+    "size_counts_per_stratum_sector": {
+      "large": 2,
+      "mid": 1,
+      "small": 1
+    },
+    "international_country_group_counts": {
+      "UK": 8,
+      "JP": 8,
+      "EU": 8
+    },
+    "total_size_counts": {
+      "large": 60,
+      "mid": 30,
+      "small": 30
+    }
+  },
+  "quota_cells": [
+    {
+      "stratum": "US",
+      "sector": "semiconductor/cloud",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "semiconductor/cloud",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "semiconductor/cloud",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "industrials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "industrials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "industrials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "consumer",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "consumer",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "consumer",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "energy/materials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "energy/materials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "energy/materials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "financials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "financials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "financials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "healthcare",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "US",
+      "sector": "healthcare",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "US",
+      "sector": "healthcare",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "semiconductor/cloud",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "semiconductor/cloud",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "semiconductor/cloud",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "industrials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "industrials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "industrials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "consumer",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "consumer",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "consumer",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "energy/materials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "energy/materials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "energy/materials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "financials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "financials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "financials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "healthcare",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "healthcare",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CN_MAINLAND",
+      "sector": "healthcare",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "semiconductor/cloud",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "semiconductor/cloud",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "semiconductor/cloud",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "industrials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "industrials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "industrials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "consumer",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "consumer",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "consumer",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "energy/materials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "energy/materials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "energy/materials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "financials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "financials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "financials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "healthcare",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "HK",
+      "sector": "healthcare",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "HK",
+      "sector": "healthcare",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "semiconductor/cloud",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "semiconductor/cloud",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "semiconductor/cloud",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "industrials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "industrials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "industrials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "consumer",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "consumer",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "consumer",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "energy/materials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "energy/materials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "energy/materials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "financials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "financials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "financials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "healthcare",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "CA",
+      "sector": "healthcare",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "CA",
+      "sector": "healthcare",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "semiconductor/cloud",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "semiconductor/cloud",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "semiconductor/cloud",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "industrials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "industrials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "industrials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "consumer",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "consumer",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "consumer",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "energy/materials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "energy/materials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "energy/materials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "financials",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "financials",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "financials",
+      "size": "small",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "healthcare",
+      "size": "large",
+      "required": 2
+    },
+    {
+      "stratum": "INT",
+      "sector": "healthcare",
+      "size": "mid",
+      "required": 1
+    },
+    {
+      "stratum": "INT",
+      "sector": "healthcare",
+      "size": "small",
+      "required": 1
+    }
+  ],
+  "measured_resources": {
+    "security_rows": 2384,
+    "active_security_rows": 2383,
+    "security_rows_by_listing_country": {
+      "US": 1219,
+      "CN": 1018,
+      "HK": 147
+    },
+    "raw_issuer_state_counts": {
+      "RESOLVED": 1214,
+      "NO_ISSUER_EVIDENCE": 1169,
+      "DEFERRED_IDENTITY_EXCEPTION": 1
+    },
+    "active_issuer_state_counts": {
+      "DEFERRED_IDENTITY_EXCEPTION": 1,
+      "NO_ISSUER_EVIDENCE": 1168,
+      "RESOLVED": 1214
+    },
+    "current_resolved_active_issuer_ids_by_listing_country": {
+      "CN": 0,
+      "HK": 0,
+      "US": 1211
+    },
+    "issuer_master_rows": 1215,
+    "issuer_master_legacy_rows": 4,
+    "scope_qualification": "US listing-country is not proof of US primary global listing; no canonical identifier was minted or reallocated.",
+    "market_cap_reference": {
+      "rows": 509,
+      "positive_finite_values": 504,
+      "null_values": 5,
+      "cache_asof": "2026-10-07",
+      "valuation_date_proved": false,
+      "issuer_join_executed": false,
+      "thresholds_applied": false
+    },
+    "membership": {
+      "rows": 3600,
+      "distinct_tickers": 2938,
+      "active_rows": 3476,
+      "ticker_row_surplus": 662,
+      "denominator_is_not_issuers": true
+    },
+    "canada_breadth": {
+      "rows": 74,
+      "healthcare_label_rows": 0
+    },
+    "canada_search": {
+      "rows": 216,
+      "healthcare_label_rows": 5,
+      "cap_field": false,
+      "issuer_id_field": false,
+      "observation_date_field": false
+    },
+    "china_sector": {
+      "rows": 5223,
+      "distinct_tickers": 5221,
+      "open_interval_rows": 5220,
+      "resolved_issuer_frame": false
+    },
+    "hk_hsci_reference": {
+      "ticker_strings": 582,
+      "metadata_as_of": "2026-10-08T15:03:35Z",
+      "resolved_issuer_frame": false
+    }
+  },
+  "deficiencies": [
+    {
+      "code": "NUMERIC_CAP_THRESHOLDS_UNFROZEN",
+      "type": "selection_policy",
+      "evidence": "Accepted source strategy §6 specifies categories and quotas, not numeric thresholds, cap date/currency/basis or boundaries."
+    },
+    {
+      "code": "PRIMARY_LISTING_ASSERTION_MISSING",
+      "type": "field_semantics",
+      "evidence": "security_master.country and mic describe an observed listing; no primary/secondary/dual-primary global assignment."
+    },
+    {
+      "code": "FOREIGN_ISSUER_RESOLUTION_MISSING",
+      "type": "identity",
+      "evidence": "All 1,165 CN/HK security rows are NO_ISSUER_EVIDENCE; CA/UK/JP/EU listing countries are absent from this authority table."
+    },
+    {
+      "code": "SIX_SECTOR_CROSSWALK_UNFROZEN",
+      "type": "selection_policy",
+      "evidence": "Observed GICS/SIC/ETF/Shenwan labels do not instantiate the accepted semiconductor/cloud and other six groups under a dated approved mapping."
+    },
+    {
+      "code": "CAPITALIZATION_BASIS_AND_VINTAGE_UNPROVEN",
+      "type": "field_semantics",
+      "evidence": "509-row display cache keeps 504 positive finite values and cache asof only; no per-value valuation, response, currency-source, issuer/class aggregation or revision receipt."
+    },
+    {
+      "code": "DOCUMENT_AVAILABILITY_INVENTORY_NOT_SUPPLIED",
+      "type": "availability",
+      "evidence": "No per-selected-issuer inventory exists because no cohort or source-attempt inventory was constructed here. This is not evidence of no documents."
+    },
+    {
+      "code": "GLOBAL_FRAME_POPULATION_UNPROVEN",
+      "type": "coverage",
+      "evidence": "Existing rosters are partial source-specific populations, not a resolved union at a declared primary-listing perimeter."
+    },
+    {
+      "code": "SOURCE_PURPOSE_RIGHTS_UNPROVEN",
+      "type": "rights",
+      "evidence": "New primary frame extracts require source-owner purpose/retention rights. JPX terms explicitly condition commercial data collection/secondary use on permission or contract."
+    },
+    {
+      "code": "RUNTIME_MATERIALIZATION_NOT_PROVED",
+      "type": "execution_boundary",
+      "evidence": "All 13 inspected Parquet paths returned isfile=false in the pro-003 workspace. Actual fixed-ref blobs were parsed; no hydration or application import occurred."
+    }
+  ],
+  "exclusion_accounting": {
+    "denominator": "Table-specific states; overlapping reasons. Not a global issuer exclusion denominator.",
+    "counts": [
+      {
+        "source": "data/reference/security_master.parquet",
+        "reason": "NO_ISSUER_EVIDENCE",
+        "population": "active security rows",
+        "count": 1168
+      },
+      {
+        "source": "data/reference/security_master.parquet",
+        "reason": "DEFERRED_IDENTITY_EXCEPTION",
+        "population": "active security rows",
+        "count": 1
+      },
+      {
+        "source": "data/reference/security_master.parquet",
+        "reason": "SUPERSEDED_DUPLICATE_MINT",
+        "population": "retained security rows",
+        "count": 1,
+        "overlaps_raw_unevidenced_count": true
+      },
+      {
+        "source": "data/polygon_universe/reference.parquet",
+        "reason": "NULL_MARKET_CAP",
+        "population": "ticker rows",
+        "count": 5
+      },
+      {
+        "source": "data/reference/issuer_master.parquet",
+        "reason": "LEGACY_MINT_NOT_RESOLVED_EVIDENCE",
+        "population": "issuer rows",
+        "count": 4
+      }
+    ],
+    "note": "No candidate selection was attempted; no handpicked exclusion/eligibility list is presented as an issuer census."
+  },
+  "source_manifest": "inspection_source_manifest.json",
+  "required_field_mapping": "required_field_mapping.json",
+  "primary_route_register": "primary_source_route_register.json",
+  "selected_threshold_rule_implemented": false,
+  "executable_selector_created": false,
+  "reason_no_selector": "Principal assignment conditions selector/validation on accepted thresholds and a complete actual frame. Both are absent.",
+  "manual_six_case_pilot_is_this_cohort": false,
+  "relationship_vendor_outputs_consumed": false,
+  "application_imports": false,
+  "producer_factories_invoked": false,
+  "provider_jobs_launched": false,
+  "new_source_captures": false,
+  "source_registry_edits": false,
+  "native_source_writes": false,
+  "git_mutations": false,
+  "authority": {
+    "admission_status": "NOT_ADMITTED",
+    "production_admitted": false,
+    "predictive_admitted": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "may_trade": false,
+    "signal": null,
+    "score": null,
+    "economic_weight": null
+  },
+  "root_owned_next_actions": [
+    "Freeze missing method inputs while retaining accepted quotas.",
+    "Obtain rights-cleared dated primary/reference frame extracts through current source owners.",
+    "Resolve foreign issuer and primary-listing identity under incumbent authority.",
+    "Assemble source/clock/rights-bound candidate frame and document-status inventory.",
+    "Validate joint quota feasibility and freeze deterministic selection before relationship-vendor outputs."
+  ]
+}

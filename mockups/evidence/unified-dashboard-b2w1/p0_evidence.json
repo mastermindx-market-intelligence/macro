@@ -1,0 +1,275 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-20T19:09:48Z",
+  "tool": {
+    "module_ref": "mockups/evidence/unified-dashboard-b2w1/capture.py",
+    "version": "ud-b2-w1-r6",
+    "capture_method": "playwright screenshot of site/macro.html .mx5-sc-left (8 rest cells) plus hover(.mx5-sc-left) and focus(#mx5BtnRisk) at desktop/en dark+light"
+  },
+  "target": {
+    "kind": "site_dir",
+    "site_dir": "site",
+    "base_url": null
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "kind": "hover",
+        "name": "sc_left_hover",
+        "spec": "sc_left_hover:hover(.mx5-sc-left)",
+        "attribute": null,
+        "value": ".mx5-sc-left"
+      },
+      {
+        "kind": "focus",
+        "name": "sc_left_focus",
+        "spec": "sc_left_focus:focus(#mx5BtnRisk)",
+        "attribute": null,
+        "value": "#mx5BtnRisk"
+      }
+    ]
+  },
+  "outcome": "captured",
+  "honesty": {
+    "access": "anonymous only",
+    "gaps": "none for the 8 rest cells; hover/focus captured on desktop/en only (the interaction gate's required pair)",
+    "authority": "this tool screenshots; it scores nothing"
+  },
+  "pages": [
+    {
+      "page_id": "macro.html",
+      "route": "/macro.html",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_dark_en_1440.png",
+          "sha256": "5062150eac6365ff9389d21adeafa9bd28461f8f381d9a01a83439ac6a634f49",
+          "bytes": 187570,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_dark_zh_1440.png",
+          "sha256": "56b5525e8bdc4f72e39de6668d860f4e384bfa28110808458f50e331be43db94",
+          "bytes": 193496,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_light_en_1440.png",
+          "sha256": "6865aa7bad9d4ddd397a653db96c5d85e70771510d33d1b66ae588023b8c70f1",
+          "bytes": 153802,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_light_zh_1440.png",
+          "sha256": "841243198991d9fa96288b5c2415cc3e84fc137f2a9463795c5c2cb88bc2e786",
+          "bytes": 156610,
+          "width": 1440,
+          "height": 900,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_dark_en_390.png",
+          "sha256": "aaf7877e17165792dc8ca5b1640a77a1a1ea18a31ce621a88e9f255c78e65de6",
+          "bytes": 113694,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_dark_zh_390.png",
+          "sha256": "79eb09231c50a0015dfc0c2d185bc24346c7d36bd073e3550ec3d99bda9c7880",
+          "bytes": 121534,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_light_en_390.png",
+          "sha256": "739a4a18614da8b93021b56ae7780f032bf41b87826e083e880a4924a3d7b286",
+          "bytes": 105046,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "captured": true,
+          "file": "macro_light_zh_390.png",
+          "sha256": "a2df1f67a10681f87465bce83d8b218236ffd8471e350d3248576339a7274f0a",
+          "bytes": 106909,
+          "width": 390,
+          "height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": "sc_left_hover",
+          "applied_force_state": "sc_left_hover",
+          "captured": true,
+          "file": "risk_isle_hover_en_dark_1440.png",
+          "sha256": "45acbfc35cf7da33de4cd1a73638fb132e559a19399c949783191ee0f18c1fb4",
+          "bytes": 87680,
+          "width": 408,
+          "height": 820,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": "sc_left_focus",
+          "applied_force_state": "sc_left_focus",
+          "captured": true,
+          "file": "risk_isle_focus_en_dark_1440.png",
+          "sha256": "aaeed45fc1f13990269aafb7e3e2ce1408b1afe5fe7bb3e0aee58449c73a0b27",
+          "bytes": 88783,
+          "width": 408,
+          "height": 820,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": "sc_left_hover",
+          "applied_force_state": "sc_left_hover",
+          "captured": true,
+          "file": "risk_isle_hover_en_light_1440.png",
+          "sha256": "3df9dcc18fee38505604cf07880a89ba377d86d25256735fa6190a9e9f9fe75c",
+          "bytes": 75923,
+          "width": 408,
+          "height": 820,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": "sc_left_focus",
+          "applied_force_state": "sc_left_focus",
+          "captured": true,
+          "file": "risk_isle_focus_en_light_1440.png",
+          "sha256": "3df9dcc18fee38505604cf07880a89ba377d86d25256735fa6190a9e9f9fe75c",
+          "bytes": 75923,
+          "width": 408,
+          "height": 820,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        }
+      ]
+    }
+  ]
+}

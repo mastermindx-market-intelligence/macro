@@ -20,9 +20,37 @@ brun() {
   echo "$rc"          > "$ART/$slug.rc"
   echo "$((t1 - t0))" > "$ART/$slug.sec"
 }
+# TOP ANATOMY R0b ordering fix (TOPA-COMPLETION-20260828): build_top_maturation in
+# cl_stage consumes data/massive_stock_day, which is R2-canonical and gitignored —
+# a fresh engine checkout never holds the shards, and this job's only other restore
+# of that store (the price_pressure lobe leg) runs AFTER this band. Cold runner
+# proof: run 33232322255 / job 99066153702 — "panel: 0 source files" at 12:10:46Z,
+# then the SAME job restored 21,452 tickers at 12:56Z; Winner Health fail-opened to
+# a null artifact stamped with a healthy vintage (the manifest is committed, the
+# shards are not) at rc=0, four consecutive nights. So: restore BEFORE any cluster
+# launches. Same guarded idiom as the price_pressure leg — warm runner = one
+# find(1) probe that stops at the first hit (never a glob: ~20k files ≈ 800KB of
+# argv), cold runner = the same delta download the later leg would otherwise pay,
+# so net job cost is unchanged. Non-fatal on purpose: the builder's own staleness
+# gate refuses and writes its designed null rather than failing the band, and the
+# later price_pressure leg retries. R2_* env comes from the step's env block.
+# Ordering pinned by tests/test_daily_engine_massive_restore_order.py.
+if [ -z "$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -quit 2>/dev/null)" ]; then
+  echo "top_maturation: massive_stock_day store has no parquet bars locally (cold runner) — restoring from R2 before the builder band"
+  python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo "::warning title=massive-restore-pre-band::massive_stock_day restore failed (non-fatal — top_maturation fail-opens to its null state; the price_pressure leg retries later in this job)"
+else
+  echo "top_maturation: massive_stock_day store present locally — no R2 restore needed"
+fi
+# The store host publishes the skew ledger to R2. Copy it down before emit.
+# If the copy fails, emit still renders the committed ledger and reports that
+# ledger's as-of time. The failure is a warning, not a crash.
+python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
 # --- clusters: each internally ORDERED by its data deps; clusters mutually independent ---
 cl_markets() {
   brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities
+  # Real-path receipt: source store -> premium VM -> shipped Gold panel.
+  # Source-unavailable is honest/green; only a render-contract mismatch is red.
+  brun commodities_gold_premium_audit "audit China gold premium live path" scripts.audit_china_gold_premium --strict-render
   brun spr          "build strategic reserves (build_spr)"               scripts.build_spr
   brun forex        "build forex vector (build_forex)"                   scripts.build_forex
   brun bonds        "build bonds & bond-health (build_bonds)"            scripts.build_bonds
@@ -41,6 +69,12 @@ cl_markets() {
 cl_gex() {
   brun gex_board    "GEX magnets board (build_gex_board)"        scripts.build_gex_board
   brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
+  # Grey Deer pullback prospective lane: issue tonight's SPY rows, then grade the
+  # matured ones. Reads data/massive_stock_day (restored before the band) and
+  # appends only to data/grey_deer_pullback/. Writer and grader each refuse
+  # unless COLLECT_LANE=nightly and their daily.yml:engine identity pins match
+  # (step env). Never fatal: every problem is a ::warning and rc stays 0.
+  brun grey_deer_pullback "Grey Deer pullback prospective issue+grade (grey_deer_pullback_nightly)" scripts.grey_deer_pullback_nightly
   # build_market_structure MOVED OUT of this band to just BEFORE build_site
   # (OEU M-FIX). It ran here, i.e. AFTER build_site had already rendered
   # market_structure.html from build_site.py's MSP block — so the page
@@ -54,7 +88,7 @@ cl_gex() {
   brun darkpool     "dark pool desk (build_darkpool_desk)"        scripts.build_darkpool_desk
   brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
   brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
   brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
   # AFTER skew+ivspread: it joins both ledgers into the neutralised feature panel.
   brun options_dislocation "options information-dislocation panel (build_options_dislocation)" scripts.build_options_dislocation
@@ -88,8 +122,13 @@ cl_baskets() {
   # ::warning): the plane is display-tier with all six authority booleans
   # false, so a contract breach must not take the collect lane down. CI runs
   # the same guard with --strict.
+  # Bind the actual checkout immediately before this producer, in this cluster only.
+  THEME_GRAPH_WITNESS_DIR=$(python -c 'from scripts.build_theme_graph import start_nightly_witness; print(start_nightly_witness())')
+  export THEME_GRAPH_WITNESS_ID="$(python -c 'import os, sys; print(os.path.basename(sys.argv[1]))' "$THEME_GRAPH_WITNESS_DIR")"
   brun theme_graph "theme graph nightly materialization (build_theme_graph)" scripts.build_theme_graph
   brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts
+  # Capture now: an unrelated cluster can still exhaust the later wait barrier.
+  python -c 'import sys; from scripts.build_theme_graph import finish_nightly_witness; finish_nightly_witness(*sys.argv[1:])' "$THEME_GRAPH_WITNESS_DIR" "$ART" || echo "::warning::theme graph witness capture unavailable (non-fatal)"
   brun subsector_conf "subsector confluence desk + double-gated funnel (build_subsector_confluence)" scripts.build_subsector_confluence
   brun subsector_conf_ndx "nasdaq-100 subsector confluence desk (build_subsector_confluence --nasdaq)" scripts.build_subsector_confluence --nasdaq
   brun subsector_conf_rut "russell-2000 subsector confluence desk (build_subsector_confluence --russell)" scripts.build_subsector_confluence --russell
@@ -218,7 +257,7 @@ wait
 # check_builder_failstreaks, which globs *.rc and so catches a >=2-night
 # streak regardless of ORDER) — but a FIRST failure still passed silently,
 # with no log and no step-summary line for the TXI W1 chain tracker.
-ORDER="commodities spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
+ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime grey_deer_pullback market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
 echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
 for slug in $ORDER; do
   [ -f "$ART/$slug.log" ] || continue

@@ -5,11 +5,11 @@
   {# act_now_v2: assembled by engine/china_act_now.assemble_act_now() in build_china.py.
      Sectors + themes co-exist as typed rows (THEME / SECTOR / BASKET chips).
      Bottoming lane copy law: never BUY-family words (F1/W8-R3).
-     Dual-read law (FT-R1): a name in reduce AND bottoming appears in BOTH lanes.
+     Raw dual reads are retained upstream; display_lanes combines exact entity identities.
      Macro mode: only the legacy actcol sub-panel is used (untouched, see line ~1275). #}
   {% if act_now_v2 %}
   {% set _anv2 = act_now_v2 %}
-  {% set _anl = _anv2.lanes %}
+  {% set _anl = _anv2.get("display_lanes", _anv2.lanes) %}
   {# These few anv2 rules used to live inline in china.html.j2's <style>. They ride
      HERE (with the include) rather than in the shared theme.css bundle on purpose:
      editing theme.css rehashes it and stales the ?v= stamp on ~176 committed pages
@@ -45,12 +45,12 @@
           kick=('How to read this','如何看懂'),
           title=('Four lanes, left to right','四个分栏，从左到右'),
           rows=[
-            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point today.','今天有干净的入场点。')},
-            {'tone':'info', 'k':('In favour','看好'),          'v':('Still good — but it has run. <b>Wait for a dip.</b>','依然看好 — 但已经涨过。<b>等回调。</b>')},
+            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A fresh setup or a still-qualified leading theme.','新入场形态，或条件仍然有效的领涨主题。')},
+            {'tone':'info', 'k':('In favour','看好'),          'v':('Constructive context. <b>An entry is not confirmed.</b>','背景仍看好。<b>入场条件尚未确认。</b>')},
             {'tone':'warn', 'k':('Bottoming','洗盘观察'),      'v':('Beaten down, first signs of turning up. <b>Watch only — never a buy signal.</b>','超跌后初现回升迹象。<b>仅供观察 — 绝非买入信号。</b>')},
             {'tone':'dn',   'k':('Reduce / avoid','减仓·回避'),'v':('The trend is weakening.','趋势正在转弱。')},
           ],
-          body=('A name can honestly sit in two lanes at once — weakening, yet bottoming. We show both reads rather than pick one for you.','同一名称可以同时出现在两栏 — 趋势转弱，却已在筑底。我们把两种判读都显示，而不是替你二选一。'),
+          body=('One card combines the same theme’s action and turning signals. Different sector or subtheme exposures remain separate; disagreements stay visible.','同一主题的行动与转向信号合并在一张卡片中。不同板块或子主题的敞口仍分开显示，信号分歧不会隐藏。'),
           receipt=('rows mix themes (scored 0-100) and sectors (timed by cycle stage) · re-drawn nightly','行内混合主题（0-100分）与行业板块（按周期阶段定时机）· 每晚重绘')) }}
       </h2>
       <div class="anv2-meta">
@@ -58,6 +58,9 @@
         <a href="sector_central_china.html#actnow" class="anv2-xlink">{{ t('theme desk →', '主题面板 →') }}</a>
       </div>
     </div>
+    {% if _anv2.get('theme_data_note') %}
+    <div class="anv2-notes" data-theme-data-status><span class="muted" style="font-size:11px">{{ t(_anv2.theme_data_note.en, _anv2.theme_data_note.zh) }}</span></div>
+    {% endif %}
     {% if _anv2.notes %}
     <div class="anv2-notes">{% for n in _anv2.notes %}<span class="muted" style="font-size:11px">⚠ {{ n }}</span>{% endfor %}</div>
     {% endif %}
@@ -69,12 +72,20 @@
     {%- set _sc = (sectors_by_ticker.get(row.id) if row.kind == 'SECTOR' and sectors_by_ticker is defined else none) -%}
     {# PR-4: compute tag tone for hover card header #}
     {%- set _rptag_cls = 'up' if row.reco in ('accumulate','buy','add') else ('dn' if row.reco in ('avoid','trim','reduce','exit') else 'warn') -%}
-    <div class="anv2-row" data-rpop>
+    {%- set _continuation = row.get("entry_route") == "continuation" -%}
+    {%- set _unavailable = row.get("theme_decision", {}).get("status") == "UNAVAILABLE" -%}
+    {%- set _settling = _unavailable and row.get("theme_decision", {}).get("source_status") == "UNSETTLED" -%}
+    {%- if _unavailable -%}{%- set _rptag_cls = "" -%}{%- endif -%}
+    {%- set _read_override = (("Session not yet settled", "交易日数据尚待确认") if _settling else (("Current inputs unavailable", "当前输入暂缺") if _unavailable else
+                              (("Leadership continuing", "领先趋势延续") if _continuation else none))) -%}
+    {%- set _takeaway_override = (("Wait for the completed session data. No new entry is confirmed.", "请等待交易日数据确认；暂无法确认新的入场机会。") if _settling else (("Current theme inputs are unavailable. No new buy is confirmed.", "当前主题输入不可用，无法确认新的买入机会。") if _unavailable else
+        (("Trend accumulation remains in favour. Check each stock’s entry separately.", "趋势增持仍获支持，个股入场条件须分别判断。") if _continuation else none))) -%}
+    <div class="anv2-row" data-rpop data-entry-route="{{ row.get('entry_route') or 'none' }}">
       {# PR-4: hover card payload — cloned by theme.js into a .row-pop overlay #}
       {#- Hover decision card — the SAME component the US board uses
           (templates/_decision_card.html.j2). Themes get the score ring + leadership
           read + breadth + leaders; sectors get the setup read + cycle metrics. -#}
-      {%- set _is_theme = row.kind in ('THEME','BASKET') and row.score is not none -%}
+      {%- set _is_theme = row.kind == 'THEME' or (row.kind == 'BASKET' and row.score is not none) -%}
       {%- set _stats = [] -%}
       {%- set _trust = [] -%}
       {%- if _is_theme -%}
@@ -155,6 +166,15 @@
           carries theme_intel.leadership, otherwise the neutral "Current read". The
           pre-parity board had no leadership data at all — that is what the old
           no-Leadership-word test was protecting against. -#}
+      {%- set _display_tag = (row.reco_en, row.reco_zh or tr(row.reco_en)) if row.reco_en
+          else ((row.tag, row.tag_zh or tr(row.tag)) if row.tag
+          else ((row.phase, tr(row.phase)) if row.phase else none)) -%}
+      {%- if _unavailable -%}
+        {%- set _display_tag = ('SESSION SETTLING','交易日数据待确认') if _settling else ('DATA UNAVAILABLE','数据暂缺') -%}
+      {%- elif lane == 'bot' -%}{%- set _display_tag = ('Watch only','仅供观察') -%}
+      {%- elif lane == 'pull' and row.reco in ('accumulate','enter','buy','add') -%}
+        {%- set _display_tag = ('Entry pending','入场待确认') -%}
+      {%- endif -%}
       {{ dc.dc_card({
         'kind': 'theme' if _is_theme else 'sector',
         'mark': icon('diamond') if _is_theme else icon('sector'),
@@ -162,13 +182,11 @@
         'eyebrow': ('Theme basket','主题篮子') if _is_theme
                    else (('Sector pulse · ' ~ row.id, '板块脉搏 · ' ~ row.id) if row.id else ('Sector pulse','板块脉搏')),
         'name': (row.name, row.name_zh or tr(row.name)),
-        'tag': (row.reco_en, row.reco_zh or tr(row.reco_en)) if row.reco_en
-               else ((row.tag, row.tag_zh or tr(row.tag)) if row.tag
-               else ((row.phase, tr(row.phase)) if row.phase else none)),
+        'tag': _display_tag,
         'score': row.score if _is_theme else none,
-        'kicker': (('Leadership read','领先度判断') if row.get('leadership') else ('Current read','当前判读'))
+        'kicker': ('Data status','数据状态') if _unavailable else (('Leadership read','领先度判断') if row.get('leadership') else ('Current read','当前判读'))
                   if _is_theme else ('Current setup','当前形态'),
-        'read': (
+        'read': _read_override or (
           (('Led by a few names','少数龙头带动') if row.get('leadership') == 'narrow'
            else (('Broad and leading','广泛领先') if row.reco in ('accumulate','enter','buy','add')
            else (('Late and extended','后期且延伸') if row.reco in ('trim','reduce')
@@ -178,23 +196,23 @@
           (('Turning up from the low','自低位回升') if lane == 'bot'
            else (('Entry open today','今日入场窗口开启') if lane == 'buy'
            else (('Momentum fading','动能转弱') if lane == 'reduce'
-           else ('In favour — but it has run','仍看好 — 但已上涨'))))
+           else ('Entry conditions pending','入场条件待确认'))))
         ),
         'sub': (_sub_en|trim, _sub_zh|trim) if not _is_theme
                else ((_rsn_en, _rsn_zh) if _rsn_en else none),
         'trust': _trust, 'stats': _stats,
         'leaders': {'label': ('Leaders','龙头'), 'val': (row.get('leaders_en'), row.get('leaders_zh') or row.get('leaders_en'))}
                    if row.get('leaders_en') else none,
-        'takeaway': (
+        'takeaway': _takeaway_override or (
           (('Signals disagree. The trend still says reduce while the price shows an early bottom — wait for them to agree.','信号不一致。趋势仍建议减仓，价格却初现筑底 — 等两者一致再动。')
              if (lane == 'reduce' and row.dual_read)
            else (('Turning up from the low — watch it, do not chase it.','自低位回升 — 观察为主，不要追。') if lane == 'bot'
-           else ((('Leadership is broad. Add on pullbacks, not into strength.','领先面广。回调时加仓，不要追强势。') if row.get('leadership') == 'broad'
-                  else ('In favour. Add on pullbacks, not into strength.','仍然看好。回调时加仓，不要追强势。')) if row.reco in ('accumulate','enter','buy','add')
+           else ((('A clean entry is open today.','今日入场窗口干净。') if lane == 'buy'
+                  else ('Constructive theme; its entry conditions are not yet confirmed.','主题背景仍看好；入场条件尚未确认。')) if row.reco in ('accumulate','enter','buy','add')
            else (('Momentum is extended. Protect gains into strength.','动能已过度延伸。逢强保护利润。') if row.reco in ('trim','reduce')
            else (('Breadth is fading. Stand aside until it turns again.','广度转弱。在重新转强之前先观望。') if row.reco in ('avoid','exit')
            else (('A clean entry is open today.','今日入场窗口干净。') if lane == 'buy'
-           else ('Still in favour, but it has run — wait for a dip.','仍然看好，但已上涨 — 等回调。')))))))
+           else ('Constructive context; check the specific entry conditions.','背景仍看好；请查看具体入场条件。')))))))
         ),
         'foot': ('Click row for holdings and full history','点击查看持仓与完整历史') if _is_theme
                 else ('Click row for the full sector view','点击查看完整板块详情'),
@@ -212,12 +230,17 @@
         {# type chips (THEME/SECTOR/BASKET) removed by operator request 2026-07-10 —
            row provenance lives in the board help() tooltip instead #}
         {# reco chip (theme rows) #}
-        {% if row.reco_en %}<span class="anv2-chip anv2-chip-reco-{{ row.reco or 'hold' }}">{{ t(row.reco_en, row.reco_zh or tr(row.reco_en)) }}</span>{% endif %}
+        {% if _unavailable %}
+        <span class="anv2-chip">{{ t('SESSION SETTLING','交易日数据待确认') if _settling else t('DATA UNAVAILABLE','数据暂缺') }}</span>
+        {% elif lane == 'pull' and row.reco in ('accumulate','enter','buy','add') %}
+        <span class="anv2-chip anv2-chip-reco-hold">{{ t('Entry pending','入场待确认') }}</span>
+        {% elif lane != 'bot' and row.reco_en %}<span class="anv2-chip anv2-chip-reco-{{ row.reco or 'hold' }}">{{ t(row.reco_en, row.reco_zh or tr(row.reco_en)) }}</span>{% endif %}
+        {% if row.get('action_disagreement') %}<span class="anv2-chip anv2-chip-washout">{{ t('Conflicting actions','行动信号分歧') }}</span>{% endif %}
         {# sector urgency/tag chip #}
         {% if row.tag and row.kind != 'THEME' %}<span class="anv2-chip anv2-chip-tag">{{ t(row.tag, row.tag_zh or tr(row.tag)) }}</span>{% endif %}
         {# dual-read chip on reduce lane #}
         {% if lane == 'reduce' and row.dual_read %}
-        <span class="anv2-chip anv2-chip-washout" data-tip-en="Mixed picture: the longer trend still says reduce, but the recent price action shows early signs of a bottom. This name also appears in Bottoming Watch — both reads are shown so you see the disagreement." data-tip-zh="信号矛盾：长期趋势仍建议减仓，但近期价格已初现筑底迹象。该名称同时出现在洗盘观察栏——两种判读并列显示，便于看清分歧。">{{ t(row.dual_chip_en, row.dual_chip_zh) }}</span>
+        <span class="anv2-chip anv2-chip-washout" data-tip-en="Mixed picture: the longer trend still says reduce, but the recent price action shows early signs of a bottom. The turning evidence is retained on this card; it does not cancel the reduce signal." data-tip-zh="信号矛盾：长期趋势仍建议减仓，但近期价格已初现筑底迹象。转向证据保留在本卡片中，但不会抵消减仓信号。">{{ t(row.dual_chip_en, row.dual_chip_zh) }}</span>
         {% endif %}
         {# bottoming lane: trough+slope chip #}
         {% if lane == 'bot' and row.osc_slope is not none %}
@@ -227,6 +250,7 @@
         {# price-tape chip (W8-R7 rider) — TURNING/CONFIRMED state from basket_turn_cn #}
         {% if row.organ_chip_en %}<span class="anv2-chip anv2-chip-tape">{{ t(row.organ_chip_en, row.organ_chip_zh or tr(row.organ_chip_en)) }}</span>{% endif %}
       </div>
+      {% if _continuation %}<div class="anv2-stat">{{ t('Theme accumulation remains in favour','主题增持条件仍然有效') }}</div>{% endif %}
       {# stat line: rel20 for themes, rs_63d+pos for bottoming #}
       {% if lane == 'bot' %}
       <div class="anv2-stat">
@@ -265,10 +289,10 @@
     {%- endmacro -%}
 
     {{ _anlane('buy',  'buy',  'Buy Now',               '立即买入',
-               'Clean entry point today', '今日有干净入场点',
+               'Fresh setups and continuing leaders', '新形态与持续领涨主题',
                _anl.buy_now, 'anv2-buy') }}
     {{ _anlane('pull', 'pull', 'In Favour', '看好',
-               'Still in favour — wait for a dip before adding', '仍看好 — 等回调再加仓',
+               'Check the stated entry or data constraint', '查看具体入场条件或数据限制',
                _anl.wait_pullback, 'anv2-pull') }}
     {{ _anlane('bot',  'bot',  'Bottoming Watch',        '洗盘观察',
                'Beaten down, first signs of turning up — watch only', '超跌初现回升迹象 — 仅观察',

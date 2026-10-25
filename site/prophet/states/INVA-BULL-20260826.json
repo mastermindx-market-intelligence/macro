@@ -1,0 +1,52 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "INVA-BULL-20260826",
+  "asof": "2026-10-24",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 39.5,
+  "raw_confidence": 39.6,
+  "delta_vs_base": -20.5,
+  "recommended_action": null,
+  "human_state": "Closed",
+  "components": {
+    "validity": 63.3,
+    "progress": 0.0,
+    "pace": 14.0,
+    "retention": 0.0,
+    "overlay": 53.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 0.713,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 126.7,
+    "p1": -0.1914,
+    "p2": -0.0957,
+    "p3": null,
+    "move_r": -0.287,
+    "mfe_r": 0.352,
+    "mae_r": -0.676
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 0.3800003814697277,
+  "_mae": -0.7300002288818348,
+  "_max_p1": 0.2345681367097083,
+  "_first_trigger_ts": "2026-09-03",
+  "_first_t1_ts": null,
+  "_first_t2_ts": null,
+  "days_elapsed": 57,
+  "tau": 1.2667,
+  "closed": true,
+  "outcome": "EXPIRED"
+}

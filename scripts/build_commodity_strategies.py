@@ -32,6 +32,7 @@ from engine import commodity_strategies as S  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts import _active_render as AR  # noqa: E402
+from scripts import _commodity_card_fields as CF  # noqa: E402
 from scripts.build_strategies import _card, _detail_vm, _evaluate  # noqa: E402
 from scripts.build_vector import C  # noqa: E402
 
@@ -72,6 +73,8 @@ def _build_active(env, site, built, cards_by_group: dict) -> list:
                        thesis_en=m["thesis_en"], thesis_zh=m["thesis_zh"], sc=sc,
                        extra_en=f"{ev['lev_now']}x {m['bench_en']} · vol-targeted",
                        extra_zh=f"{ev['lev_now']}x {m['bench_zh']} · 波动率目标")
+        card.update(CF.card_fields(sc, ev.get("oos")))
+        card["as_of"] = ev.get("asof")
         cards_by_group.setdefault(m["group"], []).append(card)
         out.append(card)
         vm = AR.commodity_detail_vm(ev, built=built, back=_BACK,

@@ -77,20 +77,37 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import os
+import errno
+import stat
+import threading
+from contextlib import contextmanager
 import hashlib
 import json
 import subprocess
 import sys
+import time
+import io
+import re
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.entry_radar.replay.identity_observation_snapshot import IdentitySnapshotRead
+    from engine.neuralweb.market_memory_identity_candidate import ParquetBoundInitialCandidate
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from lib import config, ticker_aliases  # noqa: E402
 from lib.dataos.identity import (  # noqa: E402
+    BATS,
     XASE,
+    ARCX,
+    TXSE,
+    alias_binding_sha256,
     XNAS,
     XNYS,
     AliasRow,
@@ -119,6 +136,11 @@ ISSUER_MIGRATIONS_NAME = "issuer_migrations.parquet"
 SECURITY_MIGRATIONS_NAME = "security_migrations.parquet"
 
 CONSTITUENTS = ROOT / "data" / "breadth" / "constituents.parquet"
+#: ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the mid- and
+#: small-cap breadth constituents join the identity universe, read exactly like
+#: CONSTITUENTS (forward-only: no valid_from backdating, ingested_at = build time).
+MIDCAP_CONSTITUENTS = ROOT / "data" / "midcap_breadth" / "constituents.parquet"
+SMALLCAP_CONSTITUENTS = ROOT / "data" / "smallcap_breadth" / "constituents.parquet"
 MEMBERSHIP = ROOT / "data" / "baskets" / "membership.json"
 DELISTED_LEDGER = ROOT / "config" / "delisted_symbols.yml"
 CONFIG_YML = ROOT / "config.yml"
@@ -183,6 +205,10 @@ ALIAS_COLUMNS = (
     "valid_from",
     "valid_to",
     "ingested_at",
+    "known_at",
+    "evidence_sha256",
+    "binding_sha256",
+    "alias_kind",
 )
 #: ``reference.issuer_master`` — one row per distinct non-null issuer_id (spec §3).
 ISSUER_MASTER_COLUMNS = (
@@ -227,6 +253,8 @@ SECURITY_MIGRATIONS_COLUMNS = (
 #: That equality is what makes the builder idempotent rather than merely deterministic.
 MASTER_DTYPES = {"effective_at": "datetime", "ingested_at": "datetime",
                  "issuer_evidence_snapshot": "date"}
+REFERENCE_ALIAS_COLUMNS = frozenset({"known_at", "evidence_sha256", "binding_sha256"})
+OPTIONAL_ALIAS_COLUMNS = REFERENCE_ALIAS_COLUMNS | {"alias_kind"}
 ALIAS_DTYPES = {"valid_from": "date", "valid_to": "date", "ingested_at": "datetime"}
 ISSUER_MASTER_DTYPES = {"evidence_snapshot": "date", "n_securities": "int"}
 ISSUER_MIGRATIONS_DTYPES = {"evidence_snapshot": "date", "migrated_at": "datetime"}
@@ -310,14 +338,20 @@ VENDOR_THEME_GRAPH_NATIVE = "theme_graph_native"
 #: otherlisted.txt single-character exchange codes, per the legend the collector that
 #: fetches the file records at ``collectors/symbol_directory.py:184-185``:
 #: "A=NYSE MKT (AMEX), N=NYSE, P=NYSE Arca, Z=BATS, V=Investors Exchange".
-#: Only the three that have a MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
-#: Arca / BATS / IEX are deliberately ABSENT rather than approximated: a name listed
+#: ``F`` = Texas Stock Exchange (MIC TXSE) is newer than that legend: the CTS Pillar
+#: participant id ``F`` is assigned to TXSE (txse.com alert TXSE-2026-002 / CTA
+#: "CTS Pillar Output Specification"), and the 2026-10-15 otherlisted.txt snapshot
+#: carries ``F`` on exactly the TXSE-listed names (ET, TXS, OILT, ILS, ...).
+#: Only venues with an evidence-backed MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
+#: Arca / IEX remain deliberately ABSENT rather than approximated: a name listed
 #: there is reported unresolved by name, because widening the closed MIC list is a
 #: decision a human makes once, in a diff — not something a seed loader guesses.
 EXCHANGE_MIC = {
     "NASDAQ": XNAS,
     "N": XNYS,
     "A": XASE,
+    "Z": BATS,
+    "F": TXSE,
 }
 
 #: `exchange:` values used by the exit ledger (`config/delisted_symbols.yml`), which
@@ -391,19 +425,21 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
         # repair tests), so `membership` genuinely carries two simultaneous
         # observations that need the same date boundary to stay unambiguous.
         #
-        # `store` is DELIBERATELY NOT dated here (AMENDMENT ruling 9 / m3 asks for a
-        # dated store answer "per the same derivation rules as the yahoo family" —
-        # attempted and reverted: dating it requires CLOSING the pre-existing
-        # committed open-bounded `(store, EQR, ...)` row, which AMENDMENT ruling 6 /
-        # M5 forbids (a fresh row overlapping a committed row pointing at an ACTIVE
-        # id is now a fail-closed build error, never a silent replacement — verified:
-        # this exact combination raises VendorAliasPruneConflict on the real
-        # committed alias table). Reported as a builder-discovered ruling conflict
-        # rather than force one ruling over the other; see the PR body / packet
-        # DEVIATIONS for the full analysis and the two ways to resolve it (a narrow
-        # ruling-6 carve-out for a row a NEWLY-dated RenameEvent retroactively
-        # scopes, or an explicit one-time hand-migration of the stale `store` row).
-        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        # `store` IS dated here since 2026-08-28 (AMENDMENT ruling 9 / m3, completed
+        # alongside the owed breadth-lane retirement — the EQR->VMRK store-key
+        # migration under the #4622 protocol). The ruling conflict that deferred it
+        # (dating the store answer required closing the pre-existing committed
+        # open-bounded `(store, EQR, ...)` row, which AMENDMENT ruling 6 / M5's
+        # fail-closed prune law forbids the builder to do) was resolved via the
+        # comment's own option 2: an explicit ONE-TIME HAND-MIGRATION of the
+        # committed row (data/reference/vendor_aliases.parquet: `(store, EQR,
+        # SEC:US-XNYS-EQR, None, None)` -> valid_to=2026-08-18, plus the dated
+        # `(store, VMRK, ..., 2026-08-18, None)` row), receipted in that change's PR
+        # body. The general AMENDMENT §2 same-id-refinement carve-out remains a
+        # follow-up with its own review; until it lands, the NEXT dated rename on a
+        # current-catalog space still fail-closes at VendorAliasPruneConflict and
+        # needs the same one-time hand-migration.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP, VENDOR_STORE),
         evidence=(
             "SEC EDGAR CIK 0000906107 Form 8-K filed 2026-08-17, accession "
             "0001140361-26-033377, Item 5.03: name changed Equity Residential -> "
@@ -436,6 +472,136 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
             "effective 2026-06-24; SATS 128 rows and ECHO 128 rows with identical "
             "(date,type) key sets and 39 byte-identical identity columns); "
             "config.yml quality.ticker_key_migrations SATS: ECHO"
+        ),
+    ),
+    RenameEvent(
+        old="PSKY",
+        new="SKYD",
+        on=date(2026, 10, 6),
+        # Skydance Corporation (formerly Paramount Skydance, CIK 0002041610) transferred
+        # its Class B listing Nasdaq->NYSE and renamed PSKY->SKYD the SAME day, so unlike
+        # EQR->VMRK (NYSE->NYSE) this rename MOVES THE VENUE: the renamed key re-derives
+        # today's MIC plus the chain's inception code (US-XNYS-PSKY) while the committed
+        # master row carries the inception venue (US-XNAS-PSKY). The exact-listing-key
+        # SECURITY_SUPERSESSIONS entry below is the operator ratification that joins the
+        # two — one stable id before and after 2026-10-06, never a second mint (and the
+        # pending-transition fence is never consulted for a join, only for a mint).
+        #
+        # `membership` is DATED for the same reason EQR->VMRK's is: two simultaneous
+        # membership observations exist (the PIT/stored side still keyed PSKY;
+        # data/breadth/constituents.parquet re-fetched as SKYD), so the space needs the
+        # date boundary to stay unambiguous — the roster resolve that fail-closed as
+        # membership_alias_unresolved is exactly this consumer.
+        #
+        # `store` is NOT dated and no (store, SKYD) row is minted: data/stocks/ and the
+        # per-ticker stores still key PSKY (the #4622-protocol key migration is a
+        # separate act, out of scope here), so the committed open (store, PSKY, ...) row
+        # stays the one true answer and the builder's current-catalog gate leaves it
+        # alone. `yahoo_fetch` likewise stays at the committed PSKY row for the same
+        # reason — the repo's fetch/store seam has not moved.
+        #
+        # `yahoo` is dated because Yahoo follows the exchange spelling (same as
+        # MMC/SATS): finance.yahoo.com serves the renamed symbol today.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0002041610 Form 8-K filed 2026-10-06, accession "
+            "0001104659-26-113913, Items 2.01/5.03: on 2026-10-06 the Company "
+            "transferred the listing of its Class B Common Stock from The Nasdaq "
+            "Stock Market LLC to the New York Stock Exchange and changed the ticker "
+            "symbol from PSKY to SKYD. Corroborated by "
+            "data.sec.gov/submissions/CIK0002041610.json (name Skydance Corp, "
+            "ticker SKYD, exchange NYSE, unbroken formerNames chain Paramount "
+            "Skydance Corp 2025-08-07 -> 2026-10-06 under one CIK), Form 8-K filed "
+            "2026-09-25 accession 0001104659-26-111034 Item 3.01 (listing-transfer "
+            "notice), Form 8-A12B filed 2026-10-05 accession 0001104659-26-113569, "
+            "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
+        ),
+    ),
+    RenameEvent(
+        old="DOMO",
+        new="HUCK",
+        on=date(2026, 9, 24),
+        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so no
+        # supersession entry is needed (same as EQR->VMRK). `yahoo` + `membership`
+        # dated exactly as PSKY's are; `store`/`yahoo_fetch` stay at the committed
+        # DOMO rows until a #4622-protocol store-key migration moves them (out of
+        # scope here). Until then the committed build still reports US-XNAS-DOMO
+        # in resolved_not_rederivable and HUCK in listing_continuity: this event
+        # dates and attributes the rename, it does not by itself clear those rows.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 "
+            "(www.sec.gov/Archives/edgar/data/1505952/000110465926109635/"
+            "tm2625825d1_8k.htm): Nasdaq ticker DOMO -> HUCK effective 2026-09-24, "
+            "same registrant/CIK. Corroborated by the 2026-10-15 nasdaqlisted.txt "
+            "snapshot (HUCK listed, DOMO absent)."
+        ),
+    ),
+    RenameEvent(
+        old="YYGH",
+        new="YFOR",
+        on=date(2026, 9, 2),
+        # Nasdaq->Nasdaq symbol change with a name change (YY Group Holding Ltd. is
+        # the formerName under the same CIK). Vendors dated as DOMO->HUCK above.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001985337 Form 6-K accession 0001185185-26-003874 "
+            "(www.sec.gov/Archives/edgar/data/1985337/000118518526003874/"
+            "yfor6k090726.htm): Nasdaq ticker YYGH -> YFOR effective 2026-09-02, "
+            "same registrant/CIK (formerName YY Group Holding Ltd.). Corroborated by "
+            "the 2026-10-15 nasdaqlisted.txt snapshot (YFOR listed, YYGH absent)."
+        ),
+    ),
+)
+
+
+# ── The curated venue-transfer registry ───────────────────────────────────────
+@dataclass(frozen=True)
+class VenueTransfer:
+    """One SAME-SYMBOL primary-listing transfer between venues (no rename).
+
+    A transfer leaves the symbol directory carrying the security only under its NEW
+    venue, so the resolution re-derives ``US-{to_mic}-{symbol}`` while the committed
+    master row keeps its inception venue ``US-{from_mic}-{symbol}`` — structurally
+    the PSKY->SKYD cross-venue case without a :class:`RenameEvent`. Each entry is
+    paired with an EXACT-listing-key :data:`SECURITY_SUPERSESSIONS` entry (checked
+    by :func:`_venue_transfer_covered_keys`); together they ratify the join onto the
+    one canonical row, never a second mint. Authored data, same evidence law.
+    """
+
+    symbol: str
+    from_mic: str
+    to_mic: str
+    on: date
+    evidence: str
+
+
+VENUE_TRANSFERS: tuple[VenueTransfer, ...] = (
+    VenueTransfer(
+        symbol="KHC",
+        from_mic=XNAS,
+        to_mic=XNYS,
+        on=date(2026, 9, 14),
+        evidence=(
+            "SEC EDGAR CIK 0001637459: Form 8-K accession 0001637459-26-000057 "
+            "(listing-transfer notice, Nasdaq -> NYSE), Form 25 accession "
+            "0001637459-26-000062 (voluntary removal from Nasdaq) and Form 8-A12B "
+            "accession 0001637459-26-000061 (NYSE registration); KHC trades on NYSE "
+            "from 2026-09-14 under the unchanged symbol."
+        ),
+    ),
+    VenueTransfer(
+        symbol="ET",
+        from_mic=XNYS,
+        to_mic=TXSE,
+        on=date(2026, 10, 5),
+        evidence=(
+            "SEC EDGAR CIK 0001276187: Form 8-K accession 0001276187-26-000044 "
+            "(listing-transfer notice, NYSE -> Texas Stock Exchange), Form 25 "
+            "accession 0001276187-26-000058 (voluntary removal from NYSE) and Form "
+            "8-A12B accession 0001276187-26-000056 (TXSE registration); ET trades "
+            "on TXSE from 2026-10-05 under the unchanged symbol (txse.com press "
+            "release; otherlisted.txt exchange code F)."
         ),
     ),
 )
@@ -484,7 +650,73 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
             "www.sec.gov/files/company_tickers.json (CIK 906107 -> VMRK)."
         ),
     ),
+    SecuritySupersession(
+        listing_key="US-XNYS-PSKY",
+        canonical_id="SEC:US-XNAS-PSKY",
+        on=date(2026, 10, 6),
+        # Same evidence as the PSKY->SKYD RenameEvent above (verbatim, E1-style). This
+        # entry is the CROSS-VENUE half of that rename: EQR->VMRK never needed one
+        # because NYSE->NYSE re-derives the committed listing key exactly, while the
+        # PSKY->SKYD Nasdaq->NYSE transfer re-derives US-XNYS-PSKY (today's venue plus
+        # the chain's inception code) against a committed US-XNAS-PSKY (the inception
+        # venue). The entry ratifies BOTH directions of the same fact by EXACT listing
+        # key, never a bare inception-code match: mint_master_rows joins a resolution
+        # that renders this key onto the canonical ACTIVE row (no second stable id, no
+        # fence consult — the join resolves to an existing row), and
+        # apply_security_supersession would tombstone a US-XNYS-PSKY row minted as an
+        # independent duplicate exactly as the VMRK one was.
+        evidence=(
+            "SEC EDGAR CIK 0002041610 Form 8-K filed 2026-10-06, accession "
+            "0001104659-26-113913, Items 2.01/5.03: on 2026-10-06 the Company "
+            "transferred the listing of its Class B Common Stock from The Nasdaq "
+            "Stock Market LLC to the New York Stock Exchange and changed the ticker "
+            "symbol from PSKY to SKYD. Corroborated by "
+            "data.sec.gov/submissions/CIK0002041610.json (name Skydance Corp, "
+            "ticker SKYD, exchange NYSE, unbroken formerNames chain Paramount "
+            "Skydance Corp 2025-08-07 -> 2026-10-06 under one CIK), Form 8-K filed "
+            "2026-09-25 accession 0001104659-26-111034 Item 3.01 (listing-transfer "
+            "notice), Form 8-A12B filed 2026-10-05 accession 0001104659-26-113569, "
+            "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
+        ),
+    ),
+    SecuritySupersession(
+        listing_key="US-XNYS-KHC",
+        canonical_id="SEC:US-XNAS-KHC",
+        on=date(2026, 9, 14),
+        # The cross-venue half of the KHC VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[0].evidence,
+    ),
+    SecuritySupersession(
+        listing_key="US-TXSE-ET",
+        canonical_id="SEC:US-XNYS-ET",
+        on=date(2026, 10, 5),
+        # The cross-venue half of the ET VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[1].evidence,
+    ),
 )
+
+
+def _venue_transfer_covered_keys() -> frozenset[str]:
+    """Symbols a :data:`VENUE_TRANSFERS` entry ratifies for a cross-venue join.
+
+    Fail-closed pairing check: every transfer must have EXACTLY the matching
+    :data:`SECURITY_SUPERSESSIONS` entry (``US-{to}-{sym}`` -> ``SEC:US-{from}-{sym}``)
+    — a transfer without its exact-key supersession, or with a mismatched canonical
+    id, is a curation defect raised here, never a silent join.
+    """
+    by_lk = {e.listing_key: e for e in SECURITY_SUPERSESSIONS}
+    covered: set[str] = set()
+    for t in VENUE_TRANSFERS:
+        lk = f"US-{t.to_mic}-{t.symbol}"
+        want = f"SEC:US-{t.from_mic}-{t.symbol}"
+        entry = by_lk.get(lk)
+        if entry is None or entry.canonical_id != want or t.from_mic == t.to_mic:
+            raise ValueError(
+                f"VENUE_TRANSFERS entry {t!r} lacks its exact SECURITY_SUPERSESSIONS "
+                f"pair {lk} -> {want}"
+            )
+        covered.add(t.symbol)
+    return frozenset(covered)
 
 #: Renames the repo records WITHOUT a citable date.  Fiserv renamed FISV->FI in 2023
 #: and the vendor LAGS it: Yahoo still serves the series under FISV
@@ -668,6 +900,16 @@ def load_universe() -> dict[str, dict]:
         frame = pd.read_parquet(CONSTITUENTS)
         for ticker in frame.index.astype(str):
             note(ticker.strip().upper(), "breadth.constituents", None)
+
+    if MIDCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(MIDCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "midcap_breadth.constituents", None)
+
+    if SMALLCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(SMALLCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "smallcap_breadth.constituents", None)
 
     if MEMBERSHIP.exists():
         payload = json.loads(MEMBERSHIP.read_text())
@@ -992,6 +1234,7 @@ def resolve_universe(
     delisted: dict[str, dict],
     directory: dict[str, str],
     snapshot_date: str | None,
+    *, reference_probe_keys: frozenset[str] = frozenset(),
 ) -> list[Resolution]:
     """Resolve every seed key to a venue + inception code, or say why it could not be.
 
@@ -1050,6 +1293,8 @@ def resolve_universe(
                     continue
                 directory_symbol = candidate
                 mic = EXCHANGE_MIC.get(exchange)
+                if key in reference_probe_keys and key == "SPY" and exchange == "P":
+                    mic = ARCX
                 venue_source = (
                     f"data/symbol_directory/snapshots/{snapshot_date}.parquet:"
                     f"{candidate}.exchange={exchange}"
@@ -1107,13 +1352,17 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
       open-bounded row (the space never moved, or the day it moved is not citable) or a
       DATED PAIR straddling the rename.  The pair is what makes the table answer
       differently either side of the boundary, which is the whole deliverable.
-    * CURRENT-CATALOG spaces (``yahoo_fetch``, ``store``) get exactly ONE OPEN-BOUNDED
-      row at today's symbol, for every security, always.  A vendor that migrated the
-      whole history onto the new name has no boundary to scope, and one row per security
-      is also what ``VendorAliasTable`` requires: the constructor refuses two rows that
-      overlap on ``(vendor, security_id)``, so a "current catalog" carrying both names
-      open-bounded is not a thing this reader will accept — correctly, because "what do
-      I call it today" has exactly one answer.
+    * CURRENT-CATALOG spaces (``yahoo_fetch``, ``store``) get ONE OPEN-BOUNDED row at
+      today's symbol per security — or, since 2026-08-28 (AMENDMENT ruling 9 / m3), a
+      DATED PAIR when a RenameEvent names the space in ``vendors`` AND the security is
+      the renamed one (inception-code gate below): the repo's own stored key genuinely
+      changed on a day (EQR->VMRK), and "what key did the repo file this under on date
+      D" needs the boundary. Either way exactly ONE row is open-bounded per security,
+      which is what ``VendorAliasTable`` requires (the constructor refuses two rows
+      overlapping on ``(vendor, security_id)``) — "what do I call it today" still has
+      exactly one answer. Dated or not, current-catalog rows are NEVER historical-
+      naming evidence: ``engine/theme_graph/identity_resolution.py`` excludes these
+      spaces by VENDOR IDENTITY in HISTORICAL mode (``_CURRENT_CATALOG_VENDORS``).
 
       V4-D2B1-R1: a dedup-onto-one-master-row rename (§2.3 — e.g. EQR/VMRK, where BOTH
       the pre-rename and post-rename symbol stay live universe keys on purpose, unlike
@@ -1130,6 +1379,10 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
         for vendor in event.vendors:
             dated[(vendor, event.old)] = event
             dated[(vendor, event.new)] = event
+
+    # The store-key ratification map for the chain-member gate below (config's own
+    # record of "the repo's stored key moved on a ratified day").
+    _, store_key_migrations = load_config_maps()
 
     rows: list[AliasRow] = []
     current_by_sec: dict[tuple[str, str], tuple[str, bool]] = {}
@@ -1163,18 +1416,34 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
         # it (MRSH -> MMC), which is why data/baskets/ohlcv/MMC.parquet is the file that
         # exists while Yahoo is fetched under MRSH.
         #
-        # `store` stays a plain current-catalog space (one open-bounded row, the
-        # is_root-gated root resolution only) — AMENDMENT ruling 9 (m3) asked for a
-        # dated VMRK answer here, but dating it structurally requires closing the
-        # pre-existing committed open `(store, EQR, ...)` row, which AMENDMENT ruling
-        # 6 / M5's fail-closed law forbids (verified: raises
-        # VendorAliasPruneConflict). See the `historical` dict above for the full
-        # note; reported as a builder-discovered ruling conflict, not force-resolved.
+        # `store` (like `yahoo_fetch`) is a current-catalog space: the is_root-gated
+        # winner per security is emitted below, dated through RENAME_EVENTS since
+        # 2026-08-28 (AMENDMENT ruling 9 / m3, completed — the ruling-6 conflict that
+        # deferred it was resolved by the one-time hand-migration of the committed
+        # open `(store, EQR, ...)` row; see the RenameEvent comment at the top).
         current = {
             VENDOR_YAHOO_FETCH: ticker_aliases.fetch_symbol(res.key),
             VENDOR_STORE: res.key,
         }
         is_root = res.key == res.inception_code
+        # A CHAIN MEMBER (res.key != its inception_code) may speak for the
+        # current-catalog spaces ONLY when the repo's own records ratify its key as
+        # the one stored/fetched today: `quality.ticker_key_migrations` (SATS->ECHO —
+        # data/stocks/ECHO.parquet is the file that exists) or a RenameEvent that
+        # dates the store space (EQR->VMRK, post-#4622 migration). PSKY->SKYD carries
+        # NEITHER (the store-key migration is a separate #4622-protocol act), so the
+        # stores still key PSKY and a fresh open (store, SKYD, ...) row would assert
+        # a falsehood AND overlap the committed open (store, PSKY, ...) row — the
+        # exact undated-replacement shape `_prune_stale_aliases` fails closed on.
+        chain_member_ratified = (
+            any(
+                res.key in (event.old, event.new) and VENDOR_STORE in event.vendors
+                for event in RENAME_EVENTS
+            )
+            or store_key_migrations.get(res.inception_code) == res.key
+        )
+        dated_rename_member = any(res.key in (event.old, event.new) for event in RENAME_EVENTS)
+        unratified_rename_member = dated_rename_member and not is_root and not chain_member_ratified
 
         for vendor, symbol in historical.items():
             event = dated.get((vendor, symbol))
@@ -1189,11 +1458,39 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
         for vendor, symbol in current.items():
             key = (vendor, sec)
             prior = current_by_sec.get(key)
-            if prior is None or is_root:
+            # The gate covers exactly ONE shape: a NON-ROOT key that a DATED
+            # RenameEvent names, whose store key no RenameEvent-with-store and no
+            # `ticker_key_migration` ratifies (today: SKYD — the comment above). A
+            # notation variant that no rename mentions (MOG-A/MOG.A, BRK-B, BF-B —
+            # `_inception_code` falls back to the directory's DOT spelling for any
+            # key no rename mentions, so `res.key != res.inception_code` alone
+            # cannot tell a chain member from a dot/dash notation variant) and an
+            # UNDATED_RENAMES key (FI) keep origin/main's
+            # `prior is None or is_root` behaviour: their fresh open store/
+            # yahoo_fetch rows are TRUE rows, and suppressing them (#8828 review F1)
+            # drops live current-catalog rows nothing reports and leaves committed
+            # carry-over as the only survivor.
+            if is_root or (prior is None and not unratified_rename_member):
                 current_by_sec[key] = (symbol, is_root)
 
     for (vendor, sec), (symbol, _is_root) in current_by_sec.items():
-        rows.append(AliasRow(vendor, symbol, sec, None, None))
+        # AMENDMENT ruling 9 (m3): a current-catalog space whose symbol a RenameEvent
+        # dates (event.vendors naming this vendor) emits the dated old/new pair per
+        # the same derivation rules as the historical spaces above, so `store` can
+        # answer "what key did the repo file this under on date D" across a ratified
+        # key migration (EQR->VMRK). A symbol no event dates keeps the single
+        # open-bounded row. The `dated` map is keyed by SYMBOL and carries no
+        # security identity, and this repo tracks live ticker reuse — so the pair is
+        # emitted ONLY for the security the event actually renamed (the one whose id
+        # the event's own keys resolve to); a stranger security that merely reuses
+        # one of the event's symbol strings keeps its plain open-bounded row.
+        event = dated.get((vendor, symbol))
+        renamed_sec = (ids.get(event.new) or ids.get(event.old)) if event else None
+        if event is None or sec != renamed_sec:
+            rows.append(AliasRow(vendor, symbol, sec, None, None))
+        else:
+            rows.append(AliasRow(vendor, event.old, sec, None, event.on))
+            rows.append(AliasRow(vendor, event.new, sec, event.on, None))
 
     # Dedup on the full grain — a security reached through two spaces that happen to
     # agree must not produce two identical rows (which would also read as an overlap).
@@ -1507,6 +1804,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     if not path.exists():
         return []
     frame = pd.read_parquet(path)
+    if "alias_kind" in columns and any(
+        name in frame.columns and frame[name].notna().any()
+        for name in ("attempt_id", "alias_family_id", "alias_revision_id")
+    ):
+        raise IdentityError("revisioned alias requires observation history writer; refusing projection")
     missing = [c for c in columns if c not in frame.columns]
     hard_missing = [c for c in missing if c not in allow_missing]
     if hard_missing:
@@ -1517,6 +1819,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     present = [c for c in columns if c not in missing]
     rows: list[dict] = []
     for record in frame[present].to_dict("records"):
+        if "alias_kind" in columns and pd.notna(record.get("alias_kind")):
+            # Validate the new namespace BEFORE legacy date/string coercion can
+            # turn a malformed stored value into the tuple its seal describes.
+            raw_alias = {k: None if pd.isna(v) else v for k, v in record.items()}
+            VendorAliasTable.from_records([raw_alias])
         row: dict = {}
         for column in columns:
             if column in missing:
@@ -1561,7 +1868,9 @@ def _current_symbol_of_row(row: dict) -> str:
 
 
 def _compute_lost(existing: list[dict], resolutions: list[Resolution],
-                  delisted: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+                  delisted: dict[str, dict], *,
+                  registry_joined_ids: frozenset[str] = frozenset(),
+                  ) -> tuple[list[dict], list[dict]]:
     """The pending-transition fence predicate (V4-D2B1-R1 §5.1, AMENDMENT ruling 3 /
     M1): ``(fence_lost, exception_lost)`` — committed master rows that are ACTIVE
     (``security_state`` null), whose CURRENT symbol is NOT exit-ledgered, and whose
@@ -1606,6 +1915,13 @@ def _compute_lost(existing: list[dict], resolutions: list[Resolution],
             continue
         if str(row["listing_key"]) in rederived:
             continue
+        if str(row["security_id"]) in registry_joined_ids:
+            # A SECURITY_SUPERSESSIONS-ratified cross-venue join re-derived this
+            # row's SECURITY under the renamed key this run (its own listing key —
+            # minted at the inception venue — is structurally unreachable once the
+            # venue moves): the row is accounted for, not lost, exactly like a
+            # same-venue rename's re-derivation heals its row.
+            continue
         code = str(row.get("inception_code") or "").upper()
         if code in exceptions:
             exception_lost.append(row)
@@ -1632,7 +1948,7 @@ def _gmi_us_unresolved_refusal(
         # set whenever either matched; ``exchange_symbol`` is NOT a reliable signal
         # here, because ``resolve_universe``'s own unresolved-Resolution construction
         # hardcodes it None on the unmapped-MIC path — verified against the real
-        # committed CBOE/Z case).  AMENDMENT R15 — the two DISTINCT venue-shaped
+        # historical pre-BATS-support CBOE/Z case). AMENDMENT R15 — the two DISTINCT venue-shaped
         # refusals sharing this branch are discriminated STRUCTURALLY via
         # ``res.venue_mapped`` (set explicitly at every construction site in
         # :func:`resolve_universe`), never by substring-matching the human-readable
@@ -1858,6 +2174,7 @@ def mint_master_rows(
     gmi_admission_targets: frozenset[str] = frozenset(),
     directory_flags: dict[str, dict] | None = None,
     ambiguous_tickers: frozenset[str] = frozenset(),
+    direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
 ) -> tuple[list[dict], dict[str, str], list[str], list[dict], list[dict], list[dict],
            list[dict], list[dict]]:
     """``(master rows, {membership key: security_id}, notes, resurrection_refusals,
@@ -1912,6 +2229,28 @@ def mint_master_rows(
       set, or independent CIK evidence, lets the mint proceed (H7: IPOs are not
       collateral damage).
     """
+    # Explicit new captured observations supplement the independence test only.
+    # They never mutate the collector-owned CIK map or feed issuer grouping.
+    direct_ciks = {}
+    if type(direct_registrant_inputs) not in (tuple, list) or len(direct_registrant_inputs) > 3:
+        raise IdentityError("direct registrant intake exceeds the bounded probe set")
+    for source in direct_registrant_inputs:
+        if not _direct_registrant_source_shape(source):
+            raise IdentityError("invalid direct registrant input shape")
+        # Existing writer now is UTC with the offset omitted by _iso_now().
+        clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
+        if clock.tzinfo is None:
+            clock = clock.replace(tzinfo=timezone.utc)
+        prepared = prepare_direct_registrant(**source, decision_at=clock.isoformat())
+        observed = prepared["registrant"]
+        key = observed["symbol"]
+        matching = [res for res in resolutions if res.key == key]
+        if len(matching) != 1 or matching[0] != prepared["resolution"] or key in direct_ciks:
+            raise IdentityError("direct registrant observation does not bind one exact fresh resolution")
+        ordinary = (cik_map or {}).get(key)
+        if key in ambiguous_tickers or (ordinary is not None and ordinary[0] != observed["cik"]):
+            raise IdentityError("direct registrant conflicts with ordinary CIK evidence")
+        direct_ciks[key] = (observed["cik"], observed["title"])
     by_listing_key = {str(row["listing_key"]): dict(row) for row in existing}
     out: dict[str, dict] = {}
     for k, v in by_listing_key.items():
@@ -1925,7 +2264,60 @@ def mint_master_rows(
     gmi_eligibility_refusals: list[dict] = []
     directory_flags = directory_flags or {}
 
-    lost_rows, exception_lost_rows = _compute_lost(existing, resolutions, delisted or {})
+    # Cross-venue rename join (2026-10-11, the PSKY->SKYD Nasdaq->NYSE transfer): a
+    # would-be NEW mint whose EXACT rendered listing key a
+    # :data:`SECURITY_SUPERSESSIONS` entry names, with that entry's canonical row
+    # ACTIVE in this build, is a CURATED-RATIFIED join onto that existing canonical
+    # row, not a mint. A rename that moves the venue re-derives today's MIC plus the
+    # chain's inception code (US-XNYS-PSKY) while the committed row carries the
+    # inception venue (US-XNAS-PSKY), so the stored listing-key join a same-venue
+    # rename gets for free (VMRK -> US-XNYS-EQR) is a MISS here — without this
+    # bridge the candidate falls to the pending-transition fence below, which
+    # refuses it exactly as designed (same registrant, never independent evidence),
+    # and the renamed key never reaches ``ids`` at all. The registry entry is the
+    # operator ratification (exact listing key + evidence law, the same standard
+    # :func:`apply_security_supersession` holds itself to); the join MINTS NOTHING —
+    # ``ids`` gains the canonical id, the fence is consulted only for genuine mints,
+    # and a second stable id for the same company can never appear.
+    active_by_security_id = {
+        str(row["security_id"]): row for row in existing if not row.get("security_state")
+    }
+    supersession_joins: dict[str, str] = {}
+    _rename_covered_keys = {
+        sym for event in RENAME_EVENTS for sym in (event.old, event.new)
+    } | _venue_transfer_covered_keys()  # same-symbol transfers: exact-pair checked
+    for entry in SECURITY_SUPERSESSIONS:
+        if entry.listing_key in by_listing_key:
+            continue  # a committed row already owns this key: the stored join below
+            # (or the H8 resurrection refusal, when that row is a tombstone) governs
+        canonical = active_by_security_id.get(entry.canonical_id)
+        if canonical is None:
+            continue
+        # The join serves a RENAME-COVERED key only: the dated alias family the join
+        # exists to feed is derived from the RenameEvent (date + evidence law), so a
+        # key no event covers never joins — it keeps falling to the fence below
+        # exactly as before this bridge existed (the H1/H7 race replays pin that).
+        # A VENUE_TRANSFERS symbol is covered too: a same-symbol transfer has no
+        # dated alias family to feed (the symbol never changes), and its exact
+        # supersession pairing is enforced by _venue_transfer_covered_keys.
+        covered = any(
+            res.listing_key is not None
+            and res.listing_key.render() == entry.listing_key
+            and res.key in _rename_covered_keys
+            for res in resolutions
+        )
+        if covered:
+            supersession_joins[entry.listing_key] = entry.canonical_id
+    _rederived_rendered = {
+        res.listing_key.render() for res in resolutions if res.listing_key is not None
+    }
+    registry_joined_ids = frozenset(
+        cid for lk, cid in supersession_joins.items() if lk in _rederived_rendered
+    )
+
+    lost_rows, exception_lost_rows = _compute_lost(
+        existing, resolutions, delisted or {}, registry_joined_ids=registry_joined_ids
+    )
     # AMENDMENT ruling 2 (M2, null-CIK fail-open): a CIK-less lost row makes
     # independence UNPROVABLE, not vacuously true. The prior code dropped null CIKs
     # from `lost_ciks` entirely (`if r.get("issuer_cik")`), which meant a lost row
@@ -1969,9 +2361,16 @@ def mint_master_rows(
                 continue
             ids[res.key] = str(stored["security_id"])
         else:
+            ratified_join = supersession_joins.get(rendered)
+            if ratified_join is not None:
+                # The cross-venue bridge above: this resolution already "resolved to
+                # an existing row" — the canonical one — so no mint, no fence
+                # consult, and no second stable id.
+                ids[res.key] = ratified_join
+                continue
             if lost_rows:
                 evidence_key = _evidence_join_key(res.inception_code or res.key)
-                candidate_evidence = cik_map.get(evidence_key)
+                candidate_evidence = cik_map.get(evidence_key) or direct_ciks.get(res.key)
                 # AMENDMENT ruling 2 (M2): independent iff the candidate HAS a CIK,
                 # EVERY fence-scoped lost row has a NON-NULL CIK, AND the candidate's
                 # CIK differs from all of them. A null anywhere makes independence
@@ -2267,8 +2666,12 @@ def apply_issuer_correction(
     finally covers its ticker — the contract's own promised self-heal (spec §11 "FI/
     FISV ... self-heals on a later map") was unreachable.  ``RESOLVED``,
     ``DEFERRED_IDENTITY_EXCEPTION`` and ``EVIDENCE_CONFLICT`` rows stay mint-once —
-    never revisited: a later run whose seeds are unchanged sees the SAME pending set
-    (only the unstamped + NO_ISSUER_EVIDENCE rows) and, if none of them can change
+    never revisited (sole exception: an allowlist-refused EVIDENCE_CONFLICT whose
+    issuer_id is still NULL and whose stamped CIK has since been ratified in
+    config/issuer_group_allowlist.yml, and no same-CIK conflicted sibling carries a
+    committed issuer_id — see the reopen below): a later run whose seeds are
+    unchanged sees the SAME pending set (the unstamped, NO_ISSUER_EVIDENCE and
+    AMBIGUOUS rows plus any ratified-reopen rows) and, if none of them can change
     outcome, returns byte-stable rows.  A CIK group that later grows to include an
     already-RESOLVED member ADOPTS that member's existing ``issuer_id`` rather than
     re-running the tie-break ("the id is never re-derived because membership grew",
@@ -2325,9 +2728,35 @@ def apply_issuer_correction(
     # a CIK group, and a future CIK map carrying its old symbol can never trip it into
     # EVIDENCE_CONFLICT (H4).  Its issuer columns stay exactly as committed, frozen.
     _REOPENABLE = (None, "", "NO_ISSUER_EVIDENCE", "AMBIGUOUS")
+    # ALLOWLIST RATIFICATION REOPEN (#9570): a row the FIX 5 gate refused — typed
+    # EVIDENCE_CONFLICT with its stamped issuer_cik — whose CIK has SINCE been
+    # ratified in config/issuer_group_allowlist.yml is re-examined, but ONLY while
+    # its issuer_id is still NULL.  With no committed value there is nothing for
+    # mint-once to protect, and the ratification row IS the review the gate asked
+    # for.  A conflict that carries a committed issuer_id (FIX 1(b), or a refused
+    # legacy row) stays terminal: reopening it would rewrite an assignment.  The
+    # reopen is also ALL-OR-NOTHING per CIK: when any conflicted sibling sharing the
+    # stamped CIK carries a committed issuer_id, NO null member of that CIK reopens —
+    # a partial reopen would tie-break over the null members alone and mint a second
+    # issuer_id for one registrant (the committed sibling is not RESOLVED, so the
+    # adoption index below never sees it).  Such a CIK stays terminal for a human.
+    _committed_conflict_ciks = {
+        r.get("issuer_cik")
+        for r in rows
+        if not r.get("security_state")
+        and r.get("issuer_state") == "EVIDENCE_CONFLICT"
+        and r.get("issuer_id") is not None
+        and r.get("issuer_cik")
+    }
     pending = [
         r for r in rows
-        if r.get("issuer_state") in _REOPENABLE and not r.get("security_state")
+        if not r.get("security_state") and (
+            r.get("issuer_state") in _REOPENABLE
+            or (r.get("issuer_state") == "EVIDENCE_CONFLICT"
+                and r.get("issuer_id") is None
+                and r.get("issuer_cik") in allowed_ciks
+                and r.get("issuer_cik") not in _committed_conflict_ciks)
+        )
     ]
     if not pending:
         return rows, []
@@ -2512,11 +2941,28 @@ def _build_issuer_master_rows(master_rows: list[dict],
 class VendorAliasPruneConflict(Exception):
     """Raised by :func:`_prune_stale_aliases` (AMENDMENT ruling 6 / M5) when a fresh
     alias row overlaps a committed row that points at an ACTIVE (non-superseded)
-    ``security_id``. Fail-closed by design: the pre-amendment code silently dropped
-    ANY overlapping committed row (whether it pointed at a superseded id or not),
-    which is an undisclosed last-write-wins replacement on an append-only dataset —
-    exactly the M5 defect. A genuine correction to an ACTIVE row's alias history is a
-    curation act (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, or an operator
+    ``security_id`` and the overlap is not excused by the AMENDMENT §2 same-id-
+    refinement carve-out (see below). Fail-closed by design: the pre-amendment code
+    silently dropped ANY overlapping committed row (whether it pointed at a
+    superseded id or not), which is an undisclosed last-write-wins replacement on an
+    append-only dataset — exactly the M5 defect. A genuine correction to an ACTIVE
+    row's alias history that does NOT qualify for the carve-out is a curation act (a
+    new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, or an operator resolving the
+    conflict by hand), never something this builder silently resolves.
+
+    TWO lawful deletion classes now exist (:func:`_prune_stale_aliases` documents
+    both in full): the original superseded-``security_id`` tombstone prune, and the
+    AMENDMENT §2 same-id-refinement carve-out (implemented 2026-08-29) — a fresh
+    DATED family pointing at the SAME still-active ``security_id`` that exactly
+    tiles the full time axis, with the family row COVERING the committed row's own
+    start date carrying its ``vendor_symbol`` (start-anchored, see
+    :func:`_is_lawful_same_id_refinement`), is a lawful REFINEMENT of a committed
+    open-bounded row rather than a conflict. Every other overlap — an undated
+    replacement row, a zero/negative-width row, a gap or double-cover in the
+    tiling, a fully dated committed row, a family whose start-covering leg names a
+    different symbol, or a fresh row naming a DIFFERENT security_id — still raises
+    exactly as before, and the raised message names the SPECIFIC failed condition
+    (or the specific different-``security_id`` row).
 
     AMENDMENT ruling 11 (§3): a plain ``Exception``, NEVER ``SystemExit`` — the
     pre-amendment class subclassed ``SystemExit``, which is a ``BaseException``
@@ -2529,8 +2975,103 @@ class VendorAliasPruneConflict(Exception):
     path (:func:`main`) still stays fail-closed because nothing there catches it at
     all — an uncaught ``Exception`` propagating out of ``main()`` is still a non-zero
     exit, exactly like before this rebase.
-    resolving the conflict by hand), never something this builder silently resolves.
     """
+
+
+def _covering_family_row(ordered: list[AliasRow], point: date | None) -> AliasRow | None:
+    """The unique row in an already tiling-validated ``ordered`` family that covers
+    ``point`` — ``point=None`` means -infinity, which under a lawful gapless,
+    overlap-free tiling is covered ONLY by the row open at the start
+    (``valid_from is None``); a real date is covered by whichever row's
+    ``[valid_from, valid_to)`` half-open interval contains it. Callers must
+    validate the tiling FIRST (see :func:`_is_lawful_same_id_refinement`) — over an
+    unvalidated family this can return ``None`` (a gap) or an arbitrary row among
+    several genuine candidates (an overlap).
+    """
+    if point is None:
+        for f in ordered:
+            if f.valid_from is None:
+                return f
+        return None
+    for f in ordered:
+        lo_ok = f.valid_from is None or f.valid_from <= point
+        hi_ok = f.valid_to is None or point < f.valid_to
+        if lo_ok and hi_ok:
+            return f
+    return None
+
+
+def _is_lawful_same_id_refinement(ex_row: AliasRow, family: list[AliasRow]) -> str | None:
+    """AMENDMENT §2 same-id-refinement carve-out predicate (implemented 2026-08-29;
+    start-anchored symbol rule + deterministic tiling added in the same-day fix
+    packet). Returns ``None`` when ``ex_row`` IS a lawful refinement, else a short
+    string naming the FIRST failed condition — checked in this fixed order,
+    because the start-anchored symbol check (d) is only meaningful once the tiling
+    itself (e) is known to be well-formed.
+
+    ``family`` is every FRESH row sharing ``ex_row``'s ``(vendor, security_id)``.
+
+    a. ``ex_row`` is OPEN-ENDED (``valid_to is None``) — a fully dated committed row
+       contradicted by fresh evidence is a history rewrite, never a refinement.
+    b. (same id) — enforced by the CALLER: every fresh row that overlaps ``ex_row``
+       must share ``ex_row.security_id`` before this predicate even runs (a
+       different-id overlap is reported by name, never folded into this reason);
+       ``family`` is already scoped to ``ex_row.security_id`` by construction.
+    c. DATED — no row in ``family`` may be fully open (``valid_from is None and
+       valid_to is None``); a single undated replacement row is not a citable
+       refinement.
+    (width) — no row in ``family`` may have zero or negative width
+       (``valid_from is not None and valid_to is not None and valid_from >= valid_to``);
+       a degenerate row can neither tile the axis nor meaningfully "cover" a point,
+       and admitting one would make the tiling check below order-dependent.
+    e. Full-axis tiling — sorted DETERMINISTICALLY (``valid_from`` ascending with
+       ``None`` first, THEN ``valid_to`` ascending with ``None`` last as the
+       tie-break — two rows sharing one ``valid_from`` never depend on input
+       order), exactly one row is open at the start, exactly one is open at the
+       end, and every consecutive pair meets EXACTLY (``prev.valid_to ==
+       next.valid_from``): gapless and overlap-free across the whole axis.
+       (Implies ``len(family) >= 2`` given (c).)
+    d. Start-anchored symbol continuity — REPLACES the original era-blind rule
+       ("some row, ANYWHERE in the family, carries the committed symbol"), which
+       let a family whose EARLY leg happened to share the committed row's symbol
+       excuse pruning a row that, at ITS OWN start date, the family actually maps
+       to a DIFFERENT live symbol (the reviewer's PROBE A: a committed
+       ``(yahoo, ABC, sec, 2020-01-01, None)`` against a family whose current
+       (post-2010) leg is ``DEF`` must still raise, even though an ``ABC`` leg
+       exists earlier in the same family). The family row COVERING
+       ``ex_row.valid_from`` (``None`` == -infinity; see
+       :func:`_covering_family_row` — under the now-validated tiling exactly one
+       row covers any point) must carry ``ex_row``'s own ``vendor_symbol``.
+    """
+    if ex_row.valid_to is not None:
+        return "the committed row is fully dated (valid_to is not None), not open-ended"
+    if not family:
+        return "no fresh row shares this row's (vendor, security_id)"
+    if any(f.valid_from is None and f.valid_to is None for f in family):
+        return "the family contains an undated (fully open) row"
+    if any(
+        f.valid_from is not None and f.valid_to is not None and f.valid_from >= f.valid_to
+        for f in family
+    ):
+        return "the family contains a zero-or-negative-width row"
+    ordered = sorted(
+        family,
+        key=lambda f: (f.valid_from is not None, f.valid_from, f.valid_to is None, f.valid_to),
+    )
+    if sum(1 for f in ordered if f.valid_from is None) != 1:
+        return "the family does not have exactly one open-start row"
+    if sum(1 for f in ordered if f.valid_to is None) != 1:
+        return "the family does not have exactly one open-end row"
+    for prev, nxt in zip(ordered, ordered[1:]):
+        if prev.valid_to != nxt.valid_from:
+            return "the family does not exactly tile the time axis (a gap or overlap)"
+    covering = _covering_family_row(ordered, ex_row.valid_from)
+    if covering is None or covering.vendor_symbol != ex_row.vendor_symbol:
+        return (
+            "the family row covering the committed row's start must carry its "
+            "vendor_symbol"
+        )
+    return None
 
 
 def _prune_stale_aliases(
@@ -2543,23 +3084,64 @@ def _prune_stale_aliases(
     contradicts is not append-only history, it is a stale artifact of a mint this
     repair corrects.
 
-    ONE deletion class, narrowly scoped (AMENDMENT ruling 6 REMOVES the prior
+    TWO deletion classes, narrowly scoped (AMENDMENT ruling 6 REMOVES the prior
     "ambiguity-conflicting" class 2, which silently dropped ANY committed row
     overlapping a fresh one — including rows pointing at a perfectly ACTIVE id, an
     undisclosed last-write-wins replacement on an append-only dataset):
 
-    * **Superseded security_id.**  Any row minted for a security this run tombstoned
-      (V4-D2B1-R1 §3) is categorically wrong — VMRK's alias rows must converge onto
-      EQR's family (§3.7), never keep pointing at the corrected id.  Every deletion in
-      this class is named in ``pruned`` — the caller receipts it (``vendor_alias_prunes``
-      + a ``::warning``), never a silent drop.
+    * **Superseded security_id** (``prune_class="superseded_tombstone"``).  Any row
+      minted for a security this run tombstoned (V4-D2B1-R1 §3) is categorically
+      wrong — VMRK's alias rows must converge onto EQR's family (§3.7), never keep
+      pointing at the corrected id.
 
-    A fresh row that overlaps a committed row pointing at an ACTIVE id (never
-    superseded) is NO LONGER pruned — it is a fail-closed :class:`VendorAliasPruneConflict`.
-    Two rows that are BYTE-IDENTICAL are not a conflict (ordinary merge dedup in
-    :func:`merge_alias_rows` already handles those), and this never touches a fresh
-    row's own side.
+    * **Same-id refinement** (``prune_class="same_id_refinement"``, AMENDMENT §2
+      carve-out, implemented 2026-08-29).  A fresh candidate that overlaps a
+      committed row pointing at a still-ACTIVE ``security_id`` is not automatically a
+      conflict: when EVERY overlapping fresh row shares the committed row's OWN
+      ``security_id`` and belongs to a DATED same-id family that exactly tiles the
+      full time axis (no gaps, no overlaps) with the family row COVERING the
+      committed row's own start date carrying its ``vendor_symbol`` (the
+      start-anchored rule — see :func:`_is_lawful_same_id_refinement` for the full
+      ordered condition list), the committed open-bounded row is a stale
+      pre-refinement artifact, not a genuine ambiguity: it is pruned, not raised.
+      EVERY open-ended committed row that the SAME lawful family refines is pruned
+      (plural) — a family can legitimately extend past more than one prior
+      committed link in one run (see the chained-refinement unit test). A single
+      UNDATED replacement row, a zero/negative-width row, a gapped/overlapping
+      tiling, a fully DATED committed row, a family whose start-covering leg names
+      a different symbol, or ANY overlapping fresh row naming a DIFFERENT
+      ``security_id`` still falls through to the fail-closed raise below exactly
+      as before this carve-out.
+
+    Every deletion in EITHER class is named in ``pruned`` (tagged with its
+    ``prune_class``) — the caller receipts it (``vendor_alias_prunes`` + a dedicated
+    ``::warning`` per class), never a silent drop.
+
+    A fresh row that overlaps a committed row pointing at an ACTIVE id, and is not
+    excused by the carve-out above, is a fail-closed :class:`VendorAliasPruneConflict`
+    naming the specific failed condition (or the specific different-``security_id``
+    row, when that is what disqualified it). Two rows that are BYTE-IDENTICAL are
+    not a conflict (ordinary merge dedup in :func:`merge_alias_rows` already
+    handles those), and this never touches a fresh row's own side.
     """
+    # Root relations are immutable additions, not ordinary symbol refinements.
+    # Validate before the tombstone branch so no malformed/unknown kind disappears.
+    if any(r.get("alias_kind") is not None for r in existing) or any(r.alias_kind is not None for r in fresh):
+        prior = VendorAliasTable.from_records(existing)
+        VendorAliasTable(fresh)
+        roots = [r for r in prior.rows if r.alias_kind == "occ_root"]
+        new_roots = [r for r in fresh if r.alias_kind == "occ_root"]
+        for row in roots:
+            if row.security_id in superseded_ids:
+                raise VendorAliasPruneConflict("option-root tombstone requires explicit evidence curation")
+        # Merge enforces unchanged seals; the table enforces forward uniqueness.
+        root_records = [r for r in existing if r.get("alias_kind") == "occ_root"]
+        VendorAliasTable.from_records(merge_alias_rows(new_roots, root_records, "unused"))
+        ordinary, pruned = _prune_stale_aliases(
+            [r for r in existing if r.get("alias_kind") is None],
+            [r for r in fresh if r.alias_kind is None], superseded_ids)
+        return ordinary + root_records, pruned
+
     fresh_by_vendor_symbol: dict[tuple[str, str], list[AliasRow]] = {}
     fresh_by_vendor_sec: dict[tuple[str, str], list[AliasRow]] = {}
     for row in fresh:
@@ -2570,33 +3152,72 @@ def _prune_stale_aliases(
     pruned: list[dict] = []
     for ex in existing:
         if str(ex["security_id"]) in superseded_ids:
-            pruned.append(ex)
+            pruned.append({**ex, "prune_class": "superseded_tombstone"})
             continue
         ex_row = AliasRow(
             str(ex["vendor"]), str(ex["vendor_symbol"]), str(ex["security_id"]),
             _as_bound_date(ex["valid_from"]), _as_bound_date(ex["valid_to"]),
+            ex.get("known_at"), ex.get("evidence_sha256"), ex.get("binding_sha256"),
         )
         candidates = (
             fresh_by_vendor_symbol.get((ex_row.vendor, ex_row.vendor_symbol), [])
             + fresh_by_vendor_sec.get((ex_row.vendor, ex_row.security_id), [])
         )
+        family = fresh_by_vendor_sec.get((ex_row.vendor, ex_row.security_id), [])
+        overlaps: list[AliasRow] = []
         for fr in candidates:
             if (fr.vendor_symbol, fr.security_id, fr.valid_from, fr.valid_to) == (
                 ex_row.vendor_symbol, ex_row.security_id, ex_row.valid_from, ex_row.valid_to
             ):
                 continue  # identical — ordinary dedup, not a conflict
             if ex_row.overlaps(fr):
-                # AMENDMENT ruling 6 (M5): fail-closed — never a silent replacement.
-                raise VendorAliasPruneConflict(
-                    f"fresh alias row {fr!r} overlaps a COMMITTED row pointing at "
-                    f"an ACTIVE security_id ({ex_row!r}) — refusing to silently "
-                    "prune or replace it. A committed alias row may be pruned ONLY "
-                    "when it points at a superseded security_id (AMENDMENT ruling "
-                    "6 / M5); resolve this by curation (a registered "
-                    "RENAME_EVENTS/SECURITY_SUPERSESSIONS entry) or by hand, never "
-                    "by silent last-write-wins."
-                )
-        out.append(ex)
+                overlaps.append(fr)
+
+        if not overlaps:
+            out.append(ex)
+            continue
+
+        if ex_row.vendor == "polygon":
+            raise VendorAliasPruneConflict("prospective native alias revision is not admitted")
+
+        # A different-security_id overlap is disqualifying on its own and is named
+        # explicitly — it is never folded into the same-id predicate's reason.
+        foreign = next((fr for fr in overlaps if fr.security_id != ex_row.security_id), None)
+        if foreign is not None:
+            raise VendorAliasPruneConflict(
+                f"fresh alias row {foreign!r} overlaps a COMMITTED row pointing "
+                f"at an ACTIVE security_id ({ex_row!r}) but names a DIFFERENT "
+                "security_id — refusing to silently prune or replace it. A "
+                "committed alias row may be pruned ONLY when it points at a "
+                "superseded security_id (AMENDMENT ruling 6 / M5), or when it is "
+                "a lawful AMENDMENT §2 same-id-refinement, which requires EVERY "
+                "overlapping fresh row to share this row's OWN security_id — a "
+                "different security_id among the overlapping rows never "
+                "qualifies. Resolve this by curation (a registered "
+                "RENAME_EVENTS/SECURITY_SUPERSESSIONS entry) or by hand, never "
+                "by silent last-write-wins."
+            )
+
+        reason = _is_lawful_same_id_refinement(ex_row, family)
+        if reason is None:
+            # AMENDMENT §2 carve-out: prune the committed row, receipted — never a
+            # silent last-write-wins replacement, but no longer a raise either.
+            # EVERY open-ended committed row this SAME lawful family refines is
+            # pruned in its own loop iteration (plural), not just the first.
+            pruned.append({**ex, "prune_class": "same_id_refinement"})
+            continue
+
+        # AMENDMENT ruling 6 (M5): fail-closed — never a silent replacement.
+        raise VendorAliasPruneConflict(
+            f"fresh alias row {overlaps[0]!r} overlaps a COMMITTED row pointing "
+            f"at an ACTIVE security_id ({ex_row!r}) — refusing to silently prune "
+            "or replace it. A committed alias row may be pruned ONLY when it "
+            "points at a superseded security_id (AMENDMENT ruling 6 / M5), or "
+            "when it is a lawful AMENDMENT §2 same-id-refinement — this family "
+            f"did not qualify: {reason}. Resolve this by curation (a registered "
+            "RENAME_EVENTS/SECURITY_SUPERSESSIONS entry) or by hand, never by "
+            "silent last-write-wins."
+        )
     return out, pruned
 
 
@@ -2607,6 +3228,8 @@ def _as_bound_date(value: str | None) -> date | None:
 
 def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> list[dict]:
     """Append-only on the declared grain; a committed row keeps its ``ingested_at``."""
+    # Check raw root record bounds/types before legacy date normalization.
+    VendorAliasTable.from_records([r for r in existing if r.get("alias_kind") is not None])
     merged: dict[tuple, dict] = {}
     for row in existing:
         key = (
@@ -2615,7 +3238,10 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             str(row["security_id"]),
             _normalize_bound(row["valid_from"]),
             _normalize_bound(row["valid_to"]),
+            row.get("alias_kind"),
         )
+        if key in merged and row.get("alias_kind") == "occ_root":
+            raise IdentityError("duplicate committed option-root relation")
         merged[key] = {
             "vendor": key[0],
             "vendor_symbol": key[1],
@@ -2623,11 +3249,14 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": str(row["ingested_at"]),
+            **{c: row.get(c) for c in OPTIONAL_ALIAS_COLUMNS},
         }
     for row in fresh:
         key = (row.vendor, row.vendor_symbol, row.security_id,
-               _as_iso(row.valid_from), _as_iso(row.valid_to))
+               _as_iso(row.valid_from), _as_iso(row.valid_to), row.alias_kind)
         if key in merged:
+            if (row.vendor == "polygon" or row.alias_kind == "occ_root") and merged[key].get("binding_sha256") != row.binding_sha256:
+                raise IdentityError("conflicting prospective native alias; revisions not admitted")
             continue
         merged[key] = {
             "vendor": key[0],
@@ -2636,8 +3265,15 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": now,
+            "known_at": row.known_at.isoformat() if isinstance(row.known_at, datetime) else row.known_at,
+            "evidence_sha256": row.evidence_sha256,
+            "binding_sha256": row.binding_sha256,
+            "alias_kind": row.alias_kind,
         }
-    return [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4])))]
+    rows = [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4]), str(k[5])))]
+    # New root relations never rely on the main caller to catch forward conflicts.
+    VendorAliasTable.from_records([r for r in rows if r.get("alias_kind") is not None])
+    return rows
 
 
 def _normalize_bound(value) -> str | None:
@@ -2680,6 +3316,8 @@ def _write_parquet(rows: list[dict], columns: tuple[str, ...], path: Path,
     """Write the declared columns in the declared order, with the declared dtypes."""
     import pandas as pd
 
+    if "alias_kind" in columns:
+        VendorAliasTable.from_records(rows)
     data: dict[str, object] = {}
     for column in columns:
         values = [row.get(column) for row in rows]
@@ -2748,7 +3386,1380 @@ def _multi_security_issuer_groups(master_rows: list[dict]) -> list[dict]:
     ]
 
 
-def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False) -> dict:
+# Prospective reference-only intake. These four probes are neither a collection
+# cohort nor a scientific population. Receipt evidence stays with the existing
+# canonical writer; this function performs no network or credential operation.
+REFERENCE_PROBES = {
+    "MU": ("NASDAQ", XNAS, "CS", False),
+    "SPY": ("P", ARCX, "ETF", True),
+    "QQQ": ("NASDAQ", XNAS, "ETF", True),
+    "SMH": ("NASDAQ", XNAS, "ETF", True),
+}
+REFERENCE_SCHEMA = "mastermind.prospective_reference.v1"
+_REFERENCE_MAX_BYTES = 2 * 1024 * 1024
+
+
+def _reference_digest(value: object) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                    ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+
+
+def _reference_json(path: Path) -> tuple[dict, str]:
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise IdentityError("duplicate reference JSON key")
+            result[key] = value
+        return result
+    with path.open("rb") as source:
+        raw = source.read(_REFERENCE_MAX_BYTES + 1)
+    if len(raw) > _REFERENCE_MAX_BYTES:
+        raise IdentityError("reference evidence exceeds byte bound")
+    try:
+        value = json.loads(raw, object_pairs_hook=pairs,
+                           parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+    except (ValueError, UnicodeError) as exc:
+        raise IdentityError("invalid reference evidence JSON") from exc
+    if not isinstance(value, dict):
+        raise IdentityError("reference evidence must be an object")
+    return value, hashlib.sha256(raw).hexdigest()
+
+
+# Scoped reentrancy bookkeeping only; fcntl/OS owns exclusion. This is not
+# source authority, a durable lock registry, lease, retry queue or daemon.
+_reference_writer_local = threading.local()
+
+
+def _writer_path(out_dir: Path) -> str:
+    return os.path.abspath(os.fspath(out_dir))
+
+
+def _assert_reference_writer_target(out_dir: Path) -> None:
+    """Detect directory substitution inside our currently held writer scope."""
+    token = getattr(_reference_writer_local, "active", {}).get(_writer_path(out_dir))
+    if token is None or token[0] != os.getpid():
+        return  # Pure read-only legacy guard calls are allowed outside writers.
+    _pid, fd, device, inode = token
+    try:
+        now = os.stat(out_dir, follow_symlinks=False)
+        held = os.fstat(fd)
+    except OSError as exc:
+        raise IdentityError("reference writer target changed or unavailable") from exc
+    if (not stat.S_ISDIR(now.st_mode) or
+            (now.st_dev, now.st_ino) != (device, inode) or
+            (held.st_dev, held.st_ino) != (device, inode)):
+        raise IdentityError("reference writer target changed during transaction")
+
+
+@contextmanager
+def _reference_writer_scope(out_dir: Path):
+    """One nonblocking, cooperative POSIX directory lock for all local writers.
+
+    Manual build and the ENTIRE nightly snapshot/build/rollback hold this same
+    scope. Nested calls in the same process/thread reuse its descriptor; other
+    processes/threads refuse immediately. No lockfile or new data schema.
+    This requires a local filesystem with working flock semantics. It does not
+    coordinate Git pushes, unrelated hosts, old code, or non-cooperating actors.
+    Creating an initial empty output directory is not generation publication.
+    """
+    try:
+        import fcntl
+    except ImportError as exc:
+        raise IdentityError("reference writer locking unsupported on this host") from exc
+    out_dir = Path(out_dir)
+    key = _writer_path(out_dir)
+    active = getattr(_reference_writer_local, "active", None)
+    if active is None:
+        active = {}
+        _reference_writer_local.active = active
+    previous = active.get(key)
+    owner_pid = os.getpid()
+    if previous is not None and previous[0] == owner_pid:
+        _assert_reference_writer_target(out_dir)
+        yield
+        return
+    fd = None
+    acquired = False
+    primary_error: BaseException | None = None
+    try:
+        if out_dir.is_symlink():
+            raise IdentityError("reference writer target is a symlink")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fd = os.open(out_dir, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+                     | getattr(os, "O_NOFOLLOW", 0))
+        held = os.fstat(fd)
+        if not stat.S_ISDIR(held.st_mode):
+            raise IdentityError("reference writer target is not a directory")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            if exc.errno in (errno.EACCES, errno.EAGAIN):
+                raise IdentityError("reference writer busy; no files changed") from exc
+            raise IdentityError("reference writer locking unavailable") from exc
+        acquired = True
+        active[key] = (owner_pid, fd, held.st_dev, held.st_ino)
+        _assert_reference_writer_target(out_dir)
+        yield
+    except OSError as exc:
+        if acquired:
+            primary_error = exc
+            raise  # Preserve the original builder/rollback exception contract.
+        primary_error = IdentityError("reference writer target unavailable")
+        raise primary_error from exc
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors: list[OSError] = []
+        try:
+            if acquired:
+                if previous is None:
+                    active.pop(key, None)
+                else:
+                    active[key] = previous
+                # A forked child must never unlock the parent's open description.
+                if os.getpid() == owner_pid:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                    except OSError as exc:
+                        cleanup_errors.append(exc)
+        finally:
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except OSError as exc:
+                    # Do not retry close: the descriptor may already be released.
+                    cleanup_errors.append(exc)
+        if cleanup_errors:
+            # Preserve this scope's original failure, including its errno and
+            # identity. An exception already handled by our caller is unrelated.
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"reference writer cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional reference writer cleanup: {error}")
+                raise first
+
+
+@dataclass(frozen=True, slots=True)
+class InitialReferencePromotion:
+    """A receipt replacement, directory flush, and actual native read completed.
+
+    The retained preparation's conservative admission/authenticity markers are
+    unchanged. This result is not source qualification or a trading admission.
+    """
+    prepared: "ParquetBoundInitialCandidate"
+    read: "IdentitySnapshotRead"
+    directory_synced: bool
+
+
+class InitialReferencePromotionError(IdentityError):
+    """An attempted rename needs observation, never an automatic second write."""
+
+    def __init__(self, *, prepared, effect_state: str, directory_synced: bool):
+        self.prepared = prepared
+        self.effect_state = effect_state
+        self.directory_synced = directory_synced
+        super().__init__(
+            f"initial reference promotion interrupted: effect_state={effect_state}; "
+            f"directory_synced={directory_synced}; reconcile exact receipt/artifact bytes"
+        )
+
+
+def _initial_reference_path(directory: str | Path) -> Path:
+    if not isinstance(directory, (str, Path)):
+        raise IdentityError("initial reference requires an absolute existing directory")
+    root = Path(directory)
+    if not root.is_absolute() or ".." in root.parts:
+        raise IdentityError("initial reference requires an absolute existing directory")
+    return root
+
+
+def _initial_reference_expected(receipt_sha256: str, artifact_sha256: dict) -> tuple:
+    from engine.entry_radar.replay.identity_observation_snapshot import REFERENCE_ARTIFACTS
+
+    if (type(receipt_sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", receipt_sha256) is None
+            or type(artifact_sha256) is not dict
+            or set(artifact_sha256) != set(REFERENCE_ARTIFACTS)
+            or any(type(value) is not str or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                   for value in artifact_sha256.values())):
+        raise IdentityError("initial reference requires exact six SHA-256 preimages")
+    return tuple((name, artifact_sha256[name]) for name in REFERENCE_ARTIFACTS)
+
+
+def _initial_reference_files(directory_fd: int) -> tuple[bytes, dict[str, bytes]]:
+    # Reuse the actual bounded, no-follow reader. This is not another decoder.
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        REFERENCE_ARTIFACTS, _read_file,
+    )
+
+    before = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    artifacts = {name: _read_file(directory_fd, name, 64 * 1024 * 1024)
+                 for name in REFERENCE_ARTIFACTS}
+    after = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    if before != after:
+        raise IdentityError("initial reference receipt preimage changed during read")
+    return before, artifacts
+
+
+def _initial_reference_vector(artifacts: dict[str, bytes]) -> tuple:
+    return tuple((name, hashlib.sha256(raw).hexdigest()) for name, raw in artifacts.items())
+
+
+def _inspect_initial_reference_publication(
+    root: Path, original_sha: str, candidate_sha: str, artifacts: tuple,
+    *, expected_directory_identity: tuple | None = None,
+) -> str:
+    """Observe one stable path/byte vector; no locks, writes, retries or repairs."""
+    fd = None
+    state = "EFFECT_UNKNOWN"
+    try:
+        fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0))
+        held = os.fstat(fd)
+        identity = (held.st_dev, held.st_ino)
+        if (not stat.S_ISDIR(held.st_mode)
+                or (expected_directory_identity is not None
+                    and identity != expected_directory_identity)):
+            return state
+        raw, observed_artifacts = _initial_reference_files(fd)
+        now = os.stat(root, follow_symlinks=False)
+        if (stat.S_ISDIR(now.st_mode) and (now.st_dev, now.st_ino) == identity
+                and _initial_reference_vector(observed_artifacts) == artifacts):
+            digest = hashlib.sha256(raw).hexdigest()
+            if digest == candidate_sha:
+                state = "APPLIED"
+            elif digest == original_sha:
+                state = "NOT_APPLIED"
+    except (OSError, IdentityError):
+        state = "EFFECT_UNKNOWN"
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                state = "EFFECT_UNKNOWN"  # A close failure is not retried.
+    return state
+
+
+def inspect_initial_reference_publication(
+    out_dir: str | Path, *, original_receipt_sha256: str,
+    candidate_receipt_sha256: str, artifact_sha256: dict[str, str],
+) -> str:
+    """Read-only reconciliation of a possibly interrupted initial promotion.
+
+    APPLIED/NOT_APPLIED mean that the exact candidate/original receipt and all
+    five expected artifact bytes were observed at this path. They do not prove
+    the cause of those bytes, crash durability, source authenticity, or admission.
+    Missing files, a directory change during inspection, torn reads, or
+    unexpected bytes remain EFFECT_UNKNOWN.
+    """
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(original_receipt_sha256, artifact_sha256)
+    _initial_reference_expected(candidate_receipt_sha256, artifact_sha256)
+    if candidate_receipt_sha256 == original_receipt_sha256:
+        raise IdentityError("initial reference reconciliation requires distinct receipts")
+    return _inspect_initial_reference_publication(
+        root, original_receipt_sha256, candidate_receipt_sha256, vector)
+
+
+@contextmanager
+def _staged_initial_receipt(directory_fd: int, raw: bytes, mode: int):
+    """Own only a new temporary receipt on the held directory descriptor."""
+    import uuid
+
+    name = f".initial-reference-{uuid.uuid4().hex}.tmp"
+    fd = None
+    created = False
+    primary_error = None
+    try:
+        fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0), 0o600, dir_fd=directory_fd)
+        created = True
+        offset = 0
+        while offset < len(raw):
+            written = os.write(fd, raw[offset:])
+            if written <= 0:
+                raise OSError(errno.EIO, "initial reference staged write made no progress")
+            offset += written
+        os.fchmod(fd, mode & 0o777)
+        os.fsync(fd)
+        closing, fd = fd, None  # Never retry a failed close on a possibly reused fd.
+        os.close(closing)
+        yield name
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors = []
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if created:
+            try:
+                os.unlink(name, dir_fd=directory_fd)
+            except FileNotFoundError:
+                pass  # The successful rename consumed our temporary name.
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if cleanup_errors:
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"initial reference stage cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional initial reference stage cleanup: {error}")
+                raise first
+
+
+def promote_initial_reference_generation(
+    out_dir: str | Path, *, expected_receipt_sha256: str,
+    expected_artifact_sha256: dict[str, str],
+) -> InitialReferencePromotion:
+    """Explicit initial-only receipt promotion inside the existing Data OS owner.
+
+    The caller must qualify the actual source set and installed writer before
+    canonical invocation. Hashes and the normal code identity do not authenticate
+    its market evidence. There is no caller clock, attestation flag, CLI or nightly
+    activation. All five Parquets remain byte-identical; the accepted R23 decoder
+    and native validator determine the candidate from those physical bytes.
+
+    Hold R25's cooperative local writer lock through preparation, exact preimage
+    recheck, same-directory receipt rename, directory fsync and actual readback.
+    This does not coordinate other hosts or noncooperating filesystem writers.
+    After the native receipt exists, legacy refresh deliberately refuses; this
+    is not a history-preserving successor-generation or rollback publisher.
+    """
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        _read_file, read_identity_snapshot,
+    )
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(expected_receipt_sha256, expected_artifact_sha256)
+    try:
+        existing = os.stat(root, follow_symlinks=False)
+    except OSError as exc:
+        raise IdentityError("initial reference requires an existing directory") from exc
+    if not stat.S_ISDIR(existing.st_mode):
+        raise IdentityError("initial reference target must be an existing directory")
+    directory_identity = (existing.st_dev, existing.st_ino)
+    replace_attempted = False
+    directory_synced = False
+    prepared = None
+    try:
+        with _reference_writer_scope(root):
+            _pid, directory_fd, device, inode = _reference_writer_local.active[_writer_path(root)]
+            if (device, inode) != directory_identity:
+                raise IdentityError("initial reference target changed before writer acquisition")
+            before, artifacts = _initial_reference_files(directory_fd)
+            if (hashlib.sha256(before).hexdigest() != expected_receipt_sha256
+                    or _initial_reference_vector(artifacts) != vector):
+                raise IdentityError("initial reference preimage mismatch")
+            code_version = _git_sha()
+            prepared = build_parquet_bound_initial_candidate(
+                before, artifacts, code_version=code_version)
+            del artifacts
+            _assert_reference_writer_target(root)
+            receipt_stat = os.stat(RECEIPT_NAME, dir_fd=directory_fd, follow_symlinks=False)
+            if not stat.S_ISREG(receipt_stat.st_mode):
+                raise IdentityError("initial reference receipt preimage is no longer regular")
+            raw = prepared.candidate.candidate_receipt_bytes
+            with _staged_initial_receipt(directory_fd, raw, receipt_stat.st_mode) as staged:
+                _assert_reference_writer_target(root)
+                current, current_artifacts = _initial_reference_files(directory_fd)
+                if (current != before or _initial_reference_vector(current_artifacts) != vector):
+                    raise IdentityError("initial reference preimage changed before commit")
+                del current_artifacts
+                if _git_sha() != code_version:
+                    raise IdentityError("initial reference code identity changed before commit")
+                if _read_file(directory_fd, staged, 9 * 1024 * 1024) != raw:
+                    raise IdentityError("initial reference staged receipt changed before commit")
+                _assert_reference_writer_target(root)
+                replace_attempted = True
+                os.replace(staged, RECEIPT_NAME, src_dir_fd=directory_fd, dst_dir_fd=directory_fd)
+                os.fsync(directory_fd)
+                directory_synced = True
+                observed = read_identity_snapshot(root)
+                _assert_reference_writer_target(root)
+                if (observed.snapshot.receipt_bytes != raw
+                        or observed.receipt.receipt_sha256 != prepared.candidate.candidate_receipt_sha256
+                        or observed.receipt.generation_id != prepared.candidate.generation_id
+                        or observed.receipt.artifact_sha256 != vector):
+                    raise IdentityError("initial reference actual readback does not match candidate")
+                result = InitialReferencePromotion(prepared, observed, directory_synced=True)
+        return result
+    except BaseException as exc:
+        if not replace_attempted:
+            raise
+        try:
+            effect = _inspect_initial_reference_publication(
+                root, expected_receipt_sha256, prepared.candidate.candidate_receipt_sha256,
+                vector, expected_directory_identity=directory_identity)
+        except Exception as reconciliation_error:
+            effect = "EFFECT_UNKNOWN"
+            exc.add_note(f"initial reference reconciliation failed: {reconciliation_error}")
+        if isinstance(exc, Exception):
+            raise InitialReferencePromotionError(
+                prepared=prepared, effect_state=effect, directory_synced=directory_synced) from exc
+        # Preserve KeyboardInterrupt/SystemExit, with exact recovery identities.
+        exc.add_note(
+            f"initial reference promotion: effect_state={effect}; directory_synced={directory_synced}; "
+            f"original_receipt_sha256={expected_receipt_sha256}; "
+            f"candidate_receipt_sha256={prepared.candidate.candidate_receipt_sha256}; "
+            f"artifact_sha256={dict(vector)}"
+        )
+        raise
+
+
+def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
+    """Fail closed before legacy builder rewrites any native identity history.
+
+    The ordinary security-master builder still emits legacy receipt structure;
+    it cannot append authenticated native publication/observation history.
+    Any existing native key, including a partial or malformed one, is a
+    potential generation boundary and MUST NOT be stripped by a successful
+    rebuild. The only lawful remedy is a separate source-owner writer that
+    retains and validates the complete native context. This is not that writer.
+    """
+    _assert_reference_writer_target(out_dir)
+    receipt_path = out_dir / RECEIPT_NAME
+    if not receipt_path.exists():
+        return
+    receipt, _ = _reference_json(receipt_path)
+    if "publication" in receipt or "identity_observations" in receipt:
+        raise IdentityError(
+            "native identity publication/history cannot be preserved by legacy "
+            "security-master builder; refusing regeneration before source writes"
+        )
+
+
+def _reference_ns(value: object, name: str) -> int:
+    if type(value) is not int or value <= 0:
+        raise IdentityError(f"invalid reference {name}")
+    return value
+
+
+def _reference_clock_ns(value: object) -> int:
+    try:
+        clock = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if clock.tzinfo is None or clock.utcoffset() is None:
+            raise ValueError("naive")
+        delta = clock.astimezone(timezone.utc) - datetime(1970, 1, 1, tzinfo=timezone.utc)
+        return ((delta.days * 86400 + delta.seconds) * 1000000 + delta.microseconds) * 1000
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise IdentityError("invalid reference UTC clock") from exc
+
+
+def _reference_clock_iso(ns: int) -> str:
+    # Ceiling, never float rounding or truncation that advances availability.
+    return (datetime(1970, 1, 1, tzinfo=timezone.utc)
+            + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
+
+
+_DIRECT_REGISTRANT_KEYS = frozenset({
+    "symbol", "response_body", "capture", "listing_body", "listing_receipt_body",
+})
+_FUND_REFERENCE_KEYS = frozenset({"fund_reference_body", "fund_reference_capture"})
+_FUND_REFERENCE_URL = "https://www.sec.gov/files/company_tickers_mf.json"
+
+
+def _direct_registrant_source_shape(source) -> bool:
+    return (isinstance(source, dict) and set(source) in
+            (_DIRECT_REGISTRANT_KEYS, _DIRECT_REGISTRANT_KEYS | _FUND_REFERENCE_KEYS))
+
+
+def _fund_reference_capture(capture: dict, *, on: date, latest: int) -> int:
+    """Validate one retained official HTTP observation, never invent its clock."""
+    keys = {"url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at"}
+    if (not isinstance(capture, dict) or set(capture) != keys
+            or capture["url"] != _FUND_REFERENCE_URL
+            or capture["final_url"] != _FUND_REFERENCE_URL
+            or type(capture["status"]) is not int or capture["status"] != 200
+            or type(capture["bytes"]) is not int
+            or not 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+            or not isinstance(capture["sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", capture["sha256"]) is None):
+        raise IdentityError("invalid SEC fund-reference capture")
+    started = _reference_clock_ns(capture["request_started_at"])
+    completed = _reference_clock_ns(capture["read_completed_at"])
+    if (not 0 < started <= completed <= latest
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("SEC fund-reference observation clocks disagree")
+    return completed
+
+
+def _validate_fund_reference(link: dict, *, symbol: str, cik: str,
+                             on: date, latest: int) -> int:
+    """Check retained selection/provenance consistency, not HTTP authenticity."""
+    keys = {"schema", "symbol", "cik", "series_id", "class_id",
+            "selection_sha256", "capture"}
+    if (symbol not in {"QQQ", "SMH"} or not isinstance(link, dict)
+            or set(link) != keys or link["schema"] != "mastermind.sec_fund_reference.v1"
+            or link["symbol"] != symbol or link["cik"] != cik
+            or not isinstance(link["series_id"], str)
+            or re.fullmatch(r"S[0-9]{9}", link["series_id"]) is None
+            or not isinstance(link["class_id"], str)
+            or re.fullmatch(r"C[0-9]{9}", link["class_id"]) is None):
+        raise IdentityError("invalid retained SEC fund-reference selection")
+    selected = {k: link[k] for k in ("symbol", "cik", "series_id", "class_id")}
+    if link["selection_sha256"] != _reference_digest(selected):
+        raise IdentityError("SEC fund-reference selection changed")
+    return _fund_reference_capture(link["capture"], on=on, latest=latest)
+
+
+def _prepare_fund_reference(body: bytes, capture: dict, *, symbol: str,
+                            cik: str, on: date, decision: int) -> tuple[dict, int]:
+    """Bind an explicitly captured search-association row to SEC and listing evidence.
+
+    SEC does not guarantee this search file's accuracy/scope. This is one
+    corroborating input to the existing independence fence, not a canonical
+    security, issuer group, vendor alias, or historical identity observation.
+    """
+    if type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES:
+        raise IdentityError("SEC fund-reference byte bound")
+    completed = _fund_reference_capture(capture, on=on, latest=decision)
+    if capture["bytes"] != len(body) or capture["sha256"] != hashlib.sha256(body).hexdigest():
+        raise IdentityError("SEC fund-reference capture does not bind exact bytes")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate SEC fund-reference JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs,
+            parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
+            parse_float=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(value, dict) or set(value) != {"fields", "data"}
+                or value["fields"] != ["cik", "seriesId", "classId", "symbol"]
+                or not isinstance(value["data"], list) or not 0 < len(value["data"]) <= 100000):
+            raise ValueError("unsupported SEC fund-reference table")
+        matches = []
+        for row in value["data"]:
+            if (not isinstance(row, list) or len(row) != 4
+                    or type(row[0]) is not int or not 0 < row[0] < 10**10
+                    or not isinstance(row[1], str) or re.fullmatch(r"S[0-9]{9}", row[1]) is None
+                    or not isinstance(row[2], str) or re.fullmatch(r"C[0-9]{9}", row[2]) is None
+                    or not isinstance(row[3], str) or len(row[3]) > 32):
+                raise ValueError("invalid SEC fund-reference row")
+            # SEC can retain an unassigned class with an empty ticker. It is
+            # not a match; conflicting or duplicate requested-symbol rows refuse.
+            if row[3] == symbol:
+                matches.append(row)
+        if len(matches) != 1 or f"{matches[0][0]:010d}" != cik:
+            raise ValueError("fund symbol/registrant missing, ambiguous or conflicting")
+    except (ValueError, TypeError, RecursionError, UnicodeError) as exc:
+        raise IdentityError("invalid SEC fund-reference evidence") from exc
+    selected = dict(symbol=symbol, cik=cik, series_id=matches[0][1], class_id=matches[0][2])
+    link = {"schema": "mastermind.sec_fund_reference.v1", **selected,
+            "selection_sha256": _reference_digest(selected), "capture": dict(capture)}
+    _validate_fund_reference(link, symbol=symbol, cik=cik, on=on, latest=decision)
+    return link, completed
+
+
+def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dict,
+                             listing_body: bytes, listing_receipt_body: bytes,
+                             decision_at: str, fund_reference_body: bytes | None = None,
+                             fund_reference_capture: dict | None = None) -> dict:
+    """Prepare a *new* dated ETF observation for the existing mint fence.
+
+    The SEC supplies registrant identity, not a precise venue or issuer grouping.
+    The existing collector receipt supplies the current listing observation, not
+    a SEC binding. Neither ticker equality nor this result is a canonical ID.
+    Only the existing canonical mint may decide independence against its actual
+    lost rows. No old reference disposition is read, replaced or retried here.
+    The caller owns capture provenance; hashes detect changes, not authenticate
+    an HTTP sender. This function reads supplied bytes and publishes nothing.
+    """
+    from lib.symbol_directory_receipts import (
+        ReceiptValidationError, validate_symbol_directory_completion_receipt_bytes,
+    )
+    import pandas as pd
+    import pyarrow.parquet as pq
+    import math
+
+    if not isinstance(symbol, str) or symbol not in {"SPY", "QQQ", "SMH"}:
+        raise IdentityError("direct registrant intake supports only existing ETF probes")
+    if (type(response_body) is not bytes or not response_body
+            or len(response_body) > _REFERENCE_MAX_BYTES
+            or type(listing_body) is not bytes or not listing_body
+            or len(listing_body) > 8 * 1024 * 1024
+            or type(listing_receipt_body) is not bytes or not listing_receipt_body
+            or len(listing_receipt_body) > 512 * 1024):
+        raise IdentityError("direct registrant evidence exceeds its byte bounds")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+
+    def finite(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("nonfinite JSON number")
+        return number
+
+    try:
+        sec = json.loads(response_body.decode("utf-8"), object_pairs_hook=pairs,
+                         parse_float=finite,
+                         parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        receipt = json.loads(listing_receipt_body.decode("utf-8"), object_pairs_hook=pairs)
+        # Bound decoded row count before the canonical validator reads Parquet.
+        if pq.ParquetFile(io.BytesIO(listing_body)).metadata.num_rows > 200000:
+            raise ValueError("too many listing rows")
+        receipt = validate_symbol_directory_completion_receipt_bytes(
+            receipt, listing_receipt_body, listing_body, expected_kind="listing_snapshot")
+    except (ValueError, TypeError, RecursionError, UnicodeError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid direct registrant or listing evidence") from exc
+    if not isinstance(sec, dict) or not isinstance(capture, dict):
+        raise IdentityError("direct registrant evidence must be objects")
+    cik = sec.get("cik")
+    tickers = sec.get("tickers")
+    title = sec.get("name")
+    if (not isinstance(cik, str) or not re.fullmatch(r"[0-9]{10}", cik) or int(cik) == 0
+            or not isinstance(title, str) or not title.strip() or len(title) > 512
+            or not isinstance(tickers, list)
+            or any(not isinstance(t, str) or not t for t in tickers)
+            or len(tickers) != len(set(tickers))):
+        raise IdentityError("SEC response does not identify the requested registrant")
+    supplied_fund = fund_reference_body is not None or fund_reference_capture is not None
+    if symbol not in tickers:
+        if tickers or symbol not in {"QQQ", "SMH"} or not supplied_fund:
+            raise IdentityError("SEC response does not identify the requested registrant")
+    elif supplied_fund:
+        raise IdentityError("fund-reference extension is only for empty QQQ/SMH ticker arrays")
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    digest = hashlib.sha256(response_body).hexdigest()
+    if (capture.get("url") != url or capture.get("final_url") != url
+            or type(capture.get("status")) is not int or capture["status"] != 200
+            or type(capture.get("bytes")) is not int or capture["bytes"] != len(response_body)
+            or capture.get("sha256") != digest):
+        raise IdentityError("SEC capture does not bind the exact response")
+    started = _reference_clock_ns(capture.get("request_started_at"))
+    completed = _reference_clock_ns(capture.get("read_completed_at"))
+    decision = _reference_clock_ns(decision_at)
+    listing_completed = _reference_clock_ns(receipt["clocks"]["collector_completed_at"])
+    on = date.fromisoformat(receipt["observation_date"])
+    if (not 0 < started <= completed <= decision or listing_completed > decision
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("direct registrant observation clocks disagree")
+    if receipt["authority"]["listing_identity_observation_eligible"] is not True:
+        raise IdentityError("listing observation is ineligible")
+    frame = pd.read_parquet(io.BytesIO(listing_body))
+    rows = frame.loc[frame["symbol"] == symbol]
+    exchange, venue, _, _ = REFERENCE_PROBES[symbol]
+    if len(rows) != 1:
+        raise IdentityError("listing observation is missing or ambiguous")
+    row = rows.iloc[0]
+    if (row["exchange"] != exchange or not bool(row["etf"])
+            or bool(row["test_issue"]) or bool(row["is_preferred"])):
+        raise IdentityError("listing observation conflicts with the ETF probe")
+    # Reuse the scoped resolver, including rename/venue law. SEC's broad
+    # 'NYSE' label is never translated into XNYS or another MIC here.
+    resolutions = resolve_universe(
+        {symbol: {"sources": ["direct_registrant_observation"], "first_seen": on}},
+        {}, {symbol: exchange}, on.isoformat(), reference_probe_keys=frozenset({symbol}))
+    if (len(resolutions) != 1 or resolutions[0].listing_key is None
+            or resolutions[0].listing_key.mic != venue):
+        raise IdentityError("canonical resolver did not establish the listing")
+    resolution = resolutions[0]
+    fund, fund_completed = None, 0
+    if supplied_fund:
+        fund, fund_completed = _prepare_fund_reference(
+            fund_reference_body, fund_reference_capture, symbol=symbol,
+            cik=cik, on=on, decision=decision)
+    return {"resolution": resolution, "registrant": {
+        "symbol": symbol, "cik": cik, "title": title,
+        "listing_key": resolution.listing_key.render(), "observed_on": on.isoformat(),
+        "known_at": _reference_clock_iso(max(completed, listing_completed, fund_completed)),
+        "response_sha256": digest,
+        "listing_snapshot_sha256": receipt["artifact"]["sha256"],
+        "listing_receipt_sha256": hashlib.sha256(listing_receipt_body).hexdigest(),
+        "capture": {key: capture[key] for key in (
+            "url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at")},
+        "scope": "pending_transition_independence_only",
+        **({"fund_reference": fund} if fund is not None else {}),
+    }}
+
+
+def _load_reference_input(out_dir: Path, path: Path | None) -> dict | None:
+    previous = None
+    receipt_path = out_dir / RECEIPT_NAME
+    if receipt_path.exists():
+        previous = _reference_json(receipt_path)[0].get("prospective_reference")
+    if path is None and previous is None:
+        return None
+    if previous is not None and not isinstance(previous, dict):
+        raise IdentityError("invalid retained prospective reference receipt")
+    if path is not None:
+        bundle, file_sha = _reference_json(path)
+        if previous is not None and bundle != previous.get("input"):
+            raise IdentityError("conflicting prospective reference input; revisions not admitted")
+    else:
+        bundle = previous.get("input")
+        file_sha = previous.get("input_file_sha256")
+    if not isinstance(bundle, dict) or bundle.get("schema") != REFERENCE_SCHEMA:
+        raise IdentityError("unsupported prospective reference schema")
+    probes = bundle.get("probes")
+    if not isinstance(probes, dict) or set(probes) != set(REFERENCE_PROBES):
+        raise IdentityError("reference intake requires exactly MU/SPY/QQQ/SMH probes")
+    dates = {r.get("requested_date") for r in probes.values() if isinstance(r, dict)}
+    if len(dates) != 1 or len(probes) != sum(isinstance(r, dict) for r in probes.values()):
+        raise IdentityError("reference probes require one explicit observation date")
+    requested_date = next(iter(dates))
+    try:
+        on = date.fromisoformat(requested_date)
+    except (ValueError, TypeError) as exc:
+        raise IdentityError("invalid reference observation date") from exc
+    if on.isoformat() != requested_date:
+        raise IdentityError("noncanonical reference date")
+    snapshot = SYMBOL_DIR_SNAPSHOTS / f"{requested_date}.parquet"
+    receipt_file = SYMBOL_DIR_SNAPSHOTS.parent / "receipts" / "snapshots" / f"{requested_date}.json"
+    listing_receipt, listing_receipt_sha = _reference_json(receipt_file)
+    with snapshot.open("rb") as source:
+        snapshot_bytes = source.read(8 * 1024 * 1024 + 1)
+    if len(snapshot_bytes) > 8 * 1024 * 1024:
+        raise IdentityError("listing snapshot exceeds reference read bound")
+    snapshot_sha = hashlib.sha256(snapshot_bytes).hexdigest()
+    artifact = listing_receipt.get("artifact", {})
+    if (artifact.get("sha256") != snapshot_sha or artifact.get("bytes") != len(snapshot_bytes)
+            or artifact.get("key") != f"snapshots/{requested_date}.parquet"
+            or listing_receipt.get("observation_date") != requested_date
+            or listing_receipt.get("completeness", {}).get("status") != "complete"
+            or listing_receipt.get("completeness", {}).get("duplicate_key_count") != 0
+            or listing_receipt.get("authority", {}).get("listing_identity_observation_eligible") is not True):
+        raise IdentityError("listing source receipt does not bind a complete eligible snapshot")
+    import pandas as pd
+    listing_frame = pd.read_parquet(io.BytesIO(snapshot_bytes))
+    if len(listing_frame) != artifact.get("rows"):
+        raise IdentityError("listing source receipt row count mismatch")
+    listing_started = _reference_clock_ns(listing_receipt.get("clocks", {}).get("collector_started_at"))
+    listing_completed = _reference_clock_ns(listing_receipt.get("clocks", {}).get("collector_completed_at"))
+    mic = bundle.get("mic_evidence", {})
+    selected = mic.get("selected_row", {})
+    if (mic.get("http_status") != 200
+            or selected.get("MIC") != ARCX or selected.get("OPERATING MIC") != XNYS
+            or selected.get("STATUS") != "ACTIVE" or selected.get("OPRT/SGMT") != "SGMT"
+            or selected.get("ISO COUNTRY CODE (ISO 3166)") != "US"
+            or mic.get("source_url") != "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv"
+            or not re.fullmatch(r"[0-9a-f]{64}", str(mic.get("response_sha256", "")))):
+        raise IdentityError("invalid official ARCX MIC evidence")
+    mic_started = _reference_clock_ns(mic.get("request_started_at_utc"))
+    mic_completed = _reference_clock_ns(mic.get("response_read_completed_at_utc"))
+    read_completed = time.time_ns()
+    if previous is not None:
+        prior_clock = _reference_ns(previous.get("source_read_completed_at_utc_ns"), "retained read clock")
+        if prior_clock > read_completed:
+            raise IdentityError("retained reference read is in the future")
+        read_completed = prior_clock
+        if previous.get("input_sha256") != _reference_digest(bundle):
+            raise IdentityError("retained reference input seal mismatch")
+    if not (0 < listing_started <= listing_completed <= read_completed
+            and 0 < mic_started <= mic_completed <= read_completed):
+        raise IdentityError("inconsistent reference source clocks")
+    common = {
+        "listing_snapshot_sha256": snapshot_sha,
+        "listing_receipt_sha256": listing_receipt_sha,
+        "mic_evidence_sha256": _reference_digest(mic),
+        "source_read_completed_at_utc_ns": read_completed,
+    }
+    if previous is not None and previous.get("evidence") != common:
+        raise IdentityError("retained reference source evidence changed")
+    states = {}
+    for symbol, (exchange, venue, kind, etf) in REFERENCE_PROBES.items():
+        record = probes[symbol]
+        if (record.get("request_path") != f"/v3/reference/tickers/{symbol}"
+                or record.get("request_params") != {"date": requested_date}):
+            raise IdentityError("native reference request metadata mismatch")
+        started = _reference_ns(record.get("request_started_at_utc_ns"), "request clock")
+        observed = _reference_ns(record.get("decoded_payload_observed_at_utc_ns"), "decoded observation clock")
+        if not 0 < started <= observed <= read_completed:
+            raise IdentityError("inconsistent native reference observation clocks")
+        if _reference_clock_iso(started)[:10] != requested_date:
+            raise IdentityError("prospective request date must be the actual request UTC date")
+        payload = record.get("decoded_payload")
+        if record.get("decoded_payload_sha256") != _reference_digest(payload):
+            raise IdentityError("decoded native payload seal mismatch")
+        rows = listing_frame.loc[listing_frame["symbol"] == symbol]
+        reason = None
+        if len(rows) != 1:
+            reason = "official_listing_not_unique"
+        else:
+            row = rows.iloc[0]
+            if (str(row["exchange"]) != exchange or bool(row["etf"]) != etf
+                    or bool(row["test_issue"]) or bool(row["is_preferred"])):
+                reason = "official_listing_identity_conflict"
+        native = payload.get("results") if isinstance(payload, dict) else None
+        if reason is None and (not isinstance(payload, dict) or payload.get("status") != "OK"
+                               or not isinstance(native, dict)):
+            reason = "native_reference_unavailable"
+        expected = {"ticker": symbol, "market": "stocks", "locale": "us",
+                    "primary_exchange": venue, "type": kind, "active": True}
+        if reason is None and (native.get("active") is not True
+                               or any(native.get(k) != v for k, v in expected.items())):
+            reason = "native_reference_identity_conflict"
+        if reason is None and not re.fullmatch(r"BBG[A-Z0-9]{9}", str(native.get("composite_figi", ""))):
+            reason = "native_stable_identifier_missing"
+        known_at = _reference_clock_iso(max(observed, listing_completed, mic_completed, read_completed))
+        states[symbol] = {
+            "symbol": symbol, "status": "REFUSED" if reason else "EVIDENCE_READY",
+            "code": reason, "known_at": known_at,
+            "evidence_sha256": _reference_digest({"record": record, **common}),
+            "native_identity": ({k: native[k] for k in (*expected, "composite_figi")} if reason is None else None),
+        }
+        if previous is not None:
+            prior = previous.get("probes", {}).get(symbol)
+            if not isinstance(prior, dict) or prior.get("status") not in {"BOUND", "REFUSED"}:
+                raise IdentityError("invalid retained reference disposition")
+            for field in ("symbol", "known_at", "evidence_sha256", "native_identity"):
+                if prior.get(field) != states[symbol][field]:
+                    raise IdentityError("retained reference binding evidence changed")
+            if prior["status"] == "REFUSED":
+                owner_refusal = prior.get("code") in {
+                    "canonical_identity_refused", "canonical_listing_identity_conflict"}
+                if not ((owner_refusal and reason is None) or prior.get("code") == reason):
+                    raise IdentityError("invalid retained reference refusal")
+                # This is the original dated disposition, not a new mint attempt.
+                # A later owner change cannot upgrade old evidence at its old clock.
+                states[symbol] = dict(prior)
+    return {
+        "schema": REFERENCE_SCHEMA, "input": bundle, "input_sha256": _reference_digest(bundle),
+        "input_file_sha256": file_sha, "source_read_completed_at_utc_ns": read_completed,
+        "evidence": common, "probes": states,
+        "clock_semantics": "known_at observes binding evidence; not publication or Radar read availability",
+        "provider_date_semantics": "request date is not first-seen proof; filing-derived fields can include later-submitted filings and are unused",
+        "provider_reference_documentation": "https://massive.com/docs/rest/stocks/tickers/ticker-overview",
+        "consumer_requirement": "candidate input additionally requires actual native snapshot read receipt by cutoff",
+        "authority": {"research_admitted": False, "trading_authority": False},
+    }
+
+
+def _reference_aliases(state: dict | None, ids: dict, master_rows: list[dict],
+                       pending: list[dict], resurrection: list[dict]) -> list[AliasRow]:
+    if state is None:
+        return []
+    master = {r["security_id"]: r for r in master_rows}
+    aliases = []
+    for symbol, evidence in state["probes"].items():
+        if evidence["status"] == "REFUSED":
+            continue
+        sec = ids.get(symbol)
+        if sec is None or sec not in master or master[sec].get("security_state"):
+            refusals = [r for r in pending if r.get("symbol") == symbol]
+            refusals += [r for r in resurrection if r.get("key") == symbol]
+            evidence.update(status="REFUSED", code="canonical_identity_refused", owner_refusals=refusals)
+            continue
+        row = master[sec]
+        listing = parse_listing_key(row["listing_key"])
+        native = evidence["native_identity"]
+        # Compare the canonical owner row and its established current-symbol
+        # relationship, never the immutable security_id spelling. No venue
+        # continuity authority is introduced by this prospective source slice.
+        if (row.get("country") != "US" or row.get("mic") != native["primary_exchange"]
+                or listing.country != row.get("country") or listing.mic != row.get("mic")
+                or listing.code != row.get("inception_code")
+                or _current_symbol_of_row(row) != native["ticker"]):
+            evidence.update(status="REFUSED", code="canonical_listing_identity_conflict",
+                            canonical_listing_identity={k: row.get(k) for k in
+                                ("security_id", "listing_key", "country", "mic", "inception_code")})
+            continue
+        start = date.fromisoformat(state["input"]["probes"][symbol]["requested_date"])
+        seal = alias_binding_sha256("polygon", symbol, sec, start, None,
+                                    evidence["known_at"], evidence["evidence_sha256"])
+        aliases.append(AliasRow("polygon", symbol, sec, start, None,
+                                evidence["known_at"], evidence["evidence_sha256"], seal))
+        evidence.update(status="BOUND", code=None, security_id=sec,
+                        listing_key=master[sec]["listing_key"], binding_sha256=seal)
+    return aliases
+
+
+def read_direct_registrant_inputs(path: Path) -> list[dict]:
+    """Read one explicit local capture bundle; no network or credential access."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate input JSON key")
+            result[key] = value
+        return result
+
+    try:
+        body = _read_regular_file(path, label="direct registrant manifest", limit=512 * 1024)
+        manifest = json.loads(body, object_pairs_hook=pairs,
+                              parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(manifest, dict) or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] not in {"mastermind.direct_registrant_input.v1",
+                                               "mastermind.direct_registrant_input.v2"}
+                or not isinstance(manifest["sources"], list) or not 1 <= len(manifest["sources"]) <= 3):
+            raise ValueError("invalid direct registrant manifest")
+        inputs = []
+        for record in manifest["sources"]:
+            if (not _direct_registrant_source_shape(record)
+                    or (manifest["schema"] == "mastermind.direct_registrant_input.v1"
+                        and set(record) != _DIRECT_REGISTRANT_KEYS)):
+                raise ValueError("invalid direct registrant source")
+            source = dict(record)
+            files = [("response_body", _REFERENCE_MAX_BYTES),
+                     ("listing_body", 8 * 1024 * 1024),
+                     ("listing_receipt_body", 512 * 1024)]
+            if "fund_reference_body" in source:
+                files.append(("fund_reference_body", _REFERENCE_MAX_BYTES))
+            for key, limit in files:
+                name = source[key]
+                if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+                    raise ValueError("source must be a sibling filename")
+                source[key] = _read_regular_file(path.parent / name, label=key, limit=limit)
+            inputs.append(source)
+        return inputs
+    except (OSError, ValueError, TypeError, RecursionError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid direct registrant input files") from exc
+
+
+def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict],
+                             now: str) -> tuple[dict | None, list[Resolution]]:
+    """Carry decisions inside the existing receipt; never replay retained inputs."""
+    previous = None
+    if (out_dir / RECEIPT_NAME).exists():
+        previous = _reference_json(out_dir / RECEIPT_NAME)[0].get("direct_registrant_intake")
+    if type(inputs) not in (tuple, list) or len(inputs) > 3:
+        raise IdentityError("direct registrant intake exceeds the bounded probe set")
+    if previous is None and not inputs:
+        return None, []
+    clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
+    if clock.tzinfo is None:
+        clock = clock.replace(tzinfo=timezone.utc)
+    state = {"schema": "mastermind.direct_registrant_intake.v1", "observations": {}}
+    if previous is not None:
+        if (not isinstance(previous, dict) or set(previous) != {"schema", "observations", "sha256"}
+                or previous.get("schema") != state["schema"]
+                or not isinstance(previous.get("observations"), dict)
+                or len(previous["observations"]) > 3
+                or previous["sha256"] != _reference_digest({k: previous[k] for k in ("schema", "observations")})):
+            raise IdentityError("invalid retained direct registrant receipt")
+        for key, row in previous["observations"].items():
+            if (key not in {"SPY", "QQQ", "SMH"} or not isinstance(row, dict)
+                    or row.get("symbol") != key or not isinstance(row.get("status"), str)
+                    or row["status"] not in {"BOUND", "REFUSED"}
+                    or row.get("scope") != "pending_transition_independence_only"
+                    or _reference_clock_ns(row.get("known_at")) > _reference_clock_ns(clock.isoformat())):
+                raise IdentityError("invalid retained direct registrant disposition")
+            try:
+                on = date.fromisoformat(row["observed_on"])
+                capture = row["capture"]
+                expected_url = f'https://data.sec.gov/submissions/CIK{row["cik"]}.json'
+                started = _reference_clock_ns(capture["request_started_at"])
+                completed = _reference_clock_ns(capture["read_completed_at"])
+                known = _reference_clock_ns(row["known_at"])
+                listing = parse_listing_key(row["listing_key"])
+                valid = (
+                    on.isoformat() == row["observed_on"]
+                    and isinstance(row["cik"], str)
+                    and re.fullmatch(r"[0-9]{10}", row["cik"]) is not None
+                    and int(row["cik"]) > 0
+                    and isinstance(row["title"], str) and 0 < len(row["title"].strip()) <= 512
+                    and listing.country == DEFAULT_COUNTRY
+                    and listing.mic == REFERENCE_PROBES[key][1]
+                    and listing.code == _inception_code(key, key)
+                    and all(isinstance(row.get(field), str)
+                            and re.fullmatch(r"[0-9a-f]{64}", row[field]) is not None
+                            for field in ("response_sha256", "listing_snapshot_sha256", "listing_receipt_sha256"))
+                    and set(capture) == {"url", "final_url", "status", "bytes", "sha256",
+                                         "request_started_at", "read_completed_at"}
+                    and capture["url"] == capture["final_url"] == expected_url
+                    and type(capture["status"]) is int and capture["status"] == 200
+                    and type(capture["bytes"]) is int and 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+                    and capture["sha256"] == row["response_sha256"]
+                    and 0 < started <= completed <= known
+                    and _reference_clock_iso(started)[:10] == on.isoformat()
+                    and _reference_clock_iso(completed)[:10] == on.isoformat()
+                )
+                if row["status"] == "BOUND":
+                    valid = valid and isinstance(row.get("security_id"), str) and bool(row["security_id"])
+                else:
+                    causes = row.get("owner_refusals")
+                    valid = (valid and row.get("code") == "canonical_identity_refused"
+                             and isinstance(causes, list) and bool(causes)
+                             and all(isinstance(cause, dict) and cause.get("symbol") == key
+                                     and isinstance(cause.get("reason"), str) and cause["reason"]
+                                     for cause in causes))
+                if "fund_reference" in row:
+                    _validate_fund_reference(row["fund_reference"], symbol=key,
+                                             cik=row["cik"], on=on, latest=known)
+                if not valid:
+                    raise IdentityError("invalid retained direct registrant fields")
+            except (KeyError, TypeError, ValueError, OverflowError) as exc:
+                raise IdentityError("invalid retained direct registrant fields") from exc
+            state["observations"][key] = dict(row)
+    prepared_resolutions = []
+    for source in inputs:
+        if not _direct_registrant_source_shape(source):
+            raise IdentityError("invalid direct registrant input shape")
+        if not isinstance(source["symbol"], str):
+            raise IdentityError("invalid direct registrant symbol")
+        if source["symbol"] in state["observations"]:
+            raise IdentityError("direct registrant observation already retained; no replay")
+        result = prepare_direct_registrant(**source, decision_at=clock.isoformat())
+        row = result["registrant"]
+        state["observations"][row["symbol"]] = dict(row, status="PENDING")
+        prepared_resolutions.append(result["resolution"])
+    return state, prepared_resolutions
+
+
+def _current_direct_resolution(symbol: str, row: dict, directory: dict, flags: dict,
+                               delisted: dict, snapshot_date: str | None) -> Resolution | None:
+    """Use the current listing rail, never a retained observation as today's venue."""
+    if (snapshot_date is None or snapshot_date < row["observed_on"] or symbol in delisted
+            or directory.get(symbol) != REFERENCE_PROBES[symbol][0]
+            or flags.get(symbol) != {"etf": True, "test_issue": False, "is_preferred": False}):
+        return None
+    resolved = resolve_universe(
+        {symbol: {"sources": [], "first_seen": date.fromisoformat(row["observed_on"])}},
+        delisted, directory, snapshot_date, reference_probe_keys=frozenset({symbol}))
+    # The resolver also emits every exit-ledger key, including unrelated symbols.
+    current = next(r for r in resolved if r.key == symbol)
+    if current.listing_key is None or current.listing_key.render() != row["listing_key"]:
+        return None
+    return current
+
+
+def _retained_direct_resolutions(state: dict | None, existing: list[dict], *,
+                                 directory: dict, directory_flags: dict, delisted: dict,
+                                 snapshot_date: str | None) -> list[Resolution]:
+    """Re-derive stored active IDs only while the current rail still supports them."""
+    results = []
+    for symbol, row in (state["observations"].items() if state else ()):
+        if row["status"] != "BOUND":
+            continue
+        matches = [r for r in existing if r["security_id"] == row.get("security_id")]
+        if len(matches) != 1 or matches[0]["listing_key"] != row["listing_key"]:
+            raise IdentityError("retained direct registrant canonical row is missing or conflicting")
+        stored = matches[0]
+        if stored.get("security_state"):
+            continue  # historical observation retained; never resurrect a tombstone
+        listing = parse_listing_key(stored["listing_key"])
+        if (stored["country"] != listing.country or stored["mic"] != listing.mic
+                or stored["inception_code"] != listing.code):
+            raise IdentityError("retained direct registrant listing fields conflict")
+        current = _current_direct_resolution(symbol, row, directory, directory_flags,
+                                             delisted, snapshot_date)
+        if current is not None:
+            results.append(current)
+    return results
+
+
+def prepare_spy_option_root(sources: dict, *, decision_at: str) -> tuple[AliasRow, dict]:
+    """Prepare one observed-day source inference; no network or publication.
+
+    This profile is deliberately SPY-specific. Capture metadata belongs to the
+    admitted caller and is not authentication. Cboe identifies the actual option
+    product; Theta's v3 contract supplies the namespace semantics; SEC plus the
+    native listing receipt identify the underlying. No name or ticker matching
+    fallback, historical effective date, index admission or source-use grant.
+    """
+    import csv
+    from html.parser import HTMLParser
+    from lib.dataos.identity import option_root_binding_sha256
+
+    urls = {
+        "cboe_reference": "https://cdn.cboe.com/data/us/options/market_statistics/symbol_reference/cone-underlying.csv",
+        "cboe_product": "https://www.cboe.com/tradable_products/sp_500/spx_weekly_options/specifications",
+        "theta_contract": "https://thetadata.net/docs/operations/option_history_eod.html",
+        "registrant": "https://data.sec.gov/submissions/CIK0000884394.json",
+    }
+    if type(sources) is not dict or set(sources) != set(urls) | {"listing_body", "listing_receipt_body"}:
+        raise IdentityError("invalid option-root source bundle")
+    decision = _reference_clock_ns(decision_at)
+    bodies, observations, clocks = {}, {}, []
+    for role, url in urls.items():
+        source = sources[role]
+        if type(source) is not dict or set(source) != {"body", "capture"}:
+            raise IdentityError("invalid option-root source record")
+        body, capture = source["body"], source["capture"]
+        if (type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES
+                or type(capture) is not dict
+                or set(capture) != {"url", "final_url", "status", "bytes", "sha256",
+                                    "request_started_at", "read_completed_at"}
+                or capture.get("url") != url
+                or capture.get("final_url") != url or type(capture.get("status")) is not int
+                or capture["status"] != 200 or type(capture.get("bytes")) is not int
+                or capture["bytes"] != len(body)
+                or capture.get("sha256") != hashlib.sha256(body).hexdigest()):
+            raise IdentityError("option-root capture does not bind the exact source")
+        started = _reference_clock_ns(capture.get("request_started_at"))
+        completed = _reference_clock_ns(capture.get("read_completed_at"))
+        if not 0 < started <= completed <= decision:
+            raise IdentityError("invalid option-root source clocks")
+        clocks.extend((started, completed))
+        observations[role] = {"url": url, "bytes": len(body), "sha256": capture["sha256"],
+                              "request_started_at": _reference_clock_iso(started),
+                              "read_completed_at": _reference_clock_iso(completed)}
+        bodies[role] = body
+    on = date.fromisoformat(_reference_clock_iso(max(clocks))[:10])
+    if any(_reference_clock_iso(clock)[:10] != on.isoformat() for clock in clocks):
+        raise IdentityError("option-root sources must be observed on one date")
+    if _reference_clock_iso(decision)[:10] != on.isoformat():
+        raise IdentityError("new option-root admission must occur on its observed date")
+
+    class Tables(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text, self.tables = [], []
+            self.hidden = 0
+            self.rows = self.cells = self.cell = None
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ("script", "style", "template"):
+                self.hidden += 1
+            if self.hidden:
+                return
+            if tag == "table":
+                if self.rows is not None:
+                    raise ValueError("nested source table")
+                self.rows = []
+            if tag == "tr" and self.rows is not None:
+                self.cells = []
+            if tag in ("td", "th") and self.cells is not None:
+                self.cell = []
+
+        def handle_data(self, value):
+            if self.hidden:
+                return
+            self.text.append(value)
+            if self.cell is not None:
+                self.cell.append(value)
+
+        def handle_endtag(self, tag):
+            if self.hidden:
+                if tag in ("script", "style", "template"):
+                    self.hidden -= 1
+                return
+            if tag in ("td", "th") and self.cell is not None:
+                self.cells.append(" ".join(" ".join(self.cell).split()))
+                self.cell = None
+            if tag == "tr" and self.cells is not None:
+                self.rows.append(self.cells)
+                self.cells = None
+            if tag == "table" and self.rows is not None:
+                self.tables.append(self.rows)
+                self.rows = None
+
+    try:
+        reader = csv.DictReader(io.StringIO(bodies["cboe_reference"].decode("utf-8-sig")))
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
+            raise ValueError("duplicate reference columns")
+        rows = list(reader)
+        if len(rows) > 20000 or any(None in row or any(v is None for v in row.values()) for row in rows):
+            raise ValueError("invalid reference rows")
+        selected = [r for r in rows if r.get("Symbol") == "SPY"]
+        if len(selected) != 1 or {k: selected[0].get(k) for k in
+                ("Company", "Symbol Type", "Options Type", "Clearing")} != {
+                "Company": "STATE STR SPDR S&P 500 ETF TR TR UNIT", "Symbol Type": "ETF",
+                "Options Type": "Standard", "Clearing": "OCC"}:
+            raise ValueError("SPY reference does not identify the standard ETF product")
+        product = Tables()
+        product.feed(bodies["cboe_product"].decode("utf-8"))
+        matches = [(table, row.index("SPDR ® S&P 500 ® ETF Options")) for table in product.tables
+                   for row in table if row.count("SPDR ® S&P 500 ® ETF Options") == 1]
+        if len(matches) != 1:
+            raise ValueError("ambiguous SPY product column")
+        table, column = matches[0]
+        for label, expected in (("Root Ticker Symbol", "SPY"), ("Options Chain", "SPY"),
+                                ("Settlement Type", "Physical Shares of ETF"), ("Exercise Style", "American")):
+            cells = [r for r in table if r and r[0] == label]
+            if len(cells) != 1 or len(cells[0]) <= column or cells[0][column] != expected:
+                raise ValueError("SPY root/product semantics conflict")
+            if label == "Root Ticker Symbol" and cells[0].count("SPY") != 1:
+                raise ValueError("SPY option root appears in multiple product columns")
+        theta = Tables()
+        theta.feed(bodies["theta_contract"].decode("utf-8"))
+        text = " ".join(" ".join(theta.text).split())
+        if ("/v3/option/history/eod" not in text or
+                "symbol Required - The stock or index symbol, or underlying symbol for options. Type: string" not in text):
+            raise ValueError("Theta v3 symbol contract unavailable")
+    except (UnicodeError, ValueError, TypeError, csv.Error) as exc:
+        raise IdentityError("option-root source semantics invalid") from exc
+
+    direct = prepare_direct_registrant(symbol="SPY", response_body=bodies["registrant"],
+        capture=sources["registrant"]["capture"], listing_body=sources["listing_body"],
+        listing_receipt_body=sources["listing_receipt_body"], decision_at=decision_at)
+    registrant = direct["registrant"]
+    if (registrant["cik"] != "0000884394" or registrant["title"] != "SPDR S&P 500 ETF TRUST"
+            or registrant["observed_on"] != on.isoformat()
+            or registrant["listing_key"] != "US-ARCX-SPY"):
+        raise IdentityError("option-root canonical source identity conflicts")
+    known = _reference_clock_iso(max(*clocks, _reference_clock_ns(registrant["known_at"])))
+    end = on + timedelta(days=1)
+    evidence = {"schema": "mastermind.spy_option_root_sources.v1", "vendor": "thetadata", "root": "SPY",
+        "underlying_id": "SEC:US-ARCX-SPY", "valid_from": on.isoformat(), "valid_to": end.isoformat(),
+        "known_at": known, "sources": observations, "listing": registrant,
+        "scope": "source-specific SPY inference; observed day only; no live Theta or rights assertion",
+        "limits": ["No verified Matrix session for this observed date; root lookup is identity preparation only",
+                   "Consumption uses the Options root/Matrix path; ordinary us_equity excludes ARCX"]}
+    body = (json.dumps(evidence, indent=2, sort_keys=True) + "\n").encode()
+    sha = hashlib.sha256(body).hexdigest()
+    seal = option_root_binding_sha256("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha)
+    return AliasRow("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha, seal,
+                    alias_kind="occ_root"), evidence
+
+
+def admit_spy_option_root(sources: dict, master_rows: list[dict], *, decision_at: str):
+    """Prepare against exactly one existing active canonical target, before writes."""
+    row, evidence = prepare_spy_option_root(sources, decision_at=decision_at)
+    matches = [r for r in master_rows if r.get("security_id") == row.security_id]
+    if len(matches) != 1:
+        raise IdentityError("option underlying canonical target missing or duplicated")
+    master = matches[0]
+    if (master.get("security_state") is not None or master.get("superseded_by") is not None
+            or [master.get(k) for k in ("listing_key", "country", "mic", "inception_code")] !=
+               ["US-ARCX-SPY", "US", "ARCX", "SPY"]):
+        raise IdentityError("option underlying is inactive or conflicting")
+    def stored_clock(name):
+        # The existing writer reader returns ISO strings from typed UTC Parquet.
+        try:
+            value = datetime.fromisoformat(str(master.get(name)).replace("Z", "+00:00"))
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            return _reference_clock_ns(value.isoformat())
+        except (ValueError, TypeError) as exc:
+            raise IdentityError("invalid canonical target clock") from exc
+    effective, ingested = stored_clock("effective_at"), stored_clock("ingested_at")
+    if not 0 < effective <= ingested <= _reference_clock_ns(decision_at) or _reference_clock_iso(effective)[:10] > str(row.valid_from):
+        raise IdentityError("option underlying canonical clocks conflict")
+    # Seal the exact canonical record fields used for admission. Consumers also
+    # bind the independently captured master bytes and their availability clock.
+    evidence["canonical_target"] = {key: master.get(key) for key in MASTER_COLUMNS}
+    body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+    digest = hashlib.sha256(body).hexdigest()
+    from lib.dataos.identity import option_root_binding_sha256
+    seal = option_root_binding_sha256(row.vendor, row.vendor_symbol, row.security_id,
+        row.valid_from, row.valid_to, row.known_at, digest)
+    return AliasRow(row.vendor, row.vendor_symbol, row.security_id, row.valid_from, row.valid_to,
+                    row.known_at, digest, seal, alias_kind="occ_root"), evidence
+
+
+def read_spy_option_root_input(path: Path) -> dict:
+    """Read the explicit local source bundle with the incumbent bounded reader."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate source manifest key")
+            result[key] = value
+        return result
+
+    def read(name, limit):
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+            raise ValueError("source must be a sibling filename")
+        return _read_regular_file(path.parent / name, label="option-root source", limit=limit)
+
+    try:
+        raw = _read_regular_file(path, label="option-root manifest", limit=512 * 1024)
+        manifest = json.loads(raw, object_pairs_hook=pairs,
+                              parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        roles = {"cboe_reference", "cboe_product", "theta_contract", "registrant"}
+        if (type(manifest) is not dict or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] != "mastermind.spy_option_root_input.v1"
+                or type(manifest["sources"]) is not dict
+                or set(manifest["sources"]) != roles | {"listing_body", "listing_receipt_body"}):
+            raise ValueError("invalid option-root manifest")
+        sources = manifest["sources"]
+        for role in roles:
+            if type(sources[role]) is not dict or set(sources[role]) != {"body", "capture"}:
+                raise ValueError("invalid option-root source")
+            sources[role]["body"] = read(sources[role]["body"], _REFERENCE_MAX_BYTES)
+        sources["listing_body"] = read(sources["listing_body"], 8 * 1024 * 1024)
+        sources["listing_receipt_body"] = read(sources["listing_receipt_body"], 512 * 1024)
+        return sources
+    except (OSError, ValueError, TypeError, RecursionError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid option-root input files") from exc
+
+
+def _spy_option_root_state(out_dir: Path, sources: dict | None, master_rows: list[dict], now: str):
+    """Retain one bounded admission in the existing writer receipt, without replay."""
+    previous = (_reference_json(out_dir / RECEIPT_NAME)[0].get("spy_option_root")
+                if (out_dir / RECEIPT_NAME).exists() else None)
+    if sources is not None and previous is not None:
+        raise IdentityError("SPY option-root admission already retained; no replay")
+    if sources is not None:
+        row, evidence = admit_spy_option_root(sources, master_rows, decision_at=now + "Z")
+        return evidence, [row]
+    if previous is not None:
+        if (type(previous) is not dict or previous.get("schema") != "mastermind.spy_option_root_sources.v1"
+                or previous.get("vendor") != "thetadata" or previous.get("root") != "SPY"
+                or previous.get("underlying_id") != "SEC:US-ARCX-SPY"):
+            raise IdentityError("invalid retained SPY root evidence")
+        # Its sealed alias binds the whole retained document below. No source
+        # observation is resubmitted and its historical clock is never refreshed.
+        if _reference_clock_ns(previous.get("known_at")) > _reference_clock_ns(now + "Z"):
+            raise IdentityError("retained SPY source evidence is not yet known")
+    return previous, []
+
+
+def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[dict], now: str):
+    roots = [r for r in alias_rows if r.get("alias_kind") == "occ_root"
+             and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY"]
+    if evidence is None:
+        if roots:
+            raise IdentityError("SPY root lacks its retained source evidence")
+        return
+    try:
+        start, end = date.fromisoformat(evidence["valid_from"]), date.fromisoformat(evidence["valid_to"])
+        body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+        table = VendorAliasTable.from_records(roots)
+        binding = table.resolve_option_underlying("thetadata", "SPY", start,
+                    decision_at=now + "Z", evidence_bytes=body)
+        if (len(roots) != 1 or end != start + timedelta(days=1) or binding is None
+                or binding.security_id != evidence["underlying_id"]
+                or binding.valid_to != end or binding.known_at.isoformat() != evidence["known_at"]):
+            raise IdentityError("retained SPY source/alias mismatch")
+    except (KeyError, ValueError, TypeError, OverflowError) as exc:
+        raise IdentityError("invalid retained SPY root binding") from exc
+
+
+def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
+    """Preserve the existing API; serialize all actual local writer effects."""
+    kwargs = dict(dry_run=dry_run, allow_missing_evidence=allow_missing_evidence,
+                  reference_evidence_path=reference_evidence_path,
+                  direct_registrant_inputs=direct_registrant_inputs,
+                  spy_option_root_input=spy_option_root_input)
+    if dry_run:
+        return _build_reference_unlocked(out_dir, **kwargs)
+    with _reference_writer_scope(out_dir):
+        return _build_reference_unlocked(out_dir, **kwargs)
+
+
+def _build_reference_unlocked(out_dir: Path, dry_run: bool = False,
+          allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
     """Do the whole build and return the receipt payload (written unless ``dry_run``).
 
     ``allow_missing_evidence`` (V4-D2B1 FIX 2 / B2 manual-path hardening): a missing or
@@ -2762,9 +4773,45 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    # Protect native publication/history BEFORE any input reads or writes.
+    # An older builder cannot safely produce a new generation after native
+    # history appears, even when its ordinary data sources have advanced.
+    _assert_no_unpreserved_native_generation(out_dir)
+    if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
+        raise IdentityError("option-root intake cannot combine with security admission")
+    now = _iso_now()
+    direct_state, direct_resolutions = _direct_registrant_state(out_dir, direct_registrant_inputs, now)
+    direct_keys = frozenset(direct_state["observations"]) if direct_state else frozenset()
+    reference = _load_reference_input(out_dir, reference_evidence_path)
+    for symbol, observation in (direct_state["observations"].items() if direct_state else ()):
+        if observation["status"] != "PENDING" or reference is None:
+            continue
+        prior = reference["probes"].get(symbol)
+        if prior is not None and prior["status"] == "EVIDENCE_READY":
+            raise IdentityError("direct intake cannot supply identity to an unsettled older reference")
+        if prior is not None and _reference_clock_ns(observation["known_at"]) <= _reference_clock_ns(prior["known_at"]):
+            raise IdentityError("direct intake must be newer than the retained reference disposition")
+    reference_keys = frozenset(
+        symbol for symbol, row in (reference["probes"].items() if reference else ())
+        if row["status"] == "EVIDENCE_READY"
+    )
+    reference_only_keys = (frozenset({"SPY", "QQQ", "SMH"}) if reference else frozenset()) | direct_keys
     universe = load_universe()
     delisted = load_delisted()
     directory, directory_flags, snapshot_date, snapshot_path = load_directory()
+    for incoming in direct_resolutions:
+        observation = direct_state["observations"][incoming.key]
+        if (observation["observed_on"] != snapshot_date or snapshot_path is None
+                or _current_direct_resolution(incoming.key, observation, directory,
+                                               directory_flags, delisted, snapshot_date) != incoming):
+            raise IdentityError("direct registrant does not bind the current listing rail")
+        from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+        try:
+            current_bytes = _read_regular_file(snapshot_path, label="current listing", limit=8 * 1024 * 1024)
+        except (OSError, ReceiptValidationError) as exc:
+            raise IdentityError("current listing snapshot unavailable") from exc
+        if hashlib.sha256(current_bytes).hexdigest() != observation["listing_snapshot_sha256"]:
+            raise IdentityError("direct registrant does not bind the current listing bytes")
     fixups, migrations = load_config_maps()
     cik_map, cik_snapshot_date, cik_map_path, ambiguous_tickers = load_cik_map()
     if cik_map_path is None and not allow_missing_evidence:
@@ -2775,7 +4822,16 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             "anyway, e.g. on a bare checkout before the first weekly CIK map lands."
         )
 
-    now = _iso_now()
+    # ETF trust CIKs are not an admitted ETF issuer grouping. This reference lane
+    # must not populate or merge their issuer axis, including on later reruns.
+    # Compare independent evidence BEFORE removing ETF keys from the issuer map.
+    for symbol, observation in (direct_state["observations"].items() if direct_state else ()):
+        if observation["status"] not in {"PENDING", "BOUND"}:
+            continue
+        ordinary = cik_map.get(symbol)
+        if symbol in ambiguous_tickers or (ordinary is not None and ordinary[0] != observation["cik"]):
+            raise IdentityError("direct registrant conflicts with ordinary CIK evidence")
+    cik_map = {k: v for k, v in cik_map.items() if k not in reference_only_keys}
     master_path = out_dir / MASTER_NAME
     aliases_path = out_dir / ALIASES_NAME
     issuer_master_path = out_dir / ISSUER_MASTER_NAME
@@ -2800,8 +4856,28 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         master_path, MASTER_COLUMNS, MASTER_DTYPES,
         allow_missing=ISSUER_AXIS_COLUMNS | SECURITY_AXIS_COLUMNS,
     )
+    spy_root_evidence, spy_root_aliases = _spy_option_root_state(
+        out_dir, spy_option_root_input, existing_master_rows, now)
+    if spy_option_root_input is not None:
+        observed = spy_root_evidence["listing"]
+        if (snapshot_date != observed["observed_on"] or snapshot_path is None
+                or _current_direct_resolution("SPY", observed, directory, directory_flags,
+                                              delisted, snapshot_date) is None
+                or hashlib.sha256(spy_option_root_input["listing_body"]).hexdigest() != observed["listing_snapshot_sha256"]):
+            raise IdentityError("option-root evidence does not bind the current listing")
+        from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+        try:
+            current_listing = _read_regular_file(snapshot_path, label="current listing", limit=8 * 1024 * 1024)
+        except (OSError, ReceiptValidationError) as exc:
+            raise IdentityError("current listing unavailable") from exc
+        if current_listing != spy_option_root_input["listing_body"]:
+            raise IdentityError("option-root evidence does not bind the current listing bytes")
     existing_us_rows = [r for r in existing_master_rows if r.get("country") == "US"]
     existing_cn_hk_rows = [r for r in existing_master_rows if r.get("country") in ("CN", "HK")]
+    direct_resolutions += _retained_direct_resolutions(
+        direct_state, existing_master_rows, directory=directory, directory_flags=directory_flags,
+        delisted=delisted, snapshot_date=snapshot_date)
+    direct_resolution_keys = frozenset(r.key for r in direct_resolutions)
 
     # ── V4-D2B2-US — GMI seed intake + full-population admission accounting ────────
     # AMENDMENT §1 (post-review fix pass) — R1 (blocker), R2, R3, R5, R6, R11.
@@ -2848,7 +4924,22 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if "gmi_us_seed" not in _row["sources"]:
             _row["sources"].append("gmi_us_seed")
 
-    resolutions = resolve_universe(universe, delisted, directory, snapshot_date)
+    for code in sorted(reference_keys):
+        row = universe.setdefault(code, {"sources": [], "first_seen": None})
+        if "prospective_reference_probe" not in row["sources"]:
+            row["sources"].append("prospective_reference_probe")
+        if code in reference_only_keys:
+            row["first_seen"] = date.fromisoformat(reference["input"]["probes"][code]["requested_date"])
+    reference_directory = dict(directory)
+    for code in reference_keys:
+        reference_directory[code] = REFERENCE_PROBES[code][0]
+    resolutions = resolve_universe(universe, delisted, reference_directory, snapshot_date,
+                                   reference_probe_keys=reference_keys | direct_resolution_keys)
+    for incoming in direct_resolutions:
+        conflicts = [r for r in resolutions if r.key == incoming.key and r.listing_key != incoming.listing_key]
+        if conflicts:
+            raise IdentityError("direct registrant conflicts with the current listing resolution")
+    resolutions = [r for r in resolutions if r.key not in direct_resolution_keys] + direct_resolutions
     legacy_resolutions = [r for r in resolutions if r.key in legacy_keys]
     resolved = [r for r in legacy_resolutions if r.listing_key is not None]
     unresolved = [r for r in legacy_resolutions if r.listing_key is None]
@@ -2875,9 +4966,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         cik_map=cik_map,
         delisted=delisted,
         snapshot_date=cik_snapshot_date,
-        gmi_admission_targets=gmi_us_only_targets,
+        gmi_admission_targets=gmi_us_only_targets - (reference_only_keys & (reference_keys | direct_resolution_keys)),
         directory_flags=directory_flags,
         ambiguous_tickers=ambiguous_tickers,
+        direct_registrant_inputs=direct_registrant_inputs,
     )
 
     # ── V4-D2B2-US — complete per-target accounting (R2, corrected R13) ────────────
@@ -2909,6 +5001,12 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     _resolved_not_rederivable_codes: set[str] = set()
     us_gmi_refusals_by_code: dict[str, dict] = {}
     for _code in gmi_us_all_targets:
+        if _code in reference_only_keys:
+            us_gmi_refusals_by_code[_code] = {
+                "code": "structural_etf",
+                "reason": "reference-only ETF identity is not GMI common-equity admission",
+            }
+            continue
         if _code in disclosed_exclusion_keys or _code in ids:
             continue
         _covering_sec = _active_us_security_by_root.get(_inception_code(_code, None))
@@ -2948,7 +5046,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             del us_gmi_refusals_by_code[_dup]
 
     us_gmi_resolved_codes = sorted(
-        (c for c in gmi_us_all_targets if c in ids or c in _resolved_not_rederivable_codes)
+        (c for c in gmi_us_all_targets if c not in reference_only_keys
+         and (c in ids or c in _resolved_not_rederivable_codes))
     )
     us_gmi_missing = sorted(
         c for c in gmi_us_all_targets
@@ -2982,7 +5081,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     # here so a receipt reader can see which admissions relied on the exemption.
     us_gmi_exit_ledger_exempt = sorted(
         c for c in gmi_us_only_targets
-        if c in ids
+        if c in ids and c not in reference_only_keys
         and not _master_rows_by_security_for_gmi.get(ids[c], {}).get("_existed_before")
         and (_er2 := resolutions_by_key.get(c)) is not None
         and _er2.exchange_symbol is None
@@ -3040,21 +5139,56 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         master_rows, cik_map, cik_snapshot_date, now, ambiguous_tickers=ambiguous_tickers
     )
 
-    fresh_aliases = build_alias_rows(resolutions, ids) + cn_hk_alias_rows
+    native_aliases = _reference_aliases(reference, ids, master_rows,
+                                        pending_transition_refusals, resurrection_refusals)
+    if direct_state is not None:
+        for symbol, observed in direct_state["observations"].items():
+            if observed["status"] != "PENDING":
+                continue
+            matches = [r for r in master_rows if r["security_id"] == ids.get(symbol)
+                       and r["listing_key"] == observed["listing_key"] and not r.get("security_state")]
+            if len(matches) == 1:
+                observed.update(status="BOUND", security_id=matches[0]["security_id"])
+            else:
+                causes = [r for r in pending_transition_refusals + resurrection_refusals
+                          if r.get("symbol") == symbol]
+                if not causes:
+                    causes = [{"symbol": symbol, "reason": "canonical writer returned no unique active identity"}]
+                observed.update(status="REFUSED", code="canonical_identity_refused", owner_refusals=causes)
+        direct_state["sha256"] = _reference_digest(direct_state)
+    fresh_aliases = build_alias_rows(
+        [r for r in resolutions if r.key not in reference_only_keys], ids
+    ) + cn_hk_alias_rows + native_aliases + spy_root_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
-        _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES),
+        _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
+                       allow_missing=OPTIONAL_ALIAS_COLUMNS),
         fresh_aliases, superseded_ids,
     )
-    if alias_prunes:
-        # AMENDMENT ruling 6 (M5) — every prune is receipted + a ::warning, never a
-        # silent drop.
+    # AMENDMENT ruling 6 (M5) / AMENDMENT §2 — every prune is receipted + a
+    # ::warning, never a silent drop; the two lawful deletion classes get their OWN
+    # named annotation so the nightly log tells the operator WHICH kind fired.
+    tombstone_prunes = [r for r in alias_prunes if r.get("prune_class") == "superseded_tombstone"]
+    refinement_prunes = [r for r in alias_prunes if r.get("prune_class") == "same_id_refinement"]
+    if tombstone_prunes:
         print(
-            f"::warning title=security-master-vendor-alias-prune::{len(alias_prunes)} "
+            f"::warning title=security-master-vendor-alias-prune::{len(tombstone_prunes)} "
             "committed vendor alias row(s) pruned (pointed at a security_id this "
             "run tombstoned): "
             + ", ".join(
                 f"{r['vendor']}/{r['vendor_symbol']}->{r['security_id']}"
-                for r in alias_prunes
+                for r in tombstone_prunes
+            ),
+            flush=True,
+        )
+    if refinement_prunes:
+        print(
+            f"::warning title=security-master-vendor-alias-refinement-prune::"
+            f"{len(refinement_prunes)} committed vendor alias row(s) pruned (a "
+            "fresh DATED same-id family refined a committed open-bounded row, "
+            "AMENDMENT §2 carve-out): "
+            + ", ".join(
+                f"{r['vendor']}/{r['vendor_symbol']}->{r['security_id']}"
+                for r in refinement_prunes
             ),
             flush=True,
         )
@@ -3106,8 +5240,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         "inputs": {
             **{
                 str(path.relative_to(ROOT)): _sha256(path)
-                for path in (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML,
-                            TICKER_ALIASES_PY)
+                for path in (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS,
+                            MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
             },
             _relpath(SYMBOL_DIR_SNAPSHOTS): (
                 _sha256(snapshot_path) if snapshot_path is not None else None
@@ -3134,14 +5268,17 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             "issuer_migrations": len(issuer_migration_rows),
             "security_migrations": len(security_migration_rows),
         },
-        # AMENDMENT ruling 6 (M5) — every committed vendor alias row this run pruned
-        # (all point at a security_id this SAME run tombstoned), receipted rather
-        # than silently dropped.
+        # AMENDMENT ruling 6 (M5) / AMENDMENT §2 — every committed vendor alias row
+        # this run pruned, receipted rather than silently dropped: either it points
+        # at a security_id this SAME run tombstoned (`prune_class="superseded_
+        # tombstone"`) or a fresh DATED same-id family lawfully refined it
+        # (`prune_class="same_id_refinement"`).
         "vendor_alias_prunes": [
             {
                 "vendor": r["vendor"], "vendor_symbol": r["vendor_symbol"],
                 "security_id": r["security_id"], "valid_from": r["valid_from"],
-                "valid_to": r["valid_to"],
+                "valid_to": r["valid_to"], "prune_class": r["prune_class"],
+                "ingested_at": r["ingested_at"],
             }
             for r in sorted(alias_prunes, key=lambda r: (r["vendor"], r["vendor_symbol"]))
         ],
@@ -3331,7 +5468,65 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         },
     }
 
+    if reference is not None:
+        receipt["prospective_reference"] = reference
+    elif any(r.get("vendor") == "polygon" for r in alias_rows):
+        raise IdentityError("native aliases require retained prospective evidence")
+
+    if direct_state is not None:
+        receipt["direct_registrant_intake"] = direct_state
+        # Historical admission is immutable; disclose this build's re-derivation separately.
+        current_direct_ids = {r.key for r in direct_resolutions}
+        receipt["direct_registrant_rederivation"] = {
+            symbol: ("REFUSED" if row["status"] == "REFUSED" else
+                     "RETIRED" if any(r["security_id"] == row.get("security_id") and r.get("security_state")
+                                      for r in master_rows) else
+                     "CURRENT" if symbol in current_direct_ids else "LISTING_UNAVAILABLE")
+            for symbol, row in direct_state["observations"].items()
+        }
+    _validate_spy_option_root_retention(spy_root_evidence, alias_rows, now)
+    if spy_root_evidence is not None:
+        receipt["spy_option_root"] = spy_root_evidence
+    if reference_evidence_path is not None or direct_registrant_inputs or spy_option_root_input is not None:
+        def semantic(rows, columns):
+            return sorted(_reference_digest({
+                c: (int(row[c]) if c == "n_securities" and row.get(c) is not None else row.get(c))
+                for c in columns
+            }) for row in rows)
+        old_by_id = {r["security_id"]: r for r in existing_master_rows}
+        projected_existing = [r for r in master_rows if r["security_id"] in old_by_id]
+        if semantic(projected_existing, MASTER_COLUMNS) != semantic(existing_master_rows, MASTER_COLUMNS):
+            raise IdentityError("bounded reference intake would change an existing security row")
+        extras = [r for r in master_rows if r["security_id"] not in old_by_id]
+        if (spy_option_root_input is not None and extras) or any(r["inception_code"] not in reference_only_keys for r in extras):
+            raise IdentityError("bounded reference intake would mint a non-probe security")
+        old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
+                                     allow_missing=OPTIONAL_ALIAS_COLUMNS)
+        old_native = [r for r in old_aliases if r["vendor"] == "polygon"]
+        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"
+                      and not (spy_option_root_input is not None and r.get("alias_kind") == "occ_root"
+                               and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY")]
+        if spy_option_root_input is not None and len(alias_rows) != len(old_aliases) + 1:
+            raise IdentityError("option-root intake must add exactly one new relation")
+        old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]
+        if semantic(new_legacy, ALIAS_COLUMNS) != semantic(old_legacy, ALIAS_COLUMNS):
+            raise IdentityError("bounded reference intake would change non-native aliases")
+        for old_native_row in old_native:
+            if old_native_row not in alias_rows:
+                raise IdentityError("bounded reference intake would replace a native alias")
+        for path_, columns_, dtypes_, rows_ in (
+            (issuer_master_path, ISSUER_MASTER_COLUMNS, ISSUER_MASTER_DTYPES, issuer_master_rows),
+            (issuer_migrations_path, ISSUER_MIGRATIONS_COLUMNS, ISSUER_MIGRATIONS_DTYPES, issuer_migration_rows),
+            (security_migrations_path, SECURITY_MIGRATIONS_COLUMNS, SECURITY_MIGRATIONS_DTYPES, security_migration_rows),
+        ):
+            if semantic(_read_existing(path_, columns_, dtypes_), columns_) != semantic(rows_, columns_):
+                raise IdentityError("bounded reference intake would change issuer or migration rows")
+
     if not dry_run:
+        # Recheck immediately before the first write: a native source owner may
+        # have published history while this legacy builder computed its rows.
+        # This is a narrow additional refusal, NOT an atomic writer lock.
+        _assert_no_unpreserved_native_generation(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_parquet(master_rows, MASTER_COLUMNS, master_path, MASTER_DTYPES)
         _write_parquet(alias_rows, ALIAS_COLUMNS, aliases_path, ALIAS_DTYPES)
@@ -3352,6 +5547,75 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
 #: actually change" (RECEIPT_NAME is handled separately — see :func:`run_nightly_refresh`).
 _NIGHTLY_ARTIFACT_NAMES = (MASTER_NAME, ALIASES_NAME, ISSUER_MASTER_NAME, ISSUER_MIGRATIONS_NAME,
                            SECURITY_MIGRATIONS_NAME)
+
+#: DSC falsifier escalation sidecar (AMENDMENT §3-adjacent, added 2026-08-29) — a
+#: per-``out_dir`` streak of :class:`VendorAliasPruneConflict` nightly refusals with
+#: no intervening SUCCESSFUL refresh (see :func:`run_nightly_refresh`'s handler for
+#: the restart-on-different-conflict rule). Deliberately NOT in
+#: ``_NIGHTLY_ARTIFACT_NAMES``: it is bookkeeping about refusals, not a produced
+#: identity artifact, and must never be touched by :func:`_restore_artifacts`.
+#: TWO counters live in this sidecar, both int-validated on every read (see
+#: :func:`_valid_streak_count`):
+#:
+#: * ``consecutive`` / ``first_conflict_at`` — the MATCHING-TEXT streak: resets to
+#:   1 (and ``first_conflict_at`` to now) whenever the fresh conflict's message
+#:   text differs from the prior refusal's — a different conflict is a fresh clock,
+#:   not a continuation of the old one.
+#: * ``refusals_since_last_success`` / ``first_refusal_at`` — a MONOTONIC counter:
+#:   incremented on EVERY :class:`VendorAliasPruneConflict` refusal regardless of
+#:   whether the conflict text matches the prior one, and reset ONLY by
+#:   :func:`_clear_prune_conflict_streak` (i.e. only a SUCCESSFUL refresh clears
+#:   it). This exists because two or more DIFFERENT standing conflicts, each
+#:   recurring in alternation (A, B, A, B, ...), would otherwise hold
+#:   ``consecutive`` at 1 forever — genuinely wedged, but never escalating.
+#:
+#: PERSISTENCE (undeclared on purpose, like ``_receipt.json``): this sidecar rides
+#: the SAME nightly data commit as every other ``out_dir`` artifact — ``daily.yml``'s
+#: ``git add data/`` step commits it alongside ``_receipt.json``, which is likewise
+#: not a ``config/dataset_registry.yml`` row (it is process bookkeeping, not a
+#: dataset). No registry entry is added for it and it is never ``.gitignore``'d. If a
+#: commit is ever lost or the sidecar otherwise fails to persist across nights, the
+#: worst case is FAIL-DEGRADED, never fail-silent: BOTH counters simply restart at 1
+#: (see :func:`_read_prune_conflict_streak` — missing/corrupt reads as "no prior
+#: streak"), which only DELAYS the ``::error`` escalation by however many nights were
+#: lost. The per-night ``::warning`` (the primary disclosure) is unconditional and
+#: fires on every refusal regardless of the sidecar's state.
+_NIGHTLY_PRUNE_STREAK_NAME = "_nightly_prune_conflict_streak.json"
+
+
+def _read_prune_conflict_streak(out_dir: Path) -> dict:
+    """Prior streak state, or ``{}`` on missing/corrupt/unreadable/non-dict — NEVER
+    raises. A parsed JSON payload that is not itself an object (``null``, a list, a
+    bare number, a bare string — all valid JSON, none of them usable state) is
+    exactly as unusable as a missing file: treated as "no prior streak", never
+    propagated to the caller's ``.get`` calls, which would otherwise raise
+    ``AttributeError`` and break AMENDMENT §3's pinned always-return-0 invariant.
+    Individual COUNTER fields inside a dict payload are validated separately by the
+    caller via :func:`_valid_streak_count` (a dict is not proof its ``consecutive``/
+    ``refusals_since_last_success`` values are themselves usable ints)."""
+    path = out_dir / _NIGHTLY_PRUNE_STREAK_NAME
+    try:
+        payload = json.loads(path.read_text())
+    except Exception:  # noqa: BLE001 — a corrupt sidecar restarts the streak, never crashes
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _valid_streak_count(value: object) -> bool:
+    """True iff ``value`` is a usable prior streak count: a real (non-``bool``)
+    ``int`` that is ``>= 1``. ``bool`` is a subclass of ``int`` in Python
+    (``isinstance(True, int)`` is ``True``, and ``True + 1 == 2``), so a naive
+    ``isinstance(x, int)`` check would silently accept a JSON ``true``/``false``
+    sidecar value as a real count — excluded explicitly. Zero and negative values
+    are likewise never a legitimate PRIOR count (every real streak starts at 1),
+    so they are treated the same as "no prior streak", not propagated forward."""
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+
+def _clear_prune_conflict_streak(out_dir: Path) -> None:
+    path = out_dir / _NIGHTLY_PRUNE_STREAK_NAME
+    if path.exists():
+        path.unlink()
 
 
 def _read_bytes_if_exists(path: Path) -> bytes | None:
@@ -3377,8 +5641,31 @@ def _identity_rail_unreadable(directory: Path) -> bool:
     return False
 
 
+def _legacy_rollback_cannot_replace_native(out_dir: Path) -> bool:
+    """Refuse a stale rollback if current receipt became native or unreadable.
+
+    A newer native publisher may have committed its receipt while this older
+    nightly builder was still processing. Restoring an older legacy receipt
+    would erase genuine owner history. This is fail-closed observed-state
+    protection, NOT a shared interprocess lock or atomic transaction.
+    """
+    try:
+        _assert_no_unpreserved_native_generation(out_dir)
+    except IdentityError as exc:
+        print(
+            "::error title=security-master-native-history-race::"
+            f"{exc} — refusing stale legacy rollback; preserving current "
+            "reference files for canonical source-owner reconciliation",
+            flush=True,
+        )
+        return True
+    return False
+
+
 def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
-                       before_receipt: bytes | None) -> None:
+                       before_receipt: bytes | None) -> bool:
+    if _legacy_rollback_cannot_replace_native(out_dir):
+        return False
     for name, content in before.items():
         path = out_dir / name
         if content is None:
@@ -3392,9 +5679,21 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
             receipt_path.unlink()
     else:
         receipt_path.write_bytes(before_receipt)
+    return True
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
+    """Keep one writer lock across old snapshot, build, rollback and cleanup."""
+    try:
+        with _reference_writer_scope(out_dir):
+            return _run_nightly_reference_unlocked(out_dir)
+    except IdentityError as exc:
+        print("::error title=security-master-writer-refusal::"
+              f"{exc} — nightly did not acquire a valid writer transaction", flush=True)
+        return 0
+
+
+def _run_nightly_reference_unlocked(out_dir: Path) -> int:
     """The ``daily.yml`` collect-job seam (spec §7).  Fail-closed refresh laws:
 
       (a) a missing/unreadable identity input -> REFUSE, keep last-good artifacts,
@@ -3427,7 +5726,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
     ``notes`` and a success ``::notice`` — the false-freshness escape this law exists
     to close, on either rail.
     """
-    required = (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
+    required = (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS, MEMBERSHIP,
+                DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
     missing = [
         str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)
         for p in required if not p.exists()
@@ -3476,25 +5776,99 @@ def run_nightly_refresh(out_dir: Path) -> int:
     except VendorAliasPruneConflict as exc:
         # AMENDMENT ruling 11 (§3) — a DEDICATED handler, BEFORE the generic one
         # below: a fresh alias row conflicting with a committed ACTIVE-id row
-        # (ruling 6 / M5, and — until the AMENDMENT §2 same-id-refinement
-        # carve-out lands — every future dated rename on the `store` space) is a
-        # curation-required refusal, not a build defect. Same restore-and-continue
-        # shape as the generic handler, but its own named ::warning so the nightly
-        # log says WHAT needs curating rather than a bare "read/parse failure".
-        _restore_artifacts(out_dir, before, before_receipt)
+        # (ruling 6 / M5) that the AMENDMENT §2 same-id-refinement carve-out did
+        # NOT excuse is a curation-required refusal, not a build defect. Same
+        # restore-and-continue shape as the generic handler, but its own named
+        # ::warning so the nightly log says WHAT needs curating rather than a bare
+        # "read/parse failure".
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly-prune-conflict::{exc} — "
             "curation required (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, "
             "or an operator resolving the conflict by hand); keeping last-good "
             "artifacts, generated_at not re-stamped", flush=True,
         )
+        # DSC falsifier escalation — a STANDING conflict silently wedges the
+        # nightly artifact refresh indefinitely (measured 8 days, 2026-08-20 ->
+        # 08-28). The seam still ALWAYS returns 0 (AMENDMENT §3's invariant is
+        # unconditional — the escalation is the annotation, never the exit code),
+        # but a THIRD+ refusal with no intervening SUCCESSFUL refresh also raises
+        # its voice with a loud ::error naming how long the artifact set has been
+        # frozen and the curation cure. TWO counters, both fed by every refusal
+        # here: ``consecutive`` (the MATCHING-TEXT streak — restarts at 1 whenever
+        # the conflict text changes, a different conflict being a fresh clock) and
+        # ``refusals_since_last_success`` (MONOTONIC — every refusal here
+        # increments it regardless of text, reset ONLY on a success). The monotonic
+        # counter exists because two or more DIFFERENT conflicts recurring in
+        # ALTERNATION (A, B, A, B, ...) would otherwise hold ``consecutive`` at 1
+        # forever — genuinely wedged, yet never escalating under the text-matching
+        # counter alone.
+        streak_path = out_dir / _NIGHTLY_PRUNE_STREAK_NAME
+        prior = _read_prune_conflict_streak(out_dir)
+        now_stamp = _iso_now()
+        conflict_text = str(exc)[:1000]
+
+        prior_consecutive = prior.get("consecutive")
+        same_conflict = (
+            prior.get("conflict") == conflict_text and _valid_streak_count(prior_consecutive)
+        )
+        if same_conflict:
+            consecutive = prior_consecutive + 1
+            first_conflict_at = prior.get("first_conflict_at") or now_stamp
+        else:
+            consecutive = 1
+            first_conflict_at = now_stamp
+
+        prior_refusals = prior.get("refusals_since_last_success")
+        if _valid_streak_count(prior_refusals):
+            refusals_since_last_success = prior_refusals + 1
+            first_refusal_at = prior.get("first_refusal_at") or now_stamp
+        else:
+            refusals_since_last_success = 1
+            first_refusal_at = now_stamp
+
+        streak_path.write_text(json.dumps({
+            "consecutive": consecutive,
+            "first_conflict_at": first_conflict_at,
+            "refusals_since_last_success": refusals_since_last_success,
+            "first_refusal_at": first_refusal_at,
+            "last_conflict_at": now_stamp,
+            "conflict": conflict_text,
+        }, indent=2, sort_keys=True) + "\n")
+
+        # Escalate on EITHER trigger. A same-text streak (consecutive >= 3) is
+        # checked FIRST and, when it fires, is always also true of the monotonic
+        # counter (every matching-text refusal is also a refusal) — so preferring
+        # it keeps the message from claiming "conflict text has varied" when it
+        # has not. Only when consecutive stays under 3 (the text changed
+        # recently) but the monotonic count has still reached 3 do we escalate on
+        # alternating/varying conflicts, with wording that says so.
+        if consecutive >= 3:
+            escalate_n, escalate_since, varied = consecutive, first_conflict_at, False
+        elif refusals_since_last_success >= 3:
+            escalate_n, escalate_since, varied = (
+                refusals_since_last_success, first_refusal_at, True
+            )
+        else:
+            escalate_n = None
+        if escalate_n is not None:
+            varied_note = " (conflict text has varied)" if varied else ""
+            print(
+                f"::error title=security-master-nightly-prune-conflict-stuck::"
+                f"{escalate_n} nightly prune-conflict refusals{varied_note} with no "
+                f"intervening successful refresh since {escalate_since}; cure "
+                "with a curation act (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS "
+                "entry) or an operator hand migration.", flush=True,
+            )
         return 0
     except Exception as exc:  # noqa: BLE001 — any read/parse failure refuses, never half-writes
         # FIX 4 (M2): a mid-build failure can leave PARTIAL writes on disk (build()
         # writes master -> aliases -> issuer_master -> issuer_migrations -> receipt in
         # sequence, and any of those can raise) — restore ALL artifacts to last-good
         # rather than leaving a torn mix of new-and-old bytes.
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::build failed reading identity "
             f"inputs ({exc}) — keeping last-good artifacts, generated_at not "
@@ -3503,7 +5877,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         return 0
 
     if receipt.get("notes"):
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::{'; '.join(receipt['notes'])} — "
             "unmodelled rename or listing-key collision; keeping last-good artifacts, "
@@ -3514,13 +5889,19 @@ def run_nightly_refresh(out_dir: Path) -> int:
     after = {name: _read_bytes_if_exists(out_dir / name) for name in _NIGHTLY_ARTIFACT_NAMES}
     if after == before:
         if before_receipt is not None:
+            # Even a byte-stable legacy build must not reset a newer native
+            # receipt that appeared while its unchanged inputs were checked.
+            if _legacy_rollback_cannot_replace_native(out_dir):
+                return 0
             (out_dir / RECEIPT_NAME).write_bytes(before_receipt)
+        _clear_prune_conflict_streak(out_dir)
         print(
             "::notice title=security-master-nightly::inputs unchanged since the last "
             "generation — byte-stable no-op, generated_at not re-stamped", flush=True,
         )
         return 0
 
+    _clear_prune_conflict_streak(out_dir)
     print(
         f"::notice title=security-master-nightly::identity inputs advanced — "
         f"regenerated ({coverage_line(receipt)})", flush=True,
@@ -3575,6 +5956,12 @@ def main(argv: list[str] | None = None) -> int:
                         help="output directory (default: data/reference)")
     parser.add_argument("--dry-run", action="store_true",
                         help="build and report, write nothing")
+    parser.add_argument("--reference-evidence", type=Path,
+                        help="bounded prospective reference observations; no network calls")
+    parser.add_argument("--direct-registrant-evidence", type=Path,
+                        help="new captured SEC/listing observation; no old-input replay or network calls")
+    parser.add_argument("--spy-option-root-evidence", type=Path,
+                        help="bounded captured SPY option sources; existing canonical target required")
     parser.add_argument("--report", action="store_true",
                         help="full census: row counts, rename events, input hashes")
     parser.add_argument(
@@ -3598,6 +5985,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None or args.spy_option_root_evidence is not None):
+        parser.error("evidence intake is explicit, not a nightly fetch")
     if args.nightly:
         return run_nightly_refresh(Path(args.out))
 
@@ -3608,7 +5997,12 @@ def main(argv: list[str] | None = None) -> int:
             "NO_ISSUER_EVIDENCE", flush=True,
         )
     receipt = build(Path(args.out), dry_run=args.dry_run,
-                    allow_missing_evidence=args.allow_missing_evidence)
+                    allow_missing_evidence=args.allow_missing_evidence,
+                    reference_evidence_path=args.reference_evidence,
+                    direct_registrant_inputs=(read_direct_registrant_inputs(args.direct_registrant_evidence)
+                                              if args.direct_registrant_evidence is not None else ()),
+                    spy_option_root_input=(read_spy_option_root_input(args.spy_option_root_evidence)
+                                           if args.spy_option_root_evidence is not None else None))
     _report(receipt, verbose=args.report)
     # A NOTE IS A FAILURE, not a warning (adversarial review, 2026-08-13).  `notes`
     # carries exactly two things, and neither may pass: a rename the repo's own maps

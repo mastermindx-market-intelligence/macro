@@ -1651,3 +1651,265 @@ def test_pressure_render_stays_tiny(tmp_path):
     text = mp._render_pressure(packet)
     assert len(text) <= 420, (len(text), text)
     assert len(text.split("\n")) <= 6
+
+
+def test_china_regional_clock_separates_session_state_and_component_vintages(tmp_path):
+    """2026-09-13 incident replay: a 9/9 basket component may not become the
+    exchange's alleged last trading day when state and the calendar are through 9/11."""
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09",
+        "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+        "cycle_context": {"asOf": "2026-09-11", "market": "CN"},
+    })
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "date": "2026-09-11",
+        "quad": "Q4",
+        "quad_name": "Growth-scare",
+        "cycle_tag": "mid",
+    })
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+
+    packet = mp.build_packet(tmp_path, now=now)
+    rows = packet["regional"]
+    line = mp._render_regional(packet)
+
+    assert "CN (latest completed session 2026-09-11" in line
+    assert "state through 2026-09-11" in line
+    assert "basket inputs through 2026-09-09, 2 sessions behind" in line
+    assert "CN (2026-09-09)" not in line
+    assert "each stamped with its OWN session" not in line
+    cn = next(row for row in rows if row["code"] == "CN")
+    assert cn["expected_session"] == "2026-09-11"
+    assert cn["state_as_of"] == "2026-09-11"
+    assert cn["component_as_of"] == "2026-09-09"
+    assert cn["component_sessions_behind"] == 2
+
+
+def test_china_missing_artifacts_remain_an_explicit_gap(tmp_path):
+    gaps: list[str] = []
+    rows = mp._regional_block(
+        tmp_path, gaps,
+        now=datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc),
+    )
+
+    assert not any(row.get("code") == "CN" for row in rows)
+    assert "regional CN: absent" in gaps
+
+
+def test_china_calendar_failure_never_restores_a_bare_component_stamp(
+        tmp_path, monkeypatch):
+    from lib import cn_calendar
+
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09",
+        "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+    })
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "date": "2026-09-11",
+        "quad_name": "Growth-scare",
+    })
+    monkeypatch.setattr(
+        cn_calendar, "expected_last_session",
+        lambda now=None: (_ for _ in ()).throw(RuntimeError("calendar unavailable")),
+    )
+    gaps: list[str] = []
+
+    rows = mp._regional_block(tmp_path, gaps, now=datetime(2026, 9, 14, tzinfo=timezone.utc))
+    line = mp._render_regional({"regional": rows})
+
+    assert "state through 2026-09-11" in line
+    assert "basket inputs through 2026-09-09" in line
+    assert "exchange session unavailable" in line
+    assert "CN (2026-09-09)" not in line
+    assert any("regional CN clock: build failed" in gap for gap in gaps)
+
+
+def test_non_china_component_dates_are_labeled_not_bare():
+    line = mp._render_regional({"regional": [{
+        "code": "HK", "label": "Hong Kong",
+        "as_of": "2026-09-11", "component_as_of": "2026-09-11",
+        "bench_label": "Hang Seng",
+    }]})
+
+    assert "HK (basket inputs through 2026-09-11)" in line
+    assert "HK (2026-09-11)" not in line
+
+
+def test_build_packet_normalizes_naive_now(tmp_path):
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09", "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+    })
+    aware = mp.build_packet(tmp_path, now=datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc))
+    naive = mp.build_packet(tmp_path, now=datetime(2026, 9, 14, 4, 0))
+    assert naive.get("regional") == aware.get("regional")
+    cn = next(row for row in naive["regional"] if row["code"] == "CN")
+    assert cn["expected_session"] == "2026-09-11"
+
+
+def test_china_undated_content_never_binds_to_exchange_session_alone(tmp_path):
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "quad": "Q1", "quad_name": "Goldilocks", "cycle_tag": "mid",
+    })
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+
+    packet = mp.build_packet(tmp_path, now=now)
+    line = mp._render_regional(packet)
+
+    assert "latest completed session 2026-09-11" in line
+    assert "content vintage unknown" in line
+    assert "CN (latest completed session 2026-09-11):" not in line
+
+
+# Producer-owned observation changes must survive daily netting in grounding.
+def _observation_comparison(relative=1.010101, **overrides):
+    return {
+        'schema':'basket_intraday_comparison.v1', 'status':'observed',
+        'benchmark':'SPY', 'method':'matched_member_equal_weight', 'session_date':'2026-10-13',
+        'reference_asof':'2026-10-13T14:59:00+00:00',
+        'source_asof':'2026-10-13T15:29:00+00:00', 'elapsed_minutes':30,
+        'matched_members':1, 'total_members':1, 'coverage_pct':100,
+        'relative_change_pct':relative, 'absolute_change_pct':relative,
+        'benchmark_change_pct':0, 'max_clock_skew_seconds':60,
+        **overrides,
+    }
+
+
+def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
+    pulse = {'mode':'live', 'as_of_quotes':'2026-10-13T15:29:00+00:00', 'baskets':[
+        {'id':'ai_semiconductors', 'live_ew_chg_pct':0,
+         'intraday_comparison':_observation_comparison(-1.960784)},
+        {'id':'us_sector_health', 'live_ew_chg_pct':0,
+         'intraday_comparison':_observation_comparison(1.010101)},
+    ]}
+    root = make_root(tmp_path, basket_pulse=pulse)
+    packet = mp.build_packet(root, now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
+    assert packet['leaders']['up'] == [] and packet['leaders']['down'] == []
+    assert len(packet['leaders']['intraday']) == 2
+    text = mp.render_digest(packet)
+    assert 'since prior observation' in text
+    assert 'not fund flows' in text
+    assert '+1.01%' in text and '\u22121.96%' in text
+    assert '1/1 matched' in text
+    assert '14:59:00Z' in text and '15:29:00Z' in text
+    assert len(text) <= mp.DEFAULT_CHAR_BUDGET
+    assert 'intraday_comparison' not in text
+
+
+@pytest.mark.parametrize('change', [
+    {'status':'insufficient_matched_coverage'}, {'benchmark':'OTHER'},
+    {'schema':'unrecognized'}, {'relative_change_pct':float('nan')},
+    {'matched_members':0}, {'matched_members':True}, {'total_members':0},
+    {'coverage_pct':25}, {'elapsed_minutes':5},
+    {'source_asof':'2026-10-13T14:58:00+00:00'},
+    {'reference_asof':'2026-10-13T14:59:00'},
+])
+def test_unqualified_intraday_comparison_does_not_enter_grounding(tmp_path, change):
+    pulse = {'mode':'live', 'baskets':[{'id':'ai_semiconductors', 'live_ew_chg_pct':0,
+             'intraday_comparison':_observation_comparison(**change)}]}
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
+    assert 'leaders' not in packet
+
+
+def test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority(tmp_path):
+    comparison = _observation_comparison(confidence=0.99, buy=True, target=999)
+    pulse = {'mode':'delayed','baskets':[
+        {'id':f'group_{i}', 'live_ew_chg_pct':0,'intraday_comparison':comparison}
+        for i in range(20)]}
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
+    assert len(packet['leaders']['intraday']) <= 2 * mp.LEADERS_PER_SIDE
+    line = mp._render_leaders(packet)
+    assert 'delayed' in line
+    assert '0.99' not in line and '999' not in line
+    assert 'confidence' not in json.dumps(packet['leaders'])
+
+
+def test_future_intraday_evidence_is_not_grounding(tmp_path):
+    comparison = _observation_comparison(
+        reference_asof="2100-10-13T14:59:00+00:00", source_asof="2100-10-13T15:29:00+00:00")
+    pulse = {"mode":"live", "baskets":[{"id":"ai_semiconductors", "live_ew_chg_pct":0,
+             "intraday_comparison":comparison}]}
+    assert "leaders" not in mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
+
+
+@pytest.mark.parametrize("change", [
+    {"session_date":"2026-10-12"},
+    {"reference_asof":"2026-10-12T15:29:00+00:00", "elapsed_minutes":1440},
+    {"reference_asof":"2026-10-13T13:00:00+00:00", "elapsed_minutes":149},
+    {"relative_change_pct":5.0},
+    {"max_clock_skew_seconds":600},
+])
+def test_intraday_consumer_rejects_inconsistent_session_or_arithmetic(change):
+    now = datetime(2026,10,13,15,30,tzinfo=timezone.utc)
+    assert mp._intraday_comparison_block(_observation_comparison(**change), now=now) is None
+
+
+def test_intraday_consumer_freshness_budget_boundary():
+    end = datetime(2026,10,13,15,29,tzinfo=timezone.utc)
+    payload = _observation_comparison()
+    assert mp._intraday_comparison_block(payload, now=end+timedelta(minutes=mp.QUOTES_STALE_MIN)) is not None
+    assert mp._intraday_comparison_block(payload, now=end+timedelta(minutes=mp.QUOTES_STALE_MIN, seconds=1)) is None
+
+
+def test_intraday_consumer_rejects_naive_evaluation_clock():
+    assert mp._intraday_comparison_block(_observation_comparison(), now=datetime(2026,10,13,15,30)) is None
+
+
+
+@pytest.mark.parametrize("kind,seconds,accepted", [
+    ("settled_regular",1,True), ("settled_regular",90,True),
+    ("settled_regular",91,False), ("regular",1,False), ("overnight",1,False),
+])
+def test_closing_comparison_consumer_keeps_real_source_time(kind, seconds, accepted):
+    close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+    start = close-timedelta(minutes=15)
+    end = close+timedelta(seconds=seconds)
+    raw = _observation_comparison(reference_asof=start.isoformat(),source_asof=end.isoformat(),
+        elapsed_minutes=(end-start).total_seconds()/60, observation_kind=kind,
+        settlement_tolerance_seconds=90)
+    result = mp._intraday_comparison_block(raw, now=close+timedelta(minutes=16))
+    assert (result is not None) is accepted
+    if result is not None:
+        assert result["source_asof"] == end.isoformat() and result["observation_kind"] == kind
+
+
+@pytest.mark.parametrize("end,seconds,expected", [
+    ("2026-10-13T14:00:40+00:00", 40, "14:00:40Z"),
+    ("2026-10-13T14:00:00.001000+00:00", 0.001, "14:00:00.001000Z"),
+])
+def test_intraday_render_preserves_subminute_source_duration(end, seconds, expected):
+    raw = _observation_comparison(
+        reference_asof="2026-10-13T14:00:00+00:00", source_asof=end,
+        elapsed_minutes=seconds / 60, max_clock_skew_seconds=seconds / 10)
+    block = mp._leaders_block({"mode":"live", "baskets":[{
+        "id":"ai_semiconductors", "live_ew_chg_pct":0,
+        "intraday_comparison":raw}]}, [], now=datetime.fromisoformat(end))
+    rendered = mp._render_leaders({"leaders":block})
+    assert "2026-10-13 14:00:00Z" in rendered
+    assert expected in rendered
+    assert f"{seconds:g}s" in rendered
+
+
+def test_intraday_render_discloses_benchmark_window_and_member_tolerance():
+    raw = _observation_comparison(
+        relative=-0.990099, absolute_change_pct=0, benchmark_change_pct=1,
+        reference_asof="2026-10-13T14:00:00+00:00",
+        source_asof="2026-10-13T14:05:00+00:00", elapsed_minutes=5,
+        matched_members=4, total_members=4, max_clock_skew_seconds=30)
+    block = mp._leaders_block({"mode":"live", "baskets":[{
+        "id":"ai_semiconductors", "live_ew_chg_pct":0,
+        "intraday_comparison":raw}]}, [], now=datetime(2026,10,13,14,6,tzinfo=timezone.utc))
+    assert block["intraday"][0]["max_clock_skew_seconds"] == 30
+    rendered = mp._render_leaders({"leaders":block})
+    assert "SPY window" in rendered
+    assert "SPY +1%" in rendered
+    assert "member clocks within" in rendered and "30s/endpoint" in rendered
+    assert "300s" in rendered and "4/4 matched" in rendered
+
+
+@pytest.mark.parametrize("state,fresh", [("retained",True),("new",False),("retained",0),("other",False)])
+def test_intraday_delivery_metadata_cannot_claim_a_contradictory_new_observation(state,fresh):
+    raw=_observation_comparison(delivery_state=state,is_new_observation=fresh)
+    assert mp._intraday_comparison_block(raw,now=datetime(2026,10,13,15,30,tzinfo=timezone.utc)) is None

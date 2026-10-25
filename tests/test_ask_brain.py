@@ -2451,3 +2451,101 @@ def test_leak_screen_empty_answer_untouched():
     from engine.neuralweb import ask_brain as ab
     out, flagged = ab._leak_screen_ask("", "anything")
     assert (out, flagged) == ("", False)
+
+
+# ---------------------------------------------------------------------------
+# Mastermind AI L0 — task profiles for progressive tool visibility
+# ---------------------------------------------------------------------------
+
+def test_task_profile_self_contained_financial_scenario_has_no_market_seed():
+    profile = ab._question_profile(
+        "Use only these supplied assumptions: EPS rises from 5 to 6 while P/E falls from 20x to 15x.",
+        None,
+    )
+    assert profile.name == "self_contained_financial"
+    assert profile.grounding_scope == "self_contained"
+    assert profile.seed_tools == ()
+    budget, seeds = ab._classify_question(
+        "Use only these supplied assumptions: EPS rises from 5 to 6 while P/E falls from 20x to 15x.",
+        None,
+    )
+    assert budget == ab._BUDGET_GENERAL
+    assert seeds == []
+
+
+def test_task_profile_current_single_name_move_prefers_events_and_symbol_context():
+    profile = ab._question_profile("Why did NVDA move today?", None)
+    assert profile.name == "single_name_current"
+    assert profile.grounding_scope == "single_name_current"
+    assert profile.seed_tools[:3] == ("get_market_events", "get_symbol_context", "get_quote")
+    assert "query_spine" not in profile.seed_tools
+
+
+def test_signal_fire_question_preserves_signal_explanation_route():
+    profile = ab._question_profile("Why did NVDA fire a buy signal?", None)
+    assert profile.name == "signal_explanation"
+    assert profile.seed_tools[:3] == ("query_spine", "read_world_state", "read_kernel")
+
+
+def test_options_setup_preempts_generic_setup_for_route():
+    profile = ab._question_profile("What is the options setup for NVDA?", None)
+    assert profile.name == "options_single_name"
+    assert profile.seed_tools[0] == "read_options_entry_state"
+    assert "explain_options_context" in profile.seed_tools
+    assert "query_spine" not in profile.seed_tools
+
+
+def test_chinese_options_question_routes_to_options_profile():
+    profile = ab._question_profile("NVDA 的期权偏度和 gamma 怎么看？", None)
+    assert profile.name == "options_single_name"
+    assert "read_options_entry_state" in profile.seed_tools
+    assert "explain_options_context" in profile.seed_tools
+
+
+def test_portfolio_question_routes_portfolio_first_not_macro_first():
+    profile = ab._question_profile("Review my portfolio risk and factor exposure", None)
+    assert profile.name == "portfolio_current"
+    assert profile.grounding_scope == "portfolio_current"
+    assert profile.seed_tools[0] == "get_portfolio_brief"
+    assert "read_factor_state" in profile.seed_tools
+
+
+def test_chinese_portfolio_question_routes_portfolio_first():
+    profile = ab._question_profile("看看我的持仓风险和因子暴露", None)
+    assert profile.name == "portfolio_current"
+    assert profile.seed_tools[0] == "get_portfolio_brief"
+
+
+def test_rates_question_exposes_macro_rates_profile_and_curve_seed():
+    profile = ab._question_profile("What does the yield curve say about real rates?", None)
+    assert profile.name == "macro_rates"
+    assert profile.grounding_scope == "market_current"
+    assert profile.seed_tools[:2] == ("read_world_state", "get_curve_detail")
+
+
+def test_theme_question_exposes_theme_profile_without_changing_existing_seed():
+    profile = ab._question_profile("Which themes are forming early?", None)
+    assert profile.name == "theme_current"
+    assert profile.seed_tools[:2] == ("read_theme_state", "read_theme_thesis")
+
+
+def test_ambiguous_question_retains_ambiguous_profile_and_legacy_seed():
+    profile = ab._question_profile("Tell me what matters in markets", None)
+    assert profile.name == "ambiguous"
+    assert profile.grounding_scope == "ambiguous"
+    assert profile.seed_tools == ("read_world_state",)
+
+
+def test_context_ticker_current_move_uses_single_name_current_not_signal_route():
+    profile = ab._question_profile("Why is it down today?", "AAPL")
+    assert profile.name == "single_name_current"
+    assert profile.seed_tools[0] == "get_market_events"
+
+
+
+def test_question_profile_specialist_macro_stays_ambiguous():
+    profile = ab._question_profile(
+        "Show me historical analogues for NVDA after CPI shocks", None
+    )
+    assert profile.name == "ambiguous"
+    assert profile.grounding_scope == "ambiguous"

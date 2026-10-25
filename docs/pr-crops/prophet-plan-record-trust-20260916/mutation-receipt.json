@@ -1,0 +1,36 @@
+{
+  "scope": "in-memory actual-template mutation proof; production files unchanged",
+  "status": "PASS",
+  "source_sha256": {
+    "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
+    "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828"
+  },
+  "mutations": [
+    {
+      "mutation": "record_mode",
+      "baseline": true,
+      "mutant_rejected": true,
+      "failure_kind": "intended output invariant; no template or collection error"
+    },
+    {
+      "mutation": "original_zone",
+      "baseline": true,
+      "mutant_rejected": true,
+      "failure_kind": "intended output invariant; no template or collection error"
+    },
+    {
+      "mutation": "attached_identity",
+      "baseline": true,
+      "mutant_rejected": true,
+      "failure_kind": "intended output invariant; no template or collection error"
+    },
+    {
+      "mutation": "no_nested_anchors",
+      "baseline": true,
+      "mutant_rejected": true,
+      "failure_kind": "intended output invariant; no template or collection error"
+    }
+  ],
+  "source_unchanged": true,
+  "script_sha256": "9634706cb5af364dafb9096bc6faca357e42946630304d991c6b660c0f254651"
+}

@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "scope": "LOCAL_HANDOFF_DOCUMENT_HASH_GRAPH_AND_RESPONSIBILITY_CHECKS_ONLY",
+  "document_checks": 1606,
+  "deliberately_invalid_document_mutations_rejected": 10,
+  "mutation_names": [
+    "native_subagent_allowed",
+    "internal_fallback_allowed",
+    "astra_build_dependency",
+    "decision_not_fable",
+    "fake_worker_start",
+    "missing_build",
+    "graph_cycle",
+    "missing_requirement",
+    "fake_operating_test_pass",
+    "outcome_read_permission"
+  ],
+  "counts": {
+    "build_units": 29,
+    "research_packets": 24,
+    "decisions": 12,
+    "requirements": 36,
+    "work_cards": 53,
+    "inherited_acceptance_requirements": 126,
+    "additional_operating_requirements": 30,
+    "all_acceptance_requirements": 156,
+    "product_or_operating_acceptance_tests_executed": 0,
+    "baseline_members_verified": 28,
+    "manifest_content_files": 110
+  },
+  "source_edits": false,
+  "workers_dispatched": 0,
+  "models_trained": 0,
+  "registered_trials": 0,
+  "production_proven": false,
+  "requires_astra": false,
+  "external_fabric_only": true
+}

@@ -42,6 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -2308,7 +2309,12 @@ def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
                 r["rate_pos"] = br["exc63"] >= 0
             else:
                 r["rate_str"], r["rate_pos"] = T("—", "—"), None
+            r["rate_hit"] = br.get("hit") if br else None
+            r["rate_n"] = br.get("n") if br else None
+            r["rate_exc"] = br.get("exc63") if br else None
             r["season_str"], _ = _compact_season(st.get("season_this"))
+            _sm = r["season_str"]
+            r["season_magnitude"] = _sm.split(" (", 1)[0] if _sm and " (" in _sm else _sm
             r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
             # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict
             # (3D tactical) conflicts with the cycle timing action (slow, cap-weighted).
@@ -2553,18 +2559,32 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2594,7 +2614,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
@@ -2607,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
@@ -2636,19 +2656,32 @@ def _policy_lever_view() -> dict | None:
         return None
 
 
-def holdings_rows() -> list[dict]:
-    """Compact teaser for the dashboard's "real fund moves" panel: the top
-    conviction-ranked ACCUMULATION decisions across the thematic/active fund
-    universe (same engine as the full radar at etfs.html). Conviction = pp of
-    fund weight committed, so a tiny-position double doesn't outrank a real add."""
-    from engine.holdings_signals import top_etf_accumulation
+def holdings_panel() -> tuple[list[dict], int | None]:
+    """Sliced teaser rows + destination-true accumulate N for the etfs.html link.
+
+    N is the number of accumulate rows the destination actually renders
+    (``drop_cash(all_etf_signals())`` → ``split_by_conviction`` accumulate side
+    → ``page_top_n``). If that chain fails, N is None and the template drops
+    the count rather than print a number the board will not show.
+    """
+    from engine.holdings_signals import (
+        all_etf_signals, drop_split_events, etf_page_accumulation,
+    )
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     try:
-        acc = top_etf_accumulation().get("accumulation", [])[:n]
+        raw = all_etf_signals()
+        acc_all = [r for r in drop_split_events(raw)
+                   if (r.get("conviction_pp") or 0) > 0]
+        acc = sorted(acc_all, key=lambda r: -r["conviction_pp"])[:n]
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("fund moves panel failed: %s", e)
-        return []
-    return [{
+        return [], None
+    try:
+        universe_n = len(etf_page_accumulation(raw))
+    except Exception as e:  # noqa: BLE001 — a bad count is worse than none
+        log.warning("etfs.html accumulate count failed (%s) — dropping N", e)
+        universe_n = None
+    rows = [{
         "fund": s["etf"], "fund_name": s.get("etf_name", s["etf"]),
         "ticker": s["ticker"], "name": s["name"], "sector": s.get("sector", ""),
         "weight_pct": s.get("weight_pct"), "conviction_pp": s.get("conviction_pp"),
@@ -2656,6 +2689,40 @@ def holdings_rows() -> list[dict]:
         "is_active": s.get("is_active", False), "confirmed": s.get("confirmed", False),
         "ladder": s.get("ladder"), "window": s.get("window", ""),
     } for s in acc]
+    return rows, universe_n
+
+
+def holdings_rows() -> list[dict]:
+    """Compact teaser for the dashboard's "real fund moves" panel: the top
+    conviction-ranked ACCUMULATION decisions across the thematic/active fund
+    universe (same engine as the full radar at etfs.html). Conviction = pp of
+    fund weight committed, so a tiny-position double doesn't outrank a real add."""
+    rows, _uni = holdings_panel()
+    return rows
+
+
+def accumulation_panel() -> tuple[list[dict], int | None]:
+    """Sliced accumulation-watch rows + residual-universe N from the same pass."""
+    from engine.holdings_signals import sector_residual_panel
+    from engine.playbook import SECTOR_NAMES
+    n = config.load()["holdings_signals"].get("panel_top_n", 12)
+    rows = []
+    try:
+        raw, universe_n = sector_residual_panel(n)
+        for s in raw:
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
+        log.error("accumulation panel failed: %s", e)
+        return [], None
+    return rows, universe_n
 
 
 def accumulation_rows() -> list[dict]:
@@ -2663,23 +2730,10 @@ def accumulation_rows() -> list[dict]:
     holding's weight change split into a price part and a residual ('active'), with
     the stock's cycle state attached. See engine/holdings_signals.py.
 
-    Uses ``top_sector_residuals`` (the strongest residual movers, no alert gate) so
+    Uses ``sector_residual_panel`` (the strongest residual movers, no alert gate) so
     the panel is always populated — on passive SPDRs the residual is tiny by
     construction and the thresholded list is almost always empty."""
-    from engine.holdings_signals import top_sector_residuals
-    from engine.playbook import SECTOR_NAMES
-    n = config.load()["holdings_signals"].get("panel_top_n", 12)
-    rows = []
-    for s in top_sector_residuals(n):
-        rows.append({
-            "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
-            "ticker": s["ticker"], "name": s["name"],
-            "raw_change": s["raw_change"], "active_change": s["active_change"],
-            "active_pct": s["active_pct"],
-            "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
-            "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
-            "direction": s["direction"], "confirmed": s["confirmed"],
-            "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    rows, _uni = accumulation_panel()
     return rows
 
 
@@ -3731,6 +3785,25 @@ def build_support_page(env: Environment, site: Path, generated: str) -> None:
     log.info("wrote support.html (public support desk)")
 
 
+def build_help_page(env: Environment, site: Path, generated: str) -> None:
+    """Render the public, source-validated bilingual owner directory.
+
+    This is deliberately fail-closed. A missing source label or invalid target
+    aborts the render instead of leaving a stale or inferred help destination.
+
+    Uses lib.help_directory.help_page_view_model — the SAME builder
+    scripts.build_public_pages.build calls — so this render path can never
+    drift from that one and hand the template a partial context again
+    (review finding B-F13-3 BLOCKER-1: this call site used to splat only
+    entries/categories/directory_state and raise UndefinedError on
+    ``changelog``, which this function's except-and-log swallowed silently).
+    """
+    vm = help_page_view_model(config.ROOT)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, refresh=refresh_disclosure(config.ROOT, generated), **vm)
+    write_page(site / "help.html", html)
+    log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
+
+
 def build_unsubscribe_page(env: Environment, site: Path, generated: str) -> None:
     """✨ Unsubscribe — the public bilingual opt-out page (SEE W4, masterplan R5).
 
@@ -3762,13 +3835,13 @@ ETF_GICS = {                       # SPDR sector fund -> GICS sector (residual-a
 }
 
 
-def build_alpha_data(site: Path) -> dict | None:
+def build_alpha_data(site: Path, *, asof=None) -> dict | None:
     """Compute the sector-neutral residual-momentum cross-section and write
     factordata/alpha.json (consumed by the sector pages + per-stock panels).
     Additive — any failure logs and skips. See research/RESIDUAL_ALPHA_MOMENTUM.md."""
     from engine.residual_alpha import compute_residual_alpha
     try:
-        alpha = compute_residual_alpha()
+        alpha = compute_residual_alpha(asof=asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("residual-alpha engine failed: %s", e)
         return None
@@ -4305,6 +4378,7 @@ def build_advanced_page(env: Environment, site: Path, generated: str, latest: di
         accumulation=accumulation_rows(), holdings_changes=holdings_rows(),
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
         flows_html=flows_html_table(),
+        breadth_split=_breadth_split_view(),  # UD-B2-W3 R6: relocated from macro dialog
     )
     write_page(site / "advanced.html", html)
     log.info("wrote advanced.html (%.0f KB)", (site / "advanced.html").stat().st_size / 1024)
@@ -4373,9 +4447,10 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     disagree, the card ships two numbers for the same date: on 2026-07-31 the
     gauge baked 69 / Risk-on while the chart's endpoint baked 66, and the header's
     "last graded <date>" stamp disclosed nothing, because the two dates matched.
-    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to;
-    the logged row on disk is left exactly as it was written. Legacy rows without raw_score
-    fall back to score."""
+    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to.
+    If the settled board is newer than the ledger tail, it is appended to the display path so
+    the chart cannot stop on an older score. The logged rows on disk are left exactly as written.
+    Legacy rows without raw_score fall back to score."""
     try:
         p = config.data_dir() / "market_state" / "forward_log.jsonl"
         if not p.exists():
@@ -4402,12 +4477,19 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
         cur_score = (current or {}).get("raw_score")
         if cur_score is None:
             cur_score = (current or {}).get("score")
-        if cur_asof and cur_score is not None and cur_asof == out[-1]["asof"] \
-                and int(cur_score) != out[-1]["score"]:
-            log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
-                     "forward_log row untouched)",
-                     cur_asof, out[-1]["score"], int(cur_score))
-            out[-1] = {"asof": cur_asof, "score": int(cur_score)}
+        if cur_asof and cur_score is not None:
+            cur_score = int(cur_score)
+            last_asof = out[-1]["asof"]
+            if cur_asof == last_asof and cur_score != out[-1]["score"]:
+                log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
+                         "forward_log row untouched)",
+                         cur_asof, out[-1]["score"], cur_score)
+                out[-1] = {"asof": cur_asof, "score": cur_score}
+            elif cur_asof > last_asof:
+                log.info("ms_history: appending settled display endpoint %s=%d after ledger %s "
+                         "(forward_log untouched)", cur_asof, cur_score, last_asof)
+                out.append({"asof": cur_asof, "score": cur_score})
+                out = out[-60:]
         return out
     except Exception:  # noqa: BLE001 — additive, never fatal
         return None
@@ -4510,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4530,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -4712,6 +4793,17 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                   "— no receipt rendered", flush=True)
     except Exception as _bse:  # noqa: BLE001 — additive, never fatal
         log.warning("W-L1 board state attach failed (%s)", _bse)
+    # Per-candidate Added / 入榜 date: current continuous published-board membership
+    # start (engine/prophet_board_since.py). Display-only; reads the existing
+    # data/us_board_ledger/snapshots.jsonl fossil (memoized per-process, so the
+    # post-build_library re-render below does not re-parse the 33MB file). Threaded
+    # through this ONE shared attach so both call sites (the first-pass render and
+    # the post-build_library re-render) can never silently diverge.
+    try:
+        from engine.prophet_board_since import stamp_us_board_since_fail_open
+        doc = stamp_us_board_since_fail_open(doc, data_dir=config.data_dir(), log=log)
+    except Exception as _bse:  # noqa: BLE001 — additive, never fatal
+        log.warning("us board_since stamp failed (%s)", _bse)
     return doc
 
 
@@ -4824,11 +4916,12 @@ def _us_board_gate_cfg() -> dict:
         cfg = config.load().get("us_board_gate") or {}
         return {"gated": bool(cfg.get("gated", False)),
                 "preview_rows": int(cfg.get("preview_rows") or 3),
+                "today_preview_rows": int(cfg.get("today_preview_rows") or 6),
                 "panels": bool(cfg.get("panels", False)),
                 "panel_preview_rows": int(cfg.get("panel_preview_rows")
                                           or US_PANEL_PREVIEW_DEFAULT)}
     except Exception:  # noqa: BLE001
-        return {"gated": False, "preview_rows": 3,
+        return {"gated": False, "preview_rows": 3, "today_preview_rows": 6,
                 "panels": False, "panel_preview_rows": US_PANEL_PREVIEW_DEFAULT}
 
 
@@ -4946,6 +5039,149 @@ def us_stance_projection(entry_status: "str | None", board_read: "dict | None") 
     return {"verb": None, "stance_basis": "no_read"}
 
 
+def _us_today_featured_preview(
+    us_standouts: "dict | None", preview_rows: int
+) -> list[dict]:
+    """Bounded Today shelf from the FULL owner-ordered Featured population.
+
+    The Screener gate intentionally exposes only a prefix of buy. Today used
+    to filter that already-sliced prefix, so a healthy 12-name Featured shelf
+    could collapse to two visible cards merely because rank #3 was not Featured.
+    This projection reads the full board before the split, preserves owner order,
+    and changes neither membership nor timing/entry semantics.
+    """
+    rows = (us_standouts or {}).get("buy") or []
+    limit = max(0, int(preview_rows))
+    return [row for row in rows if row.get("featured")][:limit]
+
+
+def _us_today_source_binding(
+    raw_sha: "str | None", owner_doc: "dict | None"
+) -> "dict | None":
+    """Exact Today provenance pair from two facts this build already owns.
+
+    `raw_sha` is the frozen lowercase 64-hex sha256 of the raw
+    us_standouts.json bytes (computed once at read time) and `owner_doc` is
+    the ORIGINAL json.loads of those same bytes, captured BEFORE
+    _attach_board_display_chips enriches the board. Valid input returns
+    {"source_sha256": "sha256:" + raw_sha, "pair_id": <emit.pair_id>};
+    anything malformed or unavailable returns None. No re-hash, no re-read,
+    no normalization: uppercase or padded values are refused, never repaired.
+    """
+    if (not isinstance(raw_sha, str) or len(raw_sha) != 64
+            or any(c not in "0123456789abcdef" for c in raw_sha)):
+        return None
+    if not isinstance(owner_doc, dict):
+        return None
+    emit = owner_doc.get("emit")
+    if not isinstance(emit, dict):
+        return None
+    pair_id = emit.get("pair_id")
+    if (not isinstance(pair_id, str) or len(pair_id) != 32
+            or any(c not in "0123456789abcdef" for c in pair_id)):
+        return None
+    return {"source_sha256": "sha256:" + raw_sha, "pair_id": pair_id}
+
+
+def _us_today_native_binding(source_bytes: "bytes | None") -> "dict | None":
+    """Genuine three-field Today binding via the ORIGINAL owner callable.
+
+    Consumes the EXACT finalized raw us_standouts.json bytes through
+    scripts.build_stock_library.today_selection_source_binding, which validates
+    the full buy[] roster and returns schema
+    prophet.today_selection_source_binding/v1 carrying source_sha256, pair_id,
+    selection_receipt and ordered_rows (the original zero-based buy[] index and
+    that row's canonical receipt each). Invoked here BEFORE any display
+    attachment or tier splitting, on both the first and the post-library fresh
+    read. Any failure — owner runtime absent, malformed roster, unusable
+    emit/session — is a typed unavailable (logged, never raised): the board
+    renders exactly as before and no binding, receipt or index is invented.
+    """
+    if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+        return None
+    try:
+        from scripts.build_stock_library import today_selection_source_binding
+    except Exception as exc:  # noqa: BLE001 — an absent owner runtime is unavailable
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+    try:
+        return today_selection_source_binding(bytes(source_bytes))
+    except Exception as exc:  # noqa: BLE001 — invalid source keeps ordinary rendering
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+
+
+def _us_today_bind_rows(
+    us_standouts: "dict | None", binding: "dict | None"
+) -> "dict | None":
+    """Carry owner-issued selection metadata into COPIED buy presentation rows.
+
+    Positional only, straight from the binding's own ordered_rows: each copied
+    row gains `_today_selection_index`/`_today_row_receipt` from the SAME
+    original buy[] position. The source dict and its row dicts are never
+    mutated, tickers are never searched or joined, and no index is inferred
+    from sort order. Anything short of a full 1:1 positional match returns the
+    board unchanged, so a partially bound shelf can never half-hydrate.
+    """
+    if not binding or not isinstance(us_standouts, dict):
+        return us_standouts
+    rows = us_standouts.get("buy")
+    ordered = binding.get("ordered_rows")
+    if not isinstance(rows, list) or not isinstance(ordered, list):
+        return us_standouts
+    if len(ordered) != len(rows):
+        return us_standouts
+    bound_rows = []
+    for position, row in enumerate(rows):
+        meta = ordered[position]
+        receipt = meta.get("row_receipt") if isinstance(meta, dict) else None
+        if (not isinstance(row, dict) or not isinstance(receipt, str)
+                or meta.get("selection_index") != position):
+            return us_standouts
+        bound_rows.append({**row, "_today_selection_index": position,
+                           "_today_row_receipt": receipt})
+    bound = dict(us_standouts)
+    bound["buy"] = bound_rows
+    return bound
+
+
+def _us_today_rows_meta(rows: "list[dict] | None") -> "list[dict]":
+    """Entitled Today indices/receipts for the protected payload, render order.
+
+    Positional carry from the bound COPIED rows only (never re-derived from a
+    ticker, a value or a sort); one missing/malformed field empties the whole
+    list, so an incompletely bound shelf ships no hydratable metadata.
+    """
+    meta = []
+    for row in rows or []:
+        index = row.get("_today_selection_index") if isinstance(row, dict) else None
+        receipt = row.get("_today_row_receipt") if isinstance(row, dict) else None
+        if (not isinstance(index, int) or isinstance(index, bool) or index < 0
+                or not isinstance(receipt, str)):
+            return []
+        meta.append({"selection_index": index, "row_receipt": receipt})
+    return meta
+
+
+def _us_today_native_emit_for(binding: "dict | None", today_nonempty: bool) -> "str | None":
+    """Protected payload URL when the ungated Today shelf is genuinely bound.
+
+    Genuine means the owner-issued three-field binding (selection_receipt
+    present alongside both legacy pins); the loader may then ride the SAME
+    trampoline and payload URL even with no tier gate on the page. Anything
+    less — legacy two-field pair, explicit None, empty shelf — emits no native
+    loader fallback.
+    """
+    if not today_nonempty or not isinstance(binding, dict):
+        return None
+    receipt = binding.get("selection_receipt")
+    if (not isinstance(receipt, str)
+            or not isinstance(binding.get("source_sha256"), str)
+            or not isinstance(binding.get("pair_id"), str)):
+        return None
+    return US_PAYLOAD_URL
+
+
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
     """Tier-preview split for the US Prophet board.
 
@@ -5033,6 +5269,35 @@ def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bo
     }
     return shell_book, life_gate, locked
 
+
+
+def _split_us_leader_observations(
+    projection: "dict | None", preview_rows: int, *, gated: bool = True
+):
+    """Server-side preview split for the display-only leader observation shelf.
+
+    Source status, provenance and aggregate counts remain on the shell; only ticker rows
+    beyond the configured preview move into the existing protected US payload. The input
+    projection is never mutated.
+    """
+    if not gated or not projection or not projection.get("rows"):
+        return projection, None, []
+    rows = list(projection.get("rows") or [])
+    preview_n = max(0, preview_rows)
+    preview = rows[:preview_n]
+    locked = rows[preview_n:]
+    if not locked:
+        return projection, None, []
+    shell = dict(projection)
+    shell["rows"] = preview
+    gate = {
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(rows),
+        "tier": "essential",
+        "payload": US_PAYLOAD_URL,
+    }
+    return shell, gate, locked
 
 def _us_life_gate_cfg() -> bool:
     """P-MP1-SHELL repair round, finding S1: fail-CLOSED sibling of
@@ -5273,16 +5538,121 @@ def _us_board_row_flat(n: dict) -> dict:
     }
 
 
+def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
+    """Admit the published book before its stock-route consumers use it.
+
+    A missing file retains the existing loading state. An unreadable collection
+    uses the existing error state, rather than masquerading as an empty book.
+    Valid books pass through unchanged, including published order and totals.
+    """
+    if not path.exists():
+        return None, False
+    try:
+        book = json.loads(path.read_text())
+        if not isinstance(book, dict):
+            raise ValueError("plan book must be an object")
+        counts = book.get("lifecycle_counts")
+        if counts is not None and not isinstance(counts, dict):
+            raise ValueError("lifecycle counts must be an object when provided")
+        intake = book.get("intake")
+        if intake and not isinstance(intake, (dict, list, str)):
+            raise ValueError("intake must support the published membership check")
+        plans = book.get("plans", [])
+        if not isinstance(plans, list):
+            raise ValueError("plan collection must be a list")
+        for plan in plans:
+            # Closed rows also reach the episode map and lifecycle context.
+            if not isinstance(plan, dict):
+                raise ValueError("plan record must be an object")
+            for field in ("id", "asset"):
+                value = plan.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"plan {field} must be a nonblank string")
+            opened = plan.get("entry_date") or plan.get("recorded_at") or plan.get("signal_date") or ""
+            if not isinstance(opened, str):
+                raise ValueError("episode opening date must be a string")
+            # Existing lifecycle labels use this value as a dictionary key.
+            # Preserve hashable historical values; reject collection values.
+            hash(plan.get("lifecycle_state"))
+        return book, False
+    except Exception as exc:  # noqa: BLE001 — unreadable books never stop the build
+        log.warning("prophet/index.json unreadable (%s)", exc)
+        return None, True
+
+
+def _plan_relations_for(
+    book: "dict | None", book_error: object = False
+) -> "tuple[str, dict[str, list[dict]]]":
+    """Return open, same-security plan summaries keyed by normalized ticker.
+
+    A malformed plans container, or any malformed open record, leaves the
+    whole owner unreadable: the result is ("unknown", {}) rather than a
+    silent skip. Truthy ``closed`` records are excluded before validation.
+    """
+    if book_error or not isinstance(book, dict):
+        return "unknown", {}
+    plans = book.get("plans", [])
+    if not isinstance(plans, list):
+        return "unknown", {}
+    by_ticker: dict[str, list[dict]] = {}
+    for plan in plans:
+        if not isinstance(plan, dict):
+            return "unknown", {}
+        if plan.get("closed"):
+            continue
+        plan_id = plan.get("id")
+        asset = plan.get("asset")
+        if not isinstance(plan_id, str) or not plan_id.strip():
+            return "unknown", {}
+        if not isinstance(asset, str) or not asset.strip():
+            return "unknown", {}
+        try:
+            hash(plan.get("lifecycle_state"))
+        except TypeError:
+            return "unknown", {}
+        by_ticker.setdefault(asset.strip().upper(), []).append({
+            "id": plan_id,
+            "lifecycle_state": plan.get("lifecycle_state"),
+            "formation_date": plan.get("formation_date"),
+            "signal_date": plan.get("signal_date"),
+            "signal_date_basis": plan.get("signal_date_basis"),
+            "observed_date": plan.get("observed_date"),
+            "price_basis_date": plan.get("price_basis_date"),
+            "recorded_at": plan.get("recorded_at"),
+            "plan_asof": plan.get("plan_asof"),
+        })
+    for grouped in by_ticker.values():
+        grouped.sort(key=lambda entry: (
+            str(entry.get("formation_date") or ""), str(entry.get("id") or "")), reverse=True)
+    return "none", by_ticker
+
+
+def _plan_relation_for_row(
+    plan_relations: "tuple[str, dict[str, list[dict]]] | None", row: dict
+) -> dict:
+    """Return the security-level relation payload for one already-entitled row."""
+    if not plan_relations:
+        return {"state": "none", "plans": []}
+    state, by_ticker = plan_relations
+    if state == "unknown":
+        return {"state": "unknown", "plans": []}
+    plans = by_ticker.get(str(row.get("ticker") or "").strip().upper(), [])
+    return {"state": "related_security" if plans else "none", "plans": plans}
+
+
 def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
+                       today_rows: "list[dict] | None" = None,
+                       today_source_binding: "dict | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
                        locked_plans: "list[dict] | None" = None,
                        cand_map: "dict | None" = None,
                        trg_map: "dict | None" = None,
-                       episode_map: "dict | None" = None) -> None:
+                       episode_map: "dict | None" = None,
+                       plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> None:
     """Render the paid remainder of the US Prophet board into
     site/premiumdata/us_stocks.json.
 
@@ -5300,16 +5670,42 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     past `life_gate['preview']`), so the migrated grid's hydrated cards can
     never drift from its server-rendered ones. Independent switch from `gate`
     (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
+    `today_source_binding` carries the exact raw-source pair to every payload
+    shape, or explicit None when unavailable, for the shell hydration gate.
+    `today_rows_meta` carries the owner-issued entitled Today indices/receipts
+    (positional with `today_cards_html`) for that same gate; empty whenever the
+    board is ungated (nothing withheld) or the rows carry no full binding.
     """
+    # Add only the presentation for this same entitled row. Failure keeps its
+    # native flat facts, with no detail action, rather than dropping the payload.
+    def _table_row(n):
+        flat = _us_board_row_flat(n)
+        try:
+            presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
+            flat["setup_detail"] = str(presenter(
+                n, (us_standouts or {}).get("as_of"),
+                plan_rel=_plan_relation_for_row(plan_relations, n)))
+        except Exception as exc:  # noqa: BLE001 — a missing detail is not a missing row
+            log.error("us_stocks: table detail unavailable (%s)", exc)
+            flat["setup_detail"] = None
+        return flat
+
     path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
     panel_blocks = panel_blocks or {}
+    today_rows = list(today_rows or [])
     if gate is None:
         # The board itself is whole (ungated, or smaller than the preview cap) but
         # the ADJACENT panels can still be withholding rows, so the payload is not
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
-                   "built": built, "cards_html": "", "rows": []}
+                   "built": built, "cards_html": "", "rows": [],
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0,
+                   # Honest empty remainder — the protected native binding above
+                   # is what still permits Today native context for the unchanged
+                   # server-rendered shelf.
+                   "today_rows_meta": []}
+        payload["today_source_binding"] = today_source_binding
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5338,11 +5734,35 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         rw_zh = (("今晚无法检查"
                   + (("全部 " + str(_rw_n) + " 只股票") if _rw_n else "这些股票")
                   + "的上行空间，因此这一项不加分。") if _rw_dead else "")
+
+        # Today is a paid/full-access presentation shelf. Keep its extra rows in
+        # the already protected payload instead of baking them into anonymous HTML.
+        try:
+            today_cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — front shelf fails soft to shell
+            log.error("us_stocks: Today card render failed (%s)", e)
+            today_cards_html = ""
+        _today_declared = ((us_standouts or {}).get("ranking") or {}).get("featured_count")
+        _today_total = (_today_declared
+                        if isinstance(_today_declared, int) and not isinstance(_today_declared, bool)
+                        and _today_declared >= len(feat)
+                        else len(feat))
+
         items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
                 items=items, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
-                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh)
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
         except Exception as e:  # noqa: BLE001 — payload must still write with an
             # honest empty card block rather than aborting the whole build.
             log.error("us_stocks: locked card render failed (%s)", e)
@@ -5353,12 +5773,17 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "total": gate["total"], "preview": gate["preview"],
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
-            "rows": [_us_board_row_flat(n) for n in locked_rows],
+            "rows": [_table_row(n) for n in locked_rows],
+            "today_cards_html": today_cards_html,
+            "today_preview": len(today_rows),
+            "today_total": _today_total,
+            "today_rows_meta": _us_today_rows_meta(today_rows),
+            "today_source_binding": today_source_binding,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names")}
+                                      "plv_names", "leader_observations", "candidate_pool")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5481,6 +5906,30 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     pgate: dict = {"tier": "essential", "payload": US_PAYLOAD_URL, "preview": preview}
     locked: dict = {}
+    overrides: dict = {}
+
+    # The complete eligible pool uses the SAME protected row split and payload.
+    # No withheld ticker is copied into the anonymous shell, search index or JS.
+    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
+        vm.get("us_candidate_visibility"), preview, gated=True
+    )
+    if pool_gate:
+        overrides["us_candidate_visibility"] = pool_shell
+        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
+        locked["candidate_pool"] = pool_locked
+
+    # ── Leader observations — a separate display population, never Candidates/Plans.
+    leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
+        vm.get("us_leader_observations"), preview, gated=True
+    )
+    if leader_gate:
+        overrides["us_leader_observations"] = leader_shell
+        pgate["leader_observations"] = {
+            "preview": leader_gate["preview"],
+            "locked": leader_gate["locked"],
+            "total": leader_gate["total"],
+        }
+        locked["leader_observations"] = leader_locked
 
     # ── .topsetups — the residual fresh-trigger table. The template filters
     # top_setups.buy against the carded board and caps at 10; that filter is
@@ -5563,11 +6012,12 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     if len(pgate) <= 3:                       # tier/payload/preview only
         return {}, None, {}
-    return {}, pgate, locked
+    return overrides, pgate, locked
 
 
 def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dict,
-                             vm: dict) -> dict:
+                             vm: dict,
+                             plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> dict:
     """Render the withheld panels into the `*_html` blocks that ride the board's
     payload. Every block comes from the SAME template the shell renders, so the
     hydrated page and a full server render cannot drift apart.
@@ -5586,6 +6036,25 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
             log.error("us_stocks: locked %s render failed (%s)", key, e)
             out[key] = ""
 
+    if locked.get("candidate_pool"):
+        _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
+                rows=locked["candidate_pool"],
+                setup_as_of=(vm.get("us_candidate_visibility") or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        candidate_view = vm.get("us_candidate_visibility") or {}
+        out["candidate_pool_source"] = {
+            "as_of": candidate_view.get("as_of"),
+            "digest": candidate_view.get("source_digest"),
+            "total": (candidate_view.get("counts") or {}).get("eligible"),
+        }
+    if locked.get("leader_observations"):
+        _render(
+            "leader_observations_html",
+            "_us_leader_observation_rows.html.j2",
+            rows=locked["leader_observations"],
+        )
     if locked.get("setups"):
         _render("setups_html", "_us_setups_rows.html.j2", rows=locked["setups"])
     if locked.get("leaders"):
@@ -5606,6 +6075,12 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
 
 
 def main() -> int:
+    from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
+
+    _us_board_observed_at = datetime.now(timezone.utc)
+    _us_completed_session = _us_nyse_calendar.expected_last_session(
+        _us_board_observed_at
+    ).isoformat()
     site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
 
@@ -5624,10 +6099,17 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"),
                       autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
-                       SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
     # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
     # template so the Setups card grid (re-sourced to the plan book, below) can
     # call it per row — the SAME function scripts/build_site.py already ships
@@ -5641,7 +6123,7 @@ def main() -> int:
     sector_timing, notable = {}, []
     alpha_data = None
     try:
-        alpha_data = build_alpha_data(site)
+        alpha_data = build_alpha_data(site, asof=_us_completed_session)
         _tmark("alpha_data")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("alpha data failed: %s", e)
@@ -5708,6 +6190,11 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("support page failed: %s", e)
     try:
+        build_help_page(env, site, generated)
+        _tmark("help_page")
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.error("help page failed: %s", e)
+    try:
         build_unsubscribe_page(env, site, generated)
         _tmark("plans_support_unsub_pages")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
@@ -5740,10 +6227,14 @@ def main() -> int:
     # (theme.js signInWithOAuth redirectTo), not a fixed host — the allowed
     # origins live in the Supabase dashboard (see ACCOUNTS_SETUP.md).
     # copy shared static assets (theme + visual widgets) into the site
-    for asset in ("theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
+    for asset in ("government-revenue-parity.css","government-revenue-dossiers.js","government-revenue-candidate-radar.js","government-revenue-briefcase.js","government-revenue-briefcase-ui.js","government-revenue-sbir.js","government-revenue-sbir.css","government-revenue-investor.js","government-revenue-investor.css","government-revenue-theme-context.js","government-revenue-theme-context.css",
+                  "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",
                   "account.js",
+                  "market_memory.css", "market_memory.js", "market_memory_intent.js",
+                  "market_memory_retained.css", "market_memory_retained.js",
                   # landing onboarding sheet (paired templates/ -> site/ byte copy)
                   "onboard.js", "onboard.css",
                   "stockdata.js", "logo_config.js", "stock-logos.js", "watchlist.js", "factor_exposure.js", "auth.js",
@@ -5759,6 +6250,7 @@ def main() -> int:
                   "tablesort.js", "charts.js",
                   "aibrief.js", "stockbrief.js", "aidesk_lean.js",
                   "stockview.js",
+                  "ticker_news.js", "ticker_news.css",
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
                   "risk_envelope_live.js",
@@ -5848,16 +6340,63 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_refusal = None
+    _us_w3c_binding = None
+    _us_today_binding = None
+    _us_source_bytes = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
+        # Bind the existing frozen raw SHA to the original decoded source.
+        _us_today_binding = _us_today_source_binding(_us_w3c_binding, us_standouts)
+    # Native three-field binding: the ORIGINAL owner callable consumes the exact
+    # frozen raw bytes BEFORE any attachment or tier splitting, and its ordered
+    # metadata rides COPIED presentation rows by original position only. Typed
+    # unavailable on any failure — ordinary source rendering is preserved.
+    _us_today_native = _us_today_native_binding(_us_source_bytes)
+    if _us_today_native is not None:
+        us_standouts = _us_today_bind_rows(us_standouts, _us_today_native)
+        _us_today_binding = {**_us_today_binding, **_us_today_native} if _us_today_binding \
+            else _us_today_native
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
+    # Read the existing lossless pool; never rescore or re-admit a candidate here.
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -5893,15 +6432,24 @@ def main() -> int:
     #     (§10's ".mx-error" state, names what failed, offers Retry).
     # Both leave us_prophet_book None; only the flag differs, and only the
     # flag decides which of the two non-live states the ladder renders.
-    us_prophet_book = None
-    us_prophet_book_error = False
-    _pbk = site / "prophet" / "index.json"
-    if _pbk.exists():
-        try:
-            us_prophet_book = json.loads(_pbk.read_text())
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.warning("prophet/index.json unreadable (%s)", e)
-            us_prophet_book_error = True
+    us_prophet_book, us_prophet_book_error = _read_us_prophet_book(
+        site / "prophet" / "index.json")
+
+    # P1 — read the incumbent leader-pullback coverage independently of Candidates and
+    # Plans. The full roster exists only in this in-memory view and the existing protected
+    # US payload; the Prophet index carries aggregate source/count telemetry only.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+    )
+    _leader_reference_session = (
+        (us_prophet_book or {}).get("source_asof")
+        or ((us_standouts or {}).get("staleness") or {}).get("price_through")
+        or (us_standouts or {}).get("as_of")
+    )
+    us_leader_observations = load_prophet_observations(
+        site_root=site,
+        reference_session=_leader_reference_session,
+    )
 
     # THEME TAPE (W2) — the hottest themes reconciled against the board above, so a
     # heating theme the board is SILENT on still prints a line saying so. Pure
@@ -5969,7 +6517,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -5978,20 +6528,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)
@@ -6571,6 +7123,53 @@ def main() -> int:
     except Exception:  # noqa: BLE001 — additive, never break the build
         pass
 
+    # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
+    # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
+    # their own nightly cadences) — the macro page never recomputes the blender
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
+    # ms_history is added so the spine row can compute month-ago travel the same way
+    # the US subject row does (>=22 rows → real, shorter → designed-null travel
+    # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
+    # ~:362-384 — never substitute raw_score).
+    def _persisted_ms_view(market_key: str) -> dict | None:
+        try:
+            from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+            _snap = _lp(market_key=market_key)
+            if not _snap:
+                return None
+            _view = {
+                "score": _snap.get("score"),
+                "raw_score": _snap.get("raw_score"),
+                "verdict": _snap.get("verdict"),
+                "label_en": _snap.get("label_en"),
+                "label_zh": _snap.get("label_zh"),
+                "asof": _snap.get("asof"),
+                "caveat_en": _snap.get("caveat_en") or "",
+                "caveat_zh": _snap.get("caveat_zh") or "",
+                "display_only": True,
+                "market": market_key,
+                "ms_history": [],      # filled below from the parquet log
+            }
+            # score_log.parquet is keyed by the per-market directory; CN lives
+            # under data/china_market_state/ (the existing convention used by
+            # build_china.py:1888), HK under data/hk_market_state/.
+            _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+            _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+            if _sl_path.exists():
+                _all = pd.read_parquet(_sl_path).sort_values("date")
+                _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+            return _view
+        except Exception as _e:  # noqa: BLE001 — additive, never fatal
+            log.warning("%s_market_state ingest failed (%s); degrading to None",
+                        market_key, _e)
+            return None
+
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
+
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
     # Both fail-open; skips attach entirely if no data.
@@ -6661,6 +7260,9 @@ def main() -> int:
     _fx_context = _build_fx_context()
     _msig_stances_val = _msig_stances(_us_ms_view, _chart_liq_meta, f)
 
+    _hold_rows, _hold_uni = holdings_panel()
+    _acc_rows, _acc_uni = accumulation_panel()
+
     vm = dict(
         latest=latest,
         risk_envelope=_risk_envelope,
@@ -6684,7 +7286,13 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
+        us_today_source_binding=_us_today_binding,
+        us_today_native_binding=_us_today_native,
+        us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
+        us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
         theme_tape=theme_tape,
         us_board_outcomes=us_board_outcomes,
@@ -6710,9 +7318,11 @@ def main() -> int:
         msig_stances=_msig_stances_val,          # MSX-2: stance {en,zh} pairs per section
         fx_context=_fx_context,                  # MSX-2: FX context block (fail-open None)
         positioning=positioning_rows(f),
-        holdings_changes=holdings_rows(),
+        holdings_changes=_hold_rows,
+        holdings_universe_n=_hold_uni,
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
-        accumulation=accumulation_rows(),
+        accumulation=_acc_rows,
+        accumulation_universe_n=_acc_uni,
         flows_html=flows_html_table(),
         health=health_rows(),
         factor_leadership=factor_leadership,
@@ -6722,13 +7332,18 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
+        # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
+        # build_china. Read-only on this lane; off the heavy render path.
+        hk_market_state=_hk_ms_view,
+        cn_market_state=_cn_ms_view,
         idx_spark=_idx_spark_view(),      # v5 scorecard: 20-point sparklines SPY/QQQ/^DJI/^RUT — graceful absent
         signal_stack=build_signal_stack(latest),  # consolidated cross-subsystem read (display-only)
         vol_shock=_vol_shock_view(latest, event_risk),  # forward vol-shock risk gauge (display-only)
@@ -6771,6 +7386,24 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import (
+        internationalize_hero_styles,
+        write_global_regime_fragment,
+    )
+    _intl_hero_css = internationalize_hero_styles(
+        (Path(__file__).resolve().parent.parent / "templates" / "theme.css").read_text()
+    )
+    _intl_hero_html = env.get_template("_unified_dashboard_hero.html.j2").render(
+        **vm, ud_international=True
+    )
+    write_global_regime_fragment(
+        site,
+        f"<style>\n{_intl_hero_css}\n</style>\n{_intl_hero_html}",
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
@@ -6889,6 +7522,30 @@ def main() -> int:
         log.warning("news_feed build failed: %s", _e)
         _news_feed = []
 
+    # F05/MO-PAID-017: bounded chronicle consequence surface for News Feed.
+    # Read-time projection over a recent window — never a nightly-committed
+    # impact.jsonl dump. Explicitly not a Market-Feed-branded surface.
+    _chronicle_impact = None
+    try:
+        from engine.chronicle import impact as _impact_mod  # noqa: PLC0415
+        from engine.chronicle import spine as _spine_mod  # noqa: PLC0415
+        _ev_path = Path(config.data_dir()) / "chronicle" / "events.jsonl"
+        _evs = _spine_mod.load_events_jsonl(_ev_path) if _ev_path.exists() else []
+        _chronicle_impact = _impact_mod.glance_consequence_surface(_evs)
+    except Exception as _e:  # noqa: BLE001 — additive; never fatal
+        log.warning("chronicle_impact glance failed: %s", _e)
+        _chronicle_impact = {
+            "served_as_market_feed": False,
+            "market_feed_disposition": "explicitly_does_not_serve_market_feed",
+            "stance_en": "Not available yet",
+            "stance_zh": "暂不可用",
+            "reason_en": "Consequence projection failed to load.",
+            "reason_zh": "后果投影未能加载。",
+            "families": {},
+            "rows": [],
+            "event_count": 0,
+        }
+
     out_news = site / "news.html"
     # vm already carries a 'macro_news' key (assigned above), so we must NOT splat
     # **vm AND pass macro_news= explicitly — that collides at argument binding and
@@ -6909,6 +7566,7 @@ def main() -> int:
             news_calibration=_news_calibration_data,
             financial_news=_financial_news_data,
             news_feed=_news_feed,
+            chronicle_impact=_chronicle_impact,
         )
     except Exception as _e:  # noqa: BLE001 — degrade, never raise
         log.error("news.html render failed (%s: %s) — retrying without side-artifacts",
@@ -6922,6 +7580,7 @@ def main() -> int:
                 news_calibration=None,
                 financial_news=None,
                 news_feed=_news_feed,
+                chronicle_impact=_chronicle_impact,
             )
         except Exception as _e2:  # noqa: BLE001 — degrade, never raise
             log.error("news.html artifact-free render failed too (%s: %s) — "
@@ -6945,6 +7604,13 @@ def main() -> int:
     # an overridden copy of vm, and the withheld remainder is written to
     # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
     _us_gate_cfg = _us_board_gate_cfg()
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+    # The loader emits for a GENUINE bound nonempty ungated Today too (same
+    # trampoline, same protected payload URL, no extra auth path): three real
+    # owner pins plus at least one Featured row, else None.
+    _us_today_emit = _us_today_native_emit_for(
+        vm.get("us_today_source_binding"), bool(_us_today_featured))
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -6969,20 +7635,30 @@ def main() -> int:
     # *_html blocks. Same rule: NEVER mutate the shared vm.
     _us_pov, _us_pgate, _us_plocked = _split_us_panels(
         vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+    _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
+        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+    vm["plan_rel_by_ticker"] = _us_plan_by_ticker
+    vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
     _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
+                       today_source_binding=vm.get("us_today_source_binding"),
                        pgate=_us_pgate,
-                       panel_blocks=_render_us_panel_payload(env, _us_pgate, _us_plocked, vm),
+                       panel_blocks=_render_us_panel_payload(
+                                       env, _us_pgate, _us_plocked, vm,
+                                       (_us_plan_state, _us_plan_by_ticker)),
                        life_gate=_us_life_gate, locked_plans=_us_life_locked,
                        cand_map=_us_life_repair["us_candidate_map"],
                        trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
                                 if r.get("ticker")},
-                       episode_map=_us_life_episodes)
+                       episode_map=_us_life_episodes,
+                       plan_relations=(_us_plan_state, _us_plan_by_ticker))
     out_st = site / "us_stocks.html"
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
            "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_native_emit": _us_today_emit,
            "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
            "us_prophet_episodes": _us_life_episodes,
            "us_prophet_book_error": us_prophet_book_error,
@@ -7107,40 +7783,14 @@ def main() -> int:
     # Additive — never fatal to the daily run.
     try:
         from scripts.build_market_heatmap import build_all as build_market_heatmaps
-        from engine.market_heatmap import PAGE_META as _HM_MK
-        from engine.market_heatmap import page_summary as _hm_summary
-        from engine.market_heatmap import sibling_markets as _hm_siblings
-        from lib.seo import is_public_path as _is_public
+        from scripts.build_market_heatmap import render_pages as render_market_heatmap_pages
+
         _hm_payloads = build_market_heatmaps(site, generated_utc=generated)
         _tmark("intl_heatmaps")
-        _hm_tmpl = env.get_template("market_heatmap.html.j2")
-        for _m, _mk in _HM_MK.items():
-            out_mh = site / f"{_m}_heatmap.html"
-            # Read the tile map back off disk rather than trusting the in-memory
-            # return: build_all() swallows a single market's failure so one dead
-            # feed cannot take the site down, and on that path the committed JSON
-            # from the last good run is what the browser will actually fetch — so
-            # it is what the server-rendered summary must describe.
-            _pay = _hm_payloads.get(_m)
-            if not _pay:
-                try:
-                    _pay = json.loads((site / "marketdata" / f"{_m}_heatmap.json")
-                                      .read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001 — no map, no summary; the shell still ships
-                    _pay = None
-            # The wall shows exactly when the page is anonymous-public. One source
-            # of truth (config/site_access.yml) means a sibling market adopts the
-            # tier preview by moving one line of policy — no template edit, no
-            # second flag that can disagree with the boundary.
-            _gated = _is_public(f"/{_m}_heatmap.html")
-            _sum = _hm_summary(_pay)
-            write_page(out_mh, _hm_tmpl.render(
-                mk=_mk, summary=_sum, gated=_gated,
-                n_tiles=(_sum or {}).get("n_tiles") or (_pay or {}).get("n_tiles") or 0,
-                siblings=_hm_siblings(_m),
-            ))
-            log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out_mh,
-                     out_mh.stat().st_size / 1024, bool(_sum), _gated)
+        # The shared publisher owns JSON→SSR fallback and boundary projection.
+        # Asia close calls the same owner for China alone, so no second page
+        # renderer can drift from the full-site path.
+        render_market_heatmap_pages(_hm_payloads, site=site, env=env)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market heatmaps (cn/hk/ca) failed: %s", e)
 
@@ -7259,7 +7909,7 @@ def main() -> int:
     # a "results ready" flag, so the owner is told exactly when to return for the next step.
     try:
         from engine import experiments_registry
-        experiments_registry.build(site)
+        experiments_registry.build_published(site)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("experiments registry build failed: %s", e)
 
@@ -7309,7 +7959,7 @@ def main() -> int:
             log.warning("profile translation step failed (%s); blurbs stay English", e)
         _tmark("profile_translation")
         from scripts.build_stock_library import main as build_library
-        build_library()
+        build_library(now=_us_board_observed_at)
         _tmark("stock_library")
 
         # One-build-lag fix (us_stocks staleness banner): build_library() just wrote
@@ -7330,14 +7980,80 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
-            _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_refusal = None
+            _fresh_w3c_binding = None
+            _fresh_today_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
+            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
+                                if _fresh_source_bytes is not None else None)
+            _fresh_su = None
+            _fresh_today_native = None
+            if _fresh_owner_doc is not None:
+                # Same first/fresh rule: bind the frozen raw SHA to the ORIGINAL
+                # decoded doc BEFORE display attachment touches it.
+                _fresh_today_binding = _us_today_source_binding(
+                    _fresh_w3c_binding, _fresh_owner_doc)
+                # Same owner callable, same exact fresh bytes, still before any
+                # attachment or split.
+                _fresh_today_native = _us_today_native_binding(_fresh_source_bytes)
+                if _fresh_today_native is not None:
+                    _fresh_owner_doc = _us_today_bind_rows(
+                        _fresh_owner_doc, _fresh_today_native)
+                    _fresh_today_binding = (
+                        {**_fresh_today_binding, **_fresh_today_native}
+                        if _fresh_today_binding else _fresh_today_native)
+                _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
-                    or (_fresh_su.get("staleness") or {}) != _prior_stale):
+                    or (_fresh_su.get("staleness") or {}) != _prior_stale
+                    # A same-session correction can change names, exclusion reasons,
+                    # or availability without advancing the date/freshness clock.
+                    # Compare the existing allowlisted view, not unrelated raw fields.
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")
+                    # A same-session native binding change (availability or value)
+                    # must not pair a fresh source with older Today metadata.
+                    or _fresh_today_native != vm.get("us_today_native_binding")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
+                vm["us_today_source_binding"] = _fresh_today_binding
+                vm["us_today_native_binding"] = _fresh_today_native
                 vm["us_standouts"] = _fresh_su
+                vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
                 # it moves with it for the same reason the Theme Tape below does — the
                 # whole point of deriving it from us_standouts (rather than from the
@@ -7385,6 +8101,12 @@ def main() -> int:
                 # payload from THIS generation — otherwise the re-render would bake
                 # the fresh board's full row set straight into the shell and
                 # silently reopen the leak on every one-build-lag refresh.
+                _us_today_featured2 = _us_today_featured_preview(
+                    vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+                # Same genuine-bound emit rule as the first pass, from THIS
+                # generation's binding and Featured shelf.
+                _us_today_emit2 = _us_today_native_emit_for(
+                    vm.get("us_today_source_binding"), bool(_us_today_featured2))
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7406,22 +8128,31 @@ def main() -> int:
                 # or the re-render bakes their full row sets back into the shell.
                 _us_pov2, _us_pgate2, _us_plocked2 = _split_us_panels(
                     vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+                _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
+                    vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+                vm["plan_rel_by_ticker"] = _us_plan_by_ticker2
+                vm["plan_rel"] = {"state": _us_plan_state2, "plans": []}
                 _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
+                                   today_rows=_us_today_featured2,
+                                   today_source_binding=vm.get("us_today_source_binding"),
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
-                                       env, _us_pgate2, _us_plocked2, vm),
+                                       env, _us_pgate2, _us_plocked2, vm,
+                                       (_us_plan_state2, _us_plan_by_ticker2)),
                                    life_gate=_us_life_gate2, locked_plans=_us_life_locked2,
                                    cand_map=_us_life_repair2["us_candidate_map"],
                                    trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
                                             if r.get("ticker")},
-                                   episode_map=_us_life_episodes2)
+                                   episode_map=_us_life_episodes2,
+                                   plan_relations=(_us_plan_state2, _us_plan_by_ticker2))
                 _dash = env.get_template("dashboard.html.j2")
                 write_page(site / "macro.html", _dash.render(**vm, mode="macro"))
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,
+                       "us_today_native_emit": _us_today_emit2,
                        "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
                        "us_prophet_episodes": _us_life_episodes2,
                        "us_prophet_book_error": us_prophet_book_error,
@@ -7435,6 +8166,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of
@@ -7662,6 +8399,54 @@ def main() -> int:
     except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
         log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
 
+    # Finance Intelligence dossier — render only the registered preview shell.
+    # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships
+    # no private store, no publish lane, and no serving route — the read model
+    # is consumed at runtime from the same-origin foundation route behind the
+    # site_full access policy; this static renderer never reads or republishes
+    # any read-model payload.
+    try:
+        from scripts.build_finance_intelligence_page import render_from_state as _render_finance
+        _fi_page = _render_finance(config.ROOT)
+        log.info("wrote %s", _fi_page)
+    except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
+
+    # Expectation Surface — Information→Price wave 1 descriptive consensus page
+    # (schema expectation_surface.page.v1, financial_influence=false everywhere).
+    # Degrade-safe: an import or render fault skips the page, never the build.
+    try:
+        from scripts.build_expectation_surface import build as _build_es
+        _es_summary = _build_es(write=True)
+        log.info("wrote site/expectation_surface.html (%s)", _es_summary.get("state"))
+    except Exception as _es_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("expectation_surface render failed (%s); page skipped", _es_e)
+
+    # Consumer Cyclical PLNT synthetic display card — one static card mounting
+    # display_packet over the committed synthetic fixture. It writes no data,
+    # fetches nothing, and a native-admitted refusal raises before any page
+    # exists; this hook only keeps a full-site rebuild from leaving the card
+    # behind the templates.
+    try:
+        from scripts.build_consumer_cyclical_plnt_page import render as _render_plnt
+        _plnt_page = _render_plnt(config.ROOT)
+        log.info("wrote %s", _plnt_page)
+    except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
+
+    # F01 Macro & Monetary suite — server-rendered workspace pages over the
+    # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
+    # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
+    # never a stale or empty one), so this hook only keeps a full-site rebuild
+    # from leaving the suite's pages and shared assets behind the templates.
+    try:
+        from scripts.build_macro_suite_pages import render as _render_macro_suite
+        _macro_suite_pages = _render_macro_suite(config.ROOT)
+        for _mq_page in _macro_suite_pages:
+            log.info("wrote %s", _mq_page)
+    except Exception as _mq_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("macro suite pages render failed (%s); pages skipped", _mq_e)
+
     # W4: TIL State of Themes terminal — cross-theme matrix with asymmetry legs,
     # falsifier health, filter chips, and weekly-delta strip. Reads the four
     # site/neuralwebdata theme artifacts already written by build_thematic_state.
@@ -7689,6 +8474,18 @@ def main() -> int:
         log.info("wrote %s", site / "market_structure.html")
     except Exception as _msp_e:  # noqa: BLE001 — additive; never break main build
         log.warning("market_structure.html render failed (%s); page skipped", _msp_e)
+
+    # U1 — Theme Map (house hierarchy, category → theme → sub-theme → micro-theme).
+    # Reads the breadth-display reader; never writes to data/. Render failure
+    # never breaks main build (builder emits `.mx-empty` on store unreadable).
+    try:
+        import scripts.build_theme_tree_page as _ttb
+        _ttb_html = _ttb.render(config.ROOT)
+        write_page(site / "theme_tree.html", _ttb_html)
+        _tmark("theme_tree")
+        log.info("wrote %s", site / "theme_tree.html")
+    except Exception as _ttb_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("theme_tree render failed (%s); page skipped", _ttb_e)
 
     # Market Memory — data-free authenticated shell over existing macro analogue
     # and Signal Episode Atlas APIs.  The page never republishes analytical data.

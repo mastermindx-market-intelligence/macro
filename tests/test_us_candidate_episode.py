@@ -11,6 +11,7 @@ import pytest
 from engine.stock_identity import fingerprint
 from engine.us_candidate_episode import (
     EpisodeContractError,
+    ANCHOR_KINDS,
     anchor_token,
     apply_commands,
     build_all_candidates,
@@ -21,6 +22,7 @@ from engine.us_candidate_episode import (
     make_event,
     project_events,
     reconcile_observations,
+    SUPPRESSION_REASONS,
     validate_events,
 )
 
@@ -60,7 +62,15 @@ def _observation(*, source_event_id: str = "turn-watch:XYZ:2026-08-24", anchor=A
     return value
 
 
-def _event(event_type: str, episode: str, *, payload: dict, source_event_id: str, correction_of=None):
+def _event(
+    event_type: str,
+    episode: str,
+    *,
+    payload: dict,
+    source_event_id: str,
+    correction_of=None,
+    known_at: str = "2026-08-24T20:00:00Z",
+):
     return make_event(
         event_type=event_type,
         episode_id=episode,
@@ -68,7 +78,7 @@ def _event(event_type: str, episode: str, *, payload: dict, source_event_id: str
         source_schema="test.source/v1",
         source_event_id=source_event_id,
         occurred_at="2026-08-24T20:00:00Z",
-        known_at="2026-08-24T20:00:00Z",
+        known_at=known_at,
         recorded_at=RECORDED_AT,
         source_receipt="sha256:test-source",
         definition_era=ERA,
@@ -89,6 +99,40 @@ def test_canonical_anchor_ignores_receipt_but_preserves_exact_anchor_identity():
     assert episode_id(SECURITY_ID, "epoch_0", ANCHOR, 1).startswith(
         "pe:SEC:US-XNAS-XYZ:epoch_0:sa:"
     )
+
+
+def test_anchor_vocabulary_is_closed_to_the_registered_species():
+    assert ANCHOR_KINDS == frozenset({"turn_watch_reset_low"})
+    assert "ANCHOR_KIND_NOT_REGISTERED" in SUPPRESSION_REASONS
+
+
+@pytest.mark.parametrize("kind", ["future_low", "entry_radar_expert_fire"])
+def test_canonical_anchor_refuses_unregistered_species_fail_closed(kind):
+    with pytest.raises(EpisodeContractError, match="kind is not registered"):
+        canonical_anchor({**ANCHOR, "kind": kind})
+
+
+def test_b1_dataset_registry_rows_are_accepted():
+    import yaml
+
+    registry_path = Path(__file__).parents[1] / "config" / "dataset_registry.yml"
+    contracts = {row["dataset_id"]: row for row in yaml.safe_load(registry_path.read_text())["datasets"]}
+    dataset_ids = {
+        "prophet.us.candidate_episode.turn_watch_input",
+        "prophet.us.candidate_episode.events",
+        "prophet.us.candidate_episode.suppressions",
+        "prophet.us.candidate_episode.current",
+        "prophet.us.candidate_episode.all_candidates",
+        "prophet.us.candidate_episode.reconciliation_receipt",
+    }
+    assert dataset_ids <= contracts.keys()
+    assert all(contracts[dataset_id]["status"] == "PRODUCED" for dataset_id in dataset_ids)
+    registry_text = registry_path.read_text()
+    assert "NATURALLY_ACCEPTED_2026-08-28" in registry_text
+    assert "scheduled run 33147282433" in registry_text
+    assert "peg:c025bb50c45f" in registry_text
+    assert "a8ee11ba0e48" in registry_text
+    assert "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-28-b1-acceptance.md:37-46" in registry_text
 
 
 @pytest.mark.parametrize(
@@ -437,6 +481,219 @@ def test_replay_and_ledger_hash_use_known_at_source_system_source_event_id_order
     assert document["generated_from"]["ledger_sha256"] == "sha256:" + sha256(canonical_json(expected).encode()).hexdigest()
 
 
+
+
+def test_subsecond_known_at_orders_events_and_episode_rows_chronologically(tmp_path):
+    """Whole-second text must sort before a later fractional instant in the same second."""
+    receipt = "sha256:" + "a" * 64
+    first_anchor = {**ANCHOR, "time": "2026-08-24T19:00:00Z", "source_receipt": receipt}
+    second_anchor = {**ANCHOR, "time": "2026-08-24T19:30:00Z", "source_receipt": receipt}
+    first = _event(
+        "OPENED",
+        episode_id("SEC:US-XNAS-AAA", "epoch_0", first_anchor, 1),
+        source_event_id="whole-second",
+        known_at="2026-08-24T20:00:00Z",
+        payload={
+            **_observation(
+                anchor=first_anchor,
+                security_id="SEC:US-XNAS-AAA",
+                company_id="ISS:US-XNAS-AAA",
+                ticker_at_observation="AAA",
+            ),
+            "structural_anchor": first_anchor,
+            "opened_at": "2026-08-24T20:00:00Z",
+        },
+    )
+    later = _event(
+        "OPENED",
+        episode_id("SEC:US-XNAS-BBB", "epoch_0", second_anchor, 1),
+        source_event_id="fractional-later",
+        known_at="2026-08-24T20:00:00.100000Z",
+        payload={
+            **_observation(
+                anchor=second_anchor,
+                security_id="SEC:US-XNAS-BBB",
+                company_id="ISS:US-XNAS-BBB",
+                ticker_at_observation="BBB",
+            ),
+            "structural_anchor": second_anchor,
+            "opened_at": "2026-08-24T20:00:00.100000Z",
+        },
+    )
+
+    document = build_all_candidates([later, first], suppression_count=0)
+    expected_ledger = [first, later]
+    assert document["generated_from"]["ledger_sha256"] == (
+        "sha256:" + sha256(canonical_json(expected_ledger).encode()).hexdigest()
+    )
+    assert [row["security_id"] for row in document["episodes"]] == [
+        "SEC:US-XNAS-AAA",
+        "SEC:US-XNAS-BBB",
+    ]
+    path = tmp_path / "all_candidates.json"
+    path.write_text(json.dumps(document))
+    assert [row["security_id"] for row in load_all_candidates(path)] == [
+        "SEC:US-XNAS-AAA",
+        "SEC:US-XNAS-BBB",
+    ]
+
+
+def test_subsecond_observation_order_cannot_move_episode_open_forward():
+    """Input order must not let a later subsecond observation become the OPENED cut."""
+    anchor = {**ANCHOR, "time": "2026-08-24T19:00:00Z"}
+    whole = _observation(
+        anchor=anchor,
+        source_event_id="whole",
+        occurred_at="2026-08-24T20:00:00Z",
+        known_at="2026-08-24T20:00:00Z",
+    )
+    later = _observation(
+        anchor=anchor,
+        source_event_id="later",
+        occurred_at="2026-08-24T20:00:00.100000Z",
+        known_at="2026-08-24T20:00:00.100000Z",
+    )
+
+    result = reconcile_observations([], [later, whole], recorded_at=RECORDED_AT, definition_era=ERA)
+    assert result.episodes[0]["opened_at"] == "2026-08-24T20:00:00Z"
+    assert [event["source_event_id"] for event in result.events] == ["whole", "later"]
+
+
+def test_fractional_precision_second_boundary_and_shuffle_are_chronological():
+    """Fractional precision and a later second use instant order regardless of input order."""
+    anchor = {**ANCHOR, "time": "2026-08-24T19:00:00Z"}
+    observations = [
+        _observation(
+            anchor=anchor,
+            source_event_id="next-second",
+            occurred_at="2026-08-24T20:00:01Z",
+            known_at="2026-08-24T20:00:01Z",
+        ),
+        _observation(
+            anchor=anchor,
+            source_event_id="fraction-200",
+            occurred_at="2026-08-24T20:00:00.200000Z",
+            known_at="2026-08-24T20:00:00.200000Z",
+        ),
+        _observation(
+            anchor=anchor,
+            source_event_id="fraction-100",
+            occurred_at="2026-08-24T20:00:00.100000Z",
+            known_at="2026-08-24T20:00:00.100000Z",
+        ),
+    ]
+    result = reconcile_observations(
+        [], observations, recorded_at=RECORDED_AT, definition_era=ERA
+    )
+    assert [event["source_event_id"] for event in result.events] == [
+        "fraction-100",
+        "fraction-200",
+        "next-second",
+    ]
+
+
+def test_equivalent_subsecond_text_uses_source_identity_tie_break_and_is_shuffle_invariant():
+    """Equivalent accepted timestamp spellings normalize to one instant before tie-breaking."""
+    anchor = {**ANCHOR, "time": "2026-08-24T19:00:00Z"}
+    first_by_identity = _observation(
+        anchor=anchor,
+        source_event_id="a-event",
+        occurred_at="2026-08-24T20:00:00.1Z",
+        known_at="2026-08-24T20:00:00.1Z",
+    )
+    second_by_identity = _observation(
+        anchor=anchor,
+        source_event_id="b-event",
+        occurred_at="2026-08-24T20:00:00.100000Z",
+        known_at="2026-08-24T20:00:00.100000Z",
+    )
+    forward = reconcile_observations(
+        [],
+        [first_by_identity, second_by_identity],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    reversed_input = reconcile_observations(
+        [],
+        [second_by_identity, first_by_identity],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    assert forward.events == reversed_input.events
+    assert forward.episodes == reversed_input.episodes
+    assert [event["source_event_id"] for event in forward.events] == ["a-event", "b-event"]
+    assert {event["known_at"] for event in forward.events} == {"2026-08-24T20:00:00.100000Z"}
+
+
+def test_subsecond_known_at_wins_over_same_second_anchor_time():
+    """Opening time is the later instant, not the lexicographically larger timestamp text."""
+    result = reconcile_observations(
+        [],
+        [
+            _observation(
+                source_event_id="fractional-open",
+                occurred_at="2026-08-24T20:00:00.100000Z",
+                known_at="2026-08-24T20:00:00.100000Z",
+            )
+        ],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    assert result.episodes[0]["opened_at"] == "2026-08-24T20:00:00.100000Z"
+    replay = reconcile_observations(
+        result.events,
+        [
+            _observation(
+                source_event_id="fractional-open",
+                occurred_at="2026-08-24T20:00:00.100000Z",
+                known_at="2026-08-24T20:00:00.100000Z",
+            )
+        ],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    assert replay.new_events == ()
+    assert replay.events == result.events
+
+
+def test_subsecond_last_observed_at_uses_instant_order_not_string_order():
+    """A fractional observation later in the same second is the latest observation."""
+    anchor = {**ANCHOR, "time": "2026-08-24T19:00:00Z"}
+    opened = reconcile_observations(
+        [],
+        [
+            _observation(
+                anchor=anchor,
+                source_event_id="open",
+                occurred_at="2026-08-24T19:30:00Z",
+                known_at="2026-08-24T19:30:00Z",
+            )
+        ],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    result = reconcile_observations(
+        opened.events,
+        [
+            _observation(
+                anchor=anchor,
+                source_event_id="whole-observed",
+                occurred_at="2026-08-24T20:00:00Z",
+                known_at="2026-08-24T20:00:00Z",
+            ),
+            _observation(
+                anchor=anchor,
+                source_event_id="fractional-observed",
+                occurred_at="2026-08-24T20:00:00.200000Z",
+                known_at="2026-08-24T20:00:00.200000Z",
+            ),
+        ],
+        recorded_at=RECORDED_AT,
+        definition_era=ERA,
+    )
+    assert result.episodes[0]["last_observed_at"] == "2026-08-24T20:00:00.200000Z"
+
+
 def test_data_os_identity_and_epoch_zero_stock_identity_provenance_fail_closed():
     with pytest.raises(EpisodeContractError):
         episode_id("SEC::", "epoch_0", ANCHOR, 1)
@@ -700,3 +957,67 @@ def test_episode_generation_text_is_canonical_in_validation_reader_and_supersess
         }
         with pytest.raises(EpisodeContractError, match="supersession"):
             apply_commands(opened.events, [command], recorded_at=RECORDED_AT, definition_era=ERA)
+
+
+def test_replay_relations_visit_each_event_linearly_without_changing_projection(monkeypatch):
+    """Adding episodes must not rescan every immutable relation for every row."""
+    from engine import us_candidate_episode as core
+
+    observations = [_observation(source_event_id=f"turn-watch:linear:{index}",
+                                security_id=f"SEC:US-XNAS-X{index:03d}",
+                                company_id=f"ISS:US-XNAS-X{index:03d}",
+                                ticker_at_observation=f"X{index:03d}") for index in range(48)]
+    result = reconcile_observations([], observations, recorded_at=RECORDED_AT, definition_era=ERA)
+    baseline = project_events(result.events)
+    reads = 0
+
+    class CountedEnvelope(dict):
+        def __getitem__(self, key):
+            nonlocal reads
+            if key == "episode_id":
+                reads += 1
+            return super().__getitem__(key)
+
+    original = core.validate_events
+
+    def validated_with_counting(events):
+        return [CountedEnvelope(row) for row in original(events)]
+
+    monkeypatch.setattr(core, "validate_events", validated_with_counting)
+    assert core.project_events(result.events) == baseline
+    assert reads <= 8 * len(result.events)
+
+
+def test_replay_grouping_preserves_interleaved_clock_ties_and_late_retractions():
+    """Post-replay grouping preserves tie order and removes retracted relations/rows."""
+    opened = reconcile_observations([], [
+        _observation(source_event_id=f"turn-watch:group:{index}",
+                     security_id=f"SEC:US-XNAS-X{index}", company_id=f"ISS:US-XNAS-X{index}",
+                     ticker_at_observation=f"X{index}") for index in range(2)
+    ], recorded_at=RECORDED_AT, definition_era=ERA)
+    a, b = [row["episode_id"] for row in opened.episodes]
+    early_tie = _event("OBSERVED", a, source_event_id="a-observed", payload={},
+                       known_at="2026-08-24T20:00:00.1Z")
+    late_tie = _event("OBSERVED", a, source_event_id="c-observed", payload={},
+                      known_at="2026-08-24T20:00:00.100Z")
+    expert_a = _event("EXPERT_EVENT_ATTACHED", a, source_event_id="d-expert",
+                      payload={"expert_event_id": "radar:a"})
+    expert_b = _event("EXPERT_EVENT_ATTACHED", b, source_event_id="b-expert",
+                      payload={"expert_event_id": "radar:b"})
+    events = [*opened.events, early_tie, expert_b, late_tie, expert_a]
+    before = project_events(list(reversed(events)))
+    row_a = next(row for row in before if row["episode_id"] == a)
+    assert row_a["observation_count"] == 2
+    assert row_a["last_observed_at"] == early_tie["known_at"]
+    assert row_a["expert_events"] == ["radar:a"]
+    open_b = next(event for event in opened.events if event["episode_id"] == b)
+    for index, target in enumerate((early_tie, expert_a, open_b)):
+        events.append(_event("RETRACTED", target["episode_id"],
+                             source_event_id=f"retract:{index}", correction_of=target["event_id"],
+                             known_at="2026-08-24T20:01:00Z", payload={"reason": "source withdrew"}))
+    after = project_events(list(reversed(events)))
+    assert len(after) == 1 and after[0]["episode_id"] == a
+    assert after[0]["observation_count"] == 1
+    assert after[0]["last_observed_at"] == late_tie["known_at"]
+    assert after[0]["source_event_ids"] == ["c-observed"]
+    assert after[0]["expert_events"] == []

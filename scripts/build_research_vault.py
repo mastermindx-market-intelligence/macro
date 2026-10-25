@@ -34,7 +34,15 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.research_vault import catalog as catalog_mod  # noqa: E402
-from engine.research_vault.sidecar import clean_title  # noqa: E402
+from engine.research_vault.sidecar import (  # noqa: E402
+    canon_institution,
+    clean_summary_points,
+    clean_title,
+    desk_stamp_classes,
+    desk_type,
+    display_title,
+    institution_display_pair,
+)
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -85,10 +93,16 @@ def load_catalog() -> dict:
 def _public_item(item: dict) -> dict:
     pub = {k: item.get(k) for k in _ITEM_FIELDS}
     # Render-side guard: the committed snapshot is data we do not control (the
-    # upstream desk truncates its own ticker parentheticals), and it feeds the SSR
-    # cards + the JSON island + every /research/ landing page below. Repair here so
-    # a stale snapshot can never ship an unbalanced "(" into a public surface.
+    # upstream desk truncates its own ticker parentheticals, and MarketDesk's
+    # summarizer — out of this repo — emits markdown ** and splits on "vs."),
+    # and it feeds the SSR cards + the JSON island + every /research/ landing
+    # page below. Repair here so a stale snapshot can never ship those artifacts
+    # onto a public surface. sidecar.normalize is the ingest-side twin.
     pub["title"] = clean_title(pub.get("title")) or (pub.get("title") or "")
+    pub["summary_points"] = clean_summary_points(pub.get("summary_points") or [])
+    inst = canon_institution(str(pub.get("institution") or "").strip())
+    if inst:
+        pub["institution"] = inst
     return pub
 
 
@@ -105,7 +119,6 @@ def _public_catalog(cat: dict) -> dict:
 
 
 _MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-_STAMP = {"buy": "BUY", "sell": "SELL", "independent": "IND"}
 
 
 def _e(s) -> str:
@@ -150,8 +163,10 @@ def _title_link(x: dict) -> str:
 
     The hydrated Pro feed restores the interactive viewer link. Keeping the
     no-JS public baseline plain ensures its three summaries cannot open a report.
+    Display polish (repeat-collapse, trailing date) is applied here, never in
+    the slug path.
     """
-    return _e(x.get("title"))
+    return _e(display_title(x.get("title")))
 
 
 def _ssr_card(x: dict) -> str:
@@ -159,10 +174,11 @@ def _ssr_card(x: dict) -> str:
     re-renders the full interactive feed on hydrate; this is the no-JS baseline.
     English content only (report text is the analyst's source language); the page
     chrome around it stays bilingual via the template's l-en/l-zh spans."""
-    inst = (x.get("institution") or "Unknown").strip() or "Unknown"
+    inst_raw = (x.get("institution") or "Unknown").strip() or "Unknown"
+    inst_en, inst_zh = institution_display_pair(inst_raw)
     side = (x.get("side") or "independent").lower()
-    stamp_cls = "buy" if side == "buy" else ("sell" if side == "sell" else "indep")
-    stamp = _STAMP.get(side, "IND")
+    stamp_en, stamp_zh, _ = desk_type(side)
+    stamp_cls = desk_stamp_classes(side)
     desk = x.get("desk") or ""
     top = bool(x.get("top_pick"))
     needs = bool(x.get("needs_metadata"))
@@ -171,7 +187,11 @@ def _ssr_card(x: dict) -> str:
 
     desk_bits = f'<span class="rep-sep">·</span><span class="rep-desk">{_e(desk)}</span>' if desk else (
         '<span class="rep-sep">·</span><span class="backfill">institution to be confirmed</span>' if needs else "")
-    pin = '<span class="rep-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21l2.3-7.4-6-4.6h7.6z"/></svg>Highlighted</span>' if top else ""
+    pin = (
+        '<span class="rep-pin"><svg viewBox="0 0 24 24" fill="currentColor">'
+        '<path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21l2.3-7.4-6-4.6h7.6z"/>'
+        '</svg><span class="l-en">Highlighted</span><span class="l-zh">精选</span></span>'
+    ) if top else ""
     if pts:
         pts_html = '<ul class="rep-points">' + "".join(f"<li>{_e(p)}</li>" for p in pts[:4]) + "</ul>"
     else:
@@ -179,13 +199,21 @@ def _ssr_card(x: dict) -> str:
     tags_html = "".join(f'<span class="rep-tag">{_e(t)}</span>' for t in tags)
     cal = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
     cls = "rep glass" + (" pick" if top else "") + (" needs" if needs else "")
+    if inst_en == inst_zh:
+        inst_html = f'<span class="rep-inst">{_e(inst_en)}</span>'
+    else:
+        inst_html = (
+            f'<span class="rep-inst"><span class="l-en">{_e(inst_en)}</span>'
+            f'<span class="l-zh">{_e(inst_zh)}</span></span>'
+        )
     return (
         f'<article class="{cls}" data-id="{_e(x.get("id"))}">'
         f'<div class="rep-top">'
-        f'<span class="rep-logo">{_e(_logo_for(inst))}</span>'
+        f'<span class="rep-logo">{_e(_logo_for(inst_raw))}</span>'
         f'<span class="rep-unread" aria-hidden="true"></span>'
-        f'<span class="rep-inst">{_e(inst)}</span>{desk_bits}'
-        f'<span class="stamp {stamp_cls}"><span class="dt"></span>{stamp}</span>{pin}'
+        f'{inst_html}{desk_bits}'
+        f'<span class="stamp {stamp_cls}"><span class="dt"></span>'
+        f'<span class="l-en">{_e(stamp_en)}</span><span class="l-zh">{_e(stamp_zh)}</span></span>{pin}'
         f'</div>'
         f'<h3>{_title_link(x)}</h3>{pts_html}'
         f'<div class="rep-foot"><div class="rep-meta">'
@@ -267,7 +295,11 @@ def render(catalog: dict | None = None) -> str:
     # title/summary containing it can't break out of the island.
     catalog_json = json.dumps(baked_catalog, ensure_ascii=False).replace("</", "<\\/")
     ssr_feed = _ssr_feed(catalog)
-    return tmpl.render(catalog_json=catalog_json, ssr_feed=ssr_feed)
+    return tmpl.render(
+        catalog_json=catalog_json,
+        ssr_feed=ssr_feed,
+        summary=baked_catalog.get("summary") or {},
+    )
 
 
 def build() -> Path:

@@ -1,0 +1,50 @@
+## Diagnosis: ci-authority "incomplete" is a transport-listing ambiguity, not a controller defect
+
+**Bottom line.** The raw verdict `incomplete` with `["ci-authority"]` is consistent with the raw reader failing to apply `is_non_binding_check` to an older cancelled check, which the canonical pipeline (`head_check_runs` + `decide_verdict`) is designed to filter. The scope note already asserts "no product failure inferred," and the supplied code supports that reading. No source change is justified yet.
+
+### Where the raw verdict comes from
+
+The raw response shows two `ci-authority` entries on head `b4ff0d7…ca3cd`:
+
+| id | name | status | conclusion | run | started → completed |
+|---|---|---|---|---|---|
+| 116650737614 | `ci-authority` | completed | `success` | 38801303047 | 20:21:46Z → 20:22:00Z |
+| 116650577511 | `ci-authority` | completed | `cancelled` | 38801258721 | 20:21:25Z → 20:21:44Z |
+
+A raw reader that enumerates names → verdicts without applying the binding filter will see `cancelled` and emit `incomplete` (which puts `cancelled` in `INCOMPLETE_CONCLUSIONS` for this project — implied by the verdict shape).
+
+### Why the canonical reader should reach `clean`
+
+Two pieces of the supplied code handle exactly this case:
+
+1. **`is_non_binding_check` (cited inline)** returns True when `check == CI_AUTHORITY_INACTIVE_CONTEXT` and `base_ref == "main"`. The active `ci-authority/main` context is "fully binding (pending and failure both block)" per the comment, while the pilot context is "an invalidation receipt, not a failing check." For PRs targeting main, the sweeper must drop the pilot context from `considered`.
+2. **`head_check_runs` (canonical reader)** paginates with explicit `filter=latest`, `per_page=100`, 5-page cap, fail-closed on truncation, and is paired with `decide_verdict` to compute the verdict.
+
+If the cancelled check is the inactive (pilot) context, `is_non_binding_check` strips it before `decide_verdict` runs. With only the `success` entry left in `considered`, `decide_verdict` falls through `pending` → `incomplete` → `bad` → and the affirmative-pass branch returns `("clean", [])`. The `main_context_pass: true` assertion in the observation is consistent with that being exactly the active context that succeeded.
+
+### What is proved vs unknown
+
+**Proved by supplied text:**
+- The raw reader's query (`check-runs?per_page=100`, filter omitted) returned two `ci-authority` entries.
+- `decide_verdict` would call that `incomplete` if a `cancelled` entry survived `is_non_binding_check`.
+- The canonical reader is `head_check_runs` (uses `filter=latest` explicitly) and its verdict path is `binding_status_checks` → `decide_verdict`.
+- The active main context succeeded per `main_context_pass`.
+
+**Unknown from supplied text:**
+- The full `name` strings (with context suffix) of the two entries — the observation shows `name: "ci-authority"` for both, but does not disambiguate `ci-authority/main` vs `ci-authority/pilot`.
+- Whether `filter=latest` will actually dedupe these two when their full names match — the doc snippet ("Omitting filter is documented as latest already") says yes, but the raw response with filter omitted already shows both, which is itself the contradiction the scope note flags.
+- The exact membership of `INCOMPLETE_CONCLUSIONS` (not in the snippets), though `cancelled` is almost certainly included given the raw verdict.
+
+### One discriminating next observation
+
+After the 300s boundary, run the canonical `head_check_runs` reader and inspect three fields on the returned `ci-authority` entries:
+
+1. The full `name` (with context) — is one of them literally `CI_AUTHORITY_INACTIVE_CONTEXT` (e.g., `ci-authority/pilot`)?
+2. The `conclusion` — is `cancelled` present alongside `success`, or only the success survives `filter=latest`?
+3. `total_count` vs returned length — confirms no truncation, so no third hidden entry.
+
+If the cancelled entry carries the inactive context name, the canonical verdict must be `clean` after `is_non_binding_check`. If `filter=latest` already drops the cancelled entry, the verdict is `clean` for the same reason via a different path. Either way, the raw `incomplete` is the artifact of the raw reader's missing filter, not a defect in `decide_verdict` or `head_check_runs`.
+
+### Source-fix verdict
+
+**No source change is justified yet.** The binding filter, the inactive-context exemption, the affirmative-pass rule, and the `filter=latest` canonical query are all in place and aligned with the documented intent. The two missing observations (full name, canonical total) are the minimum that distinguishes "raw reader missed a binding rule" from "controller bug." Acting on the raw `incomplete` without that observation would re-litigate an unverified transport artifact and risk relabeling as release approval, which is exactly what the assignment says not to do. Wait for the incumbent's canonical annotation; parent validates against the actual bytes.

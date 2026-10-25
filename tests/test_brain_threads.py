@@ -233,7 +233,10 @@ def test_list_threads_orders_by_updated_at_desc():
     """The threads-list store query must carry order=updated_at.desc (the widget shows
     most-recent-first)."""
     seen = {}
-    with patch.object(gw, "_sb_get", side_effect=lambda p: seen.setdefault("p", p) or []):
+    def fake_get(path):
+        seen["p"] = path
+        return []
+    with patch.object(gw, "_sb_get", side_effect=fake_get):
         gw.list_threads("userA")
     assert "order=updated_at.desc" in seen["p"]
 

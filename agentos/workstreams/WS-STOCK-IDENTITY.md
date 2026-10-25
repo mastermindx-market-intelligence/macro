@@ -173,6 +173,7 @@ do_not_redo:
   - "Do not let sector/archetype/ticker become a routing key; labels remain diagnostics/baselines."
   - "Do not grant SIF/expert/model/LLM Prophet rank/gate/size/trade authority from research evidence."
 artifacts:
+  - agentos/handoffs/STOCK-IDENTITY-2026-10-25-RECOVERY.md
   - research/STOCK_IDENTITY_EXPERT_ROUTING_MASTERPLAN_BY_FABLE.md
   - research/stock_identity/W1_IDENTITY_ATLAS_V0_REGISTRATION.md
   - research/stock_identity/W2_EXPERT_REPLAY_REGISTRATION.md
@@ -185,13 +186,20 @@ artifacts:
   - agentos/handoffs/STOCK-IDENTITY-2026-08-30-W3AR-CENSUS-P2-PREREG.md
   - agentos/handoffs/STOCK-IDENTITY-2026-08-29-W3S-DEAD-CONTROL-RESTART.md
 next_action: >
-  CEO Sol actively owns recovery. Finish the current zero-effect capacity census and directly
-  bind lawful receivers rather than using generic OPEN_PICKUP/Secretary placement. Start
-  SI-W3AR-CENSUS-P2-PREREG-V1 and SI-W3S-DEAD-CONTROL-V1 in parallel on separate carriers as soon
-  as eligible receivers exist. W3AR must stop before any P2 draw/read; W3S must rederive and either
-  produce >=5 lawful terminated adjusted tapes or BLOCKED_NO_LAWFUL_DATA. Keep W3B HELD. Revalidate
-  PR #6672 on its new exact head and merge the records carrier when GitHub draft-state tooling permits;
-  do not create a replacement records carrier solely to bypass the draft UI state.
+  CURRENT SOURCE RECOVERY: Portfolio Operations Sol, native receiver
+  01a118ef-abf3-7ba3-9c57-d4c9c4633816, owns records/source reconciliation on the SAME
+  PR #6672 under the Chairman's leadership-continuity ruling. Historical receiver
+  assignments are not an owner wait; the revoked W3AR receiver stays revoked and the
+  old bundled operation stays terminal. Original programme SI-FABLE-COO-PROGRAM-20260828
+  and bounded successor SI-W3AR-CENSUS-P2-PREREG-V1 are preserved. Revalidate these
+  recovery records against current source, obtain the required independent review and
+  exact-head checks, then use the normal protected release path. This source recovery
+  starts no study/census/input/outcome read and grants no P2 seed/draw/membership,
+  W3B/Q1, W3S cohort verdict or new Analog Lab product surface. After records acceptance,
+  the current receiver must qualify actual source/writer/effects and bind the bounded
+  successor through current admitted execution controls; it stops before any P2 draw/read.
+  Return material source and eventual accepted ruler/selection/outcome seams to Market
+  Ontology B P17.T1; records or #6911 PIT/dedup slice 1 alone do not satisfy that consumer.
 ---
 
 ## Context
