@@ -137,10 +137,10 @@ waves:
     status: in_progress
     depends_on: [HC-P0]
     next_action: >
-      Preserve #1852/7d5528da exact two-file R3 delta and independent COMMENT
-      review5640667276 PASS; observe final-head CI separately. Consume/stop both
-      carriers. Repair #1860/95d7daae on its SAME author under HC-P1B.T2.FIX1:
-      cumulative deadline, bounded capture, owned lifetime and truthful manifests.
+      Preserve #1852/7d5528da independent COMMENT5640667276 PASS and final-head
+      CI40144548543 SUCCESS; both carriers are consumed/stopped. Repair frozen
+      #1860/dae43dfd on its SAME author under HC-P1B.T2.FIX2: post-spawn
+      exception custody, actual manifest/cleanup bounds and traversal-error truth.
       Independent frozen-head review follows repair. No Docker journey is authorized.
   - id: HC-P2
     title: Existing admitted model-route parity
@@ -156,11 +156,11 @@ waves:
     status: in_progress
     depends_on: [HC-P1A, HC-P2]
     next_action: >
-      Implement pinned HC-P3.CURRENTNESS.T1: four new files for one original-run
-      controller currentness observation using actual Runtime owners, never a full
-      dispatch permit. Independent frozen-head review follows. Leave broker/native/
-      DSH activation and #1856/#1790 held subjects untouched. Preserve their review
-      and ambiguous-request no-retry boundaries; installed/live P3 remains open.
+      Review frozen #1862/5f187aca under HC-P3.CURRENTNESS.T1.R1 using a distinct
+      Cursor reviewer: four new files for original-run controller observations.
+      Author26tests are not independent acceptance. Dispatch is always false;
+      actual session/model association remains absent. Leave broker/native/DSH
+      activation and #1856/#1790 held subjects untouched. Installed/live P3 is open.
   - id: HC-P4
     title: Event-driven office continuity
     status: todo
@@ -180,13 +180,12 @@ waves:
     status: in_progress
     depends_on: [HC-P4]
     next_action: >
-      Preserve #1854/3be06cec source PASS and green CI. Consume frozen #1859
-      abcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb A1 actual mounted fallback and
-      reconcile original HC-P6.T1.R1.P2 delivery to the SAME independent reviewer
-      without duplicate follow-up. Observe final CI and exact-head review.
-      T2 isolated draft START1792886827.454889 is confirmed on bc-28d187ca at
-      fixed40d under A2. Final T1 binding/integration and
-      independent UI review remain gates. Full signed-in/native/P6 is open.
+      Preserve #1854/3be06cec source PASS and green CI. #1859/abcb8f8c now has
+      independent COMMENT5640772935 PASS and final CI/OS SUCCESS; consume/stop
+      the reviewer. Same-author HC-P6.T2.INTEGRATE1 binds frozen #1861/63069243
+      to exact reviewed A1 proof files and actual mounted fallback through App.
+      Preserve the 12-path UI scope plus only those 3 exact dependency files.
+      Independent final UI review follows; full signed-in/native/P6 remains open.
   - id: HC-P7
     title: Independent comparative evaluation and reliability
     status: in_progress
@@ -290,15 +289,16 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  For Mastermind #1841, reconcile the original HC-P6.T1.R1.P2 delivery to the
-  SAME reviewer on frozen #1859/abcb8f8c without duplicate follow-up. Observe final
-  CI and consume the bound review. #1852/7d5528da independent source PASS is
-  consumed; final CI is separate. Consume same-author topology FIX1 after queued
-  carry1792887549.030979, then pin independent review. UI bc-28d187ca and ACP
-  controller-source bc-5f06f055 have actual STARTs; consume their frozen returns,
-  resolve final T1 integration and commission separate exact-head reviews.
-  Four-file ACP observations remain unarmed. Preserve #1853/#1854 PASS, #1856
-  review hold and #1790 no-retry law. MISSION_COMPLETE remains false.
+  For Mastermind #1841, carry pinned HC-P1B.T2.FIX2 to the SAME frozen #1860
+  author at dae43dfd, and HC-P6.T2.INTEGRATE1 to the SAME frozen #1861 author
+  at63069243. #1859/abcb8f8c independent COMMENT5640772935 PASS plus CI/OS
+  SUCCESS now bind the UI dependency. #1852/7d5528da source PASS and final CI
+  SUCCESS are consumed. Place pinned HC-P3.CURRENTNESS.T1.R1 on frozen
+  #1862/5f187aca, then bind distinct final-head reviews for repaired/integrated
+  topology and UI source when those same authors return.
+  Future ACP continuation design remains unplaced; all observations are unarmed.
+  Preserve #1853/#1854 PASS, #1856 review hold and #1790 no-retry law.
+  MISSION_COMPLETE remains false.
   #1856/a9601a9c stays frozen with consumed refusal, no semantic verdict or retry.
   All three original Fabric EFFECT_UNKNOWN holds and #1850 source proof remain.
   Independent release, installed/live proof and original R2 acceptance are open.
@@ -3727,3 +3727,264 @@ MISSION_COMPLETE=false; the notification task remains notification-only.
   sticky through original adapter collection/cleanup; one-shot v2 close behavior
   cannot silently erase a late v3 fault and manufacture SUCCEEDED.
 MISSION_COMPLETE=false. No final RESULT or approval/merge/install/provider action.
+
+
+### Final producer review and next source tasks — 2026-10-25 00:44 UTC
+
+HC-P6.T1.R1.P2 was proven never delivered by the original reviewer transcript,
+then carried ONCE at1792888184.265809 to the same bc-37213b15 reviewer as
+run-47d46f99-01a2-48a9-a796-54a58f51df91, following e74df943.
+RESULT1792888415.867989 and GitHub COMMENT5640772935 independently PASS frozen
+#1859/abcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb. Root read the full review and
+rechecked unchanged Draft/head/19paths. Reviewer stopped, clean scratch/no writes.
+This is source-associated-read qualification, not an approval or full P6.
+- Independent mounted positive:10024B, SHA256
+  0487a73fd74dc12056db30c3aa114ac9eb0792cb4a281dea14336c322854250a;
+  identitycc41b5fb8879905ee444dbfa65830cf4, CURRENT/COMPLETE.
+- Independent mounted fallback:9150B, SHA256
+  80c402e233d8caa0da495b637f966a011e034be7eb0c17ee486b9aa02e722230;
+  identity26c8381aeac076207b47360284a505af, CURRENT/CONTENT_OVER_BUDGET/INCOMPLETE.
+  Both actual HTTP bodies were generated in reviewer scratch and consumed fresh.
+  Each retained one exact tuple/SAME observation; identities differ honestly.
+- Mounted exporter2pass; replay9pass/3skip; freshpositive3pass/9skip;
+  freshfallback3pass/9skip. Missing/empty fresh input refused without fallback.
+  Committed10024B positive SHA9ca1a0a5 and all production ceilings unchanged.
+- Final-head CI40144702324 and OS40144702325 now SUCCESS, independently read.
+  Source review reported CodeQL SUCCESS. No broad rerun.
+#1852/7d5528da final-head CI40144548543 is now SUCCESS, separate from already
+consumed independent COMMENT5640667276 PASS and author/reviewer STOP.
+
+#### HC-P1B.T2.FIX2 — complete readiness lifetime and filesystem bounds
+
+PLANNED BEFORE SAME-CHILD CONTINUATION. Original author
+bc-7072b0b1-6da7-57bf-9204-01336ea2ce46, child
+meta-ceo-harness-rakazo-topology-cursor-20261024-01, thread1792883195.455409.
+FIX1 RESULT1792888464.146999 freezes Draft#1860 at
+dae43dfd6f2e1d4715ee3afd93c84e08ea6ee7b9 on
+cursor/rakazo-topology-readiness-ce46, base3095d09f. Root verified head and delta.
+One normal commit after95d:4changed files,6total,26author tests. Readiness returned
+SOURCE_PREPARED/READINESS_BLOCKED with docker absent and execution NOT_RUN.
+This is an observed source-prep result, NOT an independently qualified readiness
+bound: root and separate native advisory found three remaining concrete defects.
+
+1. After Popen returns, default_spawn has no unconditional owned-process finally.
+   os.set_blocking/select/capture OSError can leave that child running while
+   run_readiness catches the error, hashes and deletes its root. Repair the complete
+   post-spawn lifetime, including setup/capture/settlement errors and interruption.
+   Every exit must preserve the original child handle and report settled or uncertain.
+   Uncertain forbids later probes, hashing, deletion and a clean-custody claim.
+   Never enumerate/kill foreign processes. Failure before Popen and failure after
+   actual spawn are different. Do not swallow a capture error as successful EOF.
+
+2. _owned_hashes discards the10s budget returned by take; manifest traversal checks
+   only overall time once per directory; read_bytes allocates a whole file before
+   checking128MiB. Plain shutil.rmtree has no deadline, and receipt timing is sampled
+   before cleanup. Make hash and cleanup phases actually bounded under the ONE180s
+   attempt with20s cleanup reserve and bounded reap, not just a pre-operation check.
+   Enforce traversal/file/chunk/aggregate limits before allocation; do not consume
+   cleanup reserve while hashing. Blocking filesystem work must have an owned
+   cancellable/settleable boundary, not an abandoned thread or unchecked blocking IO.
+   A small fixed helper mode inside this same run.py using the repaired bounded
+   child path is allowed; no extra production path or generic arbitrary command API.
+   Helper source/environment and request/output grammar must be fixed and bounded.
+   Consume helper output only after its original process is confirmed settled.
+   If an OS operation cannot settle within the bound, retain truthful UNKNOWN.
+   Cleanup may have partially happened: unknown is not absent or safe-to-retry.
+   Resample elapsed/remaining/exhausted facts after cleanup and reap for the final
+   receipt; never invent a completed wall-time guarantee when settlement is unknown.
+
+3. os.walk without onerror silently skips missing/unreadable roots or nested
+   scandir errors and can hash an incomplete/empty tree as SOURCE_PREPARED.
+   Admit the actual no-follow owned root and fail traversal/read/type/identity races
+   explicitly. Missing/error manifests are null with a precise cause, never an empty
+   digest substituted for failure. A truly admitted empty directory is distinct.
+   Preserve canonical deterministic manifest output and source/derived ownership.
+
+Implementation edge constraints from independent native advisory:
+- A fresh helper inherits owned TMPDIR; do not rederive allocation ownership from
+  its different tempfile.gettempdir(). Retain canonical allocation base/root identity
+  from the original owner. Admit direct directory/owner/device/inode before removal.
+- Retain path/identity immediately after allocation succeeds. Failed setup before a
+  complete marker is retained/unknown, not unbounded rmtree(ignore_errors=True).
+- Record bounded original PID/PGID/root recovery facts for uncertainty, without
+  treating stale PID data as later kill authority. Reserve command capacity for cleanup.
+- Guarantee bounded parent waits and either proven settlement or explicit uncertainty;
+  do not promise uninterruptible kernel operations physically stop by180s.
+
+Writable ceiling remains the ORIGINAL SIX files only. Prefer run.py/tests/schema/
+README; topology.patch and offline.compose.yaml need no change. Preserve donor
+c5e66e010ee3f3166d2ad216f928a75a0b9a2218, closed environment before first child,
+Git admission/no filters/replacements, streaming8192B logs and817721B binary bound,
+exact two attempt-owned image tags, execution_authorized=false and empty admitted
+daemon set. This task still authorizes NO topology/Docker/provider/install action.
+
+Focused proof: actual inert owned child with injected post-Popen setup/select/read
+failure; original group settled or retained UNKNOWN and no later work; phase/overall
+timeout with cleanup reserve; stalled owned FS helper, bounded memory/oversize file,
+missing root/nested traversal failure/symlink or type race; partial cleanup timeout
+and accurate final timing; unchanged ownership/environment/source controls.
+Use finite test budgets; no broad reruns, foreign resources or daemon operations.
+Same branch/Draft, preflight remote exactdae and original idle custody before edit.
+One or more ordinary commits, no rebase/reset/force-push; stop on drift/unknown.
+Return final SHA/blobs/delta, commands/counts/skips, measured readiness/custody/CI,
+clean remote-equal freeze. THEN separate non-author Cursor exact-head review.
+State: REPAIR_PLANNED_BEFORE_CARRY; SOURCE_ONLY; NO_EXECUTION_AUTHORITY.
+
+#### HC-P6.T2.INTEGRATE1 — reviewed producer binding and genuine fallback App proof
+
+PLANNED BEFORE SAME-CHILD CONTINUATION. Author
+bc-28d187ca-f434-59fe-86ce-cf262b75de10, child
+meta-ceo-harness-office-ui-cursor-20261024-01, thread1792885833.554159.
+RESULT1792888736.121439 freezes Draft#1861 at
+630692432d8937fd86555579a61fc0b8e1168107, branch
+cursor/hc-p6-t2-office-compound-ui-de10. Root verified Draft/head/base/12paths.
+Actual tested dependency40d; abcb was observed but NOTadopted. Author200tests/
+6files and typecheck pass. Initial CI40147475143/OS40147475146 pending.
+Original T2/A1/A2/custody law stays authoritative; current source has no final UI
+qualification. Synthetic content-budget cases remain labeled synthetic.
+
+Now final producer #1859/abcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb is independently
+source-reviewed PASS and CI/OS green. Bind this exact immutable dependency, not its
+future moving branch. Same UI author, verify idle/clean/exact6306 and remote source
+pins first. Preserve existing UI commits; integrate the reviewed A1 one-commit
+delta via ordinary cherry-pick/content-equivalent normal commit, without merge,
+rebase/reset/force-push or any modification to the #1859 author's branch.
+
+Only these THREE inherited files may change, and their final bytes MUST equal
+reviewed abcb exactly:
+- app/mastermind_os/src/meta-ceo/fixtures/mission-result-producer/README.md
+- app/mastermind_os/src/meta-ceo/mission-result-producer.test.ts
+- tests/test_workspace_mission_result_http.py
+This is a narrow dependency-import exception to original T2 readonly inheritance;
+all other inherited files remain byte-equal to reviewed abcb. The UI's ORIGINAL
+12 files remain its only editable implementation/proof scope. After integration,
+content comparison against exactabcb must show exactly those12 UI paths; against
+prior6306 report dependency import separately. The ancestry still includes40d;
+do not falsely call the cherry-picked hash the original abcb ancestor.
+
+Generate actual mounted positive AND CONTENT_OVER_BUDGET bodies from the integrated
+producer in this carrier's test-owned Runtime using reviewed exporter tests and
+fresh attempt-owned directories. Consume the unchanged whole HTTP bytes through
+actual createWebAuth -> composeMissionHost -> App -> useOfficeProjection ->
+projectOffice -> Office, including the real picker/sign-in path. Extend only the
+authorized App/host/decoder tests as needed. A fresh-input mode must strictly reject
+missing/malformed/empty/mismatched provenance input, not silently use committed or
+synthetic bytes. Preserve independent local acquisition IDs and body SHA/length/
+provenance receipts. Test credentials are explicitly test-owned, never live login.
+
+Positive must show one associated CURRENT/COMPLETE pair. Genuine nested fallback
+must remain associated CURRENT with CONTENT_OVER_BUDGET and INCOMPLETE coverage,
+no invented content/acceptance. Both keep exact tuple/SAME observation. Test
+standalone Mission refresh clears the pair, explicit same-tuple reacquisition,
+A/B/A and late success/failure isolation, auth/method/host-generation invalidation,
+both picker handlers, legacy capability absence vs compound failure no-fallback,
+and raw/nested/compound+LF byte caps. Do not edit production projectOffice/
+MetaCeoOffice/mission.ts/result.ts/composeMissionHost or source-pinned positive.
+
+A concrete in-scope repair is also required at frozen6306: App.tsx pickResult's
+stale closure (around3047) checks host identity/generation/selection/auth/ticket but
+omits host.readMissionResult === captured compoundRead, and its queued microtask
+invokes the captured method without checking stale first. Root fetched exact App
+bloba965fe57f8edfb8bfcdcd64696b8fd440c15ce93 and hostblob
+bf85fad16ea04c31ddcfeef7083719b84caa543f to confirm the independent advisory.
+host.ts fences raw-client method replacement only; that does not fence replacement
+of the mounted typed method on the same host. Capture/check typed method identity
+before invocation and before publication/clearing, including late success/failure.
+Add full App-path tests for replacement while pending and before queued invocation,
+proving old work cannot publish or clear a newer pair. No fallback or extra request.
+
+Run meaningful focused changed-surface tests and typecheck only, with exact counts/
+skips and fresh-export evidence; hosted CI is separate. If integration conflicts
+or source drift require another inherited write, stop and report exact scope.
+Return new frozen head, normal-commit genealogy,12UI/3import inventories+hashes,
+commands/results and actual bytes custody. A DISTINCT Cursor reviewer will generate
+and consume its own mounted bodies and challenge the final UI/races before source
+qualification. No installed/native/fullP6 acceptance, approval, merge or live effect.
+State: INTEGRATION_PLANNED_BEFORE_CARRY; SOURCE_UI_PROOF_ONLY.
+
+#### ACP continuation architecture: independent objections retained before any build
+
+The four-file CURRENTNESS.T1 authorbc-5f06f055 remains the only active ACP source
+task. Its return/review precedes any transport build. Native architecture challenge
+on protected3095 found these requirements for the later explicit v3 proposal:
+- open_run/channel.start must remain attach/send-only and return resources before
+  readiness/DURABLE_BOUND. Otherwise Supervisor cannot record_process/mark_running/
+  checkpoint to release the same wait. prepare_prompt must await separate phase
+  futures, NEVER the continuing lifetime-reader task. Startup discovery precedes
+  actual ACP new_session/model confirmation and cannot require that later join.
+- Existing _BrokerRun has mandatory ProcessRef and is created after adapter.start.
+  One provisional startup slot under the EXISTING broker must retain the original
+  start before await, then transfer once to _BrokerRun. Adapter._opening can outlive
+  a timed-out start; failed broker task alone is not absence. Shutdown must join/
+  truthfully quarantine this original startup and continuation before final sweep.
+- Pre-prompt cancellation must wake parked initialization/readiness/durable waits.
+  No prompt exists from which to infer an ACP cancelled terminal. Preserve v1/v2
+  requirements; any future trusted pre-prompt outcome is distinct and never sets
+  cancellation_observed by fiat. First fault/cancel reason owns ONE settlement task.
+- Continuing-channel faults must stay sticky through native close/adapter collection.
+  Successful socket cleanup cannot erase a protocol fault and manufacture SUCCEEDED.
+  Invalidate pending publication before first teardown await; retain uncertain work.
+- Both old transports close after one exchange. Add explicitly versioned retained
+  modes, strict bounded closed frames and one read owner; never merely rename schema.
+  Reuse every existing _start launch/descriptor/profile/occupancy gate.
+- Darwin auth proves original control-UID connection, not exact controller PID/start.
+  New fixed client must verify expected broker principal; frame PID is not evidence.
+  No reconnect/resume/restart from stream IDs; lost durable ACK is an existing run.
+All transported controller observations remain dispatch_authorized=false. Future
+actual per-invocation authority, patched DSH v2 consumer and installed proof remain
+separate, unimplemented gates. No alternate review/retry of #1856/#1790 is placed.
+MISSION_COMPLETE=false; final RESULT remains unsent.
+
+
+#### HC-P3.CURRENTNESS.T1.R1 — independent four-file controller source review
+
+PLANNED BEFORE REVIEW PLACEMENT. Author RESULT1792888793.021519 freezes
+Draft#1862 at5f187aca744fbad46e6f7738ee355c118c1f6300, branch
+cursor/acp-currentness-t1-f5a5, protectedbase3095d09f. Actual modelgrok-4.7-high-fast,
+authorbc-5f06f055-73a7-55f1-8a24-73e6de5bf5a5, clean remote-equal/no further writes.
+Root independently read PR/head and compare:1commit,4newfiles,+1596/-0; read actual
+controller and closed codec. Author26tests incl current-attempt regression; CI
+40147517062 pending. Source controller observation only; no runtime activation.
+The preceding paragraph saying author still active is superseded by this frozen return.
+
+New independent reviewer child:
+meta-ceo-harness-acp-currentness-review-cursor-20261025-01
+rootmeta-ceo-open-harness-convergence-20261024-sol-001
+parentmeta-ceo-harness-implementation-20261024-web-001.
+Use admitted/default-model Cursor in separate reviewer-owned scratch, not the author
+carrier. Reviewer must differ from bc-5f06f055. Verify remote exact5f187aca before/
+after; stop on drift and do not auto-adopt a later head. Original taska9cd9a2 and
+CURRENTNESS.T1 contract above remain the review obligations.
+
+Review exactly the four new files against protectedbase3095:
+common/acp_continuing_authority_contract.py (440a311cbbad7d633d976914369b5f96c2ad2b4a),
+control_plane/acp_current_authority.py (6c7f207bb0766bfc9b88ac6b8d3bde16d895d1bc),
+tests/test_acp_current_authority.py, docs/architecture/ACP_CONTINUING_AUTHORITY.md.
+Read actual incumbent owners, not just author summary. Challenge one fresh Runtime
+transaction with store.now_ms/_leased_row/current_authority_snapshot and retained
+original token/job/Attempt/worker/quota/fence. Prove no replacement adoption, lease
+mutation, cachedpositive or cached expected policy object substituted for fresh
+source/profile/realm/authority/grant/route observations. Keep orchestration grant
+digest distinct from MCP grant; expected/echoed/native facts must stay distinct.
+Startup/discovery phase cannot promote to dispatch. Absence of an incumbent actual
+session/model attachment is honest; dispatch should remain NOT_CURRENT here, and
+dispatch_authorized must ALWAYS be false. Do not invent a fake association to pass.
+
+Independently run focused real Runtime positive/revocation/fence/token/expiry/
+currentlink/quota/offline/OHF/process/profile/model/realm/readfailure cases, checking
+unchanged ownership/lease. Challenge closed codec with unknown/missing/wrongtypes,
+boolasint, nested/oversized/duplicate/nonfinite/invalidUTF8 frames; no uncaught parser
+or hashing/type exceptions, unbounded allocation/traversal, ambiguous correlation
+or request-controlled authority. Token sentinel must not leak through response,
+repr, exception text/cause or a reflected field. Inspect output bound/truthfulness.
+Only test-owned Runtime and inert local fixtures; mockCURRENT/true is not proof.
+Read source first; one focused targeted run plus concrete adverse reproductions,
+no broad duplicate suite or unrelated CI reruns. CI is a separate receipt.
+
+Return actual agent/model/carrier START, final exact-head COMMENT verdict PASS /
+REQUEST_CHANGES / HOLD with concrete findings/locations, actual commands/counts/
+skips, evidence limitations, clean scratch/no writer and STOP. No source fixes,
+push, approval, merge, installation/provider/credential/account/purchase effects.
+This is a NEW disjoint source subject; it never retries/replaces reviews of
+#1856/#1790 or the three held Fabric runs. FullP3 and all later transports stay open.
+State: REVIEW_PLANNED_BEFORE_PLACEMENT; SOURCE_ONLY.

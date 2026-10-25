@@ -893,3 +893,51 @@ MISSION_COMPLETE=false; no approval/merge/install/provider/finalRESULT.
   sticky through original adapter collection/cleanup; one-shot v2 close behavior
   cannot silently erase a late v3 fault and manufacture SUCCEEDED.
 MISSION_COMPLETE=false. No final RESULT or approval/merge/install/provider action.
+
+
+### Source review consumed; next same-author tasks pinned — 2026-10-25 00:44 UTC
+
+#1859/abcb8f8c final independent COMMENT5640772935 PASS, actual P2 carry
+1792888184.265809 and RESULT1792888415.867989. Reviewerbc-37213b15 stopped.
+Independent positive10024B SHA0487a73f...250a and genuine fallback9150B
+SHA80c402e2...2230 were generated/consumed in reviewer scratch with CURRENT/SAME
+exact tuple; complete vs incomplete coverage preserved. Full hashes in workstream.
+Exporter2pass, replay9pass3skip, freshpositive/fallbackeach3pass9skip; absentinput
+refused. CI40144702324/OS40144702325 now SUCCESS. No UI/fullP6 acceptance.
+#1852/7d final CI40144548543 SUCCESS, source PASS already consumed/stopped.
+
+#1860 FIX1 RESULT1792888464.146999 freezes dae43dfd,26author tests, source-only
+READINESS_BLOCKED/SOURCE_PREPARED. Root/native found post-Popen exceptions lose
+child custody, hash/cleanup budget remains unenforced, os.walk hides errors.
+HC-P1B.T2.FIX2 now pins SAME author/six-path repair BEFORE carry, actual owned
+filesystem helper allowed within run.py, uncertainty retained, final timing honest.
+Separate final-head Cursor review follows. No Docker journey authorized.
+
+UI RESULT1792888736.121439 freezes #1861/63069243,12paths,200author tests/typecheck
+against40d. HC-P6.T2.INTEGRATE1 now pins SAME author BEFORE carry: exact reviewed
+abcb A1 delta only (three named inherited proof files byte-equal), normal commit,
+no merge/rebase/reset/force, remaining12 UI paths only. Actual mounted positive and
+fallback must pass through web auth/host/App/hook/projection/Office, strict fresh
+input provenance, then DISTINCT frozen-head review. No installed/fullP6 claim.
+
+Four-file ACP authorbc-5f06f055 still active; currentness remains dispatch=false.
+Independent future transport objections retained: separate readiness/barrier/lifetime
+waits, original provisional start + late _opening custody, truthful pre-prompt cancel,
+sticky faults through success classification, strict explicit v3 retained transport,
+reuse all launch guards, original authenticated UID connection not claimed PID.
+No transport placement. #1856/#1790 and three Fabric no-retry holds unchanged.
+MISSION_COMPLETE=false. No final RESULT, self-approval/merge or prohibited effect.
+
+INTEGRATE1 also includes root-confirmed App mounted-method replacement race at6306:
+stale checks omit the captured typed method, and the queued invocation has no stale
+precheck. Repair/test within existing App scope before independent review. FIX2
+additionally binds helper ownership to retained allocation identity despite TMPDIR,
+retains partial allocation/uncertain PID/PGID/root recovery facts, and promises
+bounded parent waits rather than impossible guaranteed kernel settlement.
+
+ACP RESULT1792888793.021519 now freezes #1862/5f187aca744fbad46e6f7738ee355c118c1f6300,
+base3095,4newfiles/+1596,author26tests,CI40147517062pending. Root read PR/head/diff
+and actual codec/controller. HC-P3.CURRENTNESS.T1.R1 pins one distinct Cursor reviewer
+BEFORE placement, exact-head real Runtime/codec/authority evidence challenge; no
+source edits or false dispatch/session claims. This supersedes the active-author
+status above. New source subject, never alternate/retry of held #1856/#1790.
