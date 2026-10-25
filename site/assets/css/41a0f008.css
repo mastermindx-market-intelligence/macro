@@ -1,0 +1,56 @@
+
+.bonds-duration-open{min-height:44px;margin-top:var(--sp-3,12px)}
+.bonds-duration-dialog .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.bonds-duration-dialog{position:fixed;inset:0 0 0 auto;margin:0;width:min(590px,100vw);height:100vh;height:100dvh;max-width:100vw;max-height:100vh;max-height:100dvh;padding:0;border:0;border-inline-start:1px solid var(--line);background:var(--panel);color:var(--text);font-family:var(--font-ui);font-size:var(--fs-body,14px);box-shadow:var(--popover-shadow);overflow:hidden}
+.bonds-duration-dialog[open]{display:flex;flex-direction:column}
+.bonds-duration-dialog::backdrop{background:var(--glass-bg);backdrop-filter:blur(4px)}
+.bonds-duration-dialog [hidden]{display:none!important}
+.bonds-duration-dialog *{box-sizing:border-box}
+.bonds-duration-dialog .duration-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4,16px);padding:var(--sp-6,24px);padding-top:max(var(--sp-6,24px),env(safe-area-inset-top));flex-shrink:0}
+.bonds-duration-dialog .duration-eyebrow{margin:0;color:var(--ink-link,var(--link));font-size:var(--fs-micro,10px);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.bonds-duration-dialog .duration-scope{color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.55;margin:var(--sp-2,8px) 0 0}
+.bonds-duration-dialog .duration-close{min-width:44px;min-height:44px;padding:0;flex-shrink:0;font-size:var(--fs-h2,17px)}
+.bonds-duration-dialog .duration-body{padding:0 var(--sp-6,24px) var(--sp-6,24px);min-height:0;overflow-y:auto;overscroll-behavior:contain;flex:1}
+.bonds-duration-dialog h2{font-family:var(--font-ui);font-size:var(--fs-h1,28px);font-weight:700;line-height:1.2;letter-spacing:-.02em;margin:0 0 var(--sp-2,8px)}
+.bonds-duration-dialog .duration-intro{margin:0 0 var(--sp-5,20px);line-height:1.6;color:var(--muted)}
+.bonds-duration-dialog .duration-editor{padding:var(--sp-4,16px);margin:0 0 var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
+.bonds-duration-dialog .duration-editor label{display:block;font-weight:600;margin-bottom:var(--sp-2,8px)}
+.bonds-duration-dialog .duration-input-row{display:flex;align-items:center;gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-input-row input{min-width:0;width:100%;min-height:44px;padding:var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--bg);color:var(--text);font:inherit;font-variant-numeric:tabular-nums}
+.bonds-duration-dialog input[aria-invalid="true"]{border-color:var(--act)}
+.bonds-duration-dialog input[type="range"]{width:100%;min-height:44px;margin:0;accent-color:var(--link)}
+.bonds-duration-dialog .duration-small{font-size:var(--fs-sm,12.5px);line-height:1.55;color:var(--muted);margin:var(--sp-2,8px) 0}
+.bonds-duration-dialog .duration-editor-actions{display:flex;gap:var(--sp-2,8px);flex-wrap:wrap}
+.bonds-duration-dialog .duration-error{margin:0 0 var(--sp-4,16px);padding:var(--sp-4,16px);border:1px solid var(--act);border-radius:var(--r-card,12px);background:var(--panel2);color:var(--ink-act,var(--act));line-height:1.55}
+.bonds-duration-dialog .duration-shock{display:flex;justify-content:space-between;gap:var(--sp-4,16px);margin:var(--sp-4,16px) 0;padding-bottom:var(--sp-3,12px);border-bottom:1px solid var(--line);font-size:var(--fs-sm,12.5px)}
+.bonds-duration-dialog .duration-shock strong{font-variant-numeric:tabular-nums;text-align:end;color:var(--ink-link,var(--link))}
+.bonds-duration-dialog .duration-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-position{padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--bg);min-width:0}
+.bonds-duration-dialog .duration-position-label{font-size:var(--fs-micro,10px);line-height:1.5;color:var(--muted);font-weight:600}
+.bonds-duration-dialog .duration-value{display:block;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:var(--fs-h1,28px);line-height:1.4;margin:var(--sp-2,8px) 0;color:var(--text);overflow-wrap:anywhere}
+.bonds-duration-dialog .duration-empty{display:block;font-size:var(--fs-md,15px);line-height:1.6;margin:var(--sp-2,8px) 0;color:var(--muted)}
+.bonds-duration-dialog .duration-percent{display:block;font-variant-numeric:tabular-nums;font-size:var(--fs-sm,12.5px);color:var(--muted)}
+.bonds-duration-dialog .duration-limit{margin:var(--sp-4,16px) 0 0;padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);line-height:1.55}
+.bonds-duration-dialog .duration-limit strong{display:block;font-size:var(--fs-sm,12.5px);font-weight:600;margin-bottom:var(--sp-2,8px)}
+.bonds-duration-dialog .duration-missing{border-color:var(--warn)}
+.bonds-duration-dialog .duration-missing strong{color:var(--ink-warn,var(--warn))}
+.bonds-duration-dialog .duration-limit p{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:0}
+.bonds-duration-dialog .duration-state{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.55;margin:var(--sp-4,16px) 0 0}
+.bonds-duration-dialog .duration-footer{flex-shrink:0;padding:var(--sp-4,16px) var(--sp-6,24px);padding-bottom:max(var(--sp-4,16px),env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--panel)}
+.bonds-duration-dialog .duration-footer-actions{display:flex;gap:var(--sp-3,12px)}
+.bonds-duration-dialog .duration-footer-actions button{flex:1;min-width:0;white-space:normal}
+.bonds-duration-dialog .duration-edit{order:2}
+.bonds-duration-dialog .duration-footer-note{font-size:var(--fs-micro,10px);line-height:1.5;color:var(--muted);margin:var(--sp-3,12px) 0 0}
+.bonds-duration-dialog button{font-family:var(--font-ui);min-height:44px}
+.bonds-duration-dialog :focus-visible{outline:2px solid var(--info,var(--blue));outline-offset:3px}
+.bonds-duration-dialog button:disabled,.bonds-duration-dialog input:disabled{opacity:.65;cursor:not-allowed}
+html[data-theme="dark"] .bonds-duration-dialog .duration-eyebrow,html[data-theme="dark"] .bonds-duration-dialog .duration-shock strong{color:var(--ink-info,var(--info,var(--blue)))}
+html[data-theme="light"] .bonds-duration-dialog{background:var(--panel);border-inline-start:1px solid var(--line);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .bonds-duration-dialog::backdrop{background:var(--glass-brd);backdrop-filter:none}
+html[data-theme="light"] .bonds-duration-dialog .duration-position{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .bonds-duration-dialog .duration-editor,html[data-theme="light"] .bonds-duration-dialog .duration-limit{background:var(--panel2);box-shadow:none}
+html[data-theme="light"] .bonds-duration-dialog .duration-missing strong{color:var(--text)}
+html[data-lang="zh"] .bonds-duration-dialog h2,html[data-lang="zh"] .bonds-duration-dialog .duration-eyebrow{letter-spacing:0;text-transform:none}
+@media(min-width:641px) and (max-width:900px){.bonds-duration-dialog{inset:auto 0 0;width:100%;height:80vh;height:80dvh;max-height:100dvh;border:1px solid var(--line);border-radius:var(--r-panel,14px) var(--r-panel,14px) 0 0}}
+@media(max-width:640px){.bonds-duration-dialog{width:100%;border:0}.bonds-duration-dialog .duration-header{padding:var(--sp-4,16px);padding-top:max(var(--sp-4,16px),env(safe-area-inset-top))}.bonds-duration-dialog .duration-body{padding:0 var(--sp-4,16px) var(--sp-4,16px)}.bonds-duration-dialog .duration-footer{padding-inline:var(--sp-4,16px)}.bonds-duration-dialog .duration-results{grid-template-columns:1fr}.bonds-duration-dialog .duration-position{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--sp-3,12px);align-items:center}.bonds-duration-dialog .duration-position-label{grid-column:1}.bonds-duration-dialog .duration-value,.bonds-duration-dialog .duration-empty{grid-column:2;grid-row:1 / 3;font-size:var(--fs-num-lg,22px);margin:0}.bonds-duration-dialog .duration-position .duration-small{grid-column:1;margin:var(--sp-1,4px) 0 0}.bonds-duration-dialog .duration-percent{grid-column:2;text-align:end}.bonds-duration-dialog .duration-footer-actions{flex-direction:column}.bonds-duration-dialog .duration-edit{order:0}.bonds-duration-dialog .duration-footer-actions button{width:100%}}
+@media(prefers-reduced-motion:reduce){.bonds-duration-dialog,.bonds-duration-dialog *,.bonds-duration-dialog *::before,.bonds-duration-dialog *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
