@@ -9,8 +9,10 @@ throughout so a failure here can only be a transport-layer regression.
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 import json
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -32,7 +34,9 @@ from engine.us_candidate_episode import (  # noqa: E402
     CandidateEpisodeStoreSnapshot,
     EpisodeContractError,
     ValidatedCandidateEpisodeGeneration,
+    canonical_json,
     episode_id as b1_episode_id,
+    load_candidate_episode_store_snapshot,
 )
 from lib.dataos.identity import IssuerMaster  # noqa: E402
 
@@ -69,6 +73,13 @@ _D5_ANCHOR = {
 }
 _D5_EPISODE_ID = b1_episode_id(
     "SEC:US-XNAS-AAPL", "epoch_0", _D5_ANCHOR, 1,
+)
+
+#: A canonical B1 identity this store never held. An unknown ID must be
+#: unknown HISTORY, not a live OPENED event with its row removed: the second
+#: is an impossible generation, and the two must never answer the same way.
+_D5_UNKNOWN_EPISODE_ID = b1_episode_id(
+    "SEC:US-XNAS-AAPL", "epoch_0", {**_D5_ANCHOR, "price": "101.0000"}, 1,
 )
 
 
@@ -418,8 +429,31 @@ def test_episode_intelligence_kill_switch_is_503_and_skips_b1(
 
 
 def test_episode_intelligence_absent_episode_is_private_404(
+    episode_intelligence_client,
+) -> None:
+    """An identity this generation never held is the incumbent private 404.
+
+    The unknown identity is unknown HISTORY — not a live OPENED event whose
+    row was removed. The latter is an impossible generation under the real
+    loader, and it answers 503 (below), never this 404.
+    """
+    response = episode_intelligence_client.get(
+        _episode_intelligence_url(_D5_UNKNOWN_EPISODE_ID),
+    )
+    assert response.status_code == 404
+    assert response.json() == {"error": "prophet_episode_not_found"}
+    _assert_private_headers(response)
+
+
+def test_episode_intelligence_absent_projection_without_owner_withdrawal_is_private_503(
     episode_intelligence_client, monkeypatch,
 ) -> None:
+    """A live OPENED event whose row vanished is a contract failure, not a 404.
+
+    The B1 owner removes an episode row only when its own opening event is
+    retracted, so a row-absent/OPENED-present generation cannot be explained —
+    it must fail closed instead of masquerading as an unknown identity.
+    """
     monkeypatch.setattr(
         prophet_lab_api,
         "load_candidate_episode_store_snapshot",
@@ -427,8 +461,11 @@ def test_episode_intelligence_absent_episode_is_private_404(
         raising=False,
     )
     response = episode_intelligence_client.get(_episode_intelligence_url())
-    assert response.status_code == 404
-    assert response.json() == {"error": "prophet_episode_not_found"}
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": "prophet_episode_intelligence_unavailable",
+        "detail": "Episode intelligence temporarily unavailable",
+    }
     _assert_private_headers(response)
 
 
@@ -742,8 +779,8 @@ def earnings_detail_client(monkeypatch,tmp_path):
         yield client,app,calls,tmp_path
 
 
-def _earnings_detail_url():
-    return f"/api/prophet/lab/v1/episodes/{_D5_EPISODE_ID}/earnings"
+def _earnings_detail_url(episode_id: str = _D5_EPISODE_ID):
+    return f"/api/prophet/lab/v1/episodes/{episode_id}/earnings"
 
 
 def test_earnings_detail_actual_route_uses_one_native_d5_read(earnings_detail_client):
@@ -775,10 +812,9 @@ def test_earnings_detail_kill_switch_inherited(earnings_detail_client,monkeypatc
     _assert_private_headers(response);assert calls==[]
 
 
-def test_earnings_detail_missing_episode_inherits_private_404(earnings_detail_client,monkeypatch):
+def test_earnings_detail_missing_episode_inherits_private_404(earnings_detail_client):
     client,_,calls,_=earnings_detail_client
-    monkeypatch.setattr(prophet_lab_api,"load_candidate_episode_store_snapshot",lambda _: _d5_snapshot(episodes=()))
-    response=client.get(_earnings_detail_url())
+    response=client.get(_earnings_detail_url(_D5_UNKNOWN_EPISODE_ID))
     assert response.status_code==404
     _assert_private_headers(response);assert calls==[]
 
@@ -865,3 +901,402 @@ def test_full_native_earnings_route_preserves_b1_d5_and_source_field(monkeypatch
     assert all(v is False for v in brief["authority"].values())
     assert reads==["evt_cik0000320193_2026q3_results"]
     assert body["is_original_as_run_recommendation"] is False
+
+
+# ---------------------------------------------------------------------------
+# B2-1 — correction visibility on the exact episode read
+#
+# Every test in this section runs against a REAL B1 store: the real producer
+# (scripts/reconcile_us_candidate_episodes.reconcile), the real HEAD and
+# generation bytes it publishes, and the real
+# engine.us_candidate_episode.load_candidate_episode_store_snapshot reader. No
+# snapshot is faked here. Only the D5 projection is ever stubbed, and only
+# where a test must observe that a downstream read did or did not run.
+# ---------------------------------------------------------------------------
+_B1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "us_candidate_episode" / "intake"
+_B1_RECORDED_AT = "2026-11-27T18:05:00Z"
+_B1_LATER_RECORDED_AT = "2026-11-28T18:05:00Z"
+_B1_WITHDRAWAL_REASON = "PRIVATE-OPERATOR-REASON-MUST-NOT-LEAK"
+_B1_UNKNOWN_EPISODE_ID = b1_episode_id(
+    "SEC:US-XNAS-ALFA", "epoch_0",
+    {
+        "kind": "turn_watch_reset_low",
+        "time": "2026-11-27T18:00:00Z",
+        "price": "99.0000",
+        "basis": "adjusted_close",
+    },
+    1,
+)
+
+
+def _b1_seed_sources(repo_root: Path) -> None:
+    pd = pytest.importorskip("pandas")
+    data = repo_root / "data"
+    (data / "reference").mkdir(parents=True)
+    pd.DataFrame(json.loads((_B1_FIXTURE_ROOT / "security_master.json").read_text())).to_parquet(
+        data / "reference" / "security_master.parquet", index=False,
+    )
+    pd.DataFrame(json.loads((_B1_FIXTURE_ROOT / "vendor_aliases.json").read_text())).to_parquet(
+        data / "reference" / "vendor_aliases.parquet", index=False,
+    )
+    turn = data / "us_prophet_rank" / "episode_inputs" / "turn_watch" / "2026-11-27.json"
+    turn.parent.mkdir(parents=True)
+    shutil.copyfile(_B1_FIXTURE_ROOT / "turn_watch.json", turn)
+
+
+def _b1_store_root(repo_root: Path) -> Path:
+    return repo_root / "data" / "us_prophet_rank" / "episodes"
+
+
+def _b1_turn_watch_path(repo_root: Path) -> Path:
+    return (
+        repo_root / "data" / "us_prophet_rank" / "episode_inputs"
+        / "turn_watch" / "2026-11-27.json"
+    )
+
+
+def _b1_rewrite_turn_watch(repo_root: Path, mutate) -> None:
+    """Change the owned TURN WATCH source row and re-seal its content hash."""
+    path = _b1_turn_watch_path(repo_root)
+    document = json.loads(path.read_text())
+    mutate(document)
+    material = {key: value for key, value in document.items() if key != "content_sha256"}
+    document["content_sha256"] = sha256(canonical_json(material).encode("utf-8")).hexdigest()
+    path.write_text(canonical_json(document) + "\n")
+
+
+def _b1_run_nightly(
+    repo_root: Path, *, correction_path: Path | None = None,
+    recorded_at: str = _B1_RECORDED_AT,
+) -> dict:
+    from scripts import reconcile_us_candidate_episodes as writer
+
+    return writer.reconcile(
+        repo_root=repo_root, nightly=True, replay=False,
+        recorded_at=recorded_at, correction_path=correction_path,
+    )
+
+
+def _b1_snapshot(repo_root: Path) -> CandidateEpisodeStoreSnapshot:
+    return load_candidate_episode_store_snapshot(_b1_store_root(repo_root))
+
+
+def _b1_opened_events(repo_root: Path) -> list[dict]:
+    return [
+        event for event in _b1_snapshot(repo_root).generation.events
+        if event["event_type"] == "OPENED"
+    ]
+
+
+def _b1_opened_event(repo_root: Path) -> dict:
+    opened = _b1_opened_events(repo_root)
+    assert len(opened) == 1
+    return opened[0]
+
+
+def _b1_command(
+    event: dict, *, event_type: str, source_event_id: str, occurred_at: str,
+    known_at: str, payload: dict, correction_of: str | None = None,
+) -> dict:
+    return {
+        "event_type": event_type,
+        "episode_id": event["episode_id"],
+        "source_system": "operator_correction",
+        "source_schema": "prophet.candidate_episode_correction/v1",
+        "source_event_id": source_event_id,
+        "occurred_at": occurred_at,
+        "known_at": known_at,
+        "source_receipt": "sha256:" + "9" * 64,
+        "correction_of": correction_of,
+        "payload": payload,
+    }
+
+
+def _b1_publish_correction(repo_root: Path, name: str, command: dict, *, recorded_at: str) -> dict:
+    correction = repo_root / name
+    correction.write_text(canonical_json(command) + "\n")
+    return _b1_run_nightly(repo_root, correction_path=correction, recorded_at=recorded_at)
+
+
+def _b1_withdraw_opening(repo_root: Path, event: dict, *, recorded_at: str) -> dict:
+    """Append a real opening retraction and publish the next generation."""
+    return _b1_publish_correction(
+        repo_root, "withdrawal.jsonl",
+        _b1_command(
+            event, event_type="RETRACTED", source_event_id="retract-opening-1",
+            occurred_at=recorded_at, known_at=recorded_at,
+            payload={"reason": _B1_WITHDRAWAL_REASON},
+            correction_of=event["event_id"],
+        ),
+        recorded_at=recorded_at,
+    )
+
+
+def _b1_intelligence_url(episode_id: str) -> str:
+    return f"/api/prophet/lab/v1/episodes/{episode_id}/intelligence"
+
+
+@pytest.fixture()
+def b1_store_client(tmp_path, monkeypatch):
+    """A REAL B1 store published by the real producer and served by the real route."""
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    _b1_seed_sources(repo_root)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    _b1_run_nightly(repo_root)
+    monkeypatch.setenv("PROPHET_LAB_EPISODE_STORE_ROOT", str(_b1_store_root(repo_root)))
+    monkeypatch.setenv(
+        "PROPHET_LAB_SECURITY_MASTER_PATH",
+        str(repo_root / "data" / "reference" / "security_master.parquet"),
+    )
+    monkeypatch.delenv(KILL_SWITCH_ENV, raising=False)
+    app = FastAPI()
+    app.include_router(prophet_lab_api.router)
+    app.dependency_overrides[prophet_lab_api.require_site_full_user] = lambda: {"id": "u-paid"}
+    with TestClient(app) as client:
+        yield client, repo_root
+
+
+def test_b1_real_store_current_episode_reads_the_incumbent_d5_response(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["schema"] == SCHEMA_INTELLIGENCE_VECTOR
+    assert body["episode_ref"]["episode_id"] == opened["episode_id"]
+    assert body["episode_ref"]["generation_id"] == _b1_snapshot(repo_root).generation_id
+    assert body["decision_cut"]["known_at"] == opened["known_at"]
+    _assert_private_headers(response)
+
+
+def test_b1_withdrawn_opening_reads_private_410_with_owner_facts(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    generation_before = _b1_snapshot(repo_root).generation_id
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 410
+    body = response.json()
+    assert body["error"] == "prophet_episode_withdrawn"
+    assert body["episode_id"] == opened["episode_id"]
+    assert body["generation_id"] != generation_before
+    assert body["generation_id"] == _b1_snapshot(repo_root).generation_id
+    withdrawal = body["withdrawal"]
+    assert withdrawal["event_id"].startswith("pee:")
+    assert withdrawal["correction_of"] == opened["event_id"]
+    assert withdrawal["known_at"] == _B1_LATER_RECORDED_AT
+    _assert_private_headers(response)
+
+
+def test_b1_withdrawn_opening_leaves_the_old_generation_bytes_untouched(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    old_generation = _b1_snapshot(repo_root).generation.path
+    before = {
+        str(path.relative_to(old_generation)): path.read_bytes()
+        for path in sorted(old_generation.rglob("*")) if path.is_file()
+    }
+    old_projection = json.loads((old_generation / "all_candidates.json").read_text())
+
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    after = {
+        str(path.relative_to(old_generation)): path.read_bytes()
+        for path in sorted(old_generation.rglob("*")) if path.is_file()
+    }
+    assert after == before
+    assert [row["episode_id"] for row in old_projection["episodes"]] == [opened["episode_id"]]
+    assert _b1_snapshot(repo_root).generation.episodes == ()
+
+
+def test_b1_unknown_identity_stays_private_404_after_a_withdrawal(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    response = client.get(_b1_intelligence_url(_B1_UNKNOWN_EPISODE_ID))
+    assert response.status_code == 404
+    assert response.json() == {"error": "prophet_episode_not_found"}
+    _assert_private_headers(response)
+
+
+def test_b1_observation_retraction_does_not_withdraw_the_episode(b1_store_client):
+    """A retracted OBSERVED event is not an opening withdrawal — the episode stays."""
+    client, repo_root = b1_store_client
+    _b1_rewrite_turn_watch(
+        repo_root, lambda document: document["rows"][0].__setitem__("observation_revision", 2),
+    )
+    _b1_run_nightly(repo_root, recorded_at=_B1_LATER_RECORDED_AT)
+    observed = [
+        event for event in _b1_snapshot(repo_root).generation.events
+        if event["event_type"] == "OBSERVED"
+    ]
+    assert len(observed) == 1
+
+    _b1_publish_correction(
+        repo_root, "observation-withdrawal.jsonl",
+        _b1_command(
+            observed[0], event_type="RETRACTED", source_event_id="retract-observed-1",
+            occurred_at="2026-11-28T19:00:00Z", known_at="2026-11-28T19:00:00Z",
+            payload={"reason": _B1_WITHDRAWAL_REASON},
+            correction_of=observed[0]["event_id"],
+        ),
+        recorded_at="2026-11-28T20:00:00Z",
+    )
+
+    opened = _b1_opened_event(repo_root)
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 200, response.text
+    assert response.json()["schema"] == SCHEMA_INTELLIGENCE_VECTOR
+
+
+def test_b1_withdrawal_does_not_ban_another_episode_of_the_same_security(b1_store_client):
+    """The withdrawal is scoped to one exact episode identity, never to a ticker."""
+    client, repo_root = b1_store_client
+    first = _b1_opened_event(repo_root)
+
+    _b1_publish_correction(
+        repo_root, "state-correction.jsonl",
+        _b1_command(
+            first, event_type="STATE_TRANSITIONED", source_event_id="state-resolved-1",
+            occurred_at="2026-11-27T19:00:00Z", known_at="2026-11-27T19:00:00Z",
+            payload={"episode_state": "RESOLVED", "terminal_reason": "operator-resolved"},
+        ),
+        recorded_at="2026-11-27T20:00:00Z",
+    )
+    _b1_rewrite_turn_watch(
+        repo_root, lambda document: document["rows"][0]["reset"].__setitem__("reset_low", 43.2),
+    )
+    _b1_run_nightly(repo_root, recorded_at=_B1_LATER_RECORDED_AT)
+    opened = _b1_opened_events(repo_root)
+    assert len(opened) == 2
+    second = [event for event in opened if event["episode_id"] != first["episode_id"]][0]
+    assert second["episode_id"].startswith("pe:SEC:US-XNAS-ALFA:")
+
+    _b1_publish_correction(
+        repo_root, "second-withdrawal.jsonl",
+        _b1_command(
+            second, event_type="RETRACTED", source_event_id="retract-opening-2",
+            occurred_at="2026-11-28T19:00:00Z", known_at="2026-11-28T19:00:00Z",
+            payload={"reason": _B1_WITHDRAWAL_REASON},
+            correction_of=second["event_id"],
+        ),
+        recorded_at="2026-11-28T20:00:00Z",
+    )
+
+    withdrawn = client.get(_b1_intelligence_url(second["episode_id"]))
+    assert withdrawn.status_code == 410
+    assert withdrawn.json()["error"] == "prophet_episode_withdrawn"
+    sibling = client.get(_b1_intelligence_url(first["episode_id"]))
+    assert sibling.status_code == 200, sibling.text
+    assert sibling.json()["episode_ref"]["episode_id"] == first["episode_id"]
+
+
+def test_b1_withdrawal_loads_no_identity_and_no_earnings_source(b1_store_client, monkeypatch):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+    calls: list[str] = []
+
+    def _forbidden_identity(_path):
+        calls.append("identity")
+        raise AssertionError("issuer identity must not be read after a withdrawal")
+
+    def _forbidden_earnings(**_kwargs):
+        calls.append("earnings")
+        raise AssertionError("D5 must not be built after a withdrawal")
+
+    monkeypatch.setattr(prophet_lab_api, "_load_issuer_master", _forbidden_identity)
+    monkeypatch.setattr(prophet_lab_api, "build_earnings_intelligence_vector", _forbidden_earnings)
+
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 410
+    assert calls == []
+
+
+def test_b1_earnings_route_inherits_the_withdrawal_410(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    response = client.get(f"/api/prophet/lab/v1/episodes/{opened['episode_id']}/earnings")
+    assert response.status_code == 410
+    assert response.json()["error"] == "prophet_episode_withdrawn"
+    _assert_private_headers(response)
+
+
+def test_b1_withdrawal_response_carries_only_the_allowlisted_owner_facts(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 410
+    body = response.json()
+    assert set(body) == {"error", "detail", "episode_id", "generation_id", "withdrawal"}
+    assert set(body["withdrawal"]) == {"event_id", "correction_of", "known_at"}
+    serialized = json.dumps(body, sort_keys=True)
+    assert _B1_WITHDRAWAL_REASON not in serialized
+    assert "reason" not in body["withdrawal"]
+    assert "ISS:US-XNAS-ALFA" not in serialized
+    assert str(repo_root) not in serialized
+    assert "/data/" not in serialized
+
+
+def test_b1_read_loads_exactly_one_validated_snapshot_per_request(b1_store_client, monkeypatch):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    calls: list[object] = []
+    real_loader = prophet_lab_api.load_candidate_episode_store_snapshot
+
+    def _counting(root):
+        calls.append(root)
+        return real_loader(root)
+
+    monkeypatch.setattr(prophet_lab_api, "load_candidate_episode_store_snapshot", _counting)
+
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 200, response.text
+    assert len(calls) == 1
+
+
+def test_b1_anonymous_caller_is_blocked_before_the_withdrawal_is_disclosed(
+    b1_store_client, monkeypatch,
+):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+    import app.main as main_mod
+
+    monkeypatch.setattr(
+        main_mod,
+        "require_user",
+        lambda _authorization: (_ for _ in ()).throw(HTTPException(401, "missing bearer token")),
+    )
+    app = FastAPI()
+    app.include_router(prophet_lab_api.router)
+    with TestClient(app) as anonymous:
+        response = anonymous.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 401
+    assert "prophet_episode_withdrawn" not in response.text
+    _assert_private_headers(response)
+
+
+def test_b1_corrupt_generation_is_private_503_after_a_withdrawal(b1_store_client):
+    client, repo_root = b1_store_client
+    opened = _b1_opened_event(repo_root)
+    _b1_withdraw_opening(repo_root, opened, recorded_at=_B1_LATER_RECORDED_AT)
+
+    generation = _b1_snapshot(repo_root).generation.path
+    projection = generation / "all_candidates.json"
+    projection.write_bytes(projection.read_bytes() + b"\x00")
+
+    response = client.get(_b1_intelligence_url(opened["episode_id"]))
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": "prophet_episode_intelligence_unavailable",
+        "detail": "Episode intelligence temporarily unavailable",
+    }
+    _assert_private_headers(response)
