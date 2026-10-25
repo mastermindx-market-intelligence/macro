@@ -1,0 +1,211 @@
+{
+  "schema": "quant_lab_method_result.v1",
+  "method_key": "systematic_core_engine",
+  "result_kind": "versioned_external_method_dossier",
+  "verdict": "limited_identification",
+  "headline_en": "The current architecture is disclosed; the current trading rules are not.",
+  "headline_zh": "当前架构已披露，但当前交易规则仍未披露。",
+  "current": {
+    "asof": "2026-09-12",
+    "status": "LIMITED_IDENTIFICATION_CURRENT_VERSION",
+    "status_zh": "当前版本识别有限",
+    "universe": ["SPY", "XLE", "GLD", "SHY"],
+    "architecture": ["Trend Base", "Dislocation Overlay"],
+    "portfolio_shape_en": "Long-only ETF/Treasury/cash model; current public evidence does not establish option contracts as portfolio holdings.",
+    "portfolio_shape_zh": "多头 ETF／短期国债／现金模型；当前公开证据并未证明期权合约属于组合持仓。",
+    "options_context_en": "Signal Sigma options positioning is shown beside the ETF state; its exact deterministic authority is unresolved.",
+    "options_context_zh": "Signal Sigma 期权仓位信息与 ETF 状态并列展示；其是否具有确定性的组合决策权限仍未确定。"
+  },
+  "authority": {
+    "tier": "DISPLAY_ONLY",
+    "line_en": "Research context only — no rank, size, gate, portfolio or trading authority.",
+    "line_zh": "仅作研究背景－不产生排序、仓位、准入、组合或交易权限。"
+  },
+  "timeline": [
+    {
+      "period": "2026-06-25",
+      "title_en": "Four-sleeve dislocation generation",
+      "title_zh": "四袖套错位版本",
+      "detail_en": "SPX / IEMG / GLD / BTC-or-IBIT construction; flat outside structural dislocations; Donald Jones auction-market exit disclosed as the winner among tested exits.",
+      "detail_zh": "SPX／IEMG／GLD／BTC 或 IBIT 结构；结构性错位之外保持空仓；披露 Donald Jones 拍卖市场退出法在所测退出法中胜出。",
+      "source": "sce_june_generation"
+    },
+    {
+      "period": "2026-07-06",
+      "title_en": "White-box KAMA / dislocation generation",
+      "title_zh": "白盒 KAMA／错位版本",
+      "detail_en": "Dual-KAMA regime detection, hysteresis, ATR-normalized dislocation trigger, HYG/IEI veto, GEX tilt and SPY/QQQ/GLD/BIL weighting were disclosed.",
+      "detail_zh": "披露双 KAMA 状态识别、滞后机制、ATR 标准化错位触发、HYG/IEI 否决、GEX 倾斜以及 SPY/QQQ/GLD/BIL 权重。",
+      "source": "sce_july_method"
+    },
+    {
+      "period": "2026-07-10",
+      "title_en": "July live-state snapshot",
+      "title_zh": "七月实时状态快照",
+      "detail_en": "A live-state disclosure showed 25% SPY / 75% BIL with QQQ and GLD flat — evidence for that generation, not a rule for September.",
+      "detail_zh": "实时状态披露为 25% SPY／75% BIL，QQQ 与 GLD 为空仓－这是该版本的证据，并非九月版本的规则。",
+      "source": "sce_july_state"
+    },
+    {
+      "period": "2026-08-12",
+      "title_en": "Index base + defined-risk dislocation generation",
+      "title_zh": "指数基础仓＋有限风险错位版本",
+      "detail_en": "Long index base with defined-risk QQQ/GLD dislocation trades. The later auction-profile reconstruction null belongs only to this tested family.",
+      "detail_zh": "指数多头基础仓配合有限风险的 QQQ／GLD 错位交易。后续拍卖轮廓复刻的空结果只适用于这一被测家族。",
+      "source": "sce_august_generation"
+    },
+    {
+      "period": "2026-09-10–12",
+      "title_en": "Current Trend Base + Dislocation Overlay generation",
+      "title_zh": "当前 Trend Base＋Dislocation Overlay 版本",
+      "detail_en": "SPY, XLE, GLD and SHY; two independent engines; current product pages share one engine run/data pull and are explicitly model output rather than a brokerage record.",
+      "detail_zh": "标的为 SPY、XLE、GLD 与 SHY；两个独立引擎；当前产品页面共享一次引擎运行／数据拉取，并明确属于模型输出而非券商账户记录。",
+      "source": "sce_sep_current_whitepaper"
+    }
+  ],
+  "claim_ledger": [
+    {
+      "claim_en": "Investable set is SPY, XLE, GLD plus short-duration Treasury ETF SHY.",
+      "claim_zh": "可投资标的是 SPY、XLE、GLD，加短久期国债 ETF SHY。",
+      "class": "disclosed_fact",
+      "state_en": "Current disclosed method fact",
+      "state_zh": "当前已披露方法事实"
+    },
+    {
+      "claim_en": "Architecture uses two independent engines named Trend Base and Dislocation Overlay.",
+      "claim_zh": "架构使用两个独立引擎：Trend Base 与 Dislocation Overlay。",
+      "class": "disclosed_fact",
+      "state_en": "Current disclosed method fact",
+      "state_zh": "当前已披露方法事实"
+    },
+    {
+      "claim_en": "Full evaluation window is 2004–2026; $200k grows to about $10.08m; annualized return 19.7%; max drawdown -7.9%; Calmar/MAR 2.51 versus 0.20 for the S&P 500.",
+      "claim_zh": "完整评估窗口为 2004–2026；20 万美元增长至约 1,008 万美元；年化回报 19.7%；最大回撤 -7.9%；Calmar/MAR 为 2.51，对比标普 500 的 0.20。",
+      "class": "publisher_claim",
+      "state_en": "Publisher claim — not independently reproduced",
+      "state_zh": "发布者主张－尚未独立复现"
+    },
+    {
+      "claim_en": "Current performance and position views come from one engine run and one data pull; figures are model output, not a brokerage record.",
+      "claim_zh": "当前业绩与持仓页面来自同一次引擎运行和同一次数据拉取；数字属于模型输出，而非券商账户记录。",
+      "class": "disclosed_fact",
+      "state_en": "Current product disclosure",
+      "state_zh": "当前产品披露"
+    },
+    {
+      "claim_en": "The tested August auction-profile exit family did not validate a deterministic exit rule.",
+      "claim_zh": "被测试的八月拍卖轮廓退出家族未能验证出确定性的退出规则。",
+      "class": "tested_result",
+      "state_en": "NO_EXIT_RULE_VALIDATED — August family only",
+      "state_zh": "未验证出退出规则－仅限八月被测家族"
+    },
+    {
+      "claim_en": "Exact current Trend Base transitions, Dislocation Overlay entry/sizing/exit, options-context authority and SHY/cash execution policy are not publicly identified.",
+      "claim_zh": "当前 Trend Base 转换、Dislocation Overlay 入场／仓位／退出、期权背景权限，以及 SHY／现金执行政策的精确规则尚未公开识别。",
+      "class": "unresolved",
+      "state_en": "Current Section 3 or equivalent discriminator not recovered",
+      "state_zh": "尚未获得当前 Section 3 或等价判别证据"
+    }
+  ],
+  "evidence_partition": [
+    {
+      "class": "disclosed_fact",
+      "label_en": "Disclosed facts",
+      "label_zh": "已披露事实",
+      "summary_en": "Current universe, named two-engine architecture and model-vs-brokerage boundary are directly disclosed.",
+      "summary_zh": "当前标的范围、双引擎命名架构以及模型输出与券商记录的边界均为直接披露。"
+    },
+    {
+      "class": "publisher_claim",
+      "label_en": "Publisher claims",
+      "label_zh": "发布者主张",
+      "summary_en": "Long-history return, drawdown and risk-adjusted statistics remain attributed claims until a version-matched funded replay reproduces them.",
+      "summary_zh": "长期回报、回撤与风险调整指标仍属于发布者主张，直至用版本匹配、资金化的回放独立复现。"
+    },
+    {
+      "class": "tested_result",
+      "label_en": "Tested results",
+      "label_zh": "已测试结果",
+      "summary_en": "The August auction-profile exit family produced a scoped null; source/version reconciliation independently establishes that September is a materially different generation.",
+      "summary_zh": "八月拍卖轮廓退出家族得到限定范围的空结果；来源／版本核对也独立确认九月属于实质不同的新版本。"
+    },
+    {
+      "class": "unresolved",
+      "label_en": "Still unresolved",
+      "label_zh": "仍未解决",
+      "summary_en": "The exact current transition, entry, sizing, exit, options-authority and cash/SHY execution rules remain unidentified.",
+      "summary_zh": "当前精确的转换、入场、仓位、退出、期权权限与现金／SHY 执行规则仍未识别。"
+    }
+  ],
+  "scoped_results": [
+    {
+      "version": "2026-08",
+      "scope": "tested August auction-profile exit family only",
+      "scope_zh": "仅限被测试的八月拍卖轮廓退出家族",
+      "status": "NO_EXIT_RULE_VALIDATED",
+      "meaning_en": "No deterministic exit in the tested August profile family was validated.",
+      "meaning_zh": "被测试的八月轮廓家族中未验证出确定性的退出规则。",
+      "does_not_mean_en": "This does not mean the current September SCE has no exit rule.",
+      "does_not_mean_zh": "这并不意味着当前九月版本的 SCE 没有退出规则。"
+    }
+  ],
+  "failed_reconstruction_families": [
+    {
+      "name_en": "August auction-profile exits",
+      "name_zh": "八月拍卖轮廓退出法",
+      "state": "NO_EXIT_RULE_VALIDATED",
+      "detail_en": "Preserved as a scoped negative result; do not generalize it to September.",
+      "detail_zh": "保留为限定范围的负结果；不得推广到九月版本。"
+    },
+    {
+      "name_en": "Old-version rule splicing",
+      "name_zh": "跨旧版本拼接规则",
+      "state": "REJECTED_BY_VERSION_BOUNDARY",
+      "detail_en": "June Jones exits, July dual-KAMA parameters and August hypotheses are lineage evidence, not missing September rules.",
+      "detail_zh": "六月 Jones 退出法、七月双 KAMA 参数与八月假设属于谱系证据，不是九月缺失规则的替代品。"
+    },
+    {
+      "name_en": "Option-inventory-as-current-ledger path",
+      "name_zh": "将期权库存视为当前组合账本",
+      "state": "RETIRED_AS_CURRENT_REPLICA_PATH",
+      "detail_en": "Current disclosures separate ETF/cash state from options context, so the older option-inventory enumeration is not a current portfolio reconstruction path.",
+      "detail_zh": "当前披露将 ETF／现金状态与期权背景分开，因此旧的期权库存枚举不再属于当前组合复刻路径。"
+    }
+  ],
+  "unresolved_current_rules": [
+    {
+      "en": "Exact Trend Base state variable, warm-up, cash-rotation threshold, hysteresis and sizing.",
+      "zh": "Trend Base 的精确状态变量、预热期、现金轮换阈值、滞后机制与仓位。"
+    },
+    {
+      "en": "Exact Dislocation Overlay entry predicate, eligible-asset selection, overlap policy and sizing.",
+      "zh": "Dislocation Overlay 的精确入场条件、合格资产选择、重叠政策与仓位。"
+    },
+    {
+      "en": "Exact overlay exit/invalidation rule and whether Jones auction-value logic survived into September.",
+      "zh": "叠加层的精确退出／失效规则，以及 Jones 拍卖价值逻辑是否延续至九月。"
+    },
+    {
+      "en": "Exact authority of daily options positioning: descriptive context, eligibility modifier or deterministic gate.",
+      "zh": "每日期权仓位的精确权限：描述性背景、资格修正，还是确定性准入门槛。"
+    },
+    {
+      "en": "Exact SHY-versus-cash treatment, distributions, costs, execution clock and rebalance convention.",
+      "zh": "SHY 与现金的精确处理、分红、成本、执行时钟与再平衡约定。"
+    },
+    {
+      "en": "Exact rule version behind the published 2004–2026 statistics and whether all current components existed over that full window.",
+      "zh": "公开 2004–2026 统计所对应的精确规则版本，以及当前全部组件是否贯穿该完整窗口。"
+    }
+  ],
+  "reopen_event": {
+    "en": "A genuinely new current-version Section 3 or equivalent deterministic disclosure. Reopen identification from that evidence; do not resume proxy tuning from older generations.",
+    "zh": "出现真正新的当前版本 Section 3 或等价确定性披露时重新开启识别；必须从该新证据出发，不得恢复旧版本的代理调参。"
+  },
+  "artifacts": {
+    "ruling": "research/nextsignals/SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md",
+    "placement": "research/nextsignals/SCE_INTEGRATION_PLACEMENT_AND_GATES_2026-09-10.md",
+    "decision": "agentos/decisions/DEC-SCE-CURRENT-REPLICA-LIMITED-IDENTIFICATION.md",
+    "handoff": "agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-12-sce-v11-version-boundary.md"
+  }
+}
