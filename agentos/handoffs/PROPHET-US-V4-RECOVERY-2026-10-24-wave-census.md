@@ -21,7 +21,43 @@ changed:
     what: >
       Record source pins, every-wave census, actual merged and open carriers,
       proof limits, recovery custody and the bounded B2 continuation contract.
+  - path: research/prophet_v4/B17_SHIPPED_ROSTER_INPUT_CENSUS_2026-10-24.json
+    what: >
+      Freeze the bounded input-availability census of the original 240-name
+      bake-off and all 33 committed origination snapshots at the B2 source head.
+      This adds no roster store, efficacy claim, acceptance or runtime authority.
 verified:
+  - claim: Both previously pending exact-head CI runs completed successfully.
+    command: GET workflow runs 40147828669 and 40147024285 plus their exact-head check-runs.
+    result: >
+      Record head 5ef79049d351 passed ci-gate and three selected packs in
+      40147828669. Source head 228c25d37617 passed ci-gate and all twelve packs
+      in 40147024285, which concluded success at 2026-10-25T01:31:44Z.
+      These are exact-head receipts; they do not certify a later records child.
+      The separate inactive merge-queue-pilot context remains inactive_base_context.
+  - claim: Current-owner reconciliation and fresh review commissioning occurred through the existing Fabric.
+    command: Same-root fabric_status, fabric_result and original controller_output for review -01; fresh requests -02 and -03 and retained native receipts.
+    result: >
+      Review -01 is terminal rc1/HTTP429 with no accepted verdict and was
+      dispositioned STOP WITHOUT ACCEPTANCE under the current Chairman directive.
+      Fresh -02 was refused before launch for native capacity. A later no-effect
+      preview established eligible capacity; fresh -03 launched on the non-author
+      bailian pool, then terminated rc1/HTTP403 AccessDenied class without a
+      confirmed review. No failed run was accepted, reopened or replayed.
+  - claim: A full local Git comparison preserves the admitted B2 review subject against newer main.
+    command: git fetch origin main; git diff --name-only 6a386e18c06a14490a4a9ef909042801fce52f0f..8bf2ff28e419865a7cfa027af1955a0f13d3cdf6 -- app/prophet_lab.py engine/us_candidate_episode.py tests/test_prophet_lab_api.py tests/test_us_candidate_episode.py
+    result: >
+      Empty path delta. Candidate head remained 228c25d37617 and its workspace
+      clean. The truncated GitHub comparison was not used as absence proof.
+  - claim: The currently committed exact-source snapshots do not cover the original B-17 bake-off cutoff.
+    command: Read frozen bake-off JSON and all git-tree origination_sources at 228c25d37617; decompress, hash-check, inspect dates and AST call/schema inventory.
+    result: >
+      240 priced primary names; SATS excluded for missing price and HL/UEC are
+      separate add-ons. All 33 snapshot content hashes match filenames. They
+      cover 14 distinct as-of dates from 2026-09-25 through 2026-10-23; none is
+      at or before the frozen 2026-08-10 price edge. The existing bake-off
+      program does not call select_candidates. This is input qualification,
+      not a recomputed shipped-roster coverage/lead result.
   - claim: B2-1 is published as a separate four-file Draft with parent-run real-writer/reader proof.
     command: python3 -m pytest tests/test_us_candidate_episode.py tests/test_prophet_lab_api.py tests/test_us_candidate_episode_reconciler.py -q
     result: >
@@ -91,7 +127,8 @@ unverified:
   - claim: Identity and outcome of the interrupted previous census Fabric request.
     what_would_verify: Original run/root/controller and same-carrier result/effect evidence; absence from inspected legacy records is not proof of no effect.
 unresolved:
-  - "B2 review prophet-v4-b2-withdrawal-review-20261025-01 ended rc1 with provider 429 and no confirmed verdict; continuation_evidence_unqualified, execution_absence_proven=false and retry_allowed=false. Reconcile the original operation."
+  - "Fresh independent review prophet-v4-b2-withdrawal-review-20261025-03 is terminal rc1 with an access-denied-class HTTP403 and no qualified verdict. The retained provider outcome is kind=unknown, api_status=null, initial_rejection=false; it is not an eligible pre-task capacity rejection."
+  - "B-17's original historical admission inputs are not supplied by the 33 currently committed later origination snapshots. This bounded census does not prove such inputs absent from every archive."
   - "Census review prophet-v4-census-review-20261024-01 remains NOT_FOUND after an interrupted return, without absence/retry proof. Independent exact-record approval is not claimed."
   - B-17 actual shipped-roster measurement remains open.
   - "#7264 retains native research-view custody and Draft/HOLD; its shared API path requires the composition rule below."
@@ -100,21 +137,26 @@ unresolved:
   - "Existing Plan34412, NASDAQ preserve-build and other effect-unknown operations are not retried or cleared by this census."
 next_actions:
   - >
-    Reconcile original review prophet-v4-b2-withdrawal-review-20261025-01 through
-    its canonical owner. Provider 429 / unconfirmed response and retry_allowed=false
-    permit no retry, reroute, replacement reviewer or native fallback.
+    Retain current-session ownership. Qualify and repair the actual provider-access
+    failure through its existing owner before admissible independent review
+    continuation. Review -03's 403 AccessDenied class is not a quota/capacity
+    result; do not replay it, bypass its denial or switch credentials/providers
+    to force the refused action. No absent-owner ACK is required.
   - >
-    Consume exact-head CI for source Draft 10176 at 228c25d37617a7217c8f65f1613ade701a2fe01a
-    and the final record-only child of Draft 10174. Passing tests or CI do not
-    substitute for the missing independent review.
+    Obtain a qualified non-authoring review of exact source head
+    228c25d37617a7217c8f65f1613ade701a2fe01a once a legitimate admitted route is
+    available. Preserve the three review-operation dispositions and the current
+    prohibition on self-approval and merging.
   - >
-    After admissible qualified non-author review, follow normal source/release gates
-    and obtain installed-source plus legitimate authenticated production correction proof.
-    Preserve the held 7264 carrier and live 9634/9610 writers.
+    Recover source-bound historical select_candidates inputs for the original
+    240-name bake-off panel, or obtain the existing decision owner's explicit
+    change of measurement scope. The later 14-session snapshot collection is a
+    different population/window and cannot silently close B-17.
   - >
-    Keep B2 in_progress until remaining original correction/mutation acceptance and
-    B-17 shipped-roster measurement are satisfied. Preserve all downstream wave gates.
-  - Keep the recovery copy under ~/gwcap/estate-census/ aligned with the final published record head.
+    Preserve source CI success and consume validation for this new records child.
+    After independent review and future authorized release gates, obtain installed
+    identity and legitimate authenticated production correction proof.
+  - Keep B2 in_progress and all original downstream gates; refresh the recovery copy to the final published records head.
 do_not_redo:
   - No fresh masterplan, renumbered wave graph, duplicate episode store, publication owner, theme graph, ranker or grader.
   - No repeat of the accepted Aug-14 replay, A1 natural-run acceptance, B1 acceptance or closed B2-0 audit.
@@ -144,12 +186,13 @@ assignment, not evidence that every historical seat or operation has stopped.
 
 The record is authored by Astra Pro acting in the Sol/principal role.
 `model: sol` is the existing AgentOS role enumeration, not a provider identity.
-`ended_because: blocked` records the final continuation's actual stopping condition:
-the original independent review has no confirmed verdict and expressly disallows
-retry. The census and bounded B2 source implementation are delivered as Drafts;
-the broader mission is not complete.
+`ended_because: blocked` now records the fresh review's actual provider
+AccessDenied-class refusal, not a requirement to wait for an absent owner.
+Current-session takeover and original-run reconciliation are complete. The
+census, bounded B2 source and input-qualification receipts are delivered as
+Drafts; the broader mission and independent review remain incomplete.
 
-- Protected Mastermind procedure: `3095d09f1789a5b8002503beae872774c297b1a5`,
+- Initial protected Mastermind procedure: `3095d09f1789a5b8002503beae872774c297b1a5`,
   Skillpack `mastermind.sol_skillpack.v1` 1.0.1, bootstrap major 1.
 - Macro census/source base: `0684ab6922cffccf329ab74fe40758be851d836c`.
 - Refreshed main: `b46d17e99235f910cd5900d48e0e8503206be44d`; the workstream,
@@ -194,7 +237,7 @@ elsewhere. Dated source/name searches are discovery aids, not universal absence 
 | A3 | todo | Existing publisher/checkpoint and public/private split, including #7180/#5840. | Prove original atomic source/commit/served-byte and split-brain invariants through that owner. No second publisher. |
 | A4 | todo | Historical natural-run success exists. | Original fire-drill week and recovery evidence remain distinct; execute after A2/A3 acceptance. |
 | B1 | done | Accepted run 33147282433, commit a8ee11ba0e48, exact HEAD-selected generation and lawful episode/event census. | Preserve accepted owner/loader; use it for B2. Current health is not inferred from the old acceptance. |
-| B2 | in_progress | #6840 froze the B2-0 audit; B-15/16/18/19 closed within that dated scope. B2-1 source Draft #10176 has 184 parent focused passes plus two metadata smoke passes. | **Top:** reconcile the original 429/unconfirmed independent review, then qualified exact-source review/CI and legitimate production correction proof. B-17 shipped-roster measurement remains open. |
+| B2 | in_progress | #6840 audit adopted; source Draft #10176 has 184 focused passes, two smoke passes and all hosted CI packs/gate passing. Original review reconciled; fresh non-author review attempted. | Fresh review -03 returned AccessDenied-class HTTP403 with no verdict. Resolve that actual provider gate; then independent review and legitimate production proof. B-17 input census proves the current snapshots cover a later window, so historical roster measurement remains open. |
 | B3 | **in_progress** | #7356 and #7506 merged orthogonal candidate-state and identity-epoch cores; current source retains non-authoritative semantics. | Complete original consumer and production acceptance with exact B1 identity. Do not equate R6 B03 to this wave. |
 | B4 | **in_progress** | #7569 strategy-bound availability and #7687 structural overlay merged; source/same-read modules exist. | Finish B2/B3 and current owned quote/basis/clock evidence with Entry Timing/R7; green only means ENTRY_OPEN. |
 | B5A | in_progress | Historical Lab/API/shell and commercial-boundary repairs; #9935 adds a pure dossier wrapper. | Reconcile outstanding entitled Operator Lab journey with R7 and held #7264; source wrapper is not whole-product acceptance. |
@@ -373,7 +416,7 @@ this exact run, inspect its patch and real-generation proof, then obtain
 independent review excluding the author pool. Do not launch a replacement or
 claim background wake. The parent remains the attended owner.
 
-## Implemented continuation and exact review block — 2026-10-25 00:40 UTC
+## Historical implemented-continuation checkpoint — 2026-10-25 00:40 UTC
 
 The top wave was continued after recovery publication. **B2-1 is built and
 locally verified in Draft [#10176](https://github.com/mastermindx-market-intelligence/macro/pull/10176),
@@ -499,3 +542,156 @@ source Draft. Full B2 acceptance, B-17 actual shipped-roster measurement,
 downstream original criteria and whole V4 completion remain open. Both PRs stay
 Draft. No source merge, deployment, background wake or unattended continuation
 is represented as completed or running.
+
+## Current-owner takeover and fresh-review outcome — October 24, 2026 at 10:25 PM CDT
+
+UTC receipt time: `2026-10-25 03:25:54 UTC`. This section supersedes the historical
+owner-wait next action above while preserving its observations and operation history.
+
+The Chairman's current outer directive explicitly assigns this recovery session
+the reconciliation, fresh independent review and continued B2 gates, **without
+self-approval or merging**. The current session has taken that role. Protected
+Mastermind was refreshed at `ca6007536466b53ff9a342d8d6b0d995929d3187`;
+Skillpack 1.0.1 remains compatible. The required procedure/source-law paths are
+unchanged from the prior pin and were loaded at this exact revision.
+
+### Original operation reconciled by the current owner
+
+For `prophet-v4-b2-withdrawal-review-20261025-01`, the same-root status,
+retained result and original controller `2612` were read again. Native status
+is `TERMINAL` / `VERIFIED_TERMINAL`, rc1, with HTTP429,
+`QWEN_FINAL_RESPONSE_UNCONFIRMED` and no accepted review. Controller evidence
+includes `REMOTE_DONE rc=1`, saved process/provider/usage receipts, remote
+transport cleanup and `DONE rc=1`. Usage qualification reports unknown tokens.
+Response SHA-256 remains
+`06ba1f1dba779b0a081199a177f8b2f79b5adc650e21e6a9e0ca0d307a4b7ac5`.
+
+**Current-owner disposition: STOP WITHOUT ACCEPTANCE.** The failed operation was
+not reopened, overwritten, replayed or accepted. Its
+`continuation_evidence_unqualified`, `execution_absence_proven=false` and
+`retry_allowed=false` remain true. The takeover and this disposition were
+recorded on [#10176](https://github.com/mastermindx-market-intelligence/macro/pull/10176)
+before commissioning a fresh review. The new user instruction supplies fresh
+commission authority; it does not rewrite the old runtime facts.
+
+### Fresh non-authoring review attempts and exact boundaries
+
+All attempts retain original root
+`6adce1ef-c13c-83e9-9510-983a2249a6a0` and actual parent
+`6add20f6-3e20-83ea-81f8-b324d9f6cfbb`. Each fresh review targets
+`228c25d37617a7217c8f65f1613ade701a2fe01a`, uses task class review / C2, and
+excludes the minimax implementation-author pool. Its packet permits source
+inspection and bounded tests, not candidate edits, GitHub approval, merge,
+deployment or child commissioning. WHY NOT FABLE: a fixed four-file contract
+is suitable for an admitted economical independent reviewer.
+
+| Operation | Actual result | Disposition |
+|---|---|---|
+| `prophet-v4-b2-withdrawal-review-20261025-01` | Original rc1/HTTP429; no qualified verdict. | Terminal without acceptance; current-owner reconciliation complete. |
+| `prophet-v4-b2-withdrawal-review-20261025-02` | Controller `12508`; exit75; retained `REQUEST_REFUSED_BEFORE_LAUNCH`. Exact native refusal receipt binds root/parent/request digest and `launch_attempted=false`. | No worker started. Preserve `same_run_replay_allowed=false`; do not replay. |
+| `prophet-v4-b2-withdrawal-review-20261025-03` | Controller `31783`; normal admission/lease and provider launch on M1, bailian/qwen3.8-max; then rc1 and access-denied-class HTTP403, without a confirmed final response. | Terminal without acceptance; actual provider-access gate remains. |
+
+For -02, the same installed native adapter's no-effect preview returned no
+eligible remote host: M1 lane ceiling, and unavailable/unqualified other hosts.
+The capacity census found another root's held lease within its declared lifetime,
+with remote-worker state unknown. It was preserved: no lease release, worker kill,
+host-ceiling change, credential change or admission-policy change occurred.
+The old refusal's retained request SHA-256 is
+`52f33acf801993904805891fdf9047450222c01fba468d3617b806a98abf580c`.
+Its native receipt proves the narrower no-launch fact; the facade's conservative
+top-level absence/root-verification fields were not rewritten.
+
+The parent continued source-integration verification and B-17 input qualification.
+At the next material boundary, a later native preview returned an eligible
+M1/qwen/qwen3.8-max/bailian route with `state=PREVIEW_ONLY`, `reserved=false`
+and `selection_rechecked_at_request=true`. That observed capacity change
+preceded the new -03 commission. Fresh GitHub readback confirmed the exact
+source head unchanged, open, Draft and four files. Preview was not represented
+as reservation or execution; actual -03 launch evidence came from its controller.
+
+For -03, retained response SHA-256 is
+`53cccfde1d4e212ffe77a52e37b34479f2305238fb5f0e8ed36f6cd95af5f32f`
+(497 bytes). The result contains `QWEN_FINAL_RESPONSE_UNCONFIRMED` and
+`kind=403`. The installed immutable adapter generation
+`ac9acf0daf5a438934f3862afa02039734aa100812d4e040eda5966388817c3b`
+classifies 403 only from an explicit AccessDenied error code or co-located
+403/access-denied evidence; its documented classification is not quota.
+
+Preserve the narrower normalized receipt too: `provider_outcome.kind=unknown`,
+`api_status=null`, `initial_rejection=false`, complete event capture, and no
+qualified usage snapshot. Capture SHA-256 is
+`ceb57907771911a9138c78e9141751a9de5db19d38b8ce0f8284012170ba717c`.
+The precise underlying entitlement/access cause is not established by these
+receipts. Process evidence shows rc1 and completed cleanup with zero residuals;
+canonical status is verified terminal, unverified acceptance and no retry.
+No further account/provider switch or replay was attempted around that denial.
+There is no accepted independent review and no active reviewer.
+
+### CI and integration gates advanced
+
+Source run
+[40147024285](https://github.com/mastermindx-market-intelligence/macro/actions/runs/40147024285)
+completed **success** at `228c25d37617a7217c8f65f1613ade701a2fe01a`:
+all twelve packs, plan, contract and `ci-gate` passed. The previously pending
+pack0 completed successfully, including its validation/run and artifact steps.
+The active main authority and supporting fences also passed. The separate
+inactive merge-queue-pilot authority failure remains `inactive_base_context`.
+
+Record run
+[40147828669](https://github.com/mastermindx-market-intelligence/macro/actions/runs/40147828669)
+passed its gate and three selected packs at
+`5ef79049d3514d8371cafe1c175679c14bdccf0f`. This is the parent of this new
+records update; no inherited CI claim is made for the later child.
+
+The GitHub base-to-main comparison hit its 300-file output limit, so the parent
+used a full local Git comparison after fetching main. No changes occurred in the
+four B2 review paths between the admitted base and
+`8bf2ff28e419865a7cfa027af1955a0f13d3cdf6`. The B2 candidate stayed clean at
+the same reviewed target head. No rebase, source repair or repeated broad test
+battery was needed. No merge/deployment was performed.
+
+### B-17: concrete input qualification, not borrowed recall claims
+
+The new [input census](../../research/prophet_v4/B17_SHIPPED_ROSTER_INPUT_CENSUS_2026-10-24.json)
+is a frozen supporting research receipt, not a new roster, grader or outcome
+authority. Its SHA-256 is
+`298a2c64bfe1d5c0957eda5ff69a7b89458a482f16ddf7201dfc7e28d1a3ba1b`.
+
+| Input qualification at source head `228c25d37617` | Observed result |
+|---|---|
+| Original frozen bake-off | Run 2026-08-11; price right edge 2026-08-10. |
+| Primary panel | 240 priced names from 241 store names; SATS unpriced. HL/UEC remain separate add-ons. |
+| Committed immutable origination sources | 33 gzip JSON blobs; all 33 uncompressed content hashes match their filenames. |
+| Available dates | 14 distinct `as_of` dates, 2026-09-25 through 2026-10-23. |
+| Snapshots at or before the original frozen price edge | **0** in this exact committed tree. |
+| Existing bake-off evaluator | Does not call `select_candidates`; its episode schema does not carry the complete admission input vector. |
+
+Current `select_candidates` requires the source buy row, entry signal, direction,
+conviction band, admitted tier/status and the source rule identity. The published
+bake-off's naked-union episodes and these later snapshots cannot establish the
+original historical intersection's coverage and lead. The census includes every
+inspected source path, hash and date, so this gap is reproducible. It does **not**
+claim that all other archives were searched or that historical inputs can never
+be recovered.
+
+Next measurement action: recover exact historical admission inputs for the frozen
+panel/window through the existing data owner and use the original measurement
+ruler. A later-window study would require an explicit changed scope and separate
+label. Do not substitute it silently, close B-17, append a fake seq2 closure or
+restore the suspended 60.6%/12-session product claim.
+
+### Recoverable frontier
+
+The current session has performed the requested takeover and original-operation
+reconciliation, commissioned fresh non-authoring review through Fabric, consumed
+CI success, proved source integration compatibility and qualified the B-17 input
+gap. **The outstanding review gate is a real provider AccessDenied-class refusal,
+not an absent-owner acknowledgment.** The next recovery must qualify that failure
+through the existing provider/admission owner and establish a legitimate eligible
+review path; the failed operation is not replay authority.
+
+B2 remains `in_progress`; the original graph still has **5 done / 6 in_progress /
+19 todo**. Independent approval, source adoption, production correction proof and
+B-17 measurement remain separate. Both PRs stay Draft. The user has prohibited
+self-approval and merging in this continuation; no merge labels, approval, source
+merge, deployment, background watcher or unattended review are armed or claimed.

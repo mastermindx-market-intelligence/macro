@@ -254,17 +254,21 @@ waves:
     status: in_progress
     pr: [6840, 10176]
     next_action: >
-      TOP WAVE / BUILT, REVIEW BLOCKED. #6840 / 86634cb89ad4 froze B2-0 and its
-      B-15/16/18/19 audit closures. B2-1 source Draft #10176 at 228c25d37617 implements
-      exact-opening withdrawal versus unknown identity from one validated B1 snapshot;
-      parent real-writer/immutable-generation/private-route tests passed 184, with two
-      exact-HEAD metadata smoke tests also passing. Original independent review
-      prophet-v4-b2-withdrawal-review-20261025-01 returned provider 429 with no confirmed
-      verdict and retry_allowed=false. Reconcile that exact operation through its canonical
-      owner before admissible continuation; no retry, replacement or native review fallback.
-      Consume exact-head CI and qualified non-author review before normal source/release
-      and legitimate authenticated production proof. B-17 shipped-roster measurement and
-      full B2 acceptance remain open. Preserve #7264 and the dated shared-path ruling.
+      SOURCE BUILT / CI PASSED / INDEPENDENT REVIEW OPEN. Draft #10176 at
+      228c25d37617 preserves the one-snapshot B1 correction seam; 184 parent
+      focused tests, two metadata smoke tests and hosted run 40147024285 passed.
+      Current-owner takeover reconciled the original HTTP429 review without
+      acceptance. Fresh request -02 was refused before launch for capacity;
+      fresh non-authoring review prophet-v4-b2-withdrawal-review-20261025-03
+      launched after capacity cleared but returned HTTP403 AccessDenied class,
+      no confirmed response and retry_allowed=false. Qualify the provider-access
+      failure through the existing owner before admissible review continuation;
+      no self-approval, merge or denied-operation rerouting.
+      B-17's new input census verifies 33 immutable source blobs over 14 later
+      as-of dates, with zero overlap with the frozen bake-off cutoff. Recover
+      historical admission inputs and re-measure the actual shipped roster;
+      the naked-union claims remain suspended. Preserve #6840 audit closures,
+      #7264's composition boundary and legitimate production proof obligations.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -801,30 +805,34 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
-  2026-10-25 00:40 UTC continuation: Draft #10174 preserves the original 30 waves.
-  B2-1 is implemented in source Draft #10176 at
-  228c25d37617a7217c8f65f1613ade701a2fe01a; parent verification passed 184 focused
-  tests and two exact-HEAD metadata smoke tests. The original builder artifact
-  was hash-verified and its return accepted for implementation/test evidence only.
-  Independent review prophet-v4-b2-withdrawal-review-20261025-01 ended with
-  provider 429, no confirmed verdict, continuation_evidence_unqualified and
-  retry_allowed=false. TOP NEXT OBLIGATION: reconcile that original review
-  operation through its canonical owner before any admissible continuation.
-  Do not retry, reroute or replace it. Consume exact-head CI and qualified
-  non-author review, then normal source/release gates and legitimate authenticated
-  production proof. B2 remains in_progress; B-17 shipped-roster measurement is open.
-  Detailed census and continuation receipts are in
-  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md.
-  Counts remain five done, six in_progress and nineteen todo; B3/B4 have merged
-  cores, and D6 remains gated by #6705's explicit D5-only scope. Preserve accepted
-  A1/B1 receipts, live #9634/#9610 writers, #8444's Draft/design hold and #7264's
-  native-Lab carrier/HOLD under the handoff's shared-path composition rule.
-  Record review prophet-v4-census-review-20261024-01 remains NOT_FOUND without
-  absence/retry proof; the prior interrupted census request has no recovered run
-  identity. Preserve all actual STARTed/EFFECT_UNKNOWN custody. Neither missing
-  status nor this checkpoint authorizes replay. R7 remains the existing delivery
-  decomposition. Both PRs stay Draft; no source merge, deployment, whole-wave
-  acceptance or background reviewer continuation is claimed.
+  2026-10-24 America/Chicago continuation: this recovery session owns B2 under
+  the Chairman's no-owner-wait directive. Original review
+  prophet-v4-b2-withdrawal-review-20261025-01 was reconciled TERMINAL rc1/HTTP429,
+  STOP WITHOUT ACCEPTANCE; its no-retry and no-absence-proof facts are preserved.
+  Fresh request -02 was refused before launch for native host capacity. After
+  capacity changed and a no-effect preview offered an eligible non-author route,
+  fresh review prophet-v4-b2-withdrawal-review-20261025-03 launched through normal
+  Fabric admission, but returned rc1/HTTP403 AccessDenied class, no confirmed
+  review and no accepted verdict. Preserve that terminal operation; do not replay
+  or switch accounts/providers to route around the access denial.
+  TOP NEXT ACTION: qualify and repair the actual provider-access failure through
+  its existing owner, then obtain an admitted non-authoring review of source
+  Draft #10176 at 228c25d37617a7217c8f65f1613ade701a2fe01a. This session retains
+  the recovery action; there is no absent-owner ACK gate. Do not self-approve,
+  merge or deploy under this continuation.
+  B2 source CI 40147024285 passed all twelve packs and ci-gate. The full local
+  comparison against main 8bf2ff28e419 found no delta in the four review paths.
+  B-17 input census is committed under
+  research/prophet_v4/B17_SHIPPED_ROSTER_INPUT_CENSUS_2026-10-24.json: all 33
+  source hashes verify, but their 14 as-of dates start 2026-09-25, after the
+  frozen 240-name bake-off's 2026-08-10 price edge. Recover exact historical
+  admission inputs before re-measuring; later snapshots do not close B-17.
+  Counts remain five done, six in_progress and nineteen todo. Preserve accepted
+  A1/B1, active #9634/#9610, #8444's design hold and #7264's carrier/HOLD under
+  the handoff's composition rule. The interrupted census-review request and
+  older unidentified request remain fenced. Resume the dated cumulative
+  handoff; no fresh masterplan, production acceptance or background review is
+  claimed. Both PRs remain Draft.
 ---
 
 ## Context
