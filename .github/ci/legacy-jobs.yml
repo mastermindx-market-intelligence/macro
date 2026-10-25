@@ -262,6 +262,12 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -2223,6 +2229,12 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -3235,6 +3247,12 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -7000,6 +7018,12 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Prophet WM/KO reader closure on current-main integration.
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
@@ -8062,6 +8086,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
       - engine/entry_radar/replay/__init__.py
@@ -10072,6 +10100,13 @@ jobs:
     # output and are correctly gate:data; narrowing that job's own gate is a
     # separate, larger cleanup outside this PR's scope.
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "tests/test_prophet_early_observations_v2.py"
+      - "tests/test_prophet_wmko_delivery_contract.py"
+      - "tests/test_us_turn_watch_v2.py"
+      - "config/us_turn_watch_universe.v2.json"
+      - "config/us_turn_watch_universe.v1.json"
+      - "engine/us_turn_watch.py"
       - "app/prophet_lab.py"
       # Same-box Treasury input reuses this module's internal and site-full guards.
       - "app/treasury_history.py"
@@ -10199,7 +10234,7 @@ jobs:
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
-        run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
+        run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py tests/test_prophet_early_observations_v2.py tests/test_prophet_wmko_delivery_contract.py tests/test_us_turn_watch_v2.py -q
       - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
         run: python -m pytest tests/test_prophet_object_change.py -q
       - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API
@@ -10534,6 +10569,12 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -14364,6 +14405,12 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -16504,6 +16551,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      # Prophet WM/KO reader closure on current-main integration.
+      - "config/us_turn_watch_universe.v2.json"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -20853,6 +20902,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v2.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25116,6 +25167,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -27316,6 +27371,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -29913,6 +29974,10 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -31094,6 +31159,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v2.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -35501,6 +35568,10 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -36019,6 +36090,12 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -39201,6 +39278,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -43840,6 +43923,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Prophet WM/KO read-path import closure (PR #9610).
+      - "config/us_turn_watch_universe.v2.json"
       - "app/options_auth.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"

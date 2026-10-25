@@ -1,0 +1,4 @@
+COMMAND ["/tmp/prophet-wmko-test-env-20261018/bin/python", "-c", "from pathlib import Path; from scripts.run_ci_pack import load_legacy_jobs; jobs=load_legacy_jobs(Path('.github/ci/legacy-jobs.yml')); print('VALID_JOBS='+str(len(jobs))); assert len(jobs)==327"]
+VALID_JOBS=327
+
+ACTUAL_EXIT=0

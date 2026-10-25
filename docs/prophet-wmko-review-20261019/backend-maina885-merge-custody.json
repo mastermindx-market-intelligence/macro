@@ -1,0 +1,155 @@
+{
+  "cwd_writers": [],
+  "frozen_and_held": {
+    "config/us_turn_watch_universe.v1.json": "011e048ba285f5e17b2c0ced696e1cb5525de6a6",
+    "engine/us_candidate_episode_intake.py": "1e622e8a74810c5b46b164e8cb537f4611b81499",
+    "scripts/build_turn_watch.py": "5a3a192ac1ba685e5c102bc06393687db5c6283b",
+    "site/turn_watch/turn_watch.json": "bd7ebd2253ea13974aa21ce55a013a3353bba8c3"
+  },
+  "head": "89d9ee9cbc980abd99a8704e068fdfa0cfcdb117",
+  "merge_base": "68b205e59763eac97378295ff9df99147960dae3",
+  "merge_target": "a88592f801123a6d06268c712b318cf1fe6e7e35",
+  "pr_before": {
+    "auto_merge": null,
+    "comments": 4,
+    "head": "89d9ee9cbc980abd99a8704e068fdfa0cfcdb117",
+    "labels": [
+      "merge-blocked"
+    ]
+  },
+  "probe_tree": "12abde1dc2c228a5440b0bb1e256469ea0e3bbf5",
+  "protected_mastermind_pin": "d5cce731a23588ddbf4df806bd9e8dcfa5eecf24",
+  "raw19": {
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/research/prophet_v4/wm_ko_20261018/ci-89d-39234426974-gate-20261019.log": "dc962496f29ea7db0b26f6bfc0cc3b271fb6143b524faf51f3c7bdfa0875e711",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/research/prophet_v4/wm_ko_20261018/ci-89d-39234426974-review-20261019.json": "9e0d11afcc4979f2e9c84fad4bbfb8728cebf5a082af447df7b13d622720a6eb",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/research/prophet_v4/wm_ko_20261018/ci-89d-39234426974-semantic-20261019.json": "73687152db8095ba43418a3179b35d40a73b3b317ace672b85290735fd36c213",
+    "research/prophet_v4/wm_ko_20261018/ci-pr9610-head88090-20261018.log": "4e15898ed1c069a4376caf041366b3f15386aed0690788db625ee9bfb37ec548",
+    "research/prophet_v4/wm_ko_20261018/native_replay.json": "9af9d6185796b2d8063f3b3d679f228b7e7bc22ca76d96f510323fd5c967118e",
+    "research/prophet_v4/wm_ko_20261018/prophet-delivery-contract-green-20261018.log": "0916cf62f2a5f6653b3d92a9d25b1ba63e418a0fbbf26e4b8f8c78e0e679e4cb",
+    "research/prophet_v4/wm_ko_20261018/prophet-delivery-contract-red-20261018.log": "d8f39cf9b32d85a372fc288402668d96461f955cb2db6990ab928be2e105dbeb",
+    "research/prophet_v4/wm_ko_20261018/prophet-existing-queue-red-20261018.log": "ceaba6b00ec34e1a16a5cff76c6c32f772be897bf1bee7b0e9c06dcb243db21f",
+    "research/prophet_v4/wm_ko_20261018/prophet-existing-queue-red-ready-20261018.log": "8fb49eab4efb2622f45bfcc496500ee570c6d63cc75132e1e6399699555d91bc",
+    "research/prophet_v4/wm_ko_20261018/prophet-final-backend-battery-20261018.log": "a78e19dfe9714da36c12abe22038e7870f3d2c7a93e784e04e8ae8388b0ec12d",
+    "research/prophet_v4/wm_ko_20261018/prophet-final-review-backend-battery-20261019.log": "636dc4aeae5cdaf709c0eddec6bfa29e4dba300120b339f0563fb7692bc98ddf",
+    "research/prophet_v4/wm_ko_20261018/prophet-import-containment-red-20261019.log": "17427eea735dd6db20da19dc6c36d9de978af6b1d21274155243d59cece7f146",
+    "research/prophet_v4/wm_ko_20261018/prophet-integrated-backend-battery-20261018.log": "059b1a4240971cd3cd887d38a8290e720e7c3daa5cd8566757116cd41b3210c8",
+    "research/prophet_v4/wm_ko_20261018/prophet-producer-consistency-green-20261018.log": "c0b2ba87496a163c2682158cd799a2078647f0b288f30c9e5de4654c88f0f38d",
+    "research/prophet_v4/wm_ko_20261018/prophet-restart-closure-green-20261019.log": "0fdf5089b01331e25e4bccb7646cf54904017737e9c2b0e66b2d82e45ca08f36",
+    "research/prophet_v4/wm_ko_20261018/prophet-v2-and-engine-green-20261018.log": "90c200f7829ca43312a2a77d71c6f5f4a4dae95e97a0323fd9898af8620058bf",
+    "research/prophet_v4/wm_ko_20261018/prophet-yahoo-test-dependency-20261018.log": "bd4f3435344b3e60853c484b103c741b5eef80ce684ceb45ca8519e6a1ed28c4",
+    "research/prophet_v4/wm_ko_20261018/replay.py": "a39ec415d41f7ad8bc9dc681bcd6fe9ee68622e07588667f7a8095e90ad3f5ba",
+    "research/prophet_v4/wm_ko_20261018/v2_source_readiness_e190.json": "864c574db2ea9433ded37c3c388221e20334bafa6c7bb3fb0e293ba66f0cd9ab"
+  },
+  "recorded_at": "2026-10-19T11:56:18.666318+00:00",
+  "resolution": "For each of seven additive conflicts retain accepted GMI schema declaration, then the existing Prophet comment and declarations. All other automatically merged bytes are preserved.",
+  "resolved_manifest_sha256": "ed7a881f9f6aeb2d65257e63381719f97f90b4b01c8d72aa03011e528f5f4321",
+  "root": "prophet-wmko-miss-20261018",
+  "semantic_union": {
+    "concurrent_fields": [
+      "/jobs/bea-gvc-current-descriptive-consumer/paths",
+      "/jobs/c19-wp22-dhi-traversal/paths",
+      "/jobs/c19-wp32-integrated-answer-correction-denial-pins/paths",
+      "/jobs/crypto-assistant-context/paths",
+      "/jobs/fif-kernel-guards/paths",
+      "/jobs/nw-lobe-unfreeze/paths",
+      "/jobs/research-price-panel/paths",
+      "/jobs/ticker-news-qbus/paths",
+      "/jobs/washout-turn-organ/paths"
+    ],
+    "gmi_additions": {
+      "bea-gvc-current-descriptive-consumer": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "c19-wp22-dhi-traversal": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "c19-wp32-integrated-answer-correction-denial-pins": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "conviction-profile": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "crypto-assistant-context": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "dashboard-render-contract": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "fif-kernel-guards": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "intelligence-registry": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "nw-lobe-unfreeze": [
+        "engine/company_intelligence/issuer_disclosures.py",
+        "engine/company_intelligence/issuer_disclosure_selection.py",
+        "engine/company_intelligence/issuer_disclosure_publication.py",
+        "engine/company_intelligence/issuer_disclosure_preflight.py",
+        "engine/company_intelligence/issuer_disclosure_owner.py",
+        "engine/company_intelligence/current_context_runtime.py",
+        "engine/company_intelligence/current_company_context.py",
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json",
+        "scripts/publish_company_disclosure.py",
+        "tests/test_gmi_activity_membership_admission.py"
+      ],
+      "options-estate-guards": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "ratio-lens": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "regime-outlook-mapping": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "research-price-panel": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "ticker-news-qbus": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "transmission-chains": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "unrun-subsector-themes": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ],
+      "washout-turn-organ": [
+        "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      ]
+    },
+    "gmi_declarations": 26,
+    "gmi_jobs": 17,
+    "jobs": 327,
+    "prophet_declarations": 49,
+    "prophet_jobs": 13,
+    "prophet_suites": [
+      "tests/test_prophet_early_observations_v2.py",
+      "tests/test_prophet_wmko_delivery_contract.py",
+      "tests/test_us_turn_watch_v2.py"
+    ]
+  },
+  "source21": {
+    "app/deploy/update.sh": "9f2065e5322badf2a781ad4b0690b7193e576de0",
+    "app/prophet_observations.py": "24942aabdc89005674c372bab596f5f52c7e0458",
+    "config/us_turn_watch_universe.v2.json": "5d5c17f0391a07135eb21112d1e61fe2d492e8e9",
+    "docs/PROPHET_WMKO_BACKEND_DELIVERY_2026-10-18.md": "bd9bce34e540eb1ed1e7f23e4a561ef27ff75a8a",
+    "docs/prophet-wmko-review-20261019/api-restart-closure.log": "0590b8f1a3c2ee6470a76bcb68eec54634223202",
+    "docs/prophet-wmko-review-20261019/backend-final-tests.log": "dce4cf148cd015cc89c9b23df2d856c2887fab2c",
+    "docs/prophet-wmko-review-20261019/backend-main68-integration-evidence.json": "43efa3c481286bb965613be983e99fb7e816edef",
+    "docs/prophet-wmko-review-20261019/backend-main68-integration-tests.log": "73b2c37ce4c9ad91ec0cae3425725eeacb270b42",
+    "docs/prophet-wmko-review-20261019/backend-main68-manifest-loader.log": "da22fbe275a0dfb42ad98444e930c6260f4dd2b3",
+    "docs/prophet-wmko-review-20261019/backend-main68-manifest-union.json": "2f0d3b4b0a86fa175d23d0644537023338c09aec",
+    "docs/prophet-wmko-review-20261019/backend-pre-review-tests.log": "8a54260239f123afc6af33986260d900ad2528f6",
+    "docs/prophet-wmko-review-20261019/main68-integration-reconciliation.md": "92170651dae670bf2db74d3c86393b47412a5c34",
+    "docs/superpowers/plans/2026-10-18-prophet-early-opportunity-reliability.md": "feedf5e6a374b8c1f814210bef033d1db6d3cf6e",
+    "engine/prophet_early_observations.py": "18a1e76a982b30555721d48e71bfa6643b38cd12",
+    "engine/us_turn_watch.py": "bd6c04ba9b8ce7843ff9c96f3713e6e596711c0f",
+    "research/prophet_v4/wm_ko_20261018/v1_parity_proof_20261018.json": "6d40e8b42b81a320ea0326a8935e1044bb8d6036",
+    "scripts/backfill_yahoo_universe.py": "03ba737b901760d665e4511f0e5b57405871b9c9",
+    "tests/test_prophet_early_observations_v2.py": "fcb6ffa2118277a6fce421f4ce8a14bcf7c4b5d8",
+    "tests/test_prophet_wmko_delivery_contract.py": "b48f83e3d813cab6fb3c115526aa07e4ee343bd1",
+    "tests/test_us_turn_watch_v2.py": "10de7724f3d531d74ce0f8169f4fcfa49b7dd32e",
+    "tests/test_yahoo_universe_backfill.py": "8ece0c76aab76bdab1bd74273771221a942c3121"
+  }
+}

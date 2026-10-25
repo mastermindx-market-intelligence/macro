@@ -51,6 +51,21 @@ from engine import us_turn_watch as TW
 _FIXTURE_END = "2026-08-06"
 
 
+@pytest.fixture
+def frozen_deck_clock(monkeypatch):
+    """Build synthetic v1 decks at their own completed source session."""
+    frozen_utc = datetime.fromisoformat(f"{_FIXTURE_END}T22:00:00+00:00")
+
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return frozen_utc.replace(tzinfo=None)
+            return frozen_utc.astimezone(tz)
+
+    monkeypatch.setattr(TW, "datetime", FrozenDateTime)
+
+
 def _series(vals: list[float], end: str = _FIXTURE_END) -> pd.Series:
     idx = pd.date_range(end=end, periods=len(vals), freq="B")
     return pd.Series(vals, index=idx, dtype=float)
@@ -832,7 +847,7 @@ def test_source_contract_fails_when_modal_session_lags_expected_completed_sessio
     assert status["max_completed_session_lag"] == 0
 
 
-def test_short_history_names_are_excluded_and_counted(tmp_path, monkeypatch):
+def test_short_history_names_are_excluded_and_counted(tmp_path, monkeypatch, frozen_deck_clock):
     """The bar floor is a COUNT in coverage, not a silent drop."""
     root = tmp_path / "data"
     (root / TW.DECK_STORE).mkdir(parents=True)
@@ -911,7 +926,7 @@ def test_annotations_are_flushed(module_path):
 # End-to-end shape on a frozen mini-store
 # ---------------------------------------------------------------------------
 
-def test_compute_deck_end_to_end_on_a_frozen_store(tmp_path):
+def test_compute_deck_end_to_end_on_a_frozen_store(tmp_path, frozen_deck_clock):
     root = tmp_path / "data"
     site = tmp_path / "site"
     (root / TW.DECK_STORE).mkdir(parents=True)
@@ -961,7 +976,7 @@ def test_compute_deck_end_to_end_on_a_frozen_store(tmp_path):
     json.loads(json.dumps(art, default=str))
 
 
-def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path):
+def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path, frozen_deck_clock):
     """RECALL CONTRACT: the deck is optimised for recall and the operator is the second-stage
     filter — a beyond-cap name stripped to a bare ticker cannot be filtered on anything.  Each
     carries WHY it triggered and WHICH group it sits in; full rows stay capped.
@@ -1005,7 +1020,7 @@ def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path):
 
 
 def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact(
-        tmp_path, monkeypatch, capsys):
+        tmp_path, monkeypatch, capsys, frozen_deck_clock):
     """A cap must hide full rows only from the public document, never from the intake.
 
     MUTATION CHECK: returning ``deck`` here, or adding ``all_triggered`` to the public
@@ -1087,7 +1102,8 @@ def test_the_deck_never_writes_under_prophet_authority(tmp_path):
 
 
 @pytest.mark.parametrize("active_count", (0, 3))
-def test_bulk_does_not_build_discarded_untriggered_context(tmp_path, monkeypatch, active_count):
+def test_bulk_does_not_build_discarded_untriggered_context(
+        tmp_path, monkeypatch, active_count, frozen_deck_clock):
     """Every name keeps trigger/RS participation; detail work follows the uncapped union."""
     root, site = tmp_path / "data", tmp_path / "site"
     (root / TW.DECK_STORE).mkdir(parents=True)

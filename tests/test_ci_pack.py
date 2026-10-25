@@ -5347,6 +5347,90 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-10-24 Prophet WM/KO current-source composition (PR #9610):
+    Accepted current-main cacdaf8 retains its complete suites, closures and
+    packing rules. Three original WM/KO tests add six estimator units to
+    prophet-lab. Canonical composed-source probes measure index 134 jobs /
+    5,830 units, free-content 134 / 5,828 and plan-book 127 / 5,580, each
+    in ten packs. All fit accepted current-main ceilings 5,886 / 5,877 /
+    5,636, so no ceiling, job bound, pack bound or selector is changed.
+    Older 51f0 measurements below remain specific to that historical tree.
+
+
+    2026-10-24 WM/KO integration against accepted 51f0ac98:
+    Independent whole-tree baseline and combined-tree canonical probes select
+    identical job IDs: index 135 / build 135 / plan 128, each in ten packs.
+    Accepted-main weights are 5,879 / 5,875 / 5,629; combined weights are
+    5,885 / 5,881 / 5,635. Only prophet-lab changes, 59 -> 65, for the
+    original three required WM/KO suites. Thus the subject adds exactly six
+    units to each probe. Accepted main itself already exceeds its build
+    ceiling 5,873 by two; the red baseline is retained separately, not
+    attributed to this PR. Set only that breached ceiling to measured 5,881.
+    Preserve index/plan ceilings, all job limits, ten packs, every suite,
+    scope rule, estimator and prior source-specific measurement below.
+
+    2026-10-20 WM/KO refresh onto accepted main e583b3aa preserves the
+    private company-news addition below: build keeps its 135-job ceiling and
+    5,795-unit accepted baseline. The already-reviewed WM/KO suites add six
+    estimator units, composing to 5,828 for index and 5,801 for build. Plan's
+    5,600 ceiling and the ten-pack bound remain unchanged. Exact combined
+    measurements are retained with the current integration validation.
+
+    WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
+    to prophet-lab's existing invocation. The unchanged estimator retains eight
+    commands and one command-length unit; explicit test paths increase 20 -> 23,
+    so the job weight is 49 -> 55. Hosted contract-delta run 39350015873,
+    job 118391740353, tested synthetic 3ccda72 (base a914 + subject d940):
+    build_free_content selects the same 134 jobs / 10 packs, weight 5638 -> 5644,
+    with no new entrant. Index.html and plan_book also gain six units and remain
+    within their bounds. Fund only the measured six-unit excess, 5638 -> 5644.
+    All suites, selectors, job limits, the other weight ceilings and the ten-pack
+    bound remain unchanged; fresh hosted CI must execute this updated assertion.
+
+    Accepted d528 composition (2026-10-20) retains the four methodology /
+    seasonality units and the six WM/KO units: 5,638 + 4 + 6 = 5,648.
+    Both historical measurements above remain evidence for their original
+    source trees. Validate this combined manifest with the canonical probe and
+    the absolute packing assertion before publishing; all other bounds stay fixed.
+
+    Accepted 6629 composition (2026-10-20) retains the seven SPR units
+    and the six WM/KO units: 5,642 + 7 + 6 = 5,655. The prior accepted
+    local-projections curation and all earlier measurements remain intact.
+    Validate this combined manifest with the unchanged canonical estimator
+    and the absolute packing assertion; every other bound stays fixed.
+
+    Accepted f54eeb composition (2026-10-20) preserves the joint 5,661
+    ceiling above and adds only the six required WM/KO units: 5,667.
+    The fixed pin carries the nine-unit country-cycles step; its existing
+    three-unit Spvector allowance is retained without asserting that suite
+    is present. Validate the actual combined manifest; other bounds stay fixed.
+
+    Accepted 92c51f composition (2026-10-20) retains both W23-L11 and
+    W23-L13 Spvector steps and adds only the six required WM/KO units:
+    5,664 + 6 = 5,670. The older f54eeb allowance above describes that
+    earlier pin; both vector steps are present at this accepted base.
+    Validate the full combined manifest with the unchanged canonical
+    estimator and absolute assertion; every other bound stays fixed.
+
+
+    Accepted 13e098 composition (2026-10-20) preserves the four SPR
+    JODI/gold units above and the six required WM/KO units:
+    5,664 + 4 + 6 = 5,674. Both historical measurements and all
+    earlier composition notes retain their original source attribution.
+    Validate this combined manifest with the unchanged canonical estimator
+    and absolute assertion; every other bound stays fixed.
+
+
+    2026-10-20 WM/KO composition with accepted 6793c010:
+    Preserve the accepted Brain rich-answer contribution above and the six
+    retained WM/KO units. The accepted-main index/build weights plus those
+    six units compose to 5,822 + 6 = 5,828 and 5,697 + 6 = 5,703.
+    These are composition calculations, distinct from the later canonical
+    measurements recorded for this combined tree. Preserve both parents'
+    historical source attribution, the 5,600 plan-book ceiling, all job-count
+    bounds, the ten-pack bound, every suite and selector, and the unchanged
+    estimator and absolute assertions.
+
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,
     not DATA support-email-spine. Hosted 40073480536 measured base 5,875
