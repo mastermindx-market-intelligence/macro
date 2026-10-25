@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-24",
+  "as_of": "2026-10-25",
   "bottleneck": {
     "accounts": [
       {
@@ -7,7 +7,7 @@
         "author_replies": 0,
         "contributions": 2,
         "engagements": 0,
-        "impressions": 31,
+        "impressions": 19,
         "measured": 2,
         "replies_abstained": 0,
         "replies_enqueued": 0,
@@ -15,11 +15,23 @@
         "unmeasured": 0
       },
       {
-        "account": "meagan",
+        "account": "mastermind_news",
+        "author_replies": 0,
+        "contributions": 2,
+        "engagements": 0,
+        "impressions": 3,
+        "measured": 2,
+        "replies_abstained": 0,
+        "replies_enqueued": 0,
+        "replies_sent": 0,
+        "unmeasured": 0
+      },
+      {
+        "account": "sophia",
         "author_replies": 0,
         "contributions": 1,
-        "engagements": 1,
-        "impressions": 54,
+        "engagements": 0,
+        "impressions": 76,
         "measured": 1,
         "replies_abstained": 0,
         "replies_enqueued": 0,
@@ -34,13 +46,13 @@
   "cells": [
     {
       "dims": {
-        "account": "flagship",
-        "format": "watchlist",
-        "hook_family": "weekend_levels",
+        "account": "mastermind_news",
+        "format": "breaking",
+        "hook_family": "press_lane",
         "register": "unknown"
       },
-      "med_adjusted": -0.012084,
-      "med_impressions": 15.5,
+      "med_adjusted": -0.005221,
+      "med_impressions": 1.5,
       "med_label": 0.0,
       "n": 2,
       "n_labelled": 2,
@@ -50,14 +62,46 @@
     },
     {
       "dims": {
-        "account": "meagan",
-        "format": "congress",
-        "hook_family": "content_studio",
-        "register": "wire"
+        "account": "flagship",
+        "format": "breaking",
+        "hook_family": "press_lane",
+        "register": "unknown"
       },
-      "med_adjusted": 0.006435,
-      "med_impressions": 54.0,
-      "med_label": 0.018519,
+      "med_adjusted": -0.005221,
+      "med_impressions": 13.0,
+      "med_label": 0.0,
+      "n": 1,
+      "n_labelled": 1,
+      "n_null": 0,
+      "verdict": "seeding",
+      "verdict_note": "1 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
+    },
+    {
+      "dims": {
+        "account": "flagship",
+        "format": "watchlist",
+        "hook_family": "content_studio",
+        "register": "unknown"
+      },
+      "med_adjusted": -0.005221,
+      "med_impressions": 6.0,
+      "med_label": 0.0,
+      "n": 1,
+      "n_labelled": 1,
+      "n_null": 0,
+      "verdict": "seeding",
+      "verdict_note": "1 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
+    },
+    {
+      "dims": {
+        "account": "sophia",
+        "format": "chart",
+        "hook_family": "content_studio",
+        "register": "persona"
+      },
+      "med_adjusted": -0.005221,
+      "med_impressions": 76.0,
+      "med_label": 0.0,
       "n": 1,
       "n_labelled": 1,
       "n_null": 0,
@@ -83,7 +127,7 @@
       "thread_saturation"
     ],
     "max_supported": 1,
-    "n_labelled": 3,
+    "n_labelled": 5,
     "requested": [
       "parent_size",
       "post_age",
@@ -98,8 +142,8 @@
     "hook_family"
   ],
   "n_floor": 20,
-  "n_rows": 3,
-  "n_rows_all_time": 376,
+  "n_rows": 5,
+  "n_rows_all_time": 384,
   "north_star": {
     "active": false,
     "follower_floor": 250,
@@ -116,20 +160,31 @@
     "angle": [
       {
         "angle": "unknown",
-        "med_adjusted": -0.012084,
-        "med_impressions": 15.5,
+        "med_adjusted": -0.005221,
+        "med_impressions": 2.0,
         "med_label": 0.0,
-        "n": 2,
-        "n_labelled": 2,
+        "n": 3,
+        "n_labelled": 3,
         "n_null": 0,
         "verdict": "seeding",
-        "verdict_note": "2 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+        "verdict_note": "3 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
       },
       {
-        "angle": "process",
-        "med_adjusted": 0.006435,
-        "med_impressions": 54.0,
-        "med_label": 0.018519,
+        "angle": "level_watch",
+        "med_adjusted": -0.005221,
+        "med_impressions": 6.0,
+        "med_label": 0.0,
+        "n": 1,
+        "n_labelled": 1,
+        "n_null": 0,
+        "verdict": "seeding",
+        "verdict_note": "1 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+      },
+      {
+        "angle": "precedent",
+        "med_adjusted": -0.005221,
+        "med_impressions": 76.0,
+        "med_label": 0.0,
         "n": 1,
         "n_labelled": 1,
         "n_null": 0,
@@ -140,39 +195,39 @@
     "note": "Marginal tables, one dimension at a time — NOT extra joint-cell dimensions. See labels.PROVENANCE_DIMS for the cardinality arithmetic. 'unknown' is a real bucket: an item that carried no shape/angle/trigger is counted, never dropped.",
     "shape": [
       {
-        "med_adjusted": -0.012084,
-        "med_impressions": 15.5,
-        "med_label": 0.0,
-        "n": 2,
-        "n_labelled": 2,
-        "n_null": 0,
-        "shape": "unknown",
-        "verdict": "seeding",
-        "verdict_note": "2 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
-      },
-      {
-        "med_adjusted": 0.006435,
-        "med_impressions": 54.0,
-        "med_label": 0.018519,
-        "n": 1,
-        "n_labelled": 1,
-        "n_null": 0,
-        "shape": "caption",
-        "verdict": "seeding",
-        "verdict_note": "1 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
-      }
-    ],
-    "trigger": [
-      {
-        "med_adjusted": -0.012084,
-        "med_impressions": 18.0,
+        "med_adjusted": -0.005221,
+        "med_impressions": 2.0,
         "med_label": 0.0,
         "n": 3,
         "n_labelled": 3,
         "n_null": 0,
-        "trigger": "unknown",
+        "shape": "unknown",
         "verdict": "seeding",
         "verdict_note": "3 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+      },
+      {
+        "med_adjusted": -0.005221,
+        "med_impressions": 41.0,
+        "med_label": 0.0,
+        "n": 2,
+        "n_labelled": 2,
+        "n_null": 0,
+        "shape": "caption",
+        "verdict": "seeding",
+        "verdict_note": "2 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+      }
+    ],
+    "trigger": [
+      {
+        "med_adjusted": -0.005221,
+        "med_impressions": 6.0,
+        "med_label": 0.0,
+        "n": 5,
+        "n_labelled": 5,
+        "n_null": 0,
+        "trigger": "unknown",
+        "verdict": "seeding",
+        "verdict_note": "5 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
       }
     ]
   },
