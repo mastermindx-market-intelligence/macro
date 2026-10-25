@@ -799,3 +799,40 @@ Attempt authority, but no complete live join to child session/process/artifact/t
 generation. The one-shot v2 admission ACK, fixture state.allowed and test build
 cannot serve as that join. Preserve #1856 refusal; no new source/activation task.
 MISSION_COMPLETE=false; no final RESULT.
+
+### 2026-10-25 final-head and repair checkpoint
+
+#1859 A1 returned1792886209.751869 frozenabcb8f8ccca350491a5eefb0e0ccb7b510a7b7eb,
+remote-equal/clean,19paths. Exactly three proof files changed after40d; committed
+positive10024B/SHA2569ca1a0a5…unchanged. Actual mounted fallback9150B/SHA256
+78a2672e658de5ce57af95e2ba4583869aa3d81a6de44113e91263c9027ce782,
+CURRENT/SAME/CONTENT_OVER_BUDGET/INCOMPLETE, canonical6000-character summary,
+unchanged production ceilings. Author1producerpass/fresh3pass9skip/typecheckpass.
+OS40144702325SUCCESS, CI40144702324running. Same independent reviewer phase1
+HOLD_FINAL_HEAD1792886313.758579 found no blocker at40d and did not review newtip.
+HC-P6.T1.R1.P2 now pins exactabcb final/delta and independent positive+fallback
+regeneration/consumption BEFORE phase2 continuation. No mixed-head acceptance.
+
+#1852 R3 returned1792886068.551749 frozen7d5528da780d4d642fe4a62618671f64ecb93076,
+exacttwofiles+4/-2, correct approval-required label. Same reviewer was routed
+1792886074.344849 before this checkpoint; do not rewrite that actual order.
+Independent COMMENT5640667276/RESULT1792886243.909589 PASS for labeldelta,
+1closedlauncherpass; retained R2controls hold. CI40144548543running, source and
+mechanical gates separate. Parent consumption/STOP is next; no repeat review.
+
+#1860 topology SOURCE_PREPARED/READINESS_BLOCKED return1792886166.667979:
+95d7daae3a0afbb0d2eb5b11dd2551e6bc89a682,6paths,author20tests,NOEXECUTION.
+Native non-author advisory+root source reading found missing cumulative180s
+deadline, unbounded communicate buffers, early cleanup gaps/uncertain child
+continuation, invented empty manifest hashes, overly broad future image cleanup.
+HC-P1B.T2.FIX1 pins bounded repair in SAME original six-path carrier BEFORE request.
+Execution remains impossible; later isolated-daemon gate is not a lexical manifest.
+Independent frozen-head Cursor review follows repair, not this advisory.
+
+T2 draft placement1792885833.554159 is authorized underA2 atfixed40d;
+STARTunobserved, reconcile without duplication. Reviewed final T1 integration
+remains owed. ACP needs continuing authority across BOTH controller/broker-to-native
+and native-to-child boundaries; neither one-shot v2 nor async-wrapper cached
+positive supplies it. Native design advice only, no new ACP implementation task.
+#1790R5 requestunknown/no-retry; #1856reviewhold unchanged.
+MISSION_COMPLETE=false, no final RESULT/approval/merge/install/provider/account action.
