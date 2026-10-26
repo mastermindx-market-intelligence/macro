@@ -1,8 +1,8 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-10-25",
-  "generated_utc": "2026-10-26T04:52:40+00:00",
+  "as_of": "2026-10-26",
+  "generated_utc": "2026-10-26T15:41:45+00:00",
   "freshness": "degraded",
   "entities": [
     {
@@ -100,27 +100,27 @@
       "ticker": "1024.HK",
       "name_en": "Kuaishou",
       "name_zh": "\u5feb\u624b",
-      "attention_shock_z": null,
+      "attention_shock_z": 21.435,
       "tone_pctile": null,
-      "narrative_state": null,
-      "young": true,
-      "n_obs": 0,
-      "as_of_date": null,
-      "no_data_reason": "young series: 0 < 20 obs",
-      "state_en": null,
-      "state_zh": null
+      "narrative_state": "attention_spike",
+      "young": false,
+      "n_obs": 74,
+      "as_of_date": "2026-10-26",
+      "no_data_reason": null,
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
       "slug": "smic",
       "ticker": "0981.HK",
       "name_en": "SMIC",
       "name_zh": "\u4e2d\u82af\u56fd\u9645",
-      "attention_shock_z": 0.037,
+      "attention_shock_z": 0.218,
       "tone_pctile": null,
       "narrative_state": "quiet",
       "young": false,
       "n_obs": 74,
-      "as_of_date": "2026-10-16",
+      "as_of_date": "2026-10-26",
       "no_data_reason": null,
       "state_en": "quiet",
       "state_zh": "\u5e73\u9759"
@@ -176,23 +176,38 @@
       "state_zh": "\u5e73\u9759"
     },
     {
+      "slug": "kuaishou",
+      "ticker": "1024.HK",
+      "name_en": "Kuaishou",
+      "name_zh": "\u5feb\u624b",
+      "attention_shock_z": 21.435,
+      "tone_pctile": null,
+      "narrative_state": "attention_spike",
+      "young": false,
+      "n_obs": 74,
+      "as_of_date": "2026-10-26",
+      "no_data_reason": null,
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
+    },
+    {
       "slug": "smic",
       "ticker": "0981.HK",
       "name_en": "SMIC",
       "name_zh": "\u4e2d\u82af\u56fd\u9645",
-      "attention_shock_z": 0.037,
+      "attention_shock_z": 0.218,
       "tone_pctile": null,
       "narrative_state": "quiet",
       "young": false,
       "n_obs": 74,
-      "as_of_date": "2026-10-16",
+      "as_of_date": "2026-10-26",
       "no_data_reason": null,
       "state_en": "quiet",
       "state_zh": "\u5e73\u9759"
     }
   ],
   "n_watched": 8,
-  "n_live": 4,
+  "n_live": 5,
   "warming_up": false,
   "is_stale": true
 }
