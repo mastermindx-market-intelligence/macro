@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-25T11:46:03.839326+00:00",
+  "generated_at": "2026-10-26T05:59:07.993036+00:00",
   "n_ledgers": 35,
   "n_closed": 27,
   "n_grader_starved": 8,
@@ -16,7 +16,7 @@
       ],
       "n_logged": 118455,
       "n_graded": 216270,
-      "last_graded_at": "2026-10-25T11:41:53.591489+00:00",
+      "last_graded_at": "2026-10-26T05:55:01.807066+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 216270,
       "n_graded": 216270,
-      "last_graded_at": "2026-10-25T11:41:53.591489+00:00",
+      "last_graded_at": "2026-10-26T05:55:01.807066+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -329,7 +329,7 @@
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "GRADER-STARVED",
-      "n_owed_ungraded": 0
+      "n_owed_ungraded": 10
     },
     {
       "key": "market_state_forward_log",

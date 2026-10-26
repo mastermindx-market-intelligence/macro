@@ -2,7 +2,7 @@
  "membership": "data/baskets/membership.json",
  "reference": "data/breadth/constituents.parquet",
  "reference_status": "ok",
- "asof": "2026-10-24",
+ "asof": "2026-10-25",
  "skipped": false,
  "note": "",
  "drift": true,
