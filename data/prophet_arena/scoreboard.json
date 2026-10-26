@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-10-24",
+  "as_of": "2026-10-26",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -311,10 +311,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-10-24",
+    "asof": "2026-10-26",
     "standouts_as_of": "2026-10-23",
     "price_through": "2026-10-23",
-    "observed_at_utc": "2026-10-25T04:43:14.679832+00:00",
+    "observed_at_utc": "2026-10-26T07:09:46.860734+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -323,7 +323,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-10-24",
+      "artifact_as_of": "2026-10-26",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -354,7 +354,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 16.0
+        "runtime_s": 15.1
       }
     },
     "policies": {
@@ -366,6 +366,7 @@
           "VSXY",
           "KHC",
           "RELY",
+          "CBU",
           "INVX",
           "PRGS",
           "BANC",
@@ -377,18 +378,19 @@
           "ADUS",
           "SLB",
           "BKU",
-          "DLX",
           "KEY",
+          "DLX",
           "REXR",
           "SPG",
           "PII",
-          "LYV",
           "OGS",
-          "D",
+          "LYV",
           "BCC",
+          "D",
           "BILL",
           "SJM",
           "ADBE",
+          "KRG",
           "AYI",
           "UNF",
           "WFRD",
@@ -403,31 +405,30 @@
           "ADC",
           "MGY",
           "HAYW",
-          "NBIX",
           "BFS",
+          "NBIX",
           "ARLO",
           "RH",
           "EXP",
           "GIII",
           "HQY",
-          "BC",
           "TFX",
           "FND",
-          "BRX",
-          "ES",
+          "BC",
           "MGEE",
+          "ES",
           "GOLF",
           "ZBH",
           "AR",
           "EXE",
-          "EIX",
           "JJSF",
+          "EIX",
           "UDR",
           "NFG",
           "IRT",
           "ENOV",
-          "ATMU",
           "CRH",
+          "ATMU",
           "HSY",
           "HRL",
           "PCG",
@@ -440,21 +441,21 @@
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 76,
+          "offered": 77,
           "skipped_duplicate_id": 61,
           "skipped_open_plan": 5,
-          "skipped_clock_provenance": 10,
+          "skipped_clock_provenance": 11,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -469,6 +470,14 @@
             {
               "ticker": "KHC",
               "id": "KHC-BULL-20261021",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+              ]
+            },
+            {
+              "ticker": "CBU",
+              "id": "CBU-BULL-20261021",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
@@ -540,7 +549,7 @@
             }
           ],
           "originated": 0,
-          "validation_failed": 10
+          "validation_failed": 11
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -553,17 +562,17 @@
           "VSXY",
           "KHC",
           "RELY",
+          "CBU",
           "INVX",
           "PRGS",
           "BANC",
           "PKG",
-          "KNTK",
-          "FITB"
+          "KNTK"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -577,7 +586,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -592,6 +601,14 @@
             {
               "ticker": "KHC",
               "id": "KHC-BULL-20261021",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+              ]
+            },
+            {
+              "ticker": "CBU",
+              "id": "CBU-BULL-20261021",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
@@ -620,14 +637,6 @@
               "errors": [
                 "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
               ]
-            },
-            {
-              "ticker": "FITB",
-              "id": "FITB-BULL-20261021",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
-              ]
             }
           ],
           "originated": 0,
@@ -644,8 +653,8 @@
           "VSXY",
           "KHC",
           "RELY",
+          "CBU",
           "INVX",
-          "PRGS",
           "ROL",
           "LHX",
           "ATO",
@@ -658,7 +667,7 @@
         ],
         "n_plans": 3,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": 12,
           "cap_applied": true,
           "door_w_offered": 35,
@@ -675,7 +684,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -696,11 +705,11 @@
               ]
             },
             {
-              "ticker": "PRGS",
-              "id": "PRGS-BULL-20261023",
+              "ticker": "CBU",
+              "id": "CBU-BULL-20261021",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-23' postdates tier_event_date '2026-10-19'"
+                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
               ]
             }
           ],
@@ -722,7 +731,7 @@
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": 6,
           "cap_applied": true
         },
@@ -734,7 +743,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -779,18 +788,18 @@
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
             "admitted": 12,
             "admitted_via_fallback": 11,
-            "excluded_misaligned": 63,
+            "excluded_misaligned": 64,
             "excluded_unreadable": 1,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
           "passed_gate": 12,
-          "excluded": 64
+          "excluded": 65
         },
         "origination": {
           "offered": 12,
@@ -800,7 +809,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -827,6 +836,7 @@
           "VSXY",
           "KHC",
           "RELY",
+          "CBU",
           "INVX",
           "PRGS",
           "BANC",
@@ -838,18 +848,19 @@
           "ADUS",
           "SLB",
           "BKU",
-          "DLX",
           "KEY",
+          "DLX",
           "REXR",
           "SPG",
           "PII",
-          "LYV",
           "OGS",
-          "D",
+          "LYV",
           "BCC",
+          "D",
           "BILL",
           "SJM",
           "ADBE",
+          "KRG",
           "AYI",
           "UNF",
           "WFRD",
@@ -864,31 +875,30 @@
           "ADC",
           "MGY",
           "HAYW",
-          "NBIX",
           "BFS",
+          "NBIX",
           "ARLO",
           "RH",
           "EXP",
           "GIII",
           "HQY",
-          "BC",
           "TFX",
           "FND",
-          "BRX",
-          "ES",
+          "BC",
           "MGEE",
+          "ES",
           "GOLF",
           "ZBH",
           "AR",
           "EXE",
-          "EIX",
           "JJSF",
+          "EIX",
           "UDR",
           "NFG",
           "IRT",
           "ENOV",
-          "ATMU",
           "CRH",
+          "ATMU",
           "HSY",
           "HRL",
           "PCG",
@@ -901,21 +911,21 @@
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 76,
+          "offered": 77,
           "skipped_duplicate_id": 61,
           "skipped_open_plan": 5,
-          "skipped_clock_provenance": 10,
+          "skipped_clock_provenance": 11,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -930,6 +940,14 @@
             {
               "ticker": "KHC",
               "id": "KHC-BULL-20261021",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+              ]
+            },
+            {
+              "ticker": "CBU",
+              "id": "CBU-BULL-20261021",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
@@ -1001,7 +1019,7 @@
             }
           ],
           "originated": 0,
-          "validation_failed": 10
+          "validation_failed": 11
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -1014,36 +1032,34 @@
           "VSXY",
           "KHC",
           "RELY",
+          "CBU",
           "INVX",
           "PRGS",
           "BANC",
           "PKG",
-          "KNTK",
-          "TDS"
+          "KNTK"
         ],
-        "plan_ids": [
-          "TDS-BULL-20261021"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 76,
+          "admitted": 77,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 77,
+          "admitted_with_widening": 78,
           "buy_soon_in_board": 1,
           "buy_soon_admitted_by_widening": 1,
-          "buy_soon_selected": 1,
+          "buy_soon_selected": 0,
           "widening": "the status-class gate is relaxed for buy_soon rows only; tone, band, tier, entry-signal presence and the champion's own ordering stay the champion's"
         },
         "origination": {
           "offered": 12,
           "skipped_duplicate_id": 5,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 5,
+          "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-25",
+          "recorded_at": "2026-10-26",
           "price_basis_date": "2026-10-23",
           "clock_errors": [],
           "validation_failures": [
@@ -1058,6 +1074,14 @@
             {
               "ticker": "KHC",
               "id": "KHC-BULL-20261021",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
+              ]
+            },
+            {
+              "ticker": "CBU",
+              "id": "CBU-BULL-20261021",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-21' postdates tier_event_date '2026-10-19'"
@@ -1088,8 +1112,8 @@
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 5
+          "originated": 0,
+          "validation_failed": 6
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0

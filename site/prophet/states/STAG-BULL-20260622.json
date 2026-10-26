@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STAG-BULL-20260622",
-  "asof": "2026-10-24",
+  "asof": "2026-10-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.1,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 85.2,
     "progress": 0.0,
-    "pace": 4.7,
+    "pace": 2.0,
     "retention": 0.0,
     "overlay": 56.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.888,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 142.2,
+    "horizon_pct_used": 146.7,
     "p1": -0.0748,
     "p2": -0.0374,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 64,
-  "tau": 1.4222,
+  "days_elapsed": 66,
+  "tau": 1.4667,
   "closed": true,
   "outcome": "EXPIRED"
 }

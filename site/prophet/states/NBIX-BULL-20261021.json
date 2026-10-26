@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NBIX-BULL-20261021",
-  "asof": "2026-10-24",
+  "asof": "2026-10-26",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 68.4,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.354,
     "dist_to_t1_r": 1.146,
     "dist_to_t2_r": 2.646,
-    "horizon_pct_used": 6.7,
+    "horizon_pct_used": 11.1,
     "p1": 0.2359,
     "p2": 0.118,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 3,
-  "tau": 0.0667
+  "days_elapsed": 5,
+  "tau": 0.1111
 }
