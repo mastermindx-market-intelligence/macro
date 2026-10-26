@@ -161,7 +161,7 @@ def content_address_png(png: bytes, output_dir: Path) -> tuple[str, str, int, in
     return name, digest, int(width), int(height)
 
 
-def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
+def fixture_vm(*, stretched: dict[str, str] | None = None, scenario: str | None = None) -> dict:
     """Current-shaped commodities VM. Sparse trees have no data/; this is the
     W6 r2 page-test idiom (test_hero_current_shaped_board_is_selective), not a
     live bake. Pass `stretched` to pin a larger counted set (n_top=9 crop).
@@ -176,6 +176,7 @@ def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
         _chg_tone,
         _conf_action,
         _heat_cell,
+        _mtf_grade_plain,
         _plain_cycle,
         _plain_cycle_state,
         _sync_read,
@@ -183,6 +184,8 @@ def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
         sector_stance,
     )
 
+    if scenario not in (None, "r1-mixed", "r1-incomplete", "r1-gold-conflict"):
+        raise ValueError("unknown commodity evidence scenario")
     stretched_map = dict(_STRETCHED if stretched is None else stretched)
     names = [n for _k, _e, _z, ns in _GRID_GROUPS for n in ns]
     members = []
@@ -297,7 +300,8 @@ def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
         },
         "index": {
             "ew": 412, "chg_1m_pct": 2.4, "ts_trend": "up",
-            "mtf_en": "Go with the trend", "mtf_zh": "顺势而为",
+            "mtf_en": _mtf_grade_plain("TREND-FOLLOW")[0],
+            "mtf_zh": _mtf_grade_plain("TREND-FOLLOW")[1],
             "velocity_20": 0.4, "shock_state": "normal",
             "shock_en": "—", "shock_zh": "—", "benchmarks": {},
         },
@@ -345,7 +349,7 @@ def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
              "detail_zh": "冲击 z 值进入喷发区间。"},
         ],
     }]
-    return {
+    context = {
         "vm": vm, "assets": assets, "complex": complex_vm,
         "catalysts": catalysts, "timeline": timeline,
         "as_of": "Sep 10, 2026", "built": "2026-09-10 12:00 UTC",
@@ -356,6 +360,39 @@ def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
         "conviction_labels": CONVICTION_LABELS,
         "order": ["gold", "silver", "copper", "oil"],
     }
+    if scenario:
+        context["as_of"] = "Synthetic R1 fixture"
+        context["built"] = "Synthetic R1 fixture — not market data"
+        breadth.update(n_up_trend=13, n_bull_momentum=8, n_low_risk=4,
+                       trend_diversity=0.8)
+        vm["breadth"].update(breadth)
+        vm["breadth"].update(_sync_read(0.8))
+        vm["stance"] = sector_stance(conf, breadth, index_shock="normal")
+    if scenario == "r1-incomplete":
+        vm["stance"] = sector_stance({}, breadth)
+        vm["index"].update(shock_state=None, shock_en=None, shock_zh=None)
+    elif scenario == "r1-gold-conflict":
+        from engine.commodity_mtf import confluence_verdict
+        tf = {
+            key: {"macd_pos": key not in {"D", "3D"},
+                  "macd_cross_dn": key in {"D", "3D"},
+                  "rsi14": 40 if key in {"D", "3D"} else 60}
+            for key in ("D", "3D", "W", "2W", "ME")
+        }
+        analysis = {"mtf": tf, "ladder": {"regime": "bull", "state": "RALLY ON"}, "cycle": {}}
+        gold = next(row for row in detail if row["name"] == "gold")
+        gold["verdict"] = confluence_verdict(analysis, "gold")
+        names_tf = [("D", "Daily", "日线"), ("3D", "3-Day", "3日"),
+                    ("W", "Weekly", "周线"), ("2W", "Biweekly", "双周"),
+                    ("ME", "Monthly", "月线")]
+        gold["mtf_rows"] = [
+            {"key": key, "label": en, "label_zh": zh,
+             "rsi14": tf[key]["rsi14"], "rsi5": None, "stoch": None,
+             "macd": "dn" if key in {"D", "3D"} else "pos",
+             "trend": "down" if key in {"D", "3D"} else "up"}
+            for key, en, zh in names_tf
+        ]
+    return context
 
 
 def render_page(ctx: dict | None = None) -> str:
@@ -401,6 +438,10 @@ def write_fixture_site(scratch: Path) -> None:
     (scratch / "commodities_w6_ntop9.html").write_text(
         render_page(fixture_vm(stretched=_STRETCHED_NINE)), encoding="utf-8"
     )
+
+    for scenario in ("r1-mixed", "r1-incomplete", "r1-gold-conflict"):
+        (scratch / f"commodities_{scenario}.html").write_text(
+            render_page(fixture_vm(scenario=scenario)), encoding="utf-8")
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:
@@ -488,6 +529,20 @@ def _new_page(browser, *, width, height, locale, theme, touch=False):
     return context, page
 
 
+
+def assert_document_fits(geometry: dict) -> None:
+    """Reject clipped/unknown browser evidence; one-pixel rounding is tolerated."""
+    import math
+    width, scroll = geometry.get("width"), geometry.get("scroll")
+    # A mobile browser can widen its layout viewport to fit overflowing content.
+    # Compare against the requested viewport, not that already-expanded width.
+    requested = geometry.get("viewport_width", width)
+    if any(isinstance(v, bool) or not isinstance(v, (int, float))
+           or not math.isfinite(v) for v in (width, scroll, requested)):
+        raise ValueError("document geometry unavailable")
+    if requested <= 0 or width <= 0 or scroll < 0 or abs(width - requested) > 1 or scroll > requested + 1:
+        raise ValueError(f"document viewport mismatch: layout={width}px, scroll={scroll}px, requested={requested}px")
+
 def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
 
@@ -563,6 +618,15 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     _matrix("h-hero-ntop9-tip", clip_sels=[".hero", ".lens-pop"],
             action="open-hero-tip", full_viewport=False,
             html="commodities_w6_ntop9.html")
+    _matrix("r1-mixed-hero", clip_sels=None, action=None, full_viewport=True,
+            html="commodities_r1-mixed.html")
+    _matrix("r1-incomplete-hero", clip_sels=None, action=None, full_viewport=True,
+            html="commodities_r1-incomplete.html")
+    _matrix("r1-gold-conflict", clip_sels=['.dpanel[data-detpanel="gold"]'],
+            action="open-gold", full_viewport=False,
+            html="commodities_r1-gold-conflict.html")
+    _matrix("r1-risk-board", clip_sels=[".board"], action="scroll-risk-board",
+            full_viewport=False, html="commodities_r1-mixed.html")
     if subjects:
         jobs = [j for j in jobs if j["subject"] in subjects]
 
@@ -671,6 +735,11 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                         page.locator('.dtab[data-det="oil"]').click()
                         page.wait_for_timeout(80)
                         page.locator('.dpanel[data-detpanel="oil"]').first.scroll_into_view_if_needed()
+                    elif action == "open-gold":
+                        page.locator('.dtab[data-det="gold"]').click()
+                        page.locator('.dpanel[data-detpanel="gold"]').first.scroll_into_view_if_needed()
+                    elif action == "scroll-risk-board":
+                        page.locator(".board").first.scroll_into_view_if_needed()
                     elif action == "scroll-catalysts":
                         page.locator(".cat-list").first.scroll_into_view_if_needed()
                     elif action == "scroll-timeline":
@@ -794,6 +863,10 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                             clip_sels = None
                             job["_direct_clip"] = box
                     overlay = page.evaluate(_OVERLAY_PROBE.strip()) or []
+                    geometry = page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})")
+                    geometry["viewport_width"] = job["width"]
+                    entry["document_geometry"] = geometry
+                    assert_document_fits(geometry)
                     if job.get("_direct_clip"):
                         png = page.screenshot(type="png", clip=job["_direct_clip"])
                     elif job.get("full_viewport"):
@@ -839,7 +912,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
             for subject, states in by_subject.items():
                 pages.append({
                     "page_id": f"commodities.html#{subject}",
-                    "route": "/commodities_w6.html",
+                    "route": "/" + next(j["html"] for j in jobs if j["subject"] == subject),
                     "registry_route": "/commodities.html",
                     "route_kind": "commodities_w6_subject",
                     "subject": subject,
@@ -860,7 +933,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_commodities_w6_evidence.py",
-            "version": "w6-r5-element",
+            "version": "w6-r1-guidance-and-geometry",
             "capture_method": (
                 "playwright viewport/clip screenshot on a fixture-rendered "
                 "commodities.html.j2 (page CSS + _state_inks + _vector_polish + "
@@ -903,8 +976,8 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
             "authority": "this tool screenshots; it scores nothing",
             "page": (
                 "commodities.html.j2 rendered with a current-shaped fixture VM "
-                "(3 of 17 stretched → In favour; names on LENS tip). "
-                "n_top=9 crop uses commodities_w6_ntop9.html. No data/ reads. "
+                "(3 of 17 stretched → Mixed conditions; names on LENS tip). "
+                "n_top=9 crop uses commodities_w6_ntop9.html. R1 scenarios explicitly use synthetic breadth, missing data, and gold timeframe disagreement. No data/ reads. "
                 "Omitted vs live: "
                 "_site_nav chrome, live.js quote hydration, oil-episode banner, "
                 "coverage matrix, Inter webfonts (system fallback). "
