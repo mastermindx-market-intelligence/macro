@@ -27,6 +27,29 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  stock-identity-method-projection:
+    if: ${{ false }}  # executed inside the ordinary PR code pack
+    gate: code
+    scope: exclusive
+    paths:
+      - engine/__init__.py
+      - engine/stock_identity/__init__.py
+      - engine/stock_identity/authority.py
+      - engine/stock_identity/replay/__init__.py
+      - engine/stock_identity/replay/method_projection.py
+      - tests/__init__.py
+      - tests/test_stock_identity_method_projection.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: outcome-free registered method projection
+        run: python -m pytest tests/test_stock_identity_method_projection.py -q
   options-r1-sector-holdings-coverage:
     # Options R1 W2B: sector holdings coverage emitter — separate denominators, unknown total stays null, Terminal contract, additive hook.
     # scope: exclusive — the suite reads scripts/build_sector_central.py as text and imports it (the additive hook
