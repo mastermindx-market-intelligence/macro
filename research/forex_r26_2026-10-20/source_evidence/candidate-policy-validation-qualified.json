@@ -1,0 +1,26 @@
+{
+  "schema": "forex.r26.candidate-policy-validation.v1",
+  "base": "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+  "started_at_utc": "2026-10-22T08:25:45.173353+00:00",
+  "elapsed_seconds": 5.459,
+  "exit_code": 0,
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_tiingo_forex_source.py",
+    "-q",
+    "--disable-warnings"
+  ],
+  "before_sha256": {
+    "lib/dataos/tiingo_forex.py": "f3e3849f91bc677a3de641f1affee292549f39902a97668a0ddddaf978647afa",
+    "tests/test_tiingo_forex_source.py": "65d9f8f373311e76288329ae49fd8f1d83d7a6c5ea5fd5d661c75a04e9fced3b"
+  },
+  "after_sha256": {
+    "lib/dataos/tiingo_forex.py": "f3e3849f91bc677a3de641f1affee292549f39902a97668a0ddddaf978647afa",
+    "tests/test_tiingo_forex_source.py": "65d9f8f373311e76288329ae49fd8f1d83d7a6c5ea5fd5d661c75a04e9fced3b"
+  },
+  "stdout": "........................................................................ [ 56%]\n........................................................                 [100%]\n128 passed, 14 warnings in 4.26s\n",
+  "stderr": "",
+  "command_metadata_note": "Exact invocation corrected from the execution script; results and hashes unchanged."
+}

@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-10-25",
-  "generated_utc": "2026-10-25T00:40:29.497410+00:00",
+  "generated_utc": "2026-10-25T13:44:40.869237+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -20,8 +20,8 @@
     "open": 24,
     "note": "6 scored, hit-rate 0.833 (directional accuracy 0.833). Sample is tiny \u2014 treat conviction as provisional and lean low."
   },
-  "n_signals": 74,
-  "n_broken": 41,
+  "n_signals": 75,
+  "n_broken": 42,
   "signals": [
     {
       "ticker": "IBM",
@@ -648,6 +648,36 @@
       "clamped": null
     },
     {
+      "ticker": "SNAP",
+      "signal_score": 37,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.85,
+      "convergence_score": 3,
+      "channels": [
+        "activist_13d",
+        "app_demand",
+        "cnbc_pick"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 32.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -30.3,
+      "ret_20d": 17.0,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "BMY",
       "signal_score": 36,
       "conviction": "medium",
@@ -956,35 +986,6 @@
       "rolling_over": false,
       "off_high_252": 0.0,
       "ret_20d": 33.1,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "NOW",
-      "signal_score": 32,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.7,
-      "convergence_score": 2,
-      "channels": [
-        "special_situation",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 32.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -17.0,
-      "ret_20d": 13.9,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
@@ -1330,6 +1331,36 @@
       "clamped": null
     },
     {
+      "ticker": "GM",
+      "signal_score": 41,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.45,
+      "convergence_score": 3,
+      "channels": [
+        "cnbc_pick",
+        "gov_contract_accel",
+        "lobbying"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -16.7,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -15.8,
+      "ret_20d": -8.1,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "GOOGL",
       "signal_score": 40,
       "conviction": "medium",
@@ -1402,35 +1433,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "GM",
-      "signal_score": 33,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.2,
-      "convergence_score": 2,
-      "channels": [
-        "gov_contract_accel",
-        "lobbying"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -16.7,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -15.8,
-      "ret_20d": -8.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -2050,6 +2052,35 @@
       "clamped": null
     },
     {
+      "ticker": "DELL",
+      "signal_score": 18,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.45,
+      "convergence_score": 2,
+      "channels": [
+        "activist_13d",
+        "cnbc_pick"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 10.2,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -22.3,
+      "ret_20d": -18.8,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "LULU",
       "signal_score": 18,
       "conviction": "medium",
@@ -2079,45 +2110,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "ASML",
-      "signal_score": 18,
-      "conviction": "low",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.5,
-      "convergence_score": 1,
-      "channels": [
-        "affiliation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -7.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -20.9,
-      "ret_20d": -9.9,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Ro Khanna",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Michael McCaul",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        }
-      ],
-      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
