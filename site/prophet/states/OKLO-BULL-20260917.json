@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OKLO-BULL-20260917",
-  "asof": "2026-10-26",
+  "asof": "2026-10-27",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.6,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -2.05,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 44.4,
+    "horizon_pct_used": 46.7,
     "p1": -2.0333,
     "p2": -1.0167,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 20,
-  "tau": 0.4444
+  "days_elapsed": 21,
+  "tau": 0.4667
 }

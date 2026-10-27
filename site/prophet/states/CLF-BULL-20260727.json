@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CLF-BULL-20260727",
-  "asof": "2026-10-26",
+  "asof": "2026-10-27",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.6,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.606,
     "dist_to_t1_r": 0.894,
     "dist_to_t2_r": 2.394,
-    "horizon_pct_used": 193.3,
+    "horizon_pct_used": 195.6,
     "p1": 0.4037,
     "p2": 0.2019,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 87,
-  "tau": 1.9333,
+  "days_elapsed": 88,
+  "tau": 1.9556,
   "closed": true,
   "outcome": "EXPIRED"
 }

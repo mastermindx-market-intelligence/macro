@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PBH-BULL-20260925",
-  "asof": "2026-10-26",
+  "asof": "2026-10-27",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 60.7,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 50.3,
-    "pace": 43.1,
+    "pace": 41.4,
     "retention": 60.8,
     "overlay": 53.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.726,
     "dist_to_t1_r": 0.774,
     "dist_to_t2_r": 2.274,
-    "horizon_pct_used": 68.9,
+    "horizon_pct_used": 71.1,
     "p1": 0.4837,
     "p2": 0.2419,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": "2026-10-20",
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889,
+  "days_elapsed": 32,
+  "tau": 0.7111,
   "closed": true,
   "outcome": "INVALIDATED"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WHR-BULL-20260609",
-  "asof": "2026-10-26",
+  "asof": "2026-10-27",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.8,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -3.992,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 124.4,
+    "horizon_pct_used": 126.7,
     "p1": -3.3281,
     "p2": -1.6641,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 56,
-  "tau": 1.2444,
+  "days_elapsed": 57,
+  "tau": 1.2667,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

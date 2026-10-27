@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TGTX-BULL-20260611",
-  "asof": "2026-10-26",
+  "asof": "2026-10-27",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.9,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.211,
     "dist_to_t1_r": 1.289,
     "dist_to_t2_r": 2.789,
-    "horizon_pct_used": 155.6,
+    "horizon_pct_used": 157.8,
     "p1": 0.1408,
     "p2": 0.0704,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 70,
-  "tau": 1.5556,
+  "days_elapsed": 71,
+  "tau": 1.5778,
   "closed": true,
   "outcome": "EXPIRED"
 }
