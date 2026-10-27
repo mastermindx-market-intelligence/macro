@@ -1,8 +1,8 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-10-26T06:28:47.347063+00:00",
+  "generated_at": "2026-10-27T07:40:28.241417+00:00",
   "base": {
-    "sha": "ac2a76ed47177d655df90e21a1b2dc47ba95126b"
+    "sha": "2120c48d1639debde183e4d6b48e8f131393c34b"
   },
   "merged_days": 14,
   "merged_truncated": true,
@@ -315,8 +315,8 @@
       "head_ref": "sol/metabolism-gc-blobless-fetch-20261024-c1",
       "updated_at": "2026-10-24T17:50:50Z",
       "is_draft": true,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
+      "merge_state": "BLOCKED",
+      "merge_state_raw": "BLOCKED",
       "files_count": 2,
       "files_truncated": false,
       "files_error": false,
