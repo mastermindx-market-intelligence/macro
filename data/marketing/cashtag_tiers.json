@@ -2,7 +2,7 @@
   "schema": "marketing.cashtag_tiers/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-10-24T21:06:16Z",
+  "produced_at": "2026-10-25T09:14:36Z",
   "tier": "display",
   "as_of": "2026-10-23",
   "universe_n": 2715,
@@ -33524,10 +33524,10 @@
         "pct_1d": 2.599798725259994,
         "pct_1w": null,
         "earnings_in_days": null,
-        "dollar_vol_musd": 73.04325254999999,
+        "dollar_vol_musd": 79.38468509,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
-        "adv20_musd": 73.04325254999999,
+        "adv20_musd": 79.38468509,
         "in_index_universe": false
       }
     },

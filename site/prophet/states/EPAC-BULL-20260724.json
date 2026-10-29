@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EPAC-BULL-20260724",
-  "asof": "2026-10-24",
+  "asof": "2026-10-27",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.3,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.863,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
+    "horizon_pct_used": 197.8,
     "p1": -0.0912,
     "p2": -0.0456,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 89,
+  "tau": 1.9778,
   "closed": true,
   "outcome": "EXPIRED"
 }

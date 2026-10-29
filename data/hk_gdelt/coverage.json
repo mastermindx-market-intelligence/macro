@@ -1,43 +1,44 @@
 {
   "alibaba": {
-    "date": "2026-10-24",
-    "rows": 74,
-    "status": "ok",
-    "ticker": "9988.HK"
+    "date": "2026-10-26",
+    "rows": 0,
+    "status": "empty"
   },
   "tencent": {
-    "date": "2026-10-24",
+    "date": "2026-10-26",
     "rows": 0,
     "status": "empty"
   },
   "meituan": {
-    "date": "2026-10-24",
+    "date": "2026-10-26",
     "rows": 0,
     "status": "empty"
   },
   "xiaomi": {
-    "date": "2026-10-24",
+    "date": "2026-10-26",
     "rows": 0,
     "status": "empty"
   },
   "baidu": {
-    "date": "2026-10-24",
+    "date": "2026-10-26",
     "rows": 0,
     "status": "empty"
   },
   "jdcom": {
-    "date": "2026-10-24",
+    "date": "2026-10-26",
     "rows": 0,
     "status": "empty"
   },
   "kuaishou": {
-    "date": "2026-10-24",
-    "rows": 0,
-    "status": "empty"
+    "date": "2026-10-26",
+    "rows": 74,
+    "status": "ok",
+    "ticker": "1024.HK"
   },
   "smic": {
-    "date": "2026-10-24",
-    "rows": 0,
-    "status": "empty"
+    "date": "2026-10-26",
+    "rows": 74,
+    "status": "ok",
+    "ticker": "0981.HK"
   }
 }

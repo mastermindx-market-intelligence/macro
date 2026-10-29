@@ -466,15 +466,25 @@
     },
     "russell_breadth": {
       "status": "split",
-      "split_tickers": 1,
-      "noise_tickers": 89,
+      "split_tickers": 2,
+      "noise_tickers": 91,
       "findings": [
+        {
+          "ticker": "ELME",
+          "verdict": "split",
+          "bad_bars": 519,
+          "bars": 519,
+          "bad_share": 1.0,
+          "worst_excess": 58.000129,
+          "worst_date": "2025-02-20",
+          "inverted_bars": 0
+        },
         {
           "ticker": "ETD",
           "verdict": "split",
           "bad_bars": 467,
-          "bars": 519,
-          "bad_share": 0.8998,
+          "bars": 524,
+          "bad_share": 0.8912,
           "worst_excess": 0.169815,
           "worst_date": "2025-11-12",
           "inverted_bars": 0
@@ -543,8 +553,8 @@
           "ticker": "ARR",
           "verdict": "noise",
           "bad_bars": 2,
-          "bars": 524,
-          "bad_share": 0.0038,
+          "bars": 519,
+          "bad_share": 0.0039,
           "worst_excess": 0.017252,
           "worst_date": "2026-09-17",
           "inverted_bars": 0
@@ -573,7 +583,7 @@
           "ticker": "FLNG",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 519,
+          "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.013093,
           "worst_date": "2026-08-04",
@@ -613,8 +623,8 @@
           "ticker": "FIBK",
           "verdict": "noise",
           "bad_bars": 2,
-          "bars": 524,
-          "bad_share": 0.0038,
+          "bars": 519,
+          "bad_share": 0.0039,
           "worst_excess": 0.011822,
           "worst_date": "2026-07-06",
           "inverted_bars": 0
@@ -713,8 +723,8 @@
           "ticker": "NECB",
           "verdict": "noise",
           "bad_bars": 2,
-          "bars": 519,
-          "bad_share": 0.0039,
+          "bars": 524,
+          "bad_share": 0.0038,
           "worst_excess": 0.008464,
           "worst_date": "2026-09-15",
           "inverted_bars": 0
@@ -813,7 +823,7 @@
           "ticker": "IMMR",
           "verdict": "noise",
           "bad_bars": 1,
-          "bars": 519,
+          "bars": 524,
           "bad_share": 0.0019,
           "worst_excess": 0.006411,
           "worst_date": "2026-09-18",
@@ -880,6 +890,16 @@
           "inverted_bars": 0
         },
         {
+          "ticker": "APOG",
+          "verdict": "noise",
+          "bad_bars": 2,
+          "bars": 519,
+          "bad_share": 0.0039,
+          "worst_excess": 0.005394,
+          "worst_date": "2026-10-01",
+          "inverted_bars": 0
+        },
+        {
           "ticker": "KRG",
           "verdict": "noise",
           "bad_bars": 2,
@@ -940,33 +960,13 @@
           "inverted_bars": 0
         },
         {
-          "ticker": "RPC",
+          "ticker": "WDFC",
           "verdict": "noise",
-          "bad_bars": 1,
-          "bars": 524,
-          "bad_share": 0.0019,
-          "worst_excess": 0.003529,
-          "worst_date": "2026-08-04",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "OBK",
-          "verdict": "noise",
-          "bad_bars": 1,
-          "bars": 524,
-          "bad_share": 0.0019,
-          "worst_excess": 0.003332,
-          "worst_date": "2026-07-21",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "DLX",
-          "verdict": "noise",
-          "bad_bars": 1,
-          "bars": 524,
-          "bad_share": 0.0019,
-          "worst_excess": 0.003198,
-          "worst_date": "2026-07-21",
+          "bad_bars": 6,
+          "bars": 519,
+          "bad_share": 0.0116,
+          "worst_excess": 0.003612,
+          "worst_date": "2026-09-25",
           "inverted_bars": 0
         }
       ]
@@ -1269,7 +1269,7 @@
       ]
     }
   },
-  "splits": 2,
+  "splits": 3,
   "status": "split",
-  "noise_tickers": 162
+  "noise_tickers": 164
 }
