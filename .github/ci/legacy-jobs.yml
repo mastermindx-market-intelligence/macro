@@ -56,6 +56,9 @@ jobs:
       - lib/config.py
       - lib/nyse_calendar.py
       - lib/store.py
+      - site/anticipationdata/us_leader_pullback.json
+      - site/basketdata/us_basket_turn.json
+      - site/factordata/basket_washout_state.json
       - tests/__init__.py
       - tests/test_stock_identity_input_boundaries.py
       - tests/test_stock_identity_method_projection.py
