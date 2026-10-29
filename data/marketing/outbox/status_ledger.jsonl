@@ -12055,3 +12055,4 @@
 {"id":"ob-2026-10-29-d40cc2529c","from":"approved","to":"quarantined","at":"2026-10-29T00:15:39Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.83) of ob-2026-10-29-c75f45fdf0 posted today; same template, different ticker","receipt":null}
 {"id":"ob-2026-10-29-fc91676805","from":"approved","to":"posting","at":"2026-10-29T00:15:39Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-29-fc91676805","from":"posting","to":"posted","at":"2026-10-29T00:15:40Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae2902b7d94db46db25efea","external_url":null,"at":"2026-10-29T00:15:32Z","booked_at":"2026-10-29T00:15:32Z"}}
+{"id":"ob-2026-10-29-ba8a7492c4","from":"queued","to":"quarantined","at":"2026-10-29T01:49:29Z","actor":"approval-desk","note":"approval-desk: session_language: today_word_off_session:today's; today_word_off_session:today","receipt":null}
