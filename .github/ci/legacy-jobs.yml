@@ -9284,6 +9284,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -18129,6 +18130,7 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -18326,6 +18328,7 @@ jobs:
     # site/** and data/** edits otherwise do not select it, because they cannot
     # move its verdict.
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -19020,6 +19023,7 @@ jobs:
     # builder-shim job added unrelated selection weight to every page builder.
     # The incumbent context-bus suite keeps its existing owner above.
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -19672,6 +19676,7 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "lib/cn_calendar.py"
@@ -25774,6 +25779,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -26943,6 +26949,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "engine/entry_radar/__init__.py"
