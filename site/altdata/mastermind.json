@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-10-25",
-  "generated_utc": "2026-10-25T02:07:13.207440+00:00",
+  "as_of": "2026-10-26",
+  "generated_utc": "2026-10-26T04:33:41.525587+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -20,8 +20,8 @@
     "open": 24,
     "note": "6 scored, hit-rate 0.833 (directional accuracy 0.833). Sample is tiny \u2014 treat conviction as provisional and lean low."
   },
-  "n_signals": 74,
-  "n_broken": 41,
+  "n_signals": 76,
+  "n_broken": 42,
   "signals": [
     {
       "ticker": "IBM",
@@ -263,42 +263,30 @@
       "clamped": null
     },
     {
-      "ticker": "PLTR",
-      "signal_score": 53,
-      "conviction": "high",
+      "ticker": "A",
+      "signal_score": 49,
+      "conviction": "medium",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.7,
-      "convergence_score": 4,
+      "weighted_score": 1.3,
+      "convergence_score": 3,
       "channels": [
-        "affiliation",
         "gov_contract_accel",
-        "retail_buzz",
-        "stocktwits_bull"
+        "news_sentiment",
+        "special_situation"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 58.2,
+      "rs_vs_spy_60d": 22.2,
       "no_price_data": false,
-      "extended": true,
+      "extended": false,
       "rolling_over": false,
-      "off_high_252": -5.9,
-      "ret_20d": 3.7,
+      "off_high_252": -2.6,
+      "ret_20d": 0.3,
       "above_50dma": true,
       "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Marjorie Taylor Greene",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 2,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -538,29 +526,42 @@
       "clamped": null
     },
     {
-      "ticker": "BAH",
+      "ticker": "PLTR",
       "signal_score": 39,
-      "conviction": "medium",
+      "conviction": "high",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.1,
-      "convergence_score": 2,
+      "weighted_score": 1.25,
+      "convergence_score": 4,
       "channels": [
-        "gov_contract_accel",
-        "special_situation"
+        "affiliation",
+        "gov_contract",
+        "retail_buzz",
+        "stocktwits_bull"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 12.8,
+      "rs_vs_spy_60d": 58.2,
       "no_price_data": false,
-      "extended": false,
+      "extended": true,
       "rolling_over": false,
-      "off_high_252": -21.6,
-      "ret_20d": 7.4,
+      "off_high_252": -5.9,
+      "ret_20d": 3.7,
       "above_50dma": true,
-      "entry_tier": "T1",
-      "affiliations": [],
-      "n_affiliated_actors": 0,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Marjorie Taylor Greene",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -639,6 +640,36 @@
       "off_high_252": -6.6,
       "ret_20d": -2.4,
       "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "SNAP",
+      "signal_score": 37,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.85,
+      "convergence_score": 3,
+      "channels": [
+        "activist_13d",
+        "app_demand",
+        "cnbc_pick"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 32.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -30.3,
+      "ret_20d": 17.0,
+      "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
@@ -966,35 +997,6 @@
       "clamped": null
     },
     {
-      "ticker": "NOW",
-      "signal_score": 32,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.7,
-      "convergence_score": 2,
-      "channels": [
-        "special_situation",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 32.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -17.0,
-      "ret_20d": 13.9,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "REBN",
       "signal_score": 31,
       "conviction": "medium",
@@ -1113,44 +1115,6 @@
   ],
   "broken_signals": [
     {
-      "ticker": "BA",
-      "signal_score": 55,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.85,
-      "convergence_score": 5,
-      "channels": [
-        "affiliation",
-        "gov_grant",
-        "lobbying",
-        "patent_cluster",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -17.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -25.3,
-      "ret_20d": -4.9,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Jim Cramer",
-          "rel": "ENDORSES",
-          "kind": "influencer"
-        }
-      ],
-      "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "HUBB",
       "signal_score": 52,
       "conviction": "high",
@@ -1258,6 +1222,43 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "BA",
+      "signal_score": 46,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.55,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "gov_grant",
+        "patent_cluster",
+        "stocktwits_bull"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -17.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -25.3,
+      "ret_20d": -4.9,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Jim Cramer",
+          "rel": "ENDORSES",
+          "kind": "influencer"
+        }
+      ],
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1402,35 +1403,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "GM",
-      "signal_score": 33,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.2,
-      "convergence_score": 2,
-      "channels": [
-        "gov_contract_accel",
-        "lobbying"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -16.7,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -15.8,
-      "ret_20d": -8.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -2040,6 +2012,35 @@
       "rolling_over": true,
       "off_high_252": -48.1,
       "ret_20d": -9.5,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "DELL",
+      "signal_score": 18,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.45,
+      "convergence_score": 2,
+      "channels": [
+        "activist_13d",
+        "cnbc_pick"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 10.2,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -22.3,
+      "ret_20d": -18.8,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],

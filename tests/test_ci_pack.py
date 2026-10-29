@@ -5052,6 +5052,9 @@ CURATED_EXCLUSIVE = {
     # Synthetic OHLC delivery has an exact import/read closure; preserve every
     # packing ceiling and keep this new code gate off unrelated render probes.
     "ohlc-origin-delivery",
+    # Pure W3AR projection pins its complete import closure without selecting
+    # unrelated render probes or acquiring scientific execution authority.
+    "stock-identity-method-projection",
 }
 
 
