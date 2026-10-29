@@ -2124,6 +2124,12 @@
       return (S.upStep === "billing") ? viewBilling() : upgradeFreePlan(root);
     }
 
+    // A Pro lifetime grant already holds this access, even with a legacy monthly
+    // interval. Mirror the existing landing pricing and theme.js lifetime rule.
+    var lifetime = (tier === "unlimited" || S.me.source === "comp") &&
+                   !S.me.current_period_end && S.me.status !== "canceled";
+    if (tier === "pro" && lifetime) return upgradeBest(root);
+
     // paid tiers → lane cards
     var lanes = upgradeLanes(tier, interval);
     if (!lanes.length) return upgradeBest(root);   // pro-annual / unlimited
