@@ -1372,6 +1372,17 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "engine/options_statistics.py"
       - "engine/options_statistics_state.py"
       - "tests/test_options_statistics.py"
@@ -9296,6 +9307,21 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "engine/intl_global_universe.py"
@@ -18144,6 +18170,20 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - engine/__init__.py
@@ -18328,6 +18368,10 @@ jobs:
     # site/** and data/** edits otherwise do not select it, because they cannot
     # move its verdict.
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
       - "templates/**"
       - "engine/**"
       - "lib/**"
@@ -19019,6 +19063,20 @@ jobs:
     # builder-shim job added unrelated selection weight to every page builder.
     # The incumbent context-bus suite keeps its existing owner above.
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/forex*.py
       - engine/neuralweb/mastermind_context.py
       - lib/forex*.py
@@ -19658,6 +19716,17 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -25750,6 +25819,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - ".github/workflows/daily.yml"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -26906,6 +26989,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -35328,6 +35414,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -38817,6 +38904,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/neuralweb/market_memory_history_transcripts.py
       - tests/test_market_memory_history_transcripts.py
       - collectors/__init__.py
@@ -38941,6 +39042,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - collectors/tiingo_archive.py
@@ -39065,6 +39180,17 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
