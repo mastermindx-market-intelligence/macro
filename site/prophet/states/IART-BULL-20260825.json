@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IART-BULL-20260825",
-  "asof": "2026-10-24",
+  "asof": "2026-10-27",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.8,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -15.267,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 133.3,
+    "horizon_pct_used": 140.0,
     "p1": -10.8444,
     "p2": -5.4222,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333,
+  "days_elapsed": 63,
+  "tau": 1.4,
   "closed": true,
   "outcome": "INVALIDATED"
 }

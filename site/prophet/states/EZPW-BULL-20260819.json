@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EZPW-BULL-20260819",
-  "asof": "2026-10-24",
+  "asof": "2026-10-27",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 45.1,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.964,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 146.7,
+    "horizon_pct_used": 153.3,
     "p1": -0.0243,
     "p2": -0.0121,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": "2026-08-21",
   "_first_t2_ts": "2026-08-24",
-  "days_elapsed": 66,
-  "tau": 1.4667,
+  "days_elapsed": 69,
+  "tau": 1.5333,
   "closed": true,
   "outcome": "T1_HIT"
 }
