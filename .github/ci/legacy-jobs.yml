@@ -32,6 +32,19 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/base.py
+      - collectors/yahoo.py
+      - config/delisted_symbols.yml
+      - lib/cn_calendar.py
+      - lib/delisted_symbols.py
+      - lib/exchange_holidays.py
+      - lib/hk_calendar.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/stooq.py
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
       - engine/__init__.py
       - engine/canon.py
       - engine/conditions.py
