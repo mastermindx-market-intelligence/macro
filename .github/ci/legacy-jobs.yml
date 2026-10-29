@@ -10026,10 +10026,17 @@ jobs:
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+          )
+          PY
       - name: Actual International builder and template contracts
         run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: Actual DOM controller and page entry in Chromium
@@ -13562,6 +13569,16 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
