@@ -1,0 +1,46 @@
+{
+  "schema": "research.existing_refresh_characterization_receipt.v1",
+  "executed_at_utc": "2026-09-16T06:06:41.759769+00:00",
+  "python": "3.13.5",
+  "scope": "Two transcribed existing helper functions with synthetic well-formed inputs, controlled adapters and in-memory SQLite; not a production ingestion run.",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "e625ea15c3f511f6c5f445e28acb69df5c148d50",
+    "path": "engine/research_vault/ingest.py",
+    "upstream_git_blob": "d005c052ebb76c465d45818db0df8d0b3db79c00",
+    "functions": ["_refresh_sidecars", "_resync_corpus_summaries"],
+    "input_mode": "transcribed_source_excerpt",
+    "full_upstream_byte_match_verified": false,
+    "full_upstream_runner_mode_executed": false,
+    "constants": {"refresh_trigger": "summary_points", "lookback_days": 14, "cap": 500}
+  },
+  "case_count": 7,
+  "characterization_assertions": "PASS",
+  "cases": [
+    {"id": "missing_recent_summary_recovers", "sidecar_reads": 1, "refreshed": 1, "summaries": 1, "resynced": 0, "observed": "Catalog/corpus summary and ticker filled"},
+    {"id": "nonempty_summary_correction_not_fetched", "sidecar_reads": 0, "refreshed": 0, "summaries": 0, "resynced": 0, "observed": "Old populated summary retained"},
+    {"id": "late_entity_enrichment_behind_filled_summary", "sidecar_reads": 0, "refreshed": 0, "summaries": 0, "resynced": 0, "observed": "Ticker/tag/desk remain empty"},
+    {"id": "nonempty_catalog_corpus_divergence_not_resynced", "sidecar_reads": 0, "refreshed": 0, "summaries": 0, "resynced": 0, "observed": "Old populated corpus summary retained"},
+    {"id": "empty_corpus_summary_resynced_locally", "sidecar_reads": 0, "refreshed": 0, "summaries": 0, "resynced": 1, "observed": "Blank corpus summary filled from catalog even for older report"},
+    {"id": "old_missing_summary_outside_fill_window", "sidecar_reads": 0, "refreshed": 0, "summaries": 0, "resynced": 0, "observed": "Dated 20-day-old missing summary remains missing"},
+    {"id": "identity_is_not_changed_by_enrichment_refresh", "sidecar_reads": 1, "refreshed": 1, "summaries": 1, "resynced": 0, "observed": "Summary filled, original institution retained"}
+  ],
+  "controlled_dependencies": ["sidecar parse/normalization for well-formed fixtures", "summary serialization", "in-memory object store"],
+  "real_sqlite_exercised": true,
+  "fts_exercised": false,
+  "publication_exercised": false,
+  "pdf_processing_exercised": false,
+  "new_model_evaluation": false,
+  "new_original_source_admission": false,
+  "new_customer_journey_proof": false,
+  "previous_111_case_reference_rerun": false,
+  "planned_120_task_benchmark_run": false,
+  "local_artifact_sha256": {
+    "ingest_refresh_excerpt.py.txt": "08a4dc67794bb6e3a9262c127f024e0921c4d7d26609e2912b002ce7488ae35c",
+    "probe_refresh_boundary.py": "9522a004db0089308354abd29c530118502372c48889feee5fd3241a6508423e",
+    "refresh_boundary_results.json": "18f8d23e14370e8c619d9f11f65044a577fca0718224ce88ff1bc33af838dc3c",
+    "expanded_chunk6_report": "ed024745742f0cbf4ada3fd9ea670a5dca72d1b20557b914a12b6ac9a5bd996a"
+  },
+  "serialization_note": "This compact repository receipt and report preserve the observations/contract. They are not claimed byte-identical to the expanded local report or detailed local diagnostic JSON.",
+  "interpretation": "Observed expected boundaries of selected existing fill-only helpers, not proof of production incidents, all-system repair absence, new product functionality or successful deployment."
+}

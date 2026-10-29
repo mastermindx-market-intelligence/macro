@@ -1,0 +1,71 @@
+{
+  "schema": "research.client_context_review.r10.compact",
+  "status": "LOCAL_REVIEW_CANDIDATE_NOT_ADOPTED",
+  "procedure_commit": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+  "runtime_inspection_pin": "e729d0fd9d48868b49a1911d4098c689b3d373bd",
+  "recovered_head": "e62f39677466b0c342b750357b0e3aa10e13a708",
+  "stale_pr_body_head": "1b1543ff98a333d3c80ca465a54937f035859d59",
+  "r9_package_in_mounted_attachments": false,
+  "historical_r9_60_checks_rerun": false,
+  "selected_r9_blocks_sha256_verified": true,
+  "selected_baseline_sha256": {
+    "search_client_r9.js": "2460075492f450fda043f1ddd69b32a720d0e622b5bbe7880fde2bfb2325cf48",
+    "render_feed_r9.js": "b6d96b80ccab06226075318bbaade85bfe578aaad45fbfbd9b8678cca6caa686"
+  },
+  "selected_candidate_sha256": {
+    "search_client_r10.js": "01b29d4261def1168f735b79814a6aaa7e21e13e2453d222347e052ae47511f0",
+    "render_feed_r10.js": "ba1f242c38cbda8307da1583dbd5aca24912da73501c2c5d5ad603e1eb07e031"
+  },
+  "baseline_on_new_cases": {"total": 31, "passed": 16, "failed": 15},
+  "final_reproduction": {
+    "executed_at_utc": "2026-09-16T09:48:49.890Z",
+    "node": "v22.16.0",
+    "total": 31,
+    "passed": 31,
+    "failed": 0
+  },
+  "failure_families": [
+    "Scope changes rendered without launching a replacement request",
+    "A JSON null response confused with internal ignored-response control flow",
+    "A synchronous auth-helper exception outside the promise failure path"
+  ],
+  "mutations": [
+    {"name": "disconnect_render_reconciliation", "failed_assertions": 12, "rejected": true},
+    {"name": "confuse_wire_null_with_ignored_response", "failed_assertions": 2, "rejected": true},
+    {"name": "query_only_stale_guard", "failed_assertions": 2, "rejected": true},
+    {"name": "lose_synchronous_helper_capture", "failed_assertions": 1, "rejected": true},
+    {"name": "lose_same_scope_coalescing", "failed_assertions": 20, "rejected": true},
+    {"name": "widen_denied_response", "failed_assertions": 3, "rejected": true}
+  ],
+  "mutation_scope": "Direct local challenge in disposable copies; not independent review or extra passing cases",
+  "reproduction_guards": {
+    "modified_baseline_refused_before_output_creation": true,
+    "existing_output_directory_refused": true,
+    "counted_in_31_cases": false
+  },
+  "syntax_checks_passed": true,
+  "tested_runner_repository_readback": {
+    "commit": "9636eb0d1b1a5f8a7b268608287de0a9d56393a7",
+    "blobs": {
+      "r10/reproduce_r10.py": "e57b5cae43673eb29e6634629479e07311e908d1",
+      "r10/test_search_context.js": "fe76ee932c5186dea7531af29fce8c27c0aa4698",
+      "r10/mutation_review.py": "3cab2160640271ccb0a230f99d8882950be8a3af"
+    },
+    "all_match_tested_local_bytes": true
+  },
+  "scope": "Selected client and selected renderer with controlled timers, network, DOM, auth and synthetic records. Not a whole application or customer session.",
+  "full_runtime_client_or_api_byte_parity": false,
+  "actual_browser_cases": 0,
+  "actual_source_pdf_binding": false,
+  "source_use_rights_established": false,
+  "company_associations_built": false,
+  "owner_interface_or_writer_accepted": false,
+  "runtime_files_modified": false,
+  "production_proven": false,
+  "previous_111_cases_rerun": false,
+  "model_benchmark_run": false,
+  "native_host_calls": 0,
+  "previous_admin_or_native_block_retried": false,
+  "request_deadline_added": false,
+  "serialized_record_note": "Compact durable projection of the executed expanded local receipt; not claimed identical to its serialization. Full new harness and reproduction runner are committed beside this record."
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "research.source_discovery_bridge.r12",
+  "verified_at_utc": "2026-09-16T22:21:00.143364+00:00",
+  "status": "ISOLATED_REVIEW_PASS_NOT_PRODUCTION",
+  "tests": {"total": 32, "failures": 0, "errors": 0},
+  "mutations": [
+    {"mutation":"implicit_scope_escalation","exit_code":1,"summary":"failures=1","rejected":true},
+    {"mutation":"eligibility_after_budget","exit_code":1,"summary":"failures=1","rejected":true},
+    {"mutation":"body_version_unchecked","exit_code":1,"summary":"failures=1","rejected":true},
+    {"mutation":"source_pdf_hash_unchecked","exit_code":1,"summary":"failures=1","rejected":true},
+    {"mutation":"selection_generation_unchecked","exit_code":1,"summary":"failures=2","rejected":true},
+    {"mutation":"accounting_access_change_ignored","exit_code":1,"summary":"failures=1","rejected":true}
+  ],
+  "python":"3.13.5",
+  "sqlite":"3.46.1",
+  "reportlab":"4.4.9",
+  "pdftotext":"pdftotext version 25.06.0",
+  "source_identities": {
+    "baseline_corpus_git_blob":"0b035b34489a4efd2ae7a3c59d153b3d1977701a",
+    "pending_corpus_git_blob":"1bc0aacd46d8ec0ad25d3b53341040a3e6aa1af8",
+    "r9_patch_git_blob":"d9593533dad00251a97d0813f6598ea1fffb8236",
+    "review_composite_sha256":"58bfdaf91f1cb7f9a4f7e1f700bd90be3269fe9ea7d6cc156661a9a456b89d6f"
+  },
+  "demo": {
+    "source_pdf_sha256":"e5c73cf8c17917e421a34d2d90fe7a270fd053f7cca8b95c7fb1d254d1e35bfb",
+    "body_sha256":"dbe55b614bb249ade89ca31d2ff364dd2b2e4a5724402eeae65f40bb33356bfa",
+    "page":2,"old_selection_after_change":"selection_stale","meter_callback_calls":2
+  },
+  "source_and_version_integrity_measured":true,
+  "source_material":"entirely synthetic, programmatically created",
+  "actual_gateway_run":false,"actual_auth_or_ledger_run":false,
+  "original_institutional_source_admitted":false,"actual_browser_run":false,
+  "model_evaluation":false,"runtime_modified":false,
+  "limits":"Full corpus and incumbent selector executed; Brain/gateway adapter, permission and accounting remain controlled proposals.",
+  "code_sha256": {
+    "bridge.py":"4a3376301c711512a5d4d96c07a32e5d7091dafbb6df193f4bb232944e068929",
+    "demo.py":"0616bf687f52939c0924a2dcc97e1da18dea711cb17408c928a3df3d559f1430",
+    "fixtures.py":"756bcfa1b2c9036a570c0ce63391e3868b02a7d8b21c4f29f8efd656871e8df4",
+    "mutation_review.py":"3c3bf0e5c0addf4be3384640850370b970cf0d4a15b0cdae1b3716babed1d098",
+    "run_review.py":"098122659fcad6c25d34daee2ee992727db013dcb6b04b4030692e3be0800a95",
+    "test_bridge.py":"b63a88e73e834db52b0a08da25db0693c34f57ff591fd7246b9eddd5a713a657"
+  },
+  "procedure_commit":"5ee11ab1e993616f3568cfca4069cb21fa61fd8f",
+  "main_ref_observed":"89bdc314a0e096759553f669cc6483b34d89bf7b",
+  "incumbent_head":"8271ae320732997be4553957e3e2773d1b9e9f1b",
+  "research_start_head":"8e7ecadc009a514122adbc4dd742c89b0b6eea3a",
+  "initial_scaffold_red":{"cases":28,"failures":27,"meaning":"Unimplemented reference, not production regression count"},
+  "review_red":{"cases":32,"failures":1,"reason":"access changed during accounting"},
+  "visual_pdf_inspection":{"pages":2,"method":"local PDF render, not browser"},
+  "customer_capability":"SPEC_ONLY",
+  "serialization":"Compact repository projection of executed receipt; source/result values preserved, whitespace differs from package expanded JSON."
+}

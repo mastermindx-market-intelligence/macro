@@ -1,0 +1,89 @@
+{
+  "schema": "research_vault.capacity_study.r25.compact_repository",
+  "state": "SIMULATED_SENSITIVITY_NOT_PRODUCTION_PROOF",
+  "verified_on": "2026-09-19",
+  "main_pin": "a1334a1a6c154b9b49664ee892d9710742fc6018",
+  "allocator_blob": "1c5d6c024c6427a3c17dd7205043627f606fcc2a",
+  "backlog_blob": "2ca5ab89e3b7409abbb9765216e6eda484c680c3",
+  "profile": {"weekday":206.5,"weekend":85.2,"weekly":1202.9},
+  "method": {
+    "cap_per_account":70,
+    "rolling_minutes":1440,
+    "warmup_days":28,
+    "measured_days":28,
+    "arrival_days":70,
+    "seed_range_inclusive":[4101,4116],
+    "scenario_families":9,
+    "scenario_seed_combinations":129,
+    "account_counts":[1,2,3,4],
+    "simulation_cells":516,
+    "counting_warning":"Shared arrivals across account comparisons and reused baseline traces; not 516 independent observations.",
+    "selection":"Optimistic FIFO, NOT production value-first/new-window-first allocator.",
+    "distributions":"Poisson hourly counts; optional mean-one gamma daily-rate CV 0.15/0.35/0.60, all assumptions not fitted data.",
+    "downstream_processing_included":false,
+    "confidence_intervals_or_actual_SLA_claimed":false
+  },
+  "selected_results_pct_within_six_hours": [
+    {"scenario":"smooth_full_profile","three":100.0,"four":100.0},
+    {"scenario":"poisson_full_profile","three":98.64,"four":100.0},
+    {"scenario":"mild_variable_day_full_profile","three":85.04,"four":99.89},
+    {"scenario":"variable_day_full_profile","three":64.94,"four":96.61},
+    {"scenario":"high_variable_day_full_profile","three":52.23,"four":78.95},
+    {"scenario":"poisson_80pct_eligible","two":35.93,"three":100.0,"four":100.0},
+    {"scenario":"variable_day_80pct_eligible","two":21.04,"three":93.29,"four":99.64},
+    {"scenario":"poisson_full_12h_common_outage","three":89.90,"four":97.45},
+    {"scenario":"poisson_full_4min_spacing","three":98.64,"four":100.0}
+  ],
+  "selected_twenty_four_hour_results": {
+    "variable_day_full_profile_three":96.98,
+    "poisson_80pct_eligible_two":97.61
+  },
+  "outage_cohort": {
+    "local_hours":[5,17],
+    "three_and_four_within_six_hours_mean_pct":26.161624259241542,
+    "three_and_four_p95_delay_hours_mean":11.131822916666666,
+    "mean_added_delay_hours":7.709656130384934,
+    "four_whole_window_p95_hours_rounded":0.01,
+    "additional_independent_sample":false,
+    "instant_reopening_drain_is_optimistic_model_assumption":true
+  },
+  "verification": {
+    "unit_tests":16,"passed":16,"failures":0,
+    "oracle_sets_inside_one_test":100,
+    "all516_rows_and_aggregates_reproduced_with_publication_input_serialization":true,
+    "incident_cohort_replay_equal":true,
+    "selected_SQL_control":{"inventory_first":"older_high_score","runtime_new_tier_first":"fresh_lower_score","full_module_execution":false},
+    "product_tests":0,"language_model_calls":0,"real_downloads":0,
+    "prior_product_suites_rerun":false
+  },
+  "tested_git_blobs": {
+    "capacity_inputs.json":"7162f6e58f4189806b1b14c86581f7f51089b7be",
+    "rolling_capacity.py":"c9c11e317fec6a6f6e327cfbc694bc587a8f43d3",
+    "test_rolling_capacity.py":"3b674814992ce0e7a280bbdf4a5fae0d169e9452",
+    "outage_analysis.py":"ee95c68db1258e5adc5e47c49914b64570d5d7f5",
+    "selection_order_control.py":"d6bd74a7e54503abd952f17e1ab550a08fe5b9b7"
+  },
+  "full_local_output_sha256": {
+    "publication_results.json":"657aa0d2fe8444852486895c854d643742c014f09b19c3d6a05dd583d6f0f739",
+    "publication_outage.json":"cdb87ec4287e413c7b9341d36844b4ded44bf5016ffcd5a7ae3d3bb858c70922"
+  },
+  "original_operation": {
+    "device":"3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "candidate_worktree":"/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/rv-r23-producer-synthetic",
+    "registered_detached_head":"fd962aae6b25309d3b800f806d0d593f92694c9a",
+    "read_only_lookup_pid":91023,"lookup_exit":0,
+    "original_process_binding_verified":false,
+    "next_content_inspection":"BLOCKED_BY_TOOL before a process handle",
+    "state":"EFFECT_UNKNOWN_PRESERVED",
+    "retry_rehome_or_recreation":false
+  },
+  "release_and_access": {
+    "W2_PR":7230,"W2_head":"fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2",
+    "W2_CI":35320271015,"W2_CI_state":"queued",
+    "reader_PR":7079,"reader_head":"8271ae320732997be4553957e3e2773d1b9e9f1b",
+    "reader_state":"open draft unmerged","supabase_installed":false,
+    "runtime_modified":false,"purchase":false,"source_use_grant_established":false
+  },
+  "serialization_note":"Selected rounded repository projection; expanded local results and report have different serialization. Exact tested scripts and input are retained alongside this receipt.",
+  "interpretation":"Research sensitivity only. No live demand fit, acquisition completeness, actual latency, useful answer, customer conversion, model quality or incremental subscription ROI proved."
+}

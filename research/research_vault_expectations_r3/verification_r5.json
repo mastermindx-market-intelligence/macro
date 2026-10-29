@@ -1,0 +1,21 @@
+{
+  "schema": "offline_analyst_reference_assay.v1",
+  "executed_at_utc": "2026-09-16T05:26:54.008915+00:00",
+  "python": "3.13.5",
+  "tests_run": 111,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "success": true,
+  "scope": "Manual issuer and analyst research cases plus negative fixtures; no PDF/model/production tests.",
+  "original_source_pairs_bound": 0,
+  "authenticated_customer_journeys": 0,
+  "sha256": {
+    "revision_oracle.py": "e61825506b555d6a35e80fff9526e75c5672a4edd51f34f602c798907d1ed90b",
+    "test_revision_oracle.py": "a41ad9a559ee3bd1d1defd048c6c4310838cd5539a447be5a44008279811fecf",
+    "test_analyst_contract.py": "18c25ae4d58ec7014d352490aa292f00e5c4b2546412a1834d76ca7d4315963a",
+    "analyst_control_case.json": "b2d8aa5be94ec0875dc49b2d2cc65d5694866139d1e3c23b08fdbe408b117d89",
+    "public_control_case.json": "05915cffe856fb0f383f5bdc98d2dffddfaf7628d0633a14aa4fa107c8760e1b",
+    "run_analyst_assay.py": "5f4f3b4f52f01cb35a13d3455bd357cc4a88477df9967d495876fe07f0251b73"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "research_vault.strategy_economics.r24",
+  "state": "PLANNING_SENSITIVITY_NOT_OBSERVED_ROI",
+  "calculated_on": "2026-09-19",
+  "source_pin": "7babc6c17d50968683a0b7fc49323c103edf89da",
+  "allocator_blob": "1c5d6c024c6427a3c17dd7205043627f606fcc2a",
+  "inputs": {
+    "weekday_items": 206.5,
+    "weekend_items": 85.2,
+    "weekly_items": 1202.9,
+    "local_nominal_per_account_daily_cap": 70,
+    "advertised_monthly_usd_per_account": 150,
+    "intended_use_and_pooling_rights_established": false
+  },
+  "capacity": [
+    {"accounts": 1, "weekly_capacity": 490, "weekly_balance": -712.9, "weekday_spare": -136.5, "weekend_day_spare": -15.2, "monthly_subscription_usd": 150},
+    {"accounts": 2, "weekly_capacity": 980, "weekly_balance": -222.9, "weekday_spare": -66.5, "weekend_day_spare": 54.8, "monthly_subscription_usd": 300},
+    {"accounts": 3, "weekly_capacity": 1470, "weekly_balance": 267.1, "weekday_spare": 3.5, "weekend_day_spare": 124.8, "monthly_subscription_usd": 450},
+    {"accounts": 4, "weekly_capacity": 1960, "weekly_balance": 757.1, "weekday_spare": 73.5, "weekend_day_spare": 194.8, "monthly_subscription_usd": 600}
+  ],
+  "derived": {
+    "three_account_weekday_required_utilization_pct": 98.33333333333333,
+    "three_account_weekly_required_utilization_pct": 81.82993197278911,
+    "three_account_weekend_share_of_weekly_surplus_pct": 93.44814676151255,
+    "two_account_max_eligible_fraction_at_full_use_pct": 81.46978136170921,
+    "two_account_max_eligible_fraction_at_95pct_use_pct": 77.39629229362374,
+    "three_account_balance_at_85pct_use": 46.6,
+    "three_account_balance_at_80pct_use": -26.9,
+    "30day_average_raw_profile_volume": 5155.285714285715
+  },
+  "sensitivities": [
+    {"eligible_fraction": 0.8, "usable_capacity_fraction": 1.0, "two_account_weekly_balance": 17.68},
+    {"eligible_fraction": 0.8, "usable_capacity_fraction": 0.95, "two_account_weekly_balance": -31.32},
+    {"eligible_fraction": 0.8, "usable_capacity_fraction": 0.85, "two_account_weekly_balance": -129.32},
+    {"eligible_fraction": 0.8, "usable_capacity_fraction": 0.8, "two_account_weekly_balance": -178.32}
+  ],
+  "single_pass_example": {
+    "assumed_total_input_tokens_per_attempt": 12000,
+    "assumed_output_tokens_per_attempt": 2000,
+    "input_usd_per_million": 1,
+    "output_usd_per_million": 5,
+    "cost_per_attempt_usd": 0.022,
+    "assumed_successful_attempts_per_report": 1,
+    "30day_profile_standard_cost_usd": 113.41628571428572,
+    "30day_profile_eligible_batch_cost_usd": 56.70814285714286,
+    "2421_record_one_pass_standard_cost_usd": 53.262,
+    "not_included": ["failures", "retries", "fallback models", "visual/table processing", "extra verification", "interactive answers", "storage", "licensing", "engineering", "review labor"]
+  },
+  "serving_sensitivities": [
+    {"users": 100, "answers_per_user_month": 30, "assumed_cost_per_answer": 0.05, "monthly_cost": 150},
+    {"users": 100, "answers_per_user_month": 30, "assumed_cost_per_answer": 0.25, "monthly_cost": 750},
+    {"users": 1000, "answers_per_user_month": 30, "assumed_cost_per_answer": 0.05, "monthly_cost": 1500},
+    {"users": 1000, "answers_per_user_month": 30, "assumed_cost_per_answer": 0.25, "monthly_cost": 7500}
+  ],
+  "proposed_first_increment": {
+    "window_days_after_working_permitted_capacity": 30,
+    "incremental_subscription_usd": 150,
+    "proposed_incremental_processing_evaluation_ceiling_usd": 100,
+    "proposed_total_ceiling_usd": 250,
+    "purchase_authorized": false,
+    "engineering_and_additional_license_fees_excluded": true,
+    "existing_scorecard": "research/research_vault_expectations_r3/r22/account_pilot_scorecard_r22.json"
+  },
+  "interpretation_limits": [
+    "Historical configured arrival profile, not a new feed census.",
+    "Local70/day planning allowance, not a newly verified contractual entitlement.",
+    "No pooling, commercial-use or retention permission is granted by capacity arithmetic.",
+    "Fractional demand/utilization inputs are sensitivities, not measurements.",
+    "Weekly averages omit rolling-window placement, bursts and correlated outages; no freshness SLO or queue proof.",
+    "Model token shapes and serving unit costs are assumptions, not measured spend or guaranteed quality.",
+    "No new model, customer, source or product test was executed.",
+    "Compact repository projection of the expanded calculation file; serializations differ."
+  ],
+  "sources": [
+    "https://github.com/mastermindx-market-intelligence/macro/blob/7babc6c17d50968683a0b7fc49323c103edf89da/collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/allocator.py",
+    "https://www.zerohedge.com/signup",
+    "https://platform.claude.com/docs/en/about-claude/pricing"
+  ]
+}
