@@ -12152,3 +12152,9 @@
 {"id":"ob-2026-10-29-f1ac8f821f","from":"approved","to":"posting","at":"2026-10-29T17:40:38Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-29-f1ac8f821f","from":"posting","to":"posted","at":"2026-10-29T17:40:39Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae38516145e9f24d45aeeb7","external_url":null,"at":"2026-10-29T17:40:01Z","booked_at":"2026-10-29T17:40:01Z"}}
 {"id":"ob-2026-10-29-fb7ccdac85","from":"approved","to":"quarantined","at":"2026-10-29T17:40:39Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.73) of ob-2026-10-29-50f297f325 posted today; same template, different ticker","receipt":null}
+{"id":"ob-2026-10-29-b6e2d21305","from":"queued","to":"approved","at":"2026-10-29T19:03:41Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-29-e47de4fb10","from":"queued","to":"approved","at":"2026-10-29T19:03:42Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-29-f893aafb44","from":"queued","to":"approved","at":"2026-10-29T19:03:42Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-29-b6e2d21305","from":"approved","to":"quarantined","at":"2026-10-29T19:03:43Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-29-e47de4fb10","from":"approved","to":"quarantined","at":"2026-10-29T19:03:43Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-29-f893aafb44","from":"approved","to":"quarantined","at":"2026-10-29T19:03:44Z","actor":"publisher","note":"voice laws (queue vintage): raw dollar figure '$535,669,604,626': humanize it (7,639,791,784 is $7.64B, 83,000,000 is $83M)","receipt":null}
