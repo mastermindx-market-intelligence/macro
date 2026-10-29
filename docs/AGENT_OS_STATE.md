@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-10-25T03:43:47Z  |  108 workstreams (86 active · 6 blocked · 12 done · 4 parked)
+Generated: 2026-10-27T07:40:28Z  |  108 workstreams (86 active · 6 blocked · 12 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-10-25T03:43:47.686785+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-27T07:40:28.241417+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 108 WS · 523 DEC · 562 DSC · 775 handoffs |
@@ -357,8 +357,10 @@ Generated: 2026-10-25T03:43:47Z  |  108 workstreams (86 active · 6 blocked · 1
 - agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed
 - agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed
 - agentos/decisions/DEC-F07-VALUATION-SOURCE-IS-SEC-COMPANYFACTS-V1.md: [review-overdue] review_by 2026-10-06 has passed
+- agentos/decisions/DEC-FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION.md: [review-overdue] review_by 2026-10-24 has passed
 - agentos/decisions/DEC-FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS.md: [review-overdue] review_by 2026-10-08 has passed
 - agentos/decisions/DEC-FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.md: [review-overdue] review_by 2026-10-08 has passed
+- agentos/decisions/DEC-FINANCE-RERATING-STEPPER-BINDS-FOUR-CONTRACT-PLANES.md: [review-overdue] review_by 2026-10-24 has passed
 - agentos/decisions/DEC-FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED.md: [review-overdue] review_by 2026-10-08 has passed
 - agentos/decisions/DEC-ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06.md: [review-overdue] review_by 2026-10-20 has passed
 - agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed
