@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-10-27T07:40:28Z  |  108 workstreams (86 active · 6 blocked · 12 done · 4 parked)
+Generated: 2026-10-29T20:10:03Z  |  108 workstreams (86 active · 6 blocked · 12 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-10-27T07:40:28.241417+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-29T20:10:03.131716+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 108 WS · 523 DEC · 562 DSC · 775 handoffs |
@@ -349,6 +349,7 @@ Generated: 2026-10-27T07:40:28Z  |  108 workstreams (86 active · 6 blocked · 1
 - agentos/decisions/DEC-CS-V2-IDENTITY-DUAL-READ.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-CS-V2-LIVE-TAIL-SEPARATE-FROM-BACKLOG.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-CS-V2-SIX-QUESTION-ONTOLOGY.md: [review-overdue] review_by 2026-08-25 has passed
+- agentos/decisions/DEC-CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY.md: [review-overdue] review_by 2026-10-27 has passed
 - agentos/decisions/DEC-CS-V2-W2A-CLASS-RESERVES-AND-HORIZON-FRESHNESS.md: [review-overdue] review_by 2026-08-28 has passed
 - agentos/decisions/DEC-CS-V2-W2B-500-LIVE-ENVELOPE.md: [review-overdue] review_by 2026-08-30 has passed
 - agentos/decisions/DEC-CS-V2-W2C-EXACT-DEPENDENCY-INCREMENTAL-DOCUMENT-TERMS.md: [review-overdue] review_by 2026-09-01 has passed
