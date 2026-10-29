@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-26",
-  "generated_at_utc": "2026-10-26T15:46:44.784823+00:00",
+  "asof": "2026-10-28",
+  "generated_at_utc": "2026-10-29T20:01:35.344260+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -14,30 +14,6 @@
       "impact": "medium",
       "source_class": "static",
       "source": "china_calendar.political_windows",
-      "approx": true
-    },
-    {
-      "date": "2026-10-26",
-      "window_end": null,
-      "etype": "omo_mlf_tender",
-      "label_en": "PBoC MLF tender — 1年期, RMB 700bn",
-      "label_zh": "央行中期借贷便利（MLF）操作：1年期，7,000亿元",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "feed",
-      "source": "china_omo.operations",
-      "approx": false
-    },
-    {
-      "date": "2026-10-27",
-      "window_end": null,
-      "etype": "HK_TRADE",
-      "label_en": "HK external trade",
-      "label_zh": "香港对外商品贸易",
-      "region": "hk",
-      "impact": "medium",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
       "approx": true
     },
     {
@@ -474,6 +450,7 @@
     }
   ],
   "data_gaps": [
+    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {
