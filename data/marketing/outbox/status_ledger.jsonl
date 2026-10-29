@@ -12194,3 +12194,5 @@
 {"id":"ob-2026-10-29-478bc9d019","from":"approved","to":"quarantined","at":"2026-10-29T19:38:21Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
 {"id":"ob-2026-10-29-b777aa3ed2","from":"approved","to":"posting","at":"2026-10-29T19:38:23Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-29-b777aa3ed2","from":"posting","to":"posted","at":"2026-10-29T19:38:27Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae3a0b302b1fcfd3e163559","external_url":null,"at":"2026-10-29T19:38:19Z","booked_at":"2026-10-29T19:38:19Z"}}
+{"id":"ob-2026-10-29-9c103a3a84","from":"approved","to":"quarantined","at":"2026-10-29T22:00:22Z","actor":"press_wire_reap","note":"expired_stale_wire: theme_list sat untouched 4.3h (ttl 3h) — the moment it was written about is gone","receipt":null}
+{"id":"ob-2026-10-29-c7787878ab","from":"approved","to":"quarantined","at":"2026-10-29T22:00:22Z","actor":"press_wire_reap","note":"expired_stale_wire: mover sat untouched 4.3h (ttl 3h) — the moment it was written about is gone","receipt":null}
