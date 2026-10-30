@@ -29,8 +29,23 @@ changed:
       Paper customer-experience spec.
   - path: research/sector_theme_factor_intelligence/GRANULAR_REGIME_MODEL_DECISION_2026-10-30.md
     what: >-
-      Proposed vector-first granular state model and separate prospective
-      forecast validation contract; no accepted probability or customer release.
+      Twelve-axis quantitative state decision, first-difference/acceleration
+      distinction, own-group and single-name exceptions, and draft falsifiable
+      prospective forecasting research protocol; no accepted probability.
+  - path: engine/sector_theme_regime_fingerprint.py
+    what: >-
+      Pure read-only P1a view; per-horizon observed axes and bounded breadth
+      morphology, same-member first differences and single-name exceptions.
+      Explicitly abstains on credit, future probability and unqualified sources.
+  - path: tests/test_sector_theme_regime_fingerprint.py
+    what: >-
+      31 authored synthetic test functions including parameterized authority
+      refusals, negative-majority bounds, PIT clocks, units, roster/vintage
+      mismatch, two-endpoint acceleration prohibition and individual-name cases.
+  - path: .github/ci/legacy-jobs.yml
+    what: >-
+      Adds new P1a engine/test paths to incumbent leadership-rotation-contract
+      job and names both P1 and P1a suites; no separate test runner or waiver.
 verified:
   - claim: >-
       Draft source and the versioned research/plan files were published to the
@@ -50,19 +65,27 @@ verified:
       contract-delta: missing new test suite legacy job registration;
       fence-pack: this handoff unparseable without YAML frontmatter.
 unverified:
-  - claim: Full repository-hosted test suite, exact-head independent review and source publication
+  - claim: Full exact-head P1a tests, current CI/fence conclusion, independent non-author review and production path
     what_would_verify: >-
-      Register the new suite through original legacy pack owner; fix
-      malformed handoff; verify current exact-head concluded CI and independent review.
+      Fetch exact-head GitHub Actions checks and running suite logs; new
+      fingerprints have NOT yet been independently executed in a qualified
+      repo checkout. Obtain independent review after actual Fabric admission.
+      Signed-in producer-to-browser and rights/PIT gates are separately owed.
   - claim: Granular regime forecasting improves forward detection, calibration or returns
     what_would_verify: >-
       Rights-cleared PIT known-at inputs, preregistered horizon/event outcomes,
       purged chronological tests and prospective shadow calibration against baselines.
 unresolved:
   - >-
-    PR #10213 was failing CI at head 42cba03b9e5ec1b7fa85111914d45523128b3f51:
-    new suite had no existing CI owner, this handoff lacked schema frontmatter,
-    and an unrelated broader pack reported git-derived workstream dates absent.
+    Old PR head 42cba03 failed CI for unregistered test suite and malformed
+    handoff; both now repaired in candidate source. Prior unrelated
+    git-derived workstream-date failure may recur; do not claim a healed CI
+    until an exact-current-head run concludes. New P1a tests are CI-wired but
+    do not have a returned passing run.
+  - >-
+    Fabric manual Grok review of new head 8f85fd31 rejected with
+    MANUAL_ROUTE_UNAVAILABLE, retry_allowed=false. No independent review;
+    do not replay that logical request on another pool or carrier.
   - >-
     GMI qualified true subtheme constituents and rights/use/availability remain
     held; ancestor proxy is never member-level observed breadth.
@@ -71,13 +94,15 @@ unresolved:
     canvas edit or screenshot, no signed-in customer path.
 next_actions:
   - >-
-    Repair current source-branch handoff schema and register focused P1
-    pytest suite in existing leadership-rotation-contract job, then verify
-    source head, CI selection, exact-head checks and independent review.
+    Verify current exact PR #10213 source head, new P1a CI suite actually
+    selected/executed, exact-head fences and CI conclusion. Repair only
+    actual introduced reds on the existing source branch. Do NOT ready/merge
+    until independent non-author review and release/source rights gates.
   - >-
-    Implement read-only vector-first fingerprint consumer (P1a) only after
-    source input qualification and review; maintain numerical factor and
-    missingness instead of inventing precise probabilities.
+    P1a pure descriptor implementation exists as source candidate, not
+    approved/landed/customer qualified. Continue P2 owner-admitted GMI PIT,
+    membership and source-clock evidence when granted; no fake microtheme
+    member identity or credit vintages.
   - >-
     Bind owner-admitted member PIT, rights, credit source and live clocks;
     future-state probability modeling remains a separately preregistered P6G
@@ -156,3 +181,47 @@ EXECUTIVE: `Mastermind_Executive_V3__executive_state` returned MCP SSE 429; orig
 ## 2026-10-30 granular model addition
 
 See `research/sector_theme_factor_intelligence/GRANULAR_REGIME_MODEL_DECISION_2026-10-30.md` at PR #10213: use an observed 12-axis continuous regime fingerprint and multiple evidence-bound interpretations. Live probability claims remain held pending strict PIT science. This addition does not supersede any existing Granular Regime Intelligence macro authority.
+
+
+## 2026-10-30 resumed implementation milestone (GitHub source only)
+
+Chairman continuation: **replace the four-condition breadth scan with a more
+granular descriptive state, preserving non-predictive and source-law safeguards**.
+
+- Original draft #10213 branch was updated in place; no new lifecycle, feed,
+  parent workstream, model authority or conflicting PR. New source files:
+  `engine/sector_theme_regime_fingerprint.py`,
+  `tests/test_sector_theme_regime_fingerprint.py`.
+- 12-axis fingerprint is a projection over the existing P1 factor frame, not
+  a new data/model owner: absolute/relative trend, participation, same-member
+  breadth first differences, dispersion/median and multi-horizon agreement,
+  plus typed UNMEASURED for unsupported slope-acceleration, extension, credit,
+  volatility/liquidity and original rights evidence.
+- Also reports individual-name per-horizon strength and exceptions against a
+  weak group, preserving actual member IDs and without duplicating theme votes.
+  Overlapping morphology tags do not form a 100% probability partition.
+- Hardening refuses impossible denominator identification bounds, wrong
+  fractional units, mixed cohort/membership version, future group knowledge,
+  wrong decision time, and any forged publication/predictive/rank rights.
+- 31 synthetic test functions authored, parameterized cases more than that;
+  **not locally or CI proven yet** for the resumed implementation.
+  `.github/ci/legacy-jobs.yml` now names both suites in incumbent
+  leadership-rotation-contract pack; no test waiver.
+- Research decision expanded with explicit model falsifier, PIT and
+  chronology constraints, calibrated event-specific outcomes, duration
+  censoring, adverse excursion, macro regime context (non-probabilistic),
+  and independent prospective-shadow acceptance. This is a research
+  **protocol draft**, not an accepted pre-registration or empirical result.
+
+Latest direct source write BEFORE this handoff: source branch commit
+`47d61637f086d767ab74dbf973f5e3891af1e975`;
+the handoff update advances that head. Confirm current PR head before acting.
+At last read, GitHub CI/fences for that head were `pending` and had not
+returned. Independent Fabric manual review was denied with
+`MANUAL_ROUTE_UNAVAILABLE`; no review was actually performed. No Paper
+edit, customer data integration, release or trading authority asserted.
+
+Classification: `MORE_WORK_EXISTS`. Preserve source changes and diagnose
+only newly observed exact-head errors. Next material step: verify code/tests
+in the actual repository CI, then obtain non-author review and the GMI PIT/rights
+qualified one-group feed before any production-facing consumer.
