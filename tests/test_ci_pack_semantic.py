@@ -3236,8 +3236,8 @@ def test_native_inherited_total_is_explicitly_digest_bound_without_changing_ordi
     assert PACK.semantic_job_digest(ordinary) == before[1]
 
 
-@pytest.mark.parametrize("minutes", [15,12])
-def test_non_native_owner_total_remains900_or_international720(monkeypatch, minutes):
+@pytest.mark.parametrize("minutes", [12, 15, 16])
+def test_non_native_owner_total_respects_declared_deadline(monkeypatch, minutes):
     _capture_job_environment(monkeypatch)
     job = _job("ordinary-owner", [{"name":"first","run":"before"}, {"name":"last","run":"after"}], timeout=minutes)
     ticks = iter([0., 0., 650.])
@@ -3336,13 +3336,28 @@ def test_unmarked_brain_unknown_installer_preserves_settlement_fence(monkeypatch
     assert result.steps[0]["outcome"] == "infrastructure_blocked"
 
 
-def test_explicit_owner_manifest_activation_keeps_brain900_and_international720():
+def test_explicit_owner_manifest_activation_keeps_brain900_and_measured_international960():
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
     native = [job.job_id for job in jobs.values()
               if any(spec.get("acquisition") == "native_parallel" for spec in PACK._browser_setup_contract(job))]
     assert native == ["bea-gvc-current-descriptive-consumer", "ontology-explorer", "unrun-brain-gateway"]
     assert jobs["unrun-brain-gateway"].definition["timeout-minutes"] == 15
-    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 12
+    # Exact full-CI run 40955912461 failed on the old 720s budget after a
+    # roughly 9-minute fail-closed canonical-base acquisition and 442 passed
+    # render tests. Run 40979773826 at the 960s budget completed this owner.
+    # Preserve a fixed positive bound and every original step; do not relax
+    # source or browser checks merely to lengthen the deadline.
+    intl = jobs["international-workspace-browser"].definition
+    assert intl["timeout-minutes"] == 16
+    assert [step["name"] for step in intl["steps"] if "name" in step] == [
+        "install render test dependencies",
+        "install browser test dependencies",
+        "canonical base for the frozen-file guard (fail closed)",
+        "Actual International builder and template contracts",
+        "Actual DOM controller and page entry in Chromium",
+        "Generic table sort/filter in Chromium (templates/tablesort.js)",
+    ]
+    assert all(step.get("acquisition") != "native_parallel" for step in intl["steps"])
     brain = PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]
     assert brain["activation_job_id"] == "unrun-brain-gateway"
     assert brain["logical_job_timeout_minutes"] == 15 and brain["timeout_minutes"] == 10
