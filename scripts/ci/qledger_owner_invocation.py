@@ -219,9 +219,10 @@ class ConversionInvocation:
         candidate._ref_matches(owner.repo, owner.target.accepted_ref, accepted_tip_oid)
         return result
 
-    def invoke_reader(self, commit_oid, consumer, *args, **kwargs):
+    def invoke_reader(self, commit_oid, consumer, *args, require_complete_current=False, **kwargs):
+        """Historical reader is allowed; a complete/current claim must carry an owner cut."""
         binding = self.owner.read_binding(expected_manifest_digest=self.manifest_digest,
-                                           commit_oid=commit_oid)
+            commit_oid=commit_oid, require_complete_current=require_complete_current)
         with ClaimsBindingScope(binding), ClaimsReadScope(self.owner.repo):
             return consumer(*args, **kwargs)
 
