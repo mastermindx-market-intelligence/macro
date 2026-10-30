@@ -125,7 +125,7 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
                 or p.get("eligible_for_historical_prediction") is not False
                 or p.get("trading_or_alert_authority") is not False):
             return _hold("input_authority_not_source_qualified")
-        if p.get("group_kind") not in GROUP_KINDS:
+        if type(p.get("group_kind")) is not str or p["group_kind"] not in GROUP_KINDS:
             return _hold("unqualified_group_kind")
         if p.get("basis") not in ("CURRENT_ROSTER", "PIT_AS_KNOWN"):
             return _hold("unrecognized_membership_basis")
