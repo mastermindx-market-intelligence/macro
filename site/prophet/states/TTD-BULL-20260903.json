@@ -1,18 +1,18 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTD-BULL-20260903",
-  "asof": "2026-10-27",
+  "asof": "2026-10-29",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 26.1,
-  "raw_confidence": 26.8,
+  "raw_confidence": 26.1,
   "delta_vs_base": -33.9,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
     "validity": 10.7,
     "progress": 0.0,
-    "pace": 28.7,
+    "pace": 26.0,
     "retention": 0.0,
     "overlay": 53.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.212,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
+    "horizon_pct_used": 106.7,
     "p1": -0.5255,
     "p2": -0.2627,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,16 @@
   "_first_trigger_ts": "2026-09-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222,
+  "days_elapsed": 48,
+  "tau": 1.0667,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "INVALIDATED"
 }
