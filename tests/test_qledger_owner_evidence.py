@@ -2,6 +2,7 @@
 from hashlib import sha256
 from pathlib import Path
 import subprocess
+import os
 
 import pytest
 
@@ -320,3 +321,151 @@ def test_native_readback_evidence_requires_actual_live_original(causal,fixture,m
             if fault=='caught-lost-response':assert 'successful Git response unavailable' in str(callback.finalization.failure)
     # This concrete partial provider still issues no host/resource admission.
     with pytest.raises(EvidenceUnavailable):real.assert_resources()
+
+
+@pytest.fixture
+def fresh_https_reader(tmp_path, https_origin):
+    """Fast read-transport fixture; host admission is exclusively test-owned."""
+    import time
+    from types import SimpleNamespace
+    from scripts.ci import qledger_owner_evidence as evidence, qledger_engine_publisher as publisher
+    from scripts.ci.qledger_owner_invocation import NativeReaderInvocation, reader_assertion_scope
+    remote,url,cert,header,network=https_origin
+    repo=tmp_path/'reader-repo';repo.mkdir();git(repo,'init','-q')
+    git(repo,'config','user.name','fixture');git(repo,'config','user.email','fixture@example.invalid')
+    (repo/'retained').write_bytes(b'test-owned immutable input\n');git(repo,'add','retained');git(repo,'commit','-qm','fixture')
+    oid=git(repo,'rev-parse','HEAD').decode();git(repo,'push','-q',str(remote),oid+':refs/heads/main')
+    git(repo,'remote','add','origin',url)
+    git(repo,'config','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader','AUTHORIZATION: '+header)
+    owner=tmp_path/'reader-owner';owner.mkdir(mode=0o700)
+    context=SimpleNamespace(repo=repo,owner_root=owner,original_deadline_monotonic_ns=time.monotonic_ns()+30_000_000_000)
+    proof=evidence.OrdinaryPublicationEvidence.__new__(evidence.OrdinaryPublicationEvidence)
+    proof.context=context;proof.origin_digest=sha256(url.encode()).hexdigest()
+    proof._pid=os.getpid();proof._last=time.monotonic_ns();proof._failed=False;proof._native_reader_attempt=None
+    proof.native_reader_carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+    class TestGate:
+        def __init__(self):self._native_reader_call=None;self.calls=[];self.refuse=None
+        def _check(self):pass
+        def _assert(self,method,**ctx):
+            self.calls.append((method,ctx))
+            if self.refuse==method:raise evidence.EvidenceUnavailable('test-owned missing '+method)
+            if method=='assert_descendants_settled':
+                attempt=ctx['native_reader_attempt']
+                assert attempt.process.poll()==0 and attempt.process.stdout.closed
+                assert attempt.call is self._native_reader_call and attempt.carrier.pid==os.getpid()
+    gate=TestGate();record={'candidate':oid,'publication':{'origin':proof.origin_digest,'transport':'checkout_https','layout':None}}
+    call=NativeReaderInvocation(gate,None,record,{'operation_id':'test-reader','lane_id':'test-lane','budget_id':'reader-budget','retention_id':'reader-retention'},context.original_deadline_monotonic_ns,time.monotonic_ns())
+    gate._native_reader_call=call
+    def run():
+        with reader_assertion_scope(call):
+            try:return proof._native_origin_readback(record,call.check,reader_call=call)
+            except BaseException as exc:
+                # Match the public evidence entry's sticky-refusal wrapper.
+                from scripts.ci.qledger_owner_invocation import record_publication_assertion_refusal
+                record_publication_assertion_refusal(exc);raise
+    state=SimpleNamespace(proof=proof,gate=gate,call=call,run=run,network=network,repo=repo,remote=remote,url=url,cert=cert,oid=oid)
+    yield state
+    # Test-owned cleanup only, after assertions about retained uncertain state.
+    attempt=proof._native_reader_attempt
+    if attempt and attempt.process and attempt.process.poll() is None:
+        import signal
+        os.killpg(attempt.process.pid,signal.SIGKILL);attempt.process.wait()
+    if attempt and attempt.process and attempt.process.stdout:attempt.process.stdout.close()
+    carrier=proof.native_reader_carrier
+    if not carrier._closed:
+        for fd in (carrier.git_dir,carrier.config_fd,carrier.ca_fd):
+            if fd is not None:
+                try:os.close(fd)
+                except OSError:pass
+    if attempt and not attempt.confirmed:
+        for fd in [attempt.control_fd,*attempt.directories.values(),*(item[0] for item in attempt.files.values())]:
+            if fd is not None:
+                try:os.close(fd)
+                except OSError:pass
+
+
+@pytest.mark.parametrize('fault',['positive','origin','config-replaced','borrowed-writer','foreign-pid','resources','settlement','wrong-ref','redirect','missing-header','ambient-config'])
+def test_fresh_https_reader_uses_own_bound_readonly_carrier(fresh_https_reader,monkeypatch,fault):
+    from scripts.ci.qledger_owner_evidence import EvidenceUnavailable
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+    s=fresh_https_reader;c=s.proof.native_reader_carrier
+    before=git(s.remote,'rev-parse','refs/heads/main');config=(s.repo/'.git/config')
+    if fault=='origin':s.proof.origin_digest='0'*64
+    if fault=='config-replaced':
+        payload=config.read_bytes();config.rename(config.with_name('original-config'));config.write_bytes(payload)
+    if fault=='borrowed-writer':c._attempt=object()
+    if fault=='foreign-pid':c.pid+=1
+    if fault=='resources':s.gate.refuse='assert_resources'
+    if fault=='settlement':s.gate.refuse='assert_descendants_settled'
+    if fault=='wrong-ref':s.call.record['candidate']='a'*40
+    if fault=='redirect':s.network['redirect']=True
+    if fault=='missing-header':
+        # A newly opened original FD with no qualified header cannot authenticate.
+        for fd in (c.git_dir,c.config_fd,c.ca_fd):
+            if fd is not None:os.close(fd)
+        c._closed=True
+        git(s.repo,'config','--unset-all',c.key)
+        from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier
+        c=s.proof.native_reader_carrier=CheckoutHTTPSCarrier(s.repo,s.url,tls_ca_file=s.cert)
+    if fault=='ambient-config':
+        monkeypatch.setenv('GIT_CONFIG_COUNT','1');monkeypatch.setenv('GIT_CONFIG_KEY_0','url.https://localhost:1/.insteadOf');monkeypatch.setenv('GIT_CONFIG_VALUE_0',s.url)
+        monkeypatch.setenv('https_proxy','https://localhost:1')
+    if fault in ('positive','ambient-config'):
+        s.run();attempt=s.proof._native_reader_attempt
+        assert attempt.confirmed and not attempt.uncertain and c._closed and not attempt.control.exists()
+        assert attempt.response==((s.oid+'\trefs/heads/main\n').encode(),0)
+        assert {method for method,_ in s.gate.calls}=={'assert_resources','assert_process_version','assert_descendants_settled'}
+    else:
+        with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run()
+        assert s.call.failure is not None and s.call.uncertain
+        attempt=s.proof._native_reader_attempt
+        if attempt:
+            assert not attempt.confirmed and attempt.uncertain and not c._closed
+            with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run()
+    assert s.network['received']==0 and git(s.remote,'rev-parse','refs/heads/main')==before
+    assert all('receive-pack' not in path for _,path,_,_ in s.network.get('protocol',[]))
+    if fault in ('origin','config-replaced','borrowed-writer','foreign-pid','resources','missing-header'):
+        assert s.network['requests']==0
+
+
+@pytest.mark.parametrize('fault',['partial','error','oversized','timeout','caught-settlement'])
+def test_fresh_https_reader_uncertain_completion_is_not_retried(fresh_https_reader,monkeypatch,fault):
+    import time,sys
+    from scripts.ci import qledger_engine_publisher as publisher
+    from scripts.ci.qledger_owner_evidence import EvidenceUnavailable
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+    s=fresh_https_reader;original=subprocess.Popen;dispatches=[]
+    if fault=='caught-settlement':
+        original_assert=s.gate._assert
+        def caught(method,**context):
+            if method=='assert_descendants_settled':
+                from scripts.ci.qledger_owner_invocation import record_publication_assertion_refusal
+                try:raise EvidenceUnavailable('test-owned caught settlement failure')
+                except EvidenceUnavailable as exc:record_publication_assertion_refusal(exc)
+                return None
+            return original_assert(method,**context)
+        monkeypatch.setattr(s.gate,'_assert',caught)
+    else:
+        expected=(s.oid+'\trefs/heads/main\n').encode()
+        payload=expected[:-1] if fault=='partial' else (b'x'*4097 if fault=='oversized' else expected)
+        program='import sys,time\n'
+        if fault=='timeout':
+            endpoint=time.monotonic_ns()+2_000_000_000
+            s.call.deadline=s.proof.context.original_deadline_monotonic_ns=endpoint
+            program+='time.sleep(20)\n'
+        else:program+=f'sys.stdout.buffer.write({payload!r});sys.stdout.flush();sys.exit({2 if fault=="error" else 0})\n'
+        def child(command,**kwargs):
+            if publisher._HTTPS_EXEC in command:
+                dispatches.append(command)
+                assert command[-6:]==['ls-remote','--refs','--exit-code','--',s.url,'refs/heads/main']
+                assert 'push' not in command and kwargs['start_new_session'] is True
+                return original([sys.executable,'-I','-c',program],**kwargs)
+            return original(command,**kwargs)
+        monkeypatch.setattr(subprocess,'Popen',child)
+    with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run()
+    attempt=s.proof._native_reader_attempt
+    assert attempt.uncertain and not attempt.confirmed and s.call.failure is not None
+    assert not attempt.carrier._closed and attempt.control.exists()
+    with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run()
+    if fault!='caught-settlement':assert len(dispatches)==1
+    assert s.network['received']==0

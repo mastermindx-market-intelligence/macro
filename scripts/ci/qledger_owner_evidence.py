@@ -59,11 +59,13 @@ class OrdinaryPublicationEvidence:
     The assigning original owner must supply its existing pre-push binding.
     Capturing today's URL here would not prove that original identity.
     """
-    def __init__(self, context, *, origin_binding_sha256):
+    def __init__(self, context, *, origin_binding_sha256, native_reader_carrier=None):
         _require(type(origin_binding_sha256) is str and len(origin_binding_sha256) == 64
                  and all(x in '0123456789abcdef' for x in origin_binding_sha256),
                  'original normal-push origin binding required')
         self.context, self.origin_digest = context, origin_binding_sha256
+        self.native_reader_carrier = native_reader_carrier
+        self._native_reader_attempt = None
         self._native_readback_attempt = None  # One live original; never a restart/admission receipt.
         self._pid, self._last, self._failed = os.getpid(), time.monotonic_ns(), False
         _require(type(context.original_deadline_monotonic_ns) is int,
@@ -278,9 +280,9 @@ class OrdinaryPublicationEvidence:
                  and call.binding.tree_oid == call.record['tree']
                  and call.binding.read_snapshot().receipt.root_digest == call.record['root'],
                  'actual immutable native reader generation differs')
-        self._native_origin_readback(call.record,call.check)
+        self._native_origin_readback(call.record,call.check,reader_call=call)
 
-    def _native_origin_readback(self,record,check):
+    def _native_origin_readback(self,record,check,*,reader_call=None):
         self._check();check()
         _require(record['publication']['origin'] == self.origin_digest, 'reader original publication origin differs')
         destination=self._origin().decode('utf-8',errors='strict')
@@ -321,6 +323,12 @@ class OrdinaryPublicationEvidence:
             finally:
                 for handle in (fd,heads,refs,root):
                     if handle is not None:os.close(handle)
+        elif parsed.scheme == 'https' and reader_call is not None:
+            _require(self._native_reader_attempt is None,
+                     'original native HTTPS readback already entered; no retry')
+            attempt = _NativeHTTPSReadback(self, reader_call, destination)
+            self._native_reader_attempt = attempt
+            attempt.perform()
         else:
             raise EvidenceUnavailable('fresh native HTTPS/SSH reader carrier is not qualified; original writer auth cannot transfer')
         self._origin();check();self._check()
@@ -414,6 +422,158 @@ class OrdinaryPublicationEvidence:
         raise EvidenceUnavailable('actual loaded owner/runtime bundle and native process binding authority unavailable')
 
 
-def build_evidence(context, *, origin_binding_sha256):
+def build_evidence(context, *, origin_binding_sha256, native_reader_carrier=None):
     """Owner-entry factory; the original origin pin identifies, never admits."""
-    return OrdinaryPublicationEvidence(context, origin_binding_sha256=origin_binding_sha256)
+    return OrdinaryPublicationEvidence(context, origin_binding_sha256=origin_binding_sha256,
+                                       native_reader_carrier=native_reader_carrier)
+
+
+class _NativeHTTPSReadback:
+    """One fresh native reader's fixed ref query; no publisher or admission issuer.
+
+    A failed attempt retains its original carrier/control/child identities. The
+    caller's existing settlement path owns recovery; another read cannot repair
+    a lost response. Credential bytes are consumed only by the existing child.
+    """
+    def __init__(self, evidence, call, destination):
+        import shutil
+        from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier, _file_stamp
+        from scripts.ci.qledger_owner_invocation import NativeReaderInvocation
+        _require(type(call) is NativeReaderInvocation and call.pid == os.getpid(),
+                 'actual fresh reader invocation required')
+        carrier = evidence.native_reader_carrier
+        _require(type(carrier) is CheckoutHTTPSCarrier and carrier.pid == call.pid
+                 and carrier.repo == evidence.context.repo and carrier.destination == destination
+                 and call.record['publication']['transport'] == 'checkout_https'
+                 and call.record['publication']['layout'] is None,
+                 'own original HTTPS reader carrier required; writer auth cannot transfer')
+        carrier.check(); call.check(); evidence._check()
+        _require(carrier._attempt is None and not carrier._closed,
+                 'original HTTPS reader carrier already used')
+        self.evidence, self.call, self.carrier = evidence, call, carrier
+        self.git = shutil.which('git')
+        _require(self.git is not None, 'incumbent Git executable unavailable')
+        self.git_stamp = _file_stamp(os.stat(self.git))
+        self.process = self.control = self.control_fd = None
+        self.directories, self.files = {}, {}
+        self.uncertain, self.confirmed, self.failure = True, False, None
+        self.response = None
+        _require(carrier._use_lock.acquire(blocking=False), 'concurrent HTTPS reader carrier refused')
+        # Bind before any setup or process effect. No reassignment on failure.
+        carrier._attempt = self
+
+    def check(self):
+        from scripts.ci.qledger_engine_publisher import _file_stamp, _inode
+        _require(self.failure is None and self.evidence._native_reader_attempt is self
+                 and self.carrier._attempt is self, 'original HTTPS reader attempt is unresolved')
+        remaining = min(self.evidence._check(), self.call.check())
+        self.carrier.check()
+        _require(_file_stamp(os.stat(self.git)) == self.git_stamp, 'original Git executable changed')
+        if self.control_fd is not None:
+            _require(_inode(os.fstat(self.control_fd)) == _inode(os.stat(self.control,follow_symlinks=False)),
+                     'reader control directory replaced; retained')
+            _require(set(os.listdir(self.control_fd)) == {'HEAD','config','refs','objects'},
+                     'reader control inventory changed; retained')
+            for name, fd in self.directories.items():
+                _require(_inode(os.fstat(fd)) == _inode(os.stat(name,dir_fd=self.control_fd,follow_symlinks=False))
+                         and not os.listdir(fd), 'reader control child changed; retained')
+            for name,(fd,stamp) in self.files.items():
+                _require(_file_stamp(os.fstat(fd)) == stamp
+                         == _file_stamp(os.stat(name,dir_fd=self.control_fd,follow_symlinks=False)),
+                         'reader control file changed; retained')
+        return remaining
+
+    def authority(self, method, phase):
+        context = dict(self.call.context, phase=phase, native_reader=self.call,
+            native_reader_attempt=self, git_executable=self.git,
+            authentication_config_identity=self.carrier.config_stamp,
+            publication_transport='checkout_https',
+            git_pid=None if self.process is None else self.process.pid)
+        self.call.gate._assert(method, **context)
+        self.check()
+
+    def setup(self):
+        from scripts.ci.qledger_host_gate import _directory
+        from scripts.ci.qledger_engine_publisher import _file_stamp
+        self.check()
+        self.authority('assert_resources','native-reader-https-intent')
+        self.authority('assert_process_version','native-reader-https-intent')
+        self.control = Path(tempfile.mkdtemp(prefix='.qledger-reader-git-',dir=self.evidence.context.owner_root))
+        self.control_fd = _directory(self.control)
+        for name in ('refs','objects'):
+            os.mkdir(name,mode=0o700,dir_fd=self.control_fd)
+            self.directories[name] = os.open(name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=self.control_fd)
+        for name,payload in (('HEAD',b'ref: refs/heads/unused\n'),
+                             ('config',b'[core]\n bare = true\n repositoryformatversion = 0\n')):
+            fd = os.open(name,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=self.control_fd)
+            self.files[name] = (fd,None)
+            _require(os.write(fd,payload) == len(payload), 'reader control write incomplete')
+            os.fsync(fd)
+            self.files[name] = (fd,_file_stamp(os.fstat(fd)))
+        os.fsync(self.control_fd); self.check()
+
+    def query(self):
+        import json
+        from scripts.ci.qledger_engine_publisher import _HTTPS_EXEC
+        self.check()
+        fds = [self.carrier.config_fd,self.control_fd]
+        if self.carrier.ca_fd is not None: fds.append(self.carrier.ca_fd)
+        # No command/ref/destination is accepted from JSON or the consumer.
+        # This original child gets its own credential FD; no writer state.
+        command = [sys.executable,'-I','-c',_HTTPS_EXEC,str(self.carrier.config_fd),
+            json.dumps(self.carrier.config_stamp),self.carrier.key,self.git,
+            str(self.call.deadline),'0',str(self.control_fd),
+            str(self.carrier.ca_fd if self.carrier.ca_fd is not None else -1),
+            'ls-remote','--refs','--exit-code','--',self.carrier.destination,'refs/heads/main']
+        self.process = subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,pass_fds=tuple(fds),start_new_session=True)
+        data = bytearray()
+        with selectors.DefaultSelector() as selector:
+            selector.register(self.process.stdout,selectors.EVENT_READ)
+            while selector.get_map():
+                ready = selector.select(min(self.check(),0.25)); self.check()
+                for key,_ in ready:
+                    part = os.read(key.fd,min(4097-len(data),4096))
+                    if not part: selector.unregister(key.fileobj)
+                    data.extend(part)
+                    _require(len(data)<=4096, 'native HTTPS reader output exceeded bound; original retained')
+            self.process.wait(timeout=self.check())
+        self.process.stdout.close()
+        self.response = (bytes(data), self.process.returncode)
+        self.check()
+        _require(self.response == ((self.call.record['candidate']+'\trefs/heads/main\n').encode('ascii'),0),
+                 'exact original HTTPS reader response unavailable; no retry')
+        self.authority('assert_descendants_settled','native-reader-https-settled')
+
+    def close_known(self):
+        self.check()
+        # Only our exact, unchanged private inventory is removed. Any failure
+        # preserves remaining descriptors and makes this attempt non-reusable.
+        from scripts.ci.qledger_engine_publisher import _file_stamp, _inode
+        for name,(fd,stamp) in self.files.items():
+            _require(_file_stamp(os.stat(name,dir_fd=self.control_fd,follow_symlinks=False)) == stamp
+                     == _file_stamp(os.fstat(fd)), 'reader cleanup file replaced; retained')
+            os.unlink(name,dir_fd=self.control_fd); os.close(fd)
+        for name,fd in self.directories.items():
+            _require(_inode(os.stat(name,dir_fd=self.control_fd,follow_symlinks=False)) == _inode(os.fstat(fd))
+                     and not os.listdir(fd), 'reader cleanup directory replaced; retained')
+            os.rmdir(name,dir_fd=self.control_fd); os.close(fd)
+        _require(_inode(os.stat(self.control,follow_symlinks=False)) == _inode(os.fstat(self.control_fd)),
+                 'reader cleanup root replaced; retained')
+        os.rmdir(self.control); os.close(self.control_fd)
+        self.control_fd = None
+        self.uncertain = False
+        self.carrier.close_known(self)
+        self.confirmed = True
+
+    def perform(self):
+        try:
+            self.setup(); self.query()
+            self.evidence._origin(); self.check()
+            self.close_known()
+        except BaseException as exc:
+            self.failure = exc; self.uncertain = True
+            # Caught evidence errors remain sticky on the actual reader call.
+            if self.call.failure is None:self.call.failure = exc
+            self.call.uncertain = True
+            raise

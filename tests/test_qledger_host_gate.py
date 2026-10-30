@@ -681,7 +681,12 @@ def _fresh_native_reader(packet):
     context=SimpleNamespace(**packet['context'])
     for name in ('repo','owner_root','result_path'):setattr(context,name,Path(getattr(context,name)))
     context.original_deadline_monotonic_ns=time.monotonic_ns()+60_000_000_000
-    proof=build_evidence(context,origin_binding_sha256=packet['publication']['origin'])
+    reader_inputs={}
+    if 'https' in packet:
+        from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier
+        reader_inputs['native_reader_carrier']=CheckoutHTTPSCarrier(context.repo,packet['https']['url'],
+            tls_ca_file=Path(packet['https']['cert']))
+    proof=build_evidence(context,origin_binding_sha256=packet['publication']['origin'],**reader_inputs)
     class TestOnlyEvidence(FixtureEvidence):
         def assert_publication_readback(self,**ctx):
             return proof.assert_publication_readback(**ctx,bootstrap_pid=os.getpid(),
@@ -709,6 +714,9 @@ def _fresh_native_reader(packet):
     payload=loaded.native_reader(selection,operation_id='reader-original',lane_id='reader-lane',
         budget_id='reader-budget',retention_id='reader-retention')
     assert payload.endswith(b'{"future":"1"}\n')
+    if 'https' in packet:
+        assert proof._native_reader_attempt.confirmed and not proof._native_reader_attempt.uncertain
+        assert reader_inputs['native_reader_carrier']._closed
 
 
 def test_native_generation_fresh_python_reader_and_second_producer_anchor_refusal(causal,fixture,monkeypatch,tmp_path):
@@ -1045,3 +1053,44 @@ def test_second_generation_tracking_cas_lost_durability_keeps_original_handles(h
     assert gate._native_anchor_handles['entered'] and gate._native_anchor_handles['replaced']
     assert gate._native_anchor_handles['fds'] and not readbacks
     assert all(os.fstat(fd) for fd in gate._native_anchor_handles['fds'])
+
+
+from tests.test_qledger_native_publication import https_origin  # noqa: F401
+
+
+def test_original_https_generation_has_fresh_isolated_reader(causal,fixture,monkeypatch,tmp_path,https_origin):
+    """Real test-owned HTTPS publish then fresh authenticated read, no host grant."""
+    import json,inspect
+    from dataclasses import asdict
+    from engine import qledger_original_result as result
+    from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier
+    from scripts.ci.qledger_owner_evidence import build_evidence
+    state=_native_cycle_case(causal,fixture,monkeypatch,tmp_path)
+    gate=state['gate'];repo=gate.repo;remote,url,cert,header,network=https_origin
+    # New operation's original origin is bound before any native producer work.
+    git(repo,'push','-q',str(remote),gate.candidate_oid+':refs/heads/main')
+    git(repo,'remote','set-url','origin',url)
+    git(repo,'config','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader','AUTHORIZATION: '+header)
+    origin=sha256(url.encode()).hexdigest()
+    carrier=CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+    state['publication'].original.update(origin_binding_sha256=origin,original_origin_inode=None,https_carrier=carrier)
+    gate.evidence.real=build_evidence(state['context'],origin_binding_sha256=origin)
+    published=state['run']();selection=_selection(state)
+    assert published.status=='publication_confirmed' and carrier._closed and network['received']==1
+    retained=selection[3]
+    args={k:v for k,v in state['args'].items() if k!='evidence'}
+    for key in ('owner_code','runtime_code'):args[key]=[(str(p.path),p.digest) for p in args[key]]
+    args['producers']=[[*k,*v] for k,v in args['producers'].items()]
+    packet=dict(context={k:str(v) if isinstance(v,Path) else v for k,v in vars(state['context']).items()},args=args,
+        originals=[result._descriptor(r) for r in (*retained.predecessors,retained)],limits=asdict(retained.limits),
+        selection=selection[:3],publication=selection[4],https={'url':url,'cert':str(cert)})
+    program=('import json,sys,os\nfrom pathlib import Path\n'
+        'sys.path.insert(0,sys.argv[1])\n'
+        'from scripts.ci.qledger_host_gate import HostGate,CodePin,GateRefusal\n'
+        +inspect.getsource(FixtureEvidence)+'\n'+inspect.getsource(_fresh_native_reader)
+        +'\n_fresh_native_reader(json.loads(sys.stdin.read()))\n')
+    child=subprocess.run([sys.executable,'-I','-c',program,str(Path(__file__).resolve().parents[1])],
+        input=json.dumps(packet),text=True,capture_output=True,timeout=90)
+    assert child.returncode==0,child.stderr
+    assert network['received']==1 and git(remote,'rev-parse','refs/heads/main').decode()==selection[0]
+    assert not (gate.root/gate.HOLD).exists()
