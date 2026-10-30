@@ -12332,3 +12332,12 @@
 {"id":"ob-2026-10-30-b55173c56e","from":"approved","to":"posting","at":"2026-10-30T18:48:40Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-30-b55173c56e","from":"posting","to":"posted","at":"2026-10-30T18:48:41Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae4e689a351214acfa31fea","external_url":null,"at":"2026-10-30T18:48:34Z","booked_at":"2026-10-30T18:48:34Z"}}
 {"id":"ob-2026-10-30-d0ea8be82d","from":"approved","to":"quarantined","at":"2026-10-30T18:48:41Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-30-10036b27e5","from":"queued","to":"approved","at":"2026-10-30T18:54:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-30-48538ed3b3","from":"queued","to":"approved","at":"2026-10-30T18:54:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-30-dc6130f9ba","from":"queued","to":"approved","at":"2026-10-30T18:54:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-30-363b71d3bd","from":"queued","to":"approved","at":"2026-10-30T18:54:30Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-30-10036b27e5","from":"approved","to":"posting","at":"2026-10-30T18:54:32Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-30-10036b27e5","from":"posting","to":"posted","at":"2026-10-30T18:54:33Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ae4e7e9260ad0ee5bc38531","external_url":null,"at":"2026-10-30T18:54:28Z","booked_at":"2026-10-30T18:54:28Z"}}
+{"id":"ob-2026-10-30-48538ed3b3","from":"approved","to":"quarantined","at":"2026-10-30T18:54:33Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-30-dc6130f9ba","from":"approved","to":"quarantined","at":"2026-10-30T18:54:34Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.71) of ob-2026-10-30-b55173c56e posted today; same template, different ticker","receipt":null}
+{"id":"ob-2026-10-30-363b71d3bd","from":"approved","to":"quarantined","at":"2026-10-30T18:54:34Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
