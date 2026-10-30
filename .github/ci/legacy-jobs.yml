@@ -10053,7 +10053,11 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
-    timeout-minutes: 12
+    # Hosted run 40955912461 used ~9m for fail-closed canonical-main acquisition,
+    # then passed 442 render tests; its 12m cap cut off active Chromium tests.
+    # Keep all guards and browser assertions; bound the complete qualified job
+    # at 16m so slow but successful ancestry acquisition can finish the checks.
+    timeout-minutes: 16
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
