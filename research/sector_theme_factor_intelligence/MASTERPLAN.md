@@ -1,0 +1,82 @@
+# Sector & Theme Factor Intelligence — source-bound implementation masterplan
+
+Recorded: 2026-10-30 (America/Cancun). Status: **proposed source-only extension**, not an Agent OS acceptance or released product.
+Task tree: `research/sector_theme_factor_intelligence/MASTERPLAN.md`, owning repository `mastermindx-market-intelligence/macro`.
+Protected Mastermind procedure: `bb85b429f2ffffd38408080ce4df7d6378c34100`; `mastermind.sol_skillpack.v1` / version `1.0.1` / bootstrap-major `1`.
+Initial Macro source census: `6f60f9c75328996fbd43e4472d8890283de165fc`.
+Existing organizational parent: `WS:LEADERSHIP-ROTATION-INTELLIGENCE` (not a new workstream); canonical theme-data dependency: `WS:GMI-THEME-GRAPH`.
+Existing task trees: `research/ROTATION_COMMAND_MASTERPLAN_BY_FABLE.md`, `research/SECTOR_ROTATION_CONTINUATION.md`. This document specifies an additive extension; it does not replace their accepted nodes or the W1–W5 delivery.
+Current source carrier: `sol/sector-theme-factor-intelligence-20261030`. Organizational handoff/artifacts linkage **not yet accepted or written**; the incumbent Agent OS writer must reconcile this source proposal.
+
+## Chairman outcome and 10/10 completion ruler
+
+One user journey from **market -> sector -> theme -> subtheme -> constituent -> evidence -> history -> conditional candidate**, with replay at intraday, daily, weekly, monthly and multi-year horizons. The user can determine (a) measured relative leaders and laggards, (b) breadth, trend quality, concentration, acceleration/deterioration, (c) plausible stage and historical analogs rather than fictional guaranteed "room to run", (d) correlated/inverse asset and credit stress, and (e) the exact known-at evidence and failure/null reasons. Individual leaders remain visible even when their sector or entry gate says HOLD.
+
+10/10 acceptance requires all: current qualified canonical constituents including overlap and correction lineage; factual same-clock multi-timeframe measurements; factor-by-factor decompositions; intraday-to-daily state continuity; historical replay of what was *knowable*, distinct from reconstructed contexts; robust and independently reviewed predictive research before any predictive promotion; genuine permitted market feed and rights; well-designed EN/ZH responsive experience; exact-head CI and independent review; signed-in full producer -> canonical artifact -> API -> browser -> alert/return path proof where applicable. Green tests or a pretty page are not production proof.
+
+## Incumbents, boundaries and anti-duplication
+
+- `engine/theme_scoring.py` already blends trend (.26), breadth (.18), impulse (.07), macro (.18), MTF (.16), volhole (.05) and crowding (.10). Its forward-return efficacy is NOT established. Do not silently change these weights, enter/trim verbs, or invalidate its source-clock rules.
+- `engine/leadership_rotation_context.py` already owns `relative_wealth`, `breadth` with coverage bounds, measurement vs transitions vs research estimates, cohort and evidence modes. Reuse these pure methods: relative wealth = `(1+R_g)/(1+R_b)-1`; coverage bounds = `[k/N,(k+N-n)/N]` (identification bounds, not confidence intervals).
+- `engine/live_breadth.py` and existing VPS poller are market-wide DISPLAY-tier on the current lawful feed; no new poller/stream or feed entitlement. The 15-minute delayed basis must never render as instantaneous.
+- `WS:GMI-THEME-GRAPH` is the canonical node, membership/PIT, rights, identity, ThemeState owner. Its W3B qualified owner receipts and W3C rights-gated cohorts are NOT fully accepted. Never fill unknown identities, populations or qualifications with current-roster assumptions.
+- `engine/sector_cycles.py`, `engine/group_flow.py`, `engine/basket_mtf.py`, `engine/rotation_events.py`, existing Factor Atlas (Macro issue #8679; Terminal draft #928), and qualified credit/bonds/flow owners are inputs or consumers, not systems to recreate.
+- Existing `WS:LEADERSHIP-ROTATION-INTELLIGENCE` recorded `MEASURED_PRODUCT_COMPLETE` for its bounded T01–T26 sector journey but `PREDICTIVE_CAPABILITY_QUALIFIED=NO` and original program not complete. Preserve its prereg V1/V2/V2.1 scientific results, W6 continuation, and do-not-redo holds. This extension may not relabel them as successful.
+- No new entity master, ticker graph, data collector, event publisher, theme score authority, trading/portfolio authority, lifecycle, scheduler, experiment registry, alert outbox or separate learning store.
+
+## Product semantics: five noninterchangeable analytical layers
+
+**L0 data and eligibility**: point-in-time `security_id` and issuer; sector/theme/subtheme membership revision and known-at; optional dual memberships with overlap; eligible universe N vs sampled n; calendar, RTH/overnight basis, price adjustment basis, current-roster vs PIT; source, rights, observed_at, available_at, correction ID, first-seen, stale and null reasons. Different clocks never get joined as if simultaneous.
+
+**L1 observed ticker and group state**: 1/5/15/60min; RTH session; 1/5/20/63/126/252 sessions; multi-year contextual history where source permits. Ticker-level return, logarithmic slope when robust, MA20/50/200 eligibility, 52-week range, normalized RSI/ROC, volatility/ATR, drawdown and distance from own historically conditioned run distribution. Group equal-weight, weighted only with complete lagged genuine weights, median, dispersion, tail share, positive-return breadth, % above MAs, positive RS/beta-residual breadth, new-high/low and up/down volume only where entitled. Report factor numerator/eligible n/expected N/bounds. No null-as-zero.
+
+**L2 transitions and mechanism diagnostics**: paired-identity same-member 2x2 strength transitions; cohort-entry/exit separated from true state flips; cross-horizon alignment/conflict; acceleration = change in predeclared smoothed relative-return slope with exact windows and volatility normalization; concentration/HHI and leadership turnover; rising aggregate with shrinking breadth; falling cap-weighted group while median and equal-weight strengthen; intra-group leader vs laggard participation gap; sector/theme rank migration. Endpoint changes are not a record of every intrawindow crossing.
+
+**L3 cross-asset and credit context**: observe pairwise relative strength vs SPY and parent, cross-sectional sector spread, defensives vs cyclicals, RSP/SPY, IWM/SPY, short/long duration, USD, gold, volatility and HY/IG spread where permitted and published. A putative inverse leg is an empirical rolling relationship with dated lookback, sample count, lower-tail/bear-market conditional estimate and instability flag. Never assume gold/TLT/XLU remain negatively correlated or treat simultaneous opposite moves as proven flows. Compare liquidity/funding, credit widening, risk-on leadership and risk-off oversold/turning states; differentiate market observation from a causal explanation. Daily published credit OAS is not an intraday tick. FRED ICE BofA OAS display began limiting available observations to 3 years in April 2026; historical sourcing/redistribution needs explicit rights and vintage review.
+
+**L4 researched hypotheses**: prior-run analog conditional distributions (MFE/MAE, continuation frequency, survival/hazard, reversals) and pairwise factor interaction hypotheses for defined next 1/5/20/63-session outcomes. "Room to run" is an empirical *distribution with sample, limits and regime*, never a forecast from an RSI percentile alone. Until genuinely validated: research estimate only, not score/rank/promotion/position size.
+
+**L5 consumer/action boundary**: descriptive frame may feed Macro/Terminal sector detail, rotation research, AI Briefs/Risk Radar as explicitly named observations. Existing signal/risk/entry/portfolio/outbox owners independently decide if and how an alert is permitted; no direct trading or position sizing. Natural-language explanation uses measured fields and cites as-of/basis and nulls; LLM may summarize but may not author numbers, identities or causality.
+
+## One canonical read-only frame, version 1
+
+```text
+sector_theme_factor_frame/v1
+  group: {canonical_group_id, kind, parent_ids, membership_revision, overlap_policy}
+  horizon: {bar_interval, session_basis, start, end, close_kind}
+  evidence: {source_id, source_revision, observed_at, available_at, correction_id,
+             evidence_mode, rights_use, cohort_id, membership_mode, stale_reason}
+  universe: {expected_n, eligible_n, sampled_n, missing_by_reason}
+  observations: {constituent_states, group_returns, rs_vs_benchmark, rs_vs_parent,
+                 breadth_metrics, breadth_identification_bounds, divergence, dispersion,
+                 concentration, transitions, extension_context, cross_asset_context}
+  interpretation: {current_strength, breadth_direction, acceleration, deterioration,
+                   disagreement_flags, unmeasured_reasons}
+  research: {hypothesis_id, pre_registration, eligible_horizons, evaluation_status}
+  authority: {display_only=true, predictive_promoted=false,
+              entry_gate_owner, alert_owner}
+```
+
+No invented one-dimensional score. If a weighted composite is later justified, its sign/weights, missing-leg treatment, benchmark and horizons require frozen experiment, versioned definition and separate owner approval; any missing high-impact factor must not silently renormalize to false confidence.
+
+## Ordered task tree (source evidence, not Executive Jobs)
+
+- **P0 [implementation_complete / source census only]** Reconcile Macro source `6f60f9c`, `WS:LEADERSHIP-ROTATION-INTELLIGENCE`, `WS:GMI-THEME-GRAPH`, Factor Atlas issue #8679, and incumbent breadth/theme scoring. Evidence: pinned source and current workstream reads. **DO_NOT_REDO** accepted W1–W5, graph D2C/D2D and previous score tests. Outstanding: current signed-in/production and source-writer custody proof, so acceptance not claimed.
+- **P1 [ready]** Pure factor/coverage/transition read-only contract, using existing relative-wealth and breadth logic. No new graph owner or live fetch. Inputs: explicitly typed, source-vintaged member evidence; output L1/L2 factor frame with abstentions. Acceptance: hermetic cases for missing denominator bounds, zero measured, overlapping members, paired transitions, future-known evidence refused, ties, incompatible horizons, weighted denominator gaps, unit invariance and exhaustive property checks. Risk reversible; candidate owned on this isolated source branch, independent review required.
+- **P2 [proposed; depends P1 and genuine GMI qualification]** Owner adapters from PIT GMI and qualified price tapes; exact signal source, retained current roster vs PIT, rights/use clocks and correction handling. No pre-existing W3B/W3C acceptance inferred. Acceptance: real-source dry run plus fail-closed cases for unavailable identity/rights; no raw data retention in the new module.
+- **P3 [proposed; depends P1/P2]** Intraday-to-daily factor chronology and event diff on incumbent publisher read path. Preserve vendor delay, RTH and extended-hours dislocations, time-of-day comparisons, outage rollbacks and same-member transitions; no shadow collector. Acceptance: recorded real session and stale/holiday/feed regression; output can be replayed exactly as issued.
+- **P4 [proposed; depends P1/P2]** Cross-asset/credit read-only evidence adapters and conditional relationship stability. Same-as-of only; ICE OAS history and redistribution licensing gate; preserve source vintage, publication latency and missingness. Acceptance: prove no intraday credit-spread front-running; regime-correlation inversion tests and date-mismatch refusal.
+- **P5 [proposed; depends P1/P2/P3]** Paper-designed Macro Sector Central + Theme Detail and compatible Terminal panel: group matrix, ticker ladder, breadth trend heatmap, leader/laggard divergence, cross-asset stress, historical analogs, clear evidence badges, EN/ZH, keyboard, responsive, dark/light. Use canonical source frame, no duplicate backend. Acceptance: desktop/mobile and failure/null/rights-gated browser states; real signed-in input→view path.
+- **P6 [proposed; depends P1/P2/P4]** Pre-registered, chronology-respecting scientific race. Explicit outcomes next 1/5/20/63 sessions; classify rather than promise future performance. Compare current theme scoring, momentum-only, breadth-only, SPY/parent baselines, and variants without inverse/credit legs. Purge/embargo overlapping labels; calendar-age and listing-survivorship checks; untouched chronological/era holdouts; clustered/block bootstrap; feature dependence, multiple tests, costs, turnover, missed-upside, false alarms, capture/latency. Prespecified promotion requires independent skeptical review and a prospective shadow audit, with negative findings retained.
+- **P7 [proposed; depends P5/P6]** Read-only observation adoption in existing Risk Radar/AI Brief/Prophet/alerts and optional *validated* predictive research later, never direct score/rank/size/trade authority from this plan. Acceptance: one prospective observation→approved consumer→user return trace and explicit opt-in gates for real alerts.
+- **P8 [proposed; depends P1–P7]** Exact-head CI, independent non-author Fabric review, rights/security/entitlement validation, normal release, seeded replay, live data lineage, multi-session production browser acceptance and operator rollback. Completion only when the full 10/10 ruler is observed and documented by the canonical owners.
+
+## Immediate implementation contract and collision fences
+
+Build **P1 only**, additive `engine/sector_theme_factor_intelligence.py` and `tests/test_sector_theme_factor_intelligence.py`, using incumbent pure functions; no changes to `engine/theme_graph/`, `engine/theme_scoring.py`, `engine/live_breadth.py`, existing rotation files, deployed data, `site/`, `templates/`, CI scheduling or publisher. At that milestone, run targeted tests and independent review, then qualify P2 producer inputs before extending data effects. Separate design work may inspect Paper, but never modify an overlapping active Paper file without its exact carrier authority.
+
+External research anchors: Moskowitz & Grinblatt (1999), `https://doi.org/10.1111/0022-1082.00146`; Moskowitz/Ooi/Pedersen (2012), `https://doi.org/10.1016/j.jfineco.2011.11.003`; Gu/Kelly/Xiu (2020), `https://doi.org/10.1093/rfs/hhaa009`; FRED/ALFRED `BAMLH0A0HYM2` source/restrictions. These support hypotheses and feature selection, **not** validated performance for our particular model or data.
+
+## Current recovery boundary
+
+GitHub source proposal: eligible branch above; **not** Agent OS source-linked/accepted, merged, deployed, reviewed, or production proven. Before claiming an organizational milestone, an eligible Agent OS writer must add the appropriate task-tree artifact pointer and a valid dated handoff under existing `WS:LEADERSHIP-ROTATION-INTELLIGENCE`, preserving live writers, DO_NOT_REDO and external W6 obligations. No duplicate workstream or Job is created by this file.
