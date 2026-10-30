@@ -44,7 +44,9 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # #581/#548/#555/#526/#588/#550/#557 + live 401 probes): outside-union rows MO-PAID-055 and
 # MO-PAID-084 NOT_BUILT -> BUILT_NOT_PROVEN, MO-PAID-052 NOT_BUILT -> PARTIAL, MO-DELTA-039 and
 # MO-PAID-081 notes only. Prior digest: 83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951.
-OUTSIDE_UNION_SHA256 = "a5f263439ac32778504c887db876ad5391961eb86ec41de533e81628424ba3ea"
+# P18.T1 / #10206: only PAID024 notes changed outside the union. The dedicated
+# F04 guard below also pins all 128 unrelated rows and both rows' protected fields.
+OUTSIDE_UNION_SHA256 = "0da50ef2d42a8aa7c0ce85c19d704ae3d50549958eff9abe0637c795dd8d5551"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -509,6 +511,24 @@ def test_other_49_rows_are_byte_identical_to_integration_baseline():
     assert _outside_digest() == OUTSIDE_UNION_SHA256
 
 
+def test_f04_two_row_reconciliation_preserves_unrelated_bytes_and_protected_fields():
+    # P18.T1 is a notes/consumer correction, not capability, rights or authority promotion.
+    # Baselines are the reviewed pre-correction f5d91f6c source, not the changed CSV.
+    expected = {'MO-DELTA-004': '229fe985d194e31b0f1f5f819538890e21cc1ac13092aa2903f0c6c759e1f5f3', 'MO-PAID-024': '26d91c6eb4f69a759491653cebe553ca692b05e57b833fd0fc42bbcb5c708a06'}
+    allowed_notes = {"state_delta", "real_consumer", "missing_contract_or_proof",
+                     "next_bounded_child", "adjudication_notes"}
+    rows = _rows()
+    for row_id, digest in expected.items():
+        allowed = allowed_notes | ({"real_producer"} if row_id == "MO-PAID-024" else set())
+        protected = {key: value for key, value in rows[row_id].items() if key not in allowed}
+        assert hashlib.sha256(json.dumps(protected, sort_keys=True).encode()).hexdigest() == digest, row_id
+    untouched = b"".join(
+        line for line in CSV_PATH.read_bytes().splitlines(keepends=True)
+        if line.split(b",", 1)[0].decode() not in expected
+    )
+    assert hashlib.sha256(untouched).hexdigest() == "9747f48a13ce3ef0093757f47cae659eabb154a19bd2ffa2b2dada226586375c"
+
+
 def test_sol_adjudicated_closure_fields_are_not_stale():
     r = _rows()
 
@@ -751,7 +771,19 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     theme_map = r["MO-DELTA-004"]
     assert theme_map["capability_state_c2"] == "PARTIAL"
-    assert "no product surface" in theme_map["missing_contract_or_proof"].lower()
+    assert "templates/ontology-theme.js" in theme_map["real_consumer"]
+    assert "authenticated full-path acceptance remains open" in theme_map["real_consumer"]
+    assert "served #10191 decoder SHA" in theme_map["missing_contract_or_proof"]
+    assert "issuer-selection502 and C01 boundary are not cleared" in theme_map["missing_contract_or_proof"]
+
+    retrospective = r["MO-PAID-024"]
+    assert retrospective["capability_state_c2"] == "NOT_BUILT"
+    assert "research.capture_event" in retrospective["real_producer"]
+    assert "/api/ontology/explorer/research/v1" in retrospective["real_consumer"]
+    assert "without automatic request" in retrospective["real_consumer"]
+    assert "Full calibrated arbitrage/opportunity semantics remain absent" in retrospective["missing_contract_or_proof"]
+    assert "rank/gate/size/entry authority" in retrospective["missing_contract_or_proof"]
+    assert "first-click recipient UNKNOWN remains" in retrospective["missing_contract_or_proof"]
 
     research_mode = r["MO-PAID-031"]
     assert research_mode["capability_state_c2"] == "SPEC_ONLY"
