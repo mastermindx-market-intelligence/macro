@@ -531,3 +531,70 @@ user-path proof and independent review. Do not substitute mutable current
 rosters, synthetic fixtures or owner-**claimed** receipts for authentic
 as-known evidence. No source or product release occurs from this QA
 checkpoint. Mission remains **MORE_WORK_EXISTS**.
+
+
+## 2026-10-30 P3c multi-horizon source consumer checkpoint
+
+Original full mission remains granular sector/theme/name breadth across
+intraday, daily, weekly and longer horizons, with forecast qualification
+separate from descriptive measured states. The source-only P1–P3 program
+now includes **P3c**:
+`engine/sector_theme_multi_horizon_view.py` and
+`tests/test_sector_theme_multi_horizon_view.py`.
+The original existing `compose_regime_fingerprint` remains the sole
+quantitative 12-axis composer. P3c takes 2+ already projected P2
+research-only horizon frames, checking exact constituent/security/issuer
+population, cohort/membership vintage and known-at, group, original
+endpoint and decision, benchmark and parent identity, price basis, RTH/
+session basis and source-origin. It preserves separately labeled source
+period starts; 1m/5d/20d values are not added or averaged. Opposite
+parent-relative signs are explanatory divergence, not a forecast or
+trading permission. Its bilingual explanation is recomputed from the
+numeric fingerprint, not from a caller's cached/forged prose.
+
+**Direct test proof:** isolated M2 Studio scratch
+`/tmp/stfi-verify-bc14-20261030`, **201 passed in 0.24s**
+for the seven factor/P1a/P2/P2b/P2c/P3a/P3b/P3c suites, including
+19 named P3c test functions, following the earlier 182-pass P1–P3b
+checkpoint. A deterministic 750-mutation P3c malformed-packet sweep
+returned **0 uncaught exceptions**. All 15 tested source files originally
+matched the exact GitHub blob SHA at
+`92cc89d9c12db5005df5ba3a5ca93bd6d4262e67`.
+After renaming P3c tests (avoiding collision with the reserved
+P4 cross-asset phase), test file blob
+`cee718f93f95a94c74365fd5d723f40e2bff010e` was separately
+verified byte-identical locally and on GitHub. No remote Macro
+working-tree edit or collector execution was made.
+
+The new module is registered under the **existing**
+`leadership-rotation-contract` CI job in
+`.github/ci/legacy-jobs.yml`; code/docs head before this handoff is
+`d0eb77451c70d99eed1f1688b13b69bd2706d2a0`.
+Final exact-head hosted CI/fences have not concluded at time of writing;
+this handoff commit advances the head again and requires its own
+exact-head check conclusion. **Do not imply that the 201 local tests are
+a passing full hosted CI run or an independent reviewer.**
+
+Existing GMI W3B/W3C is still SOURCE_UNAVAILABLE/rights and
+authentic original owner observations unqualified on current Macro main
+`fd8d61c07261fd3a0f747aa8899f9638bc0a73cc`.
+A source-shaped research packet is not a receipt; customer/alert/
+ranking/forecast/trade flags remain false. Existing Sector Central
+redesign macro#7646 has an incumbent 92-capability UX migration
+contract; do not write its live templates or fabricate a Paper
+artboard to bypass the prior direct Paper SSE 429 transport failure.
+Do not restart the Fabric manual review denied with
+`MANUAL_ROUTE_UNAVAILABLE/retry_allowed=false`.
+
+**Exact next action:** inspect the PR #10213 new head and any CI/fence
+completion or actual test failure; repair only confirmed introduced
+reds in the original branch. Obtain an independent non-author review
+through a lawful newly serviceable avenue, then an authentic GMI
+membership/identity/source rights and price/benchmark known-at
+producer for one US theme. Bind through P2 to the existing Sector
+Central/Terminal read, and prove a signed-in real-source user journey.
+P4 credit sources remain separate rights-gated research, P5 Paper
+design and production UX remain incomplete, P6 predictive prereg,
+time-series calibration and prospective shadow acceptance unproven.
+No master-plan dependent phase is marked accepted from this QA alone.
+**Mission MORE_WORK_EXISTS; draft/hold.**
