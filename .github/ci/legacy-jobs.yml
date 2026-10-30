@@ -8933,6 +8933,7 @@ jobs:
     scope: exclusive
     paths:
       - "scripts/build_aibrief.py"
+      - "scripts/__init__.py"
       - "tests/test_aibrief_countdown_qual.py"
       - "templates/aibrief.html.j2"
       - "data/release_forecast/latest.json"

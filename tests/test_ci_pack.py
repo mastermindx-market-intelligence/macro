@@ -5054,6 +5054,10 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 
