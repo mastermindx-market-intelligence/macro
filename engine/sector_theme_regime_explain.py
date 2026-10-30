@@ -119,7 +119,7 @@ def _group_card(tag: str, h: str, row: Mapping) -> dict | None:
         if pos is None or not pos[1] < .5:
             return None
         return _card("group", tag, h,
-            f"{h}: at most {pos[1]*100:.1f}% of eligible members had positive returns. A majority were flat or negative—not necessarily decliners.",
+            f"{h}: at most {pos[1]*100:.1f}% of eligible members had positive returns. A majority were flat or negative; the count of strictly declining members is not identified.",
             f"{h}：最多 {pos[1]*100:.1f}% 的合资格成分股上涨；大多数持平或下跌，不一定全是下跌股票。",
             {"positive_return_breadth_upper_bound": pos[1]},
             ["participation.positive_return_breadth.identification_bounds"])
