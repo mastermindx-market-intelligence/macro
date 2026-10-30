@@ -289,6 +289,7 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
         disp = _median_and_gap(frame)
         per[h] = {
             "period_end": frame["clock"]["period_end"],
+            "moving_average_basis": frame["clock"].get("moving_average_basis"),
             "evidence_mode": frame["evidence"].get("mode"),
             "absolute_trend": {"group_return": abs_return,
                                "uptrend_breadth": breadth["uptrend_breadth"],
