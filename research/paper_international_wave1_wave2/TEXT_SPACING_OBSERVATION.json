@@ -1,0 +1,118 @@
+{
+  "status": "PASS_SCOPED_SOURCE_FIXTURE_OBSERVATION; whole accessibility and served acceptance remain open",
+  "source_head": "5694a67f31c9f6f400541bc4bde586a51540ddfe",
+  "source_effect": "No product or test-suite source change; this continuation records a distinct user-spacing condition.",
+  "purpose": "Earlier contrast, computed accessibility and doubled-font checks did not establish behavior under a four-property user text-spacing override.",
+  "reference": "https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html",
+  "applied_test_style": "* { line-height:1.5 !important; letter-spacing:.12em !important; word-spacing:.16em !important; } p { margin-bottom:2em !important; }",
+  "conditions": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "widths": [
+      320,
+      1440
+    ],
+    "height": 900,
+    "font_size": "unchanged",
+    "native_zoom": "NOT_EXECUTED",
+    "data": "Explicit retained synthetic publisher fixture; no new rights or real source qualification"
+  },
+  "verification": {
+    "command": "python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-spacing-20261014-r1/matrix.py",
+    "cases": 8,
+    "states_per_case": 10,
+    "state_observations": 80,
+    "direct_text_observations": 6672,
+    "states": [
+      "Overview",
+      "Inspector read",
+      "Inspector ledger",
+      "Inspector field",
+      "Compare",
+      "Macro",
+      "Risk",
+      "History",
+      "Scenario result",
+      "Library"
+    ],
+    "results": "All8cases pass. No detected clipping against hidden/clip ancestors, no workspace control extending outside viewport and document width <= viewport+1px in80samples. Before/after text signatures and analytical URL agree in each sample.",
+    "spacing_assertion": "Rendered matrix samples verify line-height1.5, letter-spacing0.12em and word-spacing0.16em. A separate final precondition check verifies all four overrides, including paragraph-bottom2em, over every pre-rendered workspace direct-text element/paragraph in each of8configurations. Hidden panels are included in that precondition scope, not claimed as extra rendered cases.",
+    "interaction_results": {
+      "inspector_hierarchical_escape_restores_origin_focus": 8,
+      "scenario_5_and_minus3_yields_1_85": 8,
+      "library_native_clear_restores_input_focus": 8
+    },
+    "smoke": "Initial seven-view Light/EN320 geometry probe passed. It overlaps final observations and is not counted as extra accepted journeys.",
+    "override_effectiveness": {
+      "command": "python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-spacing-20261014-r1/override_effectiveness.py",
+      "configurations": 8,
+      "direct_text_elements_per_configuration": 29121,
+      "paragraphs_per_configuration": 1858,
+      "failed_property_checks": 0,
+      "full_workspace_text_equality_before_after": true,
+      "scope": "Pre-rendered markup, including hidden panels and inactive analytical contexts. These are repeated DOM observations, not distinct controls or additional rendered journeys."
+    }
+  },
+  "method_limits": [
+    "Direct text signatures retain the first120characters of each node for comparison; they are not complete-content byte equality. Geometric ranges use full node text.",
+    "The geometry probe detects overflow:hidden/clip ancestor clipping and viewport-wide controls, not every text overlap, raster occlusion, native select popup or screen-reader behavior.",
+    "Visually hidden/aria-hidden text and native option/SVG/script/style contents are excluded. Offscreen-but-rendered page content can be counted; observations are not distinct controls.",
+    "Whole SC1.4.12 certification remains open: the probe covers particular source-fixture states, not every content variation, user stylesheet, browser, overlay or live access context. Computed hidden-markup styles do not add rendered coverage.",
+    "Two viewed Scenario images retain the existing shared launcher overlap. It can obscure a small region at a given scroll position; previously recorded scroll recovery and remaining usability limitation are unchanged.",
+    "Source-fixture arithmetic is illustrative; it adds no chart/benchmark/source/rights/Saved qualification.",
+    "No original Chrome handoff interaction, nativezoom retry, worker/review retry, PR/CI read, ready/merge/autoarm/deploy or cross-chat transport."
+  ],
+  "evidence": {
+    "package": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-spacing-20261014-r1",
+    "matrix_sha256": "955c7421fdf4dc2da5b1c883acbd4e8ceecd9ba61e4d16fba3e1810a5481e415",
+    "script_sha256": "dc6aa889c0789c7e132c7fdbc597c816ba4f13dac6a2fd5d7dae83bfd90e0788",
+    "log_sha256": "32f510ba05d6448a1ecabc797923bf0bb9352de25d3e4812f6b44bbb5d24ad1d",
+    "input_html_sha256": "306105a5f491914851e11f513f06e8598e4e76e5ec58f8a50360369e32f8b512",
+    "optimized_html_sha256": "86814a50904cc3fb0421bf931431c8118b2fa6501eeb7a40df9e108e4eab7341",
+    "served_asset_sha256": {
+      "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+      "templates/intl_workspace.css": "585bb762f5d3b6bf0270853b99aca0d145f36a4b5764c9795198043e433565ca",
+      "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+      "templates/intl_workspace_risk.css": "1a9857cb564768d1df39452ad59d168d409ee56db7a4123cfb2c1868c05e92b1",
+      "templates/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+      "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+      "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+      "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+      "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+      "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+      "templates/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
+      "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "templates/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+      "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "templates/terminal_overlay.js": "bb582bd6205f44687650a82d5731bbc03766995a3eb3e5676ad6930f8a2748e3",
+      "templates/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+    },
+    "screenshots": {
+      "scenario-dark-zh-320.png": "99a356401c28f4bfe450e442416ac2e92ac184b8e3b68a0cfb06047975573479",
+      "scenario-light-en-1440.png": "5bd7e3e3b5fb0ae2603da980f81c0f0cf6dcd4476db752583c1c59c8a310e4ba"
+    },
+    "parent_viewed": "Both saved images; no independent visual acceptance",
+    "override_effectiveness": {
+      "override_effectiveness.py": "1801fdfa86da51e4277d44d5ebf92e8cc5f4bcb6d85e0cb81b5ce2fb427171b6",
+      "OVERRIDE_EFFECTIVENESS.json": "9e461c195b950db0b8fbdee173d6f9e1122d40cd5ddde3ca60b005b56d2f9058",
+      "OVERRIDE_EFFECTIVENESS.log": "dcba2476c16f4f339b88c722e32d89b5cbd5971346354a10c9449522ee35f199"
+    }
+  },
+  "remaining": "Programme incomplete. Original Chrome extension UI, review policy refusal, current qualification/rights, genuine Saved and all release/IW2 custody gates persist. Current CI unobserved; no repeated polls."
+}

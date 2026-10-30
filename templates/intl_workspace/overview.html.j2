@@ -27,26 +27,38 @@
   id="{{ context_id|e }}-overview"
   aria-labelledby="{{ context_id|e }}-title"
 >
-  <h2 id="{{ context_id|e }}-title">
+  {# The shell header and the selected Overview tab already name this panel; the
+     native h2 keeps the section's semantic heading and stays in the accessibility
+     tree, visually hidden rather than removed. #}
+  <h2 id="{{ context_id|e }}-title" class="intl-overview__panel-title">
     <span class="l-en">Market overview</span>
     <span class="l-zh" lang="zh">市场概览</span>
   </h2>
 
   <div class="intl-overview__first-read">
-    <div class="intl-overview__context">
-      <span class="l-en">{{ projection_context.configured_count }} configured markets, {{ projection_context.eligible_count }} qualified returns</span>
-      <span class="l-zh" lang="zh">覆盖市场 {{ projection_context.configured_count }} 个，符合条件的回报 {{ projection_context.eligible_count }} 个</span>
-      <span class="l-en">{{ projection_context.context.horizon|e }}</span>
-      <span class="l-zh" lang="zh">{{ projection_context.context.horizon|e }}</span>
-      {% if projection_context.context.currency_basis == 'usd_unhedged' %}
-        <span class="l-en">USD · Unhedged</span><span class="l-zh" lang="zh">美元·未对冲</span>
-      {% else %}
-        <span class="l-en">Local currency</span><span class="l-zh" lang="zh">本币</span>
-      {% endif %}
-      <span class="l-en">Price return</span><span class="l-zh" lang="zh">价格回报</span>
-    </div>
-
     <div class="intl-overview__summary" data-im-summary>
+      <p class="intl-overview__eyebrow{% if overview.ranking_status != 'available' %} intl-overview__eyebrow--attention{% endif %}">
+        {% if overview.ranking_status == 'available' %}
+          <span class="l-en">Qualified returns</span><span class="l-zh" lang="zh">符合条件的回报</span>
+        {% elif overview.ranking_reason == 'unequal_windows' %}
+          <span class="l-en">Returns not comparable</span><span class="l-zh" lang="zh">回报不可比</span>
+        {% else %}
+          <span class="l-en">Returns unavailable</span><span class="l-zh" lang="zh">回报不可用</span>
+        {% endif %}
+      </p>
+      <div class="intl-overview__context">
+        <span class="l-en">{{ projection_context.configured_count }} configured markets, {{ projection_context.eligible_count }} qualified returns</span>
+        <span class="l-zh" lang="zh">覆盖市场 {{ projection_context.configured_count }} 个，符合条件的回报 {{ projection_context.eligible_count }} 个</span>
+        <span class="l-en">{{ projection_context.context.horizon|e }}</span>
+        <span class="l-zh" lang="zh">{{ projection_context.context.horizon|e }}</span>
+        {% if projection_context.context.currency_basis == 'usd_unhedged' %}
+          <span class="l-en">USD · Unhedged</span><span class="l-zh" lang="zh">美元·未对冲</span>
+        {% else %}
+          <span class="l-en">Local currency</span><span class="l-zh" lang="zh">本币</span>
+        {% endif %}
+        <span class="l-en">Price return</span><span class="l-zh" lang="zh">价格回报</span>
+      </div>
+
       {% if overview.summary.kind == 'highest_lowest_returns' %}
         {% set highest = overview.rows | selectattr('market_id', 'defined') | selectattr('market_id', 'equalto', overview.summary.highest_market_id) | first %}
         {% set lowest = overview.rows | selectattr('market_id', 'defined') | selectattr('market_id', 'equalto', overview.summary.lowest_market_id) | first %}
@@ -57,23 +69,44 @@
           <span class="l-en"><strong>{{ highest.name_en|e }}</strong> highest, <strong>{{ lowest.name_en|e }}</strong> lowest</span>
           <span class="l-zh" lang="zh"><strong>{{ lowest.name_zh|e }}</strong> 最低，<strong>{{ highest.name_zh|e }}</strong> 最高</span>
         </p>
-        {% if overview.summary.positive_count is not none %}
-          <p><span class="l-en">{{ overview.summary.positive_count }} of {{ projection_context.eligible_count }} positive</span><span class="l-zh" lang="zh">{{ overview.summary.positive_count }} / {{ projection_context.eligible_count }} 个为正</span></p>
-        {% endif %}
-        {% if overview.summary.fx_detracted_count is not none and projection_context.context.currency_basis == 'usd_unhedged' %}
-          <p><span class="l-en">{{ overview.summary.fx_detracted_count }} of {{ overview.summary.fx_eligible_count }} reduced by currency</span><span class="l-zh" lang="zh">{{ overview.summary.fx_detracted_count }} / {{ overview.summary.fx_eligible_count }} 个受汇率拖累</span></p>
+        {% if overview.summary.positive_count is not none or (overview.summary.fx_detracted_count is not none and projection_context.context.currency_basis == 'usd_unhedged') %}
+          <dl class="intl-overview__stats">
+            {% if overview.summary.positive_count is not none %}
+            <div>
+              <dt><span class="l-en">Positive returns</span><span class="l-zh" lang="zh">正回报</span></dt>
+              <dd>{{ overview.summary.positive_count }} / {{ projection_context.eligible_count }}</dd>
+            </div>
+            {% endif %}
+            {% if overview.summary.fx_detracted_count is not none and projection_context.context.currency_basis == 'usd_unhedged' %}
+            <div>
+              <dt><span class="l-en">Reduced by currency</span><span class="l-zh" lang="zh">受汇率拖累</span></dt>
+              <dd>{{ overview.summary.fx_detracted_count }} / {{ overview.summary.fx_eligible_count }}</dd>
+            </div>
+            {% endif %}
+          </dl>
         {% endif %}
       {% elif overview.ranking_reason == 'unequal_windows' %}
         <h3><span class="l-en">Available returns use different calculation windows</span><span class="l-zh" lang="zh">可用回报采用不同计算窗口</span></h3>
+        <p>
+          <span class="l-en">Comparable current returns cannot be shown for this selection. Some returns exist, but they were measured over different periods, so they cannot be compared side by side.</span>
+          <span class="l-zh" lang="zh">此选择无法显示可比的当前回报。部分回报虽存在，但计算区间不同，无法并排比较。</span>
+        </p>
       {% else %}
         <h3><span class="l-en">Current returns unavailable</span><span class="l-zh" lang="zh">当前回报不可用</span></h3>
-      {% endif %}
-      {% if overview.ranking_status == 'available' %}
-        <p class="intl-overview__limitation">
-          <span class="l-en">Comparable price returns; not an allocation recommendation</span>
-          <span class="l-zh" lang="zh">可比价格回报；不构成配置建议</span>
+        <p>
+          <span class="l-en">Comparable current returns cannot be shown for this selection. The covered markets have not met the research standard for comparing returns right now, so no ranking, figure or market read is offered.</span>
+          <span class="l-zh" lang="zh">此选择无法显示可比的当前回报。目前覆盖市场尚未达到比较回报所需的研究要求，因此不提供排名、数字或市场解读。</span>
         </p>
       {% endif %}
+      <p class="intl-overview__limitation">
+        {% if overview.ranking_status == 'available' %}
+          <span class="l-en">Comparable price returns; not an allocation recommendation</span>
+          <span class="l-zh" lang="zh">可比价格回报；不构成配置建议</span>
+        {% else %}
+          <span class="l-en">Unavailable evidence does not mean low risk.</span>
+          <span class="l-zh" lang="zh">证据不可用不代表风险较低。</span>
+        {% endif %}
+      </p>
     </div>
 
     {% if overview.ranking_status == 'available' and overview.focus_ids %}
@@ -84,16 +117,26 @@
         {% endfor %}
       {% endfor %}
       <div class="intl-overview__focus" data-im-focus>
-        <h3>
-          <span class="l-en">{% if projection_context.eligible_count > 4 %}Three highest and lowest remaining{% else %}All qualified returns{% endif %}</span>
-          <span class="l-zh" lang="zh">{% if projection_context.eligible_count > 4 %}最高三个及其余最低一个{% else %}全部符合条件的回报{% endif %}</span>
-        </h3>
+        <div class="intl-overview__focus-head">
+          <h3>
+            <span class="l-en">{% if projection_context.eligible_count > 4 %}Three highest and lowest remaining{% else %}All qualified returns{% endif %}</span>
+            <span class="l-zh" lang="zh">{% if projection_context.eligible_count > 4 %}最高三个及其余最低一个{% else %}全部符合条件的回报{% endif %}</span>
+          </h3>
+          <p class="intl-overview__focus-context">
+            <span class="l-en">{{ projection_context.context.horizon|e }} · {% if projection_context.context.currency_basis == 'usd_unhedged' %}USD · Unhedged{% else %}Local currency{% endif %} · Price return</span>
+            <span class="l-zh" lang="zh">{{ projection_context.context.horizon|e }} · {% if projection_context.context.currency_basis == 'usd_unhedged' %}美元 · 未对冲{% else %}本币{% endif %} · 价格回报</span>
+          </p>
+          <p class="intl-overview__focus-note">
+            <span class="l-en">Ordered by return · Not a pick list</span>
+            <span class="l-zh" lang="zh">按回报排序 · 非推荐名单</span>
+          </p>
+        </div>
         <ol class="intl-overview__focus-list" data-im-focus-list>
           {% for row in focus_rows %}
             <li data-im-focus-item data-market-id="{{ row.market_id|e }}" id="{{ context_id|e }}-focus-{{ row.slot|e }}">
               <span class="intl-overview__market-name"><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></span>
               {% if row.index_id is defined %}<span class="intl-overview__index" data-index-id="{{ row.index_id|e }}">{{ row.index_label|e }}</span>{% endif %}
-              <span class="intl-overview__return" data-im-return>
+              <span class="intl-overview__return{% if row.metric.value is not none and row.metric.value > 0 %} intl-overview__return--up{% elif row.metric.value is not none and row.metric.value < 0 %} intl-overview__return--down{% endif %}" data-im-return>
                 {% if row.metric.value is none %}
                   <span class="l-en">Unavailable</span><span class="l-zh" lang="zh">不可用</span>
                 {% else %}
@@ -103,22 +146,87 @@
             </li>
           {% endfor %}
         </ol>
+        <div class="intl-overview__focus-footer">
+          <div class="intl-overview__focus-footer-copy">
+            <p class="intl-overview__focus-footer-title">
+              <span class="l-en">All {{ projection_context.configured_count }} covered markets, full attribution</span>
+              <span class="l-zh" lang="zh">全部 {{ projection_context.configured_count }} 个覆盖市场与完整归因</span>
+            </p>
+            <p class="intl-overview__focus-footer-note">
+              <span class="l-en">Expand shows every covered market with local, USD and currency-effect detail.</span>
+              <span class="l-zh" lang="zh">展开后显示每个覆盖市场的本币、美元与汇率影响明细。</span>
+            </p>
+          </div>
+          <button
+            class="intl-overview__expansion-trigger"
+            type="button"
+            hidden
+            data-im-action="set_expanded"
+            data-im-expanded="true"
+            data-im-expansion-trigger
+            aria-controls="{{ context_id|e }}-markets"
+            aria-expanded="true"
+          >
+            <span class="l-en">Expand all markets</span><span class="l-zh" lang="zh">展开全部市场</span>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="intl-overview__coverage" data-im-coverage>
+        <div class="intl-overview__coverage-head">
+          <h3>
+            <span class="l-en">Coverage and evidence</span>
+            <span class="l-zh" lang="zh">覆盖与依据</span>
+          </h3>
+          <p class="intl-overview__coverage-context">
+            <span class="l-en">{{ projection_context.context.horizon|e }} · {% if projection_context.context.currency_basis == 'usd_unhedged' %}USD · Unhedged{% else %}Local currency{% endif %} · Price return</span>
+            <span class="l-zh" lang="zh">{{ projection_context.context.horizon|e }} · {% if projection_context.context.currency_basis == 'usd_unhedged' %}美元 · 未对冲{% else %}本币{% endif %} · 价格回报</span>
+          </p>
+          <p class="intl-overview__coverage-note">
+            <span class="l-en">Evidence status for every covered market</span>
+            <span class="l-zh" lang="zh">每个覆盖市场的依据状态</span>
+          </p>
+        </div>
+        <ul class="intl-overview__coverage-list">
+          {% for row in overview.rows %}
+            {% if row.quality == 'denied' %}
+              <li class="intl-overview__coverage-row intl-overview__coverage-row--withheld">
+                <span class="intl-overview__coverage-status">
+                  <span class="l-en">Market details withheld</span><span class="l-zh" lang="zh">市场详情未披露</span>
+                </span>
+              </li>
+            {% else %}
+              {% set coverage_quality = quality_labels.get(row.quality, quality_labels.unknown) %}
+              <li class="intl-overview__coverage-row">
+                <span class="intl-overview__coverage-name"><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></span>
+                <span class="intl-overview__coverage-status"><span class="l-en">{{ coverage_quality.en|e }}</span><span class="l-zh" lang="zh">{{ coverage_quality.zh|e }}</span></span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+        <div class="intl-overview__coverage-footer">
+          <div class="intl-overview__coverage-footer-copy">
+            <p class="intl-overview__coverage-footer-note">
+              <span class="l-en">Expand lists the same roster with full detail; deeper research remains available below.</span>
+              <span class="l-zh" lang="zh">展开后列出同一清单及完整明细；更深入的研究仍可在下方查看。</span>
+            </p>
+          </div>
+          <button
+            class="intl-overview__expansion-trigger"
+            type="button"
+            hidden
+            data-im-action="set_expanded"
+            data-im-expanded="true"
+            data-im-expansion-trigger
+            aria-controls="{{ context_id|e }}-markets"
+            aria-expanded="true"
+          >
+            <span class="l-en">Expand all markets</span><span class="l-zh" lang="zh">展开全部市场</span>
+          </button>
+        </div>
       </div>
     {% endif %}
   </div>
-
-  <button
-    class="intl-overview__expansion-trigger"
-    type="button"
-    hidden
-    data-im-action="set_expanded"
-    data-im-expanded="true"
-    data-im-expansion-trigger
-    aria-controls="{{ context_id|e }}-markets"
-    aria-expanded="true"
-  >
-    <span class="l-en">Expand all markets</span><span class="l-zh" lang="zh">展开全部市场</span>
-  </button>
 
   <section
     class="intl-overview__markets"

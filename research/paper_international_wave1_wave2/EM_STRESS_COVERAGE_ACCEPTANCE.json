@@ -1,0 +1,46 @@
+{
+  "base_head": "c611087616ed1d7f2779e4fd8b28d51f4f332d5c",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "EM headline shows actual owner indicator state with supplied available/total coverage and hot count; insufficient or untyped coverage is unavailable; removes position instructions.",
+  "source_hashes": {
+    "templates/intl.html.j2": "aba78c156e4259afc436bdaca6f68777deb125bfaa6be60d822a84d6d9fd7f61",
+    "engine/intl_risk.py": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355",
+    "tests/test_intl_em_coverage_render.py": "811be18fdc6f2d0d63c0ecf11b365dad59f14ea6c573f7af04c4f08e829c2c76",
+    "tests/intl_workspace_page.test.cjs": "195bc46d5cf7245373c4ccc8800965092a7c39e50be9c71d5b1bd784ac9be847"
+  },
+  "verification": {
+    "red": "11PythonFAIL;1browserFAIL",
+    "green": "11PythonPASS14inheritedwarnings;12unique browserPASS24widthstates320/1440",
+    "canonical": "8DarkLightENZH1440/390captures of3of6availableCalm fixture;27boundassets"
+  },
+  "parent_review": {
+    "files": [
+      "em-coverage-1440-dark-en.png",
+      "em-coverage-1440-light-en.png",
+      "em-coverage-390-dark-zh.png",
+      "em-coverage-390-light-zh.png"
+    ],
+    "result": "4actual focused images viewed: explicit partial coverage, neutral Calm with indicator scope, readable bilingual wrapping in Dark/Light. Not independent approval."
+  },
+  "capture_harness": {
+    "failure": "Python Playwright Locator.first was called as a method, copied from JavaScript usage. Canonical8captures completed, focused helper failed before capture.",
+    "repair": "Use Python first property; repeat only focused helper, not canonical captures or tests."
+  },
+  "capture_diagnostics": "Inherited static live_config.js404; no page horizontal overflow; existing unrelated panel debt retained.",
+  "manifest_sha256": "9d2b52211678e8a075675fb872cfb8eb5040f4da04a6fdfdc311728678811fbe",
+  "limits": [
+    "Actual aggregation over synthetic leg payloads, not acquired or qualified market data.",
+    "Owner thresholds, scoring, state and fields unchanged.",
+    "Not deployed, live, speech, physicaltouch, nativezoom or complete accessibility.",
+    "All review, release, rights, Saved, migration, frozen-effect, browser, CI and IW2 holds remain."
+  ],
+  "next": {
+    "state": "ACTUAL_OWNER_COUNTEREXAMPLES_REPRODUCED",
+    "source": "engine/contagion.py spillover/_dy_connectedness; Contagion board wording",
+    "finding": "Model fits volatility; normalized forecast-error variance shares are presented as stress transmission speed, a global-variance denominator and daily-return inputs. A normalized synthetic matrix yields outbound160points andSPY row20percent.",
+    "next": "Preserve calculations; correct method, receiving/outbound denominator, coverage and snapshot date scope.",
+    "evidence": "../connectedness-method-scope-20261014-r1/OWNER_COUNTEREXAMPLES.json"
+  }
+}

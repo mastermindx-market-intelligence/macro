@@ -1,0 +1,88 @@
+{
+  "schema": "paper.compass_accessible_name.v1",
+  "status": "LOCAL_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "base_commit": "baa0634d0f4c1895e43d4b2c06b6f4d454f0314f",
+  "change": "SVG accessible name references its visible localized caption, numeric reading/scale when present, and engine/unavailable verdict. Existing language changes update the computed name with no new JavaScript translation path.",
+  "red": "Three exact accessible-name assertions fail on original static English labels; original names also omit visible verdict. Fail-before stops at the first English assertion, so it is not claimed as three executed Chinese failures.",
+  "verification": {
+    "focused_browser_tests": 3,
+    "locale_reading_assertions": 9,
+    "sequence": "EN -> ZH -> EN for absent,0 and54 readings at320px",
+    "python_tests": 20,
+    "python_warnings": "5 pytest temporary-directory cleanup warnings from another retained test tree; no manual cleanup",
+    "full_page_closure": {
+      "tests": 20,
+      "pass": 20,
+      "fail": 0,
+      "counts_overlap": true,
+      "source_scope": "Before CSS-equivalent trailing semicolon; final focused3 tests pass on final bytes."
+    },
+    "agentos": "0 errors;146 inherited warnings",
+    "final_focused_browser": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "locale_reading_assertions": 9,
+      "command": "NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node --test --test-name-pattern=\"Compass accessible\" tests/intl_workspace_page.test.cjs",
+      "rc": 0
+    },
+    "guard_resolution": "Initial design scanner treated trailing HTML after blanked Jinja as literal custom-property value. Explicit CSS declaration semicolon preserves runtime value and makes the existing unmodified scanner pass. Final design guard rc0; diff rc0.",
+    "runtime_resolution": "One final focused test command stopped before execution because NODE_PATH was absent; bundled installed Playwright path restored. No dependency installed.",
+    "final_checks": [
+      {
+        "name": "DESIGN_FINAL",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-accessibility-20261014-r1/FINAL_SOURCE.diff"
+        ],
+        "rc": 0,
+        "log_sha256": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40"
+      },
+      {
+        "name": "DIFF_FINAL",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "rc": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "3fa10d0f3bc5930496b440fdfc07888992597cdb6e545056e4bd06b4bca5392c",
+    "tests/intl_workspace_page.test.cjs": "b15eea5759af17c342d328361ea95c94cdac06db8eaeeebe81cc13ccea2e11fc",
+    "tests/test_intl_workspace_integration.py": "e8f55bdf256893b6937d6488ef6e0192f86a21fd14a42e2ea9fc8d8767808690"
+  },
+  "review": "Parent causal source and actual computed-browser-name checks only. Independent review remains pending under retained Fabric policy-publication refusal; no duplicate review worker or alternate carrier requested.",
+  "limits": [
+    "Computed browser accessibility names are not screen-reader speech or native200percent zoom.",
+    "No CSS/layout change in this phase; prior layout renders retain their own exact-source scope.",
+    "No deployment, current rights, genuine Saved, frozen-effect or IW2 custody change."
+  ],
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-accessibility-20261014-r1",
+  "evidence_sha256": {
+    "RED.log": "532e5b2d2eee0041f6617c27827c79171f585cefb97c0ee3edec77d701eb475e",
+    "GREEN.log": "e985bf03f87a8e4a54ba7ebb3964270961e8012f6c6f364732db3c4ab5b248ec",
+    "PYTHON.log": "7d3174949eba13010d95cbf708ecc6f29ee76b9de801a2f66dddf5800b1cd344",
+    "FULL_PAGE.log": "902884d39d80bdfb90e803c9a440f869846574826b53f01a9a2a7409880ef0bc",
+    "AGENTOS.log": "a4aee9f3b749b142f999fed07afc9e17d0a41fea68a7dd64459fc29228015f5d",
+    "FINAL_FOCUSED.log": "e8af47dd909ca1586ec46b2f512bbac00bf635b0d5d6145850abf3fd933adb75",
+    "FINAL_FOCUSED_RUNTIME.log": "c3637c4533deff361a0208ea58bf167c8b504ec93619c60c47d159d8dc5a0024",
+    "FINAL_SOURCE.diff": "a7406bf980b0d3d142f7bb8179b2390834d5d86b42ee185c7def6c51ae9d6129",
+    "FINAL_CHECKS.json": "db8c1281e2688c7f3a4c5ad1af8dc32aaf3f4ee75626c637bcb8b50c1aa636e9",
+    "DESIGN.log": "cbee67a736d4851f4f56e1449859f4cf79d7b7c32711481a8462c1f1c0db56d3",
+    "DESIGN_FINAL.log": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40",
+    "AGENTOS_FINAL.log": "a4aee9f3b749b142f999fed07afc9e17d0a41fea68a7dd64459fc29228015f5d"
+  },
+  "pre_semicolon_source_sha256": {
+    "templates/intl.html.j2": "a7a3d05d10a5def737b4be89170b7c8b46082c74c2b9518143ee26a7b4bc1c68",
+    "tests/intl_workspace_page.test.cjs": "b15eea5759af17c342d328361ea95c94cdac06db8eaeeebe81cc13ccea2e11fc",
+    "tests/test_intl_workspace_integration.py": "e8f55bdf256893b6937d6488ef6e0192f86a21fd14a42e2ea9fc8d8767808690"
+  }
+}

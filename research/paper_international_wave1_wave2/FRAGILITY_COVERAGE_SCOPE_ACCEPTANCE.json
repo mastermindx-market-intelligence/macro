@@ -1,0 +1,81 @@
+{
+  "base_head": "83e027bcb67e67af544c17195578e81fab11c99f",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Fragility reports supplied country coverage and flags without an all-clear or delivery promise; latest field years retain missing-data and projection limits. Native Library link focuses the existing heading.",
+  "source_hashes": {
+    "templates/intl.html.j2": "66b9c962e699ae4f8b803dbbce3335ab077faacfa2cdffdc959088bdd5a8b1b5",
+    "tests/test_intl_fragility_scope_render.py": "7c86e87961c3e0cd58184d863fcc599008bf4a8fe81d102fbd5973cad74edc74",
+    "tests/intl_workspace_page.test.cjs": "c8b53c176aaaf97cf13b79426cd32e1dc5fb75fda559f208dd30bc0da9e3a493",
+    "engine/intl_risk.py": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "owner_trace": {
+    "sources": {
+      "engine/intl_risk.py": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355",
+      "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+      "templates/intl.html.j2": "fc683d965f7ad3f023964d1782364726929abf5b3ea046004f6c9a23dd5cd03b"
+    },
+    "facts": [
+      "vulnerability_table omits country only when all three IMF fields absent; partial rows remain eligible for fragile=false",
+      "fragile means at least3actual adverse flags; false does not establish complete assessed coverage",
+      "asof_year per row is max supplied IMF field year; fields may differ and owner explicitly falls back to future projection when no historical values exist",
+      "as_of_years min/max summarize row maxima, not a source edition or release clock",
+      "build enrichment supplies names/tags but does not fill missing source data",
+      "current template calls unflagged partial sample clear and promises missing data after next WEO release; static2025footer not owner supplied"
+    ],
+    "scope": "Read-only source trace; synthetic actual-owner discriminators next. No acquired data, model changes, deployment or review retry."
+  },
+  "owner_preservation": {
+    "since": "150e6fbe07ebccdccfa313b961aab39b2022b339",
+    "unchanged": {
+      "engine/intl_risk.py": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355",
+      "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+      "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+    },
+    "scope": "These actual owner and enrichment bytes were not changed by the presentation repairs."
+  },
+  "verification": {
+    "red": "9render failures on originalsource;1browser failure on native headingfocus",
+    "green": "9unique finalrenderPASS14inheritedwarnings;8unique finalbrowserPASS16widthjourneys320/1440. The first candidate also passed before copy refinement; counts overlap.",
+    "canonical": "8final DarkLightENZH1440/390 captures,27boundassets; actual owner evaluated only synthetic IMF inputs."
+  },
+  "parent_review": {
+    "files": [
+      "fragility-1440-dark-en.png",
+      "fragility-1440-light-en.png",
+      "fragility-320-dark-zh.png",
+      "fragility-320-light-zh.png",
+      "fragility-flagged-1440-dark-en.png",
+      "fragility-flagged-1440-light-en.png",
+      "fragility-flagged-320-dark-zh.png",
+      "fragility-flagged-320-light-zh.png"
+    ],
+    "result": "8final actual images viewed: partial and flagged samples eachDark/Light desktopEnglish/narrowChinese. Coverage, preserved warning tags, native focus and year/projection caveat readable. Not independent approval."
+  },
+  "copy_refinement": {
+    "change": "Plain user-facing country coverage and projection/year wording, with sentence punctuation; remove implementation phrase owner projection fallback",
+    "logic_changed": false,
+    "initial_validation": "9render/8browser passed before copy refinement",
+    "final_validation": "Will rerun affected cases and capture final bytes; counts overlap",
+    "previous_images": "before-copy-clarity/"
+  },
+  "manifest_sha256": "32ac996838bf0c26d349728f498a14c2d65a501904082f00ff8f8df80b5f863f",
+  "limits": [
+    "No actual market/source acquisition or qualification.",
+    "Owner calculations, thresholds, flags, enrichments and input years unchanged.",
+    "No source edition, publication date, completeness, freshness or delivery date inferred.",
+    "Source fixture proof is not live, speech, nativezoom, physicaltouch or complete accessibility.",
+    "IW2 custody and all original review, release, frozen-effect, qualification, rights, Saved and migration holds persist."
+  ],
+  "next": "Resume the original live Library-to-Stock return only after Chris completes or dismisses its recorded Chrome extension UI; otherwise assess genuinely new owner qualification, Compare/Saved contract or review input without replaying accepted source cases or polling held surfaces.",
+  "test_eof_correction": {
+    "initial": "Staged whitespace check refused new blankline at test EOF; commit/push did not run",
+    "repair": "Trim only trailing empty test line",
+    "python_ast_identical": true,
+    "product_bytes_changed": false,
+    "test_rerun_required": false,
+    "new_test_sha256": "7c86e87961c3e0cd58184d863fcc599008bf4a8fe81d102fbd5973cad74edc74"
+  }
+}

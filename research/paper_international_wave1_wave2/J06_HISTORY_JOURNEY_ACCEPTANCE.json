@@ -1,0 +1,30 @@
+{
+  "schema": "paper.j06_source_reader_journey.v1",
+  "status": "SCOPED_LOCAL_FIXTURE_PASS",
+  "head": "baa0634d0f4c1895e43d4b2c06b6f4d454f0314f",
+  "cases_passed": 8,
+  "reader_path": "Actual load_history_result on isolated Parquet -> project_history_read -> existing _publication_workspace -> actual full template -> native browser controls",
+  "results": [
+    "Exact timestamp offsets/nanoseconds and0-vs-unavailable cells retained in3 JP observations.",
+    "Changing return horizon/basis preserves classifier rows and timestamps.",
+    "Switching to KR shows source-missing, distinct from JP ready and default bridge qualification-unknown.",
+    "History Back retains market, pins and current period/basis; reopening preserves rows and source status.",
+    "Existing no-grant publication bridge serializes no observation dates or rows.",
+    "Manual+5/-3 scenario gives1.85percent and leaves history DOM and source Parquet hash unchanged."
+  ],
+  "visual_observations": [
+    "320px dated table wraps exact ISO timestamps onto many lines; all content is retained, but dense wrapping remains a usability limitation.",
+    "Shared launcher transiently intersects some table/result pixels; prior scoped normal-scroll diagnosis applies only at its recorded scope."
+  ],
+  "limits": [
+    "Two local source modes x4 theme/locale/viewport combinations; synthetic capability inputs on allowed mode are not a current grant.",
+    "Actual reader and filesystem I/O are proven only for isolated synthetic files, not production/current rights.",
+    "No revision/first-known claim, Saved write, ledger advance or live deployment.",
+    "No native200percent zoom or screen-reader speech acceptance."
+  ],
+  "source_bound_evidence_sha256": "de43980a6651d1bb1f207bc1f6ad33c0c4f2ae394b16c055304fc203eca7f3f7",
+  "parent_viewed": [
+    "synthetic_allowed-320-en.png",
+    "withheld-1440-zh.png"
+  ]
+}

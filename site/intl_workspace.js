@@ -145,8 +145,12 @@
     library.results.hidden = invalid || !searching || !matches.length;
     library.empty.hidden = invalid || !searching || !!matches.length;
     library.back.hidden = !state.library_group;
-    library.status.textContent = invalid ? (zh ? '搜索内容无效。请输入不超过256个字符，且不含不支持的控制字符。' : 'Search input is invalid. Use up to 256 characters without unsupported control characters.') :
-      searching && !matches.length ? (zh ? '没有匹配的工具。请尝试其他工具名称或问题。' : 'No tools match this search. Try another tool name or question.') : '';
+    var statusText = invalid ? (zh ? '搜索内容无效。请输入不超过256个字符，且不含不支持的控制字符。' : 'Search input is invalid. Use up to 256 characters without unsupported control characters.') :
+      searching && !matches.length ? (zh ? '没有匹配的工具。请尝试其他工具名称或问题。' : 'No tools match this search. Try another tool name or question.') :
+      searching ? (zh ? '“'+library.query+'”的搜索结果：'+matches.length+' 个工具。' :
+        matches.length+(matches.length===1?' tool found for “':' tools found for “')+library.query+'”.') : '';
+    // Repaints must not re-announce the same settled search message.
+    if (library.status.textContent !== statusText) library.status.textContent = statusText;
     var nextResult = null;
     resultRows.slice().reverse().forEach(function (row) {
       if (row.parentNode !== library.results || row.nextSibling !== nextResult) {
@@ -1186,6 +1190,8 @@
         var show = !duplicate && cohortId === id && selected.length >= 2 &&
           selected.every(function (market) { return lineIds.has(market) && tableIds.has(market); });
         group.hidden = !show;
+        var marketCount = group.querySelector('[data-im-chart-market-count]');
+        if (show && marketCount) marketCount.textContent = String(selected.length);
         lines.forEach(function (node) {
           // SVGGeometryElement.hidden may be only a JS expando; the actual
           // attribute is required for browser [hidden] CSS and rollback.
@@ -1242,6 +1248,9 @@
     if (!plan.rows.has(slot) || (button ? !plan.selected.includes(slot) : !plan.options.some(function (o) { return o.value === value && !o.disabled; }))) return true;
     event.preventDefault();
     var result = dispatch(controller,{type:button ? 'unpin' : 'pin',market_id:controller.config.markets[slot]});
+    // The picker is an add command, not committed state. Native change already
+    // selected the attempted option before a reducer or history refusal.
+    if (picker && !result.ok) picker.value = '';
     if (result.ok && button) plan.picker.focus();
     return true;
   }
@@ -1254,7 +1263,7 @@
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
-      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
+      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable],[data-im-chart-market-count]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
@@ -1292,6 +1301,7 @@
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]')) attrs.push('hidden');
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
+      if (node.matches('[data-im-chart-market-count]')) text = true;
       if (node.matches('[data-im-compare-pin] option')) attrs.push('disabled');
       if (node.matches('[data-im-compare-pin]')) value = true;
       return {node:node, attrs:Array.from(new Set(attrs)).map(function (name) {return [name,node.getAttribute(name)];}),
@@ -1489,8 +1499,12 @@
       var labels={current:['Your FX input','您的汇率输入'],unchanged:['FX unchanged','汇率不变'],illustrative_plus3:['Illustrative FX +3%','示例汇率 +3%']};
       label.textContent=labels[row.kind][zh?1:0]+' ('+scenarioNumber(row.fxPercent)+'%)';value.textContent=scenarioNumber(row.usdPercent)+'%';li.append(label,value);plan.rows.appendChild(li);
     });
-    if(announcement&&result)plan.announcement.textContent=(zh?'条件美元回报 ':'Conditional USD return ')+scenarioNumber(result.usdPercent)+'%; '+(zh?'汇率贡献 ':'FX contribution ')+scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp');
-    else if(!result)plan.announcement.textContent='';
+    if(result&&(announcement||plan.announcement.textContent)) {
+      // Translate an existing status on locale changes, without rewriting the
+      // live region for an unchanged calculation or unrelated repaint.
+      var statusText=(zh?'条件美元回报 ':'Conditional USD return ')+scenarioNumber(result.usdPercent)+'%; '+(zh?'汇率贡献 ':'FX contribution ')+scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp');
+      if(plan.announcement.textContent!==statusText)plan.announcement.textContent=statusText;
+    } else if(!result&&plan.announcement.textContent)plan.announcement.textContent='';
     plan.all('[data-im-scenario-action="calculate"],[data-im-scenario-action="request_reset"]').forEach(function(n){n.disabled=!!d.pending||d.reset_pending;});
   }
 
@@ -1508,7 +1522,12 @@
     var current=scenarioContext(controller.state||result.state),next=scenarioContext(result.state);
     if(JSON.stringify(current)!==JSON.stringify(next)) {
       var proposal=IntlWorkspaceScenario.reduceDraft(prior,{type:'propose_context',context:next},normalLanguage(controller.root));
-      if(!proposal.ok)return {ok:false,state:controller.state,issues:[{code:'INVALID_ACTION',field:'scenario'}],intent:null};
+      if(!proposal.ok) {
+        // Native controls already show the attempted value. Restore the
+        // committed context when an open confirmation refuses that change.
+        paint(controller,controller.state,controller.issues);
+        return {ok:false,state:controller.state,issues:[{code:'INVALID_ACTION',field:'scenario'}],intent:null};
+      }
       controller.scenarioDraft=proposal.draft;
       if(proposal.draft.pending) {
         if(!historyPlan(controller,controller.state)){controller.scenarioDraft=prior;return {ok:false,state:controller.state,issues:[{code:'NO_MATCHING_PANEL',field:'history'}],intent:null};}
@@ -1527,7 +1546,9 @@
   }
 
   function scenarioKeydown(controller,event) {
-    if (event.defaultPrevented || !['Escape','Esc'].includes(event.key) ||
+    // Escape belongs to the input method while it is cancelling a candidate.
+    // Do not discard the staged Scenario assumptions or move focus underneath it.
+    if (event.defaultPrevented || event.isComposing || event.keyCode===229 || !['Escape','Esc'].includes(event.key) ||
         !event.target || event.target.closest('[data-im-workspace]')!==controller.root) return;
     var plan=controller.state&&historyPlan(controller,controller.state);
     if(!plan||plan.panel.hidden||!controller.scenarioDraft)return;

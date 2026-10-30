@@ -17,6 +17,10 @@ _NOTICE = {
     "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",
 }
 _MAX_DEPTH = 64
+_PUBLICATION_FIELDS = frozenset({
+    "measure_id", "generation", "evaluated_at", "origin", "decision_origin",
+    "source_reference", "evidence_key", "clocks",
+})
 
 
 def _fail():
@@ -213,16 +217,82 @@ def _eligible_policy(section):
     return False
 
 
+def _macro_publication(record, *, generation, notice, measures):
+    """Project the optional narrow ECB issuer-retention record, or withhold it.
+
+    The record is retained once at workspace level only beside a v2 workspace
+    that actually published the same qualified, fully allowed EZ official
+    deposit under the exact source notice, with the actual generation and the
+    original qualification/decision association. Stale, denied or unknown
+    metadata or value permissions, missing, failed or unknown sources, v1, an
+    absent notice and any generation, source, evidence or decision association
+    mismatch withhold the record; an invalid record grants nothing and the
+    ordinary existing projection is preserved untouched.
+    """
+    if record is None:
+        return None
+    supplied = measures.get("EZ.policy_rate")
+    if (type(record) is not dict or type(supplied) is not dict
+            or set(record) != _PUBLICATION_FIELDS
+            or any(type(record[key]) is not str or not record[key].strip()
+                   for key in ("measure_id", "generation", "evaluated_at",
+                               "source_reference", "evidence_key"))
+            or record["measure_id"] != "EZ.policy_rate"
+            or record["generation"] != generation):
+        return None
+    decision_origin = record["decision_origin"]
+    origin = record["origin"]
+    clocks = record["clocks"]
+    if (type(decision_origin) is not dict
+            or set(decision_origin) != {"owner_ref", "policy_ref", "decision_ref"}
+            or any(type(value) is not str or not value
+                   for value in decision_origin.values())
+            or decision_origin["owner_ref"] != "scripts/build_intl.py"
+            or decision_origin["policy_ref"] != "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission"
+            # Compare supplied references; never fill or infer an absent one.
+            or decision_origin["decision_ref"] != generation + ":EZ.policy_rate"
+            or type(origin) is not dict or set(origin) != {"qualification_identity"}
+            or type(origin["qualification_identity"]) is not str
+            or not origin["qualification_identity"]
+            or origin["qualification_identity"] != decision_origin["decision_ref"]
+            or type(clocks) is not dict
+            or set(clocks) != {"published_at", "rights_at", "source_observed_at"}
+            or clocks["published_at"] is not None or clocks["rights_at"] is not None
+            or type(clocks["source_observed_at"]) is not str
+            or clocks["source_observed_at"] != supplied.get("observation_at")
+            or record["source_reference"] != supplied.get("source_reference")
+            or record["evidence_key"] != supplied.get("evidence_key")
+            or supplied.get("quality") != "qualified"
+            or supplied.get("metadata") != "allowed"
+            or supplied.get("value_permission") != "allowed"
+            or notice is None):
+        return None
+    return {
+        "measure_id": record["measure_id"],
+        "generation": record["generation"],
+        "evaluated_at": record["evaluated_at"],
+        "origin": dict(origin),
+        "decision_origin": dict(decision_origin),
+        "source_reference": record["source_reference"],
+        "evidence_key": record["evidence_key"],
+        "clocks": dict(clocks),
+        "source_notice": dict(notice),
+    }
+
+
 def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations,
-                  source_notice=None):
+                  source_notice=None, ecb_publication=None):
     """Publish detached Macro sidecars without changing the owner workspace."""
     if workspace is None:
         _bound(source_notice)
         _notice(source_notice)
+        _bound(ecb_publication)
         return None
     for value in (workspace, registry, measures, cycle_evidence, destinations, source_notice):
         _bound(value)
-    if type(workspace) is not dict or "macros" in workspace:
+    _bound(ecb_publication)
+    if (type(workspace) is not dict or "macros" in workspace
+            or "macro_publication" in workspace):
         _fail()
     _validate_config(workspace.get("config"))
     if (type(workspace.get("binding_version", 1)) is not int
@@ -284,4 +354,9 @@ def attach_macros(workspace, *, registry, measures, cycle_evidence, destinations
             macro["generation"] = panel["generation"]
         macros.append(macro)
     result["macros"] = macros
+    publication = _macro_publication(
+        ecb_publication, generation=generation, notice=notice,
+        measures=safe_inputs["measures"])
+    if publication is not None:
+        result["macro_publication"] = publication
     return result

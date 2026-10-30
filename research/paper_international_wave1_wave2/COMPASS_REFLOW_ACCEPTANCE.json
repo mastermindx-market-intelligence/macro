@@ -1,0 +1,79 @@
+{
+  "schema": "paper.compass_reflow.v1",
+  "status": "SOURCE_ACCEPTED_RELEASE_HELD",
+  "base_head": "ecd8254f284db047e288bf7c2cfce9a6b6031e4e",
+  "change": "Allow the existing gauge/verdict flex row to wrap when insufficient width remains, preserving 170px gauge, 16px gap and wide placement. No runtime stylesheet or new palette.",
+  "source_sha256": {
+    "templates/intl.html.j2": "3d363eeead40f78607e1e951016ba8579a51b29b439f47e49c99e0ec22cb7738",
+    "tests/intl_workspace_page.test.cjs": "af366f1103de03ffae15343dfdb46b8b8690e322e23c0be4f3bea405a4a9b067"
+  },
+  "red": {
+    "english_tests_failed_before": 2,
+    "chinese_tests_already_passed": 2,
+    "cause": "320px card ends at300px while English verdict text reaches305.656px; page width remains320 because overflow is clipped within the card"
+  },
+  "verification": {
+    "page_tests_passed": 17,
+    "new_browser_regressions": 4,
+    "regression_states_per_case": 10,
+    "python_tests_passed": 16,
+    "rendered_cases_passed": 16,
+    "counts_overlap": true,
+    "design_guard": "0 blocking;25369 inherited nonblocking",
+    "visual_evidence_guard": "exit0; mechanical existing receipt check, not current visual taste proof",
+    "whitespace": "exit0"
+  },
+  "review": {
+    "worker": "/root/compass_source_review",
+    "thread": "01a1388e-3151-77c1-a949-e77b842ec1c8",
+    "actual_parent": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "model": "gpt-5.6-terra",
+    "effort": "medium",
+    "role": "explorer",
+    "fork_turns": "none",
+    "result_sha256": "1c27e2520d9d99d121512d066cc53687fcf11fb9a8d0caf27442b5538c03970a",
+    "result_bytes": 3449,
+    "source": "exact native rollout session_meta/turn_context and original final result",
+    "fabric_prerequisite": "request exit75; status NOT_FOUND/EXECUTION_NOT_ELIGIBLE; no worker launched, no unknown effect or replacement of a frozen operation",
+    "parent_verdict": "ACCEPTED bounded causal source/test review",
+    "limits": [
+      "Review did not run tests, browser or visual acceptance",
+      "Font-size simulation is not native zoom",
+      "No release or production authority"
+    ],
+    "consumed_once": true
+  },
+  "visual_review": {
+    "parent_inspected": [
+      "final-320-dark-en-1x.png",
+      "final-320-light-zh-2x.png",
+      "final-1440-light-en-1x.png"
+    ],
+    "conclusion": "Local verdict line and caption remain readable; narrow card stacks, desktop keeps side-by-side layout. Existing empty-data semantic presentation is a separate newly confirmed defect."
+  },
+  "limits": [
+    "Actual local template/assets with explicitly synthetic empty-owner VM; not production or current qualification",
+    "Doubled verdict-side font size is not native200percent zoom",
+    "Native Chrome zoom attempt stopped after user window activity; no zoom setting changed",
+    "Absent-reading semantic repair is separate; shared launcher full visual acceptance remains open.",
+    "No change to global navigation, shared launcher, generated site/intl.html or source data",
+    "All release, rights, Saved, migration, qualification, frozen-effect and Terminal IW2 custody holds persist"
+  ],
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-reflow-20261014-r1",
+  "evidence_sha256": {
+    "CAUSAL.json": "9e580a43da7252aaf20bbaa58198851d7e3ffe0545b2bb352cb231b9c0600cdc",
+    "RED.log": "8bd80c76103195bab37fe130341c2e726b92b1a857a5f8223675db1b9cf4636d",
+    "GREEN_PAGE.log": "1c44ae0f7491ce71bbdd61faa3464c0651737dfe47b29d387beb6105c619ef48",
+    "CHECKS.json": "3a5cce1753a8e799f666c4d15412104a92f607ee997e70646d39a58f3a8e994b",
+    "FINAL_RENDER.json": "469fbd5a792491afc30921045bb2f1da85695bf49e124d5f5215b71b0790a7ea",
+    "PARENT_REVIEW.json": "6c3c561c12cf6cef79b763d0a2da656b5e0417d9dbc009118457629e8d875bf0",
+    "NATIVE_REVIEW.txt": "1c27e2520d9d99d121512d066cc53687fcf11fb9a8d0caf27442b5538c03970a",
+    "NATIVE_ZOOM_DEFERRED.json": "34553cf06b29132c6f018985325baf3519d8685e087346091f2b715eb7d53874"
+  },
+  "launcher_diagnosis": {
+    "cases": 4,
+    "finding": "1440EN natural geometry intersects one text line;320ZH has2 text-line hits. Browser scrolling to center exposes every result line in all4 cases and the native method disclosure opens. Transient overlap is retained as a usability observation; no trapped content was proven and shared launcher source is unchanged.",
+    "scope": "Synthetic EOD publisher plus current assets, not live assistant operation",
+    "evidence_sha256": "f3059d05748aa8eee0f7bf8ff829f9b87acf2a5c139bc1553b72083c2e630264"
+  }
+}

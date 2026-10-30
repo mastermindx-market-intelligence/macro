@@ -5951,8 +5951,6 @@
       '-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .24s ease}' +
     '.lens-scrim.open{opacity:1;pointer-events:auto}' +
     'html.lens-lock,html.lens-lock body{overflow:hidden}' +
-    /* the Mastermind launcher stacks above the sheet — hide it while one is open */
-    'html.lens-lock #mmb-root{visibility:hidden !important}' +
     '@media (max-width:640px){' +
       '.lens-pop{left:0 !important;right:0;top:auto !important;bottom:0 !important;width:100%;max-width:100%;' +
         'border-radius:20px 20px 0 0;padding-bottom:max(10px,env(safe-area-inset-bottom));' +
@@ -6134,7 +6132,16 @@
     document.documentElement.classList.remove('lens-lock');
     if (cur) { cur.classList.remove('lens-on'); cur.removeAttribute('aria-describedby'); cur = null; }
   }
-  function scheduleClose() { clearTimeout(closeTimer); closeTimer = setTimeout(hide, CLOSE_MS); }
+  function scheduleClose() {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function () {
+      // Pointer movement must not dismiss an explanation still being read by
+      // keyboard. Check at expiry so focus can move into the popover first.
+      var active = document.activeElement;
+      if ((cur && cur.contains(active)) || (pop && pop.contains(active))) return;
+      hide();
+    }, CLOSE_MS);
+  }
 
   document.addEventListener('pointerover', function (e) {
     // Touch devices: a tap fires pointerover BEFORE click, so pre-showing here would
@@ -6179,7 +6186,7 @@
   }, true);
   document.addEventListener('focusout', function (e) {
     var t = e.target && e.target.closest && e.target.closest(SEL);
-    if (t) scheduleClose();
+    if (t || (pop && pop.contains(e.target))) scheduleClose();
   }, true);
   document.addEventListener('click', function (e) {
     if (!e.target || !e.target.closest) return;

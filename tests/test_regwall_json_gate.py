@@ -239,6 +239,30 @@ def test_prophet_leader_observation_source_is_early_paid_and_pricing_disclosed()
     assert "Full book" in plans
 
 
+def test_international_workspace_assets_are_public_without_promoting_data():
+    """The public HTML must load these exact ten presentation/controller files.
+
+    Production answered 401 for them and left the workspace inert. No data or
+    future asset family is included in this reviewed presentation-only change.
+    """
+    assets = {
+        "/intl_workspace.css", "/intl_workspace_macro.css",
+        "/intl_workspace_risk.css", "/intl_workspace_history.css",
+        "/intl_workspace_state.js", "/intl_library_search.js",
+        "/intl_workspace_scenario.js", "/intl_workspace.js",
+        "/intl_workspace_entry.js", "/intl_workspace_surveillance.css",
+    }
+    public = _public_policy_tokens()
+    assert {path for path in public if path.startswith("/intl")} == assets
+    text = _read_caddyfile()
+    protected = {"/intldata/latest.json", "/intl_research/private.json",
+                 "/premiumdata/intl.json", "/intl_workspace_future.js"}
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        paths = _path_tokens(_extract_block(text, matcher))
+        assert assets <= paths, matcher
+        assert not any(fnmatchcase(path, pattern) for path in protected for pattern in paths)
+
+
 def test_holding_research_code_assets_public_without_private_response_exemption():
     """The anonymous shell loads code; exact-row data stays on the paid API."""
     assets = {"/institutional_holding_research.js", "/institutional_holding_research.css"}
@@ -248,13 +272,90 @@ def test_holding_research_code_assets_public_without_private_response_exemption(
     for name in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
         paths = _path_tokens(_extract_block(text, name))
         assert assets <= paths, name
-    private_paths = {
-        "/api/forensics/v1/institutional/reported-holding",
+    # Non-API protected paths: they must fail fnmatch against ALL FOUR serving
+    # lists, including both registration exclusions as well as cache lanes.
+    private_asset_paths = {
         "/institutional_holding_research.json",
         "/institutional_13f/holdings.parquet",
     }
-    for path in private_paths:
+    for path in private_asset_paths:
+        assert not any(fnmatchcase(path, public) for public in policy), path
+        for name in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+            assert not any(fnmatchcase(path, public) for public in
+                           _path_tokens(_extract_block(text, name))), (name, path)
+
+    # The payload API is a different class: in @reg_asset/@reg_asset_err the
+    # exact token ``/api/*`` is the intentional NON_POLICY reverse-proxy
+    # exclusion (tests/test_site_access_boundary.py), not a public grant, so the
+    # endpoint is never asserted against it. What must hold instead is that no
+    # OTHER token admits it — no exact endpoint row, no narrower
+    # /api/forensics* wildcard, no broad family promotion. The policy and the
+    # two cache matchers carry no /api/* token, so there any admitting token is
+    # a payload grant outright.
+    api_paths = {"/api/forensics/v1/institutional/reported-holding"}
+    for path in api_paths:
         assert not any(fnmatchcase(path, public) for public in policy), path
         for name in ("@public_static", "@public_versioned"):
             assert not any(fnmatchcase(path, public) for public in
                            _path_tokens(_extract_block(text, name))), (name, path)
+        for name in ("@reg_asset", "@reg_asset_err"):
+            admitted = [rule for rule in _path_tokens(_extract_block(text, name))
+                        if fnmatchcase(path, rule)]
+            assert set(admitted) <= {"/api/*"}, (
+                name, [rule for rule in admitted if rule != "/api/*"])
+
+
+def test_brain_visuals_assets_public_without_payload_or_family_promotion():
+    """The chat widget's illustration pair is public; nothing else in its family is.
+
+    /mm_brain_visuals.js and /mm_brain_visuals.css carry illustration code only;
+    every response they render arrives through the Bearer-authenticated
+    /api/brain/* gateway on the existing reverse proxy. This pins the pair
+    exactly and refuses the promotions that would look equivalent: an adjacent
+    private JSON/data/source-map/variant file, a family wildcard, and any Brain
+    API endpoint or prefix in a public list.
+
+    API negatives follow the /api/* rule: in the two wall matchers the exact
+    token ``/api/*`` is the intentional NON_POLICY proxy exclusion, so the test
+    asks which OTHER token admits the endpoint — it never asserts that the
+    endpoint fails fnmatch against ``/api/*`` itself.
+    """
+    assets = {"/mm_brain_visuals.js", "/mm_brain_visuals.css"}
+    text = _read_caddyfile()
+    policy = _public_policy_tokens()
+    matchers = ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned")
+    matcher_tokens = {
+        name: _path_tokens(_extract_block(text, name)) for name in matchers
+    }
+
+    # Exactly the two reviewed presentation files, in policy and every matcher.
+    assert {path for path in policy if "mm_brain_visuals" in path} == assets
+    for name, tokens in matcher_tokens.items():
+        assert {path for path in tokens if "mm_brain_visuals" in path} == assets, name
+
+    # Adjacent private/derived/future family files are NOT API: they must fail
+    # fnmatch against the public policy and ALL FOUR lists.
+    private_family = {
+        "/mm_brain_visuals.json", "/mm_brain_visuals/private.json",
+        "/mm_brain_visuals.js.map", "/mm_brain_visuals_private.js",
+        "/mm_brain_visuals_future.js",
+    }
+    for path in private_family:
+        assert not any(fnmatchcase(path, rule) for rule in policy), path
+        for name, tokens in matcher_tokens.items():
+            assert not any(fnmatchcase(path, rule) for rule in tokens), (name, path)
+
+    # The payload plane: a Brain endpoint may be admitted only by the wall
+    # matchers' intentional /api/* proxy token, and by nothing anywhere else.
+    endpoint = "/api/brain/threads"
+    assert not any(fnmatchcase(endpoint, rule) for rule in policy), endpoint
+    prefixes = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))["public"]["prefixes"]
+    assert not any(endpoint.startswith(prefix.rstrip("/") + "/") for prefix in prefixes), (
+        "a public policy prefix admits the Brain API"
+    )
+    for name in ("@public_static", "@public_versioned"):
+        assert not any(fnmatchcase(endpoint, rule) for rule in matcher_tokens[name]), name
+    for name in ("@reg_asset", "@reg_asset_err"):
+        admitted = [rule for rule in matcher_tokens[name] if fnmatchcase(endpoint, rule)]
+        assert set(admitted) <= {"/api/*"}, (
+            name, [rule for rule in admitted if rule != "/api/*"])

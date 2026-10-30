@@ -175,12 +175,13 @@
     <div class="topline">
       <h1>{{ t('International analyzer', '国际个股分析') }}</h1>
       <div class="searchwrap">
-        <input id="q" placeholder="Search any JP / KR / TW / UK / EU stock… (e.g. Toyota, Samsung, TSMC, Shell, ASML)" autocomplete="off">
-        <div id="sugg"></div>
+        <input id="q" role="combobox" aria-autocomplete="list" aria-controls="sugg" aria-expanded="false" aria-label="Search stocks" placeholder="Search any JP / KR / TW / UK / EU stock… (e.g. Toyota, Samsung, TSMC, Shell, ASML)" autocomplete="off">
+        <div id="sugg" role="listbox"></div>
       </div>
     </div>
   </div>
 
+  <p id="lookup_status" class="muted" role="status" aria-live="polite"></p>
   <div id="result">
     <div class="panel">
       <div class="topline">
@@ -277,11 +278,14 @@
 <script src="stockview.js"></script>
 <script>
 (function () {
-  var idx = [], cal = null, sel = -1, items = [];
+  var idx = [], cal = null, sel = -1, items = [], lookupSerial = 0, activeChart = null;
+  var currentRecord = null, statusKey = '', statusTicker = '';
   var q = document.getElementById('q'), sugg = document.getElementById('sugg');
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { asof: 'data through', notlib: 'NOT IN LIBRARY',
+          invalidlink: 'Invalid stock link. Search for a stock to continue.',
+          loading: 'Loading stock analysis…', unavailable: 'Stock analysis could not be loaded. Try this stock again.',
           notlibmsg: 'Not in the nightly library (curated JP/KR/TW/UK/EU large-caps + sector ETFs + indices). Add it in config.yml → intl.constituents.',
           season: 'Seasonality', failed: '⚠ Failed cycle — price is below the low that started this cycle; the larger trend is usually rolling over.',
           next: 'Next:', ph: 'Search any JP / KR / TW / UK / EU stock…',
@@ -297,6 +301,8 @@
           cb_oil: 'Oil β', cb_gold: 'Gold β', cb_cad: 'CAD β', cb_primary: 'primary driver',
           cb_fit: 'fit R²', cb_none: 'market-driven · no commodity tilt' },
     zh: { asof: '数据截至', notlib: '不在库中',
+          invalidlink: '个股链接无效。请搜索股票以继续。',
+          loading: '正在加载个股分析…', unavailable: '暂时无法加载个股分析。请重新选择该股票。',
           notlibmsg: '不在每晚更新的标的库中（精选 日/韩/台/英/欧 大盘股 ＋ 板块 ETF ＋ 指数）。可在 config.yml → intl.constituents 添加。',
           season: '季节性', failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点；此时更大的趋势通常正在转向下行。',
           next: '下一步：', ph: '搜索任意 日/韩/台/英/欧 个股…',
@@ -321,11 +327,16 @@
     return lang() === 'zh' ? (d.label_zh || d.label) + ' · ' + (d.action_zh || d.action)
                            : d.label + ' · ' + d.action;
   }
-  q.placeholder = L('ph');
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
 
-  // one unified universe — load THIS market first so a deep-linked #TICKER resolves
-  // immediately, then fold in every other market so the box can find ANY stock and
-  // route cross-market picks to the analyzer that owns them (US→stock.html, …).
+  // One unified universe: independent indexes feed the existing market routes.
+  // A missing home index must not prevent another market's index from loading;
+  // direct #TICKER lookup remains independent of all search indexes.
   var STOCK_MKTS = [
     ['stockdata/', 'stock.html', '🇺🇸', 'US'],
     ['chinastockdata/', 'china_lookup.html', '🇨🇳', 'China'],
@@ -340,29 +351,49 @@
   }
   (function () {
     var home = STOCK_MKTS.filter(function (m) { return m[1] === STOCK_HOME; })[0];
-    fetch(home[0] + 'index.json').then(function (r) { return r.json(); }).then(function (d) {
-      idx = tagMkt(d, home); fromHash();
-      STOCK_MKTS.forEach(function (m) {
-        if (m[1] === STOCK_HOME) return;
-        fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
-          .then(function (e) { idx = idx.concat(tagMkt(e, m)); }).catch(function () {});
-      });
+    fetch(home[0] + 'index.json').then(function (r) {
+      if (!r.ok) throw new Error('search index unavailable');
+      return r.json();
+    }).then(function (d) {
+      // Retain foreign records that settled before this response.
+      idx = tagMkt(d, home).concat(idx);
+      refreshPendingSuggestions();
+    }).catch(function () { /* Search is optional for a direct stock link. */ });
+    STOCK_MKTS.forEach(function (m) {
+      if (m[1] === STOCK_HOME) return;
+      fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
+        .then(function (e) { idx = idx.concat(tagMkt(e, m)); refreshPendingSuggestions(); }).catch(function () {});
     });
   })();
   fetch('intlstockdata/calibration.json').then(r => r.ok ? r.json() : null)
     .then(d => { cal = d; }).catch(() => {});
 
   function fromHash() {
-    var t = decodeURIComponent((location.hash || '').slice(1));
+    var t;
+    try { t = decodeURIComponent((location.hash || '').slice(1)); }
+    catch (error) { lookupSerial += 1; showLookupStatus('invalidlink'); return; }
     if (t) load(t);
+    else { lookupSerial += 1; showLookupStatus(''); }
   }
   window.addEventListener('hashchange', fromHash);
   window.addEventListener('mmx:shell-location', fromHash);
+  // Boot deep links load immediately from the canonical hash: never gated on
+  // the search index or on a shell acknowledgment.
+  fromHash();
 
-  q.addEventListener('input', function () {
-    var v = q.value.trim().toLowerCase();
+  var suggestionsActive = false;
+  function hideSuggestions() {
+    suggestionsActive = false;
+    sugg.style.display = 'none';
+    q.setAttribute('aria-expanded', 'false');
+    q.removeAttribute('aria-activedescendant');
     sel = -1;
-    if (!v) { sugg.style.display = 'none'; return; }
+  }
+  q.addEventListener('blur', hideSuggestions);
+  function renderSuggestions() {
+    var v = q.value.trim().toLowerCase();
+    sel = -1; q.removeAttribute('aria-activedescendant');
+    if (!v) { hideSuggestions(); return; }
     items = idx.filter(function (x) {
       return x.t.toLowerCase().indexOf(v) === 0 ||
              x.n.toLowerCase().indexOf(v) >= 0 || x.s.toLowerCase().indexOf(v) >= 0;
@@ -374,22 +405,40 @@
       return ap - bp || a.t.localeCompare(b.t);
     }).slice(0, 12);
     sugg.innerHTML = items.map(function (x, i) {
-      return '<div data-i="' + i + '">' +
-             (x._fl ? '<span style="flex:none;width:18px;text-align:center">' + x._fl + '</span>' : '') +
-             '<b>' + x.t + '</b><small>' + x.n +
-             (x.s ? ' · ' + x.s : '') + '</small><span class="muted" style="font-size:11px">' +
-             disp(x.st) + '</span></div>';
+      return '<div id="intl-stock-option-' + i + '" role="option" aria-selected="false" data-i="' + i + '">' +
+             (x._fl ? '<span style="flex:none;width:18px;text-align:center">' + esc(x._fl) + '</span>' : '') +
+             '<b>' + esc(x.t) + '</b><small>' + esc(x.n) +
+             (x.s ? ' · ' + esc(x.s) : '') + '</small><span class="muted" style="font-size:11px">' +
+             esc(disp(x.st)) + '</span></div>';
     }).join('');
     sugg.style.display = items.length ? 'block' : 'none';
+    q.setAttribute('aria-expanded', items.length ? 'true' : 'false');
+  }
+  function refreshPendingSuggestions() {
+    // A late index may complete an active query, but must not reopen a dismissed
+    // search or change the identity selected for the next Enter key.
+    if (suggestionsActive && document.activeElement === q && sel < 0) renderSuggestions();
+  }
+  q.addEventListener('input', function () {
+    suggestionsActive = true;
+    renderSuggestions();
   });
   q.addEventListener('keydown', function (e) {
+    if (e.isComposing || e.keyCode === 229) return;
+    if (e.key === 'Escape') { hideSuggestions(); return; }
     if (sugg.style.display === 'none') return;
     var divs = sugg.querySelectorAll('div');
     if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, divs.length - 1); e.preventDefault(); }
     else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); e.preventDefault(); }
     else if (e.key === 'Enter') { pick(sel >= 0 ? sel : 0); e.preventDefault(); return; }
-    else if (e.key === 'Escape') { sugg.style.display = 'none'; return; }
-    divs.forEach(function (d, i) { d.classList.toggle('sel', i === sel); });
+    divs.forEach(function (d, i) {
+      d.classList.toggle('sel', i === sel);
+      d.setAttribute('aria-selected', i === sel ? 'true' : 'false');
+    });
+    if (divs[sel]) {
+      q.setAttribute('aria-activedescendant', divs[sel].id);
+      divs[sel].scrollIntoView({block: 'nearest'});
+    }
   });
   sugg.addEventListener('mousedown', function (e) {
     var d = e.target.closest('div[data-i]');
@@ -397,30 +446,72 @@
   });
   function pick(i) {
     if (!items[i]) return;
-    sugg.style.display = 'none';
+    hideSuggestions();
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'intl_stock.html') {
       var _d = items[i]._tgt + '#' + encodeURIComponent(items[i].t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d; return;
     }
-    var _h = encodeURIComponent(items[i].t); var _ss2 = window.MMXSharedShell; if (_ss2) { if (_ss2.navigate('#' + _h, 'push') && (location.hash || '').slice(1) === _h) fromHash(); } else { location.hash = _h; }
+    var _h = encodeURIComponent(items[i].t);
+    var _ss2 = window.MMXSharedShell;
+    if (_ss2) {
+      // The bridge may replace the hash synchronously before acceptance. Only
+      // an active bridge's explicit reselection of the already-loaded/pending
+      // identity refreshes here; new selections wait for mmx:shell-location.
+      // An inactive bridge queues navigation, so its true return is no ACK.
+      var _refresh = _ss2.active === true && (location.hash || '') === '#' + _h &&
+        ((currentRecord && currentRecord.ticker === items[i].t) || statusTicker === items[i].t);
+      if (_ss2.navigate('#' + _h, 'push') && _refresh) fromHash();
+      return;
+    }
+    var hash = '#' + _h;
+    if (location.hash === hash) load(items[i].t);
+    else location.hash = hash;
   }
 
   function load(t) {
+    var serial = ++lookupSerial;
+    // A hash or preference change can start another request before this one
+    // settles. Neither a stale record nor its failure may repaint that selection.
+    showLookupStatus('loading', t);
     var safe = t.replace('=', '_').replace('^', '_');
     fetch('intlstockdata/' + safe + '.json').then(function (r) {
-      if (!r.ok) throw new Error('not in library');
+      if (!r.ok) {
+        var error = new Error('stock lookup failed'); error.status = r.status; throw error;
+      }
       return r.json();
-    }).then(render).catch(function () {
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('r_name').textContent = t;
-      document.getElementById('r_state').textContent = L('notlib');
-      document.getElementById('r_state').className = 'state';
-      document.getElementById('r_entry').style.display = 'none';
-      document.getElementById('r_points').innerHTML = '';
-      document.getElementById('r_conviction_panel').style.display = 'none';
-      document.getElementById('r_cyclebox').innerHTML = L('notlibmsg');
+    }).then(function (d) {
+      if (serial !== lookupSerial) return;
+      // The publisher preserves the exact ticker inside each record. A current
+      // response can still contain the wrong file; reject it before any render.
+      if (!d || typeof d !== 'object' || Array.isArray(d) || d.ticker !== t) {
+        throw new Error('stock record identity mismatch');
+      }
+      render(d);
+      currentRecord = d;
+      statusKey = statusTicker = '';
+      paintLookupStatus();
+    }).catch(function (error) {
+      if (serial !== lookupSerial) return;
+      showLookupStatus(error.status === 404 ? 'notlib' : 'unavailable', t);
     });
+  }
+
+  function paintLookupStatus() {
+    var message = statusKey ? L(statusKey) : '';
+    document.getElementById('lookup_status').textContent =
+      message && statusTicker ? statusTicker + ' · ' + message : message;
+  }
+
+  function showLookupStatus(key, ticker) {
+    currentRecord = null;
+    statusKey = key || ''; statusTicker = ticker || '';
+    // Keep old facts, chart and decision bands out of the accessible/visible page
+    // until the current selection has a complete record. Do not move search focus.
+    if (activeChart) { activeChart.destroy(); activeChart = null; }
+    document.getElementById('result').style.display = 'none';
+    liveHeaderPx({});
+    paintLookupStatus();
   }
 
   // unified Conviction Profile hero — renders the SAME block as the standout card on
@@ -478,7 +569,7 @@
   // allow_limited idiom, universe-wide (the search universe IS the library universe —
   // scripts/build_intl_library.py:105 was the drop site). Shows an honest limited card —
   // identity, listing date, chart; hides every analysis panel so nothing stale leaks through.
-  function renderLimited(d) {
+  function renderLimited(d, keepChart) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g,
       function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); };
     liveHeaderPx(d);   // no tech.price on a limited rec -> hides a prior ticker's live chip
@@ -505,17 +596,17 @@
       'New listing — first traded ' + d.listed + ', only ' + n + ' session' + (n === 1 ? '' : 's') +
       ' of history so far. The cycle & momentum model needs about a year of trading, so the full analysis unlocks as data accrues. Watch — don\'t chase. Price chart below.',
       '新上市 —— 首个交易日 ' + d.listed + '，目前仅有 ' + n + ' 个交易日。周期与动量模型需约一年历史，完整分析将随数据积累解锁。宜观察，勿追高。下方为价格走势图。')) + '</div>';
-    if (window.StockChart) {
-      try { window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
+    if (!keepChart && window.StockChart) {
+      try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish — the banner above stands alone */ }
     }
     hideEmptyGroups();
   }
 
-  function render(d) {
+  function render(d, keepChart) {
     document.getElementById('result').style.display = 'block';
     document.getElementById('r_name').textContent = d.name + ' (' + d.ticker + ')';
-    if (d.limited) { renderLimited(d); return; }
+    if (d.limited) { renderLimited(d, keepChart); return; }
     // a full record may follow a limited one — re-show the panels it hid and drop
     // its banner (SV.mount rebuilds sv-decision only when the view-model mounts)
     ['panel_deep', 'panel_mtf', 'r_cal_panel'].forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = ''; });
@@ -724,8 +815,8 @@
 
     // Bespoke self-hosted chart (chart.js) from our own intl closes (intlohlc/<T>.json):
     // area + client-side RSI/Stoch/MACD/Stoch-RSI/EMA, 1D/3D/1W. Garnish — fails quietly.
-    if (window.StockChart) {
-      try { window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
+    if (!keepChart && window.StockChart) {
+      try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish */ }
     }
     hideEmptyGroups();
@@ -738,11 +829,20 @@
       g.style.display = (panels.length && !anyVisible) ? 'none' : '';
     });
   }
-  document.addEventListener('themechange', function () {
-    var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
-  });
   document.addEventListener('langchange', function () {
-    q.placeholder = L('ph'); var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
+    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
+    if (sugg.style.display !== 'none' && items && items.length) {
+      sugg.querySelectorAll('div[data-i]').forEach(function (d) {
+        var x = items[+d.dataset.i]; if (!x) return;
+        var m = d.querySelector('span.muted'); if (m) m.textContent = disp(x.st);
+      });
+    }
+    // Translate the accepted record in place; the chart owns its locale repaint.
+    // Pending/error states keep their request identity and never revive old facts.
+    var requested = '';
+    try { requested = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { /* invalid link */ }
+    if (currentRecord && currentRecord.ticker === requested) render(currentRecord, true);
+    else paintLookupStatus();
   });
 })();
 </script>
@@ -761,7 +861,7 @@
     else if (r.left + r.width / 2 - half < 0) h.classList.add('edge-left');
   });
 </script>
-<p class="muted" style="font-size:12px">{{ t('Generated', '生成于') }} {{ generated_utc }} UTC · {{ t('charts by TradingView · top constituents of JP/KR/TW/UK/EU, not exhaustive', '图表由 TradingView 提供 · 日/韩/台/英/欧主要成分股，非全市场') }}</p>
+<p class="muted" style="font-size:12px">{{ t('Generated', '生成于') }} {{ generated_utc }} · {{ t('charts by TradingView · top constituents of JP/KR/TW/UK/EU, not exhaustive', '图表由 TradingView 提供 · 日/韩/台/英/欧主要成分股，非全市场') }}</p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>

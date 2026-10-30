@@ -1,0 +1,95 @@
+{
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "base_head": "cee2f73d713c3efa115c5ba741c42c85ef460e3f",
+  "source_hashes": {
+    "templates/theme.js": "f5142480e0e71544fb702b64a295a473ae971103cc26772aea0ee53766346df0",
+    "templates/theme.css": "1b9403386cfd2c85c9f5aefdae212d3d0deecf08cb1e51c80740da003baf54d3",
+    "site/theme.js": "98dc238f4258156dc5f8e29f2c2709bce9282668a36043dc6f4b748a9a6ee9b6",
+    "site/theme.css": "1b9403386cfd2c85c9f5aefdae212d3d0deecf08cb1e51c80740da003baf54d3",
+    "tests/intl_workspace_page.test.cjs": "6840fe2dd1dc9eb1e06f55a882b1346c95ae4913037f2e3661fdc50188e703be"
+  },
+  "capability": "Mobile LENS hides both existing launcher lifecycle states while locked, restores the resting launcher after Escape, and reserves reading clearance below a44px close control. Existing desktop composition and launch lifecycle unchanged.",
+  "verification": {
+    "red": "4original browserFAIL caused by boot visibility; separate later close-clearance caseFAIL from actual text/control overlap.",
+    "final_browser": "4unique final cases at320/390. Original interrupted run retained2individualDarkPASS with no exit code; remaining2LightPASS in terminal follow-up. Initial4boot-only green cases overlap and are not added.",
+    "static": "Launcher suite15PASS1FAIL14inheritedwarnings. Unchanged asset guard reports stock.html# navigation link on both immutable baseline and candidate; not called suite green.",
+    "runtime": "Runtime-style guard passed; canonical JS only removes the old injected hide rule.",
+    "sync": "115template/site pairs match, using incumbent deterministic theme emitter.",
+    "images": "8final canonical1440/390DarkLightENZH renders plus8focused native-open LENS views. Open-sheet capture verifies no assistant bundle request from navigation through Escape; no loaded root mounted.",
+    "interruption": {
+      "original_session": 74878,
+      "recovery": "write_stdin reports Unknown process id after tool runtime changed; process inventory shows no original test/capture process.",
+      "retained": "Two dark final cases individually passed; no final run summary or process exit code. Light cases and subsequent guards/captures were not recorded.",
+      "action": "Preserve incomplete log; execute only outstanding Light cases and remaining never-started guards/captures.",
+      "partial_log_sha256": "a79d8df6f46cc46b3da66b733a7588a219153ab4f20cb6920951e819bdc4123f"
+    }
+  },
+  "parent_review": {
+    "state": "PARENT_SOURCE_ACCEPTED",
+    "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+    "final_mobile_viewed": [
+      "lens-390-dark-en.png",
+      "lens-390-light-en.png",
+      "lens-390-dark-zh.png",
+      "lens-390-light-zh.png"
+    ],
+    "findings": [
+      "Mobile content no longer sits under the native close control or resting launcher.",
+      "Dark sheet keeps luminance hierarchy; Light keeps contrasting ink on its existing light material. No palette substitution introduced.",
+      "44px close target has reserved header clearance; method paragraphs remain readable within narrow sheet."
+    ],
+    "desktop_reuse": [
+      {
+        "file": "lens-1440-dark-en.png",
+        "sha256": "812d238ac2aaeda5f1735824a69fe141b70bf84128b54adeb1d858f3bb660fb8",
+        "basis": "Byte-identical to actual prior parent view in this turn."
+      },
+      {
+        "file": "lens-1440-dark-zh.png",
+        "sha256": "1a63e86eef73d2a30e44b7d396533758f478e1940465e46879d64a8d90d8f678",
+        "basis": "Byte-identical to actual prior parent view in this turn."
+      },
+      {
+        "file": "lens-1440-light-en.png",
+        "sha256": "fc32bc95cdc233984c47cac0791299e506d7e972e3d6d55b447704192258ced2",
+        "basis": "Byte-identical to actual prior parent view in this turn."
+      },
+      {
+        "file": "lens-1440-light-zh.png",
+        "sha256": "8ed8811f9c5aa1c9598367ee6db205d44d104414c5a3fa1dc52a8d095e70aaa9",
+        "basis": "Byte-identical to actual prior parent view in this turn."
+      }
+    ],
+    "limits": [
+      "Scoped isolated parent render review; no independent approval, assistive speech or deployed acceptance.",
+      "Other overlays and assistant-loaded operation are outside this case."
+    ]
+  },
+  "manifest_sha256": "9ace49f784711f75ad9a002b56540045d2da781ec14d6ef68e97f856d75a233a",
+  "inherited_guard": {
+    "base_head": "cee2f73d713c3efa115c5ba741c42c85ef460e3f",
+    "baseline_offenders": [
+      "stock.html#"
+    ],
+    "candidate_offenders": [
+      "stock.html#"
+    ],
+    "baseline_sha256": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+    "candidate_sha256": "f5142480e0e71544fb702b64a295a473ae971103cc26772aea0ee53766346df0",
+    "classification": "Unchanged preexisting asset-guard failure; never report whole suite green."
+  },
+  "derived_preflight": {
+    "result": "Existing derived theme.js exactly matches lib.site_assets.emit_theme_js; no source divergence.",
+    "first_attempt": "Incorrect plain-copy preflight stopped before product edit.",
+    "correction": "Use incumbent deterministic emitter for theme.js and exact plain-copy CSS. Preserve existing public configuration and overlay suffix.",
+    "emitted_before_sha256": "80c7061d17e8718283adcd4913ca5becddf43a3a232e5624b6cedd7ff8c09f79",
+    "emitter_source_sha256": "1c6b73e5a3691a95cfc172da689a3d8c87a90d9f584db338b3458550a4106829"
+  },
+  "reuse": "International template bytes unchanged from published funding source; no older captures restamped. Shared theme dependency changed, so earlier unrelated whole-page evidence retains original scope.",
+  "limits": [
+    "Independent review PENDING_ORIGINAL_POLICY_REFUSAL. Product CI UNOBSERVED; source NOT_DEPLOYED.",
+    "Native keyboard events inside isolated Chrome source fixtures are not physical touch, speech, OS high contrast, native zoom or authenticated live acceptance.",
+    "Loaded widget visibility rule is preserved by exact selector migration; no assistant or loaded-widget journey was executed.",
+    "All existing release, qualification, frozen-effect, Saved, rights, migration, original-browser and IW2 custody holds remain."
+  ]
+}

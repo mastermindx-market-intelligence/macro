@@ -20,6 +20,7 @@ _SECTIONS = {
     "leadership_rotation": "intl-leadership-rotation",
     "cross_country": "intl-cross-country",
     "market_turns": "intl-market-turns",
+    "recovery_quality": "intl-recovery-quality",
     "rates_curves_carry": "intl-rates-curves",
     "central_banks_liquidity": "intl-central-banks",
     "credit_bonds": "intl-credit-bonds",
@@ -28,6 +29,7 @@ _SECTIONS = {
     "dollar_conditions": "intl-dollar-conditions",
     "structural_fragility": "intl-structural-fragility",
     "contagion": "intl-contagion",
+    "trade_supply_links": "intl-trade-supply-links",
     "cross_market_correlation": "intl-cross-market-correlation",
 }
 

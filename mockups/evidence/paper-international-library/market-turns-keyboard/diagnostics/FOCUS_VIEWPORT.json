@@ -1,0 +1,160 @@
+{
+  "cases": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "before": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 14.998397827148438,
+          "y": 80.99534606933594,
+          "width": 300.003173828125,
+          "height": 233.5025177001953
+        },
+        "text": "JAPAN\nRepair attempt\nThe index has repaired some technical damage, but confirmation is incomplete. Do not treat this as a durable recovery until leadership follows through and external pressure recedes. Unconfirmed — wait for breadth and external pressure to improve.\n20-day +8.2% · Momentum improving",
+        "lock": false
+      },
+      "after": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 15,
+          "y": 81,
+          "width": 300,
+          "height": 233.5
+        },
+        "text": "JAPAN\nRepair attempt\nThe index has repaired some technical damage, but confirmation is incomplete. Do not treat this as a durable recovery until leadership follows through and external pressure recedes. Unconfirmed — wait for breadth and external pressure to improve.\n20-day +8.2% · Momentum improving",
+        "lock": false
+      },
+      "file": "focus-dark-en-1440.png",
+      "sha256": "17a2900259e35ae6fa354b82d84787b7873e69fefb5b929a3885c40872ce2f9e"
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 1440,
+      "before": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 14.998428344726562,
+          "y": 156.99607849121094,
+          "width": 300.003173828125,
+          "height": 172.75181579589844
+        },
+        "text": "日本\n修复尝试\n指数已修复部分技术损伤，但确认仍不完整。在领涨股跟进、外部压力回落前，不应视为持久复苏。 尚未确认 — 等待广度与外部压力改善。\n20日 +8.2% · 动能 转强",
+        "lock": false
+      },
+      "after": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 15,
+          "y": 157,
+          "width": 300,
+          "height": 172.75
+        },
+        "text": "日本\n修复尝试\n指数已修复部分技术损伤，但确认仍不完整。在领涨股跟进、外部压力回落前，不应视为持久复苏。 尚未确认 — 等待广度与外部压力改善。\n20日 +8.2% · 动能 转强",
+        "lock": false
+      },
+      "file": "focus-light-zh-1440.png",
+      "sha256": "2c4c9b797a6ce83e0c4da2bbfc641f03992a0f385f8dd70c6ca291e335484375"
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 320,
+      "before": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 0,
+          "y": 643.4908447265625,
+          "width": 320,
+          "height": 256.5
+        },
+        "text": "✕\nJAPAN\nRepair attempt\nThe index has repaired some technical damage, but confirmation is incomplete. Do not treat this as a durable recovery until leadership follows through and external pressure recedes. Unconfirmed — wait for breadth and external pressure to improve.\n20-day +8.2% · Momentum improving",
+        "lock": true
+      },
+      "after": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 0,
+          "y": 643.5,
+          "width": 320,
+          "height": 256.5
+        },
+        "text": "✕\nJAPAN\nRepair attempt\nThe index has repaired some technical damage, but confirmation is incomplete. Do not treat this as a durable recovery until leadership follows through and external pressure recedes. Unconfirmed — wait for breadth and external pressure to improve.\n20-day +8.2% · Momentum improving",
+        "lock": true
+      },
+      "file": "focus-dark-en-320.png",
+      "sha256": "ba8e6ed79a548f6cc61574b9c2d0fddd5874ea6a1b5987719411710d4e5911f3",
+      "after_fullpage": {
+        "open": false,
+        "opacity": "0",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm",
+        "rect": {
+          "x": 0,
+          "y": 669.5,
+          "width": 320,
+          "height": 256.5
+        },
+        "text": "✕\nJAPAN\nRepair attempt\nThe index has repaired some technical damage, but confirmation is incomplete. Do not treat this as a durable recovery until leadership follows through and external pressure recedes. Unconfirmed — wait for breadth and external pressure to improve.\n20-day +8.2% · Momentum improving",
+        "lock": false
+      },
+      "fullpage_diagnostic_sha256": "066314a8b8215c2d73e4384b4056ed7c7843980a1b273b2f79039addceae6f54"
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 320,
+      "before": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 0,
+          "y": 704.2408447265625,
+          "width": 320,
+          "height": 195.75
+        },
+        "text": "✕\n日本\n修复尝试\n指数已修复部分技术损伤，但确认仍不完整。在领涨股跟进、外部压力回落前，不应视为持久复苏。 尚未确认 — 等待广度与外部压力改善。\n20日 +8.2% · 动能 转强",
+        "lock": true
+      },
+      "after": {
+        "open": true,
+        "opacity": "1",
+        "bodyOpacity": "1",
+        "focus": "tb-tile tb-warm lens-on",
+        "rect": {
+          "x": 0,
+          "y": 704.25,
+          "width": 320,
+          "height": 195.75
+        },
+        "text": "✕\n日本\n修复尝试\n指数已修复部分技术损伤，但确认仍不完整。在领涨股跟进、外部压力回落前，不应视为持久复苏。 尚未确认 — 等待广度与外部压力改善。\n20日 +8.2% · 动能 转强",
+        "lock": true
+      },
+      "file": "focus-light-zh-320.png",
+      "sha256": "f2a6934ce07851986063e96288983674a87bb8a4752cc0e04ed41fb04092fcab"
+    }
+  ],
+  "scope": "Native keyboard and settled viewport captures; no full-page screenshot resizing before the accepted shots."
+}

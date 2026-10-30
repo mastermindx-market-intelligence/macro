@@ -1,0 +1,33 @@
+{
+  "base_head": "80ff35e9b612f2213daa99fcef7ea1de808e1eac",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Periphery preserves absence and supplied precision; scoped Bund clock and noncausal method.",
+  "source_hashes": {
+    "templates/intl.html.j2": "031a3608e9dbb9f59c3558857c209b74afb3e7a4aec3b1bf403711016ac84ea0",
+    "engine/intl_compare.py": "78bf103cae23d6dba49cd9d6cd9d408c55e470add889c9d404577323fe24deb5",
+    "tests/test_intl_periphery_scope_render.py": "19d92dc0d73876e7061708035a25891cb99f71775226866583686db4de606118",
+    "tests/intl_workspace_page.test.cjs": "7e741caf3b5fe7746d185071b5bd5eba68fcf687faa82373ef99456ef695502a"
+  },
+  "red": "10 causal Python failures plus3 valid-direction passes after correcting only capitalization in3 originally failing cases;1browserfailure. Original13FAIL log retained as harness-inclusive.",
+  "green": "13PythonPASS14inheritedwarnings;4browserPASS8widthstates320/1440;8canonical1440/390DarkLightENZHcaptures;4focusedparentviews.",
+  "parent_review": {
+    "images": [
+      "periphery-1440-dark-en.png",
+      "periphery-1440-light-en.png",
+      "periphery-390-dark-zh.png",
+      "periphery-390-light-zh.png"
+    ],
+    "observed": "Both material directions preserve table hierarchy and independent footer; neutral unavailable/rounded states readable, narrow Chinese labels wrap inside cells. Supplied signedzero retained; existing localized direction colors retained. No document overflow in scoped browser tests.",
+    "scope": "Parent visual inspection only; no independent review."
+  },
+  "manifest_sha256": "ca9501f153ff30f7839d1adb3ac1bc8683bfe450170766187578408359ae0313",
+  "limits": [
+    "Synthetic actual-owner fixtures, not live market qualification or deployed acceptance.",
+    "No owner calculation, rounding, Boolean or acquisition change; no borrowed row dates, causal stress verdict or precision invention.",
+    "No full accessibility, speech, physical-touch or nativezoom claim; inherited fixture warnings retained.",
+    "All review, CI, release, rights, Saved, frozen-effect, original browser and IW2 holds preserved."
+  ],
+  "next": "ECB actual owner flat/tiny-positive return drainingFalse and weekly-bin date;12new render failures retained in ecb-balance-scope-20261014-r1. No ECB repair yet."
+}

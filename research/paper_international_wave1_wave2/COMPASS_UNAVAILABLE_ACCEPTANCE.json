@@ -1,0 +1,104 @@
+{
+  "schema": "paper.compass_unavailable_acceptance.v1",
+  "status": "LOCAL_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "base_commit": "1cd968f897afbe63cacfef6e7301720eb574f87a",
+  "changes": "Absent risk readings display Unavailable/暂无数据 with no active gauge, risk verdict, broad-strength or coverage claim. Real0,54 and engine Split tape72 are preserved.",
+  "source_sha256": {
+    "templates/intl.html.j2": "e99dccce3cdf79c956ecd91664158c28a7cfe21d26becff5d8f5557c311f8e08",
+    "tests/test_intl_workspace_integration.py": "25309740bbe5d9fa365a810be76f7d89b088fa53288b8438d4af7032930c99e6"
+  },
+  "red": {
+    "product_failures": 5,
+    "positive_controls_passed": 3,
+    "deselected": 12,
+    "detail": "Four absent inputs render Neutral; missing score-key raises Undefined round TypeError. Two earlier collection failures are retained separately, not counted as product failures."
+  },
+  "verification": {
+    "integration_tests": 20,
+    "focused_browser_tests": 4,
+    "browser_regression_states": 40,
+    "fresh_rendered_cases": 18,
+    "counts_overlap": true,
+    "checks": [
+      {
+        "name": "DESIGN",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-unavailable-20261014-r1/FINAL_SOURCE.diff"
+        ],
+        "rc": 0,
+        "log_sha256": "089251320e94202a57a7e5a132f52c67957bb844055ede75a39551f1596dd2e4"
+      },
+      {
+        "name": "VISUAL_GUARD",
+        "command": [
+          "python3",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-unavailable-20261014-r1/FINAL_SOURCE.diff"
+        ],
+        "rc": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "WHITESPACE",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "rc": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "review": {
+    "verdict": "INDEPENDENT_REVIEW_NOT_EXECUTED",
+    "run_id": "paper-01a1101f-compass-unavailable-review-20261014-r1",
+    "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "parent": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "class": "review",
+    "task_complexity": "C1_ROUTINE_BOUNDED",
+    "route": "normal router; selected MiniMax/ubuntu3",
+    "adapter_state": "TERMINAL_FAILURE",
+    "adapter_signal": "prelaunch_failure",
+    "rc": 75,
+    "reason": "ROUTING_CRITICAL_POLICY_MISMATCH; SUPPORT_PUBLICATION_REFUSED; SCP_FAILED",
+    "result_available": false,
+    "retry": false,
+    "replacement": false,
+    "accepted": false,
+    "remote_cleanup": "not separately observed; no manual cleanup or release",
+    "parent_assessment": "Template absence handling is causally supported by5 red cases,20 integration passes and18 actual browser renders. This is parent assessment, not independent approval."
+  },
+  "visual_review": {
+    "parent_inspected": [
+      "missing-320-dark-en-2x.png",
+      "missing-1440-light-zh-1x.png",
+      "split-320-dark-en-1x.png"
+    ],
+    "conclusion": "Empty gauge and muted unavailable copy remain readable; valid engine warning retains its score and treatment. No new tokens or shared-navigation changes."
+  },
+  "scope_limits": [
+    "Synthetic local actual-template fixtures; not source qualification, current rights or deployment.",
+    "Visible EN/ZH labels verified; legacy SVG aria-label remains English in both locales.",
+    "Doubled side text is not native browser zoom.",
+    "Independent review remains pending after original prelaunch policy mismatch; no alternate worker/carrier used.",
+    "All IW2 Terminal custody and original release, qualification, frozen effects, rights, Saved and migration holds persist."
+  ],
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-unavailable-20261014-r1",
+  "evidence_sha256": {
+    "RED.log": "1648fdbb3acfc07689934d0e96727ee60cb16b431c2f21a56f04e8f547ce38b5",
+    "GREEN.log": "b54ee831eeb116ad293f7a5ff02a1a1966af8eda671236bddc7e78c2b03f3a85",
+    "BROWSER.log": "e504af8b64145dd32fd5fba3c7a38bbb9c4547f15be692201786616e1db2dddb",
+    "RENDERED.json": "de0940da48da9f8b7a88efd634e96cf0b2fb38d74a0a340d76ddeac5af6dd624",
+    "CHECKS.json": "23cb0cf817b210f94ee43e55ac6e5db55f1c14c8090fa8ab080b1c9a929554dc",
+    "FABRIC_REQUEST.log": "47792c8119ce322c5e41a514c983b769e0acf13d1b1e357eabada439fdb0e636",
+    "FABRIC_STATUS.json": "38a2f1dae0bc5132eef7bdf924fa385b813de43564e7812ea18ce8ec5d3abe10",
+    "REVIEW_FRONTIER.json": "8fd6edd978ae4fc9a30be91a7f0612f6487ef29cb25189d7e820c0b79233c068"
+  }
+}

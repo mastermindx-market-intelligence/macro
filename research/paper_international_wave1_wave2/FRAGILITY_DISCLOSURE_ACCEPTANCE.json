@@ -1,0 +1,33 @@
+{
+  "base_head": "b8f4d03dbf11154e5738b7e510b4ca9cc4412675",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Expanded Fragility countries retain each actual owner warning tag in EN/ZH; native disclosure keyboard behavior is preserved. Chinese publication-date typo corrected.",
+  "source_hashes": {
+    "templates/intl.html.j2": "c523c9e8299025655afc97495d54fc48ff54fc15ca17a1aa076baeb3047f7034",
+    "tests/test_intl_fragility_disclosure_render.py": "5c5991e2eeaa2bba17e27c6e8fa7d070f456d6f28ee55a5a75841f8b96a7dc64",
+    "tests/intl_workspace_page.test.cjs": "9e849e670eef7313973e285d8a63f714512a27bf2eab8b1fe0c8d78fb75c0415",
+    "engine/intl_risk.py": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "verification": {
+    "initial_render": "Three selector harness failures plus one real Chinese copy failure; original retained. Scoped selector correction then one 3-row PASS and two real 4/5-row missing-tag failures.",
+    "red_browser": "CHL actual warning tags empty after native Enter expansion; original source b8f4d03.",
+    "green": "4 unique Python PASS,14 inherited cleanup warnings;4 unique browser PASS across8width states320/1440.",
+    "canonical": "8 captures Dark/Light EN/ZH1440/390;27 source assets. live_config.js404 retained, no live access claim.",
+    "focused": "8 actual expanded panel images inspected acrossDark/Light EN/ZH320/1440. Warning text fits, correct distinct values and summary focus visible. Existing floating launcher can overlap footer at certain scroll positions; no full-page accessibility closure."
+  },
+  "data": "Actual vulnerability_table + _enrich_vulnerability over synthetic distinct IMF observations; BIS absent; no acquired market data or qualification.",
+  "preservation": {
+    "engine/intl_risk.py": "byte-identical to base HEAD",
+    "scripts/build_intl.py": "byte-identical to base HEAD"
+  },
+  "manifest_sha256": "882a4f775d41ba6d2e18a3ba4c551e0fa2a9f18c3861518afc88f4fdd80f7df2",
+  "limits": [
+    "No calculation, threshold, flag, data authority or enrichment change.",
+    "No live, speech, native zoom, physical touch or complete accessibility acceptance.",
+    "All custody, qualification, review, frozen-effect, rights, Saved, migration and release holds retained."
+  ],
+  "next": "Discriminate missing Trade/supply historical percentile against actual owner before bounded presentation repair; original live Chrome UI remains a human boundary."
+}

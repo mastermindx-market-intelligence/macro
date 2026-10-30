@@ -84,6 +84,57 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_international_workspace_presentation_public_without_data_grants():
+    """Anonymous International HTML cannot enhance if any one script/CSS is 401.
+
+    Only the ten exact, committed presentation assets are admitted here. No
+    API, source-price JSON, user Saved body or future asset family is public.
+    """
+    assets = {
+        "/intl_workspace.css",
+        "/intl_workspace_macro.css",
+        "/intl_workspace_risk.css",
+        "/intl_workspace_history.css",
+        "/intl_workspace_state.js",
+        "/intl_library_search.js",
+        "/intl_workspace_scenario.js",
+        "/intl_workspace.js",
+        "/intl_workspace_entry.js", "/intl_workspace_surveillance.css",
+    }
+    assert len(assets) == 10
+    exact = POLICY["public"]["exact"]
+    prefixes = POLICY["public"]["prefixes"]
+    assert all(exact.count(asset) == 1 for asset in assets)
+    assert assets <= _caddy_public_exclusions()
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY,
+                          flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, f"{name}: missing International presentation"
+    for asset in assets:
+        source = ROOT / "templates" / asset.lstrip("/")
+        emitted = SITE / asset.lstrip("/")
+        assert source.is_file() and emitted.is_file(), asset
+        assert source.read_bytes() == emitted.read_bytes(), asset
+
+    # A healthy browser shell is not redistribution, Saved or API entitlement.
+    withheld = (
+        "/intl_workspace/private.json",
+        "/intl_prices.json",
+        "/data/intl/index.json",
+        "/api/intl/qualifications",
+        "/saved/research.json",
+    )
+    for candidate in withheld:
+        assert candidate not in exact
+        assert not any(candidate.startswith(p.rstrip("/") + "/") for p in prefixes)
+    assert not any(p.rstrip("/") == "/intl_workspace" for p in prefixes)
+
+
 def test_help_build_clock_is_one_exact_public_ui_asset():
     """Public Help must load its local clock; nearby resources stay gated."""
     asset = "/help_refresh.js"
@@ -871,3 +922,81 @@ def test_portfolio_state_cache_migration_covers_every_served_consumer():
             assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
             consumers.add(str(page.relative_to(SITE)))
     assert {"watchlist.html", "ontology.html"} <= consumers
+
+
+def test_brain_visuals_assets_are_public_in_policy_and_every_caddy_matcher():
+    """The chat widget's illustration pair must load on every anonymous page.
+
+    Pin the existing presentation pair without promoting adjacent payloads
+    or future members of the family. This is static-boundary evidence only.
+    """
+    assets = {"/mm_brain_visuals.js", "/mm_brain_visuals.css"}
+    assert len(assets) == 2
+    exact = POLICY["public"]["exact"]
+    assert all(exact.count(asset) == 1 for asset in assets)
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, f"{name}: missing Brain visuals presentation"
+
+
+def test_brain_visuals_payload_api_and_family_wildcards_stay_out_of_the_boundary():
+    """Illustration code is public; the Brain payload plane never is.
+
+    /api/brain/* is the Bearer-authenticated macro-api gateway reached through
+    the existing reverse proxy. In @reg_asset/@reg_asset_err the exact token
+    ``/api/*`` is that NON_POLICY proxy exclusion (see its block comment), not a
+    public grant — so those two lists are asked which token OTHER than ``/api/*``
+    admits the endpoint, never whether the endpoint fails fnmatch against it.
+    The policy and the two cache matchers carry no ``/api/*`` token, so any
+    admitting token there is a payload grant outright.
+    """
+    endpoint = "/api/brain/threads"
+    public_exact = set(POLICY["public"]["exact"])
+    public_prefixes = POLICY["public"]["prefixes"]
+    assert not _matches(endpoint, sorted(public_exact)), endpoint
+    assert not any(
+        endpoint.startswith(p.rstrip("/") + "/") for p in public_prefixes
+    ), "a public policy prefix admits the Brain API"
+
+    # Adjacent private/derived/future files of the visuals family stay gated,
+    # in policy and in every serving list.
+    private_family = (
+        "/mm_brain_visuals.json",
+        "/mm_brain_visuals/private.json",
+        "/mm_brain_visuals.js.map",
+        "/mm_brain_visuals_private.js",
+        "/mm_brain_visuals_future.js",
+    )
+    for candidate in private_family:
+        assert candidate not in public_exact, candidate
+        assert not any(
+            candidate.startswith(p.rstrip("/") + "/") for p in public_prefixes
+        ), candidate
+
+    for name in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        # Family promotion: no mm_brain_visuals token beyond the two exact assets.
+        family = {p for p in paths if "mm_brain_visuals" in p}
+        assert family <= {"/mm_brain_visuals.js", "/mm_brain_visuals.css"}, (
+            f"@{name} admits a mm_brain_visuals wildcard/variant: "
+            f"{sorted(family - {'/mm_brain_visuals.js', '/mm_brain_visuals.css'})}"
+        )
+        for candidate in private_family:
+            assert not _matches(candidate, sorted(paths)), (name, candidate)
+        admitted = sorted(p for p in paths if _matches(endpoint, [p]))
+        if name.startswith("reg_asset"):
+            assert set(admitted) <= {"/api/*"}, (name, admitted)
+        else:
+            assert admitted == [], (name, admitted)

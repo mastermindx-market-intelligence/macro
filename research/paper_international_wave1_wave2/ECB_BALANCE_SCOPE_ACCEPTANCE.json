@@ -1,0 +1,53 @@
+{
+  "base_head": "971051a3739cb6cec6972aba958b64cbebec2825",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "ECB card reports supplied52week balance change and weekly-bin clock, preserving rounded-zero uncertainty without policy-action claims.",
+  "source_hashes": {
+    "templates/intl.html.j2": "8afc070866a5628493f54936d15d5f2c29755297d8ff55b72580409ed558ae93",
+    "engine/intl_rates.py": "c5da6a12ceb8ec8bbd86d3cd36496072f96d7548e1f4273bc53d31673f78cc99",
+    "tests/test_intl_ecb_scope_render.py": "c18fac77356fe28574eee1f02a39981840cd8a8af0ee4eb54bdf2d2d6ee071b7",
+    "tests/intl_workspace_page.test.cjs": "d34ebaa8d5d41dfdebffacabafdde00417b9602a9420d008ecd23d93513dd8bd"
+  },
+  "verification": {
+    "red": "12originalPythonFAIL;1originalbrowserFAIL",
+    "green": "12uniquePythoncases:10PASS+2targetedcorrectedPASS,14inheritedwarnings;4uniquebrowsercases:3PASS+1targetedcorrectedPASS,8widthstates320/1440. Originalcandidate2Python/1browser failures were substring easing in non-decreasing; logs retained.",
+    "canonical": "8DarkLightENZH1440/390captures;4focusedparentviews",
+    "final_heading": "After removing the inherited decorative bank emoji flagged on the changed heading line:4affectedbrowserPASS8widthstates,8freshcanonicalcaptures4focusedparentviews. Counts overlap; still4unique browsercases. Original captures archived before-heading-correction."
+  },
+  "harness_correction": {
+    "initial_candidate_python": "10PASS2FAIL",
+    "initial_candidate_browser": "3PASS1FAIL",
+    "cause": "Substring easing incorrectly matched non-decreasing. Corrected English whole-word boundaries; no product change or expectation removal.",
+    "targeted_followup": "only flat/tiny_up Python and dark en browser; accepted other cases reused"
+  },
+  "parent_review": {
+    "files": [
+      "ecb-1440-dark-en.png",
+      "ecb-1440-light-en.png",
+      "ecb-390-dark-zh.png",
+      "ecb-390-light-zh.png"
+    ],
+    "result": "Final heading without decorative emoji reviewed in4actualfocused images; both material directions preserve readable values, wrapping status and weekly-bin date. No independent approval."
+  },
+  "manifest_sha256": "b5e617d52e8e06b40ded72413a7e04495022be7dbf3e0e2605b81c09ed60bd10",
+  "limits": [
+    "No owner calculation, rounding, acquisition, signal threshold, underlying observation date or policy contract invented.",
+    "Synthetic fixtures; not live market, speech, nativezoom, physicaltouch or complete accessibility.",
+    "All review, release, rights, Saved, migration, frozen-effect, browser, CI and IW2 custody holds remain."
+  ],
+  "next": {
+    "state": "SOURCE_INSPECTED_DISTINCT_GAP",
+    "source": "engine/contagion.py two_tier_read; templates/intl.html.j2 tier2_hot and channel chips",
+    "finding": "Absent/insufficient legs can have zero hot_count or hotFalse; summary treats these as zero of5, green and Ignore for US book. Owner actually counts4tests and safety flag is informational.",
+    "next": "Construct actual-owner missing/partial/evaluated counterexamples. Preserve thresholds, supplied flags, source state and independent dollar flag; scope coverage and remove unsupported position instruction. No new risk classification or causal contract."
+  },
+  "publication_sequence_failure": {
+    "published_head": "5b7bf3f1c4ddf4e1c1f640dc9a4ed86ae8185bea",
+    "failure": "The outer shell ran git publication after Python guard loop aborted. Design check found1emoji on an edited inherited heading line. Other guard loop steps did not execute.",
+    "repair": "Remove decorative bank emoji; refresh affected browser geometry and captures, rerun all required guards, checked subprocess gating before normal corrective commit.",
+    "deployed": false,
+    "prior_evidence": "before-heading-correction retained; no old capture restamp"
+  }
+}

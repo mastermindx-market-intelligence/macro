@@ -53,18 +53,18 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=29ec9caa">
+<link rel="stylesheet" href="theme.css?v=2faa15b9">
 
-<link rel="stylesheet" href="intl_workspace.css?v=e321de56">
+<link rel="stylesheet" href="intl_workspace.css?v=97b2e435">
 <link rel="stylesheet" href="intl_workspace_macro.css?v=11b8e48f">
-<link rel="stylesheet" href="intl_workspace_risk.css?v=5f21f98f">
-<link rel="stylesheet" href="intl_workspace_history.css?v=a4d33346">
+<link rel="stylesheet" href="intl_workspace_risk.css?v=1a9857cb">
+<link rel="stylesheet" href="intl_workspace_history.css?v=49cfc25a">
 <link rel="stylesheet" href="intl_workspace_surveillance.css?v=8398ff14">
 <script defer src="intl_workspace_state.js?v=b02a8083"></script>
 <script defer src="intl_library_search.js?v=019933a8"></script>
 <script defer src="intl_workspace_scenario.js?v=91217398"></script>
-<script defer src="intl_workspace.js?v=ba10411e"></script>
-<script defer src="intl_workspace_entry.js?v=3b476b4c"></script>
+<script defer src="intl_workspace.js?v=ca134302"></script>
+<script defer src="intl_workspace_entry.js?v=ca184198"></script>
 
 
 
@@ -34475,7 +34475,7 @@
             <td class="neg">-13.6%</td>
             <td class="neg">-29.7%</td>
           </tr>
-        
+
         </tbody>
       </table>
       <p class="caveat" style="margin-top:10px"><span class="l-en">Positive = beat the S&P 500 over that window. Relative-strength lens only.</span><span class="l-zh">正值 = 该周期跑赢标普500。仅相对强弱视角。</span></p>
@@ -36067,7 +36067,7 @@
           <span class="v">#2</span>
           
         </div>
-      
+
         <div class="rb"><span class="flg">🇪🇺</span><span style="width:54px" class="muted">EZ</span>
           <span class="bar"><span class="bf" style="width:44%;background:var(--link)"></span></span>
           <span class="v">#3</span>
@@ -36247,6 +36247,40 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
     btn.style.display = 'none';
   });
 });
+// Only the International sector board has a page-owned fourteen-row collapse.
+// tablesort.js counts ALL matching rows, and must not announce matches that
+// .sbmore.hidden still keeps invisible. Reveal the collapsed rows for an active
+// query before tablesort's input handler runs; restore collapse on Clear/Reset
+// unless the visitor deliberately chose Show all. Never change another table.
+(function(){
+  var table = document.querySelector('table.sb.sortable');
+  var more = document.querySelector('.more-btn[data-more="sbmore"]');
+  if (!table || !more) return;
+  function filterInput(){
+    var anchor = table.parentNode && table.parentNode.classList.contains('tbl-scroll')
+      ? table.parentNode : table;
+    var control = anchor.previousElementSibling;
+    return control && control.classList.contains('tbl-filter')
+      ? control.querySelector('input[type="search"]') : null;
+  }
+  function syncVisibility(value){
+    var active = String(value || '').trim().length > 0;
+    var expanded = more.style.display === 'none';
+    table.querySelectorAll('tbody tr.sbmore').forEach(function(row){
+      row.classList.toggle('hidden', !active && !expanded);
+    });
+  }
+  document.addEventListener('input', function(event){
+    var input = filterInput();
+    if (input && event.target === input) syncVisibility(input.value);
+  }, true);
+  // tablesort's no-match reset sets input.value itself without firing input.
+  document.addEventListener('click', function(event){
+    var reset = event.target.closest && event.target.closest('[data-tablesort-reset]');
+    var input = filterInput();
+    if (reset && input && reset.parentNode === input.parentNode) syncVisibility('');
+  }, true);
+})();
 </script>
 
 
@@ -36389,7 +36423,8 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
   } catch(e){}
 })();
 </script>
-<script src="theme.js?v=2454e0ca" defer></script>
+<script src="theme.js?v=be94e3f1" defer></script>
 <script src="tablesort.js?v=62f1b5ef" defer></script>
+<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

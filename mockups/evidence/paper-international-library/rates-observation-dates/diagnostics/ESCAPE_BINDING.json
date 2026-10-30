@@ -1,0 +1,7 @@
+{
+  "template_sha256": "f500845c4c34a456545d9db36adb08e2f27844d6949071e8a37b507870d7377e",
+  "html_sha256": "7b519ff87f4209e23ad617cdf1cc2d3ee0d92bb391435d076c17fabc59c34c49",
+  "capture_html_unchanged_after_final_escape": true,
+  "source_semantics": "Escape only present supplied strings; render missing bilingual fallback as its native macro markup. Existing renderer autoescape=False; no inference of global XSS remediation.",
+  "rejected_intermediate": "Whole-expression escaping would print fallback span markup; one failing missing-case test retained."
+}

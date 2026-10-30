@@ -38,6 +38,22 @@
 {% macro not_supplied() -%}
 <span class="l-en">Not supplied</span><span class="l-zh" lang="zh">未提供</span>
 {%- endmacro %}
+{% macro cycle_heading(key) -%}
+{# Translate only an already-admitted heading, using the retained International
+   quadrant names. Qualification and method references belong to the projector. #}
+{% set labels = {'goldilocks': ['Goldilocks', '金发女孩'],
+                 'reflation': ['Reflation', '再通胀'],
+                 'stagflation': ['Stagflation', '滞胀'],
+                 'growth_scare': ['Growth-scare', '增长恐慌']} %}
+{% if key in labels %}<span class="l-en">{{ labels[key][0]|e }}</span><span class="l-zh" lang="zh">{{ labels[key][1]|e }}</span>{% else %}{{ key|e }}{% endif %}
+{%- endmacro %}
+{% macro component_readings(components) -%}
+{% for component in components %}
+  <span>{{ component.key|e }} · <span class="l-en">Score:</span><span class="l-zh" lang="zh">评分：</span> {% if component.score is none %}{{ not_supplied() }}{% else %}{{ component.score|e }}{% endif %} · <span class="l-en">Weight:</span><span class="l-zh" lang="zh">权重：</span> {% if component.weight is none %}{{ not_supplied() }}{% else %}{{ component.weight|e }}{% endif %}</span>{% if not loop.last %} · {% endif %}
+{% else %}
+  <span class="l-en">No components supplied.</span><span class="l-zh" lang="zh">未提供分项。</span>
+{% endfor %}
+{%- endmacro %}
 {% macro reason_text(reason) -%}
 {% if reason is none %}{{ not_supplied() }}{% elif reason in reason_labels %}<span class="l-en">{{ reason_labels[reason].en|e }}</span><span class="l-zh" lang="zh">{{ reason_labels[reason].zh|e }}</span>{% else %}{{ reason|e }}{% endif %}
 {%- endmacro %}
@@ -85,7 +101,7 @@
             {% set metric_period = metric.get('period') %}{% if metric_period is none %}{{ not_supplied() }}{% else %}<span class="intl-macro__period">{{ metric_period.start|e }} – {{ metric_period.end|e }} · {{ metric_period.count|e }} · {{ metric_period.count_basis|e }}</span>{% endif %}
           </dd></div>
           <div><dt><span class="l-en">Calculation date</span><span class="l-zh" lang="zh">计算日期</span></dt><dd>{% if metric.get('calculation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('calculation_at')|e }}{% endif %}</dd></div>
-          <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{{ metric.get('source_reference')|e }}</dd></div>
+          <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{% if metric.get('source_reference') is none %}{{ not_supplied() }}{% else %}{{ metric.get('source_reference')|e }}{% endif %}</dd></div>
           {% if metric.get('evidence_key') is not none %}<div><dt><span class="l-en">Evidence key</span><span class="l-zh" lang="zh">证据键</span></dt><dd class="intl-macro__reference" tabindex="0">{{ metric.get('evidence_key')|e }}</dd></div>{% endif %}
         </dl>
       </details>
@@ -133,7 +149,7 @@
       {% if macro_section.selected_market is none %}
         <p><span class="l-en">Cycle assessment unavailable where growth and inflation evidence is missing.</span><span class="l-zh" lang="zh">缺少增长和通胀依据时，经济周期判断暂无可用。</span></p>
       {% elif macro_section.selected_reads.economic_cycle.destination is not none %}
-        <p><a href="{{ macro_section.selected_reads.economic_cycle.destination|e }}">{{ macro_section.selected_reads.economic_cycle.title_key|e }}</a></p>
+        <p><a href="{{ macro_section.selected_reads.economic_cycle.destination|e }}">{{ cycle_heading(macro_section.selected_reads.economic_cycle.title_key) }}</a></p>
       {% else %}
         <p>{{ reason_text(macro_section.selected_reads.economic_cycle.reason) }}</p>
       {% endif %}
@@ -162,16 +178,24 @@
         <section>
           <h3>{{ composite.market_id|e }} · {{ composite.method_kind|e }}</h3>
           {% if composite.supported_heading is none %}
-            <p><span class="l-en">Original method retained; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">保留原方法；不声称经济周期诊断。</span></p>
+            {% if composite.reported_method_ref is none %}
+              <p><span class="l-en">Method not supplied; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">未提供方法；不声称经济周期诊断。</span></p>
+            {% else %}
+              <p><span class="l-en">Original method retained; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">保留原方法；不声称经济周期诊断。</span></p>
+            {% endif %}
           {% else %}
-            <p>{{ composite.supported_heading|e }}</p>
+            <p>{{ cycle_heading(composite.supported_heading) }}</p>
           {% endif %}
-          <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {{ composite.reported_method_ref|e }} · {{ composite.presentation_quality|e }}</p>
+          <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {% if composite.reported_method_ref is none %}{{ not_supplied() }}{% else %}{{ composite.reported_method_ref|e }}{% endif %} · {% set composite_quality = quality_labels.get(composite.presentation_quality, quality_labels.unknown) %}<span class="l-en">{{ composite_quality.en|e }}</span><span class="l-zh" lang="zh">{{ composite_quality.zh|e }}</span></p>
+          {% if composite.components is not none %}
           <dl>
-            <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{% for component in composite.components.growth %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
-            <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{% for component in composite.components.inflation %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
+            <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{{ component_readings(composite.components.growth) }}</dd></div>
+            <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{{ component_readings(composite.components.inflation) }}</dd></div>
             <div><dt><span class="l-en">As of</span><span class="l-zh" lang="zh">截至</span></dt><dd>{{ composite.components.asof|e }}</dd></div>
           </dl>
+          {% else %}
+            <p data-im-macro-components-unavailable><span class="l-en">Component evidence not supplied.</span><span class="l-zh" lang="zh">未提供分项依据。</span></p>
+          {% endif %}
         </section>
       {% endfor %}
     </details>

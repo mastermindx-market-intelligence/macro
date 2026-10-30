@@ -46,7 +46,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "intl_workspace_surveillance.css")
 
 
-def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+def _ecb_publication_result(materialized, *, evaluated_at, generation):
     """Issue this owner's adopted, byte-bound ECB decision, then qualify it.
 
     The reviewed purchase notices and per-access source notice are publication
@@ -57,6 +57,39 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
     import numpy as np
     from engine.intl_inputs import admit_ecb_deposit_field
 
+    def retained(measure, decision=None):
+        # Only the actual admission verdict can expose its original origin.
+        admitted = (measure.get("quality") == "qualified"
+                    and measure.get("metadata") == "allowed"
+                    and measure.get("value_permission") == "allowed")
+        origin = ({"qualification_identity": decision["decision_ref"]}
+                  if admitted and decision is not None else None)
+        clocks = {"published_at": None, "rights_at": None,
+                  "source_observed_at": (measure.get("observation_at")
+                                         if measure.get("metadata") == "allowed" else None)}
+        publication = None
+        if origin is not None:
+            # Narrow issuer-retention record: the actual evaluation identity and
+            # the original decision owner only. The source reference is the
+            # admitted measure's own byte-bound pair, never reconstructed from
+            # the generation or hash; no binding, provenance or values.
+            publication = {
+                "measure_id": "EZ.policy_rate",
+                "generation": generation,
+                "evaluated_at": evaluated_at,
+                "origin": dict(origin),
+                "decision_origin": {
+                    "owner_ref": decision["owner_ref"],
+                    "policy_ref": decision["policy_ref"],
+                    "decision_ref": decision["decision_ref"],
+                },
+                "source_reference": measure.get("source_reference"),
+                "evidence_key": measure.get("evidence_key"),
+                "clocks": dict(clocks),
+            }
+        return {"measure": measure, "origin": origin, "clocks": clocks,
+                "publication": publication}
+
     unavailable = {
         "quality": "missing" if materialized["status"] == "missing" else "failed",
         "reason": "not_supplied" if materialized["status"] == "missing" else "source_failed",
@@ -65,11 +98,11 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
         "calculation_at": None, "source_reference": None, "evidence_key": None,
     }
     if materialized["status"] != "ready":
-        return unavailable
+        return retained(unavailable)
     try:
         series = materialized["series"]
         if series.empty:
-            return {**unavailable, "quality": "missing", "reason": "not_supplied"}
+            return retained({**unavailable, "quality": "missing", "reason": "not_supplied"})
         endpoint = series.iloc[-1]
         if type(endpoint) in {np.int8, np.int16, np.int32, np.int64,
                               np.uint8, np.uint16, np.uint32, np.uint64,
@@ -95,14 +128,23 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
                 "value": endpoint, "unit": "percent",
             },
         }
-        return admit_ecb_deposit_field(
+        measure = admit_ecb_deposit_field(
             series, provenance=materialized["provenance"],
             materialized_identity=identity, evaluated_at=evaluated_at,
             publication_decision=decision,
         )
+        return retained(measure, decision)
     except Exception as exc:  # Keep a malformed owned snapshot out of the page.
         log.error("International ECB evidence unavailable (%s)", type(exc).__name__)
-        return unavailable
+        return retained(unavailable)
+
+
+
+def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+    """Preserve the existing field-only presentation API."""
+    return _ecb_publication_result(
+        materialized, evaluated_at=evaluated_at, generation=generation,
+    )["measure"]
 
 
 def _history_publication_sources(receipts):
@@ -178,13 +220,15 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
             "bases": workspace["config"]["bases"],
     }
     try:
-        measure = _ecb_publication_measure(
+        publication = _ecb_publication_result(
             read_ecb_deposit_materialization(data_root=data_root),
             evaluated_at=evaluated_at, generation=generation,
         )
         mounted = attach_macros(
-            workspace, registry=registry, measures={"EZ.policy_rate": measure},
+            workspace, registry=registry,
+            measures={"EZ.policy_rate": publication["measure"]},
             cycle_evidence={}, destinations={},
+            ecb_publication=publication["publication"],
             source_notice={
                 "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
                 "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",
@@ -461,6 +505,7 @@ def main() -> int:
     # the ITR block can fail-open if this try never runs.
     _wr_intl_raw: "pd.DataFrame | None" = None
     _wr_bench: "pd.Series | None" = None
+    _wr_bench_note: str | None = None
     try:
         from engine import intl_performance
         from engine import intl_inputs as _wr_inputs
@@ -470,7 +515,7 @@ def main() -> int:
         _wr_countries = _wr_inputs.countries()
         # US bench (already USD, ^GSPC/SPY fallback) for the momentum leg + as a
         # turn-state input for the US row.
-        _wr_bench, _ = intl_performance._bench_series_fresh(intl_closes=_wr_intl_raw)
+        _wr_bench, _wr_bench_note = intl_performance._bench_series_fresh(intl_closes=_wr_intl_raw)
         if _wr_bench is not None and not _wr_bench.empty:
             _wr_extra_closes["US"] = _wr_bench.dropna()
 
@@ -915,8 +960,10 @@ def main() -> int:
             _itr_bench = perf.get("bench")
             bench_note = perf.get("bench_note")
         elif _wr_bench is not None:
-            # ITR-R7: reuse the bench hoisted for the world-risk block (same helper).
+            # Reuse the already-qualified benchmark and its source-date disclosure.
+            # Performance-panel failure must not erase a SPY-substitution note.
             _itr_bench = _wr_bench
+            bench_note = _wr_bench_note
         else:
             try:
                 from engine.intl_performance import _bench_series_fresh as _itr_bf

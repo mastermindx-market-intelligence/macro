@@ -1,0 +1,204 @@
+{
+  "schema": "paper.central_bank_absence.acceptance.v1",
+  "state": "BUILT_NOT_PROVEN",
+  "base_head": "509d1a0998223f782ca200750e698acf3d287b63",
+  "source_sha256": "fcc1d7e3d0c02fda2efa505470ea72513a98d2e4e507edfc6f3fa85c201d6e79",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/central-bank-absence-20261014-r1",
+  "causal_red": {
+    "render": "Unknown trend1FAIL4PASS plus separate missing-impulse1FAIL; actual snapshot supplied synthetic frames",
+    "browser_focus": "One original browser fail at unfocusable heading; not a browser value red",
+    "scroll": "Named region missing on generic scroll container: role/label/tabindex null; earlier selector-only failure retained separately"
+  },
+  "green": {
+    "render": "35PASS14inheritedwarnings:6new central-bank cases plus29affected builder tests; before only final named-scroller markup/CSS addition",
+    "browser": "4finalPASS0FAIL across8widthstates320/1440 EN/ZH Dark/Light; native heading/region focus, 4narrow right/left traversals and8exact Library query returns",
+    "intermediate_browser": "4absence/focus cases passed before scroller extension; overlap with final cases, not additive full journeys",
+    "canonical_capture_states": 8,
+    "focused_images": 6
+  },
+  "visual": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "final_source_sha256": "fcc1d7e3d0c02fda2efa505470ea72513a98d2e4e507edfc6f3fa85c201d6e79",
+    "manifest_sha256": "e45751c7ac20daa7b4fe35c02c872f7ce07f6554f64f5cc3548528a22fd781a4",
+    "focused_images": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "file": "cards-1440-dark-en.png",
+        "sha256": "328c03f3a55fd57ed4fe11af9a64430dd1b683dc0d5c25629629a86a4006acf7",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t0.00%\tUnavailable\t\u2014\tUnavailable\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 40,
+            "y": 263.171875,
+            "width": 673,
+            "height": 189.5,
+            "top": 263.171875,
+            "right": 713,
+            "bottom": 452.671875,
+            "left": 40
+          },
+          "table": {
+            "x": 59,
+            "y": 330.265625,
+            "width": 647.09375,
+            "height": 68.09375,
+            "top": 330.265625,
+            "right": 706.09375,
+            "bottom": 398.359375,
+            "left": 59
+          }
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "lang": "en",
+        "file": "cards-1440-light-en.png",
+        "sha256": "64c1694db2745677d0dc47817a9288a1b7cc3d89e5840a758774ae2d0e486f36",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t0.00%\tUnavailable\t\u2014\tUnavailable\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 40,
+            "y": 263.171875,
+            "width": 673,
+            "height": 189.5,
+            "top": 263.171875,
+            "right": 713,
+            "bottom": 452.671875,
+            "left": 40
+          },
+          "table": {
+            "x": 59,
+            "y": 330.265625,
+            "width": 647.09375,
+            "height": 68.09375,
+            "top": 330.265625,
+            "right": 706.09375,
+            "bottom": 398.359375,
+            "left": 59
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh.png",
+        "sha256": "0f43740c92d1535210e3185424310f6a07c280072c9385dd8478061272bb6101",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t0.00%\t\u4e0d\u53ef\u7528\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 207.3125,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 207.375,
+            "left": 20
+          },
+          "table": {
+            "x": 39,
+            "y": 67.15625,
+            "width": 464.875,
+            "height": 68.09375,
+            "top": 67.15625,
+            "right": 503.875,
+            "bottom": 135.25,
+            "left": 39
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh-last-column.png",
+        "sha256": "f49568db49e9a2589058912debd19b6735477a67f53f8fb74551e361e61b5300",
+        "keyboard_scroll": {
+          "left": 153,
+          "max": 153,
+          "focused": true
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh.png",
+        "sha256": "ad2da10c4efd472ac2d0b0530beee8bd850e1add738e48eaa3569335e4e7406e",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t0.00%\t\u4e0d\u53ef\u7528\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 207.3125,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 207.375,
+            "left": 20
+          },
+          "table": {
+            "x": 39,
+            "y": 67.15625,
+            "width": 464.875,
+            "height": 68.09375,
+            "top": 67.15625,
+            "right": 503.875,
+            "bottom": 135.25,
+            "left": 39
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh-last-column.png",
+        "sha256": "a8de1481f86e35a6de9a1ceac3e11c35029a2765a840d3121e8e0151f8af7723",
+        "keyboard_scroll": {
+          "left": 153,
+          "max": 153,
+          "focused": true
+        }
+      }
+    ],
+    "findings": [
+      "Actual owner unknown trend and unknown13w impulse display Unavailable; literal0 rate and flat known impulse retain their meanings.",
+      "Dark table keeps restrained instrument materials; Light table keeps white material and hairlines. Existing directional chips remain for actual supplied trends.",
+      "Four settled rest views plus two narrow right-edge views were parent-inspected. Native keyboard reachability is verified, not physical touch or screen-reader speech.",
+      "The preexisting generic scroller did provide overflow containment. Offscreen columns alone did not prove pointer-scroll failure. New named region and explicit keyboard focus are the accepted change.",
+      "Existing source clock/proxy disclosures remain incomplete; aggregate as_of is latest row date, not common freshness. No full Central-bank qualification or live acceptance."
+    ]
+  },
+  "harness_limits": [
+    "Initial snapshot(today=...) TypeError was fixture misuse, corrected to actual no-arg signature; no product red from that attempt",
+    "Synthetic frames use actual owner snapshot; no real store or calendar reads",
+    "Capture and browser optimizer use actual27source assets; no live profile"
+  ],
+  "holds": [
+    "Source NOT_DEPLOYED; independent review PENDING under original refusal",
+    "CI NOT_OBSERVED; no poll/retry/alternate observer",
+    "IW2 owns all TerminalPR804 surfaces",
+    "No ready/merge/autoarm/deploy; all qualification/rights/Saved/migration/frozen-effect/release holds persist"
+  ]
+}

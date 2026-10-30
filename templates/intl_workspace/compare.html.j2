@@ -66,11 +66,11 @@
         <tr class="intl-compare__row" data-im-compare-slot="{{ row.slot|e }}"{% if not denied %} data-im-compare-cohort-id="{{ (row.cohort_id if row.cohort_id is not none else '')|e }}"{% endif %}>
           <th class="intl-compare__market" scope="row">
             {% if denied %}{{ words('Unavailable', '不可用') }}{% else %}
-              {{ words(row.name_en, row.name_zh) }}
+              <span id="{{ context_id|e }}-compare-market-name-{{ row.slot|e }}">{{ words(row.name_en, row.name_zh) }}</span>
               {% if row.get('index_label') is not none %}<span class="intl-compare__index">{{ row.index_label|e }}</span>{% endif %}
               {% if row.cohort_id is not none %}<a href="#{{ context_id|e }}-compare-{{ row.cohort_id|e }}">{{ words('Calculation window', '计算区间') }}</a>{% endif %}
             {% endif %}
-            <button type="button" data-im-compare-remove="{{ row.slot|e }}" hidden>{{ words('Remove selection', '移除选择') }}</button>
+            <button type="button" data-im-compare-remove="{{ row.slot|e }}"{% if not denied %} aria-labelledby="{{ context_id|e }}-compare-remove-label-{{ row.slot|e }} {{ context_id|e }}-compare-market-name-{{ row.slot|e }}"{% endif %} hidden><span id="{{ context_id|e }}-compare-remove-label-{{ row.slot|e }}">{{ words('Remove selection', '移除选择') }}</span></button>
           </th>
           <td>
             {% if denied %}<p data-im-compare-quality="denied">{{ words('Information withheld', '信息未披露') }}</p>

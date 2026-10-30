@@ -1,0 +1,54 @@
+{
+  "base_head": "d66a660f6e0123dc1bc73e385b68139c1361fc1f",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Actual rank() on synthetic rising/flat prices, benchmark absence, short history and supplied states. Preserve calculation and owner order; expose signed composite scores and native reading path.",
+  "counterexample": "Identical 22.02 percent 20-session readings produce 15.168 and 9.101 scores; flat synthetic prices produce 0 and -6.6 under different supplied states. Original bars collapse nonpositive values and saturate above3.",
+  "repair": [
+    "Name composite score rather than 20-day momentum; expose signed three-decimal owner scores without arbitrary bar clipping.",
+    "Explain50/30/20 weighting, benchmark-dependent basis, adjustments and zero substitution for missing windows without inventing per-row coverage.",
+    "Preserve rank, supplied market identity and escaped notes; absent rankings stay absent.",
+    "Native heading focus, canonical labelled scrollable table, method help and context/query-preserving Back."
+  ],
+  "tests": {
+    "render_unique_pass": 6,
+    "browser_unique_pass": 4,
+    "browser_width_states": 8,
+    "original_render_red": 5,
+    "original_browser_red": 1,
+    "counts_overlap": true,
+    "warnings": "14 inherited pytest cleanup warnings"
+  },
+  "visual": {
+    "canonical": 8,
+    "focused": 8,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "parent_review": "Eight final focused views read; canonical table material retains distinct existing Dark/Light treatments. Narrow table uses contained keyboard scrolling.",
+    "limits": "No independent review/live/physical input/speech/native zoom acceptance.",
+    "manifest_sha256": "c5c560805491fbfb25b79231957085cda9529a93623187b8ae129352abe47062"
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "42bd20d334c0356d07cbb46ac2147576379b55fb4018b3bb578abc5bdc2fee70",
+    "tests/test_intl_rotation_reading_render.py": "c8dd28d3a9b99896a10e491fa6f806e840241df1fb9b1f9989a6eb7f2e719f80",
+    "tests/test_intl_workspace_integration.py": "ecb805bc57ddaae826f782ced21877840784ceecc5836f5373385ad14b008179",
+    "tests/intl_workspace_page.test.cjs": "9030a4364dd5951695814f6286369ccc94cd38e07874e296ef73ba7de1f94314"
+  },
+  "owners_unchanged": {
+    "engine/intl_rotation.py": "d26d99e2b736af9311d7e7bdd65f10abdb3cd8606c51d1505610f626d068f52b",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "lib/intl_library_mount.py": "5689c95196c8f107dc7499c2b249cb36de061969c7baad3e9cf7eca1a3fb8c76"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/leadership-score-reading-20261014-r1"
+}

@@ -1,6 +1,8 @@
 """International destination must contain its risk-desk grid on narrow screens."""
 from pathlib import Path
+from html.parser import HTMLParser
 import re
+from urllib.parse import urlsplit, unquote
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -29,6 +31,29 @@ def test_international_mobile_controls_and_risk_labels_can_wrap():
 
 def test_committed_international_projection_carries_mobile_containment():
     html = (ROOT / "site/intl.html").read_text()
+    class Stylesheets(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.hrefs = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "link" and "stylesheet" in attrs.get("rel", "").split():
+                self.hrefs.append(attrs["href"])
+
+    parsed = Stylesheets()
+    parsed.feed(html)
+    # The publisher can extract inline styles into local content-addressed CSS.
+    # Follow the actual committed references, never a similarly named stale file.
+    site = (ROOT / "site").resolve()
+    for href in parsed.hrefs:
+        url = urlsplit(href)
+        if url.scheme or url.netloc:
+            continue
+        stylesheet = (site / unquote(url.path).lstrip("/")).resolve()
+        assert stylesheet.is_relative_to(site), href
+        assert stylesheet.is_file(), href
+        html += "\n" + stylesheet.read_text()
     assert re.search(r"body\.page-intl \.ird-twocol\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0", html)
     assert re.search(r"body\.page-intl \.te-strip\s*\{[^}]*grid-template-columns\s*:\s*minmax\(0,\s*1fr\)", html)
     for selector in ("body.page-intl .seg", "body.page-intl .ird-tx-row"):

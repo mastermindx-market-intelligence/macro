@@ -1,0 +1,67 @@
+{
+  "base_head": "a2dbb6c335db480ff88330063a5bca41b4b782d7",
+  "candidate_template_sha256": "53a89f75cbfee9103ee34cb8bf0bd20dba2a1d4e7101be983ab6df54ee10ba3e",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "NOT_OBSERVED",
+  "limits": [
+    "Synthetic source fixtures only; no live data acquisition or qualification.",
+    "No native zoom, speech, physical touch or complete accessibility acceptance.",
+    "All custody, frozen-effect, rights, Saved, migration and release holds retained."
+  ],
+  "capability": "Null/unknown owner regimes stay unavailable and neutral in both summaries; valid regimes and separate safety bid retained; no tonight promise.",
+  "verification": {
+    "python": "7 causal unavailable failures,3 supported-enum passes; separate safety fixture corrected to TTR.safety_bid and reproduced original failure. Final11PASS14 inherited warnings.",
+    "browser": "1 original failure,4 final new cases PASS across Dark/Light EN/ZH and320/1440; the same final log includes2Credit timeout reruns. Counts overlap and are not added."
+  },
+  "canonical_captures": 8,
+  "manifest_sha256": "9eef5cb7c04f29beaf94d87c39f9baf240f783b49d7e4f940c92400d0a9ddc28",
+  "focused_images": 8,
+  "parent_review": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "images_viewed": [
+      "cards-1440-dark-en.png",
+      "header-1440-dark-en.png",
+      "cards-1440-light-en.png",
+      "header-1440-light-en.png",
+      "cards-390-dark-zh.png",
+      "header-390-dark-zh.png",
+      "cards-390-light-zh.png",
+      "header-390-light-zh.png"
+    ],
+    "findings": [
+      "Eight focused images viewed:header and detail for1440EN/390ZH in Dark/Light. Missing owner regime is neutral and Unavailable; no Mixed picture or promised tonight refresh.",
+      "Existing dark instrument and light research materials retain their distinct backgrounds/borders and readable muted text. No clipping observed in these scoped views.",
+      "Existing action/subtitle and valid-regime interpretation are outside this bounded acceptance; no new market qualification or complete accessibility claim."
+    ],
+    "scope": "Synthetic actual-owner missing-input result. Independent review unavailable under retained original refusal; no live browser operation."
+  },
+  "capture_limits": {
+    "console_error_count": 1,
+    "by_viewport": {
+      "desktop": {
+        "document_height_px": 3756,
+        "elements_wider_than_viewport": 0,
+        "horizontal_overflow": false
+      },
+      "mobile": {
+        "document_height_px": 5187,
+        "elements_wider_than_viewport": 4,
+        "horizontal_overflow": false
+      }
+    }
+  },
+  "capture_limit_note": "Isolated live_config.js404 and inherited mobile wide-element heuristics retained; no document overflow in measured reference states.",
+  "source_trace": {
+    "state": "DISTINCT_ACTUAL_OWNER_RETURN_PRESENTATION_GAP",
+    "sources": {
+      "engine/forex_dollar.py": "83704866ea0ddf152b7cd9ec4f44e290552546ccc142d001b197e2bff6aa9535",
+      "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+      "templates/intl.html.j2": "d5440e80b74bb97875ca6d9e1a60b8f47a976deb3b9134b400e509e4fcb86125"
+    },
+    "owner": "smile_decomp returns truthy gaps/regimeNone/display_onlyTrue for missing DXY, US2y, foreign basket or insufficient common history. Its _regime_from_z(None) returns unknown. Builder passes smile_decomp through after its existing forex publication-age gate.",
+    "defect": "Both header chip and Dollar card use truthiness and default every non-rates/non-safety regime to Mixed picture. Missing or empty input instead promises a read tonight.",
+    "scope": "Recognize only the three supported enum values; unavailable stays neutral with no delivery promise; preserve separate TTR safety_bid and exact owner inputs. No numerical/ranking/source admission or freshness change.",
+    "review": "Parent review only; original Fabric refusal persists."
+  }
+}

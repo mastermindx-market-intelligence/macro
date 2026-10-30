@@ -1,0 +1,66 @@
+{
+  "status": "RETAINED_DISTINCT_PREEXISTING_PRESENT_VALUE_GEOMETRY_GAP",
+  "fixture": "Synthetic AUshort=-0.4,y10=-0.1; same actual template and inherited clamp.",
+  "observed": {
+    "labels": [
+      {
+        "text": "3m -0.4",
+        "rect": {
+          "x": 51.4375,
+          "y": 539.671875,
+          "width": 34.9375,
+          "height": 13.9375,
+          "top": 539.671875,
+          "right": 86.375,
+          "bottom": 553.609375,
+          "left": 51.4375
+        }
+      },
+      {
+        "text": "10y -0.1",
+        "rect": {
+          "x": 51.578125,
+          "y": 539.671875,
+          "width": 34.65625,
+          "height": 13.9375,
+          "top": 539.671875,
+          "right": 86.234375,
+          "bottom": 553.609375,
+          "left": 51.578125
+        }
+      }
+    ],
+    "points": [
+      {
+        "left": "4%",
+        "rect": {
+          "x": 64.90625,
+          "y": 528.671875,
+          "width": 8,
+          "height": 8,
+          "top": 528.671875,
+          "right": 72.90625,
+          "bottom": 536.671875,
+          "left": 64.90625
+        }
+      },
+      {
+        "left": "4%",
+        "rect": {
+          "x": 64.90625,
+          "y": 528.671875,
+          "width": 8,
+          "height": 8,
+          "top": 528.671875,
+          "right": 72.90625,
+          "bottom": 536.671875,
+          "left": 64.90625
+        }
+      }
+    ],
+    "overlap": true
+  },
+  "screenshot_sha256": "7c03c48d12e06727defd3d2e6f43a54cfcaa4bd5fbfe784ae56a1830c3b0faa9",
+  "not_changed": "This phase repairs absence only. Present negative values still use inherited 4..96percent clamp and overlapping labels; not accepted as accurate negative geometry.",
+  "next_action": "Discriminate near-equal/negative endpoint geometry and labels in owned template; preserve true zero and supplied data. Choose a bounded readable representation without fabricating a curve or changing owner values. No prior journey replay or owner contract invention."
+}

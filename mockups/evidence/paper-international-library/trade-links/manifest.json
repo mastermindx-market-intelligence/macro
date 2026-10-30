@@ -1,0 +1,315 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-14T10:28:33Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:49417/live_config.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:49417/live_config.js"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2853,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3054,
+            "elements_wider_than_viewport": 4,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 2853,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 7,
+          "h3": 13,
+          "h4": 35,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 4,
+        "payload_bytes_total": 1788997,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 546
+      },
+      "page_id": "intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links",
+      "registry_route": "/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links",
+      "route": "/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 355591,
+          "captured": true,
+          "file": "evidence/92493bf5245e63ee.png",
+          "force_state": null,
+          "height": 2853,
+          "locale": "en",
+          "sha256": "92493bf5245e63ee52f1ee6c7ed4ec99c8989751cc5e4ceea4bd5b49381c6313",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 375765,
+          "captured": true,
+          "file": "evidence/eaa2892424044fb0.png",
+          "force_state": null,
+          "height": 2853,
+          "locale": "en",
+          "sha256": "eaa2892424044fb0128976de62bd8bdd48c7e0198150b6b05d02f7590fb90536",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 350433,
+          "captured": true,
+          "file": "evidence/a0f8d6a5130b7a5b.png",
+          "force_state": null,
+          "height": 2853,
+          "locale": "zh",
+          "sha256": "a0f8d6a5130b7a5bcea0a62ecbb1893b33cc1eb7c1b6126b71e2216837a45e19",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 370325,
+          "captured": true,
+          "file": "evidence/b584d25c85aa6db7.png",
+          "force_state": null,
+          "height": 2853,
+          "locale": "zh",
+          "sha256": "b584d25c85aa6db73f300d740e58d86c7eb2ccd46ad1350ec06e80b6fa9fd098",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 192976,
+          "captured": true,
+          "file": "evidence/2afa89e40a36830a.png",
+          "force_state": null,
+          "height": 3054,
+          "locale": "en",
+          "sha256": "2afa89e40a36830aa65fdd9b14b145ebdcc6f0cc48691b2a62961fb8351b53c1",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 210221,
+          "captured": true,
+          "file": "evidence/648fde58f68dbf3b.png",
+          "force_state": null,
+          "height": 3054,
+          "locale": "en",
+          "sha256": "648fde58f68dbf3b84cda34f80ac1a3fec071cb027bb262f61efb79661176f75",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 183264,
+          "captured": true,
+          "file": "evidence/c76035fdffbe2c93.png",
+          "force_state": null,
+          "height": 2804,
+          "locale": "zh",
+          "sha256": "c76035fdffbe2c935040a7342c8712c79526a1b89c4feeeafa54e275de0d627a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 200557,
+          "captured": true,
+          "file": "evidence/4b336bfbaba28092.png",
+          "force_state": null,
+          "height": 2804,
+          "locale": "zh",
+          "sha256": "4b336bfbaba28092493133d73a4cdcdff24a53a59fa38db87f17f3c01131f319",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

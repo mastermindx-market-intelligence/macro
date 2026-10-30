@@ -1,0 +1,36 @@
+{
+  "schema": "paper.library_keyboard_ime_journey.v1",
+  "recorded_at": "2026-10-14T06:09:00.812771+00:00",
+  "status": "PASS_SCOPED",
+  "source_head": "f65f1b46b0c52e86dd5a915fa728644a5d1a5328",
+  "source_tree": "a7737629238cc23f850c2b6ed61185b639dcddac",
+  "product_changes": "NONE in this phase",
+  "cases": 8,
+  "matrix": "Dark/Light x EN/ZH x 1440/320 CSS px, normal text",
+  "observed": [
+    "Native typing preserves raw leading/trailing spaces and deterministic cross-country result.",
+    "Synthetic IME interim input retains committed result during locale roundtrip and horizon/basis changes; compositionend selects Growth and inflation and announces committed query/count.",
+    "Two native Tab presses pass Clear and reach the actual result anchor with visible2px outline. Enter opens retained research and all enclosing disclosures.",
+    "Same-document browser Back retains exact input/result node identities and query; native keyboard Clear restores18 original catalogue nodes/order and focuses input.",
+    "Group entry focuses its heading; group Back and browser Back preserve draft. Query does not enter URL, network requests, localStorage or sessionStorage."
+  ],
+  "source_sha256": {
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-keyboard-ime-20261014-r1",
+  "journey_sha256": "29413cc799687865eb0a5307e9c72f0748b894d8d2ac80edd430e959d00e9d9c",
+  "assets_bound": 26,
+  "parent_visual_read": [
+    "dark-zh-320-keyboard.png",
+    "light-en-1440-keyboard.png"
+  ],
+  "limits": [
+    "Synthetic composition events are not an OS IME interaction or screen-reader speech proof.",
+    "Actual full template and publisher optimizer use retained synthetic inputs; no current rights, numerical qualification or served acceptance.",
+    "Same-document native anchor return only; cross-document Stock return remains blocked by the original Chrome extension UI. No persistent query storage introduced.",
+    "No source repair, independently accepted review, deployed fix, Saved write or native browser zoom claim.",
+    "All release, rights, frozen-effect, review, original app attachment and IW2 custody holds persist."
+  ]
+}

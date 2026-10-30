@@ -1,0 +1,65 @@
+{
+  "schema": "paper.macro_risk_history_journey.v1",
+  "status": "LOCAL_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "base_commit": "284d6e640db8c591c49e6ee45a5bc1dac380fc1f",
+  "procedure_pin": "1d5d1c05bc621193eae72a6c3d31d6a26036bd9f",
+  "problem": "A withheld currency channel offered an empty Evidence disclosure. Status and qualification/support reason could both render the same Unavailable translation.",
+  "repair": "Render a localized noninteractive Evidence unavailable message when no endpoint metadata or input reference can be disclosed. Retain metadata-only evidence even when numeric values are denied. Suppress a reason only when its EN and ZH labels exactly equal the status labels.",
+  "workflow": {
+    "modes": [
+      "admitted synthetic sources",
+      "no EOD grant plus normal unknown-disclosure History bridge",
+      "missing policy and history sources",
+      "malformed policy bytes and metadata-denied History"
+    ],
+    "matrix": "4 source modes x Dark/Light x EN/ZH x 1440/320 =32 full workflows",
+    "paths": "Macro/Policy -> Risk -> History -> browser Back/Forward -> market change/back -> Overview return/back -> Macro -> URL reload",
+    "clocks": "Policy observation2026-10-06 remains fixed; Risk endpoints end2026-10-07 with3m start2026-07-10 and1m start2026-09-08; History retains exact January timestamps including timezone/nanoseconds and separate actual read time.",
+    "verification": "32PASS after empty-disclosure fix;8 affected withheld workflows rerun PASS after copy dedup.24 other workflows reused: their rendered HTML differs only by210 single spaces before distinct reason labels; full comparison in UNAFFECTED_WORKFLOW_REUSE.json. Counts overlap, not40 unique cases.",
+    "input_parquet_mutation": false,
+    "assets": 26
+  },
+  "regression": {
+    "empty_disclosure_red": 2,
+    "metadata_only_positive_controls": 2,
+    "duplicate_copy_red": 2,
+    "distinct_reason_positive_control": 1,
+    "final_python_pass": 118,
+    "final_python_files": 3,
+    "warnings": 14,
+    "warning_scope": "Inherited pytest temp cleanup warnings; no manual cleanup",
+    "final_render_cases": 8,
+    "render_matrix": "Dark/Light x EN/ZH x1440px1x or320px2x computed text",
+    "native_zoom": "NOT_EXECUTED"
+  },
+  "parent_visual_review": [
+    "final-empty-evidence-dark-en-320.png",
+    "final-empty-evidence-light-zh-320.png"
+  ],
+  "dark_treatment": "Existing dark instrument surfaces and subdued unavailable text retained.",
+  "light_treatment": "Existing light research surfaces, hairlines and subdued unavailable text retained.",
+  "independent_review": "PENDING. Existing original compass-unavailable Fabric support-publication policy refusal is retained; no retry, replacement worker, native reviewer or alternate carrier. No new worker dispatched.",
+  "rejected_evidence": "13 initial journeys stopped at a harness-caused final disclosure toggle; no product regression claimed. Owned process30945/driver30969 closed, session38252 exit143. Character-level comparison process67283 was stopped at143 and replaced by bounded exact whitespace comparison; no source effect.",
+  "limits": [
+    "Isolated synthetic publication and existing test permissions are not live grants or authentic source qualification.",
+    "No Saved write, account change, deployed repair, native200percent zoom or Paper visual parity.",
+    "IW2 retains every Terminal804 surface. Original release,rights,migration,frozen-effect,qualification and platform holds remain."
+  ],
+  "source_sha256": {
+    "templates/intl_workspace/risk.html.j2": "72c3a626275fb56c9f30cb95699fb88077325bd6cff4267db48d6ee6a6741d59",
+    "tests/test_intl_workspace_risk_render.py": "8418099d5f3b5c7fd9e19a7eb5e1a59fae6e695cc522721bd9be77964eab3452"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/macro-risk-history-20261014-r1",
+  "evidence_sha256": {
+    "PREPARED.json": "40935323a2a4d6578ca4995be513c528e488df97d626ba015a803d9baebee132",
+    "ORIGINAL_HARNESS_RUN.json": "2151eb5a8c1ac7c0937f6906c5ae63d1a92d9cbb1cb6b26a7e21f04c2b5f2e7f",
+    "JOURNEY_REPAIRED.json": "d28260890acba90847d7f45529c87b39608da06cd4f03b8cd4fc01d5053212f7",
+    "JOURNEY_FINAL_WITHHELD.json": "e29b0565f729d58efda2007ccc2cde6d0559c2aae5b37bd5bdbfce157217bf42",
+    "UNAFFECTED_WORKFLOW_REUSE.json": "d7bbe17fa2a47b8522adecd9034c04e9f978d9926ab7edbadd0011d7af12c44c",
+    "FINAL_EMPTY_EVIDENCE_RENDERED.json": "89fe29384b9d6271af2843caec8ba3fd960f70dfba61c178a6355cb8a66b82c1",
+    "EMPTY_EVIDENCE_RED.log": "1c87fa4544986e2673e34a6413a7fc287bab0b3c1ff6e040aa57e40c6046304f",
+    "DUPLICATE_REASON_RED.log": "b4e75fdd20db9c366740407e10e295574a0cbd30836fbd3dca92f1613b03da90",
+    "FINAL_PYTHON.log": "a7b52859a5a4996c7d851903a88b05e5aefba23350c7f7aa7f0b88b99fc79004",
+    "CHECKS.json": "49882ff7b277ed2a5247c558d1bcc156026c3135e368c43327bb4c6a3038da01"
+  }
+}

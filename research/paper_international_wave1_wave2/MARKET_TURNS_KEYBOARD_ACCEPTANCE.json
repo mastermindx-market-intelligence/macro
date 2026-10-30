@@ -1,0 +1,140 @@
+{
+  "schema": "paper.market_turns_keyboard_acceptance.v1",
+  "status": "SOURCE_VERIFIED_REVIEW_AND_RELEASE_PENDING",
+  "base_head": "2baf806451523956f1741590b4e2f29a968e4ac5",
+  "gap": "Market turns had supplied rich reads but its3div cards were skipped by native Tab on1440/320.",
+  "repair": "Make each existing card a focusable group named by its localized market and code, with a token-based focus-visible outline; use existing LENS focus/Escape and exact supplied content.",
+  "source_changed": [
+    "templates/intl.html.j2: three lines"
+  ],
+  "verification": {
+    "browser_red": {
+      "passed": 0,
+      "failed": 4,
+      "scope": "All four fail at first320px native Tab to Japan, before source fix."
+    },
+    "browser_green": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "widths": [
+        320,
+        1440
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "width_states": 8,
+      "card_read_observations": 24,
+      "back_returns": 8,
+      "claims": [
+        "Sequential native Tab reaches all3cards; localized accessible group name and market code present.",
+        "Existing tooltip contains matching market and owner/state read; visible2px focus outline.",
+        "Escape closes tooltip and scroll lock while retaining origin focus; next Tab reaches next card/exit.",
+        "Same analytical URL and raw Library query preserved after browser Back."
+      ]
+    },
+    "python_green": {
+      "passed": 29,
+      "failed": 0,
+      "warnings": 14,
+      "files": [
+        "tests/test_intl_workspace_integration.py"
+      ],
+      "scope": "Affected actual-builder/template seam; inherited pytest temporary-cleanup warnings."
+    },
+    "unavailable_optional_check": {
+      "file": "tests/test_intl_build.py",
+      "outcome": "COLLECTION_ERROR before any test ran: ModuleNotFoundError yfinance imported by unrelated universe collector. No install or test skip/mocking performed."
+    },
+    "design_added_lines": {
+      "blocking": 0,
+      "inherited": 25368,
+      "log": "design-final.log"
+    },
+    "diff_check": {
+      "exit_code": 0
+    },
+    "visual_guard": {
+      "exit_code": 0,
+      "scope": "Structural state/receipt existence only; forced-focus visual limitation retained."
+    },
+    "agentos": {
+      "exit_code": 0,
+      "errors": 0,
+      "inherited_warnings": 146
+    }
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "a31f52417c7ef676ddb01916fd215a518f73cd3c80ef23e3836f082258e98b8f",
+    "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+    "lib/intl_library_mount.py": "5689c95196c8f107dc7499c2b249cb36de061969c7baad3e9cf7eca1a3fb8c76",
+    "tests/intl_workspace_page.test.cjs": "22fcfe46b12fa387e8cb4d146e556f994525cf8918c8f904d49cc0c350a6257d",
+    "tests/test_intl_workspace_integration.py": "f5b110934359640d9d8409ab826b25fc818475ea6a9997b35127a05d67ba0db2"
+  },
+  "data_scope": "Synthetic existing JP/HK owner recovery reads plus AU existing uptrend read; no real data collection, qualified markets, grants or contracts.",
+  "harness_corrections": [
+    "Python page.url is a property; failed diagnostic preserved, not product failure.",
+    "English lens-kick uses CSS uppercase; assertion now compares market identity case-insensitively. Initial2EN failures and2ZH passes retained separately.",
+    "First capture inventory omitted newly requested Inter900; initial16captures rejected and archived. Final fixture includes27actual assets.",
+    "design-final.log binds final complete change.diff after its producing command settled.",
+    "Full-page screenshot closes transient LENS through incumbent resize handling; four separate settled viewport captures prove the scoped reading state. No shared controller or capture tool was changed."
+  ],
+  "visual_evidence": {
+    "status": "BOUNDED_PARENT_INSPECTION_COMPLETE_INDEPENDENT_REVIEW_PENDING",
+    "canonical_manifest": "mockups/evidence/paper-international-library/market-turns-keyboard/manifest.json",
+    "canonical_manifest_sha256": "e6730a7f85d0555c8b543470e18d614b61872687e357999f20ebd9167f892fae",
+    "canonical_captured_cells": 16,
+    "rest_context_cells": 8,
+    "forced_focus_cells_not_accepted_as_settled_reading_proof": 8,
+    "fullpage_capture_limitation": "Full-page screenshot changes viewport dimensions and invokes the existing LENS resize-close handler. Forced-focus screenshots retain a fading or closed panel; they are not accepted as settled full-reading evidence. Manifest is retained unchanged.",
+    "settled_viewport_cases": [
+      {
+        "theme": "dark",
+        "locale": "en",
+        "width": 1440,
+        "path": "mockups/evidence/paper-international-library/market-turns-keyboard/diagnostics/focus-dark-en-1440.png",
+        "sha256": "17a2900259e35ae6fa354b82d84787b7873e69fefb5b929a3885c40872ce2f9e"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "width": 1440,
+        "path": "mockups/evidence/paper-international-library/market-turns-keyboard/diagnostics/focus-light-zh-1440.png",
+        "sha256": "2c4c9b797a6ce83e0c4da2bbfc641f03992a0f385f8dd70c6ca291e335484375"
+      },
+      {
+        "theme": "dark",
+        "locale": "en",
+        "width": 320,
+        "path": "mockups/evidence/paper-international-library/market-turns-keyboard/diagnostics/focus-dark-en-320.png",
+        "sha256": "ba8e6ed79a548f6cc61574b9c2d0fddd5874ea6a1b5987719411710d4e5911f3"
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "width": 320,
+        "path": "mockups/evidence/paper-international-library/market-turns-keyboard/diagnostics/focus-light-zh-320.png",
+        "sha256": "f2a6934ce07851986063e96288983674a87bb8a4752cc0e04ed41fb04092fcab"
+      }
+    ],
+    "settled_viewport_receipt": "mockups/evidence/paper-international-library/market-turns-keyboard/diagnostics/FOCUS_VIEWPORT.json",
+    "settled_predicate": "Native Tab focus; panel open, panel opacity1 and body opacity1 before and after each viewport screenshot. No full-page expansion precedes these four shots.",
+    "parent_review": "All four settled viewport images viewed: owner read and market label readable, localized copy correct and desktop origin outline visible. Mobile sheet retains origin focus behind its scrim; Escape behavior separately verified by browser tests.",
+    "remaining_limits": [
+      "Four mobile wide-element findings without document overflow in canonical rest measurements.",
+      "Existing launcher remains near the mobile sheet receipt; no launcher repair or complete overlap audit.",
+      "Isolated live_config.js404 retained; no missing font in final capture.",
+      "No actual screen-reader speech, OS high contrast, physical touch, native zoom, production or whole accessibility acceptance."
+    ]
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/market-turns-keyboard-20261014-r1",
+  "independent_review": "PENDING under original ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED; no retry/replacement/alternate reviewer.",
+  "release": "NOT_DEPLOYED; current-head CI unobserved; no ready/merge/autoarm/deploy.",
+  "holds": "IW2 owns ALL Terminal804 surfaces. Original Chrome extension UI boundary, nativezoom/Codexapp refusals, appattachmentcell44PENDING_UNKNOWN, qualification/EFFECT_UNKNOWN, frozen reviews/T03k, rights/Saved/migration/release persist; no fakeSaved or cross-chat messages."
+}

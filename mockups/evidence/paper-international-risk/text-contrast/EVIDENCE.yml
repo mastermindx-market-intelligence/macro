@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace_risk.css
+- site/intl_workspace_risk.css
+manifest: mockups/evidence/paper-international-risk/text-contrast/manifest.json

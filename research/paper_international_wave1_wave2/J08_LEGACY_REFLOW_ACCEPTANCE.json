@@ -1,0 +1,72 @@
+{
+  "schema": "paper.j08_legacy_reflow.v1",
+  "status": "SOURCE_ACCEPTED_RELEASE_HELD",
+  "base_head": "810265741b9e4164ce52adc9cde0355280686fc9",
+  "change": "At widths up to640px, generic legacy research summaries place the description on a separate full row. Missing risk-desk data no longer omits required wrapping. The title and caret remain on the first row. Wider layout and analytical state are unchanged.",
+  "source_sha256": {
+    "templates/intl.html.j2": "2e3b03bbd6914767ebab5aa2e6605f9287558e59f60070a6f78fe918fc62e7ed",
+    "tests/intl_workspace_page.test.cjs": "3e9d45026f857c21c7a5354121798edad274d775a7f6e73ad77836d9cf4f6bc0",
+    "tests/test_intl_mobile_layout.py": "c0fd99ba35b6eb5f7bdd203698a0cf3fd65bc692a9fb72034bfe79a5b1e41bd5"
+  },
+  "red": {
+    "original_product_failures": 2,
+    "original_product_reason": "EN dark/light at320px produces324px page width after native Library anchor navigation",
+    "test_assumption_failures_separate": 2,
+    "test_assumption": "Empty Chinese tables fit; actual horizontal scroll is required only when scrollWidth exceeds clientWidth",
+    "rejected_intermediate": "Moving the wrap rule alone removed page overflow but collapsed description width to0px; READABILITY_RED.log preserves this failure"
+  },
+  "final_verification": {
+    "permanent_browser_regressions_passed": 4,
+    "fresh_rendered_cases_passed": 8,
+    "native_anchor_journeys": 16,
+    "projection_tests_passed": 4,
+    "matrix": [
+      "320 EN/ZH Dark/Light",
+      "640 EN Light",
+      "641 EN Light",
+      "1440 EN Dark",
+      "1440 ZH Light"
+    ],
+    "description_width_at320_px": 242,
+    "summary_width_at320_px": 278,
+    "page_width_at320_px": 320,
+    "counts_overlap": true,
+    "source_binding": "CHECKS.json and RENDER_BINDING.json"
+  },
+  "historical_checks": {
+    "initial_move_only_page_closure": "13 PASS before final row layout; not represented as final-source closure",
+    "initial_render_checks": "15 PASS,1 FAIL: inline-only generated-site CSS assumption; fixed test resolves real local linked CSS",
+    "design": "0 blocking,25369 preexisting nonblocking",
+    "runtime_style": "214 JS files,44 injectors,89 hits within budget",
+    "visual_evidence_guard": "exit0; mechanical presence/state check only"
+  },
+  "projection": "site/intl.html and current data were not regenerated or restamped. The projection test follows actual local linked CSS, confined to site/, including existing content-addressed61acc268.css.",
+  "review": {
+    "run": "paper-01a1101f-legacy-reflow-layout-review-20261014-r1",
+    "result_sha256": "85175e994b6703b01559c5780d482dcde97432e3b3ad2e7fbe156e6da673fa47",
+    "bytes": 7492,
+    "parent_adjudication": "Accepted bounded source review with explicit cascade, scope, width, session-local state and runtime corrections",
+    "adapter": "ACCEPTED/VALIDATED_OUTCOME",
+    "usage_receipt": "MISSING",
+    "worker_runtime_or_visual_execution": false
+  },
+  "earlier_review": "Initial move-only review consumed once, terminal, not adapter-accepted; its visual sufficiency was rejected by parent. No duplicate consumption.",
+  "limits": [
+    "Synthetic rendered EOD fixture, not production or live-data qualification",
+    "No native200percent zoom or screen-reader speech acceptance",
+    "Parent reviewed final320px EN Dark/Light screenshots; full journey visual acceptance remains open",
+    "Existing compass clipping and floating launcher overlap remain separate unresolved observations",
+    "Repaired template is not deployed; current generated HTML remains historical"
+  ],
+  "programme_status": "INCOMPLETE",
+  "release_holds": "All original release, source rights, qualification, Saved, migrations, frozen effects and Terminal IW2 custody holds retained",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j08-legacy-reflow-20261014-r1",
+  "evidence_sha256": {
+    "CHECKS.json": "641c02846c1c7de3009bf9f95529b4b7cc5d85256027e846d841f530394ebbfb",
+    "REFLOW_ACCEPTANCE.json": "d542467878ee6bdc02e6d3e50c5dbc0af37ada51c049ac4df8bd28b7474309de",
+    "RENDER_BINDING.json": "6df09c1a2826c9708b7ffc076d96d26d386a6505c12d402bec52e55ae2ba83d0",
+    "PARENT_LAYOUT_REVIEW.json": "001eaf7eb7d00c948eece4bef29640115cde528a68d2eb6b9cd78cdf9ce64c74",
+    "FABRIC_LAYOUT_ACCEPT_READBACK.json": "814e6dc5e533934e6e57562fbf81ecc3824d6ee800be4c451a31f86c13dd327f",
+    "VISUAL_OBSERVATIONS.json": "e379ef54e5acbd96ca71387e99c75b06f374bd411ed18dcdaabd9f78d3bb4e90"
+  }
+}

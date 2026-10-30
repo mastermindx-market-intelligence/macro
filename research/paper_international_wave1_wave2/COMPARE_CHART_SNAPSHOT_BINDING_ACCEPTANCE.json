@@ -1,0 +1,38 @@
+{
+  "base_head": "78bb811201e80fbfa6d0db63489d9891d64d9ffb",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "effect": "UNMOUNTED_PURE_SOURCE_PREPARATION",
+  "function": "engine.intl_performance_charts:build_snapshot_bound_charts",
+  "behavior": [
+    "Validate plain snapshot containers before access.",
+    "Recompute existing source_snapshot from the same detached supplied frame used by existing raw chart producer.",
+    "Require exact typed snapshot equality, including digest, full configured series, original clocks, dated nulls, numeric identity and caller-supplied adjustment basis labels.",
+    "Attach source_content_sha256 to unchanged raw chart envelope."
+  ],
+  "authority_limits": [
+    "Matching content is not authenticated issuer identity. Caller labels and basis labels do not become approved provenance.",
+    "Existing not_evaluated qualification and unavailable normalization persist.",
+    "No interior-point disclosure policy, benchmark, normalized chart, page mount, data acquisition or release.",
+    "Fingerprint is source-content binding only; algorithm/configuration version acceptance remains separate."
+  ],
+  "tests": {
+    "new_unique_cases_pass": 10,
+    "initial_failures": 10,
+    "initial_failure_reason": "New function absent; no claim these were product regression failures.",
+    "initial_green_run": {
+      "passed": 9,
+      "failed": 1
+    },
+    "harness_correction": "Unknown extra key correctly raises invalid_chart_snapshot, not content mismatch; corrected expected reason and reran only that case.",
+    "targeted_extra_pass": 1,
+    "prior_31_cases": "Not replayed; existing producer AST unchanged.",
+    "inherited_pytest_warnings": 14
+  },
+  "parent_review": "Assigning-parent source inspection: delegates numerical work unchanged; verifies snapshot before projection; output remains detached and unqualified. This is not independent review.",
+  "source_sha256": {
+    "engine/intl_performance_charts.py": "d18c1ef78c0230dc02e4f0aef433fd0c339fb07ebfeb4a49857d1cdaba5d5c63",
+    "tests/test_intl_performance_charts.py": "3200ca5d64c3cbe37d9c76c6f4b0dfd0f99ae6ea3ebe5d499b94d754e928714c"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compare-chart-snapshot-binding-20261015-r1"
+}

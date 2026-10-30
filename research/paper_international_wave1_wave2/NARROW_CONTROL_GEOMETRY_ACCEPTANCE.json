@@ -1,0 +1,182 @@
+{
+  "status": "ACCEPTED_SCOPED_PARENT_GEOMETRY",
+  "source_head": "2aae6530bbc257da6d54f36b04f7d034457e3742",
+  "product_changed": false,
+  "deployed": false,
+  "scope": "Current publisher-optimized retained synthetic full page, isolated headless Chrome, 320 CSS px, dark, English and Chinese, normal text.",
+  "claim": "All sampled rendered button, select, input and summary rectangles meet the project 44 by 44 CSS pixel threshold.",
+  "unique_state_observations": 20,
+  "control_observations_including_repeated_toolbar": 310,
+  "minimum_width_css_px": 58.5625,
+  "minimum_height_css_px": 44,
+  "observations": [
+    {
+      "locale": "en",
+      "state": "overview",
+      "rendered_control_count": 11,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "inspector-read",
+      "rendered_control_count": 14,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "inspector-ledger",
+      "rendered_control_count": 18,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "inspector-field",
+      "rendered_control_count": 16,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "compare",
+      "rendered_control_count": 12,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "macro",
+      "rendered_control_count": 12,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "risk",
+      "rendered_control_count": 19,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "history",
+      "rendered_control_count": 16,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "scenario",
+      "rendered_control_count": 19,
+      "undersized_count": 0
+    },
+    {
+      "locale": "en",
+      "state": "library",
+      "rendered_control_count": 18,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "overview",
+      "rendered_control_count": 11,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "inspector-read",
+      "rendered_control_count": 14,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "inspector-ledger",
+      "rendered_control_count": 18,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "inspector-field",
+      "rendered_control_count": 16,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "compare",
+      "rendered_control_count": 12,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "macro",
+      "rendered_control_count": 12,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "risk",
+      "rendered_control_count": 19,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "history",
+      "rendered_control_count": 16,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "scenario",
+      "rendered_control_count": 19,
+      "undersized_count": 0
+    },
+    {
+      "locale": "zh",
+      "state": "library",
+      "rendered_control_count": 18,
+      "undersized_count": 0
+    }
+  ],
+  "fixture": {
+    "path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/macro-risk-history-20261014-r1/admitted.final.html",
+    "sha256": "306105a5f491914851e11f513f06e8598e4e76e5ec58f8a50360369e32f8b512",
+    "optimized_sha256": "7f78318071e3a820d4ce6b77b9348d55caf929dbaa724995b864a892674924fc"
+  },
+  "assets": {
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+    "templates/intl_workspace.css": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+    "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+    "templates/intl_workspace_risk.css": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+    "templates/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+    "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+    "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+    "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+    "templates/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "templates/terminal_overlay.js": "bb582bd6205f44687650a82d5731bbc03766995a3eb3e5676ad6930f8a2748e3",
+    "templates/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+  },
+  "reproduction": {
+    "command": "python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/touch-targets-20261014-r1/probe.py",
+    "script_sha256": "fca4fade32fe81d4be5b838e526b9e02ee31bfe9da481f2893cb91227850f110",
+    "result_sha256": "0ec35cd39958045ed2b13823dfa53e0e397dc6321d9a7368272629b4bb006c06",
+    "log_sha256": "549db75c52333c23425026366345b65545b871560f3a3637497b9058e2c5e656",
+    "exit_code": 0
+  },
+  "limits": [
+    "310 observations include repeated toolbar controls and rendered inert background controls while Inspector is open; they are not 310 distinct interactive targets.",
+    "Links, hidden or unvisited states, disabled-target usability, overlap and physical touch interaction are not assessed by this rectangle census.",
+    "Only dark320 English/Chinese and normal text; previous accepted theme/scale proof retains its separate scope.",
+    "No screen-reader speech, OS IME, native zoom, actual source rights, live browser acceptance, independent review or deployment.",
+    "All original custody, qualification, frozen-effect, review, browser, rights, Saved, migration and release holds persist."
+  ],
+  "independent_review": "NOT_EXECUTED; existing support-publication policy refusal unchanged"
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "paper.rates_observation_dates.acceptance.v1",
+  "state": "BUILT_NOT_PROVEN",
+  "base_head": "d50651a71a812852d388e6660d0bf4209c1c611a",
+  "source_sha256": "f500845c4c34a456545d9db36adb08e2f27844d6949071e8a37b507870d7377e",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/rates-observation-dates-20261014-r1",
+  "owner_semantics": "macro_freshness supplies observation MONTHS for10y/CPI; anchor.asof dates US10y only. No3m/US2y clock exists here. Values and missing fields retain owner scope.",
+  "red": "4 original-source render failures; unescaped-string candidate1FAIL3PASS; whole-expression escape candidate rejected by missing-fallback literal-markup failure.",
+  "green": {
+    "render": "4PASS14inherited temporary-cleanup warnings, dated/missing/omitted/escaped",
+    "browser": "4PASS0FAIL across8width states320/1440 Dark/Light EN/ZH",
+    "capture_states": 8,
+    "focused_settled_images": 4,
+    "binding": "Final conditional escaping yields exact same benign optimized HTML bytes as tested browser/canonical captures; ESCAPE_BINDING.json records source and HTML hashes."
+  },
+  "visual": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "viewed": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "file": "cards-1440-dark-en.png",
+        "sha256": "9d78738bf91f1f153c71775ee2eef15a0b61621cc8e0f14de1783f8382d8505c",
+        "dates": [
+          "10y observation month: 2026-08\nCPI observation month: 2019-12",
+          "10y observation month: Unavailable\nCPI observation month: 2026-06\n3m date unavailable",
+          "10y observation month: 2026-07\nCPI observation month: Unavailable\n3m date unavailable",
+          "10y observation month: Unavailable\nCPI observation month: Unavailable"
+        ],
+        "anchor": "US 10y observation date: 2026-09-29 \u00b7 US 2y date unavailable"
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "lang": "en",
+        "file": "cards-1440-light-en.png",
+        "sha256": "2406bb2511d522130da56652d5d9dcf5da59dd859da7b5b3e15cc5f454b08aa2",
+        "dates": [
+          "10y observation month: 2026-08\nCPI observation month: 2019-12",
+          "10y observation month: Unavailable\nCPI observation month: 2026-06\n3m date unavailable",
+          "10y observation month: 2026-07\nCPI observation month: Unavailable\n3m date unavailable",
+          "10y observation month: Unavailable\nCPI observation month: Unavailable"
+        ],
+        "anchor": "US 10y observation date: 2026-09-29 \u00b7 US 2y date unavailable"
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh.png",
+        "sha256": "e3e2e400a33c4e96c440f2d19c5a432174e165f37030aee808948b6f5ae9d26f",
+        "dates": [
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a 2026-08\nCPI\u89c2\u6d4b\u6708\uff1a 2019-12",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\nCPI\u89c2\u6d4b\u6708\uff1a 2026-06\n3\u6708\u65e5\u671f\u4e0d\u53ef\u7528",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a 2026-07\nCPI\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\n3\u6708\u65e5\u671f\u4e0d\u53ef\u7528",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\nCPI\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528"
+        ],
+        "anchor": "\u7f8e\u56fd10\u5e74\u89c2\u6d4b\u65e5\uff1a 2026-09-29 \u00b7 \u7f8e\u56fd2\u5e74\u65e5\u671f\u4e0d\u53ef\u7528"
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh.png",
+        "sha256": "101dfa043f7c568ef681668b218d34a5af0031f5c14045c1794828de9dc03d9c",
+        "dates": [
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a 2026-08\nCPI\u89c2\u6d4b\u6708\uff1a 2019-12",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\nCPI\u89c2\u6d4b\u6708\uff1a 2026-06\n3\u6708\u65e5\u671f\u4e0d\u53ef\u7528",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a 2026-07\nCPI\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\n3\u6708\u65e5\u671f\u4e0d\u53ef\u7528",
+          "10\u5e74\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528\nCPI\u89c2\u6d4b\u6708\uff1a \u4e0d\u53ef\u7528"
+        ],
+        "anchor": "\u7f8e\u56fd10\u5e74\u89c2\u6d4b\u65e5\uff1a 2026-09-29 \u00b7 \u7f8e\u56fd2\u5e74\u65e5\u671f\u4e0d\u53ef\u7528"
+      }
+    ],
+    "findings": [
+      "Independent 10y/CPI observation months and US10y date remain readable in Dark and Light, English desktop and Chinese narrow views.",
+      "Existing Dark luminance panels and Light cool research materials retained; no new style system.",
+      "Four first focused images caught the existing 1100ms theme flourish; retained under transition-diagnostics, excluded from settled evidence. Final four wait1250ms without removing overlay.",
+      "Existing narrow launcher proximity/overlap persists; no whole-page accessibility/live acceptance."
+    ],
+    "canonical_manifest_sha256": "c2934dea4c7366b5434860cc19e0f212895372d25b4c0b11a5b60e515b959574",
+    "html_binding": {
+      "template_sha256": "f500845c4c34a456545d9db36adb08e2f27844d6949071e8a37b507870d7377e",
+      "html_sha256": "7b519ff87f4209e23ad617cdf1cc2d3ee0d92bb391435d076c17fabc59c34c49",
+      "capture_html_unchanged_after_final_escape": true,
+      "source_semantics": "Escape only present supplied strings; render missing bilingual fallback as its native macro markup. Existing renderer autoescape=False; no inference of global XSS remediation.",
+      "rejected_intermediate": "Whole-expression escaping would print fallback span markup; one failing missing-case test retained."
+    }
+  },
+  "holds": [
+    "Source NOT deployed; independent review pending under original refusal",
+    "Current-head CI unobserved; no polling admission",
+    "No ready/merge/autoarm/deploy",
+    "IW2 exclusively owns TerminalPR804",
+    "All qualification/rights/Saved/migration/frozen-effect/release holds retained"
+  ]
+}

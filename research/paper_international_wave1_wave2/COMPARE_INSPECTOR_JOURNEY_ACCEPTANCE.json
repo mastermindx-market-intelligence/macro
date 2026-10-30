@@ -1,0 +1,53 @@
+{
+  "schema": "paper.compare_inspector_journey.v1",
+  "status": "LOCAL_FIXTURE_WORKFLOW_VERIFIED",
+  "base_commit": "a92657f60fb573ed3280d24e613a4fb7492278a5",
+  "workflow": "Overview compact -> expand seven-market roster -> Compare -> four admitted pins or two unqualified retained pins -> native Inspector/evidence/field -> close -> Overview same-node modal/evidence/field -> Back/Back -> Escape focus return -> browser Back -> reload",
+  "matrix": {
+    "explicit": "16 cases: admitted/withheld fixture x Dark/Light x EN/ZH x1440/320px",
+    "auto": "8 admitted cases: noon/night x EN/ZH x820/390px; opposite OS scheme; explicit theme -> Auto transition",
+    "assets": 26,
+    "text_scale": 1,
+    "native_zoom": "NOT_EXECUTED"
+  },
+  "invariants": [
+    "One controller, seven expanded markets, exact generation, market/period/basis/price-return context and pin order survive navigation.",
+    "Admitted Compare rows follow server order4,5,6,0 instead of insertion order0,4,5,6.",
+    "Admitted local/USD/FX contribution values remain unchanged across inline and same-node modal Inspector.",
+    "Four separate observation/publication/ingestion/generation clocks remain Not supplied. Calculation endpoints2026-09-08 and2026-10-07 are not promoted to publication or freshness.",
+    "No-grant fixture exposes exactly six localized unavailable Compare fields for two selected markets, zero Inspector numbers, absent Inspector source and empty panel source; selection is incomparable.",
+    "Binding version2 intentionally enhances only Overview to modal. Compare native details remain usable; source/generation/view guards unchanged.",
+    "Escape closes the modal and returns focus to the exact triggering summary. Back and reload retain the comparison."
+  ],
+  "parent_visual_review": [
+    "admitted-dark-zh-320-field.png",
+    "admitted-light-en-1440-field.png"
+  ],
+  "dark_treatment": "Retained dark instrument material, wrapped source and field card; in-modal scrolling remains necessary at narrow height.",
+  "light_treatment": "Retained white research modal, hairlines and shaded clock/observation groups; source identity and hierarchy preserved.",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compare-inspector-20261014-r1",
+  "evidence_sha256": {
+    "ACCEPTED_JOURNEY.json": "a5e861e71a1d0840edb400fbed57db7ec24bf904da680d39158257c174f58721",
+    "ACCEPTED_AUTO.json": "85bc4725809a32762a7a8bfaa1dc99280de2546436c918cdb966f15d86e69f82",
+    "journey_actual_routes.py": "8221752f3f745c58420deea0a157a6ef5de1488e5fd76be80651d260d5fca40d",
+    "journey_withheld.py": "7d10217b92325d836bf75af9ce28e4ee158ca1d16d4e462e4c258b63bcba5576",
+    "journey_auto.py": "1a29e6be4bfd070b6dd3204eb683d5f69c5b1ef37682c030cdd5b45b9e212026"
+  },
+  "source_sha256": {
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223"
+  },
+  "rejected_harness_evidence": [
+    "Original harness expected a modal while Compare intentionally retains a native disclosure for binding version2. No view/generation guard changed.",
+    "One corrected smoke used li instead of actual role=listitem article; no product failure.",
+    "Eight initial withheld checks incorrectly expected zero value containers; actual containers show localized Unavailable. Corrected checks require exactly6 unavailable values and zero Inspector numbers.",
+    "One withheld smoke treated omitted source attribute and empty panel source as unequal; final check explicitly requires absent Inspector source and empty panel source.",
+    "Initial4 cases overwrote a harness expected-theme string with the server-rank array. Corrected variable names; no product change."
+  ],
+  "limits": [
+    "Publisher-derived retained synthetic inputs are not current rights or qualified live market evidence.",
+    "Chart series and benchmark comparison remain explicitly unavailable; this does not close all J02 acceptance.",
+    "No Saved, native zoom, screen-reader speech, full accessibility or Paper/production parity claim.",
+    "Parent workflow verification is not independent product review. Original policy refusal, frozen operations, qualification, release, rights, migration and IW2804 custody remain."
+  ]
+}

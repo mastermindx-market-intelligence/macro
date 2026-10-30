@@ -1,0 +1,270 @@
+{
+  "schema": "paper.workspace_accessibility_tree.v1",
+  "recorded_at": "2026-10-14T06:43:20.472902+00:00",
+  "status": "PASS_SCOPED",
+  "product_source_head": "a73a6923f83e747473a8c99e3b28a042276e10b0",
+  "product_changes": "NONE; four permanent browser tests and evidence/continuity only",
+  "matrix": {
+    "test_cases": 4,
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "widths_css_px": [
+      1440,
+      320
+    ],
+    "views": [
+      "overview",
+      "compare",
+      "macro",
+      "risk",
+      "history",
+      "library"
+    ],
+    "view_observations": 24,
+    "inspector_modal_cases": 4,
+    "scenario_invalid_to_valid_cases": 4
+  },
+  "observed": [
+    "Chromium computed names exist for every exposed button, combobox, textbox, searchbox, link, checkbox and radio within the workspace; hidden panel descendants are excluded.",
+    "Workspace region has the localized name. Desktop view buttons expose exactly one pressed selection; narrow view combobox exposes its localized name.",
+    "Open Inspector exposes a named modal dialog (Japan / 日本), four named controls and zero workspace background controls. Escape returns focus to the original trigger and restores toolbar exposure.",
+    "Invalid Scenario input is a focused textbox with localized name, invalid state, format help and current error in its computed description. Correction removes the error and invalid state while preserving format help.",
+    "Scenario result announcement exposes status, polite live and atomic properties."
+  ],
+  "command": "NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14 node --test --test-name-pattern=\"Workspace accessibility tree\" tests/intl_workspace_page.test.cjs",
+  "result": {
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "exit_code": 0
+  },
+  "source_sha256": {
+    "tests/intl_workspace_page.test.cjs": "bec3c38adbe46cbcf9c6309a609295b1fb2611d1d766d0a0742e397e8e332f89",
+    "tests/test_intl_workspace_integration.py": "e08826f62eae04eb91d986b20542e96b1755d29c239cc49c1c04a5d41be04872",
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "templates/intl_workspace.css": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+    "templates/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+    "templates/intl.html.j2": "3fa10d0f3bc5930496b440fdfc07888992597cdb6e545056e4bd06b4bca5392c",
+    "scripts/optimize_assets.py": "9c8697398bed0f504385e740c62ed0e1fc80b3620a8c64668c2983109241fddc",
+    "templates/intl_workspace/compare.html.j2": "fed425067115c832735c37129807624020b1f4f921066d01a1f5e4c5f13423c3",
+    "templates/intl_workspace/history.html.j2": "c08ce7d210065c0abf6ae3ba84442fda810c3ad8e816717712f2484e51290cea",
+    "templates/intl_workspace/inspector.html.j2": "675fdf258899cea8d361593e990d819deb187cb1ef90284d1c72012153e06f94",
+    "templates/intl_workspace/library.html.j2": "45bacd0239214a99597c53bce290af5744ea60c198ea2510154064b791d80ae0",
+    "templates/intl_workspace/macro.html.j2": "153c31c19bcea3cdad53295ca0052f9f8bb8fdd0df8362b9e824e633689f1f7b",
+    "templates/intl_workspace/overview.html.j2": "965802e3f7edbc1ac0fefb5ef9017fdf96d4c56e1d40c58b7271d77892fc1f57",
+    "templates/intl_workspace/risk.html.j2": "72c3a626275fb56c9f30cb95699fb88077325bd6cff4267db48d6ee6a6741d59",
+    "templates/intl_workspace/shell.html.j2": "5eebf58b4cb55b63097635dddd9fa5064a11a7bc5996ebe71be460bea2586b27"
+  },
+  "log_sha256": "5d319280c8da5df968c66b52e9cfd207978b5290a106a85023b1b661bdd17692",
+  "view_observations": [
+    {
+      "view": "overview",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 11,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "compare",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 18,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "macro",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 12,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "risk",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 11,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "history",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 16,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "library",
+      "lang": "en",
+      "width": 1440,
+      "namedControls": 21,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "overview",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 6,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "compare",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 13,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "macro",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 7,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "risk",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 6,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "history",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 9,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "library",
+      "lang": "en",
+      "width": 320,
+      "namedControls": 13,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "overview",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 11,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "compare",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 18,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "macro",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 12,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "risk",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 11,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "history",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 16,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "library",
+      "lang": "zh",
+      "width": 1440,
+      "namedControls": 21,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "overview",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 6,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "compare",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 13,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "macro",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 7,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "risk",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 6,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "history",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 9,
+      "inactivePanelNodesExposed": 0
+    },
+    {
+      "view": "library",
+      "lang": "zh",
+      "width": 320,
+      "namedControls": 13,
+      "inactivePanelNodesExposed": 0
+    }
+  ],
+  "modal_observations": [
+    {
+      "lang": "en",
+      "width": 1440,
+      "inspectorDialogName": "Japan",
+      "modalControls": 4,
+      "backgroundControlsExposed": 0
+    },
+    {
+      "lang": "en",
+      "width": 320,
+      "inspectorDialogName": "Japan",
+      "modalControls": 4,
+      "backgroundControlsExposed": 0
+    },
+    {
+      "lang": "zh",
+      "width": 1440,
+      "inspectorDialogName": "日本",
+      "modalControls": 4,
+      "backgroundControlsExposed": 0
+    },
+    {
+      "lang": "zh",
+      "width": 320,
+      "inspectorDialogName": "日本",
+      "modalControls": 4,
+      "backgroundControlsExposed": 0
+    }
+  ],
+  "harness_correction": "Initial narrow assertion counted panel Back-to-Overview action as toolbar navigation. Restricted census to data-im-controls ancestry. Initial 2 failures were test scope, not product defects. Final run includes additional modal-tree assertions.",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/accessibility-tree-20261014-r1",
+  "limits": [
+    "Actual current full Jinja page, existing publisher optimizer, isolated synthetic EOD/History fixture and headless Chrome. No current source or rights qualification.",
+    "Computed accessibility tree is not OS screen-reader speech, OS IME, native200percent zoom, complete accessibility conformance or visual taste acceptance. No new visual styling or screenshot claim.",
+    "No product repair, deployment, live Chrome interaction, Saved write, independent review or whole-CI acceptance. Existing served Stock-to-Library Back remains at the original extension-UI human boundary.",
+    "All review-policy, qualification/EFFECT_UNKNOWN, frozen operation, rights/migration/release, app attachment, nativezoom and IW2 PR804 custody holds persist."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "status": "PASS_SCOPED_SOURCE_FIXTURE_OBSERVATION; no Inspector source repair required",
+  "base_head": "0418af51d8be0784b0d9617fb9ab389874778bc8",
+  "working_source_delta": "Only unrelated History forced-colors selection CSS; active Inspector uses unchanged product bytes.",
+  "purpose": "Earlier900px-height width/spacing checks did not prove native keyboard reachability at256px viewport height.",
+  "conditions": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "viewports": [
+      [
+        320,
+        256
+      ],
+      [
+        820,
+        256
+      ]
+    ],
+    "data": "Retained synthetic admitted publisher fixture, actual templates and26local assets",
+    "browser": "Headless Chrome; no original live handoff interaction, OS virtual keyboard or nativezoom"
+  },
+  "verification": {
+    "cases": 8,
+    "states": 32,
+    "modes": [
+      "read",
+      "ledger",
+      "field",
+      "deeper"
+    ],
+    "keyboard_observations": 560,
+    "focused_control_observations": 440,
+    "focused_dialog_observations": 72,
+    "unfocused_body_observations": 48,
+    "result": "Every visible enabled nonnegative-tabindex control reached through native Tab/Shift+Tab and fully within dialog/viewport when focused. No background control receives focus. All32modes reach both scroll ends using native End/Home after4stable rendering frames. Whole payload text and analytical URL preserved. Escape restores origin in8cases.",
+    "body_scope": "All48BODY observations have document.hasFocus=false; retained as native browser-chrome transitions, not in-dialog focus and not background-control focus.",
+    "control_scope": "Tabbable controls determined by actual visible enabled DOM. Unique per state; observation counts include repeated nodes.",
+    "scroll_scope": "Reachability, not permanent visibility of all text at once; bottom evidence clocks remain explicitly Not supplied."
+  },
+  "rejected_attempts": [
+    "Initial End measured mid-animation (scroll102 of813) and is not a product failure.",
+    "Threshold-only end wait still allowed a Home timing race; final checks require4unchanged frames, separate diagnosis reached both ends.",
+    "Initial deeper assertion was investigated as possibly absent fixture content; actual cause was field-to-deeper action refusal by existing mode contract. Final journey uses Back to ledger before Go deeper. No contract/source change."
+  ],
+  "evidence": {
+    "package": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector-short-viewport-20261014-r1",
+    "matrix_sha256": "0433ce5c4d1f2575224fdd172fd49855420a0e7c7b9f8839e08e22886e2a693d",
+    "script_sha256": "76fa34e7ab9f408f79a43f0ad8ce02f2d31874dee2833c4aeac5d3963e6c3d25",
+    "log_sha256": "adb9420f5e00e91f0064fe6cc15677ffb4eae56a6d29c5d8b9bb60eba1089e73",
+    "html_sha256": "75fb92464fcfa56c63447dee4b0848f55133237cbf42237017f3a42419de5d73",
+    "assets": {
+      "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+      "templates/intl_workspace.css": "585bb762f5d3b6bf0270853b99aca0d145f36a4b5764c9795198043e433565ca",
+      "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+      "templates/intl_workspace_risk.css": "1a9857cb564768d1df39452ad59d168d409ee56db7a4123cfb2c1868c05e92b1",
+      "templates/intl_workspace_history.css": "49cfc25afb07782589eb9ca5fc51133943f1dafa49bfc8b0078c35494b2857e9",
+      "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+      "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+      "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+      "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+      "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+      "templates/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
+      "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "templates/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+      "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "templates/terminal_overlay.js": "bb582bd6205f44687650a82d5731bbc03766995a3eb3e5676ad6930f8a2748e3",
+      "templates/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+    },
+    "screenshots": {
+      "field-bottom-dark-en-320.png": "f00159df8bdb234442151f837bc49936edc3fa94b6bd370690f032942ee486e7",
+      "field-bottom-light-zh-320.png": "7e35330eb48330e7f82dbb87df4199c70b5e9fec7ddd174927929b0c005f2990",
+      "field-bottom-dark-zh-320.png": "84bffd6fbf34482ff3814b460563579aebf9826f1b3dfd91b0e327a6d3f3ab81",
+      "field-bottom-light-en-320.png": "81f449f64153ef2ab2c3b26d1195c3fd4aaa4b694352cc5c14dfdc1b571763b0"
+    },
+    "parent_viewed": [
+      "field-bottom-dark-en-320.png",
+      "field-bottom-light-zh-320.png"
+    ]
+  },
+  "limits": [
+    "No complete accessibility, assistive speech, physical keyboard/device, OS virtual keyboard, nativezoom or live acceptance.",
+    "Four bottom screenshots are scoped diagnostics, not canonical dual-theme whole-page design acceptance.",
+    "Original Chrome extension UI, review-policy refusal, source qualification/rights, genuine Saved, migration/release and IW2 custody holds remain.",
+    "No new worker/reviewer, PR/CI reads, watcher, browser refusal retry or cross-chat message."
+  ]
+}

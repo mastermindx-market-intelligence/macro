@@ -1,0 +1,24 @@
+{
+  "schema": "paper.library_served_return.v1",
+  "recorded_at": "2026-10-14T05:55:49.125546+00:00",
+  "status": "PARTIAL_HUMAN_BROWSER_BOUNDARY",
+  "entry": "https://www.mastermind-x.com/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price",
+  "browser": "Existing Chrome profile, normal viewport, original Chinese preference; new owned tab",
+  "observed": [
+    "Library showed18 tool descriptions across six groups; four targets explicitly unavailable. Numerical qualification remained unknown.",
+    "Search for the exact visible Chinese label 经济体板块与股票 retained the raw text and showed one link to /intl_stocks.html. The old served live-status area remained empty.",
+    "The actual link opened https://www.mastermind-x.com/intl_stocks.html. First click response detached during navigation; inspection of the same original tab confirmed destination and visible International Stock Dashboard. No duplicate click.",
+    "Stock page visibly distinguished data-as-of2026-10-09 from generation2026-10-14 05:12UTC. This is UI-label observation, not data qualification.",
+    "Browser Back was refused because another extension UI is open on the page. Return/query restoration is NOT_OBSERVED. Original tab marked handoff successfully."
+  ],
+  "human_action": "Complete or dismiss the open extension UI in Google Chrome, then allow continuation of the original tab. No alternate browser/control path or retry was used.",
+  "source_contract": "Canonical Library contract keeps raw query session-local and out of URL/storage. Prior fixture cross-document reload cleared the draft; same-document Back retains it. Do not invent persistent query storage before resolving this boundary.",
+  "limits": [
+    "No live Back success, query restoration, current source qualification, new rights, Saved write, preference change or deployed fix claim.",
+    "Existing-profile success does not isolate authentication from cached assets.",
+    "No screenshot captured after the refusal; original tool transcript retains observations.",
+    "Original release, review, frozen-effect, rights, migration, nativezoom, Codex-app and IW2804 holds remain."
+  ],
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-served-return-20261014-r1",
+  "boundary_sha256": "6e277acdb820a9ddf39921c9f7fbe6104745e4bf4dd185ea4d73dabb6a72c16e"
+}

@@ -9,48 +9,70 @@
 {% if geometry.schema == 'intl-chart-geometry.v1' and geometry.cohorts %}
 <section class="intl-chart" data-im-chart-model="intl-chart-geometry.v1" data-im-chart-status="{{ geometry.status|e }}">
   <header>
-    <h3>{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
-    <p>{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
+    <h3 id="{{ context_id|e }}-chart-heading">{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
+    <p id="{{ context_id|e }}-chart-intro">{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
   </header>
   <p data-im-chart-selection-unavailable hidden>
     {{ words('Chart unavailable for these selected markets because source evidence or calculation windows do not align.', '由于数据来源依据或计算区间不一致，所选市场的图表暂不可用。') }}
   </p>
   {% set palette = ['var(--info)', 'var(--warn)', 'var(--down)', 'var(--up)'] %}
+  {# Keep each source series recognizable when a cohort reuses a hue. The same
+     stable pattern belongs to its path and named legend at every viewport. #}
+  {% set patterns = ['none', '8 4', '2 4', '8 3 2 3', '12 4', '4 3', '12 3 2 3 2 3'] %}
+  {# Isolated observations have no line to carry a dash pattern. Use a stable
+     point symbol at the exact observation, with the same symbol in its key. #}
+  {% set symbols = [
+    'M -9 0 A 9 9 0 1 0 9 0 A 9 9 0 1 0 -9 0 Z',
+    'M -9 -9 H 9 V 9 H -9 Z',
+    'M 0 -9 L 9 9 H -9 Z',
+    'M 0 -9 L 9 0 L 0 9 L -9 0 Z',
+    'M -9 0 H 9 M 0 -9 V 9',
+    'M -9 -9 L 9 9 M 9 -9 L -9 9',
+    'M -9 0 L -4.5 -9 H 4.5 L 9 0 L 4.5 9 H -4.5 Z'
+  ] %}
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
     <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
-      <summary>{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · {{ cohort.paths|length }} {{ words('markets', '个市场') }}
+      <summary id="{{ identity|e }}-title">{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · <span data-im-chart-market-count>{{ cohort.paths|length }}</span> {{ words('markets', '个市场') }}
         · <time datetime="{{ cohort.window.start|e }}">{{ cohort.window.start[:10]|e }}</time>–
         <time datetime="{{ cohort.window.end|e }}">{{ cohort.window.end[:10]|e }}</time>
       </summary>
       <figure>
-        <svg role="img" aria-labelledby="{{ identity|e }}-title {{ identity|e }}-desc"
-             width="100%"
+        {# Reuse visible localized text, including the committed count/window.
+           A fixed bilingual SVG title would speak both languages in either locale. #}
+        <svg role="img" aria-labelledby="{{ context_id|e }}-chart-heading {{ identity|e }}-title"
+             aria-describedby="{{ context_id|e }}-chart-intro {{ identity|e }}-desc"
+             width="100%" overflow="visible"
              viewBox="0 0 {{ cohort.width|e }} {{ cohort.height|e }}"
              preserveAspectRatio="xMidYMid meet">
-          <title id="{{ identity|e }}-title">Rebased market performance / 市场基准化表现</title>
-          <desc id="{{ identity|e }}-desc">100 at the observed start; missing dates interrupt each line. / 可观测起点为 100；缺失数据中断曲线。</desc>
           <line x1="0" y1="{{ cohort.baseline_y|e }}" x2="{{ cohort.width|e }}"
                 y2="{{ cohort.baseline_y|e }}" stroke="var(--muted)" stroke-width="1"
-                stroke-dasharray="5 5" />
-          <text x="4" y="{{ ([cohort.baseline_y - 8, 14]|max)|e }}" fill="var(--muted)" font-size="11">100</text>
+                stroke-dasharray="5 5" vector-effect="non-scaling-stroke" />
           {% for line in cohort.paths %}
             {% set stroke = palette[(loop.index0) % (palette|length)] %}
+            {% set pattern = patterns[(loop.index0) % (patterns|length)] %}
+            {% set symbol = symbols[(loop.index0) % (symbols|length)] %}
             {% for segment in line.segments %}
               {% if segment.count > 1 %}
                 <path data-im-chart-series="{{ line.market_id|e }}"
                       d="{{ segment.d|e }}" fill="none" stroke="{{ stroke|e }}"
+                      stroke-dasharray="{{ pattern|e }}" vector-effect="non-scaling-stroke"
                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
               {% else %}
-                <circle data-im-chart-series="{{ line.market_id|e }}"
-                        cx="{{ segment.first_x|e }}" cy="{{ segment.first_y|e }}"
-                        r="3" fill="{{ stroke|e }}" />
+                <g data-im-chart-series="{{ line.market_id|e }}" data-im-chart-point
+                   transform="translate({{ segment.first_x|e }} {{ segment.first_y|e }})">
+                  <path d="{{ symbol|e }}" fill="none" stroke="{{ stroke|e }}"
+                        stroke-width="1.5" vector-effect="non-scaling-stroke" />
+                </g>
               {% endif %}
             {% endfor %}
           {% endfor %}
         </svg>
-        <figcaption>
-          {{ words('An interrupted path means data was not observed; no missing price or FX value was filled.', '曲线断开表示该日期未观测到数据；未填补缺失的价格或汇率。') }}
+        <figcaption id="{{ identity|e }}-desc">
+          {{ words('Line and point styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型和点形用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
+          {# Keep the reference reading in normal text: SVG glyphs shrink with
+             the 640-unit plot and become unreadable on narrow screens. #}
+          <span data-im-chart-baseline-label>{{ words('Horizontal dashed reference line: 100.', '水平虚线基准：100。') }}</span>
         </figcaption>
       </figure>
       <table class="intl-compare__table" data-im-chart-data-table>
@@ -65,10 +87,19 @@
             {% set name = market_names.get(line.market_id, {}) %}
             <tr data-im-chart-table-market="{{ line.market_id|e }}">
               <th scope="row">
-                <svg aria-hidden="true" width="18" height="12" viewBox="0 0 18 12">
-                  <line x1="0" y1="6" x2="17" y2="6"
-                        stroke="{{ palette[(loop.index0) % (palette|length)]|e }}" stroke-width="2.5" />
+                <svg aria-hidden="true" width="32" height="12" viewBox="0 0 32 12">
+                  <line x1="0" y1="6" x2="31" y2="6"
+                        stroke="{{ palette[(loop.index0) % (palette|length)]|e }}" stroke-width="2.5"
+                        stroke-dasharray="{{ patterns[(loop.index0) % (patterns|length)]|e }}"
+                        stroke-linecap="round" vector-effect="non-scaling-stroke" />
                 </svg>
+                {% if line.segments|selectattr('count', 'equalto', 1)|list|length %}
+                  <svg aria-hidden="true" width="20" height="20" viewBox="-10 -10 20 20">
+                    <path data-im-chart-point-key d="{{ symbols[(loop.index0) % (symbols|length)]|e }}"
+                          fill="none" stroke="{{ palette[(loop.index0) % (palette|length)]|e }}"
+                          stroke-width="1.5" vector-effect="non-scaling-stroke" />
+                  </svg>
+                {% endif %}
                 {{ words(name.get('en', line.market_id), name.get('zh', line.market_id)) }}
               </th>
               <td>{{ line.observations|e }}</td>

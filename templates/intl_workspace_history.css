@@ -41,6 +41,10 @@
 .intl-history details { border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:var(--fs-body); }
 .intl-history summary { cursor:pointer; min-block-size:44px; }
 .intl-history table { table-layout:fixed; inline-size:100%; border-collapse:collapse; font-size:var(--fs-sm); }
+.intl-history__observations-scroll { overflow-x:auto; max-inline-size:100%; }
+.intl-history__observations-scroll:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+.intl-history__observations table { table-layout:auto; inline-size:max-content; min-inline-size:100%; }
+.intl-history__observations :is(th,td) { white-space:nowrap; }
 .intl-history caption { text-align:start; padding-block:calc(var(--fs-body)/2); color:var(--muted); }
 .intl-history :is(th,td) { text-align:start; vertical-align:top; padding:calc(var(--fs-body)/2); border-block-end:1px solid var(--line); }
 .intl-history__error { color:var(--down); }
@@ -49,6 +53,10 @@
 .intl-history__tabs { display:none; gap:calc(var(--fs-body)/2); padding:var(--fs-body); border-block-end:1px solid var(--line); }
 .intl-history__tabs button { flex:1; }
 .intl-history__tabs [aria-pressed="true"] { border-color:var(--link); }
+/* Keep selection distinct when the user's palette replaces border/fill colors. */
+@media (forced-colors: active) {
+  .intl-history__tabs [aria-pressed="true"] { text-decoration:underline; }
+}
 .intl-history__footer { padding:var(--fs-body) calc(var(--fs-body)*1.5); border-block-start:1px solid var(--line); }
 .intl-history :is(button,input,select,summary,a):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
 [data-theme="light"] .intl-history { background:var(--panel); box-shadow:var(--card-shadow); }

@@ -1,0 +1,154 @@
+{
+  "schema": "paper.library_trade_links_acceptance.v1",
+  "status": "SOURCE_VERIFIED_REVIEW_AND_RELEASE_PENDING",
+  "base_head": "85372d037da3396e1d2394531d6dac2fbfd254f6",
+  "capability": "Library Trade & supply links opens the existing rendered CGL pressure panel and returns with research context and search draft intact.",
+  "cause": "The publisher already supplies CGL and the template renders its guarded panel, but the heading had no stable destination and the Library mount omitted this tool binding.",
+  "repair": [
+    "Add intl-trade-supply-links to the existing CGL heading inside its original conditional.",
+    "Map the existing public tool key to that unique rendered heading using the incumbent destination validator."
+  ],
+  "unchanged": [
+    "Approved public-copy decision, model-context-not-company-exposure notice and numerical qualification are unchanged.",
+    "No CGL engine, weights, source collection, history, governance, controller, CSS, or stock route changes."
+  ],
+  "verification": {
+    "python_red": {
+      "passed": 2,
+      "failed": 2,
+      "reason": "Present empty/populated CGL panels lacked target; absent panels pass."
+    },
+    "browser_red": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "English dark valid test found zero destination links before source repair."
+    },
+    "python_green": {
+      "passed": 36,
+      "failed": 0,
+      "files": [
+        "tests/test_intl_library_mount.py",
+        "tests/test_intl_workspace_integration.py"
+      ],
+      "new_cases": 7,
+      "warnings": 14,
+      "warning_scope": "Inherited pytest temporary-directory cleanup warnings."
+    },
+    "browser_green": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "widths": [
+        320,
+        1440
+      ],
+      "width_states": 8,
+      "claims": [
+        "Native Enter reaches rendered CGL target and opens legacy research.",
+        "JP / 3m / local / Library context remains in URL.",
+        "Synthetic Building/38percent/source-gap copy retained.",
+        "Native Back restores exact URL and raw localized query.",
+        "No page horizontal overflow."
+      ]
+    },
+    "design_added_lines": {
+      "blocking": 0,
+      "inherited": 25368
+    },
+    "agentos": {
+      "exit_code": 0,
+      "log": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1/agentos.log",
+      "scope": "Final records including this phase"
+    },
+    "visual_guard": {
+      "exit_code": 0,
+      "scope": "Changed template with eight canonical captures"
+    },
+    "diff_check": {
+      "exit_code": 0
+    }
+  },
+  "visual_evidence": {
+    "manifest": "mockups/evidence/paper-international-library/trade-links/manifest.json",
+    "manifest_sha256": "d0fd1b677fbfb0fb2686d944fc33f13a5ef996e39997e9f1f7e00ff0db8a43e3",
+    "canonical_captures": 8,
+    "viewports": [
+      1440,
+      390
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "parent_viewed": [
+      "dark/en/390",
+      "light/zh/390",
+      "dark/en/1440",
+      "light/zh/1440"
+    ],
+    "scope": "Existing material treatments unchanged. Desktop exposes the new link; narrow rest captures collapse Library groups and show target context. Separate 320 search captures expose the actual narrow link.",
+    "inherited_findings": [
+      "live_config.js 404 on isolated fixture",
+      "Floating launcher overlap remains.",
+      "Four wide-element measurements on mobile with no document overflow."
+    ],
+    "narrow_search_diagnostics": [
+      {
+        "theme": "dark",
+        "locale": "en",
+        "width": 320,
+        "query": "Trade & supply links",
+        "file": "dark-en-320-search.png",
+        "url": "http://trade-links.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price",
+        "href": "#intl-trade-supply-links",
+        "notice": "Model context, not company exposure",
+        "sha256": "dec0abfc6d1c1046bc214ebdc5452eff9788b1a7650dbcac400f0c45c9c272a3",
+        "parent_viewed": true
+      },
+      {
+        "theme": "light",
+        "locale": "zh",
+        "width": 320,
+        "query": "贸易与供应链联系",
+        "file": "light-zh-320-search.png",
+        "url": "http://trade-links.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price",
+        "href": "#intl-trade-supply-links",
+        "notice": "模型背景，并非公司敞口",
+        "sha256": "2844482768894749f36238785adc355af910e1e488fefbb810b51d5fa35742a4",
+        "parent_viewed": true
+      }
+    ],
+    "parent_assessment": "Existing Dark/Light treatments remain readable in viewed cases. Both 320px searched states expose the actual matching link, model-context notice and visible focus outline. Parent inspection is not independent review. The inherited launcher overlap remains."
+  },
+  "rejected_harness_attempts": [
+    "First Python attempt incorrectly read data/route fields from search-only catalogue; rejected, corrected to actual mount output before valid red.",
+    "First four browser cases attempted desktop-hidden mobile view selector; rejected. Corrected to normal URL entry; unexecuted wrong market-selector assumption also removed."
+  ],
+  "data_scope": "Synthetic existing CGL fixture only. Route availability is not data availability; metrics stay empty and data_state unknown. Missing/empty CGL means no link; an existing empty-pressure panel remains navigable with existing unavailable copy. No real qualification inferred.",
+  "source_sha256": {
+    "lib/intl_library_mount.py": "e8812e6c2ca9e135b9c51b4f5b878ee0398ab266b7b4592c66a90504a0449b85",
+    "templates/intl.html.j2": "602cc9938e53d2b44659e21230dc9d11a72ef2791af6a7eeda09dc37ddd1ba82",
+    "templates/intl_workspace/library.html.j2": "45bacd0239214a99597c53bce290af5744ea60c198ea2510154064b791d80ae0",
+    "config/intl_library_catalogue.json": "efb38991184357909b1f8c55c6753efad4f2e8b56616d2d526d9318e8a94895c",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "tests/test_intl_library_mount.py": "726a5dd8624068435b5a7d09dab644c16c6d8902fc31810fc9ada617b00dc652",
+    "tests/test_intl_workspace_integration.py": "b177aa3808542416303f900296511eeaf4dced31e9a1832c5b072d456ac9ca67",
+    "tests/intl_workspace_page.test.cjs": "7d602c5c795693cb2326c029b782cfc69d2ae3f0cded957765f9cd72e0fe0fdb"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1",
+  "independent_review": "PENDING; original ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED preserved. No replacement request.",
+  "release": "NOT_DEPLOYED; no ready/merge/autoarm/deploy. Current CI unobserved; no polling.",
+  "holds": "All original qualification/EFFECT_UNKNOWN, frozen reviews/T03k, rights/Saved/migration/release, Chrome/Codex CUA/nativezoom and pending app attachment holds preserved; IW2 alone owns Terminal804. No cross-chat message."
+}

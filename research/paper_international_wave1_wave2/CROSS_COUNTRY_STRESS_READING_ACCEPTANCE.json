@@ -1,0 +1,65 @@
+{
+  "base_head": "390de1b5bc0a03b93cdb6056a7870c71c1dc6aac",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Pure equity_risk_all on synthetic prices, explicit synthetic country metadata. No acquisition, rights or current market qualification.",
+  "counterexample": "Equal off-high0 gives owner stress0 and20; short80-observation history gives extensionna. Composite is50percent depth/30percent trend/20percent volatility, not realized loss or probability.",
+  "repair": [
+    "Label Market stress and preserve unknown extension instead of normal.",
+    "Native named heading/table; reuse existing tbl-scroll ownership to avoid inaccessible nested scrollers in Cross-country, Leadership and Correlation.",
+    "At <=640px Cross-country Economy column scrolls with data so it cannot cover last values. Desktop sticky behavior retained."
+  ],
+  "tests": {
+    "render_unique_pass": 3,
+    "browser_unique_pass": 12,
+    "browser_width_states": 24,
+    "final_cross_country_cases": 4,
+    "final_cross_country_width_states": 8,
+    "counts_overlap": true,
+    "original_failures": [
+      "3 render causal",
+      "heading focus",
+      "three outer-scroll ownership failures",
+      "sticky Economy occlusion"
+    ],
+    "retained_harness_failures": [
+      "Chinese search alias corrected",
+      "Chinese Leadership fits240px; overflow assumption corrected",
+      "LightZH optimizer timed out before browser; unchanged targeted pass"
+    ],
+    "reuse": "Render passes predate class/position-only changes; other8 browser cases predate table.cmp-only CSS change and retain exact markup/assets. No full-suite rerun."
+  },
+  "visual": {
+    "current_states": 24,
+    "cross_country_fresh_canonical": 8,
+    "cross_country_focused": 8,
+    "other_canonical_reused": 16,
+    "other_focused_reused": 16,
+    "initial_canonical_states": 24,
+    "superseded_cross_country_states": 8,
+    "current_cross_manifest_sha256": "9109ab9b5e675d6afcffff68727201e033052023fa29cd9bfe6093d38b5bea49",
+    "earlier_scroll_owner_manifest_sha256": "c9c5e0cc5d82e28a0441b1e5428fa15adaf494897cd77e62f280276450a1a228",
+    "parent": {
+      "reviewer": "Assigning parent; not independent review",
+      "focused_views_read": 24,
+      "dark": "Dark instrument panels and restrained dividers retain signed values, unavailable text and visible native focus.",
+      "light": "Pale research canvas and white panels retain readable stress/state columns and native focus; no palette substitution introduced.",
+      "narrow": "Last state cell is hit-test visible after horizontal scrolling; final screenshot shows0/20 and unavailable. Chinese Leadership fits240px; English and correlation scroll as needed.",
+      "remaining": "Inherited light Unknown regime chip is low contrast; Correlation owner footer still asserts diversification. Separate diagnosed gaps, not accepted by this receipt.",
+      "limits": "Source fixtures only; no full accessibility, speech, native zoom, real touch or live acceptance."
+    }
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "e81713b7abf317e39e1d17dd7705a1c8e23ec5a23c05dc32e28f80dce05032f0",
+    "tests/test_intl_cross_country_reading_render.py": "09189f7f7e1c6eee2255046a538e6b1ceced3ab1d0f98a4fff03ee314c9dc63b",
+    "tests/intl_workspace_page.test.cjs": "aa712a427cfbbd4248950efb5e810581259a54a3722fe0882184481d689c2b80",
+    "tests/test_intl_workspace_integration.py": "34ed8eea57f920bd58803207670e25ea3c4f19a0de0c7d2de5a90905e6e68c41"
+  },
+  "owners_unchanged": {
+    "engine/intl_equity_risk.py": "505a908e5efeb8a0a71a2c236c08ed825abf48692abb5ddb2ff41e4532d5b166",
+    "engine/extension.py": "b4dafe1a69e6c3d9567e3c0d522dc449fa04c7984d850efa79c8ce70cc4cc5fd",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "lib/intl_library_mount.py": "5689c95196c8f107dc7499c2b249cb36de061969c7baad3e9cf7eca1a3fb8c76"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/cross-country-stress-reading-20261014-r1"
+}
