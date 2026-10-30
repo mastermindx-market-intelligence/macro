@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VIR-BULL-20260821",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 44.9,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 22.6,
-    "pace": 8.7,
+    "pace": 2.0,
     "retention": 35.3,
     "overlay": 59.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.346,
     "dist_to_t1_r": 1.154,
     "dist_to_t2_r": 2.654,
-    "horizon_pct_used": 135.6,
+    "horizon_pct_used": 146.7,
     "p1": 0.2304,
     "p2": 0.1152,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 61,
-  "tau": 1.3556,
+  "days_elapsed": 66,
+  "tau": 1.4667,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "EXPIRED"
 }

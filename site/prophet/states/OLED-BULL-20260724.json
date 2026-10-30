@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OLED-BULL-20260724",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 44.0,
+  "management_confidence": 45.2,
   "raw_confidence": 45.5,
-  "delta_vs_base": -16.0,
+  "delta_vs_base": -14.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.701,
     "dist_to_t1_r": 0.799,
     "dist_to_t2_r": 2.299,
-    "horizon_pct_used": 195.6,
+    "horizon_pct_used": 206.7,
     "p1": 0.4674,
     "p2": 0.2337,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 88,
-  "tau": 1.9556,
+  "days_elapsed": 93,
+  "tau": 2.0667,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "T1_HIT"
 }

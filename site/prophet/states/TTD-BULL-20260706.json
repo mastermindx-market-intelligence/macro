@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTD-BULL-20260706",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -1.176,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
+    "horizon_pct_used": 137.8,
     "p1": -0.1173,
     "p2": -0.0586,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667,
+  "days_elapsed": 62,
+  "tau": 1.3778,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "INVALIDATED"
 }

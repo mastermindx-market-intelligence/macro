@@ -2137,20 +2137,48 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", type=Path, required=True, help="Company Intelligence product prefix")
     parser.add_argument("--terminal-tx-index-url", default=DEFAULT_TX_INDEX_URL)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--evidence-out", type=Path)
+    parser.add_argument("--evidence-ready-output", type=Path)
+    parser.add_argument("--evidence-checkout", default="")
+    parser.add_argument("--evidence-run-id", default="")
+    parser.add_argument("--evidence-run-attempt", default="")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    evidence = None
+    publisher = publish_event_workspaces
+    if args.evidence_out is not None:
+        from functools import partial
+        from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
+        try:
+            evidence = PublicationEvidence(args.evidence_out, checkout=args.evidence_checkout,
+                run_id=args.evidence_run_id, run_attempt=args.evidence_run_attempt)
+        except EvidenceValidationError as exc:
+            print(f"event workspaces: evidence unavailable: {exc.code}", file=sys.stderr)
+            return 1
+        publisher = partial(publish_event_workspaces, evidence=evidence)
+    refresh_outcome = "failed"
     try:
-        return refresh(
+        result = refresh(
             args.work_dir,
             tx_index_url=args.terminal_tx_index_url,
             out_dir=args.out_dir,
             dry_run=args.dry_run,
             prior_workspace=load_prior_flagship_workspace,
+            publish_generation=publisher,
         )
+        refresh_outcome = "returned_success" if result == 0 else "returned_conflict" if result == PUBLISH_CONFLICT else "failed"
+        return result
     except RefreshError as exc:
         print(f"::error title=event-workspaces::{exc}", flush=True)
         print(f"event workspaces: refresh refused: {exc}", file=sys.stderr)
         return 1
+
+    finally:
+        if evidence is not None:
+            ready = evidence.finish(args.out_dir, refresh_outcome)
+            if ready and args.evidence_ready_output is not None:
+                evidence.mark_ready(args.evidence_ready_output)
+
 
 
 if __name__ == "__main__":

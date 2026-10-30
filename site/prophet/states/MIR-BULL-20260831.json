@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MIR-BULL-20260831",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 32.4,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.764,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 120.0,
+    "horizon_pct_used": 131.1,
     "p1": -0.1576,
     "p2": -0.0788,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": "2026-09-04",
   "_first_t2_ts": null,
-  "days_elapsed": 54,
-  "tau": 1.2,
+  "days_elapsed": 59,
+  "tau": 1.3111,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "T1_HIT"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "YELP-BULL-20260630",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 18.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.11,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 188.9,
+    "horizon_pct_used": 200.0,
     "p1": -0.593,
     "p2": -0.2965,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 85,
-  "tau": 1.8889,
+  "days_elapsed": 90,
+  "tau": 2.0,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "NO_ENTRY"
 }

@@ -1,18 +1,18 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SON-BULL-20260617",
-  "asof": "2026-10-24",
+  "asof": "2026-10-29",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 24.2,
-  "raw_confidence": 23.7,
-  "delta_vs_base": -35.8,
+  "management_confidence": 22.9,
+  "raw_confidence": 22.4,
+  "delta_vs_base": -37.1,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
     "validity": 24.7,
     "progress": 0.0,
-    "pace": 4.7,
+    "pace": 0.0,
     "retention": 40.6,
     "overlay": 50.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.355,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 142.2,
+    "horizon_pct_used": 153.3,
     "p1": -0.43,
     "p2": -0.215,
     "p3": null,
@@ -45,8 +45,16 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 64,
-  "tau": 1.4222,
+  "days_elapsed": 69,
+  "tau": 1.5333,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-23",
+    "run_asof": "2026-10-29",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  },
   "closed": true,
   "outcome": "NO_ENTRY"
 }
