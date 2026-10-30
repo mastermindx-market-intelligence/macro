@@ -770,6 +770,48 @@ class TestUnknownSchema:
 # 8. build_and_write integration test
 # ---------------------------------------------------------------------------
 
+class TestRejectedMetadataPrivacy:
+    @pytest.mark.parametrize("schema", [
+        [], {}, ["PRIVATE_SENTINEL"], {"private": "PRIVATE_SENTINEL"},
+        "PRIVATE_SENTINEL", "mastermind_nw_feedback.v99 PRIVATE_SENTINEL",
+        None, 42, True,
+    ])
+    def test_invalid_schema_is_absent_without_raw_metadata(self, tmp_path, schema):
+        obj = _v1_fixture()
+        obj["schema"] = schema
+        _write_feedback(tmp_path, obj)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert summary["source_schema"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+        assert all(value is False for key, value in summary["authority"].items()
+                   if key.startswith("can_"))
+
+    def test_invalid_timestamp_diagnostic_does_not_copy_source(self, tmp_path):
+        obj = _v1_fixture(generated_at="PRIVATE_SENTINEL")
+        _write_feedback(tmp_path, obj)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+
+    def test_read_error_diagnostic_does_not_copy_exception(self, tmp_path, monkeypatch):
+        source = _write_feedback(tmp_path, _v1_fixture())
+        original = Path.read_text
+
+        def fail_source(path, *args, **kwargs):
+            if path == source:
+                raise OSError("PRIVATE_SENTINEL")
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", fail_source)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+
+
 class TestBuildAndWrite:
     def test_writes_artifact(self, tmp_path):
         _write_feedback(tmp_path, _v1_fixture())

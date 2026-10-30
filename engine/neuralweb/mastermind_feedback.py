@@ -25,7 +25,8 @@ Accepts mastermind_nw_feedback.v1, .v2 (additive: decision_flow, outcome_mix,
 context_audit, metric_families blocks) and .v3 (W-AI dialogue: reflection,
 nudges, operator_directives — the Mastermind AI reflection lobe's coded asks
 plus operator-authored, bot-side-scrubbed directives, re-scrubbed here).
-Unknown schema string → treat as absent with a gap note naming the schema seen.
+Unknown canonical version → absent with a gap note naming the version seen.
+Malformed schema values and rejected metadata are never copied into diagnostics.
 
 LEAK-PROOF BY CONSTRUCTION (FB-R8, test-enforced)
 ---------------------------------------------------
@@ -63,6 +64,9 @@ _ACCEPTED_SOURCE_SCHEMAS = frozenset({
     "mastermind_nw_feedback.v2",
     "mastermind_nw_feedback.v3",
 })
+
+# Retain useful unknown-version diagnostics without copying arbitrary source text.
+_SOURCE_SCHEMA_RE = re.compile(r"mastermind_nw_feedback\.v[1-9][0-9]{0,8}\Z")
 
 # Schemas that carry the v2 additive blocks (v3 is a superset of v2)
 _V2_PLUS_SCHEMAS = frozenset({
@@ -658,8 +662,8 @@ def read_feedback(root: Path | str | None = None) -> dict:
 
     try:
         raw = json.loads(source_path.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001
-        gap_notes.append(f"site/mastermind/nw_feedback.json unparseable — {exc}")
+    except Exception:  # noqa: BLE001
+        gap_notes.append("site/mastermind/nw_feedback.json unreadable or unparseable")
         return {"state": "absent", "raw": None, "gap_notes": gap_notes, "source_schema": None}
 
     if not isinstance(raw, dict):
@@ -668,6 +672,11 @@ def read_feedback(root: Path | str | None = None) -> dict:
 
     # Schema check
     source_schema = raw.get("schema")
+    if not isinstance(source_schema, str) or not _SOURCE_SCHEMA_RE.fullmatch(source_schema):
+        gap_notes.append(
+            "site/mastermind/nw_feedback.json has malformed or unknown schema; treating as absent"
+        )
+        return {"state": "absent", "raw": None, "gap_notes": gap_notes, "source_schema": None}
     if source_schema not in _ACCEPTED_SOURCE_SCHEMAS:
         gap_notes.append(
             f"site/mastermind/nw_feedback.json has unknown schema {source_schema!r} "
@@ -698,7 +707,7 @@ def read_feedback(root: Path | str | None = None) -> dict:
     dt = _parse_date(generated_at)
     if dt is None:
         gap_notes.append(
-            f"site/mastermind/nw_feedback.json has unparseable generated_at={generated_at!r}; "
+            "site/mastermind/nw_feedback.json has unparseable generated_at; "
             "treating as absent (cannot verify freshness)"
         )
         return {
