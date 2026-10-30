@@ -588,3 +588,12 @@ def test_p2a_34_comparison_basis_exposes_original_market_id_and_window():
         "period_end": END.isoformat(), "horizon": "5d",
         "decision_at": DECISION.isoformat(), "market": "US",
     }
+
+
+def test_p2b_15_missing_fingerprint_authority_is_a_hold_not_exception():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    base["authority"] = None
+    ctx = project_owner_group_flow_context(
+        base, flow_reading(), flow_binding())
+    assert ctx["status"] == "HELD"
+    assert ctx["reason"] == "missing_fingerprint_authority"
