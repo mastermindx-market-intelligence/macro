@@ -1985,7 +1985,7 @@ def public_report(report: dict) -> dict:
         failures = raw_settlement.get("failures")
         out["prophet_settlement"] = {
             "schema": "prophet.settlement_manifest/v1",
-            "status": observed_status if observed_status in allowed_status else "UNAVAILABLE_DATA",
+            "status": observed_status if isinstance(observed_status, str) and observed_status in allowed_status else "UNAVAILABLE_DATA",
             "owed_session": raw_settlement.get("owed_session")
             if isinstance(raw_settlement.get("owed_session"), str) else None,
             "source_asof": raw_settlement.get("source_asof")
