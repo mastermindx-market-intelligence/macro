@@ -82,6 +82,17 @@ class RetainedOriginalConversion:
     candidate_oid: str
     tree_oid: str
     eligible_for_cutover: bool = False
+    source_scope: str = "ACCEPTED_PREFIX_ONLY"
+
+    def require_complete_current_generation(self):
+        """Restart readback is exact prefix evidence, never a live source cut."""
+        candidate.require_complete_authority_generation(candidate.AcceptedPrefixQualification(
+            accepted_tip_oid=self.target.accepted_tip_oid,
+            accepted_ref=self.target.accepted_ref,
+            source_blob_oid=self.target.legacy_blob_oid,
+            source_logical_sha256=sha256(self.source_bytes).hexdigest(),
+            source_byte_count=len(self.source_bytes),
+        ))
 
 
 class OriginalConversionOwner:
@@ -338,8 +349,12 @@ class OriginalConversionOwner:
         candidate._ref_matches(self.repo, accepted_ref, accepted_tip_oid)
         return binding, witness
 
-    def read_binding(self, *, expected_manifest_digest, commit_oid):
-        """Match one immutable generation; no remote-acceptance/install claim."""
+    def read_binding(self, *, expected_manifest_digest, commit_oid, require_complete_current=False):
+        """Historical immutable binding. Current complete authority remains unproven."""
+        if type(require_complete_current) is not bool:
+            raise SnapshotIntegrityError("PUBLICATION_INPUT", "current-generation request must be a boolean")
         retained = self.readback(expected_manifest_digest)
+        if require_complete_current:
+            retained.require_complete_current_generation()
         return NativeGitClaimsBinding(self.repo, commit_oid=commit_oid,
             expected_root_digest=retained.snapshot.receipt.root_digest, limits=self.limits)
