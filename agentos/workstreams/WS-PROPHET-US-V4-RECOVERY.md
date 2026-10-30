@@ -256,13 +256,17 @@ waves:
     status: in_progress
     pr: [6840, 10176, 10180]
     next_action: >
-      B17 INPUTS RECOVERED / BOUNDED REPLAY BUILT / INDEPENDENT REVIEW OPEN.
-      Draft #10180 at 943906af5c04 contains the research verifier, 28 locally passing tests,
-      immutable source receipts and original-cutoff point replay. All 241 signal
-      files and 240 price candidates were recovered; 57 complete buy snapshots
-      cover 32 source dates, but zero of 7918 C0 episodes has a complete
-      34-session admission-date window. B-17 remains STILL_LIVE with null full
-      coverage/lead. DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT
+      B17 INPUTS RECOVERED / CI PROVEN / HISTORY INCOMPLETE / REVIEW OPEN.
+      Draft #10180 at 943906af5c04 contains the verifier and its 28 hosted-
+      passing tests (ci-pack-5, 1.78 seconds), immutable source receipts and
+      original-cutoff point replay. All 241 signal files and 240 price
+      candidates were recovered; 57 buy snapshots cover 32 source dates,
+      but no C0 episode has a complete 34-session admission-date window.
+      Of 7918 original C0 episodes, 7775 (98.19 percent) predate the
+      first archived board on 2026-06-16; only 143 postdate/meet the boundary.
+      This is absence of source history, NOT zero shipped-roster coverage.
+      B-17 remains STILL_LIVE with null full coverage and lead.
+      DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT
       shows that close-only replay does not reproduce shipped buy[] and a
       vintage-main replay cannot qualify the pre-2026 board history.
       Recover historically bound full-population admission inputs
@@ -270,19 +274,21 @@ waves:
       actual union-and-gate roster with the frozen denominator and rulers.
       The reproduced 60.62 percent / 12-session baseline is C1-relaxed, not a
       measured union or shipped-roster result; preserve the price-vintage proof limit.
-      CI 40188371899 failed contract-delta because the new suite was unwired;
-      a nine-line registration in existing prophet-lab gate:code now runs
-      tests/test_prophet_b17_frozen_input_recovery.py on the new Draft head.
-      Consume CI 41043491441 and fences 41043491265, confirm the suite
-      actually ran, and fix any new red before advancing release gates.
+      Repaired CI 41043491441 passed contract-delta, all 12 packs and ci-gate;
+      pack-5 logged the actual B-17 step and 28 tests passing in 1.78s;
+      fences 41043491265 passed. Recovery CI 41044730818 also passed.
+      This is CI proof, NOT scientific acceptance or approval.
       Correction Draft #10176 remains at 228c25d37617, with 184 focused tests,
       two metadata smokes and CI 40147024285 passed. The current owner reconciled
       original review -01 terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE.
       Under the latest explicit directive, exactly one fresh non-Qwen request
       prophet-v4-b2-withdrawal-review-20261025-04 was pinned to GLM and refused:
       MANUAL_ROUTE_UNAVAILABLE, INVALID_ARGUMENT, execution_absence_proven=false,
-      retry_allowed=false; no controller or verdict returned. No further retry,
-      self-approval or merge. Retain ownership without an absent-owner ACK gate.
+      retry_allowed=false; no controller or verdict returned. The separate
+      GitHub Copilot request returned no assigned reviewer/verdict; Cursor
+      Bugbot replied unable to authenticate this repo (comment 6521998829).
+      No review pickup or authorization. Do not replay denied operations,
+      self-approve or merge; obtain legitimate reviewer access first.
       Preserve #6840 audit closures, #7264 composition/HOLD and production proof
       obligations. Current receipts and implementation gaps are in the October 25
       frozen-input handoff; the October 24 census remains historical evidence.
@@ -822,40 +828,36 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
-  2026-10-25 continuation: the current recovery session owns B2 under Chris's
-  no-owner-wait directive. Continue from the original thirty-wave record and
-  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-30-b17-ci-registration.md.
-  Draft #10180 is now at 943906af5c0478e6bcf43f601b7f001fc30e0914 after
-  wiring the B-17 suite into the existing code gate; its original research source
-  at 0bcc11b27cd884165af61841e0e59b90fd27f124 is unchanged. The new head's
-  CI and fences must conclude and show the suite actually ran. This Draft recovers the
-  original frozen inputs and implements a bounded canonical union-and-selector
-  replay. All 240 price candidates match recorded metadata and episode anchors;
-  241 signal files and 57 full buy snapshots were recovered. The sample covers
-  32 source dates but zero complete 34-session windows for the 7918 original
-  C0 episodes. B-17 remains STILL_LIVE; full coverage and lead remain null.
-  TOP IMPLEMENTATION ACTION: recover full-population historical admission inputs
-  and availability clocks for the missing original sessions; build a pure input
-  adapter only from qualified historical dependencies. Preserve the original
-  denominator and R2i rules, missing-as-unknown and upstream population caps.
-  Do not run the present-day producer as a historical reconstruction or infer
-  served/first-visibility proof from source dates. The reproduced 60.62 percent
-  / 12-session result belongs to C1-relaxed, not a measured union roster.
-  Correction Draft #10176 remains at 228c25d37617a7217c8f65f1613ade701a2fe01a.
-  Its CI 40147024285 and previous records CI 40158568747 at 90d11979dbb0 passed.
-  Original review -01 remains terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE;
-  -02 capacity refusal and -03 terminal HTTP403 AccessDenied class remain scoped.
-  The single newly authorized non-Qwen review -04, pinned to GLM with the
-  MiniMax author pool excluded, returned MANUAL_ROUTE_UNAVAILABLE /
-  INVALID_ARGUMENT, execution_absence_proven=false and retry_allowed=false.
-  No controller or verdict was returned. Record that exact refusal and continue
-  implementation; no further review attempt, self-approval, merge or deployment.
-  Counts remain five done, six in_progress and nineteen todo. Preserve accepted
-  A1/B1, D5 source acceptance and D6 gate, active #9634/#9610, #8444's design
-  hold and #7264's carrier/HOLD under the existing composition rule. Interrupted
-  census-review and older unidentified-request effects remain fenced. All three
-  recovery/source PRs remain Draft; no new masterplan or production acceptance.
-
+  2026-10-30 continuation: current recovery role owns B2, B-17 and the
+  independent-review gate under Chris's no-owner-wait directive. Use the
+  cumulative handoff agentos/handoffs/
+  PROPHET-US-V4-RECOVERY-2026-10-30-b17-ci-registration.md and
+  discovery DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT.
+  Research Draft #10180 is unchanged at 943906af5c0478e6bcf43f601b7f001fc30e0914;
+  its CI 41043491441 conclusively passed contract-delta, all 12 code packs
+  including pack-5 B-17 regression (28 passed in 1.78s) and ci-gate, and
+  fences 41043491265 succeeded. Recovery CI 41044730818 passed at prior head.
+  The immutable original C0 population contains 7918 dated episodes;
+  7775 (98.19 percent) precede first archived complete board source on
+  2026-06-16, leaving only 143 on/after in the archived date range.
+  The sampled archive has 57 snapshots / 32 source dates and zero complete
+  34-session admission windows. Historical pre-archive input is unknown,
+  not zero return/coverage. TOP SCIENCE ACTION: locate full-population PIT
+  admission evidence and source/serving clocks for the original cutoff or
+  escalate the scientifically unanswerable pre-history for an explicit scope
+  ruling; never silently replace the frozen 7918 denominator.
+  B2 correction Draft #10176 remains at 228c25d37617a7217c8f65f1613ade701a2fe01a.
+  Its exact-head 40147024285 CI passed, but no independent review or
+  real production correction proof exists. Prior Fabric runs -01 through -04
+  retain terminal/refusal and no-retry fences. The separate non-Fabric Cursor
+  review comment 6521997949 was answered by cursor[bot] comment 6521998829
+  with an explicit repository authentication/configuration refusal; no
+  reviewer started. GitHub Copilot request yielded no assigned reviewer or
+  review receipt. Obtain legitimate review integration/admin access and then
+  request a fresh independent non-author review through an authorized path,
+  without bypassing either denial. Keep all three PRs Draft/HOLD, no
+  self-approval, merge or deployment. Counts remain five done, six
+  in_progress, nineteen todo; preserve accepted A1/B1/D5 and collision holds.
 ---
 
 ## Context
