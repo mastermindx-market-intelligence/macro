@@ -20,7 +20,14 @@ export function eventSelectionFromSearch(search) {
     return Object.freeze({date,ticker,side});
   } catch (_) { return null; }
 }
-function instant(v) { return typeof v==='string' && /(?:Z|[+-]\d\d:\d\d)$/.test(v) && Number.isFinite(Date.parse(v)); }
+function instant(v) {
+  // Date.parse normalizes impossible dates and 24:00. Validate the written
+  // calendar/time first; retain native offsets and fractional-second precision.
+  const m=typeof v==='string' && /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-](\d{2}):(\d{2}))$/.exec(v);
+  return !!m && !m[1].startsWith('0000-') && day(m[1]) && +m[2]<24 && +m[3]<60
+    && (m[4]===undefined || +m[4]<60) && (m[5]===undefined || +m[5]<24 && +m[6]<60)
+    && Number.isFinite(Date.parse(v));
+}
 function cancel(reader) { try { void Promise.resolve(reader.cancel()).catch(()=>{}); } catch (_) {} }
 function field(dl,en,zh,value) { const row=node('div','ox-company-field');row.append(node('dt','',en,zh));const dd=node('dd');dd.textContent=value;row.append(dd);dl.append(row); }
 function pct(v) { return (v>0?'+':'')+(100*v).toFixed(2)+'%'; }
@@ -48,6 +55,7 @@ export function decodeResearch(value, selection) {
       || ['date','ticker','side'].some(p=>k.asof.t0_evidence_ref.native_identity?.[p]!==id[p])
       || k.asof.t0_evidence_ref.native_digest?.sha256!==c.source.snapshot_sha256
       || k.asof.t0_evidence_ref.recorded_clock?.value!==clock.captured_at
+      || k.asof.value!==clock.captured_at || k.asof.grain!=='datetime'
       || k.calibrated?.state!=='unavailable'
       || ['opportunity_score','confidence','probability','impact'].some(p=>k.calibrated[p]!==null)
       || ['transmission','company_context','valuation_context','path_timing','portfolio_intersection'].some(p=>k[p]?.state!=='unavailable')) fail();

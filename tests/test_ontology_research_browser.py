@@ -247,3 +247,57 @@ def test_pressure_watch_research_action_uses_full_row_measure(browser, width, th
         assert all('/api/' not in url for url in requests)
     finally:
         context.close()
+
+
+@pytest.mark.parametrize('mutation', ['case_cutoff', 'case_grain', 'source_day', 'capture_day', 'capture_rollover'])
+def test_research_rejects_incoherent_or_impossible_capture_clocks(browser, mutation):
+    value = packet()
+    if mutation == 'case_cutoff':
+        value['case']['asof']['value'] = '2026-01-04T10:00:00Z'
+    elif mutation == 'case_grain':
+        value['case']['asof']['grain'] = 'date'
+    else:
+        stamp = '2026-03-02T10:00:00Z'
+        if mutation == 'capture_day':
+            stamp = '2026-02-30T10:00:00Z'
+        elif mutation == 'capture_rollover':
+            stamp = '2026-03-01T24:00:00Z'
+        value['capture']['capture']['captured_at'] = stamp
+        value['case']['asof']['value'] = stamp
+        value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = stamp
+        if mutation == 'source_day':
+            value['capture']['source']['generated_utc'] = '2026-02-30T09:00:00Z'
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        inspect(page)
+        page.wait_for_function("!['idle','loading'].includes(document.querySelector('[data-research-result]').dataset.state)")
+        assert page.locator('[data-research-result]').get_attribute('data-state') == 'unavailable'
+        assert 'opc_' not in page.locator('[data-research-result]').text_content()
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize('stamp', ['2024-02-29T10:00:00.123456Z', '2026-01-03T11:00:00.123456+01:00', '2026-01-03T11:00+01:00'])
+def test_research_preserves_valid_native_clock_precision(browser, stamp):
+    value = packet()
+    if stamp.startswith('2024'):
+        value['capture']['source']['generated_utc'] = stamp
+        for identity in [value['capture']['native_identity'], value['case']['asof']['t0_evidence_ref']['native_identity']]:
+            identity['date'] = '2024-02-28'
+    else:
+        value['capture']['source']['generated_utc'] = stamp
+        stamp = '2026-01-03T10:00:00.123456Z'
+    value['capture']['capture']['captured_at'] = stamp
+    value['case']['asof']['value'] = stamp
+    value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = stamp
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        page.locator('#ox-research [name=date]').fill(value['capture']['native_identity']['date'])
+        page.locator('#ox-research [name=ticker]').fill('TEST')
+        page.locator('#ox-research button[type=submit]').click()
+        settled(page, 'ready')
+        assert stamp in page.locator('[data-research-result]').text_content()
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
