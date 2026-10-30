@@ -84,9 +84,17 @@ def _ledger_path(cohort: str, root: Path | None = None) -> Path:
     return r / "data" / _LEDGER_DIR / f"{cohort}.parquet"
 
 
-def _load_ledger(cohort: str, root: Path | None = None) -> pd.DataFrame:
-    """Load an existing ledger parquet, or return an empty frame. Never raises."""
+def _load_ledger(cohort: str, root: Path | None = None, *,
+                 strict: bool = False) -> pd.DataFrame:
+    """Read a ledger; strict writers may bootstrap only a genuinely absent file."""
     p = _ledger_path(cohort, root)
+    if strict:
+        try:
+            p.stat()
+        except FileNotFoundError:
+            return pd.DataFrame()
+        # A failed read must not turn existing rows into an empty replacement.
+        return pd.read_parquet(p)
     if not p.exists():
         return pd.DataFrame()
     try:
@@ -121,7 +129,7 @@ def _append_rows(cohort: str, new_rows: list[dict],
     """
     if not new_rows:
         return 0
-    existing = _load_ledger(cohort, root)
+    existing = _load_ledger(cohort, root, strict=True)
     new_df = pd.DataFrame(new_rows)
     metadata_changed = False
     if cohort in _VERSIONED_COHORTS:

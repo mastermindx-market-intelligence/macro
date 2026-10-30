@@ -30962,6 +30962,8 @@ jobs:
       # tests in 5.7s, inside this job's 8-minute budget. The census-surface count
       # becomes 15 when #5607 (frozen-census freeze annotation) lands; that PR touches
       # only the builder and its suite, so it inherits this wiring with no edit here.
+      - name: ownership forward ledger read-failure preservation
+        run: python -m pytest tests/test_ownership_ledger.py -q
       - name: 13F smart-money desk — engine contracts, nightly builder, census surface
         run: >
           python -m pytest
