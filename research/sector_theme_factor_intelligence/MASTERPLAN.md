@@ -73,10 +73,42 @@ No invented one-dimensional score. If a weighted composite is later justified, i
 
 ## Immediate implementation contract and collision fences
 
-Build **P1 only**, additive `engine/sector_theme_factor_intelligence.py` and `tests/test_sector_theme_factor_intelligence.py`, using incumbent pure functions; no changes to `engine/theme_graph/`, `engine/theme_scoring.py`, `engine/live_breadth.py`, existing rotation files, deployed data, `site/`, `templates/`, CI scheduling or publisher. At that milestone, run targeted tests and independent review, then qualify P2 producer inputs before extending data effects. Separate design work may inspect Paper, but never modify an overlapping active Paper file without its exact carrier authority.
+The original P1-only implementation boundary is historical: this same draft now contains the P1-P3c pure research consumers described above. The current recovery scope is to qualify and repair those existing modules and their tests, preserve their single incumbent CI owner, and obtain independent source review. This is not acceptance of P1-P3c or permission to expand data effects. No changes to `engine/theme_graph/`, `engine/theme_scoring.py`, `engine/live_breadth.py`, incumbent rotation source, deployed data, `site/`, `templates/`, CI scheduling or publisher. P4-P8 retain their dependencies and original acceptance criteria. Real producer integration requires actual owner admission; a synthetic packet or this plan cannot grant it. Paper work requires the exact qualified target and carrier; a disconnected connector is not canvas proof.
 
 External research anchors: Moskowitz & Grinblatt (1999), `https://doi.org/10.1111/0022-1082.00146`; Moskowitz/Ooi/Pedersen (2012), `https://doi.org/10.1016/j.jfineco.2011.11.003`; Gu/Kelly/Xiu (2020), `https://doi.org/10.1093/rfs/hhaa009`; FRED/ALFRED `BAMLH0A0HYM2` source/restrictions. These support hypotheses and feature selection, **not** validated performance for our particular model or data.
 
 ## Current recovery boundary
 
 GitHub source proposal: eligible branch above; **not** Agent OS source-linked/accepted, merged, deployed, reviewed, or production proven. Before claiming an organizational milestone, an eligible Agent OS writer must add the appropriate task-tree artifact pointer and a valid dated handoff under existing `WS:LEADERSHIP-ROTATION-INTELLIGENCE`, preserving live writers, DO_NOT_REDO and external W6 obligations. No duplicate workstream or Job is created by this file.
+
+
+## 2026-10-30 recovery qualification delta
+
+The Chairman assigned the recovering session to lead this existing additive programme;
+source carrier and task IDs remain unchanged. Cumulative recovery and child/effect
+state stay in `agentos/handoffs/LEADERSHIP-ROTATION-FACTOR-BREADTH-2026-10-30.md`,
+not in another task registry. The parent W1-W5 and separate W6 scientific scope are preserved.
+
+- Exact recovered head `a469f858a8bda9dc3168abb151835ae9c5c7e60d` passed full hosted CI
+  run `41141643577` and fences `41141643321`. The authoritative plan binds tested
+  merge `4b0b5fe69ab01f5b62da0a6943989c2906a0bf64` to base
+  `fd8d61c07261fd3a0f747aa8899f9638bc0a73cc`. Its owning
+  `leadership-rotation-contract` job actually executed in pack 5, job
+  `124358219887`: **268 passed in 9.92s**. This corrects the old unresolved-CI
+  description only for that exact recovered head, not a later repair head.
+- P2 recovery found a reproducible UTC normalization overflow in parseable extreme
+  timestamps, plus malformed fingerprint member IDs reaching sorting. The small
+  repair keeps invalid clocks/populations held. Invalid optional flow clocks hold
+  that context without discarding otherwise valid base observations. No clock is
+  clamped and no missing observation becomes zero or publishable.
+- The 58 new parameterized cases discriminated the prior source: **57 failed,
+  1 passed**, with 60 unrelated cases deselected. After repair, all seven focused
+  suites passed: **259 passed in 0.27s** in an isolated M2 source copy whose 15
+  original engine/test blobs matched the recovered head. This is focused source
+  execution, not independent review, native full-repository or product acceptance.
+  The repair must receive its own exact-head CI and independent review.
+- Current GMI W3B/W3C owner records still require authentic membership/identity,
+  purpose-specific rights and original producer proof. The direct Paper connector
+  returned a transport 404; no Paper target, edit, screenshot or product proof exists.
+
+No node is promoted to `accepted` by this recovery evidence.

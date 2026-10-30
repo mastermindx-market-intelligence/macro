@@ -613,3 +613,74 @@ def test_p2a_35_unhashable_owner_selectors_fail_closed(bad, path, expected):
         target = target[key]
     target[path[-1]] = bad
     held(p, expected)
+
+
+_UTC_OVERFLOW_CLOCKS = (
+    "0001-01-01T00:00:00+14:00",
+    "9999-12-31T23:59:59-12:00",
+    datetime(1, 1, 1, tzinfo=timezone(timedelta(hours=14))),
+    datetime(9999, 12, 31, 23, 59, 59,
+             tzinfo=timezone(timedelta(hours=-12))),
+)
+
+
+@pytest.mark.parametrize("clock", _UTC_OVERFLOW_CLOCKS)
+@pytest.mark.parametrize("path", (
+    ("membership_known_at",),
+    ("market", "period_start"),
+    ("market", "period_end"),
+    ("market", "decision_at"),
+    ("member_identities", "AAA", "available_at"),
+    ("market", "benchmark", "period_start"),
+    ("market", "benchmark", "observed_at"),
+    ("market", "benchmark", "available_at"),
+    ("market", "parent", "available_at"),
+    ("market", "member_rows", "AAA", "period_start"),
+))
+def test_p2_recovery_utc_normalization_overflow_holds(path, clock):
+    packet = fixture()
+    target = packet
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = clock
+    original = deepcopy(packet)
+    out = preview_us_theme_packet(packet)
+    assert packet == original
+    assert out["status"] == "HELD"
+    assert out["hold_reasons"]
+    assert out["frame"] is None and out["fingerprint"] is None
+    assert out["eligible_for_customer_publication"] is False
+    assert out["eligible_for_historical_prediction"] is False
+    assert out["trading_or_alert_authority"] is False
+
+
+@pytest.mark.parametrize("clock", _UTC_OVERFLOW_CLOCKS)
+@pytest.mark.parametrize("field", ("period_end", "observed_at", "available_at"))
+def test_p2_recovery_flow_utc_overflow_holds_only_flow_context(field, clock):
+    packet = flow_packet()
+    packet["group_flow_reading"] = flow_reading()
+    packet["group_flow_binding"] = flow_binding()
+    packet["group_flow_binding"][field] = clock
+    original = deepcopy(packet)
+    out = preview_us_theme_packet(packet)
+    assert packet == original
+    assert out["status"] == "RESEARCH_PREVIEW_ONLY"
+    context = out["group_flow_context"]
+    assert context["status"] == "HELD"
+    assert context["reason"] == "missing_group_flow_original_clock"
+    assert context["eligible_for_customer_publication"] is False
+    assert context["ranking_or_trading_authority"] is False
+
+
+@pytest.mark.parametrize("bad_id", (None, {}, [], 7, True, ""))
+def test_p2_recovery_malformed_fingerprint_member_holds(bad_id):
+    fingerprint = preview_us_theme_packet(flow_packet())["fingerprint"]
+    fingerprint["group"]["member_ids"][0] = bad_id
+    original = deepcopy(fingerprint)
+    out = project_owner_group_flow_context(
+        fingerprint, flow_reading(), flow_binding())
+    assert fingerprint == original
+    assert out["status"] == "HELD"
+    assert out["reason"] == "owner_flow_population_mismatch"
+    assert out["eligible_for_customer_publication"] is False
+    assert out["ranking_or_trading_authority"] is False

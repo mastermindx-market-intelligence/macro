@@ -37,9 +37,13 @@ def _timestamp(value: object) -> datetime | None:
             return None
     else:
         return None
-    if v.tzinfo is None or v.utcoffset() is None:
+    try:
+        if v.tzinfo is None or v.utcoffset() is None:
+            return None
+        return v.astimezone(timezone.utc)
+    except (ValueError, OverflowError, TypeError):
+        # A parseable local clock can still lie outside the UTC datetime range.
         return None
-    return v.astimezone(timezone.utc)
 
 
 def _day(value: object) -> date | None:
@@ -392,6 +396,7 @@ def project_owner_group_flow_context(
     group_ids = group.get("member_ids")
     if (not isinstance(ids, list) or not isinstance(group_ids, list)
             or any(not _name(x) for x in ids)
+            or any(not _name(x) for x in group_ids)
             or sorted(ids) != sorted(group_ids)
             or len(set(ids)) != len(ids)):
         return _flow_held("owner_flow_population_mismatch")
