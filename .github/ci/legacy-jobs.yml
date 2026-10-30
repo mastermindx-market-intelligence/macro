@@ -9065,6 +9065,10 @@ jobs:
       # new suites render templates/impulse.html.j2 through
       # scripts/build_impulse._render_html with inline payloads (jinja2/pandas, both
       # already on this install line). No new job.
+      # AI Brief server-rendered countdown: tests/test_aibrief_countdown_qual.py
+      # exercises scripts/build_aibrief.py alongside test_aibrief_w4_panels.py;
+      # the same render-guard job already installs its required dependencies.
+      # Keep the new suite explicit in this run step for contract-delta coverage.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -9201,6 +9205,7 @@ jobs:
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
           tests/test_aibrief_w4_panels.py
+          tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
           tests/test_validated_claims_thirdparty.py
           tests/test_validated_claims_engine.py
