@@ -27304,7 +27304,9 @@ jobs:
     paths:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
+      - site/tools/calculators/dollar-cost-averaging.html
       - tests/js/calculator_input_integrity.test.mjs
+      - tests/js/dca_stability.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
     runs-on: ubuntu-latest
@@ -27321,7 +27323,7 @@ jobs:
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
-        run: node --test tests/js/calculator_input_integrity.test.mjs
+        run: node --test tests/js/calculator_input_integrity.test.mjs tests/js/dca_stability.test.mjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
