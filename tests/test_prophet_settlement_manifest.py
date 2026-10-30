@@ -16,6 +16,20 @@ attacks one way a NON-reader truth could masquerade as settlement:
     missing reader clock                -> test_missing_reader_clock_fails_closed
     mixed vintage                       -> test_vintage_flags_fail_closed
     leaked board content                -> test_no_leaks_in_envelope
+    null artifact map (false green)     -> test_missing_artifact_hashes_fails_closed_typed
+    index-only map ≟ full bundle        -> test_index_only_mapping_cannot_infer_the_bundle
+    unrelated asset entry               -> test_unrelated_asset_entry_is_not_the_accepted_bundle
+    subset map (missing hashes)         -> test_missing_asset_entries_are_incomplete
+    wrong index hash in a full map      -> test_wrong_index_hash_in_full_map_is_pending
+    reader map ≟ issuer accepted map    -> test_reader_map_must_equal_issuer_accepted_map
+    issuer map ≟ receipt index hash     -> test_issuer_accepted_map_must_agree_with_receipt_index
+    missing trusted references          -> test_missing_accepted_bundle_reference_is_pending
+                                           test_missing_reader_proof_is_pending
+    malformed trusted reference         -> test_accepted_bundle_reference_shape_is_enforced
+                                           test_reader_proof_shape_is_enforced
+    bundle id ≟ reader served id        -> test_bundle_ids_must_agree
+    bundle id ≅ receipt checkpoint      -> test_bundle_id_may_not_be_the_receipt_checkpoint
+    synthetic accepted read (SETTLED)   -> test_synthetic_explicit_accepted_read_is_the_only_settled_shape
 
 Everything is pure and clock-free by construction: fixture stamps are FROZEN
 LITERALS, no test opens a socket or reads a clock, and the source guards at the
@@ -59,11 +73,53 @@ CHECKPOINT = "c1e2a3b4c1e2a3b4c1e2a3b4c1e2a3b4c1e2a3b4"
 BOARD_SHA = "d0e5a1d11804e9458df70e009de268ebce30c21000000000000000000000000a0"
 LEAK_PATH = "/opt/macro/data/us_board_ledger/origination_sources/leak-bait.json.gz"
 
+# ── SYNTHETIC §18.2 accepted-bundle fixtures (constructed, NOT observed) ─────
+# The bundle identity, board definition and asset hashes below are test
+# fixtures built for this suite.  They are never a production publish bundle
+# or a production reader proof, and no test here is production proof that any
+# real session settled.  The projection's SETTLED path requires the caller to
+# inject this binding evidence; these fixtures exist so the suite can pin the
+# projection's acceptance and rejection rules around it.
+SYNTH_BUNDLE_ID = "SYNTHETIC-TEST-BUNDLE-ID-NOT-A-PRODUCTION-PROOF"
+SYNTH_OTHER_BUNDLE_ID = "SYNTHETIC-OTHER-BUNDLE-ID-TEST-ONLY"
+SYNTH_BOARD_DEFINITION = "synthetic_board_definition_TEST_ONLY"
+SYNTH_CANDIDATE_COUNT = 7
+
 _UNSET = object()
 
 
 def digest(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def synthetic_artifact_hashes(index_sha: str) -> dict[str, str]:
+    """The full §18.2 four-asset raw hash map for a synthetic accepted read:
+    ``index`` is bound to the actual served bytes; the other three assets are
+    synthetic fixture digests."""
+    return {
+        "board": digest(b"synthetic-board-bytes"),
+        "candidate_store": digest(b"synthetic-candidate-store-bytes"),
+        "index": index_sha,
+        "theme_state": digest(b"synthetic-theme-state-bytes"),
+    }
+
+
+def synthetic_accepted_bundle(artifact_hashes: dict[str, str], *,
+                              bundle_id: str = SYNTH_BUNDLE_ID) -> dict:
+    """A synthetic SOURCE-ISSUED accepted bundle reference (§18.2 publish
+    bundle identity plus the bundle-level identity fields).  Fixture only."""
+    return {
+        "bundle_id": bundle_id,
+        "board_definition": SYNTH_BOARD_DEFINITION,
+        "candidate_count": SYNTH_CANDIDATE_COUNT,
+        "artifact_hashes": dict(artifact_hashes),
+    }
+
+
+def synthetic_reader_proof(*, bundle_id: str = SYNTH_BUNDLE_ID) -> dict:
+    """A synthetic reader-served bundle identity (§18.2 reader_proof
+    ``served_bundle_id``).  Fixture only."""
+    return {"served_bundle_id": bundle_id}
 
 
 def index_document(*, source_asof: str = FRI, schema: str = MAN.INDEX_SCHEMA,
@@ -136,14 +192,24 @@ def evidence(index_kw: dict | None = None,
 def manifest_call(*, index_kw: dict | None = None, health_kw: dict | None = None,
                   served_index_bytes=_UNSET, accepted_health=_UNSET,
                   **over) -> dict:
-    """One manifest projection over green evidence with surgical overrides."""
+    """One manifest projection over green evidence with surgical overrides.
+
+    Green now INCLUDES the §18.2 full-bundle binding evidence, synthesized
+    around the exact served bytes from the SYNTHETIC fixtures above, so each
+    mutation can strip exactly one element and pin a single typed failure.
+    The binding evidence is constructed for tests only — never production
+    proof."""
     served, health = evidence(index_kw, health_kw)
+    artifact = synthetic_artifact_hashes(digest(served))
     kwargs = {
         "owed_session": FRI,
         "accepted_health": health if accepted_health is _UNSET else accepted_health,
         "served_index_bytes": served if served_index_bytes is _UNSET else served_index_bytes,
         "reader_observed_at": READ_AT,
         "computed_at": COMPUTED_AT,
+        "artifact_hashes": artifact,
+        "accepted_bundle": synthetic_accepted_bundle(artifact),
+        "reader_proof": synthetic_reader_proof(),
     }
     kwargs.update(over)
     return MAN.project_settlement_manifest(**kwargs)
@@ -153,10 +219,13 @@ def manifest_call(*, index_kw: dict | None = None, health_kw: dict | None = None
 
 def test_settled_complete_envelope():
     served, health = evidence()
+    artifact = synthetic_artifact_hashes(digest(served))
     out = MAN.project_settlement_manifest(
         owed_session=FRI, accepted_health=health, served_index_bytes=served,
         reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
-        artifact_hashes={"index": digest(served)},
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof(),
     )
     assert out["schema"] == "prophet.settlement_manifest/v1"
     assert out["status"] == "SETTLED"
@@ -168,7 +237,7 @@ def test_settled_complete_envelope():
     assert out["computed_at"] == COMPUTED_AT      # echoed verbatim, not synthesized
     assert out["published_at"] == PUBLISHED_FRESH
     assert out["checkpoint"] == CHECKPOINT
-    assert out["artifact_hashes"] == {"index": digest(served)}
+    assert out["artifact_hashes"] == artifact     # the full four-asset map, echoed
 
 
 def test_envelope_is_closed_and_ordered():
@@ -217,12 +286,17 @@ def test_gate_skip_night_does_not_advance():
 
 def test_stale_source_stays_pending_with_every_other_gate_green():
     """The stale night really did serve the accepted stale bundle (digest
-    matches) with a qualified reader clock — settlement STILL waits for the
-    source, because §18.1 gates on reader_visible_asof >= owed_session."""
+    matches, full §18.2 binding green) with a qualified reader clock —
+    settlement STILL waits for the source, because §18.1 gates on
+    reader_visible_asof >= owed_session."""
     served, health = evidence(index_kw={"source_asof": WED})
+    artifact = synthetic_artifact_hashes(digest(served))
     out = MAN.project_settlement_manifest(
         owed_session=THU, accepted_health=health,
-        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT)
+        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof())
     assert out["status"] == "PENDING"
     assert "source_asof_stale" in out["failures"]
     assert out["reader_visible_asof"] == WED
@@ -230,9 +304,13 @@ def test_stale_source_stays_pending_with_every_other_gate_green():
 
 def test_source_asof_equal_to_owed_settles():
     served, health = evidence(index_kw={"source_asof": THU})
+    artifact = synthetic_artifact_hashes(digest(served))
     out = MAN.project_settlement_manifest(
         owed_session=THU, accepted_health=health,
-        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT)
+        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof())
     assert out["status"] == "SETTLED"
 
 
@@ -241,14 +319,21 @@ def test_source_asof_equal_to_owed_settles():
 def test_equal_source_dates_but_mismatched_raw_digest_is_pending():
     """MUTATION PIN (stale served bundle).  Same session date on both sides,
     but the reader is holding a DIFFERENT bundle than the accepted receipt
-    describes.  Matching as-of dates must not paper over a bundle split."""
+    describes.  Matching as-of dates must not paper over a bundle split.
+    With the full §18.2 binding green on the receipt's accepted bytes, the
+    drifted served tree is accused twice: against the receipt digest AND
+    against the reader's own index asset entry."""
     served = index_bytes(source_asof=FRI, plan_count=999)   # other bundle, same session
     health = health_receipt(index_sha256=digest(index_bytes(source_asof=FRI)))
+    artifact = synthetic_artifact_hashes(digest(index_bytes(source_asof=FRI)))
     out = MAN.project_settlement_manifest(
         owed_session=FRI, accepted_health=health,
-        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT)
+        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof())
     assert out["status"] == "PENDING"
-    assert out["failures"] == ["served_digest_mismatch"]
+    assert out["failures"] == ["artifact_index_digest_mismatch", "served_digest_mismatch"]
     assert out["source_asof"] == out["reader_visible_asof"] == FRI
 
 
@@ -278,9 +363,13 @@ def test_reader_clock_before_published_at_still_settles():
     clock trails the publisher's (cross-host skew) must not flap settlement
     when the served bytes provably ARE the accepted bundle."""
     served, health = evidence()
+    artifact = synthetic_artifact_hashes(digest(served))
     out = MAN.project_settlement_manifest(
         owed_session=FRI, accepted_health=health, served_index_bytes=served,
-        reader_observed_at="2026-10-30T20:00:00Z", computed_at=COMPUTED_AT)   # < published_at
+        reader_observed_at="2026-10-30T20:00:00Z", computed_at=COMPUTED_AT,   # < published_at
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof())
     assert out["status"] == "SETTLED"
 
 
@@ -394,12 +483,17 @@ def test_computed_at_is_required_and_only_echoed_when_genuine():
 
 def test_served_and_health_source_asof_disagreement_is_loud():
     """§18.3: make split-brain loud, in the envelope itself — the reader sees
-    THU while the receipt claims FRI, for the SAME accepted bytes."""
+    THU while the receipt claims FRI, for the SAME accepted bytes (the full
+    §18.2 hash binding agrees; only the source dates split)."""
     served = index_bytes(source_asof=THU)
     health = health_receipt(index_sha256=digest(served), source_asof=FRI)
+    artifact = synthetic_artifact_hashes(digest(served))
     out = MAN.project_settlement_manifest(
         owed_session=THU, accepted_health=health,
-        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT)
+        served_index_bytes=served, reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof())
     assert out["status"] == "PENDING"
     assert out["failures"] == ["served_source_asof_mismatch"]
     assert out["source_asof"] == FRI
@@ -476,10 +570,209 @@ def test_unqualified_artifact_hashes_are_flagged_not_echoed():
     assert out["status"] == "PENDING"
 
 
-def test_artifact_hashes_omitted_stays_none():
-    out = manifest_call()
+# ═══════════════ §18.2 accepted full-bundle binding (fail closed) ════════════
+
+def test_missing_artifact_hashes_fails_closed_typed():
+    """MUTATION PIN (the reproduced false green).  Every other gate is green —
+    qualified receipt, raw-digest match, owed session, qualified clocks,
+    clean vintage, schema — and the caller supplies NO artifact map at all,
+    exactly the shape the incumbent sentinel read model emits today.  That
+    must never read SETTLED: with ``artifact_hashes`` null the bundle cannot
+    be proven, so the verdict is PENDING with the typed missing code."""
+    out = manifest_call(artifact_hashes=None)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_hashes_missing"]
     assert out["artifact_hashes"] is None
     assert "artifact_hashes_unqualified" not in out["failures"]
+
+
+def test_index_only_mapping_cannot_infer_the_bundle():
+    """MUTATION PIN (the audit gap).  An index hash that individually matches
+    the accepted receipt proves ONE asset, not the accepted multi-asset
+    bundle: §18.2 requires candidate_store, board, index and theme_state
+    together.  The missing assets are never inferred — not from the receipt,
+    not from the served bytes, not from anywhere — so the verdict stays
+    PENDING with the typed incomplete-bundle code."""
+    out = manifest_call(artifact_hashes={"index": digest(index_bytes())})
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_bundle_incomplete"]
+    assert out["artifact_hashes"] == {"index": digest(index_bytes())}
+
+
+def test_missing_asset_entries_are_incomplete():
+    """MUTATION PIN (missing hashes).  Any subset of the four §18.2 assets is
+    not the full accepted bundle, even when the surviving entries are
+    well-formed."""
+    out = manifest_call(artifact_hashes={
+        "board": digest(b"b"), "index": digest(index_bytes())})
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_bundle_incomplete"]
+
+
+def test_unrelated_asset_entry_is_not_the_accepted_bundle():
+    """MUTATION PIN (unrelated hashes).  Entries outside the frozen §18.2
+    bundle set — however well-formed — are not part of the accepted bundle
+    and cannot ride along as one."""
+    artifact = synthetic_artifact_hashes(digest(index_bytes()))
+    artifact["unrelated_asset"] = digest(b"not-part-of-the-bundle")
+    out = manifest_call(artifact_hashes=artifact)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_bundle_unrecognized_entry"]
+    assert out["artifact_hashes"]["unrelated_asset"] == \
+        digest(b"not-part-of-the-bundle")
+
+
+def test_wrong_index_hash_in_full_map_is_pending():
+    """MUTATION PIN (wrong index hash).  A complete, well-formed map whose
+    index entry does not hash the bytes production actually serves is a
+    misbound read — the manifest accuses both the map's index entry and its
+    disagreement with the issuer's accepted map."""
+    artifact = synthetic_artifact_hashes(digest(b"bytes-nobody-served"))
+    out = manifest_call(artifact_hashes=artifact)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_bundle_mismatch",
+                               "artifact_index_digest_mismatch"]
+
+
+def test_reader_map_must_equal_issuer_accepted_map():
+    """MUTATION PIN (map drift).  The reader's raw asset hashes and the
+    issuer's accepted bundle hashes must agree entry-for-entry: one drifted
+    asset is a different bundle, not a settled one."""
+    artifact = synthetic_artifact_hashes(digest(index_bytes()))
+    artifact["theme_state"] = digest(b"a-theme-state-the-issuer-never-accepted")
+    out = manifest_call(artifact_hashes=artifact)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["artifact_bundle_mismatch"]
+
+
+def test_issuer_accepted_map_must_agree_with_receipt_index():
+    """MUTATION PIN (issuer vs receipt).  The accepted bundle's index hash and
+    the accepted receipt's index hash are both issuer claims about the SAME
+    bundle; disagreement is a loud PENDING, never settled through."""
+    drift = synthetic_artifact_hashes(digest(b"an-index-the-receipt-never-accepted"))
+    out = manifest_call(
+        artifact_hashes=drift,
+        accepted_bundle=synthetic_accepted_bundle(drift),
+        health_kw={"index_sha256": digest(b"the-receipts-own-index")},
+    )
+    assert out["status"] == "PENDING"
+    assert "bundle_index_digest_mismatch" in out["failures"]
+
+
+def test_missing_accepted_bundle_reference_is_pending():
+    """MUTATION PIN (missing trusted reference, issuer side).  Without the
+    source-issued accepted bundle reference there is no bundle identity to
+    bind to — the reader's own hash map alone cannot manufacture one."""
+    out = manifest_call(accepted_bundle=None)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["accepted_bundle_missing"]
+
+
+def test_missing_reader_proof_is_pending():
+    """MUTATION PIN (missing trusted reference, reader side).  Without the
+    reader-served bundle identity there is no proof production served the
+    accepted bundle — settlement waits."""
+    out = manifest_call(reader_proof=None)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["reader_proof_missing"]
+
+
+@pytest.mark.parametrize("bundle_over", [
+    {"bundle_id": ""},
+    {"bundle_id": "not a single token"},
+    {"bundle_id": 1761891063},
+    {"board_definition": ""},
+    {"board_definition": None},
+    {"candidate_count": -1},
+    {"candidate_count": "7"},
+    {"candidate_count": True},        # bool is an int subclass — not a count
+    {"candidate_count": None},
+    {"artifact_hashes": {"index": digest(index_bytes())}},   # not the full set
+    {"artifact_hashes": "not-a-mapping"},
+    {"artifact_hashes": {**synthetic_artifact_hashes(digest(index_bytes())),
+                         "extra": digest(b"x")}},
+])
+def test_accepted_bundle_reference_shape_is_enforced(bundle_over):
+    """The source-issued reference must carry the §18.2 identity fields and
+    exactly the four frozen asset entries; any defect accuses the
+    REFERENCE, not the reader's own map."""
+    bundle = synthetic_accepted_bundle(synthetic_artifact_hashes(digest(index_bytes())))
+    bundle.update(bundle_over)
+    out = manifest_call(accepted_bundle=bundle)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["accepted_bundle_malformed"]
+
+
+@pytest.mark.parametrize("proof, expected", [
+    (None, "reader_proof_missing"),
+    ("the reader looked", "reader_proof_malformed"),
+    ({"served_bundle_id": None}, "reader_proof_malformed"),
+    ({"served_bundle_id": ""}, "reader_proof_malformed"),
+    ({"served_bundle_id": "has spaces"}, "reader_proof_malformed"),
+    ({"served_bundle_id": 7}, "reader_proof_malformed"),
+])
+def test_reader_proof_shape_is_enforced(proof, expected):
+    out = manifest_call(reader_proof=proof)
+    assert out["status"] == "PENDING"
+    assert out["failures"] == [expected]
+
+
+def test_bundle_ids_must_agree():
+    """MUTATION PIN (mismatched bundle IDs).  The issuer's accepted bundle
+    identity and the reader's served bundle identity are two independent
+    claims; settlement requires them to name the same bundle."""
+    out = manifest_call(reader_proof=synthetic_reader_proof(
+        bundle_id=SYNTH_OTHER_BUNDLE_ID))
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["bundle_id_mismatch"]
+
+
+def test_bundle_id_may_not_be_the_receipt_checkpoint():
+    """MUTATION PIN (no silent conflation).  The receipt's ``checkpoint`` is
+    the source git archive commit — a different identity from the published
+    bundle.  An accepted bundle whose ``bundle_id`` IS the checkpoint string
+    is the checkpoint/bundle conflation defect itself and stays PENDING; the
+    projection never borrows the checkpoint as a bundle identity."""
+    out = manifest_call(
+        accepted_bundle=synthetic_accepted_bundle(
+            synthetic_artifact_hashes(digest(index_bytes())), bundle_id=CHECKPOINT),
+        reader_proof=synthetic_reader_proof(bundle_id=CHECKPOINT),
+    )
+    assert out["status"] == "PENDING"
+    assert out["failures"] == ["bundle_id_checkpoint_conflated"]
+
+
+def test_synthetic_explicit_accepted_read_is_the_only_settled_shape():
+    """The §18.2 settled shape, end to end, with ALL binding evidence
+    EXPLICIT: the full four-asset raw hash map, the source-issued accepted
+    bundle reference (bundle_id, board_definition, candidate_count, artifact
+    hashes), and a reader-served bundle identity naming the same bundle.
+
+    The identities and hashes are SYNTHETIC TEST FIXTURES (see the constants
+    above) — this test proves the projection accepts a well-formed accepted
+    read; it is NOT production proof that any real session settled."""
+    served, health = evidence()
+    artifact = synthetic_artifact_hashes(digest(served))
+    out = MAN.project_settlement_manifest(
+        owed_session=FRI, accepted_health=health, served_index_bytes=served,
+        reader_observed_at=READ_AT, computed_at=COMPUTED_AT,
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof(),
+    )
+    assert out["status"] == "SETTLED"
+    assert out["failures"] == []
+    assert out["artifact_hashes"] == artifact
+
+
+def test_artifact_hashes_omitted_is_pending_not_settled():
+    """MUTATION PIN (artifact_hashes=None default).  Omitting the map is not
+    neutrality — it is missing bundle evidence, typed and fail closed."""
+    out = manifest_call(artifact_hashes=None)
+    assert out["artifact_hashes"] is None
+    assert "artifact_hashes_unqualified" not in out["failures"]
+    assert "artifact_hashes_missing" in out["failures"]
+    assert out["status"] == "PENDING"
 
 
 # ═══════════════════════ public safety ═══════════════════════════════════════
@@ -487,12 +780,16 @@ def test_artifact_hashes_omitted_stays_none():
 def test_no_leaks_in_envelope():
     """Preserve DEC:B1-PROPHET-PUBLIC-SPLIT hygiene: the manifest may accuse,
     but it may not echo.  No paths, no plan book, no board bytes — even when
-    the served bytes and receipt carry them in plain sight."""
+    the served bytes, receipt and accepted bundle reference carry them in
+    plain sight."""
     served = index_bytes()
+    artifact = synthetic_artifact_hashes(digest(served))
     out = manifest_call(
         served_index_bytes=served,
         accepted_health=health_receipt(index_sha256=digest(served)),
-        artifact_hashes={"index": digest(served)},
+        artifact_hashes=artifact,
+        accepted_bundle=synthetic_accepted_bundle(artifact),
+        reader_proof=synthetic_reader_proof(),
         computed_at=COMPUTED_AT,
     )
     text = json.dumps(out)
@@ -606,7 +903,47 @@ def test_failure_vocabulary_is_closed_and_fully_exercised():
         ({"index_kw": {"source_delayed": True}}, {"source_delayed"}),
         ({"index_kw": {"source_unknown": True}}, {"source_unknown"}),
         ({"index_kw": {"source_mixed_vintage": True}}, {"source_mixed_vintage"}),
-        ({"artifact_hashes": {"index": "nope"}}, {"artifact_hashes_unqualified"}),
+        ({"artifact_hashes": {"index": "nope"}},
+         {"artifact_hashes_unqualified", "artifact_bundle_incomplete"}),
+        ({"artifact_hashes": None}, {"artifact_hashes_missing"}),
+        ({"artifact_hashes": {"index": digest(index_bytes())}},
+         {"artifact_bundle_incomplete"}),
+        ({"artifact_hashes": {**synthetic_artifact_hashes(digest(index_bytes())),
+                              "unrelated": digest(b"unrelated-bytes")}},
+         {"artifact_bundle_unrecognized_entry"}),
+        ({"artifact_hashes": {**synthetic_artifact_hashes(digest(index_bytes())),
+                              "board": "NOTAHASH"}},
+         {"artifact_hashes_unqualified"}),
+        ({"accepted_bundle": None}, {"accepted_bundle_missing"}),
+        ({"accepted_bundle": "the receipt says so"}, {"accepted_bundle_malformed"}),
+        ({"accepted_bundle": synthetic_accepted_bundle(
+            synthetic_artifact_hashes(digest(index_bytes())), bundle_id="")},
+         {"accepted_bundle_malformed"}),
+        ({"accepted_bundle": {**synthetic_accepted_bundle(
+            synthetic_artifact_hashes(digest(index_bytes()))),
+            "artifact_hashes": {"index": digest(index_bytes())}}},
+         {"accepted_bundle_malformed"}),
+        ({"reader_proof": None}, {"reader_proof_missing"}),
+        ({"reader_proof": {"served_bundle_id": "has spaces"}},
+         {"reader_proof_malformed"}),
+        ({"reader_proof": synthetic_reader_proof(bundle_id=SYNTH_OTHER_BUNDLE_ID)},
+         {"bundle_id_mismatch"}),
+        ({"artifact_hashes": {**synthetic_artifact_hashes(digest(index_bytes())),
+                              "theme_state": digest(b"drifted-theme-state")}},
+         {"artifact_bundle_mismatch"}),
+        ({"artifact_hashes": {**synthetic_artifact_hashes(digest(index_bytes())),
+                              "index": digest(b"not-the-served-bytes")}},
+         {"artifact_bundle_mismatch", "artifact_index_digest_mismatch"}),
+        ({"artifact_hashes": synthetic_artifact_hashes(digest(b"drifted-index-bytes")),
+          "accepted_bundle": synthetic_accepted_bundle(
+              synthetic_artifact_hashes(digest(b"drifted-index-bytes"))),
+          "health_kw": {"index_sha256": digest(b"a-third-bundle")}},
+         {"served_digest_mismatch", "artifact_index_digest_mismatch",
+          "bundle_index_digest_mismatch"}),
+        ({"accepted_bundle": synthetic_accepted_bundle(
+            synthetic_artifact_hashes(digest(index_bytes())), bundle_id=CHECKPOINT),
+          "reader_proof": synthetic_reader_proof(bundle_id=CHECKPOINT)},
+         {"bundle_id_checkpoint_conflated"}),
     ]
     seen: set[str] = set()
     for over, expected in battery:

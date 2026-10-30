@@ -88,6 +88,25 @@ def test_missing_computed_clock_withholds_settlement():
     assert _measure(raw, health=_health(raw, asof="2026-10-30"))["status"] != "SETTLED"
 
 
+def test_green_read_without_bundle_evidence_stays_pending_typed():
+    """MUTATION PIN (the reproduced false green, at the read model).  A fully
+    green read — owed session fresh, receipt digest bound to the exact served
+    bytes, qualified reader and compute clocks, clean vintage flags — used to
+    read SETTLED with ``artifact_hashes`` null, because the read model binds
+    no §18.2 full-bundle evidence.  Fail closed: the verdict is PENDING and
+    the typed missing-evidence codes name exactly what the acceptance side
+    (source-issued accepted bundle reference + reader served identity) must
+    inject before SETTLED is reachable.  Nothing here is production proof."""
+    raw = _served("2026-10-30")
+    report = _measure(raw, health=_health(raw, asof="2026-10-30"))
+    assert report["status"] == "PENDING"
+    assert "artifact_hashes_missing" in report["failures"]
+    assert "accepted_bundle_missing" in report["failures"]
+    assert "reader_proof_missing" in report["failures"]
+    assert report["artifact_hashes"] is None
+    assert "PAID-PRIVATE-PLAN" not in json.dumps(report)
+
+
 def test_public_report_projects_only_allowlisted_health_metadata():
     private = {
         "generated_at": NOW.isoformat(),

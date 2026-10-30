@@ -35,15 +35,47 @@ this module returns ``SETTLED`` if and only if ALL of:
     ``false`` — an absent or null flag is NOT proven clean and fails closed;
   * the receipt itself is the accepted shape (schema, qualified 64-hex
     lowercase ``index_sha256``, qualified UTC ``published_at``, non-empty
-    ``checkpoint``).
+    ``checkpoint``);
+  * the §18.2 accepted build bundle is proven as a WHOLE and BOUND: the
+    caller supplies the full four-asset raw hash map (``candidate_store``,
+    ``board``, ``index``, ``theme_state``) whose ``index`` entry hashes the
+    exact served bytes, a SOURCE-ISSUED accepted bundle reference
+    (``accepted_bundle``: ``bundle_id``, ``board_definition``,
+    ``candidate_count``, and the issuer's own four-asset hash map), and the
+    reader-served bundle identity (``reader_proof.served_bundle_id``) — and
+    all three agree: reader map == issuer map, issuer index hash ==
+    receipt ``index_sha256``, issuer ``bundle_id`` == reader
+    ``served_bundle_id``.
+
+BUNDLE BINDING LAW (§18.2, fail closed).  The multi-asset binding is never
+inferred.  A single index hash — however exactly it matches the accepted
+receipt — proves one asset, not the accepted bundle; the projection will not
+reconstruct the remaining assets, and a map carrying entries outside the
+frozen four is not the bundle either.  The bundle identity is injected
+issuer/reader evidence: the projection never mints one (an id it computed
+itself — from the served bytes, the receipt, anything — would manufacture
+the very attestation it is supposed to judge), and it never borrows the
+receipt's ``checkpoint``, which is the source git archive commit, a
+different identity from the published bundle.  An injected ``bundle_id``
+equal to the receipt checkpoint is the conflation defect itself and stays
+PENDING.
+
+ACCEPTANCE-SIDE HANDOFF.  Until the publisher/readers actually issue the
+accepted bundle reference and the served-identity proof, callers that bind
+no bundle evidence — the incumbent sentinel read model
+``project_prophet_settlement_from_reads`` among them — get ``PENDING`` with
+typed missing-evidence codes even when every other gate is green.  That is
+deliberate: it closes the reproduced false green in which a settled verdict
+was reachable with ``artifact_hashes`` null.
 
 Anything less is ``PENDING`` (judged, not settled) or ``UNAVAILABLE_DATA``
 (blind).  Blindness is reserved for what the sentinel calls INDETERMINATE
 (a read that could not be made: no bytes, unparseable bytes, no receipt) or a
 malformed ``owed_session`` (nothing can be owed).  A definitive read of a wrong
-artifact (schema mismatch, digest mismatch, stale source) is a JUDGED failure —
-``PENDING`` — never blindness.  Missing reader clock and missing receipt hash
-fail closed: neither can ever be inferred.
+artifact (schema mismatch, digest mismatch, stale source, incomplete or
+mismatched bundle binding) is a JUDGED failure — ``PENDING`` — never
+blindness.  Missing reader clock, missing receipt hash and missing bundle
+evidence fail closed: none of them can ever be inferred.
 
 OWNER BINDING — why the interface takes evidence, not endpoints.  This module
 performs NO I/O: the caller supplies (a) the exact production-served bytes,
@@ -92,6 +124,7 @@ __all__ = [
     "FAILURE_CODES",
     "MANIFEST_FIELDS",
     "VINTAGE_FLAGS",
+    "REQUIRED_BUNDLE_ARTIFACT_KEYS",
     "project_settlement_manifest",
 ]
 
@@ -107,6 +140,22 @@ STATUS_UNAVAILABLE_DATA = "UNAVAILABLE_DATA"
 #: to prove a single-vintage, non-delayed, known-source read.  The failure code
 #: IS the field name — the manifest accuses the field, not a paraphrase.
 VINTAGE_FLAGS = ("source_delayed", "source_unknown", "source_mixed_vintage")
+
+#: §18.2 frozen accepted build bundle: exactly these four raw asset hashes.
+#: No fewer (a subset is not the bundle) and no others (an unrelated entry is
+#: not part of the accepted bundle either).
+REQUIRED_BUNDLE_ARTIFACT_KEYS = (
+    "board",
+    "candidate_store",
+    "index",
+    "theme_state",
+)
+_REQUIRED_BUNDLE_KEYS = frozenset(REQUIRED_BUNDLE_ARTIFACT_KEYS)
+
+#: A source-issued opaque bundle identity is a bounded single token.  The
+#: bound is a sanity envelope, not a format claim: the projection judges
+#: injected identity strings, it never mints or parses them.
+_MAX_BUNDLE_ID_LEN = 128
 
 # ── typed failure vocabulary (closed; no paths, no secrets, no hosts) ────────
 
@@ -131,6 +180,18 @@ FAILURE_PUBLISHED_AT_MISSING = "published_at_missing"
 FAILURE_PUBLISHED_AT_UNQUALIFIED = "published_at_unqualified"
 FAILURE_CHECKPOINT_MISSING = "checkpoint_missing"
 FAILURE_ARTIFACT_HASHES_UNQUALIFIED = "artifact_hashes_unqualified"
+FAILURE_ARTIFACT_HASHES_MISSING = "artifact_hashes_missing"
+FAILURE_ARTIFACT_BUNDLE_INCOMPLETE = "artifact_bundle_incomplete"
+FAILURE_ARTIFACT_BUNDLE_UNRECOGNIZED_ENTRY = "artifact_bundle_unrecognized_entry"
+FAILURE_ARTIFACT_INDEX_DIGEST_MISMATCH = "artifact_index_digest_mismatch"
+FAILURE_ARTIFACT_BUNDLE_MISMATCH = "artifact_bundle_mismatch"
+FAILURE_ACCEPTED_BUNDLE_MISSING = "accepted_bundle_missing"
+FAILURE_ACCEPTED_BUNDLE_MALFORMED = "accepted_bundle_malformed"
+FAILURE_READER_PROOF_MISSING = "reader_proof_missing"
+FAILURE_READER_PROOF_MALFORMED = "reader_proof_malformed"
+FAILURE_BUNDLE_ID_MISMATCH = "bundle_id_mismatch"
+FAILURE_BUNDLE_INDEX_DIGEST_MISMATCH = "bundle_index_digest_mismatch"
+FAILURE_BUNDLE_ID_CHECKPOINT_CONFLATED = "bundle_id_checkpoint_conflated"
 
 FAILURE_CODES = frozenset(
     {
@@ -156,6 +217,18 @@ FAILURE_CODES = frozenset(
         FAILURE_CHECKPOINT_MISSING,
         *VINTAGE_FLAGS,
         FAILURE_ARTIFACT_HASHES_UNQUALIFIED,
+        FAILURE_ARTIFACT_HASHES_MISSING,
+        FAILURE_ARTIFACT_BUNDLE_INCOMPLETE,
+        FAILURE_ARTIFACT_BUNDLE_UNRECOGNIZED_ENTRY,
+        FAILURE_ARTIFACT_INDEX_DIGEST_MISMATCH,
+        FAILURE_ARTIFACT_BUNDLE_MISMATCH,
+        FAILURE_ACCEPTED_BUNDLE_MISSING,
+        FAILURE_ACCEPTED_BUNDLE_MALFORMED,
+        FAILURE_READER_PROOF_MISSING,
+        FAILURE_READER_PROOF_MALFORMED,
+        FAILURE_BUNDLE_ID_MISMATCH,
+        FAILURE_BUNDLE_INDEX_DIGEST_MISMATCH,
+        FAILURE_BUNDLE_ID_CHECKPOINT_CONFLATED,
     }
 )
 
@@ -222,6 +295,23 @@ def _load_served_index(raw: bytes) -> dict | None:
     return payload if isinstance(payload, dict) else None
 
 
+def _qualified_bundle_identity(value: object) -> bool:
+    """True for a non-empty, whitespace-free, bounded identity token.
+
+    The projection only JUDGES injected identities; it never builds one.  A
+    bundle id computed here — from the served bytes, the receipt, or anything
+    else — would be a self-minted attestation, which is exactly what a
+    settlement manifest must not manufacture (§18.2 bundle identity is
+    source-issued evidence).
+    """
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and len(value) <= _MAX_BUNDLE_ID_LEN
+        and value.split() == [value]
+    )
+
+
 def project_settlement_manifest(
     *,
     owed_session: str,
@@ -230,12 +320,20 @@ def project_settlement_manifest(
     reader_observed_at: str | None,
     artifact_hashes: Mapping[str, str] | None = None,
     computed_at: str | None = None,
+    accepted_bundle: Mapping | None = None,
+    reader_proof: Mapping | None = None,
 ) -> dict:
     """Project the ``prophet.settlement_manifest/v1`` settlement envelope.
 
     Every input is EVIDENCE the caller already lawfully holds: the exact bytes
     production serves for ``prophet/index.json``, the caller's own read clock,
-    and the accepted publisher receipt.  See the module docstring for the
+    the accepted publisher receipt, and — required for SETTLED since the §18.2
+    binding law — the full four-asset raw hash map (``artifact_hashes``), the
+    SOURCE-ISSUED accepted bundle reference (``accepted_bundle``: bundle_id,
+    board_definition, candidate_count, artifact_hashes) and the reader-served
+    bundle identity (``reader_proof``: served_bundle_id).  None of that is
+    ever inferred or minted here; absent binding evidence is a typed PENDING,
+    even with every other gate green.  See the module docstring for the
     SETTLED contract, the blindness boundary and the owner binding.  Pure:
     no I/O, no clock, no state; identical inputs give an identical envelope.
     """
@@ -349,21 +447,125 @@ def project_settlement_manifest(
     else:
         failures.add(FAILURE_COMPUTED_AT_UNQUALIFIED)
 
-    # ── accepted build-bundle artifact hashes: qualified entries only ───────
+    # ── §18.2 accepted build bundle: the full raw-asset map, bound ──────────
+    # The bundle is proven as a WHOLE or not at all: the reader-side map must
+    # be complete and well-formed, its index entry must hash the exact served
+    # bytes, and it must equal the issuer's accepted map entry-for-entry.  A
+    # matching index hash alone proves one asset — never the bundle — and is
+    # never promoted into one.
     manifest_hashes: dict[str, str] | None = None
-    if artifact_hashes is not None:
+    caller_map_qualified = False
+    if artifact_hashes is None:
+        failures.add(FAILURE_ARTIFACT_HASHES_MISSING)
+    elif not isinstance(artifact_hashes, Mapping):
+        failures.add(FAILURE_ARTIFACT_HASHES_UNQUALIFIED)
+    else:
         manifest_hashes = {}
-        if isinstance(artifact_hashes, Mapping):
-            for name, value in artifact_hashes.items():
+        entries_qualified = True
+        for name, value in artifact_hashes.items():
+            if isinstance(name, str) and name \
+                    and isinstance(value, str) \
+                    and _SHA256_RE.fullmatch(value):
+                manifest_hashes[name] = value
+            else:
+                entries_qualified = False
+                failures.add(FAILURE_ARTIFACT_HASHES_UNQUALIFIED)
+        manifest_hashes = dict(sorted(manifest_hashes.items()))
+        raw_keys = {name for name in artifact_hashes
+                    if isinstance(name, str) and name}
+        missing = _REQUIRED_BUNDLE_KEYS - raw_keys
+        unknown = raw_keys - _REQUIRED_BUNDLE_KEYS
+        if missing:
+            failures.add(FAILURE_ARTIFACT_BUNDLE_INCOMPLETE)
+        if unknown:
+            failures.add(FAILURE_ARTIFACT_BUNDLE_UNRECOGNIZED_ENTRY)
+        caller_map_qualified = entries_qualified and not missing and not unknown
+        index_entry = manifest_hashes.get("index")
+        if index_entry is not None and served_digest is not None \
+                and index_entry != served_digest:
+            failures.add(FAILURE_ARTIFACT_INDEX_DIGEST_MISMATCH)
+
+    # ── source-issued accepted bundle reference (§18.2 publish identity) ────
+    # Injected evidence, never derived: the reference comes from the issuer of
+    # the accepted bundle.  Building one here — from the receipt, the served
+    # bytes or anything else — would manufacture authority the projection does
+    # not have, so absence is a typed PENDING and defects accuse the
+    # REFERENCE, not the reader's own map.
+    accepted_map: dict[str, str] | None = None
+    accepted_map_qualified = False
+    bundle_id: str | None = None
+    if accepted_bundle is None:
+        failures.add(FAILURE_ACCEPTED_BUNDLE_MISSING)
+    elif not isinstance(accepted_bundle, Mapping):
+        failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+    else:
+        candidate = accepted_bundle.get("bundle_id")
+        if _qualified_bundle_identity(candidate):
+            bundle_id = candidate
+        else:
+            failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+
+        candidate = accepted_bundle.get("board_definition")
+        if not (isinstance(candidate, str) and candidate):
+            failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+
+        candidate = accepted_bundle.get("candidate_count")
+        if not (isinstance(candidate, int)
+                and not isinstance(candidate, bool)
+                and candidate >= 0):
+            failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+
+        issuer_hashes = accepted_bundle.get("artifact_hashes")
+        if not isinstance(issuer_hashes, Mapping):
+            failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+        else:
+            accepted_map = {}
+            entries_qualified = True
+            for name, value in issuer_hashes.items():
                 if isinstance(name, str) and name \
                         and isinstance(value, str) \
                         and _SHA256_RE.fullmatch(value):
-                    manifest_hashes[name] = value
+                    accepted_map[name] = value
                 else:
-                    failures.add(FAILURE_ARTIFACT_HASHES_UNQUALIFIED)
+                    entries_qualified = False
+            if entries_qualified and set(accepted_map) == _REQUIRED_BUNDLE_KEYS:
+                accepted_map_qualified = True
+            else:
+                failures.add(FAILURE_ACCEPTED_BUNDLE_MALFORMED)
+
+    # ── reader-served bundle identity (§18.2 reader_proof.served_bundle_id) ─
+    served_bundle_id: str | None = None
+    if reader_proof is None:
+        failures.add(FAILURE_READER_PROOF_MISSING)
+    elif not isinstance(reader_proof, Mapping):
+        failures.add(FAILURE_READER_PROOF_MALFORMED)
+    else:
+        candidate = reader_proof.get("served_bundle_id")
+        if _qualified_bundle_identity(candidate):
+            served_bundle_id = candidate
         else:
-            failures.add(FAILURE_ARTIFACT_HASHES_UNQUALIFIED)
-        manifest_hashes = dict(sorted(manifest_hashes.items()))
+            failures.add(FAILURE_READER_PROOF_MALFORMED)
+
+    # ── accepted-bundle binding gates: reader read vs issuer vs receipt ─────
+    if bundle_id is not None and served_bundle_id is not None \
+            and bundle_id != served_bundle_id:
+        failures.add(FAILURE_BUNDLE_ID_MISMATCH)
+
+    if bundle_id is not None and checkpoint_text is not None \
+            and bundle_id == checkpoint_text:
+        # The receipt checkpoint is the source git archive commit — a
+        # different identity from the published bundle.  An identity equal to
+        # it is the checkpoint/bundle conflation defect itself, never a
+        # legitimate settled identity, and the projection never borrows it.
+        failures.add(FAILURE_BUNDLE_ID_CHECKPOINT_CONFLATED)
+
+    if caller_map_qualified and accepted_map_qualified \
+            and manifest_hashes != accepted_map:
+        failures.add(FAILURE_ARTIFACT_BUNDLE_MISMATCH)
+
+    if accepted_map_qualified and health_digest is not None \
+            and accepted_map.get("index") != health_digest:
+        failures.add(FAILURE_BUNDLE_INDEX_DIGEST_MISMATCH)
 
     # ── fold one status from the collected failures ─────────────────────────
     if failures & {
