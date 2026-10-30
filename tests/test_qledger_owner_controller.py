@@ -178,8 +178,24 @@ def original(loaded,previous,number):
     ctx=loaded.context;authority=loaded.gate.evidence.provider.authority
     fault=os.environ.get('QL_TEST_FAULT','positive')
     if previous is None:
-        loaded.gate.initial_checkout(lambda oid:child_git(authority,ctx.repo,'checkout','--quiet','-B','main',oid))
-        child_git(authority,ctx.repo,'update-ref','refs/remotes/origin/main',ctx.candidate_oid)
+        ref=loaded.gate.owner.target.accepted_ref
+        accepted=loaded.gate.owner.target.accepted_tip_oid
+        def actual_tip():
+            return subprocess.check_output(['git','-C',str(ctx.repo),'rev-parse','--verify',ref+'^{commit}']).strip().decode()
+        assert actual_tip()==accepted
+        def checkout_and_seed(oid):
+            # Preflight has completed and the real install HOLD is owned. A
+            # named-origin push deliberately updates its tracking ref here;
+            # setup must not rely on URL-push behavior across Git versions.
+            assert loaded.gate._mode=='install' and loaded.gate._hold_identity is not None
+            assert (ctx.owner_root/loaded.gate.HOLD).is_file() and actual_tip()==accepted
+            child_git(authority,ctx.repo,'checkout','--quiet','-B','main',oid)
+            child_git(authority,ctx.repo,'push','--quiet','origin',oid+':refs/heads/main')
+            assert actual_tip()==oid
+            child_git(authority,ctx.repo,'push','--quiet',TEST_REMOTE,oid+':refs/heads/main')
+            assert actual_tip()==oid
+        loaded.gate.initial_checkout(checkout_and_seed)
+        assert actual_tip()==ctx.candidate_oid
         child_git(authority,ctx.repo,'remote','set-url','origin',HTTPS_URL)
         # Only test-owned credentials are provisioned, never real secrets.
         child_git(authority,ctx.repo,'config',HTTPS_KEY,TEST_HEADER)
@@ -321,13 +337,12 @@ def controller_case(conversion_invocation,tmp_path,https_origin):
     owner.chmod(0o700);(owner/'producer-evidence').mkdir(mode=0o700)
     remote,url,cert,header,network=https_origin
     initial=owner/'initial-published.git';git(repo,'init','--bare','--quiet',str(initial));git(repo,'remote','add','origin',str(initial))
-    git(repo,'push','--quiet',str(initial),prepared.candidate.candidate_oid+':refs/heads/main')
-    git(repo,'push','--quiet',str(remote),prepared.candidate.candidate_oid+':refs/heads/main')
+    assert git(repo,'rev-parse','--verify',invocation.owner.target.accepted_ref+'^{commit}').decode()==invocation.owner.target.accepted_tip_oid
     bundle=owner/'bundle';files=set(bundle_files())|{'scripts/ci/qledger_owner_controller.py','scripts/ci/qledger_owner_evidence.py','scripts/ci/qledger_engine_publisher.py'}
     pins={name:put(bundle/name,(SOURCE/name).read_bytes()) for name in files}
     pins['scripts/build_allocation.py']=put(bundle/'scripts/build_allocation.py',ALLOCATION.encode())
     from urllib.parse import urlsplit
-    entry=OWNER_ENTRY+f'\nINITIAL_ORIGIN={sha256(str(initial).encode()).hexdigest()!r}\nNATIVE_ORIGIN={sha256(url.encode()).hexdigest()!r}\nHTTPS_URL={url!r}\nHTTPS_KEY={"http.https://"+urlsplit(url).netloc+"/.extraheader"!r}\nTEST_HEADER={"authorization: "+header!r}\nTEST_CA={str(cert)!r}\n'
+    entry=OWNER_ENTRY+f'\nINITIAL_ORIGIN={sha256(str(initial).encode()).hexdigest()!r}\nNATIVE_ORIGIN={sha256(url.encode()).hexdigest()!r}\nHTTPS_URL={url!r}\nHTTPS_KEY={"http.https://"+urlsplit(url).netloc+"/.extraheader"!r}\nTEST_HEADER={"authorization: "+header!r}\nTEST_CA={str(cert)!r}\nTEST_REMOTE={str(remote)!r}\n'
     pins['owner_entry.py']=put(bundle/'owner_entry.py',entry.encode())
     for name in ('templates/shared_shell_bridge.js','templates/shared_shell.css'):pins[name]=put(bundle/name,(SOURCE/name).read_bytes())
     assert len(pins)<=128
