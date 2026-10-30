@@ -473,6 +473,7 @@ SOURCE_HEADS = {
 def _rows():
     with CSV_PATH.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    assert len(rows) == len({r["id"] for r in rows}), "duplicate ledger IDs"
     return {r["id"]: r for r in rows}
 
 
@@ -515,6 +516,8 @@ def test_f04_two_row_reconciliation_preserves_unrelated_bytes_and_protected_fiel
     # P18.T1 is a notes/consumer correction, not capability, rights or authority promotion.
     # Baselines are the reviewed pre-correction f5d91f6c source, not the changed CSV.
     expected = {'MO-DELTA-004': '229fe985d194e31b0f1f5f819538890e21cc1ac13092aa2903f0c6c759e1f5f3', 'MO-PAID-024': '26d91c6eb4f69a759491653cebe553ca692b05e57b833fd0fc42bbcb5c708a06'}
+    # Exact reviewed df9 notes: retaining a refusal phrase cannot bless a contradictory append.
+    reviewed_notes = {'MO-DELTA-004': '33f7b9dcbc441ad342571d801c2ec2f68163d97f7c69de174afdc446c72009b6', 'MO-PAID-024': '730dff07947e141456578c29eb5bddf562c6468d14d660b6f09e4acf58aaf574'}
     allowed_notes = {"state_delta", "real_consumer", "missing_contract_or_proof",
                      "next_bounded_child", "adjudication_notes"}
     rows = _rows()
@@ -522,6 +525,8 @@ def test_f04_two_row_reconciliation_preserves_unrelated_bytes_and_protected_fiel
         allowed = allowed_notes | ({"real_producer"} if row_id == "MO-PAID-024" else set())
         protected = {key: value for key, value in rows[row_id].items() if key not in allowed}
         assert hashlib.sha256(json.dumps(protected, sort_keys=True).encode()).hexdigest() == digest, row_id
+        notes = {key: value for key, value in rows[row_id].items() if key in allowed}
+        assert hashlib.sha256(json.dumps(notes, sort_keys=True).encode()).hexdigest() == reviewed_notes[row_id], row_id
     untouched = b"".join(
         line for line in CSV_PATH.read_bytes().splitlines(keepends=True)
         if line.split(b",", 1)[0].decode() not in expected
