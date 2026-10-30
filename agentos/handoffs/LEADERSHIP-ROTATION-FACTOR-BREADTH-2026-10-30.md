@@ -407,3 +407,64 @@ selected leadership-rotation-contract test-pack result; repair any
 actual introduced fail within this same branch, then obtain lawful
 non-author review and next qualified real owner source adapter when
 GMI source/rights gate clears. No session/job is assumed running.
+
+
+## 2026-10-30 final P3 quality fence before one exact-head CI
+
+Follow-on P2 proof structure now includes `comparison_basis` with
+same `period_start/period_end`, explicit broad-market benchmark security ID,
+parent ID, RTH/overnight/session basis and price adjustment basis. Every
+member/parent/benchmark observation must match that complete window. Synthetic
+counterexamples test mismatches and unknown original period start; the
+bridge is still deliberately unqualified research preview.
+
+P3a source `engine/sector_theme_regime_comparison.py` with its tests
+compares multiple theme/sector previews only when their entire comparison
+basis matches. Identity maps preserve a separate unique `security_id`
+count and `issuer_id` count and disclose both across-group security overlap
+and issuer overlap, including separate share classes. Distinct overlapping
+theme membership is not independent corroboration. Malformed/forged
+issuer/security populations and numerical coverage fail closed. No ranking,
+customer publication, issuer-adjusted inference or trading authority.
+
+P3b source `engine/sector_theme_regime_timeline.py` with its tests
+reads *already retained* ordered owner-preview rows, never creates a new
+history, schedule, event, watcher or original issuer. Its common-member
+positive-return and uptrend state flips reuse incumbent
+`breadth_change`. Missing member coverage and changed membership
+revisions do not become true flips. Breadth trend only claimed when
+`[lower_after-upper_before,upper_after-lower_before]` identifies a strict
+direction. Sliding-window RS is labeled **level change, not acceleration**.
+The consumer explicitly disclaims original-vintage authentication and
+absence of upstream lookahead. No production metric or forecast proof.
+
+Final scoped static hardening:
+- Group scanner checks nested `universe` structure, bounded measured
+  return count and complete securities before outputting a row.
+- Timeline refuses malformed `evidence`, constituent types and
+  incomplete member maps before computing paired flips.
+- Group-flow consumer refuses missing/forged authority structure rather
+  than raising on it.
+- Matching regression tests added in each existing new suite, no waivers.
+- Existing `.github/ci/legacy-jobs.yml` leadership-rotation-contract
+  code job now owns and executes all new suites once selected.
+
+Last code/test source edit BEFORE this note:
+`9052d146b787b005124f6c0d5e8fb0a11041397c`.
+This handoff update advances the same draft branch. After it, fetch
+the **exact current PR #10213 head** and its queued/in-progress CI and
+fences. **Only the prior P1/P1a 134-pass earlier-head result was
+observed actually passing.** New P2/P3 suites are source-only until the
+current complete test pack returns; no independent review was accepted,
+no merge, real feed, valid GMI source entitlement or browser acceptance
+proven. Original Fabric manual review denied
+`MANUAL_ROUTE_UNAVAILABLE/retry_allowed=false`; never cross-route
+replay that action. Paper SSE 429 is transport, not design acceptance.
+
+Next critical step: inspect actual exact-head CI and repair failing suites
+on THIS PR only if they exist. Then lawful independent non-author review
+and original source owner rights/vintage qualification for one U.S.
+theme; keep customer/trade/alert/predictive authority false.
+Project root mission remains **MORE_WORK_EXISTS**, with held lanes not
+mistaken for completed product. Do not restart main's W1–W5 or bypass
+GMI W3B/W3C and Terminal #868 explicit source/effect holds.
