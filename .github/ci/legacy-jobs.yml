@@ -19467,6 +19467,7 @@ jobs:
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
+      - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
