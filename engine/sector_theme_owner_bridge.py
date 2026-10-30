@@ -210,6 +210,7 @@ def preview_us_theme_packet(packet: object) -> dict:
     ):
         return _held("original_membership_receipt_not_authenticated_here")
     identity_ids: dict[str, str] = {}
+    security_issuer_ids: dict[str, str] = {}
     for ticker in members:
         record = identities.get(ticker)
         if (not isinstance(record, Mapping)
@@ -223,6 +224,7 @@ def preview_us_theme_packet(packet: object) -> dict:
         if mode == "PIT_AS_KNOWN" and identity_clock > end:
             return _held("future_identity_for_pit")
         identity_ids[ticker] = record["security_id"]
+        security_issuer_ids[record["security_id"]] = record["issuer_id"]
     if len(set(identity_ids.values())) != len(members):
         return _held("duplicate_canonical_security")
     rows = market.get("member_rows")
@@ -305,6 +307,10 @@ def preview_us_theme_packet(packet: object) -> dict:
         },
         "known_member_tickers": len(members),
         "expected_security_ids": list(sorted(identity_ids.values())),
+        "issuer_by_security_id": {
+            sec: security_issuer_ids[sec] for sec in sorted(security_issuer_ids)
+        },
+        "unique_issuer_n": len(set(security_issuer_ids.values())),
         "frame": frame,
         "fingerprint": fp,
         "explanation": explain_regime_preview(fp),
