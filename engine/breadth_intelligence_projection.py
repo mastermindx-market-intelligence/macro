@@ -151,6 +151,12 @@ def project_groups(
                                eligible_n=N, observed_n=n, **kw))
             continue
         levels = {m: dict(thresholds_by_symbol[m]) for m in valid_symbols}
+        # Existing counter uses non-None for MA/52w denominator admission.
+        # Invalid source levels must not become negative votes on MA breadth.
+        for m, th in levels.items():
+            for field in ("ma50", "ma200", "hi52", "lo52"):
+                if not _finite_positive(th.get(field)):
+                    th[field] = None
         prices = {m: last_by_symbol[m] for m in valid_symbols}
         counter = aggregate_tier(group_id, group_id, {"en": name, "zh": name}, levels, prices)
         adv, dec, unch = (counter[k] for k in ("adv", "dec", "unch"))
