@@ -217,47 +217,48 @@ waves:
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
     status: in_progress
     next_action: >
-      A2 FULL-BUNDLE FALSE-GREEN CORRECTION COMMITTED 2026-10-30;
-      FULL PRODUCTION SETTLEMENT STILL UNPROVEN. Preserve original
-      Macro Draft #10202 at exact head
-      2ea0bf0b213242ff06472f18306dbdb059443fa9 (prior
-      93e1de8028301ac1917088df9a6f2f3954b25ffc code CI and
-      independent source/artifact proof remain a DO_NOT_REDO historical
-      acceptance, not proof of the new semantic change). Original Fabric
-      patch worker prophet-v4-a2-failclosed-full-bundle-proof-patch-20261030-01
-      returned terminal rc0, response_sha256
-      1e9f0d6263a529c9e31db2abcb3b47e5d6b985078dcea49054efbda86a1166d8;
-      three verified source/test blobs were integrated on the same
-      branch. This fixes index-only SETTLED with null artifact hashes:
-      now requires full source-issued four-asset digest map, accepted
-      bundle_id/board_definition/candidate_count, and matching
-      reader_proof.served_bundle_id or status PENDING. 210 tests
-      passed in a fresh exact-commit checkout, no tracked mutation;
-      see #10202 issue comment 6533159927. Current-head hosted
-      CI 41125933425 and fences 41125933453 automatically started;
-      fences SUCCESS, full CI PENDING at checkpoint, consume its
-      existing run and repair only genuine failures. A distinct
-      nonauthor Fabric reviewer prophet-v4-a2-bundle-failclosed-independent-review-20261030-01
-      (root 6adce1ef-c13c-83e9-9510-983a2249a6a0) was started
-      at exact 2ea0bf0b; consume verdict; prior cf84 SOURCE_PASS
-      does not approve this semantic change. Genuine producer clock
-      lives on separate Macro Draft #10209 at exact da3a04518f13695339ab54421e3894632d3b6ba4,
-      full hosted CI 41110624274 SUCCESS and distinct
-      independent nonauthor SOURCE_PASS, with NO merge/deploy.
-      Records Draft #10174 former head 03320189 CI 41088771066
-      SUCCESS after failed-jobs-only attempt 2; original graph
-      remains 30 waves. Frozen board source SHA at checkpoint
-      913d6c16 matched the archived input blob and the index raw
-      hash matched the public R2 health receipt, but no accepted
-      candidate/board/theme full bundle_id or protected live reader
-      proof was established. Current public staleness output lacks
-      A2 settlement (not deployed). Next after code CI/review:
-      owner-coordinate actual issuer-accepted bundle, same-identity
-      reader attestation, incumbent availability rescue/liveness
-      read consumers and mutation/production proof without
-      duplicating A3 publisher, scheduler, trade control, or
-      private plan HTTP access. Both #10202 and #10209 stay
-      Draft/HOLD; NO self-approval, merge, deploy, or A2 closure.
+      2026-10-30 SUCCESSOR RECOVERY. Immutable A2 source Draft #10202
+      remains at 2ea0bf0b213242ff06472f18306dbdb059443fa9,
+      three source/test paths changed from previous 93e1de80.
+      Exact-head hosted CI 41125933425 is terminal GREEN:
+      ci-plan, contract-delta, all twelve packs and ci-gate SUCCESS;
+      fences 41125933453 fence-pack SUCCESS. Hosted ci-pack-4
+      job 124304950284 actually executed 83 A2 settlement tests,
+      83 passed in 2.98 seconds at 2026-10-30T21:08:26Z.
+      Fresh exact-commit isolated checkout previously passed 210.
+      Existing independent reviewer operation
+      prophet-v4-a2-bundle-failclosed-independent-review-20261030-01
+      returned TERMINAL rc0, response SHA256
+      acf970db43543724dd86e362b36b3da923e68f569f66cb8c477f9e7409,
+      no SETTLED bypass found, but explicitly UNVERIFIED because
+      hosted CI was in progress then. Do not upgrade its result
+      silently to SOURCE_PASS and do not treat it as a source defect.
+      One distinct post-CI independent read-only review was
+      commissioned as prophet-v4-a2-postci-source-independent-review-20261030-01
+      under the original Fabric root
+      6adce1ef-c13c-83e9-9510-983a2249a6a0, controller
+      created PID 19649; last observation ACTIVE_OR_WAITING,
+      worker START unproven. Consume and adjudicate its exact
+      terminal verdict; repair only a reproducible genuine blocker
+      with fresh CI and another distinct nonauthor review as required.
+      Genuine producer computed_at is separate Draft #10209 at
+      da3a04518f13695339ab54421e3894632d3b6ba4,
+      hosted CI 41110624274 and fences 41110623759 GREEN,
+      earlier independent source review SOURCE_PASS; not deployed.
+      Prior 93e/cf84 SOURCE_PASS and artifact proof are DO_NOT_REDO
+      historical evidence, not current-head semantic review.
+      Full accepted four-asset candidate_store/board/index/theme_state
+      source-issued bundle ID, qualified candidate_count and
+      board_definition, and protected served-bundle identity are NOT
+      actually emitted or attested on the current production path.
+      PENDING is the correct outcome, never live SETTLED.
+      Next owner-coordinate incumbent issuer/checkpoint and
+      protected VPS reader paths, then existing availability
+      liveness/rescue consumers and mutation/live proof.
+      Respect A3's distinct atomic publisher authority.
+      Keep #10174, #10202 and #10209 Draft/HOLD; no self-approval,
+      merge, deployment, public paid-index fetch or false closure.
+
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"

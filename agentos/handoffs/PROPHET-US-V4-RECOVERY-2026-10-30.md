@@ -98,14 +98,43 @@ verified:
       TERMINAL rc0, local unmerged patch SHA256 bada1256997d7789ed3a8b00cab608577764c2fdf1bba87e67ba66d716f30dcf;
       independent parent rerun 155 tests passed, no push/PR/deployment.
       A read-only liveness/rescue consumer-seam audit also returned terminal rc0.
+  - claim: A2 exact-current-head hosted CI and fenced regression execution are green.
+    command: >
+      GitHub actions/runs/41125933425/jobs and actions/runs/41125933453/jobs;
+      inspect full ci-pack-4 job 124304950284 log for the A2 suite.
+    result: >
+      On immutable #10202 2ea0bf0b, ci-plan, contract-delta,
+      all 12 ci-packs and ci-gate succeeded; fence-pack succeeded.
+      ci-pack-4 executed 83 settlement tests: 83 passed in 2.98s
+      at 2026-10-30T21:08:26Z. No failed or cancelled jobs;
+      trusted-ci skipped by design.
+  - claim: Original independent A2 bundle-failclosed reviewer returned without a code defect.
+    command: >
+      Fabric status/result for
+      prophet-v4-a2-bundle-failclosed-independent-review-20261030-01,
+      original root 6adce1ef-c13c-83e9-9510-983a2249a6a0.
+    result: >
+      TERMINAL rc0, result SHA256
+      acf970db43543724dd86e362b36b3da923e68f569f66cb8c477f9e7409.
+      Reviewer confirmed exact-head isolation, 210 local tests,
+      no SETTLED bypass, but verdict UNVERIFIED because CI was
+      nonterminal at review. This is not an unconditional SOURCE_PASS.
+  - claim: Producer-clock Draft source CI also remains fully green.
+    command: >
+      GitHub actions/runs/41110624274/jobs and 41110623759/jobs.
+    result: >
+      #10209 da3a0451 has ci-plan, contract-delta, twelve
+      ci-packs and ci-gate SUCCESS plus fence-pack SUCCESS,
+      but is unmerged and undeployed.
 unverified:
-  - claim: New A2 source head full hosted CI and nonauthor review.
+  - claim: Independent unqualified SOURCE_PASS on new A2 semantics at 2ea0bf0b.
     what_would_verify: >
-      Exact #10202 head 2ea0bf0b... GitHub CI run 41125933425
-      terminal ci-plan/contract-delta/all 12 packs/ci-gate SUCCESS,
-      fences 41125933453 SUCCESS, plus distinct Fabric independent
-      SOURCE_PASS on that immutable new semantic head. No prior
-      cf84/93e review substitution.
+      Post-CI distinct non-author Fabric reviewer
+      prophet-v4-a2-postci-source-independent-review-20261030-01
+      returns terminal exact-head SOURCE_PASS after inspecting
+      frozen complete bundle and protected-reader fail-closed semantics.
+      The original reviewer returned UNVERIFIED while CI was still running;
+      GitHub approval and real-path production proof remain separate.
   - claim: Full A2 source-to-protected-reader production settlement.
     what_would_verify: >
       Owner-issued genuine UTC computed_at in real Prophet producer,
@@ -128,25 +157,29 @@ unresolved:
     INVALID_ARGUMENT and retry_allowed false; no Fabric ACCEPTED claim.
 next_actions:
   - >
-    Consume existing #10202 current-head CI 41125933425 and fences
-    41125933453; adjudicate any real failure, preserve green
-    old-head CI evidence without borrowing it for new semantics.
+    Consume existing post-CI independent read-only Fabric review
+    prophet-v4-a2-postci-source-independent-review-20261030-01
+    (controller PID 19649), root
+    6adce1ef-c13c-83e9-9510-983a2249a6a0. Current status
+    ACTIVE_OR_WAITING, worker START unproven, no outcome asserted.
+    Reconcile the same operation, do not retry or duplicate;
+    repair only a demonstrated blocker under original #10202
+    exact-head write/effect gates and requalify changed semantics.
   - >
-    Consume exact independent Fabric review
-    prophet-v4-a2-bundle-failclosed-independent-review-20261030-01
-    on new head 2ea0bf0b; no duplicate reviewer, no self-approval,
-    maintain #10202 Draft/HOLD. Source tests 210 pass.
+    Coordinate incumbent accepted four-asset publication identity,
+    production producer-clock Draft #10209 and protected VPS
+    served-bundle reader attestation. Keep existing Availability
+    rescue/liveness consumers and A3 publication atomicity
+    under their separate owners; obtain live mutation/negative proof.
   - >
-    Preserve separate #10209 producer UTC clock full hosted green
-    and independent SOURCE_PASS without merge. Owner-coordinate
-    issuer-authentic accepted multi-asset bundle and protected
-    served-identity proof. Integrate existing availability
-    rescue/liveness consumers only under their owner and freeze A3.
+    Preserve #10202 and #10209 as Draft/HOLD. No self-approval,
+    merge, deployment, R2 private index disclosure or live SETTLED
+    claim; old 93e green and cf84 source review remain DO_NOT_REDO.
 do_not_redo:
   - Never replay Aug 14 A1 historical reconstruction or B1 canonical episode identity.
   - Do not duplicate source audit, original settlement builder, immutable
     Cursor/Grok semantic SOURCE_PASS, or independent artifact verification.
-  - Do not rerun exact-head green #10202 CI 41074236673 without a material head change.
+  - Do not rerun exact-head green #10202 CI 41074236673 or 41125933425 without a material head change.
   - Do not open a second A2 implementation PR or duplicate a publisher,
     rescue/watch scheduler, canonical state or control plane.
   - Do not self-approve, merge, deploy, read private plan index publicly
@@ -156,7 +189,7 @@ danger_areas:
   - A missing computed_at is not filled with re-stampable asof or recorded_at.
   - Public health metadata is allowed; the private plan/index is walled.
   - A builder or reviewer delivered result is not runtime acceptance or release.
-prs: [10174, 10176, 10180, 10202]
+prs: [10174, 10176, 10180, 10202, 10209]
 ---
 
 # Prophet US V4 — A2 settlement recovery continuation
@@ -231,3 +264,43 @@ Records #10174 prior CI 41088771066 completed success on attempt 2, after a
 GitHub transport transient. The material original A2 current-head and future
 gates are source-linked here; a new records-head CI may start for this update,
 but must not be conflated with the A2 source CI or prior records CI.
+
+## October 30 successor recovery — CI settled; exact-head nonauthor review remains open
+
+This successor recovered protected Mastermind procedure at
+`bb85b429f2ffffd38408080ce4df7d6378c34100` and assumed the
+responsible Sol role after the prior chat exhausted context.
+This does not take a live source lease or transfer a STARTed worker.
+
+At A2 semantic source `2ea0bf0b213242ff06472f18306dbdb059443fa9`,
+hosted CI [41125933425](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41125933425)
+completed success across all twelve packs, ci-plan, contract-delta,
+and terminal ci-gate. [Fences 41125933453](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41125933453)
+passed. The pack-4 log 124304950284 actually ran 83
+V4-A2 settlement tests, all passed in 2.98s. The earlier 210-test clean
+exact-commit fixture remains independent local evidence.
+No code defect was found to justify modifying either source Draft.
+
+Original Fabric review
+`prophet-v4-a2-bundle-failclosed-independent-review-20261030-01`
+returned terminal rc0, SHA256
+`acf970db43543724dd86e362b36b3da923e68f569f66cb8c477f9e7409`,
+with no SETTLED bypass but a conditional UNVERIFIED verdict due to
+nonterminal CI at that time. CI is now qualified, but the review is not
+retroactively relabeled SOURCE_PASS. One distinct post-CI read-only
+review operation
+`prophet-v4-a2-postci-source-independent-review-20261030-01`
+was commissioned under the original Fabric root. The controller
+was created (PID 19649); last status ACTIVE_OR_WAITING with no proven
+worker START or terminal result. Do not duplicate this operation.
+
+The prior read-only bundle audit analyzed older source `93e1de80`
+and documented the then-real null-artifact false-green. That problem is
+already addressed at `2ea0bf0b`, so its old suggested index-only
+repair is superseded and MUST NOT be reimplemented.
+`#10209` still holds genuine compute timestamp in a green, separate
+Draft. Neither source branch is merged or deployed. Current real issuer
+does not emit accepted full four-asset bundle identity and the protected
+reader has no attested same-bundle proof. True A2 production SETTLED
+therefore remains unproven; preserve PENDING and work through
+the existing publisher/read/rescue owners without duplicating A3.
