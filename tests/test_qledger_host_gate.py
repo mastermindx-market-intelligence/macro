@@ -824,8 +824,8 @@ def invoke(value,**ctx):
     return ctx['producer']()
 gate=SimpleNamespace(native_cycle=cycle,establish_native_anchor=anchor,candidate_oid='a'*40,
     invocation=SimpleNamespace(invoke_producer=invoke))
-loaded=LoadedBootstrap(gate,SimpleNamespace(build_producer=build),SimpleNamespace(callable=lambda value:value),
-    None,context,dict(producer_context=dict(operation_id='test-op',lane_id='test-lane',budget_id='test-budget',retention_id='test-retention')))
+loaded=LoadedBootstrap(gate,SimpleNamespace(build_producer=build),SimpleNamespace(callable=lambda value:value,check=lambda:None),
+    SimpleNamespace(check=lambda:None),context,dict(producer_context=dict(operation_id='test-op',lane_id='test-lane',budget_id='test-budget',retention_id='test-retention')))
 finalizer=NativePublicationFinalizer(origin_binding_sha256='b'*64,original_origin_inode=(1,2),original_attempt=1,original_max_attempts=20,original_alarm_seconds=420)
 if failure_phase:
     try:loaded.native_producer(owner_binding=binding,regions=('us',),native_intents={},publication=finalizer)

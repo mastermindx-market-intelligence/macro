@@ -371,6 +371,26 @@ class LoadedBootstrap:
         # Never publish a network generation expecting to borrow writer auth.
         _require('https_carrier' not in publication.original,
                  'native HTTPS installed-reader join is not qualified before production')
+        return self._native_cycle(owner_binding=owner_binding,regions=regions,native_intents=native_intents,
+                                  publication=publication,current_generation=current_generation,call=call)
+
+    def _native_cycle(self, *, owner_binding, regions, native_intents, publication,
+                      current_generation=None, call=None):
+        """Qualified owner composition only; private visibility grants nothing."""
+        self.deadline.check();self.bundle.check()
+        original=self.config['producer_context']
+        _require(type(original) is dict and set(original)=={'operation_id','lane_id','budget_id','retention_id'},
+                 'actual original native process context required')
+        publisher=importlib.import_module('scripts.ci.qledger_engine_publisher')
+        finalizer=self.bundle.callable(publisher.NativePublicationFinalizer)
+        _require(owner_binding is not None and type(publication) is finalizer
+                 and publication.pid==os.getpid(),'actual native owner/finalizer inputs required')
+        if 'https_carrier' in publication.original:
+            controller=importlib.import_module('scripts.ci.qledger_owner_controller')
+            evidence_type=self.bundle.callable(controller.OwnerEntryEvidence)
+            provider=self.gate.evidence.provider
+            _require(type(provider) is evidence_type,'qualified explicit owner controller required')
+            self.bundle.callable(provider._require_native_original)(self,owner_binding,publication)
         with self.gate.native_cycle(owner_binding,budget_id=original['budget_id'],retention_id=original['retention_id'],
                                    current_generation=current_generation):
             _require((owner_binding.operation_id,owner_binding.lane_id)==(original['operation_id'],original['lane_id']),
