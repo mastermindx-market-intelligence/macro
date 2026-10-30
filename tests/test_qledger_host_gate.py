@@ -768,9 +768,10 @@ def test_native_cycle_excludes_separate_gate_before_original(causal,fixture,monk
     assert (gate.root/gate.HOLD).exists()
 
 
-def test_native_bootstrap_routes_ex_and_refuses_network_gap_in_isolated_python():
-    # The real bootstrap refuses ordinary imports. Test the method routing in
-    # its required isolated interpreter; no flags or import guards are patched.
+@pytest.mark.parametrize('failure_phase', [None, 'anchor', 'build', 'callback'])
+def test_native_bootstrap_routes_ex_and_refuses_network_gap_in_isolated_python(failure_phase):
+    # Exercise the actual bootstrap-owned producer closure in its required
+    # isolated interpreter. These are test-owned boundaries, not admission.
     program=r"""
 import sys
 sys.path.insert(0,sys.argv[1])
@@ -779,26 +780,54 @@ from types import SimpleNamespace
 from scripts.ci.qledger_runner_bootstrap import LoadedBootstrap,BootstrapRefusal
 from scripts.ci.qledger_engine_publisher import NativePublicationFinalizer
 calls=[]
+failure_phase=sys.argv[2]
+failure=OSError('test-owned original boundary failure')
 binding=SimpleNamespace(operation_id='test-op',lane_id='test-lane')
+context=SimpleNamespace(original_deadline_monotonic_ns=123456789)
 @contextmanager
 def cycle(value,**ctx):
     assert value is binding
+    assert ctx==dict(budget_id='test-budget',retention_id='test-retention',current_generation=None)
     calls.append('EX')
     try:yield
     finally:calls.append('release')
-def build(context,**inputs):
-    assert calls==['EX'] and inputs['owner_binding'] is binding
+def anchor(**ctx):
+    assert calls==['EX','invoke']
+    assert ctx==dict(original_deadline_monotonic_ns=context.original_deadline_monotonic_ns)
+    calls.append('anchor')
+    if failure_phase=='anchor':raise failure
+def callback():
+    assert calls==['EX','invoke','anchor','build']
+    calls.append('callback')
+    if failure_phase=='callback':raise failure
+    return 'test-owned result'
+def build(actual_context,**inputs):
+    assert actual_context is context and calls==['EX','invoke','anchor']
+    assert inputs==dict(owner_binding=binding,regions=('us',),native_intents={},call=None,publication=finalizer)
     calls.append('build')
-    return binding,lambda:None
+    if failure_phase=='build':raise failure
+    return binding,callback
 def invoke(value,**ctx):
-    assert value is binding and calls==['EX','build']
-    calls.append('invoke');return 'test-owned result'
-gate=SimpleNamespace(native_cycle=cycle,candidate_oid='a'*40,invocation=SimpleNamespace(invoke_producer=invoke))
+    assert value is binding and calls==['EX']
+    assert ctx['gate'] is gate and ctx['installed_commit_oid']=='a'*40
+    assert ctx['budget_id']=='test-budget' and ctx['retention_id']=='test-retention'
+    assert set(ctx)=={'gate','installed_commit_oid','budget_id','retention_id','producer'}
+    calls.append('invoke')
+    return ctx['producer']()
+gate=SimpleNamespace(native_cycle=cycle,establish_native_anchor=anchor,candidate_oid='a'*40,
+    invocation=SimpleNamespace(invoke_producer=invoke))
 loaded=LoadedBootstrap(gate,SimpleNamespace(build_producer=build),SimpleNamespace(callable=lambda value:value),
-    None,SimpleNamespace(),dict(producer_context=dict(operation_id='test-op',lane_id='test-lane',budget_id='test-budget',retention_id='test-retention')))
+    None,context,dict(producer_context=dict(operation_id='test-op',lane_id='test-lane',budget_id='test-budget',retention_id='test-retention')))
 finalizer=NativePublicationFinalizer(origin_binding_sha256='b'*64,original_origin_inode=(1,2),original_attempt=1,original_max_attempts=20,original_alarm_seconds=420)
-assert loaded.native_producer(owner_binding=binding,regions=('us',),native_intents={},publication=finalizer)=='test-owned result'
-assert calls==['EX','build','invoke','release']
+if failure_phase:
+    try:loaded.native_producer(owner_binding=binding,regions=('us',),native_intents={},publication=finalizer)
+    except OSError as exc:assert exc is failure
+    else:raise AssertionError('original failure swallowed')
+    ordered=['EX','invoke','anchor','build','callback']
+    assert calls==ordered[:ordered.index(failure_phase)+1]+['release']
+else:
+    assert loaded.native_producer(owner_binding=binding,regions=('us',),native_intents={},publication=finalizer)=='test-owned result'
+    assert calls==['EX','invoke','anchor','build','callback','release']
 calls.clear()
 finalizer.original['https_carrier']=object()
 try:loaded.native_producer(owner_binding=binding,regions=('us',),native_intents={},publication=finalizer)
@@ -806,7 +835,7 @@ except BootstrapRefusal as exc:assert 'installed-reader join' in str(exc)
 else:raise AssertionError('unsupported carrier admitted')
 assert calls==[]
 """
-    child=subprocess.run([sys.executable,'-I','-c',program,str(Path(__file__).resolve().parents[1])],
+    child=subprocess.run([sys.executable,'-I','-c',program,str(Path(__file__).resolve().parents[1]),failure_phase or ''],
         capture_output=True,text=True,timeout=30)
     assert child.returncode==0,child.stderr
 
