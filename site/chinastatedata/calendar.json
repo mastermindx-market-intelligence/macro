@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-28",
-  "generated_at_utc": "2026-10-29T20:01:35.344260+00:00",
+  "asof": "2026-10-30",
+  "generated_at_utc": "2026-10-30T13:44:00.626409+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -15,30 +15,6 @@
       "source_class": "static",
       "source": "china_calendar.political_windows",
       "approx": true
-    },
-    {
-      "date": "2026-10-28",
-      "window_end": null,
-      "etype": "FOMC",
-      "label_en": "US FOMC decision",
-      "label_zh": "美联储 FOMC 决议",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-10-29",
-      "window_end": null,
-      "etype": "HKMA_RATE",
-      "label_en": "HKMA base rate (post-FOMC)",
-      "label_zh": "金管局基本利率（FOMC 次日）",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
     },
     {
       "date": "2026-10-30",

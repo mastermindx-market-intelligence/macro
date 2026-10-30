@@ -1,8 +1,8 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-10-29",
-  "generated_utc": "2026-10-29T19:57:26+00:00",
+  "as_of": "2026-10-30",
+  "generated_utc": "2026-10-30T13:39:42+00:00",
   "freshness": "degraded",
   "entities": [
     {
@@ -25,15 +25,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": null,
+      "attention_shock_z": 1.935,
       "tone_pctile": null,
-      "narrative_state": null,
-      "young": true,
-      "n_obs": 0,
-      "as_of_date": null,
-      "no_data_reason": "young series: 0 < 20 obs",
-      "state_en": null,
-      "state_zh": null
+      "narrative_state": "quiet",
+      "young": false,
+      "n_obs": 71,
+      "as_of_date": "2026-10-27",
+      "no_data_reason": null,
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
     },
     {
       "slug": "meituan",
@@ -146,6 +146,21 @@
       "state_zh": "\u5e73\u9759"
     },
     {
+      "slug": "tencent",
+      "ticker": "0700.HK",
+      "name_en": "Tencent",
+      "name_zh": "\u817e\u8baf",
+      "attention_shock_z": 1.935,
+      "tone_pctile": null,
+      "narrative_state": "quiet",
+      "young": false,
+      "n_obs": 71,
+      "as_of_date": "2026-10-27",
+      "no_data_reason": null,
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
+    },
+    {
       "slug": "meituan",
       "ticker": "3690.HK",
       "name_en": "Meituan",
@@ -207,7 +222,7 @@
     }
   ],
   "n_watched": 8,
-  "n_live": 5,
+  "n_live": 6,
   "warming_up": false,
   "is_stale": true
 }
