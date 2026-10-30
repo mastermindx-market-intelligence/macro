@@ -78,3 +78,38 @@ provider snapshots) whose complete original population, producer-rule
 vintage and observation/serving clocks are demonstrably qualified.
 Then use the pinned B-17 original population and ruler without relabeling
 C1-relaxed scores as shipped-roster coverage.
+
+## Frozen denominator versus observable repository history — October 30, 2026
+
+A read-only direct Git object extraction of
+`228c25d37617a7217c8f65f1613ade701a2fe01a:research/prophet_us_audit/early_admission_bakeoff_episodes.parquet`
+returned 8,096,374 bytes, SHA-256
+`a55f3e3ecaef13efc6dc0a407375ee3d87e66b6dfb70eacb0c1d3b7249c6feb4`.
+The 39,877-row source was filtered by `addon == False` and
+`construction == "C0"` (no new population or selector). The result contains
+**7,918 C0 episodes**, earliest **2014-12-04**, latest **2026-08-10**.
+Relative to the first recovered board-archive source date **2026-06-16**:
+
+- **7,775** C0 episodes (**98.19%**) are before that first archive date;
+- **143** (**1.81%**) are on or after the first archive date;
+- **zero** are after the original 2026-08-10 frozen cutoff.
+
+Reproduction: `git show 228c25d37617a7217c8f65f1613ade701a2fe01a:research/prophet_us_audit/early_admission_bakeoff_episodes.parquet`
+from the original Macro object store; use `pandas.read_parquet`, filter
+`~df.addon.astype(bool) & df.construction.eq("C0")`, and split
+`pandas.to_datetime(df.date).dt.date` at `2026-06-16`.
+The run completed with exit 0 on the original source; SHA-256 and counts
+were read back from that single bounded process.
+
+**Interpretation:** 98.19% is **not a measured 0% shipped-roster coverage**.
+It is the part of the frozen event denominator for which the recovered
+repository board history has no contemporaneous source dates. The 143
+later episodes are at most a *date-range eligibility population*, not
+proof of admitted or first-visible candidates: the existing 57 archived
+snapshots cover only 32 distinct dates, and the B-17 report found **zero
+complete 34-session admission windows** even for that later slice.
+The next material dependency is independently sourced full-population
+historical producer inputs and original availability clocks, or an explicit
+scientific ruling about what can and cannot be measured without them.
+No redefinition of the frozen denominator, no present-day rerun posing as
+historical admission, no promotion of the C1-relaxed baseline.
