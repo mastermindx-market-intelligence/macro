@@ -177,6 +177,9 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
         if not isinstance(group, Mapping) or not isinstance(frame.get("group"), Mapping):
             return _hold("missing_source_group")
         if (group.get("group_id") != frame["group"].get("group_id")
+                or group.get("cohort_id") != frame["group"].get("cohort_id")
+                or group.get("membership_revision")
+                != frame["group"].get("membership_revision")
                 or frame["group"].get("membership_mode") != row.get("basis")
                 or group.get("membership_mode") != row.get("basis")):
             return _hold("group_or_mode_mismatch")
@@ -327,7 +330,8 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
         },
         "observations": records, "changes": changes,
         "original_issued_snapshots_authenticated": False,
-        "no_interpolated_events_or_lookahead": True,
+        "no_interpolation_or_outcome_access_in_this_composer": True,
+        "absence_of_upstream_lookahead_proven": False,
         "customer_publication": False, "forecast_authority": False,
         "ranking_or_trading_authority": False,
     }
