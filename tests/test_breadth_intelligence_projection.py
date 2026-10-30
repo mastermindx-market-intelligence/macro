@@ -73,6 +73,13 @@ class Tests(unittest.TestCase):
         self.assertEqual(r["logical_identification_bounds_pct"], [40, 40])
         self.assertEqual((self.prices, self.thresholds, self.groups), before)
 
+    def test_nonfinite_ma_does_not_pollute_denominator(self):
+        levels = copy.deepcopy(self.thresholds)
+        levels["C"]["ma50"] = math.nan
+        r = self.calc(thresholds_by_symbol=levels)["groups"][0]
+        # C's invalid MA is excluded from its denominator, never a negative vote.
+        self.assertEqual(r["pct_above_50"], 50)
+
     def test_missingness_refuses_instead_of_zero(self):
         p = dict(self.prices)
         p.pop("C")
