@@ -2029,3 +2029,103 @@ def test_pilot_preclaim_capacity_inspection_never_requests(monkeypatch,case):
     assert adapter.preflight(deadline_at=9. if case=='deadline' else 50.) is (case=='ready')
     assert adapter._index==(1 if case=='spent' else 0) and adapter._budget is None
     if case=='ready':assert seen==['http://127.0.0.1:25503/v3/option/history/eod','http://127.0.0.1:25503/v3/option/history/greeks/eod']
+
+
+class TestPerExpirationTimings:
+    """Measure lazy consumption without changing the fallback's data or calls."""
+
+    @pytest.mark.parametrize("failed", [(), (20261030,), (20261030, 20261106)])
+    def test_lazy_stream_timing_and_failure_parity(self, monkeypatch, caplog, failed):
+        import logging
+        from collectors import thetadata as td
+
+        clock = [0.0]
+        calls, active, peak = [], [0], [0]
+        monkeypatch.setattr(td.time, "monotonic", lambda: clock[0])
+        monkeypatch.setattr(td, "_session", lambda: object())
+
+        def expirations(root):
+            clock[0] += 2
+            return ["bad", "2026-10-29", "2026-10-30", "2026-11-06", "2027-12-01"]
+
+        def stream(session, path, params):
+            calls.append((path, params.copy()))
+            active[0] += 1
+            peak[0] = max(peak[0], active[0])
+            try:
+                clock[0] += 3
+                yield {"expiration": params["expiration"], "value": 7}
+                clock[0] += 4
+                if params["expiration"] in failed:
+                    raise td._StreamTruncated("fixture truncation")
+            finally:
+                active[0] -= 1
+
+        def parse(lines):
+            rows = list(lines)
+            clock[0] += 5
+            return rows
+
+        def build(rows):
+            clock[0] += 11
+            return pd.DataFrame(rows)
+
+        monkeypatch.setattr(td, "list_expirations", expirations)
+        monkeypatch.setattr(td, "_stream_lines", stream)
+        with caplog.at_level(logging.INFO, logger=td.log.name):
+            result = td._bulk_trade_quote_per_exp(
+                "spy", "put", "2026-10-30", "2026-10-30",
+                "09:30:00.000", "10:00:00.000", 90, parse, build,
+            )
+        assert peak[0] == 1 and active[0] == 0
+        assert [params["expiration"] for _, params in calls] == [20261030, 20261106]
+        for path, params in calls:
+            assert path == "/v3/option/history/trade_quote"
+            assert params == dict(symbol="SPY", expiration=params["expiration"], strike="*",
+                                  right="put", start_date=20261030, end_date=20261030,
+                                  start_time="09:30:00.000", end_time="10:00:00.000")
+        expected = [{"expiration": e, "value": 7} for e in [20261030, 20261106] if e not in failed]
+        if expected:
+            pd.testing.assert_frame_equal(result, pd.DataFrame(expected))
+        else:
+            assert result is None
+        timing = [r.getMessage() for r in caplog.records if "per-exp timing" in r.getMessage()]
+        assert any("phase=list_expirations" in m and "elapsed_s=2.000" in m for m in timing)
+        for exp in [20261030, 20261106]:
+            msg = next(m for m in timing if f"expiration={exp}" in m)
+            assert "phase=stream_parse" in msg
+            assert ("elapsed_s=7.000" if exp in failed else "elapsed_s=12.000") in msg
+            assert ("status=truncated" if exp in failed else "status=ok") in msg
+        build_messages = [m for m in timing if "phase=build_frame" in m]
+        assert len(build_messages) == bool(expected)
+        if expected:
+            assert "elapsed_s=11.000" in build_messages[0]
+
+    @pytest.mark.parametrize("expirations", [None, []])
+    def test_unavailable_or_empty_list_remains_none(self, monkeypatch, caplog, expirations):
+        import logging
+        from collectors import thetadata as td
+        monkeypatch.setattr(td, "list_expirations", lambda root: expirations)
+        monkeypatch.setattr(td, "_session", lambda: object())
+        def forbidden(*args):
+            pytest.fail("empty/unavailable expiration list must not stream or build")
+        monkeypatch.setattr(td, "_stream_lines", forbidden)
+        with caplog.at_level(logging.INFO, logger=td.log.name):
+            assert td._bulk_trade_quote_per_exp(
+                "SPY", "call", "2026-10-30", "2026-10-30", None, None, 90,
+                forbidden, forbidden,
+            ) is None
+        assert "phase=list_expirations" in caplog.text
+
+    def test_unexpected_parser_error_propagates(self, monkeypatch, caplog):
+        import logging
+        from collectors import thetadata as td
+        monkeypatch.setattr(td, "list_expirations", lambda root: ["2026-10-30"])
+        monkeypatch.setattr(td, "_session", lambda: object())
+        monkeypatch.setattr(td, "_stream_lines", lambda *args: iter([]))
+        def broken(lines):
+            raise ValueError("parser fixture")
+        with caplog.at_level(logging.INFO, logger=td.log.name), pytest.raises(ValueError, match="parser fixture"):
+            td._bulk_trade_quote_per_exp("SPY", "call", "2026-10-30", "2026-10-30",
+                                        None, None, 90, broken, pd.DataFrame)
+        assert "status=error" in caplog.text
