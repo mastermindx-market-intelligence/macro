@@ -19,6 +19,7 @@ import math
 
 from engine.sector_theme_factor_intelligence import HORIZONS, MA_BASES, project_factor_frame
 from engine.sector_theme_regime_fingerprint import compose_regime_fingerprint
+from engine.sector_theme_regime_explain import explain_regime_preview
 
 SCHEMA = "sector_theme_owner_preview/v1"
 PURPOSE = "sector_theme_factor_research"
@@ -274,6 +275,7 @@ def preview_us_theme_packet(packet: object) -> dict:
         "expected_security_ids": list(sorted(identity_ids.values())),
         "frame": frame,
         "fingerprint": fp,
+        "explanation": explain_regime_preview(fp),
         "group_flow_context": project_owner_group_flow_context(
             fp, packet.get("group_flow_reading"), packet.get("group_flow_binding")
         ),
