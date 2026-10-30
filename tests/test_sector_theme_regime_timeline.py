@@ -42,7 +42,8 @@ def test_p3b_01_paired_deterioration_has_exact_common_member_flips():
     result = compose_regime_timeline(pair())
     assert result["status"] == "RESEARCH_PREVIEW_ONLY"
     assert result["original_issued_snapshots_authenticated"] is False
-    assert result["no_interpolated_events_or_lookahead"] is True
+    assert result["no_interpolation_or_outcome_access_in_this_composer"] is True
+    assert result["absence_of_upstream_lookahead_proven"] is False
     change = result["changes"][0]
     assert change["stable_population"] is True
     assert change["paired_member_positive_return"]["newly_negative_common"] == [
@@ -91,7 +92,9 @@ def test_p3b_04_rolling_window_rs_change_is_explicitly_not_acceleration():
     ))
     change = result["changes"][0]["rolling_window_rs_level_change_not_acceleration"]
     assert change["status"] == "measured"
-    assert abs(change["value"] - .03) < 1e-12
+    # Both trailing returns use SPY +1%, so 0.03 nominal change maps to
+    # 0.03 / 1.01 in relative-wealth space, not a simple return difference.
+    assert abs(change["value"] - (.03 / 1.01)) < 1e-12
     assert change["unit"] == "fraction"
     assert "acceleration" not in result["changes"][0]
 
