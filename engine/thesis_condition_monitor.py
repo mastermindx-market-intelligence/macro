@@ -215,7 +215,8 @@ def load_tripwire_view() -> tuple[list[dict], dict, str | None]:
     Returns (entries, state, error_class). error_class is None for the normal
     "file absent" state (nothing has rendered yet -- a legitimate READ_OK_ZERO,
     not an error) and is a typed string when a file EXISTS but cannot be parsed
-    -- an unknown latch state must never render identically to an empty one.
+    into the expected shape -- an unknown latch state must never render
+    identically to an empty one.
     """
     root = config.ROOT
     f_path = root / ft._FALSIFIERS_JSON
@@ -225,16 +226,26 @@ def load_tripwire_view() -> tuple[list[dict], dict, str | None]:
     if f_path.exists():
         try:
             data = json.loads(f_path.read_text())
-            entries = data if isinstance(data, list) else data.get("falsifiers", [])
         except (json.JSONDecodeError, OSError, UnicodeDecodeError):
             return [], {}, "corrupt_falsifiers_json"
+        if isinstance(data, list):
+            rows = data
+        elif isinstance(data, dict):
+            rows = data.get("falsifiers", [])
+        else:
+            return [], {}, "corrupt_falsifiers_json"
+        if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows):
+            return [], {}, "corrupt_falsifiers_json"
+        entries = rows
     if s_path.exists():
         try:
-            state = json.loads(s_path.read_text())
+            data = json.loads(s_path.read_text())
         except (json.JSONDecodeError, OSError, UnicodeDecodeError):
             return [], {}, "corrupt_tripwire_state_json"
+        if not isinstance(data, dict):
+            return [], {}, "corrupt_tripwire_state_json"
+        state = data
     return entries, state, None
-
 
 def fired_windows(entries: list[dict], latch_state: dict) -> list[dict]:
     """Windows whose latch_state entry is a latched FIRED with a non-null fired_on."""
