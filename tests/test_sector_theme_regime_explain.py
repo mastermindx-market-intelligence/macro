@@ -183,3 +183,40 @@ def test_p2c_14_zero_member_group_does_not_generate_fiction():
     out = explain_regime_preview(fp(members=(), rows={}))
     assert out["group_cards"] == [] and out["single_name_cards"] == []
     assert out["eligible_for_customer_publication"] is False
+
+
+def test_p2c_15_ma_explanation_preserves_intraday_bar_basis():
+    items = {
+        "AAA": row(ret=.02),
+        "BBB": row(ret=0, close=108, ma20=108, ma50=108,
+                   ma200=95, prev_ma50=106),
+        "CCC": row(ret=-.03, close=85, ma20=90, ma50=95,
+                   ma200=100, prev_ma50=96),
+    }
+    for item in items.values():
+        item["ma_basis"] = "1m_bars"
+    p = fp(members=("AAA", "BBB", "CCC"), rows=items, ma_basis="1m_bars")
+    out = explain_regime_preview(p)
+    card = cards(out, "single_name_cards")[
+        "name_above_ma50_while_group_majority_not_above"]
+    assert "one-minute bars" in card["en"]
+    assert "1分钟K线" in card["zh"]
+    assert card["metrics"]["ma_basis"] == "1m_bars"
+    p["single_names"]["AAA"]["horizons"]["5d"]["ma_basis"] = "daily_sessions"
+    out = explain_regime_preview(p)
+    assert "name_above_ma50_while_group_majority_not_above" not in cards(
+        out, "single_name_cards")
+    assert "name_above_ma50_while_group_majority_not_above" in out[
+        "withheld_unverified_facets"]
+
+
+def test_p2c_16_malformed_extreme_bound_cannot_crash_or_invent_majority():
+    p = fp(members=("AAA", "BBB", "CCC"),
+           rows={"AAA": row(ret=1.0), "BBB": row(ret=0),
+                 "CCC": row(ret=0)})
+    p["horizons"]["5d"]["participation"][
+        "positive_return_breadth"]["identification_bounds"] = [10**400, 1]
+    out = explain_regime_preview(p)
+    assert not any("majority_" in c["tag"] for c in out["group_cards"])
+    assert "majority_nonpositive_participation_proven_by_bounds" in out[
+        "withheld_unverified_facets"]
