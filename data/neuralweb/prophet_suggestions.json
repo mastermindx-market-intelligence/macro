@@ -1,13 +1,13 @@
 {
   "schema": "prophet.suggestions/v1",
-  "as_of": "2026-10-30T10:09:45+00:00",
+  "as_of": "2026-10-30T19:51:11+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "suggestions": [
     {
       "code": "stale_us_audit_scoreboard_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-audit-scoreboard is 2002h old (SLA 48.0h) [US]",
+      "detail": "us-audit-scoreboard is 2012h old (SLA 48.0h) [US]",
       "market": "us",
       "first_seen": "2026-08-10",
       "asof": "2026-10-30"
@@ -16,25 +16,16 @@
       "code": "stale_us_board_outcomes_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-board-outcomes is 850h old (SLA 48h) [US]",
+      "detail": "us-board-outcomes is 860h old (SLA 48h) [US]",
       "market": "us",
       "first_seen": "2026-09-27",
-      "asof": "2026-10-30"
-    },
-    {
-      "code": "stale_site_china_standouts_cn",
-      "kind": "staleness",
-      "severity": "medium",
-      "detail": "site-china-standouts is 34h old (SLA 30.0h) [CN]",
-      "market": "cn",
-      "first_seen": "2026-10-30",
       "asof": "2026-10-30"
     },
     {
       "code": "stale_ca_board_ledger_ca",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "ca-board-ledger is 138h old (SLA 48h) [CA]",
+      "detail": "ca-board-ledger is 151h old (SLA 48h) [CA]",
       "market": "ca",
       "first_seen": "2026-10-30",
       "asof": "2026-10-30"
@@ -43,7 +34,7 @@
       "code": "stale_intl_setups_intl",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "intl-setups is 106h old (SLA 48h) [INTL]",
+      "detail": "intl-setups is 116h old (SLA 48h) [INTL]",
       "market": "intl",
       "first_seen": "2026-10-25",
       "asof": "2026-10-30"

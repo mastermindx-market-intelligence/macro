@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 214,
+    "opportunity_queue_depth": 227,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 214,
-      "scored": 343,
+      "open": 227,
+      "scored": 356,
       "newest": [
         {
           "id": "radar-confluence-AMCR-2026-10-30",
           "problem_or_desire": "$AMCR: confluence combo Weekly 21/100 golden cross + weekly reclaims 35-day line + Ichimoku bull cross + Price reclaims AVWAP from earnings-proxy anchor firing, test WR 85%",
           "expected_value": 0.55,
-          "score": 0.527027,
+          "score": 0.505856,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-confluence-CAT-2026-10-30",
           "problem_or_desire": "$CAT: confluence combo Weekly short-term uptrend + weekly RSI-14 washed out + lower-band reclaim firing, test WR 67%",
           "expected_value": 0.55,
-          "score": 0.527027,
+          "score": 0.505856,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-confluence-LYB-2026-10-30",
           "problem_or_desire": "$LYB: confluence combo Weekly reclaims 100-day line + weekly Stochastic-RSI bullish cross + long-term uptrend + Bi-weekly Stochastic-RSI bullish cross firing, test WR 82%",
           "expected_value": 0.55,
-          "score": 0.527027,
+          "score": 0.505856,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 2196,
-      "receipts": 2196,
+      "total": 2217,
+      "receipts": 2217,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-30-23145aedfa",
+          "id": "pub-ob-2026-10-30-d87d7e94bc",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-10-30T19:41:39Z"
+        },
+        {
+          "id": "pub-ob-2026-10-30-fba534b5f4",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-30T07:50:00Z"
+          "published_at": "2026-10-30T19:41:39Z"
         },
         {
-          "id": "pub-ob-2026-10-30-2b9ef0218c",
+          "id": "pub-ob-2026-10-30-10036b27e5",
           "channel": "x",
-          "account": "mastermind_news",
+          "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-30T07:50:00Z"
-        },
-        {
-          "id": "pub-ob-2026-10-30-5624dcebd2",
-          "channel": "x",
-          "account": "mastermind_news",
-          "status": "clean",
-          "published_at": "2026-10-30T07:50:00Z"
+          "published_at": "2026-10-30T18:54:28Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 17,
-    "signal_posts": 0,
-    "charts": 52,
+    "total_posts": 31,
+    "signal_posts": 5,
+    "charts": 202,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-30"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-30T10:20:29Z",
-  "inputs_hash": "sha256:d2102703cbf23217fae654058e564593df2f4a73c9d7923bf0e8605d6aa8ced6",
+  "produced_at": "2026-10-30T20:16:42Z",
+  "inputs_hash": "sha256:6fa355609210a3aacd534097c1dd03ef1dac2a888834277008482bbc8a2f625c",
   "tier": "display"
 }
