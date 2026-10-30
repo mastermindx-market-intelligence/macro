@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-30T00:19:52.363586+00:00",
+  "produced_at": "2026-10-30T10:43:47.484852+00:00",
   "as_of": "2026-10-20",
   "status": "degraded",
   "phase": "final",
@@ -849,7 +849,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-10-26T16:13:56Z",
+    "asof": "2026-10-30T10:28:30Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
@@ -857,7 +857,7 @@
     },
     "nulls_added": 35,
     "cards_filed": 2,
-    "llm_lane_status": "degraded_pack_only",
+    "llm_lane_status": "armed",
     "display_only": true,
     "not_a_signal": true
   },
