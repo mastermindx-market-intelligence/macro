@@ -4,7 +4,7 @@
   var doc=win.document, script=doc.currentScript;
   var base=new URL('./',script&&script.src||doc.baseURI).href;
   var loads={};
-  var versions={visualJS:'2e3ce3a5',visualCSS:'b9f2e195',financeJS:'a8f801ae',financeCSS:'b317487a',math:'e24d5a2c'};
+  var versions={visualJS:'eaa23940',visualCSS:'893bd6a0',financeJS:'a8f801ae',financeCSS:'b317487a',math:'e24d5a2c'};
   function asset(name,kind,version) {
     return new Promise(function(resolve,reject) {
       var node=doc.createElement(kind==='style'?'link':'script');
