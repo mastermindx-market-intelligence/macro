@@ -1,38 +1,53 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-30T00:37:06Z",
+  "produced_at": "2026-10-30T10:20:20Z",
   "as_of": "2026-10-30",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 23,
-    "passed": 23,
-    "quarantined": 0,
-    "quarantined_policy": 0,
+    "items": 17,
+    "passed": 16,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
-  "reasons_histogram": {},
-  "quarantined": [],
-  "passed": [
+  "reasons_histogram": {
+    "near_dup": 1
+  },
+  "quarantined": [
     {
-      "id": "post-flagship-005",
-      "account": "flagship",
-      "slot": "D1-S20",
+      "id": "post-kelly-005",
+      "account": "kelly",
+      "slot": "D1-S12",
       "type": "macro",
       "cashtag": "",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-meagan-005"
+      ]
+    }
+  ],
+  "passed": [
+    {
+      "id": "post-flagship-003",
+      "account": "flagship",
+      "slot": "D1-S10",
+      "type": "receipt",
+      "cashtag": "$BNL",
       "headline": ""
     },
     {
-      "id": "post-flagship-006",
+      "id": "post-flagship-009",
       "account": "flagship",
-      "slot": "D1-S21",
+      "slot": "D1-S31",
       "type": "watchlist",
-      "cashtag": "$RHI",
-      "headline": "$RHI at the line that matters"
+      "cashtag": "$ENVX",
+      "headline": ""
     },
     {
       "id": "post-flagship-010",
@@ -43,28 +58,12 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-011",
-      "account": "flagship",
-      "slot": "D1-S34",
-      "type": "receipt",
-      "cashtag": "$OKLO",
-      "headline": "$OKLO prints a new yearly closing low"
-    },
-    {
       "id": "post-flagship-020",
       "account": "flagship",
       "slot": "D1-S50",
       "type": "receipt",
       "cashtag": "$WWD",
-      "headline": "The $WWD setup failed below 309"
-    },
-    {
-      "id": "post-conf-flagship-001",
-      "account": "flagship",
-      "slot": "CONF-01",
-      "type": "signal",
-      "cashtag": "$DG",
-      "headline": "$DG just lined up a pattern we track."
+      "headline": "$WWD entry is 333"
     },
     {
       "id": "post-theme-003",
@@ -72,7 +71,7 @@
       "slot": "D1-S1",
       "type": "theme_list",
       "cashtag": "$FSLY",
-      "headline": "Cloud Computing ripping, +1.9% avg today"
+      "headline": "Cloud Computing ripping, +1.9% avg on Thursday"
     },
     {
       "id": "post-founder-003",
@@ -83,20 +82,12 @@
       "headline": ""
     },
     {
-      "id": "post-founder-005",
+      "id": "post-founder-008",
       "account": "founder",
-      "slot": "D1-S20",
+      "slot": "D1-S24",
       "type": "watchlist",
-      "cashtag": "$RHI",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-011",
-      "account": "founder",
-      "slot": "D1-S28",
-      "type": "receipt",
-      "cashtag": "$ACMR",
-      "headline": ""
+      "cashtag": "$ENVX",
+      "headline": "$ENVX is still stalling."
     },
     {
       "id": "post-founder-013",
@@ -104,7 +95,15 @@
       "slot": "D1-S32",
       "type": "receipt",
       "cashtag": "$SFM",
-      "headline": "The $SFM plan is down to one level"
+      "headline": "$SFM risk tightens with the move"
+    },
+    {
+      "id": "post-founder-019",
+      "account": "founder",
+      "slot": "D1-S43",
+      "type": "receipt",
+      "cashtag": "$OKLO",
+      "headline": ""
     },
     {
       "id": "post-meagan-004",
@@ -112,7 +111,7 @@
       "slot": "D1-S12",
       "type": "receipt",
       "cashtag": "$VMI",
-      "headline": "The $VMI setup failed."
+      "headline": "$VMI has one job above 487"
     },
     {
       "id": "post-meagan-005",
@@ -123,44 +122,12 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-017",
-      "account": "meagan",
-      "slot": "D1-S36",
-      "type": "watchlist",
-      "cashtag": "$ENVX",
-      "headline": ""
-    },
-    {
       "id": "post-theme-004",
       "account": "meagan",
       "slot": "D1-S1",
       "type": "theme_list",
       "cashtag": "$STKH",
-      "headline": "Agriculture & FoodTech selling off, -1.1% avg today"
-    },
-    {
-      "id": "post-sophia-009",
-      "account": "sophia",
-      "slot": "D1-S26",
-      "type": "receipt",
-      "cashtag": "$SGML",
-      "headline": "5 straight red weeks for $SGML"
-    },
-    {
-      "id": "post-sophia-014",
-      "account": "sophia",
-      "slot": "D1-S34",
-      "type": "watchlist",
-      "cashtag": "$ENVX",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-005",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
+      "headline": "Agriculture & FoodTech selling off, -1.1% avg on Thursday"
     },
     {
       "id": "post-kelly-016",
@@ -168,31 +135,23 @@
       "slot": "D1-S36",
       "type": "receipt",
       "cashtag": "$AA",
-      "headline": "$AA still owes the reclaim"
+      "headline": "$AA recovery claim, defined"
     },
     {
-      "id": "post-theme-005",
+      "id": "post-kelly-019",
       "account": "kelly",
-      "slot": "D1-S1",
-      "type": "theme_list",
-      "cashtag": "$TENB",
-      "headline": "Internet of Things ripping, +1.2% avg today"
-    },
-    {
-      "id": "post-housepick-005",
-      "account": "kelly",
-      "slot": "D1-S3",
+      "slot": "D1-S41",
       "type": "watchlist",
-      "cashtag": "$CUBI",
+      "cashtag": "$NE",
       "headline": ""
     },
     {
-      "id": "post-cici-002",
+      "id": "post-cici-011",
       "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "While New York slept, growth firmed and inflation stayed warm"
+      "slot": "D1-S24",
+      "type": "receipt",
+      "cashtag": "$AA",
+      "headline": ""
     },
     {
       "id": "post-theme-006",
@@ -200,13 +159,13 @@
       "slot": "D1-S1",
       "type": "theme_list",
       "cashtag": "$CCI",
-      "headline": "Telecommunications ripping, +1.3% avg today"
+      "headline": "Telecommunications ripping, +1.3% avg on Thursday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 212,
-      "hits": 0,
+      "pairs_checked": 110,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {
