@@ -269,3 +269,13 @@ def test_p3a_19_malformed_universe_and_count_are_held():
     data["UTILITIES"]["frame"]["universe"]["measured_return_n"] = True
     assert compose_regime_comparison(data)["reason"] == (
         "invalid_measured_security_count")
+
+
+def test_p3a_20_unhashable_group_kind_fails_closed_not_exception():
+    for malformed in ([], {"bad": "kind"}):
+        data = preview_pairs()
+        data["UTILITIES"]["group_kind"] = malformed
+        out = compose_regime_comparison(data)
+        assert out["status"] == "HELD"
+        assert out["reason"] == "unqualified_group_kind"
+        assert out["groups"] == []
