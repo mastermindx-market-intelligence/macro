@@ -155,7 +155,7 @@ def test_provisional_close_cannot_obtain_settlement_from_equal_hashes(tmp_path):
     for p in (tmp_path / "data/risk_envelope/latest.json", tmp_path / "site/riskdata/risk_envelope.json"):
         payload = json.loads(p.read_text(encoding="utf-8"))
         payload["revision"] = "settled"
-        p.write_text(json.dumps(payload, sort_keys=True) + "\\n", encoding="utf-8")
+        p.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
     m = tmp_path / "data/market_state/latest.json"
     m.write_text(json.dumps({"asof": "2026-10-29", "provisional": True}), encoding="utf-8")
     result = check_pair(tmp_path)
