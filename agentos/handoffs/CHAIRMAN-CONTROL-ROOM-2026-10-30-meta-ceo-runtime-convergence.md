@@ -7,11 +7,16 @@ mission: >
   Continue the Chairman's existing Meta-CEO R2 company-office implementation by reconciling
   DSH native UI, Hermes candidate execution, Grok Bot/OpenClaw incumbent, Rakazo challenger,
   Mastermind OS, Agent OS, Executive OS and original-parent return; do not create a second plane.
+  Original Meta-CEO R2 principal root 01a13315-332b-7102-b7c8-0c7fc01fa92c is preserved
+  as an historical canonical continuity reference, not evidence of a live owner lease.
 state_before: >
   The existing Macro WS:CHAIRMAN-CONTROL-ROOM includes immutable Meta-CEO R2 acceptance_contracts.
   Existing code candidates were split across unmerged Mastermind PRs #1717, #1859, #1861,
   #1876 and #1885. Grok bot was visibly active but its local OpenClaw gateway was not
-  responding to RPC. No accepted product R2 end-to-end or seven-day office proof existed.
+  responding to RPC. The original 2026-10-14 R2 acceptance-consumer handoff preserved a
+  scoped read-only acceptance review and original-parent evidence; it must not be redone
+  or promoted to whole-product R2 acceptance. No accepted product R2 end-to-end or
+  seven-day office proof existed.
 changed:
   - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30-meta-ceo-runtime-convergence.md
     what: >
@@ -23,6 +28,15 @@ changed:
       Add one dated handoff pointer to the existing artifacts list. Original waves,
       ownership, next_action and the Meta-CEO R2 acceptance contract remain unchanged.
 verified:
+  - claim: The preceding R2 acceptance-consumer checkpoint has a distinct bounded accepted source scope.
+    command: >
+      GitHub fetch_file Macro agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-14-r2-acceptance-consumer.md
+      at ce5201f96f721967d0d6cf65a0afc759d28ce35b, with original root and receipt refs.
+    result: >
+      Original Codex principal root 01a13315-332b-7102-b7c8-0c7fc01fa92c remains the
+      immutable original commission reference, and source-only selected Mission v4
+      acceptance-consumer review was accepted in that earlier handoff. An actual
+      installed original-parent receipt and R2 product acceptance remain separate.
   - claim: The original Agent OS workstream already owns the R2 Meta-CEO contract.
     command: >
       GitHub fetch_file Macro agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md
@@ -91,6 +105,7 @@ do_not_redo:
   - "Do not replace existing Grok Bot/Secretary or restart OpenClaw before its exact owner health/collision gate."
   - "Do not replay the failed original Fabric audit, or claim PR CI as production acceptance."
   - "Do not redo accepted Executive OS, Agent OS, RuntimeBinding, Wake, DSH and original R2 criterion source."
+  - "Preserve the 2026-10-14 original R2 acceptance-consumer scoped source review and original principal/root; do not imply either proves the new office path."
 danger_areas:
   - "Auth scope, tenant/project selection, wrong-run session association, stale Office previews and mistaken accepted results."
   - "Lost effect receipts, duplicate wake/retry, other-owner worktree, unverified model/credentials and private Mac service state."
@@ -103,7 +118,7 @@ danger_areas:
 ## Original outcome and authority
 
 Chairman asks for one coherent Mastermind OS + Agent OS integration and a grounded choice between incumbent Grok Secretary/OpenClaw and candidate Hermes/DeepSeek Harness/Rakazo for **always-on Secretary and Meta-CEO** roles. No premature cutover; lead implementation to actual signed-in, governed, durable company behavior. Existing R2 user contract and acceptance falsifiers, not a new competing project, are source-of-truth:
-- Mastermind R2 intent `6b26f69cc040b46c8099a17a7ef94d3242f5386e` `research/mastermind_meta_ceo_master_plan_r2_2026-10-12.md`; existing Agent OS acceptance contract and `agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-12-meta-ceo-r2.md`.
+- Mastermind R2 intent `6b26f69cc040b46c8099a17a7ef94d3242f5386e` `research/mastermind_meta_ceo_master_plan_r2_2026-10-12.md`; existing Agent OS acceptance contract and `agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-12-meta-ceo-r2.md`. Historical original principal root is `01a13315-332b-7102-b7c8-0c7fc01fa92c`; preserve the separate `2026-10-14-r2-acceptance-consumer` handoff's accepted scoped read review without treating it as full installed R2 acceptance.
 - [Meta-CEO open harness convergence #1841](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1841), current owner plan and source/law, not an accepted product.
 - Current protected Mastermind `master@bb85b429f2ffffd38408080ce4df7d6378c34100` (Skillpack 1.0.1, bootstrap major 1); Macro `main@ce5201f96f721967d0d6cf65a0afc759d28ce35b`. Facts dated 2026-10-30, subject to exact-head refresh when moving carriers.
 
