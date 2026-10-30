@@ -1,0 +1,268 @@
+{
+  "browser_proofs": 0,
+  "checks": [
+    {
+      "name": "amendment_contract:explicitly supersedes R6 section 8",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:/api/themes/v1/research/query",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:/api/themes/v1/research/evidence",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:engine/earnings_narrative/private_publication.py",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:R7 Task4 becomes qualification",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:consumer_cyclical",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:consumer_economic_change.v1",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:typed company subject",
+      "result": "PASS"
+    },
+    {
+      "name": "amendment_contract:REFUSE",
+      "result": "PASS"
+    },
+    {
+      "name": "profile_route_family_closed",
+      "result": "PASS"
+    },
+    {
+      "name": "profile_subject_closed",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_section_ready",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_no_product_or_trade_claim",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_literal_values",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_all_result_envelopes",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_all_ready_have_units_scale_refs_periods_precision",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_section_ready",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_no_product_or_trade_claim",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_literal_values",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_all_result_envelopes",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_all_ready_have_units_scale_refs_periods_precision",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_section_ready",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_no_product_or_trade_claim",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_literal_values",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_all_result_envelopes",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_all_ready_have_units_scale_refs_periods_precision",
+      "result": "PASS"
+    },
+    {
+      "name": "scale_preserved_in_envelope",
+      "result": "PASS"
+    },
+    {
+      "name": "scale_preserved_in_explanation",
+      "result": "PASS"
+    },
+    {
+      "name": "ratio_precision_two_decimals",
+      "result": "PASS"
+    },
+    {
+      "name": "explanation_recomputes_with_numeric_change",
+      "result": "PASS"
+    },
+    {
+      "name": "counterevidence_carried",
+      "result": "PASS"
+    },
+    {
+      "name": "next_observation_carried",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-PASS-THROUGH_forbidden_absent",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-CASH_forbidden_absent",
+      "result": "PASS"
+    },
+    {
+      "name": "EX-OUTLOOK_forbidden_absent",
+      "result": "PASS"
+    },
+    {
+      "name": "forbidden_marker_is_discriminating",
+      "result": "PASS"
+    },
+    {
+      "name": "counterevidence_required",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_expense_degrades_section",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_expense_preserves_independent_results",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_expense_suppresses_only_dependents",
+      "result": "PASS"
+    },
+    {
+      "name": "malformed_expense_is_local",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_asset_preserves_preproceeds",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_asset_suppresses_reconciliation",
+      "result": "PASS"
+    },
+    {
+      "name": "missing_outlook_bound_is_local",
+      "result": "PASS"
+    },
+    {
+      "name": "cash_mismatch_does_not_destroy_preproceeds",
+      "result": "PASS"
+    },
+    {
+      "name": "annual_disguised_as_quarter_refused_for_dependents",
+      "result": "PASS"
+    },
+    {
+      "name": "leap_year_quarter_allowed",
+      "result": "PASS"
+    },
+    {
+      "name": "half_year_not_quarter",
+      "result": "PASS"
+    },
+    {
+      "name": "reversed_outlook_clock_suppressed",
+      "result": "PASS"
+    },
+    {
+      "name": "timezone_missing_is_local",
+      "result": "PASS"
+    },
+    {
+      "name": "tiny_denominator_difference_still_visible",
+      "result": "PASS"
+    },
+    {
+      "name": "tiny_denominator_ratio_withheld",
+      "result": "PASS"
+    },
+    {
+      "name": "large_percentage_not_blanket_rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "nonpositive_denominator_ratio_withheld",
+      "result": "PASS"
+    },
+    {
+      "name": "exact_decimal_cash",
+      "result": "PASS"
+    },
+    {
+      "name": "original_value_text_preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "inputs_immutable",
+      "result": "PASS"
+    },
+    {
+      "name": "result_precision_carried",
+      "result": "PASS"
+    },
+    {
+      "name": "source_text_never_grants_authority",
+      "result": "PASS"
+    },
+    {
+      "name": "check_names_unique",
+      "result": "PASS"
+    }
+  ],
+  "covers": [
+    "H1",
+    "H2",
+    "H3",
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5"
+  ],
+  "failed": 0,
+  "investment_tests": 0,
+  "kind": "consumer_r12_repair_verification",
+  "native_application_tests": 0,
+  "native_schema_tests": 0,
+  "passed": 60,
+  "source_admissions": 0,
+  "source_hashes": {
+    "CONSUMER_R12_SYNTHETIC_WORKED_CASES.json": "c2d66857ed5ee24f4618b900852da11e3edaccc82421626bca1fcaffc4fc6f69",
+    "REPAIR_AMENDMENT_R12.md": "284aca03a5a63065e391586c3f9cdfa40d61818b07c8bac8db8a52e430cbe974",
+    "research_oracle.py": "659d172c12922e26a0a237b9ac4e991195ea863e396c73300c86a5bbb27f1265",
+    "verify_research_oracle.py": "aac2d6606ca9538897f9cf26c9c097bb6e93ced7559750f4b22944f0473cbcaf"
+  }
+}
