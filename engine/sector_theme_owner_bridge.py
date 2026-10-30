@@ -188,6 +188,8 @@ def preview_us_theme_packet(packet: object) -> dict:
     if pit is False and snap is not None and mode == "CURRENT_ROSTER":
         # Avoid presenting some other historical snapshot as this current list.
         return _held("current_roster_with_foreign_snapshot")
+    if pit is True and snap is not None and known.date() < snap:
+        return _held("membership_known_at_predates_native_snapshot")
     # Dated snapshots alone are NOT proof of their first availability.
     if origin == "owner_reported" and not isinstance(
         packet.get("original_membership_receipt"), Mapping
@@ -246,9 +248,11 @@ def preview_us_theme_packet(packet: object) -> dict:
             membership_revision=revision,
             membership_known_at=known,
             membership_mode=mode,
+            # An owner-shaped packet does not prove immutable ORIGINAL observation
+            # receipts; keep it reconstructed until incumbent custody verifies.
             evidence_mode=(
                 "synthetic_fixture" if origin == "synthetic_fixture"
-                else "original_retained"
+                else "reconstructed_price_history"
             ),
             ma_basis=ma_basis,
             benchmark_return=benchmark,
