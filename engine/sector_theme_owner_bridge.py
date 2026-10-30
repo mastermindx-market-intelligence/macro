@@ -368,10 +368,13 @@ def project_owner_group_flow_context(
         return _flow_held("missing_current_factor_fingerprint")
     if not isinstance(owner_reading, Mapping) or not isinstance(binding, Mapping):
         return _flow_held("missing_owner_group_flow")
-    if fingerprint.get("authority", {}).get("eligible_for_customer_publication") is not False:
+    authority = fingerprint.get("authority")
+    if not isinstance(authority, Mapping):
+        return _flow_held("missing_fingerprint_authority")
+    if authority.get("eligible_for_customer_publication") is not False:
         return _flow_held("fingerprint_claims_publication_rights")
-    if (fingerprint.get("authority", {}).get("predictive_promoted") is not False
-            or fingerprint.get("authority", {}).get("ranking_authority") is not False):
+    if (authority.get("predictive_promoted") is not False
+            or authority.get("ranking_authority") is not False):
         return _flow_held("fingerprint_claims_prediction_or_ranking")
     group = fingerprint.get("group")
     horizons = fingerprint.get("horizons")
