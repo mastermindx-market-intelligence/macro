@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/leadership_lab.css
+  - templates/leadership_lab.html.j2
+manifest: mockups/evidence/leadership-lab-8586/manifest.json
