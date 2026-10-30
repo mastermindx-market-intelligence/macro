@@ -141,3 +141,66 @@ def test_two_symbols_from_same_tool_require_exact_call_identity(visual):
 def test_source_numeric_strings_do_not_launder_an_unbound_value(visual):
     request = spec("table", rows=[["A", 2], ["B", "25bp"]], basis="source", bindings=[{"row": 0, "column": 1, "tool": "get_data", "pointer": "/v"}])
     assert "error" in visual.compile_visual(request, [("get_data", {"v": 2})], "1")
+
+
+# Candlestick is a 12th native visual preset, not a separate OHLC market-data owner.
+def candle_spec(**changes):
+    return spec("candlestick", title="Illustrative bullish 30-minute pivot",
+                subtitle="30-minute synthetic candles",
+                columns=["Candle", "Open", "High", "Low", "Close"],
+                rows=[
+                    ["1", 110, 114, 105, 106],
+                    ["2", 106, 109, 101, 102],
+                    ["Pivot", 102, 107, 101, 106],
+                    ["Breakout", 106, 111, 104, 110],
+                ], **changes)
+
+
+def test_candle_compiler_preserves_ohlc_and_history_provenance(visual):
+    args = candle_spec()
+    wire = visual.compile_visual(args, [], "illustration-1")
+    assert wire["type"] == "chart"
+    assert wire["visual"]["template"] == "candlestick"
+    assert wire["visual"]["basis"] == "illustrative"
+    assert wire["visual"]["rows"] == args["rows"]
+    assert visual.validate_view(wire)
+    assert visual.public_visuals({"visuals": [wire]}) == [wire]
+    assert "bindings" not in wire["visual"]
+    assert wire["visual"]["provenance"]["sources"] == []
+
+
+@pytest.mark.parametrize("changes", [
+    {"columns": ["Candle", "Open", "Low", "High", "Close"]},
+    {"columns": ["Candle", "Open", "High", "Low"]},
+    {"rows": [["1", 1, 2, 0, 1]] * 3},
+    {"rows": [["1", 1, 2, 0, 1]] * 49},
+    {"rows": [["1", 1, 2, 0, 1], ["2", 1, 0.5, 0.75, 1], ["3", 1, 2, 0, 1], ["4", 1, 2, 0, 1]]},
+    {"rows": [["1", 1, 2, 0, -1], ["2", 1, 2, 0, 1], ["3", 1, 2, 0, 1], ["4", 1, 2, 0, 1]]},
+    {"rows": [[2, 1, 2, 0, 1]] * 4},
+    {"rows": [["1", 1, math.inf, 0, 1]] * 4},
+    {"rows": [["<script>", 1, 2, 0, 1]] * 4},
+])
+def test_candle_rejects_invalid_price_geometry_and_labels(visual, changes):
+    assert "error" in visual.compile_visual(candle_spec(**changes), [], "bad-candle")
+
+
+def test_candle_source_requires_exact_observation_for_every_ohlc_cell(visual):
+    args = candle_spec()
+    rows = args["rows"]
+    bars = [{"open": row[1], "high": row[2], "low": row[3], "close": row[4]} for row in rows]
+    args["basis"] = "source"
+    args["bindings"] = [
+        {"row": i, "column": j + 1, "tool": "get_ohlc", "pointer": f"/bars/{i}/{k}", "call_id": "source-1"}
+        for i in range(len(rows)) for j, k in enumerate(["open", "high", "low", "close"])
+    ]
+    observed = [("get_ohlc", {"bars": bars}, "source-1")]
+    wire = visual.compile_visual(args, observed, "source-chart")
+    assert wire["visual"]["provenance"]["numeric_cells_matched"] == 16
+    assert wire["visual"]["provenance"]["freshness_verified"] is False
+    assert visual.validate_view(wire)
+    args["bindings"].pop()
+    assert "error" in visual.compile_visual(args, observed, "unbound")
+    args["bindings"].append(
+        {"row": 3, "column": 4, "tool": "get_ohlc", "pointer": "/bars/3/close", "call_id": "source-1"}
+    )
+    assert "error" in visual.compile_visual(args, [("get_ohlc", {"bars": bars, "ok": False}, "source-1")], "failed")
