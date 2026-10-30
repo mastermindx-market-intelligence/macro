@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BNL-BULL-20261006",
-  "asof": "2026-10-29",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 17.0,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -3.87,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 41.1,
+    "horizon_pct_used": 42.9,
     "p1": -3.2464,
     "p2": -1.623,
     "p3": null,
@@ -45,13 +45,13 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.4107,
+  "days_elapsed": 24,
+  "tau": 0.4286,
   "price_frame": {
     "state": "stale",
     "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
+    "run_asof": "2026-10-30",
+    "lag": 5,
     "lag_basis": "business_days",
     "max_lag": 3
   }
