@@ -78,6 +78,10 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-10-20"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-10-29"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
@@ -105,11 +109,11 @@
     "n_family_rows": 0,
     "n_paired_rows": 1931,
     "paired": {
-      "identical": 1888,
-      "matured": 0,
+      "identical": 1792,
+      "matured": 96,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 96
     },
     "reconstruction_refused": [
       "2026-10-23",
@@ -141,13 +145,13 @@
       "identical": 30,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
-    "liveness": "session_missing",
-    "reason": "candidate session missing from the durable store; not pulled from Pages",
-    "stamp_date": "2026-10-23"
+    "liveness": "degraded_or_unpaired",
+    "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+    "stamp_date": "2026-10-29"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -164,7 +168,7 @@
       "stamp_date": "2026-10-23"
     }
   ],
-  "n_degraded_or_unpaired": 19,
+  "n_degraded_or_unpaired": 20,
   "n_missing": 3,
   "paired_sessions_accrued": 30,
   "same_stamp_revisions_refused": [
