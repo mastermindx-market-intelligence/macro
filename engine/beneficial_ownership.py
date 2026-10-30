@@ -15,7 +15,7 @@ escalation. So we grade:
 
 Filer identity comes from a lightweight SGML-header enrichment
 (collectors/beneficial_ownership.py); the engine degrades gracefully to a
-form-type-only read (13D vs 13G + flip) when that enrichment is absent.
+form-type-only read (13D vs 13G, no same-filer flip) when enrichment is absent.
 DISPLAY-ONLY CONTEXT — never a scored alpha (the case study: "very few events,
 not statistically validated").
 """
