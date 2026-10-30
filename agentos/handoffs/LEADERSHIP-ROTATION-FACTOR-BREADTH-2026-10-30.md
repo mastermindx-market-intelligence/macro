@@ -468,3 +468,66 @@ theme; keep customer/trade/alert/predictive authority false.
 Project root mission remains **MORE_WORK_EXISTS**, with held lanes not
 mistaken for completed product. Do not restart main's W1–W5 or bypass
 GMI W3B/W3C and Terminal #868 explicit source/effect holds.
+
+
+## 2026-10-30 exact-source isolated P1–P3 QA and input hardening
+
+On immutable PR #10213 code head
+`e4cbdb314b841fa3b78dce314168b13440524f59`
+the attended Sol session verified the six new suites in a **separate**
+`m2studio` temporary directory
+`/tmp/stfi-verify-bc14-20261030`, sourced through the GitHub connector
+and kept outside the active `~/Documents/GitHub/macro` worktree.
+All 13 engine/test files were matched against source at this exact head
+using `git hash-object`: **13 matches, zero mismatches**. This is
+independent execution of source tests, not an independent code review.
+
+Command, in the isolated directory, with Python 3 and pytest 9.1.1:
+`PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m pytest
+tests/test_sector_theme_factor_intelligence.py
+tests/test_sector_theme_regime_fingerprint.py
+tests/test_sector_theme_owner_bridge.py
+tests/test_sector_theme_regime_explain.py
+tests/test_sector_theme_regime_comparison.py
+tests/test_sector_theme_regime_timeline.py -q -p no:cacheprovider`
+Result: **182 passed in 0.24s, zero failed**.
+
+The first exact-source isolated run returned **172 passed / 1 failed**:
+`test_p2c_03_flat_stocks_are_not_described_as_decliners`.
+It was a semantic English-narrative wording failure, not evidence of
+a numeric breadth miscalculation. The explicit flat-or-negative
+explanation was repaired at
+`6bc02b07e2432437fa557cbee4aeba59fd95a043`
+and the six-suite rerun returned **173 passed**.
+
+A seeded mutation test then varied nested owner packet field types in
+P2 ingress, P3a cross-group matrix and P3b chronology. Initially
+**38 uncaught TypeErrors / 720 malformed-input mutations**, principally
+unhashable `list`/`dict` selectors reaching `frozenset` membership
+checks. Source fixes at `ed71df1328e5a6250ba5a37d1dd41fe2360a750b`
+and `b06f20ce325b1039f9934f68fb0e0bcb8c1de46b`
+add explicit string-type admission before membership/horizon/source
+vocabulary comparisons. New P2/P3a regression tests were committed in
+`4c7bbd26be0ec16b2fb4dd8bdd3430626f7ea116` and
+`e4cbdb314b841fa3b78dce314168b13440524f59`.
+The **identical 720-mutation seeded sweep now returns zero uncaught
+exceptions**; newly authored bad-packet cases contribute to 182 passed.
+This is a bounded adversarial sample, not exhaustive correctness proof.
+
+Current hosted CI at `e4cb...` was in progress, not conclusively
+green, before this handoff edit. **This handoff write advances the head
+again**, so successor must inspect exact new-head CI/fences, read the
+selected `leadership-rotation-contract` pack outcome and repair any
+newly evidenced failures only. No CI waiver. Draft/Hold, no accepted
+non-author review, no Paper artboard, no real GMI owner source entitlement,
+no signed-in source-to-browser acceptance, no historical predictive
+qualification, no trade/alert/customer authority. The original Fabric
+manual review route denial still bars unchanged replay.
+
+Follow-on: when legitimate GMI owner rights/PIT/identity and quote
+vintage receipts exist, compose one true U.S. theme group through this
+read-only P2 bridge and incumbent Sector Central consumer, then obtain
+user-path proof and independent review. Do not substitute mutable current
+rosters, synthetic fixtures or owner-**claimed** receipts for authentic
+as-known evidence. No source or product release occurs from this QA
+checkpoint. Mission remains **MORE_WORK_EXISTS**.
