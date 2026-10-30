@@ -13,7 +13,7 @@ import re
 from collections.abc import Callable, Sequence
 from typing import Any
 
-TEMPLATES = ("bar", "line", "area", "scatter", "donut", "table", "metrics", "status", "scenarios", "timeline", "flow")
+TEMPLATES = ("bar", "line", "area", "scatter", "donut", "candlestick", "table", "metrics", "status", "scenarios", "timeline", "flow")
 MAX_BYTES = 65536
 MAX_VISUALS = 4
 _FIELDS = {"version", "template", "title", "subtitle", "takeaway", "unit", "columns", "rows", "basis", "bindings"}
@@ -82,6 +82,13 @@ def _shape(params: Any) -> dict:
                 _text(row[0], empty=False)
             _require(all(v is None or _number(v) for v in row[1:]), "nonnumeric_series")
         _require(any(_number(v) for r in normalized for v in r[1:]), "no_numeric_data")
+    if template == "candlestick":
+        _require(columns == ["Candle", "Open", "High", "Low", "Close"], "invalid_candle_columns")
+        _require(4 <= len(normalized) <= 48, "invalid_candle_cardinality")
+        for row in normalized:
+            label, op, high, low, close = row
+            _require(bool(label.strip()) and all(_number(n) and n > 0 for n in (op, high, low, close)), "invalid_candle_values")
+            _require(low <= min(op, close) <= max(op, close) <= high, "invalid_ohlc")
     if template == "donut":
         _require(len(columns) == 2 and len(rows) <= 12, "invalid_donut_cardinality")
         _require(all(r[1] is None or r[1] >= 0 for r in normalized), "negative_share")
@@ -232,13 +239,14 @@ def public_visuals(meta: Any) -> list[dict]:
 def tool_schema() -> dict:
     cell = {"type": ["string", "number", "null"]}
     return {"name": "render_inline_visual", "description":
-        "Draw a preset chart/table/metrics/scenario/timeline/relationship visual in this reply. "
-        "Prefer zero or one useful visual after an answer. Keep price candles on render_inline_chart. "
+        "Draw a preset chart/table/metrics/scenario/timeline/relationship/candlestick visual in this reply. "
+        "Prefer zero or one useful visual after an answer. Live Terminal price-chart control stays on render_inline_chart. "
         "For observed data use basis=source and bind EVERY value cell (number or text) to a completed prior tool. Narrative templates bind every non-null cell, including dates/labels. "
         "with {row,column,tool,pointer,call_id}; repeated tools require the exact existing tool-use call_id. "
         "Pointer is RFC6901 into that result. Values must match exactly; "
         "do not invent freshness, units or evidence. Source binding accepts exact strings without reformatting. For explicitly requested fictional teaching examples use illustrative (visibly unverified). "
         "Line/bar/area: first column category, remaining numbers/null, one shared unit. Scatter: numeric X,Y. "
+        "Candlestick: columns exactly [Candle,Open,High,Low,Close], 4-48 rows of valid positive OHLC. For illustrative teaching examples only, the renderer derives first reversal candle after two opposite candles, entry above/below the pivot and subsequent breakout; do not manufacture historical/live quotes. Source-based candles require prior exact OHLC bindings. "
         "Donut: category and nonnegative value. Metrics: label,value,optional delta. Narrative templates: 2-3 text columns. "
         "No HTML/URLs/styles. At most four per report. Final guards may withhold a rejected visual.",
         "input_schema": {"type": "object", "additionalProperties": False,
