@@ -280,7 +280,7 @@ def test_p1a_19_missing_intraday_credit_extensions_are_not_zero():
     p = fp()
     for axis in ("rs_velocity_acceleration", "extension_maturity",
                  "vol_liquidity", "cross_asset_credit"):
-        assert p["axes"][axis]["status"] == "not_yet_computed"
+        assert p["axes"][axis]["status"] == "unmeasured"
         assert "reason" in p["axes"][axis]
     assert p["axes"]["evidence_quality"]["source_rights_verified"] is False
 
