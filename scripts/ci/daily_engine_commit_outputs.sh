@@ -62,6 +62,13 @@ if [ "$cgp_audit_rc" -ne 0 ]; then
   echo "::error title=China gold premium final render audit::normalized Gold panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
 fi
 git add data/ site/ reports/
+# Grey Deer EW-P1: same-settled-bundle mirrors and market session must agree.
+# Read-only, no second health ledger. WARN rather than abort: unrelated nightly
+# market outputs remain publishable while the original source owner repairs
+# a partial/missing mirror or a source clock. The consumer must still abstain.
+if ! python -m scripts.check_risk_envelope_pair --root .; then
+  echo "::warning title=Grey Deer settled envelope mirror/clock divergence::risk envelope data/site copies missing, different or behind current market_state; inspect the printed typed result; do not treat stale mirror as a fresh hazard or enable rotation alerts"
+fi
 # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
 # matches nothing, and this step runs under `-eo pipefail` — a missing
 # templates/ would abort the commit and lose the whole render rather than
