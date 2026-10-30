@@ -1,0 +1,28 @@
+{
+  "schema": "bonds.compatible-main-integration.v1",
+  "recorded_at_utc": "2026-10-24T04:42:30.381605+00:00",
+  "intended_merge_parents": [
+    "0ae44a8abeabf0fef38094713e598975056d9905",
+    "c6f6484ce53b897fbaf35d9727bab0ba90b3561a"
+  ],
+  "prospective_tree_before_metadata": "0dd31958da281f67e7d60b902d2bfc7d2a72f708",
+  "assessment_sha256": "f265a1b7086bae31b73940a957d109b0dfb2d0953b61bff677ec200a21e05b4b",
+  "conflicts": [],
+  "source_pin_count": 56,
+  "git_bound_input_count": 556,
+  "nonpage_asset_count": 29,
+  "all_bindings_equal_main94d_native_generation": true,
+  "material_native_invalidation": false,
+  "native_generation_reexecuted": false,
+  "page_sha256": "1f05d112c10d0cf723c008f64df3cd67eb06c43266b6d1f767bbdb74d7d8acd8",
+  "page_bytes": 728415,
+  "source_test_and_manifest_identity": {
+    "tests/test_bonds_glance_copy.py": true,
+    "tests/test_bonds_source_integration.py": true,
+    "tests/test_ci_pack.py": true,
+    ".github/ci/legacy-jobs.yml": true
+  },
+  "native_qualification": "page_adoption_main94d_20261024.json",
+  "final_head_contract_and_publication": "https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277",
+  "visual_or_release_acceptance": false
+}

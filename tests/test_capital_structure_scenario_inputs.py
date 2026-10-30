@@ -61,6 +61,8 @@ from engine.capital_structure.scenario_inputs import (
     ScenarioInputsUnavailable,
     assemble_scenario_inputs,
     commitment_inputs_from_record,
+    financial_inputs_from_fif_cash_receipt,
+    financial_inputs_from_record,
     instrument_set_from_record,
     validate_capacity_inputs_bundle,
 )
@@ -757,3 +759,322 @@ def test_u1b_producer_never_reads_provider_or_credential_paths(
         inside_allowed = any(resolved.is_relative_to(base.resolve()) for base in allowed)
         interpreter = path.startswith(sys.prefix) or "/usr/lib/python" in path or "site-packages" in path
         assert inside_allowed or interpreter, path
+
+
+# ---------------------------------------------------------------------------
+# Governed FIF cash receipt boundary (synthetic owner fixtures, no live data)
+# ---------------------------------------------------------------------------
+
+
+def _fif_cash_witness(*, exact_value: str | None = None, metric_id: str = "cash_and_cash_equivalents",
+                      end: str = "2024-12-31", issuer_sic: str | None = None,
+                      cik: str | None = None, class_restricted_cash: bool = False):
+    from copy import deepcopy
+    from dataclasses import replace
+
+    import tests.test_fundamental_forensics_production_dataset_store as FIF
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.production_provider import ProductionFinancialQueryProvider
+    from engine.fundamental_forensics.query_service import execute_financial_query
+    from engine.fundamental_forensics.raw_ledger import RawFactLedger
+
+    material = FIF._material()
+    if exact_value is not None:
+        # Alter the existing synthetic owner fixture, retaining no real-world
+        # claim. Re-derive occurrence and production-generation identities.
+        events = tuple(
+            replace(event, raw_token=exact_value, parsed_value=Decimal(exact_value),
+                    decimals="INF", precision=None, occurrence_id=None)
+            if event.concept_qname == "us-gaap:CashAndCashEquivalentsAtCarryingValue"
+            else event
+            for event in material.ledger.events
+        )
+        # The owner fixture binds metadata by occurrence ID, not accession.
+        # A changed value has a new ID even when its filing/body is unchanged.
+        metadata = {
+            changed.occurrence_id: material.filing_metadata[original.occurrence_id]
+            for original, changed in zip(material.ledger.events, events)
+        }
+        material = replace(material, ledger=RawFactLedger(events=events), filing_metadata=metadata)
+    if cik is not None:
+        # A synthetic single-cash generation for the existing CS disk fixture's
+        # CIK. Retain its distinct display ticker so the join cannot use ticker.
+        cash, = (event for event in material.ledger.events
+                 if event.concept_qname == "us-gaap:CashAndCashEquivalentsAtCarryingValue")
+        binding = replace(material.binding, entity_id=f"test.issuer.{cik}", cik=cik, source_entity_id=cik)
+        entity = replace(material.entity, entity_id=binding.entity_id, cik=cik, source_entity_id=cik)
+        metadata = material.filing_metadata[cash.occurrence_id]
+        cash = replace(
+            cash, source=replace(cash.source, entity_id=cik),
+            context=replace(cash.context, entity_identifier=cik), occurrence_id=None,
+        )
+        material = replace(
+            material, binding=binding, entity=entity, ledger=RawFactLedger(events=(cash,)),
+            filing_metadata={cash.occurrence_id: metadata},
+        )
+    if class_restricted_cash:
+        # Synthetic governed variant: a real class-dependent VALUE must fail
+        # the adapter's no-SIC replay. Retain all owner digest validation.
+        from engine.fundamental_forensics.metric_registry import _content_digest
+
+        registry = deepcopy(material.registry_payload)
+        catalog = registry["catalog"]
+        contract, = (row for row in catalog["metrics"]
+                     if row["metric_id"] == "cash_and_cash_equivalents")
+        contract["rule"] = {**contract["rule"], "version": "1.0.1"}
+        contract["applicability"] = {
+            "issuer_class_basis": "sic", "applicable_classes": ["software"],
+            "excluded_classes": [], "basis_note": "synthetic cash-class replay fixture",
+        }
+        catalog["catalog_version"] = "1.1.1"
+        catalog["content_sha256"] = _content_digest(catalog)
+        material = replace(material, registry_payload=registry)
+    store, publication = FIF._publish(material)
+    generation = PDS.load_generation(store, material.binding.entity_id, publication.generation_id)
+    body = json.dumps({
+        "schema": "fundamental_forensics.financial_query_request/v1",
+        "entity_id": material.binding.entity_id,
+        "policy": {
+            "selection": "latest_known_as_of",
+            "source_snapshot_at": "2026-10-05T00:00:00Z",
+            "recorded_at": "2026-10-05T00:00:00Z",
+        },
+        "metric_ids": [metric_id],
+        "periods": [{"kind": "instant", "start": None, "end": end, "label": "reported-instant"}],
+    }).encode("utf-8")
+    result = execute_financial_query(
+        body=body, provider=ProductionFinancialQueryProvider(store),
+        issuer_sic_resolver=lambda _cik: issuer_sic,
+    )
+    return generation, result
+
+
+@pytest.fixture(scope="module")
+def fif_cash_witness():
+    return _fif_cash_witness()
+
+
+def _adapt_fif_cash(witness, **overrides):
+    kwargs = {
+        "issuer_id": "sec:cik:0000999999",
+        "available_at": "2026-10-05T01:00:00Z",
+        "as_of": "2026-10-05T02:00:00Z",
+    }
+    kwargs.update(overrides)
+    return financial_inputs_from_fif_cash_receipt(*witness, **kwargs)
+
+
+def test_fif_cash_binds_only_dated_exact_cash_with_original_provenance(fif_cash_witness) -> None:
+    import hashlib
+    from engine.fundamental_forensics.query import MetricMatrix
+    from engine.fundamental_forensics.raw_ledger import canonical_json
+
+    generation, result = fif_cash_witness
+    built = _adapt_fif_cash(fif_cash_witness)
+    fact, = built.facts
+    cell, = MetricMatrix.from_dict(result.envelope["receipt"]).cells
+    assert built.binding.support == "partial"
+    assert built.binding.generation_id == generation.generation_id
+    assert built.binding.artifact_sha256 == sha256_of([fact])
+    assert built.binding.as_of == "2026-10-05T02:00:00Z"
+    assert built.cash_basis == "unrestricted_cash"
+    assert fact["amount"] == {"value": "15", "unit": "usd", "status": "known"}
+    assert fact["measured_at"] == "2024-12-31"
+    assert fact["available_at"] == "2026-10-05T01:00:00Z"
+    assert fact["source"]["query_response"] == result.envelope
+    assert fact["source"]["query_response"]["authority"] == {"class": "context_only", "display_only": True}
+    assert fact["source"]["query_response"]["delivery"]["attested"] is False
+    assert fact["source"]["query_response"]["delivery"]["capture_basis"] == "reconstruction"
+    assert fact["source"]["dataset_clocks"] == generation.manifest["clocks"]
+    assert fact["source"]["query_response_sha256"] == result.sha256
+    assert fact["source"]["receipt_sha256"] == hashlib.sha256(canonical_json(cell.to_dict()).encode()).hexdigest()
+    assert financial_inputs_from_record(built.as_record()).as_record() == built.as_record()
+    assert set(fact) == {
+        "schema", "item_id", "item_kind", "availability", "amount",
+        "measured_at", "gross_net", "available_at", "source",
+    }
+
+
+def test_fif_cash_never_rounds_through_binary_float() -> None:
+    from engine.fundamental_forensics.query import MetricMatrix
+
+    value = "9007199254740993.125"
+    witness = _fif_cash_witness(exact_value=value)
+    cell, = MetricMatrix.from_dict(witness[1].envelope["receipt"]).cells
+    assert cell.is_value and cell.value == Decimal(value)
+    built = _adapt_fif_cash(witness)
+    assert built.facts[0]["amount"]["value"] == value
+
+
+@pytest.mark.parametrize("overrides", [
+    {"issuer_id": "sec:cik:0000789019"},
+    {"issuer_id": "issuer:0000999999"},
+    {"issuer_id": "FIP1"},
+    {"available_at": "2026-10-05T00:00:00"},
+    {"available_at": "2026-10-05T01:00:00.0000001Z"},
+    {"as_of": "2026-10-05T02:00:00.0000001Z"},
+    {"as_of": "2026-10-05T00:30:00Z"},
+    {"available_at": "2026-10-04T23:59:59Z"},
+    {"available_at": "2026-09-30T23:59:59Z"},
+])
+def test_fif_cash_rejects_identity_or_unproved_cutoff(fif_cash_witness, overrides) -> None:
+    with pytest.raises(ScenarioInputsError):
+        _adapt_fif_cash(fif_cash_witness, **overrides)
+
+
+@pytest.mark.parametrize("damage", ["body", "digest", "authority", "attestation", "role_bytes"])
+def test_fif_cash_rejects_receipt_and_generation_damage(fif_cash_witness, damage) -> None:
+    import hashlib
+    from dataclasses import replace
+    from engine.fundamental_forensics.raw_ledger import canonical_json
+
+    generation, result = fif_cash_witness
+    if damage == "body":
+        result = replace(result, body=result.body + b" ")
+    elif damage == "digest":
+        result = replace(result, sha256="0" * 64)
+    elif damage == "role_bytes":
+        payloads = dict(generation.role_payloads)
+        payloads["ledger_json"] = payloads["ledger_json"] + b" "
+        generation = replace(generation, role_payloads=payloads)
+    else:
+        envelope = json.loads(result.body)
+        if damage == "authority":
+            envelope["authority"]["display_only"] = False
+        else:
+            envelope["delivery"]["attested"] = True
+        body = canonical_json(envelope).encode("utf-8")
+        result = replace(result, body=body, sha256=hashlib.sha256(body).hexdigest(), envelope=envelope)
+    with pytest.raises(ScenarioInputsError):
+        _adapt_fif_cash((generation, result))
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"metric_id": "accounts_receivable_net"},
+    {"end": "2022-12-31"},
+])
+def test_fif_cash_refuses_other_or_missing_witnesses(kwargs) -> None:
+    with pytest.raises(ScenarioInputsError):
+        _adapt_fif_cash(_fif_cash_witness(**kwargs))
+
+
+def test_fif_cash_accepts_outcome_inert_sic_with_identical_replay(fif_cash_witness) -> None:
+    generation, result = _fif_cash_witness(issuer_sic="7372")
+    original_generation, original_result = fif_cash_witness
+    assert generation.generation_id == original_generation.generation_id
+    assert result.body == original_result.body
+    assert result.sha256 == original_result.sha256
+    assert _adapt_fif_cash((generation, result)).as_record() == _adapt_fif_cash(fif_cash_witness).as_record()
+
+
+def test_fif_cash_refuses_a_value_that_requires_issuer_class() -> None:
+    from engine.fundamental_forensics.query import MetricMatrix
+
+    witness = _fif_cash_witness(issuer_sic="7372", class_restricted_cash=True)
+    cell, = MetricMatrix.from_dict(witness[1].envelope["receipt"]).cells
+    assert cell.is_value and cell.value == Decimal("15")
+    missing_generation, missing_result = _fif_cash_witness(class_restricted_cash=True)
+    assert missing_generation.generation_id == witness[0].generation_id
+    missing, = MetricMatrix.from_dict(missing_result.envelope["receipt"]).cells
+    assert not missing.is_value and missing.reason == "issuer_class_unknown"
+    with pytest.raises(ScenarioInputsError, match="receipt does not reproduce"):
+        _adapt_fif_cash(witness)
+
+
+def test_fif_cash_uses_only_supplied_memory(fif_cash_witness, monkeypatch) -> None:
+    from dataclasses import replace
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics import query_service
+
+    class NoStore:
+        def __getattr__(self, _name):
+            raise AssertionError("adapter must not access the original store")
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("adapter must not acquire configuration or data")
+
+    generation, result = fif_cash_witness
+    monkeypatch.setattr(PDS, "build_production_dataset_store", forbidden)
+    monkeypatch.setattr(query_service, "resolve_issuer_sic", forbidden)
+    _adapt_fif_cash((replace(generation, store=NoStore()), result))
+
+
+def test_fif_cash_builder_entry_is_optional_and_keeps_other_family_gates(fif_cash_witness) -> None:
+    assert producer._financials_entry().support == "unavailable"
+    entry = producer._financials_entry(
+        issuer_id="sec:cik:0000999999", as_of="2026-10-05T02:00:00Z",
+        witness=(*fif_cash_witness, "2026-10-05T01:00:00Z"),
+    )
+    assert entry.support == "partial"
+    entries = {
+        INSTRUMENTS_FAMILY: FamilyEntry(INSTRUMENTS_FAMILY, "unavailable", ("candidate_terms_not_materialized",)),
+        SHARE_BASIS_FAMILY: FamilyEntry(SHARE_BASIS_FAMILY, "unavailable", ("share_observations_not_admitted",)),
+        FINANCIALS_FAMILY: entry,
+        COMMITMENTS_FAMILY: FamilyEntry(COMMITMENTS_FAMILY, "unavailable", ("commitment_rows_absent",)),
+    }
+    bundle = check_bundle(_fixture_bundle(
+        entries, issuer_id="sec:cik:0000999999", as_of="2026-10-05T02:00:00Z",
+        rules=RulesEntry(support="unavailable", reason_codes=("no_rule_governs_as_of",)),
+    ))
+    inputs = assemble_scenario_inputs(bundle, "sec:cik:0000999999", "2026-10-05T02:00:00Z")
+    assert isinstance(inputs, ScenarioInputsUnavailable)
+    assert FINANCIALS_FAMILY in inputs.available
+    assert INSTRUMENTS_FAMILY in inputs.components
+    assert RULES_FAMILY in inputs.components
+
+
+def test_fif_cash_builder_refuses_coverage_widening_and_preserves_last_bundle(tmp_path, fif_cash_witness) -> None:
+    root = _served_root(tmp_path)
+    producer.build_from_disk(root=root)
+    target = root / CAPACITY_INPUTS_FILENAME
+    before = target.read_bytes()
+    with pytest.raises(ScenarioInputsError, match="not in the served issuer set"):
+        producer.build_from_disk(
+            root=root,
+            fif_cash_receipts={"sec:cik:0000789019": (*fif_cash_witness, "2026-10-05T01:00:00Z")},
+        )
+    assert target.read_bytes() == before
+
+
+def test_fif_cash_builder_binds_verified_witness_for_an_existing_served_issuer(tmp_path) -> None:
+    from dataclasses import replace
+
+    root = _served_root(tmp_path)
+    as_of = "2026-10-05T02:00:00Z"
+    state_builder.build_from_disk(root=root, as_of=as_of, generated_at="2026-10-05T03:00:00Z")
+    state_bytes = (root / producer.STATE_BUNDLE_FILENAME).read_bytes()
+    producer.build_from_disk(root=root, generated_at="2026-10-05T03:01:00Z")
+    before = _read_produced_bundle(root)
+    assert set(before["issuers"]) == {ISSUER}
+    assert before["issuers"][ISSUER][FINANCIALS_FAMILY]["support"] == "unavailable"
+
+    generation, result = _fif_cash_witness(cik=ISSUER.removeprefix("sec:cik:"))
+    summary = producer.build_from_disk(
+        root=root, generated_at="2026-10-05T03:02:00Z",
+        fif_cash_receipts={ISSUER: (generation, result, "2026-10-05T01:00:00Z")},
+    )
+    after = _read_produced_bundle(root)
+    assert summary["status"] == "ok"
+    assert summary["issuers"] == 1
+    assert summary["families"][FINANCIALS_FAMILY] == 0
+    assert set(after["issuers"]) == {ISSUER}
+    assert after["state_generation_id"] == before["state_generation_id"]
+    assert after["source_generation_id"] == before["source_generation_id"]
+    assert (root / producer.STATE_BUNDLE_FILENAME).read_bytes() == state_bytes
+    financials = after["issuers"][ISSUER][FINANCIALS_FAMILY]
+    assert financials["support"] == "partial"
+    assert financials["record"]["facts"][0]["amount"]["value"] == "15"
+    assert financials["record"]["facts"][0]["measured_at"] == "2024-12-31"
+    assert financials["record"]["facts"][0]["source"]["query_response"] == result.envelope
+    for family in (INSTRUMENTS_FAMILY, SHARE_BASIS_FAMILY, COMMITMENTS_FAMILY):
+        assert after["issuers"][ISSUER][family] == before["issuers"][ISSUER][family]
+    assert after["rules"] == before["rules"]
+
+    target = root / CAPACITY_INPUTS_FILENAME
+    last_good = target.read_bytes()
+    damaged = replace(result, body=result.body + b" ")
+    with pytest.raises(ScenarioInputsError):
+        producer.build_from_disk(
+            root=root, fif_cash_receipts={ISSUER: (generation, damaged, "2026-10-05T01:00:00Z")},
+        )
+    assert target.read_bytes() == last_good

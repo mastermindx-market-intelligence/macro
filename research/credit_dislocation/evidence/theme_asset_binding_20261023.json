@@ -1,0 +1,151 @@
+{
+  "record_kind": "owner_recovery_evidence",
+  "title": "Theme asset source lineage and artifact-only binding correction",
+  "documentation_status": "Owner record integrated into the existing CDI evidence carrier",
+  "observed_date": "2026-10-23",
+  "source": "Exact read and execution facts supplied by the accountable root owner; this compiler performed local proposal edits only.",
+  "source_identity": {
+    "head": "d67c40527801925ab3323310f72e2cbf070a4ead",
+    "merge_head": "7f57e913a5fa17e11001564a31c4c70a425cb102",
+    "remote_head": "cf9ac2b2c03f3f4f7be429f87483c1281ba784ba",
+    "observed_date": "2026-10-23",
+    "final_composition": false
+  },
+  "lineage": {
+    "checked_at_utc": "2026-10-23T05:56:22.907488Z",
+    "raw_finished_asset_equals": "pinned templates/theme.js",
+    "fixed_input_manifest_source": "templates/theme.js admitted as site_asset, bypassing production bake/bundle",
+    "template_git_blob": "943f65c1642c7f1e6d362a3891ec9d6ebf228e2d",
+    "canonical_emitter": "lib.site_assets.emit_theme_js",
+    "pinned_minifier": "rjsmin==1.2.5",
+    "canonical_output_matches_existing_index": true,
+    "canonical_output_bytes": 271335,
+    "canonical_output_sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+    "remaining_supabase_or_brain_placeholders": false,
+    "receipt_path": ".cdi-proof/integration-20261022/theme-asset-source-lineage-20261023.json",
+    "receipt_sha256": "a7eaadbd2b9db8e93c6fc62c3924c2a6b90f26b2a613e94e9edfd50311bfac03"
+  },
+  "artifact_only_correction": {
+    "pid": 10615,
+    "completed_at_utc": "2026-10-23T05:57:36.555074Z",
+    "artifact_directory": ".cdi-proof/w4-theme-corrected-20261023",
+    "optimizer": "existing make_optimizer",
+    "exact_html_change": "Exactly one theme.js?v=4403e51f changed to theme.js?v=a46f6677",
+    "html_bytes": 727897,
+    "html_sha256": "77ce3a305172dae6f034694db38e9f0785320b01b326c40863841a54e354f54f",
+    "nonpage_assets_matching_fixed_merge_index": 28,
+    "page_merge_unresolved": true,
+    "receipt_path": ".cdi-proof/integration-20261022/w4-theme-binding-20261023.result.json",
+    "receipt_sha256": "6f9e595c8a43d855576549fd521ceca129428e7652e19eade081835a81062fd7",
+    "original_29_file_artifact_preserved_bytewise": true,
+    "producer_rerun": false,
+    "cdi_rerun": false,
+    "native_rerun": false,
+    "css_or_js_externalization_rerun": false
+  },
+  "ci_inventory_repair": {
+    "scope": "Three-entry inventory repair; same exact bytes as Forex fix",
+    "applied_at_utc": "2026-10-23T05:50:29.751072Z",
+    "pid": 93121,
+    "sha256": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+    "ci_execution_or_pass_claim": false
+  },
+  "upstream_reconciliation": {
+    "fetched_at_utc": "2026-10-23T05:57:08.726034Z",
+    "main_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+    "changed_shared_scope": [
+      "theme",
+      "mm_brain",
+      "CI",
+      "generated bonds"
+    ],
+    "next_owner_action": "Curate and commit the preserved 7f57e913 merge, then merge current upstream normally before final qualification.",
+    "identical_ci_inventory_repair_also_present_on_observed_main": true
+  },
+  "original_review_observation": {
+    "observed_at_utc": "2026-10-23T05:45Z",
+    "status": "terminal",
+    "rc": 1,
+    "verified": false,
+    "continuation_evidence": "unqualified",
+    "retry_allowed": false,
+    "response_sha256": "610b5ddef9d7dd6a55841c0ff2b45928a68b1906000d341b5fab0e130c99dfc7",
+    "new_review": false
+  },
+  "limits": [
+    "No final composition, final-head CI, browser, independent review or release claim.",
+    "All prior held facts, original refusal and unknown-effect custody remain.",
+    "October 22 native evidence retains its original execution date; this is a separate October 23 artifact correction."
+  ],
+  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated.",
+  "subsequent_qualifications": [
+    {
+      "observed_date": "2026-10-23",
+      "scope": "Distinct afc native artifact literal-asset closure; old 7f artifact and correction remain unchanged.",
+      "source_identity": {
+        "head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+        "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e"
+      },
+      "native_report_sha256": "5ab5945c557f0effeff7480a4f262cd7c8ba6472fba016ba107704d9c0539cd8",
+      "artifact_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+      "artifact_bytes": 728494,
+      "site_files": 30,
+      "literal_asset_references": 27,
+      "fonts": 6,
+      "css_files": 11,
+      "nonpage_files_matching_current_index": 29,
+      "missing_assets": [],
+      "literal_receipt_path": ".cdi-proof/integration-20261022/w4-afc-literal-asset-closure-20261023.json",
+      "literal_receipt_sha256": "6ba02d76581c382d35586ea765a869336c5e7a5dfcb267bd4715e0060b8abc73",
+      "theme_js": {
+        "bytes": 275110,
+        "sha256": "25617108b24d273d63f5be0c7b5516f316a34d2201a54e0ac3012bf2fdf1da46"
+      },
+      "mm_brain_js": {
+        "bytes": 290712,
+        "sha256": "e7dce73797a01db5d115eaef6c19e24fa866b0f95206f7d36444252cc2c1511c"
+      },
+      "acceptance": {
+        "literal_assets": true,
+        "current_market_page": false,
+        "browser": false,
+        "release": false
+      },
+      "browser_result": {
+        "at": "2026-10-23T06:36:50.758380+00:00",
+        "selected_browser": "Chrome extension id0",
+        "tab_id": "1065717964",
+        "url": "http://127.0.0.1:53861/bonds.html",
+        "outcome": "TECHNICAL_ROUTE_FAILURE",
+        "browser_error": "net::ERR_SOCKET_NOT_CONNECTED",
+        "platform_safety_refusal_observed": false,
+        "candidate_screenshot_or_interaction_proven": false,
+        "alternate_host_browser_tunnel_file_url_or_publication_attempted": false,
+        "studio_http_status": 200,
+        "studio_http_page_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "receipt_sha256": "df2b93a31368461eea720a1f78c167a7e09278e0636a47ec0fc433415fbfd84d",
+        "owned_preview_closed_at_utc": "2026-10-23T06:36:51.191032Z",
+        "closure_receipt_sha256": "e61cd92f6d615ec84fba26d7f303e2f6bfd4c82c778c046963ac5e26e1cbd282",
+        "error_tab_closed": true,
+        "visual_acceptance": false
+      }
+    }
+  ],
+  "upstream_page_source_binding": {
+    "pid": 75578,
+    "completed_at_utc": "2026-10-23T07:16:26.802939Z",
+    "original_upstream_sha256": "0df12cb81abf9e112a84997953d31c5dadd127241f626075c1e7ea46fc4b2450",
+    "page_sha256": "77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065",
+    "page_bytes": 254664,
+    "changes": [
+      "Canonical existing native/index CSS reference ebe31e14->a29822ca",
+      "Matching current template/native Lens handler; existing shared theme remains renderer/activation/dismissal owner"
+    ],
+    "market_copy_and_data_unchanged": true,
+    "old_upstream_and_native_candidates_preserved": true,
+    "qualification_passed": 2,
+    "qualification_seconds": 2.06,
+    "qualification_completed_at_utc": "2026-10-23T07:16:30.220464Z",
+    "qualification_log_sha256": "62abdf0d57d6f0ab2c46d9343d7a93fb2c04b4f4e7172710c218150663775672"
+  }
+}

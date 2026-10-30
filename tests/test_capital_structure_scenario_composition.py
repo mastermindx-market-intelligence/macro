@@ -89,6 +89,20 @@ NOT_CASH_ON_HAND = "not cash on hand"
 # ---------------------------------------------------------------------------
 
 
+def _cash_at_horizon(value: Decimal) -> dict[str, Any]:
+    """Synthetic arithmetic fixture: observed cash at the horizon and cutoff.
+
+    C1's horizon starts on SALE and its cutoff is that day's midnight. This
+    declares a same-horizon observation; it does not carry June cash forward.
+    """
+    return F.cash(
+        str(value),
+        measured=C1.SALE,
+        item_id="cash-at-horizon",
+        available_at=C1.AS_OF,
+    )
+
+
 def explain(
     actions: Sequence[ActionSelection] = (),
     *,
@@ -98,6 +112,7 @@ def explain(
     view: str | None = None,
     state_view_mode: str | None = None,
     cash: Decimal = OPENING_CASH,
+    cash_fact: Mapping[str, Any] | None = None,
     floor: Decimal = LIQUIDITY_FLOOR,
     burn_per_day: Decimal = BURN_PER_DAY,
     extra_facts: Sequence[Mapping[str, Any]] = (),
@@ -132,7 +147,8 @@ def explain(
             state, request=dataclasses.replace(state.request, view_mode=state_view_mode)
         )
     financials = F.financials(
-        F.cash(str(cash), measured="2026-06-30"), *[dict(item) for item in extra_facts]
+        _cash_at_horizon(cash) if cash_fact is None else dict(cash_fact),
+        *[dict(item) for item in extra_facts],
     )
     commitments = F.covenants(
         F.covenant("cov-min-1", str(floor), available_at=COVENANT_AVAILABLE)
@@ -1063,6 +1079,41 @@ def test_s0_the_f1_deficit_case_keeps_the_exact_negative_balance() -> None:
     assert money(period.shortfall) == Decimal("5878000.00")
 
 
+def test_s0_pre_horizon_cash_with_unknown_interim_flows_withholds_coverage() -> None:
+    """An available historical cash fact cannot seed the horizon's balance."""
+    reported_cash = F.cash(
+        str(OPENING_CASH),
+        measured="2026-06-30",
+        item_id="cash-q2",
+        available_at="2026-08-10T20:00:00Z",
+    )
+    result = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")],
+        cash_fact=reported_cash,
+    )
+    check(result)
+    funding = result.funding_schedule.periods[0]
+    coverage = result.coverage[0]
+    assert result.joint_check.status == "feasible"
+    assert "unknown:interim_flows" in {
+        item.unknown_id for item in result.funding_schedule.unknowns
+    }
+    assert funding.opening_balance.provenance.available_at == reported_cash["available_at"]
+    assert "2026-06-30" in (funding.opening_balance.note or "")
+    assert money(funding.minimum_liquidity) == LIQUIDITY_FLOOR
+    assert money(coverage.scenario_net) == Decimal("5700000.00")
+    assert coverage.status == "indeterminate"
+    for quantity in (
+        funding.opening_balance,
+        funding.closing_balance,
+        funding.gap,
+        coverage.gap,
+        coverage.scenario_balance,
+        coverage.shortfall,
+    ):
+        assert quantity.status == "unknown" and quantity.value is None
+
+
 def test_s0_the_consistency_assertion_fires_on_a_tampered_schedule(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1432,7 +1483,7 @@ def explain_with_state(
     if scenario_over:
         over.update(scenario_over)
     scenario = dataclasses.replace(scenario, **over)
-    financials = F.financials(F.cash(str(OPENING_CASH), measured="2026-06-30"))
+    financials = F.financials(_cash_at_horizon(OPENING_CASH))
     commitments = F.covenants(
         F.covenant("cov-min-1", str(LIQUIDITY_FLOOR), available_at=COVENANT_AVAILABLE)
     )

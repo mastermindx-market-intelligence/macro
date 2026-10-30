@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_bonds_duration.html.j2
+  - templates/_credit_dislocation.html.j2
+  - site/bonds.html
+  - site/assets/css/41a0f008.css
+  - site/assets/css/e42cc80f.css
+manifest: mockups/evidence/bonds-warning-token-4213-20261025/manifest.json

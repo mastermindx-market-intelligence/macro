@@ -438,13 +438,6 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
   border:1px solid var(--line);background:transparent;color:var(--muted);
   font-size:11px;font-weight:700;cursor:help;line-height:1;position:relative}
 .wrap .band-chip .lens-q{color:inherit;border-color:color-mix(in srgb,currentColor 45%,transparent)}
-.wrap .lens-q::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
-  z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-sm);font-size:12px;font-weight:500;
-  line-height:1.45;letter-spacing:0;text-transform:none;color:var(--text);background:var(--panel);
-  border:1px solid var(--line);box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 18%,transparent);
-  white-space:normal;text-align:left}
-html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
-.wrap .lens-q.cnx-tip-open::after,.wrap .lens-q:focus-visible::after{display:block}
 @media(max-width:640px){.wrap .lens-q{width:32px;height:32px;font-size:13px}}
 
 /* Focus-visible rings on interactive hosts. */
@@ -461,6 +454,9 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
+<style>
+{% include "_bonds_source_inspector.css.j2" %}
+</style>
 </head>
 <body>
 {% include "_site_nav.html.j2" %}
@@ -520,6 +516,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         {% endif %}
         <span class="dtp-chip dtp-chip--snapshot"><i></i><span class="l-en">Latest bond snapshot</span><span class="l-zh">最新债券快照</span></span>
         <span class="dtp-asof"><span class="l-en">As of {{ hero.as_of or as_of }}</span><span class="l-zh">截至 {{ hero.as_of_zh or as_of_zh or as_of }}</span></span>
+        <button type="button" id="bonds-source-open" aria-haspopup="dialog" aria-controls="bonds-source-dialog" aria-expanded="false"><span class="l-en">Transmission sources</span><span class="l-zh">传导来源</span></button>
       </div>
       {% if hero.caveat_en %}<div class="mx-callout"><b class="l-en">Read the score with care:</b><b class="l-zh">读数注意：</b>
         <span class="l-en">{{ hero.caveat_en.split(':', 1)[1] if ':' in (hero.caveat_en or '') else hero.caveat_en }}</span>
@@ -630,6 +627,8 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         <div class="flag info" style="margin-top:10px">ℹ {{ t('Context only. The same factors helped most with drawdown control, not precise return timing.', '仅供参考。同类因子主要帮助控制回撤，而非精确择时收益。') }}</div>
         {% endif %}
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
+        <button type="button" class="gbtn gbtn-quiet bonds-duration-open" data-duration-open aria-haspopup="dialog" aria-controls="bonds-duration-dialog" disabled>{{ t('Preview price impact →', '预览价格影响 →') }}</button>
+        <p class="sub faint" data-duration-unavailable>{{ t('Preview unavailable: JavaScript and native dialog support are required. Market information is unaffected.', '预览不可用：需要 JavaScript 与原生对话框支持。市场信息不受影响。') }}</p>
       </div>
 
       <div class="panel" id="stress">
@@ -826,6 +825,54 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
   </section>
   {% endif %}
 
+  {% if explanation_view and explanation_view.get('mechanisms') %}
+  <section class="landing" id="bond-explanations">
+    <p class="landing-kicker">{{ t('WHY BONDS ARE MOVING', '债券为何波动') }}</p>
+    <div class="card">
+      <h2>{{ t('Competing explanations — keep the disagreement visible', '竞争性解释 — 保留分歧') }}</h2>
+      <p class="sub faint">{{ t(
+        'Five evidence rows from existing owners. They are descriptive/mechanical context, not probabilities, forecasts or a forced single story.',
+        '来自现有权威来源的五条证据路径。它们是描述性/机制性背景，不是概率、预测或强行归一的单一叙事。'
+      ) }}</p>
+      {% set _src = explanation_view.get('source_status', {}) %}
+      <p class="sub faint">{{ t('Source join', '来源连接') }} · {{ _src.get('state', 'unknown') }}{% if explanation_view.get('as_of') %} · {{ explanation_view.get('as_of') }}{% endif %}</p>
+
+      {% for row in explanation_view.get('mechanisms', []) %}
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">{{ row.get('label', {}).get('en') }}</span><span class="l-zh">{{ row.get('label', {}).get('zh') }}</span></b>
+          <span class="sub faint"> · {{ row.get('state', 'unknown') }}</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">{{ row.get('summary', {}).get('en') }}</span><span class="l-zh">{{ row.get('summary', {}).get('zh') }}</span></p>
+        {% if row.get('withheld_reason') %}
+        <p class="sub faint"><b>{{ t('Withheld', '暂不判断') }}:</b> <span class="l-en">{{ row.get('withheld_reason', {}).get('en') }}</span><span class="l-zh">{{ row.get('withheld_reason', {}).get('zh') }}</span></p>
+        {% endif %}
+
+        {% for bucket, label_en, label_zh in [('supports','Supports','支持'), ('contradicts','Contradicts','反驳'), ('missing','Missing / withheld','缺失 / 暂不使用')] %}
+          {% set items = row.get(bucket, []) %}
+          {% if items %}
+          <div class="sub" style="margin-top:8px"><b>{{ t(label_en, label_zh) }}</b></div>
+          {% for item in items %}
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">{{ item.get('claim', {}).get('en') }}</span><span class="l-zh">{{ item.get('claim', {}).get('zh') }}</span>
+            <span> · {{ item.get('source') or 'source unavailable' }}{% if item.get('source_as_of') %} · {{ item.get('source_as_of') }}{% endif %}</span>
+            {% if item.get('limit') %}
+              <span> · </span><span class="l-en">{{ item.get('limit', {}).get('en') }}</span><span class="l-zh">{{ item.get('limit', {}).get('zh') }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </details>
+      {% endfor %}
+      <p class="sub faint" style="margin-top:10px">{{ t(
+        'Display-only evidence. No score, probability, alert, holding, trade or market state is changed here.',
+        '仅展示证据。本区不会改变评分、概率、提醒、持仓、交易或市场状态。'
+      ) }}</p>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- ===================== LANDING: FED PATH ===================== -->
   {% if fed_path %}
   <section class="landing" id="fed-path">
@@ -1001,6 +1048,12 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     <h2>{{ t('Credit reading unavailable', '信用读数不可用') }}</h2>
     <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
   </div>
+  {% elif cc_vm.producer_current is defined and not cc_vm.producer_current %}
+  <div class="card cs-card cs-neutral" data-card="credit-currentness-unconfirmed">
+    <h2>{{ t('Current credit reading unconfirmed', '当前信用读数未确认') }}</h2>
+    <p class="cc-verdict-lead">{{ t(cc_vm.hero.subtitle_en, cc_vm.hero.subtitle_zh) }}</p>
+    <div class="cc-as-of">{{ t('Source date', '数据源日期') }}: {{ cc_vm.as_of if cc_vm.as_of else t('Unavailable', '不可用') }}</div>
+  </div>
   {% else %}
   {# 2. HERO STANCE CARD #}
   <div class="card cs-card {{ cc_vm.hero.hero_cs }}">
@@ -1162,7 +1215,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   {# 7. MATURITY WALL MINI-CARD #}
   {% if cc_vm.maturity_wall %}
   <div class="card cs-card cs-neutral">
-    <h2>{{ t('When the debt comes due', '债务到期分布') }}</h2>
+    <h2>{{ t('Tracked bond-fund holdings by maturity', '跟踪债券基金持仓到期期限分布') }}</h2>
     <div class="cc-mat-wall">
       {% for row in cc_vm.maturity_wall %}
       <div class="cc-mat-row">
@@ -1184,10 +1237,11 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       <span><span class="cc-dot" style="background:var(--blue)"></span><span class="l-en">5–10y</span><span class="l-zh">5–10年</span></span>
       <span><span class="cc-dot" style="background:var(--indigo)"></span><span class="l-en">10y+</span><span class="l-zh">10年+</span></span>
     </div>
-    <p class="sub faint" style="margin:8px 0 0;font-size:11px">{{ t('All themes had zero bonds maturing within 1 year as of ' ~ cc_vm.as_of ~ '.', '截至' ~ cc_vm.as_of ~ '，所有主题均无1年内到期债券。') }}</p>
+    <p class="sub faint" style="margin:8px 0 0;font-size:11px">{{ t('Fund holdings only: face values held by five tracked funds, not total issuer debt or refinancing maturities. Holdings as of ' ~ cc_vm.maturity_wall[0].as_of ~ '.', '仅显示五只跟踪基金的债券持仓面值，并非发行人全部在外债务或完整再融资到期负担。持仓日期：' ~ cc_vm.maturity_wall[0].as_of ~ '。') }}</p>
   </div>
   {% endif %}
 
+  {% if cdi is not defined %}
   {# 8. STOCKS VS BONDS — fail-closed stale-date gate (§3) #}
   <div class="card cs-card {% if div_card.state == 'delayed' %}cc-delayed cs-neutral{% else %}cs-neutral{% endif %}" data-card="stocks-vs-bonds">
     <h2>{{ t('Stocks vs their bonds', '股票与其债券') }}</h2>
@@ -1226,6 +1280,8 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     {% endif %}
   </div>
 
+  {% endif %}
+
   {# 9. FOOTER NOTE #}
   <div class="cc-foot-note">
     <span class="l-en">Prices are fund-reported estimates · covers bonds inside major index funds only · daily prices start 14 Jul 2026</span><span class="l-zh">价格为基金披露估值 · 仅覆盖主要指数基金持仓债券 · 日度价格自2026年7月14日起</span>
@@ -1233,6 +1289,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 {% endif %}
 {% endif %}
 {# END CCW-W4 corporate credit desk #}
+{% include "_credit_dislocation.html.j2" %}
 
   <!-- ===================== STRESS + CROSS-ASSET ===================== -->
   <div class="sec-head">{{ t('Stress & funding · the stock-bond hedge', '压力与资金状况 · 股债对冲') }}</div>
@@ -1353,9 +1410,9 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% set gc = 'var(--down)' if (r.gap or 0) >= 10 else '#d9a03c' if (r.gap or 0) >= 2 else 'var(--up)' if (r.gap or 0) <= -2 else 'var(--muted)' %}
       <tr>
         <td style="padding:5px 8px;border-bottom:1px solid var(--line)"><b>{{ t(r.label_en, r.label_zh) }}</b></td>
-        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }};font-weight:700">{{ '%+.1f'|format(r.gap) }}pp{% if r.gap_chg_1y is not none %} <span class="sub faint" style="font-weight:400">{{ '%+.1f'|format(r.gap_chg_1y) }}/yr</span>{% endif %}</td>
+        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }};font-weight:700">{% if r.gap is none %}<span class="faint">—</span>{% else %}{{ '%+.1f'|format(r.gap) }}pp{% if r.gap_chg_1y is not none %} <span class="sub faint" style="font-weight:400">{{ '%+.1f'|format(r.gap_chg_1y) }}/yr</span>{% endif %}{% endif %}</td>
         <td style="padding:5px 8px;border-bottom:1px solid var(--line);color:{{ gc }}">{{ t(r.gap_state, {'elevated risk':'风险偏高','building':'累积中','deleveraging':'去杠杆','neutral':'中性'}.get(r.gap_state, r.gap_state)) }}</td>
-        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)">{{ r.dsr }}%{% if r.dsr_chg_1y is not none %} <span class="sub faint">{{ '%+.1f'|format(r.dsr_chg_1y) }}/yr</span>{% endif %}</td>
+        <td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)">{% if r.dsr is none %}<span class="faint">—</span>{% else %}{{ r.dsr }}%{% if r.dsr_chg_1y is not none %} <span class="sub faint">{{ '%+.1f'|format(r.dsr_chg_1y) }}/yr</span>{% endif %}{% endif %}</td>
       </tr>
       {% endfor %}
     </table>
@@ -1479,38 +1536,45 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   </div>
 </div>
 
+{% include "_bonds_duration.html.j2" %}
 <script src="theme.js"></script>
+<script type="module">
+{% include "_bonds_duration.mjs.j2" %}
+</script>
 <script defer src="illus.js"></script>
 <script>
 /* scroll reveal — cards + hero rise into view (reduced-motion parks them shown) */
 (function(){var els=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion:reduce)').matches){els.forEach(function(e){e.classList.add('in');});return;}
 var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
 els.forEach(function(e){io.observe(e);});})();
-/* LENS `?` — pointerdown toggle so tap at 390 does not flash-and-vanish (S1). */
+/* Keep pointer focus from opening Lens before its click-toggle runs.
+   Shared theme.js owns all tooltip rendering, activation and dismissal. */
 (function(){
   document.addEventListener('pointerdown', function(e){
     var q = e.target && e.target.closest && e.target.closest('.wrap .lens-q');
     if(!q) return;
     e.preventDefault();
     e.stopPropagation();
-    var was = q.classList.contains('cnx-tip-open');
-    document.querySelectorAll('.wrap .lens-q.cnx-tip-open').forEach(function(el){
-      el.classList.remove('cnx-tip-open');
-    });
-    if(!was) q.classList.add('cnx-tip-open');
   }, true);
-  document.addEventListener('keydown', function(e){
-    var t = e.target;
-    if(!t || !t.classList || !t.classList.contains('lens-q')) return;
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      t.classList.toggle('cnx-tip-open');
-    }
-  });
 })();
 </script>
 <footer class="site-footer">
   <span>© 2026 Mastermind Inc</span>
 </footer>
+<!-- R33 display context: payload stays on the existing protected static boundary. -->
+<dialog id="bonds-source-dialog" aria-labelledby="bonds-source-title">
+  <header class="bonds-source-header">
+    <h2 id="bonds-source-title" class="bonds-source-title">{{ t('Bonds transmission sources', '债券传导来源') }}</h2>
+    <button type="button" id="bonds-source-close" class="bonds-source-close" aria-label="Close source inspector"><span aria-hidden="true">×</span></button>
+  </header>
+  <p id="bonds-source-status" class="source-sr-only" role="status" aria-live="polite"></p>
+  <div id="bonds-source-content" role="region" aria-labelledby="bonds-source-title" aria-busy="false" tabindex="-1"></div>
+</dialog>
+<script>
+{% include "_bonds_source_adapter.js.j2" %}
+</script>
+<script>
+{% include "_bonds_source_inspector.js.j2" %}
+</script>
 </body>
 </html>

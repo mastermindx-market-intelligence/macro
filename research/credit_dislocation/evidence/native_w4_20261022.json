@@ -1,0 +1,305 @@
+{
+  "record_kind": "owner_recovery_evidence",
+  "title": "W4 retained native generation and artifact-only completion",
+  "documentation_status": "Owner record integrated into the existing CDI evidence carrier",
+  "checkpoint_identity": {
+    "observed_date": "2026-10-22",
+    "repository": "mastermindx-market-intelligence/macro",
+    "carrier_pr": 9590,
+    "head": "d67c40527801925ab3323310f72e2cbf070a4ead",
+    "merge_head": "7f57e913a5fa17e11001564a31c4c70a425cb102",
+    "remote_head": "cf9ac2b2c03f3f4f7be429f87483c1281ba784ba",
+    "composition_state": "pending local merge with subsequent owner source/test edits; no final composed commit/tree or final-head CI verdict supplied",
+    "source": "Exact identities and execution facts supplied by the accountable recovery owner. This local documentation reconciliation inspected only retained scratch proposals/source helpers; it performed no host read, application test, build, browser, provider, CI, Fabric, independent review or remote mutation. Reconcile current repository/runtime state before effects.",
+    "fresh_state_read_performed_by_documentation_compiler": false
+  },
+  "scope": "One actual retained holdings -> CCW producer -> existing validation -> CDI -> native generation, followed by artifact-only completion and a read-only literal asset supplement.",
+  "snapshot_boundary": {
+    "source_pin_binding": "Exact source_pins records in the continued qualification report",
+    "snapshot_precedes_collector_date_repair": true,
+    "proves_final_worktree_or_final_head": false,
+    "final_composed_tree": null,
+    "source_pin_count": 56,
+    "source_pins_path": ".cdi-proof/integration-20261022/w4-retained-runner/source_pins.json",
+    "source_pins_sha256": "84adf08a4a8b3e0fb5bc79df20eca0bc7654f55043e1330ef1c4a9963d29859f"
+  },
+  "fixed_input_image": {
+    "files": 561,
+    "data_files": 543,
+    "site_asset_files": 18,
+    "bytes": 58272794,
+    "manifest_path": ".cdi-proof/integration-20261022/w4-fixed-input-manifest.json",
+    "sha256": "356d286cdb0a54a34c2cf5cd30c815801eb529a0075004f6450f400c0f666cc4",
+    "source_image": ".cdi-proof/w4-fixed-input-source-20261022",
+    "provenance": "Original five 2026-10-15 holdings files and same-date LQD; explicit selected immutable main market/registry/equity/breadth bytes. One fixed composition through producer, validation, CDI and native.",
+    "original_holdings_source_dates": [
+      "2026-10-15"
+    ],
+    "hyg_sample": "absent; not supplied or synthesized",
+    "transmission_latest_present": true,
+    "regime_latest_present": true
+  },
+  "execution_lineage": [
+    {
+      "phase": "initial runtime-resource failure",
+      "pid": 76924,
+      "completed_at_utc": "2026-10-22T19:14:12Z",
+      "exit_code": 1,
+      "proof_directory": ".cdi-proof/w4-retained-native-20261022",
+      "report_sha256": "4c2b85b72ae71fb5a83286b59179fc53409ebb4fa50366b0a72fef691c00b37e",
+      "report_hash_status": "Verified by accountable root owner on 2026-10-23; original failure remains unchanged.",
+      "failure": "Installed America/New_York TZif was not admitted by the exact runtime-resource guard.",
+      "producer_calls": 0,
+      "native_build_calls": 0,
+      "owner_correction": {
+        "scope": "Only the exact installed America/New_York TZif resource was admitted; no data boundary widened.",
+        "tzif_bytes": 1744,
+        "tzif_sha256": "d7f2206b3a45989fc9ad63d558922532fa7352280d5f87176bf1db79cb1d1fa9",
+        "corrected_guard_sha256": "244b561bbe6d18a1aaa9b9343853ebc29ee2d8d1733c90f8b3adb5680be87489"
+      },
+      "report_path": ".cdi-proof/w4-retained-native-20261022/qualification_result.json"
+    },
+    {
+      "phase": "actual producer/validation/CDI/native generation",
+      "pid": 83180,
+      "report_path": ".cdi-proof/w4-retained-native-20261022-continued/qualification_result.json",
+      "report_sha256": "9fad0c78b99dd2a3dde9afaca863903f099ad40fbd02c02bd3c1a9eb122c2400",
+      "retained_report_status": "INCOMPLETE",
+      "actual_producer_calls": 1,
+      "actual_native_build_calls": 1,
+      "validation_overall": "PASS",
+      "native_checks_true": 13,
+      "native_checks_total": 14,
+      "failed_check": "r33_adapter_and_inspector_present",
+      "exact_false_negative": {
+        "old_predicate": ".bonds-source-dialog",
+        "actual_css_selector": "#bonds-source-dialog",
+        "companion_selector": "#bonds-source-open",
+        "pinned_css_blob": "9f36cf46ebdd31bf6b62b871af97476152264a3c"
+      },
+      "externalization_reached": false,
+      "observed_guard_denials": [],
+      "original_inputs_and_pinned_source_unchanged": true,
+      "private_manifest_inputs_unchanged": true
+    },
+    {
+      "phase": "consume retained HTML; finish assets without producer/CDI/native rerun",
+      "pid": 13190,
+      "completed_at_utc": "2026-10-22T19:29:19.626991Z",
+      "exit_code": 0,
+      "report_path": ".cdi-proof/w4-native-artifact-finished-20261022/artifact_finish_result.json",
+      "report_sha256": "bd1c5800c4ff3dda1b0ada777769532cbce24d1820b6436d805ef518232bc4a4",
+      "status": "ARTIFACT_FINISH_COMPLETE",
+      "corrected_native_checks_true": 14,
+      "native_checks_total": 14,
+      "correction_basis": "Exact full pinned inspector CSS occurs once in the actual retained artifact; matched ID markup and the other retained R33 facts are preserved.",
+      "original_report_html_data_and_source_unchanged": true,
+      "observed_guard_denials": [],
+      "producer_rerun": false,
+      "cdi_rerun": false,
+      "native_build_rerun": false,
+      "original_incomplete_report_rewritten": false
+    },
+    {
+      "phase": "supplemental literal HTML/inline CSS/asset availability",
+      "pid": 63195,
+      "result_path": ".cdi-proof/integration-20261022/w4-finished-literal-assets.result.json",
+      "result_sha256": "670f4922798e6003e848f0d86424839fd5232bd26559c2a47f369aceb123f276",
+      "recorded_site_files": 29,
+      "inter_fonts": 6,
+      "actual_inline_r11_module_body_sha256": "8a08d88580ab811c45e1773ae73c69cffc9ba56f547daf979eb66222e5450dad",
+      "accepted_finish_receipt_unchanged": true,
+      "current_source_read": false,
+      "current_source_unchanged_claim": false,
+      "transform_or_native_rerun": false,
+      "reason_for_supplement": "Earlier font_files=0 covered only HTML script/link roots and external CSS. The six Inter faces remain in a 793-byte inline style below the 1024-byte externalization threshold.",
+      "checked_at_utc": "2026-10-22T19:40:00.747012Z",
+      "status": "QUALIFIED_LITERAL_ASSET_CLOSURE",
+      "missing_or_unqualified": []
+    }
+  ],
+  "actual_generation_facts": {
+    "canonical_bond_rows": 10376,
+    "registry_mapped_history_rows": 311,
+    "issuer_count": 18,
+    "retained_dates_per_mapped_history_row": 1,
+    "observed_source_date": "2026-10-15",
+    "eligible_five_session_history": 0,
+    "eligible_twenty_one_session_history": 0,
+    "paired_comparisons": 0,
+    "cdi_status": "stale",
+    "cdi_age_sessions_at_recorded_run": 5,
+    "authority": "ordinary descriptive context; no scoring or promotion",
+    "population_limit": "Bounded history is for the current registry-mapped CDI population; it is not complete history for all holdings or total issuer debt."
+  },
+  "final_artifact": {
+    "path": ".cdi-proof/w4-native-artifact-finished-20261022/site/bonds.html",
+    "bytes": 727897,
+    "sha256": "051fa91022a7e91335bed22499e4a8ce44a8fb296b5f8de6845a0e03796fe68d",
+    "changed_after_snapshot_by_this_record": false
+  },
+  "interpretation_limits": [
+    "Producer validation PASS is confined to the actual retained generation and incumbent convention checks; no independent historical pricing qualification is added.",
+    "One actual source date is not padded into 5/21-session windows or relabeled prospective history.",
+    "No historical publication knowability, current credit condition, CDS evidence, scoring authority, live funding coverage, browser/visual acceptance or release/publication claim.",
+    "Original and private bytes/source were unchanged during the qualified intervals; this is not an assertion that later collector repairs leave all 56 current source paths unchanged.",
+    "Python audit observations are not complete native syscall visibility.",
+    "Original timezone failure and selector-failed report remain immutable recovery evidence."
+  ],
+  "unresolved_evidence_bindings": [],
+  "pending_repository_curation": {
+    "status": "Original Oct22 comparison preserved below as chronology. Oct23 source-lineage diagnosis and artifact-only correction resolve theme binding against the fixed merge index; all 28 nonpage assets now match. Page and overall composition remain pending; see theme_asset_binding_20261023.json.",
+    "generated_css_files": 7,
+    "candidate_theme_js_bytes": 387822,
+    "merged_index_theme_js_bytes": 271335,
+    "theme_js_difference": "Owner is diagnosing the existing asset helper-generated global bundle before deciding curation.",
+    "seven_new_repository_files_claim": false,
+    "final_tree_finished": false,
+    "recorded_output_files_compared": 29,
+    "recorded_output_files_matching_index_hash": 27,
+    "generated_css_files_matching_index_hash": 7,
+    "index_comparison_exceptions": [
+      {
+        "path": "site/bonds.html",
+        "state": "sole unmerged path; final retained artifact differs from all three conflict stages"
+      },
+      {
+        "path": "site/theme.js",
+        "state": "recorded candidate bytes differ from stage-0 index bytes"
+      }
+    ],
+    "candidate_theme_js_sha256": "4403e51fd4486a1bd9de261dd3e21f6e642fbb9725fa010248f6701df3fe000e",
+    "merged_index_theme_js_blob": "55ada201f767fefd66904a14748cbe2398f3540c",
+    "merged_index_theme_js_sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+    "index_comparison_scope": "Exact recorded output bytes compared with pending-merge index objects; this is not a claim that every sparse-checkout file is physically materialized."
+  },
+  "documentation_reconciled_date": "2026-10-23",
+  "later_artifact_correction": "theme_asset_binding_20261023.json; original final_artifact identity above remains preserved historical evidence.",
+  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated.",
+  "subsequent_qualifications": [
+    {
+      "observed_date": "2026-10-23",
+      "scope": "Distinct afc retained-input qualification; preserves all earlier reports and artifacts",
+      "source_identity": {
+        "head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+        "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+        "remote_head": "cf9ac2b2c03f3f4f7be429f87483c1281ba784ba"
+      },
+      "input_image": {
+        "files": 562,
+        "bytes": 58466498,
+        "immutable_afc_inputs": 537,
+        "retained_original_holdings_and_sample": 6,
+        "site_assets": 19,
+        "changed_data_files_from_prior_image": 232,
+        "manifest_path": ".cdi-proof/integration-20261022/w4-afc-fixed-input-manifest-20261023.json",
+        "sha256": "bcd08969106d6c0ad2f6296393c955a28f2fc2905f0e3404be8f7d6b3fae31c3"
+      },
+      "execution": {
+        "pid": 1188,
+        "started_at_utc": "2026-10-23T06:23:11.925143Z",
+        "completed_at_utc": "2026-10-23T06:23:47.030682Z",
+        "exit_code": 0,
+        "report_path": ".cdi-proof/w4-afc-retained-native-20261023/qualification_result.json",
+        "report_sha256": "5ab5945c557f0effeff7480a4f262cd7c8ba6472fba016ba107704d9c0539cd8",
+        "wrapper_receipt_sha256": "02c6a8226ea74ac0ff2b16b8abd91d5f70b7d6f65b4330c00e6f8df48758f7c0",
+        "native_checks_true": 14,
+        "native_checks_total": 14,
+        "guard_denials": [],
+        "original_private_inputs_and_source_unchanged": true,
+        "actual_clocks": true,
+        "validation_overall": "PASS",
+        "cdi_asof": "2026-10-23",
+        "holdings_source_date": "2026-10-15",
+        "cdi_age_sessions": 6,
+        "canonical_bond_rows": 10376,
+        "mapped_one_date_history_rows": 311,
+        "eligible_five_or_twenty_one_session_history": 0,
+        "hyg_sample": "absent, explicitly reported, nongating",
+        "observer_copy_correction": "Only class-selector predicate corrected to actual #bonds-source-dialog ID selector; original observer and all older reports preserved"
+      },
+      "artifact": {
+        "bytes": 728494,
+        "sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "site_files": 30,
+        "literal_asset_references": 27,
+        "fonts": 6,
+        "total_css": 11,
+        "nonpage_files_matching_current_index": 29,
+        "literal_asset_receipt_sha256": "6ba02d76581c382d35586ea765a869336c5e7a5dfcb267bd4715e0060b8abc73",
+        "missing_assets": []
+      },
+      "current_market_acceptance": {
+        "accepted": false,
+        "reason": "Candidate remains October21/MOVE96, while afc page is October22/MOVE107. engine.inputs bounds the feature frame at SPY's last valid close.",
+        "spy_commits_checked": [
+          "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+          "3b5058cf10a6791d5e8097e514af0c8ff15b9b59"
+        ],
+        "spy_path": "data/yahoo/SPY.parquet",
+        "spy_blob": "c84b37ba34104ec453806983b859d01dd9f6c51c",
+        "spy_sha256": "90ca58537e5b5afe3981d34e83e4ac3246397eb91e715bb39c22088ba0c3222d",
+        "last_valid_close_date": "2026-10-21",
+        "production_source_route": "Existing closing-bell price-store freshness prefetch can heal Yahoo ephemerally, then commit site and provisional snapshot pointers without those price files. No replacement dates or prices were supplied.",
+        "global_input_absence_claim": false
+      },
+      "browser_restart_recovery": {
+        "at": "2026-10-23T06:36:50.758380+00:00",
+        "selected_browser": "Chrome extension id0",
+        "tab_id": "1065717964",
+        "url": "http://127.0.0.1:53861/bonds.html",
+        "outcome": "TECHNICAL_ROUTE_FAILURE",
+        "browser_error": "net::ERR_SOCKET_NOT_CONNECTED",
+        "platform_safety_refusal_observed": false,
+        "candidate_screenshot_or_interaction_proven": false,
+        "alternate_host_browser_tunnel_file_url_or_publication_attempted": false,
+        "studio_http_status": 200,
+        "studio_http_page_sha256": "f08cd2a4f71b0cd9e83b28184b033e233dc8df0da043037d8ff585c06997586e",
+        "receipt_sha256": "df2b93a31368461eea720a1f78c167a7e09278e0636a47ec0fc433415fbfd84d",
+        "owned_preview_closed_at_utc": "2026-10-23T06:36:51.191032Z",
+        "closure_receipt_sha256": "e61cd92f6d615ec84fba26d7f303e2f6bfd4c82c778c046963ac5e26e1cbd282",
+        "error_tab_closed": true,
+        "visual_acceptance": false
+      }
+    }
+  ],
+  "source_integration_followup_20261023": {
+    "local_head": "3f79c79b92ee0c4c788caf9e8ffe60601b6615d1",
+    "merge_head": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+    "prior_curation": {
+      "pid": 51330,
+      "passed": 2,
+      "failed": 2,
+      "receipt_sha256": "8f97cfaea40fa00d5e370bd7893174519b6c9aa200e2416e0c4e45eb65cb560a"
+    },
+    "corrected_curation_and_page": {
+      "pid": 48525,
+      "passed": 3,
+      "failed": 1,
+      "completed_at_utc": "2026-10-23T07:09:53.313725Z",
+      "log_sha256": "a46459d37f0b1f13dfe7e478378edb9d920d3d74c4a05bd62b83a24774c1db43",
+      "remaining_failure": "Canonical current-template stylesheet a29822ca absent from preserved upstream page.",
+      "both_curation_checks_passed": true
+    },
+    "page_binding": {
+      "pid": 75578,
+      "completed_at_utc": "2026-10-23T07:16:26.802939Z",
+      "original_upstream_sha256": "0df12cb81abf9e112a84997953d31c5dadd127241f626075c1e7ea46fc4b2450",
+      "page_sha256": "77e54e2a2f73bf9bff090b0ed37da7eb6198cc64a905911a6590af2e2c505065",
+      "page_bytes": 254664,
+      "changes": [
+        "Canonical existing native/index CSS reference ebe31e14->a29822ca",
+        "Matching current template/native Lens handler; existing shared theme remains renderer/activation/dismissal owner"
+      ],
+      "market_copy_and_data_unchanged": true,
+      "old_upstream_and_native_candidates_preserved": true,
+      "qualification_passed": 2,
+      "qualification_seconds": 2.06,
+      "qualification_completed_at_utc": "2026-10-23T07:16:30.220464Z",
+      "qualification_log_sha256": "62abdf0d57d6f0ab2c46d9343d7a93fb2c04b4f4e7172710c218150663775672"
+    },
+    "final_committed_head_or_hosted_ci_proven": false,
+    "current_feature_or_browser_or_release_accepted": false,
+    "current_checkpoint": "https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277"
+  }
+}

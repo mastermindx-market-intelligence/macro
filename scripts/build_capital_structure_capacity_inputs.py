@@ -10,8 +10,8 @@ uses, then binds per issuer exactly what each nightly run can lawfully produce:
   decisions ledger when one is admitted (never fuzzy, never invented);
 * share basis — only from admitted share-count observations and corporate
   actions under the root (never from a provider, a publication chain or R2);
-* financials — unavailable until the F0b binder exists on an admitted
-  companyfacts artifact;
+* financials — one governed FIF cash receipt supplied in memory for an
+  already served issuer, or unavailable when no such receipt is supplied;
 * commitments — from the covenant-term ledger, falling back to document-term
   rows, with the quarantine twin excluded by name;
 * rules — the L0 rule applicability pack as of the cutoff's date.
@@ -35,7 +35,11 @@ import os
 from pathlib import Path
 import sys
 import tempfile
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from engine.fundamental_forensics.production_datasets import ProductionDatasetGeneration
+    from engine.fundamental_forensics.query_service import FinancialQueryResult
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -69,6 +73,7 @@ from engine.capital_structure.scenario_inputs import (  # noqa: E402
     FamilyEntry,
     RulesEntry,
     ScenarioInputsError,
+    financial_inputs_from_fif_cash_receipt,
     validate_capacity_inputs_bundle,
 )
 from engine.capital_structure.share_basis import select_share_basis  # noqa: E402
@@ -308,8 +313,24 @@ def _bind_share_basis(root: Path, issuer_id: str, as_of: str) -> FamilyEntry:
     )
 
 
-def _financials_entry() -> FamilyEntry:
-    """Financials stay unavailable until the F0b binder is admitted (SPEC_U1B §0)."""
+def _financials_entry(
+    *,
+    issuer_id: str | None = None,
+    as_of: str | None = None,
+    witness: tuple[ProductionDatasetGeneration, FinancialQueryResult, str] | None = None,
+) -> FamilyEntry:
+    """No acquisition: bind a supplied witness or preserve explicit absence."""
+    if witness is not None:
+        if not isinstance(witness, tuple) or len(witness) != 3 or issuer_id is None or as_of is None:
+            raise ScenarioInputsError("fif_cash: generation, query receipt and actual availability required")
+        generation, result, available_at = witness
+        financials = financial_inputs_from_fif_cash_receipt(
+            generation, result, issuer_id=issuer_id, available_at=available_at, as_of=as_of,
+        )
+        return FamilyEntry(
+            family=FINANCIALS_FAMILY, support="partial", reason_codes=(),
+            binding=financials.binding, record=financials,
+        )
     return FamilyEntry(
         family=FINANCIALS_FAMILY,
         support="unavailable",
@@ -377,8 +398,14 @@ def build_from_disk(
     root: Path | str | None = None,
     generated_at: str | None = None,
     out_path: Path | None = None,
+    fif_cash_receipts: Mapping[str, tuple[ProductionDatasetGeneration, FinancialQueryResult, str]] | None = None,
 ) -> dict[str, Any]:
-    """Verify the generation and the served state, and publish one bundle — or nothing."""
+    """Verify the generation and the served state, and publish one bundle — or nothing.
+
+    Optional receipts are already retained in memory, keyed to the served
+    issuer set. This seam creates no reader, acquisition path, CLI option or
+    clock; a receipt newer than the served cutoff refuses the whole build.
+    """
     root = Path(root) if root is not None else _data_root()
     target = Path(out_path) if out_path is not None else (root / CAPACITY_INPUTS_FILENAME)
 
@@ -399,13 +426,24 @@ def build_from_disk(
     state_generation_id = str(state_bundle["generation_id"])
     as_of_date = as_of[:10]
 
+    if fif_cash_receipts is not None and not isinstance(fif_cash_receipts, Mapping):
+        raise ScenarioInputsError("fif_cash: issuer witness mapping required")
+    witnesses = dict(fif_cash_receipts) if fif_cash_receipts is not None else {}
+    served_issuers = {str(row["request"]["issuer_id"]) for row in state_bundle.get("issuers") or ()}
+    if set(witnesses) - served_issuers:
+        raise ScenarioInputsError("fif_cash: witness issuer is not in the served issuer set")
+    if any(witness is None for witness in witnesses.values()):
+        raise ScenarioInputsError("fif_cash: supplied witness must not be null")
+
     issuers: dict[str, dict[str, FamilyEntry]] = {}
     for record in state_bundle.get("issuers") or ():
         issuer_id = str(record["request"]["issuer_id"])
         issuers[issuer_id] = {
             INSTRUMENTS_FAMILY: _bind_instruments(root, issuer_id, as_of),
             SHARE_BASIS_FAMILY: _bind_share_basis(root, issuer_id, as_of),
-            FINANCIALS_FAMILY: _financials_entry(),
+            FINANCIALS_FAMILY: _financials_entry(
+                issuer_id=issuer_id, as_of=as_of, witness=witnesses.get(issuer_id),
+            ),
             COMMITMENTS_FAMILY: _bind_commitments(root, issuer_id, as_of, source_generation_id),
         }
     rules = _bind_rules(as_of_date)

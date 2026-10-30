@@ -14,6 +14,7 @@ Zero network calls; all inputs are synthetic (tmp_path fixtures).
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -164,6 +165,20 @@ from scripts.build_bonds import (
     _build_theme_tiles,
     _load_theme_daily_levels,
 )
+
+
+@pytest.fixture(autouse=True)
+def _fixed_credit_fixture_clock(monkeypatch):
+    """Historical credit fixtures are evaluated at an explicit compatible clock."""
+    from scripts import build_bonds
+
+    class FixtureClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            stamp = datetime(2026, 7, 15, 12, tzinfo=timezone.utc)
+            return stamp.astimezone(tz) if tz is not None else stamp.replace(tzinfo=None)
+
+    monkeypatch.setattr(build_bonds, "datetime", FixtureClock)
 
 
 # ---------------------------------------------------------------------------
@@ -512,6 +527,48 @@ class TestMaturityWall:
         for row in rows:
             for seg in row["segs"]:
                 assert seg["flex"] > 0
+
+
+    def test_maturity_wall_uses_one_latest_snapshot(self, tmp_path: Path) -> None:
+        """An older bucket may not masquerade as the latest holdings distribution."""
+        cm_dir = tmp_path / "corp_bonds"
+        (cm_dir / "series").mkdir(parents=True)
+        cm_path = cm_dir / "credit_momentum.json"
+        _write_cm(cm_path, _minimal_cm("2026-10-16"))
+        rows = [
+            {"as_of": "2026-07-14", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 0.0, "n_bonds": 0},
+            {"as_of": "2026-07-14", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "1_3y", "par_total": 1_000_000.0, "n_bonds": 1},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 2_000_000.0, "n_bonds": 1},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "1_3y", "par_total": 0.0, "n_bonds": 0},
+            {"as_of": "2026-10-16", "scope_type": "theme", "scope": "neocloud_credit",
+             "bucket": "1_3y", "par_total": 3_000_000.0, "n_bonds": 1},
+        ]
+        pd.DataFrame(rows).to_parquet(cm_dir / "series" / "maturity_wall.parquet")
+        snapshot = _build_maturity_wall(cm_path)
+        hyperscaler = next(x for x in snapshot if x["slug"] == "hyperscaler_credit")
+        assert hyperscaler["as_of"] == "2026-10-16"
+        assert [x["css_class"] for x in hyperscaler["segs"]] == ["seg-0"]
+        assert all(x["as_of"] == "2026-10-16" for x in snapshot)
+
+        html = _render_credit_section(build_corp_credit_vm(data_root=tmp_path, now=datetime(2026, 10, 17, 12, tzinfo=timezone.utc)))
+        assert "Tracked bond-fund holdings by maturity" in html
+        assert "face values held by five tracked funds" in html
+        assert "2026-10-16" in html
+        assert "All themes had zero bonds maturing" not in html
+
+    def test_maturity_wall_missing_dates_fail_closed(self, tmp_path: Path) -> None:
+        """Malformed as-of dates cannot silently produce a current-seeming chart."""
+        cm_dir = tmp_path / "corp_bonds"
+        (cm_dir / "series").mkdir(parents=True)
+        pd.DataFrame([
+            {"as_of": None, "scope_type": "theme", "scope": "hyperscaler_credit",
+             "bucket": "0_1y", "par_total": 2_000_000.0, "n_bonds": 1}
+        ]).to_parquet(cm_dir / "series" / "maturity_wall.parquet")
+        assert _build_maturity_wall(cm_dir / "credit_momentum.json") == []
 
 
 # ---------------------------------------------------------------------------
@@ -1238,3 +1295,95 @@ class TestHighGradeGauge:
         assert "still building" in g["tip_en"]
         assert "usual range" not in g["tip_en"]
         assert "moving faster" not in g["tip_en"], "no second rung to choose between"
+
+
+class TestCreditProducerCurrentness:
+    @pytest.mark.parametrize("clock, qualified, verdict, reason", [
+        ("2026-10-22T05:59:00+00:00", True, "current", "date_only_conservative"),
+        ("2026-10-22T06:00:00+00:00", True, "current", "date_only_conservative"),
+        ("2026-10-22T06:01:00+00:00", False, "blind", "date_only_calendar_unknown"),
+    ])
+    def test_declared_date_only_sla_boundary(self, tmp_path, clock, qualified, verdict, reason):
+        cm = _cm_with_live_roster()
+        cm["as_of"] = "2026-10-20"
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", cm)
+        vm = build_corp_credit_vm(tmp_path, now=datetime.fromisoformat(clock))
+        assert vm["source_available"] is True
+        assert vm["producer_current"] is qualified
+        assert vm["as_of"] == "2026-10-20"
+        assert vm["currentness"]["verdict"] == verdict
+        assert reason in vm["currentness"]["reasons"]
+        html = _render_credit_section(vm)
+        health = _build_corp_credit_bond_health(vm)
+        if qualified:
+            assert vm["gauges"] and "Spread gauges" in html
+            assert health["market_state"] is not None
+        else:
+            assert vm["gauges"] == [] and vm["themes"] == []
+            assert "credit-currentness-unconfirmed" in html
+            assert "2026-10-20" in html
+            assert "当前信用读数未确认" in html
+            assert health["market_state"] is None
+            assert health["as_of"] == "2026-10-20"
+            assert not any(health["authority"].values())
+            for invented in ("Credit stress: low", "zero bonds maturing", "No new issuance", "Spread gauges"):
+                assert invented not in html
+
+    def test_full_timestamp_staleness_is_distinct_from_date_only_blindness(self, tmp_path):
+        cm = _cm_with_live_roster()
+        cm["as_of"] = "2026-10-21T00:00:00Z"
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", cm)
+        vm = build_corp_credit_vm(tmp_path, now=datetime(2026, 10, 22, 6, 1, tzinfo=timezone.utc))
+        assert vm["currentness"]["verdict"] == "stale"
+        assert "date_only_calendar_unknown" not in vm["currentness"]["reasons"]
+        assert vm["producer_current"] is False
+        assert _build_corp_credit_bond_health(vm)["market_state"] is None
+
+    @pytest.mark.parametrize("raw", [None, "not-a-date", "2026-02-30", "9999-12-31"])
+    def test_bad_watermark_cannot_fall_back_to_newer_clocks(self, tmp_path, raw):
+        cm = _cm_with_live_roster()
+        if raw is None:
+            cm.pop("as_of")
+        else:
+            cm["as_of"] = raw
+        cm["data_session"] = "2026-10-22"
+        cm["built"] = "2026-10-22T06:01:00Z"
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", cm)
+        vm = build_corp_credit_vm(tmp_path, now=datetime(2026, 10, 22, 6, 1, tzinfo=timezone.utc))
+        assert vm["source_available"] is True
+        assert vm["producer_current"] is False
+        assert vm["gauges"] == []
+        assert _build_corp_credit_bond_health(vm)["market_state"] is None
+        assert "Current credit reading unconfirmed" in _render_credit_section(vm)
+        if raw in ("2026-02-30", "9999-12-31"):
+            assert vm["currentness"] is None
+            assert vm["currentness_error"] in ("ValueError", "OverflowError")
+
+    def test_fresh_file_mtime_does_not_rescue_old_content(self, tmp_path):
+        cm = _cm_with_live_roster()
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", cm)
+        vm = build_corp_credit_vm(tmp_path, now=datetime(2026, 10, 22, 6, 1, tzinfo=timezone.utc))
+        assert vm["as_of"] == "2026-07-14"
+        assert vm["currentness"]["verdict"] == "blind"
+        assert vm["currentness"]["field"] == "as_of"
+        assert vm["producer_current"] is False
+
+    def test_missing_registered_contract_does_not_admit_current_credit(self, tmp_path, monkeypatch):
+        _write_cm(tmp_path / "corp_bonds" / "credit_momentum.json", _cm_with_live_roster())
+        monkeypatch.setattr("engine.neuralweb.synapse.load_registry", lambda **kwargs: {})
+        vm = build_corp_credit_vm(tmp_path)
+        assert vm["source_available"] is True
+        assert vm["producer_current"] is False
+        assert vm["currentness"] is None
+        assert vm["currentness_error"] == "KeyError"
+
+    def test_public_policy_boundary_refuses_a_naive_assessment_clock(self):
+        from engine.output_health import assess_producer_freshness
+        from lib.dataos.temporal import TemporalError
+
+        with pytest.raises(TemporalError):
+            assess_producer_freshness(
+                entry={"asof_field": "as_of", "freshness_sla_hours": 30},
+                obs={"content_asof_raw": "2026-10-20", "asof_field_present": True, "watermark_field_used": "as_of"},
+                now=datetime(2026, 10, 22, 6),
+            )

@@ -1,0 +1,62 @@
+{
+  "scope": "recovery identity and retained evidence, not production or retroactive execution attestation",
+  "recorded_at": "2026-10-18T10:31:28.411906+00:00",
+  "prior_published_head": "2596c9e58872d1458ddb2ab116a960d22a16b0e6",
+  "pr": 9590,
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "6679847bd73c6bf9388b786353fb63f2348a3e288a76d515987cec4f3fcfaa7e",
+    ".github/workflows/daily.yml": "62c470a926eb7e4bbd13c2e399b4db95defb19a89a9c1c436e4ef98856a99c65",
+    "config/dag.yml": "e0965eb9fbc0bf2c4abd0fdb3c14f7070520a0d92c0e8373dab7c259bdaaccff",
+    "config/synapse.yml": "19d1563a934c7552e6c94d347275afd0250baabc7261c172858d07d874534854",
+    "engine/corp_credit.py": "c13e9d0fd85e4e9d742c2f40266af4079032071b5ac3f33cfcfa91069df084c8",
+    "scripts/build_bonds.py": "da16af29cdc59f2d60030b6d6223936863fe8ebca9c596d554c385cbcdf1a28b",
+    "templates/bonds.html.j2": "187e3d0d979645f9f72438dd9f86f23902d53ecb35af02803efa6cb06c6e9ef7",
+    "engine/credit_dislocation.py": "2db61c5f6af701a0390950c3ab3938a3d39f3370b97820d22858ddabc9b1e2eb",
+    "engine/credit_dislocation_view.py": "034762c2af84e7a2c465263e902f9d4ff02b2175dc20e6a0387c49f747b440ed",
+    "scripts/verify_credit_dislocation_ui.py": "13b000ddef8ae5a568aaf08bf08797ac8d0ee8302eb60fc4ea75f4c9d9b67455",
+    "templates/_credit_dislocation.html.j2": "853dc4255af8f71ae710abc3b7e8b3755e3de36a3e5583623a987d98f86d2a1f",
+    "tests/test_corp_credit_bounded_solver.py": "05049cd339a0f1b1413429837f9a3a0ef9b00137f8f33ff072a814c07746da63",
+    "tests/test_credit_dislocation.py": "391d0f30cd816cc4959a8b3f50ed32ddced2485c4374871ac8c64a091c9cf82e",
+    "tests/test_credit_dislocation_view.py": "023805c54cd71e58c47bff5c2e55591120a62a7037a9986deeebde9b0ff27b92",
+    "tests/test_credit_dislocation_wiring.py": "d77a3c174339ec37aef609b368e61e5610b19abc1b04b5282aba00778375b630"
+  },
+  "retained_tests": {
+    "integrated-tests.log": {
+      "sha256": "8360cba59e28e8e29fe3dc1017a7c827338ad6b54fd2f903a90e1daf1447d0d1",
+      "result_tail": "182 passed in 12.92s",
+      "modified_at": "2026-10-18T07:04:29.123574+00:00"
+    },
+    "solver-tests.log": {
+      "sha256": "8964d151fa5bb0819239b3daccc2c1b3a15f2cc264db3571f234db47697c5a1d",
+      "result_tail": "75 passed in 5.19s",
+      "modified_at": "2026-10-18T07:19:18.418736+00:00"
+    },
+    "ui-tests.log": {
+      "sha256": "098c860d19aa00223b7ce1631909669c462797b1d460d53ac4c77a30df029567",
+      "result_tail": "178 passed in 15.93s",
+      "modified_at": "2026-10-18T06:58:27.223162+00:00"
+    }
+  },
+  "browser_receipt_sha256": "32c8c4b70e8c206355cfb712fb1a9d77bf9c3d4af39731dcfc2b771ef9e7bb71",
+  "refreshed_binding": {
+    "bond_as_of": "2026-10-15",
+    "latest_bonds": 10376,
+    "issuer_rows": 810,
+    "history_dates": 54,
+    "pricing_validation": "PENDING",
+    "engine_seconds": 268.7,
+    "wall_seconds": 269.47,
+    "maximum_resident_bytes": 1837056000,
+    "cdi_recompiled_after_refresh": false
+  },
+  "paper": {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-1H-0",
+    "artboard_id": "6GDA-0",
+    "reconciled_operation_id": "ccw-cdi-20261018-design-06",
+    "reconciliation": "expected rows present in same-carrier readback and screenshot; do not replay"
+  },
+  "raw_data_published": false,
+  "deployed": false,
+  "mission_complete": false
+}

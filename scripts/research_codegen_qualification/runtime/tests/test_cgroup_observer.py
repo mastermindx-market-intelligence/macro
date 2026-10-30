@@ -215,11 +215,16 @@ def test_changed_device_refuses_and_closes(tree, monkeypatch):
     original = c.os.fstat
     def different_device(n):
         info = original(n)
-        if n == fd: return info
+        # Only the duplicated root directory is meant to change device.
+        # This patches os.fstat globally: unrelated framework fds must retain
+        # their complete stat_result shape, including st_size and timestamps.
+        if n == fd or (info.st_dev, info.st_ino) != expected:
+            return info
         class Changed:
-            st_mode = info.st_mode
-            st_ino = info.st_ino
             st_dev = info.st_dev + 1
+
+            def __getattr__(self, name):
+                return getattr(info, name)
         return Changed()
     monkeypatch.setattr(c.os, "fstat", different_device)
     with pytest.raises(c.ObservationRefused, match="root_identity"):

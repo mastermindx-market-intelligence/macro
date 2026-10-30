@@ -32,12 +32,14 @@ Outputs (all under data/corp_bonds/):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import math
 import re
 import time
 from datetime import date
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +47,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config
+from lib.nyse_calendar import is_session, session_n_back, sessions_between
 
 log = logging.getLogger(__name__)
 
@@ -97,6 +100,22 @@ MATURITY_BUCKETS = [
     ("5_10y",   5.0, 10.0),
     ("10y_plus",10.0, float("inf")),
 ]
+
+
+# Additive bounded history in the existing latest-panel artifact; no new writer.
+INSTRUMENT_HISTORY_SCHEMA = "ccw.bond_history.v1"
+INSTRUMENT_HISTORY_POPULATION = "current_registry_mapped_instruments"
+INSTRUMENT_HISTORY_BASIS = "retained_holdings_recomputed_current_inputs"
+INSTRUMENT_HISTORY_MAX_OBSERVATIONS = 22  # existing 21-session horizon plus baseline
+INSTRUMENT_HISTORY_MAX_BYTES = 16_384
+_HISTORY_NUMERIC_FIELDS = (
+    "par", "mv", "coupon", "price_dirty", "price_clean", "accrued_pct",
+    "ytm_pct", "cmt_pct", "g_spread_bp", "d1_g_spread_bp_matched",
+)
+_HISTORY_RECORD_FIELDS = set(_HISTORY_NUMERIC_FIELDS) | {
+    "as_of", "maturity", "currency", "currency_status", "terms_consistent",
+    "cmt_as_of", "near_par_call_flag", "matched_n",
+}
 
 # Minimum tenor for YTM/g-spread computation (bonds expiring within 14 days excluded)
 MIN_TENOR_DAYS = 14
@@ -317,6 +336,125 @@ def _normalize_constituent_name(name: str) -> str:
 # Step 1: Canonicalize bonds (aggregate multi-fund positions)
 # ---------------------------------------------------------------------------
 
+
+def _history_date(value: Any) -> date:
+    if not isinstance(value, str) or len(value) != 10:
+        raise ValueError("instrument history: invalid date")
+    parsed = date.fromisoformat(value)
+    if parsed.isoformat() != value:
+        raise ValueError("instrument history: noncanonical date")
+    return parsed
+
+
+def _history_object(pairs: list) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("instrument history: duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def parse_instrument_history(value: Any, *, isin: str, as_of: str,
+                             issuer: str | None = None) -> dict | None:
+    """Read the optional, bounded producer field; absent differs from invalid."""
+    if value is None or value is pd.NA or (
+        isinstance(value, (float, np.floating)) and math.isnan(value)
+    ):
+        return None
+    if not isinstance(value, str) or len(value.encode("utf-8")) > INSTRUMENT_HISTORY_MAX_BYTES:
+        raise ValueError("instrument history: invalid type or byte limit")
+    def reject_constant(value: str) -> None:
+        raise ValueError("instrument history: non-finite JSON")
+    try:
+        payload = json.loads(value, object_pairs_hook=_history_object, parse_constant=reject_constant)
+    except (json.JSONDecodeError, RecursionError) as exc:
+        raise ValueError("instrument history: invalid JSON") from exc
+    keys = {"schema", "population", "valuation_basis", "isin", "issuer", "as_of",
+            "first_seen", "calculation_convention", "historical_publication_qualified",
+            "independent_historical_pricing_qualified", "observations"}
+    if not isinstance(payload, dict) or set(payload) != keys:
+        raise ValueError("instrument history: incompatible structure")
+    if (payload["schema"] != INSTRUMENT_HISTORY_SCHEMA
+            or payload["population"] != INSTRUMENT_HISTORY_POPULATION
+            or payload["valuation_basis"] != INSTRUMENT_HISTORY_BASIS
+            or payload["isin"] != isin or payload["as_of"] != as_of
+            or not isinstance(payload["issuer"], str) or not payload["issuer"]
+            or (issuer is not None and payload["issuer"] != issuer)
+            or payload["calculation_convention"] not in {"clean", "dirty"}
+            or payload["historical_publication_qualified"] is not False
+            or payload["independent_historical_pricing_qualified"] is not False):
+        raise ValueError("instrument history: identity, cutoff or basis mismatch")
+    end = _history_date(as_of)
+    first_seen = _history_date(payload["first_seen"])
+    if first_seen > end:
+        raise ValueError("instrument history: future first_seen")
+    rows = payload["observations"]
+    if not isinstance(rows, list) or len(rows) > INSTRUMENT_HISTORY_MAX_OBSERVATIONS:
+        raise ValueError("instrument history: observation limit")
+    start = session_n_back(end, INSTRUMENT_HISTORY_MAX_OBSERVATIONS - 1)
+    expected = set(sessions_between(start, end)) if start is not None else set()
+    previous = None
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != _HISTORY_RECORD_FIELDS:
+            raise ValueError("instrument history: incompatible observation")
+        day = _history_date(row["as_of"])
+        if day not in expected or day < first_seen or (previous is not None and day <= previous):
+            raise ValueError("instrument history: unordered, duplicate or out-of-window observation")
+        previous = day
+        for field in _HISTORY_NUMERIC_FIELDS:
+            number = row[field]
+            if number is not None and (
+                isinstance(number, bool) or not isinstance(number, (int, float))
+                or not math.isfinite(number)
+            ):
+                raise ValueError("instrument history: invalid numeric observation")
+        if row["maturity"] is not None:
+            _history_date(row["maturity"])
+        currency = row["currency"]
+        if row["currency_status"] not in {"observed", "missing", "conflict"}:
+            raise ValueError("instrument history: invalid currency status")
+        if row["currency_status"] == "observed":
+            if (not isinstance(currency, str) or not currency.isascii()
+                    or not 1 <= len(currency) <= 16 or currency.strip() != currency):
+                raise ValueError("instrument history: invalid currency")
+        elif currency is not None:
+            raise ValueError("instrument history: ambiguous currency cannot be chosen")
+        if type(row["terms_consistent"]) is not bool:
+            raise ValueError("instrument history: invalid terms status")
+        if row["near_par_call_flag"] is not None and type(row["near_par_call_flag"]) is not bool:
+            raise ValueError("instrument history: invalid call flag")
+        if type(row["matched_n"]) is not int or row["matched_n"] not in {0, 1}:
+            raise ValueError("instrument history: invalid matched count")
+        delta = row["d1_g_spread_bp_matched"]
+        if (delta is not None) != (row["matched_n"] == 1):
+            raise ValueError("instrument history: inconsistent matched change")
+        if row["matched_n"] and row["near_par_call_flag"] is not False:
+            raise ValueError("instrument history: call exclusion violated")
+        if row["cmt_as_of"] is not None:
+            curve_day = _history_date(row["cmt_as_of"])
+            if not 0 <= (day - curve_day).days <= CMT_TOLERANCE.days:
+                raise ValueError("instrument history: invalid curve observation date")
+    if rows and rows[-1]["as_of"] != as_of:
+        raise ValueError("instrument history: latest observation missing")
+    return payload
+
+
+def _observed_currency(values: pd.Series) -> tuple[str | None, str]:
+    normalized = []
+    for value in values:
+        if not isinstance(value, str):
+            return None, "missing"
+        value = value.strip().upper()
+        if not value or value in {"NAN", "NONE", "NULL", "N/A"} or not value.isascii() or len(value) > 16:
+            return None, "missing"
+        normalized.append(value)
+    unique = set(normalized)
+    if len(unique) != 1:
+        return None, "conflict" if unique else "missing"
+    return normalized[0], "observed"
+
+
 def canonicalize_bonds(raw: pd.DataFrame) -> pd.DataFrame:
     """Aggregate per-(as_of, isin) across funds. Returns bond-level DataFrame.
 
@@ -331,6 +469,8 @@ def canonicalize_bonds(raw: pd.DataFrame) -> pd.DataFrame:
     raw["par_value"] = pd.to_numeric(raw["par_value"], errors="coerce")
     raw["market_value"] = pd.to_numeric(raw["market_value"], errors="coerce")
     raw["coupon"] = pd.to_numeric(raw["coupon"], errors="coerce")
+    if "currency" not in raw:
+        raw["currency"] = None
 
     n_before = len(raw)
     bad = (
@@ -379,6 +519,13 @@ def canonicalize_bonds(raw: pd.DataFrame) -> pd.DataFrame:
         "funds": agg_funds,
     })
     result = result.join(meta)
+    currency = grp["currency"].agg(_observed_currency)
+    result["currency"] = currency.map(lambda item: item[0])
+    result["currency_status"] = currency.map(lambda item: item[1])
+    result["terms_consistent"] = (
+        grp["coupon"].nunique(dropna=False).eq(1)
+        & grp["maturity"].nunique(dropna=False).eq(1)
+    )
     result["segment"] = np.where(result["hy_par"] > result["ig_par"], "hy", "ig")
     result["price_dirty_raw"] = 100.0 * result["mv"] / result["par"]
     result = result.reset_index()
@@ -588,7 +735,32 @@ def _pv_and_deriv_matrix(
     return pv, dpv, pv - dirty_price
 
 
+# A date-extended holdings panel may contain hundreds of thousands of rows.
+# Each bond is independent: bound the cash-flow matrix without changing pricing.
+YTM_BLOCK_ROWS = 4096
+
+
 def _ytm_solve(
+    dirty_price: np.ndarray,
+    coupon_pct: np.ndarray,
+    tenor_yrs: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Preserve the established scalar result while bounding matrix allocations."""
+    arrays = [np.asarray(value, dtype=float) for value in (dirty_price, coupon_pct, tenor_yrs)]
+    if any(array.ndim != 1 for array in arrays) or len({len(array) for array in arrays}) != 1:
+        raise ValueError("YTM inputs must be equally sized one-dimensional arrays")
+    n = len(arrays[0])
+    if n <= YTM_BLOCK_ROWS:
+        return _ytm_solve_block(*arrays)
+    yields = np.full(n, np.nan)
+    flags = np.full(n, 2, dtype=int)
+    for start in range(0, n, YTM_BLOCK_ROWS):
+        end = min(start + YTM_BLOCK_ROWS, n)
+        yields[start:end], flags[start:end] = _ytm_solve_block(*(array[start:end] for array in arrays))
+    return yields, flags
+
+
+def _ytm_solve_block(
     dirty_price: np.ndarray,
     coupon_pct: np.ndarray,
     tenor_yrs: np.ndarray,
@@ -666,17 +838,17 @@ def _ytm_solve(
 # Step 6: G-spread via CMT curve interpolation
 # ---------------------------------------------------------------------------
 
-def _build_cmt_lookup(
+def _build_cmt_lookup_with_dates(
     curve_df: pd.DataFrame,
     as_of_dates: pd.DatetimeIndex,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.Series]:
     """For each as_of date, find the last CMT curve row on-or-before within 7d.
 
     Returns a DataFrame indexed by as_of_date, columns are tenor floats.
     Rows where no curve within 7d: all NaN.
     """
     if curve_df.empty:
-        return pd.DataFrame(index=as_of_dates)
+        return pd.DataFrame(index=as_of_dates), pd.Series(pd.NaT, index=as_of_dates)
 
     curve_idx = pd.to_datetime(curve_df.index).sort_values()
     curve_df_sorted = curve_df.loc[curve_idx]
@@ -698,9 +870,23 @@ def _build_cmt_lookup(
         direction="backward",
         tolerance=CMT_TOLERANCE,
     )
-    merged = merged.set_index("as_of").drop(columns=["curve_date"], errors="ignore")
-    merged = merged.reindex(as_of_dates)
-    return merged
+    merged = merged.set_index("as_of").reindex(as_of_dates)
+    source_dates = merged["curve_date"].copy()
+    return merged.drop(columns=["curve_date"], errors="ignore"), source_dates
+
+
+def _build_cmt_lookup(curve_df: pd.DataFrame, as_of_dates: pd.DatetimeIndex) -> pd.DataFrame:
+    """Preserve the incumbent numeric lookup API and columns."""
+    return _build_cmt_lookup_with_dates(curve_df, as_of_dates)[0]
+
+
+def _selected_cmt_dates(curve_df: pd.DataFrame, as_of: pd.Series) -> pd.Series:
+    _, selected = _build_cmt_lookup_with_dates(
+        curve_df, pd.DatetimeIndex(pd.to_datetime(as_of).drop_duplicates())
+    )
+    mapping = {str(day.date()): None if pd.isna(value) else str(value.date())
+               for day, value in selected.items()}
+    return as_of.map(lambda value: mapping.get(str(value)[:10]))
 
 
 def compute_g_spread_bp(
@@ -939,8 +1125,15 @@ def compute_matched_delta(
             isins_t = set(grp_t["isin"])
             common = isins_prev & isins_t
 
-            # Filter: seasoning + not near_par at t
+            # Churn describes the whole population even when no delta is eligible.
+            grp_prev_indexed = grp_prev.set_index("isin")
             grp_t_indexed = grp_t.set_index("isin")
+            total_par_t = grp_t["par"].sum()
+            entered_par = grp_t_indexed.reindex(isins_t - isins_prev)["par"].fillna(0).sum()
+            exited_par = grp_prev_indexed.reindex(isins_prev - isins_t)["par"].fillna(0).sum()
+            comp_change = bool((entered_par + exited_par) > COMPOSITION_MARKER_PAR_SHARE * total_par_t)
+
+            # Filter: seasoning + not near_par at t
             matched_isins = []
             for isin in common:
                 if isin not in grp_t_indexed.index:
@@ -953,16 +1146,16 @@ def compute_matched_delta(
                 fs = row_t.get("first_seen", None)
                 if fs is None:
                     continue
-                if seasoning_cutoff is not None and str(fs) > str(seasoning_cutoff):
+                # A short retained store cannot establish five-bar seasoning.
+                if seasoning_cutoff is None or str(fs) > str(seasoning_cutoff):
                     continue
                 matched_isins.append(isin)
 
             if not matched_isins:
-                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": False}
+                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": comp_change}
                 continue
 
             # Par-weighted mean g-spread at t and t_prev
-            grp_prev_indexed = grp_prev.set_index("isin")
             matched_t = grp_t_indexed.loc[matched_isins]
             matched_prev = grp_prev_indexed.reindex(matched_isins)
 
@@ -973,7 +1166,7 @@ def compute_matched_delta(
             # Only include bonds where both g-spreads are valid
             valid = gs_t.notna() & gs_prev.notna() & par_t.notna() & (par_t > 0)
             if not valid.any():
-                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": False}
+                out[str(key)][str(t)] = {"d1": None, "matched_n": 0, "comp_change": comp_change}
                 continue
 
             gs_t_valid = gs_t[valid]
@@ -982,12 +1175,6 @@ def compute_matched_delta(
             pw_t = (gs_t_valid * par_valid).sum() / par_valid.sum()
             pw_prev = (gs_prev_valid * par_valid).sum() / par_valid.sum()
             d1 = float(pw_t - pw_prev)
-
-            # Composition change: (entered + exited par) > 0.5% of panel par at t
-            total_par_t = grp_t["par"].sum()
-            entered_par = grp_t_indexed.reindex(isins_t - isins_prev)["par"].fillna(0).sum()
-            exited_par = grp_prev_indexed.reindex(isins_prev - isins_t)["par"].fillna(0).sum()
-            comp_change = bool((entered_par + exited_par) > COMPOSITION_MARKER_PAR_SHARE * total_par_t)
 
             out[str(key)][str(t)] = {
                 "d1": d1,
@@ -1240,7 +1427,7 @@ def _ols_with_hc1(X: np.ndarray, y: np.ndarray) -> dict:
     return {"coefficients": beta.tolist(), "hc1_se": hc1_se.tolist(), "t_stats": t_stats.tolist(), "n": n, "k": k}
 
 
-def _load_validation_samples(root: Path | None = None) -> dict[str, pd.DataFrame | None]:
+def _load_validation_samples(root: Path | None = None, *, as_of: str | None = None) -> dict[str, pd.DataFrame | None]:
     """Load iShares LQD/HYG validation samples if available."""
     data_root = _data_root(root)
     sample_dir = data_root / "corp_bonds" / "validation_sample"
@@ -1249,6 +1436,10 @@ def _load_validation_samples(root: Path | None = None) -> dict[str, pd.DataFrame
         return result
     for fund in ["LQD", "HYG"]:
         files = sorted(sample_dir.glob(f"{fund}_*.parquet"))
+        if as_of is not None:
+            # Preserve the matching vintage when a newer independent fund file
+            # arrives before the holdings producer. Never pick a future sample.
+            files = [p for p in files if p.stem[len(fund) + 1:] <= as_of]
         if not files:
             continue
         try:
@@ -1445,6 +1636,221 @@ def resolve_price_convention(joined_df: pd.DataFrame, panel_date: str | None = N
     }
 
 
+def initial_price_convention(panel: pd.DataFrame, root: Path | None = None) -> str:
+    """Resolve the existing same-day probe before pricing the whole history.
+
+    The final four-criterion validation still owns acceptance. This only avoids a
+    redundant dirty-price history solve followed by the identical clean-price
+    solve. Missing/unusable samples preserve the prior provisional dirty default.
+    """
+    if panel.empty:
+        return "dirty"
+    latest = str(panel["as_of"].max())
+    sample = _load_validation_samples(root, as_of=latest)["LQD"]
+    if sample is None or sample.empty or set(sample["as_of"].astype(str)) != {latest}:
+        return "dirty"
+    try:
+        joined = _join_panel_to_sample(panel[panel["as_of"].astype(str) == latest], sample)
+        if len(joined) < 5:
+            return "dirty"
+        # Before the first solve only the independent sample has a YTM column.
+        if "ytm_pct_is" not in joined and "ytm_pct" in joined:
+            joined = joined.rename(columns={"ytm_pct": "ytm_pct_is"})
+        verdict = resolve_price_convention(joined, latest)["verdict"]
+        return verdict if verdict in {"clean", "dirty"} else "dirty"
+    except (KeyError, ValueError, TypeError, ArithmeticError) as exc:
+        log.warning("corp_credit: initial price probe unavailable: %s", exc)
+        return "dirty"
+
+
+
+def _history_record(row: pd.Series, delta: dict) -> dict:
+    record = {field: _maybe_float(row.get(field)) for field in _HISTORY_NUMERIC_FIELDS}
+    record["as_of"] = str(row["as_of"])
+    maturity = row.get("maturity")
+    try:
+        record["maturity"] = _history_date(str(maturity)).isoformat()
+    except (ValueError, TypeError):
+        record["maturity"] = None
+    status = row.get("currency_status", "missing")
+    record["currency_status"] = status
+    record["currency"] = row.get("currency") if status == "observed" else None
+    consistent = row.get("terms_consistent", False)
+    record["terms_consistent"] = False if pd.isna(consistent) else bool(consistent)
+    flag = row.get("near_par_call_flag")
+    record["near_par_call_flag"] = None if pd.isna(flag) else bool(flag)
+    curve_day = row.get("cmt_as_of")
+    record["cmt_as_of"] = None if pd.isna(curve_day) else str(curve_day)
+    change = _maybe_float(delta.get("d1"))
+    eligible = change is not None and delta.get("matched_n") == 1 and record["near_par_call_flag"] is False
+    record["d1_g_spread_bp_matched"] = change if eligible else None
+    record["matched_n"] = 1 if eligible else 0
+    return record
+
+
+def _build_bond_panel_latest(panel: pd.DataFrame, sorted_dates: list, *,
+                             calculation_convention: str) -> pd.DataFrame:
+    """Keep latest levels intact; attach bounded history for the existing CDI population."""
+    if panel.empty or not sorted_dates:
+        return pd.DataFrame()
+    latest_dt = sorted_dates[-1]
+    columns = [
+        "as_of", "isin", "cusip6", "name", "funds", "segment",
+        "issuer", "theme", "sector", "coupon", "maturity", "tenor_yrs",
+        "par", "mv", "price_dirty", "accrued_pct", "price_clean",
+        "ytm_pct", "cmt_pct", "g_spread_bp", "near_par_call_flag", "first_seen",
+        "currency", "currency_status", "terms_consistent", "cmt_as_of",
+    ]
+    latest = panel[panel["as_of"] == latest_dt][[c for c in columns if c in panel]].copy()
+    latest["instrument_history_json"] = None
+    mapped = latest["issuer"].notna() & latest["issuer"].astype(str).ne("")
+    if not mapped.any():
+        return latest
+    end = _history_date(str(latest_dt))
+    if not is_session(end):
+        return latest  # no common-session cutoff; keep incumbent levels and optional absence
+    start = session_n_back(end, INSTRUMENT_HISTORY_MAX_OBSERVATIONS - 1)
+    expected = {day.isoformat() for day in sessions_between(start, end)} if start else set()
+    source_dates = [str(day) for day in sorted_dates]
+    prefix = next((i for i, day in enumerate(source_dates) if start and day >= start.isoformat()), 0)
+    # Keep prior global source bars for seasoning; only publish common-session rows.
+    source_dates = source_dates[max(0, prefix - ENTRY_SEASONING_BARS):]
+    ids = set(latest.loc[mapped, "isin"].astype(str))
+    retained = panel[
+        panel["isin"].astype(str).isin(ids)
+        & panel["as_of"].astype(str).isin(source_dates)
+    ].copy()
+    retained = retained[retained["as_of"].map(lambda day: is_session(_history_date(str(day))))]
+    deltas = compute_matched_delta(retained, source_dates, "isin", "instrument")
+    groups = {str(key): group.sort_values("as_of") for key, group in retained.groupby("isin")}
+    for index, row in latest[mapped].iterrows():
+        isin = str(row["isin"])
+        group = groups.get(isin, pd.DataFrame())
+        observations = []
+        if not group.empty:
+            for _, observation in group[group["as_of"].astype(str).isin(expected)].iterrows():
+                delta = deltas.get(isin, {}).get(str(observation["as_of"]), {})
+                observations.append(_history_record(observation, delta))
+        payload = {
+            "schema": INSTRUMENT_HISTORY_SCHEMA, "population": INSTRUMENT_HISTORY_POPULATION,
+            "valuation_basis": INSTRUMENT_HISTORY_BASIS,
+            "isin": isin, "issuer": str(row["issuer"]), "as_of": str(latest_dt),
+            "first_seen": str(row["first_seen"]),
+            "calculation_convention": calculation_convention,
+            "historical_publication_qualified": False,
+            "independent_historical_pricing_qualified": False,
+            "observations": observations,
+        }
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        parse_instrument_history(encoded, isin=isin, as_of=str(latest_dt), issuer=str(row["issuer"]))
+        latest.at[index, "instrument_history_json"] = encoded
+    return latest
+
+
+def _validate_instrument_history(frame: pd.DataFrame, convention: str, as_of: str) -> dict:
+    instruments = observations = priced = absent_mapped = 0
+    unmapped = 0
+    for _, row in frame.iterrows():
+        issuer = row.get("issuer")
+        mapped = isinstance(issuer, str) and bool(issuer)
+        if not mapped:
+            unmapped += 1
+        history = parse_instrument_history(
+            row.get("instrument_history_json"), isin=str(row["isin"]), as_of=as_of,
+            issuer=issuer if mapped else None,
+        )
+        if history is None:
+            absent_mapped += int(mapped)
+            continue
+        if not mapped or history["calculation_convention"] != convention:
+            raise ValueError("instrument history: population or convention mismatch")
+        instruments += 1
+        records = history["observations"]
+        observations += len(records)
+        if records:
+            outer = _history_record(row, {})
+            for field in _HISTORY_RECORD_FIELDS - {"matched_n", "d1_g_spread_bp_matched"}:
+                if records[-1][field] != outer[field]:
+                    raise ValueError("instrument history: latest row differs from panel")
+        previous = None
+        for record in records:
+            required = ("par", "mv", "accrued_pct", "price_dirty", "price_clean")
+            has_price = all(record[field] is not None for field in required) and record["par"] > 0
+            if has_price:
+                raw = 100.0 * record["mv"] / record["par"]
+                dirty = raw + record["accrued_pct"] if convention == "clean" else raw
+                clean = raw if convention == "clean" else raw - record["accrued_pct"]
+                if not np.allclose([record["price_dirty"], record["price_clean"]],
+                                   [dirty, clean], rtol=1e-9, atol=1e-8):
+                    raise ValueError("instrument history: declared price convention mismatch")
+                priced += 1
+            spread = record["g_spread_bp"]
+            if spread is not None:
+                if (not has_price or record["ytm_pct"] is None or record["cmt_pct"] is None
+                        or record["cmt_as_of"] is None
+                        or not np.isclose(spread, (record["ytm_pct"] - record["cmt_pct"]) * 100,
+                                          rtol=1e-9, atol=1e-8)):
+                    raise ValueError("instrument history: invalid spread price/curve basis")
+            change = record["d1_g_spread_bp_matched"]
+            if change is not None:
+                if spread is None or (previous is not None and (
+                    previous["g_spread_bp"] is None
+                    or not np.isclose(change, spread - previous["g_spread_bp"], rtol=1e-9, atol=1e-8)
+                )):
+                    raise ValueError("instrument history: inconsistent matched change")
+            previous = record
+    return {
+        "schema": INSTRUMENT_HISTORY_SCHEMA, "population": INSTRUMENT_HISTORY_POPULATION,
+        "valuation_basis": INSTRUMENT_HISTORY_BASIS,
+        "instrument_rows": instruments, "observation_rows": observations,
+        "convention_verified_rows": priced, "unmapped_latest_rows": unmapped,
+        "absent_mapped_rows": absent_mapped,
+        "historical_publication_qualified": False,
+        "independent_historical_pricing_qualified": False,
+    }
+
+
+def bind_validation_inputs(validation: dict, root: Path, *, observation_as_of: str,
+                           calculation_convention: str) -> dict:
+    """Bind a completed pricing check to the exact derived artifacts it checked.
+
+    This is provenance, not a new pricing verdict or predictive promotion. A later
+    data replacement invalidates the binding even when the dates are unchanged.
+    """
+    if calculation_convention not in {"clean", "dirty"}:
+        raise ValueError("unknown calculation price convention")
+    bound = dict(validation)
+    artifacts = {}
+    priced_rows = 0
+    history_binding = None
+    for name in ("bond_panel_latest", "issuer_daily"):
+        path = root / "corp_bonds" / "series" / f"{name}.parquet"
+        payload = path.read_bytes()
+        artifacts[name] = hashlib.sha256(payload).hexdigest()
+        if name == "bond_panel_latest":
+            frame = pd.read_parquet(BytesIO(payload))
+            raw = 100.0 * frame["mv"] / frame["par"]
+            expected = raw + frame["accrued_pct"] if calculation_convention == "clean" else raw
+            valid = np.isfinite(expected) & np.isfinite(frame["price_dirty"]) & (frame["par"] > 0)
+            priced_rows = int(valid.sum())
+            if not priced_rows or not np.allclose(frame.loc[valid, "price_dirty"], expected[valid], rtol=1e-9, atol=1e-8):
+                raise ValueError("derived panel does not use the declared price convention")
+            if set(frame["as_of"].astype(str)) != {observation_as_of}:
+                raise ValueError("derived panel observation does not match the validation binding")
+            if "instrument_history_json" in frame:
+                history_binding = _validate_instrument_history(frame, calculation_convention, observation_as_of)
+    bound["input_binding"] = {
+        "schema": "corp_credit.validation_binding.v1",
+        "observation_as_of": observation_as_of,
+        "calculation_convention": calculation_convention,
+        "convention_verified_rows": priced_rows,
+        "artifacts": artifacts,
+    }
+    if history_binding is not None:
+        bound["input_binding"]["instrument_history"] = history_binding
+    return bound
+
+
 def run_validation(
     panel: pd.DataFrame,
     market_daily: pd.DataFrame,
@@ -1456,7 +1862,7 @@ def run_validation(
     Returns the validation dict (written to data/corp_bonds/validation.json).
     """
     criteria: dict[str, Any] = {}
-    samples = _load_validation_samples(root)
+    samples = _load_validation_samples(root, as_of=str(panel["as_of"].max()) if not panel.empty else None)
     price_convention = "dirty"  # default; updated by criterion (a)
 
     # ------------------------------------------------------------------
@@ -1975,9 +2381,11 @@ def snapshot(root: str | Path | None = None) -> dict:
     )
 
     # -------------------------------------------------------------------------
-    # Step 3: Price convention (default "dirty"; updated after validation)
+    # Step 3: Same-day convention probe before the expensive full-history solve.
+    # Final validation below still controls acceptance; this is not promotion.
     # -------------------------------------------------------------------------
-    convention = "dirty"
+    convention = initial_price_convention(panel, _root)
+    log.info("corp_credit: initial price convention: %s", convention)
     panel["price_dirty"], panel["price_clean"] = apply_price_convention(
         panel["price_dirty_raw"], panel["accrued_pct"], convention
     )
@@ -2030,6 +2438,7 @@ def snapshot(root: str | Path | None = None) -> dict:
     )
     panel["cmt_pct"] = cmt_pct
     panel["g_spread_bp"] = g_spread_bp
+    panel["cmt_as_of"] = _selected_cmt_dates(curve_df, panel["as_of"])
 
     # -------------------------------------------------------------------------
     # Step 7: Issuer/theme matching
@@ -2081,15 +2490,9 @@ def snapshot(root: str | Path | None = None) -> dict:
     sector_daily = _build_sector_daily(panel, sorted_dates)
     maturity_wall = _build_maturity_wall(panel)
 
-    # bond_panel_latest: latest as_of only, per-bond
+    # Latest levels plus bounded history for the existing registry-mapped CDI population.
     latest_dt = sorted_dates[-1] if sorted_dates else ""
-    bond_latest_cols = [
-        "as_of", "isin", "cusip6", "name", "funds", "segment",
-        "issuer", "theme", "sector", "coupon", "maturity", "tenor_yrs",
-        "par", "mv", "price_dirty", "accrued_pct", "price_clean",
-        "ytm_pct", "cmt_pct", "g_spread_bp", "near_par_call_flag", "first_seen",
-    ]
-    bond_panel_latest = panel[panel["as_of"] == latest_dt][[c for c in bond_latest_cols if c in panel.columns]].copy()
+    bond_panel_latest = _build_bond_panel_latest(panel, sorted_dates, calculation_convention=convention)
 
     # -------------------------------------------------------------------------
     # Write series parquets
@@ -2141,6 +2544,7 @@ def snapshot(root: str | Path | None = None) -> dict:
         )
         panel["cmt_pct"] = cmt_pct2
         panel["g_spread_bp"] = g_spread_bp2
+        panel["cmt_as_of"] = _selected_cmt_dates(curve_df, panel["as_of"])
         # A convention flip moves price/ytm/g-spread on every row: the near-par
         # flag and EVERY aggregate family must be rebuilt, or the parquets ship
         # a mix of conventions (maturity_wall is par-only but rebuilt for
@@ -2156,10 +2560,15 @@ def snapshot(root: str | Path | None = None) -> dict:
         _write_pq(sector_daily, "sector_daily.parquet")
         _write_pq(market_daily, "market_daily.parquet")
         _write_pq(maturity_wall, "maturity_wall.parquet")
-        bond_panel_latest = panel[panel["as_of"] == latest_dt][[c for c in bond_latest_cols if c in panel.columns]].copy()
+        bond_panel_latest = _build_bond_panel_latest(
+            panel, sorted_dates, calculation_convention=resolved_convention
+        )
         _write_pq(bond_panel_latest, "bond_panel_latest.parquet")
         # Update validation with fresh market_daily
         val = run_validation(panel, market_daily, baml_oas, _root)
+
+    val = bind_validation_inputs(val, data_root, observation_as_of=str(latest_dt),
+                                 calculation_convention=resolved_convention)
 
     val_path = data_root / "corp_bonds" / "validation.json"
     val_path.parent.mkdir(parents=True, exist_ok=True)

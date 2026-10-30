@@ -1,0 +1,31 @@
+{
+  "scope": "Bounded source publication and display-only consumer review",
+  "adviser": "r33_integration_judgment",
+  "status": "PASS_FOR_BOUNDED_SOURCE_AND_DISPLAY_CONSUMER",
+  "reviewed": [
+    "Publication helper selection and hash semantics",
+    "Strict JavaScript adapter and inspector boundaries",
+    "Captured digest independently recomputed",
+    "Existing five-key hub preservation from design and tests"
+  ],
+  "root_final_review": [
+    "Read actual host main and its 204-line insertion-only diff",
+    "Matched actual host builder/test SHA256",
+    "Verified current main builder is byte-identical to the inspected base",
+    "Verified final localized inspector and race handling in 26 browser journeys",
+    "Verified all 65 core journeys on final HTML",
+    "Reviewed native source/scorecard/START screenshots and ownership"
+  ],
+  "capture_digest": "d568576803a0fa032846f419fd433a9391e01c13e60e6dc4c75a8ff6017a1455",
+  "unresolved_blockers": [],
+  "capability": "BUILT_NOT_PROVEN for production",
+  "non_claims": [
+    "No release/merge acceptance",
+    "No authenticated imported publisher",
+    "No qualified instrument observation",
+    "No calibrated likelihood",
+    "No retention or active compound monitor"
+  ],
+  "dialogue_edge": "ACCEPTED / STOP",
+  "watcher": "NOT_APPLICABLE"
+}

@@ -1,0 +1,145 @@
+{
+  "schema": "mastermind.design_validation.bonds_transmission.r32",
+  "status": "design_and_offline_reference_verified",
+  "at": "2026-10-18T08:13:49Z",
+  "native": {
+    "operations": 62,
+    "applied_response_observed": 61,
+    "reconciled_no_effect": 1,
+    "unresolved_effects": 0,
+    "working_indicators_finished": true,
+    "global_token_hash": "cfd3d65c",
+    "tokens_changed": false,
+    "boards": 21,
+    "nodeCount": 4081,
+    "unique": 4081,
+    "duplicateCount": 0,
+    "owned_pages": [
+      "p-1H-0",
+      "p-1E-0"
+    ],
+    "protected_pages": [
+      "p-1F-0",
+      "p-N-1"
+    ],
+    "foreign_attachments_r32": 0
+  },
+  "offline": {
+    "built": true,
+    "verified": true,
+    "browser": "Chromium 151.0.7922.34",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1100
+      },
+      {
+        "width": 1024,
+        "height": 844
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "browser_journeys": {
+      "passed": 65,
+      "failed": 0,
+      "report": "r32/verification/journey-results.json"
+    },
+    "analytical_checks": {
+      "passed": 39,
+      "failed": 0,
+      "report": "r32/analytics-results.json"
+    },
+    "page_errors": 0,
+    "external_requests": 0,
+    "persistence": "in_memory_only",
+    "production_services_invoked": false,
+    "repository_build": {
+      "passed": true,
+      "method": "Build from manifest, token snapshot, fixtures, contracts and all 21 inline JSX exports in isolated package without authoring source-input.json; byte-for-byte match.",
+      "routes": 8,
+      "tool_specimens": 25,
+      "artboards": 21,
+      "html_bytes": 599626,
+      "html_sha256": "b319f1bbf464b18a0ba94d6b1115d7e4b9a331d5ae78b68f2551ac12da76347f",
+      "html_git_blob_sha1": "0ae11f1676c8de639a2767cea330ef3d7722e1be"
+    },
+    "final_metadata_rebuild": {
+      "behavior_source_unchanged": true,
+      "change": "Refreshed embedded interaction-contract metadata after accepted browser run; repository fallback output matched."
+    }
+  },
+  "visual": {
+    "native_reviewed": [
+      "685I-1",
+      "67ZC-1",
+      "6JFT-0",
+      "6GTF-0",
+      "6H13-0",
+      "6H4X-0",
+      "6HBO-0",
+      "64PQ-1",
+      "670P-1",
+      "64G1-1",
+      "66HU-1"
+    ],
+    "method": "Native screenshots, all-eight-route rendered coverage, targeted desktop and phone screenshots, bounded independent analysis and journey judgment"
+  },
+  "source_scope": {
+    "reported_financing": "CoreWeave 2026-06-30 SEC snapshot; exact current daily cash coverage unbound",
+    "market_values": "synthetic",
+    "cash_example": "Synthetic Parent A, separate borrower",
+    "existing_owner_pins": {
+      "macro": "mastermindx-market-intelligence/macro@4f52d22596545cbd67b5143e188baf5660237024",
+      "terminal": "mastermindx-market-intelligence/mastermind-terminal@d6515f47232538161af8d3d4c27064165eda40fe",
+      "r30_projection": "mastermindx-market-intelligence/macro@62a3f9ad070c7583687aef8c30d53fd1764c6aab"
+    }
+  },
+  "not_performed": [
+    "Production component integration",
+    "Real Investigation mutation",
+    "Compound monitor activation",
+    "Database/schema mutation",
+    "Live source binding",
+    "Historical model/backtest qualification",
+    "Forecast calibration",
+    "Trading",
+    "Deployment",
+    "Merge"
+  ],
+  "historical_incident_record": "r31/validation.json",
+  "packaged_at": "2026-10-18T08:31:26.763Z",
+  "advisory_reviews": [
+    {
+      "role": "analytical",
+      "status": "accepted",
+      "scope": "Custom-rule preservation, null peers, explicit-null fixture construction, review chronology and frozen expiry rules."
+    },
+    {
+      "role": "journey",
+      "status": "accepted",
+      "scope": "Rejected application preservation, exact inactive-rule inspection, conflict form restoration, explicit modal focus wrapping and recorded rendered coverage."
+    }
+  ],
+  "file_hashes_sha256": {
+    "r32/implementation.md": "a2949e0e184911c368cee15f3bcc9480da0ba852cde8682a9d2535e786960184",
+    "r32/data_contract.md": "f4bd9d445ac3cdf2a8ac14f4fea3c70be817f8b3975282ec394724e97020c2e3",
+    "r32/feature-scorecard.md": "494628457f3433778a80f7d1c8fff9decd37238469f9243fa456e5707e49ec4b",
+    "r32/validation.md": "0fee1e3dc1be2993768a3cc3f68fd631269192ae91e25f49b74fc0662196c726",
+    "r32/native_effects.json": "d6d758386042d3743a98c2c40a5d91c8a5ad5d4187d2f64db8bb60d59b4fc313",
+    "r32/action_map.json": "e46a4b404665024fbbc03bd2177e553de319f02fd68dc6154b06dfe3cb4e989e",
+    "r32/reference-app.js": "29fcd4d95b7e4e8f77b6a25ad9efb506187af9fc85e681d44701f7307b8d343f",
+    "r32/reference-logic.js": "a2e3f627757dc1cfb9de29aa8031d7e0c7450700c3285544b621710b71f3273b",
+    "r32/reference.css": "9f88b912026793479b1a6f1be47b4384edc030dbc775efe34a970cb79ac102d9",
+    "r32/build-reference.cjs": "a199c085bddca2da0fe0f6257d351f7f82f15decafb61250cac986aaebb38b96",
+    "r32/test-analytics.cjs": "73bbba943507181522ee250d0dae7567f2cab2cc6d08f54ff2c46b27949d1286",
+    "r32/test-journeys.cjs": "cd607edf2640f0c56ce9cb26ed6c563c04184724b8d09336284f4ba746ff4501",
+    "r32/analytics-results.json": "4cea17366a7bab0837762151c46e19cb74a1d9f57872ac096c595f1a9301cbf9",
+    "r32/verification/journey-results.json": "d9996fec963ca7f5b90d0fa47841e59a4db21f47f51b44e7cf106ba98e1aa7af",
+    "r32/reference/index.html": "b319f1bbf464b18a0ba94d6b1115d7e4b9a331d5ae78b68f2551ac12da76347f",
+    "manifest.json": "fd43ad83557ad7f7e7d4f741c287289a077e5286f71327f1db3eb5661b4c8263",
+    "interaction_contracts.json": "a8945b6eb9526ad9dceaacc10a86fb613dc2e6cd87273326466f7a9d50b2375c"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "record_kind": "owner_recovery_evidence",
+  "title": "Holdings explicit sponsor dates and validation-sample atomic keep-first recovery",
+  "documentation_status": "Owner record integrated into the existing CDI evidence carrier",
+  "checkpoint_identity": {
+    "observed_date": "2026-10-22",
+    "repository": "mastermindx-market-intelligence/macro",
+    "carrier_pr": 9590,
+    "head": "d67c40527801925ab3323310f72e2cbf070a4ead",
+    "merge_head": "7f57e913a5fa17e11001564a31c4c70a425cb102",
+    "remote_head": "cf9ac2b2c03f3f4f7be429f87483c1281ba784ba",
+    "composition_state": "pending local merge with subsequent owner source/test edits; no final composed commit/tree or final-head CI verdict supplied",
+    "source": "Exact identities and execution facts supplied by the accountable recovery owner. This local documentation reconciliation inspected only retained scratch proposals/source helpers; it performed no host read, application test, build, browser, provider, CI, Fabric, independent review or remote mutation. Reconcile current repository/runtime state before effects.",
+    "fresh_state_read_performed_by_documentation_compiler": false
+  },
+  "source_paths": [
+    "collectors/corp_bond_holdings.py",
+    "scripts/fetch_ishares_validation_sample.py"
+  ],
+  "test_owners": [
+    "tests/test_corp_bond_holdings.py",
+    "tests/test_corp_credit.py"
+  ],
+  "behavior": [
+    "SPDR source dates require an explicit full valid sponsor as-of date; missing, malformed, relative or partial dates no longer become an inferred prior business day.",
+    "LQD/HYG sample dates require an explicit valid source date; missing or malformed dates no longer become today's date.",
+    "LQD/HYG publication stages and fsyncs the Parquet in the existing output directory, then uses an atomic no-replace hard link to the existing dated filename.",
+    "Same-date content or a concurrent winner preserves the first file; later observed source dates use separate dated paths; partial encoding leaves no published or temporary artifact.",
+    "Unsupported no-replace publication refuses without a replacement fallback. Existing source formats, provider ownership, schedules and raw data remain unchanged."
+  ],
+  "qualification_runs": [
+    {
+      "phase": "RED on original source with new regression controls",
+      "pid": 97400,
+      "passed": 7,
+      "failed": 19,
+      "duration_seconds": 2.9,
+      "log_sha256": "81e2dadee1811ed7481748ef5b12b4587237d78647b902347669ea547390791a",
+      "log_path": ".cdi-proof/integration-20261022/holdings-source-date-red.log",
+      "scope": "26 new explicit sponsor-date and validation-sample keep-first cases."
+    },
+    {
+      "phase": "initial post-repair whole-owner run",
+      "pid": 19835,
+      "passed": 133,
+      "failed": 0,
+      "setup_errors": 9,
+      "duration_seconds": 6.69,
+      "log_sha256": "c2f0a34ba412b61580929a265f5c1c6eabe979f30c9bf1cf20ec6a1b811a80ad",
+      "log_path": ".cdi-proof/integration-20261022/holdings-source-date-green.log",
+      "paths": [
+        "tests/test_corp_bond_holdings.py",
+        "tests/test_corp_credit.py"
+      ],
+      "result": "Source assertions passed where setup completed; nine registry setups could not run because the exact tracked file was absent from the sparse worktree."
+    },
+    {
+      "phase": "focused registry/match-rate resolution",
+      "pid": 24426,
+      "passed": 11,
+      "failed": 0,
+      "setup_errors": 0,
+      "duration_seconds": 4.05,
+      "completed_at_utc": "2026-10-22T19:33:15Z",
+      "classes": [
+        "TestIssuerRegistry",
+        "TestMatchRate"
+      ],
+      "log_sha256": "eb4cb48e73896f25e117e2069abf48cd4a339c5abcadca1e09e0d1702d1fff2f",
+      "log_path": ".cdi-proof/integration-20261022/holdings-source-date-registry-followup.log"
+    }
+  ],
+  "exact_registry_materialization": {
+    "path": "data/corp_bonds/issuer_themes.json",
+    "origin": "Exact existing pending-merge index object materialized into the sparse source workspace; no registry content edit.",
+    "git_blob": "926e7a2f183657f12a38b2b1c2bfa14a5e1a4a48",
+    "sha256": "a51bef8dabcdca5f69a87355d3baa17f9db9c371d9340d1746b8d80d56642cd3",
+    "bytes": 9166,
+    "original_workspace_or_w4_input_image_changed": false
+  },
+  "count_interpretation": {
+    "resolved_unique_cases": 142,
+    "arithmetic": "133 + 11 - 2 overlapping passes = 142",
+    "overlap_count": 2,
+    "overlapping_node_ids": null,
+    "overlap_provenance": "Two overlapping cases reported by owner; exact node IDs not yet enumerated.",
+    "one_combined_green_run": false,
+    "final_head_test_result": false
+  },
+  "preserved_limits": [
+    "These synthetic temporary-file regressions do not claim a new provider observation, fresh holdings, historical availability or historical pricing.",
+    "The keep-first change is for the LQD/HYG validation-sample writer; the separate SPDR holdings writer was not newly certified race-safe.",
+    "Atomic no-replace protects one dated publication path, not global quiescence or directory-entry power-loss durability.",
+    "The owner native snapshot predates this collector/sample-source repair and is not a native build of the final pending worktree.",
+    "No provider retries/acquisition, migration, archive substitution, browser, release or publication plane was created.",
+    "The original dirty source/data workspaces and untracked/ignored material remain preserved.",
+    "Legacy retained filenames or stored as_of fields do not gain explicit sponsor-date provenance retroactively from this parser repair."
+  ],
+  "unresolved_evidence_bindings": [
+    "The two overlapping pytest node IDs remain unenumerated; counts and all three retained log paths/hashes are preserved. No single final-head run is claimed."
+  ],
+  "documentation_reconciled_date": "2026-10-23",
+  "source_observations_sha256": {
+    "collectors/corp_bond_holdings.py": "53418dde9c382d0ebb39d4836b53e5801dbb84120b54caaa7516f9f482d183ee",
+    "scripts/fetch_ishares_validation_sample.py": "4b2fb18be2ba26537eb0a9fcb53b4e8a559364f7ee2eabab29f3e57a7e3a2f14",
+    "tests/test_corp_bond_holdings.py": "2ed74e22b80f65e603288382a05f46bdb6203dcdfde784e0f44ab31fce421e89",
+    "tests/test_corp_credit.py": "d81007f0bf145bbf59a99f7699375aaa439fbf9e66ae2a80cc54779faac959f0"
+  },
+  "source_observation_scope": "Owner-reported pending-worktree byte identities after the repair; no new source read or final-head qualification by this compiler.",
+  "owner_reconciliation_note": "Original execution scopes and dates remain. Exact current metadata bindings were recovered from retained same-carrier receipts without reexecuting producers or tests. Final composition and release remain gated."
+}

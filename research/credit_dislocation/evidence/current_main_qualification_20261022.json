@@ -1,0 +1,168 @@
+{
+  "schema": "mastermind.cdi.current_main_qualification.v1",
+  "recorded_at": "2026-10-22T09:59:33.545828+00:00",
+  "owner_pr": 9590,
+  "operation_id": "ccw-cdi-source-integration-20261022-sol-001",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/ccw-cdi-source-integration-20261022-sol-001",
+  "source_parents": [
+    "a7f28614fe993ab8dc4d4e3cdfb20892c824bfb7",
+    "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7"
+  ],
+  "tested_source_tree": "d8d71034f60dd8e682306b931b52209ceb1fe950",
+  "changed_main_jobs": [
+    "ccw-w2-gspread-engine",
+    "ccw-w4-credit-desk"
+  ],
+  "all_other_main_jobs_equal": true,
+  "owned_runtime_validation": "See source_composition_20261022.json:258 passed plus two exact-index asset checks passed; core runtime source remained byte-identical through latest main merge.",
+  "same_pr_publish_ref": "refs/heads/claude/ssd-ccw-dislocation-v1-cc87720e59421398",
+  "expected_remote_before_publish": "4074adb0aeb2d5029dbaacdda4de5bf4e81f19ab",
+  "original_data_workspace_head": "4d345a59ac8fb595cc8cfaf4435f51fcd0eae706",
+  "original_data_preservation_manifest_sha256": "92cfaaa4d508438dc9d367a88b952daae7cbbeed01d89f3e8568b5dbdfff105d",
+  "held_source_included": "R33#9578@03e2bbf1f2f5aacb86e21eca33dba8cacbeb0f1c; its review/release hold remains binding.",
+  "source_review_accepted": false,
+  "native_current_composition_proven": false,
+  "browser_acceptance": false,
+  "production_acceptance": false,
+  "current_main_composition": {
+    "at": "2026-10-22T09:44:55.958639+00:00",
+    "parents": [
+      "a7f28614fe993ab8dc4d4e3cdfb20892c824bfb7",
+      "1b3166c7dc7ea176c7aa4a99ddc203694a0f3ac7"
+    ],
+    "index_tree": "f9e205115ab770867aac043b7d2abe0bba0e9fbc",
+    "core_before": {
+      "scripts/build_bonds.py": "824faa1f9394343fda7c743b33745b3088f54abb76989249e83580ca2f42b9a3",
+      "scripts/build_macro_context.py": "69d4d2986cf4e353ec126fca53bc3c7240fb04dc849c3a27936ad48f86c56fa1",
+      "templates/bonds.html.j2": "a9e100a8eb896474716efa792428a4696180d46b527e7dc426b5eb5b34c25aeb",
+      "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+      "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651"
+    },
+    "core_after": {
+      "scripts/build_bonds.py": "824faa1f9394343fda7c743b33745b3088f54abb76989249e83580ca2f42b9a3",
+      "scripts/build_macro_context.py": "69d4d2986cf4e353ec126fca53bc3c7240fb04dc849c3a27936ad48f86c56fa1",
+      "templates/bonds.html.j2": "a9e100a8eb896474716efa792428a4696180d46b527e7dc426b5eb5b34c25aeb",
+      "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+      "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651"
+    },
+    "core_unchanged": true,
+    "manifest_sha256": "03b91df4871ca15cd57a12195e45d7f5866b58b486997950563d05ea39aeb0f9"
+  },
+  "initial_guard_failure": {
+    "at": "2026-10-22T09:48:58.725005+00:00",
+    "source_tree": "f9e205115ab770867aac043b7d2abe0bba0e9fbc",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 1,
+    "seconds": 174.145,
+    "source_before": {
+      ".github/ci/legacy-jobs.yml": "03b91df4871ca15cd57a12195e45d7f5866b58b486997950563d05ea39aeb0f9",
+      "tests/test_ci_pack.py": "c0ccd3bab6fca2d5fc7c1319360816aadca89673e2c77548a66d621df59be449",
+      "scripts/build_bonds.py": "824faa1f9394343fda7c743b33745b3088f54abb76989249e83580ca2f42b9a3",
+      "templates/bonds.html.j2": "a9e100a8eb896474716efa792428a4696180d46b527e7dc426b5eb5b34c25aeb",
+      "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+      "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651"
+    },
+    "source_after": {
+      ".github/ci/legacy-jobs.yml": "03b91df4871ca15cd57a12195e45d7f5866b58b486997950563d05ea39aeb0f9",
+      "tests/test_ci_pack.py": "c0ccd3bab6fca2d5fc7c1319360816aadca89673e2c77548a66d621df59be449",
+      "scripts/build_bonds.py": "824faa1f9394343fda7c743b33745b3088f54abb76989249e83580ca2f42b9a3",
+      "templates/bonds.html.j2": "a9e100a8eb896474716efa792428a4696180d46b527e7dc426b5eb5b34c25aeb",
+      "engine/credit_dislocation.py": "40d168f3b2f2f89c4af511008b0fe623443f0bdf21e735e20b17506b9ee9d57b",
+      "engine/corp_credit.py": "c99d9455606d2a97d75facfdbb0a74ded9c635a30a438fc4f7c1d84d118a1651"
+    },
+    "source_unchanged": true,
+    "log_sha256": "84be312d6253e5f987e0087d0bf9945400d9f9afb605d8d1ff52598ef7a64154",
+    "result_tail": [
+      ".F..                                                                     [100%]",
+      "=================================== FAILURES ===================================",
+      "_________ test_curated_exclusive_scopes_cover_their_own_import_closure _________",
+      "",
+      "    def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:",
+      "        \"\"\"Zero MISS: every file a curated job imports must still select it.",
+      "    ",
+      "        `scope: exclusive` REPLACES inference, so the declared paths are the whole",
+      "        scope \u2014 a closure file with no matching pattern is a job that stops running",
+      "        when its own dependency changes, and reports green forever. The manifest's",
+      "        load-time coverage audit only reaches the paths a job's COMMANDS name; the",
+      "        transitive import closure is one layer deeper and is checked here.",
+      "    ",
+      "        The computation itself is ``scripts.run_ci_pack.curated_exclusive_closure_findings``",
+      "        \u2014 the same function ``scripts/check_contract_delta.py`` calls for the head side",
+      "        of its PR-vs-base delta, so this test and that gate can never quietly diverge on",
+      "        what \"covered\" means.",
+      "        \"\"\"",
+      "        misses_full = curated_exclusive_closure_findings(MANIFEST)",
+      "        misses = {job_id: list(paths[:8]) for job_id, paths in misses_full.items()}",
+      ">       assert not misses, (",
+      "            \"curated exclusive scope(s) no longer cover their own import closure:\\n  \"",
+      "            + \"\\n  \".join(f\"{k}: {v}\" for k, v in misses.items())",
+      "            + \"\\n\\nA new import reached a tree the declaration does not name, so that \"",
+      "            \"job silently stopped running for edits to it. Widen the job's `paths:` \"",
+      "            \"in .github/ci/legacy-jobs.yml to cover the listed files \u2014 widening is \"",
+      "            \"always the safe direction.\"",
+      "        )",
+      "E       AssertionError: curated exclusive scope(s) no longer cover their own import closure:",
+      "E           ccw-w4-credit-desk: ['config/dag.yml', 'engine/corp_credit.py']",
+      "E         ",
+      "E         A new import reached a tree the declaration does not name, so that job silently stopped running for edits to it. Widen the job's `paths:` in .github/ci/legacy-jobs.yml to cover the listed files \u2014 widening is always the safe direction.",
+      "E       assert not {'ccw-w4-credit-desk': ['config/dag.yml', 'engine/corp_credit.py']}",
+      "",
+      "tests/test_ci_pack.py:5061: AssertionError",
+      "",
+      "NOTE: sparse worktree \u2014 artifacts, data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+      "=========================== short test summary info ============================",
+      "FAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "1 failed, 3 passed in 173.36s (0:02:53)"
+    ]
+  },
+  "bounded_repair": {
+    "at": "2026-10-22T09:52:43.982713+00:00",
+    "source_tree": "d8d71034f60dd8e682306b931b52209ceb1fe950",
+    "introduced_missing_paths": [
+      "config/dag.yml",
+      "engine/corp_credit.py"
+    ],
+    "paths_before": 926,
+    "paths_after": 928,
+    "other_jobs_commands_scopes_unchanged": true,
+    "manifest_before_sha256": "03b91df4871ca15cd57a12195e45d7f5866b58b486997950563d05ea39aeb0f9",
+    "manifest_after_sha256": "d4f641acfa9f46b1b39814b1a502461cc7fd6c6d8f26f4d3523553c94bc5552d"
+  },
+  "corrected_guards": {
+    "at": "2026-10-22T09:55:41.235099+00:00",
+    "source_tree": "d8d71034f60dd8e682306b931b52209ceb1fe950",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "seconds": 177.227,
+    "manifest_unchanged": true,
+    "log_sha256": "277becb7b23b941183fd76cd1461c853df8057ab13c6b82fd604a2b90dcc7833",
+    "result_tail": [
+      "....                                                                     [100%]",
+      "4 passed in 176.28s (0:02:56)"
+    ]
+  }
+}

@@ -594,3 +594,34 @@ class TestFooterFilter:
             assert "disclaims" not in name.lower(), (
                 f"Disclaimer row leaked into output: {name[:80]!r}"
             )
+
+
+class TestExplicitSponsorAsOf:
+    """A retained date must come from the sponsor preamble, not the run clock."""
+
+    @pytest.mark.parametrize(("reported", "expected"), [
+        ("10-Jul-2026", "2026-07-10"),
+        ("2026-10-15", "2026-10-15"),
+        ("February 29, 2024", "2024-02-29"),
+    ])
+    def test_valid_explicit_date_is_preserved(self, reported, expected):
+        raw = _load_xlsx(_build_ssga_bond_xlsx(
+            [{"Name": "BOND A", "Identifier": "US594918BT73"}], asof=reported))
+        snap = _parse_bond_xlsx(raw, "SPIB")
+        assert snap["as_of"].unique().tolist() == [expected]
+
+    def test_missing_label_does_not_use_collection_day(self):
+        raw = _load_xlsx(_build_ssga_bond_xlsx(
+            [{"Name": "BOND A", "Identifier": "US594918BT73"}]))
+        raw.iloc[2, 1] = "Holdings date unavailable"
+        with pytest.raises(ValueError, match="as-of date"):
+            _parse_bond_xlsx(raw, "SPIB")
+
+    @pytest.mark.parametrize("reported", [
+        "", "not-a-date", "NaT", "today", "Jul 13", "31-Feb-2026",
+    ])
+    def test_malformed_partial_or_relative_date_refuses(self, reported):
+        raw = _load_xlsx(_build_ssga_bond_xlsx(
+            [{"Name": "BOND A", "Identifier": "US594918BT73"}], asof=reported))
+        with pytest.raises(ValueError, match="as-of date"):
+            _parse_bond_xlsx(raw, "SPIB")

@@ -4466,6 +4466,7 @@ CURATED_EXCLUSIVE = {
     # `options-catalyst-links` (#7774) is hermetic and reads daily.yml and
     # this manifest as text. Closure-coverage audit: zero misses.
     "market-os-macro-workspaces",
+    "ccw-w4-credit-desk",
     "uk-policy-desk",
     # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
     "finance-intelligence",
@@ -5333,6 +5334,11 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
 # Minus-A1 population is a composed-source counterfactual, not a main baseline.
 # https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Retained histories below describe their original qualified compositions.
+# Main's 5877 already includes the memo's inherited two units; do not count them twice.
+# 2026-10-24: retain PR #10125's memo regression suite in its incumbent job.
+# The same-tree measurement adds two weight units, with identical selected IDs.
+# Fund only free-content 5873 -> 5875; the dated entry below records attribution.
 # Preserve protected GovRev memo coverage (+2 in its existing selected job).
 # App-parent bridge coverage retains its existing Node command in data-base-shim.
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
@@ -5397,6 +5403,31 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the one existing Brain invocation gains test_research_thesis_read.py.
     Preserve canonical job/pack ceilings, selectors and all measurement history;
     fund only its previously qualified two estimator units per probe.
+
+    2026-10-23 CCW/CDI plus Catalyst composition joins owner62324977
+    and protected main88b5bc86. Canonical measurement on this merged tree
+    (113.92s): index135/5874, free-content135/5856, Prophet130/5640;
+    ten packs each. Versus qualified623, the sole added job is the
+    original catalyst-opportunity owner, weight6. All350 prior jobs,
+    their commands/timeouts and every prior path remain; the merged
+    manifest has351 jobs. Set only the breached Prophet weight ceiling
+    from5634 to5640, with no padding. Preserve job limits136/136/130,
+    other weight ceilings, ten packs and both histories below.
+    Planning weights are accounting units, not measured execution time.
+
+    2026-10-23 CCW/CDI source composition with protected afcedb87 keeps
+    all 350 jobs and existing suite commands. Canonical measurements on
+    this composed tree: index135/5874, free-content135/5856 and
+    Prophet129/5634; ten packs each. The immutable afc manifest measured
+    on this SAME feature tree gives index136/5884, free135/5856 and
+    Prophet129/5632. This is not a historical afc-tree execution.
+    Retained bounded-solver coverage adds two Prophet estimator units;
+    the other four units above the old5628 ceiling are a composition
+    baseline difference, not an attribution to that added suite.
+    Set only the Prophet weight ceiling to the measured5634. Preserve
+    job limits136/136/130, other weight ceilings, ten packs, timeouts,
+    all suites and the canonical planner. These are accounting units,
+    not measured runtime. Prior measurement histories remain below.
 
     2026-10-23 Catalyst PR #9552 current-main integration: separate exact-tree
     canonical planner runs on main9732eb9f and merge9c1262d6 preserve
@@ -6690,6 +6721,34 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Only a breached ceiling moves, to its measured head weight, no padding;
     job-count ceilings, the pack limit, selectors and every prior suite stay
     unchanged. Planning weights are not measured execution times.
+
+    2026-10-24 (PR #9590, inherited PR #10125 coverage funding):
+    Hosted run 40064141322 / pack-1 job 120783973422 fails the free-content
+    weight bound at 5,875 / 5,873. Its separate contract-delta census on
+    merge bd0215d4f2fd (head bd825ff0649a, base df6895341db9) measures the
+    same 5,875 in head and base: no introduced packing regression.
+
+    Canonical packing_probe_measurements on bd825ff0649a compares its real
+    manifest with a temporary manifest counterfactual removing only
+    dfb1cfc758586's tests/test_government_revenue_dossier_validation_memo.py
+    addition. Both use the SAME candidate source tree; the counterfactual
+    is not a historical-tree or main-baseline selection measurement:
+
+        templates/index.html          134 jobs, 5,867 -> 5,869 weight
+        scripts/build_free_content.py 135 jobs, 5,873 -> 5,875 weight
+        engine/prophet/plan_book.py    129 jobs, 5,633 -> 5,635 weight
+
+    Every selected job ID is identical; all rows remain at ten packs.
+    The retained suite raises unrun-government-revenue from 104 to 106.
+    Its companion declared path in defense-rail-laws changes no weight.
+    An additional counterfactual removing d8e8f1a4a085's source-binding
+    suite changes only defense-rail-laws (156 -> 158), absent from these
+    probe selections, and therefore contributes zero to the measured rows.
+
+    Fund only the breached free-content weight ceiling, 5,873 -> 5,875,
+    with no padding. Preserve every job-count and pack bound, the other
+    weight ceilings, all suites, commands, selectors and duration overrides.
+    These are deterministic planning weights, not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

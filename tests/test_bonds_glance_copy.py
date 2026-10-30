@@ -3,6 +3,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import re
+import runpy
+
+import numpy as np
+import pandas as pd
+import pytest
+from jinja2 import Environment, FileSystemLoader
+
+from engine import bonds
+from scripts import build_bonds
+
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "bonds.html.j2"
 SITE = ROOT / "site" / "bonds.html"
@@ -118,3 +129,78 @@ def test_committed_bonds_stylesheet_is_fingerprinted() -> None:
     assert text == rendered_css
     assert ".dtp-chip--snapshot" in text
     assert ".dtp-chip--live" not in text
+
+
+# Producer-to-visible-driver coverage for missing rates and their recovery.
+def _pipeline(monkeypatch, rates=None):
+    # Store absence is an explicit supported producer condition. Prevent unrelated
+    # local calibration/store data from influencing this deterministic fixture.
+    monkeypatch.setattr(bonds.store, "read", lambda *args, **kwargs: None)
+    frame = pd.DataFrame(
+        {"hy_oas": 3.0, "move": 90.0, **(rates or {})},
+        index=pd.bdate_range("2024-01-01", periods=600),
+    )
+    health = bonds.bonds_frame(frame)
+    assert not health.empty and "health_score" in health
+    snapshot = bonds.bonds_snapshot(frame, health)
+    vm = build_bonds._vm(snapshot, health)
+    hero = build_bonds._hero_pack(vm, "Oct 9, 2026", snapshot["cycle_phase"])
+    glance = build_bonds._glance(vm)
+    base_ctx = runpy.run_path(str(ROOT / "tests/test_bonds_divergence_gate.py"))["_base_ctx"]
+    ctx = base_ctx(vm=vm, hero=hero, glance=glance)
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
+    html = env.get_template("bonds.html.j2").render(**ctx)
+    driver = re.search(
+        r'<div class="panel" id="curve">.*?<p class="drv-read">(.*?)</p>',
+        html, re.S,
+    )
+    assert driver is not None, "The assertion must inspect the actual visible curve driver"
+    return snapshot, hero, glance[0], driver.group(1), html
+
+
+@pytest.mark.parametrize("rates", [{}, {"spread_2s10s": np.nan, "spread_10y3m": np.nan, "curve_tp_adj": np.nan}])
+def test_absent_rates_stay_unavailable_in_visible_curve_driver(monkeypatch, rates):
+    snapshot, hero, curve, driver, _ = _pipeline(monkeypatch, rates)
+    assert snapshot["pillars"]["curve"]["spread_2s10s"] is None
+    assert snapshot["pillars"]["curve"]["inverted"] is None
+    assert "not readable yet" in hero["clause_en"]
+    assert curve["state_en"] == "Unavailable"
+    assert curve["state_zh"] == "暂不可用"
+    assert curve["sev"] == "gl-mid"
+    assert '<span class="l-en">Unavailable</span>' in driver
+    assert '<span class="l-zh">暂不可用</span>' in driver
+    assert "Flat" not in driver and "平坦" not in driver
+
+
+@pytest.mark.parametrize("spread, expected_en, expected_zh", [
+    (0.0, "Flat", "平坦"), (0.15, "Flat", "平坦"),
+    (0.16, "Normal", "正常"), (0.99, "Normal", "正常"),
+    (1.0, "Steep", "陡峭"), (1.5, "Steep", "陡峭"),
+])
+def test_observed_spreads_preserve_existing_thresholds(monkeypatch, spread, expected_en, expected_zh):
+    _, _, curve, driver, _ = _pipeline(monkeypatch, {"spread_2s10s": spread})
+    assert curve["state_en"] == expected_en
+    assert curve["state_zh"] == expected_zh
+    assert f'<span class="l-en">{expected_en}</span>' in driver
+    assert "Unavailable" not in driver
+
+
+@pytest.mark.parametrize("rates", [
+    {"spread_10y3m": -0.3},
+    {"curve_tp_adj": -0.3},
+    {"spread_10y3m": -0.3, "spread_2s10s": 1.5},
+])
+def test_observed_inversion_keeps_precedence(monkeypatch, rates):
+    _, hero, curve, driver, _ = _pipeline(monkeypatch, rates)
+    assert curve["state_en"] == "Inverted"
+    assert curve["state_zh"] == "倒挂"
+    assert "inverted" in hero["clause_en"]
+    assert '<span class="l-en">Inverted</span>' in driver
+
+
+def test_recovery_and_loss_do_not_retain_a_prior_curve_state(monkeypatch):
+    observed = []
+    for rates in ({}, {"spread_2s10s": 0.0}, {}, {"spread_2s10s": 1.5}):
+        _, _, curve, _, _ = _pipeline(monkeypatch, rates)
+        observed.append(curve["state_en"])
+    assert observed == ["Unavailable", "Flat", "Unavailable", "Steep"]

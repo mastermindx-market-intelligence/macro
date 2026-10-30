@@ -1,0 +1,57 @@
+{
+  "schema": "bonds.current_main_retained_page_integration.v1",
+  "recorded_at_utc": "2026-10-24T03:58:51.261786+00:00",
+  "intended_merge_parents": [
+    "12c254a3d8ca7c88977a17f71653117c2a3997a9",
+    "dfb1cfc758586ee6679bb14f4520e75676608548"
+  ],
+  "source_repairs": "hosted_ci_repair_20261024.json",
+  "assessment_result_sha256": "69bac4ad6b5965ec1c8cb25cfb20b83b73f1412e67f1ca249fbd200357994733",
+  "resolution_result_sha256": "38111549a5352b12331da15e37aae63b8d060453869e5df3a6ad7d9272debbfa",
+  "stage_tree_before_this_record": "17e07bd741f96f89147be51d4cff94487ec71b71",
+  "conflicts_resolved": [
+    "site/bonds.html"
+  ],
+  "page": {
+    "path": "site/bonds.html",
+    "bytes": 728615,
+    "sha256": "a4cbb8d4722f1b9fcd52c7729ce0792d5e03e2f81cfad24e7c3822e053538952",
+    "git_blob": "e693cd9869ca58a702fb4bbdc1e8ef37b96f9346"
+  },
+  "material_native_invalidator": false,
+  "native_generation_reexecuted": false,
+  "retained_native_proof": "page_adoption_main41e_20261024.json",
+  "input_manifest_sha256": "a0d78c627e1db2c7b209305c414b31c45bb11cbc6529c1981f3ea9bb15a9c24a",
+  "unchanged_binding_counts": {
+    "producer_template_pins": 56,
+    "git_bound_inputs": 556,
+    "private_fixed_inputs": 6,
+    "nonpage_assets": 29
+  },
+  "all_index_bindings_equal_retained_generation": true,
+  "private_input_content_hashes_equal": true,
+  "page_contract_source_unchanged": true,
+  "prior_page_contracts_reused": 2,
+  "sparse_resolution": {
+    "site_parent_was_absent": true,
+    "materialized_only_owned_page": true,
+    "sparse_profile_changed": false,
+    "original_merge_reexecuted": false
+  },
+  "source_validation_before_main_integration": {
+    "census_rows": 343,
+    "unchanged_census_ceiling": 344,
+    "census_tests_passed": 1,
+    "serving_tests_passed": 3
+  },
+  "remaining_holds": [
+    "real Browser capture and owning visual evidence",
+    "independent review",
+    "new merged-head checks and ordinary publication"
+  ],
+  "post_commit_validation_and_publication": "https://github.com/mastermindx-market-intelligence/macro/pull/9590#issuecomment-6337092277",
+  "deployment": false,
+  "migration": false,
+  "provider_acquisition": false,
+  "gate_weakening": false
+}
