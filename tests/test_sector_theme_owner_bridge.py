@@ -6,7 +6,9 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from engine.sector_theme_owner_bridge import preview_us_theme_packet
+from engine.sector_theme_owner_bridge import (
+    preview_us_theme_packet, project_owner_group_flow_context,
+)
 
 END = datetime(2026, 10, 29, 20, tzinfo=timezone.utc)
 DECISION = END + timedelta(minutes=5)
@@ -330,3 +332,205 @@ def test_p2a_29_incomplete_quote_population_retains_identification_bounds():
     assert b["bounds"] == pytest.approx([.5, 1.0])
     assert v["fingerprint"]["horizons"]["5d"]["absolute_trend"][
         "group_return"]["status"] == "unmeasured"
+
+
+def flow_packet():
+    p = fixture()
+    m = p["market"]
+    m["horizon"] = "20d"
+    m["benchmark"] = quote(.01, horizon="20d")
+    m["parent"] = quote(.02, horizon="20d")
+    m["member_rows"] = {
+        "AAA": quote(.04, horizon="20d"),
+        "BBB": quote(.03, horizon="20d"),
+    }
+    return p
+
+
+def flow_reading():
+    return {
+        "accel_z": 1.1, "broadening_z": -0.7, "breadth": .5,
+        "cohesion": .3, "cohesion_chg": -.1, "persistence": .75,
+        "rs_pctile": .6, "stage": "emerging", "flow_score": 99999.0,
+    }
+
+
+def flow_binding():
+    return {
+        "origin": "synthetic_fixture",
+        "source_function": "engine.group_flow.fingerprint_at",
+        "source_revision": "fixture-flow-definition-r1",
+        "group_id": "AI_INDUSTRIAL_INFRA",
+        "cohort_id": "fixture-cohort-20261029",
+        "member_ids": ["SEC_AAA", "SEC_BBB"],
+        "horizon": "20d",
+        "period_end": END.isoformat(),
+        "observed_at": (END + timedelta(seconds=30)).isoformat(),
+        "available_at": (END + timedelta(minutes=1)).isoformat(),
+        "windows": {
+            "rs_window_d": 20, "breadth_ma_d": 50,
+            "corr_window_d": 40, "persist_window_d": 20,
+            "z_lookback_d": 252,
+        },
+    }
+
+
+def test_p2b_01_owner_context_integrates_as_separate_research_only_view():
+    p = flow_packet()
+    p["group_flow_reading"] = flow_reading()
+    p["group_flow_binding"] = flow_binding()
+    out = preview_us_theme_packet(p)
+    assert out["status"] == "RESEARCH_PREVIEW_ONLY"
+    ctx = out["group_flow_context"]
+    assert ctx["status"] == "OWNER_REPORTED_RESEARCH_ONLY"
+    assert ctx["owner_stage_descriptive_only"] == "emerging"
+    assert ctx["observations"]["relative_wealth_second_difference_z"]["value"] == 1.1
+    assert ctx["observations"]["ma_breadth_broadening_z"]["value"] == -.7
+    assert ctx["observations"]["relative_strength_persistence"]["value"] == .75
+    assert "flow_score" not in repr(ctx)
+    assert ctx["ranking_or_trading_authority"] is False
+    assert ctx["eligible_for_customer_publication"] is False
+    # The main candidate remains source-unqualified; the owner report must
+    # never silently flip the canonical predictor/rank gates.
+    assert out["fingerprint"]["axes"]["rs_velocity_acceleration"]["status"] == "unmeasured"
+    assert out["fingerprint"]["authority"]["predictive_promoted"] is False
+
+
+def test_p2b_02_missing_flow_context_does_not_block_base_observations():
+    out = preview_us_theme_packet(flow_packet())
+    assert out["status"] == "RESEARCH_PREVIEW_ONLY"
+    assert out["group_flow_context"]["status"] == "HELD"
+    assert out["group_flow_context"]["reason"] == "missing_owner_group_flow"
+
+
+def test_p2b_03_group_and_cohort_identity_are_not_interchangeable():
+    p = flow_packet()
+    base = preview_us_theme_packet(p)["fingerprint"]
+    b = flow_binding()
+    b["cohort_id"] = "other"
+    out = project_owner_group_flow_context(base, flow_reading(), b)
+    assert out["reason"] == "owner_flow_group_or_cohort_mismatch"
+    b = flow_binding()
+    b["group_id"] = "other"
+    out = project_owner_group_flow_context(base, flow_reading(), b)
+    assert out["reason"] == "owner_flow_group_or_cohort_mismatch"
+
+
+def test_p2b_04_missing_or_swapped_member_ids_refuses_context():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["member_ids"] = ["SEC_AAA", "SEC_CCC"]
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "owner_flow_population_mismatch"
+
+
+def test_p2b_05_20d_only_not_arbitrary_intraday_bar():
+    base = preview_us_theme_packet(fixture())["fingerprint"]
+    out = project_owner_group_flow_context(base, flow_reading(), flow_binding())
+    assert out["reason"] == "group_flow_requires_20d_factor_frame"
+
+
+def test_p2b_06_daily_ma_basis_required_for_owner_flow():
+    p = flow_packet()
+    p["market"]["ma_basis"] = "1m_bars"
+    base = preview_us_theme_packet(p)["fingerprint"]
+    out = project_owner_group_flow_context(base, flow_reading(), flow_binding())
+    assert out["reason"] == "group_flow_requires_daily_session_ma_basis"
+
+
+def test_p2b_07_wrong_or_futuristic_owner_timestamp_refuses():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["available_at"] = (DECISION + timedelta(seconds=1)).isoformat()
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "future_or_out_of_order_group_flow_receipt"
+    b = flow_binding()
+    b["period_end"] = (END - timedelta(days=1)).isoformat()
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "group_flow_wrong_period_end"
+
+
+def test_p2b_08_unregistered_producer_and_missing_revision_refuse():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["source_function"] = "engine.other.fingerprint_at"
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "unknown_group_flow_source_definition"
+    b = flow_binding()
+    b["source_revision"] = ""
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "unknown_group_flow_source_definition"
+
+
+def test_p2b_09_owner_window_changes_are_not_silent():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["windows"]["rs_window_d"] = 15
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "unqualified_group_flow_window_definition"
+    b = flow_binding()
+    del b["windows"]["breadth_ma_d"]
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "unqualified_group_flow_window_definition"
+
+
+def test_p2b_10_out_of_range_owner_fields_are_unmeasured_not_extreme():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    r = flow_reading()
+    r["breadth"] = 1.4
+    r["cohesion"] = float("nan")
+    r["persistence"] = -.2
+    ctx = project_owner_group_flow_context(base, r, flow_binding())
+    obs = ctx["observations"]
+    for field in ("ma_breadth_observed_sample", "member_return_cohesion",
+                  "relative_strength_persistence"):
+        assert obs[field]["status"] == "unmeasured"
+    assert obs["ma_breadth_broadening_z"]["value"] == -.7
+
+
+def test_p2b_11_no_owner_measurements_means_hold():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    r = {k: None for k in (
+        "accel_z", "broadening_z", "breadth", "cohesion",
+        "cohesion_chg", "persistence", "rs_pctile",
+    )}
+    r["stage"] = "quiet"
+    ctx = project_owner_group_flow_context(base, r, flow_binding())
+    assert ctx["reason"] == "all_owner_group_flow_fields_unmeasured"
+
+
+def test_p2b_12_owner_stage_is_lowercase_and_not_reinterpreted():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    r = flow_reading()
+    r["stage"] = "EMERGING"
+    assert project_owner_group_flow_context(
+        base, r, flow_binding())["reason"] == "unknown_owner_flow_stage_vocabulary"
+    r["stage"] = "cooling"
+    assert project_owner_group_flow_context(
+        base, r, flow_binding())["owner_stage_descriptive_only"] == "cooling"
+
+
+def test_p2b_13_group_flow_capture_rights_do_not_grant_factor_research():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["origin"] = "owner_reported"
+    b["use_verdict"] = {
+        "verdict": "ALLOWED", "purpose": "selection_cohort_internal_capture",
+        "registry_revision": "rev-1", "source_ref": "flow-source",
+    }
+    assert project_owner_group_flow_context(
+        base, flow_reading(), b)["reason"] == "group_flow_research_use_not_admitted"
+
+
+def test_p2b_14_owner_research_claims_remain_unqualified_not_a_proof():
+    base = preview_us_theme_packet(flow_packet())["fingerprint"]
+    b = flow_binding()
+    b["origin"] = "owner_reported"
+    b["use_verdict"] = {
+        "verdict": "ALLOWED", "purpose": "sector_theme_factor_research",
+        "registry_revision": "rev-1", "source_ref": "flow-source",
+    }
+    ctx = project_owner_group_flow_context(base, flow_reading(), b)
+    assert ctx["status"] == "OWNER_REPORTED_RESEARCH_ONLY"
+    assert ctx["original_observation_and_use_receipts_verified"] is False
+    assert ctx["eligible_for_customer_publication"] is False
