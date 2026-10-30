@@ -372,3 +372,33 @@ def test_p1a_28_per_name_source_time_and_ma_basis_are_retained():
     assert p["single_names"]["AAA"]["horizons"]["5d"]["period_end"] == END.isoformat()
     assert p["single_names"]["AAA"]["horizons"]["5d"]["ma_basis"] == "daily_sessions"
     assert p["single_names"]["AAA"]["horizons"]["5d"]["above_ma200"] is True
+
+
+def test_p1a_29_invalid_breadth_algebra_cannot_launder_majority():
+    f = fact()
+    f["measures"]["positive_return_breadth"]["bounds"] = [0.2, 1.0]
+    p = compose_regime_fingerprint({"5d": f})
+    result = p["horizons"]["5d"]["participation"]["positive_return_breadth"]
+    assert result == {"status": "unmeasured",
+                      "reason": "inconsistent_breadth_denominator"}
+    assert not any("majority_" in tag for tag in facet_ids(p))
+
+
+def test_p1a_30_wrong_numeric_units_refuse_rs_and_ticker_return():
+    f = fact()
+    f["measures"]["group_rs_parent"]["unit"] = "percent"
+    f["constituents"]["AAA"]["return_frac"]["unit"] = "percent"
+    p = compose_regime_fingerprint({"5d": f})
+    assert p["horizons"]["5d"]["rs_parent"] == {
+        "status": "unmeasured", "reason": "unexpected_numeric_unit",
+    }
+    assert p["single_names"]["AAA"]["horizons"]["5d"]["return"]["status"] == "unmeasured"
+    assert p["horizons"]["5d"]["concentration_dispersion"][
+        "full_cohort_median_return"]["status"] == "unmeasured"
+
+
+def test_p1a_31_malformed_group_identity_fails_closed():
+    f = fact()
+    f["group"]["cohort_id"] = None
+    with pytest.raises(ValueError, match="group, cohort"):
+        compose_regime_fingerprint({"5d": f})
