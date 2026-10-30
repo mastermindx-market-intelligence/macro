@@ -1,3 +1,100 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/meta-ceo-secretary-runtime-convergence-20261030
+model: sol
+ended_because: blocked
+mission: >
+  Integrate one always-on Meta-CEO and Secretary with existing Mastermind OS chat,
+  Executive OS governance, Agent OS continuity and original-parent results.
+  Compare Grok Bot/OpenClaw, DeepSeek Harness, Hermes and Rakazo without
+  duplicating control planes or replacing the current live Grok Secretary.
+state_before: >
+  The Meta-CEO plan, DSH full chat donor, Office producer/consumer, Grok Secretary
+  and Hermes source roles existed on separate source carriers, but no single
+  authenticated Owner/Session/Result path was demonstrated end to end.
+  The earlier Agent OS Control Room contained no dated handoff for this convergence.
+changed:
+  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30-meta-ceo-secretary-runtime-convergence.md
+    what: >
+      Source-link runtime choice, original product/code owners, M2/M1 tests,
+      Fabric/Grok returns, boundaries, three outcomes and next actions.
+  - path: agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md
+    what: >
+      Add exactly one artifact pointer to this handoff, leaving all waves,
+      decisions, owners and prior artifacts unchanged.
+verified:
+  - claim: >
+      Mastermind OS Office native-session source and Today continuation source
+      passed their local complete test suites and TypeScript/Vite builds.
+    command: >
+      Compare Mastermind PR #1889 exact head 9e3f8da111cb615610b62b61632268d512f6cb3f
+      and PR #1891 exact head 9b08f7482c3632fd1aaffa335efebf672ef22c0a
+      with their source-linked local M1 test receipts.
+    result: >
+      PR #1889 had 1,868 app cases PASS and 6 skipped; child #1891
+      had 1,873 PASS and 6 skipped, with source-verified owner-target
+      matching and guarded Today continuation reuse. Both need independent
+      review and actual signed-in system evidence before acceptance.
+  - claim: >
+      The existing Macro workstream's artifact pointer was the sole planned
+      mutation to the previously existing record.
+    command: >
+      Compare WS-CHAIRMAN-CONTROL-ROOM.md on this PR branch with
+      macro/main ce5201f96f721967d0d6cf65a0afc759d28ce35b.
+    result: >
+      Exact old record plus one new artifacts entry, with no
+      status/owner/wave/decision modifications.
+  - claim: >
+      Fabric C2 source audit completed with a provider adapter error,
+      not an accepted review or implemented product.
+    command: >
+      Read original Fabric result for
+      meta-ceo-cross-runtime-contract-audit-20261030-001
+      on root meta-ceo-open-harness-convergence-20261024-sol-001.
+    result: >
+      TERMINAL rc=1, accepted=false, SDK unrecognized_model for
+      glm-5.3-flash, retry_allowed=false; no audit output accepted.
+unverified:
+  - claim: >
+      A signed-in Chairman can send one authorized exact-session continuation
+      from Today, receive the original Executive WorkerResult and independently
+      accept it in one coherent Office journey.
+    what_would_verify: >
+      Production-path auth and owner correlation, admitted Job/Attempt,
+      verified START, original parent result and acceptance with no
+      cross-session/cross-project leak after cold restart.
+  - claim: >
+      Hermes or OpenClaw is a suitable and cheaper replacement resident agent.
+    what_would_verify: >
+      Lawful host/provider credentials, native model turns, metering/cost,
+      Mac computer-use grants and both 24h and 7d observed reliability
+      compared with the current Grok Secretary without downtime.
+unresolved:
+  - "Independent PR review and full exact-head CI remain unsettled."
+  - "OpenClaw Gateway required RPC was unreachable despite existing Grok Bot app processes."
+  - "No authorized real Hermes process canary or resident daemon passed; the attempted real pinned canary was explicitly safety denied."
+  - "Fabric unrecognized glm-5.3-flash SDK alias terminal failure is not retry-authorized."
+  - "Grok read-only census and Pro review are ACKed but have no proven START or RESULT."
+next_actions:
+  - "Qualify PR #1889 and #1891 exact-head CI, independent non-author reviews, then normal protected source merge in dependency order without self-approval."
+  - "Verify original-owner native session and accepted worker-result source correlation in an actually signed-in Mastermind OS user path."
+  - "Resume Fabric only after the existing model alias owner repairs and a new authorized admission, never replay the terminal original audit."
+  - "Keep current Grok Secretary live; compare controlled Hermes/OpenClaw/Rakazo role path only after original owner and credential/effect gates."
+do_not_redo:
+  - "Do not create a new company memory, task queue, identity, model router, scheduler, gateway or acceptance authority."
+  - "Do not change existing #1717/#1876 DSH, #1859/#1861 Office, Grok #188/#624 or Hermes #1875-#1885 source heads as a competing writer."
+  - "Do not restart live Grok/OpenClaw services or retry the safety-denied Hermes supervisor process through another carrier."
+  - "Do not failover or re-submit the Fabric adapter-failed original run."
+danger_areas:
+  - "A native DSH chat session or Slack conversation is not an Executive Job, a source of corporate facts or acceptance."
+  - "GitHub CI, model configuration or typed Wake shadow minting does not prove actual resident execution or original-parent return."
+  - "A failed Agent OS fence is a source contract violation to correct on this same PR; unrelated generated-template mismatches require their original owner."
+prs: [10222]
+decisions:
+  - DEC:CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED
+discoveries: []
+---
+
 # Chairman Control Room — Meta-CEO and Secretary runtime convergence
 
 **Date:** 2026-10-30  
