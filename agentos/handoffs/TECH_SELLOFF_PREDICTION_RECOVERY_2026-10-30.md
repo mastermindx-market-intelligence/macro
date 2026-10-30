@@ -1,3 +1,41 @@
+---
+schema: agentos.handoff.v1
+workstream: "WS:GREY-DEER-RISK-INTELLIGENCE"
+session: sol/web-tech-selloff-prediction-recovery-20261030
+model: sol
+ended_because: ci_handoff
+mission: >
+  Recover the Chairman's timed-out Audit tech selloff prediction session and
+  continue existing Grey Deer plus Leadership Rotation source diagnosis and
+  integration without duplicate source writers, signals, queues or authorities.
+state_before: >
+  Existing Macro Drafts #10218/#10219 captured partial as-issued October risk
+  forensics, cross-publisher Risk Envelope divergence and held independent
+  architecture review. The natural nightly source nonadvancement and user alert
+  path remained unproven. Executive OS state endpoint was rate-limited.
+changed:
+  - path: research/grey_deer/evidence/EW_P1_SOURCE_CLOCK_DIVERGENCE_2026-10-30.md
+    what: Added direct original October21-30 nightly QLedger GH001 receipts.
+  - path: research/grey_deer/EARLY_WARNING_INTEGRATION_INCREMENT_2026-10-30.md
+    what: Corrected reviewer-identified forecast estimand/science and delivery gates.
+  - path: research/grey_deer/commissions/EW_ROTATION_CONSENT_OUTBOX_BRIDGE_CONTRACT_2026-10-30.md
+    what: Proposed revocation CAS/send-admission/correction safety contract; default-off.
+  - path: agentos/handoffs/TECH_SELLOFF_PREDICTION_RECOVERY_2026-10-30.md
+    what: Preserved exact source-linked leadership takeover frontier and blockers.
+verified:
+  - claim: The protected Mastermind source-law pin is compatible.
+    command: Read docs/sol_skills/INDEX.md at bb85b429f2ffffd38408080ce4df7d6378c34100.
+    result: Skillpack v1.0.1 compatible; protected source law read.
+  - claim: Native Oct29 engine and tail publication were rejected by GitHub.
+    command: GitHub original daily run 40803269874 job logs 123688873047 and 123688869633.
+    result: GH001 oversized data/qledger/claims.jsonl while other outputs were being published.
+  - claim: The recurring failure was visible in multiple independent native runs.
+    command: Original GitHub daily job logs on Oct21,23,24,26,27,29 and 30.
+    result: Repeated QLedger large-file rejections in collect_tail; additional engine refusals Oct23/24/29.
+  - claim: Recovery changes were saved on existing original Draft PR.
+    command: GitHub commit/readback for #10219 on sol/gd-early-warning-integration-20261030.
+    result: Source docs committed; no merge, alert, native delivery, tests or policy acceptance claimed.
+---
 # Chairman session takeover — Audit tech selloff prediction (2026-10-30)
 
 **Operation:** resume timed-out ChatGPT project session `Audit tech selloff prediction`; new active CEO session assumes leadership of the SAME Grey Deer + Leadership Rotation task tree. Not a new workstream, risk engine, signal model, scheduler, alert sender, queue, state registry or trading mandate. This is a recoverable coordination frontier, not a review approval or deployment receipt.
