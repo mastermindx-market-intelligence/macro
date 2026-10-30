@@ -582,3 +582,307 @@ test('tryCopy reports success only on an acknowledged write', async () => {
   });
   assert.equal(await t6('x'), false);
 });
+
+
+/*
+ * Clipboard-feedback lifetime regression: execute the unchanged, whole
+ * compounding inline script in a minimal event-driven DOM/clipboard VM.
+ * Deferred promises and controlled timers make stale callbacks deterministic.
+ */
+const COMP_SCRIPT_BLOCK = COMP_SRC.match(/<script>([\s\S]*?)<\/script>/);
+assert.ok(COMP_SCRIPT_BLOCK, 'compounding inline script should exist');
+
+function makeCompoundingCopyPage(options = {}) {
+  const nodes = new Map();
+  const documentEvents = new Map();
+  const clipboardWrites = [];
+  const legacyWrites = [];
+  const timers = [];
+  const errors = [];
+
+  function node(id) {
+    const handlers = new Map();
+    const attrs = new Map();
+    const classes = new Set();
+    return {
+      id, value: '', hidden: false, rows: 4, scrollTop: 0,
+      selectionStart: 0, selectionEnd: 0, textContent: '', innerHTML: '',
+      style: {}, children: [], dataset: {}, className: '',
+      classList: {
+        add(name) { classes.add(name); },
+        remove(name) { classes.delete(name); },
+        contains(name) { return classes.has(name); },
+      },
+      addEventListener(name, fn) { handlers.set(name, fn); },
+      fire(name, event = {}) {
+        assert.ok(handlers.has(name), id + ' has ' + name + ' listener');
+        handlers.get(name)(event);
+      },
+      getAttribute(name) { return attrs.has(name) ? attrs.get(name) : null; },
+      setAttribute(name, value) { attrs.set(name, String(value)); },
+      removeAttribute(name) { attrs.delete(name); },
+      appendChild(child) { this.children.push(child); },
+      focus() { this.focused = true; },
+      select() {
+        this.selectionStart = 0;
+        this.selectionEnd = this.value.length;
+        this.scrollTop = this.scrollHeight - this.clientHeight;
+      },
+      scrollIntoView() { this.scrolledIntoView = true; },
+      querySelectorAll() { return []; },
+      getTotalLength() { return 600; },
+      get scrollHeight() { return this.value.split('\n').length * 21; },
+      get clientHeight() { return this.rows * 21; },
+    };
+  }
+
+  for (const id of [
+    'principal', 'contrib', 'rate', 'years', 'out-main', 'out-plain',
+    'out-contrib', 'out-growth', 'out-mult', 'year-tbody',
+    'year-table-wrap', 'freq-seg', 'copy-result', 'copied',
+    'copy-fallback', 'copy-fallback-text', 'curve-wrap',
+    'cp-area-fv', 'cp-area-c', 'cp-line-fv', 'cp-line-c',
+  ]) nodes.set(id, node(id));
+
+  const initial = { principal: '10000', contrib: '500', rate: '7', years: '10' };
+  for (const [name, value] of Object.entries(initial)) nodes.get(name).value = value;
+  nodes.get('copy-fallback').hidden = true;
+  const documentElement = node('html');
+  documentElement.setAttribute('data-lang', 'en');
+  const document = {
+    documentElement,
+    getElementById(id) { assert.ok(nodes.has(id), 'unknown DOM id ' + id); return nodes.get(id); },
+    createElement(tag) { return node(tag); },
+    addEventListener(name, fn) { documentEvents.set(name, fn); },
+    body: { appendChild() {}, removeChild() {} },
+    execCommand(command) {
+      assert.equal(command, 'copy');
+      legacyWrites.push(command);
+      return options.legacySuccess === true;
+    },
+  };
+  const navigator = options.clipboardAvailable === false ? {} : {
+    clipboard: {
+      writeText(value) {
+        return new Promise((resolve, reject) => {
+          clipboardWrites.push({ value, resolve, reject });
+        });
+      },
+    },
+  };
+  const context = vm.createContext({
+    document, navigator,
+    window: { matchMedia: () => ({ matches: true }) },
+    Promise, Math, Number, String, isFinite, parseInt, console: {
+      error(...args) { errors.push(args); },
+    },
+    setTimeout(fn, ms) {
+      const timer = { fn, ms, active: true };
+      timers.push(timer);
+      return timers.length;
+    },
+    clearTimeout(id) {
+      if (timers[id - 1]) timers[id - 1].active = false;
+    },
+  });
+  vm.runInContext(COMP_SCRIPT_BLOCK[1], context, { filename: COMP_PATH });
+  assert.ok(documentEvents.has('DOMContentLoaded'));
+  documentEvents.get('DOMContentLoaded')();
+  assert.deepEqual(errors, [], 'page self-check');
+
+  return {
+    get(id) { return nodes.get(id); },
+    clipboardWrites, legacyWrites, timers,
+    click() { nodes.get('copy-result').fire('click'); },
+    input(id, value) {
+      nodes.get(id).value = value;
+      nodes.get(id).fire('input');
+    },
+    frequency(value) {
+      const btn = node('frequency');
+      btn.dataset.v = String(value);
+      nodes.get('freq-seg').fire('click', { target: { closest() { return btn; } } });
+    },
+    language(value) {
+      documentElement.setAttribute('data-lang', value);
+      documentEvents.get('langchange')();
+    },
+    succeed(index) { clipboardWrites[index].resolve(); },
+    reject(index) { clipboardWrites[index].reject(new Error('clipboard denied')); },
+    showCopied() { return nodes.get('copied').classList.contains('show'); },
+    fallbackShown() { return !nodes.get('copy-fallback').hidden; },
+    async flush() {
+      for (let i = 0; i < 6; i += 1) await Promise.resolve();
+    },
+  };
+}
+
+test('compounding generated page includes byte-identical calculator inline script', () => {
+  const built = readFileSync(join(ROOT, 'site', 'tools', 'calculators', 'compounding.html'), 'utf8');
+  assert.ok(built.includes(COMP_SCRIPT_BLOCK[0]), 'generated page has exact template inline script');
+});
+
+test('compounding obsolete rejection after input edit never reopens old fallback', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  assert.match(ui.clipboardWrites[0].value, /\$10,000/);
+  ui.input('principal', '20000');
+  assert.match(ui.get('out-main').textContent, /^\$/);
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.fallbackShown(), false);
+  assert.equal(ui.get('copy-fallback-text').value, '');
+  assert.equal(ui.showCopied(), false);
+});
+
+test('compounding second success survives first attempt rejection', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.click();
+  ui.succeed(1);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding old success cannot appear beside newly invalid result', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.input('principal', '');
+  assert.equal(ui.get('out-main').textContent, '—');
+  ui.succeed(0);
+  await ui.flush();
+  assert.equal(ui.showCopied(), false);
+  assert.equal(ui.fallbackShown(), false);
+  ui.click();
+  assert.equal(ui.clipboardWrites.length, 1, 'invalid result cannot be copied');
+});
+
+test('compounding frequency change invalidates pending success and completed feedback', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.frequency(4);
+  ui.succeed(0);
+  await ui.flush();
+  assert.equal(ui.showCopied(), false);
+  ui.click();
+  assert.match(ui.clipboardWrites[1].value, /Quarterly/);
+  ui.succeed(1);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  ui.frequency(1);
+  assert.equal(ui.showCopied(), false);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding language change invalidates pending failure and copies current language', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.language('zh');
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.fallbackShown(), false);
+  ui.click();
+  assert.match(ui.clipboardWrites[1].value, /复利计算器/);
+  ui.succeed(1);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  ui.language('en');
+  assert.equal(ui.showCopied(), false);
+});
+
+test('compounding older success timer cannot erase newer attempt feedback', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.succeed(0);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.timers.length, 1);
+  ui.click();
+  ui.succeed(1);
+  await ui.flush();
+  assert.equal(ui.timers.length, 2);
+  assert.equal(ui.timers[0].active, false, 'older timer canceled');
+  ui.timers[0].fn(); // simulate a callback already queued before cancellation
+  assert.equal(ui.showCopied(), true, 'obsolete timer must not clear newer Copied');
+  ui.timers[1].fn();
+  assert.equal(ui.showCopied(), false, 'latest timeout clears current Copied');
+});
+
+test('compounding input edit removes displayed feedback and defuses its timer', async () => {
+  const ui = makeCompoundingCopyPage();
+  ui.click();
+  ui.succeed(0);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  ui.input('years', '11');
+  assert.equal(ui.showCopied(), false);
+  assert.equal(ui.timers[0].active, false);
+  ui.timers[0].fn();
+  assert.equal(ui.showCopied(), false);
+});
+
+test('compounding latest rejected copy shows readable selectable click-time fallback', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: false });
+  ui.click();
+  const clicked = ui.clipboardWrites[0].value;
+  ui.reject(0);
+  await ui.flush();
+  const textarea = ui.get('copy-fallback-text');
+  assert.equal(ui.fallbackShown(), true);
+  assert.equal(ui.showCopied(), false);
+  assert.equal(textarea.value, clicked);
+  assert.equal(textarea.focused, true);
+  assert.equal(textarea.selectionStart, 0);
+  assert.equal(textarea.selectionEnd, clicked.length);
+  assert.equal(textarea.scrollTop, 0);
+});
+
+test('compounding unavailable clipboard preserves successful legacy copy feedback', async () => {
+  const ui = makeCompoundingCopyPage({ clipboardAvailable: false, legacySuccess: true });
+  ui.click();
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 1);
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding unavailable clipboard preserves failed legacy fallback', async () => {
+  const ui = makeCompoundingCopyPage({ clipboardAvailable: false, legacySuccess: false });
+  ui.click();
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 1);
+  assert.equal(ui.showCopied(), false);
+  assert.equal(ui.fallbackShown(), true);
+  assert.match(ui.get('copy-fallback-text').value, /hypothetical scenario/);
+});
+
+test('compounding rejected async clipboard uses successful legacy copy', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: true });
+  ui.click();
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 1);
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding newer failed attempt supersedes an older pending success', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: false });
+  ui.click();
+  ui.input('principal', '20000');
+  ui.click();
+  assert.match(ui.clipboardWrites[0].value, /\$10,000/);
+  assert.match(ui.clipboardWrites[1].value, /\$20,000/);
+  ui.reject(1);
+  await ui.flush();
+  assert.equal(ui.fallbackShown(), true);
+  assert.equal(ui.get('copy-fallback-text').value, ui.clipboardWrites[1].value);
+  ui.succeed(0);
+  await ui.flush();
+  assert.equal(ui.fallbackShown(), true, 'older success does not hide latest fallback');
+  assert.equal(ui.showCopied(), false);
+});
