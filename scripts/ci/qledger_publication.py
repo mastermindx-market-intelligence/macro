@@ -490,6 +490,7 @@ class PublicationContinuityWitness:
     planned_transaction_ids: tuple[str, ...] = ()
     already_present_transaction_ids: tuple[str, ...] = ()
     source_assurance: str = "EXPLICIT_GIT_OBJECTS_NOT_REMOTE_ACCEPTANCE"
+    source_generation_scope: str = "UNVERIFIED_EXTERNAL_AUTHORITY"
     effect: str = "not_attempted"
     eligible_for_cutover: bool = False
 
@@ -551,6 +552,7 @@ def check_legacy_conversion_candidate(
         original.logical_digest, original.byte_count, original.blob_oid,
         (conversion_transaction_id,), binding.accepted_tip_oid,
         planned_transaction_ids=(conversion_transaction_id,),
+        source_generation_scope="ACCEPTED_PREFIX_ONLY",
     )
 
 
@@ -591,6 +593,7 @@ def check_native_operation_candidate(
         receipt.authorized_transaction_ids, binding.accepted_tip_oid,
         planned_transaction_ids=required.applied,
         already_present_transaction_ids=required.already_applied,
+        source_generation_scope="NATIVE_OPERATION_BOUNDED_NOT_EXTERNAL_AUTHORITY",
     )
 
 
