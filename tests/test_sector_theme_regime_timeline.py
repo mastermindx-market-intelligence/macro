@@ -219,3 +219,18 @@ def test_p3b_16_requires_at_least_two_valid_source_previews():
         "need_two_source_previews")
     assert compose_regime_timeline([None, at_offset(1)])["reason"] == (
         "unqualified_or_modified_source_preview")
+
+
+def test_p3b_17_malformed_evidence_or_member_state_is_held_without_exception():
+    a, b = pair()
+    b["frame"]["evidence"] = None
+    assert compose_regime_timeline([a, b])["reason"] == (
+        "missing_constituent_observation")
+    b = pair()[1]
+    b["frame"]["constituents"]["SEC_AAA"] = "bad"
+    assert compose_regime_timeline([a, b])["reason"] == (
+        "malformed_constituent_state")
+    b = pair()[1]
+    b["frame"]["constituents"].pop("SEC_BBB")
+    assert compose_regime_timeline([a, b])["reason"] == (
+        "invalid_source_population")
