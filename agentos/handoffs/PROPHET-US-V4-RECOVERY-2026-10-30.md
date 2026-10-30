@@ -99,6 +99,13 @@ verified:
       independent parent rerun 155 tests passed, no push/PR/deployment.
       A read-only liveness/rescue consumer-seam audit also returned terminal rc0.
 unverified:
+  - claim: New A2 source head full hosted CI and nonauthor review.
+    what_would_verify: >
+      Exact #10202 head 2ea0bf0b... GitHub CI run 41125933425
+      terminal ci-plan/contract-delta/all 12 packs/ci-gate SUCCESS,
+      fences 41125933453 SUCCESS, plus distinct Fabric independent
+      SOURCE_PASS on that immutable new semantic head. No prior
+      cf84/93e review substitution.
   - claim: Full A2 source-to-protected-reader production settlement.
     what_would_verify: >
       Owner-issued genuine UTC computed_at in real Prophet producer,
@@ -121,22 +128,20 @@ unresolved:
     INVALID_ARGUMENT and retry_allowed false; no Fabric ACCEPTED claim.
 next_actions:
   - >
-    Preserve #10202 unchanged and Draft/HOLD: exact-head CI and hosted
-    52-test execution are fully green, independently verified, and
-    source-linked to PR comment 6527602969. No new repair, review
-    or CI rerun without material source/gate change.
+    Consume existing #10202 current-head CI 41125933425 and fences
+    41125933453; adjudicate any real failure, preserve green
+    old-head CI evidence without borrowing it for new semantics.
   - >
-    Arrange the exact next authorized producer-source step under the
-    canonical build_prophet.py publisher owner. Qualify genuine UTC
-    computed_at with the retained independently tested Ubuntu2
-    patch without bypassing an explicit denied file-read path,
-    changing the source/publisher authority or duplicating A3.
+    Consume exact independent Fabric review
+    prophet-v4-a2-bundle-failclosed-independent-review-20261030-01
+    on new head 2ea0bf0b; no duplicate reviewer, no self-approval,
+    maintain #10202 Draft/HOLD. Source tests 210 pass.
   - >
-    Integrate existing check_nightly_liveness.py and prophet_rescue.py
-    consumers only with WS:PROPHET-US-AVAILABILITY source coordination,
-    preserving the sole rescue budget and fail-closed/unknown behavior.
-    Require full bundle-identity and production protected reader proof
-    before changing the a2 wave status from in_progress.
+    Preserve separate #10209 producer UTC clock full hosted green
+    and independent SOURCE_PASS without merge. Owner-coordinate
+    issuer-authentic accepted multi-asset bundle and protected
+    served-identity proof. Integrate existing availability
+    rescue/liveness consumers only under their owner and freeze A3.
 do_not_redo:
   - Never replay Aug 14 A1 historical reconstruction or B1 canonical episode identity.
   - Do not duplicate source audit, original settlement builder, immutable
@@ -199,3 +204,30 @@ This section supersedes earlier nonterminal CI/child snapshots above.
 - Independent source semantic SOURCE_PASS on cf84 remains valid because 93e adds only eight CI path-registration lines. The distinct artifact auditor's result SHA256 is c037beb855c7e67c8c820bb5a73b50e4ec422a808f5da731e105d7492b55021e; verdict INDEPENDENT_ARTIFACT_VERIFIED YES, patch/source hashes exact, 52/52 own fixture tests passed.
 - Canonical GitHub implementation-evidence comment is https://github.com/mastermindx-market-intelligence/macro/pull/10202#issuecomment-6527602969. Artifact and separate consumer audit are delivered, not Fabric ACCEPTED; no approval or production acceptance implied.
 - No code modification was necessary to #10202 on this continuation. Current full A2 production chain remains unproven because genuine producer computed_at patch is unmerged, source and artifact freshness differ, and rescue/liveness and protected reader still owe original contract proof.
+
+## October 30 A2 fail-closed bundle settlement patch — successor frontier
+
+The original A2 Draft #10202 moved from green historical 93e1de80 to exact
+`2ea0bf0b213242ff06472f18306dbdb059443fa9`, applying three A2 files
+from retained Fabric worker `prophet-v4-a2-failclosed-full-bundle-proof-patch-20261030-01`
+whose patch SHA256 is `e16ebf168e4c01343e800e3f23a504d0bb9b940f64b8586f8b2c6a0ad8480173`.
+Source change requires accepted complete candidate_store/board/index/theme_state
+hash map, source-issued accepted bundle identity and matching protected reader
+bundle identity before SETTLED; absent data is PENDING, never a fabricated
+archive-commit bundle id. New head was independently retested in a clean
+Git checkout: **210 passed**, no code changes. The new source is linked at
+https://github.com/mastermindx-market-intelligence/macro/pull/10202#issuecomment-6533159927 .
+
+New A2 CI 41125933425 started and is NOT terminal at this checkpoint; fences
+41125933453 succeeded. Fresh nonauthor Fabric reviewer
+`prophet-v4-a2-bundle-failclosed-independent-review-20261030-01` is retained
+at root `6adce1ef-c13c-83e9-9510-983a2249a6a0`. No verdict as of
+this checkpoint. Do not self-review or merge. #10209 canonical producer clock
+remains its own Draft at `da3a0451`, with prior hosted green and nonauthor
+SOURCE_PASS; neither Draft deployed. A2 stays in_progress and the complete
+accepted publication bundle plus protected-reader receipt is unproven.
+
+Records #10174 prior CI 41088771066 completed success on attempt 2, after a
+GitHub transport transient. The material original A2 current-head and future
+gates are source-linked here; a new records-head CI may start for this update,
+but must not be conflated with the A2 source CI or prior records CI.

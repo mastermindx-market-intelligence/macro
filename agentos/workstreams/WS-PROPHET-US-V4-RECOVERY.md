@@ -217,45 +217,47 @@ waves:
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
     status: in_progress
     next_action: >
-      A2 SOURCE/CI + INDEPENDENT ARTIFACT GATES PROVEN 2026-10-30;
-      PRODUCTION SETTLEMENT STILL UNPROVEN. Preserve Macro Draft #10202
-      at exact head 93e1de8028301ac1917088df9a6f2f3954b25ffc;
-      hosted CI run 41074236673 concluded SUCCESS with all twelve
-      ci-packs, contract-delta, ci-plan and ci-gate SUCCESS, plus
-      fences 41074236886 SUCCESS. Hosted ci-pack-4 job 124127187663
-      actually ran the 45+7 settlement tests: 52 passed in 2.79s.
-      Distinct independent Cursor/Grok source reviewer SOURCE_PASS at
-      immutable semantic cf84b0b1; the later 93e commit is only eight
-      CI-manifest path registrations, no semantic/source-test difference.
-      Chairman-requested separate Fabric artifact verifier
-      prophet-v4-a2-settlement-builder-artifact-verify-20261030-01
-      TERMINAL rc0, response_sha256 c037beb855c7e67c8c820bb5a73b50e4ec422a808f5da731e105d7492b55021e,
-      INDEPENDENT_ARTIFACT_VERIFIED=YES; original GLM patch and two
-      source/test SHA256 hashes reproduced, exact-head isolated
-      52-test witness passed, no source or production mutation.
-      Independent artifact verdict and hosted proof are source-linked
-      on #10202 issue comment 6527602969; DO_NOT_REDO these gates and
-      do not reopen the branch to make cosmetic edits or replay CI.
-      The separate genuine producer UTC computed_at Fabric builder
-      prophet-v4-a2-genuine-compute-clock-build-20261030-01 is
-      TERMINAL rc0 with an isolated unmerged two-file patch and 155
-      locally independently rerun regression tests; its source
-      custody and permission fences must be respected.
-      NEXT: coordinate with the canonical build_prophet.py publisher
-      owner, integrate and independently verify a genuine compute
-      write-boundary clock, not a renamed asof/recorded_at, and bind
-      full candidate/board/theme artifact bundle identity. Existing
-      availability-owner rescue and nightly-liveness consumers must
-      read the single served settlement projection without a new
-      fetch of the private plan book or duplicate monitor/scheduler.
-      Read-only seam audit prophet-v4-a2-availability-consumer-seam-
-      audit-20261030-01 was TERMINAL rc0: existing liveness Check E
-      already fetches public staleness, rescue has separate budget
-      and source-authority restrictions. Prove owed NYSE session,
-      accepted raw hashes, protected real reader and split-brain
-      drill evidence before A2 closure. Keep #10202 Draft/HOLD,
-      no self-approval, merge, deploy, or A3 atomic-publication
-      scope takeover. A1/B1/B2 closed semantic receipts stay intact.
+      A2 FULL-BUNDLE FALSE-GREEN CORRECTION COMMITTED 2026-10-30;
+      FULL PRODUCTION SETTLEMENT STILL UNPROVEN. Preserve original
+      Macro Draft #10202 at exact head
+      2ea0bf0b213242ff06472f18306dbdb059443fa9 (prior
+      93e1de8028301ac1917088df9a6f2f3954b25ffc code CI and
+      independent source/artifact proof remain a DO_NOT_REDO historical
+      acceptance, not proof of the new semantic change). Original Fabric
+      patch worker prophet-v4-a2-failclosed-full-bundle-proof-patch-20261030-01
+      returned terminal rc0, response_sha256
+      1e9f0d6263a529c9e31db2abcb3b47e5d6b985078dcea49054efbda86a1166d8;
+      three verified source/test blobs were integrated on the same
+      branch. This fixes index-only SETTLED with null artifact hashes:
+      now requires full source-issued four-asset digest map, accepted
+      bundle_id/board_definition/candidate_count, and matching
+      reader_proof.served_bundle_id or status PENDING. 210 tests
+      passed in a fresh exact-commit checkout, no tracked mutation;
+      see #10202 issue comment 6533159927. Current-head hosted
+      CI 41125933425 and fences 41125933453 automatically started;
+      fences SUCCESS, full CI PENDING at checkpoint, consume its
+      existing run and repair only genuine failures. A distinct
+      nonauthor Fabric reviewer prophet-v4-a2-bundle-failclosed-independent-review-20261030-01
+      (root 6adce1ef-c13c-83e9-9510-983a2249a6a0) was started
+      at exact 2ea0bf0b; consume verdict; prior cf84 SOURCE_PASS
+      does not approve this semantic change. Genuine producer clock
+      lives on separate Macro Draft #10209 at exact da3a04518f13695339ab54421e3894632d3b6ba4,
+      full hosted CI 41110624274 SUCCESS and distinct
+      independent nonauthor SOURCE_PASS, with NO merge/deploy.
+      Records Draft #10174 former head 03320189 CI 41088771066
+      SUCCESS after failed-jobs-only attempt 2; original graph
+      remains 30 waves. Frozen board source SHA at checkpoint
+      913d6c16 matched the archived input blob and the index raw
+      hash matched the public R2 health receipt, but no accepted
+      candidate/board/theme full bundle_id or protected live reader
+      proof was established. Current public staleness output lacks
+      A2 settlement (not deployed). Next after code CI/review:
+      owner-coordinate actual issuer-accepted bundle, same-identity
+      reader attestation, incumbent availability rescue/liveness
+      read consumers and mutation/production proof without
+      duplicating A3 publisher, scheduler, trade control, or
+      private plan HTTP access. Both #10202 and #10209 stay
+      Draft/HOLD; NO self-approval, merge, deploy, or A2 closure.
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"
