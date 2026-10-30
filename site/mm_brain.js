@@ -39,9 +39,9 @@
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
   var visualScriptVersion = '1005e0b0';
-  var visualStyleVersion = '893bd6a0';
+  var visualStyleVersion = '897c1b53';
   var visualAssetPromise = null;
-  var presentationVersion = 'c6696f2d';
+  var presentationVersion = 'b252d819';
   var presentationPromise = null;
   function loadPresentationAssets() {
     if (window.MMBrainPresentation) return Promise.resolve(window.MMBrainPresentation);
