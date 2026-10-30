@@ -48,7 +48,7 @@ def held(rows, reason):
     assert v["customer_publication"] is False
 
 
-def test_p4a_01_true_two_horizon_quantitative_projection_not_score():
+def test_p3c_01_true_two_horizon_quantitative_projection_not_score():
     x = compose_owner_multihorizon_preview(pairs())
     assert x["status"] == "RESEARCH_PREVIEW_ONLY"
     assert x["horizons"] == ["20d", "5d"]
@@ -61,7 +61,7 @@ def test_p4a_01_true_two_horizon_quantitative_projection_not_score():
     assert x["customer_publication"] is False
 
 
-def test_p4a_02_short_long_parent_sign_conflict_recomputed():
+def test_p3c_02_short_long_parent_sign_conflict_recomputed():
     p = {
         "5d": source("5d", returns=(-.04, -.02)),
         "20d": source("20d", returns=(.20, .15)),
@@ -76,13 +76,13 @@ def test_p4a_02_short_long_parent_sign_conflict_recomputed():
     assert x["explanation"]["predictive_or_trading_authority"] is False
 
 
-def test_p4a_03_one_horizon_is_not_falsely_called_multihorizon():
+def test_p3c_03_one_horizon_is_not_falsely_called_multihorizon():
     held({"5d": source("5d")}, "requires_two_distinct_horizons")
     held({}, "requires_two_distinct_horizons")
     held(None, "requires_two_distinct_horizons")
 
 
-def test_p4a_04_wrong_benchmark_or_price_basis_abstains():
+def test_p3c_04_wrong_benchmark_or_price_basis_abstains():
     p = pairs()
     p["20d"]["comparison_basis"]["benchmark_id"] = "QQQ"
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
@@ -91,20 +91,20 @@ def test_p4a_04_wrong_benchmark_or_price_basis_abstains():
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
 
 
-def test_p4a_05_one_overnight_read_cannot_masquerade_as_rth_cohort():
+def test_p3c_05_one_overnight_read_cannot_masquerade_as_rth_cohort():
     p = pairs()
     p["20d"]["comparison_basis"]["session_basis"] = "overnight"
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
 
 
-def test_p4a_06_different_decision_at_is_not_same_as_known_vintage():
+def test_p3c_06_different_decision_at_is_not_same_as_known_vintage():
     p = pairs()
     p["20d"]["comparison_basis"]["decision_at"] = (
         END + timedelta(minutes=10)).isoformat()
     held(p, "frame_horizon_or_decision_mismatch")
 
 
-def test_p4a_07_different_member_roster_and_cohort_refuses():
+def test_p3c_07_different_member_roster_and_cohort_refuses():
     p = pairs()
     p["20d"]["frame"]["group"]["cohort_id"] = "other-cohort"
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
@@ -113,20 +113,20 @@ def test_p4a_07_different_member_roster_and_cohort_refuses():
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
 
 
-def test_p4a_08_different_membership_known_at_refuses():
+def test_p3c_08_different_membership_known_at_refuses():
     p = pairs()
     p["20d"]["frame"]["clock"]["membership_known_at"] = (
         END - timedelta(days=6)).isoformat()
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
 
 
-def test_p4a_09_one_held_source_stops_whole_composite():
+def test_p3c_09_one_held_source_stops_whole_composite():
     p = pairs()
     p["20d"] = preview_us_theme_packet(None)
     held(p, "refused_or_unknown_owner_preview")
 
 
-def test_p4a_10_malformed_issuer_mapping_is_not_a_second_vote():
+def test_p3c_10_malformed_issuer_mapping_is_not_a_second_vote():
     p = pairs()
     p["20d"]["issuer_by_security_id"] = {"SEC_AAA": "ISS_AAA"}
     held(p, "unqualified_issuer_population")
@@ -135,7 +135,7 @@ def test_p4a_10_malformed_issuer_mapping_is_not_a_second_vote():
     held(p, "unqualified_issuer_population")
 
 
-def test_p4a_11_predictive_authority_in_source_frame_refuses():
+def test_p3c_11_predictive_authority_in_source_frame_refuses():
     p = pairs()
     p["20d"]["frame"]["authority"]["predictive_promoted"] = True
     held(p, "invalid_canonical_factor_fingerprint")
@@ -144,7 +144,7 @@ def test_p4a_11_predictive_authority_in_source_frame_refuses():
     held(p, "source_preview_claims_decision_authority")
 
 
-def test_p4a_12_source_claimed_canned_text_is_recomputed():
+def test_p3c_12_source_claimed_canned_text_is_recomputed():
     p = pairs()
     p["20d"]["fingerprint"]["facets"].append({
         "id": "fake_predict_tomorrow", "horizon": "20d",
@@ -157,13 +157,13 @@ def test_p4a_12_source_claimed_canned_text_is_recomputed():
     assert "fake_predict_tomorrow" not in repr(out)
 
 
-def test_p4a_13_preview_origin_must_match_not_blend_claimed_and_synthetic():
+def test_p3c_13_preview_origin_must_match_not_blend_claimed_and_synthetic():
     p = pairs()
     p["20d"]["source_origin"] = "owner_reported"
     held(p, "cross_horizon_cohort_benchmark_or_clock_mismatch")
 
 
-def test_p4a_14_same_final_session_rth_minute_and_rth_daily_allowed():
+def test_p3c_14_same_final_session_rth_minute_and_rth_daily_allowed():
     p = {"1m": source("1m"), "5d": source("5d", session="rth")}
     x = compose_owner_multihorizon_preview(p)
     assert x["status"] == "RESEARCH_PREVIEW_ONLY"
@@ -173,13 +173,13 @@ def test_p4a_14_same_final_session_rth_minute_and_rth_daily_allowed():
     assert x["comparison_basis"]["session_basis"] == "rth"
 
 
-def test_p4a_15_declared_horizon_must_match_actual_source():
+def test_p3c_15_declared_horizon_must_match_actual_source():
     p = pairs()
     p["1d"] = p.pop("20d")
     held(p, "malformed_owner_source_basis")
 
 
-def test_p4a_16_no_fabricated_lagged_issuer_or_acceleration():
+def test_p3c_16_no_fabricated_lagged_issuer_or_acceleration():
     x = compose_owner_multihorizon_preview(pairs())
     assert x["fingerprint"]["axes"]["rs_velocity_acceleration"]["status"] == "unmeasured"
     assert x["fingerprint"]["axes"]["cross_asset_credit"]["status"] == "unmeasured"
@@ -187,7 +187,7 @@ def test_p4a_16_no_fabricated_lagged_issuer_or_acceleration():
         "issuer_hhi"]["status"] == "unmeasured"
 
 
-def test_p4a_17_inputs_not_mutated_results_deterministic():
+def test_p3c_17_inputs_not_mutated_results_deterministic():
     p = pairs()
     before = deepcopy(p)
     a = compose_owner_multihorizon_preview(p)
@@ -195,7 +195,7 @@ def test_p4a_17_inputs_not_mutated_results_deterministic():
     assert a == b and p == before
 
 
-def test_p4a_18_missing_group_or_time_source_abstains():
+def test_p3c_18_missing_group_or_time_source_abstains():
     p = pairs()
     p["20d"]["frame"]["group"] = None
     held(p, "malformed_frame_population")
@@ -204,7 +204,7 @@ def test_p4a_18_missing_group_or_time_source_abstains():
     held(p, "missing_or_noncausal_owner_window")
 
 
-def test_p4a_19_unhashable_horizon_key_is_held_not_exception():
+def test_p3c_19_unhashable_horizon_key_is_held_not_exception():
     p = pairs()
     p[("bad",)] = p.pop("20d")
     held(p, "malformed_horizon_or_source")
