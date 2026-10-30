@@ -301,7 +301,18 @@ while push_attempt; do
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
     python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
-    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then
+      echo "pushed engine outputs on attempt $PUSH_ATTEMPT"
+      # Before the push, the worktree check cannot detect a site-only post-rebase
+      # overwrite of the derived settled public copy. Inspect immutable HEAD
+      # (the exact successfully pushed commit), not any later local builder
+      # mutation. A mismatch is a typed source-integrity incident, not reason
+      # to retroactively undo unrelated ledger publication or force market risk.
+      if ! python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD; then
+        echo "::warning title=Grey Deer committed risk envelope pair divergence::pushed HEAD has nonidentical or off-session settled risk copies; consult the typed result and source publisher owner; do not activate risk alerts from either unqualified copy"
+      fi
+      push_won; exit 0
+    fi
   fi
   push_abort_rebase
   push_backoff
