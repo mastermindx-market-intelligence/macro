@@ -78,9 +78,11 @@ observations, e.g.
   `RS_parent > 0` AND `(k_after/n_common - k_before/n_common) < 0`
   on the **same measured members**. Coverage arrivals, roster entries, lost
   quotes and unknowns are counted separately.
-- `positive_group_return_but_majority_negative` only if complete observed
+- `positive_group_return_but_majority_nonpositive` only if complete observed
   cohort equal-weight return is positive AND `upper_bound(positive-return
-  breadth) < 0.5`; an uncertain bounds interval cannot be forced negative.
+  breadth) < 0.5`; this proves a majority were **flat or negative**,
+  NOT that a majority declined. A missing/flat member must never be
+  reclassified as a decliner.
 - `cross_horizon_parent_rs_sign_conflict` iff genuinely measured
   `RS_parent` has opposite signs on two explicitly labeled periods. It does
   NOT mean the numeric 5d return is commensurable with a 63d return.
@@ -207,3 +209,51 @@ factual axes, evidence-bound overlapping tags and single-name exceptions.
 This file records an **implementation candidate**, not test completion.
 No independent review, live source, Paper artboard or customer acceptance
 is claimed here. Do not bypass exact-head CI/rights/admission gates.
+
+
+## 2026-10-30 follow-on implementation, source-only
+
+The existing Draft/Hold PR #10213 now additionally carries:
+`engine/sector_theme_owner_bridge.py` + `tests/test_sector_theme_owner_bridge.py`,
+and `engine/sector_theme_regime_explain.py` +
+`tests/test_sector_theme_regime_explain.py`.
+The original `engine/sector_theme_regime_fingerprint.py` also retains each
+horizon's moving-average basis and now distinguishes **nonpositive (flat OR
+negative)** and **not above (equal OR below)** from strict declines and below-MA
+states. This is a semantic correctness correction, not a regime change
+forecast.
+
+The P2 owner bridge consumes **already-owned shapes**: U.S. `baskets`
+`members_asof`, canonical identity resolutions, original claim/market clocks
+and explicit research-purpose rights claims. An admissible synthetic or
+owner-reported packet produces **RESEARCH_PREVIEW_ONLY**, never customer
+publication, original-vintage proof, rank, forecast, alert or trading
+authority. The bridge refuses current roster labeled as PIT, date-only
+membership clocks, post-snapshot/future-known membership, unresolved/duplicate
+securities, price-basis mismatch, late benchmarks, missing purpose grant and
+unqualified sub/microtheme stock membership. It is **not** the owner adapter's
+actual authentication.
+
+A second bounded consumer reuses `engine.group_flow.fingerprint_at` by
+matching the 20-session observed cohort, named ticker/security population,
+daily-basis windows, reading revision and known-at clock. Its existing
+`accel_z`, `broadening_z`, `cohesion`, `persistence`, breadth and RS
+percentile are shown as **owner-reported, source-unqualified** numerical
+context; stage stays in the owner's actual lowercase vocabulary, and
+`flow_score` is discarded. No guessed institutional inflow/causal story.
+
+A deterministic EN/ZH interpreter rechecks each numerical predicate from the
+P1a fingerprint before emitting explanatory text. Invalid or unsupported
+facet IDs are withheld, missing inputs never become a neutral score,
+reported raw values remain accessible, and **neither the explanation nor
+its underlying preview is eligible for customer publication**. Paper UI and
+the real signed-in frontend remain not implemented or verified.
+
+The first suite with actual host CI proof is still the earlier exact head
+`73db860f5ebd495ce3950254f9296d29dbd99949`:
+`leadership-rotation-contract` returned 134 passed (pack4, 4.60s),
+while that aggregate head's full workflow was subsequently cancelled
+during continued draft commits. All newly authored P2/P2b/P2c suites are
+registered in the *same* incumbent job; **current-head CI and
+independent non-author review are outstanding**. No sample market-date
+feed, real use entitlement, Paper artboard or predictive validation is claimed.
