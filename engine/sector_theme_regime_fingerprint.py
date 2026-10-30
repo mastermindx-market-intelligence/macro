@@ -406,10 +406,14 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
             trend = m.get("trend") if m.get("trend") in ("up", "down", "mixed") else None
             above50 = m.get("above_ma50")
             above50 = above50 if type(above50) is bool else None
+            above200 = m.get("above_ma200")
+            above200 = above200 if type(above200) is bool else None
             readings[h] = {
                 "return": ret, "rs_market": rsm, "rs_parent": rsp,
-                "trend": trend, "above_ma50": above50,
-                "ma_basis": m.get("ma_basis") if trend is not None else None,
+                "trend": trend, "above_ma50": above50, "above_ma200": above200,
+                "ma_basis": m.get("ma_basis") if (
+                    trend is not None or above50 is not None or above200 is not None
+                ) else None,
                 "technical_basis_reason": m.get("technical_basis_reason"),
                 "unmeasured_reason": m.get("unmeasured_reason"),
                 "period_end": per[h]["period_end"],
