@@ -1,0 +1,96 @@
+# Breadth Intelligence — unified intraday, sector, theme and historical product plan
+
+**Recorded:** 2026-10-30. **Editorial state:** proposed / not yet product-accepted. **Owning codebase:** macro. **Mastermind protected procedure pin:** mastermindx-market-intelligence/Mastermind@bb85b429f2ffffd38408080ce4df7d6378c34100 (skillpack 1.0.1). **Initial code baseline:** macro@63a2ea6a4e32936cfbed8c4c5c043bea04b29b80. **This task tree:** research/breadth_intelligence/MASTER_PLAN.md. **No new Agent OS workstream or runtime Job is created by this plan.**
+
+## Objective and completion contract
+
+**Persona:** an institutional-style market analyst, discretionary investor or risk desk reviewing whether advances or weakness are broad, how early that was observable, and which subindustries and themes are participating or decoupling.
+
+**Machine job:** compose existing qualified US security-price observations, market breadth, as-known GICS cohorts and existing bitemporal house-theme graph into a single, explainable, multi-horizon and drillable READ. Preserve observed times, benchmark and denominator identity, source rights, coverage and nulls. Build no duplicate polling, taxonomy, signal authority, watch queue, data ledger or event pipeline.
+
+**DONE_WHEN:** On the actual Macro market workspace, a signed-in and anonymous-eligible real user can (1) view trustworthy RTH intraday breadth at the source's actual delay with truthful fallback; (2) drill through 11 GICS sectors to industries/subindustries and independently to canonical house categories/themes/microthemes without conflating the taxonomies; (3) compare 5/15/30/60-minute developments, previous-close participation, prior 1/5/20/63/126/252 sessions and longer available history with consistent clocks and PIT memberships; (4) find rising/weakening, breadth-versus-price divergence and leader-concentration context without an unexplained composite score; (5) see source/coverage/rights/unmeasured states; (6) inspect dated snapshots and compare historical versions without pretending later reconstructions were observed then. Desktop/mobile/light/dark/EN/ZH browser proof, tests, independent non-author review, accepted protected integration, natural production-path receipts and rollback are required. This draft alone does not satisfy DONE_WHEN.
+
+**Primary integration:** Add a read-only Breadth Intelligence mode to the existing market/sector exploration journey. Do not create a competing home page, dedicated Market Risk classifier, alert center, fresh subscription state, theme ontology or forecasting authority. Link into existing Sector Central and Theme Graph group detail. Design branch is illustrative, not a Paper document or shipped browser.
+
+## Current source audit — from the October 30 pinned code
+
+| Existing owner and file | Reuse, current actual boundary | Proposed incremental need |
+| --- | --- | --- |
+| engine/live_breadth.py; scripts/live_breadth_poller.py; docs/live_breadth_runbook.md | One Polygon/Massive full-market snapshot per ~90s; existing display-only S&P Composite 1500 large/mid/small tiers, adv/dec, >50/200DMA, NH/NL. Standard-feed intent is 15min delayed. Source clock, 90% coverage and 25min age are gated. site/live/breadth.json is a latest view, not a historical minute store. | Reuse the already-fetched per-symbol observation before aggregation, then project canonical sector/group membership into a separate **stateless view**. Do not add per-name network fan-out, second producer, re-publish, daily data writes or an unapproved history store. |
+| collectors/breadth.py; midcap_breadth.py; smallcap_breadth.py; russell_breadth.py | Daily constituent close matrix / daily breadth; coverage/membership/early-history bias differ. | Approved PIT daily close join and dated daily curves, with honest reconstructed modes. |
+| engine/advanced_breadth.py | McClellan 19/39 EMA, Summation, Zweig thrust, NH/NL index and price divergence at daily grain; explicitly DISPLAY ONLY. | Incorporate these as clearly labelled daily-only lenses, never stretch the daily EMA into a fictitious intraday indicator. |
+| engine/stage_flows.py; engine/subsector_rotation.py; sector_cycles | Daily GICS industry/subindustry breadth, stage and RS. | Link rather than recalculate or change the owned rotation classifier. |
+| engine/basket_breadth_divergence.py; engine/group_flow.py; engine/theme_scoring.py | Basket-member trend breadth / narrowing and other group reads. | Consume named legs, do not produce new fused theme heat, recommendation or ordering authority. |
+| engine/leadership_rotation_context.py | Already accepted stateless measured-group contract: as-known cohorts, k/n, n/N and logical identification bounds. | Reuse the bound semantics and coverage metadata. Group measurements, transition observations and research estimates remain distinct. |
+| engine/theme_graph/*; contracts/theme_graph/README.md; config/theme_crosswalk.yml | Existing bitemporal canonical category->theme->microtheme; companies have sourced MEMBER_OF to baskets/local source themes, baskets EXPRESS a theme. Local-source rights and revision gates. | Existing as-known graph readers must supply eligible theme member cohorts; no persistent company->canonical-theme shortcut, no invented exposure weights. |
+| Mastermind brain/rotation_tensor.py; brain/macro_risk.py | Downstream context consumers already exist; not breadth source authority. | Optional backward-compatible READ projection, never new trade-origin, sizing or risk veto. |
+
+**Known overlapping source writers:** macro PR #8299 (subsector rotation, still draft), #7870 (semiconductor theme foundation and graph), #9507 (rotation allocation architecture; draft), #9600 (Sector Central source timestamp; draft), and Mastermind #1556 (SIC subindustry scientific research; draft, empirical predictive gate false). Do not alter their heads or infer that a plan in a draft is released. Existing macro #9240 is merged and already owns group-measurement contracts. Underlying programme homes include WS:LEADERSHIP-ROTATION-INTELLIGENCE and WS:GMI-THEME-GRAPH; this plan adds no new organisational identity.
+
+**Verification gap:** GitHub source/runbook exists. This census did not produce a confirmed live October 30 browser screenshot, authenticated feed receipt, permissible commercial redistribution license, complete time-stamped intraday history, or Paper mutation. Existing code is BUILT_NOT_PROVEN at the requested integrated product level.
+
+## Data and time contract
+
+1. **Universe** — For every observation declare universe_id, cohort_revision, classification_source, membership_at, membership_belief_time, eligible N, available n, missing N-n, price_basis, source_asof, known_at, build_at, session_calendar, session, feed_delay, rights/use and evidence_mode. Never make missing values unchanged or zero.
+2. **As-known membership** — Use true GICS/basket effective dates where available. A later reconstructed constituent map must be tagged reconstructed_price_history/retrospective, not displayed as contemporaneous PIT. For house themes, group membership is resolved through the existing sanctioned read-time graph join with belief_time <= question cutoff; no new derived company->theme asserted edge. Themes can overlap; they cannot be summed to a unique market denominator.
+3. **Fundamental participation** — For a group G and horizon h, p(G,t,h)=100*k/n, where k is count of observed eligible names with return above zero across h; 0-return names are in n but not k. The live-breadth legacy adv_pct uses advances/(advances+declines) excluding unchanged; label these definitions separately. Returns require a valid same-basis price at both endpoints and a justified comparable session. Never splice adjusted daily total-return series with raw last-trade prices without a basis contract.
+4. **Bounded missingness** — If k positive from n observed and N eligible, the identification interval is [100*k/N, 100*(k+N-n)/N]; it is not a confidence interval. Show n/N and suppress status-color judgment below source-qualified group coverage/eligible-n floors. For tiny microthemes offer counts with a muted UNMEASURED state, not a stable percentage.
+5. **Velocity and acceleration** — delta_pp(h1,h2)=p(t,h1)-p(t_previous,h1) on a matched cohort and matched definition, measured at 5/15/30/60 minutes and each close. Acceleration is a difference in two successive matched deltas; only show with adequate sequential observations. For intraday seasonality compare elapsed session minutes (e.g. today 10:00 vs past 10:00), not a noon/close mismatch. Clock delay and calendars flow to every read.
+6. **Trend participation** — Share above own prior-known 20/50/200-session moving averages, plus 10D for tactical trend where enough history exists. 52-week new highs/lows must use prior-window extrema, exclude the currently forming bar when interpreting a fresh break and preserve split adjustment.
+7. **Price/participation divergence** — Two explicit independent named legs: index/ETF or equal-weight group return, member breadth change and breadth spread. A strong cap-weighted headline with weakening equal-weight participation is diagnostic context, not automatically a predictive short. Theme/basket overlap and concentration effective-n reported.
+8. **Historical comparisons** — 1D/5D/1M/3M/6M/1Y/3Y/5Y/all eligible history, with date-range and basis options. Reconstructed backfills, vendor lookback limitations, delisted members and revised GICS mappings carry their evidence modes. Display original observed-version history only after retained first-observation receipts exist. Do not retroactively backfill an originally-observed timestamp.
+9. **Session boundaries** — 04:00-09:30 ET premarket and 16:00-20:00 ET after-hours can be shown separately, never mixed into regular-session A/D without an explicit session filter, venue/volume eligibility and vendor field-quality evidence. During 09:30 RTH opening and trading halts, late/no trades must be missing, not silently unchanged. No exchange-open assumption merely from local wall clock.
+10. **Source rights** — Exchange data display, charting, derived analytics, retention and commercial redistribution permissions must be established through the existing DataOS rights owner before any public/live retention path is expanded. Massive documentation says an individual license does not grant redistribution to third-party product users. This plan requests no purchase or new credential.
+
+## Proposed view model (not a second store)
+
+A qualified existing producer publishes an additive, backwards-compatible, read-only, versioned projection with:
+
+- session, source_asof, known_at, build_at, delayed_min, producer/source contract, rights_result, baseline cohort/basis, display_only;
+- groups[] with id, kind (sector, industry, subindustry, curated_theme, micro_theme), source identity, version/belief clock, expected N, observed n, coverage, positive/negative/unchanged counts, adv_pct_excluding_unchanged, trend shares, new highs/lows, lower/upper identification bounds, no-measure reason, direction delta only for same-cohort matched observations;
+- series[] for each permitted timeline window with granularity, calendar, source versions and explicit absence;
+- disagreement and provenance links to underlying Macro sector/Group Reads/Theme Graph artefacts;
+- capabilities[] to gate the UI honestly (RTH source present, prior observation retained, historical point-in-time membership qualified, public display rights permitted).
+
+No raw exchange quotes or personal portfolio holdings are duplicated inside this view. Do not create a brand-new cron/workflow, database, event bus, watcher, state machine, retry layer, private entitlement or risk classification. Reuse the live poller, existing nightly data/retention infrastructure and approved presentation endpoint; resolve actual retention authority before adding one.
+
+## Product design (Paper target when connected)
+
+**Primary desktop:** Header universe+session+price-basis filters; five glance cards (positive participation, trend >50DMA, 30-minute breadth delta, sector leadership dispersion, coverage); an intraday participation curve with separate normalized index overlay; a cross-horizon sector heat matrix (15m/1D/5D/1M/3M/1Y); a side diagnostic of strengthening vs narrowing; click sector to inspect GICS industry/subindustry plus a SEPARATE theme category/theme/microtheme graph drilldown; source/cutoff/details always visible. Breadcrumbs link existing Markets → Sector Central → Theme Detail; no standalone competing home.
+
+**History view:** synchronized price/breadth time travel, historical percentile only over mature comparable universes, explicit reconstruct/observed toggle, date-provenance inspector and compare-at-same-session-minute. User can pin two dates/horizons without pretending look-ahead-adjusted data were known earlier.
+
+**States:** early session sparse/no trades; late vendor snapshot; rights-blocked; membership missing; partial coverage; no historical retention; conflicting group mapping; offline poller (last valid nightly board); unknown/empty group; narrow sparse microtheme; timezone boundary; responsive/mobile. Neutral, unknown, worsening and increasing are visually distinct; a null never becomes red or green. EN/ZH and light/dark must be tested; charts keyboard operable with legible data table equivalence.
+
+**Paper:** use the already authorized Mastermind Paper document and guarded file ID/snapshot once connection is healthy. Paper direct and legacy Studio inspection on 2026-10-30 both failed with HTTP 429 transport before edit. No Paper file, screenshot, JSX or implementation verification is claimed. A standalone fixture-only HTML reference may be used as a design handoff, not an accepted Paper artifact.
+
+## Task tree (editorial; not Executive Jobs or Agent OS wave statuses)
+
+| ID | Editorial status | Outcome / evidence | Depends on |
+| --- | --- | --- | --- |
+| P1 | in_progress | Pin existing owners, baseline, collision map, source rights and eligible data horizon. This document + reviewed census; require production feed acceptance separately. | none |
+| P1.T1 | ready | Pure projection contract for sector and curated group member sets, clock/rights/coverage/bounds; synthetic unit fixtures and negative cases. No source producer changes. | P1 census |
+| P1.T2 | proposed | Bind to existing live snapshot seam and prior-known thresholds without extra fanout or live.breadth.v1 changes. Original producer owner qualifies/approves hook and exact-source tests. | P1.T1, runtime admission, rights |
+| P2 | proposed | UX and Paper prototype in existing Market/Sector navigation. File ID and live Paper inspection required; design visual proof light/dark, EN/ZH, mobile and absent/stale states. | P1.T1 for full state design |
+| P3 | proposed | Historical daily 1/5/20/63/126/252 close-series and mature/retrospective labeling from existing constituent stores. Grounded PIT, corrections, split handling, versioned outputs. | P1.T1, price-basis rights |
+| P4 | proposed | Retained intraday timeseries by the EXISTING authorised retention owner only, not per-github-commit history; deduped event-time source samples, same-minute comparators and correction receipts. | P1.T2, retention/rights approval |
+| P5 | proposed | Read-only group projection joining existing sector and GMI as-known theme taxonomy, microtheme guards, overlap disclosure. Avoid #8299/#7870 active path collisions. | P1.T1, accepted theme readers |
+| P6 | proposed | Actual product UI integration, accessible charts, navigable group drilldown, light/dark, EN/ZH, historical/source states and signed-in/anonymous mode. | P2, P3, P5, P4 for intraday history |
+| P7 | proposed | Qualification: CI, independent non-author review, deployment, real-path RTH+closed/offline/stale/rights-denied user journeys, cross-source checksum/clock integrity, natural nightly receipt and rollback. | P6 |
+| P8 | proposed | Separately preregister hypotheses of risk/reversal lead-time, baselines, multiple-testing correction, economic metrics and OOS falsifiers; no prediction/trade authority absent accepted independent evidence. | P3/P4, lawful vintages; optional |
+
+## Acceptance falsifiers and priority
+
+**P0 product fail:** a user sees a green improving theme while fewer than the qualified source coverage floor are observed, or reads a reconstructed membership as if known at that timestamp. Any 15-minute-delayed feed presented as live is a fail.
+
+**P0 integrity fail:** new view changes the existing live.breadth.v1 published gate, emits a duplicate current-state ledger or displaces a protected PR writer. An unlicensed product redistribution or unauthorised historical retained archive is a fail.
+
+**P1 scientific fail:** look-ahead membership, raw/adjusted price splice, same-day future revisions, overlap double-counted as market participation, 1-day history described as equivalent to intraday, or a descriptive trend asserted as predictive.
+
+**P1 experience fail:** desktop-only functionality, absence of null/error/rights states, EN-only rollout, inaccessible hover-only data, time-horizon selections that change cosmetics rather than definitions, no sector→theme drilldown, or page requiring an unexplained fused score.
+
+**Proposed bounded next action:** complete P1.T1 as an additive pure adapter using the already merged engine.live_breadth.compute_tier helper (or formally accepted measured group adapter), with synthetic positive/negative coverage-clock-rights tests. Keep live poller, stage flows, theme graph and existing pages unchanged. When Paper is reachable, bind the exact authorised file, inspect target, make a disjoint board, screenshot and review before any product implementation. Publish this plan as a DRAFT only; no production acceptance, deployment or Agent OS wave state implied.
+
+## Research basis
+
+Primary current owners cited above and: S&P/MSCI official GICS hierarchy (https://www.msci.com/indexes/index-resources/gics); Massive full-market snapshot endpoint and delay semantics (https://massive.com/docs/rest/stocks/snapshots/full-market-snapshot); Massive commercial redistribution (https://massive.com/knowledge-base/article/how-can-i-redistribute-massives-market-data); ratio-adjusted McClellan technical definition (https://chartschool.stockcharts.com/table-of-contents/market-indicators/mcclellan-oscillator). External material is research evidence, not authorization or proof of current licences.
