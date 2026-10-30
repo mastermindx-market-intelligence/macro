@@ -257,7 +257,7 @@ waves:
     pr: [6840, 10176, 10180]
     next_action: >
       B17 INPUTS RECOVERED / BOUNDED REPLAY BUILT / INDEPENDENT REVIEW OPEN.
-      Draft #10180 at 0bcc11b27cd8 contains the research verifier, 28 passing tests,
+      Draft #10180 at 943906af5c04 contains the research verifier, 28 locally passing tests,
       immutable source receipts and original-cutoff point replay. All 241 signal
       files and 240 price candidates were recovered; 57 complete buy snapshots
       cover 32 source dates, but zero of 7918 C0 episodes has a complete
@@ -267,6 +267,11 @@ waves:
       actual union-and-gate roster with the frozen denominator and rulers.
       The reproduced 60.62 percent / 12-session baseline is C1-relaxed, not a
       measured union or shipped-roster result; preserve the price-vintage proof limit.
+      CI 40188371899 failed contract-delta because the new suite was unwired;
+      a nine-line registration in existing prophet-lab gate:code now runs
+      tests/test_prophet_b17_frozen_input_recovery.py on the new Draft head.
+      Consume CI 41043491441 and fences 41043491265, confirm the suite
+      actually ran, and fix any new red before advancing release gates.
       Correction Draft #10176 remains at 228c25d37617, with 184 focused tests,
       two metadata smokes and CI 40147024285 passed. The current owner reconciled
       original review -01 terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE.
@@ -816,8 +821,11 @@ waves:
 next_action: >
   2026-10-25 continuation: the current recovery session owns B2 under Chris's
   no-owner-wait directive. Continue from the original thirty-wave record and
-  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md.
-  New Draft #10180 at 0bcc11b27cd884165af61841e0e59b90fd27f124 recovers the
+  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-30-b17-ci-registration.md.
+  Draft #10180 is now at 943906af5c0478e6bcf43f601b7f001fc30e0914 after
+  wiring the B-17 suite into the existing code gate; its original research source
+  at 0bcc11b27cd884165af61841e0e59b90fd27f124 is unchanged. The new head's
+  CI and fences must conclude and show the suite actually ran. This Draft recovers the
   original frozen inputs and implements a bounded canonical union-and-selector
   replay. All 240 price candidates match recorded metadata and episode anchors;
   241 signal files and 57 full buy snapshots were recovered. The sample covers
