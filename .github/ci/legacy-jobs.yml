@@ -8939,10 +8939,16 @@ jobs:
       - "data/release_forecast/scoreboard.json"
       - "engine/event_calendar.py"
       - "engine/rebalance_calendar.py"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "engine/opex.py"
+      - "engine/validation.py"
       - "lib/nyse_calendar.py"
+      - "lib/__init__.py"
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
+      - "lib/shared_shell.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
