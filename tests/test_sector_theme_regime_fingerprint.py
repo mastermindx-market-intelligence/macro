@@ -162,8 +162,8 @@ def test_p1a_07_oversized_leader_hides_majority_negative_constituents():
     rows = {"AAA": row(ret=1.0), "BBB": row(ret=-.1),
             "CCC": row(ret=-.1)}
     p = fp(members=("AAA", "BBB", "CCC"), rows=rows)
-    assert "majority_negative_participation_proven_by_bounds" in facet_ids(p)
-    assert "positive_group_return_but_majority_negative" in facet_ids(p)
+    assert "majority_nonpositive_participation_proven_by_bounds" in facet_ids(p)
+    assert "positive_group_return_but_majority_nonpositive" in facet_ids(p)
 
 
 def test_p1a_08_missing_member_bounds_prove_broadness_when_lower_above_half():
@@ -341,7 +341,7 @@ def test_p1a_25_name_above_ma50_bucking_broad_weak_group():
     )
     a = p["single_names"]["AAA"]
     assert a["horizons"]["5d"]["above_ma50"] is True
-    assert "name_above_ma50_while_group_majority_below" in {
+    assert "name_above_ma50_while_group_majority_not_above" in {
         t["id"] for t in a["facets"]
     }
 
@@ -402,3 +402,29 @@ def test_p1a_31_malformed_group_identity_fails_closed():
     f["group"]["cohort_id"] = None
     with pytest.raises(ValueError, match="group, cohort"):
         compose_regime_fingerprint({"5d": f})
+
+
+def test_p1a_32_flat_members_do_not_get_labeled_decliners():
+    p = fp(members=("AAA", "BBB", "CCC"),
+           rows={"AAA": row(ret=1.0), "BBB": row(ret=0.0),
+                 "CCC": row(ret=0.0)})
+    ids = facet_ids(p)
+    assert "positive_group_return_but_majority_nonpositive" in ids
+    assert "majority_nonpositive_participation_proven_by_bounds" in ids
+    assert not any("majority_negative" in tag for tag in ids)
+
+
+def test_p1a_33_equal_to_ma_is_not_a_below_ma_member():
+    p = fp(
+        members=("AAA", "BBB", "CCC"),
+        rows={
+            "AAA": row(ret=.02),
+            "BBB": row(ret=0.0, close=108.0, ma20=108.0, ma50=108.0,
+                       ma200=95.0, prev_ma50=106.0),
+            "CCC": row(ret=-.02, close=85.0, ma20=90.0, ma50=95.0,
+                       ma200=100.0, prev_ma50=96.0),
+        },
+    )
+    ids = {x["id"] for x in p["single_names"]["AAA"]["facets"]}
+    assert "name_above_ma50_while_group_majority_not_above" in ids
+    assert not any("majority_below" in tag for tag in ids)
