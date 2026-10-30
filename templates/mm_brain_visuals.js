@@ -167,8 +167,8 @@
     var pivot=candlePivot(rows);
     var description=pivot ?
       L('Pivot candle '+rows[pivot.index][0]+'. '+(pivot.dir>0?'Bullish':'Bearish')+
-        ' trigger '+tickText(pivot.entry,bounds[1]-bounds[0])+
-        ', invalidation '+tickText(pivot.stop,bounds[1]-bounds[0])+
+        (pivot.dir>0?' entry ABOVE ':' entry BELOW ')+tickText(pivot.entry,bounds[1]-bounds[0])+
+        (pivot.dir>0?', stop BELOW ':', stop ABOVE ')+tickText(pivot.stop,bounds[1]-bounds[0])+
         (pivot.breakout>=0?', first later breakout '+rows[pivot.breakout][0]:', not yet broken out')+
         '. Exact open high low close values follow in the data table.',
         '转折蜡烛 '+rows[pivot.index][0]+'；触发位 '+tickText(pivot.entry,bounds[1]-bounds[0])+
@@ -193,7 +193,8 @@
           class:'mmb-v-candle-'+level[0],'data-level':level[0]}));
         figure.appendChild(svg('text',{x:width-right-2,y:y(level[1])+(level[0]==='entry'?-7:14),
           'text-anchor':'end',class:'mmb-v-candle-level-label mmb-v-candle-'+level[0]+'-label'},
-          L(level[0]==='entry'?'Entry':'Stop',level[0]==='entry'?'入场位':'止损位')));
+          L(level[0]==='entry'?(pivot.dir>0?'Entry >':'Entry <'):(pivot.dir>0?'Stop <':'Stop >'),
+            level[0]==='entry'?(pivot.dir>0?'入场 >':'入场 <'):(pivot.dir>0?'止损 <':'止损 >'))));
       });
     }
     rows.forEach(function (r,i) {
