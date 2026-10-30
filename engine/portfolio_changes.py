@@ -147,11 +147,10 @@ def snapshot_state(ctx: dict, tickers) -> dict:
         rec: dict = {}
 
         stage = blk.get("stage")
-        if isinstance(stage, dict) and stage.get("n") is not None:
-            try:
-                rec["stage"] = int(stage.get("n"))
-            except (TypeError, ValueError):
-                pass
+        if isinstance(stage, dict):
+            stage_n = _stage_number(stage.get("n"))
+            if stage_n is not None:
+                rec["stage"] = stage_n
 
         entry = blk.get("entry")
         if isinstance(entry, dict):
@@ -201,22 +200,27 @@ def snapshot_state(ctx: dict, tickers) -> dict:
     return snap
 
 
-def _stage_phrase(n) -> tuple[str, str] | None:
-    """(en, zh) for a stage number, or None when it is not a stage we can name.
-
-    Returns None rather than a generic phrase for an out-of-range value: a client-supplied
-    `stage: 999` would otherwise render "moved from Stage 999 stage to …", which is
-    client text wearing the desk's voice. No word, no clause.
-    """
+def _stage_number(n) -> int | None:
+    """Known integral stage only; never truncate a numeric desk/client value."""
     if isinstance(n, bool):
         return None
-    try:
-        i = int(n)
-    except (TypeError, ValueError):
+    if isinstance(n, str):
+        try:
+            n = int(n)
+        except ValueError:
+            return None
+    if not isinstance(n, (int, float)) or n not in STAGE_WORD:
         return None
-    words = STAGE_WORD.get(i)
-    if words is None:
+    # Membership rejects fractions, nonfinite floats and unknown stages before int().
+    return int(n)
+
+
+def _stage_phrase(n) -> tuple[str, str] | None:
+    """Bilingual desk words only for an exact, known stage identity."""
+    i = _stage_number(n)
+    if i is None:
         return None
+    words = STAGE_WORD[i]
     return (f"Stage {i} {words[0]}", f"第 {i} 阶段{words[1]}")
 
 
@@ -274,7 +278,7 @@ def diff_snapshots(previous: dict, current: dict) -> list[dict]:
         if not isinstance(p, dict) or not isinstance(c, dict):
             continue
 
-        p_stage, c_stage = p.get("stage"), c.get("stage")
+        p_stage, c_stage = _stage_number(p.get("stage")), _stage_number(c.get("stage"))
         if p_stage is not None and c_stage is not None and p_stage != c_stage:
             prev_phrase = _stage_phrase(p_stage)
             cur_phrase = _stage_phrase(c_stage)
