@@ -249,7 +249,7 @@ def test_pressure_watch_research_action_uses_full_row_measure(browser, width, th
         context.close()
 
 
-@pytest.mark.parametrize('mutation', ['case_cutoff', 'case_grain', 'source_day', 'capture_day', 'capture_rollover'])
+@pytest.mark.parametrize('mutation', ['case_cutoff', 'case_grain', 'source_day', 'capture_day', 'capture_rollover', 'capture_offset'])
 def test_research_rejects_incoherent_or_impossible_capture_clocks(browser, mutation):
     value = packet()
     if mutation == 'case_cutoff':
@@ -262,6 +262,10 @@ def test_research_rejects_incoherent_or_impossible_capture_clocks(browser, mutat
             stamp = '2026-02-30T10:00:00Z'
         elif mutation == 'capture_rollover':
             stamp = '2026-03-01T24:00:00Z'
+        elif mutation == 'capture_offset':
+            # Written Jan2 is UTC Jan1, before the selected Jan2 event.
+            stamp = '2026-01-02T00:30:00+14:00'
+            value['capture']['source']['generated_utc'] = '2026-01-01T08:00:00Z'
         value['capture']['capture']['captured_at'] = stamp
         value['case']['asof']['value'] = stamp
         value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = stamp

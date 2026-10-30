@@ -39,7 +39,8 @@ export function decodeResearch(value, selection) {
       || !['up','down'].includes(id.side) || !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(id.ticker)
       || c.source?.artifact!=='data/price_pressure/latest.json' || c.source.schema!=='price_pressure.v1'
       || !HEX.test(c.source.snapshot_sha256) || !instant(c.source.generated_utc)
-      || !instant(clock?.captured_at) || Date.parse(c.source.generated_utc)>Date.parse(clock.captured_at)
+      || !instant(clock?.captured_at) || !clock.captured_at.endsWith('Z')
+      || Date.parse(c.source.generated_utc)>Date.parse(clock.captured_at)
       || Date.parse(clock.captured_at)>Date.now()+1000 || id.date>clock.captured_at.slice(0,10)
       || clock.clock_class!=='system_recorded' || clock.historical_availability!=='unknown'
       || clock.scope!=='retrospective_captured_read' || !n
