@@ -213,6 +213,14 @@ if ! push_staged_heal data/ site/ reports/ templates/; then
   exit 1
 fi
 if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; exit 0; fi
+# Stage candidate and working tree differ across failure/rebase windows. Read the
+# *index* at the final staging boundary; a successful worktree-only parity check
+# cannot prove what the original engine will actually commit. This is read-only
+# and advisory: absent or provisional inputs keep the derived contract unqualified
+# without losing unrelated market-ledger outputs.
+if ! python -m scripts.check_risk_envelope_pair --root . --git-ref INDEX; then
+  echo "::warning title=Grey Deer staged risk envelope divergence::staged index risk source copies missing, different or off-session; do not treat this candidate as an admitted settled bundle"
+fi
 bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \
   "engine: regime update $(date -u +%F)"
 # best-effort push (see commit-data). The deploy below uses the uploaded
