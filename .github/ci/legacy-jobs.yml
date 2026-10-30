@@ -19889,6 +19889,7 @@ jobs:
       - "engine/sector_theme_regime_explain.py"
       - "engine/sector_theme_regime_comparison.py"
       - "engine/sector_theme_regime_timeline.py"
+      - "engine/sector_theme_multi_horizon_view.py"
       - "engine/marketing/__init__.py"
       - "engine/marketing/accounts.py"
       - "engine/marketing/authority.py"
@@ -19942,6 +19943,7 @@ jobs:
       - "tests/test_sector_theme_regime_explain.py"
       - "tests/test_sector_theme_regime_comparison.py"
       - "tests/test_sector_theme_regime_timeline.py"
+      - "tests/test_sector_theme_multi_horizon_view.py"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -19955,7 +19957,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation measured-product contract
-        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py tests/test_sector_theme_factor_intelligence.py tests/test_sector_theme_regime_fingerprint.py tests/test_sector_theme_owner_bridge.py tests/test_sector_theme_regime_explain.py tests/test_sector_theme_regime_comparison.py tests/test_sector_theme_regime_timeline.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py tests/test_sector_theme_factor_intelligence.py tests/test_sector_theme_regime_fingerprint.py tests/test_sector_theme_owner_bridge.py tests/test_sector_theme_regime_explain.py tests/test_sector_theme_regime_comparison.py tests/test_sector_theme_regime_timeline.py tests/test_sector_theme_multi_horizon_view.py -q -p no:cacheprovider
 
   leadership-rotation-science:
     if: ${{ false }}
