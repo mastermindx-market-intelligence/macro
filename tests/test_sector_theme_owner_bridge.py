@@ -17,9 +17,12 @@ IDENTITY_KNOWN = END - timedelta(days=7)
 
 
 def quote(ret=.03, *, horizon="5d", price_basis="split_adjusted"):
+    period_start = END - timedelta(days=20 if horizon == "20d" else 5)
     return {
         "horizon": horizon,
+        "period_start": period_start.isoformat(),
         "period_end": END.isoformat(),
+        "session_basis": "daily_close",
         "observed_at": (END + timedelta(seconds=30)).isoformat(),
         "available_at": (END + timedelta(minutes=1)).isoformat(),
         "price_basis": price_basis,
@@ -62,6 +65,10 @@ def fixture():
             "horizon": "5d",
             "ma_basis": "daily_sessions",
             "price_basis": "split_adjusted",
+            "session_basis": "daily_close",
+            "benchmark_id": "SPY",
+            "parent_id": "XLK",
+            "period_start": (END - timedelta(days=5)).isoformat(),
             "period_end": END.isoformat(),
             "decision_at": DECISION.isoformat(),
             "benchmark": quote(.01),
@@ -338,6 +345,7 @@ def flow_packet():
     p = fixture()
     m = p["market"]
     m["horizon"] = "20d"
+    m["period_start"] = (END - timedelta(days=20)).isoformat()
     m["benchmark"] = quote(.01, horizon="20d")
     m["parent"] = quote(.02, horizon="20d")
     m["member_rows"] = {
@@ -534,3 +542,49 @@ def test_p2b_14_owner_research_claims_remain_unqualified_not_a_proof():
     assert ctx["status"] == "OWNER_REPORTED_RESEARCH_ONLY"
     assert ctx["original_observation_and_use_receipts_verified"] is False
     assert ctx["eligible_for_customer_publication"] is False
+
+
+def test_p2a_30_missing_reference_security_identity_refuses():
+    p = fixture()
+    p["market"]["benchmark_id"] = None
+    held(p, "missing_benchmark_or_parent_identity")
+    p = fixture()
+    p["market"]["parent_id"] = ""
+    held(p, "missing_benchmark_or_parent_identity")
+
+
+def test_p2a_31_changed_price_start_refuses_benchmark_and_member():
+    p = fixture()
+    p["market"]["benchmark"]["period_start"] = (
+        END - timedelta(days=4)).isoformat()
+    held(p, "benchmark_reference_endpoint_mismatch")
+    p = fixture()
+    p["market"]["member_rows"]["AAA"]["period_start"] = (
+        END - timedelta(days=4)).isoformat()
+    held(p, "member_horizon_or_session_alignment_mismatch")
+
+
+def test_p2a_32_different_after_hours_basis_refuses():
+    p = fixture()
+    p["market"]["parent"]["session_basis"] = "all_sessions"
+    held(p, "parent_reference_session_basis_mismatch")
+    p = fixture()
+    p["market"]["member_rows"]["BBB"]["session_basis"] = "overnight"
+    held(p, "member_horizon_or_session_alignment_mismatch")
+
+
+def test_p2a_33_missing_interval_start_cannot_use_same_endpoint_only():
+    p = fixture()
+    p["market"].pop("period_start")
+    held(p, "missing_or_invalid_market_start")
+
+
+def test_p2a_34_comparison_basis_exposes_original_market_id_and_window():
+    out = preview_us_theme_packet(fixture())
+    assert out["comparison_basis"] == {
+        "benchmark_id": "SPY", "parent_id": "XLK",
+        "price_basis": "split_adjusted", "session_basis": "daily_close",
+        "period_start": (END - timedelta(days=5)).isoformat(),
+        "period_end": END.isoformat(), "horizon": "5d",
+        "decision_at": DECISION.isoformat(), "market": "US",
+    }
