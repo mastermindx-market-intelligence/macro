@@ -888,7 +888,7 @@ def test_caught_original_completion_failure_cannot_release_native_hold(causal,fi
 
 # These are future test-owned operations/roots only. The first operation is
 # actually published locally; the second never adopts its creator outcomes.
-def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=False):
+def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=False,https=None):
     import time,json
     from dataclasses import replace
     from types import SimpleNamespace
@@ -914,6 +914,17 @@ def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=Fa
             state.update(checked=checked,prepared=prepared,index_before_freeze=(repo/'.git/index').read_bytes())
             return prepared
         monkeypatch.setattr(engine,'finalize_daily_engine_outputs',first_finalize)
+    if https is not None:
+        from scripts.ci.qledger_owner_evidence import build_evidence
+        remote,url,cert,header,network=https
+        git(repo,'push','-q',str(remote),gate.candidate_oid+':refs/heads/main')
+        git(repo,'remote','set-url','origin',url)
+        git(repo,'config','http.'+url.rsplit('/owner/',1)[0]+'/.extraheader','AUTHORIZATION: '+header)
+        origin=sha256(url.encode()).hexdigest()
+        first_carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+        state['publication'].original.update(origin_binding_sha256=origin,original_origin_inode=None,
+            https_carrier=first_carrier)
+        gate.evidence.real=build_evidence(state['context'],origin_binding_sha256=origin)
     first=state['run']();selection=_selection(state)
     first_files={str(p.relative_to(causal[3])):p.read_bytes() for p in causal[3].rglob('*') if p.is_file()}
     old_binding=state['binding'];intents=tuple(native.NativeClaimsIntent(operation,lane,'gen2-'+s) for s in ('one','two'))
@@ -950,6 +961,24 @@ def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=Fa
         return prepared
     monkeypatch.setattr(engine,'finalize_daily_engine_outputs',finalize)
     publication=publisher.NativePublicationFinalizer(**state['publication'].original)
+    if https is not None:
+        # A new original gets separate anchor and publication carriers. Neither
+        # may adopt the first publisher's already closed authentication attempt.
+        anchor_carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+        writer_carrier=publisher.CheckoutHTTPSCarrier(repo,url,tls_ca_file=cert)
+        anchor_proof=build_evidence(context,origin_binding_sha256=origin,
+            native_anchor_carrier=anchor_carrier)
+        writer_proof=build_evidence(context,origin_binding_sha256=origin)
+        publication.original['https_carrier']=writer_carrier
+        def readback(**ctx):
+            proof=anchor_proof if 'native_anchor' in ctx else writer_proof
+            return proof.assert_publication_readback(**dict(ctx,bootstrap_pid=os.getpid(),
+                original_deadline_monotonic_ns=context.original_deadline_monotonic_ns,
+                origin_binding_sha256=origin,conversion_result_path=context.result_path,
+                conversion_manifest_digest=context.manifest_digest))
+        evidence.assert_publication_readback=readback
+        second.update(anchor_proof=anchor_proof,anchor_carrier=anchor_carrier,
+            writer_carrier=writer_carrier,first_carrier=first_carrier,network=network)
     def run():
         with gate.native_cycle(binding,budget_id='second-budget',retention_id='second-retention',current_generation=selection):
             def original():
@@ -962,6 +991,45 @@ def _second_native_case(causal,fixture,monkeypatch,tmp_path,*,real_normalizer=Fa
                 budget_id='second-budget',retention_id='second-retention',producer=original)
     second.update(gate=gate,binding=binding,context=context,run=run,publication=publication,args=second_args)
     return state,second,first,selection,first_files,opaque
+
+
+@pytest.mark.parametrize('fault',[None,'pre-settlement','post-settlement'])
+def test_https_second_producer_owns_two_sided_data_anchor(causal,fixture,monkeypatch,tmp_path,https_origin,fault):
+    state,second,first,selection,files,opaque=_second_native_case(
+        causal,fixture,monkeypatch,tmp_path,https=https_origin)
+    repo=state['gate'].repo;code=git(repo,'rev-parse','HEAD')
+    if fault:
+        evidence=second['gate'].evidence;original=evidence.assert_descendants_settled
+        def settlement(**ctx):
+            attempt=ctx.get('native_anchor_attempt')
+            if attempt and attempt.stage==('pre-query' if fault=='pre-settlement' else 'post-query'):
+                raise GateRefusal('test-owned original anchor settlement unavailable')
+            return original(**ctx)
+        evidence.assert_descendants_settled=settlement
+        with pytest.raises(GateRefusal,match='anchor settlement unavailable'):second['run']()
+        attempt=second['anchor_proof']._native_anchor_attempt
+        assert attempt.uncertain and not attempt.confirmed and not second['anchor_carrier']._closed
+        assert not second['binding'].attempts and 'callback' not in second
+        assert (second['gate'].root/second['gate'].HOLD).exists()
+        assert second['network']['received']==1 and git(repo,'rev-parse','HEAD')==code
+        assert git(https_origin[0],'rev-parse','refs/heads/main').decode()==first.publication.candidate_oid
+        assert {str(p.relative_to(causal[3])):p.read_bytes() for p in causal[3].rglob('*') if p.is_file()}==files
+        if fault=='post-settlement':
+            assert second['gate']._native_anchor_handles['replaced']
+            assert all(os.fstat(fd) for fd in second['gate']._native_anchor_handles['fds'])
+        return
+    value=second['run']()
+    attempt=second['anchor_proof']._native_anchor_attempt
+    assert value.status=='publication_confirmed' and attempt.confirmed and not attempt.uncertain
+    assert len(attempt.processes)==len(attempt.responses)==2
+    assert all(r==((first.publication.candidate_oid+'\trefs/heads/main\n').encode(),0)
+        for r in attempt.responses)
+    assert len({p.pid for p in attempt.processes})==2 and all(p.returncode==0 for p in attempt.processes)
+    assert second['anchor_carrier']._closed and second['writer_carrier']._closed
+    assert second['anchor_carrier'] is not second['writer_carrier'] is not second['first_carrier']
+    assert second['network']['received']==2 and git(repo,'rev-parse','HEAD')==code
+    assert git(repo,'rev-parse','refs/remotes/origin/main').decode()==first.publication.candidate_oid
+    assert not (second['gate'].root/second['gate'].HOLD).exists()
 
 
 def test_two_genuine_native_generations_preserve_code_originals_and_forward_ledger(causal,fixture,monkeypatch,tmp_path):

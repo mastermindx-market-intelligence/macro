@@ -59,13 +59,16 @@ class OrdinaryPublicationEvidence:
     The assigning original owner must supply its existing pre-push binding.
     Capturing today's URL here would not prove that original identity.
     """
-    def __init__(self, context, *, origin_binding_sha256, native_reader_carrier=None):
+    def __init__(self, context, *, origin_binding_sha256, native_reader_carrier=None,
+                 native_anchor_carrier=None):
         _require(type(origin_binding_sha256) is str and len(origin_binding_sha256) == 64
                  and all(x in '0123456789abcdef' for x in origin_binding_sha256),
                  'original normal-push origin binding required')
         self.context, self.origin_digest = context, origin_binding_sha256
         self.native_reader_carrier = native_reader_carrier
         self._native_reader_attempt = None
+        self.native_anchor_carrier = native_anchor_carrier
+        self._native_anchor_attempt = None
         self._native_readback_attempt = None  # One live original; never a restart/admission receipt.
         self._pid, self._last, self._failed = os.getpid(), time.monotonic_ns(), False
         _require(type(context.original_deadline_monotonic_ns) is int,
@@ -282,7 +285,7 @@ class OrdinaryPublicationEvidence:
                  'actual immutable native reader generation differs')
         self._native_origin_readback(call.record,call.check,reader_call=call)
 
-    def _native_origin_readback(self,record,check,*,reader_call=None):
+    def _native_origin_readback(self,record,check,*,reader_call=None,anchor_call=None):
         self._check();check()
         _require(record['publication']['origin'] == self.origin_digest, 'reader original publication origin differs')
         destination=self._origin().decode('utf-8',errors='strict')
@@ -323,12 +326,16 @@ class OrdinaryPublicationEvidence:
             finally:
                 for handle in (fd,heads,refs,root):
                     if handle is not None:os.close(handle)
-        elif parsed.scheme == 'https' and reader_call is not None:
+        elif parsed.scheme == 'https' and reader_call is not None and anchor_call is None:
             _require(self._native_reader_attempt is None,
                      'original native HTTPS readback already entered; no retry')
             attempt = _NativeHTTPSReadback(self, reader_call, destination)
             self._native_reader_attempt = attempt
             attempt.perform()
+        elif parsed.scheme == 'https' and anchor_call is not None and reader_call is None:
+            if self._native_anchor_attempt is None:
+                self._native_anchor_attempt = _NativeHTTPSAnchorReadback(self,anchor_call,destination)
+            self._native_anchor_attempt.perform()
         else:
             raise EvidenceUnavailable('fresh native HTTPS/SSH reader carrier is not qualified; original writer auth cannot transfer')
         self._origin();check();self._check()
@@ -350,7 +357,7 @@ class OrdinaryPublicationEvidence:
                  'original data-anchor process/resources/code binding differs')
         record=gate._native_start_generation
         _require(record is not None and gate._native_expected==record,'current verified data generation absent')
-        self._native_origin_readback(record,lambda:gate._anchor_check(live))
+        self._native_origin_readback(record,lambda:gate._anchor_check(live),anchor_call=live)
 
     @_record_original_refusal
     def assert_publication_readback(self, **context):
@@ -422,35 +429,34 @@ class OrdinaryPublicationEvidence:
         raise EvidenceUnavailable('actual loaded owner/runtime bundle and native process binding authority unavailable')
 
 
-def build_evidence(context, *, origin_binding_sha256, native_reader_carrier=None):
+def build_evidence(context, *, origin_binding_sha256, native_reader_carrier=None,
+                   native_anchor_carrier=None):
     """Owner-entry factory; the original origin pin identifies, never admits."""
     return OrdinaryPublicationEvidence(context, origin_binding_sha256=origin_binding_sha256,
-                                       native_reader_carrier=native_reader_carrier)
+                                       native_reader_carrier=native_reader_carrier,
+                                       native_anchor_carrier=native_anchor_carrier)
 
 
-class _NativeHTTPSReadback:
-    """One fresh native reader's fixed ref query; no publisher or admission issuer.
+class _NativeHTTPSRefQuery:
+    """Finite transport shared by separately bound reader and producer callers.
 
     A failed attempt retains its original carrier/control/child identities. The
     caller's existing settlement path owns recovery; another read cannot repair
     a lost response. Credential bytes are consumed only by the existing child.
     """
-    def __init__(self, evidence, call, destination):
+    def _initialize(self, evidence, call, carrier, destination, record, deadline):
         import shutil
         from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier, _file_stamp
-        from scripts.ci.qledger_owner_invocation import NativeReaderInvocation
-        _require(type(call) is NativeReaderInvocation and call.pid == os.getpid(),
-                 'actual fresh reader invocation required')
-        carrier = evidence.native_reader_carrier
         _require(type(carrier) is CheckoutHTTPSCarrier and carrier.pid == call.pid
                  and carrier.repo == evidence.context.repo and carrier.destination == destination
-                 and call.record['publication']['transport'] == 'checkout_https'
-                 and call.record['publication']['layout'] is None,
-                 'own original HTTPS reader carrier required; writer auth cannot transfer')
-        carrier.check(); call.check(); evidence._check()
+                 and record['publication']['transport'] == 'checkout_https'
+                 and record['publication']['layout'] is None,
+                 'own original HTTPS query carrier required; authentication cannot transfer')
+        carrier.check(); evidence._check()
         _require(carrier._attempt is None and not carrier._closed,
                  'original HTTPS reader carrier already used')
         self.evidence, self.call, self.carrier = evidence, call, carrier
+        self.record, self.deadline = record, deadline
         self.git = shutil.which('git')
         _require(self.git is not None, 'incumbent Git executable unavailable')
         self.git_stamp = _file_stamp(os.stat(self.git))
@@ -458,15 +464,16 @@ class _NativeHTTPSReadback:
         self.directories, self.files = {}, {}
         self.uncertain, self.confirmed, self.failure = True, False, None
         self.response = None
+        self.processes, self.responses = [], []
         _require(carrier._use_lock.acquire(blocking=False), 'concurrent HTTPS reader carrier refused')
         # Bind before any setup or process effect. No reassignment on failure.
         carrier._attempt = self
 
     def check(self):
         from scripts.ci.qledger_engine_publisher import _file_stamp, _inode
-        _require(self.failure is None and self.evidence._native_reader_attempt is self
+        _require(self.failure is None and self._bound_attempt() is self
                  and self.carrier._attempt is self, 'original HTTPS reader attempt is unresolved')
-        remaining = min(self.evidence._check(), self.call.check())
+        remaining = min(self.evidence._check(), self._invocation_check())
         self.carrier.check()
         _require(_file_stamp(os.stat(self.git)) == self.git_stamp, 'original Git executable changed')
         if self.control_fd is not None:
@@ -484,8 +491,7 @@ class _NativeHTTPSReadback:
         return remaining
 
     def authority(self, method, phase):
-        context = dict(self.call.context, phase=phase, native_reader=self.call,
-            native_reader_attempt=self, git_executable=self.git,
+        context = dict(self._authority_context(), phase=phase, git_executable=self.git,
             authentication_config_identity=self.carrier.config_stamp,
             publication_transport='checkout_https',
             git_pid=None if self.process is None else self.process.pid)
@@ -496,8 +502,8 @@ class _NativeHTTPSReadback:
         from scripts.ci.qledger_host_gate import _directory
         from scripts.ci.qledger_engine_publisher import _file_stamp
         self.check()
-        self.authority('assert_resources','native-reader-https-intent')
-        self.authority('assert_process_version','native-reader-https-intent')
+        self.authority('assert_resources',self._phase+'-intent')
+        self.authority('assert_process_version',self._phase+'-intent')
         self.control = Path(tempfile.mkdtemp(prefix='.qledger-reader-git-',dir=self.evidence.context.owner_root))
         self.control_fd = _directory(self.control)
         for name in ('refs','objects'):
@@ -522,11 +528,12 @@ class _NativeHTTPSReadback:
         # This original child gets its own credential FD; no writer state.
         command = [sys.executable,'-I','-c',_HTTPS_EXEC,str(self.carrier.config_fd),
             json.dumps(self.carrier.config_stamp),self.carrier.key,self.git,
-            str(self.call.deadline),'0',str(self.control_fd),
+            str(self.deadline),'0',str(self.control_fd),
             str(self.carrier.ca_fd if self.carrier.ca_fd is not None else -1),
             'ls-remote','--refs','--exit-code','--',self.carrier.destination,'refs/heads/main']
         self.process = subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,pass_fds=tuple(fds),start_new_session=True)
+        self.processes.append(self.process)
         data = bytearray()
         with selectors.DefaultSelector() as selector:
             selector.register(self.process.stdout,selectors.EVENT_READ)
@@ -540,10 +547,11 @@ class _NativeHTTPSReadback:
             self.process.wait(timeout=self.check())
         self.process.stdout.close()
         self.response = (bytes(data), self.process.returncode)
+        self.responses.append(self.response)
         self.check()
-        _require(self.response == ((self.call.record['candidate']+'\trefs/heads/main\n').encode('ascii'),0),
+        _require(self.response == ((self.record['candidate']+'\trefs/heads/main\n').encode('ascii'),0),
                  'exact original HTTPS reader response unavailable; no retry')
-        self.authority('assert_descendants_settled','native-reader-https-settled')
+        self.authority('assert_descendants_settled',self._phase+'-settled')
 
     def close_known(self):
         self.check()
@@ -566,14 +574,99 @@ class _NativeHTTPSReadback:
         self.carrier.close_known(self)
         self.confirmed = True
 
+    def fail(self, exc):
+        self.failure = exc; self.uncertain = True
+        if self.call.failure is None:self.call.failure = exc
+        self.call.uncertain = True
+
+
+class _NativeHTTPSReadback(_NativeHTTPSRefQuery):
+    _phase = 'native-reader-https'
+
+    def __init__(self,evidence,call,destination):
+        from scripts.ci.qledger_owner_invocation import NativeReaderInvocation
+        _require(type(call) is NativeReaderInvocation and call.pid==os.getpid(),
+                 'actual fresh reader invocation required')
+        call.check()
+        self._initialize(evidence,call,evidence.native_reader_carrier,destination,call.record,call.deadline)
+
+    def _bound_attempt(self):return self.evidence._native_reader_attempt
+    def _invocation_check(self):return self.call.check()
+    def _authority_context(self):
+        return dict(self.call.context,native_reader=self.call,native_reader_attempt=self)
+
     def perform(self):
         try:
             self.setup(); self.query()
             self.evidence._origin(); self.check()
             self.close_known()
         except BaseException as exc:
-            self.failure = exc; self.uncertain = True
-            # Caught evidence errors remain sticky on the actual reader call.
-            if self.call.failure is None:self.call.failure = exc
-            self.call.uncertain = True
+            self.fail(exc)
+            raise
+
+
+class _NativeHTTPSAnchorReadback(_NativeHTTPSRefQuery):
+    """One producer's pre/post tracking-CAS query, never reader admission.
+
+    Both ordered reads belong to this original anchor. A missing response is
+    never retried; the first child and response stay retained through the CAS.
+    """
+    _phase = 'native-anchor-https'
+
+    def __init__(self,evidence,live,destination):
+        import copy
+        from scripts.ci.qledger_owner_invocation import _LiveProducerInvocation,require_live_producer
+        _require(type(live) is _LiveProducerInvocation and require_live_producer(live.binding) is live,
+                 'actual original producer anchor required')
+        gate=live.gate;gate._anchor_check(live)
+        _require(gate._native_anchor_handles is None and gate._native_data_anchor is None,
+                 'original producer pre-CAS query required')
+        self._initialize(evidence,live,evidence.native_anchor_carrier,destination,
+                         copy.deepcopy(gate._native_start_generation),live.data_anchor_deadline)
+        self.stage='pre-cas'
+
+    def _bound_attempt(self):return self.evidence._native_anchor_attempt
+
+    def _invocation_check(self):
+        from scripts.ci.qledger_owner_invocation import require_live_producer
+        live=self.call;gate=live.gate
+        _require(require_live_producer(live.binding) is live and live.pid==self.evidence._pid==os.getpid(),
+                 'original producer anchor process changed')
+        gate._anchor_check(live)
+        _require(live.data_anchor_deadline==self.deadline==self.evidence.context.original_deadline_monotonic_ns
+                 and gate._native_start_generation==gate._native_expected==self.record
+                 and gate._native_data_anchor is None
+                 and not live.binding.attempts and not live.binding.prepared_original_results
+                 and live.binding.pre_attempt_failure is None,
+                 'original producer data generation, endpoint or pre-effect binding changed')
+        return (self.deadline-time.monotonic_ns())/1e9
+
+    def _authority_context(self):
+        return dict(self.call.gate._anchor_context(self.call),native_anchor_attempt=self)
+
+    def perform(self):
+        try:
+            self.check();gate=self.call.gate
+            if self.stage=='pre-cas':
+                _require(gate._native_anchor_handles is None,'repeated or out-of-order pre-CAS query')
+                self.stage='pre-query'
+                self.setup();self.query();self.evidence._origin();self.check()
+                self.stage='await-cas'
+            else:
+                control=gate._native_anchor_handles
+                _require(self.stage=='await-cas' and control is not None
+                         and control.get('desired')==(self.record['candidate']+'\n').encode()
+                         and len(self.processes)==len(self.responses)==1
+                         and self.processes[0].returncode==0,
+                         'original post-CAS anchor context absent or already entered')
+                gate._tracking_namespace(control)
+                _require(gate._tracking_read(control['origin'],'main')[0]==control['desired'],
+                         'original tracking CAS result differs')
+                self.stage='post-query'
+                self.authority('assert_resources',self._phase+'-intent')
+                self.authority('assert_process_version',self._phase+'-intent')
+                self.query();self.evidence._origin();self.check();self.close_known()
+                self.stage='complete'
+        except BaseException as exc:
+            self.fail(exc)
             raise

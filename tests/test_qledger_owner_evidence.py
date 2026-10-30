@@ -469,3 +469,147 @@ def test_fresh_https_reader_uncertain_completion_is_not_retried(fresh_https_read
     with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run()
     if fault!='caught-settlement':assert len(dispatches)==1
     assert s.network['received']==0
+
+
+@pytest.fixture
+def fresh_https_anchor(fresh_https_reader):
+    """Real typed producer/HTTPS transport; admission and CAS are test-owned.
+
+    The full HostGate/CAS/two-generation path is covered separately. This small
+    fixture isolates caller/authentication/ordered-response failures cheaply.
+    """
+    import time
+    from types import SimpleNamespace
+    from scripts.ci.qledger_host_gate import HostGate
+    from scripts.ci.qledger_owner_evidence import EvidenceUnavailable
+    from scripts.ci.qledger_engine_publisher import CheckoutHTTPSCarrier
+    from scripts.ci import qledger_owner_invocation as inv
+    s=fresh_https_reader;proof=s.proof;context=proof.context
+    context.manifest_digest='test-owned-manifest';context.candidate_oid='b'*40
+    binding=SimpleNamespace(original_process_id=os.getpid(),operation_id='anchor-original',lane_id='anchor-lane',
+        attempts=[],prepared_original_results=[],pre_attempt_failure=None)
+    gate=HostGate.__new__(HostGate)
+    gate.repo=s.repo;gate.candidate_oid=context.candidate_oid
+    gate.invocation=SimpleNamespace(manifest_digest=context.manifest_digest)
+    gate._native_transition=True;gate._mode='install';gate._native_owner_binding=binding
+    gate._native_start_generation=gate._native_expected=s.call.record
+    gate._native_data_anchor=gate._native_anchor_handles=None
+    live=inv._LiveProducerInvocation(SimpleNamespace(_gate=lambda *a,**k:None),binding,gate,
+        context.candidate_oid,'anchor-budget','anchor-retention')
+    live.data_anchor_deadline=context.original_deadline_monotonic_ns;live.data_anchor_last=time.monotonic_ns()
+    gate._native_anchor_live=live
+    proof.native_anchor_carrier=CheckoutHTTPSCarrier(s.repo,s.url,tls_ca_file=s.cert)
+    proof._native_anchor_attempt=None
+    calls=[];state=SimpleNamespace(**vars(s));state.live=live;state.gate=gate;state.refuse=None
+    def assertion(method,**ctx):
+        calls.append((method,ctx));attempt=ctx['native_anchor_attempt']
+        assert ctx['native_anchor'] is live and 'native_reader' not in ctx and 'native_reader_attempt' not in ctx
+        assert attempt.call is live and ctx['phase'].startswith('native-anchor-https-')
+        if state.refuse==method:raise EvidenceUnavailable('test-owned missing '+method)
+        if state.refuse=='post-settlement' and method=='assert_descendants_settled' and attempt.stage=='post-query':
+            raise EvidenceUnavailable('test-owned lost post-CAS settlement')
+        if method=='assert_descendants_settled':assert attempt.process.poll()==0 and attempt.process.stdout.closed
+    gate._assert=assertion
+    control={'desired':(s.oid+'\n').encode(),'origin':object()}
+    gate._tracking_namespace=lambda actual:actual is control or pytest.fail('wrong test-owned CAS')
+    gate._tracking_read=lambda parent,name:(control['desired'],None)
+    def run(post=False,missing=False):
+        if post:gate._native_anchor_handles=control
+        with inv.native_anchor_assertion_scope(live):
+            ctx=gate._anchor_context(live)
+            if missing:ctx.pop('native_anchor')
+            return proof.assert_publication_readback(**ctx)
+    state.run=run;state.calls=calls
+    token=inv._LIVE_PRODUCER.set(live)
+    try:yield state
+    finally:
+        inv._LIVE_PRODUCER.reset(token)
+        attempt=proof._native_anchor_attempt;carrier=proof.native_anchor_carrier
+        if attempt and not attempt.confirmed:
+            for process in attempt.processes:
+                if process.poll() is None:
+                    import signal
+                    os.killpg(process.pid,signal.SIGKILL);process.wait()
+                if process.stdout:process.stdout.close()
+            for fd in [attempt.control_fd,*attempt.directories.values(),*(x[0] for x in attempt.files.values())]:
+                if fd is not None:
+                    try:os.close(fd)
+                    except OSError:pass
+        if not carrier._closed:
+            for fd in (carrier.git_dir,carrier.config_fd,carrier.ca_fd):
+                if fd is not None:
+                    try:os.close(fd)
+                    except OSError:pass
+
+
+@pytest.mark.parametrize('fault',['positive','missing-context','borrowed-carrier','foreign-pid',
+    'expired','origin','wrong-ref','resources','process-version','settlement','post-settlement',
+    'repeated-pre','changed-generation'])
+def test_producer_https_anchor_has_own_original_and_ordered_settlement(fresh_https_anchor,fault):
+    import time
+    from scripts.ci.qledger_owner_evidence import EvidenceUnavailable
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+    s=fresh_https_anchor;c=s.proof.native_anchor_carrier
+    if fault=='borrowed-carrier':c._attempt=object()
+    if fault=='foreign-pid':c.pid+=1
+    if fault=='expired':s.proof.context.original_deadline_monotonic_ns=time.monotonic_ns()-1
+    if fault=='origin':s.proof.origin_digest='0'*64
+    if fault=='wrong-ref':s.gate._native_start_generation['candidate']='a'*40
+    if fault in ('resources','process-version','settlement'):
+        s.refuse={'resources':'assert_resources','process-version':'assert_process_version','settlement':'assert_descendants_settled'}[fault]
+    if fault=='post-settlement':s.refuse=fault
+    if fault=='positive':
+        s.run();a=s.proof._native_anchor_attempt
+        assert a.stage=='await-cas' and not a.confirmed and not c._closed and len(a.processes)==1
+        s.run(post=True)
+        assert a.confirmed and not a.uncertain and c._closed and len(a.processes)==2
+        assert not a.control.exists() and all(r==((s.oid+'\trefs/heads/main\n').encode(),0) for r in a.responses)
+    else:
+        with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):
+            s.run(missing=fault=='missing-context')
+            if fault=='changed-generation':s.gate._native_start_generation['candidate']='a'*40
+            s.run(post=fault!='repeated-pre')
+        assert s.live.failure is not None and s.live.uncertain
+        a=s.proof._native_anchor_attempt
+        if a:
+            assert not a.confirmed and not c._closed
+            count=len(a.processes)
+            with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run(post=True)
+            assert len(a.processes)==count
+            if a.control:assert a.control.exists()
+    assert s.network['received']==0
+    assert all('receive-pack' not in path for _,path,_,_ in s.network.get('protocol',[]))
+
+
+@pytest.mark.parametrize('fault',['partial-post','timeout','caught-post-settlement'])
+def test_producer_https_anchor_keeps_uncertain_original_children(fresh_https_anchor,monkeypatch,fault):
+    import sys,time
+    from scripts.ci import qledger_engine_publisher as publisher
+    from scripts.ci.qledger_owner_evidence import EvidenceUnavailable
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+    s=fresh_https_anchor;original=subprocess.Popen;dispatches=[]
+    if fault!='timeout':s.run()
+    if fault=='caught-post-settlement':s.refuse='post-settlement'
+    else:
+        if fault=='timeout':
+            endpoint=time.monotonic_ns()+1_000_000_000
+            s.proof.context.original_deadline_monotonic_ns=s.live.data_anchor_deadline=endpoint
+        program="import time;time.sleep(30)" if fault=='timeout' else "import os;os.write(1,b'partial')"
+        def child(command,**kwargs):
+            if publisher._HTTPS_EXEC in command:
+                dispatches.append(command)
+                assert command[-6:]==['ls-remote','--refs','--exit-code','--',s.url,'refs/heads/main']
+                return original([sys.executable,'-I','-c',program],**kwargs)
+            return original(command,**kwargs)
+        monkeypatch.setattr(subprocess,'Popen',child)
+    with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):
+        s.run(post=fault!='timeout')
+    # A wrapper that catches the assertion cannot rehabilitate this producer.
+    a=s.proof._native_anchor_attempt
+    assert s.live.failure is not None and s.live.uncertain and a.uncertain and not a.confirmed
+    assert not a.carrier._closed and a.control.exists()
+    assert len(a.processes)==(1 if fault=='timeout' else 2)
+    before=len(a.processes)
+    with pytest.raises((EvidenceUnavailable,SnapshotIntegrityError)):s.run(post=True)
+    assert len(a.processes)==before and s.network['received']==0
+    if fault!='caught-post-settlement':assert len(dispatches)==1
