@@ -258,3 +258,14 @@ def test_p3a_18_forged_issuer_mapping_or_count_must_not_relabel_coverage():
     data["UTILITIES"]["unique_issuer_n"] = 999
     assert compose_regime_comparison(data)["reason"] == (
         "invalid_unique_issuer_population")
+
+
+def test_p3a_19_malformed_universe_and_count_are_held():
+    data = preview_pairs()
+    data["UTILITIES"]["frame"]["universe"] = None
+    assert compose_regime_comparison(data)["reason"] == (
+        "invalid_or_mismatched_group_population")
+    data = preview_pairs()
+    data["UTILITIES"]["frame"]["universe"]["measured_return_n"] = True
+    assert compose_regime_comparison(data)["reason"] == (
+        "invalid_measured_security_count")
