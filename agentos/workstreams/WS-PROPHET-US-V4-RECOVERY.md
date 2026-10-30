@@ -262,7 +262,10 @@ waves:
       files and 240 price candidates were recovered; 57 complete buy snapshots
       cover 32 source dates, but zero of 7918 C0 episodes has a complete
       34-session admission-date window. B-17 remains STILL_LIVE with null full
-      coverage/lead. Recover historically bound full-population admission inputs
+      coverage/lead. DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT
+      shows that close-only replay does not reproduce shipped buy[] and a
+      vintage-main replay cannot qualify the pre-2026 board history.
+      Recover historically bound full-population admission inputs
       and availability clocks for the missing original dates, then measure the
       actual union-and-gate roster with the frozen denominator and rulers.
       The reproduced 60.62 percent / 12-session baseline is C1-relaxed, not a
