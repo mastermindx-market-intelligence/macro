@@ -129,11 +129,11 @@ def preview_us_theme_packet(packet: object) -> dict:
     if packet.get("group_kind") not in ("theme", "sector", "industry"):
         # No direct subtheme/microtheme security edges exist at this boundary.
         return _held("subtheme_membership_not_qualified")
-    if packet.get("membership_mode") not in MEMBERSHIP_MODES:
+    mode = packet.get("membership_mode")
+    if type(mode) is not str or mode not in MEMBERSHIP_MODES:
         return _held("missing_membership_basis")
-    mode = packet["membership_mode"]
     origin = market.get("origin")
-    if origin not in MARKET_ORIGINS:
+    if type(origin) is not str or origin not in MARKET_ORIGINS:
         return _held("unknown_source_origin")
     rights = packet.get("use_verdict")
     if origin == "owner_reported":
@@ -174,11 +174,12 @@ def preview_us_theme_packet(packet: object) -> dict:
     session_basis = market.get("session_basis")
     benchmark_id = _name(market.get("benchmark_id"))
     parent_id = _name(market.get("parent_id"))
-    if horizon not in HORIZONS or ma_basis not in MA_BASES or (
-        price_basis not in ("split_adjusted", "total_return_adjusted", "unadjusted")
-    ) or session_basis not in (
-        "daily_close", "rth", "overnight", "extended", "all_sessions"
-    ):
+    if (type(horizon) is not str or horizon not in HORIZONS
+            or type(ma_basis) is not str or ma_basis not in MA_BASES
+            or price_basis not in ("split_adjusted", "total_return_adjusted", "unadjusted")
+            or session_basis not in (
+                "daily_close", "rth", "overnight", "extended", "all_sessions"
+            )):
         return _held("invalid_timeframe_or_price_basis")
     if not benchmark_id or (market.get("parent") is not None and not parent_id):
         return _held("missing_benchmark_or_parent_identity")
