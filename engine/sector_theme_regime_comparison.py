@@ -171,12 +171,19 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         ):
             return _hold("fingerprint_claims_decision_authority")
         members = fp["group"].get("member_ids")
-        if (not isinstance(members, list)
-                or len(members) != len(set(members))
-                or any(_name(x) is None for x in members)
-                or len(members) != frame.get("universe", {}).get("expected_n")
-                or set(members) != set(frame.get("universe", {}).get("member_ids", []))):
+        universe = frame.get("universe")
+        if not isinstance(universe, Mapping):
             return _hold("invalid_or_mismatched_group_population")
+        if (not isinstance(members, list)
+                or any(_name(x) is None for x in members)
+                or len(members) != len(set(members))
+                or len(members) != universe.get("expected_n")
+                or not isinstance(universe.get("member_ids"), list)
+                or set(members) != set(universe["member_ids"])):
+            return _hold("invalid_or_mismatched_group_population")
+        if (type(universe.get("measured_return_n")) is not int
+                or not 0 <= universe["measured_return_n"] <= len(members)):
+            return _hold("invalid_measured_security_count")
         issuer_map = p.get("issuer_by_security_id")
         if (not isinstance(issuer_map, Mapping)
                 or set(issuer_map) != set(members)
@@ -224,13 +231,13 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
             "population_n": n,
             "unique_issuer_n": p["unique_issuer_n"],
             "security_breadth_not_independent_issuer_breadth": True,
-            "measured_return_n": frame.get("universe", {}).get("measured_return_n"),
+            "measured_return_n": universe["measured_return_n"],
             "equal_weight_full_cohort_return": ret,
             "rs_market": market_rs, "rs_parent": parent_rs,
             "positive_return_breadth": breadth,
             "above_ma50_breadth": above50,
             "group_facets": sorted({c.get("tag") for c in cards if type(c.get("tag")) is str}),
-            "missing_by_reason": frame.get("universe", {}).get("missing_by_reason", {}),
+            "missing_by_reason": universe.get("missing_by_reason", {}),
             "source_evidence_status": "unqualified_preview_not_customer_publishable",
         })
     overlap = [
