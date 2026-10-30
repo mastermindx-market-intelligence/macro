@@ -1,3 +1,106 @@
+---
+workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
+session: chatgpt-sol-sector-theme-factors-20261030
+model: sol
+ended_because: ci_handoff
+mission: >-
+  Add a read-only, multi-horizon sector/theme/ticker factor measurement and
+  source-qualified granular regime fingerprint to incumbent rotation intelligence.
+  No novel score, market truth, macro regime engine, collector or trade authority.
+state_before: >-
+  Measured leadership product W1–W5 recorded as delivered under its own ruler;
+  predictive capability explicitly not qualified. Existing source-scoped P1
+  candidate Draft #10213, not reviewed or merged, has CI failures.
+changed:
+  - path: engine/sector_theme_factor_intelligence.py
+    what: >-
+      Pure same-horizon factor projection with coverage/unknown bounds and no
+      rights, publish, ranking, forecast or trading authority; source-only.
+  - path: tests/test_sector_theme_factor_intelligence.py
+    what: >-
+      Synthetic counterexamples for clock and MA basis, missing cohort,
+      matched-member transitions, weighting and source abstentions.
+  - path: research/sector_theme_factor_intelligence/MASTERPLAN.md
+    what: >-
+      P0–P8 task tree and downstream owner/gate sequence for full product.
+  - path: research/sector_theme_factor_intelligence/FACTOR_RESEARCH_AND_EXPERIENCE.md
+    what: >-
+      Data qualification, factor laboratory, credit/inverse constraints and
+      Paper customer-experience spec.
+  - path: research/sector_theme_factor_intelligence/GRANULAR_REGIME_MODEL_DECISION_2026-10-30.md
+    what: >-
+      Proposed vector-first granular state model and separate prospective
+      forecast validation contract; no accepted probability or customer release.
+verified:
+  - claim: >-
+      Draft source and the versioned research/plan files were published to the
+      existing branch; PR #10213 remains unmerged and Draft/Hold.
+    command: >-
+      GitHub get_pr_info #10213, fetch_file branch and blob SHA readbacks
+    result: >-
+      Source-branch commits exist; exact CI acceptance and independent review
+      are not proven.
+  - claim: >-
+      Exact-head hosted checks for prior PR head 42cba03b9e5ec1b7fa85111914d45523128b3f51
+      reported concrete source problems.
+    command: >-
+      GitHub fetch_workflow_run_jobs 41121200535/41121200456 and
+      fetch_workflow_job_logs 124287730019/124287877927
+    result: >-
+      contract-delta: missing new test suite legacy job registration;
+      fence-pack: this handoff unparseable without YAML frontmatter.
+unverified:
+  - claim: Full repository-hosted test suite, exact-head independent review and source publication
+    what_would_verify: >-
+      Register the new suite through original legacy pack owner; fix
+      malformed handoff; verify current exact-head concluded CI and independent review.
+  - claim: Granular regime forecasting improves forward detection, calibration or returns
+    what_would_verify: >-
+      Rights-cleared PIT known-at inputs, preregistered horizon/event outcomes,
+      purged chronological tests and prospective shadow calibration against baselines.
+unresolved:
+  - >-
+    PR #10213 was failing CI at head 42cba03b9e5ec1b7fa85111914d45523128b3f51:
+    new suite had no existing CI owner, this handoff lacked schema frontmatter,
+    and an unrelated broader pack reported git-derived workstream dates absent.
+  - >-
+    GMI qualified true subtheme constituents and rights/use/availability remain
+    held; ancestor proxy is never member-level observed breadth.
+  - >-
+    Paper document target and approved carrier were not resolved; no Paper
+    canvas edit or screenshot, no signed-in customer path.
+next_actions:
+  - >-
+    Repair current source-branch handoff schema and register focused P1
+    pytest suite in existing leadership-rotation-contract job, then verify
+    source head, CI selection, exact-head checks and independent review.
+  - >-
+    Implement read-only vector-first fingerprint consumer (P1a) only after
+    source input qualification and review; maintain numerical factor and
+    missingness instead of inventing precise probabilities.
+  - >-
+    Bind owner-admitted member PIT, rights, credit source and live clocks;
+    future-state probability modeling remains a separately preregistered P6G
+    research challenger, not an entry/sizing authority.
+do_not_redo:
+  - >-
+    Existing leadership-rotation W1–W5 and GMI D2C/D2D; preserve W6
+    withheld predictive hypothesis test and all incumbent PR source writers.
+  - >-
+    Existing macro Regime One, regime_vector and GRI regime_outlook; its
+    nine overlapping paths are not mutually-exclusive probabilities.
+danger_areas:
+  - >-
+    Older engine/regime_hmm.py smoothed historical P(Quad) uses future
+    observations, unsuitable for causal point-in-time backtests.
+  - >-
+    Legacy CI manifest is CI-authority. Keep an exact single job owner,
+    full dependency closure and one branch writer; no CI waiver.
+  - >-
+    Do not claim favorable predictive power, actual cross-asset cash flows,
+    true microtheme membership, or product/production acceptance.
+---
+
 # Sector & Theme Factor Intelligence — Sol leadership / source-linked continuation
 
 RECORDED_UTC: 2026-10-30 (fixed session). STATUS: **SOURCE_CANDIDATE / NOT ACCEPTED / NOT SHIPPED**.
@@ -48,3 +151,8 @@ EXECUTIVE: `Mastermind_Executive_V3__executive_state` returned MCP SSE 429; orig
 ## Finality classification of this checkpoint
 
 `MORE_WORK_EXISTS` at mission level; P1 source artifact is independently useful but not accepted. External Paper/Executive transport and GMI rights/eligibility currently block their specific effect lanes; a future reader should reassess current evidence before making new changes. No long-running approved autonomous worker is claimed, no guaranteed background continuation, no implicit watcher. If this source branch remains unmerged, this is **not canonically adopted by main**.
+
+
+## 2026-10-30 granular model addition
+
+See `research/sector_theme_factor_intelligence/GRANULAR_REGIME_MODEL_DECISION_2026-10-30.md` at PR #10213: use an observed 12-axis continuous regime fingerprint and multiple evidence-bound interpretations. Live probability claims remain held pending strict PIT science. This addition does not supersede any existing Granular Regime Intelligence macro authority.
