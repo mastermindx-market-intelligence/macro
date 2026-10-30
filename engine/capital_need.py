@@ -41,6 +41,24 @@ def _date(value: object) -> date | None:
     return None
 
 
+def _availability_date(value: object) -> date | None:
+    """Availability timestamps share one UTC day, independent of representation."""
+    timestamp = value if isinstance(value, datetime) else None
+    if isinstance(value, str) and len(value) != 10:
+        try:
+            timestamp = datetime.fromisoformat(value)
+        except ValueError:
+            return None
+    if timestamp is not None:
+        try:
+            if timestamp.utcoffset() is not None:
+                return timestamp.astimezone(timezone.utc).date()
+        except (ValueError, OverflowError):
+            pass
+        return None
+    return _date(value)
+
+
 def _number(value: object, *, nonnegative: bool = False) -> bool:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return False
@@ -109,14 +127,7 @@ def _validated_period(block, label, cutoff, reasons):
             reasons.append(f"{label}_source_after_as_of")
     available = None
     if "source_available_at" in block:
-        available = _date(block["source_available_at"])
-        if available is None and isinstance(block["source_available_at"], str):
-            try:
-                timestamp = datetime.fromisoformat(block["source_available_at"])
-                if timestamp.tzinfo is not None:
-                    available = timestamp.astimezone(timezone.utc).date()
-            except ValueError:
-                pass
+        available = _availability_date(block["source_available_at"])
         if (available is None or filed is None or clock is None or cutoff is None
                 or not filed <= available <= clock <= cutoff):
             reasons.append(f"{label}_source_available_clock_invalid")
