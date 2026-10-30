@@ -1,5 +1,6 @@
 """Isolated real-Git preparation; no live claims or remote publication."""
 from dataclasses import replace
+from hashlib import sha256
 import subprocess
 
 import pytest
@@ -1091,3 +1092,54 @@ def test_invocation_producer_allows_no_write_invocation(conversion_invocation, t
     assert gate.events[-1] == 'producer-complete'
     assert not (root / 'write-one').exists()
     assert not store.uses_native_claims(binding.claims_path)
+
+
+def test_accepted_parent_cannot_admit_divergent_unpublished_tails(fixture):
+    """One Git parent cannot prove which complete original history really exists.
+
+    Both source worlds agree on every accepted Git byte but disagree on later
+    original-owned writes. Repeating the independent immutable preparation must
+    never turn either one into a current/complete authority receipt.
+    """
+    repo, tip, blob, prefix, limits = fixture
+    claims = repo / "data/qledger/claims.jsonl"
+    refs_before = git(repo, "show-ref")
+    index_before = (repo / ".git/index").read_bytes()
+    observed = []
+    tails = (
+        b'{"late":"A","original":"unpublished"}\nrejected-but-retained\n',
+        b'{"late":"B","original":"correction"}\n\xff\n',
+    )
+    for tail in tails:
+        claims.write_bytes(prefix + tail)
+        prepared = prepare(fixture)
+        scope = prepared.source_qualification
+        assert type(scope) is candidate.AcceptedPrefixQualification
+        assert scope.scope == "ACCEPTED_PREFIX_ONLY"
+        assert scope.accepted_tip_oid == tip
+        assert scope.accepted_ref == "refs/remotes/origin/main"
+        assert scope.source_blob_oid == blob
+        assert scope.source_logical_sha256 == sha256(prefix).hexdigest()
+        assert scope.source_byte_count == len(prefix)
+        assert prepared.continuity.eligible_for_cutover is False
+        with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
+            prepared.require_complete_current_generation()
+        assert claims.read_bytes() == prefix + tail
+        assert git(repo, "show-ref") == refs_before
+        assert (repo / ".git/index").read_bytes() == index_before
+        observed.append((prepared.candidate_oid, scope))
+    assert tails[0] != tails[1]  # materially different original-owned histories
+    assert observed[0] == observed[1]  # only accepted prefix was observable
+
+
+def test_accepted_prefix_qualification_cannot_be_upgraded_by_claimed_scope(fixture):
+    """A caller-crafted FULL label is not an original-owned source-cut receipt."""
+    prepared = prepare(fixture)
+    source = prepared.source_qualification
+    forged = replace(source, scope="COMPLETE_AUTHORITY_GENERATION")
+    with pytest.raises(SnapshotIntegrityError, match="exact accepted-prefix source receipt"):
+        candidate.require_complete_authority_generation(forged)
+    with pytest.raises(SnapshotIntegrityError, match="exact accepted-prefix source receipt"):
+        candidate.require_complete_authority_generation(None)
+    with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
+        candidate.require_complete_authority_generation(source)
