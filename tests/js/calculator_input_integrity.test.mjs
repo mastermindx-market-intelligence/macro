@@ -886,3 +886,57 @@ test('compounding newer failed attempt supersedes an older pending success', asy
   assert.equal(ui.fallbackShown(), true, 'older success does not hide latest fallback');
   assert.equal(ui.showCopied(), false);
 });
+
+
+test('compounding obsolete rejected copy never triggers a new legacy clipboard write', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: true });
+  ui.click();
+  ui.input('principal', '20000');
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 0, 'obsolete rejection must not start execCommand');
+  assert.equal(ui.showCopied(), false);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding late rejection cannot overwrite newer successful clipboard write', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: true });
+  ui.click();
+  ui.input('principal', '20000');
+  ui.click();
+  assert.match(ui.clipboardWrites[0].value, /\$10,000/);
+  assert.match(ui.clipboardWrites[1].value, /\$20,000/);
+  ui.succeed(1);
+  await ui.flush();
+  assert.equal(ui.showCopied(), true);
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 0, 'stale first attempt cannot overwrite clipboard');
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding frequency and language invalidate a late legacy fallback', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: true });
+  ui.click();
+  ui.frequency(4);
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 0);
+  ui.click();
+  ui.language('zh');
+  ui.reject(1);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 0);
+  assert.equal(ui.fallbackShown(), false);
+});
+
+test('compounding latest rejected operation still performs successful legacy copy', async () => {
+  const ui = makeCompoundingCopyPage({ legacySuccess: true });
+  ui.click();
+  ui.reject(0);
+  await ui.flush();
+  assert.equal(ui.legacyWrites.length, 1, 'current-attempt fallback retained');
+  assert.equal(ui.showCopied(), true);
+  assert.equal(ui.fallbackShown(), false);
+});

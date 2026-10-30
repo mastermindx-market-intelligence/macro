@@ -208,6 +208,29 @@
     });
   }
 
+
+  // Compounding-specific write fence. Unlike tryCopy's shared DCA behavior,
+  // a late Clipboard API rejection cannot start a NEW legacy OS write once
+  // this result or copy attempt has been superseded.
+  function tryCopyCurrent(text, isCurrent){
+    function legacy(){
+      if(!isCurrent()) return false;
+      var ok = false, ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy") === true; } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+    var cb = (typeof navigator !== "undefined") ? navigator.clipboard : null, p = null;
+    if (cb && typeof cb.writeText === "function") {
+      try { p = cb.writeText(text); } catch(e){ p = null; }
+    }
+    if (p && typeof p.then === "function") {
+      return p.then(function(){ return true; }, function(){ return legacy(); });
+    }
+    return Promise.resolve(legacy());
+  }
+
   function showCopyFallback(box, ta, text){
     ta.value = text;
     box.hidden = false;
@@ -516,7 +539,7 @@
         mult: (last.mult !== null) ? outMult.textContent : "—"
       };
       var text = copyText(lang, d);
-      tryCopy(text).then(function(ok){
+      tryCopyCurrent(text, function(){ return attempt === copyEpoch; }).then(function(ok){
         // The attempted write may already have reached the OS clipboard.
         // Its completion must never update a superseded result or attempt.
         if(attempt !== copyEpoch) return;
