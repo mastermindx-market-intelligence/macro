@@ -71,41 +71,47 @@ verified:
       with 52 focused tests; local isolated validation at cf84 performed
       179 tests with the needed engine checkout and exit 0. No formal GitHub
       APPROVED, merge, Fabric acceptance ledger or production proof.
-  - claim: A2 code gates advanced without a new release.
+  - claim: A2 hosted code gates are fully green at the exact candidate head.
     command: >
       GitHub GET /repos/mastermindx-market-intelligence/Macro/actions/runs/41074236673
       and GET run jobs; fences run 41074236886.
     result: >
-      Fences SUCCESS, contract-delta and ci-plan SUCCESS, 6 of 12 ci-packs
-      passed at checkpoint, 6 in progress, no known failed packs;
-      ci-gate not yet completed. Exact-head full CI remains unverified.
-  - claim: The next two Fabric operations are retained under the same root.
+      At exact 93e1de8028301ac1917088df9a6f2f3954b25ffc, CI run
+      41074236673 concluded SUCCESS: all 12 ci-pack jobs, contract-delta,
+      ci-plan and terminal ci-gate completed SUCCESS; zero failed or cancelled.
+      Fences 41074236886 completed SUCCESS. Hosted pack-4 job 124127187663
+      actually executed the A2 settlement suite at 15:06:27Z and reported
+      52 passed in 2.79s at 15:06:31Z. No code repair/rerun required.
+  - claim: Independent artifact-verification and producer-clock children were consumed at their original identities.
     command: >
       Fabric status and controller outputs for
       prophet-v4-a2-settlement-builder-artifact-verify-20261030-01
       and prophet-v4-a2-genuine-compute-clock-build-20261030-01.
     result: >
-      New read-only artifact verifier reserved and launched on Ubuntu3 with
-      controller PID 40590. Producer computed-clock builder retained on Ubuntu2
-      with controller PID 93754; host readback showed a living remote-sub
-      process. No terminal result or patch accepted for either at checkpoint.
+      Artifact verifier prophet-v4-a2-settlement-builder-artifact-verify-20261030-01
+      TERMINAL rc0, result SHA256 c037beb855c7e67c8c820bb5a73b50e4ec422a808f5da731e105d7492b55021e,
+      returned INDEPENDENT_ARTIFACT_VERIFIED=YES. It reproduced the original patch
+      SHA256 d991040bfcd337c1793fa7f385be52c560ca72b73843f44b5012cea623bfcdf3
+      and the two original file hashes, byte-identical through clean apply
+      to 39a7a921 and exact-source 93e. Its own 52-test witness passed.
+      Separate producer computed-clock builder prophet-v4-a2-genuine-compute-clock-build-20261030-01
+      TERMINAL rc0, local unmerged patch SHA256 bada1256997d7789ed3a8b00cab608577764c2fdf1bba87e67ba66d716f30dcf;
+      independent parent rerun 155 tests passed, no push/PR/deployment.
+      A read-only liveness/rescue consumer-seam audit also returned terminal rc0.
 unverified:
-  - claim: Latest A2 Draft hosted CI terminal success.
+  - claim: Full A2 source-to-protected-reader production settlement.
     what_would_verify: >
-      Exact-head #10202 CI run 41074236673 with all twelve ci packs,
-      contract-delta and ci-gate terminal SUCCESS; otherwise repair
-      only the new failure and require a fresh same-head CI.
-  - claim: Independent actual builder-patch artifact verification.
+      Owner-issued genuine UTC computed_at in real Prophet producer,
+      exact accepted multi-artifact candidate/board/theme hashes and
+      observed source/session clocks, one protected served raw-byte
+      bundle identity, and actual real reader SETTLED proof after
+      coherent same-session publication and fail-closed mutation drills.
+  - claim: Liveness/rescue consumption and final release approval.
     what_would_verify: >
-      Consume exact Fabric result and compare its verified files, original
-      patch digest and actual CI execution with immutable PR source, without
-      replaying the already completed semantic SOURCE_PASS.
-  - claim: Genuine computed_at plus full A2 settlement in the protected reader.
-    what_would_verify: >
-      Terminal and independently checked producer-clock patch, real producer
-      compute stamp, accepted full-population artifact bundle, source freshness,
-      protected served index bytes and real-path reader evidence with
-      incumbent rescue/liveness consumers.
+      Source-owner-coordinated updates to existing availability check
+      and sole rescue scheduler; matching stale/absent/unknown/split-brain
+      fixtures, tests, protected production-path acceptance, independent
+      formal GitHub approval and release-owner gate. No duplicate control.
 unresolved:
   - A2 remains in_progress. Draft #10202 is not merged, released or deployed.
   - Current source emits no genuine computed_at; index asof is a rerun clock.
@@ -115,20 +121,27 @@ unresolved:
     INVALID_ARGUMENT and retry_allowed false; no Fabric ACCEPTED claim.
 next_actions:
   - >
-    Consume current A2 hosted CI 41074236673 to terminal; inspect and repair
-    any failed pack or ci-gate on the same A2 branch. Requalify source review
-    if semantic bytes change. No duplicate preemptive CI dispatch.
+    Preserve #10202 unchanged and Draft/HOLD: exact-head CI and hosted
+    52-test execution are fully green, independently verified, and
+    source-linked to PR comment 6527602969. No new repair, review
+    or CI rerun without material source/gate change.
   - >
-    Consume original new independent artifact verifier from Fabric and
-    adjudicate patch provenance/test execution; do not resubmit live workers.
+    Arrange the exact next authorized producer-source step under the
+    canonical build_prophet.py publisher owner. Qualify genuine UTC
+    computed_at with the retained independently tested Ubuntu2
+    patch without bypassing an explicit denied file-read path,
+    changing the source/publisher authority or duplicating A3.
   - >
-    Consume original Ubuntu2 producer-clock worker result after terminal,
-    verify patch/digests/tests and stage under the incumbent publisher
-    source owner only. Preserve separate A2 source and A3 publication gates.
+    Integrate existing check_nightly_liveness.py and prophet_rescue.py
+    consumers only with WS:PROPHET-US-AVAILABILITY source coordination,
+    preserving the sole rescue budget and fail-closed/unknown behavior.
+    Require full bundle-identity and production protected reader proof
+    before changing the a2 wave status from in_progress.
 do_not_redo:
   - Never replay Aug 14 A1 historical reconstruction or B1 canonical episode identity.
-  - Do not duplicate source audit, original settlement builder, or immutable
-    Cursor/Grok semantic SOURCE_PASS.
+  - Do not duplicate source audit, original settlement builder, immutable
+    Cursor/Grok semantic SOURCE_PASS, or independent artifact verification.
+  - Do not rerun exact-head green #10202 CI 41074236673 without a material head change.
   - Do not open a second A2 implementation PR or duplicate a publisher,
     rescue/watch scheduler, canonical state or control plane.
   - Do not self-approve, merge, deploy, read private plan index publicly
@@ -156,10 +169,9 @@ Records source head before this checkpoint: 3ac18c464a88832a2ba4103dba8cbdcc0e35
 The sole canonical Fabic root is 6adce1ef-c13c-83e9-9510-983a2249a6a0.
 
 The immutable non-author Cursor/Grok SOURCE_PASS covered cf84b0b1; the later
-head is an eight-line CI registration only. Two retained Fabric tasks are not
-terminal: builder-artifact verification on Ubuntu3 and independent genuine
-producer-clock work on Ubuntu2. Neither is an instruction to retry or take
-over a live source writer.
+head is an eight-line CI registration only. Those two separate Fabric tasks have now returned terminal rc0: independent
+artifact custody verified YES and producer compute-clock patch tested but still
+unmerged. Neither result authorizes replacing a source writer or merging.
 
 ## Release boundary
 
@@ -171,6 +183,19 @@ liveness and rescue consumption and production-path proof are complete.
 
 ## Next action
 
-Resolve the *same* A2 CI 41074236673; consume both exact Fabric results when
-terminal, assess the next lawful source owner and continue. Preserve prior A1,
-B1, B2-1 and A2 semantic source evidence as DO_NOT_REDO.
+The code-and-independent-verification step is now PROVEN at 93e1de80.
+Coordinate the genuine producer-clock and existing availability consumer
+seams under their source owners, and obtain full accepted bundle and real
+protected-reader proof before moving A2 beyond in_progress. Preserve prior
+A1, B1, B2-1 and A2 semantic source evidence as DO_NOT_REDO.
+
+## October 30 terminal update — exact A2 CI and independent artifact witness
+
+This section supersedes earlier nonterminal CI/child snapshots above.
+
+- Macro Draft #10202 remains at `93e1de8028301ac1917088df9a6f2f3954b25ffc`, no source change or merge.
+- GitHub hosted CI 41074236673 concluded SUCCESS at that exact SHA, all twelve packs, ci-plan, contract-delta and ci-gate. Fences 41074236886 SUCCESS.
+- CI pack-4 job 124127187663 ran the actual Prophet V4-A2 settlement suite: 52 passed in 2.79 seconds at 2026-10-30T15:06:31Z.
+- Independent source semantic SOURCE_PASS on cf84 remains valid because 93e adds only eight CI path-registration lines. The distinct artifact auditor's result SHA256 is c037beb855c7e67c8c820bb5a73b50e4ec422a808f5da731e105d7492b55021e; verdict INDEPENDENT_ARTIFACT_VERIFIED YES, patch/source hashes exact, 52/52 own fixture tests passed.
+- Canonical GitHub implementation-evidence comment is https://github.com/mastermindx-market-intelligence/macro/pull/10202#issuecomment-6527602969. Artifact and separate consumer audit are delivered, not Fabric ACCEPTED; no approval or production acceptance implied.
+- No code modification was necessary to #10202 on this continuation. Current full A2 production chain remains unproven because genuine producer computed_at patch is unmerged, source and artifact freshness differ, and rescue/liveness and protected reader still owe original contract proof.

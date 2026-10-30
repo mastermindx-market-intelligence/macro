@@ -217,38 +217,45 @@ waves:
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
     status: in_progress
     next_action: >
-      PRODUCER/READER SETTLEMENT PARTIAL, NOT PRODUCTION ACCEPTED (2026-10-30).
-      Adopt-first source audit and original GLM settlement builder are DONE;
-      existing #7180/#7187 sibling availability/publisher foundations are
-      already merged. The new single source/reader projection and scoped
-      mutation suites live on separate Macro Draft #10202, current head
-      93e1de8028301ac1917088df9a6f2f3954b25ffc; semantic source
-      head cf84b0b1 passed independent non-author Cursor/Grok SOURCE_PASS,
-      52 independent tests; current head differs only by 8 additive
-      legacy-jobs CI path registrations. Local 179 focused tests passed.
-      Hosted fences 41074236886 and contract-delta/ci-plan on run
-      41074236673 passed; at source checkpoint 6 of 12 CI packs passed,
-      6 were still in_progress and ci-gate pending. Consume the same
-      current-head CI and repair actual failures only, do not duplicate
-      runs or the independent semantic review. A new distinct read-only
-      Fabric artifact verifier prophet-v4-a2-settlement-builder-artifact-
-      verify-20261030-01 has been commissioned to establish builder patch
-      SHA/file-hash integration and actual hosted-test execution; consume
-      the same run, no replacement. A separate producer-clock Fabric
-      child prophet-v4-a2-genuine-compute-clock-build-20261030-01
-      remains active on ubuntu2; do not modify its source paths or
-      duplicate that worker. Real scripts/build_prophet.py emits no
-      genuine UTC computed_at, and public health observed source_asof
-      2026-10-23 despite a fresh 2026-10-30 publish: settlement must
-      continue PENDING, never synthesize from index asof/recorded_at.
-      Integrate an independently qualified compute clock, authoritative
-      candidate/board/theme bundle hashes, and incumbent rescue/liveness
-      consumers through existing WS:PROPHET-US-AVAILABILITY ownership;
-      prove real protected served-byte, owed-session and full-population
-      settlement with mutation/fault-injection evidence before wave
-      closure. Keep distinct A3 atomic publication and all Draft/HOLD
-      release gates. Current dated handoff holds exact worker root,
-      source refs and review/CI limits.
+      A2 SOURCE/CI + INDEPENDENT ARTIFACT GATES PROVEN 2026-10-30;
+      PRODUCTION SETTLEMENT STILL UNPROVEN. Preserve Macro Draft #10202
+      at exact head 93e1de8028301ac1917088df9a6f2f3954b25ffc;
+      hosted CI run 41074236673 concluded SUCCESS with all twelve
+      ci-packs, contract-delta, ci-plan and ci-gate SUCCESS, plus
+      fences 41074236886 SUCCESS. Hosted ci-pack-4 job 124127187663
+      actually ran the 45+7 settlement tests: 52 passed in 2.79s.
+      Distinct independent Cursor/Grok source reviewer SOURCE_PASS at
+      immutable semantic cf84b0b1; the later 93e commit is only eight
+      CI-manifest path registrations, no semantic/source-test difference.
+      Chairman-requested separate Fabric artifact verifier
+      prophet-v4-a2-settlement-builder-artifact-verify-20261030-01
+      TERMINAL rc0, response_sha256 c037beb855c7e67c8c820bb5a73b50e4ec422a808f5da731e105d7492b55021e,
+      INDEPENDENT_ARTIFACT_VERIFIED=YES; original GLM patch and two
+      source/test SHA256 hashes reproduced, exact-head isolated
+      52-test witness passed, no source or production mutation.
+      Independent artifact verdict and hosted proof are source-linked
+      on #10202 issue comment 6527602969; DO_NOT_REDO these gates and
+      do not reopen the branch to make cosmetic edits or replay CI.
+      The separate genuine producer UTC computed_at Fabric builder
+      prophet-v4-a2-genuine-compute-clock-build-20261030-01 is
+      TERMINAL rc0 with an isolated unmerged two-file patch and 155
+      locally independently rerun regression tests; its source
+      custody and permission fences must be respected.
+      NEXT: coordinate with the canonical build_prophet.py publisher
+      owner, integrate and independently verify a genuine compute
+      write-boundary clock, not a renamed asof/recorded_at, and bind
+      full candidate/board/theme artifact bundle identity. Existing
+      availability-owner rescue and nightly-liveness consumers must
+      read the single served settlement projection without a new
+      fetch of the private plan book or duplicate monitor/scheduler.
+      Read-only seam audit prophet-v4-a2-availability-consumer-seam-
+      audit-20261030-01 was TERMINAL rc0: existing liveness Check E
+      already fetches public staleness, rescue has separate budget
+      and source-authority restrictions. Prove owed NYSE session,
+      accepted raw hashes, protected real reader and split-brain
+      drill evidence before A2 closure. Keep #10202 Draft/HOLD,
+      no self-approval, merge, deploy, or A3 atomic-publication
+      scope takeover. A1/B1/B2 closed semantic receipts stay intact.
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"
