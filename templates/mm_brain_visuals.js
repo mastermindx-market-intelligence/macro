@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   if (window.MMBrainVisuals) return;
-  var templates = ['bar','line','area','scatter','donut','table','metrics','status','scenarios','timeline','flow'];
+  var templates = ['bar','line','area','scatter','donut','candlestick','table','metrics','status','scenarios','timeline','flow'];
   var unsafe = /<\s*[/!a-z]|https?:\/\/|javascript\s*:|data\s*:|[\x00-\x08\x0b\x0c\x0e-\x1f\u202a-\u202e\u2066-\u2069]/i;
   var NS = 'http://www.w3.org/2000/svg';
   function number(v) { return typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= 1e15; }
@@ -31,6 +31,7 @@
         if (!s.rows.every(function (r) { return (s.template === 'scatter' ? (r[0] === null || number(r[0])) : text(r[0], true)) && r.slice(1).every(function (v) { return v === null || number(v); }); })) return false;
         if (!s.rows.some(function (r) { return r.slice(1).some(number); })) return false;
       }
+      if (s.template === 'candlestick' && (s.columns.join('|') !== 'Candle|Open|High|Low|Close' || s.rows.length < 4 || s.rows.length > 48 || !s.rows.every(function (r) { var op=r[1], hi=r[2], lo=r[3], cl=r[4]; return text(r[0],true) && [op,hi,lo,cl].every(function (v) { return number(v) && v > 0; }) && lo <= Math.min(op,cl) && Math.max(op,cl) <= hi; }))) return false;
       if (s.template === 'donut' && (s.columns.length !== 2 || s.rows.length > 12 || s.rows.some(function (r) { return r[1] !== null && r[1] < 0; }) || s.rows.reduce(function (sum,r) { return sum + (r[1] || 0); },0) <= 0)) return false;
       if (['status','scenarios','timeline','flow'].includes(s.template) && (s.columns.length > 3 || s.rows.length > 20 || !s.rows.every(function (r) { return r.every(function (c) { return c === null || text(c); }); }))) return false;
       if (s.template === 'metrics' && (s.columns.length > 3 || s.rows.length > 6)) return false;
@@ -135,6 +136,95 @@
       }); flush();
     });
   }
+
+  // The same closed v1 visual wire supplies these OHLC values. Neither this
+  // renderer nor pivot detection fetches data, recommends a trade or controls Terminal.
+  function candlePivot(rows) {
+    function dir(r) { return r[4] > r[1] ? 1 : r[4] < r[1] ? -1 : 0; }
+    for (var i=2; i<rows.length; i++) {
+      var direction=dir(rows[i]);
+      if (!direction || dir(rows[i-1]) !== -direction || dir(rows[i-2]) !== -direction) continue;
+      var entry=direction>0 ? rows[i][2] : rows[i][3];
+      var stop=direction>0 ? rows[i][3] : rows[i][2], breakout=-1;
+      for (var j=i+1; j<rows.length; j++) {
+        if (direction>0 ? rows[j][2]>entry : rows[j][3]<entry) { breakout=j; break; }
+      }
+      return {index:i,dir:direction,entry:entry,stop:stop,breakout:breakout};
+    }
+    return null;
+  }
+  function candlePlot(host,s) {
+    var width=Math.floor(host.getBoundingClientRect().width);
+    if (width<120) return;
+    host.textContent='';
+    var rows=s.rows, count=rows.length, h=294, left=56, right=12, top=30, bottom=44;
+    var pw=width-left-right, ph=h-top-bottom, step=pw/count;
+    var bounds=domain(rows.flatMap(function (r) { return [r[2],r[3]]; }),false);
+    var y=function (v) { return top+ph-(v-bounds[0])/(bounds[1]-bounds[0])*ph; };
+    var x=function (i) { return left+(i+.5)*step; };
+    var figure=svg('svg',{viewBox:'0 0 '+width+' '+h,width:width,height:h,role:'img','aria-label':s.title});
+    figure.appendChild(svg('title',{},s.title));
+    var pivot=candlePivot(rows);
+    var description=pivot ?
+      L('Pivot candle '+rows[pivot.index][0]+'. '+(pivot.dir>0?'Bullish':'Bearish')+
+        ' trigger '+tickText(pivot.entry,bounds[1]-bounds[0])+
+        ', invalidation '+tickText(pivot.stop,bounds[1]-bounds[0])+
+        (pivot.breakout>=0?', first later breakout '+rows[pivot.breakout][0]:', not yet broken out')+
+        '. Exact open high low close values follow in the data table.',
+        '转折蜡烛 '+rows[pivot.index][0]+'；触发位 '+tickText(pivot.entry,bounds[1]-bounds[0])+
+        '；止损参考位 '+tickText(pivot.stop,bounds[1]-bounds[0])+
+        '。开高低收完整数值见数据表。') :
+      L('No two-candle reversal pivot qualifies. Exact OHLC values follow in the data table.',
+        '未出现满足条件的两根蜡烛反转信号。开高低收数据见表格。');
+    figure.appendChild(svg('desc',{},description));
+    var span=bounds[1]-bounds[0];
+    for(var t=0;t<5;t++) {
+      var tick=bounds[0]+t*span/4, yy=y(tick);
+      figure.appendChild(svg('line',{x1:left,x2:width-right,y1:yy,y2:yy,class:'mmb-v-grid'}));
+      figure.appendChild(svg('text',{x:left-7,y:yy+4,'text-anchor':'end',class:'mmb-v-axis','data-tick':''},tickText(tick,span)));
+    }
+    if(s.unit) figure.appendChild(svg('text',{x:left,y:15,class:'mmb-v-axis'},s.unit));
+    if(pivot) {
+      var px=x(pivot.index), upper=y(rows[pivot.index][2]), lower=y(rows[pivot.index][3]);
+      figure.appendChild(svg('rect',{x:px-step*.43,y:upper-10,width:step*.86,height:Math.max(18,lower-upper+20),rx:6,
+        class:'mmb-v-pivot-highlight','data-pivot-index':pivot.index}));
+      [['entry',pivot.entry],['stop',pivot.stop]].forEach(function(level) {
+        figure.appendChild(svg('line',{x1:px+step*.24,x2:width-right,y1:y(level[1]),y2:y(level[1]),
+          class:'mmb-v-candle-'+level[0],'data-level':level[0]}));
+        figure.appendChild(svg('text',{x:width-right-2,y:y(level[1])+(level[0]==='entry'?-7:14),
+          'text-anchor':'end',class:'mmb-v-candle-level-label mmb-v-candle-'+level[0]+'-label'},
+          L(level[0]==='entry'?'Entry':'Stop',level[0]==='entry'?'入场位':'止损位')));
+      });
+    }
+    rows.forEach(function (r,i) {
+      var xx=x(i), up=r[4]>r[1], down=r[4]<r[1];
+      var cls=up?'mmb-v-candle-up':down?'mmb-v-candle-down':'mmb-v-candle-flat';
+      var wick=svg('line',{x1:xx,x2:xx,y1:y(r[2]),y2:y(r[3]),class:'mmb-v-candle-wick '+cls});
+      wick.appendChild(svg('title',{},r[0]+': H '+r[2]+' · L '+r[3])); figure.appendChild(wick);
+      var yy=Math.min(y(r[1]),y(r[4])), bh=Math.max(2,Math.abs(y(r[1])-y(r[4])));
+      var rect=svg('rect',{x:xx-Math.min(24,step*.62)/2,y:yy,width:Math.min(24,step*.62),height:bh,
+        rx:Math.min(2,bh/2),class:'mmb-v-candle-body '+cls,'data-candle-index':i});
+      rect.appendChild(svg('title',{},r[0]+': O '+r[1]+' · H '+r[2]+' · L '+r[3]+' · C '+r[4])); figure.appendChild(rect);
+    });
+    var lastX=-Infinity;
+    rows.forEach(function (r,i) {
+      var xx=x(i); if(xx-lastX<67) return; lastX=xx;
+      var labelText=r[0].length>10?r[0].slice(0,9)+'…':r[0];
+      var tick=svg('text',{x:xx,y:h-12,'text-anchor':'middle',class:'mmb-v-axis'},labelText);
+      tick.appendChild(svg('title',{},r[0])); figure.appendChild(tick);
+    });
+    if(pivot && pivot.breakout>=0) {
+      var r=rows[pivot.breakout], xx=x(pivot.breakout);
+      figure.appendChild(svg('circle',{cx:xx,cy:y(pivot.dir>0?r[2]:r[3]),r:5,
+        class:'mmb-v-candle-breakout','data-breakout-index':pivot.breakout}));
+      figure.appendChild(svg('text',{x:xx+(xx>width*.67?-8:8),
+        y:Math.max(17,y(pivot.dir>0?r[2]:r[3])-10),
+        'text-anchor':xx>width*.67?'end':'start',class:'mmb-v-candle-breakout-label'},
+        L('Breakout','突破')));
+    }
+    host.appendChild(figure);
+    host.appendChild(node('p','mmb-v-candle-note',description));
+  }
   function narrative(s) {
     var kind=s.template, wrapper=node(kind === 'timeline' || kind === 'flow' ? 'ol' : 'div','mmb-v-'+kind);
     s.rows.forEach(function (r) {
@@ -158,10 +248,11 @@
     var caption=node('figcaption'); caption.appendChild(node('h3','mmb-v-title',s.title));
     if (s.subtitle) caption.appendChild(node('p','mmb-v-subtitle',s.subtitle)); figure.appendChild(caption);
     figure.appendChild(s.basis === 'illustrative' ? label('p','mmb-v-basis','Illustrative · not verified market data','示意 · 非经核实的市场数据') : label('p','mmb-v-basis','Data values match retrieved output · labels and interpretation are AI-generated','数据值与已读取内容一致 · 标签及解读由 AI 生成'));
-    var isPlot=['bar','line','area','scatter','donut'].includes(s.template), resize, draw;
+    var isPlot=['bar','line','area','scatter','donut','candlestick'].includes(s.template), resize, draw;
     if (isPlot) {
       var body=node('div','mmb-v-plot'), hidden=new Set(); figure.appendChild(body);
-      draw=function () { plot(body,s,hidden); }; figure._draw=draw;
+      draw=function () { if(s.template==='candlestick') candlePlot(body,s); else plot(body,s,hidden); }; figure._draw=draw;
+      if(s.template!=='candlestick') {
       var legend=node('div','mmb-v-legend');
       var entries=s.template === 'donut' ? s.rows.map(function (r) { return r[0]; }) : s.columns.slice(1);
       entries.forEach(function (entry,i) {
@@ -170,6 +261,7 @@
         if (s.template !== 'donut') { button.type='button'; button.setAttribute('aria-pressed','true'); button.addEventListener('click',function () { if (hidden.has(i)) hidden.delete(i); else hidden.add(i); button.setAttribute('aria-pressed',String(!hidden.has(i))); draw(); }); }
         legend.appendChild(button);
       }); figure.appendChild(legend);
+      }
       resize=new ResizeObserver(function () {
         var rendered=body.querySelector('svg'), width=Math.floor(body.getBoundingClientRect().width);
         // The initial notification must not detach a correctly sized live plot.
