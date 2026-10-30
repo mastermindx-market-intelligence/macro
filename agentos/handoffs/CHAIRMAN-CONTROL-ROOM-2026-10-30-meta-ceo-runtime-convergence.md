@@ -1,3 +1,101 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/meta-ceo-secretary-runtime-convergence-20261030
+model: sol
+ended_because: ci_handoff
+mission: >
+  Continue the Chairman's existing Meta-CEO R2 company-office implementation by reconciling
+  DSH native UI, Hermes candidate execution, Grok Bot/OpenClaw incumbent, Rakazo challenger,
+  Mastermind OS, Agent OS, Executive OS and original-parent return; do not create a second plane.
+state_before: >
+  The existing Macro WS:CHAIRMAN-CONTROL-ROOM includes immutable Meta-CEO R2 acceptance_contracts.
+  Existing code candidates were split across unmerged Mastermind PRs #1717, #1859, #1861,
+  #1876 and #1885. Grok bot was visibly active but its local OpenClaw gateway was not
+  responding to RPC. No accepted product R2 end-to-end or seven-day office proof existed.
+changed:
+  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30-meta-ceo-runtime-convergence.md
+    what: >
+      Add a source-linked dated census, explicit donor-runtime selection boundary, existing
+      R2 criterion map, named original owners, protected non-goals and next original-path
+      implementation/acceptance sequence. This source record performs no live operation.
+  - path: agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md
+    what: >
+      Add one dated handoff pointer to the existing artifacts list. Original waves,
+      ownership, next_action and the Meta-CEO R2 acceptance contract remain unchanged.
+verified:
+  - claim: The original Agent OS workstream already owns the R2 Meta-CEO contract.
+    command: >
+      GitHub fetch_file Macro agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md
+      at ce5201f96f721967d0d6cf65a0afc759d28ce35b, lines 218-364.
+    result: >
+      Existing commission meta-ceo-office-r2-20261012 retains original source refs,
+      detailed criteria and all original proof obligations. No new workstream created.
+  - claim: The new source record and original workstream pointer were written and read back.
+    command: >
+      GitHub fetch_file on source branch
+      sol/agentos-meta-ceo-runtime-convergence-20261030 and
+      branch-ref SHA 51f9ca7bbf7b815db7af07b34f140ff5cd7868c6.
+    result: >
+      Both files were present at that source commit; artifact list grew by one entry,
+      original workstream acceptance contract remained, and candidate branch readback
+      matched the expected SHA.
+  - claim: Existing source app regression for PR 1889 is qualified but not released.
+    command: >
+      M1 Studio isolated original worktree npm test, npm run typecheck, npm run build
+      at source commit 9e3f8da111cb615610b62b61632268d512f6cb3f.
+    result: >
+      1868 App tests passed, six skipped, 89 test files passed; typecheck and build
+      completed successfully. Hosted CI, nonauthor review and installed user path
+      remain separate gates.
+  - claim: OpenClaw loopback Gateway is not currently reachable on tested M2.
+    command: >
+      M2 read-only launchd plist, lsof loopback port 18789, gateway status --require-rpc,
+      bounded log category inspection; no credentials, restart or mutation.
+    result: >
+      Configured local gateway port 18789 with valid LaunchAgent plist; RPC exit 1,
+      no stable loopback listener; repeated gateway-start logs report the port already
+      occupied. Cause of the discrepancy remains unproven.
+  - claim: A Fabric audit child was terminal without accepted research output.
+    command: >
+      Fabric status and fabric_result for original run
+      meta-ceo-cross-runtime-contract-audit-20261030-001 / original Meta-CEO root.
+    result: >
+      Controller terminal rc1; model adapter reports unrecognized glm-5.3-flash,
+      accepted=false and retry_allowed=false. No new worker submission.
+unverified:
+  - claim: The Grok Secretary read-only census has completed and returned source-qualified proof.
+    what_would_verify: >
+      Exact original Slack child-root START and source-backed RESULT with active loopback,
+      model, session, Wake and company tool evidence; PICKUP_ACK alone is not START.
+  - claim: The Office source has passed its own current-head protected release gates.
+    what_would_verify: >
+      PR1889 exact-head CI, nonauthor semantic review, original 1859-1861 stacked source
+      release and real signed-in Office/native session path evidence.
+  - claim: The Chairman's canonical company Office mission is production-proven.
+    what_would_verify: >
+      Actual authenticated Chairman -> Executive Job/Attempt -> worker question/ruling
+      -> worker continuation -> returned/reviewed original-parent result -> accepted
+      visible Office outcome, plus cold restart and seven-day reliability campaign.
+unresolved:
+  - "Grok bot operational status and OpenClaw gateway failure are separate; do not infer one from the other."
+  - "Hermes, Rakazo and DSH native company integration remain source-built or candidate, not production-proven."
+  - "The Fabric audit was terminal and must not be retried or failover-routed under its existing operation."
+  - "The current Office and Agent OS PRs are source candidates awaiting current-head CI/review and protected release."
+next_actions:
+  - "Correct any exact-head CI/review findings on original PR 1889 without taking another writer's source."
+  - "Protect and release the existing 1859 -> 1861 -> 1889 Mission/Result/Office stack through independent review."
+  - "Prove one end-to-end authenticated original Executive parent/WorkerResult Office return and resumed worker."
+  - "Complete Grok Secretary and Rakazo/DSH/Hermes comparison using genuine eligible user paths before role cutover."
+do_not_redo:
+  - "Do not create another Meta-CEO workstream, canonical memory, session OS, task queue, or approval system."
+  - "Do not replace existing Grok Bot/Secretary or restart OpenClaw before its exact owner health/collision gate."
+  - "Do not replay the failed original Fabric audit, or claim PR CI as production acceptance."
+  - "Do not redo accepted Executive OS, Agent OS, RuntimeBinding, Wake, DSH and original R2 criterion source."
+danger_areas:
+  - "Auth scope, tenant/project selection, wrong-run session association, stale Office previews and mistaken accepted results."
+  - "Lost effect receipts, duplicate wake/retry, other-owner worktree, unverified model/credentials and private Mac service state."
+---
+
 # Meta-CEO / Secretary runtime convergence — 30 October 2026
 
 > **Status:** DRAFT SOURCE HANDOFF, not a new workstream, accepted design revision, production deployment, or authority. Parent is existing `WS:CHAIRMAN-CONTROL-ROOM` and its original **Meta-CEO Office R2 acceptance contract**. This document adds source-linked current evidence and a ready implementation sequence; it does not amend the fixed R2 success criteria or change the workstream's SC1/P0B/ASD ownership.
