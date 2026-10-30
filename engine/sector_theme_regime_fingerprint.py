@@ -62,8 +62,10 @@ def _numeric(raw: object) -> dict:
     if not isinstance(raw, Mapping):
         return _unmeasured("missing_input")
     n = _value(raw)
-    return (_measured(n, str(raw.get("unit") or "fraction"))
-            if n is not None else _unmeasured(str(raw.get("reason") or "unmeasured_input")))
+    if n is not None and raw.get("unit") != "fraction":
+        return _unmeasured("unexpected_numeric_unit")
+    return (_measured(n) if n is not None
+            else _unmeasured(str(raw.get("reason") or "unmeasured_input")))
 
 
 def _bounds(raw: object) -> tuple[float, float] | None:
@@ -93,6 +95,14 @@ def _breadth(raw: object) -> dict:
         return _unmeasured("invalid_k_over_n")
     if ratio is None and coverage > 0:
         return _unmeasured("invalid_k_over_n")
+    if ratio is not None:
+        # The identification interval must be justified by that exact
+        # observed/expected denominator, not supplied as free-form certainty.
+        if (abs(b[0] - coverage * ratio) > 1e-9
+                or abs(b[1] - (b[0] + 1.0 - coverage)) > 1e-9):
+            return _unmeasured("inconsistent_breadth_denominator")
+    elif abs(coverage) > 1e-9 or abs(b[0]) > 1e-9 or abs(b[1] - 1) > 1e-9:
+        return _unmeasured("inconsistent_zero_coverage_bounds")
     return {
         "status": "measured" if ratio is not None else "unmeasured",
         "value": ratio,
@@ -142,6 +152,11 @@ def _validate_frames(frames: Mapping[str, Mapping]) -> tuple[list[str], dict]:
             or authority.get("ranking_authority") is not False
         ):
             raise ValueError("unqualified frame requests scoring or publication")
+        if any(
+            type(group.get(field)) is not str or not group[field].strip()
+            for field in ("group_id", "cohort_id", "membership_revision")
+        ) or group.get("membership_mode") not in ("PIT_AS_KNOWN", "CURRENT_ROSTER"):
+            raise ValueError("missing group, cohort or membership source identity")
         ids = universe.get("member_ids")
         if not isinstance(ids, list) or any(type(i) is not str or not i for i in ids):
             raise ValueError("missing canonical member population")
@@ -190,7 +205,7 @@ def _median_and_gap(frame: Mapping) -> dict:
         if not isinstance(row, Mapping):
             break
         ret = _value(row.get("return_frac"))
-        if ret is None:
+        if ret is None or row.get("return_frac", {}).get("unit") != "fraction":
             break
         nums.append(ret)
     full_median = (
@@ -383,7 +398,8 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
         "issuer_hhi": _unmeasured("needs_qualified_lagged_issuer_weights"),
     }
     axes["evidence_quality"] = {
-        "status": "measured",
+        "status": "unmeasured",
+        "reason": "source_rights_and_original_vintages_unverified",
         "source_rights_verified": False,
         "original_known_at_receipts_verified": False,
         "eligible_for_customer_publication": False,
