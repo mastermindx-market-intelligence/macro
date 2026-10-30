@@ -12992,6 +12992,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # V4-A2: sentinel now imports this read-only settlement projection.
+      - "scripts/prophet_settlement_manifest.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
@@ -14121,6 +14123,8 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      # V4-A2: sentinel now imports this read-only settlement projection.
+      - "scripts/prophet_settlement_manifest.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - ".github/workflows/**"
@@ -32785,6 +32789,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # V4-A2: sentinel now imports this read-only settlement projection.
+      - "scripts/prophet_settlement_manifest.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -44131,6 +44137,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # V4-A2: sentinel now imports this read-only settlement projection.
+      - "scripts/prophet_settlement_manifest.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
