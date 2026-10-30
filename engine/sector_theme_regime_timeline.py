@@ -210,14 +210,18 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
                 or frame["clock"].get("period_end") != end.isoformat()
                 or frame["clock"].get("decision_at") != cutoff.isoformat()):
             return _hold("inconsistent_original_factor_clock")
-        if not isinstance(frame.get("universe"), Mapping) or (
-            not isinstance(frame.get("constituents"), Mapping)
-        ):
+        if (not isinstance(frame.get("universe"), Mapping)
+                or not isinstance(frame.get("constituents"), Mapping)
+                or not isinstance(frame.get("evidence"), Mapping)):
             return _hold("missing_constituent_observation")
+        if any(not isinstance(member_row, Mapping)
+               for member_row in frame["constituents"].values()):
+            return _hold("malformed_constituent_state")
         members = frame["universe"].get("member_ids")
         if (not isinstance(members, list) or any(type(mid) is not str or not mid for mid in members)
                 or len(members) != len(set(members))
-                or frame["universe"].get("expected_n") != len(members)):
+                or frame["universe"].get("expected_n") != len(members)
+                or set(frame["constituents"]) != set(members)):
             return _hold("invalid_source_population")
         if not isinstance(at.get("participation"), Mapping):
             return _hold("missing_participation")
