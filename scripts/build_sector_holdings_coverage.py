@@ -165,7 +165,6 @@ def build_holdings_coverage(snapshots: Mapping[str, pd.DataFrame | None], *,
             "funds": out_funds}
 
 
-
 def _validate_weight_contract(feed: Mapping) -> None:
     """Reject weights the Terminal's strict reader would reject, before touching output."""
     for fund in feed["funds"]:
