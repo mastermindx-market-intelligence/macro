@@ -35,6 +35,55 @@ verified:
   - claim: Recovery changes were saved on existing original Draft PR.
     command: GitHub commit/readback for #10219 on sol/gd-early-warning-integration-20261030.
     result: Source docs committed; no merge, alert, native delivery, tests or policy acceptance claimed.
+unverified:
+  - claim: The new GH001 repair has been implemented and accepted.
+    what_would_verify: >
+      Existing nightly and QLedger publisher owner reviews a fenced engine/tail
+      change with synthetic negatives, exact-head CI, independent review and two
+      subsequent natural eligible full runs, not an isolated dry-run.
+  - claim: The recovered early-warning product is fresh, delivered and predictively validated.
+    what_would_verify: >
+      Natural source and rights receipts, exact served authenticated cross-system
+      source identity, real opted-in user outbox/drain/mail evidence and separate
+      registered prospective target-matched skill grading; policy separately approved.
+unresolved:
+  - "Original Oct20-30 per-night upstream source identity and earliest failed publisher invariant."
+  - "QLedger GH001 repair and original claims ledger custody, with #10221 same-path source writer."
+  - "Risk envelope site/mirror settled publication versus native source freshness and R2 staleness."
+  - "Current independent review of revised science and consent contracts on #10219."
+  - "Existing #10104 source/outbox/consent activation, existing mail drain effective-state and natural recipient proof."
+  - "Read-only Fabric original run controller state does not prove STARTED or return."
+  - "Original Executive OS state read was HTTP 429, not a verified OS failure or healthy recovery."
+next_actions:
+  - >
+    Reconcile exact-head #10219 CI and agentos contract (this schema record) before
+    further amendments. Keep source Draft and review old-head evidence distinctly.
+  - >
+    The incumbent Macro nightly/QLedger publisher reviews original GH001 runs and
+    the #9556 collection-only snapshot/park/restore protocol; reconcile #10221
+    same-path owner and choose one safely fenced engine/tail patch and synthetic tests.
+  - >
+    Reconcile original Fabric read-only audit run gd-ew-ql-publish-fence-audit-20261030-r1
+    on root gd-early-warning-20261030, without duplicate restart or claimed START.
+  - >
+    Original #10104 owner and Auth/outbox owners finish default-off source continuity,
+    atomic category/global/family consent, send-admission ordering and one natural
+    opt-in one-send/no-send path, with nonauthor security review and separate real proof.
+  - >
+    Independently review revised categorical/sector-probability prereg and render
+    actual source-aligned Macro, Terminal and Mastermind consumption, without
+    an unqualified forecast or policy authorization.
+do_not_redo:
+  - "Keep original #10218 forensic, #10219 owner/task tree and source law, do not re-create a competing CEO project."
+  - "Keep #10103 merged descriptive renderer, #10104 original continuity and alert carrier, #10221 active diagnostic owner, #10079 QLedger owner, #9556 collection-only accepted carve."
+  - "No replay of denied/terminal original Fabric requests, no duplicate new publisher/modifying carrier, no clean-sheet alert sender or scheduler."
+  - "Do not turn old retained price observations into purported first-known or first-served early-warning receipts."
+danger_areas:
+  - "Overgrown data/qledger/claims.jsonl is an immutable custody concern; no truncation, deletion or indiscriminate data/ commit and no runner-local snapshot represented as durable."
+  - "All rights, PIT source vintages, membership and available_at clocks retain source-specific qualification."
+  - "Catalogued Gate-only daily success is not natural collect or engine publication."
+  - "Risk Radar market-wide gate and Grey Deer hazard/policy ownership must not be overwritten by sector observations or LLM interpretation."
+  - "Source, CI, nonauthor review, merge, product installation, delivery and science acceptance are separate outcomes."
 ---
 # Chairman session takeover — Audit tech selloff prediction (2026-10-30)
 
