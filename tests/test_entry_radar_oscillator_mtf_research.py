@@ -43,6 +43,8 @@ class Reader:
             ret["input_revision_sha256"] = "wrong-sha"
         elif self.mode == "invalid":
             ret["ohlcv"]["low"] = 102.
+        elif self.mode == "available_refusal":
+            ret["refusals"] = ["OWNER_REFUSED_BASIS"]
         return ret
 
 
@@ -113,6 +115,11 @@ class MtfBars(unittest.TestCase):
     def test_bad_sha_is_not_an_admitted_receipt(self):
         rows = run(reader=Reader("wrong_basis"))
         self.assertEqual(rows[0]["refusals"], ["INVALID_OR_LATE_OWNER_RECEIPT"])
+
+    def test_available_with_owner_refusal_is_not_a_known_bar(self):
+        rows = run(reader=Reader("available_refusal"))
+        self.assertEqual(rows[0]["status"], "UNAVAILABLE")
+        self.assertIn("INVALID_OR_LATE_OWNER_RECEIPT", rows[0]["refusals"])
 
     def test_invalid_owner_ohlc_is_refused(self):
         rows = run(reader=Reader("invalid"))
@@ -253,6 +260,13 @@ class OscillatorSignals(unittest.TestCase):
     def test_duplicate_bar_identity_refused(self):
         with self.assertRaisesRegex(ValueError, "duplicate observed"):
             oscillator_events(bars=self.rows + [self.rows[0]], indicator="CANON_RSI_MACD",
+                              eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
+
+    def test_forged_full_bar_with_refusal_refused(self):
+        changed = [dict(x) for x in self.rows]
+        changed[1]["refusals"] = ["OWNER_REFUSED_SOURCE"]
+        with self.assertRaisesRegex(ValueError, "inconsistent full bar"):
+            oscillator_events(bars=changed, indicator="CANON_RSI_MACD",
                               eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
 
     def test_modified_full_bar_bounds_refused(self):
