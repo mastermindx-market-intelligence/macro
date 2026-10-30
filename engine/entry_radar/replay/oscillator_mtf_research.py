@@ -170,12 +170,24 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
     lines = []
     events = []
     sorted_bars = sorted(bars, key=lambda b: (b["symbol"], b["bar_end_utc"]))
+    grains: dict[str, int] = {}
+    observed_keys: set[tuple[str, str]] = set()
     for idx, bar in enumerate(sorted_bars):
         if bar.get("schema") != "macro.rs_oscillator_mtf_bars.v1":
             raise ValueError("unexpected bar schema")
         status = bar.get("status")
         if status not in {"FULL_KNOWN", "UNAVAILABLE", "NOT_YET_OBSERVED", "STUB_EXCLUDED"}:
             raise ValueError("unexpected source status")
+        sym, grain = bar.get("symbol"), bar.get("grain_minutes")
+        if not isinstance(sym, str) or not sym.strip() or type(grain) is not int or grain not in ALLOWED_GRAINS:
+            raise ValueError("invalid symbol or 120m/180m research grain")
+        if sym in grains and grains[sym] != grain:
+            raise ValueError("cannot mix 120m and 180m oscillator bars for one symbol")
+        grains[sym] = grain
+        bar_key = (sym, bar.get("bar_end_utc"))
+        if bar_key in observed_keys:
+            raise ValueError("duplicate observed bar identity")
+        observed_keys.add(bar_key)
         if idx and sorted_bars[idx-1]["symbol"] != bar["symbol"]:
             lines = []
         if status != "FULL_KNOWN":
@@ -188,7 +200,9 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
         key = (bar["symbol"], bar["bar_end_utc"])
         ending = _instant(bar["bar_end_utc"])
         known = _instant(bar.get("known_at_utc"))
-        if known < ending or known > cutoff or _approved_ohlcv(bar.get("ohlcv")) is None:
+        if (known < ending or known > cutoff or _approved_ohlcv(bar.get("ohlcv")) is None or
+                ending - _instant(bar.get("bar_start_utc")) != pd.Timedelta(minutes=grain) or
+                not _sha(bar.get("source_sha256"))):
             raise ValueError("inconsistent full bar/availability")
         lines.append(bar)
         ready = False
@@ -197,24 +211,33 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
             obs = supplied.get(key)
             if isinstance(obs, Mapping) and all(type(obs.get(k)) in (int, float)
                                                 and math.isfinite(obs[k]) for k in ("fast", "slow")) \
-                    and type(obs.get("oversold")) is bool and _sha(obs.get("source_sha256")):
+                    and type(obs.get("oversold")) is bool and \
+                    obs.get("source_sha256") == bar.get("source_sha256"):
                 try:
                     oscillator_known = _instant(obs.get("known_at_utc"))
-                    ready = ending <= oscillator_known <= cutoff
+                    ready = known <= oscillator_known <= cutoff
                 except ValueError:
                     ready = False
                 if ready:
-                    # Previous complete bar's as-known pair is required for crossover.
-                    prev = supplied.get((lines[-2]["symbol"], lines[-2]["bar_end_utc"])) if len(lines) > 1 else None
-                    if (isinstance(prev, Mapping) and _sha(prev.get("source_sha256")) and
+                    # Same original bar revision/basis is required for the
+                    # previous indicator input. A digest tests consistency,
+                    # never authenticates the upstream source.
+                    previous_bar = lines[-2] if len(lines) > 1 else None
+                    prev = (supplied.get((previous_bar["symbol"], previous_bar["bar_end_utc"]))
+                            if previous_bar is not None else None)
+                    if (isinstance(prev, Mapping) and
+                            prev.get("source_sha256") == previous_bar.get("source_sha256") and
                             all(type(prev.get(k)) in (int, float) and math.isfinite(prev[k])
-                                for k in ("fast", "slow")) and
-                            "known_at_utc" in prev and
-                            ending <= oscillator_known <= cutoff and
-                            _instant(prev["known_at_utc"]) <= cutoff):
-                        line, sig, p_line, p_sig = obs["fast"], obs["slow"], prev["fast"], prev["slow"]
-                        oscillator_known = max(oscillator_known, _instant(prev["known_at_utc"]))
-                        flag = obs["oversold"]
+                                for k in ("fast", "slow"))):
+                        try:
+                            prev_known = _instant(prev.get("known_at_utc"))
+                            ready = (_instant(previous_bar["known_at_utc"]) <= prev_known <= cutoff)
+                        except ValueError:
+                            ready = False
+                        if ready:
+                            line, sig, p_line, p_sig = (obs["fast"], obs["slow"], prev["fast"], prev["slow"])
+                            oscillator_known = max(oscillator_known, prev_known)
+                            flag = obs["oversold"]
                     else:
                         ready = False
         else:
@@ -242,6 +265,7 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                 state, cross = "ELIGIBILITY_UNAVAILABLE", None
             else:
                 if (type(candidate.get("is_leader")) is not bool or
+                        candidate.get("expected_prior_session") != candidate.get("asof_session") or
                         asof >= date.fromisoformat(bar["session_date"]) or
                         not _sha(candidate.get("receipt_sha256")) or owner_known > cutoff):
                     state, cross = "ELIGIBILITY_UNAVAILABLE", None
