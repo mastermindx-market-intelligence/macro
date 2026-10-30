@@ -54,13 +54,53 @@ class CandidateCommitMetadata:
 
 
 @dataclass(frozen=True)
+class AcceptedPrefixQualification:
+    """Source identity, not complete-authority or production admission.
+
+    These fields identify ONLY the source blob in the named accepted Git parent.
+    The converter cannot observe unpublished appends, rejected rows, corrections,
+    failed-push tails or unresolved original operations in another authoritative
+    incarnation. A second later source history may yield this identical receipt.
+    No caller may turn this record into COMPLETE_AUTHORITY_GENERATION.
+    """
+
+    accepted_tip_oid: str
+    accepted_ref: str
+    source_blob_oid: str
+    source_logical_sha256: str
+    source_byte_count: int
+    scope: str = "ACCEPTED_PREFIX_ONLY"
+
+
+def require_complete_authority_generation(source: AcceptedPrefixQualification) -> None:
+    """Explicit fail-closed cutover barrier for an accepted-parent-only input.
+
+    The real original ledger owner has not supplied an attributable complete
+    source cut. Matching Git ancestry, blob bytes or immutable member hashes
+    cannot substitute for that missing external authority. There is currently
+    NO success path for converting this prefix receipt into current authority.
+    """
+    if type(source) is not AcceptedPrefixQualification or source.scope != "ACCEPTED_PREFIX_ONLY":
+        raise SnapshotIntegrityError("PUBLICATION_INPUT", "exact accepted-prefix source receipt required")
+    raise SnapshotIntegrityError(
+        "MISSING_AUTHORITY_GENERATION_BOUNDARY",
+        "accepted Git parent proves only a prefix, not all original claims and later tails",
+    )
+
+
+@dataclass(frozen=True)
 class PreparedConversionCandidate:
     candidate_oid: str
     tree_oid: str
     accepted_ref: str
     commit_metadata: CandidateCommitMetadata
     continuity: publication.PublicationContinuityWitness
+    source_qualification: AcceptedPrefixQualification
     effect: str = "unreferenced_git_objects_only"
+
+    def require_complete_current_generation(self) -> None:
+        """Never promote this prefix-only conversion by reading a cache/flag."""
+        require_complete_authority_generation(self.source_qualification)
 
 
 def _ref_matches(repo: Path, ref: str, expected: str) -> None:
@@ -206,8 +246,14 @@ def prepare_legacy_conversion_candidate(
         conversion_transaction_id=transaction_id, limits=limits,
     )
     _ref_matches(repo, accepted_ref, accepted_tip_oid)
+    qualifier = AcceptedPrefixQualification(
+        accepted_tip_oid=accepted_tip_oid, accepted_ref=accepted_ref,
+        source_blob_oid=expected_legacy_blob_oid,
+        source_logical_sha256=original.logical_digest,
+        source_byte_count=original.byte_count,
+    )
     return PreparedConversionCandidate(candidate, candidate_tree, accepted_ref,
-                                       commit_metadata, witness)
+                                       commit_metadata, witness, qualifier)
 
 
 @dataclass(frozen=True)
