@@ -638,9 +638,20 @@
 
     var last=null, lastInp=null;
     var FREQ_LABELS = {12:{en:"Monthly", zh:"每月"}, 4:{en:"Quarterly", zh:"每季"}, 1:{en:"Annual", zh:"每年"}};
-    function render(){
+    var copyEpoch = 0, copyTimer = null;
+    function resetCopyFeedback(){
+      // A render or a newer copy supersedes all pending UI callbacks.
+      copyEpoch += 1;
+      if(copyTimer !== null){
+        clearTimeout(copyTimer);
+        copyTimer = null;
+      }
+      copied.classList.remove("show");
       if(copyFallback) copyFallback.hidden = true;
       if(copyFallbackText) copyFallbackText.value = "";
+    }
+    function render(){
+      resetCopyFeedback();
       tableWrap.setAttribute("aria-label", curLang() === "zh" ? "逐年明细" : "Year-by-year breakdown");
       var firstFail = null;
       var parsed = {};
@@ -735,8 +746,8 @@
 
     copyBtn.addEventListener("click", function(){
       if(!last || !last.ok || !lastInp) return;
-      if(copyFallback) copyFallback.hidden = true;
-      copied.classList.remove("show");
+      resetCopyFeedback();
+      var attempt = copyEpoch;
       var lang = curLang();
       var fl = FREQ_LABELS[lastInp.f] || FREQ_LABELS[12];
       var d = {
@@ -752,9 +763,16 @@
       };
       var text = copyText(lang, d);
       tryCopy(text).then(function(ok){
+        // The attempted write may already have reached the OS clipboard.
+        // Its completion must never update a superseded result or attempt.
+        if(attempt !== copyEpoch) return;
         if(ok){
           copied.classList.add("show");
-          setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+          copyTimer = setTimeout(function(){
+            if(attempt !== copyEpoch) return;
+            copied.classList.remove("show");
+            copyTimer = null;
+          }, 1600);
         } else {
           if(copyFallbackText && copyFallback){
             showCopyFallback(copyFallback, copyFallbackText, text);
