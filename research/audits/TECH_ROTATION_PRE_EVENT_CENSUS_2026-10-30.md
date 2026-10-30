@@ -48,6 +48,8 @@ Mastermind PR **#1667** (merged Oct21) subsequently restored publication *code* 
 
 ## Predictive-science caveat
 
+The legacy v1 red flag is not automatically a viable forecaster: the source header of `engine/risk_radar.py` states that the predecessor's `abs>=60` band, despite historical 2.9x lift in 2006-2019, measured only **0.68x** lift in the 2020-2026 era. Thus September 30 `risk_state.v1` ELEVATED is a genuinely retained earlier risk assessment, *not* a recovered validated edge or a reason to restore legacy governing authority. This applies to that researched v1 band, not as a quantified accuracy score of this single September 30 observation.
+
 `research/DEFENSIVE_ROTATION.md` tested the specific XLU-bottom/tech-top -> volatility shock hypothesis out of sample (39 triggers) and **failed its six-part pre-registered gate**: N10 primary event rate 20.5% vs 14.3% base (apparent +6.2pp), but 95% lift CI [-4.82pp, +19.94pp], 80% false alarms, and only 25% of hits had the specified 2-4 day lead. All six frozen variants failed. That result does not falsify every possible rotation predictor, but it forbids promoting this one. The Oct22 replay's XLP/SOXX first sustained comparative observations Oct8 and three-day confirmation Oct12 were retrospectively calculated; they were not actual delivered alerts. `research/DEFENSIVE_ROTATION_REPLAY_2026-10-22.md` records methods and the retained Oct9 original artifact.
 
 ## Existing carrier census / DO NOT REDO
