@@ -547,7 +547,7 @@ def _store_state(mod) -> tuple[str, str | None]:
     try:
         return (READ_OK_ZERO, None) if mod._path().exists() else (READ_NO_COVERAGE, None)
     except Exception as e:  # noqa: BLE001
-        return READ_OK_ZERO, f"store path unresolved: {type(e).__name__}"
+        return READ_UNAVAILABLE, f"store path unresolved: {type(e).__name__}"
 
 
 def _window_date(clocks: dict, ev: dict) -> date | None:
