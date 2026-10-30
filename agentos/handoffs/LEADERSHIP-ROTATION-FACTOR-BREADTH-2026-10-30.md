@@ -46,6 +46,11 @@ changed:
     what: >-
       Adds new P1a engine/test paths to incumbent leadership-rotation-contract
       job and names both P1 and P1a suites; no separate test runner or waiver.
+  - path: research/sector_theme_factor_intelligence/P2_SOURCE_INTERFACE_AUDIT_2026-10-30.md
+    what: >-
+      Read-only incumbent producer and PIT source census; identity/rights,
+      membership vintages, group_flow factor reuse, market-wide versus
+      constituent separation and first real vertical acceptance falsifiers.
 verified:
   - claim: >-
       Draft source and the versioned research/plan files were published to the
@@ -225,3 +230,19 @@ Classification: `MORE_WORK_EXISTS`. Preserve source changes and diagnose
 only newly observed exact-head errors. Next material step: verify code/tests
 in the actual repository CI, then obtain non-author review and the GMI PIT/rights
 qualified one-group feed before any production-facing consumer.
+
+
+## 2026-10-30 P2 owner-source audit addendum
+
+`research/sector_theme_factor_intelligence/P2_SOURCE_INTERFACE_AUDIT_2026-10-30.md`
+is now committed to the same draft carrier: it distinguishes PIT `baskets`
+snapshot coverage, explicit `pit=False` current-roster fallback, original
+clock/rights qualification, GMI micro-theme ancestor proxy, and owner
+`group_flow` existing acceleration/cohesion/breadth/persistence. This is
+source-based research only, not a source entitlement, new market-data route,
+live input, acceptance or worker output.
+
+Draft source also added the P1a fingerprint suite to the existing CI pack.
+Old CI failures were real; the latest full CI still awaits an exact-head
+conclusion. The manual Fabric Grok-review lane denied admission
+(`MANUAL_ROUTE_UNAVAILABLE`), with no accepted review. Keep Draft/Hold.
