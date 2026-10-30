@@ -51,6 +51,25 @@ changed:
       Read-only incumbent producer and PIT source census; identity/rights,
       membership vintages, group_flow factor reuse, market-wide versus
       constituent separation and first real vertical acceptance falsifiers.
+  - path: engine/sector_theme_owner_bridge.py
+    what: >-
+      New pure P2/P2b one-US-theme research-preview ingress that composes
+      native-shaped PIT membership/identity/rights/known-at market evidence
+      and existing group_flow numeric legs without a new data source or score.
+      Always denies customer/trade/predictive rights; unqualified preview only.
+  - path: tests/test_sector_theme_owner_bridge.py
+    what: >-
+      Synthetic counterexamples for current-roster vs PIT, stale/future clocks,
+      duplicate identity, benchmark/price basis, original receipt, separate
+      research rights, owner flow windows, stage and cohort binding.
+  - path: engine/sector_theme_regime_explain.py
+    what: >-
+      Pure EN/ZH numerical explanations from validated descriptive predicates
+      and no-forecast source-qualified refusal; no LLM or new narrative truth.
+  - path: tests/test_sector_theme_regime_explain.py
+    what: >-
+      Bilingual proof cases, forged facet abstentions, flat/nonpositive and
+      MA-equal distinction, zero/missing basis, and explicit no-publication.
 verified:
   - claim: >-
       Draft source and the versioned research/plan files were published to the
@@ -69,13 +88,26 @@ verified:
     result: >-
       contract-delta: missing new test suite legacy job registration;
       fence-pack: this handoff unparseable without YAML frontmatter.
+  - claim: >-
+      The actual hosted leadership-rotation-contract suite executed P1/P1a
+      before the subsequent P2/P2b/P2c commits.
+    command: >-
+      GitHub fetch_workflow_job_logs for job 124324232107 (PR head
+      73db860f5ebd495ce3950254f9296d29dbd99949;
+      CI run 41131426079), selected-job section and pytest results.
+    result: >-
+      Existing leadership-rotation-contract selected in pack4; 134 passed
+      in 4.60 seconds. That prior head's aggregate CI was later cancelled
+      by later commits; no current-head green accepted.
 unverified:
-  - claim: Full exact-head P1a tests, current CI/fence conclusion, independent non-author review and production path
+  - claim: Current exact-head P1a/P2/P2b/P2c CI and independent non-author review
     what_would_verify: >-
-      Fetch exact-head GitHub Actions checks and running suite logs; new
-      fingerprints have NOT yet been independently executed in a qualified
-      repo checkout. Obtain independent review after actual Fabric admission.
-      Signed-in producer-to-browser and rights/PIT gates are separately owed.
+      Fetch current head's completed Actions CI/fence checks and the named
+      leadership-rotation-contract job's actual new suites. Prior 134-pass
+      P1/P1a qualification is from an older head only. Obtain independent
+      non-author review after lawful Fabric/reviewer admission; no approved
+      review currently exists. Signed-in producer-to-browser and rights/PIT
+      gates are separately owed.
   - claim: Granular regime forecasting improves forward detection, calibration or returns
     what_would_verify: >-
       Rights-cleared PIT known-at inputs, preregistered horizon/event outcomes,
@@ -99,15 +131,19 @@ unresolved:
     canvas edit or screenshot, no signed-in customer path.
 next_actions:
   - >-
-    Verify current exact PR #10213 source head, new P1a CI suite actually
-    selected/executed, exact-head fences and CI conclusion. Repair only
-    actual introduced reds on the existing source branch. Do NOT ready/merge
-    until independent non-author review and release/source rights gates.
+    Verify latest exact PR #10213 source head and actual current-head
+    leadership-rotation-contract (P1/P1a/P2/P2b/P2c) test execution,
+    contract-delta, fence and full-CI conclusions; repair only introduced
+    failures on the existing source branch. Keep Draft/Hold until independent
+    non-author review and rights/source entitlement gates.
   - >-
-    P1a pure descriptor implementation exists as source candidate, not
-    approved/landed/customer qualified. Continue P2 owner-admitted GMI PIT,
-    membership and source-clock evidence when granted; no fake microtheme
-    member identity or credit vintages.
+    P2 pure research-preview now composes owner-shaped data, separate
+    group_flow context and quantified EN/ZH narratives. The next real
+    critical path is one CURRENT qualified U.S. theme cohort with native
+    GMI membership/identity, use-purpose/entitlement and timestamped quote
+    source readers; obtain genuine original known-at and cohort basis first,
+    never use current-roster as historical PIT or microtheme ancestor proxy.
+    Do not enable customer publication on unverified caller-supplied receipts.
   - >-
     Bind owner-admitted member PIT, rights, credit source and live clocks;
     future-state probability modeling remains a separately preregistered P6G
@@ -246,3 +282,57 @@ Draft source also added the P1a fingerprint suite to the existing CI pack.
 Old CI failures were real; the latest full CI still awaits an exact-head
 conclusion. The manual Fabric Grok-review lane denied admission
 (`MANUAL_ROUTE_UNAVAILABLE`), with no accepted review. Keep Draft/Hold.
+
+
+## 2026-10-30 P2/P2b/P2c implementation and evidence frontier
+
+On the SAME `sol/sector-theme-factor-intelligence-20261030` branch
+(Draft PR #10213), new read-only `engine/sector_theme_owner_bridge.py`
+and test suite compose one existing `baskets` native PIT member shape,
+canonical security identities, same-clock benchmark/parent/constituents,
+and an explicitly scoped research-use claim, through the already-owned
+P1 factor and P1a fingerprint. The result is ALWAYS
+`RESEARCH_PREVIEW_ONLY`, with no customer source-use attestation,
+future-event odds, original vintage proof, alerts, sizing or execution.
+Strict null/hold states are tested for mixed adjusted-price bases,
+unknown identity, missing original membership availability, PIT/current
+roster contamination, date-order issues, unqualified child themes, and
+future known/benchmark values. No customer data was acquired here.
+
+P2b consumes `engine.group_flow.fingerprint_at`'s already-computed
+`accel_z`, `broadening_z`, observed sample breadth, cohesion, persistence,
+RS percentile and real lowercase stage in a separate `OWNER_REPORTED_RESEARCH_ONLY`
+context with matched 20d cohort, 50-session/daily basis, owner windows,
+known-at and research-purpose/source revision. It never copies the incumbent
+renormalized `flow_score` into a rank/trade score; owner source is not
+authenticated by this bridge. Synthetic tests were authored and registered
+in the SAME original `leadership-rotation-contract` CI job.
+
+P2c adds deterministic English/Chinese explanations
+(`engine/sector_theme_regime_explain.py`, own tests), bound to numeric
+facets and nulls instead of generated model opinion. No fabricated
+probabilities or trading verbs. Corrections to P1a semantics distinguish
+majority **flat-or-negative** from strictly declining and equal-to-MA
+from strictly below-MA; tags and tests were updated accordingly.
+
+Verified actual hosted CI on earlier exact head
+`73db860f5ebd495ce3950254f9296d29dbd99949`:
+`leadership-rotation-contract` in pack4 completed **134 passed/4.60s**
+(job 124324232107), and contract-delta/fence each completed success.
+That older aggregate CI was later `cancelled` during successive draft
+commits. **The P2/P2b/P2c suites and semantic fixes lack a concluded
+exact-head native CI verdict as of this handoff**, and no independent review,
+merge, real-source proof or production path is claimed.
+
+The original Fabric manual Grok review returned
+`MANUAL_ROUTE_UNAVAILABLE` / `retry_allowed=false`; no same-action
+cross-route replay. Paper direct inspect again returned
+`MCP SSE probe returned 429 from openai.org` in this session; no
+Paper file ID/artboard/screenshot, no studio/desktop fallback. Other
+authorized source work remained independent.
+
+Last source commit BEFORE this handoff:
+`57caa7c8bd874657bcb226dc40719134467f6a5f`.
+Read PR #10213 fresh for the exact current head after the handoff write.
+Mission state **MORE_WORK_EXISTS**; no ongoing durable worker and
+no trade or customer feature has been promoted.
