@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import re
 import sys
 from collections.abc import Mapping, Sequence
@@ -164,8 +165,32 @@ def build_holdings_coverage(snapshots: Mapping[str, pd.DataFrame | None], *,
             "funds": out_funds}
 
 
+
+def _validate_weight_contract(feed: Mapping) -> None:
+    """Reject weights the Terminal's strict reader would reject, before touching output."""
+    for fund in feed["funds"]:
+        listed = fund["listed"]
+        for row in listed:
+            pct = row["weight_pct"]
+            if (not isinstance(pct, (int, float)) or not math.isfinite(pct)
+                    or not 0 <= pct <= 100):
+                raise ValueError(
+                    f"holdings coverage: {fund['fund']} invalid listed weight "
+                    f"{row['ticker']}={pct}")
+        coverage_pct = fund["coverage"]["weight_pct"]
+        listed_sum = round(sum(row["weight_pct"] for row in listed), 2)
+        if (not isinstance(coverage_pct, (int, float))
+                or not math.isfinite(coverage_pct)
+                or not 0 <= coverage_pct <= 100.0001
+                or abs(coverage_pct - listed_sum) > 0.01):
+            raise ValueError(
+                f"holdings coverage: {fund['fund']} invalid aggregate weight "
+                f"{coverage_pct} (listed sum {listed_sum})")
+
+
 def write_holdings_coverage(path: Path, feed: dict) -> None:
-    """Persist the feed exactly the way the Terminal reader expects it."""
+    """Persist only consumer-valid weights, leaving existing output on rejection."""
+    _validate_weight_contract(feed)
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(feed, separators=(",", ":"), ensure_ascii=False),
