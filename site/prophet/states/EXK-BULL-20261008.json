@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 48.9,
+    "retention": 48.8,
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.4,
+    "dist_to_stop_r": -3.922,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 48.9,
-    "p1": -2.9333,
-    "p2": -1.4667,
+    "p1": -3.2813,
+    "p2": -1.6407,
     "p3": null,
-    "move_r": -4.4,
+    "move_r": -4.922,
     "mfe_r": 0.0,
-    "mae_r": -4.86
+    "mae_r": -4.922
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -1.214999980926514,
+  "_mae": -1.2305000495910647,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 22,
   "tau": 0.4889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "INVALIDATED"
 }

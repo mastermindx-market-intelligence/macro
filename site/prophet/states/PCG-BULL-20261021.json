@@ -4,39 +4,39 @@
   "asof": "2026-10-30",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 54.8,
-  "raw_confidence": 54.0,
-  "delta_vs_base": -5.2,
-  "recommended_action": null,
+  "management_confidence": 59.4,
+  "raw_confidence": 65.0,
+  "delta_vs_base": -0.6,
+  "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 59.1,
+    "validity": 99.2,
     "progress": 0.0,
     "pace": 81.1,
     "retention": 50.0,
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.677,
+    "dist_to_stop_r": 0.994,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 20.0,
-    "p1": -0.2153,
-    "p2": -0.1077,
+    "p1": -0.0041,
+    "p2": -0.0021,
     "p3": null,
-    "move_r": -0.323,
+    "move_r": -0.006,
     "mfe_r": 0.0,
     "mae_r": -0.323
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Moving Away from Stop",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
@@ -46,13 +46,5 @@
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 9,
-  "tau": 0.2,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "tau": 0.2
 }

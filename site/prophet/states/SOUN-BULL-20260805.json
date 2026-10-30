@@ -17,16 +17,16 @@
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.442,
+    "dist_to_stop_r": -0.542,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 186.7,
-    "p1": -0.9612,
-    "p2": -0.4806,
+    "p1": -1.028,
+    "p2": -0.514,
     "p3": null,
-    "move_r": -1.442,
+    "move_r": -1.542,
     "mfe_r": 0.0,
-    "mae_r": -1.458
+    "mae_r": -1.542
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.5776367230132564e-07,
-  "_mae": -3.630000133514404,
+  "_mae": -3.8394999694824214,
   "_max_p1": 1.2256055483301887e-07,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 84,
   "tau": 1.8667,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "NO_ENTRY"
 }

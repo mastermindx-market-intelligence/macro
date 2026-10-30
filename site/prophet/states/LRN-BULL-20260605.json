@@ -4,27 +4,27 @@
   "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 26.4,
-  "raw_confidence": 26.4,
-  "delta_vs_base": -33.6,
+  "management_confidence": 26.2,
+  "raw_confidence": 26.0,
+  "delta_vs_base": -33.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 34.3,
+    "validity": 33.3,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.453,
+    "dist_to_stop_r": 0.443,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 255.6,
-    "p1": -0.3647,
-    "p2": -0.1824,
+    "p1": -0.3717,
+    "p2": -0.1858,
     "p3": null,
-    "move_r": -0.547,
+    "move_r": -0.557,
     "mfe_r": 0.36,
     "mae_r": -0.696
   },
@@ -47,14 +47,6 @@
   "_first_t2_ts": null,
   "days_elapsed": 115,
   "tau": 2.5556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "EXPIRED"
 }

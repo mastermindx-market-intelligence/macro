@@ -11,21 +11,21 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 34.4,
+    "progress": 38.3,
     "pace": 0.0,
-    "retention": 92.2,
+    "retention": 100.0,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.606,
-    "dist_to_t1_r": 0.894,
-    "dist_to_t2_r": 2.394,
+    "dist_to_stop_r": 1.697,
+    "dist_to_t1_r": 0.803,
+    "dist_to_t2_r": 2.303,
     "horizon_pct_used": 202.2,
-    "p1": 0.4037,
-    "p2": 0.2019,
+    "p1": 0.4648,
+    "p2": 0.2324,
     "p3": null,
-    "move_r": 0.606,
-    "mfe_r": 0.656,
+    "move_r": 0.697,
+    "mfe_r": 0.697,
     "mae_r": -0.198
   },
   "rr_ratio": 1.5,
@@ -39,22 +39,14 @@
     "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 2.580000381469727,
+  "_mfe": 2.7400002288818364,
   "_mae": -0.7800002288818355,
-  "_max_p1": 0.437659097789606,
+  "_max_p1": 0.46480071736757195,
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 91,
   "tau": 2.0222,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "EXPIRED"
 }

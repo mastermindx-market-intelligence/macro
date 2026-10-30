@@ -13,18 +13,18 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 48.8,
+    "retention": 48.9,
     "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.488,
+    "dist_to_stop_r": -1.45,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 93.3,
-    "p1": -0.3253,
-    "p2": -0.1627,
+    "p1": -0.3,
+    "p2": -0.15,
     "p3": null,
-    "move_r": -0.488,
+    "move_r": -0.45,
     "mfe_r": 0.0,
     "mae_r": -0.72
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
@@ -46,13 +46,5 @@
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 42,
-  "tau": 0.9333,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "tau": 0.9333
 }

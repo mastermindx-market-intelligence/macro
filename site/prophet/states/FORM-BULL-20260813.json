@@ -4,33 +4,33 @@
   "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 22.5,
-  "raw_confidence": 22.2,
-  "delta_vs_base": -37.5,
+  "management_confidence": 21.4,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -38.6,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 20.3,
+    "validity": 5.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.307,
+    "dist_to_stop_r": 0.15,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 164.4,
-    "p1": -0.4622,
-    "p2": -0.2311,
+    "p1": -0.5668,
+    "p2": -0.2834,
     "p3": null,
-    "move_r": -0.693,
+    "move_r": -0.85,
     "mfe_r": 0.194,
-    "mae_r": -0.754
+    "mae_r": -0.85
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 11.109997558593761,
-  "_mae": -43.170001220703114,
+  "_mae": -48.670001220703114,
   "_max_p1": 0.1293740618176857,
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 74,
   "tau": 1.6444,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "EXPIRED"
 }

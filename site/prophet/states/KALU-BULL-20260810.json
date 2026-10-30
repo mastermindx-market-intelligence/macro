@@ -2,11 +2,11 @@
   "schema": "prophet.management_state/v1",
   "id": "KALU-BULL-20260810",
   "asof": "2026-10-30",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.4,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.6,
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.6,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.4,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -17,20 +17,20 @@
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.124,
+    "dist_to_stop_r": 0.011,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 175.6,
-    "p1": -0.7493,
-    "p2": -0.3747,
+    "p1": -0.6593,
+    "p2": -0.3296,
     "p3": null,
-    "move_r": -1.124,
+    "move_r": -0.989,
     "mfe_r": 0.0,
     "mae_r": -1.124
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Phase: invalidated \u2192 overtime",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -47,14 +47,6 @@
   "_first_t2_ts": null,
   "days_elapsed": 79,
   "tau": 1.7556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "NO_ENTRY"
 }

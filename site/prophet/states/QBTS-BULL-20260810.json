@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 40.9,
-    "overlay": 50.0
+    "retention": 40.0,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.219,
+    "dist_to_stop_r": -0.344,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 175.6,
-    "p1": -0.8125,
-    "p2": -0.4063,
+    "p1": -0.8957,
+    "p2": -0.4479,
     "p3": null,
-    "move_r": -1.219,
+    "move_r": -1.344,
     "mfe_r": 0.0,
-    "mae_r": -1.258
+    "mae_r": -1.344
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -9.370000114440916,
+  "_mae": -10.01000045776367,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 79,
   "tau": 1.7556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "EXPIRED"
 }

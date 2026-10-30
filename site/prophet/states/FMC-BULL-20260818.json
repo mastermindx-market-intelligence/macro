@@ -17,14 +17,14 @@
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.557,
+    "dist_to_stop_r": -2.949,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 155.6,
-    "p1": -3.0382,
-    "p2": -1.5191,
+    "p1": -2.6325,
+    "p2": -1.3163,
     "p3": null,
-    "move_r": -4.557,
+    "move_r": -3.949,
     "mfe_r": 1.763,
     "mae_r": -4.664
   },
@@ -47,14 +47,6 @@
   "_first_t2_ts": null,
   "days_elapsed": 70,
   "tau": 1.5556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "T1_HIT"
 }

@@ -4,27 +4,27 @@
   "asof": "2026-10-30",
   "phase": "at_t2",
   "detection_phase": "at_t2",
-  "management_confidence": 85.2,
-  "raw_confidence": 80.8,
-  "delta_vs_base": 25.2,
+  "management_confidence": 82.8,
+  "raw_confidence": 79.9,
+  "delta_vs_base": 22.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 92.7,
+    "progress": 91.2,
     "pace": 100.0,
-    "retention": 74.8,
+    "retention": 73.3,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 6.453,
-    "dist_to_t1_r": -3.953,
-    "dist_to_t2_r": -2.453,
+    "dist_to_stop_r": 6.343,
+    "dist_to_t1_r": -3.843,
+    "dist_to_t2_r": -2.343,
     "horizon_pct_used": 55.6,
-    "p1": 3.6351,
-    "p2": 1.8176,
+    "p1": 3.5618,
+    "p2": 1.7809,
     "p3": null,
-    "move_r": 5.453,
+    "move_r": 5.343,
     "mfe_r": 7.289,
     "mae_r": 0.0
   },
@@ -47,14 +47,6 @@
   "_first_t2_ts": "2026-10-15",
   "days_elapsed": 25,
   "tau": 0.5556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "T1_HIT"
 }

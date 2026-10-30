@@ -8,24 +8,24 @@
   "raw_confidence": 46.0,
   "delta_vs_base": -12.0,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 33.8,
+    "progress": 33.9,
     "pace": 24.7,
     "retention": 100.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.591,
-    "dist_to_t1_r": 0.909,
-    "dist_to_t2_r": 2.409,
+    "dist_to_stop_r": 1.592,
+    "dist_to_t1_r": 0.908,
+    "dist_to_t2_r": 2.408,
     "horizon_pct_used": 108.9,
-    "p1": 0.3937,
-    "p2": 0.1969,
+    "p1": 0.3949,
+    "p2": 0.1975,
     "p3": null,
-    "move_r": 0.591,
-    "mfe_r": 0.591,
+    "move_r": 0.592,
+    "mfe_r": 0.592,
     "mae_r": -0.058
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 16.880000305175784,
+  "_mfe": 16.930003356933597,
   "_mae": -1.6700027465820284,
-  "_max_p1": 0.3937485492226683,
+  "_max_p1": 0.3949149371806298,
   "_first_trigger_ts": "2026-09-16",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 49,
   "tau": 1.0889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "closed": true,
+  "outcome": "EXPIRED"
 }

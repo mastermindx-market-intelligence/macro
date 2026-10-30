@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 52.0,
+    "progress": 50.9,
     "pace": 0.0,
-    "retention": 83.7,
+    "retention": 81.4,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.049,
-    "dist_to_t1_r": 0.451,
-    "dist_to_t2_r": 1.951,
+    "dist_to_stop_r": 2.02,
+    "dist_to_t1_r": 0.48,
+    "dist_to_t2_r": 1.98,
     "horizon_pct_used": 237.8,
-    "p1": 0.6995,
-    "p2": 0.3497,
+    "p1": 0.68,
+    "p2": 0.34,
     "p3": null,
-    "move_r": 1.049,
+    "move_r": 1.02,
     "mfe_r": 1.253,
     "mae_r": -0.007
   },
@@ -47,14 +47,6 @@
   "_first_t2_ts": null,
   "days_elapsed": 107,
   "tau": 2.3778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
   "closed": true,
   "outcome": "EXPIRED"
 }
