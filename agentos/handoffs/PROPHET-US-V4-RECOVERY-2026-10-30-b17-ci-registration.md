@@ -112,12 +112,36 @@ verified:
       entry timing, earnings blackout, sector pulse and upstream candidate
       pool/stock-rank inputs. Those are historical PIT dependencies, not
       values to backfill with present-day state or neutral defaults.
+  - claim: The B2-1 four-file withdrawal seam passed an independent non-author source review at its immutable exact head.
+    command: >
+      GitHub GET /repos/mastermindx-market-intelligence/macro/issues/comments/6522731353;
+      GitHub get_pr_info and list_pull_request_reviews #10176; check
+      unchanged source head and the reviewer's stated diff/test/owner scope.
+    result: >
+      At 2026-10-30T12:21:52Z, user mastermindx-2 posted SOURCE_PASS
+      for exact 228c25d37617a7217c8f65f1613ade701a2fe01a.
+      Reviewer explicitly disclaimed authorship, found zero blocking source
+      defects in current/withdrawn/unknown B1 owner identity, private 200/410/
+      404/503 API behavior, immutable generation and discriminating tests,
+      and cited CI 40147024285 green on the same head.
+      This is a COMMENT-level independent SOURCE_PASS, not a submitted
+      GitHub APPROVED review, merge, current-base integration or production
+      acceptance. Source-review gate for B2-1 is satisfied on this immutable
+      subject only; the previously failed Bugbot authentication is no longer
+      the gating dependency for B2-1 source review.
 unverified:
-  - claim: Independent non-authoring review of B2 correction and B-17 research.
+  - claim: B2-1 formal approval, native Lab composition and authenticated production correction proof.
     what_would_verify: >
-      A legitimately admitted independent reviewer on the current exact
-      semantic head and a consumed substantive review verdict; a successful
-      capability probe alone is not a reviewer.
+      Normal independent release/approval and integration gates, after the
+      source-passed immutable B2-1 head is composed into the incumbent Lab
+      reader (#7264 or its authorized successor) without changing B1 identity,
+      plus a legitimate authenticated real-path current/withdrawn/unknown
+      receipt. SOURCE_PASS alone does not satisfy these gates.
+  - claim: Independent scientific review and full historical B-17 measurement.
+    what_would_verify: >
+      Source-bound complete historical admission/first-visibility inputs and
+      a separate independent scientific verdict for the original frozen
+      7918-episode denominator, or an explicit scope ruling.
   - claim: B-17 actual shipped-roster full-population coverage and lead.
     what_would_verify: >
       Historically bound complete upstream admission inputs and availability
@@ -137,9 +161,17 @@ next_actions:
     with availability clocks; if unavailable, prepare an explicit scientific
     scope ruling without changing the original frozen denominator.
   - >
-    Resume an independent non-author Fabric reviewer only after documented
-    legitimate admission/connectivity recovery; preserve all original refused
-    operation identities and avoid self-approval or provider/account bypass.
+    Retain independent B2-1 SOURCE_PASS from GitHub comment 6522731353 at
+    exact 228c25d37617. Do not redo the immutable semantic source review
+    without a material head/authority/dependency change. Check the current
+    #7264 native Lab reader/composition and qualify current-base integration,
+    formal release review and authenticated correction proof under the
+    incumbent publisher/reader owners, with no self-approval or merge.
+  - >
+    Advance the independent A2 settlement-manifest wave by mapping accepted
+    #7180, #7187 and existing liveness/rescue/served-source owners to the
+    frozen A2 contract, then implement only an evidenced missing capability
+    in an isolated source carrier. Keep A3 atomic-publication distinct.
   - >
     Trace the missing historical full-population producer inputs and their
     decision-time availability clocks. Search qualified archive/ledger owners
@@ -202,6 +234,14 @@ Independent review remains a separate gate: the Fabric gateway's current
 429 is not a review, and prior -04's GLM refusal forbids blind retry.
 The current recovery role owns the next safe action; no archived-chat
 acknowledgment is required.
+
+## October 30 review qualification and A2 advance
+
+Review provenance: [independent reviewer comment #6522731353](https://github.com/mastermindx-market-intelligence/macro/pull/10176#issuecomment-6522731353), posted by `mastermindx-2`, labels its exact immutable subject `228c25d37617a7217c8f65f1613ade701a2fe01a` **SOURCE_PASS** after review of the four-file owner-driven B1 withdrawal classification, authenticated private API, real reconciler-based tests, and exact-head hosted CI. The reviewer did not author the candidate and explicitly states the result is **not formal GitHub APPROVE, release, merge or production acceptance**. GitHub's submitted review list remains empty. This supersedes the earlier assertion that an independent B2-1 source verdict is still missing; it does not rewrite the historical Fabric/Cursor 429/403/auth refusals, which remain scoped receipts rather than live review gates.
+
+B2 as a whole remains `in_progress`: B-17 shipped-roster research still lacks historic admission provenance, the existing native reader/carrier [#7264](https://github.com/mastermindx-market-intelligence/macro/pull/7264) remains Draft/HOLD and has not composed the source-passed withdrawal seam into an authenticated production path, and the remaining release/integration gates still apply. The reviewer suggested optional nonblocking negative tests (expert-event-targeted retraction and explicit public-read non-disclosure) without changing the source verdict.
+
+**Next independent critical-path wave chosen: V4-A2** (`depends_on: [a1]`, A1 done). The original [V4 masterplan](https://github.com/mastermindx-market-intelligence/macro/blob/main/research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md) requires a settlement manifest, source/computed/published/reader clocks, accepted bundle hashes, liveness/rescue consumers, false-freshness/gate-skip/stale-served mutation proofs and visible health. Existing #7180 merged content-addressed origination sources and completed-session bindings, but does not automatically prove those seven acceptance criteria. Audit the incumbent fields and owners first; no parallel settlement store/publisher or second rescue plane is permitted.
 
 ## October 30 final evidence update
 
