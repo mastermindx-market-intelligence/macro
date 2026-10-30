@@ -2,7 +2,7 @@
 workstream: WS:PROPHET-US-V4-RECOVERY
 session: sol/web-prophet-v4-b17-ci-registration-20261030
 model: sol
-ended_because: ci_handoff
+ended_because: blocked
 mission: >
   Resume Prophet V4 B2 from its original thirty-wave recovery record,
   reconcile two interrupted GitHub Create Tree attempts, publish the focused
@@ -45,13 +45,50 @@ verified:
       The comparison reports exactly one file and nine added, zero removed lines.
       Existing prophet-lab job segment was identical on the old Draft and current
       main before insertion. No correction implementation or study input changed.
-  - claim: New hosted workflows actually started for the registered head.
-    command: GitHub fetch_commit_workflow_runs at 943906af5c0478.
+  - claim: Exact-head hosted CI ran all 28 B-17 tests and its required gate passed.
+    command: >
+      GitHub fetch_workflow_run_jobs 41043491441; fetch_workflow_job_logs
+      job 124023343242 (ci-pack-5); fetch_workflow_run_jobs for records
+      CI 41044730818.
     result: >
-      CI run 41043491441 and fences run 41043491265 were in progress at
-      initial readback, not green. The earlier 40188371899 failure is specific
-      to the unwired new test. Prior 28 focused local tests passed on the
-      unchanged research source but do not replace hosted execution proof.
+      On #10180 exact head 943906af5c0478e6bcf43f601b7f001fc30e0914,
+      ci-pack-5 log line 670 names the Prophet B-17 frozen-input
+      regression step and line 672 reports 28 passed in 1.78 seconds.
+      All 12 packs, contract-delta, ci-plan, and ci-gate concluded success;
+      fences 41043491265 succeeded. Recovery records CI 41044730818
+      also passed contract-delta, 12 packs and ci-gate at 4e6c6206f184.
+      The unrelated inactive merge-queue-pilot authority context may
+      remain failure; neither CI result is code review, merge or live proof.
+  - claim: The original frozen denominator is dominated by pre-archive episodes.
+    command: >
+      Read-only git show 228c25d37617a7217c8f65f1613ade701a2fe01a:
+      research/prophet_us_audit/early_admission_bakeoff_episodes.parquet;
+      pandas.read_parquet and construction==C0 and not addon date grouping,
+      checked against source SHA256.
+    result: >
+      Original 39,877-row parquet had SHA256
+      a55f3e3ecaef13efc6dc0a407375ee3d87e66b6dfb70eacb0c1d3b7249c6feb4.
+      C0 denominator is 7,918, dated 2014-12-04 through 2026-08-10.
+      7,775 episodes (98.19 pct) precede first archived board date
+      2026-06-16; only 143 (1.81 pct) are on/after. Unknown
+      pre-archive admissions are not zero coverage. Discovery
+      DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT carries detail.
+  - claim: Non-Fabric GitHub review attempts did not produce a reviewer verdict.
+    command: >
+      GitHub request_pull_request_reviewers for
+      copilot-pull-request-reviewer[bot] on #10176 followed by
+      GET requested_reviewers, list_pull_request_reviews, issue events;
+      POST comment "cursor review" and GET PR timeline.
+    result: >
+      Copilot API returned successfully but requested_reviewers and
+      reviews remained empty: no confirmed pickup. Cursor command comment
+      6521997949 was posted; cursor[bot] reply 6521998829 said
+      "Skipping Bugbot: Unable to authenticate your request. Please
+      make sure Bugbot is properly installed and configured for this repository."
+      This is a terminal explicit authentication/configuration refusal
+      for the Cursor action, not a review return, and was not retried.
+      #10176 remains Draft at 228c25d37617 with no submitted review.
+
   - claim: The required Fabric independent reviewer has not started on this continuation.
     command: >
       Mastermind Subagent Fabric C3 fabric_capabilities probe after the
@@ -76,11 +113,6 @@ verified:
       pool/stock-rank inputs. Those are historical PIT dependencies, not
       values to backfill with present-day state or neutral defaults.
 unverified:
-  - claim: CI green and actual B-17 regression-step execution on the new head.
-    what_would_verify: >
-      Exact-head hosted CI 41043491441 with contract-delta success,
-      ci-plan selecting prophet-lab, its pack executing all 28 tests,
-      all required packs and ci-gate concluded, and fences 41043491265.
   - claim: Independent non-authoring review of B2 correction and B-17 research.
     what_would_verify: >
       A legitimately admitted independent reviewer on the current exact
@@ -100,10 +132,10 @@ unresolved:
   - Existing #10176 correction at 228c25d37617 is unchanged, CI green, independently unreviewed and not released.
 next_actions:
   - >
-    Consume run 41043491441 on the exact #10180 head and verify that the
-    prophet-lab job actually runs tests/test_prophet_b17_frozen_input_recovery.py.
-    If a genuine newly introduced failure remains, heal it in the same Draft
-    without bypassing the CI or review gates.
+    Preserve the qualified B-17 CI and 7,918-episode source receipts.
+    Search for a full-population pre-June-2026 historical admission archive
+    with availability clocks; if unavailable, prepare an explicit scientific
+    scope ruling without changing the original frozen denominator.
   - >
     Resume an independent non-author Fabric reviewer only after documented
     legitimate admission/connectivity recovery; preserve all original refused
@@ -170,3 +202,31 @@ Independent review remains a separate gate: the Fabric gateway's current
 429 is not a review, and prior -04's GLM refusal forbids blind retry.
 The current recovery role owns the next safe action; no archived-chat
 acknowledgment is required.
+
+## October 30 final evidence update
+
+Hosted [CI 41043491441](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41043491441)
+proved the new `prophet-lab` job ran `tests/test_prophet_b17_frozen_input_recovery.py`:
+pack 5 explicitly logged **28 passed in 1.78 s**, and all 12 packs,
+`contract-delta` and `ci-gate` passed. The record PR's
+[CI 41044730818](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41044730818)
+passed its gate too. The unrelated inactive merge-pilot context is not a
+B-17 test failure.
+
+Read-only exact-object census of the frozen original episode parquet:
+7,775 / 7,918 (98.19%) of C0 episodes occurred **before** the
+June 16, 2026 earliest board archive; only 143 occurred on or after.
+The [existing discovery](../discoveries/DSC-PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT.md)
+contains SHA-256, row counts, reconstruction limits, and falsifier.
+Neither proportion is a product-coverage or return statistic.
+
+Two separate non-Fabric reviewer routes were checked for exact-source
+[#10176](https://github.com/mastermindx-market-intelligence/macro/pull/10176):
+GitHub Copilot request returned but generated no assigned reviewer,
+review, or request event; Cursor Bugbot [responded explicitly](https://github.com/mastermindx-market-intelligence/macro/pull/10176#issuecomment-6521998829)
+that its request could not authenticate the repository. No review occurred.
+Do not replay the denied Cursor command or use an unverified provider
+as a synthetic approval. An administrator of the existing Cursor/GitHub
+installation must restore the repository's allowed review access (or
+a valid independent review must be obtained through separately authorized,
+admitted means) before that held source can pass the review gate.
