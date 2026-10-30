@@ -26,6 +26,8 @@ HORIZONS = frozenset((
     "63d", "126d", "252d", "756d", "1260d",
 ))
 MEMBERSHIP_MODES = frozenset(("CURRENT_ROSTER", "PIT_AS_KNOWN"))
+MA_BASES = frozenset(("daily_sessions", "1m_bars", "5m_bars", "15m_bars",
+                      "60m_bars", "rth_bars"))
 EVIDENCE_MODES = frozenset((
     "original_retained", "reconstructed_price_history", "corrected",
     "synthetic_fixture", "prospective_estimate",
@@ -140,6 +142,7 @@ def _trend(row: Mapping[str, Any]) -> str | None:
 def _read_member(
     raw: object, *, period_end: datetime, decision_at: datetime,
     horizon: str, benchmark_return: object, parent_return: object,
+    ma_basis: str,
 ) -> dict:
     reason = _clock_gate(raw, period_end=period_end,
                          decision_at=decision_at, horizon=horizon)
@@ -150,8 +153,10 @@ def _read_member(
             "rs_market": _measurement(None, reason),
             "rs_parent": _measurement(None, reason),
             "above_ma50": None, "above_ma200": None, "trend": None,
+            "ma_basis": None, "technical_basis_reason": reason,
         }
     row = raw  # clock_gate proved this is a Mapping
+    basis_usable = row.get("ma_basis") == ma_basis
     member_return = _ret(row.get("return_frac"))
     if member_return is None:
         ret_field = _measurement(None, "missing_or_invalid_return")
@@ -163,9 +168,11 @@ def _read_member(
         "return_frac": ret_field,
         "rs_market": _measurement(relative_wealth(member_return, benchmark_return)),
         "rs_parent": _measurement(relative_wealth(member_return, parent_return)),
-        "above_ma50": _positive_above(row, "ma50"),
-        "above_ma200": _positive_above(row, "ma200"),
-        "trend": _trend(row),
+        "above_ma50": _positive_above(row, "ma50") if basis_usable else None,
+        "above_ma200": _positive_above(row, "ma200") if basis_usable else None,
+        "trend": _trend(row) if basis_usable else None,
+        "ma_basis": ma_basis if basis_usable else None,
+        "technical_basis_reason": None if basis_usable else "missing_or_mismatched_ma_basis",
     }
 
 
@@ -196,13 +203,19 @@ def _weighted_return(
     weights = {sym: _number(lagged_weights[sym]) for sym in members}
     if any(v is None or v < 0.0 for v in weights.values()):
         return _measurement(None, "weights_invalid")
-    denom = math.fsum(weights.values())
+    try:
+        denom = math.fsum(weights.values())
+    except OverflowError:
+        return _measurement(None, "weights_invalid")
     if denom <= 0.0 or not math.isfinite(denom):
         return _measurement(None, "weights_invalid")
     if any(states[sym]["return_frac"]["status"] != "measured" for sym in members):
         return _measurement(None, "returns_incomplete")
-    value = math.fsum((weights[sym] / denom) *
-                       states[sym]["return_frac"]["value"] for sym in members)
+    try:
+        value = math.fsum((weights[sym] / denom) *
+                          states[sym]["return_frac"]["value"] for sym in members)
+    except OverflowError:
+        return _measurement(None, "non_finite_result")
     return _measurement(value, "non_finite_result")
 
 
@@ -219,6 +232,7 @@ def project_factor_frame(
     benchmark_return: object, parent_return: object = None,
     membership_mode: str = "PIT_AS_KNOWN",
     evidence_mode: str = "reconstructed_price_history",
+    ma_basis: str = "daily_sessions",
     lagged_weights: Mapping[str, float] | None = None,
     previous_member_ids: Sequence[str] | None = None,
     previous_measurements: Mapping[str, Mapping[str, object]] | None = None,
@@ -242,6 +256,8 @@ def project_factor_frame(
         raise ValueError("unknown membership mode")
     if evidence_mode not in EVIDENCE_MODES:
         raise ValueError("unknown evidence mode")
+    if ma_basis not in MA_BASES:
+        raise ValueError("unknown moving-average basis")
     members = _members(member_ids, "member_ids")
     if not isinstance(measurements, Mapping):
         raise ValueError("measurements must be a mapping")
@@ -250,18 +266,25 @@ def project_factor_frame(
     known = _required_clock(membership_known_at, "membership_known_at")
     if end > decision or known > decision:
         raise ValueError("future market endpoint or membership knowledge")
+    if membership_mode == "PIT_AS_KNOWN" and known > end:
+        raise ValueError("PIT membership knowledge postdates measured endpoint")
     benchmark = _ret(benchmark_return)
     parent = _ret(parent_return)
     states = {
         sym: _read_member(measurements.get(sym), period_end=end,
                           decision_at=decision, horizon=horizon,
-                          benchmark_return=benchmark, parent_return=parent)
+                          benchmark_return=benchmark, parent_return=parent,
+                          ma_basis=ma_basis)
         for sym in members
     }
     valid_returns = [states[sym]["return_frac"]["value"] for sym in members
                      if states[sym]["return_frac"]["status"] == "measured"]
-    sample_ew = _measurement(math.fsum(valid_returns) / len(valid_returns)
-                             if valid_returns else None, "no_measured_members")
+    try:
+        sample_mean = math.fsum(valid_returns) / len(valid_returns) if valid_returns else None
+    except OverflowError:
+        sample_mean = None
+    sample_ew = _measurement(sample_mean,
+                             "non_finite_group_aggregate" if valid_returns else "no_measured_members")
     full_ew = (sample_ew if len(valid_returns) == len(members) and members
                else _measurement(None, "incomplete_full_cohort"))
     # A group return based on partial sample cannot masquerade as its full-group RS.
@@ -289,6 +312,7 @@ def project_factor_frame(
         "clock": {
             "period_end": end.isoformat(), "decision_at": decision.isoformat(),
             "membership_known_at": known.isoformat(), "horizon": horizon,
+            "moving_average_basis": ma_basis,
         },
         "evidence": {
             "mode": evidence_mode,
@@ -346,13 +370,14 @@ def project_factor_frame(
                                      "previous_membership_known_at")
         if (not isinstance(previous_measurements, Mapping) or
                 prev_end > prev_decision or prev_known > prev_decision or
-                prev_decision > decision or prev_end >= end):
+                prev_decision > decision or prev_end >= end or
+                (membership_mode == "PIT_AS_KNOWN" and prev_known > prev_end)):
             raise ValueError("invalid previous endpoint or membership/clock ordering")
         prev_states = {
             sym: _read_member(previous_measurements.get(sym),
                               period_end=prev_end, decision_at=prev_decision,
                               horizon=horizon, benchmark_return=None,
-                              parent_return=None)
+                              parent_return=None, ma_basis=ma_basis)
             for sym in prev_members
         }
         before = {sym: (prev_states[sym]["trend"] == "up"
