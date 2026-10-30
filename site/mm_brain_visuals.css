@@ -63,3 +63,19 @@ html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v-grid{stroke-das
 html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v-area{fill-opacity:.06}
 @media(max-width:540px){:is(#mmb-root,.mmb-visual-surface) .mmb-v{margin:18px 0;font-size:13px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-metric{font-size:20px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-timeline .mmb-v-row{grid-template-columns:62px minmax(0,1fr);gap:12px}html[data-theme=light] :is(#mmb-root,.mmb-visual-surface) .mmb-v{padding:12px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-legend-item{min-height:44px}:is(#mmb-root,.mmb-visual-surface) .mmb-v-details summary{min-height:44px;line-height:44px}}
 @media(prefers-reduced-motion:reduce){:is(#mmb-root,.mmb-visual-surface) .mmb-v *{scroll-behavior:auto}}
+
+/* The chart's OHLC marks and levels belong to the existing native visual family. */
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-up{fill:var(--mmb-up,#319c77);stroke:var(--mmb-up,#319c77)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-down{fill:var(--mmb-down,#d25f61);stroke:var(--mmb-down,#d25f61)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-flat{fill:var(--mmb-muted);stroke:var(--mmb-muted)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-wick{stroke-width:1.6}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-body{stroke-width:.8}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-pivot-highlight{fill:var(--mmb-up,#319c77);fill-opacity:.09;stroke:var(--mmb-up,#319c77);stroke-opacity:.3;stroke-dasharray:3 3}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-entry{stroke:var(--mmb-up,#319c77);stroke-width:1.6;stroke-dasharray:6 5}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-stop{stroke:var(--mmb-down,#d25f61);stroke-width:1.6;stroke-dasharray:6 5}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-level-label{font-size:11px;font-weight:600;paint-order:stroke;stroke:var(--mmb-panel);stroke-width:3px;stroke-linejoin:round}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-entry-label{fill:var(--mmb-up,#319c77)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-stop-label{fill:var(--mmb-down,#d25f61)}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-breakout{fill:var(--mmb-up,#319c77);stroke:var(--mmb-panel);stroke-width:1.4}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-breakout-label{fill:var(--mmb-up,#319c77);font-size:11px;font-weight:650;paint-order:stroke;stroke:var(--mmb-panel);stroke-width:3px}
+:is(#mmb-root,.mmb-visual-surface) .mmb-v-candle-note{color:var(--mmb-muted);font-size:12px;line-height:1.6;margin:8px 0 12px}
