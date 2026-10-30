@@ -90,7 +90,18 @@
             data-label-en="Export unavailable" data-label-zh="导出不可用">{{ t('Export', '导出') }}</button>
         </div>
       </div>
+      {#- A43 r3 (P0 first-viewport repair): the desk band ends on ONE stamp
+          line at every viewport, as the 10-12 fold receipt measured it. The
+          device-local saved-views briefcase (X2-s) and the retained-holding
+          reader (#9771) are desk tools, not glance modules: they sit behind
+          the closed Desk tools disclosure on the stamp line, so at rest they
+          add no height above the lead brief, and open at the full band width. -#}
+      <div class="ff-desk-stamp-row">
       <p class="ff-desk-stamp" id="ff-desk-stamp">{{ t('As of — · Source —', '截止 — · 来源 —') }}</p>
+      <p class="ff-desk-stamp" id="ff-saved-badge" hidden></p>
+      <details class="ff-desk-tools" id="ff-desk-tools">
+        <summary>{{ t('Desk tools', '桌面工具') }}</summary>
+        <div class="ff-desk-tools-body">
       {#- X2-s saved views: the device-local briefcase lives on this desk band.
           Hidden until fif_saved_briefcase.js wires it (progressive reveal, no
           dead controls when the module is absent); the governed
@@ -112,14 +123,7 @@
         <button type="button" class="ff-trace-open" id="ff-saved-rename" hidden>{{ t('Rename', '重命名') }}</button>
         <button type="button" class="ff-trace-open" id="ff-saved-delete" hidden>{{ t('Delete', '删除') }}</button>
       </div>
-      <p class="ff-desk-stamp" id="ff-saved-badge" hidden></p>
-      <div class="ff-company-action" id="ff-company-action" hidden>
-        <span class="ff-action-glyph" aria-hidden="true">·</span>
-        <span class="ff-action-copy">{{ t('Loading', '正在载入') }}</span>
-      </div>
-    </header>
-
-<details class="mx-disc ff-holding-research" id="ff-holding-research">
+      <details class="mx-disc ff-holding-research" id="ff-holding-research">
   <summary>{{ t('Read a reported holding', '查阅已披露持仓') }}</summary>
   <p>{{ t('Read one retained filing record. It is delayed disclosure, not current ownership or trading intent.', '查阅一条已留存的披露记录。这是滞后披露，不代表当前持仓或交易意图。') }}</p>
   <form id="ff-holding-form" method="post" action="/api/forensics/v1/institutional/reported-holding" autocomplete="off">
@@ -144,7 +148,15 @@
   </form>
   <p id="ff-holding-status" role="status" aria-live="polite">{{ t('Choose a filing, then read its source record.', '选择披露文件，再读取其来源记录。') }}</p>
   <div id="ff-holding-result" hidden></div>
-</details>
+      </details>
+        </div>
+      </details>
+      </div>
+      <div class="ff-company-action" id="ff-company-action" hidden>
+        <span class="ff-action-glyph" aria-hidden="true">·</span>
+        <span class="ff-action-copy">{{ t('Loading', '正在载入') }}</span>
+      </div>
+    </header>
 
     <section class="ff-data-notice" id="ff-data-notice" aria-live="polite" hidden></section>
 

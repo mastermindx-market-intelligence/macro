@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-10-20T03:08:15.330199+00:00",
+  "scope": "Installed nsenter argument control only; no target, namespace join, root change, cache or service effect",
+  "all_controls_pass": true,
+  "rows": [
+    {
+      "command": [
+        "/usr/bin/nsenter",
+        "--wdns",
+        "/",
+        "--no-fork",
+        "--",
+        "/usr/bin/printf",
+        "NAMESPACE_ARGV_CONTROL_OK\n"
+      ],
+      "exit": 126,
+      "stdout": "",
+      "stderr": "nsenter: failed to execute /: Permission denied\n"
+    },
+    {
+      "command": [
+        "/usr/bin/nsenter",
+        "--wdns=/",
+        "--no-fork",
+        "--",
+        "/usr/bin/printf",
+        "NAMESPACE_ARGV_CONTROL_OK\n"
+      ],
+      "exit": 0,
+      "stdout": "NAMESPACE_ARGV_CONTROL_OK\n",
+      "stderr": ""
+    }
+  ]
+}

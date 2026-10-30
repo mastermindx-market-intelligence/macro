@@ -2763,9 +2763,16 @@ def compose_retained_macro_capabilities(reader, *, policy, query_id: str, genera
         query = features.read_episode_feature_capability(
             reader, generation, query_id=query_id, subject_id=subject_id,
             query_cutoff=query_cutoff, policy=policy)
-        population = cohort.read_retained_context_cohort(
-            reader, generation, subject_id=subject_id,
-            query_cutoff=query_cutoff, policy=policy)
+        # Only the existing owner policy can supply its sealed-evidence reader.
+        # No transport/request callback or cache-authority flag is accepted.
+        owner_reader = getattr(policy, "_read_retained_context_cohort", None)
+        if callable(owner_reader):
+            population = owner_reader(reader, generation, subject_id=subject_id,
+                query_cutoff=query_cutoff, method=method)
+        else:
+            population = cohort.read_retained_context_cohort(
+                reader, generation, subject_id=subject_id,
+                query_cutoff=query_cutoff, policy=policy)
         selection = retrieval.retrieve_retained_contexts(
             population, query, policy=policy, k=limit, method=method)
         packet = evidence.build_real_evidence_packet(

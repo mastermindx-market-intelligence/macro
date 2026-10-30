@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-10-14T13:16:08.783555+00:00",
+  "followon": "233781ef28e4ef029eb001b0c5518b1ec462673d",
+  "a1": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "rc": 1,
+  "tree": "2bac0c9b83d304c84626a62852b753aa60f9ce87",
+  "conflicts": [
+    "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+  ],
+  "scope": "Read-only merge-tree against incoming A1 source, not a main integration or a hosted/release claim."
+}

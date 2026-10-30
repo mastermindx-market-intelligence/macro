@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -50,10 +50,10 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=2e861147">
+<link rel="stylesheet" href="theme.css?v=29ec9caa">
 <link rel="stylesheet" href="assets/css/72b1a69a.css?v=72b1a69a">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
 <body>
   
@@ -64,7 +64,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
+    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -306,6 +306,8 @@
     </div>
   </div>
 </nav>
+
+
   <div class="panel">
     <div class="topline">
       <h1><span class="l-en">A-Share analyzer</span><span class="l-zh">A股分析</span></h1>
@@ -502,6 +504,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   q.addEventListener('input', function () {
     var v = q.value.trim().toLowerCase();
@@ -545,9 +548,9 @@
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'china_lookup.html') {
-      location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
+      var _d = items[i]._tgt + '#' + encodeURIComponent(items[i].t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d; return;
     }
-    location.hash = encodeURIComponent(items[i].t);
+    var _h = encodeURIComponent(items[i].t); var _ss2 = window.MMXSharedShell; if (_ss2) { if (_ss2.navigate('#' + _h, 'push') && (location.hash || '').slice(1) === _h) fromHash(); } else { location.hash = _h; }
   }
 
   function load(t) {
@@ -973,7 +976,7 @@
 })();
 </script>
 <script src="mtf.js?v=b62aea2f" defer></script>
-<script src="theme.js?v=831dd241" defer></script>
+<script src="theme.js?v=2454e0ca" defer></script>
 <script>
   // keep tooltips on-screen: flip below near the top, anchor to the nearest side near edges
   document.addEventListener('mouseover', function (e) {
@@ -987,7 +990,7 @@
     else if (r.left + r.width / 2 - half < 0) h.classList.add('edge-left');
   });
 </script>
-<p class="muted" style="font-size:12px"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-20 05:02 UTC UTC · <span class="l-en">charts by TradingView · curated A-share universe, not exhaustive</span><span class="l-zh">图表由 TradingView 提供 · 精选 A 股范围，非全市场</span></p>
+<p class="muted" style="font-size:12px"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-10-30 13:08 UTC UTC · <span class="l-en">charts by TradingView · curated A-share universe, not exhaustive</span><span class="l-zh">图表由 TradingView 提供 · 精选 A 股范围，非全市场</span></p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>

@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-10-20T11:09:17.281205+00:00",
+  "head_before": "e2d10f933587f58be8716505529a37f8839901f7",
+  "merge_head": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "tree_before": "5cb74e747b76b3321e36f4392ac25c40c84a3aef",
+  "remote_pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "purpose": "local ordinary M merge checkpoint to permit subsequent normal main ancestry integration; fresh combined CI/push/publication remain pending",
+  "commit_attempted": false,
+  "whitespace": {
+    "exit": 2,
+    "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-local-merge-whitespace.log",
+    "sha256": "0b84b95014070fe7e8c8ceb94c09b72dec04d1d858a74d149244383d76fa2547"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "eval_os.t12_cli_acceptance.v1",
+  "accepted_at": "2026-10-14T07:47:26.985333+00:00",
+  "source_parent": "69e77ca1d5592807c026123b8228fb57e788b6bc",
+  "worker_base": "760c135feb63e97038dcbe4799811520ab48057e",
+  "run_id": "eval-t12-cli-01a1333d-c1",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "parent": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "worker_pool": "glm",
+  "worker_model": "glm-5.3-flash",
+  "worker_host": "ubuntu1",
+  "worker_stdout_sha256": "fe8470f915ac539f92d4a1de58ccc2b27f027cb054fab1121dc13cf67fe75920",
+  "worker_patch_sha256": "30e3347052a0536e4c2369785ab8d8239ff82a910583f0260ad476ae44b57bcc",
+  "worker_first_pass_accepted": false,
+  "parent_verdict": "ACCEPTED_WITH_PARENT_CORRECTIONS",
+  "parent_red_tests": 6,
+  "corrections": [
+    "Non-finite float overflow rejected",
+    "Container-valued claim/grade identity fields refused",
+    "Duplicate-key errors do not echo input keys",
+    "Every file-read refusal closes its descriptor",
+    "Observed pathname replacement, ctime/size and descriptor changes refused",
+    "Malformed owner input yields bounded unknown result, not traceback"
+  ],
+  "affected_tests": {
+    "passed": 109,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": "python3 -m pytest tests/test_qledger_validity.py -q"
+  },
+  "subprocess_probes": {
+    "passed": 16,
+    "failed": 0,
+    "scope": "Synthetic supplied files, bounded invalid inputs and mode conflicts"
+  },
+  "source_qualification": {
+    "schema": "eval_os.t12_cli_source_qualification.v1",
+    "head": "69e77ca1d5592807c026123b8228fb57e788b6bc",
+    "existing_functions_ast_unchanged": [
+      "_read_jsonl",
+      "_json_payload",
+      "_emit",
+      "_selftest"
+    ],
+    "selected_existing_owner": {
+      "scripts/check_qledger_metric_validity.py": [
+        "qledger-cluster-honest-ci"
+      ],
+      "tests/test_qledger_validity.py": [
+        "qledger-cluster-honest-ci"
+      ]
+    },
+    "scope": "Current checked-out source with tracked HEAD inventory; final commit and hosted execution are separate."
+  },
+  "file_sha256": {
+    "scripts/check_qledger_metric_validity.py": "d3775ad1da581d74102870b8676e56d03d4b0ab4a6533107e5f527850882f13b",
+    "tests/test_qledger_validity.py": "283a8fa15dc566a83237b2583aeecac6b810c30a10ee8c934be8c09ec22f8dfa",
+    "research/INTELLIGENCE_OS_T12_INTERFACES.md": "67033c91935bfcbaa7551e7fb977d37806b78e0ac724e417f63c7b1699c965ec"
+  },
+  "evidence_sha256": {
+    "t12-cli-parent-red.xml": "59f64893d369c2f3e9c2da7253484461c11ccb16e6b87a2f9d3c41473680c96c",
+    "t12-cli-parent-green.xml": "884315f418afe830f60e12a53d8af8a8237c103678c153bcc55ad16e87ef0bfa",
+    "t12-cli-parent-probes-red.json": "94e4b1c09648b25b019c7eff91302296db7a09875bc7c8471f7763b0f1e4df00",
+    "t12-cli-parent-probes-green.json": "fdfa2a573bfae7269f2d90c8bd6731d0849c98c5d7cf98e55e7cf8eb03a7dcc3"
+  },
+  "limits": [
+    "No atomic read, source rights, outcome access or evidence locator verification is claimed",
+    "No Discovery publication or actual research-consumer adoption",
+    "Existing pure owner and four old CLI helper function ASTs unchanged",
+    "Containing-head hosted CI, protected publication and installed behavior remain required",
+    "Worker reported an optional memory write refused by its harness and did not retry; no root memory update occurred",
+    "Remote worker reported its own detached scratch tree; root did not adopt, remove or alter it"
+  ]
+}

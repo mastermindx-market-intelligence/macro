@@ -1,0 +1,1148 @@
+{
+  "schema": "mastermind.shared_shell_paper_reference_census.v1",
+  "observed_on": "2026-10-18",
+  "operation": "market-os-shared-shell-design-20260924-sol-001",
+  "scope": "Supplied files and their eleven-file connected reference graph; not account-wide enumeration.",
+  "method": "Explicit file/page get_basic_info plus whole-file find_nodes textValue *Shared Shell*. Read-only. Page names and literal matches are evidence, not implementation or release authority.",
+  "write_qualification": {
+    "accepted": false,
+    "observed_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "expected_catalog_sha256": "ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9",
+    "mutations_attempted": 0
+  },
+  "files": [
+    {
+      "name": "MASTERMIND PAGES",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P",
+      "pages": [
+        {
+          "id": "p-5-0",
+          "name": "Archetype Starters · Governed"
+        },
+        {
+          "id": "p-1Y-1",
+          "name": "ARCHIVE · Bonds + Transmission · pre-R30"
+        },
+        {
+          "id": "p-1X-1",
+          "name": "Forex · Archive · Prior studies & build history"
+        },
+        {
+          "id": "p-1W-1",
+          "name": "Macro · Dark Flow · Implementation · 2026-10-17"
+        },
+        {
+          "id": "p-1V-0",
+          "name": "Terminal Portfolio · Builder + Acceptance References"
+        },
+        {
+          "id": "p-1U-0",
+          "name": "Shared Market · Prepared Research + Reading · Reference"
+        },
+        {
+          "id": "p-1T-0",
+          "name": "Shared Market · Watchlists + Save States · Reference"
+        },
+        {
+          "id": "p-1S-0",
+          "name": "Shared Market · Search + Comparison · Reference"
+        },
+        {
+          "id": "p-1R-0",
+          "name": "Shared Market · All Tools + Research Launcher · Reference"
+        },
+        {
+          "id": "p-1Q-0",
+          "name": "01 · Design Foundations · Components & Archetype Rules"
+        },
+        {
+          "id": "p-1P-0",
+          "name": "00 · START HERE · Product & File Navigation"
+        },
+        {
+          "id": "p-1O-0",
+          "name": "Terminal · Portfolio · Personal Desk · 2026-10-11"
+        },
+        {
+          "id": "p-1N-0",
+          "name": "Gov Revenue · Builder Contracts & State Specimens"
+        },
+        {
+          "id": "p-1M-0",
+          "name": "BioCatalyst · Builder & Acceptance Contracts"
+        },
+        {
+          "id": "p-1L-0",
+          "name": "ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build"
+        },
+        {
+          "id": "p-1K-0",
+          "name": "MedTech · Regulatory Catalyst R13 · Design References"
+        },
+        {
+          "id": "p-1J-0",
+          "name": "REFERENCE · Policy Watch R2–R3 & HELD · Not for Build"
+        },
+        {
+          "id": "p-1I-0",
+          "name": "ARCHIVE · Commodities Legacy 90–94 · Not for Build"
+        },
+        {
+          "id": "p-1H-0",
+          "name": "Bonds · Advanced Mechanism & Decision Studies · R18–R25"
+        },
+        {
+          "id": "p-1G-0",
+          "name": "Terminal · R3 Refraction · Top-edge only"
+        },
+        {
+          "id": "p-1F-0",
+          "name": "Forex · Advanced Movement & Decision Studies · R17–R24"
+        },
+        {
+          "id": "p-1E-0",
+          "name": "Cross-Asset · Bonds × Forex Transmission & Confluence · Studies"
+        },
+        {
+          "id": "p-1D-0",
+          "name": "Terminal Settings · Original Pane · Aurora Only · R2"
+        },
+        {
+          "id": "p-1C-0",
+          "name": "Terminal · Account & settings · 2026-10-11"
+        },
+        {
+          "id": "p-1B-0",
+          "name": "ARCHIVE · Earnings and Dossiers Original Source · Not for Build"
+        },
+        {
+          "id": "p-1A-0",
+          "name": "ARCHIVE · Intelligence Hub R4 Original Source · Not for Build"
+        },
+        {
+          "id": "p-18-0",
+          "name": "Investor Shell · Market Overview · Design Candidates"
+        },
+        {
+          "id": "p-17-0",
+          "name": "REFERENCE · Forex Alternate R19–R21 Studies"
+        },
+        {
+          "id": "p-16-0",
+          "name": "ARCHIVE · Forex Duplicate Study · Not for Build"
+        },
+        {
+          "id": "p-15-0",
+          "name": "Returns Calendar · Terminal + Dossier"
+        },
+        {
+          "id": "p-14-0",
+          "name": "Bot Paper Portfolio · V3 Upgrade · 2026-10-09"
+        },
+        {
+          "id": "p-Q-0",
+          "name": "Earnings + Dossiers · North Star Study · 2026-09-26"
+        },
+        {
+          "id": "p-3-1",
+          "name": "News Intelligence · 2026-09-20"
+        },
+        {
+          "id": "p-D-0",
+          "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24"
+        },
+        {
+          "id": "p-13-1",
+          "name": "Market Breadth · Command Center · R1 · 2026-09-29"
+        },
+        {
+          "id": "p-A-0",
+          "name": "Confluence Screener · Governed Reference · 2026-09-22"
+        },
+        {
+          "id": "p-H-1",
+          "name": "Confluence Screener · R2 · 2026-09-26"
+        },
+        {
+          "id": "p-O-1",
+          "name": "Bonds · Decision Workspace · R1 · 2026-09-26"
+        },
+        {
+          "id": "p-N-1",
+          "name": "Forex · Guided Intelligence · R1 · 2026-09-26"
+        },
+        {
+          "id": "p-J-1",
+          "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26"
+        },
+        {
+          "id": "p-8-1",
+          "name": "Live Site Baselines · Wave 1 · 2026-09-21"
+        },
+        {
+          "id": "p-T-0",
+          "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27"
+        },
+        {
+          "id": "p-10-0",
+          "name": "Crypto Intelligence · R3 · Current Build · 2026-09-27"
+        },
+        {
+          "id": "p-L-0",
+          "name": "Commodities · R1 Study · 2026-09-26"
+        },
+        {
+          "id": "p-Y-0",
+          "name": "Sector Intelligence · R2 · Current Build · 2026-09-27"
+        },
+        {
+          "id": "p-S-1",
+          "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26"
+        },
+        {
+          "id": "p-K-0",
+          "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26"
+        },
+        {
+          "id": "p-Z-0",
+          "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build"
+        },
+        {
+          "id": "p-V-0",
+          "name": "ARCHIVE · Company Intelligence · Not for Build"
+        },
+        {
+          "id": "p-11-0",
+          "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build"
+        },
+        {
+          "id": "p-X-0",
+          "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build"
+        },
+        {
+          "id": "p-W-0",
+          "name": "ARCHIVE · International Markets · R9 · Not for Build"
+        },
+        {
+          "id": "p-E-1",
+          "name": "Sector Intelligence · vNext Study · 2026-09-24"
+        },
+        {
+          "id": "p-6-1",
+          "name": "Sector Intelligence · Unified Detail · 2026-09-21"
+        },
+        {
+          "id": "p-I-1",
+          "name": "Intelligence Hub · R1 Study · 2026-09-26"
+        },
+        {
+          "id": "p-9-0",
+          "name": "Sector Central · Redesign · 2026-09-21"
+        },
+        {
+          "id": "p-7-1",
+          "name": "China Intelligence · vNext · 2026-09-21"
+        },
+        {
+          "id": "p-19-0",
+          "name": "ARCHIVE · Commodities Duplicate Lab · Not for Build"
+        }
+      ],
+      "literal_match_count": 14,
+      "literal_matches": [
+        {
+          "id": "5G1J-2",
+          "name": "Shared Shell → MASTE…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared Shell → MASTERMIND PAGES · Cross-Page Link Map"
+            }
+          ]
+        },
+        {
+          "id": "5G1Y-2",
+          "name": "Shared Shell p-D is …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared Shell p-D is navigation reference only. Tools p-1R, Search/Comparison p-1S, Watchlists p-1T and Research p-1U are design references, not live routes. The application shell belongs to Mastermind OS; actual availability is owned by the existing runtime."
+            }
+          ]
+        },
+        {
+          "id": "5G28-2",
+          "name": "Confluence R2     De…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Confluence R2     Desktop + Mobile × Dark + Light × EN + ZH\nConfluence REF    governed reference matrix + reference states\nNews              Desktop + Mobile × Dark + Light\nPolicy Watch      R2 multi-device/theme; R3 intentionally asymmetric\nForex             Desktop EN dark/light; Mobile EN dark/light + one ZH dark variant\nCompany           Desktop + Tablet + Mobile design families; dark-primary\nShared Shell      Desktop + Mobile + selected Tablet/Light examples\nSector R2 p-Y-0   Desktop routes with selected mobile evidence states"
+            }
+          ]
+        },
+        {
+          "id": "1CLH-0",
+          "name": "Use the shared shell…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Use the shared shell, Inter, spacing, semantic colors and restrained blue actions. No competing navigation, neon panels or decorative left-border accents.\n\nRow → brief → evidence drawer. Closing a drawer or navigating back restores focus, filters and scroll. On mobile use a full-height evidence sheet, not a squeezed desktop panel.\n\nEvery visible control needs a real contract: Compare aligns supported series; Save persists a checkpoint; History opens the exact prior build. Do not ship decorative buttons.\n\nVerify both themes, EN/中文 expansion and locale market colors with text/arrows. Test 390/768/1440 widths, 200% zoom, keyboard, screen readers and actual contrast. These are acceptance gates, not results proven by this mockup."
+            }
+          ]
+        },
+        {
+          "id": "21H4-0",
+          "name": "Shared Shell Journey…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared Shell Journey + State Map"
+            }
+          ]
+        },
+        {
+          "id": "10UP-0",
+          "name": "SHARED SHELL / R2 + …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "SHARED SHELL / R2 + R3 / 26 SEP 2026"
+            }
+          ]
+        },
+        {
+          "id": "18WV-0",
+          "name": "Next slice: a prepar…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Next slice: a prepared theme-to-company comparison and its inspector-return state, using the existing Shared Shell and intelligence contracts. Then stress smaller widths and critical failure states. Preserve the R2 desktop and completed drawer/menu; full Macro dashboard capability parity remains unaccepted."
+            }
+          ]
+        },
+        {
+          "id": "1IIM-0",
+          "name": "Desktop drawer prese…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Desktop drawer preserves the selected commodity, filters and focus. The receipt must bind to the exact analysis build and show unavailable metadata explicitly. Closing restores focus to the triggering claim; Escape is owned once by the shared shell/dialog contract."
+            }
+          ]
+        },
+        {
+          "id": "Q9H-0",
+          "name": "Illustrative source-…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Illustrative source-degraded state. No market recommendation is being made; the shared shell is proving its fail-closed behavior."
+            }
+          ]
+        },
+        {
+          "id": "QSE-0",
+          "name": "Shared shell",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared shell"
+            }
+          ]
+        },
+        {
+          "id": "QMK-0",
+          "name": "Shared shell",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared shell"
+            }
+          ]
+        },
+        {
+          "id": "1GKI-0",
+          "name": "Quiet shared shell. …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Quiet shared shell. One short market read. Large synchronized analytical panes. Thin precise strokes, restrained grid lines, direct series labels and readable right-edge values.\n\nUse Mastermind semantic tokens and Inter. Cobalt identifies the primary series; other colors encode a defined state or comparison—not decoration. No giant orange headings, ornamental border rails, rainbow heatmaps or excessive warning badges.\n\nLight and dark are separate contrast compositions. Mobile reorganizes the workflow; it does not shrink the desktop. Keep touch targets usable and complex evidence in a full-width sheet."
+            }
+          ]
+        },
+        {
+          "id": "1GL0-0",
+          "name": "Current native revie…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Current native review: 1NK0-0 Bitcoin dark; 1O0V-0 Crypto mobile; 1O5O-0 evidence/recovery. Existing light references remain 1EQ1-0 / 1FL0-0; Cycle Lab 1FRD-0; Bitcoin mobile 1G0I-0.\n\nReuse the existing Lightweight Charts adapter, BitcoinDecisionState, shared shell, snapshots and Alert Center. Reconcile #7645 Crypto and #7849 theme custody. #8041 touches the CI enrollment owner; do not overwrite it.\n\nMacro Draft PR #8050: bfcdbaebd1032be6b96ed39532e1bab204e9d2f6 at review; the interrupted local chart move was reconciled, not repeated.\n\nLaw pin: 4c6b206d3fb7fbc6d077faf61ae361bedf259925\nPaper tokens unchanged: bba69475\nContinuity: agentos/decisions/DEC-CRYPTO-VECTOR-R2-20260926.md\nOperation: crypto-vector-r2-20260926-sol-001"
+            }
+          ]
+        },
+        {
+          "id": "1C9J-0",
+          "name": "Use existing shared …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Use existing shared shell and semantic tokens; preserve theme and language parity. No new decorative accent rail.\nTest 390 / 768 / 1440 layouts, keyboard navigation, focus restoration, screen-reader names, text resizing and color contrast.\nReplay null, stale, delayed, partial, expired, integrity-mismatch and first-visit fixtures. Never silently substitute a different model output.\nSeparate live, paper and backtest returns. Require dates, benchmark, fees, drawdown and version before showing performance.\nHuman acceptance: users can explain the market read, distinguish model budget from their own allocation, and locate evidence without instruction."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MarketOntology",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "url": "https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "MarketOntology · Joined Journey · 2026-09-25"
+        },
+        {
+          "id": "p-6-0",
+          "name": "04 · Implementation + Visual Engine · References"
+        },
+        {
+          "id": "p-5-0",
+          "name": "99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Retained Shared Shell · Company Comparison + Evidence"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Thesis Changes + Receipts"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Answers, Context + Evidence"
+        }
+      ],
+      "literal_match_count": 1,
+      "literal_matches": [
+        {
+          "id": "A95-0",
+          "name": "MARKETONTOLOGY · RET…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "MARKETONTOLOGY · RETAINED SHARED SHELL REFERENCES"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mastermind OS",
+      "fileId": "01M3NRCX55B452A12819WNE1RH",
+      "url": "https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "Page 1"
+        },
+        {
+          "id": "p-K-0",
+          "name": "12D · Sessions & Access · Canonical Atelier"
+        },
+        {
+          "id": "p-J-0",
+          "name": "12C · Meta-CEO & Supervision · Canonical Atelier"
+        },
+        {
+          "id": "p-I-0",
+          "name": "12B · Decisions & Plans · Canonical Atelier"
+        },
+        {
+          "id": "p-H-0",
+          "name": "12A · Projects & Evidence · Canonical Atelier"
+        },
+        {
+          "id": "p-G-0",
+          "name": "ARCHIVE · Market Shell References · Not for OS Build"
+        },
+        {
+          "id": "p-F-0",
+          "name": "14 · Investor Shell · Production Candidate · 2026-10-08"
+        },
+        {
+          "id": "p-E-0",
+          "name": "13 · Daily Experience · Flow + Builder Notes"
+        },
+        {
+          "id": "p-D-0",
+          "name": "12 · Canonical Atelier · Mastermind OS"
+        },
+        {
+          "id": "p-C-0",
+          "name": "11 · Chat Atelier · Current Design"
+        },
+        {
+          "id": "p-B-0",
+          "name": "10 · SOURCE ONLY · Signed-in Home Baseline"
+        },
+        {
+          "id": "p-A-0",
+          "name": "09 · Global Search + Recovery"
+        },
+        {
+          "id": "p-9-0",
+          "name": "08 · All Tools + Research Drawer"
+        },
+        {
+          "id": "p-8-0",
+          "name": "07 · Global Shell + Navigation"
+        },
+        {
+          "id": "p-7-0",
+          "name": "06 · Access, Loading + Recovery"
+        },
+        {
+          "id": "p-6-0",
+          "name": "05 · Chairman Daily Journey"
+        },
+        {
+          "id": "p-5-0",
+          "name": "04 · Connected Company Journeys"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Missions, Work + Fleet"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Conversations + Message States"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Noir Experience + Build Guides"
+        }
+      ],
+      "literal_match_count": 7,
+      "literal_matches": [
+        {
+          "id": "FMS-0",
+          "name": "OS shared shell and …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "OS shared shell and navigation states. Current product shell: page 12."
+            }
+          ]
+        },
+        {
+          "id": "AM0-0",
+          "name": "Shared Shell Journey…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared Shell Journey + State Map"
+            }
+          ]
+        },
+        {
+          "id": "BSP-0",
+          "name": "SHARED SHELL / R2 + …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "SHARED SHELL / R2 + R3 / 26 SEP 2026"
+            }
+          ]
+        },
+        {
+          "id": "BV7-0",
+          "name": "Next slice: a prepar…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Next slice: a prepared theme-to-company comparison and its inspector-return state, using the existing Shared Shell and intelligence contracts. Then stress smaller widths and critical failure states. Preserve the R2 desktop and completed drawer/menu; full Macro dashboard capability parity remains unaccepted."
+            }
+          ]
+        },
+        {
+          "id": "NIS-0",
+          "name": "Foundations · AT90 s…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Foundations · AT90 shared shell + AT91 states · page 12"
+            }
+          ]
+        },
+        {
+          "id": "KV9-0",
+          "name": "Route breadcrumb",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Atelier / Shared shell & foundations"
+            }
+          ]
+        },
+        {
+          "id": "A9V-0",
+          "name": "CURRENT: five primar…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "CURRENT: five primary destinations—Today, Projects, Inbox, Conversations and Knowledge—are composed canonically in Page 12 / Canonical Atelier, with one shared shell and one Meta-CEO. BG2–BG6 retain implementation, acceptance and IA contracts; prior route families remain behavior/reference evidence. Implementation, browser/native proof and production acceptance remain separate."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Terminal",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "Company Intelligence · 2026-09-20"
+        },
+        {
+          "id": "p-S-0",
+          "name": "Company · Production Suite · R3"
+        },
+        {
+          "id": "p-R-0",
+          "name": "00 · TERMINAL · Start Here · Product Directory"
+        },
+        {
+          "id": "p-Q-0",
+          "name": "Returns Calendar · Terminal + Stock Dossier"
+        },
+        {
+          "id": "p-P-1",
+          "name": "Options · Build Contracts + Source Proof · Reference"
+        },
+        {
+          "id": "p-O-1",
+          "name": "Market Heatmaps · Saved Views + Recovery · R7–R8"
+        },
+        {
+          "id": "p-N-1",
+          "name": "Market Heatmaps · Mobile Atlas + Comparison · R6"
+        },
+        {
+          "id": "p-M-1",
+          "name": "Company R2 · Chinese Mobile + 320px Variants"
+        },
+        {
+          "id": "p-L-1",
+          "name": "Company R2 · C01 Source, Lineage + Evidence States"
+        },
+        {
+          "id": "p-K-1",
+          "name": "Company R2 · Tablet Brief + Evidence Variants"
+        },
+        {
+          "id": "p-J-1",
+          "name": "Company R2 · Mobile + Narrow-Screen Variants"
+        },
+        {
+          "id": "p-I-1",
+          "name": "Terminal · Intelligence Workspace · 2026-10"
+        },
+        {
+          "id": "p-H-0",
+          "name": "13 · Options · 3D Research Lab"
+        },
+        {
+          "id": "p-G-0",
+          "name": "12 · SOURCE ONLY · Terminal Live Baselines"
+        },
+        {
+          "id": "p-F-0",
+          "name": "11 · Company · Earnings + Dossiers · North Star Study"
+        },
+        {
+          "id": "p-E-0",
+          "name": "10 · Retained Shared Shell · Stocks + Setups"
+        },
+        {
+          "id": "p-D-0",
+          "name": "09 · Options · Volatility Lab"
+        },
+        {
+          "id": "p-C-0",
+          "name": "ARCHIVE · Company Intelligence · Superseded"
+        },
+        {
+          "id": "p-B-1",
+          "name": "08 · Company · Financials, Market + Ownership"
+        },
+        {
+          "id": "p-A-1",
+          "name": "07 · Company · Research, Results + Sources"
+        },
+        {
+          "id": "p-9-1",
+          "name": "06 · Company · Navigation + Interaction"
+        },
+        {
+          "id": "p-7-1",
+          "name": "05 · Options · Compare"
+        },
+        {
+          "id": "p-6-1",
+          "name": "04 · Options · Scenarios + Assumptions"
+        },
+        {
+          "id": "p-5-1",
+          "name": "03 · Options · Review"
+        },
+        {
+          "id": "p-4-1",
+          "name": "02 · Options · Save + Watch"
+        },
+        {
+          "id": "p-3-1",
+          "name": "01 · Options · Plan"
+        },
+        {
+          "id": "p-2-0",
+          "name": "Terminal · Options Structure Intelligence · R1 · 2026-09-27"
+        },
+        {
+          "id": "p-8-1",
+          "name": "Market Heatmaps · Unified Workspace · 2026-09-29"
+        }
+      ],
+      "literal_match_count": 2,
+      "literal_matches": [
+        {
+          "id": "YY6-0",
+          "name": "TERMINAL · RETAINED …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "TERMINAL · RETAINED SHARED SHELL REFERENCES"
+            }
+          ]
+        },
+        {
+          "id": "YY8-0",
+          "name": "Historical Shared Sh…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Historical Shared Shell studies for setup discovery, watchlist choice and confirmation states. Current Terminal product work remains authoritative; these references preserve useful interaction ideas and responsive states."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mastermind AI",
+      "fileId": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "Mastermind AI · Chat Workbench · vNext · 2026-09-24"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Legacy Reference + Assets"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Answer Craft · R7–R8 References"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Interaction + Recovery · R2 References"
+        },
+        {
+          "id": "p-9-0",
+          "name": "R10 · Build + Implementation Boundaries"
+        },
+        {
+          "id": "p-8-0",
+          "name": "R10 · Save + Resume · Recovery"
+        },
+        {
+          "id": "p-7-0",
+          "name": "05 · SOURCE ONLY · Chat Live Baseline"
+        },
+        {
+          "id": "p-6-0",
+          "name": "99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build"
+        },
+        {
+          "id": "p-5-0",
+          "name": "04 · Retained Shared Shell · Research Reading + Evidence"
+        }
+      ],
+      "literal_match_count": 4,
+      "literal_matches": [
+        {
+          "id": "1ZA-0",
+          "name": "START HERE · R10 con…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "START HERE · R10 conversation — Start, answer, context and evidence; research states below\nR10 · Save + Resume · Recovery — Save review, uncertain saves, history, handover and session expiry\nR10 · Build + Implementation Boundaries — Builder map, preserved contracts and implementation holds\n\n01 · Interaction + Recovery · R2 References — Earlier behavior and recovery specifications\n02 · Answer Craft · R7–R8 References — Answer contracts and composition studies\n03 · Legacy Reference + Assets — Retained earlier direction and standalone assets\n04 · Retained Shared Shell · Research Reading + Evidence — Supporting reference material\n05 · SOURCE ONLY · Chat Live Baseline — Source comparison, not the R10 design direction\n99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build — Quarantined; do not use"
+            }
+          ]
+        },
+        {
+          "id": "14W-0",
+          "name": "Shared shell · Macro…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared shell · Macro PR #7949 · source commit ee7713f58ea370899e556fb3815bdb847288197a\nagentos/handoffs/MARKET-OS-SHARED-SHELL-2026-09-24.md · Paper shell source UBT-0 on p-D-0; original AI concept V0N-0 preserved."
+            }
+          ]
+        },
+        {
+          "id": "5HY-0",
+          "name": "MASTERMIND AI · RETA…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "MASTERMIND AI · RETAINED SHARED SHELL REFERENCES"
+            }
+          ]
+        },
+        {
+          "id": "5I0-0",
+          "name": "R11 Shared Shell stu…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "R11 Shared Shell studies for long-form research, evidence inspection and guided reading. Use them as historical interaction references; current vNext visual direction, R2 interaction/recovery and R7–R8 answer-craft references remain primary."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Product Design System",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "00 · Cover"
+        },
+        {
+          "id": "p-8-1",
+          "name": "07 · Source Imports + Assets · Pending Review"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Getting Started"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Foundations"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Components"
+        },
+        {
+          "id": "p-5-0",
+          "name": "04 · Patterns"
+        },
+        {
+          "id": "p-6-0",
+          "name": "05 · Reference Screens"
+        },
+        {
+          "id": "p-7-0",
+          "name": "06 · Utilities"
+        }
+      ],
+      "literal_match_count": 1,
+      "literal_matches": [
+        {
+          "id": "44N-0",
+          "name": "Intelligence Hub R4 …",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Intelligence Hub R4 now has a separate Working file; its 66 legacy source boards are preserved in MASTERMIND PAGES p-1A-0, not current build authority. Shared Shell OS states belong in Mastermind OS; product references retain their incumbent homes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "International",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "International Markets · R10 · Current Build"
+        },
+        {
+          "id": "p-F-0",
+          "name": "01B · Company Exposure & Transmission · R10"
+        },
+        {
+          "id": "p-E-0",
+          "name": "01A · Country Inspector & Follow · R10"
+        },
+        {
+          "id": "p-D-0",
+          "name": "04B · Comparison Setup & Review · R10"
+        },
+        {
+          "id": "p-C-0",
+          "name": "04A · Saved Research & Evidence Refresh · R10"
+        },
+        {
+          "id": "p-B-0",
+          "name": "80 · R10 · Builder Contracts & Reference States"
+        },
+        {
+          "id": "p-A-0",
+          "name": "ARCHIVE · Relocated Families · Not for Build"
+        },
+        {
+          "id": "p-9-0",
+          "name": "90 · ARCHIVE · Returns v2 duplicate studies · NOT FOR BUILD"
+        },
+        {
+          "id": "p-7-0",
+          "name": "06 · Returns Calendar · Terminal + Dossier"
+        },
+        {
+          "id": "p-5-0",
+          "name": "04 · Research Library + Search"
+        },
+        {
+          "id": "p-6-0",
+          "name": "05 · China Intelligence · vNext"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · History + Scenarios"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Macro, Policy + Risk"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Overview, Compare + Navigation"
+        }
+      ],
+      "literal_match_count": 0,
+      "literal_matches": []
+    },
+    {
+      "name": "Intelligence Hub",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "url": "https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "Page 1"
+        },
+        {
+          "id": "p-8-0",
+          "name": "98 · SOURCE ONLY · Intelligence Hub Alt Data Baseline"
+        },
+        {
+          "id": "p-7-0",
+          "name": "99 · Hub · Transfer QA + Held"
+        },
+        {
+          "id": "p-6-0",
+          "name": "04 · Hub · Loading, Filters + Locale Coverage"
+        },
+        {
+          "id": "p-5-0",
+          "name": "03 · Hub · Research + Risk States"
+        },
+        {
+          "id": "p-4-0",
+          "name": "02 · Hub · Mobile Commands + Evidence"
+        },
+        {
+          "id": "p-3-0",
+          "name": "01 · Hub · Desktop Commands + Evidence"
+        },
+        {
+          "id": "p-2-0",
+          "name": "Intelligence Hub · R4 · Working"
+        }
+      ],
+      "literal_match_count": 0,
+      "literal_matches": []
+    },
+    {
+      "name": "PROPHET",
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "url": "https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "PROPHET"
+        },
+        {
+          "id": "p-B-0",
+          "name": "REF · REJECTED · R6 text-row direction · R1–R4"
+        },
+        {
+          "id": "p-A-0",
+          "name": "07 · R6 successor · Opportunity workspace · DRAFT"
+        },
+        {
+          "id": "p-9-0",
+          "name": "06 · R6 · Flagship candidate · Design draft"
+        },
+        {
+          "id": "p-8-0",
+          "name": "REF · Prophet Quote + Assessment Reviews · R4.0–4.4"
+        },
+        {
+          "id": "p-7-0",
+          "name": "REF · Prophet Setup, Evidence + Playbooks · R3.1–3.9"
+        },
+        {
+          "id": "p-6-0",
+          "name": "05 · SOURCE ONLY · Prophet US Live Baseline"
+        },
+        {
+          "id": "p-5-0",
+          "name": "04 · Shared Contracts + State Coverage"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Screener · Table, Grid + Compare"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · R2 · Today, Setup + Plans"
+        },
+        {
+          "id": "p-2-1",
+          "name": "01 · Regional · Hong Kong + Canada"
+        }
+      ],
+      "literal_match_count": 3,
+      "literal_matches": [
+        {
+          "id": "7ZL-0",
+          "name": "shared shell",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "shared shell"
+            }
+          ]
+        },
+        {
+          "id": "805-0",
+          "name": "shared shell",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "shared shell"
+            }
+          ]
+        },
+        {
+          "id": "80P-0",
+          "name": "shared shell",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "shared shell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Market Guide",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "Mastermind · Market Guide · Re-envisioning"
+        },
+        {
+          "id": "p-6-0",
+          "name": "04 · Risk Radar Full Guide · Themes + Locales"
+        },
+        {
+          "id": "p-5-0",
+          "name": "REF · Guide Baseline · Themes + Locales"
+        },
+        {
+          "id": "p-4-0",
+          "name": "03 · Search, Aliases + Recovery"
+        },
+        {
+          "id": "p-3-0",
+          "name": "02 · Contextual Help + Visual Explanations"
+        },
+        {
+          "id": "p-2-0",
+          "name": "01 · Score Reading · Themes + Locales"
+        }
+      ],
+      "literal_match_count": 0,
+      "literal_matches": []
+    },
+    {
+      "name": "Risk Popups",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z",
+      "pages": [
+        {
+          "id": "p-1-0",
+          "name": "RISK RADAR SYSTEM"
+        },
+        {
+          "id": "p-6-0",
+          "name": "01B · Risk Radar · Pullback Underway · US + China"
+        },
+        {
+          "id": "p-5-0",
+          "name": "00 · Popups + Risk Radar · Start Here · Design Families"
+        },
+        {
+          "id": "p-3-0",
+          "name": "China Intelligence · R2 · Progressive Disclosure"
+        },
+        {
+          "id": "p-4-0",
+          "name": "Events & News · R2 · Briefing to Evidence · 2026-09-29"
+        },
+        {
+          "id": "p-2-0",
+          "name": "Program Handoff · Popup Upgrade Sequence"
+        }
+      ],
+      "literal_match_count": 1,
+      "literal_matches": [
+        {
+          "id": "7T4-0",
+          "name": "Shared shell, distin…",
+          "component": "Text",
+          "matched": [
+            {
+              "textValue": "Shared shell, distinct analytical question."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

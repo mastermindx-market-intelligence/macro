@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.tiingo_archive import (
     Archive, BOATS_WS, DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError,
-    collect_one, decode_boats, read_key, request_path, symbol_path, utc_now,
+    collect_one, decode_boats, read_key, recorded_request_path, request_path, symbol_path, utc_now,
 )
 
 LOG = logging.getLogger("tiingo_ingest")
@@ -46,6 +46,19 @@ MAX_SYMBOLS = 12000
 # coverage ceiling explicitly. No caller may invent a larger bound.
 MAX_LOAD_SYMBOLS = 20000
 MAX_TASKS = 120000
+# Bounded BOATS stream failure diagnostics. At most five per-attempt records
+# are retained in the returned counts, each carrying only a closed literal
+# stage/category vocabulary, the bounded attempt identity and a finite
+# monotonic elapsed duration. Records never carry or derive exception text,
+# exception class names, stacks, locals, payloads, vendor bodies, URLs,
+# tokens or peer reasons. Observer-callback and archive-storage boundaries
+# are named so they can never be confused with transport stages; terminal
+# storage/auth failures propagate instead, so no record is returned for them.
+MAX_STREAM_FAILURE_RECORDS = 5
+STREAM_FAILURE_STAGES = frozenset({"connect", "configure", "subscribe",
+                                   "receive", "observer", "storage"})
+STREAM_FAILURE_CATEGORIES = frozenset({"transport", "timeout", "callback",
+                                       "storage"})
 
 
 @dataclass(frozen=True)
@@ -218,7 +231,7 @@ def plan_page(tasks: list[Task], *, offset: int = 0, limit: int = 25,
     counts: dict[str, int] = {}
     for index, task in enumerate(tasks):
         entry = {"ordinal": index, "source": task.source, "symbol": task.symbol,
-                 "request_path": request_path(task.source, task.symbol, task.params)}
+                 "request_path": recorded_request_path(task.source, task.symbol, task.params)}
         hasher.update((json.dumps(entry, sort_keys=True, separators=(",", ":")) + "\n").encode())
         counts[task.source] = counts.get(task.source, 0) + 1
         if offset <= index < offset + limit:
@@ -296,22 +309,33 @@ def boats_stream(*, max_seconds: int, max_messages: int,
     key = read_key()
     archive = archive or Archive()
     end_at = time.monotonic() + max_seconds
+    started_at = end_at - max_seconds
     counts: dict[str, Any] = {"connections": 0, "transport_breaks": 0,
                               "raw_messages": 0, "segments": 0, "bytes": 0,
-                              "coverage_proven": False}
+                              "coverage_proven": False, "failures": []}
     buffer: list[tuple[str, str]] = []
     buffer_bytes = 0
     last_flush = time.monotonic()
     stream_active = False
+    # Failure boundary of the most recent operation in the current attempt.
+    stage = "connect"
 
     def notify(kind, payload=None):
+        nonlocal stage
         if observer is not None:
+            # Any observer invocation is a callback boundary: an exception from
+            # it must never be recorded as a transport-stage failure.
+            previous_stage = stage
+            stage = "observer"
             observer(kind, payload or {})
+            stage = previous_stage
 
     def flush() -> None:
-        nonlocal buffer_bytes, last_flush
+        nonlocal buffer_bytes, last_flush, stage
         if not buffer:
             return
+        previous_stage = stage
+        stage = "storage"
         try:
             saved = archive.store_boats_batch(buffer)
         except TiingoArchiveError:
@@ -321,6 +345,7 @@ def boats_stream(*, max_seconds: int, max_messages: int,
             # would silently drop buffered source frames. Stop the bounded stream
             # instead; the buffer stays unarchived, so no display batch qualifies.
             raise TiingoArchiveError("BOATS archive storage failed; stream stopped") from err
+        stage = previous_stage
         counts["segments"] += int(saved["new_raw"])
         counts["bytes"] += saved["raw_bytes"]
         frames = tuple(buffer)
@@ -335,22 +360,42 @@ def boats_stream(*, max_seconds: int, max_messages: int,
     # requires existing authorized runtime orchestration, independent admission
     # and a durable return/effects path; we do not self-register one here.
     attempts = 0
+
+    def record_failure(failure_stage: str, category: str) -> None:
+        # Retain only a bounded, closed-vocabulary record of a retried failure.
+        # Elapsed is clamped into [0, max_seconds] so it stays a finite,
+        # monotonic-clock duration; nothing about the exception itself is kept.
+        if len(counts["failures"]) >= MAX_STREAM_FAILURE_RECORDS:
+            return
+        elapsed = time.monotonic() - started_at
+        if not math.isfinite(elapsed) or elapsed < 0.0:
+            elapsed = 0.0
+        counts["failures"].append({
+            "stage": failure_stage,
+            "category": category,
+            "attempt": min(max(attempts, 1), MAX_STREAM_FAILURE_RECORDS),
+            "elapsed": min(elapsed, float(max_seconds)),
+        })
     try:
         while time.monotonic() < end_at and counts["raw_messages"] < max_messages:
             attempts += 1
             if attempts > 5:
                 break
             sock = None
+            stage = "connect"
             try:
                 sock = websocket.create_connection(BOATS_WS, timeout=8,
                                                     enable_multithread=True)
                 counts["connections"] += 1
+                stage = "configure"
                 sock.settimeout(3)
+                stage = "subscribe"
                 sock.send(boats_subscribe_message(key))
                 stream_active = True
                 notify("connected", {"connection": counts["connections"]})
                 while (time.monotonic() < end_at
                        and counts["raw_messages"] < max_messages):
+                    stage = "receive"
                     try:
                         raw = sock.recv()
                     except websocket.WebSocketTimeoutException:
@@ -383,11 +428,23 @@ def boats_stream(*, max_seconds: int, max_messages: int,
                             or time.monotonic() - last_flush >= flush_seconds):
                         flush()
             except TiingoArchiveError:
+                # Terminal: sensitive-material, vendor rejection or storage
+                # stop. These propagate to the caller, so no counts/failures
+                # diagnostics exist on this path; nothing is recorded here.
                 stream_active = False
                 notify("error")
                 raise
-            except (OSError, websocket.WebSocketException):
+            except (OSError, websocket.WebSocketException) as err:
                 counts["transport_breaks"] += 1
+                # Retryable failure classification at the exact boundary:
+                # observer callbacks stay distinct from every transport stage,
+                # and socket timeouts stay distinct from other transport breaks.
+                if stage == "observer":
+                    record_failure(stage, "callback")
+                elif isinstance(err, websocket.WebSocketTimeoutException):
+                    record_failure(stage, "timeout")
+                else:
+                    record_failure(stage, "transport")
                 stream_active = False
                 notify("gap")
                 flush()

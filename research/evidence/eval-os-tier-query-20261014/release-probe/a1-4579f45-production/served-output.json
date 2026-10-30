@@ -1,0 +1,65 @@
+{
+  "schema": "eval_os.public_served_assets.v1",
+  "observed_at": "2026-10-24T03:04:17.767513+00:00",
+  "anonymous_public_only": true,
+  "index": {
+    "url": "https://admin.mastermind-x.com/",
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store"
+    },
+    "bytes": 3508,
+    "sha256": "719489698196ad52419224e715dbb70fa970320694f9b79ce158b6a83ec2076e"
+  },
+  "assets": [
+    {
+      "url": "https://admin.mastermind-x.com/app.js?v=49a5431df90e",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"49a5431df90e\""
+      },
+      "bytes": 1027913,
+      "sha256": "49a5431df90ea372fa32b5df5c44135c3118d0769613579028cecaed3911ff1d",
+      "name": "app.js"
+    },
+    {
+      "url": "https://admin.mastermind-x.com/styles.css?v=8c5fb312fdd7",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"8c5fb312fdd7\""
+      },
+      "bytes": 233252,
+      "sha256": "8c5fb312fdd757c7adf39311f6ca8b07b0d50935b54460ace7546bcd91aab11a",
+      "name": "styles.css"
+    },
+    {
+      "url": "https://admin.mastermind-x.com/preferences.js?v=c22da47436d7",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"c22da47436d7\""
+      },
+      "bytes": 3173,
+      "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+      "name": "preferences.js"
+    },
+    {
+      "url": "https://admin.mastermind-x.com/assets/theme-tokens.css?v=e7b54d6df754",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"e7b54d6df754\""
+      },
+      "bytes": 18755,
+      "sha256": "e7b54d6df754d1df26621912081ebd9e82cd9b921ffed51d1ea4c828a0da8bab",
+      "name": "assets/theme-tokens.css"
+    }
+  ]
+}

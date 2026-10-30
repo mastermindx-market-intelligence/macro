@@ -752,7 +752,7 @@ class TestZoneExpiryToStarter:
         band_top = float(prices["low"].iloc[-1]) * 1.02
         plan = self._plan_with_zone(
             conversion_class=pb.ZONE_CONVERSION_WASHOUT, high=band_top,
-            expiry="2026-01-05",   # long past, so only `filled` can win
+            expiry=str(prices.index[-1].date()),  # observed touch ON expiry is eligible
         )
         plan["price_basis_date"] = str(prices.index[0].date())
         plan["entry_zone"]["price_basis_date"] = plan["price_basis_date"]
@@ -1269,3 +1269,127 @@ class TestCommittedArtifactDisposition:
         admitted = pb.select_candidates(board, n=None)
         keys = [pb._selection_sort_key(row) for row in admitted]
         assert keys == sorted(keys)
+
+
+class TestZonePointInTimeVisitContract:
+    """WP03: a zone visit is an observed PIT band touch, NEVER a broker fill.
+
+    Plan is formed at the close of July 2, 2026 (July 3 exchange holiday).
+    Separate scalar close-trigger and forward ledger grading remain untouched.
+    """
+
+    @staticmethod
+    def _zone(*, expiry="2026-07-10", convert=False, low=93.0, high=95.0):
+        return {
+            "id": "ZONE-BULL-20260702",
+            "price_basis_date": "2026-07-02",
+            "entry_zone": {
+                "low": low, "high": high, "price_basis_date": "2026-07-02",
+                "expiry_date": expiry, "stance": pb.ZONE_STANCE_WAIT,
+                "converts_on_expiry": convert,
+            },
+        }
+
+    @staticmethod
+    def _tape(dates, low=None, high=None, close=None):
+        cols = {}
+        if low is not None:
+            cols["low"] = low
+        if high is not None:
+            cols["high"] = high
+        if close is not None:
+            cols["close"] = close
+        return pd.DataFrame(cols, index=pd.to_datetime(dates))
+
+    def test_z1_basis_day_intraday_low_cannot_fill_post_close_plan(self):
+        tape = self._tape(["2026-07-02", "2026-07-06"],
+                          low=[94, 103], high=[104, 108], close=[100, 105])
+        state = pb.evaluate_entry_zone(self._zone(), tape, "2026-07-06")
+        assert state["state"] == "live"
+        assert state["filled_date"] is None
+
+    def test_z2_entire_bar_below_band_is_not_a_band_visit(self):
+        tape = self._tape(["2026-07-02", "2026-07-06"],
+                          low=[99, 80], high=[102, 90], close=[100, 86])
+        state = pb.evaluate_entry_zone(self._zone(), tape, "2026-07-06")
+        assert state["state"] == "live"
+        assert state["filled"] is False
+
+    @pytest.mark.parametrize(("convert", "expected"), [
+        (False, "expired"), (True, "converted"),
+    ])
+    def test_z3_after_expiry_visit_cannot_override_terminal_window(
+        self, convert, expected
+    ):
+        tape = self._tape(["2026-07-02", "2026-07-06",
+                           "2026-07-07", "2026-07-08"],
+                          low=[99, 98, 99, 94],
+                          high=[102, 106, 105, 101],
+                          close=[100, 104, 104, 99])
+        zone = self._zone(expiry="2026-07-07", convert=convert)
+        state = pb.evaluate_entry_zone(zone, tape, "2026-07-09")
+        assert state["state"] == expected
+        assert state["filled"] is False
+        assert state["filled_date"] is None
+        assert state["expired"] is True
+        assert state["converted"] is convert
+        en = pb._zone_lines_en(zone["entry_zone"], state, 100, 85, 115)
+        zh = pb._zone_lines_zh(zone["entry_zone"], state, 100, 85, 115)
+        assert en and zh and en != zh
+
+    def test_z4_in_window_full_ohlc_intersection_is_a_descriptive_visit(self):
+        tape = self._tape(["2026-07-02", "2026-07-06"],
+                          low=[99, 94], high=[102, 105], close=[100, 103])
+        state = pb.evaluate_entry_zone(self._zone(), tape, "2026-07-06")
+        assert state["state"] == "filled"
+        assert state["filled_date"] == "2026-07-06"
+        assert state["fill_basis"] == "ohlc_range"
+        assert state["fill_authority"] == "observation_only_not_execution"
+
+    def test_z5_visit_on_expiry_session_counts_in_window(self):
+        tape = self._tape(["2026-07-02", "2026-07-06", "2026-07-07"],
+                          low=[99, 98, 94], high=[102, 106, 106],
+                          close=[100, 104, 102])
+        state = pb.evaluate_entry_zone(
+            self._zone(expiry="2026-07-07"), tape, "2026-07-09")
+        assert state["state"] == "filled"
+        assert state["filled_date"] == "2026-07-07"
+
+    def test_z6_close_only_records_in_band_without_inventing_intraday_touches(self):
+        tape = self._tape(["2026-07-02", "2026-07-06"],
+                          close=[100, 94])
+        state = pb.evaluate_entry_zone(self._zone(), tape, "2026-07-06")
+        assert state["state"] == "filled"
+        assert state["fill_basis"] == "close"
+        assert state["fill_authority"] == "observation_only_not_execution"
+        low_only = self._tape(["2026-07-02", "2026-07-06"],
+                              low=[99, 80], close=[100, 86])
+        unsafe = pb.evaluate_entry_zone(self._zone(), low_only, "2026-07-06")
+        assert unsafe["state"] == "live"
+        assert unsafe["filled_date"] is None
+
+    def test_z7_legacy_no_zone_and_invalid_bounds_degrade_without_touch(self):
+        empty = pb.evaluate_entry_zone(
+            {"id": "LEGACY"}, self._tape(["2026-07-06"], close=[94]),
+            "2026-07-06")
+        assert empty["state"] == "none"
+        inverted = pb.evaluate_entry_zone(
+            self._zone(low=97, high=95),
+            self._tape(["2026-07-06"], low=[94], high=[100], close=[97]),
+            "2026-07-06")
+        assert inverted["state"] == "none"
+        assert inverted["filled"] is False
+
+    def test_z8_future_bar_not_read_before_asof_and_bilingual_filled_is_conditional(self):
+        tape = self._tape(["2026-07-02", "2026-07-06", "2026-07-07"],
+                          low=[99, 98, 94], high=[102, 107, 105],
+                          close=[100, 104, 100])
+        plan = self._zone()
+        state = pb.evaluate_entry_zone(plan, tape, "2026-07-06")
+        assert state["state"] == "live"
+        state = pb.evaluate_entry_zone(plan, tape, "2026-07-07")
+        assert state["state"] == "filled"
+        en = pb._zone_lines_en(plan["entry_zone"], state, 100, 85, 115)
+        zh = pb._zone_lines_zh(plan["entry_zone"], state, 100, 85, 115)
+        assert "not proof" in " ".join(en).lower()
+        assert "不代表" in "".join(zh)

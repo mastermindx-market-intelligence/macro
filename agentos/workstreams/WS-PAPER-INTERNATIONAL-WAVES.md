@@ -194,6 +194,36 @@ landmines:
   existing Investigation owner and accepted interface.
 ---
 
+## October 30 source-candidate scope
+
+The local history-preserving candidate composes original PR8754 source
+`582708537fd4f07b6a4d42cd54ed6220a34c640b` with qualified main
+`71add133e3b68c3fd130290b6ba83ffdd4c1cf91` and the accepted prospective ECB
+port `69535b6894e8fcce41bc95ee7665e5cb8445070f`. Original branch-only product
+work and dated evidence remain historical inputs, not fresh served or release
+acceptance. The reviewed [IM00 disposition](https://github.com/mastermindx-market-intelligence/macro/blob/18a846a34defbe9760d2c0e28b37997dcd5f8cbe/research/website-revamp-IM00-DISPOSITION-2026-10-24.md)
+continues to govern the port; all eleven waves and their product obligations remain.
+
+The actual account-limit refusal is CI-artifact payload egress, not a blanket
+Git-source/PR-metadata denial. Source integration does not restore that capacity:
+original run 38751445578 remains NO FURTHER REQUESTS, only packs 1/7/8/9/10 retain
+accepted consumption, and subsequent payload/final admission is NOT_ESTABLISHED.
+Technical retrieval or passing historical CI never supplies missing admission.
+Original run 39400637901 pack 3/6 diagnostics remain unavailable; no repair is inferred.
+
+This unpublished candidate authorizes no CI-triggering push, protected merge,
+installation, publisher run, live/provider/authenticated-browser operation or
+Saved/cutover effect. Historical render dates/receipts are preserved without a
+fresh-render claim. Bounded International asset hashes follow the actual merged
+assets; wider shared-theme restamping and source-publication/CI event eligibility
+remain explicit publication qualifications. Qualifier EFFECT_UNKNOWN, T03k,
+frozen reviews, rights, migrations, release, Chrome/app44 and IW2's Terminal804/
+Saved/cutover custody remain separate and held. Standing named commercial data
+rights remain approved by Chairman attestation; access, point-in-time validity and
+disclosure qualification are separate facts. No old operational continuation
+in the dated material below overrides those action-specific boundaries.
+
+
 The Chairman delivered all three waves to Astra in root `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. PR #8527 merged as `63245e035e2067f19ef9c75077dc920895b2eb17`; it is retained as the grouped source carrier for the three waves. The current release repair is draft PR #8754 in the canonical workspace operation `paper-waves-01a1101f-release-r2`. The old merged branch is not reused. No fixed one-worker programme ceiling remains. Every descendant retains the original root and actual host/provider admission; a role or available quota alone creates no capacity.
 
 Native Sol CEO `01a11057-3134-76d2-bcd1-784d69cc17d3` has executed under the Chairman-authorized local exception, requested `gpt-6.1-sol`; served model is unattested. Workers are scoped to the existing root and retained run identities; the external CHECKPOINT binds current phase and process evidence. The nested COO-to-worker graph is not proven admitted. A single native Codex heartbeat now continues this same chat from the compact external checkpoint; it is not proof of an admitted Executive same-parent runtime Wake.

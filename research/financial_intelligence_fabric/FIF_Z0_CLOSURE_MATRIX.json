@@ -7,7 +7,7 @@
     "path": "research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json",
     "case_count": 54
   },
-  "as_of": "2026-10-19",
+  "as_of": "2026-10-20",
   "verdicts": [
     "CLOSED",
     "PARTIAL",
@@ -28,15 +28,18 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 27,
-    "PARTIAL": 23,
+    "CLOSED": 30,
+    "PARTIAL": 17,
     "OPEN": 0,
-    "PENDING_LIVE": 2,
-    "HUMAN_GATE": 2
+    "PENDING_LIVE": 3,
+    "HUMAN_GATE": 4
   },
   "final_acceptance": {
     "claimable": false,
     "independent_acceptance": "Z1 pending",
+    "independent_acceptance_history": [
+      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs."
+    ],
     "rule": "No phase, report, PR or green CI is a final claim while any case is not CLOSED; Z1 independent acceptance follows a fully CLOSED matrix."
   },
   "cases": [
@@ -81,9 +84,11 @@
       "evidence": [
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_disagreeing_same_report_duplicates_are_kept_and_break_the_chain",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_rounded_link_classifies_rounded_consistent_and_mints_nothing",
-        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_repeated_chain_classifies_repeated_with_exact_edges"
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_repeated_chain_classifies_repeated_with_exact_edges",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_changed_tail_is_contradictory_and_never_mints"
       ],
-      "obligations": []
+      "obligations": [],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F4: the inconsistent leg was asserted only by an uncited test; evidence amended, stays CLOSED."
     },
     {
       "id": "A04",
@@ -277,19 +282,18 @@
       ],
       "condition": "CIK, security aliases and multiple share classes",
       "required_behavior": "Use Data OS owner binding; no new identity namespace or double-counted issuer.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_peer_cohort.py::test_goog_googl_collapse_one_member_and_a35_i1",
         "tests/test_fundamental_forensics_peer_cohort.py::test_duplicate_issuer_id_raises_entity_ids_must_be_unique",
-        "tests/test_fundamental_forensics_production_provider.py::test_production_statement_provider_binds_via_cik_over_two_class_issuer"
+        "tests/test_fundamental_forensics_production_provider.py::test_production_statement_provider_binds_via_cik_over_two_class_issuer",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_a14_two_share_classes_with_one_owner_binding_cik_collapse",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_member_identity_comes_from_the_owner_binding",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_excludes_a_contract_cik_disagreeing_with_owner_binding",
+        "tests/test_fundamental_forensics_state_peer_cohort.py::test_state_peer_cohort_excludes_a_member_with_no_owner_binding"
       ],
-      "obligations": [
-        {
-          "kind": "implementation_gap",
-          "owner": "FIF seat",
-          "next_action": "Bind the share-class collapse to the Data OS owner identity binding instead of a local map, and test that the cohort reads that binding."
-        }
-      ]
+      "obligations": [],
+      "note": " 2026-10-20: PR #9870 (main 8d788e63) binds the share-class collapse to the Data OS owner identity binding; no local map, no new namespace."
     },
     {
       "id": "A15",
@@ -352,19 +356,19 @@
       ],
       "condition": "Write response lost, immediate absence or delayed commit",
       "required_behavior": "Preserve original-target EFFECT_UNKNOWN; no replay/failover until reconciliation.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_admitted_filing_package.py::test_ambiguous_write_keeps_effect_unknown_on_original_target",
         "tests/test_fundamental_forensics_attested_query_snapshots.py::test_pointer_cas_reconciles_ambiguous_commit_and_exact_candidate_is_idempotent",
-        "tests/test_fundamental_forensics_recovery_drill.py::test_effect_unknown_delayed_pointer_commit_reconciles_landed_zero_writes"
+        "tests/test_fundamental_forensics_recovery_drill.py::test_effect_unknown_delayed_pointer_commit_reconciles_landed_zero_writes",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s1_lost_write_response_is_reconciled_in_run_exactly_once",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s2_immediate_absence_writes_typed_partial_report_then_clean_rerun",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s2_drop_after_commit_alone_is_inert_at_base",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s3_delayed_pointer_commit_lands_before_rerun_reports_unchanged",
+        "tests/test_fif_a18_publish_fault_drill.py::test_s4_cross_drill_invariants"
       ],
-      "obligations": [
-        {
-          "kind": "live_proof",
-          "owner": "FIF seat",
-          "next_action": "Run the V0 sandbox failure-injection drill (lost write response, immediate absence, delayed commit) and record the observed reconciliation."
-        }
-      ]
+      "obligations": [],
+      "note": " 2026-10-20: PR #9863 (main d0952736) commits the drill; S2 reconciled with the A21 observation record under R-A21-STORE-TRACE (PR #9871)."
     },
     {
       "id": "A19",
@@ -391,7 +395,7 @@
         "tests/fundamental_forensics_a19_hostile.test.mjs::revisions table: hostile vintages, ids and policy echo render as text"
       ],
       "obligations": [],
-      "note": "Workbench: static sink and href guards plus hostile-payload renders of the statement tree, normalized table, evidence drawer and revisions table; mutation-checked (dropping an esc() call or binding a raw href fails the suite)."
+      "note": "Workbench: static sink and href guards plus hostile-payload renders of the statement tree, normalized table, evidence drawer and revisions table; mutation-checked (dropping an esc() call or binding a raw href fails the suite). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F3 (fundamental_forensics_a19_hostile.test.mjs \"executed only by a disabled job\") REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success). A19 stays CLOSED."
     },
     {
       "id": "A20",
@@ -401,17 +405,15 @@
       ],
       "condition": "Many operators request SEC sources concurrently",
       "required_behavior": "Use one incumbent shared request budget; no10-per-worker multiplication or limit evasion.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
-        "tests/test_fif_publication_workflow_shape.py::test_contract_sec_steps_pace_at_two_requests_per_second"
+        "tests/test_fif_publication_workflow_shape.py::test_contract_sec_steps_pace_at_two_requests_per_second",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_one_shared_pacer_sleeps_between_every_consecutive_pair",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_live_fetchers_routes_both_fetch_paths_through_one_pacer",
+        "tests/test_fundamental_forensics_sec_request_pacer.py::test_concurrent_acquires_never_mark_twice_inside_one_interval"
       ],
-      "obligations": [
-        {
-          "kind": "implementation_gap",
-          "owner": "FIF seat",
-          "next_action": "Route every FIF SEC fetch through one incumbent shared request budget, and add a concurrency test that N workers together stay at or below 2 req/s."
-        }
-      ]
+      "obligations": [],
+      "note": " 2026-10-20: PR #9869 (main fc16cd51) routes every FIF SEC fetch through the incumbent shared pacer (<= 2 req/s across N workers)."
     },
     {
       "id": "A21",
@@ -420,25 +422,33 @@
       ],
       "condition": "No new filings, source outage, duplicate delivery and retry",
       "required_behavior": "Differentiate checked-no-change from source_outage and stale; idempotent generation, no rerender freshness.",
-      "verdict": "PARTIAL",
+      "verdict": "PENDING_LIVE",
       "evidence": [
         "tests/test_fundamental_forensics_filing_observation_state.py::test_observe_duplicate_delivery_is_idempotent",
         "tests/test_fundamental_forensics_filing_observation_state.py::test_mark_published_requires_successful_check_and_is_monotone",
         "tests/test_fundamental_forensics_filing_observation_state.py::test_freshness_classifies_around_the_sla_boundary",
-        "tests/test_fundamental_forensics_filing_observation_state.py::test_missing_outcome_requires_a_known_cause"
+        "tests/test_fundamental_forensics_filing_observation_state.py::test_missing_outcome_requires_a_known_cause",
+        "tests/test_fif_a21_publish_observation.py::test_t1_first_publish_writes_one_new_filing_observation_per_issuer",
+        "tests/test_fif_a21_publish_observation.py::test_t2_second_run_same_inputs_later_clock_is_checked_no_change",
+        "tests/test_fif_a21_publish_observation.py::test_t3_changed_material_is_new_content_with_old_record_as_cas_prior",
+        "tests/test_fif_a21_publish_observation.py::test_t4_commit_failure_withholds_the_observation_not_attempted_get_none",
+        "tests/test_fif_a21_publish_observation.py::test_t5a_observation_write_lost_after_commit_lands_via_read_back",
+        "tests/test_fif_a21_publish_observation.py::test_t5b_observation_write_never_lands_is_not_landed_rc_unchanged",
+        "tests/test_fif_a21_publish_observation.py::test_t6_unreadable_prior_record_refuses_before_any_write",
+        "tests/test_fif_a21_publish_observation.py::test_t7_exclusion_observation_state_covers_every_reason_constant",
+        "tests/test_fif_a21_publish_observation.py::test_t7a_source_outage_exclusion_observes_source_outage",
+        "tests/test_fif_a21_publish_observation.py::test_t7b_refusal_class_exclusion_observes_check_failed",
+        "tests/test_fif_a21_publish_observation.py::test_t8_same_clock_rerun_is_byte_identical_zero_extra_writes",
+        "tests/test_fif_a21_publish_observation.py::test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b"
       ],
       "obligations": [
         {
-          "kind": "test_gap",
-          "owner": "FIF seat",
-          "next_action": "Prove the observation state is wired into the C0 publish path (checked-no-change vs source_outage vs stale)."
-        },
-        {
           "kind": "live_proof",
           "owner": "natural schedule",
-          "next_action": "Observe the 2026-10-20 02:30Z scheduled publish and a later no-new-filing cycle."
+          "next_action": "Observe one scheduled publish (never dispatched) after PR #9871 lands and a later no-new-filing cycle: issuers/<id>/observation.json carries new_filing then checked_no_change; a withheld row shows observation_write withheld:<reason>."
         }
-      ]
+      ],
+      "note": " 2026-10-20: PR #9871 wires FilingObservationState into publish (R-A21-T8B material-change rule; R-A21-STORE-TRACE withholds the record where A14/A18 forbid a store write)."
     },
     {
       "id": "A22",
@@ -447,12 +457,22 @@
       ],
       "condition": "Signed-out, unauthorized or wrong-entitlement request",
       "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
-      "verdict": "CLOSED",
+      "verdict": "PARTIAL",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_provider_not_constructed_before_auth_or_admission",
-        "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers"
+        "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_misbound_provider_returns_503",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_malformed_json_returns_400",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers"
       ],
-      "obligations": []
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add a caplog test proving the 401/403/503 paths log no secret, path, traceback or source body (the body scan already lives in _assert_error, tests/test_fundamental_forensics_financial_query_api.py:391-400; no test captures logs)."
+        }
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven."
     },
     {
       "id": "A23",
@@ -708,7 +728,7 @@
       ],
       "condition": "250-deep/1000-core coverage targets",
       "required_behavior": "Predeclare issuer/period/field thresholds; prove them by manifest, not ticker loop count.",
-      "verdict": "PARTIAL",
+      "verdict": "PENDING_LIVE",
       "evidence": [
         "tests/test_fundamental_forensics_coverage_proof.py::test_shipped_thresholds_and_real_catalog",
         "tests/test_fundamental_forensics_coverage_proof.py::test_real_run_sanity_shipped_thresholds_block",
@@ -718,14 +738,10 @@
         {
           "kind": "live_proof",
           "owner": "FIF seat (coverage lane)",
-          "next_action": "Remeasure coverage by manifest after the 2026-10-20 02:30Z scheduled publish; last live measurement is 0/250 deep and 0/1,000 core."
-        },
-        {
-          "kind": "implementation_gap",
-          "owner": "FIF seat",
-          "next_action": "Emit a measured tier proposal when the frozen target is not met; the 250/1,000 target itself is not worker-editable."
+          "next_action": "Remeasure by manifest after the 2026-10-21T00:00Z core-catalogue clock and PR #9799 land: the 2026-10-20 remeasure (research/financial_intelligence_fabric/FIF_A36_COVERAGE_REMEASURE_2026-10-20.md) reads 32,267/50,000 deep (0/250) and 63,202/100,000 core (0/1,000) with blockers census_identity_mismatch, legacy_field_id_alias, manifest_draft, manifest_unattested."
         }
-      ]
+      ],
+      "note": "2026-10-20: measured tier proposal is emitted when the frozen target is not met (implementation gap met); the 250/1,000 target is not worker-editable. 2026-10-20: PR #9884 (cov-wire) wires the coverage manifest's specialist and packet cells to the production pack producers and the frozen packet request (DEC:FIF-MANIFEST-PACKET-REQUEST-FROZEN-2026-10-20); sic_source follows the contract resolver (sec_submissions / unbound)."
     },
     {
       "id": "A37",
@@ -739,11 +755,12 @@
       "evidence": [],
       "obligations": [
         {
-          "kind": "implementation_gap",
-          "owner": "FIF seat (pack lanes)",
-          "next_action": "Run the Q1 held-out evaluation per pack and commit the false-positive/abstention reports and failed-family dispositions."
+          "kind": "dependency_admission",
+          "owner": "independent Q1 labeler (never the FIF seat or a pack lane)",
+          "next_action": "Run the Q1 held-out evaluation per pack from an independently produced label set and commit the false-positive/abstention reports; research/financial_intelligence_fabric/FIF_A37_HELD_OUT_QUALIFIED_ABSTAIN_2026-10-20.md records that no labels exist yet, so all 12 packs abstain (qualified, not a pass)."
         }
-      ]
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) NOTE: obligation kind relabelled implementation_gap->dependency_admission (an external-labeler dependency, not a code gap)."
     },
     {
       "id": "A38",
@@ -833,13 +850,18 @@
       ],
       "condition": "Primary analyst asks what changed and why it matters",
       "required_behavior": "Readable first viewport and drilldown; do not bury insight in a dense database wall.",
-      "verdict": "PARTIAL",
+      "verdict": "HUMAN_GATE",
       "evidence": [],
       "obligations": [
         {
           "kind": "live_proof",
           "owner": "FIF seat",
           "next_action": "Commit the P2 capture on production data after the 2026-10-20 02:30Z scheduled publish: a readable first viewport plus drilldown for the five issuers."
+        },
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
         }
       ]
     },
@@ -852,14 +874,18 @@
       "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
       "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
       "verdict": "PARTIAL",
-      "evidence": [],
+      "evidence": [
+        "tests/test_check_ui_visual_evidence.py::test_committed_evidence_corpus_has_zero_findings",
+        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated"
+      ],
       "obligations": [
         {
-          "kind": "live_proof",
-          "owner": "FIF seat",
-          "next_action": "Capture EN/ZH x desktop/tablet/mobile x dark/light plus a keyboard focus-restore pass; the current fixture covers EN, dark, desktop and mobile only."
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add the tablet cell to REQUIRED_CELLS in tests/test_check_ui_visual_evidence.py (today desktop/mobile x en/zh x dark/light only) so the recaptured tablet corpus is guarded, and assert focus restore / disabled-control text on the keyboard set (tab_keys, drawer_trap); cite the P0 view contract RECEIPT_REST_CELLS_PER_VIEWPORT tablet receipt (tests/test_fundamental_forensics_p0_view_contract.py:299-302)."
         }
-      ]
+      ],
+      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability."
     },
     {
       "id": "A44",
@@ -903,7 +929,7 @@
         {
           "kind": "human_gate",
           "owner": "Chairman (signed-in browser)",
-          "next_action": "The browser linkage receipt needs an existing logged-in Chrome profile."
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
         }
       ]
     },
@@ -915,7 +941,7 @@
       ],
       "condition": "Predeclared load/network/corpus benchmark and slow owner",
       "required_behavior": "Meet accepted latency SLOs with measured distributions; no request-time SEC and no silent stale-green.",
-      "verdict": "PENDING_LIVE",
+      "verdict": "HUMAN_GATE",
       "evidence": [
         "tests/test_fundamental_forensics_latency.py::test_f_client_error_burst_never_pollutes_the_percentile_window"
       ],
@@ -924,6 +950,11 @@
           "kind": "live_proof",
           "owner": "FIF seat",
           "next_action": "Run the predeclared benchmark against production after the 2026-10-20 02:30Z scheduled publish; name the slow owner if an SLO misses."
+        },
+        {
+          "kind": "human_gate",
+          "owner": "Chairman (signed-in browser)",
+          "next_action": "EXACT_HUMAN_GATE named once 2026-10-20: the entitled production receipt needs an existing logged-in Chrome profile (A45/A42 browser linkage, A46 entitled benchmark); the seat never performs a login, never synthesizes a credential, and does not re-ask."
         }
       ]
     },
@@ -1023,7 +1054,7 @@
         "tests/test_fif_z0_closure_matrix.py::test_no_final_claim_while_any_row_is_open"
       ],
       "obligations": [],
-      "note": "This matrix plus its guard test; Z1 independent acceptance is still required before any final claim."
+      "note": "This matrix plus its guard test; Z1 independent acceptance is still required before any final claim. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F5 (all CLOSED rows CI-dark because their suites live only in .github/ci/legacy-jobs.yml) REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success); 36/39 cited suites are legacy-pack suites selected by that job when a PR touches FIF paths, 3 run in ci.yml. Z1 r1 verdict FAIL applied: F1/F2 lowered, F3/F5 rebutted, F4 amended, A54 ratified."
     },
     {
       "id": "A52",
@@ -1076,21 +1107,15 @@
       ],
       "condition": "Async export resumes after entitlement/cancellation or source change",
       "required_behavior": "Use existing job/export owner; immutable input refs and reauthorization; no second lifecycle.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_csv_posts_are_byte_identical",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_parquet_posts_are_byte_identical",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_without_auth_is_401_and_skips_provider",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_after_a_new_generation_binds_the_new_receipt"
       ],
-      "obligations": [
-        {
-          "kind": "design_ruling",
-          "owner": "FIF seat",
-          "next_action": "No export job owner exists, so export is a synchronous stateless re-issue with no second lifecycle and cancellation is a client abort. Z1 independent acceptance must ratify that this satisfies 'resume'; otherwise an async owner is needed."
-        }
-      ],
-      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id."
+      "obligations": [],
+      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10): RATIFY — export is a synchronous stateless re-issue (no export job owner, no second lifecycle, no cancellation state); the design_ruling obligation is discharged by that ratification."
     }
   ]
 }

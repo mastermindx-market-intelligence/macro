@@ -32,38 +32,24 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
+    pr: [8698, 945, 955, 1093, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Preserve accepted producer integrity, the four PRODUCED research contracts,
-  original refusals, foreign writers and PIT boundaries. Macro9084 merged9d3fe8.
-  Six actual captures account for all4,392 original requests:4,381 qualified,
-  one wholeSCNG quarantine, ten historical failures and zero never admitted.
-  The final121 captures and reader checks passed. Recovery accepted568 retained
-  projections, then536 complete plus326 missing-only writes;22925/91287 native
-  exits remain unknown. Separate eleven-request and fourteen-request later
-  repairs each completed and passed full new-reader comparison. Current accepted
-  census is47,564 nonempty histories/100,626,945 distinct bars,117 empty responses,
-  five explicit provider refusals and three whole-response quality quarantines.
-  All47,689 catalogue candidates have a current disposition; full vendor history,
-  dated identity and historical known-at remain unproven. Preserve original
-  fourteen failures and their eleven unknown causes, the failed directory
-  preflight and validation90730's unknown native exit. Terminal955 merged1408943
-  after all12 original jobs passed on c90b1ca;82 reviewed blobs match the merge
-  and installed afae release. The later5fa856bf release also passed exact10
-  consumer/builder and source/marker/public-HTML identity checks. The original
-  public relay read returned explicitHTTP403 and remains frozen. No publisher,
-  R2 PUT or new stream started. Separate Cloudflare configuration diagnosis
-  reached the verified account's Google passkey/user-presence step; only the
-  account user can complete that step. Preserve it without alternate login or
-  relay routes. Carry the reviewed evidence through protected CI and merge;
-  then continue lawful configuration diagnosis. Actual access resolution and
-  all current source, account, archive/relay custody, resource, session and
-  clock checks remain required before any separately admitted finite publication.
-  Preserve the persistent scheduling refusal. Prove real trade provenance through
-  the incumbent R2 key, installed QuoteHub/API, responsive EN/ZH and final expiry.
-  Keep News/QuoteHub/peer-intraday custody and SHW/PFE/evaluation/split/provider
-  holds. Full fundamentals and PIT remain unadmitted. Retained source, methods,
-  reviews and actual returns are in docs/tiingo-evidence/20261013-recovered-final-history/.
+  Execute the Chairman-approved bounded quote canary and conditional three-job
+  activation in docs/tiingo-evidence/20261021-terminal-24h/activation.md. The direct
+  2026-10-21 approval is current; do not ask again for the same action. Distinguish
+  actual originating tool/provider denials from historical handoff claims, and
+  reconcile current publication access before a live run. Install the accepted
+  CLI repair in a new sealed release; the existing runner now accepts an explicit
+  sixty-second total budget while retaining its kernel lock, permanent start/final
+  receipts, calendar guards and eight-hour default. Offline runner verification
+  passed 46 tests and four invalid-budget subtests. At 09:41 UTC the old release
+  21ff4afc1e87de2e6832e2ad1d84548aebdcb2e3 was intact and all three labels were
+  unloaded. The next real BOATS opening is 2026-10-22T00:00Z. A canary consumes that
+  session's start receipt; full recurring quotes can start only on a later unused
+  eligible session. Preserve Terminal PR 1093's accepted CI, deployed ea7b2028 and
+  live API/chart evidence, the settled 600-second private-history canary, and the
+  2026-10-13 history/identity/PIT boundaries. Never replay settled or frozen
+  operations, route around an actual denial, or displace a live writer.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -71,6 +57,7 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261021-terminal-24h/
   - docs/tiingo-evidence/20261013-recovered-final-history/
   - docs/tiingo-evidence/20261013-attended-recovery/
   - docs/tiingo-evidence/20261013-continuation-accounting/
@@ -402,3 +389,10 @@ stopped after that one request, with no successful response or projection. EOD
 embedded split/dividend evidence remains a distinct accepted source and does not
 clear the standalone endpoint refusal. No purchase, support email or account change
 was made. Safe current receipts are in the existing delivery-frontier directory.
+
+
+## 2026-10-21 Terminal consumer repair and continuous-delivery boundary
+
+Terminal [#1093](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1093) repairs overnight history latency and chart ordering on the existing 24H path. Daytime caching is separated from fresh private BOATS reads; the existing refresh can initialize a cold chart after background completion, and older responses/trades cannot roll back accepted data. The retained Terminal proof records 205 targeted tests, responsive overnight cases, exact-source guard checks and actual regenerated chart evidence. All sixteen original hosted CI jobs passed and the reviewed tree merged as `ea7b20286ffeda9194597245b147719d6ed515fd`. The canonical production owner deployed that revision successfully. Installed identity and source hashes, signed-in cold/expired cache transitions, and the actual AMD 1m ETH/24H chart were verified; the production screenshot and bounded metadata are retained in the activation evidence. Precise post-HTTP callback timing and continuous fresh source delivery remain separate from this acceptance.
+
+The current producer release and observed finite private-history delivery are recorded in [the activation evidence](../../docs/tiingo-evidence/20261021-terminal-24h/activation.md). The independent current-night owner settled without extension or replay. The three recurring labels remain unloaded; the source timestamp gap and original publication/scheduling refusals remain material. No quote publisher, R2 PUT or launchd installation was performed by this parent. Terminal was activated through its canonical production owner; beta and Quote Hub retained their existing process IDs. The proposal records the original owners, finite bounds, current canary interfaces, rollout prerequisites and rollback without granting runtime authority. Historical accepted archive accounting and open fundamentals/PIT boundaries remain in the prior handoff and evidence.

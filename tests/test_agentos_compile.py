@@ -329,7 +329,7 @@ def test_every_seeded_workstream_compiles_and_every_line_is_cited() -> None:
     # spawned thousands of `git log` processes over the same records and made the
     # all-workstream proof the pack's hidden hour-long tail.  The status contract
     # test separately proves that real tracked records resolve Git-derived dates.
-    module.git_dates = lambda _path: (None, None)
+    module.git_updated_batch = lambda paths: {path: None for path in paths}
     repo_sha = module._repo_sha()
     module._repo_sha = lambda: repo_sha
     for key in SEED_KEYS:
@@ -1217,14 +1217,15 @@ def test_compile_context_holds_no_scheduling_vocabulary() -> None:
 
     SCOPED TO THE PHASE 3 BLOCK — everything after the `Phase 3: context compilation`
     banner — not to the whole file, and that scoping is deliberate rather than lazy.  The
-    module's two sanctioned subprocess sites, `_git` and `git_dates`, are defined ABOVE the
+    module's sanctioned Git helpers are defined ABOVE the
     banner and are read-only local git; the compiler reaches them by call, so a new
     `subprocess.Popen` appearing below the banner is a new capability, which is exactly
     what this refuses.
     """
     source = CLI.read_text(encoding="utf-8")
     body = source.split("Phase 3: context compilation", 1)[1]
-    assert "def _git(" not in body and "def git_dates(" not in body, (
+    assert all(f"def {name}(" not in body
+               for name in ("_git", "git_dates", "git_updated", "git_updated_batch")), (
         "the sanctioned subprocess helpers moved below the banner — this scan now has a "
         "hole in it; re-scope it or move them back"
     )
@@ -1243,6 +1244,236 @@ def test_the_store_this_suite_compiles_is_the_committed_one(tmp_path: Path) -> N
     scratch = tmp_path / "agentos"
     shutil.copytree(STORE, scratch)
     assert _run("validate", "--root", str(scratch)).returncode == 0
+
+
+def _dated_compiler_store(tmp_path: Path):
+    """Real history with a merge, rename, re-add, and an untracked record."""
+    repo = tmp_path / "history"
+    repo.mkdir()
+    root = repo / "agentos"
+    env = dict(
+        os.environ, GIT_AUTHOR_NAME="Fixture", GIT_AUTHOR_EMAIL="fixture@example.invalid",
+        GIT_COMMITTER_NAME="Fixture", GIT_COMMITTER_EMAIL="fixture@example.invalid",
+    )
+
+    def git(*args, date="2026-08-01T12:00:00Z", check=True):
+        return subprocess.run(
+            ["git", *args], cwd=repo, capture_output=True, text=True, check=check,
+            env=dict(env, GIT_AUTHOR_DATE=date, GIT_COMMITTER_DATE=date),
+        )
+
+    git("init", "-b", "main")
+    _workstream(
+        root, "TARGET", depends_on=["WS:DEP"],
+        do_not_redo=["Settled fixture boundary; tests/test_agentos_compile.py."],
+        landmines=["Keep the entire constraint; tests/test_agentos_compile.py."],
+    )
+    _workstream(root, "DEP")
+    _decision(root, "KEEP")
+    for index in range(4):
+        _decision(root, f"PAD{index}", rationale="A material bounded rationale. " * 25)
+    _decision(root, "OTHER", affects=["WS:DEP"])
+    _decision(root, "OLD", superseded_by="DEC:NEW")
+    _decision(root, "NEW", supersedes=["DEC:OLD"])
+    _decision(root, "MALFORMED", question="")
+    _discovery(root, "KEEP")
+    _discovery(root, "EXPIRED", expires="2026-08-01")
+    _handoff(root, "TARGET-2026-08-01")
+    _handoff(root, "TARGET-2026-08-11")
+    (repo / "old.md").write_text("The file is renamed without a content edit.\n")
+    git("add", ".")
+    git("commit", "-m", "base")
+
+    git("checkout", "-b", "side")
+    _decision(root, "KEEP", rationale="Side branch decision.")
+    git("commit", "-am", "side", date="2026-08-02T12:00:00Z")
+    git("checkout", "main")
+    _decision(root, "KEEP", rationale="Main branch decision.")
+    _discovery(root, "KEEP", claim="The main branch verified this finding.")
+    git("commit", "-am", "main", date="2026-08-03T12:00:00Z")
+    merge = git("merge", "--no-ff", "side", "-m", "merge",
+                date="2026-08-04T12:00:00Z", check=False)
+    assert merge.returncode == 1, merge.stdout + merge.stderr
+    _decision(root, "KEEP", rationale="Resolved both branches with new decision text.")
+    git("add", "agentos/decisions/DEC-KEEP.md")
+    git("commit", "-m", "resolution", date="2026-08-04T12:00:00Z")
+    git("mv", "old.md", "renamed.md")
+    git("commit", "-m", "rename", date="2026-08-05T12:00:00Z")
+    (repo / "old.md").write_text("The old path is added again with new content.\n")
+    git("add", "old.md")
+    git("commit", "-m", "re-add", date="2026-08-06T12:00:00Z")
+    _discovery(root, "FRESH")
+    return repo, root, git
+
+
+def test_updated_dates_keep_per_path_merge_rename_and_missing_semantics(tmp_path, monkeypatch):
+    repo, root, _git_fixture = _dated_compiler_store(tmp_path)
+    module = _load_cli()
+    monkeypatch.setattr(module, "_ROOT", repo)
+    expected = {
+        root / "decisions/DEC-KEEP.md": "2026-08-04",
+        root / "discoveries/DSC-KEEP.md": "2026-08-03",
+        repo / "old.md": "2026-08-06",
+        repo / "renamed.md": "2026-08-05",
+        root / "discoveries/DSC-FRESH.md": None,
+        tmp_path / "outside.md": None,
+    }
+    assert {path: module.git_updated(path) for path in expected} == expected
+    assert {path: module.git_dates(path)[1] for path in expected} == expected
+    assert module.git_dates(repo / "old.md")[0] == "2026-08-01"
+    monkeypatch.setattr(module, "_git", lambda *_args, **_kwargs: None)
+    assert module.git_updated(root / "decisions/DEC-KEEP.md") is None
+
+
+def test_updated_batch_bounds_concurrency_deduplicates_and_preserves_order(tmp_path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor as RealExecutor
+    from queue import Queue
+    from threading import Event, Lock
+
+    module = _load_cli()
+    paths = [tmp_path / f"record-{index}.md" for index in (4, 1, 5, 0, 3, 2)]
+    release, lock, started = Event(), Lock(), Queue()
+    counts = {}
+    active = peak = 0
+
+    def executor(*, max_workers):
+        assert max_workers == 4
+        return RealExecutor(max_workers=max_workers)
+
+    def reader(path):
+        nonlocal active, peak
+        with lock:
+            counts[path] = counts.get(path, 0) + 1
+            active += 1
+            peak = max(peak, active)
+        started.put(path)
+        try:
+            assert release.wait(10), "test did not release the history readers"
+            return path.stem
+        finally:
+            with lock:
+                active -= 1
+
+    monkeypatch.setattr(module, "ThreadPoolExecutor", executor)
+    monkeypatch.setattr(module, "git_updated", reader)
+    # The driver is separate from the four reader threads. Events establish the
+    # overlap; the timeouts only settle a broken test and measure no performance.
+    with RealExecutor(max_workers=1) as driver:
+        future = driver.submit(module.git_updated_batch, iter(paths + [paths[0], paths[2]]))
+        try:
+            assert len({started.get(timeout=10) for _ in range(4)}) == 4
+            with lock:
+                assert active == peak == 4
+        finally:
+            release.set()
+        result = future.result(timeout=10)
+    assert list(result) == paths
+    assert result == {path: path.stem for path in paths}
+    assert counts == {path: 1 for path in paths}
+    assert active == 0 and peak == 4
+    monkeypatch.setattr(module, "git_updated", lambda path: "next-" + path.stem)
+    assert module.git_updated_batch(paths) == {path: "next-" + path.stem for path in paths}
+
+    def forbidden_executor(**_kwargs):
+        raise AssertionError("an empty input must not start an executor")
+
+    monkeypatch.setattr(module, "ThreadPoolExecutor", forbidden_executor)
+    assert module.git_updated_batch(iter(())) == {}
+
+
+@pytest.mark.parametrize("budget", [800, 6000])
+def test_compile_updated_only_matches_full_history_oracle_without_addition_walks(
+    tmp_path, monkeypatch, budget,
+):
+    repo, root, git = _dated_compiler_store(tmp_path)
+    module, oracle = _load_cli(), _load_cli()
+    for owner in (module, oracle):
+        monkeypatch.setattr(owner, "_ROOT", repo)
+    # This test isolates record-history acquisition. Existing higher-law tests
+    # exercise their real readers; retain one mandatory row for packing parity.
+    def higher_law(*_args, **_kwargs):
+        return [module._bundle_item(
+            kind="constraint", key="FIXTURE-LAW", path="research/FIXTURE.md",
+            locator="research/FIXTURE.md#law", authority_class="A1", status="active",
+            updated=None, excerpt="Mandatory constraint. " * 20, why="fixture law",
+        )]
+    monkeypatch.setattr(module, "_higher_law_items", higher_law)
+    store = module.load_store(root, {PROGRAM})
+    now = module._parse_moment(FROZEN)
+    calls = []
+    real_git = module._git
+
+    def observed_git(*args, **kwargs):
+        if args and args[0] == "log":
+            calls.append(args)
+        return real_git(*args, **kwargs)
+
+    monkeypatch.setattr(module, "_git", observed_git)
+    monkeypatch.setattr(oracle, "_git", observed_git)
+    current_reader = module.git_updated
+    # The old compiler consumed git_dates(path)[1]. A separate module keeps its
+    # original reader while this module uses that full-history oracle.
+    monkeypatch.setattr(module, "git_updated", lambda path: oracle.git_dates(path)[1])
+    expected = module.compile_bundle(store, workstream="TARGET", now=now, budget=budget)
+    legacy_calls = list(calls)
+    calls.clear()
+    monkeypatch.setattr(module, "git_updated", current_reader)
+    real_cost = module._item_cost
+    expected_dates = {
+        "agentos/workstreams/WS-TARGET.md": "2026-08-01",
+        "agentos/workstreams/WS-DEP.md": "2026-08-01",
+        "agentos/decisions/DEC-KEEP.md": "2026-08-04",
+        "agentos/decisions/DEC-NEW.md": "2026-08-01",
+        **{f"agentos/decisions/DEC-PAD{index}.md": "2026-08-01" for index in range(4)},
+        "agentos/discoveries/DSC-KEEP.md": "2026-08-03",
+        "agentos/discoveries/DSC-FRESH.md": None,
+        "agentos/handoffs/TARGET-2026-08-11.md": "2026-08-01",
+    }
+
+    def dated_cost(item):
+        if item["path"] in expected_dates:
+            assert item["updated"] == expected_dates[item["path"]]
+        assert set(item) == {"kind", "key", "path", "locator", "authority_class",
+                             "status", "updated", "excerpt", "why_included", "_seq"}
+        return real_cost(item)
+
+    monkeypatch.setattr(module, "_item_cost", dated_cost)
+    actual = module.compile_bundle(store, workstream="TARGET", now=now, budget=budget)
+    assert module._dump_json(actual) == module._dump_json(expected)
+    eligible = {
+        "agentos/workstreams/WS-TARGET.md", "agentos/workstreams/WS-DEP.md",
+        "agentos/decisions/DEC-KEEP.md", "agentos/decisions/DEC-NEW.md",
+        *(f"agentos/decisions/DEC-PAD{index}.md" for index in range(4)),
+        "agentos/discoveries/DSC-KEEP.md", "agentos/discoveries/DSC-FRESH.md",
+        "agentos/handoffs/TARGET-2026-08-11.md",
+    }
+    assert {args[-1] for args in calls} == eligible
+    assert len(calls) == len(eligible)
+    assert len(legacy_calls) == 2 * len(eligible)
+    assert all(args[:3] == ("log", "-1", "--format=%as") for args in calls)
+    assert sum("--diff-filter=A" in args for args in legacy_calls) == len(eligible)
+    own_rows = [item for item in _items(actual)
+                if item["path"] == "agentos/workstreams/WS-TARGET.md"]
+    assert len(own_rows) == 3  # workstream plus both mandatory constraint rows
+    assert all(item["updated"] == "2026-08-01" for item in own_rows)
+    assert any(item["key"] == "FIXTURE-LAW" for item in _items(actual))
+    if budget == 800:
+        assert actual["omitted_due_to_budget"]
+    else:
+        dated = {item["path"]: item["updated"] for item in _items(actual)}
+        assert dated["agentos/decisions/DEC-KEEP.md"] == "2026-08-04"
+        assert dated["agentos/discoveries/DSC-FRESH.md"] is None
+        # A later read observes the new commit and changed source bytes. No date
+        # result or bundle may persist merely because this process is still alive.
+        _decision(root, "KEEP", rationale="A newly committed current decision.")
+        git("commit", "-am", "next decision", date="2026-08-07T12:00:00Z")
+        expected_dates["agentos/decisions/DEC-KEEP.md"] = "2026-08-07"
+        fresh = module.compile_bundle(module.load_store(root, {PROGRAM}),
+                                      workstream="TARGET", now=now, budget=budget)
+        dated = {item["path"]: item["updated"] for item in _items(fresh)}
+        assert dated["agentos/decisions/DEC-KEEP.md"] == "2026-08-07"
+        assert fresh["repo_sha"] != actual["repo_sha"]
+        assert fresh["source_records_digest"] != actual["source_records_digest"]
 
 
 # -------------------------------------------------------- source-record identity

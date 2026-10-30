@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-15T06:50:22.132899+00:00",
+  "qualified_source": "2d0e6e334986eb73496c102a939ee4e24a688c63",
+  "containing_head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "source_unchanged": true,
+  "changed_files": [
+    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-census-diagnosis.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-current-main-preview.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-green.xml",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-qualification.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-red.xml",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-review-acceptance.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-review-adjudication.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-review-packet.txt",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-review-result.txt",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-source-repair.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/ancestor-source-repair.patch",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/b1-terminal-consumption-20261015.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/manifest.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/qualify_ancestor_repair.py",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/refreshed-base-only-verification.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/refreshed-ci-semantic-evidence.zip",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/refreshed-source-comparison.json",
+    "research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/refreshed-terminal-metadata.json"
+  ],
+  "canonical_records": 17,
+  "records_match_manifest": true,
+  "local_clean": true,
+  "unpublished": true
+}

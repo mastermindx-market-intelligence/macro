@@ -1,0 +1,106 @@
+# Prophet B23 latency acceptance matrix — lab basis only.
+#
+# Consumed by scripts/prophet_journey_latency_report.py, which turns capture
+# manifests (scripts/capture_page_evidence.py, schema mastermind.p0_evidence.v2)
+# plus lab-server journals (scripts/prophet_journey_lab_serve.py) into
+# b23_latency_report.json + a markdown summary. Nothing consumes the report's
+# PASS/FAIL until decision D11 accepts the shape; this file declares the matrix,
+# the journeys, the required sample counts and the budgets D11 will rule on.
+#
+# Grounding: the journey routes are real pages of the rendered static site
+# (site/index.html, site/us_stocks.html, site/anticipation.html — the landing,
+# the Prophet track record, and the anticipation cones). The interactions name
+# the site's own shared-nav widgets (templates/_site_nav.html.j2: the theme
+# switch button, the language toggle options, the search input), not invented
+# selectors; a later B23 journey-runner unit drives them for INP.
+schema: mastermind.prophet_journey_latency_spec.v1
+
+# The lab leg serves one rendered static directory on 127.0.0.1 and loads it
+# cold. Cells are width x locale x theme x journey step, per the B23 design.
+matrix:
+  widths: [320, 390, 768, 1440]
+  locales: [en, zh]
+  themes: [light, dark]
+  # Width-to-viewport-key map for the capture tool's --viewports flag (the
+  # manifest rows carry viewport_width; the report groups on that number, so
+  # this map is a convenience for the operator, not a report input). Keys are
+  # VIEWPORTS entries of scripts/capture_page_evidence.py at B23 BASE
+  # 15576984028.
+  viewport_keys:
+    320: narrow-320
+    390: mobile
+    768: tablet-768
+    1440: desktop
+
+journeys:
+  - name: anonymous-reader
+    steps:
+      - name: landing
+        route: /index.html
+        interactions:
+          - {name: nav-search-focus, selector: ".nav-search input", reps: 30}
+          - {name: theme-switch, selector: "button.theme-switch", reps: 30}
+          - {name: locale-switch, selector: ".lang-toggle .opt", reps: 30}
+      - name: prophet-track-record
+        route: /us_stocks.html
+        interactions:
+          - {name: theme-switch, selector: "button.theme-switch", reps: 30}
+          - {name: locale-switch, selector: ".lang-toggle .opt", reps: 30}
+      - name: anticipation-cones
+        route: /anticipation.html
+        interactions:
+          - {name: theme-switch, selector: "button.theme-switch", reps: 30}
+          - {name: locale-switch, selector: ".lang-toggle .opt", reps: 30}
+
+# manifest_key names the timing-block field of each manifest state row the
+# statistic reads; required_n is the design's N (25 cold loads per cell for
+# LCP/CLS, 30 repetitions per named interaction for INP — the manifest's
+# inp_proxy_ms is the per-load max of the driver's scripted interactions, a
+# conservative proxy: p75(max) <= budget implies every interaction's p75 is).
+# resource_count / transfer_bytes carry NO budget: the first run is the
+# baseline and later runs diff it; per-load values + max are reported so the
+# diff exists. Never mint a number here ahead of that baseline.
+statistics:
+  lcp:
+    manifest_key: lcp_ms
+    required_n: 25
+    budget: {p75_max_ms: 2500}
+    label: lab_p75_lcp_ms
+  cls:
+    manifest_key: cls
+    required_n: 25
+    budget: {p75_max: 0.1}
+    label: lab_p75_cls
+  inp:
+    manifest_key: inp_proxy_ms
+    required_n: 30
+    budget: {p75_max_ms: 200}
+    label: lab_p75_inp_proxy_ms
+  resource_count:
+    manifest_key: resource_count
+    required_n: null
+    budget: null
+    label: resource_count_per_load
+  transfer_bytes:
+    manifest_key: transfer_bytes
+    required_n: null
+    budget: null
+    label: transfer_bytes_per_load
+
+# The incumbent per-page tool timeout the server-held-time distribution is
+# flagged against: scripts/capture_page_evidence.py --timeout-s, whose default
+# is 30.0 s at B23 BASE 15576984028 (line "parser.add_argument(\"--timeout-s\",
+# type=float, default=30.0)"). Any lab response whose server-held time exceeds
+# this is EDGE_TIMEOUT_RISK — a reported distribution, no budget minted.
+tool_timeout_s: 30
+tool_timeout_source: scripts/capture_page_evidence.py --timeout-s default=30.0 (B23 BASE 15576984028)
+
+# Field metrics need a wire that does not exist yet; the report says
+# field: BLOCKED_ON_D11 and never mints or imputes a field value.
+field_metrics: BLOCKED_ON_D11
+
+# Routes that must NOT answer 200 to the anonymous lab run (auth-gated
+# planes). The anonymous static build serves none by construction; when D11 or
+# a later unit names real gated planes, list them here and the report counts a
+# 200 on any of them as the auth-plane failure class.
+gated_routes: []

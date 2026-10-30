@@ -124,8 +124,11 @@ def build_cohort_table(
 
     ``observations`` is keyed ``issuer_id → metric_id → MetricObservation``.
     Duplicate ``issuer_id`` values raise the query-kernel unique-entity
-    message.  Members sharing a CIK collapse to the lexicographically first
-    ``issuer_id``; dropped aliases emit ``A35-I1``.
+    message.  ``CohortMember.cik`` is the owner-binding cik the caller
+    supplies (A14) and is the only collapse key: members sharing it collapse
+    to the lexicographically first ``issuer_id`` and dropped aliases emit
+    ``A35-I1`` — this module never derives, re-keys, or second-guesses
+    issuer identity.
     """
     issuer_ids = [member.issuer_id for member in definition.members]
     if len(set(issuer_ids)) != len(issuer_ids):

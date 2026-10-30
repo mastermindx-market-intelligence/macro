@@ -30,6 +30,8 @@ from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_history_mount import attach_history  # noqa: E402
+from lib.intl_surveillance_mount import attach_surveillance  # noqa: E402
+from lib.intl_gs_observations import build_observation_set  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -40,7 +42,8 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
           "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
-          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
+          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js",
+          "intl_workspace_surveillance.css")
 
 
 def _ecb_publication_result(materialized, *, evaluated_at, generation):
@@ -59,14 +62,33 @@ def _ecb_publication_result(materialized, *, evaluated_at, generation):
         admitted = (measure.get("quality") == "qualified"
                     and measure.get("metadata") == "allowed"
                     and measure.get("value_permission") == "allowed")
-        return {
-            "measure": measure,
-            "origin": ({"qualification_identity": decision["decision_ref"]}
-                       if admitted and decision is not None else None),
-            "clocks": {"published_at": None, "rights_at": None,
-                       "source_observed_at": (measure.get("observation_at")
-                                              if measure.get("metadata") == "allowed" else None)},
-        }
+        origin = ({"qualification_identity": decision["decision_ref"]}
+                  if admitted and decision is not None else None)
+        clocks = {"published_at": None, "rights_at": None,
+                  "source_observed_at": (measure.get("observation_at")
+                                         if measure.get("metadata") == "allowed" else None)}
+        publication = None
+        if origin is not None:
+            # Narrow issuer-retention record: the actual evaluation identity and
+            # the original decision owner only. The source reference is the
+            # admitted measure's own byte-bound pair, never reconstructed from
+            # the generation or hash; no binding, provenance or values.
+            publication = {
+                "measure_id": "EZ.policy_rate",
+                "generation": generation,
+                "evaluated_at": evaluated_at,
+                "origin": dict(origin),
+                "decision_origin": {
+                    "owner_ref": decision["owner_ref"],
+                    "policy_ref": decision["policy_ref"],
+                    "decision_ref": decision["decision_ref"],
+                },
+                "source_reference": measure.get("source_reference"),
+                "evidence_key": measure.get("evidence_key"),
+                "clocks": dict(clocks),
+            }
+        return {"measure": measure, "origin": origin, "clocks": clocks,
+                "publication": publication}
 
     unavailable = {
         "quality": "missing" if materialized["status"] == "missing" else "failed",
@@ -158,11 +180,12 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         raise ValueError("invalid_international_chart_sink")
     generation = "im-workspace-generation:" + str(uuid4())
     publication_inputs = None
+    eod_rights = (config.load().get("intl") or {}).get("eod_publication", {})
     try:
         from lib.intl_eod_publication import build_eod_inputs
         admitted = build_eod_inputs(
             closes, data_root=Path(data_root), evaluated_at=evaluated_at,
-            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
+            rights=eod_rights,
         )
         if admitted is not None:
             closes, publication_inputs = admitted
@@ -197,13 +220,15 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
             "bases": workspace["config"]["bases"],
     }
     try:
-        measure = _ecb_publication_measure(
+        publication = _ecb_publication_result(
             read_ecb_deposit_materialization(data_root=data_root),
             evaluated_at=evaluated_at, generation=generation,
         )
         mounted = attach_macros(
-            workspace, registry=registry, measures={"EZ.policy_rate": measure},
+            workspace, registry=registry,
+            measures={"EZ.policy_rate": publication["measure"]},
             cycle_evidence={}, destinations={},
+            ecb_publication=publication["publication"],
             source_notice={
                 "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
                 "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",
@@ -228,6 +253,23 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         )
     except Exception as exc:
         log.error("International History panel unavailable (%s)", type(exc).__name__)
+    observation_set = None
+    try:
+        # W2F-X X2/X4: the incumbent chain as Wave 1 observations, built from
+        # the SAME admitted frame and the SAME eod grant object as the page.
+        # A failure withholds observations; it never suppresses the page.
+        observation_set = build_observation_set(
+            closes, publication_inputs=publication_inputs, evaluated_at=evaluated_at,
+            data_root=Path(data_root), rights=eod_rights)
+    except Exception as exc:
+        log.error("International Surveillance observations unavailable (%s)", type(exc).__name__)
+        observation_set = None
+    try:
+        # W2F seam: surveillance views mount independently; a missing or failed
+        # builder only disables its own sub-tab and never the page.
+        workspace = attach_surveillance(workspace, observations=observation_set)
+    except Exception as exc:
+        log.error("International Surveillance panel unavailable (%s)", type(exc).__name__)
     return workspace
 
 

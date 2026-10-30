@@ -31,9 +31,9 @@ regular session. Every uncertainty resolves DOWNWARD:
 ``chg`` upstream is always a PERCENT, never dollars, however plausible a
 dollar reading would look; the absolute move is always DERIVED from
 price/prevClose, never read as-is from an upstream field of a similar name.
-Extended-hours fields (``extPrice``/``extChg``/...) are never read here at
-all — regular and extended moves can have opposite signs, and reading either
-would let the wrong session's number reach the page.
+``project_regular_quote`` never reads extended-hours fields: regular and
+extended moves can have opposite signs. ``project_extended_quote`` separately
+qualifies an optional pre/post tuple without changing the regular result.
 
 Debrand law (research/licenses/MASSIVE_ENTITLEMENT_RECORD.md): the vendor is
 never named on a public surface. This module never reads or forwards
@@ -52,8 +52,9 @@ from __future__ import annotations
 import hashlib
 import math
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Mapping
+from zoneinfo import ZoneInfo
 
 SCHEMA_FRESHNESS = ("live", "delayed", "stale")
 SCHEMA_SESSION = ("regular", "pre", "post", "closed")
@@ -314,3 +315,98 @@ def project_regular_quote(
         regular_session_date=session_date if isinstance(session_date, str) else None,
         revision=revision,
     )
+
+
+def project_extended_quote(
+    row: Mapping[str, Any], *, now: float,
+    max_age_seconds: float = DEFAULT_LIVE_MAX_AGE_SECONDS,
+) -> dict[str, Any] | None:
+    """Allowlist one independently clocked pre/post print beside the regular view.
+
+    The reference is the Terminal daily-bar owner's explicit completed bar, not
+    its rolled prevClose. Source names are checked internally and never emitted.
+    Calendar coverage follows Terminal's immutable NYSE projection (2016–2028);
+    the existing Macro calendar/window owners supply the actual session rules.
+    Invalid extended data leaves the regular projection usable.
+    """
+    from engine.session_digest import session_window_et
+    from lib.nyse_calendar import is_session
+
+    if row.get("extSource") not in ("polygon-snapshot", "polygon-snapshot-rt"):
+        return None
+    if row.get("extRegularSource") != "daily_file":
+        return None
+    try:
+        price = finite_number(row.get("extPrice"))
+        reference = finite_number(row.get("extRegularClose"))
+        observed_ms = finite_number(row.get("extAsOfMs"))
+        stamped = finite_number(row.get("extTs"))
+        checked_now = finite_number(now)
+        bound = finite_number(max_age_seconds)
+    except OverflowError:
+        # JSON integers can exceed float range. Invalid extended input must
+        # leave the regular tuple available rather than fail its whole route.
+        return None
+    if (price is None or price <= 0 or reference is None or reference <= 0
+            or observed_ms is None or observed_ms <= 0 or stamped is None
+            or checked_now is None or bound is None or bound < 0
+            or stamped != math.floor(observed_ms / 1000)):
+        return None
+    age = checked_now - observed_ms / 1000
+    if age < 0 or age > bound:
+        return None
+    try:
+        et = ZoneInfo("America/New_York")
+        current = datetime.fromtimestamp(checked_now, et)
+        observed = datetime.fromtimestamp(observed_ms / 1000, et)
+        day = current.date()
+        if not date(2016, 1, 1) <= day <= date(2028, 12, 31):
+            return None
+        if observed.date() != day or not is_session(day):
+            return None
+        opened, closed = session_window_et(day)
+        post_end_hour = 17 if closed.hour < 16 else 20
+
+        def phase(instant: datetime) -> str | None:
+            if instant.replace(hour=4, minute=0, second=0, microsecond=0) <= instant < opened:
+                return "pre"
+            if closed <= instant < instant.replace(hour=post_end_hour, minute=0, second=0, microsecond=0):
+                return "post"
+            return None
+
+        session = phase(current)
+        if (session is None or phase(observed) != session
+                or row.get("extSession") != session or row.get("extMarketSession") != session):
+            return None
+        expected = day
+        if session == "pre":
+            expected -= timedelta(days=1)
+            while expected >= date(2016, 1, 1) and not is_session(expected):
+                expected -= timedelta(days=1)
+        if expected < date(2016, 1, 1) or row.get("extRegularSessionDate") != expected.isoformat():
+            return None
+        phase_end = opened if session == "pre" else current.replace(
+            hour=post_end_hour, minute=0, second=0, microsecond=0)
+        valid_until_ms = min(observed_ms + bound * 1000, phase_end.timestamp() * 1000)
+        if checked_now * 1000 >= valid_until_ms:
+            return None
+        observed_at = datetime.fromtimestamp(observed_ms / 1000, timezone.utc).isoformat(
+            timespec="milliseconds").replace("+00:00", "Z")
+    except (OverflowError, OSError, ValueError):
+        return None
+    change_abs = price - reference
+    change_pct = change_abs / reference * 100
+    if not math.isfinite(change_abs) or not math.isfinite(change_pct):
+        return None
+    basis = row.get("extBasis")
+    if basis not in ("REALTIME", "DELAYED_15M"):
+        return None
+    return {
+        "price": price, "currency": _ALLOWLISTED_CURRENCY,
+        "print_session": session, "market_session": session,
+        "completed_regular_reference": {"price": reference, "session_date": expected.isoformat()},
+        "change_abs": change_abs, "change_pct": change_pct,
+        "as_of_ms": observed_ms, "observed_at": observed_at,
+        "valid_until_ms": valid_until_ms,
+        "freshness": "live" if basis == "REALTIME" else "delayed",
+    }

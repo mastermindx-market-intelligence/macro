@@ -1,0 +1,51 @@
+{
+  "schema": "medtech.r14.release_admission_repair/v1",
+  "observed_at": "2026-10-20T18:35:19.168221+00:00",
+  "previous_macro_head": "5f2233c41d7f9560eb26afa5597859c11b6c0ac7",
+  "terminal_head": "9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3",
+  "sql_sha256": "c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406",
+  "executable_do": {
+    "unchanged": true,
+    "bytes": 7106,
+    "sha256": "a6845559c01e3e22f141992d1be9f80b6892dbdf582539fb35d456d821273985"
+  },
+  "readback_qualification": {
+    "checks_passed": 38,
+    "applier_and_namespace_tests_passed": 184,
+    "production_applied": false,
+    "independent_source_review": "ACCEPT at Terminal9d080bd; joined-filter correction closed",
+    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3/docs/evidence/medtech-r14-applier-readback-qualification-20261020.json"
+  },
+  "brain_browser_repair": {
+    "failed_run": 39468065898,
+    "failed_job": 118785455611,
+    "additional_docs_lane_failure": {
+      "run": 39472420151,
+      "job": 118801934287
+    },
+    "symptom": "Both rings retained fill=none attributes but computed fill was empty; candidate109passed1failed, automatic canonical-base replay110passed.",
+    "mechanism": "Source-established two-call locator capture permits ResizeObserver redraw to detach nodes; detachment in the failed run itself was not instrumented.",
+    "change": "Select connected circles and capture primitive computed-style values in one synchronous observation; original assertions and renderer/CSS unchanged.",
+    "positive": {
+      "command": "MM_REQUIRE_BROWSER=1 python3 -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q",
+      "passed": 110,
+      "seconds": 93.62,
+      "exit_code": 0,
+      "log_sha256": "c170901ae671003acb0e9648e2fe16caa3f17ea4474b3f1fca2c2d2cc605a06e"
+    },
+    "negative": {
+      "temporary_control": "Stronger circle fill:currentColor!important injected through a temporary pytest plugin; no tracked source edit",
+      "failed_cases": 2,
+      "exit_code": 1,
+      "computed_fill_assertion_retained": true,
+      "log_sha256": "1ecda126b55653f6dd63c1afc2d88c702c867a34ca5d6cb016a53221ea328598"
+    }
+  },
+  "files_sha256": {
+    "agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md": "1ecb60bc20e0602c672953b2cd129137f6208e8043d618ee3f4fb5fd0db088bb",
+    "agentos/decisions/DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md": "2bab76eeb953f2e16735a106690c3e4c9f2b82f6da82537bd4f4fa24202429f2",
+    "docs/medtech_r14_release_runbook.md": "bfbc22557afd466493256227b9a2c7f674a0c020ebedcc47a9b23013c0a64f3f",
+    "tests/test_brain_visuals_browser.py": "4af7674df8367ac789804e575a45bfdb9dc85ddee117cf40ec276cc5c1f091dc"
+  },
+  "release_state": "Source correction and local qualification only. Actual-head required hosted CI, canonical policy acceptance, production migration receipt and live workflow remain required."
+}

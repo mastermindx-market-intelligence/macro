@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "URG-BULL-20260805",
-  "asof": "2026-10-18",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.6,
   "raw_confidence": 8.0,
   "delta_vs_base": -49.4,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.476,
+    "dist_to_stop_r": -1.313,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
-    "p1": -1.6508,
-    "p2": -0.8254,
+    "horizon_pct_used": 175.6,
+    "p1": -1.5419,
+    "p2": -0.771,
     "p3": null,
-    "move_r": -2.476,
+    "move_r": -2.313,
     "mfe_r": 0.857,
-    "mae_r": -2.476
+    "mae_r": -2.594
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.17999997138977042,
-  "_mae": -0.5200000166893006,
+  "_mae": -0.5448000192642213,
   "_max_p1": 0.5714284806024459,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889
+  "days_elapsed": 79,
+  "tau": 1.7556,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

@@ -1,0 +1,35 @@
+{
+  "head": "da2104b788b9fd75475b149f40ede07845e1f80d",
+  "source_css_unchanged": true,
+  "expected_red_verified": true,
+  "results": [
+    {
+      "name": "python-about-publication",
+      "exit_code": 1,
+      "seconds": 2.89,
+      "log": "/tmp/shared-shell-public-nav-red-python-about-publication-20261019.log",
+      "log_sha256": "2684bfe3db29eb0373011a0d4b034c7e827078edec6d3046ae139c14f8ed1a83",
+      "summary": [
+        ">       assert b'html[data-mmx-shared-shell=\"1\"] body > nav.nav[aria-label=\"Main\"],' in css",
+        "E       assert b'html[data-mmx-shared-shell=\"1\"] body > nav.nav[aria-label=\"Main\"],' in b'/* Dormant until the bridge accepts the exact parent INIT. */\\nhtml[data-mmx-shared-shell=\"1\"] .site-nav,\\nhtml[data...html[data-mmx-shared-shell=\"1\"] {\\n  --nav-offset: 0px;\\n  --nav-height: 0px;\\n  --mmx-shared-shell-css-ready: 1;\\n}\\n'",
+        "1 failed, 1 warning in 1.94s"
+      ]
+    },
+    {
+      "name": "node-bridge",
+      "exit_code": 1,
+      "seconds": 1.36,
+      "log": "/tmp/shared-shell-public-nav-red-node-bridge-20261019.log",
+      "log_sha256": "3cf6cbc8df499896ae18183d66653a8894ad66198761c6c9ab43790d7735f87a",
+      "summary": [
+        "# Subtest: missing document meta: initialization_failed, no activation",
+        "ok 4 - missing document meta: initialization_failed, no activation",
+        "not ok 5 - valid INIT: chrome suppression, context, READY shape",
+        "# tests 70",
+        "# pass 69",
+        "# fail 1",
+        "# skipped 0"
+      ]
+    }
+  ]
+}

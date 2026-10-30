@@ -1,0 +1,115 @@
+# #1610 companion v3 — fixture interpreter-path portability
+
+**18 October 2026 UTC · Cloud-only source proposal · No helper/test execution or native action**
+
+## Triggering result retained
+
+Parent observed the native SDK-enabled combined suite at **09:47:02–09:47:07 UTC**: **113 cases, 60 passed, 53 failed, exit 1**. Parent's completed JUnit classification found all 53 failures in `tests.test_deploy_provenance`, each containing `/Volumes/Mastermind: bad interpreter: Permission denied`; all 54 companion cases passed. The JUnit artifact is **120,605 bytes**, SHA256 `917560cfc39a900c466e101a29b01cd916b5d811992cb70c13afa54496e5ffbc`. Parent's classification process `96316` completed with exit 0. This subtask did not read or execute that native run; these are explicitly parent-provided observations.
+
+The prior **59/59** deployment-owner result used a system interpreter path without spaces. It did not qualify the shebang under the owning SDK-enabled `.venv`, whose path contains a space. The actual combined failure remains preserved; this proposal supplies no replacement passing result.
+
+## Frozen source identities
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| Preserved [v2 deployment owner](ci_contract_candidate_v2/tests/test_deploy_provenance.py) | 47,847 | `0da8a0d094b3b6f20bdedbdc427481a6425d709736621e7c5554a125cf78cc48` |
+| New [v3 deployment owner](ci_contract_candidate_v3/tests/test_deploy_provenance.py) | 49,407 | `4f91f32c0b81d0038fdcbbe51f1d36d1b975096abd1b47c887ce0ea93f6e701a` |
+| Unchanged production helper | 20,370 | `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8` |
+
+The three companion proposal copies remain unchanged at Datadog `a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95`, forward `637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d`, and archival `0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384`. The [v2 revision note](CI_CONTRACT_COMPANION_V2_REVISION_2026-10-18.md), original proposal and earlier receipts remain intact.
+
+## Small shared launcher repair
+
+The generator previously placed `sys.executable` directly in a shebang. Its whitespace split prevented the transport shim from starting under the owning virtual environment.
+
+The new `_write_python_executable` uses the existing executable-file writer to create a `/bin/sh` launcher and writes the Python body to a sibling fixture file. The launcher uses `exec` with `shlex.quote(sys.executable)` and the quoted exact program path, followed by `"$0" "$@"`. The interpreter path is preserved exactly; it is neither resolved to a different executable nor looked up through `PATH`. Quoting accommodates spaces and apostrophes in the interpreter and program paths.
+
+A two-line Python prelude removes the program-file argument from `sys.argv`, restoring the invoked alias and original arguments before the existing body runs. This preserves the command-name dispatch used by the fake `ssh`, `rsync`, `python3`, `systemctl` and other aliases. The full transport body is byte-for-byte identical to v2, including path containment, real-rsync peer binding, fixture observations, and checks of the received forward-CLI root and deployment SHA. This change adds no application or production release mechanism.
+
+## One regression, currently unexecuted
+
+`test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments` uses the same generator. It selects a real interpreter through a temporary symlink under `Python runtime's path`, creates a launcher and invoked alias whose names contain spaces, and supplies an empty `PATH` directory. Its tiny Python body returns its actual interpreter and argument vector as JSON.
+
+The assertion requires the selected interpreter and invoked alias to survive, together with an empty argument, a spaced argument, quotes, literal shell metacharacters and an option-like argument. This would expose the original direct-shebang failure and detect a switch to a PATH-resolved interpreter or broken argument forwarding. It invokes no first-party program or provider when later executed. These expected distinctions have only been reviewed from source here.
+
+## Static checks and next gate
+
+Standard-library AST/source comparisons verified all **37 original functions / 49 original cases** and all **40 v2 functions / 59 v2 cases** remain unchanged. The embedded transport body is identical between v2 and v3, and the generated body including its argv prelude parses successfully. All other existing helper function ASTs remain unchanged; `_fake_transport` changes only its launcher generation and removes its unused local `sys` import. Seven prior artifact hashes matched their preserved identities.
+
+The single new regression gives **41 deployment test functions / 60 literal deployment cases**, or **114 proposed combined cases** when added to the parent's 54 companion cases. These are static counts, not pytest collection or a pass result.
+
+No test, shim, first-party module or generator was imported or executed. No native or Git operation occurred. Independent review of this narrow delta and an admitted SDK-enabled native rerun remain necessary. A passing parser or future launcher-only control would not supersede the failed combined result by itself; the affected owning suite must establish its result on the exact successor bytes.
+
+## Full v2-to-v3 delta
+
+```diff
+--- ci_contract_candidate_v2/tests/test_deploy_provenance.py
++++ ci_contract_candidate_v3/tests/test_deploy_provenance.py
+@@ -84,6 +84,47 @@
+     path.chmod(0o755)
+ 
+ 
++def _write_python_executable(path: Path, body: str) -> None:
++    """Quote the exact interpreter and preserve the invoked alias and arguments."""
++    import shlex
++    import sys
++
++    program = path.with_name(path.name + ".py")
++    program.write_text("import sys\nsys.argv = sys.argv[1:]\n" + body, encoding="utf-8")
++    _write_executable(
++        path,
++        "#!/bin/sh\nexec " + shlex.quote(sys.executable) + " " + shlex.quote(str(program))
++        + ' "$0" "$@"\n',
++    )
++
++
++def test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments(tmp_path, monkeypatch):
++    import json
++    import sys
++
++    runtime = tmp_path / "Python runtime's path"
++    runtime.mkdir()
++    interpreter = runtime / "python3"
++    interpreter.symlink_to(sys.executable)
++    monkeypatch.setattr(sys, "executable", str(interpreter))
++    launcher = tmp_path / "transport launcher"
++    _write_python_executable(
++        launcher,
++        'import json\nprint(json.dumps({"interpreter": sys.executable, "argv": sys.argv}))\n',
++    )
++    alias = tmp_path / "invoked alias"
++    alias.symlink_to(launcher)
++    arguments = ["", "two words", "quote'\"value", "$HOME; $(printf forbidden) *", "--flag=value"]
++    empty_path = tmp_path / "empty-path"
++    empty_path.mkdir()
++    result = subprocess.run(
++        [str(alias), *arguments], env=dict(os.environ, PATH=str(empty_path)),
++        text=True, capture_output=True, check=False, timeout=10,
++    )
++    assert result.returncode == 0, result.stdout + result.stderr
++    assert json.loads(result.stdout) == {"interpreter": str(interpreter), "argv": [str(alias), *arguments]}
++
++
+ def _fake_transport(
+     tmp_path: Path, *, fail_new_release: bool
+ ) -> tuple[dict[str, str], Path, str, str]:
+@@ -93,7 +134,6 @@
+     The fake service's booted SHA is independent of the on-disk marker.
+     """
+     import shutil
+-    import sys
+ 
+     real_rsync = shutil.which("rsync")
+     if real_rsync is None:
+@@ -120,8 +160,8 @@
+     events = tmp_path / "restart_events"
+     (tmp_path / "service_state").write_text("active")
+     (tmp_path / "booted_sha").write_text(old_sha)
+-    shim = fake_bin / "transport.py"
+-    _write_executable(shim, "#!" + sys.executable + "\n" + r'''
++    shim = fake_bin / "transport"
++    _write_python_executable(shim, r'''
+ import hashlib, json, os, pathlib, signal, subprocess, sys
+ 
+ root = pathlib.Path(os.environ["FAKE_ROOT"]).resolve()
+```

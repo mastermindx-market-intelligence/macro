@@ -1,0 +1,41 @@
+{
+  "arm_exit": 0,
+  "head_before": "bd158476d6ba1394b2867fa09db6faa762473158",
+  "observed_at": "2026-10-19T07:53:41.390663+00:00",
+  "pr_after": {
+    "autoMergeRequest": {
+      "authorEmail": null,
+      "commitBody": null,
+      "commitHeadline": null,
+      "enabledAt": "2026-10-19T07:53:40Z",
+      "enabledBy": {
+        "id": "U_kgDOE-Q03g",
+        "is_bot": false,
+        "login": "mastermindxryan",
+        "name": ""
+      },
+      "mergeMethod": "SQUASH"
+    },
+    "headRefOid": "bd158476d6ba1394b2867fa09db6faa762473158",
+    "isDraft": false,
+    "labels": [
+      {
+        "color": "1f883d",
+        "description": "Ready for the fail-closed green-check merge controller",
+        "id": "LA_kwDOTOzwKM8AAAACvf_Y4A",
+        "name": "merge-on-green"
+      }
+    ],
+    "mergeStateStatus": "BEHIND",
+    "reviewDecision": "",
+    "state": "OPEN"
+  },
+  "required_checks": [
+    "Ingest + signal-layer tests",
+    "Quote Hub tests",
+    "Terminal typecheck + tests"
+  ],
+  "stderr": "",
+  "stdout": "",
+  "strict": true
+}

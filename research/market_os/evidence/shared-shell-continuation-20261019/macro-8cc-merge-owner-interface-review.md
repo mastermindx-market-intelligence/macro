@@ -1,0 +1,9 @@
+# Existing merge-on-green interface — root source read, 2026-10-20
+
+Bounded SNI adviser read was incomplete: sole native rg discovery call returned aborted by user after771.3s, no listing/PID/receipt. No guide or arming invocation was consumed by that adviser; no mutation. Root independently found the existing guide and read its complete source plus the current workflow at8ccfa5ddba6770cef48f2f162c08474d023e094e.
+
+Guide docs/agent_guides/CODEX_DELIVERY.md blob220d23a9728f0ec1917f2255fd78fa7bbb67877d specifies `gh pr edit 7949 --add-label merge-on-green` from the correct repository. Arm LAST after every required push; no post-arm push and no native `gh pr merge --auto`. Actual merging waits on concluded checks, excluding only known-spurious Workers Builds: macro. Preserve hold-authority handling; current Chairman2026-10-18 production commission supersedes the earlier design-only hold. Stay attended through landed-byte and real served publication proof.
+
+TOPOLOGY CORRECTION: the guide's2026-08-21 M2 sentence is stale relative to its own pinned .github/workflows/merge-on-green.yml, blob35d6dfc75f0f4425273cfd3f14a4911061afbc95. Actual source routes sweep to ubuntu-latest, with M2 merge-control retained only as rollback capacity. The existing workflow uses completed ci/fences/integration-baseline wake-ups; successful runs invoke full sweep, failure invokes bounded marker, non-success can reconcile a durable lease. Cron*/10 is recovery only, explicitly weak. Root will use and observe this incumbent owner, not create a route or watcher. No dispatch/arm/merge performed by this read.
+
+Workflow uses serialized full sweep, cancel-in-progress:false, sparse source checkout, import-first PyYAML, then python3 scripts/merge_on_green.py. Existing owner tokens stay internal. Root will not read/export credentials, create bypasses, duplicate a sweep, or treat source inspection as an executed merge.

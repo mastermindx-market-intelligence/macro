@@ -1,0 +1,45 @@
+{
+  "scope": "Current local source/affected tests; not exact-head CI, deployment or browser acceptance",
+  "tests": {
+    "command": "python3 -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_qledger_desk_adapter.py -q",
+    "passed": 171,
+    "seconds": 23.27,
+    "output": "owner-extension-final-tests.txt"
+  },
+  "sha256": {
+    "admin/evidence_status.py": "9d87738feb4a9e59efcda263e0cdec275e77bdd41dfe5af6b3b2c10c6be24798",
+    "admin/intelligence_os.py": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551",
+    "admin/static/app.js": "41a5568f89fe9147040de594db89d820a4eb0baa30781c37eb69fef08a18a7d8",
+    "engine/qledger_desk_adapter.py": "55f7304d9c422992cb5710a95c118c16cfd78999b7bb51095e0951b9018c11c4",
+    "tests/test_admin_intelligence_os.py": "725c760f476152dd39bf112bb5908474e22ebd217b922a3d3f398b406997a125",
+    "tests/test_admin_intelligence_os_ui.py": "5f3be57d6ff8e0e66d6fdfe58582fde5e909ffd3f13ae453680fa16140ee4df0",
+    "tests/test_qledger_desk_adapter.py": "a2c35c689d76c6a98529bb7c6161084d3aa0de97f5c4e5a5a1e1fa1e8e471da5"
+  },
+  "red_witness": "native-binding-red.txt",
+  "read_cost": [
+    "synthetic-read-cost.json",
+    "synthetic-read-memory-work.json"
+  ],
+  "remaining": "Actual browser focus/chips/detail closing witnesses, parent review, source commit/CI/release gates",
+  "ui_followup": {
+    "output": "owner-extension-final-ui-tests.txt",
+    "reason": "Known owner measurement basis labels now plain EN/ZH; data/raw technical keys unchanged",
+    "passed": 13,
+    "seconds": 58.2
+  },
+  "frozen": true,
+  "post_test_nonbehavioral_delta": {
+    "file": "admin/evidence_status.py",
+    "before_sha256": "b86c6226a0b723be3fab422bd51af5ee54c3aaf0a25e04a7e4887277f4d30ad3",
+    "after_sha256": "9d87738feb4a9e59efcda263e0cdec275e77bdd41dfe5af6b3b2c10c6be24798",
+    "change": "Parent-reviewed removal of unused PurePosixPath import only; syntax verified; accepted affected tests reused"
+  },
+  "source_link_size_guard": {
+    "output": "source-link-size-guard-tests.txt",
+    "passed": 5,
+    "seconds": 87.96,
+    "actual_api_function_receipt": "source-link-size-guard-api-check.json",
+    "before_api_sha256": "fb4582cef22c08d57998f4e15c4388947c006f6b2314654c5f4c03a8703f58fa",
+    "after_api_sha256": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551"
+  }
+}

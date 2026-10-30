@@ -1,0 +1,473 @@
+{
+  "attested": false,
+  "capture_basis": "2026-10-20T23:34:58Z",
+  "contract_id": "fif-held-out-v1",
+  "field_denominator": {
+    "metric_catalog": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml",
+    "metric_ids": [
+      "accounts_payable",
+      "accounts_receivable_net",
+      "basic_earnings_per_share",
+      "basic_weighted_average_shares",
+      "capital_expenditures",
+      "cash_and_cash_equivalents",
+      "cash_dividends_paid",
+      "cash_to_total_debt",
+      "common_shares_outstanding",
+      "common_stock_repurchases",
+      "cost_of_revenue",
+      "current_assets",
+      "current_liabilities",
+      "current_ratio",
+      "debt_to_equity",
+      "depreciation_depletion_amortization",
+      "diluted_earnings_per_share",
+      "diluted_weighted_average_shares",
+      "free_cash_flow",
+      "goodwill",
+      "gross_margin",
+      "gross_profit",
+      "income_tax_expense_benefit",
+      "intangible_assets_net",
+      "inventory_net",
+      "inventory_to_revenue",
+      "long_term_debt",
+      "long_term_debt_current",
+      "net_cash_from_financing_activities",
+      "net_cash_from_investing_activities",
+      "net_cash_from_operating_activities",
+      "net_debt",
+      "net_income_loss",
+      "operating_expenses",
+      "operating_income_loss",
+      "operating_lease_right_of_use_asset",
+      "pretax_income_loss",
+      "property_plant_equipment_net",
+      "receivables_to_revenue",
+      "research_and_development_expense",
+      "retained_earnings_accumulated_deficit",
+      "revenue",
+      "share_based_compensation_expense",
+      "short_term_debt",
+      "short_term_investments",
+      "stockholders_equity",
+      "total_assets",
+      "total_debt",
+      "total_liabilities",
+      "working_capital"
+    ],
+    "not_applicable": {
+      "BAC": {
+        "cost_of_revenue": "bank-class; CostOfRevenue / CostOfGoodsAndServicesSold absent from companyfacts (fif-g3-bac.md#3.2; A30)",
+        "free_cash_flow": "bank-class; industrial FCF not applicable; PaymentsToAcquirePropertyPlantAndEquipment absent (fif-g3-bac.md#3.2, #5.2; A30)",
+        "gross_margin": "bank-class; GrossProfit absent; generic gross-margin detector must refuse (fif-g3-bac.md#3.2, #5.2; A30)",
+        "gross_profit": "bank-class; GrossProfit absent from companyfacts (fif-g3-bac.md#3.2; A30)",
+        "inventory_net": "bank-class; InventoryNet absent from companyfacts (fif-g3-bac.md#3.2, #5.2; A30)"
+      }
+    }
+  },
+  "historical_attestation": "unavailable_until_d2_admission",
+  "issuers": [
+    {
+      "accessions": [
+        {
+          "accession": "0000320193-24-000123",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2024-11-01",
+          "form": "10-K",
+          "period_of_report": "2024-09-28",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000320193-24-000081",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2024-08-02",
+          "form": "10-Q",
+          "period_of_report": "2024-06-29",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000320193-24-000069",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2024-05-03",
+          "form": "10-Q",
+          "period_of_report": "2024-03-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001308179-24-000010",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2024-01-11",
+          "form": "DEF 14A",
+          "period_of_report": "2024-02-28",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0000320193",
+      "fiscal_year_end": "09-27",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Apple Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000320193",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "listing_key": "US-XNAS-AAPL",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-AAPL",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+        "security_state": null
+      },
+      "sic": "3571",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000320193.json",
+        "retrieved_at": "2026-10-12T12:26:36Z",
+        "sha256": "2821703cf04e1138923243a87cc5148673feb9d3792a5b6a7747d1e1a093bf7f",
+        "sic_description": "Electronic Computers",
+        "source_url": "https://data.sec.gov/submissions/CIK0000320193.json"
+      },
+      "ticker": "AAPL"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0001640147-23-000030",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2023-03-29",
+          "form": "10-K",
+          "period_of_report": "2023-01-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-23-000260",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2023-12-01",
+          "form": "10-Q",
+          "period_of_report": "2023-10-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-23-000199",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2023-08-31",
+          "form": "10-Q",
+          "period_of_report": "2023-07-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001640147-24-000123",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2024-05-22",
+          "form": "DEF 14A",
+          "period_of_report": "2024-01-31",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0001640147",
+      "fiscal_year_end": "01-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "software",
+      "legal_name": "Snowflake Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0001640147",
+        "issuer_id": "ISS:US-XNYS-SNOW",
+        "listing_key": "US-XNYS-SNOW",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-SNOW",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+        "security_state": null
+      },
+      "sic": "7372",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0001640147.json",
+        "retrieved_at": "2026-10-12T12:26:37Z",
+        "sha256": "780cbbfb3e252169b2f8b089b1f1a00e5b15e8db5cd867dd2cd2b313883645db",
+        "sic_description": "Services-Prepackaged Software",
+        "source_url": "https://data.sec.gov/submissions/CIK0001640147.json"
+      },
+      "ticker": "SNOW"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000018230-23-000011",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2023-02-15",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-23-000056",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2023-11-01",
+          "form": "10-Q",
+          "period_of_report": "2023-09-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-23-000047",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2023-08-02",
+          "form": "10-Q",
+          "period_of_report": "2023-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001308179-24-000623",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2024-04-29",
+          "form": "DEF 14A",
+          "period_of_report": "2024-06-12",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000018230-18-000042",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2018-02-15",
+          "form": "10-K",
+          "period_of_report": "2017-12-31",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0000018230",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Caterpillar Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000018230",
+        "issuer_id": "ISS:US-XNYS-CAT",
+        "listing_key": "US-XNYS-CAT",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-CAT",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+        "security_state": null
+      },
+      "sic": "3531",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000018230.json",
+        "retrieved_at": "2026-10-12T12:26:37Z",
+        "sha256": "cd43eaa79308f1f76d62092b45c603432a39e32ae369548886e7bd923b90c278",
+        "sic_description": "Construction Machinery & Equip",
+        "source_url": "https://data.sec.gov/submissions/CIK0000018230.json"
+      },
+      "ticker": "CAT"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000070858-23-000092",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2023-02-22",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-23-000272",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2023-10-31",
+          "form": "10-Q",
+          "period_of_report": "2023-09-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-23-000176",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2023-07-31",
+          "form": "10-Q",
+          "period_of_report": "2023-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001193125-24-064529",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2024-03-11",
+          "form": "DEF 14A",
+          "period_of_report": "2024-04-24",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0000070858-18-000009",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2018-02-22",
+          "form": "10-K",
+          "period_of_report": "2017-12-31",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0000070858",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "bank",
+      "legal_name": "BANK OF AMERICA CORP /DE/",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000070858",
+        "issuer_id": "ISS:US-XNYS-BAC",
+        "listing_key": "US-XNYS-BAC",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-BAC",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+        "security_state": null
+      },
+      "sic": "6021",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0000070858.json",
+        "retrieved_at": "2026-10-12T12:26:38Z",
+        "sha256": "d2d7154a50fb16547f9cbaf7d27dbee3723cebd1e40635b7ced5ed24b45d03c3",
+        "sic_description": "National Commercial Banks",
+        "source_url": "https://data.sec.gov/submissions/CIK0000070858.json"
+      },
+      "ticker": "BAC"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0001652044-23-000016",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2023-02-03",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-23-000094",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2023-10-25",
+          "form": "10-Q",
+          "period_of_report": "2023-09-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001652044-23-000070",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2023-07-26",
+          "form": "10-Q",
+          "period_of_report": "2023-06-30",
+          "retention_state": "not_retained"
+        },
+        {
+          "accession": "0001308179-24-000612",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2024-04-26",
+          "form": "DEF 14A",
+          "period_of_report": "2024-06-07",
+          "retention_state": "not_retained"
+        }
+      ],
+      "cik": "0001652044",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "software",
+      "legal_name": "Alphabet Inc.",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0001652044",
+        "issuer_id": "ISS:US-XNAS-GOOG",
+        "listing_key": "US-XNAS-GOOGL",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-GOOGL",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+        "security_state": null
+      },
+      "sic": "7370",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics/five_issuer_submissions/CIK0001652044.json",
+        "retrieved_at": "2026-10-12T12:26:38Z",
+        "sha256": "9434407b197d6322de4bece8ad3b69459c8d6ddf3a68526b4b22b02e8175d33c",
+        "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+        "source_url": "https://data.sec.gov/submissions/CIK0001652044.json"
+      },
+      "ticker": "GOOGL"
+    }
+  ],
+  "known_contradictions": [],
+  "known_credential_names_not_used": [
+    "R2_RESEARCH_ACCESS_KEY_ID",
+    "R2_RESEARCH_BUCKET",
+    "R2_RESEARCH_ENDPOINT",
+    "R2_RESEARCH_SECRET_ACCESS_KEY",
+    "RESEARCH_LOCAL_STORE"
+  ],
+  "retained_package_law": {
+    "component_types": [
+      {
+        "artifact": "package_manifest.json",
+        "name": "package_manifest",
+        "role": "package identity/inventory"
+      },
+      {
+        "artifact": "index.json",
+        "name": "archive_index",
+        "role": "package-level, digest-bound"
+      },
+      {
+        "artifact": "acceptance_witness",
+        "name": "acceptance_witness",
+        "role": "package-level, binds accessionNumber/form/primaryDocument/reportDate/filingDate/acceptanceDateTime"
+      },
+      {
+        "artifact": ".htm",
+        "name": "primary_ixbrl",
+        "role": "primary"
+      },
+      {
+        "artifact": ".xsd",
+        "name": "schema",
+        "role": "schema"
+      },
+      {
+        "artifact": "_cal.xml",
+        "name": "calculation_linkbase",
+        "role": "calculation"
+      },
+      {
+        "artifact": "_def.xml",
+        "name": "definition_linkbase",
+        "role": "definition"
+      },
+      {
+        "artifact": "_lab.xml",
+        "name": "label_linkbase",
+        "role": "label"
+      },
+      {
+        "artifact": "_pre.xml",
+        "name": "presentation_linkbase",
+        "role": "presentation"
+      }
+    ],
+    "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+    "member_states": [
+      "stored",
+      "missing",
+      "not_requested",
+      "rejected_by_policy"
+    ],
+    "not_requested_member_classes": [
+      "archive_index_headers_html",
+      "archive_index_html",
+      "raw_complete_submission_txt",
+      "xbrl_zip_bundle",
+      "exhibits",
+      "graphics",
+      "extracted_xbrl_instance_htm_xml",
+      "FilingSummary.xml",
+      "MetaLinks.json",
+      "R_files"
+    ]
+  },
+  "schema": "fundamental_forensics.coverage_contract/v1",
+  "sec_request_budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+  "source_rights": {
+    "access_policy": "sec_fair_access_declared_user_agent",
+    "credentials_required": [],
+    "licences_accepted": [],
+    "provider": "sec_edgar_public_filings",
+    "purchases": []
+  }
+}

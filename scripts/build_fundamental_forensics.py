@@ -1071,6 +1071,10 @@ def _duration_days(observation: MetricObservation) -> int | None:
 class _AdmittedPeer:
     member: Mapping[str, Any]
     issuer_id: str
+    # A14: the owner binding's identity — cik in canonical cik10 form and the
+    # binding's listing label (contract ticker only when the binding has none).
+    binding_cik: str
+    binding_ticker: str
     sic: str
     issuer_class: str
     observations: Mapping[str, MetricObservation]
@@ -1127,9 +1131,10 @@ def _compose_peer_cohort(
     Evaluation order is fixed: an unavailable store excludes every member
     (``production_dataset_absent``); otherwise per member, in contract order,
     identity (exact-CIK join) is resolved before the generation is read, the
-    generation before the SIC gate, and the SIC gate before any class
-    derivation — so a member without a pinned SIC never reaches an
-    applicability call. An excluded member never enters a CohortDefinition.
+    generation's owner identity binding before the SIC gate, and the SIC gate
+    before any class derivation — so a member without a pinned SIC never
+    reaches an applicability call. An excluded member never enters a
+    CohortDefinition.
     """
     contract = _read_coverage_contract(root)
     members = _contract_members(contract) if contract else []
@@ -1170,6 +1175,37 @@ def _compose_peer_cohort(
                 "no admitted production dataset generation for the issuer",
             ))
             continue
+        # A14: the identity authority is the generation's owner binding (the
+        # admission-time manifest issuer block), never the contract's local
+        # cik/ticker. A binding that cannot be read, or whose cik has no
+        # cik10 form, is an absent dataset identity; a cik that names a
+        # different issuer than the contract row is an identity disagreement
+        # — either way the member is excluded, never silently re-keyed.
+        try:
+            binding = generation.binding
+        except ProductionDatasetError:
+            binding = None
+        binding_cik = _cik10(binding.cik) if binding is not None else None
+        if binding_cik is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "no owner identity binding on the admitted production dataset generation",
+            ))
+            continue
+        if binding_cik != member["cik10"]:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_IDENTITY,
+                # A14 review F1: the authority-side cik is carried in the
+                # reason so the disagreement is reconstructable from the row.
+                f"contract cik disagrees with owner binding cik {binding_cik}",
+            ))
+            continue
+        # the binding's listing label wins; the contract ticker survives only
+        # when the binding carries none (A14).
+        binding_ticker = (
+            str(binding.ticker).strip().upper()
+            if binding.ticker is not None else ""
+        ) or member["ticker"]
         sic = _pinned_sic(member["sic"])
         if sic is None:
             exclusions.append(_member_exclusion(
@@ -1198,6 +1234,8 @@ def _compose_peer_cohort(
         admitted.append(_AdmittedPeer(
             member=member,
             issuer_id=issuer_id,
+            binding_cik=binding_cik,
+            binding_ticker=binding_ticker,
             sic=sic,
             issuer_class=issuer_class,
             observations=observations,
@@ -1236,8 +1274,11 @@ def _compose_peer_cohort(
             members=tuple(
                 CohortMember(
                     issuer_id=peer.issuer_id,
-                    cik=peer.member["cik10"],
-                    tickers=(peer.member["ticker"],),
+                    # A14: the owner binding's identity is the only key the
+                    # kernel collapses on; the contract row's local cik/ticker
+                    # never reach the table.
+                    cik=peer.binding_cik,
+                    tickers=(peer.binding_ticker,),
                     issuer_class=peer.issuer_class,
                     sic=peer.sic,
                 )

@@ -170,7 +170,12 @@
         if (s.template !== 'donut') { button.type='button'; button.setAttribute('aria-pressed','true'); button.addEventListener('click',function () { if (hidden.has(i)) hidden.delete(i); else hidden.add(i); button.setAttribute('aria-pressed',String(!hidden.has(i))); draw(); }); }
         legend.appendChild(button);
       }); figure.appendChild(legend);
-      resize=new ResizeObserver(draw); figure._resize=resize;
+      resize=new ResizeObserver(function () {
+        var rendered=body.querySelector('svg'), width=Math.floor(body.getBoundingClientRect().width);
+        // The initial notification must not detach a correctly sized live plot.
+        if (rendered && Number(rendered.getAttribute('width')) === width) return;
+        draw();
+      }); figure._resize=resize;
     } else if (s.template === 'table') figure.appendChild(table(s));
     else figure.appendChild(narrative(s));
     if (s.template === 'donut' && s.rows.some(function (r) { return r[1] === null; })) figure.appendChild(label('p','mmb-v-detail','Shares use known values only; missing categories are not zero.','占比仅基于已知数值，缺失类别不代表零。'));

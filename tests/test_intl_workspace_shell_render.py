@@ -141,7 +141,12 @@ def test_desktop_tabs_and_controls_are_separate_rows_with_public_count():
     toolbar = one(root, "data-im-controls")
     assert toolbar.children.index(nav) < toolbar.children.index(controls)
     tabs = [node for node in nav.children if node.tag == "button"]
-    assert len(tabs) == 6
+    expected_views = ["overview", "compare", "macro", "risk", "history", "library",
+                      "scanner", "dislocations", "transmission", "dossier",
+                      "scenario", "replay", "coverage"]
+    assert [node.attrs["data-im-view"] for node in tabs] == expected_views
+    assert len(tabs) == 13
+    assert all("disabled" in node.attrs for node in tabs[6:])
     assert all(node.attrs.get("data-im-action") == "set_view" for node in tabs)
     assert [node.attrs["data-im-view"] for node in tabs][0] == "overview"
     assert all(tab not in controls.children for tab in tabs)
@@ -154,7 +159,9 @@ def test_desktop_tabs_and_controls_are_separate_rows_with_public_count():
     assert "Price return" in visible_text(context_line)
     assert "研究范围：7 个市场" in visible_text(context_line) and "价格回报" in visible_text(context_line)
     options = [node for node in walk(one(root, "class", "intl-workspace__view-select")) if node.tag == "option"]
-    assert len(options) == 6
+    assert len(options) == 13
+    assert [node.attrs["value"] for node in options] == expected_views
+    assert all("disabled" in node.attrs for node in options[6:])
 
 
 def test_controller_dom_contract_survives_the_shell_repair():

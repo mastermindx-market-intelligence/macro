@@ -1,0 +1,785 @@
+{
+  "observed_at": "2026-10-20T18:48:17.901537+00:00",
+  "scope": "read-only sampled beta continuity, production before/after, canonical release owner/hold, Macro publication files; no installer, cleanup, mutation or reservation",
+  "release_before": {
+    "at": "2026-10-20T18:48:17.914566+00:00",
+    "lock": {
+      "parent_path": "/opt/terminal/.terminal-build-resource.lock",
+      "hold_present": false,
+      "complete": true,
+      "archives": [],
+      "archive_scan_truncated": false,
+      "parent": {
+        "dev": 2048,
+        "ino": 1591358,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o700",
+        "kind": "directory",
+        "nlink": 2,
+        "bytes": 4096,
+        "mtime_ns": 1792519035849690204,
+        "ctime_ns": 1792519035849690204
+      },
+      "ancestor_and_parent_trusted": true,
+      "final_hold_absent": true,
+      "path_identity_stable": true
+    },
+    "processes": {
+      "owners": [],
+      "owner_output_truncated": false,
+      "scan_errors": [],
+      "scan_error_count": 0,
+      "error_output_truncated": false,
+      "transient_vanished": 0,
+      "identity_changed": 0,
+      "shell_processes_observed": 5,
+      "processes_sampled": 159,
+      "enumeration_truncated": false,
+      "complete": true,
+      "matcher": "shell script argument basename terminal-build.sh or exact accepted R93 content SHA including private copies",
+      "limits": "Sample only, no reservation. Inline shell wrappers are not canonical script invocations; their separately executing script child is the match. No environment or unrelated full command line retained."
+    },
+    "sample_clear": true,
+    "reservation": false
+  },
+  "services": {
+    "terminal.service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "MainPID=3255147\nExecMainStartTimestampMonotonic=7619423343388\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "terminal-beta.service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal-beta.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    }
+  },
+  "beta_source_HEAD": {
+    "argv": [
+      "git",
+      "--no-optional-locks",
+      "-C",
+      "/opt/terminal/.gitsrc-beta",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "truncated": false,
+    "timed_out": false,
+    "stdout": "e45bde2cac07ac3b29285ff70c40d68900fad62c\n",
+    "stderr": ""
+  },
+  "runtime_pointer": {
+    "path": "/opt/terminal/beta/.runtime-accepted",
+    "exists": true,
+    "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-e45bde2cac07ac3b29285ff70c40d68900fad62c-c62950826aca6fd8.json",
+    "metadata": {
+      "dev": 64769,
+      "ino": 3946428,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o640",
+      "kind": "regular",
+      "nlink": 1,
+      "bytes": 1481,
+      "mtime_ns": 1792459881132101484,
+      "ctime_ns": 1792459881135101501
+    },
+    "bytes": 1481,
+    "sha256": "698204ef4ad72a1bfa896110af875df080bf773687150890e8a2322bd6b452d7",
+    "identity_stable": true,
+    "ancestor_trusted": true,
+    "truncated": false,
+    "read_complete": true,
+    "pointer_metadata": {
+      "dev": 2048,
+      "ino": 1598476,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o777",
+      "kind": "symlink",
+      "nlink": 1,
+      "bytes": 132,
+      "mtime_ns": 1792459881135101501,
+      "ctime_ns": 1792459881135101501
+    },
+    "pointer_stable": true,
+    "target_ancestor_trusted": true,
+    "pointer_ancestor_trusted": true
+  },
+  "source_pointer": {
+    "path": "/opt/terminal/beta/.source-provisioned",
+    "exists": true,
+    "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "metadata": {
+      "dev": 64769,
+      "ino": 3943348,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o640",
+      "kind": "regular",
+      "nlink": 1,
+      "bytes": 1841,
+      "mtime_ns": 1792383936440604014,
+      "ctime_ns": 1792383936443604029
+    },
+    "bytes": 1841,
+    "sha256": "9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4",
+    "identity_stable": true,
+    "ancestor_trusted": true,
+    "truncated": false,
+    "read_complete": true,
+    "pointer_metadata": {
+      "dev": 2048,
+      "ino": 1597725,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o777",
+      "kind": "symlink",
+      "nlink": 1,
+      "bytes": 134,
+      "mtime_ns": 1792383936443604029,
+      "ctime_ns": 1792383936443604029
+    },
+    "pointer_stable": true,
+    "target_ancestor_trusted": true,
+    "pointer_ancestor_trusted": true
+  },
+  "beta_build": [
+    {
+      "path": "/opt/terminal/beta/terminal/.deployment-id",
+      "exists": true,
+      "resolved": "/opt/terminal/beta/terminal/.deployment-id",
+      "metadata": {
+        "dev": 2048,
+        "ino": 1602523,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o644",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 41,
+        "mtime_ns": 1792388000692822476,
+        "ctime_ns": 1792388000709822539
+      },
+      "bytes": 41,
+      "sha256": "50b75a482303cb7ee99bd439d6d1a002aa0cc9c2d120e210655cf097c7509675",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "text": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+    },
+    {
+      "path": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+      "exists": true,
+      "resolved": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+      "metadata": {
+        "dev": 2048,
+        "ino": 426044,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o644",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 20,
+        "mtime_ns": 1792459828979788577,
+        "ctime_ns": 1792459828979788577
+      },
+      "bytes": 20,
+      "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "text": "build-TfctsWXpff2fKS"
+    }
+  ],
+  "production_build": [
+    {
+      "path": "/opt/terminal/terminal/.deployment-id",
+      "exists": true,
+      "resolved": "/opt/terminal/terminal/.deployment-id",
+      "metadata": {
+        "dev": 2048,
+        "ino": 1604351,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o644",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 41,
+        "mtime_ns": 1792518919556080947,
+        "ctime_ns": 1792518919565080995
+      },
+      "bytes": 41,
+      "sha256": "37b23db6dea14c0ecf0303669a9542d069738873b31b548f3be3055f4e879a38",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "text": "bbc07037aae3e98597945e23448781a091d15281"
+    },
+    {
+      "path": "/opt/terminal/terminal/.next/BUILD_ID",
+      "exists": true,
+      "resolved": "/opt/terminal/terminal/.next/BUILD_ID",
+      "metadata": {
+        "dev": 2048,
+        "ino": 411974,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o644",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 20,
+        "mtime_ns": 1792518916112062617,
+        "ctime_ns": 1792518916112062617
+      },
+      "bytes": 20,
+      "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "text": "build-TfctsWXpff2fKS"
+    }
+  ],
+  "production_owner": {
+    "path": "/opt/terminal/terminal-build.sh",
+    "exists": true,
+    "resolved": "/opt/terminal/terminal-build.sh",
+    "metadata": {
+      "dev": 2048,
+      "ino": 1604272,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o755",
+      "kind": "regular",
+      "nlink": 1,
+      "bytes": 207242,
+      "mtime_ns": 1792519018401599917,
+      "ctime_ns": 1792519018408599954
+    },
+    "bytes": 207242,
+    "sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+    "identity_stable": true,
+    "ancestor_trusted": true,
+    "truncated": false,
+    "read_complete": true
+  },
+  "caddy": {
+    "path": "/etc/caddy/Caddyfile",
+    "exists": true,
+    "resolved": "/etc/caddy/Caddyfile",
+    "metadata": {
+      "dev": 64769,
+      "ino": 262161,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "kind": "regular",
+      "nlink": 1,
+      "bytes": 74183,
+      "mtime_ns": 1792486097602051396,
+      "ctime_ns": 1792486097602051396
+    },
+    "bytes": 74183,
+    "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+    "identity_stable": true,
+    "ancestor_trusted": true,
+    "truncated": false,
+    "read_complete": true
+  },
+  "status": {
+    "status": 200,
+    "headers": {
+      "cache-control": "private, no-store, max-age=0",
+      "content-type": "application/json"
+    },
+    "bytes": 246,
+    "raw_sha256": "1ba3581e1c5cbe82393b587b8a9ce70569872911a2ab0e9a91f8799d1b8170d1",
+    "truncated": false,
+    "proxy_disabled": true,
+    "redirects_disabled": true,
+    "body": {
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "buildId": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+      "bridgeVersion": "20261018.1",
+      "documentVersion": "20261018.1",
+      "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+    }
+  },
+  "pending_exists": false,
+  "beta_stages": {
+    "entries": [],
+    "truncated": false
+  },
+  "free_bytes": {
+    "/": 33705811968,
+    "/opt/terminal": 16115818496
+  },
+  "beta_after": {
+    "argv": [
+      "systemctl",
+      "show",
+      "terminal-beta.service",
+      "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+    ],
+    "exit": 0,
+    "truncated": false,
+    "timed_out": false,
+    "stdout": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+    "stderr": ""
+  },
+  "macro": {
+    "head_before": {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/opt/macro",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "bc9ea784eb124fe258e31b6d59a972d71b038575\n",
+      "stderr": ""
+    },
+    "services": {
+      "macro-api.service": {
+        "argv": [
+          "systemctl",
+          "show",
+          "macro-api.service",
+          "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+        ],
+        "exit": 0,
+        "truncated": false,
+        "timed_out": false,
+        "stdout": "MainPID=3265686\nExecMainStartTimestampMonotonic=7620001755229\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+        "stderr": ""
+      },
+      "caddy.service": {
+        "argv": [
+          "systemctl",
+          "show",
+          "caddy.service",
+          "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+        ],
+        "exit": 0,
+        "truncated": false,
+        "timed_out": false,
+        "stdout": "MainPID=2712483\nExecMainStartTimestampMonotonic=2918519097212\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+        "stderr": ""
+      }
+    },
+    "files": [
+      {
+        "path": "/usr/local/bin/macro-update",
+        "exists": true,
+        "resolved": "/usr/local/bin/macro-update",
+        "metadata": {
+          "dev": 64769,
+          "ino": 1762,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o755",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 141914,
+          "mtime_ns": 1792516113960877407,
+          "ctime_ns": 1792516113960877407
+        },
+        "bytes": 141914,
+        "sha256": "b460b0ce2ad7e595576ac28d1e06370bff25b71b20638d2923bf5f74b252b4a0",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/etc/caddy/Caddyfile",
+        "exists": true,
+        "resolved": "/etc/caddy/Caddyfile",
+        "metadata": {
+          "dev": 64769,
+          "ino": 262161,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 74183,
+          "mtime_ns": 1792486097602051396,
+          "ctime_ns": 1792486097602051396
+        },
+        "bytes": 74183,
+        "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/app/deploy/update.sh",
+        "exists": true,
+        "resolved": "/opt/macro/app/deploy/update.sh",
+        "metadata": {
+          "dev": 64769,
+          "ino": 524345,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o755",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 141914,
+          "mtime_ns": 1792516112771872425,
+          "ctime_ns": 1792516112771872425
+        },
+        "bytes": 141914,
+        "sha256": "b460b0ce2ad7e595576ac28d1e06370bff25b71b20638d2923bf5f74b252b4a0",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/app/deploy/Caddyfile",
+        "exists": true,
+        "resolved": "/opt/macro/app/deploy/Caddyfile",
+        "metadata": {
+          "dev": 64769,
+          "ino": 524342,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 74183,
+          "mtime_ns": 1792486094982041138,
+          "ctime_ns": 1792486094982041138
+        },
+        "bytes": 74183,
+        "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/site/shared_shell_bridge.js",
+        "exists": false,
+        "read_complete": false,
+        "error": "FileNotFoundError",
+        "errno": 2,
+        "detail": "[Errno 2] No such file or directory: 'shared_shell_bridge.js'"
+      },
+      {
+        "path": "/opt/macro/site/shared_shell.css",
+        "exists": false,
+        "read_complete": false,
+        "error": "FileNotFoundError",
+        "errno": 2,
+        "detail": "[Errno 2] No such file or directory: 'shared_shell.css'"
+      },
+      {
+        "path": "/opt/macro/site/index.html",
+        "exists": true,
+        "resolved": "/opt/macro/site/index.html",
+        "metadata": {
+          "dev": 64769,
+          "ino": 264602,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 187645,
+          "mtime_ns": 1791970027883700983,
+          "ctime_ns": 1791970027883700983
+        },
+        "bytes": 187645,
+        "sha256": "53a92e68a6745fd914b24b38a498a41ce6794b344753a1b6d017ef2ee598c8bc",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/site/sector_central.html",
+        "exists": true,
+        "resolved": "/opt/macro/site/sector_central.html",
+        "metadata": {
+          "dev": 64769,
+          "ino": 265660,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 395747,
+          "mtime_ns": 1792520184734201442,
+          "ctime_ns": 1792520184734201442
+        },
+        "bytes": 395747,
+        "sha256": "9cf04a51da3c993e11bfb239540ce6ed389be6dd83ce8a5a2b261074750d0986",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/site.served/shared_shell_bridge.js",
+        "exists": false,
+        "read_complete": false,
+        "error": "FileNotFoundError",
+        "errno": 2,
+        "detail": "[Errno 2] No such file or directory: 'shared_shell_bridge.js'"
+      },
+      {
+        "path": "/opt/macro/site.served/shared_shell.css",
+        "exists": false,
+        "read_complete": false,
+        "error": "FileNotFoundError",
+        "errno": 2,
+        "detail": "[Errno 2] No such file or directory: 'shared_shell.css'"
+      },
+      {
+        "path": "/opt/macro/site.served/index.html",
+        "exists": true,
+        "resolved": "/opt/macro/site.served/index.html",
+        "metadata": {
+          "dev": 64769,
+          "ino": 1311004,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 187645,
+          "mtime_ns": 1791970027883700983,
+          "ctime_ns": 1791970028123700591
+        },
+        "bytes": 187645,
+        "sha256": "53a92e68a6745fd914b24b38a498a41ce6794b344753a1b6d017ef2ee598c8bc",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      },
+      {
+        "path": "/opt/macro/site.served/sector_central.html",
+        "exists": true,
+        "resolved": "/opt/macro/site.served/sector_central.html",
+        "metadata": {
+          "dev": 64769,
+          "ino": 1312761,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 395747,
+          "mtime_ns": 1792520184734201442,
+          "ctime_ns": 1792520191453232473
+        },
+        "bytes": 395747,
+        "sha256": "9cf04a51da3c993e11bfb239540ce6ed389be6dd83ce8a5a2b261074750d0986",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true
+      }
+    ],
+    "head_after": {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/opt/macro",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "bc9ea784eb124fe258e31b6d59a972d71b038575\n",
+      "stderr": ""
+    }
+  },
+  "production_after": {
+    "service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "MainPID=3255147\nExecMainStartTimestampMonotonic=7619423343388\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "build": [
+      {
+        "path": "/opt/terminal/terminal/.deployment-id",
+        "exists": true,
+        "resolved": "/opt/terminal/terminal/.deployment-id",
+        "metadata": {
+          "dev": 2048,
+          "ino": 1604351,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 41,
+          "mtime_ns": 1792518919556080947,
+          "ctime_ns": 1792518919565080995
+        },
+        "bytes": 41,
+        "sha256": "37b23db6dea14c0ecf0303669a9542d069738873b31b548f3be3055f4e879a38",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "bbc07037aae3e98597945e23448781a091d15281"
+      },
+      {
+        "path": "/opt/terminal/terminal/.next/BUILD_ID",
+        "exists": true,
+        "resolved": "/opt/terminal/terminal/.next/BUILD_ID",
+        "metadata": {
+          "dev": 2048,
+          "ino": 411974,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 20,
+          "mtime_ns": 1792518916112062617,
+          "ctime_ns": 1792518916112062617
+        },
+        "bytes": 20,
+        "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "build-TfctsWXpff2fKS"
+      }
+    ],
+    "owner": {
+      "path": "/opt/terminal/terminal-build.sh",
+      "exists": true,
+      "resolved": "/opt/terminal/terminal-build.sh",
+      "metadata": {
+        "dev": 2048,
+        "ino": 1604272,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o755",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 207242,
+        "mtime_ns": 1792519018401599917,
+        "ctime_ns": 1792519018408599954
+      },
+      "bytes": 207242,
+      "sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true
+    }
+  },
+  "caddy_after": {
+    "path": "/etc/caddy/Caddyfile",
+    "exists": true,
+    "resolved": "/etc/caddy/Caddyfile",
+    "metadata": {
+      "dev": 64769,
+      "ino": 262161,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "kind": "regular",
+      "nlink": 1,
+      "bytes": 74183,
+      "mtime_ns": 1792486097602051396,
+      "ctime_ns": 1792486097602051396
+    },
+    "bytes": 74183,
+    "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+    "identity_stable": true,
+    "ancestor_trusted": true,
+    "truncated": false,
+    "read_complete": true
+  },
+  "release_after": {
+    "at": "2026-10-20T18:48:18.156996+00:00",
+    "lock": {
+      "parent_path": "/opt/terminal/.terminal-build-resource.lock",
+      "hold_present": false,
+      "complete": true,
+      "archives": [],
+      "archive_scan_truncated": false,
+      "parent": {
+        "dev": 2048,
+        "ino": 1591358,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o700",
+        "kind": "directory",
+        "nlink": 2,
+        "bytes": 4096,
+        "mtime_ns": 1792519035849690204,
+        "ctime_ns": 1792519035849690204
+      },
+      "ancestor_and_parent_trusted": true,
+      "final_hold_absent": true,
+      "path_identity_stable": true
+    },
+    "processes": {
+      "owners": [],
+      "owner_output_truncated": false,
+      "scan_errors": [],
+      "scan_error_count": 0,
+      "error_output_truncated": false,
+      "transient_vanished": 0,
+      "identity_changed": 0,
+      "shell_processes_observed": 5,
+      "processes_sampled": 159,
+      "enumeration_truncated": false,
+      "complete": true,
+      "matcher": "shell script argument basename terminal-build.sh or exact accepted R93 content SHA including private copies",
+      "limits": "Sample only, no reservation. Inline shell wrappers are not canonical script invocations; their separately executing script child is the match. No environment or unrelated full command line retained."
+    },
+    "sample_clear": true,
+    "reservation": false
+  },
+  "finished_at": "2026-10-20T18:48:18.157021+00:00"
+}

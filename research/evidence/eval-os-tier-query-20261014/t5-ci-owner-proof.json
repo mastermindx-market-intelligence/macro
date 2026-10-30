@@ -1,0 +1,9 @@
+{
+  "job": "intelligence-registry",
+  "missing_paths": [],
+  "closure_paths": 754,
+  "preexisting_definitions": 23,
+  "changed_preexisting_definitions": [],
+  "entire_prior_module_preserved_prefix": true,
+  "scope": "materialized local closure; hosted tracked inventory remains binding"
+}

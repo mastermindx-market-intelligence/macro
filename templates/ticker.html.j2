@@ -39,9 +39,11 @@
 <script data-dbase src="../data_base.js"></script>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../ticker_news.css">
+<script defer src="../ticker_news.js"></script>
 <script defer src="../theme.js"></script>
 <script defer src="../assets/js/company-intelligence-dossier.js?v=a3f07e08"></script>
-<script defer src="../assets/js/dossier-live-quote.js?v=20260827a"></script>
+<script defer src="../assets/js/dossier-live-quote.js?v=20261023p1"></script>
 <style>
 /* ══ dossier v6 ═══════════════════════════════════════════════════════════
    One voice: Inter (--font-ui) everywhere; numbers are tabular Inter, never
@@ -129,6 +131,15 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 .px-chg .pill6{padding:2px 9px;border-radius:8px;}
 .px-chg.pos .pill6{background:color-mix(in srgb,var(--up) 13%,transparent);border:1px solid color-mix(in srgb,var(--up) 30%,transparent);}
 .px-chg.neg .pill6{background:color-mix(in srgb,var(--down) 13%,transparent);border:1px solid color-mix(in srgb,var(--down) 30%,transparent);}
+.dq-regular-label{display:block;margin-top:8px;font-size:var(--fs-label);color:var(--muted);}
+.dq-extended{max-width:34ch;margin-top:12px;font-size:var(--fs-sm);line-height:1.6;color:var(--text);}
+.dq-extended [hidden]{display:none;}
+.dq-ext-heading{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px 8px;font-weight:650;}
+.dq-ext-move{font-variant-numeric:tabular-nums;}
+.dq-extended.pos .dq-ext-move{color:var(--ink-up,var(--up));}
+.dq-extended.neg .dq-ext-move{color:var(--ink-down,var(--down));}
+.dq-ext-reference,.dq-ext-age,[data-dq-ext-status]{display:block;color:var(--muted);}
+@media(max-width:860px){.dq-extended{max-width:none;}.dq-ext-heading{justify-content:flex-start;}}
 /* The live pip: one dot, used beside the price AND on the stance stamp so the
    two read as the same "this is current" signal. The glow is a box-shadow
    pulse rather than an opacity blink — the dot never disappears, so a glance
@@ -945,10 +956,20 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
          or not at all. The pip that used to sit here was decorative (it keyed
          off the BUILD's date); freshness is now stated once, on the stamp. #}
       {% if hero and hero.chg %}
+      <span class="dq-regular-label" data-dq-regular-label>{{ t('Regular quote', '常规时段报价') }}</span>
       <div class="px-chg {{ 'pos' if hero.chg.pos else 'neg' }}" data-dq-chg>
         <span class="pill6 num"><span data-dq-abs>{{ hero.chg.abs }}</span> · <span data-dq-pct>{{ hero.chg.pct }}</span></span>
       </div>
       {% endif %}
+      <div class="dq-extended" data-dq-extended data-dq-state="unavailable">
+        <span data-dq-ext-status>{{ t('Extended quote unavailable. Showing the regular quote.', '盘前盘后报价暂不可用，现显示常规时段报价。') }}</span>
+        <div data-dq-ext-values hidden>
+          <div class="dq-ext-heading"><span data-dq-ext-session>{{ t('Pre-market', '盘前') }}</span> <strong class="num" data-dq-ext-price></strong>
+            <span class="dq-ext-move"><span data-dq-ext-abs></span> · <span data-dq-ext-pct></span></span></div>
+          <span class="dq-ext-reference" data-dq-ext-reference><span class="l-en"></span><span class="l-zh"></span></span>
+          <span class="dq-ext-age" data-dq-ext-age><span class="l-en"></span><span class="l-zh"></span></span>
+        </div>
+      </div>
       {% if hero and hero.range52 %}
       <div class="wk52">
         <div class="lbls"><span>{{ t('52w low', '52周低') }} <b class="num">{{ hero.range52.lo }}</b></span><span>{{ t('high', '高') }} <b class="num">{{ hero.range52.hi }}</b></span></div>
@@ -986,6 +1007,8 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   </div>
   {% endif %}
 </header>
+
+{% include "ticker_news_panel.html.j2" %}
 
 <!-- ═ COMPANY INTELLIGENCE — verified dynamic context, context-only authority ═ -->
 <section class="mod ci-mod rv" id="company-update" data-company-intelligence data-ticker="{{ ticker }}" aria-labelledby="ci-title">

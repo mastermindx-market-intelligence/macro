@@ -120,6 +120,12 @@ DEDUP_KEY = list(chain_snapshot_evidence.CHAIN_SNAPSHOT_DEDUP_KEY)
 # Second-order columns joined onto the first-order base (the second-order
 # response also carries bid/ask/IV — those come from the first-order frame).
 SECOND_ORDER_JOIN_COLS = ["gamma", "vanna", "charm", "vomma", "veta"]
+SECOND_ORDER_SOURCE_COLS = {"timestamp": "second_order_timestamp",
+    "underlying_timestamp": "second_order_underlying_timestamp",
+    "_theta_acquisition": "_theta_second_acquisition",
+    "underlying_price": "second_order_underlying_price",
+    "implied_vol": "second_order_implied_vol", "iv_error": "second_order_iv_error",
+    "bid": "second_order_bid", "ask": "second_order_ask"}
 CHAIN_REQUIRED_COLUMNS = {
     "root", "expiration", "strike", "right", "snapshot_ts",
     "snapshot_bucket", "source", "bid", "ask", "delta", "theta", "vega",
@@ -360,22 +366,29 @@ def derive_bucket(now_et: datetime, cadence_min: int) -> str:
 def join_orders(first_df: pd.DataFrame, second_df: pd.DataFrame | None) -> pd.DataFrame:
     """Left-join second-order greek columns onto the first-order base frame.
 
-    The first-order frame is the base (its snapshot_ts/bid/ask/IV win); only
-    SECOND_ORDER_JOIN_COLS are taken from the second-order frame.  The first-
+    The first-order frame is the base (its snapshot_ts/bid/ask/IV win). Numeric
+    SECOND_ORDER_JOIN_COLS and separately named second-order source evidence
+    are taken from the second-order frame. The first-
     order base is deduped on the contract key.  Second-order candidates are
     deduped and joined only on exact (root, expiration, strike, right,
     snapshot_ts), so a duplicated contract row can never multiply rows and a
     clock mismatch stays null/unavailable.  A missing/failed second-order frame
     degrades to NaN second-order columns (INERT — first-order data still lands).
     """
-    base = first_df.drop_duplicates(subset=CONTRACT_KEY, keep="first")
+    base = first_df.drop_duplicates(subset=CONTRACT_KEY, keep="first").drop(
+        columns=list(SECOND_ORDER_SOURCE_COLS.values()), errors="ignore")
+
+    def without_second_evidence(out):
+        for col in SECOND_ORDER_SOURCE_COLS.values():
+            out[col] = None
+        return out
 
     if second_df is None or second_df.empty:
         out = base.copy()
         for col in SECOND_ORDER_JOIN_COLS:
             if col not in out.columns:
                 out[col] = float("nan")   # float64 NaN — keeps parquet dtypes stable
-        return out.reset_index(drop=True)
+        return without_second_evidence(out).reset_index(drop=True)
 
     # A second-order value is causally usable only when the vendor clock is
     # exactly the retained first-order contract clock.  Never silently attach
@@ -385,19 +398,25 @@ def join_orders(first_df: pd.DataFrame, second_df: pd.DataFrame | None) -> pd.Da
         for col in SECOND_ORDER_JOIN_COLS:
             if col not in out.columns:
                 out[col] = float("nan")
-        return out.reset_index(drop=True)
+        return without_second_evidence(out).reset_index(drop=True)
     right = second_df.loc[second_df["snapshot_ts"].notna()].drop_duplicates(
         subset=CONTRACT_KEY + ["snapshot_ts"], keep="first",
     )
     join_cols = [c for c in SECOND_ORDER_JOIN_COLS if c in right.columns]
+    source_cols = [c for c in SECOND_ORDER_SOURCE_COLS if c in right.columns]
+    right = right[CONTRACT_KEY + ["snapshot_ts"] + join_cols + source_cols].rename(
+        columns=SECOND_ORDER_SOURCE_COLS)
     out = base.merge(
-        right[CONTRACT_KEY + ["snapshot_ts"] + join_cols],
+        right,
         on=CONTRACT_KEY + ["snapshot_ts"],
         how="left",
     )
     for col in SECOND_ORDER_JOIN_COLS:
         if col not in out.columns:
             out[col] = float("nan")
+    for col in SECOND_ORDER_SOURCE_COLS.values():
+        if col not in out.columns:
+            out[col] = None
     return out.reset_index(drop=True)
 
 

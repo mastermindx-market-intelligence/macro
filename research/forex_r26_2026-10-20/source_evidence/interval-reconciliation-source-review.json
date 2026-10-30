@@ -1,0 +1,34 @@
+{
+  "schema": "forex_r26.source_code_review.v1",
+  "reviewer": "native source_policy_review consultation",
+  "scope": "research-only diagnostic implementation and tests; no Terminal Fabric/source admission authority",
+  "final_verdict": "NO_BLOCKING_FINDINGS",
+  "source_sha256": "7d30b518225222eac431877bb9f71e5e78454cb5056dfd7f44fe24aace171796",
+  "test_sha256": "d90967b778b0ee05b40b1f1476dd5df69d2dfa8c8431defc9fb72308b2737dd1",
+  "final_read_pid": 42245,
+  "read_only": true,
+  "findings": [
+    {
+      "id": "R26-SOURCE-R1",
+      "severity": "P2",
+      "initial_source_sha256": "6c5838376d8ec0a6eff7686d83ed63aee9b915babee70fe828088fc395f504f0",
+      "issue": "Unplaced, edge, invalid-row and early-native ordinal references escaped the selected-only output budget",
+      "resolution": "All emitted ordinal references now charged before output, including early-invalid windows; small-cap tests cover unplaced, outside-edge, invalid-native cases",
+      "state": "RESOLVED"
+    },
+    {
+      "id": "R26-SOURCE-PRECISION",
+      "found_by": "recovery owner",
+      "issue": "pandas silently truncates comma fraction timestamps, including nanosecond inputs",
+      "resolution": "Unsupported comma forms and dot fractions beyond nine digits refuse; valid dot nanoseconds preserved",
+      "state": "RESOLVED"
+    }
+  ],
+  "validation_author": "recovery owner",
+  "tests": "138 passed in 7.71 seconds; exit0; six unrelated pre-existing pytest temporary cleanup warnings",
+  "validation_receipt": "interval-reconciliation-validation-qualified.json",
+  "actual_integration_receipt": "interval-reconciliation-integration-qualified.json",
+  "finalized_feed_admitted": false,
+  "activation_performed": false,
+  "terminal_1106_review_substitution": false
+}

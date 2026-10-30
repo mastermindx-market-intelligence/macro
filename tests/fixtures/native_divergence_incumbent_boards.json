@@ -1,0 +1,405 @@
+{
+  "incumbent_sha256": "90a944962b7bb78ee4374194550966375481fd628af1d88d176a609bb8a643ef",
+  "cases": {
+    "1": {
+      "board": {
+        "items": [
+          {
+            "theme": "theme0",
+            "name": "theme0",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          }
+        ],
+        "n_cross_section": 1,
+        "n_total": 1,
+        "quadrant_counts": {
+          "confirmed": 0,
+          "hype-risk": 0,
+          "hidden-opportunity": 0,
+          "ignore": 0
+        },
+        "thin_cross_section": true,
+        "note": "cross-section too thin for reliable ranks (n=1 < 6) Quadrant thresholds (0.60/0.60) PROVISIONAL — pending forward-graded ledger significance. Display-only. Ledger accrues to data/foresight/divergence_log.jsonl."
+      },
+      "ledger_calls": []
+    },
+    "5": {
+      "board": {
+        "items": [
+          {
+            "theme": "theme0",
+            "name": "theme0",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme1",
+            "name": "theme1",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme2",
+            "name": "theme2",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme3",
+            "name": "theme3",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme4",
+            "name": "theme4",
+            "stage": null,
+            "quadrant": null,
+            "narrative_pct": null,
+            "money_pct": null,
+            "divergence": null,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          }
+        ],
+        "n_cross_section": 5,
+        "n_total": 5,
+        "quadrant_counts": {
+          "confirmed": 0,
+          "hype-risk": 0,
+          "hidden-opportunity": 0,
+          "ignore": 0
+        },
+        "thin_cross_section": true,
+        "note": "cross-section too thin for reliable ranks (n=5 < 6) Quadrant thresholds (0.60/0.60) PROVISIONAL — pending forward-graded ledger significance. Display-only. Ledger accrues to data/foresight/divergence_log.jsonl."
+      },
+      "ledger_calls": []
+    },
+    "6": {
+      "board": {
+        "items": [
+          {
+            "theme": "theme0",
+            "name": "theme0",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.0,
+            "money_pct": 1.0,
+            "divergence": -1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme1",
+            "name": "theme1",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.2,
+            "money_pct": 0.8,
+            "divergence": -0.6,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme2",
+            "name": "theme2",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.4,
+            "money_pct": 0.6,
+            "divergence": -0.2,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme3",
+            "name": "theme3",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 0.6,
+            "money_pct": 0.4,
+            "divergence": 0.2,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme4",
+            "name": "theme4",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 0.8,
+            "money_pct": 0.2,
+            "divergence": 0.6,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme5",
+            "name": "theme5",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 1.0,
+            "money_pct": 0.0,
+            "divergence": 1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          }
+        ],
+        "n_cross_section": 6,
+        "n_total": 6,
+        "quadrant_counts": {
+          "confirmed": 0,
+          "hype-risk": 3,
+          "hidden-opportunity": 3,
+          "ignore": 0
+        },
+        "thin_cross_section": false,
+        "note": "Quadrant thresholds (0.60/0.60) PROVISIONAL — pending forward-graded ledger significance. Display-only. Ledger accrues to data/foresight/divergence_log.jsonl."
+      },
+      "ledger_calls": [
+        [
+          {
+            "theme": "theme0",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.0,
+            "money_pct": 1.0,
+            "divergence": -1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          },
+          {
+            "theme": "theme1",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.2,
+            "money_pct": 0.8,
+            "divergence": -0.6,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          },
+          {
+            "theme": "theme2",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.4,
+            "money_pct": 0.6,
+            "divergence": -0.2,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          }
+        ]
+      ]
+    },
+    "8": {
+      "board": {
+        "items": [
+          {
+            "theme": "theme0",
+            "name": "theme0",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.0,
+            "money_pct": 1.0,
+            "divergence": -1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme1",
+            "name": "theme1",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.1429,
+            "money_pct": 0.8571,
+            "divergence": -0.7143,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme2",
+            "name": "theme2",
+            "stage": null,
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.2857,
+            "money_pct": 0.7143,
+            "divergence": -0.4286,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme5",
+            "name": "theme5",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 0.7143,
+            "money_pct": 0.2857,
+            "divergence": 0.4286,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme6",
+            "name": "theme6",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 0.8571,
+            "money_pct": 0.1429,
+            "divergence": 0.7143,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme7",
+            "name": "theme7",
+            "stage": null,
+            "quadrant": "hype-risk",
+            "narrative_pct": 1.0,
+            "money_pct": 0.0,
+            "divergence": 1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme3",
+            "name": "theme3",
+            "stage": null,
+            "quadrant": "ignore",
+            "narrative_pct": 0.4286,
+            "money_pct": 0.5714,
+            "divergence": -0.1429,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          },
+          {
+            "theme": "theme4",
+            "name": "theme4",
+            "stage": null,
+            "quadrant": "ignore",
+            "narrative_pct": 0.5714,
+            "money_pct": 0.4286,
+            "divergence": 0.1429,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2,
+            "excluded": false,
+            "transition": null
+          }
+        ],
+        "n_cross_section": 8,
+        "n_total": 8,
+        "quadrant_counts": {
+          "confirmed": 0,
+          "hype-risk": 3,
+          "hidden-opportunity": 3,
+          "ignore": 2
+        },
+        "thin_cross_section": false,
+        "note": "Quadrant thresholds (0.60/0.60) PROVISIONAL — pending forward-graded ledger significance. Display-only. Ledger accrues to data/foresight/divergence_log.jsonl."
+      },
+      "ledger_calls": [
+        [
+          {
+            "theme": "theme0",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.0,
+            "money_pct": 1.0,
+            "divergence": -1.0,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          },
+          {
+            "theme": "theme1",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.1429,
+            "money_pct": 0.8571,
+            "divergence": -0.7143,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          },
+          {
+            "theme": "theme2",
+            "asof": "2026-10-19",
+            "row_type": "observation",
+            "quadrant": "hidden-opportunity",
+            "narrative_pct": 0.2857,
+            "money_pct": 0.7143,
+            "divergence": -0.4286,
+            "n_narrative_legs_live": 2,
+            "n_money_legs_live": 2
+          }
+        ]
+      ]
+    }
+  }
+}

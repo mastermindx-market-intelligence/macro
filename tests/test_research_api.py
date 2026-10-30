@@ -929,6 +929,7 @@ def test_corpus_conn_nonblocking_refresh(monkeypatch, tmp_path):
 # they answer 200 for anyone, so they cannot distinguish "mounted" from
 # "reached some other handler". Only a route that must answer 401 does.
 _MOUNTED_PAID_ROUTES = (
+    ("GET", f"/api/research/read/{_DOC_ID}"),
     ("GET", f"/api/research/view/{_DOC_ID}"),
     ("POST", f"/api/research/download/{_DOC_ID}"),
     ("GET", "/api/research/quota"),
@@ -939,7 +940,7 @@ def test_every_paid_route_is_mounted_on_the_assembled_production_app() -> None:
     """A dropped router presents only as a 404 on a paid endpoint, never as an error.
 
     Mounting used to be wrapped in ``except ImportError: pass``, so a renamed
-    dependency or a package missing on the VPS deleted all three entitled routes
+    dependency or a package missing on the VPS deleted the entitled routes
     with no startup failure and no log line.  Assert what production proves:
     unauthenticated requests reach the entitlement boundary (401) instead of
     falling through to the app's 404.
@@ -953,10 +954,13 @@ def test_every_paid_route_is_mounted_on_the_assembled_production_app() -> None:
     # No context manager on purpose: mounting is import-time state, and running
     # the app's lifespan here would start its background warm threads.
     client = TestClient(main_mod.app, raise_server_exceptions=False)
-    statuses = {
-        (method, path): client.request(method, path).status_code
+    responses = {
+        (method, path): client.request(method, path)
         for method, path in _MOUNTED_PAID_ROUTES
     }
+    statuses = {key: response.status_code for key, response in responses.items()}
+    for response in responses.values():
+        assert response.headers["cache-control"] == "private, no-store"
     assert statuses == dict.fromkeys(_MOUNTED_PAID_ROUTES, 401)
 
     # Control: 404 must still be reachable on this prefix, or the assertion

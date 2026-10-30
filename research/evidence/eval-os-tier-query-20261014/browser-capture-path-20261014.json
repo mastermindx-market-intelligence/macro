@@ -1,0 +1,43 @@
+{
+  "schema": "eval_os.browser_capture_path.v1",
+  "observed_at": "2026-10-14T06:25:45.219Z",
+  "browser_id": "2",
+  "tab_id": "1925920612",
+  "origin": "https://admin.mastermind-x.com",
+  "network_capture": "supported cdp Network.enable + responseReceived + getResponseBody",
+  "overview": {
+    "request_id": "27940.28",
+    "status": 200,
+    "body_characters": 111052,
+    "generated": {
+      "observed_at": "2026-10-14T06:20:35.371472+00:00",
+      "root_mode": "mixed",
+      "compute_seconds": 0,
+      "cache": "hit",
+      "trust_mtime": false
+    },
+    "engines": 385,
+    "artifacts": 649,
+    "outputs_assessed": 295,
+    "ceo_view_present": false,
+    "painted_counts_matched": true
+  },
+  "detail": {
+    "request_id": "27940.48",
+    "url": "https://admin.mastermind-x.com/api/intelligence_os/engine?id=collectors%2Fbreadth.py%3A%3Aengine-fix",
+    "status": 200,
+    "cache_control": "no-store",
+    "engine_id": "collectors/breadth.py::engine-fix",
+    "artifact_id": "breadth-breadth",
+    "assessment_status": "partial",
+    "state": null,
+    "reasons": ["write_time_untrusted"],
+    "painted_engine_output_state_reasons_matched": true
+  },
+  "a1_production_accepted": false,
+  "limits": [
+    "Old T4 production contract; A1 ceo_view absent",
+    "Enable capture before each new interaction; cached navigation may produce no network response",
+    "No request headers, cookies, credentials or protected outcomes retained"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "eval_os.final_hosted_ci_consumption.v1",
+  "observed_at": "2026-10-15T14:18:11.463403+00:00",
+  "identity": {
+    "workflow_run_id": "38738100398",
+    "workflow": "ci",
+    "event": "pull_request",
+    "role": "pr_head",
+    "subject_head_sha": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "tested_tree_sha": "7010debbe3c395f4e5929900d61deecaa49a5a79",
+    "base_sha": "9c37ad0a3ecb9f90f1d1163c31719a5c7da821ab",
+    "plan_sha256": "89f5ee79cd1a78e9f6c3bfbe2938014b6f615baa238778b92d7fdcfb85288dbc",
+    "evidence_sha256": "917ed6cdf4b444792dedafea59dbb6676c2b18125a9c35ab0257945b4ebae20c"
+  },
+  "artifact_id": 11978754300,
+  "artifact_zip_sha256": "4946408bca8d87d70db700c411238347d7dbdc3fa54c2503a8358099fe089eee",
+  "advertised_digest_verified": true,
+  "canonical_loader_and_gate": "scripts/ci_semantic_proof.py",
+  "logical_jobs": 127,
+  "passed_semantic_command_steps": 350,
+  "inherited_steps": 0,
+  "blocking_steps": 0,
+  "infrastructure_blocking": false,
+  "semantic_gate_clear": true,
+  "a1_job": {
+    "infrastructure": {
+      "outcome": "passed"
+    },
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "steps": [
+      {
+        "classification": "passed",
+        "failure_signature": null,
+        "outcome": "passed",
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "classification": "passed",
+        "failure_signature": null,
+        "outcome": "passed",
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "limits": "Original terminal run and artifact. All plan execution/step identities verified. Semantic command steps are not unit-test or zero-skip counts. Merge/install/production remain owed.",
+  "merged": false,
+  "production_proven": false
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "eval_os.qledger_ci_command_validation.v1",
+  "head": "f095dfe19364e8ba3f3d9251c9765a6491e996d4",
+  "python": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/bin/python",
+  "manifest_sha256": "c6fea0d17ed209abba759ea73914b7f188b5b05170186aa0b2af109eed3e30a3",
+  "steps": [
+    {
+      "step": 3,
+      "name": "qledger cluster-honest Wilson CI unit tests",
+      "command": "python -m pytest tests/test_qledger_cluster_honest_ci.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 27.85,
+      "log": "qledger-ci-step-3.log"
+    },
+    {
+      "step": 4,
+      "name": "qledger contract regression suite",
+      "command": "python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_store_integrity.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 78.24,
+      "log": "qledger-ci-step-4.log"
+    },
+    {
+      "step": 5,
+      "name": "qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts",
+      "command": "python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 28.6,
+      "log": "qledger-ci-step-5.log"
+    },
+    {
+      "step": 6,
+      "name": "qledger forward-only desk adapters + evidence clock (P3) + nightly grader & W6 readiness runner",
+      "command": "python -m pytest tests/test_qledger_desk_adapter.py tests/test_qledger_evidence_clock.py tests/test_grade_qledger.py tests/test_w6_readiness_monitor.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 22.51,
+      "log": "qledger-ci-step-6.log"
+    },
+    {
+      "step": 7,
+      "name": "communique_diff phrase-book + qledger registration contract",
+      "command": "python -m pytest tests/test_communique_diff.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 12.33,
+      "log": "qledger-ci-step-7.log"
+    },
+    {
+      "step": 8,
+      "name": "altdata reboot W2 \u2014 per-channel family routing + placebo tests + HOUSE-U5 ledger lane gate",
+      "command": "python -m pytest tests/test_altdata_reboot_families.py tests/test_altdata_ledger_lane_gate.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 12.37,
+      "log": "qledger-ci-step-8.log"
+    },
+    {
+      "step": 9,
+      "name": "qledger metric-validity invariants",
+      "command": "python -m pytest tests/test_qledger_validity.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 58.14,
+      "log": "qledger-ci-step-9.log"
+    },
+    {
+      "step": 10,
+      "name": "qledger metric-validity guard selftest",
+      "command": "python scripts/check_qledger_metric_validity.py --selftest",
+      "exit_code": 0,
+      "elapsed_seconds": 0.18,
+      "log": "qledger-ci-step-10.log"
+    },
+    {
+      "step": 11,
+      "name": "qledger V1 excess-legality gate at the emitter",
+      "command": "python -m pytest tests/test_qledger_excess_legality.py -q",
+      "exit_code": 0,
+      "elapsed_seconds": 11.71,
+      "log": "qledger-ci-step-11.log"
+    }
+  ],
+  "all_execution_steps_passed": true,
+  "scope": "Existing job commands and order in separate Python3.12 processes with preexisting isolated environment; no pip changes, no hosted execution or production acceptance."
+}

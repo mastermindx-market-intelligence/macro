@@ -81,9 +81,8 @@ else:
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == (
-        "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED"
-    )
+    # Serving startup may also announce that optional observability is disabled.
+    assert "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED" in result.stdout.splitlines()
 
 
 @pytest.fixture()

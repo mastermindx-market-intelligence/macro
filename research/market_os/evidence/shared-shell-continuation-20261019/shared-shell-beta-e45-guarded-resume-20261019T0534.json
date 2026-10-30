@@ -1,0 +1,12 @@
+{
+  "completed_at": "2026-10-19T05:41:14.759832+00:00",
+  "exit_code": 1,
+  "log_bytes": 10270,
+  "log_path": "/tmp/shared-shell-beta-e45-guarded-resume-20261019T0534.log",
+  "log_sha256": "08cd8f73c244aa557653c0abea4dbe29030a17cdbc3cf7feb7984ba44a234c03",
+  "public_beta_acceptance_claimed": false,
+  "ssh_pid": 22119,
+  "started_at": "2026-10-19T05:33:08.256214+00:00",
+  "status": "REQUEST_RETURNED",
+  "target": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+}

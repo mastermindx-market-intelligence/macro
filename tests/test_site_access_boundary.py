@@ -87,7 +87,7 @@ def test_caddy_public_boundary_matches_policy_exactly():
 def test_international_workspace_presentation_public_without_data_grants():
     """Anonymous International HTML cannot enhance if any one script/CSS is 401.
 
-    Only the nine exact, committed presentation assets are admitted here. No
+    Only the ten exact, committed presentation assets are admitted here. No
     API, source-price JSON, user Saved body or future asset family is public.
     """
     assets = {
@@ -99,9 +99,9 @@ def test_international_workspace_presentation_public_without_data_grants():
         "/intl_library_search.js",
         "/intl_workspace_scenario.js",
         "/intl_workspace.js",
-        "/intl_workspace_entry.js",
+        "/intl_workspace_entry.js", "/intl_workspace_surveillance.css",
     }
-    assert len(assets) == 9
+    assert len(assets) == 10
     exact = POLICY["public"]["exact"]
     prefixes = POLICY["public"]["prefixes"]
     assert all(exact.count(asset) == 1 for asset in assets)
@@ -271,11 +271,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -662,6 +666,32 @@ def test_no_source_maps_secrets_or_server_source_in_site_tree():
     assert bad == []
 
 
+def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
+    # The moved stub must run its bridge.navigate before the parent commits a
+    # successor generation. Query-preserving HTTP redirects still fail READY.
+    match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /baskets_china.html
+        not {
+            query mmx_shell=1
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
+        }""".split())
+    assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
+    assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /movers.html
+        not {
+            query mmx_shell=1
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
+
+
 def test_fail_closed_and_browser_hardening_are_present():
     assert 'rewrite /api/regwall/check' in CADDY
     assert 'rewrite /api/paywall/check' in CADDY
@@ -855,3 +885,118 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_internal_document_denials_match_the_canonical_policy():
+    """A Caddy-only denial must never be advertised by the route registry."""
+    matcher = re.search(r"@never_site\s*\{\s*path ([^\n]+)", CADDY)
+    assert matcher, "internal-document serving denial missing"
+    declared = set(POLICY["deny"]["exact"])
+    declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
+    assert set(shlex.split(matcher.group(1))) == declared
+
+
+def test_portfolio_state_cache_migration_covers_every_served_consumer():
+    """A path-wide immutable cache requires hash stamps on every consumer."""
+    from lib.pages import optimize_assets_text
+
+    asset = SITE / "portfolio_state.js"
+    digest = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+    template = (ROOT / "templates/watchlist.html.j2").read_text()
+    tag = '<script src="portfolio_state.js" data-sync></script>'
+    assert tag in template  # Bare source joins the canonical re-stamping path.
+    stamped = optimize_assets_text(tag, lambda path: digest if path == "portfolio_state.js" else None)
+    served = (SITE / "watchlist.html").read_text()
+    assert stamped in served and "defer" not in stamped
+    for text, loading_tag in [(template, tag), (served, stamped)]:
+        assert text.index(loading_tag) < text.index('<script src="watchlist.js?')
+    refs = re.compile(r'<script\b[^>]*\bsrc="([^"]*portfolio_state\.js[^"]*)"[^>]*>')
+    consumers = set()
+    for page in SITE.rglob("*.html"):
+        for url in refs.findall(page.read_text(encoding="utf-8", errors="replace")):
+            if url.startswith(("http://", "https://", "//")):
+                continue
+            bare = url.split("?", 1)[0]
+            if (page.parent / bare).resolve() != asset.resolve():
+                continue
+            assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
+            consumers.add(str(page.relative_to(SITE)))
+    assert {"watchlist.html", "ontology.html"} <= consumers
+
+
+def test_brain_visuals_assets_are_public_in_policy_and_every_caddy_matcher():
+    """The chat widget's illustration pair must load on every anonymous page.
+
+    Pin the existing presentation pair without promoting adjacent payloads
+    or future members of the family. This is static-boundary evidence only.
+    """
+    assets = {"/mm_brain_visuals.js", "/mm_brain_visuals.css"}
+    assert len(assets) == 2
+    exact = POLICY["public"]["exact"]
+    assert all(exact.count(asset) == 1 for asset in assets)
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, f"{name}: missing Brain visuals presentation"
+
+
+def test_brain_visuals_payload_api_and_family_wildcards_stay_out_of_the_boundary():
+    """Illustration code is public; the Brain payload plane never is.
+
+    /api/brain/* is the Bearer-authenticated macro-api gateway reached through
+    the existing reverse proxy. In @reg_asset/@reg_asset_err the exact token
+    ``/api/*`` is that NON_POLICY proxy exclusion (see its block comment), not a
+    public grant — so those two lists are asked which token OTHER than ``/api/*``
+    admits the endpoint, never whether the endpoint fails fnmatch against it.
+    The policy and the two cache matchers carry no ``/api/*`` token, so any
+    admitting token there is a payload grant outright.
+    """
+    endpoint = "/api/brain/threads"
+    public_exact = set(POLICY["public"]["exact"])
+    public_prefixes = POLICY["public"]["prefixes"]
+    assert not _matches(endpoint, sorted(public_exact)), endpoint
+    assert not any(
+        endpoint.startswith(p.rstrip("/") + "/") for p in public_prefixes
+    ), "a public policy prefix admits the Brain API"
+
+    # Adjacent private/derived/future files of the visuals family stay gated,
+    # in policy and in every serving list.
+    private_family = (
+        "/mm_brain_visuals.json",
+        "/mm_brain_visuals/private.json",
+        "/mm_brain_visuals.js.map",
+        "/mm_brain_visuals_private.js",
+        "/mm_brain_visuals_future.js",
+    )
+    for candidate in private_family:
+        assert candidate not in public_exact, candidate
+        assert not any(
+            candidate.startswith(p.rstrip("/") + "/") for p in public_prefixes
+        ), candidate
+
+    for name in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        # Family promotion: no mm_brain_visuals token beyond the two exact assets.
+        family = {p for p in paths if "mm_brain_visuals" in p}
+        assert family <= {"/mm_brain_visuals.js", "/mm_brain_visuals.css"}, (
+            f"@{name} admits a mm_brain_visuals wildcard/variant: "
+            f"{sorted(family - {'/mm_brain_visuals.js', '/mm_brain_visuals.css'})}"
+        )
+        for candidate in private_family:
+            assert not _matches(candidate, sorted(paths)), (name, candidate)
+        admitted = sorted(p for p in paths if _matches(endpoint, [p]))
+        if name.startswith("reg_asset"):
+            assert set(admitted) <= {"/api/*"}, (name, admitted)
+        else:
+            assert admitted == [], (name, admitted)

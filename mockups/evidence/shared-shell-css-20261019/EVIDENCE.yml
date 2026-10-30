@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/shared_shell.css
+manifest: mockups/evidence/shared-shell-css-20261019/manifest.json

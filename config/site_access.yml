@@ -268,6 +268,19 @@ public:
     - /scene-motion.js
     - /chat.css
     - /theme.css
+    # International workspace presentation and local in-page controls. These
+    # exact files contain no datasets or data transport; source materializations
+    # and API authorization retain their existing publication/access boundaries.
+    - /intl_workspace.css
+    - /intl_workspace_macro.css
+    - /intl_workspace_risk.css
+    - /intl_workspace_history.css
+    - /intl_workspace_surveillance.css
+    - /intl_workspace_state.js
+    - /intl_library_search.js
+    - /intl_workspace_scenario.js
+    - /intl_workspace.js
+    - /intl_workspace_entry.js
     # Public Market Memory shell assets. They contain presentation/read-client
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
@@ -333,6 +346,9 @@ public:
     # transform logic and reads only the market preference already in the user's
     # own session — no signals, no customer data.
     - /nav_market.js
+    # Dormant presentation assets; no account, token, or market payload.
+    - /shared_shell_bridge.js
+    - /shared_shell.css
     - /supabase.js
     - /data_base.js
     - /live.js
@@ -456,6 +472,12 @@ public:
     # inside the existing authenticated Brain transport and thread endpoints.
     - /mm_brain_visuals.js
     - /mm_brain_visuals.css
+    - /mm_brain_presentation.js
+    - /mm_brain_markdown.js
+    - /mm_brain_finance.js
+    - /mm_brain_finance.css
+    - /mm_brain_finance_math_v1.js
+    - /mm_brain_math.js
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #
@@ -523,17 +545,6 @@ public:
     # exact symptom reported against production, where the HTML answered 200 and
     # these answered 401. Presentation only: no snapshot JSON, no data path, and
     # no prefix or wildcard is promoted with them.
-    # International workspace presentation/controllers only. No data payload,
-    # evidence, saved research, API or future wildcard family is opened here.
-    - /intl_workspace.css
-    - /intl_workspace_macro.css
-    - /intl_workspace_risk.css
-    - /intl_workspace_history.css
-    - /intl_workspace_state.js
-    - /intl_library_search.js
-    - /intl_workspace_scenario.js
-    - /intl_workspace.js
-    - /intl_workspace_entry.js
     - /macro_suite.css
     - /macro_suite_boot.js
     - /macro_suite.js
@@ -712,6 +723,15 @@ deny:
     - /_mockup_research_vault.html
     - /qa_bottom_sensors.html
     - /status.html
+    # Internal research tools are served only by the authenticated admin owner.
+    # Keep this exact deny set aligned with Caddy @never_site and route exports.
+    - /committee.html
+    - /measurement.html
+    - /crossasset.html
+    - /signal_lab.html
+    - /tech_lab.html
+    - /macro_signals.html
+    - /factors.html
   prefixes: []
 
 premium:

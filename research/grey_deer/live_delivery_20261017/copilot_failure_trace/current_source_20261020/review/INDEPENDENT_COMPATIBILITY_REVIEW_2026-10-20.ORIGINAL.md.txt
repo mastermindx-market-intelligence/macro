@@ -1,0 +1,75 @@
+# Independent review — Copilot source compatibility and repair boundary
+
+**Verdict: ACCEPT_WITH_SCOPE.** The [current-source conclusion](../CURRENT_SOURCE_2026-10-20.md) and its bounded repair contract are supported by the supplied fixed source. The original response-finalization defect remains open. This accepts the compatibility analysis; it does not accept a repaired product, a current production deployment, or a newly executed public-entry-point result.
+
+**Reviewer:** `/root/copilot_compatibility_review_oct20`. **Date:** 20 October 2026. This was a cloud-only advisory review. Only the review file was written. No Studio, GitHub, browser, provider, CI, first-party module execution, source mutation, or replay of the accepted counterexamples occurred.
+
+## Exact material reviewed
+
+| Artifact | Bytes | SHA256 |
+|---|---:|---|
+| Current-source note | 4,770 | `930e0a334716d6130c0f550424b3aa63ea6c78d50ef4fd8bca915cdbd32a83ed` |
+| [Compatibility receipt](../SOURCE_COMPATIBILITY_2026-10-20.json) | 6,938 | `3da820c3a71f3184b755f282d39ae5a1525e0743e149757c59ae2de4688c38e2` |
+| Root comparison script, `current_source_compatibility_20261020.py` | 4,947 | `25e4d550fc18fd97dde2a4d771feceff485ac420d8706252484c2b290e33b3b6` |
+| [Original findings](../../FINDINGS_2026-10-17.md) | 9,630 | `f3204c50d7944a5194a759fb5255da7e04d2e8b23748d92043857af18edb0837` |
+
+The original reproduction script was read, including its ten selected gateway nodes and six classification controls. It was not executed. I independently recomputed all four supplied source identities and performed standard-library AST comparisons; these operations parsed source as data and imported no first-party code.
+
+| Source | Bytes | SHA256 | Computed Git blob |
+|---|---:|---|---|
+| Original gateway | 511,153 | `78f4d3b320d25ff1b6b86c933fbac725fb0fe1784fe3ec7c4874564a08e926bf` | `e619f7dd424725a692172967e00604da960a0864` |
+| Current gateway | 714,053 | `bf36beeff804a751523b16f3357932398ed84795bce48d1316c0b4cd548cf0d9` | `60856a2d5b4a84cf495e1077752723f091b29087` |
+| Original and current `ask_brain.py` | 141,013 each | `a982ab591c3d1a4f940d69bf95e7b499f61af505e35c1f40e3ff50070c758a9d` | `8877b338489674cd1740146178e4f4c9863e0446` |
+
+The current source is parent-bound to [Macro #8014](https://github.com/mastermindx-market-intelligence/macro/pull/8014), head `d63e59bcd4203732fe3b9097002f9451dcf61955`. Its remote PR state, ancestry and active-owner status are parent observations, not independently retrieved in this child. No custody transfer or edit to that producer is implied.
+
+## Structural result
+
+All ten gateway declarations selected by the original counterexample have matching ASTs in the old and current files. Their independently computed AST hashes also match the comparison receipt. I separately selected the two finalization blocks directly from their owning functions and the stream's direct-body stub conditional; all match across revisions. This avoids relying only on the root script's broader AST search for the stub.
+
+Additional inspected boundaries also have identical ASTs: `_fast_visible_tool_schemas`, `_fast_evidence_requirements`, `_evidence_coverage_missing`, `_thinking_only_token_limit`, `_turn_lang`, `_leak_screen` and `_append_message`. The post-filter is imported from the byte-identical `ask_brain.py`. These observations strengthen the narrow compatibility result. They are not a complete dependency or runtime equivalence proof; dynamically assembled guard inputs and the actual authorized tool schemas were not reconstructed.
+
+The classifier result therefore remains applicable for the same supplied question and context. The exclusion-only portfolio trigger is still present in identical source. Actual family enforcement remains conditional on the gateway qualifying the turn: Fast chat, the relevant page and internals settings, and an authorized visible primary witness. The review does not assume those runtime conditions from the file hash alone.
+
+## Why surrounding recovery has not eliminated the counterexample
+
+The relevant current source is [the pinned gateway](https://github.com/mastermindx-market-intelligence/macro/blob/d63e59bcd4203732fe3b9097002f9451dcf61955/engine/neuralweb/brain_gateway.py). Current line numbers below identify this source only.
+
+In the stream, the repair flag starts false at line 11392 and is set by the missing-evidence `end_turn` branch at 11707–11719. A tool-budget or thinking-only token-limit exit need not pass through that branch. The current synthesis recovery at 11889–12055 supplies further opportunities to obtain prose, but it does not guarantee prose: every candidate can return empty, an exception can leave only empty prior content, and the final salvage loop can have no text to salvage.
+
+That residual state reaches the same finalization decision at 12057–12063. With no issued evidence repair, `_append_evidence_coverage_disclosure` can turn the empty answer into the nonempty adverse-coverage disclosure; its decisive empty-input return is at 8057–8058. The later stub condition at 12101 sees the decorated text. Under the original counterexample's stipulated state, it therefore does not recognize empty synthesis.
+
+The additional recovery paths can change how frequently this state occurs. They do not remove the state from the inspected source. This is a source-level path argument tied to the existing pure counterexample, not a new execution of the whole gateway, a fresh provider-failure diagnosis, or a claim that the present production service has just failed again.
+
+The nonstreaming path has the same remaining decision at 10699–10705. Its public finalization still passes clean text to `_append_message` at 13735 and returns `degraded: False` at 13782. The stream passes `filtered_answer` to `answer_out` at 12177–12178; its caller can then attempt assistant persistence at 14260–14270. Actual database-write success is not established by these call sites. The response-log gate at 14328–14330 also rejects only empty text, so a nonempty disclosure is not distinguished there as a missing substantive answer.
+
+## Visual-content boundary
+
+The new visual path does not invalidate the defect for a turn with no qualified visual. It does make a prose-only repair predicate unsafe as a universal response contract.
+
+Current stream admission of `_public_visuals` at 12161–12163 requires the screen to remain clear and the turn not to be filtered, stubbed or retracted. Consequently, an empty-prose turn currently takes the stub path before those visual blocks are admitted, unless other nonempty text prevents the stub. This source inspection does not establish that standalone visual-only success is already an accepted product capability.
+
+The root contract correctly preserves qualified visual content and leaves its existing acceptance with the current producer. During implementation, the explicit distinction should be:
+
+- A useful substantive answer can be qualified prose, or a separately admitted visual response under the existing response contract.
+- A raw `charts` list, an unvalidated visual object, a citation, an evidence caveat, or a suggestion block is insufficient by itself to establish success.
+- A legitimate visual must still satisfy source binding and the advice, leak, filtering, retraction and Stop rules. An empty-prose correction must not expose a visual that those rules withheld.
+- Preserve the accepted handling of genuine supported prose with a visual and any separately validated standalone visual response. Do not use this defect repair to invent visual-only policy.
+
+This is a concrete implementation and verification refinement, not a blocking defect in the reviewed note. The note already makes the necessary distinction between useful answer content and metadata and explicitly requires valid visual cases to retain their semantics.
+
+## Minimal acceptance contract
+
+The proposed sequence is appropriately bounded: repair the existing producer, demonstrate the actual changed paths with deterministic fixtures, qualify its served source, then obtain one useful authenticated answer to the original question. It does not require a provider replay to establish the source defect.
+
+The decisive fixture outcomes should remain behavior-based in both public entry points: blank or whitespace synthesis without an issued repair cannot become caveat-only success; suggestion-only output cannot become success after splitting; supported prose remains intact; genuine issued-repair failure retains its truthful wording; and refused, screened or stopped output retains the existing authority. Persistence and response logging must retain the distinction between failed synthesis and a useful answer. A new flag is useful only if the public display and persistence semantics consume it consistently.
+
+For the visual boundary, distinguish at least a qualified visual with useful prose, any explicitly accepted standalone visual case, and an invalid or withheld visual with empty prose. Existing tests may supply these controls where their exact source and scope remain applicable. No new generic test campaign or provider spend is implied.
+
+The intent and contradiction repairs remain separate concerns. Preserve affirmative private-portfolio questions that also forbid allocation instructions. Do not infer positive private-portfolio intent from an exclusion alone. Retain genuine conflicts while binding them to the actual evidence family or labeling them unscoped. None of these changes confers numerical allocation or execution authority.
+
+## Final disposition
+
+**No blocking change is requested to the current compatibility note.** The original finalization, intent and contradiction findings remain open under their documented scopes. The review accepts continued applicability to the inspected source and the proposed guard-preserving repair boundary. It does not establish failure frequency, current authorized tool visibility, a new provider stop reason, successful persistence, current deployment, corrected live delivery or programme completion.
+
+**STOP.** No watcher or continuation was created. Root retains current source custody, integration, production decisions and final acceptance.

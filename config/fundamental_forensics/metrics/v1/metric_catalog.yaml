@@ -1,8 +1,8 @@
 schema: fundamental_forensics.metric_catalog/v1
 catalog_id: fundamental_forensics_core_gaap_metrics
-catalog_version: 1.0.0
+catalog_version: 1.1.0
 available_at: "2026-08-02T00:00:00Z"
-content_sha256: 2825936bc3cdf0194625f5c16b8c9652c2477b043f0067726156af8c7847fe29
+content_sha256: 4425bdb441ac4380a66ceb34d4c72ef136a89966eefc1fd6954446e296e55461
 
 duration_consolidated: &duration_consolidated
   period_constraints:
@@ -335,6 +335,9 @@ metrics:
     rule: {rule_id: metric.intangible_assets_net/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: B}
     units: [USD]
     formula_dependencies: []
+    definition:
+      scope: "Finite-lived intangible assets, net of accumulated amortization, as reported under us-gaap FiniteLivedIntangibleAssetsNet. Excludes goodwill and indefinite-lived intangible assets; the metric identifier is broader than this measured scope."
+      rule: {rule_id: definition.intangible_assets_net/v1, version: 1.0.0, available_at: "2026-10-21T00:00:00Z", confidence: B}
     <<: [*instant_consolidated, *balance_sheet, *direct_review]
   - metric_id: total_assets
     label: Total assets

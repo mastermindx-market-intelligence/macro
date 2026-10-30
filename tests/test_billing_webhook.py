@@ -597,3 +597,431 @@ def test_checkout_failure_emits_commercial_path_event(monkeypatch, tmp_path):
     rows = load_events(root=tmp_path / "commercial_path")
     assert any(r.get("kind") == "checkout.fail" and r.get("reason") == "RuntimeError"
                for r in rows)
+
+
+@pytest.mark.parametrize("etype,status", [
+    ("customer.subscription.deleted", "canceled"),
+    ("invoice.payment_failed", "past_due"),
+])
+@pytest.mark.parametrize("failure", [
+    "timeout", "http_503", "invalid_json", "empty_body", "object", "missing_user",
+    "blank_user", "nonstring_user", "invalid_row",
+])
+def test_signed_revocation_retries_failed_mapping_then_reaches_api_me(
+    monkeypatch, etype, status, failure,
+):
+    """A failed authority lookup must not settle the event or strand paid access.
+
+    Only signature verification and the HTTP issuer are real; all provider, database,
+    mail and telemetry transports are isolated. The retained ledger remains the sole
+    duplicate authority, and later out-of-order events recompute current Stripe state.
+    """
+    import urllib.error
+    import stripe
+    from app import main
+
+    row = {
+        "user_id": "user_retry_test", "stripe_customer_id": "cus_retry_test",
+        "tier": "pro", "status": "active", "current_period_end": None,
+        "features": ["site_full", "terminal_live_options"], "source": "stripe",
+    }
+    recorded, invalidated, emitted = set(), [], []
+    mapping_available = False
+    writes = []
+    errors = {
+        "timeout": TimeoutError("offline simulated mapping timeout"),
+        "http_503": urllib.error.HTTPError("https://db.invalid", 503, "unavailable", {}, None),
+        "invalid_json": json.JSONDecodeError("invalid mapping response", "!", 0),
+    }
+
+    malformed = {
+        "empty_body": None, "object": {}, "missing_user": [{}],
+        "blank_user": [{"user_id": "  "}], "nonstring_user": [{"user_id": 123}],
+        "invalid_row": [None],
+    }
+
+    def fake_pg(method, path, **kwargs):
+        if path.startswith("stripe_events?"):
+            if method == "GET":
+                return [{"id": "found"}] if path.split("id=eq.")[1].split("&")[0] in recorded else []
+            assert method == "POST"
+            recorded.add(kwargs["body"][0]["id"])
+            return None
+        assert path.startswith("user_entitlements?")
+        if method == "GET":
+            if "stripe_customer_id=eq." in path:
+                if not mapping_available:
+                    if failure in malformed:
+                        return malformed[failure]
+                    raise errors[failure]
+                return [{"user_id": row["user_id"]}]
+            assert "user_id=eq.user_retry_test" in path
+            return [row.copy()]
+        assert method == "POST"
+        writes.append(kwargs["body"][0])
+        row.update(writes[-1])
+
+    fake_stripe = _fake_stripe([_sub(status, "pro_monthly", 1900000000)], [])
+    fake_stripe.Webhook, fake_stripe.error = stripe.Webhook, stripe.error
+    monkeypatch.setattr(billing, "_stripe", lambda: fake_stripe)
+    monkeypatch.setattr(billing, "_pg", fake_pg)
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "offline-test-key")
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", WHSEC)
+    monkeypatch.setattr(billing, "_billing_emails", lambda: None)
+    monkeypatch.setattr(billing, "_invalidate", invalidated.append)
+    monkeypatch.setattr(billing, "_commercial_emit", lambda kind, **fields: emitted.append(kind))
+    monkeypatch.setattr(main, "_brain_module", lambda: types.SimpleNamespace(
+        get_user_quotas=lambda *a, **kw: {"tier": "free", "quotas": {}},
+    ))
+    monkeypatch.setitem(main.app.dependency_overrides, main.require_user,
+                        lambda: {"id": "user_retry_test", "role": "authenticated"})
+
+    assert "terminal_live_options" in _get_api_me(main.app)[1]["features"]
+    payload = _event(etype, {"customer": "cus_retry_test"}, "evt_retry_test")
+    request = _FakeRequest(payload, {"stripe-signature": _sign(payload)})
+    error_type = type(errors[failure]) if failure in errors else ValueError
+    with pytest.raises(error_type):
+        asyncio.run(billing.webhook(request))
+    assert not recorded and not writes and not invalidated
+    assert emitted == ["webhook.error"]
+    assert row["tier"] == "pro"
+
+    mapping_available = True
+    assert asyncio.run(billing.webhook(request))["status"] == "ok"
+    assert recorded == {"evt_retry_test"} and invalidated == ["user_retry_test"]
+    response_status, issued = _get_api_me(main.app)
+    assert response_status == 200
+    assert issued["tier"] == "free" and issued["status"] == status and issued["features"] == []
+    assert asyncio.run(billing.webhook(request))["status"] == "duplicate"
+    assert len(writes) == 1 and len(invalidated) == 1
+
+    # A delayed older positive notification cannot re-grant after current-state revocation.
+    old_payload = _event("customer.subscription.updated", {
+        "customer": "cus_retry_test", "status": "active",
+    }, "evt_delayed_test")
+    assert asyncio.run(billing.webhook(_FakeRequest(
+        old_payload, {"stripe-signature": _sign(old_payload)},
+    )))["status"] == "ok"
+    assert row["tier"] == "free" and row["features"] == []
+
+
+def test_customer_mapping_absence_remains_unresolved(monkeypatch):
+    """A successful empty lookup still ignores an unrelated customer without writing."""
+    monkeypatch.setattr(billing, "_pg", lambda *a, **kw: [])
+    monkeypatch.setattr(billing, "_compute_entitlement", lambda cid: pytest.fail("unmapped customer"))
+    assert billing._user_for_customer("cus_unmapped") is None
+    billing._handle_event({"id": "evt_unmapped", "type": "invoice.payment_failed",
+                           "data": {"object": {"customer": "cus_unmapped"}}})
+
+
+@pytest.fixture
+def conversion_system(monkeypatch):
+    """Actual reducer, signed ingress and analytics request; isolated provider/DB transports."""
+    import copy
+    import stripe
+    from app import main
+
+    uid, cid, created = "11111111-1111-4111-8111-111111111111", "cus_conversion_test", 1790000000
+    price = {"id": "price_conversion", "lookup_key": "pro_monthly", "currency": "usd",
+             "recurring": {"interval": "month", "interval_count": 1}}
+    sub = {"id": "sub_conversion", "customer": cid, "created": created - 20,
+           "livemode": False, "status": "active", "trial_start": None, "trial_end": None,
+           "metadata": {"mm_user_id": uid}, "current_period_end": 1900000000,
+           "items": {"has_more": False, "data": [{"price": price, "current_period_end": 1900000000}]}}
+    session = {"id": "cs_conversion", "customer": cid, "client_reference_id": uid,
+               "livemode": False, "mode": "subscription", "status": "complete",
+               "payment_status": "paid", "amount_total": 12345, "currency": "usd",
+               "metadata": {"mm_user_id": uid}, "subscription": sub,
+               "line_items": {"has_more": False, "data": [{"price": price}]}}
+    row, ledger, analytics, requests, invalidations = {}, set(), {}, [], []
+    failure = {"mode": None}
+    provider_reads = []
+
+    def pg(method, path, body=None, **kwargs):
+        if path.startswith("stripe_events?"):
+            if method == "GET":
+                eid = path.split("id=eq.")[1].split("&")[0]
+                return [{"id": eid}] if eid in ledger else []
+            ledger.add(body[0]["id"])
+            return None
+        assert path.startswith("user_entitlements?")
+        if method == "GET":
+            return [{"user_id": uid}] if "stripe_customer_id=eq." in path else [copy.deepcopy(row)]
+        if failure["mode"] == "entitlement":
+            raise TimeoutError("isolated entitlement write failed")
+        row.update(copy.deepcopy(body[0]))
+
+    def urlopen(req, timeout=5):
+        if req.get_method() == "GET":
+            assert "/analytics_events?eid=eq." in req.full_url
+            eid = req.full_url.split("eid=eq.")[1].split("&")[0]
+            return types.SimpleNamespace(read=lambda: json.dumps([analytics[eid]] if eid in analytics else []).encode())
+        assert req.full_url.endswith("/analytics_events?on_conflict=eid")
+        assert req.headers["Prefer"] == "resolution=ignore-duplicates,return=minimal"
+        rows = json.loads(req.data)
+        requests.append(rows)
+        if failure["mode"] == "analytics":
+            raise TimeoutError("isolated analytics failure before write")
+        for item in rows:
+            analytics.setdefault(item["eid"], item)
+        if failure["mode"] == "lost_ack":
+            failure["mode"] = None
+            raise TimeoutError("isolated analytics ACK lost after write")
+        return types.SimpleNamespace(read=lambda: b"")
+
+    def retrieve_session(sid, **kwargs):
+        assert sid == session["id"] and kwargs["expand"] == ["subscription", "line_items.data.price"]
+        provider_reads.append("session")
+        return copy.deepcopy(session)
+
+    def retrieve_sub(sid):
+        assert sid == sub["id"]
+        provider_reads.append("subscription")
+        return copy.deepcopy(sub)
+
+    fake = types.SimpleNamespace(
+        Webhook=stripe.Webhook, error=stripe.error,
+        Customer=types.SimpleNamespace(modify=lambda *args, **kwargs: {}),
+        Subscription=types.SimpleNamespace(
+            list=lambda **kw: _ListResp([stripe.StripeObject.construct_from(sub, "sk_test_offline")]),
+            retrieve=retrieve_sub),
+        checkout=types.SimpleNamespace(Session=types.SimpleNamespace(retrieve=retrieve_session)),
+        entitlements=types.SimpleNamespace(ActiveEntitlement=types.SimpleNamespace(list=lambda **kw: _ListResp([]))),
+    )
+    monkeypatch.setattr(billing, "_stripe", lambda: fake)
+    monkeypatch.setattr(billing, "_pg", pg)
+    monkeypatch.setattr(billing, "_billing_emails", lambda: None)
+    monkeypatch.setattr(billing, "_commercial_emit", lambda *a, **kw: None)
+    monkeypatch.setattr(billing, "_invalidate", invalidations.append)
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "offline-key")
+    monkeypatch.setattr(main, "SUPABASE_SERVICE_ROLE_KEY", "offline-key")
+    monkeypatch.setattr(main.urllib.request, "urlopen", urlopen)
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", WHSEC)
+
+    def event(etype="checkout.session.completed", eid="evt_conversion"):
+        obj = copy.deepcopy(session if etype == "checkout.session.completed" else sub)
+        if etype == "checkout.session.completed":
+            obj["subscription"] = sub["id"]
+            obj.pop("line_items")
+        return {"id": eid, "type": etype, "created": created, "livemode": False, "data": {"object": obj}}
+
+    def send(ev):
+        payload = json.dumps(ev).encode()
+        return asyncio.run(billing.webhook(_FakeRequest(payload, {"stripe-signature": _sign(payload)})))
+
+    return types.SimpleNamespace(
+        uid=uid, cid=cid, created=created, sub=sub, session=session, row=row, ledger=ledger,
+        analytics=analytics, requests=requests, invalidations=invalidations, failure=failure,
+        provider_reads=provider_reads, event=event, send=send, main=main,
+    )
+
+
+def test_checkout_conversion_requires_persisted_entitlement_and_real_facts(conversion_system):
+    import uuid
+    f = conversion_system
+    ev = f.event()
+    f.failure["mode"] = "entitlement"
+    with pytest.raises(TimeoutError):
+        f.send(ev)
+    assert not f.analytics and not f.requests and not f.ledger and not f.provider_reads
+    f.failure["mode"] = None
+    assert f.send(ev)["status"] == "ok"
+    assert f.row["tier"] == "pro" and f.row["status"] == "active"
+    item = next(iter(f.analytics.values()))
+    assert item["eid"] == str(uuid.uuid5(uuid.NAMESPACE_URL, "mastermind:stripe:evt_conversion:checkout.completed"))
+    assert item["user_id"] == f.uid and item["type"] == "checkout.completed"
+    assert item["meta"] == {"tier": "pro", "interval": "month", "offer_key": None,
+                             "amount_cents": 12345, "is_trial": False}
+    assert item["client_ts"] == billing._iso(f.created)
+    assert "created_at" not in item  # DB observation time is not overwritten by Stripe time.
+    assert f.send(ev)["status"] == "duplicate" and len(f.requests) == 1
+
+
+@pytest.mark.parametrize("mode,rows_before_retry", [("analytics", 0), ("lost_ack", 1)])
+def test_conversion_ack_failure_retries_same_identity_without_double_count(
+    conversion_system, mode, rows_before_retry,
+):
+    f = conversion_system
+    ev = f.event()
+    f.failure["mode"] = mode
+    with pytest.raises(TimeoutError):
+        f.send(ev)
+    assert f.row["tier"] == "pro" and not f.ledger and len(f.analytics) == rows_before_retry
+    f.failure["mode"] = None
+    assert f.send(ev)["status"] == "ok"
+    assert len(f.analytics) == 1 and f.ledger == {ev["id"]}
+    assert f.requests[0][0]["eid"] == f.requests[1][0]["eid"]
+    assert f.requests[0] == f.requests[1]
+    assert f.send(ev)["status"] == "duplicate" and len(f.requests) == 2
+
+
+def test_retry_after_revocation_does_not_invent_delayed_conversion(conversion_system):
+    f = conversion_system
+    ev = f.event()
+    f.failure["mode"] = "analytics"
+    with pytest.raises(TimeoutError):
+        f.send(ev)
+    f.failure["mode"] = None
+    f.sub["status"] = "canceled"
+    assert f.send(ev)["status"] == "ok"
+    assert f.row["tier"] == "free" and f.row["features"] == [] and not f.analytics
+    assert len(f.requests) == 1 and f.ledger == {ev["id"]}
+
+
+@pytest.mark.parametrize("etype", ["customer.subscription.updated", "invoice.payment_succeeded"])
+def test_generic_paid_state_is_not_a_conversion(conversion_system, etype):
+    f = conversion_system
+    assert f.send(f.event(etype))["status"] == "ok"
+    assert f.row["tier"] == "pro" and not f.analytics and not f.provider_reads
+
+
+@pytest.mark.parametrize("trial", [False, True])
+def test_zero_amount_does_not_define_trial(conversion_system, trial):
+    f = conversion_system
+    f.session["amount_total"] = 0
+    if trial:
+        f.sub.update(status="trialing", trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+        f.session["payment_status"] = "no_payment_required"
+    assert f.send(f.event())["status"] == "ok"
+    assert next(iter(f.analytics.values()))["meta"]["is_trial"] is trial
+
+
+def test_trial_started_uses_original_exact_duration_not_catalog(conversion_system):
+    f = conversion_system
+    f.sub.update(status="trialing", trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+    assert f.send(f.event("customer.subscription.created"))["status"] == "ok"
+    assert next(iter(f.analytics.values()))["meta"] == {"tier": "pro", "trial_days": 14}
+
+
+@pytest.mark.parametrize("field,value", [
+    ("amount_total", None), ("amount_total", True), ("amount_total", -1),
+    ("currency", "jpy"), ("payment_status", "unpaid"), ("status", "open"),
+    ("client_reference_id", "foreign-user"), ("subscription", "sub_foreign"),
+])
+def test_unknown_or_foreign_checkout_facts_suppress_positive(conversion_system, field, value):
+    f = conversion_system
+    ev = f.event(); ev["data"]["object"][field] = value
+    assert f.send(ev)["status"] == "ok"
+    assert not f.analytics
+
+
+@pytest.mark.parametrize("bad", [None, "unknown", "fractional", "expired", "changed"])
+def test_trial_missing_malformed_or_stale_bounds_never_become_guessed_days(conversion_system, bad):
+    f = conversion_system
+    f.sub.update(status="trialing", trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+    ev = f.event("customer.subscription.created")
+    if bad is None:
+        ev["data"]["object"].pop("trial_end")
+    elif bad == "unknown":
+        ev["data"]["object"]["trial_end"] = "tomorrow"
+    elif bad == "fractional":
+        f.sub["trial_end"] += 1; ev = f.event("customer.subscription.created")
+    elif bad == "expired":
+        f.sub["status"] = "active"
+    else:
+        f.sub["trial_end"] += 86400
+    assert f.send(ev)["status"] == "ok"
+    assert not f.analytics
+
+
+def test_delayed_checkout_preserves_trial_at_event_clock_after_current_status_changes(conversion_system):
+    f = conversion_system
+    # Stripe retains historical trial bounds after conversion. Current active status
+    # cannot rewrite the original checkout's trial flag or provider event timestamp.
+    f.sub.update(trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+    f.session.update(amount_total=0, payment_status="no_payment_required")
+    assert f.sub["status"] == "active"
+    assert f.send(f.event())["status"] == "ok"
+    item = next(iter(f.analytics.values()))
+    assert item["meta"]["is_trial"] is True
+    assert item["client_ts"] == billing._iso(f.created)
+
+
+@pytest.mark.parametrize("raw_offer", [None, "", "unrecognized_offer", True])
+def test_missing_or_unqualified_offer_remains_unknown_not_known_none(conversion_system, raw_offer):
+    f = conversion_system
+    if raw_offer is not None:
+        f.session["metadata"]["mm_offer"] = raw_offer
+        f.sub["metadata"]["mm_offer"] = raw_offer
+    assert f.send(f.event())["status"] == "ok"
+    assert next(iter(f.analytics.values()))["meta"]["offer_key"] is None
+
+
+def test_qualified_offer_uses_exact_catalog_key_without_inventing_amount(conversion_system):
+    f = conversion_system
+    price = f.sub["items"]["data"][0]["price"]
+    price["lookup_key"] = "pro_2026_v2_annual"
+    price["recurring"]["interval"] = "year"
+    f.session["metadata"]["mm_offer"] = f.sub["metadata"]["mm_offer"] = "founding_pro"
+    assert f.send(f.event())["status"] == "ok"
+    props = next(iter(f.analytics.values()))["meta"]
+    assert props["offer_key"] == "founding_pro" and props["interval"] == "year"
+    assert props["amount_cents"] == 12345  # the exact receipt, never catalog 90000/130800
+
+
+@pytest.mark.parametrize("mismatch", ["customer", "user", "price", "mode", "bounds", "cadence"])
+def test_contradictory_provider_linkage_or_unknown_facts_suppress_conversion(conversion_system, mismatch):
+    import copy
+    f = conversion_system
+    ev = f.event()
+    if mismatch == "customer":
+        f.session["customer"] = "cus_foreign"
+    elif mismatch == "user":
+        f.sub["metadata"]["mm_user_id"] = "foreign-user"
+    elif mismatch == "price":
+        f.session["line_items"] = copy.deepcopy(f.session["line_items"])
+        f.session["line_items"]["data"][0]["price"]["id"] = "price_original_other"
+    elif mismatch == "mode":
+        f.session["livemode"] = True
+    elif mismatch == "bounds":
+        f.sub.pop("trial_end")
+    else:
+        f.sub["items"]["data"][0]["price"]["recurring"]["interval_count"] = True
+    assert f.send(ev)["status"] == "ok"
+    assert not f.analytics
+
+
+def test_legacy_analytics_failure_remains_best_effort(conversion_system):
+    f = conversion_system
+    f.failure["mode"] = "analytics"
+    f.main._mm_analytics_insert([{"eid": "legacy-fixture", "type": "pageview"}])
+    assert not f.analytics
+
+
+def test_server_analytics_missing_configuration_cannot_settle_event(conversion_system, monkeypatch):
+    f = conversion_system
+    monkeypatch.setattr(f.main, "SUPABASE_SERVICE_ROLE_KEY", "")
+    with pytest.raises(RuntimeError, match="not configured"):
+        f.send(f.event())
+    assert f.row["tier"] == "pro" and not f.ledger and not f.analytics
+
+
+def test_client_eid_collision_is_not_a_falsely_acknowledged_conversion(conversion_system):
+    import uuid
+    f = conversion_system
+    eid = str(uuid.uuid5(uuid.NAMESPACE_URL, "mastermind:stripe:evt_conversion:checkout.completed"))
+    foreign = {"eid": eid, "type": "intelligence.viewed", "site": "macro", "user_id": f.uid,
+               "client_ts": billing._iso(f.created), "meta": {"rows_visible": 3}}
+    f.analytics[eid] = foreign.copy()
+    with pytest.raises(RuntimeError, match="identity conflict"):
+        f.send(f.event())
+    assert f.row["tier"] == "pro" and not f.ledger
+    assert f.analytics == {eid: foreign}  # first fact is retained, never overwritten/coerced
+    assert not any(r["type"] == "checkout.completed" for r in f.analytics.values())
+
+
+@pytest.mark.parametrize("etype", ["checkout.session.completed", "customer.subscription.created"])
+@pytest.mark.parametrize("page_state", ["missing", True, None])
+def test_incomplete_subscription_page_cannot_qualify_single_price_conversion(conversion_system, etype, page_state):
+    f = conversion_system
+    if etype == "customer.subscription.created":
+        f.sub.update(status="trialing", trial_start=f.created - 10, trial_end=f.created - 10 + 14 * 86400)
+    ev = f.event(etype)
+    # A visible first item is insufficient: the fresh provider page must attest
+    # that no unseen subscription item can change the purported single purchase.
+    if page_state == "missing":
+        f.sub["items"].pop("has_more")
+    else:
+        f.sub["items"]["has_more"] = page_state
+    assert f.send(ev)["status"] == "ok"
+    assert not f.analytics and not f.requests

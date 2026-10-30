@@ -1,7 +1,7 @@
 {
   "schema": "us_track_history/v1",
-  "as_of": "2026-10-20",
-  "generated": "2026-10-20T08:16:23.032774+00:00",
+  "as_of": "2026-10-30",
+  "generated": "2026-10-30T10:09:45.040651+00:00",
   "cohort_rollup": {
     "horizons": {
       "h5": {
@@ -958,6 +958,16 @@
         "premature_stop_noise": 9
       }
     },
-    "raw_n": 70
+    "raw_n": 70,
+    "as_of_min": "2026-06-30",
+    "as_of_max": "2026-06-30",
+    "lanes": {
+      "buy": 34,
+      "watch": 24,
+      "laggards": 12
+    },
+    "horizons": [
+      "21"
+    ]
   }
 }

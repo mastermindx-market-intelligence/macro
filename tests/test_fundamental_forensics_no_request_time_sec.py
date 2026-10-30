@@ -36,6 +36,15 @@ from engine.fundamental_forensics.sec_document_spine import build_filing_manifes
 from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
 
 ROOT = Path(__file__).resolve().parents[1]
+# Seat ruling R-9761-CLK (b): this is a publisher-family run (the store below is
+# built through the REAL publish CLI at a fixed 2026-10-13 clock), so it reads
+# the byte-identical 1.0.0 registry copy as --repo-root, exactly like
+# test_fundamental_forensics_production_publisher.py. The publisher's CLOCK RULE
+# folds every registry available_at into admitted_at; the live registry's later
+# rule clocks (2026-10-21) would refuse this fixture run with
+# admitted_at_after_recorded_at. The lane under test is request-time network
+# reach, not registry content.
+PINNED_REGISTRY_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
 
 # ---------------------------------------------------------------------------
 # Minimal copy of the production-lane fixture pattern (identity derived at
@@ -284,7 +293,7 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path) -> int:
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report),
         ]
     )

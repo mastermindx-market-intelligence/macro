@@ -376,6 +376,9 @@
     else { lookupSerial += 1; showLookupStatus(''); }
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
+  // Boot deep links load immediately from the canonical hash: never gated on
+  // the search index or on a shell acknowledgment.
   fromHash();
 
   var suggestionsActive = false;
@@ -447,9 +450,21 @@
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'intl_stock.html') {
-      location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
+      var _d = items[i]._tgt + '#' + encodeURIComponent(items[i].t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d; return;
     }
-    var hash = '#' + encodeURIComponent(items[i].t);
+    var _h = encodeURIComponent(items[i].t);
+    var _ss2 = window.MMXSharedShell;
+    if (_ss2) {
+      // The bridge may replace the hash synchronously before acceptance. Only
+      // an active bridge's explicit reselection of the already-loaded/pending
+      // identity refreshes here; new selections wait for mmx:shell-location.
+      // An inactive bridge queues navigation, so its true return is no ACK.
+      var _refresh = _ss2.active === true && (location.hash || '') === '#' + _h &&
+        ((currentRecord && currentRecord.ticker === items[i].t) || statusTicker === items[i].t);
+      if (_ss2.navigate('#' + _h, 'push') && _refresh) fromHash();
+      return;
+    }
+    var hash = '#' + _h;
     if (location.hash === hash) load(items[i].t);
     else location.hash = hash;
   }

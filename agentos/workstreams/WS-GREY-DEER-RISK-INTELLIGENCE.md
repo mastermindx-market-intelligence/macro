@@ -41,12 +41,22 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
   - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
   - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
   - research/grey_deer/risk_radar_architecture_contract_20261017.md
   - research/grey_deer/risk_radar_research_protocol_20261017.md
   - research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json
   - research/grey_deer/all_date_census/v1/manifest.json
+  - research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md
+  - research/grey_deer/live_delivery_20261017/9573_source_landing.json
+  - research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md
   - research/ROTATION_RISK_CONFLUENCE_IMPLEMENTATION_2026-10-08.md
   - research/ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md
   - research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md
@@ -449,43 +459,37 @@ waves:
     # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
     # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
     # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
+    # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
+    # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
-  and the cumulative GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS handoff.
-  Macro PR 9515 is merged and its source landing verified; never push that closed branch.
-  Continue the native evidence operation risk-radar-meta-ceo-evidence-20261017-01a14837
-  through normal source gates. The delivered 9517 desktop workspace has accepted
-  bounded proof under live_delivery_20261017/delivered_workspace; preserve exact
-  probability qualifiers as an open defect. Current workspace writer 9548 and gateway
-  writer 9447 have intersecting source paths; preserve their actual pending effects.
-  Use the completed Copilot source diagnosis before a custody-qualified repair;
-  require an installed changed path and a useful authenticated answer, not only tests.
-  Original SPY/T12 identity is frozen once. A separately reviewed metadata-only contract
-  and source were committed at9102e6954db1 before one October18 run. Its2138 window
-  records preserve null labels,1901 unknown dates and39 horizon intersections. Supported
-  pairs9/2/0 across4/2/0 events refuse the21-session matched lane and admit no model.
-  Before feature joins or fitting, qualify exact calendar/outcomes, source purpose and
-  availability, dependence, chronological evaluation, common-support baselines and trials.
-  Preserve severe control shortfalls and FRED-purpose UNKNOWN/HOLD; no sample mutation,
-  source swap, trial registration or activation of existing T13/T14/T19 drafts occurred.
-  Mastermind1567 source is merged; the October17 runtime observation still had October9 code.
-  The exact wrapper/helper review found298 deployment-eligible paths outside rollback scope
-  and health-result/transaction-order weaknesses. The forward_evaluation review confirms
-  marker-ownership, failed-activation, retained-output and baseline-completeness gaps.
-  Read its actual registry/package, service/health/caller locks and settlement reader next;
-  qualify transport, bounded repairs, complete current-master bundle and rollback/activation
-  transaction before the canonical production decision.
-  Autonomous production deployment remains prohibited; 1507 repository differences
-  are not a transfer count or live book/prompt/ledger parity. Existing publisher8132,
-  measured-pullback8721,9428 refusal boundaries and QLedger/nightly owners remain intact.
-  Require genuine natural W5 issuance; never backfill foresight. Do not rerun accepted
-  GD3 natural four-clock proof or frozen stage1/stage1b. Keep all failed/rejected claims.
-  Authentication is resolved; all-state warning freshness/expiry, current Terminal,
-  granular recovery/action usefulness and empirical superiority remain open.
-  Preserve Envelope rank/gate/size/execute false and Portfolio/Prophet numerical policy.
-  Paper writes still require actual catalog qualification. Whole programme remains active
-  and not finally accepted.
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
 
 ---
 

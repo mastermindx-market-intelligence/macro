@@ -1,0 +1,17 @@
+{
+  "observed_at_utc": "2026-10-21T13:23:13.168407+00:00",
+  "archive_configured": "/Volumes/Mastermind/market-data/tiingo",
+  "external_mount": "/Volumes/Mastermind",
+  "is_mount": true,
+  "exists": true,
+  "network": false,
+  "credential_access": false,
+  "selected_requests": 9,
+  "plan_sha256": "e74695a22d465b40c0bac61a84d79c97deb5251f32f8124e6506a24326f80d16",
+  "scan_cap": 2000,
+  "scanned": 0,
+  "truncated": false,
+  "exact_receipts": [],
+  "invalid": [],
+  "status": "OBSERVED"
+}

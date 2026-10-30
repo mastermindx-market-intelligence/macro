@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-20T15:58:44.156Z",
+  "source_head": "c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8",
+  "scope": "Accepted independent review returns for the c73fa2 product source; subsequent CSS/harness repair and release gates are separate.",
+  "returns": [
+    {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "news-shared-integration-20261020-c3-backend-review-c73fa2-r1",
+      "root_id": "news-shared-integration-20261020-c3",
+      "accepted": true,
+      "accepted_by": "reviewer",
+      "reviewed_response_sha256": "88dfa3e92d91b0a6fa842f53ba2baf3ede0fae790b9f0b51fd700a27472b8674",
+      "verification_summary": "Accepted the exact 15,657-byte review report after retaining and rehashing it locally to 88dfa3e92d91b0a6fa842f53ba2baf3ede0fae790b9f0b51fd700a27472b8674. Source approval is limited to c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8: publication-window P1, immutable indexed anchor binding, three smaller findings, receipt-clock/projection qualifications, lossless CI merge, independent 770/125/81 test runs and 89 probes. Parent verified exact published source and report identity. Old baseline versus current candidate wording is being clarified; older recovery artifacts retain old-source scope. This is not approval of later CSS/harness changes, hosted CI, merge, deployment or activation.",
+      "legacy_acceptance_not_atomic_attestation": true,
+      "retry_allowed": false
+    },
+    {
+      "schema": "mastermind.fabric_mcp.v1",
+      "action": "fabric_accept",
+      "run_id": "news-shared-integration-20261020-c3-delivery-review-c73fa2-r1",
+      "root_id": "news-shared-integration-20261020-c3",
+      "accepted": true,
+      "accepted_by": "reviewer",
+      "reviewed_response_sha256": "c04643968b1252dce0c1f9a7df9dabe6b5dc3b19fc7348719f0671cdb162e7e4",
+      "verification_summary": "Accepted the exact 13,640-byte review report after retaining and rehashing it locally to c04643968b1252dce0c1f9a7df9dabe6b5dc3b19fc7348719f0671cdb162e7e4. Source approval is limited to c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8: bounded stream permission read pool, cancellation/backpressure and per-frame revocation, disposition of prior review findings, source-bound benchmark evidence, lossless CI manifest resolution. Independent reviewer reproduced 770 tests plus stress/edge/per-frame probes. Residual executor contention/fairness and large-page capacity limits remain disclosed. No valid canonical-state reproduction supports the old evidence-for-security hypothesis. This does not approve later CSS/harness changes or authorize release gates as complete.",
+      "legacy_acceptance_not_atomic_attestation": true,
+      "retry_allowed": false
+    }
+  ]
+}

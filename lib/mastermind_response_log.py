@@ -61,6 +61,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import os
 import threading
 import uuid
@@ -241,6 +242,7 @@ def build_row(
     flags: dict | None = None,
     thinking: list | None = None,
     row_id: str | None = None,
+    native_numeric_verification: dict | None = None,
 ) -> dict:
     """Build one `mastermind.response_log.v1` row. Pure — no I/O, never raises."""
     surf = surface if surface in _VALID_SURFACES else "macro"
@@ -279,6 +281,11 @@ def build_row(
         },
         "thinking": _clean_thinking(thinking),
     }
+    # This is the bounded same-request internal QA verdict, never the source
+    # envelopes or an authority to re-admit historical values during scoring.
+    numeric_qa = _clean_native_numeric_verification(native_numeric_verification)
+    if numeric_qa is not None:
+        row["native_numeric_verification"] = numeric_qa
     return row
 
 
@@ -392,3 +399,59 @@ def log_response_async(**kwargs: Any) -> None:
     except Exception:  # noqa: BLE001
         # Threading unavailable (extremely rare) — fall back to inline best-effort.
         log_response(**kwargs)
+
+
+# Existing request-verifier reason vocabulary; no raw diagnostic text is stored.
+_NATIVE_NUMERIC_REASONS = frozenset({
+    "answer_malformed", "answer_mismatch", "canonical_entity_mismatch",
+    "clause_structure_mismatch", "clause_text_mismatch", "fact_packet_mismatch",
+    "facts_structure_mismatch", "field_unrenderable", "fingerprint_mismatch",
+    "internal_error", "numeric_response_verified",
+    "receipt_cache_contract_violated", "receipt_malformed",
+    "receipt_route_unexpected", "receipt_schema_unexpected", "registry_mismatch",
+    "request_id_malformed", "request_id_mismatch",
+    "source_audience_not_subscriber", "source_entity_inconsistent",
+    "source_entity_not_security", "source_envelopes_malformed",
+    "source_field_duplicate", "source_field_not_available",
+    "source_field_not_numeric", "source_fingerprint_invalid",
+    "source_registry_digest_missing", "source_registry_inconsistent",
+    "source_schema_unexpected", "symbol_malformed", "symbol_mismatch",
+})
+
+def _clean_native_numeric_verification(value: Any) -> dict | None:
+    """Project a bounded internal verdict; malformed evidence is never repaired."""
+    if type(value) is not dict or value.get("internal_qa_only") is not True:
+        return None
+    try:
+        status, reason = value.get("status"), value.get("reason")
+        if type(status) is not str or status not in {"verified", "mismatch", "not_assessed"}:
+            return None
+        if type(reason) is not str or reason not in _NATIVE_NUMERIC_REASONS:
+            return None
+        if (status == "verified") != (reason == "numeric_response_verified"):
+            return None
+        count, refs = value.get("checked_count"), value.get("references")
+        if type(count) is not int or type(refs) is not list:
+            return None
+        if status == "verified":
+            if not 1 <= count <= 12 or len(refs) != count:
+                return None
+        elif count != 0 or refs:
+            return None
+        references, seen = [], set()
+        for entry in refs:
+            if type(entry) is not dict:
+                return None
+            field, fingerprint = entry.get("field_id"), entry.get("fact_fingerprint")
+            if (type(field) is not str or not 1 <= len(field) <= 128
+                    or re.fullmatch(r"[a-z][a-z0-9_.]{0,127}", field) is None
+                    or type(fingerprint) is not str or len(fingerprint) != 64
+                    or re.fullmatch(r"[0-9a-f]{64}", fingerprint) is None
+                    or field in seen):
+                return None
+            seen.add(field)
+            references.append({"field_id": field, "fact_fingerprint": fingerprint})
+        return {"status": status, "reason": reason, "checked_count": count,
+                "references": references, "internal_qa_only": True}
+    except Exception:
+        return None

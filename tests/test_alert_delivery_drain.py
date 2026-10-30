@@ -1175,3 +1175,224 @@ def test_docstring_declares_trigger_cadence_and_latency_budget():
     assert "5 minutes" in doc
     assert "15 minutes" in doc
     assert "off the render path" in doc.lower() or "off-render" in doc.lower()
+
+@pytest.fixture
+def node_decisions(monkeypatch):
+    """Capture the real decision while exercising the complete incumbent drain."""
+    decisions = []
+    original = drain.decide_row
+
+    def capture(*args, **kwargs):
+        decision = original(*args, **kwargs)
+        decisions.append(decision)
+        return decision
+
+    monkeypatch.setattr(drain, "decide_row", capture)
+    return decisions
+
+
+# P09 category source preparation: consent/paid access never stand in for the
+# still-unconnected exact source/action and trusted lifecycle reader.
+@pytest.mark.parametrize("claimed_tier,account_tier,expected", [
+    (None, "free", "entitlement_lapsed"),
+    ("free", "free", "entitlement_lapsed"),
+    (None, "essential", "options_exposure_node_admission_unavailable"),
+    ("free", "essential", "options_exposure_node_admission_unavailable"),
+    ("pro", "essential", "entitlement_lapsed"),
+    ("pro", "pro", "options_exposure_node_admission_unavailable"),
+])
+def test_node_category_has_server_owned_minimum_and_never_sends_without_admission(
+        monkeypatch, node_decisions, claimed_tier, account_tier, expected):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": claimed_tier,
+                        "rights": {"allowed": True}, "admission": {"allowed": True},
+                        "armingEpoch": "2026-09-05T14:00:00Z"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": account_tier, "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert sends == []
+    assert node_decisions[-1].reason == expected
+    assert row["status"] != "sent"
+
+
+@pytest.mark.parametrize("optin,categories,reason", [
+    (False, ["options_exposure_node"], "not_opted_in"),
+    (True, [], "no_alert_categories_selected"),
+    (True, ["thesis_window"], "category_filtered"),
+    (True, ["options_exposure_node", "unknown_future_category"], "alert_categories_unparsed"),
+    (True, ["options_exposure_node", None], "alert_categories_unparsed"),
+])
+def test_node_category_requires_explicit_current_consent(monkeypatch, node_decisions, optin, categories, reason):
+    row = _row(payload={"category": "options_exposure_node"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": optin, "alert_categories": categories}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == reason
+    assert row["status"] != "sent"
+
+
+@pytest.mark.parametrize("claimed_rights", [None, False, "allowed", [], {"allowed": True}, {"allowed": "true"}])
+def test_node_category_row_rights_are_never_current_authority(monkeypatch, node_decisions, claimed_rights):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": "essential",
+                        "rights": claimed_rights})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == "options_exposure_node_admission_unavailable"
+    assert row["status"] == "pending"
+    assert "last_error" not in row
+
+
+@pytest.mark.parametrize("category", ["holdings_material_change", "thesis_window", "fif_saved_issuer"])
+def test_existing_category_delivery_remains_available(monkeypatch, category):
+    row = _row(payload={"category": category, "subject": "Existing category notification",
+                        "ticker": "AAPL", "summary_plain": "Existing category evidence"})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": [category]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "essential", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert len(sends) == 1
+    assert row["status"] == "sent"
+
+
+@pytest.mark.parametrize("requirement,reason", [
+    ("future_enterprise", "entitlement_lapsed"),
+    ({"tier": "free"}, "entitlement_unavailable"),
+    ([], "entitlement_unavailable"),
+    (False, "entitlement_unavailable"),
+])
+def test_node_category_unknown_or_malformed_requirement_cannot_be_downgraded(
+        monkeypatch, node_decisions, requirement, reason):
+    row = _row(payload={"category": "options_exposure_node", "requires_tier": requirement})
+    user = {"email": "u@example.com", "user_metadata": {
+        "alert_email_optin": True, "alert_categories": ["options_exposure_node"]}}
+    fake = FakeTables(outbox=[row], entitlements={"u1": {
+        "tier": "pro", "status": "active", "source": "comp"}})
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent", now_utc=_now())
+    assert not sends
+    assert node_decisions[-1].reason == reason
+    assert row["status"] != "sent"
+
+
+@pytest.fixture(scope='module')
+def frozen_private_host(tmp_path_factory):
+    import os,importlib.util
+    from pathlib import Path
+    terminal=os.environ.get('OPTIONS_FROZEN_TERMINAL_SOURCE')
+    if not terminal:pytest.skip('explicit paired Terminal source required; no ambient private host')
+    helper=Path(terminal)/'tests/frozen_delivery_host_fixture.py'
+    spec=importlib.util.spec_from_file_location('paired_delivery_fixture',helper);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+    return m.prepare(Path.cwd(),terminal,tmp_path_factory.mktemp('frozen-private-delivery'))
+
+
+def _frozen_client(host):
+    import os
+    from lib.frozen_delivery_client import FrozenEmailDelivery
+    c=host['config']
+    return FrozenEmailDelivery(python=c['OPTIONS_FROZEN_DELIVERY_PYTHON'],script=c['OPTIONS_FROZEN_DELIVERY_SCRIPT'],
+        env_file=c['OPTIONS_FROZEN_DELIVERY_ENV_FILE'],source_origin=host['origin'],env={**os.environ,**host['env']})
+
+
+def _frozen_tables(host,monkeypatch,quiet=False):
+    from pathlib import Path
+    import json
+    monkeypatch.setenv('SUPABASE_URL',host['origin'])
+    d=json.loads(Path(host['fixture']).read_text());row=d['email'];uid=row['user_id']
+    user={'id':uid,'email':'synthetic@example.invalid','user_metadata':{'alert_email_optin':True,'alert_categories':['options_exposure_node'],'tz':'UTC'}}
+    if quiet:user['user_metadata']['quiet_hours']={'start':'00:00','end':'23:59'}
+    fake=FakeTables(outbox=[row],entitlements={uid:{'tier':'essential','status':'active','source':'comp','current_period_end':'2030-01-01T00:00:00Z'}})
+    _patch(monkeypatch,fake,users={uid:user})
+    return fake,row
+
+
+@pytest.mark.parametrize('fault',['','revoked','consent','category','principal','unknown','role','unsettled','prepared','payload','duplicate'])
+def test_frozen_email_actual_drain_private_cli_and_canonical_policy(frozen_private_host,monkeypatch,fault):
+    from pathlib import Path
+    host=frozen_private_host;Path(host['fault']).write_text(fault);fake,row=_frozen_tables(host,monkeypatch)
+    sends=[]
+    result=drain.drain(send_fn=lambda **kw:sends.append(kw) or 'sent',now_utc=datetime.now(timezone.utc),frozen_delivery=_frozen_client(host))
+    if fault:
+        assert sends==[] and row['status']=='pending' and result.unevaluable_n==1
+    else:
+        assert len(sends)==1 and row['status']=='sent'
+        assert sends[0]['payload']==row['payload'] and sends[0]['user_id']==row['user_id']
+        assert sends[0]['fire_event_id']==row['fire_event_id']
+
+
+def test_frozen_email_current_quiet_and_smtp_unknown_are_not_bypassed(frozen_private_host,monkeypatch):
+    from pathlib import Path
+    host=frozen_private_host;Path(host['fault']).write_text('');fake,row=_frozen_tables(host,monkeypatch,quiet=True)
+    sends=[];client=_frozen_client(host)
+    result=drain.drain(send_fn=lambda **kw:sends.append(kw) or 'sent',now_utc=datetime.now(timezone.utc),frozen_delivery=client)
+    assert sends==[] and row['status']=='deferred' and result.deferred_n==1
+    fake,row=_frozen_tables(host,monkeypatch)
+    result=drain.drain(send_fn=lambda **kw:sends.append(kw) or 'effect_unknown',now_utc=datetime.now(timezone.utc),frozen_delivery=client)
+    assert len(sends)==1 and result.effect_unknown_n==1 and row['last_error']==drain.EFFECT_UNKNOWN_LAST_ERROR
+    drain.drain(send_fn=lambda **kw:pytest.fail('Unknown SMTP effect must not be reoffered'),now_utc=datetime.now(timezone.utc),frozen_delivery=client)
+
+
+def test_frozen_email_private_client_does_not_trust_grants_or_mismatched_origin(frozen_private_host,monkeypatch):
+    from pathlib import Path
+    from lib.frozen_delivery_client import FrozenEmailDelivery,from_environment
+    host=frozen_private_host;Path(host['fault']).write_text('');fake,row=_frozen_tables(host,monkeypatch)
+    # An extra serialized grant is not read; changing the canonical full payload
+    # fails the independent database selection/reconcile before the sender.
+    row['payload']['grants']={'allowed':True}
+    result=drain.drain(send_fn=lambda **kw:pytest.fail('Forged row sent'),now_utc=datetime.now(timezone.utc),frozen_delivery=_frozen_client(host))
+    assert result.unevaluable_n==1
+    assert from_environment({}) is None
+    c=host['config']
+    with pytest.raises(ValueError,match='database'):
+        FrozenEmailDelivery(python=c['OPTIONS_FROZEN_DELIVERY_PYTHON'],script=c['OPTIONS_FROZEN_DELIVERY_SCRIPT'],env_file=c['OPTIONS_FROZEN_DELIVERY_ENV_FILE'],source_origin='https://other.invalid')
+
+
+def test_frozen_email_rechecks_authoritative_selection_and_database_origin(frozen_private_host,monkeypatch):
+    from pathlib import Path
+    import json
+    host=frozen_private_host;Path(host['fault']).write_text('');original=Path(host['fixture']).read_text()
+    fake,row=_frozen_tables(host,monkeypatch);real=drain.typed_get
+    def changed(path):
+        result=real(path)
+        if path.startswith('email_suppression?'):
+            data=json.loads(original);data['email']['status']='sent';Path(host['fixture']).write_text(json.dumps(data))
+        return result
+    monkeypatch.setattr(drain,'typed_get',changed)
+    try:
+        result=drain.drain(send_fn=lambda **kw:pytest.fail('Changed canonical selection sent'),now_utc=datetime.now(timezone.utc),frozen_delivery=_frozen_client(host))
+        assert result.unevaluable_n==1
+    finally:Path(host['fixture']).write_text(original)
+    monkeypatch.setattr(drain,'typed_get',real)
+    client=_frozen_client(host);monkeypatch.setenv('SUPABASE_URL','https://other.invalid')
+    result=drain.drain(send_fn=lambda **kw:pytest.fail('Cross-database event sent'),now_utc=datetime.now(timezone.utc),frozen_delivery=client)
+    assert result.unevaluable_n==1
+
+
+def test_frozen_email_last_user_observation_cannot_ignore_new_quiet_hours(frozen_private_host,monkeypatch):
+    from pathlib import Path
+    host=frozen_private_host;Path(host['fault']).write_text('');fake,row=_frozen_tables(host,monkeypatch)
+    real=drain.fetch_user_record;calls=[]
+    def current(uid):
+        state,user=real(uid);calls.append(uid)
+        if len(calls)>1:user['user_metadata']['quiet_hours']={'start':'00:00','end':'23:59'}
+        return state,user
+    monkeypatch.setattr(drain,'fetch_user_record',current)
+    result=drain.drain(send_fn=lambda **kw:pytest.fail('New current quiet window bypassed'),now_utc=datetime.now(timezone.utc),frozen_delivery=_frozen_client(host))
+    assert result.unevaluable_n==1 and len(calls)==2

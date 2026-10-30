@@ -284,3 +284,164 @@ for(const lang of ['en','zh']) test(`a malformed stock link leaves search usable
   await loaded; await reply('NEW');
   await page.waitForFunction(()=>document.getElementById('r_name').textContent==='NEW fixture (NEW)');
 });
+
+// Synthetic MMXSharedShell routing double for the shell-hosting cases below.
+// Mirrors the page-visible bridge contract only: accepted navigations are
+// applied synchronously while acceptance is notified later, as the incumbent
+// fragment bridge does. Same-value navigation stays silent. No real handshake,
+// parent, or store is simulated; delayed acceptance/refusal are explicit controls.
+function installShellDouble() {
+  window.__shellNav = [];
+  window.__shellEvents = [];
+  window.__nativeHashChanges = [];
+  window.__shellRefusals = 0;
+  window.__shellAcks = [];
+  window.__shellQueued = [];
+  window.__shellAcceptNext = function () { window.__shellAcks.shift()(); };
+  window.__shellActivate = function () {
+    window.__shellInactive = false;
+    window.__shellQueued.splice(0).forEach(function (apply) { apply(); });
+  };
+  window.addEventListener('hashchange', function () {
+    window.__nativeHashChanges.push(location.hash);
+  });
+  window.MMXSharedShell = Object.freeze({
+    __mmxBridge: 'synthetic-double',
+    get active() { return !window.__shellInactive; },
+    navigate(href, mode) {
+      if (mode !== 'push' && mode !== 'replace') { window.__shellRefusals += 1; return false; }
+      if (window.__shellRefuseNext) { window.__shellRefuseNext = false; window.__shellRefusals += 1; return false; }
+      var before = location.hash || '';
+      window.__shellNav.push({href: href, mode: mode});
+      function apply() {
+        if (href === before) return;
+        history.replaceState(null, '', href || location.pathname);
+        function accept() {
+          window.__shellEvents.push(href);
+          window.dispatchEvent(new Event('mmx:shell-location'));
+        }
+        if (window.__shellHoldAck) window.__shellAcks.push(accept);
+        else queueMicrotask(accept);
+      }
+      if (window.__shellInactive) window.__shellQueued.push(apply);
+      else apply();
+      return true;
+    },
+    openAuth() { return false; }
+  });
+}
+
+async function shellSetup(t) {
+  const h = await setup(t, 'en');
+  await h.page.addInitScript(installShellDouble);
+  await h.page.goto('http://stock.test/intl_stock.html?shell=1');
+  // Plain-host boot: wait for the fixture index like setup does before input.
+  await h.page.waitForLoadState('networkidle');
+  return h;
+}
+
+test('boot deep link loads under the shared shell while the search index is pending', async t => {
+  const h = await setup(t, 'en');
+  await h.page.addInitScript(installShellDouble);
+  // Hold the fresh document's search index: the boot deep link must not wait for it.
+  let heldIndex = null;
+  await h.page.route('**/intlstockdata/index.json', route => { heldIndex = route; });
+  const direct = h.requested('DIRECT');
+  await h.page.goto('http://stock.test/intl_stock.html?boot=1#DIRECT');
+  await direct;
+  await h.reply('DIRECT', record('DIRECT', {limited:true}));
+  await renderedStock(h.page, 'DIRECT');
+  assert.ok(heldIndex, 'the pending search index must have reached the held route');
+  assert.equal(await h.page.evaluate(() => window.__shellNav.length), 0, 'boot reads the canonical hash without a shell navigate');
+  assert.deepEqual(await h.page.evaluate(() => window.__nativeHashChanges), []);
+  // A query typed against the pending index stays open and completes when it arrives.
+  const search = h.page.locator('#q');
+  await search.fill('NEW');
+  assert.equal(await search.getAttribute('aria-expanded'), 'false');
+  await heldIndex.fulfill({status:200, json:['OLD','NEW','RETRY'].map(x=>({t:x,n:x+' fixture',s:'fixture sector',st:'LIMITED'}))});
+  await h.page.waitForFunction(() => document.getElementById('q').getAttribute('aria-expanded') === 'true');
+  assert.match(await h.page.getByRole('option').innerText(), /NEW/);
+});
+
+test('accepted shell routes drive selection and a stale response cannot replace the accepted identity', async t => {
+  const {page, requested, reply} = await shellSetup(t);
+  const search = page.locator('#q');
+  const oldReq = requested('OLD');
+  await search.fill('OLD'); await search.press('Enter'); await oldReq;
+  const newReq = requested('NEW');
+  await search.fill('NEW'); await search.press('Enter'); await newReq;
+  await reply('NEW', record('NEW', {name:'Accepted NEW'}));
+  await renderedStock(page, 'NEW', 'Accepted NEW');
+  await reply('OLD', record('OLD'));
+  await page.waitForFunction(() => document.getElementById('r_name').textContent === 'Accepted NEW (NEW)');
+  assert.equal(await page.locator('#result').isVisible(), true);
+  assert.equal(await page.evaluate(() => location.hash), '#NEW');
+  assert.deepEqual(await page.evaluate(() => window.__shellNav), [{href:'#OLD',mode:'push'},{href:'#NEW',mode:'push'}]);
+  assert.deepEqual(await page.evaluate(() => window.__shellEvents), ['#OLD', '#NEW']);
+  assert.deepEqual(await page.evaluate(() => window.__nativeHashChanges), []);
+});
+
+test('same-hash shell reselection still refreshes and a refused navigate changes nothing', async t => {
+  const {page, requested, reply} = await shellSetup(t);
+  const search = page.locator('#q');
+  const first = requested('NEW');
+  await search.fill('NEW'); await search.press('Enter'); await first;
+  await reply('NEW', record('NEW'));
+  await renderedStock(page, 'NEW');
+  // The same-value acceptance carries no mmx:shell-location, so re-picking the
+  // already-selected ticker must refresh explicitly on its own.
+  const refresh = requested('NEW');
+  await search.fill('NEW'); await search.press('Enter'); await refresh;
+  await reply('NEW', record('NEW', {name:'Refreshed NEW'}));
+  await renderedStock(page, 'NEW', 'Refreshed NEW');
+  assert.deepEqual(await page.evaluate(() => window.__shellEvents), ['#NEW']);
+  assert.deepEqual(await page.evaluate(() => window.__nativeHashChanges), []);
+  // A refused navigate must not fall back to a direct hash write or a request.
+  await page.evaluate(() => { window.__shellRefuseNext = true; });
+  await search.fill('OLD'); await search.press('Enter');
+  await page.waitForTimeout(50);
+  assert.equal(await page.evaluate(() => location.hash), '#NEW');
+  assert.equal(await page.locator('#r_name').innerText(), 'Refreshed NEW (NEW)');
+  assert.equal(await page.locator('#result').isVisible(), true);
+  await assert.rejects(() => reply('OLD'), /expected retained request/);
+  assert.equal(await page.evaluate(() => window.__shellRefusals), 1);
+  assert.deepEqual(await page.evaluate(() => window.__nativeHashChanges), []);
+});
+
+
+test('new shell ticker waits for delayed acceptance after synchronous fragment replacement', async t => {
+  const {page, select, requested, reply} = await shellSetup(t);
+  const search = page.locator('#q');
+  await select('OLD');
+  await reply('OLD'); await renderedStock(page, 'OLD');
+  const requests = [];
+  page.on('request', request => { if (request.url().endsWith('/NEW.json')) requests.push(request.url()); });
+  await page.evaluate(() => { window.__shellHoldAck = true; });
+  await search.fill('NEW'); await search.press('Enter');
+  assert.equal(await page.evaluate(() => location.hash), '#NEW', 'bridge has already replaced the fragment');
+  await search.fill('NEW'); await search.press('Enter');
+  await page.waitForTimeout(50);
+  assert.equal(requests.length, 0, 'neither first selection nor a same-fragment repeat may fetch before acceptance');
+  assert.equal(await page.locator('#r_name').innerText(), 'OLD fixture (OLD)');
+  const accepted = requested('NEW');
+  await page.evaluate(() => window.__shellAcceptNext()); await accepted;
+  await reply('NEW'); await renderedStock(page, 'NEW');
+  assert.equal(requests.length, 1);
+});
+
+test('inactive shell queues same-selection navigation without refreshing before activation', async t => {
+  const {page, select, requested, reply} = await shellSetup(t);
+  const search = page.locator('#q');
+  await select('NEW');
+  await reply('NEW'); await renderedStock(page, 'NEW');
+  const requests = [];
+  page.on('request', request => { if (request.url().endsWith('/NEW.json')) requests.push(request.url()); });
+  await page.evaluate(() => { window.__shellInactive = true; });
+  await search.fill('NEW'); await search.press('Enter');
+  await page.waitForTimeout(50);
+  assert.equal(requests.length, 0, 'enqueue return is not acceptance of a refresh');
+  assert.equal(await page.evaluate(() => window.__shellQueued.length), 1);
+  await page.evaluate(() => window.__shellActivate());
+  assert.equal(await page.locator('#r_name').innerText(), 'NEW fixture (NEW)');
+  assert.deepEqual(await page.evaluate(() => window.__shellEvents), []);
+});

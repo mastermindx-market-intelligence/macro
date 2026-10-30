@@ -17,17 +17,17 @@
        label tabs; the research controls sit on a separate compact row below.
        Mobile keeps the single existing view select — one DOM, CSS reflow only. #}
     <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
-      {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
+      {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库'),('scanner','Scanner','扫描'),('dislocations','Dislocations','背离'),('transmission','Transmission','传导'),('dossier','Dossiers','档案'),('scenario','Scenario lab','情景'),('replay','Replay','回放'),('coverage','Coverage','覆盖')] %}
+      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) and not (key in ['scanner','dislocations','transmission','dossier','scenario','replay','coverage'] and ((intl_workspace.surveillance|default(none) or {}).get('views', {}).get(key, {}).get('status') == 'available')) %} disabled{% endif %}>{{ t(en, zh) }}</button>
       {% endfor %}
     </nav>
     <div class="intl-workspace__controls">
       <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
         <select data-im-action="set_view">
-          {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-          <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
-          {% endfor %}
-        </select>
+        {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库'),('scanner','Scanner','扫描'),('dislocations','Dislocations','背离'),('transmission','Transmission','传导'),('dossier','Dossiers','档案'),('scenario','Scenario lab','情景'),('replay','Replay','回放'),('coverage','Coverage','覆盖')] %}
+        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) and not (key in ['scanner','dislocations','transmission','dossier','scenario','replay','coverage'] and ((intl_workspace.surveillance|default(none) or {}).get('views', {}).get(key, {}).get('status') == 'available')) %} disabled{% endif %}>{{ en|e }}</option>
+        {% endfor %}
+      </select>
       </label>
       <label>{{ t('Return horizon', '回报区间') }}
         <select data-im-action="set_horizon">
@@ -66,6 +66,18 @@
   {% for panel in intl_workspace.histories|default([]) %}
     {% with history_panel=panel, history_registry=intl_workspace.history_registry %}{% include 'intl_workspace/history.html.j2' %}{% endwith %}
   {% endfor %}
+  {# INTL-GS surveillance panels (W2F seam): W2A/W2B only add view templates +
+     builders; this loop and the view loops above never change again. The
+     snapshot bar include lets IM13 add _gs_snapshot.html.j2 without touching
+     the shell (spec §10.0 snapshot-bar position, §14). #}
+  {% if intl_workspace.surveillance_panels|default([]) %}
+  <div class="intl-gs">
+    {% include 'intl_workspace/_gs_snapshot.html.j2' ignore missing %}
+    {% for panel in intl_workspace.surveillance_panels|default([]) %}
+      {% with gs_panel=panel %}{% include 'intl_workspace/' ~ panel.view ~ '.html.j2' %}{% endwith %}
+    {% endfor %}
+  </div>
+  {% endif %}
   {% if intl_workspace.inspectors|default(none) %}
     {% with inspector_panels=intl_workspace.inspectors, root_context_id='im-workspace', inspector_copy=intl_workspace.inspector_copy %}{% include 'intl_workspace/inspector.html.j2' %}{% endwith %}
   {% endif %}
@@ -80,5 +92,8 @@
       <li><a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></li>
     </ul>
   </aside>
+  {% if intl_workspace.macro_publication|default(none) %}
+  <script type="application/json" data-im-macro-publication>{{ intl_workspace.macro_publication|tojson }}</script>
+  {% endif %}
   <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
 </section>

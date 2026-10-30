@@ -1,0 +1,34 @@
+{
+  "initial_registration": {
+    "started_utc": "2026-10-21T12:57:57.511405+00:00",
+    "protocol_sha256": "f14d0a35e4254ebe5f54ab5be035c7b16e987b4428c2a6baec8239dffa2eecfc",
+    "code_sha256": "11a8e45b420ef0b8dee3f988d7ef0d77733a0c3c6c3aa6d2a65a335957c3d814",
+    "native_sha256": "2b6f09e37e92c9791159941be2f8e0d0260b857d820e266f315f32a5c0cedfe6",
+    "manifest_sha256": "f7677fffb9d431797d75d5709bfede909b217c3642aaae00e05c43122ee8c5e3",
+    "seed": 20261021,
+    "new_parameter_grid": false
+  },
+  "corrected_registration": {
+    "started_utc": "2026-10-21T13:07:50.417587+00:00",
+    "protocol_sha256": "f14d0a35e4254ebe5f54ab5be035c7b16e987b4428c2a6baec8239dffa2eecfc",
+    "code_sha256": "b8e9b7f317739e3b3f3c2a1adffad0d85da9546abd48925f01ce233f9aa7e9ab",
+    "native_sha256": "2b6f09e37e92c9791159941be2f8e0d0260b857d820e266f315f32a5c0cedfe6",
+    "manifest_sha256": "f7677fffb9d431797d75d5709bfede909b217c3642aaae00e05c43122ee8c5e3",
+    "seed": 20261021,
+    "new_parameter_grid": false
+  },
+  "unchanged": {
+    "portfolio_summary.csv": true,
+    "portfolio_paths.csv": true,
+    "capital_rosters.csv": true,
+    "defensive_event_entries_returns_stops": true
+  },
+  "definition_correction": "Primary horizon breach is strictly below the frozen low; previous quarter-ATR allowance retained separately.",
+  "inference_guard": "At least four populated calendar half-years and 95% usable draws; joint valid fraction for contrasts.",
+  "reporting_completion": [
+    "Eventual winner AND stopped loss AND untouched reference, with ordinary control",
+    "74-versus-50 archived cohort membership",
+    "Same-roster sector contrasts",
+    "Known-low survival and account drawdown dates"
+  ]
+}

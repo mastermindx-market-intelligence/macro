@@ -174,6 +174,30 @@ def unknown_field(field):
     return {"field": field, **UNKNOWN}
 
 
+DECISION_REF = GENERATION + ":EZ.policy_rate"
+
+
+def publication(**overrides):
+    """The narrow issuer-retention record the build would supply."""
+    record = {
+        "measure_id": "EZ.policy_rate",
+        "generation": GENERATION,
+        "evaluated_at": "2026-10-07T10:00:00Z",
+        "origin": {"qualification_identity": DECISION_REF},
+        "decision_origin": {
+            "owner_ref": "scripts/build_intl.py",
+            "policy_ref": "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission",
+            "decision_ref": DECISION_REF,
+        },
+        "source_reference": "synthetic:policy-grant",
+        "evidence_key": "synthetic-policy",
+        "clocks": {"published_at": None, "rights_at": None,
+                   "source_observed_at": "2026-09-10"},
+    }
+    record.update(overrides)
+    return record
+
+
 def assert_v1_unqualified(item):
     section = item["macro_section"]
     assert section["selected_market"] is None
@@ -504,3 +528,201 @@ def test_nonfinite_workspace_values_refused():
     ws = workspace()
     ws["retained"] = math.nan
     invalid(ws)
+
+
+def test_narrow_publication_is_retained_once_at_workspace_level():
+    payload = inputs(2.5)
+    before = deepcopy(payload)
+    record = publication()
+    result = attach_macros(workspace(), **payload, source_notice=NOTICE,
+                           ecb_publication=record)
+    assert list(result) == ["config", "panels", "binding_version",
+                            "library_generation", "macros", "macro_publication"]
+    assert result["macro_publication"] == dict(record, source_notice=NOTICE)
+    # Exactly one workspace-level record; per-panel sidecars keep their shape.
+    assert all(list(item) == ["context_id", "context", "macro_section",
+                              "source_notice", "generation"]
+               for item in result["macros"])
+    assert all(item["source_notice"] == NOTICE for item in result["macros"])
+    # The existing measure projection is unchanged, typed values included.
+    assert all(policy(item["macro_section"])["value"] == 2.5
+               and type(policy(item["macro_section"])["value"]) is float
+               for item in result["macros"])
+    assert all(item["macro_section"]["selected_market"] is None for item in result["macros"])
+    assert payload == before and record == publication()
+
+
+def test_retained_publication_is_detached_from_input_and_result():
+    payload = inputs(2.5)
+    record = publication()
+    result = attach_macros(workspace(), **payload, source_notice=NOTICE,
+                           ecb_publication=record)
+    # Mutating the retained copy cannot flow back into the supplied record.
+    result["macro_publication"]["decision_origin"]["owner_ref"] = "edited"
+    result["macro_publication"]["clocks"]["source_observed_at"] = "edited"
+    result["macro_publication"]["source_notice"]["market_id"] = "edited"
+    assert record == publication()
+    # Mutating the supplied record cannot reach an already retained copy.
+    retained = result["macro_publication"]
+    record["evaluated_at"] = "edited"
+    record["origin"]["qualification_identity"] = "edited"
+    record["clocks"]["published_at"] = "invented"
+    assert retained["evaluated_at"] == "2026-10-07T10:00:00Z"
+    assert retained["origin"] == {"qualification_identity": DECISION_REF}
+    assert retained["clocks"]["published_at"] is None
+    # A fresh attachment reflects the mutated input instead of stale state.
+    withheld = attach_macros(workspace(), **payload, source_notice=NOTICE,
+                             ecb_publication=record)
+    assert "macro_publication" not in withheld
+
+
+def test_retained_publication_carries_no_values_or_raw_binding():
+    result = attach_macros(workspace(), **inputs(2.5), source_notice=NOTICE,
+                           ecb_publication=publication())
+    record = result["macro_publication"]
+    assert set(record) == {"measure_id", "generation", "evaluated_at", "origin",
+                           "decision_origin", "source_reference", "evidence_key",
+                           "clocks", "source_notice"}
+    blob = repr(record)
+    assert "2.5" not in blob and "binding" not in blob
+    assert "artifact_sha256" not in blob and "provenance" not in blob
+    assert "observation_at" not in blob
+
+
+@pytest.mark.parametrize("mutate", [
+    pytest.param(lambda record: record.update(extra=None), id="extra_key"),
+    pytest.param(lambda record: record.pop("evidence_key"), id="missing_key"),
+    pytest.param(lambda record: record.update(measure_id="EZ.gdp_yoy"), id="wrong_measure"),
+    pytest.param(lambda record: record.update(
+        generation="im-workspace-generation:00000000-0000-4123-8123-000000000000"),
+        id="generation_mismatch"),
+    pytest.param(lambda record: record.update(source_reference="synthetic:other"),
+                 id="source_mismatch"),
+    pytest.param(lambda record: record.update(evidence_key="synthetic-other"),
+                 id="evidence_mismatch"),
+    pytest.param(lambda record: record["origin"].update(
+        qualification_identity="synthetic:decision"), id="decision_association_mismatch"),
+    pytest.param(lambda record: record["decision_origin"].update(owner_ref="unrelated:owner"),
+                 id="wrong_issuer"),
+    pytest.param(lambda record: record["decision_origin"].update(policy_ref="unrelated:policy"),
+                 id="wrong_policy"),
+    pytest.param(lambda record: (record["origin"].update(qualification_identity="prior:decision"),
+                                record["decision_origin"].update(decision_ref="prior:decision")),
+                 id="jointly_wrong_decision"),
+    pytest.param(lambda record: record["decision_origin"].pop("owner_ref"),
+                 id="incomplete_decision_origin"),
+    pytest.param(lambda record: record["decision_origin"].update(policy_ref=None),
+                 id="unknown_policy_ref"),
+    pytest.param(lambda record: record["clocks"].update(
+        published_at="2026-10-07T10:00:00Z"), id="invented_publication_clock"),
+    pytest.param(lambda record: record["clocks"].update(
+        rights_at="2026-10-07T10:00:00Z"), id="invented_rights_clock"),
+    pytest.param(lambda record: record["clocks"].update(source_observed_at="2026-01-01"),
+                 id="observation_mismatch"),
+    pytest.param(lambda record: record.update(evaluated_at=None), id="unknown_evaluation"),
+    pytest.param(lambda record: record.update(evaluated_at=""), id="empty_evaluation"),
+    pytest.param(lambda record: record.update(evaluated_at=" "), id="blank_evaluation"),
+])
+def test_publication_withholds_on_shape_and_association_mismatch(mutate):
+    record = publication()
+    mutate(record)
+    result = attach_macros(workspace(), **inputs(2.5), source_notice=NOTICE,
+                           ecb_publication=record)
+    assert "macro_publication" not in result
+    # The ordinary projection is preserved with its own notice and value.
+    assert all(item["source_notice"] == NOTICE for item in result["macros"])
+    assert all(policy(item["macro_section"])["value"] == 2.5 for item in result["macros"])
+
+
+@pytest.mark.parametrize("change", [
+    pytest.param(lambda m: m.update(quality="stale", reason="source_stale"), id="stale"),
+    pytest.param(lambda m: m.update(quality="unknown", reason="not_supplied"), id="unknown"),
+    pytest.param(lambda m: m.update(
+        quality="missing", reason="not_supplied", value=None, unit=None,
+        instrument=None, period=None, observation_at=None, calculation_at=None,
+        source_reference=None, evidence_key=None), id="missing"),
+    pytest.param(lambda m: m.update(
+        quality="failed", reason="source_failed", value=None, unit=None,
+        instrument=None, period=None, observation_at=None, calculation_at=None,
+        source_reference=None, evidence_key=None), id="failed"),
+    pytest.param(lambda m: m.update(
+        quality="denied", reason="metadata_denied", metadata="denied",
+        value=None, unit=None, instrument=None, observation_at=None, calculation_at=None,
+        source_reference=None, evidence_key=None), id="metadata_denied"),
+    pytest.param(lambda m: m.update(
+        quality="unknown", reason="disclosure_unknown", metadata="unknown",
+        value=None, unit=None, instrument=None, observation_at=None, calculation_at=None,
+        source_reference=None, evidence_key=None), id="metadata_unknown"),
+    pytest.param(lambda m: m.update(
+        quality="denied", reason="value_denied", value_permission="denied",
+        value=None), id="value_denied"),
+    pytest.param(lambda m: m.update(
+        quality="unknown", reason="disclosure_unknown", value_permission="unknown",
+        value=None), id="value_unknown"),
+])
+def test_publication_withholds_unqualified_or_unpermitted_measure(change):
+    payload = inputs(2.5)
+    change(payload["measures"]["EZ.policy_rate"])
+    result = attach_macros(workspace(), **payload, source_notice=NOTICE,
+                           ecb_publication=publication())
+    assert "macro_publication" not in result
+
+
+def test_publication_withholds_for_v1_absent_notice_or_absent_argument():
+    record = publication()
+    result = attach_macros(workspace(version=1), **inputs(2.5),
+                           source_notice=NOTICE, ecb_publication=record)
+    assert "macro_publication" not in result
+    result = attach_macros(workspace(), **inputs(2.5),
+                           source_notice=None, ecb_publication=record)
+    assert "macro_publication" not in result
+    result = attach_macros(workspace(), **inputs(2.5), source_notice=NOTICE)
+    assert "macro_publication" not in result
+
+
+def test_nonplain_publication_record_stays_inside_existing_boundaries():
+    for record in ("retained", [], 7, True):
+        result = attach_macros(workspace(), **inputs(2.5), source_notice=NOTICE,
+                               ecb_publication=record)
+        assert "macro_publication" not in result
+    cyclic = publication()
+    cyclic["evaluated_at"] = cyclic
+    with pytest.raises(ValueError, match="invalid_macro_workspace$"):
+        attach_macros(workspace(), **inputs(2.5), source_notice=NOTICE,
+                      ecb_publication=cyclic)
+    cyclic = publication()
+    cyclic["generation"] = cyclic
+    with pytest.raises(ValueError, match="invalid_macro_workspace$"):
+        attach_macros(None, **inputs(), source_notice=None,
+                      ecb_publication=cyclic)
+    assert attach_macros(None, **inputs(), source_notice=None,
+                         ecb_publication=publication()) is None
+    assert attach_macros(None, **inputs(), source_notice=None,
+                         ecb_publication=None) is None
+
+
+def test_denied_metadata_measures_never_issue_a_sidecar_record():
+    payload = inputs(2.5)
+    payload["measures"]["EZ.policy_rate"].update(
+        quality="denied", reason="metadata_denied", metadata="denied",
+        value=None, unit=None, instrument=None, observation_at=None, calculation_at=None,
+        source_reference=None, evidence_key=None)
+    result = attach_macros(workspace(), **payload, source_notice=NOTICE,
+                           ecb_publication=publication())
+    assert "macro_publication" not in result
+    assert all(item["source_notice"] is None for item in result["macros"])
+    assert "value" not in policy(result["macros"][0]["macro_section"])
+
+
+@pytest.mark.parametrize("allow_metadata", [True, False])
+def test_preexisting_publication_cannot_bypass_the_owned_mount(allow_metadata):
+    ws = workspace()
+    ws["macro_publication"] = publication()
+    payload = inputs(2.5)
+    if not allow_metadata:
+        payload["measures"]["EZ.policy_rate"].update(
+            quality="denied", reason="metadata_denied", metadata="denied",
+            value=None, unit=None, instrument=None, observation_at=None, calculation_at=None,
+            source_reference=None, evidence_key=None)
+    with pytest.raises(ValueError, match="invalid_macro_workspace$"):
+        attach_macros(ws, **payload, source_notice=NOTICE)
