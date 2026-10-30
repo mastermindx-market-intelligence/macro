@@ -50,6 +50,8 @@ Public surface:
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+import math
+import sys
 
 from engine.portfolio_changes import (CURSOR_DISCLOSURE, compose_since_section,
                                       snapshot_state)
@@ -117,17 +119,43 @@ def _is_stale(asof: str, today: str) -> bool:
 def _normalize_holdings(holdings: list[dict]) -> tuple[list[str], dict[str, float], str]:
     """Return (ordered unique tickers, {ticker: weight}, mode).
 
-    Mode "positions" when >=1 row has shares>0 AND entry_price>0 → weight =
+    Mode "positions" when >=1 row has valid shares>0 AND entry_price>0 → weight =
     shares*entry_price, summed on duplicate tickers, renormalized to 1. Else "equal":
     every unique ticker gets 1/n. Tickers uppercased; blanks dropped; first-seen order
-    preserved. Position rows with missing/non-positive fields contribute 0 cost in
-    positions mode (they still count as held names — an equal share of 0 cost is 0,
-    which is honest: a name with no cost basis carries no cost-basis weight).
+    preserved. Position rows with missing/invalid fields contribute 0 cost in positions
+    mode (they still count as held names — an equal share of 0 cost is 0, which is
+    honest: a name with no cost basis carries no cost-basis weight).
+
+    An operand is valid only when it is neither bool nor None, converts to float
+    without raising (TypeError/ValueError/OverflowError, e.g. int 10**400), and is
+    finite and > 0: True is not 1 share, and inf/nan prices never enter the cost
+    base.
+
+    Ratios are computed on a plain float fast path; when any per-name cost or the
+    total overflows, or any product is subnormal, the identical duplicate-summed
+    ratios are recomputed using scaled log costs, so magnitudes beyond float range still
+    yield correct normalized cost ratios instead of NaN or an arbitrary equal
+    fallback.
     """
     order: list[str] = []
     seen: set[str] = set()
     cost: dict[str, float] = {}
+    log_terms: dict[str, list[float]] = {}
     any_positions = False
+    needs_log_scale = False
+
+    def _positive_operand(value):
+        # bool is an int subclass: reject it before float() admits True as 1.0.
+        if value is None or isinstance(value, bool):
+            return None
+        try:
+            f = float(value)
+        except (TypeError, ValueError, OverflowError):
+            # OverflowError: an int beyond float range, e.g. 10**400.
+            return None
+        if not math.isfinite(f) or f <= 0.0:
+            return None
+        return f
 
     for row in holdings or []:
         if not isinstance(row, dict):
@@ -140,27 +168,32 @@ def _normalize_holdings(holdings: list[dict]) -> tuple[list[str], dict[str, floa
             seen.add(t)
             order.append(t)
             cost.setdefault(t, 0.0)
-        shares = row.get("shares")
-        entry = row.get("entry_price")
-        try:
-            sh = float(shares) if shares is not None else None
-            ep = float(entry) if entry is not None else None
-        except (TypeError, ValueError):
-            sh = ep = None
-        if sh is not None and ep is not None and sh > 0 and ep > 0:
+            log_terms.setdefault(t, [])
+        sh = _positive_operand(row.get("shares"))
+        ep = _positive_operand(row.get("entry_price"))
+        if sh is not None and ep is not None:
             any_positions = True
-            cost[t] += sh * ep
+            product = sh * ep
+            # Subnormal products lose relative precision before normalization.
+            needs_log_scale |= not math.isfinite(product) or product < sys.float_info.min
+            cost[t] += product
+            log_terms[t].append(math.log(sh) + math.log(ep))
 
     if not order:
         return [], {}, "equal"
 
     if any_positions:
         total = sum(cost.values())
-        if total > 0:
-            weights = {t: cost[t] / total for t in order}
-            return order, weights, "positions"
-        # cost basis present on the flag rows but total is 0 (shouldn't happen given the
-        # >0 guard) — fall through to equal rather than divide by zero.
+        if not needs_log_scale and math.isfinite(total) and total > 0.0:
+            # Preserve the established arithmetic for ordinary cost bases.
+            return order, {t: cost[t] / total for t in order}, "positions"
+        # Normalize row costs before summing: no product or duplicate sum needs
+        # to fit in a float. Empty lists are held names without usable cost.
+        peak = max(v for terms in log_terms.values() for v in terms)
+        scaled = {t: math.fsum(math.exp(v - peak) for v in terms)
+                  for t, terms in log_terms.items()}
+        total = math.fsum(scaled.values())
+        return order, {t: scaled[t] / total for t in order}, "positions"
 
     n = len(order)
     weights = {t: 1.0 / n for t in order}
