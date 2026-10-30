@@ -111,7 +111,7 @@ def aggregate_owner_windows(*, symbol: str, calendar: Mapping[date, tuple[Any, A
                     except ValueError:
                         known = None
                         src_start = src_end = None
-                    good = (prices is not None and known is not None and
+                    good = (not reasons and prices is not None and known is not None and
                             end <= known <= cutoff and src_start == start and src_end == end and
                             type(source.get("expected_minutes")) is int and
                             type(source.get("observed_minutes")) is int and
@@ -202,7 +202,7 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
         known = _instant(bar.get("known_at_utc"))
         if (known < ending or known > cutoff or _approved_ohlcv(bar.get("ohlcv")) is None or
                 ending - _instant(bar.get("bar_start_utc")) != pd.Timedelta(minutes=grain) or
-                not _sha(bar.get("source_sha256"))):
+                not _sha(bar.get("source_sha256")) or bar.get("refusals")):
             raise ValueError("inconsistent full bar/availability")
         lines.append(bar)
         ready = False
