@@ -76,7 +76,12 @@ def test_p3a_03_shared_name_is_not_counted_as_independent_evidence():
         "member_id": "SEC_AAA",
         "group_ids": ["AI_INDUSTRIAL_INFRA", "UTILITIES"],
     }]
+    assert result["issuer_overlap"] == [{
+        "issuer_id": "ISS_AAA",
+        "group_ids": ["AI_INDUSTRIAL_INFRA", "UTILITIES"],
+    }]
     assert result["no_independent_votes_from_duplicate_securities"] is True
+    assert result["no_independent_votes_from_duplicate_issuers"] is True
 
 
 def test_p3a_04_market_benchmark_identity_change_refuses_comparison():
@@ -214,3 +219,42 @@ def test_p3a_15_single_group_is_descriptive_not_fake_peer_ranking():
     assert x["status"] == "RESEARCH_PREVIEW_ONLY"
     assert len(x["groups"]) == 1
     assert x["ranking_authority"] is False
+
+
+def test_p3a_16_two_share_classes_same_issuer_no_duplicate_security():
+    p = second()
+    p["member_identities"]["CCC"]["issuer_id"] = "ISS_AAA"
+    data = preview_pairs()
+    data["UTILITIES"] = preview_us_theme_packet(p)
+    report = compose_regime_comparison(data)
+    assert report["status"] == "RESEARCH_PREVIEW_ONLY"
+    assert report["security_overlap"] == []
+    assert report["issuer_overlap"] == [{
+        "issuer_id": "ISS_AAA",
+        "group_ids": ["AI_INDUSTRIAL_INFRA", "UTILITIES"],
+    }]
+    assert report["groups"][1]["population_n"] == 2
+    assert report["groups"][1]["unique_issuer_n"] == 2
+
+
+def test_p3a_17_multiple_securities_same_issuer_within_group_disclosed():
+    p = second()
+    p["member_identities"]["DDD"]["issuer_id"] = "ISS_CCC"
+    data = preview_pairs()
+    data["UTILITIES"] = preview_us_theme_packet(p)
+    report = compose_regime_comparison(data)
+    assert report["status"] == "RESEARCH_PREVIEW_ONLY"
+    assert report["groups"][1]["population_n"] == 2
+    assert report["groups"][1]["unique_issuer_n"] == 1
+    assert report["groups"][1]["security_breadth_not_independent_issuer_breadth"] is True
+
+
+def test_p3a_18_forged_issuer_mapping_or_count_must_not_relabel_coverage():
+    data = preview_pairs()
+    data["UTILITIES"]["issuer_by_security_id"] = {"SEC_CCC": "ISS_CCC"}
+    assert compose_regime_comparison(data)["reason"] == (
+        "missing_or_invalid_security_issuer_mapping")
+    data = preview_pairs()
+    data["UTILITIES"]["unique_issuer_n"] = 999
+    assert compose_regime_comparison(data)["reason"] == (
+        "invalid_unique_issuer_population")
