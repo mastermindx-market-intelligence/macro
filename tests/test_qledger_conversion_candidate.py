@@ -1143,3 +1143,45 @@ def test_accepted_prefix_qualification_cannot_be_upgraded_by_claimed_scope(fixtu
         candidate.require_complete_authority_generation(None)
     with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
         candidate.require_complete_authority_generation(source)
+
+
+def test_retained_prefix_reader_refuses_complete_current_source(fixture, tmp_path):
+    """Persisted owner readback is not authority for unpublished original tails."""
+    owner = _initial_conversion_owner(fixture, tmp_path)
+    prepared = owner.prepare()
+    retained = owner.retain(prepared)
+    assert retained.source_scope == "ACCEPTED_PREFIX_ONLY"
+    assert retained.eligible_for_cutover is False
+    legacy = owner.claims_path
+    original = legacy.read_bytes()
+    legacy.write_bytes(original + b"unpublished original after retained prefix\n")
+    restarted = owner.readback(prepared.manifest_digest)
+    assert restarted.source_scope == "ACCEPTED_PREFIX_ONLY"
+    with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
+        restarted.require_complete_current_generation()
+    with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
+        owner.read_binding(expected_manifest_digest=prepared.manifest_digest,
+            commit_oid=prepared.candidate.candidate_oid, require_complete_current=True)
+    # The historical-prefix consumer remains reachable without promoting it.
+    historical = owner.read_binding(expected_manifest_digest=prepared.manifest_digest,
+        commit_oid=prepared.candidate.candidate_oid)
+    assert historical.commit_oid == prepared.candidate.candidate_oid
+    with pytest.raises(SnapshotIntegrityError, match="current-generation request must be a boolean"):
+        owner.read_binding(expected_manifest_digest=prepared.manifest_digest,
+            commit_oid=prepared.candidate.candidate_oid, require_complete_current="yes")
+    assert legacy.read_bytes() == original + b"unpublished original after retained prefix\n"
+
+
+def test_loaded_reader_cannot_claim_complete_current_without_owner_source_cut(conversion_invocation):
+    """The existing invocation must withhold its live/current mode, even after Git conversion."""
+    invocation, prepared = conversion_invocation
+    called = []
+    def consume():
+        called.append(True)
+        return "read"
+    with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
+        invocation.invoke_reader(prepared.candidate.candidate_oid, consume,
+                                 require_complete_current=True)
+    assert called == []
+    assert invocation.invoke_reader(prepared.candidate.candidate_oid, consume) == "read"
+    assert called == [True]
