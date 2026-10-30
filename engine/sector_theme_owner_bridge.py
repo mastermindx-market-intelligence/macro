@@ -80,15 +80,18 @@ def _held(*reasons: str) -> dict:
 
 
 def _reference_return(
-    raw: object, *, horizon: str, end: datetime, decision: datetime,
-    price_basis: str,
+    raw: object, *, horizon: str, start: datetime, end: datetime,
+    decision: datetime, price_basis: str, session_basis: str,
 ) -> tuple[float | None, str | None]:
     if not isinstance(raw, Mapping):
         return None, "missing_reference"
     if raw.get("horizon") != horizon or raw.get("price_basis") != price_basis:
         return None, "reference_horizon_or_basis_mismatch"
-    if _timestamp(raw.get("period_end")) != end:
+    if (_timestamp(raw.get("period_start")) != start
+            or _timestamp(raw.get("period_end")) != end):
         return None, "reference_endpoint_mismatch"
+    if raw.get("session_basis") != session_basis:
+        return None, "reference_session_basis_mismatch"
     observed, available = _timestamp(raw.get("observed_at")), _timestamp(raw.get("available_at"))
     if observed is None or available is None:
         return None, "missing_reference_known_at"
@@ -168,15 +171,25 @@ def preview_us_theme_packet(packet: object) -> dict:
     horizon = market.get("horizon")
     ma_basis = market.get("ma_basis")
     price_basis = market.get("price_basis")
+    session_basis = market.get("session_basis")
+    benchmark_id = _name(market.get("benchmark_id"))
+    parent_id = _name(market.get("parent_id"))
     if horizon not in HORIZONS or ma_basis not in MA_BASES or (
         price_basis not in ("split_adjusted", "total_return_adjusted", "unadjusted")
+    ) or session_basis not in (
+        "daily_close", "rth", "overnight", "extended", "all_sessions"
     ):
         return _held("invalid_timeframe_or_price_basis")
+    if not benchmark_id or (market.get("parent") is not None and not parent_id):
+        return _held("missing_benchmark_or_parent_identity")
+    start = _timestamp(market.get("period_start"))
     end = _timestamp(market.get("period_end"))
     decision = _timestamp(market.get("decision_at"))
     known = _timestamp(packet.get("membership_known_at"))
     if end is None or decision is None or known is None:
         return _held("missing_original_membership_or_market_clock")
+    if start is None or start >= end:
+        return _held("missing_or_invalid_market_start")
     if end > decision or known > decision:
         return _held("future_market_or_membership_known_at")
     if mode == "PIT_AS_KNOWN" and known > end:
@@ -218,16 +231,23 @@ def preview_us_theme_packet(packet: object) -> dict:
     for ticker, raw in rows.items():
         if not isinstance(raw, Mapping) or raw.get("price_basis") != price_basis:
             return _held("member_price_basis_mismatch")
+        if (raw.get("horizon") != horizon
+                or _timestamp(raw.get("period_start")) != start
+                or _timestamp(raw.get("period_end")) != end
+                or raw.get("session_basis") != session_basis):
+            return _held("member_horizon_or_session_alignment_mismatch")
     benchmark, reason = _reference_return(
         market.get("benchmark"), horizon=horizon,
-        end=end, decision=decision, price_basis=price_basis)
+        start=start, end=end, decision=decision,
+        price_basis=price_basis, session_basis=session_basis)
     if reason is not None:
         return _held("benchmark_"+reason)
     parent = None
     if market.get("parent") is not None:
         parent, reason = _reference_return(
             market["parent"], horizon=horizon,
-            end=end, decision=decision, price_basis=price_basis)
+            start=start, end=end, decision=decision,
+            price_basis=price_basis, session_basis=session_basis)
         if reason is not None:
             return _held("parent_"+reason)
     elif packet.get("group_kind") != "sector":
@@ -271,6 +291,17 @@ def preview_us_theme_packet(packet: object) -> dict:
         ],
         "basis": mode,
         "source_origin": origin,
+        "comparison_basis": {
+            "benchmark_id": benchmark_id,
+            "parent_id": parent_id if market.get("parent") is not None else None,
+            "price_basis": price_basis,
+            "session_basis": session_basis,
+            "period_start": start.isoformat(),
+            "period_end": end.isoformat(),
+            "horizon": horizon,
+            "decision_at": decision.isoformat(),
+            "market": "US",
+        },
         "known_member_tickers": len(members),
         "expected_security_ids": list(sorted(identity_ids.values())),
         "frame": frame,
