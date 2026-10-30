@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 from scripts.check_risk_envelope_pair import check_pair, main
@@ -92,3 +93,55 @@ def test_market_state_missing_fails_closed(tmp_path):
     _fixture(tmp_path)
     (tmp_path / "data/market_state/latest.json").unlink()
     assert check_pair(tmp_path).status == "UNAVAILABLE"
+
+
+def _commit_fixture(root: Path) -> None:
+    for args in (
+        ("init", "-q"),
+        ("config", "user.name", "Risk Pair Fixture"),
+        ("config", "user.email", "risk-pair-fixture@example.invalid"),
+        ("add", "data/risk_envelope/latest.json", "site/riskdata/risk_envelope.json", "data/market_state/latest.json"),
+        ("commit", "-q", "-m", "settled fixture"),
+    ):
+        subprocess.run(("git", "-C", str(root), *args), check=True, capture_output=True)
+
+
+def test_git_commit_identity_ignores_uncommitted_runner_override(tmp_path):
+    _fixture(tmp_path)
+    _commit_fixture(tmp_path)
+    site = tmp_path / "site/riskdata/risk_envelope.json"
+    site.write_text('{"source_session":"2026-10-20"}', encoding="utf-8")
+    assert check_pair(tmp_path).status == "DIVERGED"
+    result = check_pair(tmp_path, git_ref="HEAD")
+    assert result.status == "OK"
+    assert result.reason == "settled_mirrors_match_current_market_session"
+    assert main(["--root", str(tmp_path), "--git-ref", "HEAD"]) == 0
+
+
+def test_git_commit_detects_published_asymmetry_after_worktree_repair(tmp_path):
+    _fixture(tmp_path)
+    site = tmp_path / "site/riskdata/risk_envelope.json"
+    site.write_text('{"source_session":"2026-10-20"}', encoding="utf-8")
+    _commit_fixture(tmp_path)
+    data = tmp_path / "data/risk_envelope/latest.json"
+    site.write_bytes(data.read_bytes())
+    assert check_pair(tmp_path).status == "OK"
+    result = check_pair(tmp_path, git_ref="HEAD")
+    assert result.status == "DIVERGED"
+    assert result.reason == "settled_mirror_bytes_differ"
+    assert main(["--root", str(tmp_path), "--git-ref", "HEAD"]) == 1
+
+
+def test_git_commit_reader_rejects_invalid_refs_and_missing_commits(tmp_path):
+    _fixture(tmp_path)
+    _commit_fixture(tmp_path)
+    assert check_pair(tmp_path, git_ref="HEAD:bad/path").reason == "unsupported_git_ref"
+    assert check_pair(tmp_path, git_ref="0" * 40).status == "UNAVAILABLE"
+
+
+def test_original_precommit_and_new_exact_commit_checks_remain_distinct():
+    script = Path(__file__).resolve().parents[1] / "scripts/ci/daily_engine_commit_outputs.sh"
+    content = script.read_text(encoding="utf-8")
+    assert "python -m scripts.check_risk_envelope_pair --root ." in content
+    assert "python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD" in content
+    assert content.index("if push_do origin") < content.index("--git-ref HEAD") < content.index("push_won; exit 0")
