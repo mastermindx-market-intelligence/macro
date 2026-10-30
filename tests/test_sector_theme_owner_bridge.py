@@ -261,6 +261,7 @@ def test_p2a_21_owner_claimed_rights_are_not_customer_publication_grant():
     assert v["status"] == "RESEARCH_PREVIEW_ONLY"
     assert v["source_origin"] == "owner_reported"
     assert v["frame"]["evidence"]["source_rights_verified"] is False
+    assert v["frame"]["evidence"]["mode"] == "reconstructed_price_history"
     assert v["eligible_for_customer_publication"] is False
 
 
@@ -310,3 +311,22 @@ def test_p2a_26_non_member_extra_tape_row_refuses():
 def test_p2a_27_unchanged_inputs_yield_deterministic_output():
     p = fixture()
     assert preview_us_theme_packet(p) == preview_us_theme_packet(deepcopy(p))
+
+
+def test_p2a_28_source_snapshot_cannot_be_known_before_it_existed():
+    p = fixture()
+    p["membership_asof"]["snapshot_date"] = "2026-10-29"
+    p["membership_known_at"] = "2026-10-28T15:00:00+00:00"
+    held(p, "membership_known_at_predates_native_snapshot")
+
+
+def test_p2a_29_incomplete_quote_population_retains_identification_bounds():
+    p = fixture()
+    del p["market"]["member_rows"]["AAA"]
+    v = preview_us_theme_packet(p)
+    assert v["status"] == "RESEARCH_PREVIEW_ONLY"
+    b = v["frame"]["measures"]["positive_return_breadth"]
+    assert b["bounds_kind"] == "identification_bounds_not_confidence_interval"
+    assert b["bounds"] == pytest.approx([.5, 1.0])
+    assert v["fingerprint"]["horizons"]["5d"]["absolute_trend"][
+        "group_return"]["status"] == "unmeasured"
