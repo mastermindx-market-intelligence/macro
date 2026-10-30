@@ -87,7 +87,7 @@ def _shape(params: Any) -> dict:
         _require(4 <= len(normalized) <= 48, "invalid_candle_cardinality")
         for row in normalized:
             label, op, high, low, close = row
-            _require(bool(label.strip()) and all(_number(n) and n > 0 for n in (op, high, low, close)), "invalid_candle_values")
+            _require(isinstance(label, str) and bool(label.strip()) and all(_number(n) and n > 0 for n in (op, high, low, close)), "invalid_candle_values")
             _require(low <= min(op, close) <= max(op, close) <= high, "invalid_ohlc")
     if template == "donut":
         _require(len(columns) == 2 and len(rows) <= 12, "invalid_donut_cardinality")
