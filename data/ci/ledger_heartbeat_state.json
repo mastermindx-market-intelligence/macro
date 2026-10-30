@@ -1,6 +1,6 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-10-30T00:20:23Z",
+  "updated_utc": "2026-10-30T10:50:34Z",
   "last_check_date": "2026-10-30",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
