@@ -61,7 +61,8 @@ def eligible(rows, first_day="2026-10-29", is_leader=True, known_shift=0):
         when = pd.Timestamp(row["bar_end_utc"]) + pd.Timedelta(seconds=known_shift)
         out[(row["symbol"], row["bar_end_utc"])] = {
             "is_leader": is_leader, "known_at_utc": when.isoformat(),
-            "asof_session": first_day, "receipt_sha256": SHA,
+            "asof_session": first_day, "expected_prior_session": "2026-10-29",
+            "receipt_sha256": SHA,
         }
     return out
 
@@ -205,6 +206,61 @@ class OscillatorSignals(unittest.TestCase):
                                    decision_cutoff_utc="2026-10-30T20:00:00Z")
         self.assertEqual(events[1]["state"], "NOT_LEADER")
         self.assertIsNone(events[1]["signal"])
+
+    def test_stale_historical_leader_receipt_refused(self):
+        elig = eligible(self.rows, first_day="2026-10-20")
+        events = oscillator_events(bars=self.rows, indicator="SUPPLIED_LINES",
+                                   eligibility=elig, supplied=self.supplied(),
+                                   decision_cutoff_utc="2026-10-30T20:00:00Z")
+        self.assertEqual(events[1]["state"], "ELIGIBILITY_UNAVAILABLE")
+
+    def test_mismatched_current_export_digest_refuses_signal(self):
+        supp = self.supplied()
+        supp[self.key]["source_sha256"] = "b"*64
+        ev = oscillator_events(bars=self.rows, indicator="SUPPLIED_LINES", eligibility=self.elig,
+                               supplied=supp, decision_cutoff_utc="2026-10-30T20:00:00Z")
+        self.assertIsNone(ev[1]["signal"])
+
+    def test_mismatched_previous_export_digest_refuses_signal(self):
+        supp = self.supplied()
+        first_key = (self.rows[0]["symbol"], self.rows[0]["bar_end_utc"])
+        supp[first_key]["source_sha256"] = "b"*64
+        ev = oscillator_events(bars=self.rows, indicator="SUPPLIED_LINES", eligibility=self.elig,
+                               supplied=supp, decision_cutoff_utc="2026-10-30T20:00:00Z")
+        self.assertIsNone(ev[1]["signal"])
+
+    def test_export_line_precedes_source_receipt_refused(self):
+        supp = self.supplied()
+        supp[self.key]["known_at_utc"] = self.rows[1]["bar_end_utc"]
+        ev = oscillator_events(bars=self.rows, indicator="SUPPLIED_LINES", eligibility=self.elig,
+                               supplied=supp, decision_cutoff_utc="2026-10-30T20:00:00Z")
+        self.assertIsNone(ev[1]["signal"])
+
+    def test_malformed_previous_export_clock_refuses_without_future_signal(self):
+        supp = self.supplied()
+        first_key = (self.rows[0]["symbol"], self.rows[0]["bar_end_utc"])
+        supp[first_key]["known_at_utc"] = "2026-10-30T16:30:00"
+        ev = oscillator_events(bars=self.rows, indicator="SUPPLIED_LINES", eligibility=self.elig,
+                               supplied=supp, decision_cutoff_utc="2026-10-30T20:00:00Z")
+        self.assertIsNone(ev[1]["signal"])
+
+    def test_mixed_120m_180m_bars_refused(self):
+        combined = self.rows + run(grain=180)
+        with self.assertRaisesRegex(ValueError, "mix 120m and 180m"):
+            oscillator_events(bars=combined, indicator="CANON_RSI_MACD",
+                              eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
+
+    def test_duplicate_bar_identity_refused(self):
+        with self.assertRaisesRegex(ValueError, "duplicate observed"):
+            oscillator_events(bars=self.rows + [self.rows[0]], indicator="CANON_RSI_MACD",
+                              eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
+
+    def test_modified_full_bar_bounds_refused(self):
+        changed = [dict(x) for x in self.rows]
+        changed[1]["bar_start_utc"] = changed[0]["bar_start_utc"]
+        with self.assertRaisesRegex(ValueError, "inconsistent full bar"):
+            oscillator_events(bars=changed, indicator="CANON_RSI_MACD",
+                              eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
 
     def test_unknown_indicator_refused(self):
         with self.assertRaisesRegex(ValueError, "frozen known"):
