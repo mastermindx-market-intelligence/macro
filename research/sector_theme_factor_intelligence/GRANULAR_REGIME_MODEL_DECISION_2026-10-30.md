@@ -257,3 +257,66 @@ during continued draft commits. All newly authored P2/P2b/P2c suites are
 registered in the *same* incumbent job; **current-head CI and
 independent non-author review are outstanding**. No sample market-date
 feed, real use entitlement, Paper artboard or predictive validation is claimed.
+
+
+## Same-clock group scanner and observational chronology (source-only P3)
+
+Added deterministic read-only `engine/sector_theme_regime_comparison.py`
+and `engine/sector_theme_regime_timeline.py`, with synthetic regression
+suites, on Draft/Hold PR #10213. These **do not** accept a market-data
+entitlement or make a production user journey.
+
+**Across groups:** require equal broad-market benchmark ID, exact start/end
+measurement period, decision clock, horizon, price-adjustment basis and
+RTH/overnight/daily session basis. Parent-group identity remains a distinct
+field because theme parents may differ. Show full equal-weight cohort return,
+parent and broad-market relative wealth, true positive-return breadth
+bounds, MA coverage and unknown/null reasons, but NEVER award a score,
+rank, expected trade return or risk budget. Surface canonical security
+overlap and issuer overlap separately: a shared ticker in two themes is
+not two independent votes, and distinct securities issued by the same
+company are not independent issuers. Report security N and unique issuer N
+separately instead of silently redefining the breadth denominator.
+
+**Across time:** comparisons take already retained as-issued research
+preview observations; the code does not store or backfill historical
+snapshots. Each observation retains the explicit market-clock/window and
+membership revision. On a stable cohort, use the incumbent
+`breadth_change` to identify positive→nonpositive or nonpositive→positive
+common-measured ticker flips, **separately** from new quote coverage,
+lost coverage, and constituent changes. Those flips identify two observed
+endpoints, not each intrabar crossing. For partially observed population
+breadth, the only identified delta interval is
+`[lower_after-upper_before, upper_after-lower_before]`;
+if it straddles zero, the direction is **unmeasured**. That is logical
+missing-observation uncertainty, NOT a statistical confidence interval.
+On a changed roster/membership revision, refuse direct paired comparisons.
+
+The difference in two rolling-horizon RS levels is a change in an
+**overlapping-window statistic**, not a second derivative, momentum
+acceleration, directional entry signal or causal early-warning alpha.
+A real acceleration study still needs predeclared disjoint/smoothed
+causal slopes and fixed lookback/sample, plus prospective scientific
+falsification. The timeline correctly states that its local operations
+interpolate no observations, but **original source availability and
+absence of upstream lookahead are NOT authenticated** by caller-shaped
+timestamps. Real P3 acceptance still requires PIT/GMI/rights/market owner
+receipts and market-calendar/RTH/extended-hours source/price-basis tests.
+
+The most recent GMI programme census at Macro main
+`ce5201f96f721967d0d6cf65a0afc759d28ce35b` confirms W3B
+production owner receipts/rights remain unqualified, W3C selection-cohort
+`SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE` remains the lawful
+outcome, and Terminal #868's rejected integration effect is explicitly
+held. These are **external prerequisite gates, not a reason to build a
+second membership, identity, rights or publisher owner**. The new
+preview refuses publication, historical prediction and trade/alert
+authority regardless of well-formed input. Paper direct inspection
+remained transport-unavailable (429); no actual Paper canvas was edited.
+
+The new P3 suites are registered with the existing
+`leadership-rotation-contract` job in
+`.github/ci/legacy-jobs.yml`. Acceptance still requires **completed
+exact-current-head CI, independent non-author review, lawful
+source/signed-in producer→client proof**, and an original-as-issued
+scientific eligibility decision. Nothing here qualifies these gates.
