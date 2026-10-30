@@ -203,17 +203,18 @@ def test_legacy_numeric_only_visual_snapshot_still_renders(page):
 
 
 def candle_sample(**overrides):
-    return sample(
-        "candlestick",
-        columns=["Candle", "Open", "High", "Low", "Close"],
-        rows=[
+    fields={
+        "columns": ["Candle", "Open", "High", "Low", "Close"],
+        "rows": [
             ["1", 110, 114, 105, 106],
             ["2", 106, 109, 101, 102],
             ["Pivot", 102, 107, 101, 106],
             ["Breakout", 106, 111, 104, 110],
         ],
-        subtitle="Fictional 30-minute pivot", **overrides,
-    )
+        "subtitle": "Fictional 30-minute pivot",
+    }
+    fields.update(overrides)
+    return sample("candlestick", **fields)
 
 
 def test_candle_pivot_entry_stop_and_breakout_are_real_svg_geometry(page):
