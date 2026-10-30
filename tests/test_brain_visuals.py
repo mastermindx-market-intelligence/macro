@@ -145,15 +145,17 @@ def test_source_numeric_strings_do_not_launder_an_unbound_value(visual):
 
 # Candlestick is a 12th native visual preset, not a separate OHLC market-data owner.
 def candle_spec(**changes):
-    return spec("candlestick", title="Illustrative bullish 30-minute pivot",
-                subtitle="30-minute synthetic candles",
-                columns=["Candle", "Open", "High", "Low", "Close"],
-                rows=[
-                    ["1", 110, 114, 105, 106],
-                    ["2", 106, 109, 101, 102],
-                    ["Pivot", 102, 107, 101, 106],
-                    ["Breakout", 106, 111, 104, 110],
-                ], **changes)
+    fields = {"title": "Illustrative bullish 30-minute pivot",
+              "subtitle": "30-minute synthetic candles",
+              "columns": ["Candle", "Open", "High", "Low", "Close"],
+              "rows": [
+                  ["1", 110, 114, 105, 106],
+                  ["2", 106, 109, 101, 102],
+                  ["Pivot", 102, 107, 101, 106],
+                  ["Breakout", 106, 111, 104, 110],
+              ]}
+    fields.update(changes)
+    return spec("candlestick", **fields)
 
 
 def test_candle_compiler_preserves_ohlc_and_history_provenance(visual):
