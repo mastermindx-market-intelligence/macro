@@ -1980,6 +1980,7 @@ def public_report(report: dict) -> dict:
     # omitted unless explicitly listed here as safe health metadata.
     raw_settlement = report.get("prophet_settlement")
     if isinstance(raw_settlement, dict):
+        from scripts.prophet_settlement_manifest import FAILURE_CODES
         allowed_status = {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
         observed_status = raw_settlement.get("status")
         failures = raw_settlement.get("failures")
@@ -1993,7 +1994,7 @@ def public_report(report: dict) -> dict:
             "failures": [
                 token for token in failures[:16]
                 if isinstance(token, str)
-                and re.fullmatch(r"[A-Z0-9_]{3,80}", token)
+                and token in FAILURE_CODES
             ] if isinstance(failures, list) else [],
         }
     return out

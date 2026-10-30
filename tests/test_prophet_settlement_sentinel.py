@@ -97,7 +97,7 @@ def test_public_report_projects_only_allowlisted_health_metadata():
             "status": "UNAVAILABLE_DATA",
             "source_asof": "2026-10-23",
             "owed_session": "2026-10-30",
-            "failures": ["SOURCE_STALE", "/etc/secret", "x" * 900],
+            "failures": ["source_asof_stale", "/etc/secret", "x" * 900],
             "plans": [{"ticker": "PRIVATE"}],
             "artifact_hashes": {"customer": "secret-hash"},
             "private": "SECRET",
@@ -107,7 +107,7 @@ def test_public_report_projects_only_allowlisted_health_metadata():
     assert set(public["prophet_settlement"]) == {
         "schema", "status", "source_asof", "owed_session", "failures"
     }
-    assert public["prophet_settlement"]["failures"] == ["SOURCE_STALE"]
+    assert public["prophet_settlement"]["failures"] == ["source_asof_stale"]
     assert public["surfaces"]["prophet_us"] == {"status": "stale"}
     assert "PRIVATE" not in json.dumps(public)
     assert "SECRET" not in json.dumps(public)
