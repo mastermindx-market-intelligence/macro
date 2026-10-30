@@ -290,6 +290,7 @@ def preview_us_theme_packet(packet: object) -> dict:
             "owner_custody_source_rights_and_original_receipts_not_authenticated"
         ],
         "basis": mode,
+        "group_kind": packet["group_kind"],
         "source_origin": origin,
         "comparison_basis": {
             "benchmark_id": benchmark_id,
