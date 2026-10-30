@@ -163,14 +163,14 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-10-23",
+  "rotation_asof": "2026-10-26",
   "standouts_asof": "2026-10-23",
   "available": true,
   "themes": [
    {
     "rank": 1,
     "theme": "Biometrics",
-    "emerging_score": 3.798,
+    "emerging_score": 3.775,
     "n_members": 24,
     "present_counts": {
      "buy": 0,
@@ -190,27 +190,25 @@
    {
     "rank": 2,
     "theme": "Cybersecurity",
-    "emerging_score": 1.734,
+    "emerging_score": 1.702,
     "n_members": 19,
     "present_counts": {
      "buy": 0,
-     "ran": 1,
+     "ran": 0,
      "leaders": 0
     },
     "present": {
      "buy": [],
-     "ran": [
-      "CHKP"
-     ],
+     "ran": [],
      "leaders": []
     },
-    "represented_n": 1,
+    "represented_n": 0,
     "days_since_top5_entry": null
    },
    {
     "rank": 3,
     "theme": "Real Estate & REITs",
-    "emerging_score": 1.335,
+    "emerging_score": 1.336,
     "n_members": 49,
     "present_counts": {
      "buy": 3,
@@ -232,7 +230,7 @@
    {
     "rank": 4,
     "theme": "Environmental Sustainability",
-    "emerging_score": 1.186,
+    "emerging_score": 1.188,
     "n_members": 30,
     "present_counts": {
      "buy": 3,
@@ -254,21 +252,22 @@
    {
     "rank": 5,
     "theme": "Defense & Aerospace",
-    "emerging_score": 1.123,
+    "emerging_score": 1.127,
     "n_members": 24,
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "ran": 0,
      "leaders": 0
     },
     "present": {
      "buy": [
-      "GD"
+      "GD",
+      "PL"
      ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 1,
+    "represented_n": 2,
     "days_since_top5_entry": null
    }
   ]
@@ -291,7 +290,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 5,
-  "n_unrepresented": 19,
+  "n_unrepresented": 15,
   "misses": [],
   "baskets": [
    {
@@ -381,10 +380,11 @@
     "n_members": 60,
     "n_members_live": 60,
     "n_members_read": 60,
-    "n_members_on_board": 4,
+    "n_members_on_board": 5,
     "members_on_board": [
      "AMGN",
      "MRNA",
+     "PFE",
      "VEEV",
      "ZBH"
     ],
@@ -392,7 +392,7 @@
      "buy": 2,
      "watch": 0,
      "leaders": 2,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.9306,
     "pctile_n": 252,
@@ -511,21 +511,19 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 7,
+    "n_members_on_board": 5,
     "members_on_board": [
      "ADBE",
-     "CRM",
      "DOCU",
-     "KVYO",
+     "GTLB",
      "NOW",
-     "PCOR",
      "TEAM"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 4,
-     "ran": 2
+     "ran": 0
     },
     "pctile": 0.8433,
     "pctile_n": 252,
@@ -541,13 +539,15 @@
     "n_members": 10,
     "n_members_live": 9,
     "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "PFE"
+    ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.8313,
     "pctile_n": 252,
@@ -567,9 +567,9 @@
     "members_on_board": [
      "AIZ",
      "ALL",
-     "FITB",
      "ICE",
      "JKHY",
+     "NDAQ",
      "NTRS"
     ],
     "present_counts": {
@@ -592,15 +592,14 @@
     "n_members": 20,
     "n_members_live": 20,
     "n_members_read": 20,
-    "n_members_on_board": 4,
+    "n_members_on_board": 3,
     "members_on_board": [
      "COLB",
      "EWBC",
-     "FITB",
      "WTFC"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 2,
      "watch": 1,
      "leaders": 0,
      "ran": 0
@@ -645,14 +644,15 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
      "OKE",
-     "SLB"
+     "SLB",
+     "XOM"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -698,15 +698,16 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 3,
+    "n_members_on_board": 4,
     "members_on_board": [
      "EXE",
      "OKE",
-     "SLB"
+     "SLB",
+     "XOM"
     ],
     "present_counts": {
      "buy": 3,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -774,8 +775,8 @@
     "n_members_read": 8,
     "n_members_on_board": 2,
     "members_on_board": [
-     "CRM",
-     "NOW"
+     "NOW",
+     "TEM"
     ],
     "present_counts": {
      "buy": 0,
@@ -877,16 +878,15 @@
     "n_members": 17,
     "n_members_live": 17,
     "n_members_read": 17,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
      "ADBE",
-     "CRM",
      "NOW"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.4067,
@@ -903,13 +903,14 @@
     "n_members": 22,
     "n_members_live": 21,
     "n_members_read": 22,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "GD"
+     "GD",
+     "RKLB"
     ],
     "present_counts": {
      "buy": 1,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1000,15 +1001,16 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "AMGN"
+     "AMGN",
+     "PFE"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.2956,
     "pctile_n": 252,
@@ -1024,13 +1026,15 @@
     "n_members": 15,
     "n_members_live": 15,
     "n_members_read": 15,
-    "n_members_on_board": 1,
+    "n_members_on_board": 3,
     "members_on_board": [
-     "IRDM"
+     "IRDM",
+     "PL",
+     "RKLB"
     ],
     "present_counts": {
-     "buy": 0,
-     "watch": 1,
+     "buy": 1,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -1226,13 +1230,14 @@
     "n_members": 5,
     "n_members_live": 4,
     "n_members_read": 5,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "MU",
      "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 1,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -1272,10 +1277,12 @@
     "n_members": 13,
     "n_members_live": 10,
     "n_members_read": 13,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "WULF"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1342,17 +1349,17 @@
     "members_on_board": [
      "ACN",
      "ADBE",
-     "CRM",
      "CTSH",
      "IT",
      "MSI",
+     "MU",
      "NOW",
      "SNDK"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 1,
-     "leaders": 4,
+     "watch": 2,
+     "leaders": 3,
      "ran": 1
     },
     "pctile": 0.0258,
@@ -1413,10 +1420,12 @@
     "n_members": 16,
     "n_members_live": 16,
     "n_members_read": 16,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "NVMI"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1435,11 +1444,13 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "MU"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1675,14 +1686,14 @@
   "asof": "2026-10-23",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 20103,
-  "scan_n": 1561,
+  "store_n": 21244,
+  "scan_n": 1648,
   "runners_n": 150,
-  "runners_eligible_today_n": 12,
-  "runners_never_eligible_n": 38,
+  "runners_eligible_today_n": 14,
+  "runners_never_eligible_n": 39,
   "excluder_family_hist": {
-   "not_topped_veto": 134,
-   "ELIGIBLE": 12,
+   "not_topped_veto": 132,
+   "ELIGIBLE": 14,
    "freshness_expired": 4
   }
  },
