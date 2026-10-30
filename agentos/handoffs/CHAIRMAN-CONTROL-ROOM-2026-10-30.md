@@ -18,7 +18,7 @@ state_before: >
   or promoted to whole-product R2 acceptance. No accepted product R2 end-to-end or
   seven-day office proof existed.
 changed:
-  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30-meta-ceo-runtime-convergence.md
+  - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30.md
     what: >
       Add a source-linked dated census, explicit donor-runtime selection boundary, existing
       R2 criterion map, named original owners, protected non-goals and next original-path
@@ -96,6 +96,7 @@ unresolved:
   - "The Fabric audit was terminal and must not be retried or failover-routed under its existing operation."
   - "The current Office and Agent OS PRs are source candidates awaiting current-head CI/review and protected release."
 next_actions:
+  - "Maintain existing Control Room SC1 as the primary cross-session frontier per current WS next_action; preserve #868 DO_NOT_REDO, and refresh #647/#651/#836 review and release evidence before acting. P0B and ASD remain independent."
   - "Correct any exact-head CI/review findings on original PR 1889 without taking another writer's source."
   - "Protect and release the existing 1859 -> 1861 -> 1889 Mission/Result/Office stack through independent review."
   - "Prove one end-to-end authenticated original Executive parent/WorkerResult Office return and resumed worker."
