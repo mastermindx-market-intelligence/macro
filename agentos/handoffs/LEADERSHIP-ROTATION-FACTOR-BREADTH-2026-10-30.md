@@ -70,6 +70,25 @@ changed:
     what: >-
       Bilingual proof cases, forged facet abstentions, flat/nonpositive and
       MA-equal distinction, zero/missing basis, and explicit no-publication.
+  - path: engine/sector_theme_regime_comparison.py
+    what: >-
+      Pure cross-sector/theme research scanner with exact benchmark, price,
+      session and decision-clock equality, issuer/security overlap separation,
+      explicit source/issuer counts and zero rank/customer/trade authority.
+  - path: tests/test_sector_theme_regime_comparison.py
+    what: >-
+      Synthetic aligned-vs-incompatible cohort, benchmark, session, time,
+      quote missingness, input forge and issuer/share-class overlap cases.
+  - path: engine/sector_theme_regime_timeline.py
+    what: >-
+      Pure, no-store P3 chronology of as-provided owner previews: matched
+      member endpoint transitions via incumbent breadth_change, bounded
+      participation direction, and sliding-window RS changes NOT acceleration.
+  - path: tests/test_sector_theme_regime_timeline.py
+    what: >-
+      Static regression cases for source clock, population revision,
+      coverage arrivals, partial breadth delta, changed benchmark basis,
+      boundary cases, and explicit no-original-lookahead-proof.
 verified:
   - claim: >-
       Draft source and the versioned research/plan files were published to the
@@ -138,12 +157,14 @@ next_actions:
     non-author review and rights/source entitlement gates.
   - >-
     P2 pure research-preview now composes owner-shaped data, separate
-    group_flow context and quantified EN/ZH narratives. The next real
-    critical path is one CURRENT qualified U.S. theme cohort with native
-    GMI membership/identity, use-purpose/entitlement and timestamped quote
-    source readers; obtain genuine original known-at and cohort basis first,
-    never use current-roster as historical PIT or microtheme ancestor proxy.
-    Do not enable customer publication on unverified caller-supplied receipts.
+    group_flow context and quantified EN/ZH narratives. P3 adds a
+    source-only multi-sector/theme comparison matrix and observational
+    chronology with exact basis and PIT/correction/overlap abstentions.
+    The real critical path is one CURRENT qualified U.S. theme cohort
+    with native GMI membership/identity, genuine purpose-specific
+    use entitlement and timestamped quote source readers. Never use
+    current roster as historical PIT or ancestor proxy as true micro
+    membership. No customer publication on unverified receipts.
   - >-
     Bind owner-admitted member PIT, rights, credit source and live clocks;
     future-state probability modeling remains a separately preregistered P6G
@@ -336,3 +357,53 @@ Last source commit BEFORE this handoff:
 Read PR #10213 fresh for the exact current head after the handoff write.
 Mission state **MORE_WORK_EXISTS**; no ongoing durable worker and
 no trade or customer feature has been promoted.
+
+
+## 2026-10-30 resumed P3 group comparison / chronology milestone
+
+New source-only `engine/sector_theme_regime_comparison.py` + tests
+form an unranked, benchmark/time/session/adjustment-aligned group matrix
+from P2 research previews. Input periods now carry original
+`period_start`, `period_end`, explicit broad-market benchmark ID,
+session basis and price-adjustment basis (P2 bridge and tests updated).
+The scanner reports group RS, coverage bounds and unknowns; issuer and
+security overlap are distinct. Duplicate securities/issuers across
+groups are NOT independent confirmation. No preview is customer
+publishable, ranked, predictive or trade-authorized.
+
+New source-only `engine/sector_theme_regime_timeline.py` + tests take
+successive already-retained previews (no new history store) for one
+group and same basis. The incumbent `breadth_change` owns paired
+true endpoint flips; arrivals/coverage/roster revisions remain separate.
+Aggregate positive breadth difference is bounded by
+`[lo_after-hi_before,hi_after-lo_before]`, not a CI. Sliding-window
+RS changes are NOT acceleration. The tool cannot authenticate original
+issued/vintage state from a caller timestamp and advertises
+`absence_of_upstream_lookahead_proven=false`. No forecast/alert signals.
+
+This phase is **implementation source, not acceptance**: the additional
+P3 tests are committed and registered in the same existing
+`leadership-rotation-contract` CI job, but current-head CI and
+non-author review have not been observed to conclude. Retain the
+prior proven 134-pass source run for its then-exact head only, not as
+new P3 proof.
+
+Fresh canonical GMI read on Macro main `ce5201f96f...`
+confirms W3B source owner rights and production custody still
+unqualified and W3C `SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE`
+held; Terminal #868 specific refused integration effect remains held
+with NO cross-carrier/account retry. These do not block independent
+research source work but DO block live-data/customer proof.
+
+Paper direct route was attempted through the required action family
+and returned MCP SSE 429. No exact Paper file/artboard was observed,
+no design edit or screenshot, no alternate carrier mutation.
+No current independent review was accepted. Do not promote PR #10213
+or change existing theme scoring/capital/alert owners on Draft.
+Prior source code commit before this handoff:
+`ac1c53bcacd2a415c5282e471d021315df7a1dbf`.
+**Exact next action**: read fresh PR head, latest CI/fences and one
+selected leadership-rotation-contract test-pack result; repair any
+actual introduced fail within this same branch, then obtain lawful
+non-author review and next qualified real owner source adapter when
+GMI source/rights gate clears. No session/job is assumed running.
