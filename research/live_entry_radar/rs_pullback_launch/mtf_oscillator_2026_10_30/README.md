@@ -29,8 +29,10 @@ research-only functions:
    supplied=None)` classifies known full-bar oscillator crossovers using
    a caller-supplied previous-session leader receipt.
    `eligibility[(symbol, bar_end_utc)]` supplies
-   `is_leader`, `known_at_utc`, `asof_session`, and
-   `receipt_sha256`. Unknown/stale/future leader source remains
+   `is_leader`, `known_at_utc`, `asof_session`,
+   `expected_prior_session` and `receipt_sha256`. The expected prior
+   session comes from the existing exchange calendar owner; the candidate's
+   `asof_session` must equal it. Unknown/stale/future leader source remains
    `ELIGIBILITY_UNAVAILABLE`, not a negative trade label.
 
 ## Frozen indicator species
@@ -72,13 +74,17 @@ python -m pytest -q tests/test_entry_radar_oscillator_mtf_research.py
 python -m compileall -q engine/entry_radar/replay/oscillator_mtf_research.py
 ```
 
-The original isolated source qualification returned **24 passing
+The latest isolated source qualification returned **34 passing
 synthetic tests**, with a local surrogate of the verified incumbent
-`engine.canon` implementation. **Hosted tests against the actual full
-Macro dependency environment are separately required** and are not
-claimed by that local result. All 24 are software falsifiers, not
-market trials, strategy win rates, a point-in-time data audit or Pine
-parity.
+`engine.canon` implementation. Five further integration tests were
+added under `tests/test_entry_radar_oscillator_owner_integration.py`;
+they use the native `rs_pullback_launch_data._aggregate` and actual
+Phase-1 synthetic owner fixture (including future revisions, missing
+minutes, stale basis and prior daily eligibility). **Those five require
+the full Macro test environment and have not been locally executed**;
+hosted CI against actual canonical dependencies is still required.
+These are software falsifiers, not market trials, strategy win rates,
+a point-in-time data audit or Pine parity.
 
 ## Next consumer and proof
 
