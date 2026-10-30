@@ -19132,6 +19132,7 @@ jobs:
       - "config/sector_legs.json"
       - "engine/__init__.py"
       - "engine/basket_index.py"
+      - "engine/oracle/__init__.py"
       - "engine/oracle/ratio_lens.py"
       - "engine/rotation_corr.py"
       - "engine/rotation_events.py"
@@ -19147,6 +19148,7 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "site/account.js"
       - "templates/account.js"
+      - "tests/__init__.py"
       - "tests/test_rotation_observation_integration.py"
       - "tests/test_rotation_observation_notification.py"
     timeout-minutes: 12
