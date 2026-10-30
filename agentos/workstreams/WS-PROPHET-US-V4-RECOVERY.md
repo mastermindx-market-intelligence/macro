@@ -214,14 +214,28 @@ waves:
   - id: a2
     depends_on: [a1]
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
-    status: todo
+    status: in_progress
     next_action: >
-      ADOPT FIRST. #7180 (312d3b450da2) merged completed-session and exact-source binding;
-      #7187 and #7457 also merged. Map the existing Availability/checkpoint/receipt fields to
-      every original settlement-manifest criterion, including owed and explicitly unavailable
-      sessions. The named manifest was not found in runtime source at the census pin; that is
-      not proof the capability is absent. Close by reference where satisfied; build only a
-      demonstrated delta.
+      ADOPT-FIRST SOURCE AUDIT STARTED 2026-10-30, not production accepted.
+      A1 is done. Freeze remains masterplan sec 18 and V4-A2 sec 21.
+      #7180, #7187 and #7457 are merged: #7180 freezes byte-hashed
+      origination_sources and exact completed-session price basis; existing
+      scripts/prophet_board_acceptance.py enforces nightly session/intake
+      invariants; scripts/freshness_sentinel.py reads the served Prophet
+      index and detects wall-clock re-stamp; scripts/check_nightly_liveness.py
+      and scripts/prophet_rescue.py handle gate-skip and stale source.
+      These are independently accepted owners, NOT proof that the required
+      prophet.settlement_manifest/v1, joined six-clock settlement, accepted
+      bundle hash and consumer wiring are implemented. Read-only paid Fabric
+      audit prophet-v4-a2-adoption-audit-20261030-01 was commissioned to
+      inventory exact current-source functions/tests before modification;
+      its controller launched on ubuntu3, but no result/acceptance has yet
+      been received. Adjudicate that exact run, then implement only the
+      qualified missing manifest/consumer delta with the incumbent
+      WS:PROPHET-US-AVAILABILITY for rescue/liveness paths. Do not fork the
+      checkpoint, public R2 publisher, rescue scheduler, state or registry.
+      Gate A2 completion on the frozen seven criteria including real served
+      bundle and fault-injection evidence; do not promote from source/CI alone.
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"
@@ -256,7 +270,7 @@ waves:
     status: in_progress
     pr: [6840, 10176, 10180]
     next_action: >
-      B17 INPUTS RECOVERED / CI PROVEN / HISTORY INCOMPLETE / REVIEW OPEN.
+      B2-1 SOURCE_PASS ON EXACT HEAD; B-17 SCIENCE AND PRODUCTION STILL OPEN.
       Draft #10180 at 943906af5c04 contains the verifier and its 28 hosted-
       passing tests (ci-pack-5, 1.78 seconds), immutable source receipts and
       original-cutoff point replay. All 241 signal files and 240 price
@@ -287,11 +301,18 @@ waves:
       retry_allowed=false; no controller or verdict returned. The separate
       GitHub Copilot request returned no assigned reviewer/verdict; Cursor
       Bugbot replied unable to authenticate this repo (comment 6521998829).
-      No review pickup or authorization. Do not replay denied operations,
-      self-approve or merge; obtain legitimate reviewer access first.
-      Preserve #6840 audit closures, #7264 composition/HOLD and production proof
-      obligations. Current receipts and implementation gaps are in the October 25
-      frozen-input handoff; the October 24 census remains historical evidence.
+      Those denied review routes remain historical receipt facts, but
+      independent reviewer mastermindx-2 issued SOURCE_PASS with zero blocking
+      source findings on exact #10176 head 228c25d37617, GitHub comment
+      6522731353, 2026-10-30T12:21:52Z. This is a comment-level independent
+      source verdict, NOT submitted GitHub approval, integration, merge or
+      authenticated production acceptance. Do not redo unchanged B2-1 source.
+      NEXT B2 GATE: compose the reviewed exact B1 lookup in incumbent native
+      Lab Draft #7264 or qualified successor, preserving private auth-first
+      headers, stale-generation 409 and one snapshot, then qualify production
+      current/withdrawn/unknown proof. Keep B-17 original 7918 denominator
+      and missing inputs open, #6840 audit closures, and release HOLD.
+      Current receipts and exact proof gaps are in October 30 handoff.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -842,13 +863,19 @@ next_action: >
   2026-06-16, leaving only 143 on/after in the archived date range.
   The sampled archive has 57 snapshots / 32 source dates and zero complete
   34-session admission windows. Historical pre-archive input is unknown,
-  not zero return/coverage. TOP SCIENCE ACTION: locate full-population PIT
+  not zero return/coverage. TOP CURRENT WAVE: A2 adopt-first settlement
+  contract mapping and source gap delivery under the incumbent Availability
+  owner, with read-only Fabric operation
+  prophet-v4-a2-adoption-audit-20261030-01 already launched and pending a
+  substantive verified result. B17 PARALLEL SCIENCE ACTION: locate full-population PIT
   admission evidence and source/serving clocks for the original cutoff or
   escalate the scientifically unanswerable pre-history for an explicit scope
   ruling; never silently replace the frozen 7918 denominator.
   B2 correction Draft #10176 remains at 228c25d37617a7217c8f65f1613ade701a2fe01a.
-  Its exact-head 40147024285 CI passed, but no independent review or
-  real production correction proof exists. Prior Fabric runs -01 through -04
+  Its exact-head 40147024285 CI passed; independent non-author reviewer
+  mastermindx-2 posted SOURCE_PASS comment 6522731353 on exact same head.
+  This closes B2-1 source-review only, not formal GitHub approval, native
+  Lab #7264 composition, merge or real production correction proof. Prior Fabric runs -01 through -04
   retain terminal/refusal and no-retry fences. The separate non-Fabric Cursor
   review comment 6521997949 was answered by cursor[bot] comment 6521998829
   with an explicit repository authentication/configuration refusal; no
