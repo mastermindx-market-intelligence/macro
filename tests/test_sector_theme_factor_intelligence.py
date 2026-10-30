@@ -20,6 +20,7 @@ KNOWN = END - timedelta(days=2)
 def row(
     *, ret=0.10, close=120, ma20=115, ma50=110, ma200=100,
     previous_ma50=109, period_end=END, observed_at=None,
+    ma_basis="daily_sessions",
     available_at=None, horizon="5d",
 ):
     return {
@@ -33,6 +34,7 @@ def row(
         "ma50": ma50,
         "ma200": ma200,
         "previous_ma50": previous_ma50,
+        "ma_basis": ma_basis,
     }
 
 
@@ -279,3 +281,49 @@ def test_p1_23_mixed_return_and_technical_missingness_have_different_denominator
     assert f["measures"]["above_ma50_breadth"]["coverage"] == pytest.approx(.5)
     assert f["measures"]["positive_return_breadth"]["k_over_n"] == 1.0
     assert f["measures"]["above_ma50_breadth"]["k_over_n"] == 1.0
+
+def test_p1_24_moving_average_basis_mismatch_abstains_from_technicals():
+    f = frame(measurements={
+        "AAA": row(ret=.1, ma_basis="1m_bars"),
+        "BBB": row(ret=.02),
+    })
+    assert f["constituents"]["AAA"]["return_frac"]["status"] == "measured"
+    assert f["constituents"]["AAA"]["technical_basis_reason"] == \
+           "missing_or_mismatched_ma_basis"
+    assert f["constituents"]["AAA"]["trend"] is None
+    assert f["measures"]["uptrend_breadth"]["coverage"] == pytest.approx(.5)
+    assert f["clock"]["moving_average_basis"] == "daily_sessions"
+
+
+def test_p1_25_finite_but_overflowing_weight_sum_abstains():
+    f = frame(lagged_weights={"AAA": 1e308, "BBB": 1e308})
+    assert f["measures"]["lagged_weight_full_cohort_return"] == {
+        "status": "unmeasured", "reason": "weights_invalid",
+    }
+
+
+def test_p1_26_finite_individual_returns_overflow_group_sum_not_engine():
+    f = frame(measurements={"AAA": row(ret=1e308), "BBB": row(ret=1e308)})
+    assert f["universe"]["measured_return_n"] == 2
+    assert f["measures"]["equal_weight_full_cohort_return"] == {
+        "status": "unmeasured", "reason": "non_finite_group_aggregate",
+    }
+    assert f["measures"]["group_rs_market"]["status"] == "unmeasured"
+
+
+def test_p1_27_pit_membership_cannot_be_known_later_than_measurement_endpoint():
+    with pytest.raises(ValueError, match="PIT membership"):
+        frame(membership_known_at=END + timedelta(minutes=1))
+    f = frame(membership_mode="CURRENT_ROSTER",
+              membership_known_at=END + timedelta(minutes=1))
+    assert f["authority"]["eligible_for_customer_publication"] is False
+
+
+def test_p1_28_previous_pit_membership_cannot_be_later_known():
+    old = END - timedelta(days=7)
+    with pytest.raises(ValueError, match="invalid previous endpoint"):
+        frame(previous_member_ids=("AAA",),
+              previous_measurements={"AAA": row(period_end=old)},
+              previous_period_end=old,
+              previous_decision_at=old + timedelta(minutes=5),
+              previous_membership_known_at=old + timedelta(minutes=1))
