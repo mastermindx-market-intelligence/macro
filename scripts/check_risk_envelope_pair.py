@@ -49,10 +49,12 @@ def _read(path: Path) -> tuple[bytes, dict[str, Any]] | None:
 
 
 def _read_git_blob(root: Path, ref: str, relative: Path) -> tuple[bytes, dict[str, Any]] | None:
-    """Read exact committed bytes, never an uncommitted runner worktree copy."""
+    """Read Git index or committed bytes, never an uncommitted worktree copy."""
     try:
+        # The index is a mutable staged candidate, not a committed receipt.
+        spec = f":{relative.as_posix()}" if ref == "INDEX" else f"{ref}:{relative.as_posix()}"
         proc = subprocess.run(
-            ["git", "-C", str(root), "show", f"{ref}:{relative.as_posix()}"],
+            ["git", "-C", str(root), "show", spec],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             check=False, timeout=15,
         )
@@ -75,7 +77,7 @@ def check_pair(root: Path, *, git_ref: str | None = None) -> PairCheck:
     establish the source run's settled-versus-provisional admission or rights.
     """
     if git_ref is not None and not (
-        git_ref == "HEAD" or re.fullmatch(r"[0-9a-fA-F]{40}", git_ref)
+        git_ref in ("HEAD", "INDEX") or re.fullmatch(r"[0-9a-fA-F]{40}", git_ref)
     ):
         return PairCheck("INVALID", "unsupported_git_ref")
     read = (
@@ -141,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument(
         "--git-ref", default=None,
-        help="Read immutable committed-tree bytes at HEAD or a full 40-hex SHA; parity does not prove settlement",
+        help="Read Git staged INDEX, committed HEAD, or 40-hex SHA; parity never proves settlement",
     )
     args = parser.parse_args(argv)
     result = check_pair(args.root, git_ref=args.git_ref)
