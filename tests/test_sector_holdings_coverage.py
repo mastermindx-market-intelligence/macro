@@ -277,7 +277,6 @@ def test_emitter_is_additive_and_never_fatal(tmp_path):
     assert callable(shc.emit_holdings_coverage_additive)
 
 
-
 @pytest.mark.parametrize(
     ("weights", "emitted"),
     [
