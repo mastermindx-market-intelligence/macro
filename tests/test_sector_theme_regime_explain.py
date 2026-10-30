@@ -18,7 +18,7 @@ def cards(out, family="group_cards"):
 
 
 def test_p2c_01_empty_facet_readout_is_not_false_neutral():
-    p = fp()
+    p = fp(rows={"AAA": row(ret=.02), "BBB": row(ret=-.02)})
     out = explain_regime_preview(p)
     assert out["status"] == "RESEARCH_PREVIEW_ONLY"
     assert out["group_cards"] == [] and out["single_name_cards"] == []
@@ -47,7 +47,7 @@ def test_p2c_02_valid_paired_narrowing_is_quantitative_and_bilingual():
     assert "+5.00%" in c["en"]
     assert "-50.0 pp" in c["en"]
     assert "见顶" in c["zh"]
-    assert c["metrics"]["rs_parent_frac"] == .05
+    assert abs(c["metrics"]["rs_parent_frac"] - .05) < 1e-12
     assert c["metrics"]["uptrend_breadth_delta_frac"] == -.5
     assert c["forecast_probability"] is None and c["trade_recommendation"] is None
 
@@ -116,7 +116,7 @@ def test_p2c_07_cross_horizon_conflicts_not_averaged():
 
 
 def test_p2c_08_forged_group_tags_rechecked_against_numbers():
-    p = fp()
+    p = fp(rows={"AAA": row(ret=.02), "BBB": row(ret=-.02)})
     p["facets"].append({
         "id": "majority_nonpositive_participation_proven_by_bounds",
         "horizon": "5d",
