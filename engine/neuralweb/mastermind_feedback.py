@@ -218,7 +218,7 @@ def _int_or_none(v: object) -> int | None:
     """Safely coerce to int; return None if not a valid integer."""
     if isinstance(v, int) and not isinstance(v, bool):
         return v
-    if isinstance(v, float) and v == int(v):
+    if isinstance(v, float) and v.is_integer():
         return int(v)
     return None
 
