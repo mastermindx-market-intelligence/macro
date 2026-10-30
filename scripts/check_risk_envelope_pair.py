@@ -28,6 +28,9 @@ class PairCheck:
     data_sha256: str | None = None
     site_sha256: str | None = None
     market_asof: str | None = None
+    # A matching projection does not prove that its source capture was admitted
+    # as settled. The existing publisher/authority owner must prove that step.
+    settlement_proven: bool = False
 
     @property
     def ok(self) -> bool:
@@ -68,6 +71,8 @@ def check_pair(root: Path, *, git_ref: str | None = None) -> PairCheck:
 
     A missing, invalid, or mismatched pair never falls back to the older copy.
     Source clocks and non-atomic publish failure are separate diagnostic causes.
+    Even status OK verifies only byte parity and clock agreement; it CANNOT
+    establish the source run's settled-versus-provisional admission or rights.
     """
     if git_ref is not None and not (
         git_ref == "HEAD" or re.fullmatch(r"[0-9a-fA-F]{40}", git_ref)
@@ -124,7 +129,7 @@ def check_pair(root: Path, *, git_ref: str | None = None) -> PairCheck:
             market_asof=market_asof,
         )
     return PairCheck(
-        "OK", "settled_mirrors_match_current_market_session",
+        "OK", "mirror_bytes_and_market_session_match_settlement_unverified",
         source_session=session, bundle_id=bundle,
         data_sha256=d_hash, site_sha256=s_hash,
         market_asof=market_asof,
@@ -136,7 +141,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument(
         "--git-ref", default=None,
-        help="Read immutable committed-tree bytes at HEAD or a full 40-hex SHA; never read worktree overrides",
+        help="Read immutable committed-tree bytes at HEAD or a full 40-hex SHA; parity does not prove settlement",
     )
     args = parser.parse_args(argv)
     result = check_pair(args.root, git_ref=args.git_ref)
