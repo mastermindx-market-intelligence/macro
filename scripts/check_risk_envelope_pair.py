@@ -8,6 +8,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
+import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -43,14 +45,40 @@ def _read(path: Path) -> tuple[bytes, dict[str, Any]] | None:
         return None
 
 
-def check_pair(root: Path) -> PairCheck:
+def _read_git_blob(root: Path, ref: str, relative: Path) -> tuple[bytes, dict[str, Any]] | None:
+    """Read exact committed bytes, never an uncommitted runner worktree copy."""
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "show", f"{ref}:{relative.as_posix()}"],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            check=False, timeout=15,
+        )
+        if proc.returncode != 0:
+            return None
+        item = json.loads(proc.stdout)
+        if not isinstance(item, dict):
+            return None
+        return proc.stdout, item
+    except (OSError, ValueError, UnicodeError, subprocess.TimeoutExpired):
+        return None
+
+
+def check_pair(root: Path, *, git_ref: str | None = None) -> PairCheck:
     """Compare both settled copies and the source session with market state.
 
     A missing, invalid, or mismatched pair never falls back to the older copy.
     Source clocks and non-atomic publish failure are separate diagnostic causes.
     """
-    data = _read(root / DATA_REL)
-    site = _read(root / SITE_REL)
+    if git_ref is not None and not (
+        git_ref == "HEAD" or re.fullmatch(r"[0-9a-fA-F]{40}", git_ref)
+    ):
+        return PairCheck("INVALID", "unsupported_git_ref")
+    read = (
+        (lambda relative: _read(root / relative)) if git_ref is None
+        else (lambda relative: _read_git_blob(root, git_ref, relative))
+    )
+    data = read(DATA_REL)
+    site = read(SITE_REL)
     if data is None or site is None:
         return PairCheck("UNAVAILABLE", "risk_envelope_copy_missing_or_invalid")
     d_raw, d = data
@@ -74,7 +102,7 @@ def check_pair(root: Path) -> PairCheck:
             "INVALID", "settled_bundle_identity_missing",
             source_session=session, data_sha256=d_hash, site_sha256=s_hash,
         )
-    market = _read(root / MARKET_REL)
+    market = read(MARKET_REL)
     if market is None:
         return PairCheck(
             "UNAVAILABLE", "market_state_missing_or_invalid",
@@ -106,8 +134,12 @@ def check_pair(root: Path) -> PairCheck:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
+    parser.add_argument(
+        "--git-ref", default=None,
+        help="Read immutable committed-tree bytes at HEAD or a full 40-hex SHA; never read worktree overrides",
+    )
     args = parser.parse_args(argv)
-    result = check_pair(args.root)
+    result = check_pair(args.root, git_ref=args.git_ref)
     print(json.dumps(asdict(result), sort_keys=True, separators=(",", ":")))
     return 0 if result.ok else 1
 
