@@ -274,7 +274,146 @@ def preview_us_theme_packet(packet: object) -> dict:
         "expected_security_ids": list(sorted(identity_ids.values())),
         "frame": frame,
         "fingerprint": fp,
+        "group_flow_context": project_owner_group_flow_context(
+            fp, packet.get("group_flow_reading"), packet.get("group_flow_binding")
+        ),
         "eligible_for_customer_publication": False,
         "eligible_for_historical_prediction": False,
         "trading_or_alert_authority": False,
+    }
+
+
+# P2b: CONSUME incumbent group_flow.fingerprint_at, never reproduce its flow
+# score or stage decision, and never fold owner-reported values into a new rank.
+FLOW_SCHEMA = "sector_theme_group_flow_context/v1"
+FLOW_SOURCE = "engine.group_flow.fingerprint_at"
+FLOW_WINDOWS = ("rs_window_d", "breadth_ma_d", "corr_window_d",
+                "persist_window_d", "z_lookback_d")
+
+
+def _flow_held(reason: str) -> dict:
+    return {
+        "schema": FLOW_SCHEMA, "status": "HELD",
+        "reason": reason, "observations": {},
+        "eligible_for_customer_publication": False,
+        "ranking_or_trading_authority": False,
+    }
+
+
+def _flow_metric(raw: Mapping, key: str, low: float | None = None,
+                 high: float | None = None) -> dict:
+    n = _number(raw.get(key))
+    if n is None:
+        return {"status": "unmeasured", "reason": "missing_or_invalid_owner_field"}
+    if (low is not None and n < low) or (high is not None and n > high):
+        return {"status": "unmeasured", "reason": "owner_field_out_of_range"}
+    return {"status": "owner_reported_unqualified", "value": n,
+            "unit": "z_score" if key in ("accel_z", "broadening_z") else "fraction"}
+
+
+def project_owner_group_flow_context(
+    fingerprint: object, owner_reading: object, binding: object,
+) -> dict:
+    """Project a separately labeled group_flow read without pretending source admission.
+
+    Group_flow's stage and flow_score are NOT forecast probabilities, capital
+    rankings, transaction flow measurements or independently validated alpha.
+    This interface binds the owner observation to a specific already-composed
+    group, complete security population, decision clock and 20-session basis.
+    An actual source/rights/identity owner must still authenticate the binding.
+    """
+    if not isinstance(fingerprint, Mapping) or (
+        fingerprint.get("schema") != "sector_theme_regime_fingerprint/v1"
+    ):
+        return _flow_held("missing_current_factor_fingerprint")
+    if not isinstance(owner_reading, Mapping) or not isinstance(binding, Mapping):
+        return _flow_held("missing_owner_group_flow")
+    if fingerprint.get("authority", {}).get("eligible_for_customer_publication") is not False:
+        return _flow_held("fingerprint_claims_publication_rights")
+    if (fingerprint.get("authority", {}).get("predictive_promoted") is not False
+            or fingerprint.get("authority", {}).get("ranking_authority") is not False):
+        return _flow_held("fingerprint_claims_prediction_or_ranking")
+    group = fingerprint.get("group")
+    horizons = fingerprint.get("horizons")
+    if not isinstance(group, Mapping) or not isinstance(horizons, Mapping):
+        return _flow_held("missing_group_or_horizons")
+    if (binding.get("source_function") != FLOW_SOURCE
+            or not _name(binding.get("source_revision"))):
+        return _flow_held("unknown_group_flow_source_definition")
+    if binding.get("group_id") != group.get("group_id") or (
+        binding.get("cohort_id") != group.get("cohort_id")
+    ):
+        return _flow_held("owner_flow_group_or_cohort_mismatch")
+    ids = binding.get("member_ids")
+    group_ids = group.get("member_ids")
+    if (not isinstance(ids, list) or not isinstance(group_ids, list)
+            or any(not _name(x) for x in ids)
+            or sorted(ids) != sorted(group_ids)
+            or len(set(ids)) != len(ids)):
+        return _flow_held("owner_flow_population_mismatch")
+    if binding.get("horizon") != "20d" or "20d" not in horizons:
+        return _flow_held("group_flow_requires_20d_factor_frame")
+    v = horizons["20d"]
+    if not isinstance(v, Mapping) or v.get("moving_average_basis") != "daily_sessions":
+        return _flow_held("group_flow_requires_daily_session_ma_basis")
+    config = binding.get("windows")
+    if (not isinstance(config, Mapping)
+            or any(type(config.get(k)) is not int or config[k] < 2 for k in FLOW_WINDOWS)
+            or config["rs_window_d"] != 20):
+        return _flow_held("unqualified_group_flow_window_definition")
+    period_end, observed, available, decision = (
+        _timestamp(binding.get("period_end")),
+        _timestamp(binding.get("observed_at")),
+        _timestamp(binding.get("available_at")),
+        _timestamp(group.get("decision_at")),
+    )
+    if any(v is None for v in (period_end, observed, available, decision)):
+        return _flow_held("missing_group_flow_original_clock")
+    if period_end != _timestamp(v.get("period_end")):
+        return _flow_held("group_flow_wrong_period_end")
+    if not period_end <= observed <= available <= decision:
+        return _flow_held("future_or_out_of_order_group_flow_receipt")
+    source_origin = binding.get("origin")
+    if source_origin == "owner_reported":
+        rights = binding.get("use_verdict")
+        if (not isinstance(rights, Mapping) or rights.get("verdict") != "ALLOWED"
+                or rights.get("purpose") != PURPOSE
+                or not _name(rights.get("registry_revision"))
+                or not _name(rights.get("source_ref"))):
+            return _flow_held("group_flow_research_use_not_admitted")
+    elif source_origin != "synthetic_fixture" or binding.get("use_verdict") is not None:
+        return _flow_held("group_flow_source_origin_or_rights_invalid")
+    # Never use the incumbent score; it is weighted/renormalised under the
+    # historical owner and has not demonstrated a future return edge.
+    stage = owner_reading.get("stage")
+    if stage is not None and stage not in ("EMERGING", "CONFIRMED", "COOLING", "QUIET"):
+        return _flow_held("unknown_owner_flow_stage_vocabulary")
+    fields = {
+        "relative_wealth_second_difference_z": _flow_metric(owner_reading, "accel_z"),
+        "ma_breadth_broadening_z": _flow_metric(owner_reading, "broadening_z"),
+        "ma_breadth_observed_sample": _flow_metric(owner_reading, "breadth", 0, 1),
+        "member_return_cohesion": _flow_metric(owner_reading, "cohesion", -1, 1),
+        "member_return_cohesion_change": _flow_metric(owner_reading, "cohesion_chg", -2, 2),
+        "relative_strength_persistence": _flow_metric(owner_reading, "persistence", 0, 1),
+        "relative_strength_percentile": _flow_metric(owner_reading, "rs_pctile", 0, 1),
+    }
+    if not any(v["status"] == "owner_reported_unqualified" for v in fields.values()):
+        return _flow_held("all_owner_group_flow_fields_unmeasured")
+    return {
+        "schema": FLOW_SCHEMA,
+        "status": "OWNER_REPORTED_RESEARCH_ONLY",
+        "producer": FLOW_SOURCE,
+        "producer_revision_claim": binding["source_revision"],
+        "source_origin": source_origin,
+        "cohort_id": group["cohort_id"],
+        "horizon": "20d",
+        "period_end": period_end.isoformat(),
+        "available_at": available.isoformat(),
+        "owner_windows": {key: config[key] for key in FLOW_WINDOWS},
+        "owner_stage_descriptive_only": stage,
+        "observations": fields,
+        "breadth_denominator_status": "source_population_vintage_not_authenticated",
+        "original_observation_and_use_receipts_verified": False,
+        "eligible_for_customer_publication": False,
+        "ranking_or_trading_authority": False,
     }
