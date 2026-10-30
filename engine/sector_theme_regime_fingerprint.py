@@ -389,10 +389,75 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
         "eligible_for_customer_publication": False,
         "membership_mode": contract["membership_mode"],
     }
+    # Same constituent identities, not theme labels or descendant proxies.
+    # Each name retains its own per-horizon measurements. No vote is created
+    # by a security belonging to multiple theme cohorts elsewhere.
+    single_names = {}
+    for member in contract["member_ids"]:
+        readings = {}
+        member_facets = []
+        member_signs: set[int] = set()
+        for h in horizons:
+            raw = frames[h]["constituents"].get(member)
+            m = raw if isinstance(raw, Mapping) else {}
+            ret = _numeric(m.get("return_frac"))
+            rsm = _numeric(m.get("rs_market"))
+            rsp = _numeric(m.get("rs_parent"))
+            trend = m.get("trend") if m.get("trend") in ("up", "down", "mixed") else None
+            above50 = m.get("above_ma50")
+            above50 = above50 if type(above50) is bool else None
+            readings[h] = {
+                "return": ret, "rs_market": rsm, "rs_parent": rsp,
+                "trend": trend, "above_ma50": above50,
+                "ma_basis": m.get("ma_basis") if trend is not None else None,
+                "technical_basis_reason": m.get("technical_basis_reason"),
+                "unmeasured_reason": m.get("unmeasured_reason"),
+                "period_end": per[h]["period_end"],
+            }
+            rv, rsv = _value(ret), _value(rsp)
+            if rsv is not None and rsv != 0:
+                member_signs.add(_sign(rsv))
+            group_market_rs = _value(per[h]["rs_market"])
+            if rsv is not None and rsv > 0 and (
+                group_market_rs is not None and group_market_rs < 0
+            ):
+                member_facets.append({
+                    "id": "name_outperforming_parent_while_group_lags_market",
+                    "horizon": h,
+                    "evidence": ["single_name.rs_parent", "group.rs_market"],
+                })
+            if rv is not None and rv < 0 and rsv is not None and rsv > 0:
+                member_facets.append({
+                    "id": "name_relative_leadership_despite_absolute_decline",
+                    "horizon": h,
+                    "evidence": ["single_name.return", "single_name.rs_parent"],
+                })
+            ma_bounds = per[h]["participation"]["above_ma50_breadth"].get(
+                "identification_bounds")
+            if above50 is True and ma_bounds is not None and ma_bounds[1] < .5:
+                member_facets.append({
+                    "id": "name_above_ma50_while_group_majority_below",
+                    "horizon": h,
+                    "evidence": ["single_name.above_ma50",
+                                 "group.participation.above_ma50_breadth"],
+                })
+        if 1 in member_signs and -1 in member_signs:
+            member_facets.append({
+                "id": "name_parent_rs_sign_conflict_across_horizons",
+                "horizon": "multi",
+                "evidence": ["single_name.rs_parent"],
+            })
+        single_names[member] = {
+            "member_id": member,
+            "horizons": readings,
+            "facets": member_facets,
+            "rank_or_trading_authority": False,
+        }
     return {
         "schema": SCHEMA,
         "group": contract,
         "horizons": per,
+        "single_names": single_names,
         "axes": axes,
         "facets": facets,
         "authority": {
