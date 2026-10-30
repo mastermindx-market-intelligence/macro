@@ -35,10 +35,13 @@ def _bounds(raw: object) -> tuple[float, float] | None:
     b = raw.get("identification_bounds")
     if not isinstance(b, (list, tuple)) or len(b) != 2:
         return None
-    if any(type(n) not in (int, float) or not math.isfinite(n) for n in b):
+    try:
+        if any(type(n) not in (int, float) for n in b):
+            return None
+        lo, hi = (float(n) for n in b)
+    except (OverflowError, TypeError, ValueError):
         return None
-    lo, hi = b
-    return (lo, hi) if 0 <= lo <= hi <= 1 else None
+    return (lo, hi) if math.isfinite(lo) and math.isfinite(hi) and 0 <= lo <= hi <= 1 else None
 
 
 def _pct(value: float) -> str:
@@ -163,10 +166,22 @@ def _name_card(mid: str, tag: str, h: str, row: Mapping,
         b = _bounds((group_row.get("participation") or {}).get("above_ma50_breadth"))
         if row.get("above_ma50") is not True or b is None or not b[1] < .5:
             return None
+        basis = group_row.get("moving_average_basis")
+        basis_labels = {
+            "daily_sessions": ("daily-session bars", "日线"),
+            "1m_bars": ("one-minute bars", "1分钟K线"),
+            "5m_bars": ("five-minute bars", "5分钟K线"),
+            "15m_bars": ("15-minute bars", "15分钟K线"),
+            "60m_bars": ("60-minute bars", "60分钟K线"),
+            "rth_bars": ("regular-session bars", "常规交易时段K线"),
+        }
+        if basis not in basis_labels or row.get("ma_basis") != basis:
+            return None
+        basis_en, basis_zh = basis_labels[basis]
         return _card(mid, tag, h,
-            f"{mid}, {h}: above its 50-session moving average while at most {b[1]*100:.1f}% of eligible group members were above theirs. Others may be on, not below, the average.",
-            f"{mid}（{h}）：股价高于自身50期均线，但组内最多 {b[1]*100:.1f}% 的合资格成分股高于各自均线；其余股票可能恰好位于均线上。",
-            {"positive_ma50_upper_bound": b[1]},
+            f"{mid}, {h}: above its 50-period moving average ({basis_en}) while at most {b[1]*100:.1f}% of eligible group members were above theirs. Others may be on, not below, the average.",
+            f"{mid}（{h}）：股价高于自身50期均线（{basis_zh}），但组内最多 {b[1]*100:.1f}% 的合资格成分股高于各自均线；其余股票可能恰好位于均线上。",
+            {"positive_ma50_upper_bound": b[1], "ma_basis": basis},
             ["single_names.above_ma50", "group.participation.above_ma50_breadth"])
     return None
 
