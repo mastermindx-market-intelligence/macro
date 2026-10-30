@@ -1975,6 +1975,27 @@ def public_report(report: dict) -> dict:
         sid: {k: v for k, v in c.items() if k != "facts"} if isinstance(c, dict) else c
         for sid, c in (report.get("surfaces") or {}).items()
     }
+    # This file is public. A2 never ships private source/plan payloads or raw
+    # artifact hashes to an unauthenticated reader. New internal fields stay
+    # omitted unless explicitly listed here as safe health metadata.
+    raw_settlement = report.get("prophet_settlement")
+    if isinstance(raw_settlement, dict):
+        allowed_status = {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
+        observed_status = raw_settlement.get("status")
+        failures = raw_settlement.get("failures")
+        out["prophet_settlement"] = {
+            "schema": "prophet.settlement_manifest/v1",
+            "status": observed_status if observed_status in allowed_status else "UNAVAILABLE_DATA",
+            "owed_session": raw_settlement.get("owed_session")
+            if isinstance(raw_settlement.get("owed_session"), str) else None,
+            "source_asof": raw_settlement.get("source_asof")
+            if isinstance(raw_settlement.get("source_asof"), str) else None,
+            "failures": [
+                token for token in failures[:16]
+                if isinstance(token, str)
+                and re.fullmatch(r"[A-Z0-9_]{3,80}", token)
+            ] if isinstance(failures, list) else [],
+        }
     return out
 
 
@@ -2271,6 +2292,68 @@ def facts_line(check: dict) -> str | None:
 
 
 
+
+def project_prophet_settlement_from_reads(
+    now: datetime,
+    served_index: FetchResult | None,
+    public_health: FetchResult | None,
+) -> dict:
+    """A2: join the incumbent checkpoint receipt to the actual served read.
+
+    Only an observed served index, exact raw-content hash, valid source clocks
+    and publication evidence can qualify SETTLED. This is a read model; it
+    neither publishes a source nor changes the sentinel's own health verdict.
+    The public caller narrows its fields before releasing staleness.json.
+    """
+    from scripts.prophet_settlement_manifest import project_settlement_manifest
+
+    try:
+        owed = _calendar_mod(None).expected_last_session(now).isoformat()
+    except Exception:  # noqa: BLE001 -- unknown calendar must never imply SETTLED
+        owed = ""
+    health: dict | None = None
+    if (
+        public_health is not None
+        and public_health.error is None
+        and public_health.status == 200
+        and public_health.body
+    ):
+        try:
+            node = json.loads(public_health.body)
+            health = node if isinstance(node, dict) else None
+        except (ValueError, TypeError):
+            health = None
+
+    raw: bytes | None = None
+    computed_at: str | None = None
+    if (
+        served_index is not None
+        and served_index.error is None
+        and served_index.status == 200
+        and served_index.body is not None
+    ):
+        # read_served() already read the walled bytes once. Re-encode a valid
+        # UTF-8 read; invalid original bytes cannot match the publisher's hash.
+        raw = served_index.body.encode("utf-8")
+        try:
+            doc = json.loads(served_index.body)
+            value = doc.get("computed_at") if isinstance(doc, dict) else None
+            if isinstance(value, str):
+                computed_at = value
+        except (TypeError, ValueError):
+            pass
+
+    observed = now.astimezone(timezone.utc).isoformat() if now.tzinfo else ""
+    return project_settlement_manifest(
+        owed_session=owed,
+        accepted_health=health,
+        served_index_bytes=raw,
+        reader_observed_at=observed,
+        computed_at=computed_at,
+    )
+
+
+
 def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Path,
         dry_run: bool = False, fetcher=fetch, served_dir: Path | None = None,
         served_reader=read_served) -> int:
@@ -2316,6 +2399,16 @@ def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Pat
     # and a dry run reads it without ever writing it back.
     prior_state = load_state(state_dir)
     report = evaluate(results, now, client_reads=client_reads, state=prior_state)
+
+    # A2 read-only projection: the public R2 health key is metadata only.
+    # Never fetch the private /prophet/index.json over HTTP. The index body
+    # below came from the one real served-file read already used by evaluate().
+    health_receipt = fetcher(
+        r2_base.rstrip("/") + "/prophet/health.json", want_body=True
+    )
+    report["prophet_settlement"] = project_prophet_settlement_from_reads(
+        now, results.get("prophet_us"), health_receipt
+    )
 
     # PR-1 item 1c — prophet_live served-vs-R2 agreement. Injected post-evaluate()
     # because it needs live R2 credentials that evaluate() has no business
