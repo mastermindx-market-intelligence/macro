@@ -35294,6 +35294,13 @@ jobs:
       # subject by loading scripts/prophet_rescue.py through importlib from a path
       # literal, and it carries the four mutation-pinned dispatch-safety invariants
       # (§0.4 a-d) plus the no-stop-a-run AST pin; unrun, all of that is decoration.
+      # V4-A2 pure read-only settlement projection. The stdlib-only contract
+      # consumes existing publisher+served-reader receipts and cannot SETTLE
+      # on run time, gate-skip green, or an unverified public health receipt.
+      # Own it with this existing code gate; no second workflow or monitor.
+      - name: Prophet V4-A2 settlement projection — owned clocks, served hash, unavailable inputs
+        run: python -m pytest tests/test_prophet_settlement_manifest.py -q
+
       - name: prophet rescue lane — pure decide() matrix + the four dispatch-safety pins
         # test_prophet_r2_boundary.py rides this step (not a new entry — the
         # manifest's narrow-diff ceiling reds a 181st job): same publication-
