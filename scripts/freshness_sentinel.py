@@ -2403,9 +2403,12 @@ def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Pat
     # A2 read-only projection: the public R2 health key is metadata only.
     # Never fetch the private /prophet/index.json over HTTP. The index body
     # below came from the one real served-file read already used by evaluate().
-    health_receipt = fetcher(
-        r2_base.rstrip("/") + "/prophet/health.json", want_body=True
-    )
+    try:
+        health_receipt = fetcher(
+            r2_base.rstrip("/") + "/prophet/health.json", want_body=True
+        )
+    except Exception:  # noqa: BLE001 -- optional receipt failure cannot blind existing sentinel
+        health_receipt = FetchResult(error="public_health_receipt_unavailable")
     report["prophet_settlement"] = project_prophet_settlement_from_reads(
         now, results.get("prophet_us"), health_receipt
     )
