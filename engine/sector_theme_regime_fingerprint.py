@@ -332,11 +332,11 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
                                "horizon": h,
                                "evidence": ["participation.positive_return_breadth"]})
             elif hi < .5:
-                facets.append({"id": "majority_negative_participation_proven_by_bounds",
+                facets.append({"id": "majority_nonpositive_participation_proven_by_bounds",
                                "horizon": h,
                                "evidence": ["participation.positive_return_breadth"]})
                 if a is not None and a > 0:
-                    facets.append({"id": "positive_group_return_but_majority_negative",
+                    facets.append({"id": "positive_group_return_but_majority_nonpositive",
                                    "horizon": h,
                                    "evidence": ["absolute_trend.group_return",
                                    "participation.positive_return_breadth"]})
@@ -457,7 +457,7 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
                 "identification_bounds")
             if above50 is True and ma_bounds is not None and ma_bounds[1] < .5:
                 member_facets.append({
-                    "id": "name_above_ma50_while_group_majority_below",
+                    "id": "name_above_ma50_while_group_majority_not_above",
                     "horizon": h,
                     "evidence": ["single_name.above_ma50",
                                  "group.participation.above_ma50_breadth"],
