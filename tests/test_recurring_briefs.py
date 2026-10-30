@@ -1634,3 +1634,30 @@ def test_cli_dormant_reads_nothing_and_prints_no_user_text(monkeypatch, capsys):
     assert "no subscription read" in out
     assert private not in out
     assert "planned" not in out
+
+
+@pytest.mark.parametrize("tickers", [None, [], ["MSFT"]])
+@pytest.mark.parametrize("firing", [{"state": "FIRED"}, {"latched": True}, {"fired_on": "2026-10-30"}])
+def test_named_monitor_does_not_attribute_unmatched_window(tickers, firing):
+    window = {"scope": "cycle", "cycle": "unrelated", "tickers": tickers, **firing}
+    rows = rb.project_monitors(["AAPL"], [window])
+    assert rows[0]["state_en"] == "No change in the conditions we watch."
+
+
+@pytest.mark.parametrize("tickers", [["aapl"], ["MSFT", " AAPL "]])
+def test_named_monitor_keeps_matching_fired_window(tickers):
+    rows = rb.project_monitors(["aapl"], [{"scope": "ticker", "tickers": tickers, "fired_on": "2026-10-30"}])
+    assert rows[0]["state_en"] == "A market condition we watch has changed."
+
+
+def test_named_monitor_keeps_matching_window_after_unrelated_cycle():
+    rows = rb.project_monitors(["AAPL"], [
+        {"scope": "cycle", "tickers": [], "fired_on": "2026-10-30"},
+        {"scope": "ticker", "tickers": ["AAPL"], "fired_on": "2026-10-30"},
+    ])
+    assert rows[0]["state_en"] == "A market condition we watch has changed."
+
+
+def test_unnamed_monitor_existing_global_behavior_is_unchanged():
+    rows = rb.project_monitors([], [{"scope": "cycle", "tickers": [], "fired_on": "2026-10-30"}])
+    assert rows[0]["state_en"] == "A market condition we watch has changed."

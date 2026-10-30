@@ -613,7 +613,7 @@ def project_monitors(tickers: list[str] | set[str], windows: list[dict] | None) 
         if not isinstance(window, dict):
             continue
         w_tickers = _ticker_set(window.get("tickers"))
-        if wanted and w_tickers and not (wanted & w_tickers):
+        if wanted and not (wanted & w_tickers):
             continue
         state = str(window.get("state") or "").upper()
         if state == "FIRED" or window.get("latched") or window.get("fired_on"):
