@@ -386,7 +386,7 @@ def project_owner_group_flow_context(
     # Never use the incumbent score; it is weighted/renormalised under the
     # historical owner and has not demonstrated a future return edge.
     stage = owner_reading.get("stage")
-    if stage is not None and stage not in ("EMERGING", "CONFIRMED", "COOLING", "QUIET"):
+    if stage is not None and stage not in ("emerging", "confirmed", "cooling", "quiet"):
         return _flow_held("unknown_owner_flow_stage_vocabulary")
     fields = {
         "relative_wealth_second_difference_z": _flow_metric(owner_reading, "accel_z"),
