@@ -200,3 +200,60 @@ def test_legacy_numeric_only_visual_snapshot_still_renders(page):
     wire['visual']['provenance'].pop('text_cells_matched', None)
     assert mount(page, wire)
     assert page.locator('figure').count() == 1
+
+
+def candle_sample(**overrides):
+    return sample(
+        "candlestick",
+        columns=["Candle", "Open", "High", "Low", "Close"],
+        rows=[
+            ["1", 110, 114, 105, 106],
+            ["2", 106, 109, 101, 102],
+            ["Pivot", 102, 107, 101, 106],
+            ["Breakout", 106, 111, 104, 110],
+        ],
+        subtitle="Fictional 30-minute pivot", **overrides,
+    )
+
+
+def test_candle_pivot_entry_stop_and_breakout_are_real_svg_geometry(page):
+    assert mount(page, candle_sample())
+    assert page.locator('figure[data-template=candlestick]').count() == 1
+    assert page.locator('rect[data-candle-index]').count() == 4
+    assert page.locator('rect[data-pivot-index="2"]').count() == 1
+    assert page.locator('circle[data-breakout-index="3"]').count() == 1
+    assert page.locator('line[data-level="entry"]').count() == 1
+    assert page.locator('line[data-level="stop"]').count() == 1
+    assert 'Illustrative' in page.locator('.mmb-v-basis').inner_text()
+    assert '106' in page.locator('.mmb-v-candle-note').inner_text() or '107' in page.locator('.mmb-v-candle-note').inner_text()
+    page.locator('details summary').first.click()
+    assert 'Pivot' in page.locator('table').first.inner_text()
+    assert page.locator('table tbody tr').count() == 4
+    assert page.locator('svg[role="img"] desc').count() == 1
+    for viewport in [390, 820, 1440]:
+        page.set_viewport_size({"width": viewport, "height": 844})
+        page.wait_for_timeout(30)
+        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), viewport
+    page.evaluate('document.documentElement.setAttribute("data-theme","light");document.documentElement.setAttribute("data-lang","zh")')
+    assert '转折蜡烛' in page.locator('.mmb-v-candle-note').inner_text()
+
+
+def test_candle_without_two_opposite_prior_candles_has_no_false_breakout(page):
+    wire=candle_sample(rows=[
+        ["1", 100, 103, 99, 102],
+        ["2", 102, 105, 101, 104],
+        ["3", 104, 108, 103, 107],
+        ["4", 107, 110, 105, 108],
+    ])
+    assert mount(page,wire)
+    assert page.locator('rect[data-pivot-index]').count() == 0
+    assert page.locator('line[data-level]').count() == 0
+    assert page.locator('circle[data-breakout-index]').count() == 0
+    assert 'No two-candle reversal pivot' in page.locator('.mmb-v-candle-note').inner_text()
+
+
+def test_browser_validator_rejects_chart_history_ohlc_tampering(page):
+    wire=candle_sample()
+    wire["visual"]["rows"][0][2] = 90
+    assert not mount(page,wire)
+    assert page.locator('.mmb-v').count() == 0
