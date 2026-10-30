@@ -158,6 +158,7 @@ do_not_redo:
     absorbed it. Reconstructed rows remain unmarked and this authority does not extend
     to data-defect windows or a second replay."
 artifacts:
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-30.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md
   - research/prophet_v4/LAB0_B5_RECUT_OPERATOR_LAB_2026-08-18.md
@@ -216,26 +217,38 @@ waves:
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
     status: in_progress
     next_action: >
-      ADOPT-FIRST SOURCE AUDIT STARTED 2026-10-30, not production accepted.
-      A1 is done. Freeze remains masterplan sec 18 and V4-A2 sec 21.
-      #7180, #7187 and #7457 are merged: #7180 freezes byte-hashed
-      origination_sources and exact completed-session price basis; existing
-      scripts/prophet_board_acceptance.py enforces nightly session/intake
-      invariants; scripts/freshness_sentinel.py reads the served Prophet
-      index and detects wall-clock re-stamp; scripts/check_nightly_liveness.py
-      and scripts/prophet_rescue.py handle gate-skip and stale source.
-      These are independently accepted owners, NOT proof that the required
-      prophet.settlement_manifest/v1, joined six-clock settlement, accepted
-      bundle hash and consumer wiring are implemented. Read-only paid Fabric
-      audit prophet-v4-a2-adoption-audit-20261030-01 was commissioned to
-      inventory exact current-source functions/tests before modification;
-      its controller launched on ubuntu3, but no result/acceptance has yet
-      been received. Adjudicate that exact run, then implement only the
-      qualified missing manifest/consumer delta with the incumbent
-      WS:PROPHET-US-AVAILABILITY for rescue/liveness paths. Do not fork the
-      checkpoint, public R2 publisher, rescue scheduler, state or registry.
-      Gate A2 completion on the frozen seven criteria including real served
-      bundle and fault-injection evidence; do not promote from source/CI alone.
+      PRODUCER/READER SETTLEMENT PARTIAL, NOT PRODUCTION ACCEPTED (2026-10-30).
+      Adopt-first source audit and original GLM settlement builder are DONE;
+      existing #7180/#7187 sibling availability/publisher foundations are
+      already merged. The new single source/reader projection and scoped
+      mutation suites live on separate Macro Draft #10202, current head
+      93e1de8028301ac1917088df9a6f2f3954b25ffc; semantic source
+      head cf84b0b1 passed independent non-author Cursor/Grok SOURCE_PASS,
+      52 independent tests; current head differs only by 8 additive
+      legacy-jobs CI path registrations. Local 179 focused tests passed.
+      Hosted fences 41074236886 and contract-delta/ci-plan on run
+      41074236673 passed; at source checkpoint 6 of 12 CI packs passed,
+      6 were still in_progress and ci-gate pending. Consume the same
+      current-head CI and repair actual failures only, do not duplicate
+      runs or the independent semantic review. A new distinct read-only
+      Fabric artifact verifier prophet-v4-a2-settlement-builder-artifact-
+      verify-20261030-01 has been commissioned to establish builder patch
+      SHA/file-hash integration and actual hosted-test execution; consume
+      the same run, no replacement. A separate producer-clock Fabric
+      child prophet-v4-a2-genuine-compute-clock-build-20261030-01
+      remains active on ubuntu2; do not modify its source paths or
+      duplicate that worker. Real scripts/build_prophet.py emits no
+      genuine UTC computed_at, and public health observed source_asof
+      2026-10-23 despite a fresh 2026-10-30 publish: settlement must
+      continue PENDING, never synthesize from index asof/recorded_at.
+      Integrate an independently qualified compute clock, authoritative
+      candidate/board/theme bundle hashes, and incumbent rescue/liveness
+      consumers through existing WS:PROPHET-US-AVAILABILITY ownership;
+      prove real protected served-byte, owed-session and full-population
+      settlement with mutation/fault-injection evidence before wave
+      closure. Keep distinct A3 atomic publication and all Draft/HOLD
+      release gates. Current dated handoff holds exact worker root,
+      source refs and review/CI limits.
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"
