@@ -27,6 +27,7 @@ def _hold(reason: str) -> dict:
     return {
         "schema": SCHEMA, "status": "HELD", "reason": reason,
         "comparison_basis": None, "groups": [], "security_overlap": [],
+        "issuer_overlap": [],
         "comparison_authority": False, "ranking_authority": False,
         "customer_publication": False, "forecast_or_trading_authority": False,
     }
@@ -114,6 +115,7 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
     baseline: dict | None = None
     result_rows = []
     member_to_groups: dict[str, set[str]] = defaultdict(set)
+    issuer_to_groups: dict[str, set[str]] = defaultdict(set)
     for gid, p in sorted(previews.items()):
         if _name(gid) is None or not isinstance(p, Mapping) or (
             p.get("schema") != INPUT or p.get("status") != "RESEARCH_PREVIEW_ONLY"
@@ -175,8 +177,17 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
                 or len(members) != frame.get("universe", {}).get("expected_n")
                 or set(members) != set(frame.get("universe", {}).get("member_ids", []))):
             return _hold("invalid_or_mismatched_group_population")
+        issuer_map = p.get("issuer_by_security_id")
+        if (not isinstance(issuer_map, Mapping)
+                or set(issuer_map) != set(members)
+                or any(_name(v) is None for v in issuer_map.values())):
+            return _hold("missing_or_invalid_security_issuer_mapping")
+        if (type(p.get("unique_issuer_n")) is not int
+                or p["unique_issuer_n"] != len(set(issuer_map.values()))):
+            return _hold("invalid_unique_issuer_population")
         for member in members:
             member_to_groups[member].add(gid)
+            issuer_to_groups[issuer_map[member]].add(gid)
         measures = at.get("participation")
         if not isinstance(measures, Mapping) or not isinstance(at.get("absolute_trend"), Mapping):
             return _hold("missing_group_factor_measures")
@@ -211,6 +222,8 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
             "membership_revision": fp["group"].get("membership_revision"),
             "membership_basis": p["basis"],
             "population_n": n,
+            "unique_issuer_n": p["unique_issuer_n"],
+            "security_breadth_not_independent_issuer_breadth": True,
             "measured_return_n": frame.get("universe", {}).get("measured_return_n"),
             "equal_weight_full_cohort_return": ret,
             "rs_market": market_rs, "rs_parent": parent_rs,
@@ -224,12 +237,18 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         {"member_id": member, "group_ids": sorted(gs)}
         for member, gs in sorted(member_to_groups.items()) if len(gs) > 1
     ]
+    issuer_overlap = [
+        {"issuer_id": issuer, "group_ids": sorted(gs)}
+        for issuer, gs in sorted(issuer_to_groups.items()) if len(gs) > 1
+    ]
     return {
         "schema": SCHEMA, "status": "RESEARCH_PREVIEW_ONLY",
         "comparison_basis": dict(baseline or {}),
         "groups": result_rows, "security_overlap": overlap,
+        "issuer_overlap": issuer_overlap,
         "sort_basis": "canonical_group_id_not_performance_rank",
         "no_independent_votes_from_duplicate_securities": True,
+        "no_independent_votes_from_duplicate_issuers": True,
         "input_rights_and_original_receipts_authenticated": False,
         "comparison_authority": False, "ranking_authority": False,
         "customer_publication": False, "forecast_or_trading_authority": False,
