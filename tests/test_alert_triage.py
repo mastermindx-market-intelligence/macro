@@ -561,3 +561,44 @@ def test_enum_en_maps_nfci_and_transition():
     assert at.enum_zh("cycle", "late") == "晚期"
     assert at.enum_en("nfci", "brand_new") == "brand_new"
     assert at.enum_en("nfci", None) is None
+
+# Watchlist read truth: only synthetic files, never the committed event store.
+import json as _watchlist_json
+import pytest as _watchlist_pytest
+from engine import watchlist_alerts as _watchlist_reader
+
+
+@_watchlist_pytest.mark.parametrize('bad', ['{private-marker', 'null', '[]', 'true', '7', '"private-marker"'])
+@_watchlist_pytest.mark.parametrize('placement', ['only', 'before', 'after'])
+def test_watchlist_store_corruption_is_unavailable(tmp_path, monkeypatch, caplog, bad, placement):
+    valid = _watchlist_json.dumps({'type': 'buy_zone_enter', 'asset': 'SYNTH',
+                                  'ts': '2026-06-14', 'headline': 'Synthetic event'})
+    rows = {'only': [bad], 'before': [bad, valid], 'after': [valid, bad]}[placement]
+    path = tmp_path / 'watchlist.jsonl'
+    path.write_text('\n'.join(rows), encoding='utf-8')
+    monkeypatch.setattr(_watchlist_reader, '_path', lambda: path)
+    result = at._jsonl_raw('watchlist', TODAY, TODAY, at._WATCHLIST_TIER)
+    assert result['state'] == at.READ_UNAVAILABLE
+    assert result['events'] == []
+    assert 'private-marker' not in caplog.text
+    assert 'private-marker' not in (result['reason'] or '')
+    with _watchlist_pytest.raises(ValueError):
+        _watchlist_reader.load_events()
+
+
+@_watchlist_pytest.mark.parametrize('content,expected', [
+    (None, at.READ_NO_COVERAGE), ('', at.READ_OK_ZERO), (' \n\t\n', at.READ_OK_ZERO),
+    (_watchlist_json.dumps({'type':'buy_zone_enter','asset':'SYNTH','ts':'2026-06-14'}), at.READ_OK),
+    (_watchlist_json.dumps({'type':'buy_zone_enter','asset':'SYNTH','ts':'2026-06-01'}), at.READ_OK_ZERO),
+])
+def test_watchlist_store_valid_empty_missing_truth(tmp_path, monkeypatch, content, expected):
+    path = tmp_path / 'watchlist.jsonl'
+    if content is not None:
+        path.write_text(content, encoding='utf-8')
+    monkeypatch.setattr(_watchlist_reader, '_path', lambda: path)
+    result = at._jsonl_raw('watchlist', TODAY, TODAY, at._WATCHLIST_TIER)
+    assert result['state'] == expected
+    assert len(result['events']) == (1 if expected == at.READ_OK else 0)
+    if result['events']:
+        assert result['events'][0]['asset'] == 'SYNTH'
+        assert result['events'][0]['tier'] == 'context'
