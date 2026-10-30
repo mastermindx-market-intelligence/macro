@@ -1122,6 +1122,7 @@ def test_accepted_parent_cannot_admit_divergent_unpublished_tails(fixture):
         assert scope.source_logical_sha256 == sha256(prefix).hexdigest()
         assert scope.source_byte_count == len(prefix)
         assert prepared.continuity.eligible_for_cutover is False
+        assert prepared.continuity.source_generation_scope == "ACCEPTED_PREFIX_ONLY"
         with pytest.raises(SnapshotIntegrityError, match="accepted Git parent proves only a prefix"):
             prepared.require_complete_current_generation()
         assert claims.read_bytes() == prefix + tail
@@ -1185,3 +1186,12 @@ def test_loaded_reader_cannot_claim_complete_current_without_owner_source_cut(co
     assert called == []
     assert invocation.invoke_reader(prepared.candidate.candidate_oid, consume) == "read"
     assert called == [True]
+
+
+def test_native_operation_witness_is_not_a_legacy_authority_source_cut(native_fixture):
+    """Even valid immutable native operation provenance is not an external source boundary."""
+    prepared = prepare_native(native_fixture)
+    assert prepared.continuity.source_generation_scope == (
+        "NATIVE_OPERATION_BOUNDED_NOT_EXTERNAL_AUTHORITY"
+    )
+    assert prepared.continuity.eligible_for_cutover is False
