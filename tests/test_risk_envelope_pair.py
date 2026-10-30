@@ -114,7 +114,8 @@ def test_git_commit_identity_ignores_uncommitted_runner_override(tmp_path):
     assert check_pair(tmp_path).status == "DIVERGED"
     result = check_pair(tmp_path, git_ref="HEAD")
     assert result.status == "OK"
-    assert result.reason == "settled_mirrors_match_current_market_session"
+    assert result.reason == "mirror_bytes_and_market_session_match_settlement_unverified"
+    assert result.settlement_proven is False
     assert main(["--root", str(tmp_path), "--git-ref", "HEAD"]) == 0
 
 
@@ -145,3 +146,19 @@ def test_original_precommit_and_new_exact_commit_checks_remain_distinct():
     assert "python -m scripts.check_risk_envelope_pair --root ." in content
     assert "python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD" in content
     assert content.index("if push_do origin") < content.index("--git-ref HEAD") < content.index("push_won; exit 0")
+
+
+def test_provisional_close_cannot_obtain_settlement_from_equal_hashes(tmp_path):
+    _fixture(tmp_path)
+    # The closing-bell pointer can have the same market date while still
+    # being provisional; date and bytes alone cannot create settlement.
+    for p in (tmp_path / "data/risk_envelope/latest.json", tmp_path / "site/riskdata/risk_envelope.json"):
+        payload = json.loads(p.read_text(encoding="utf-8"))
+        payload["revision"] = "settled"
+        p.write_text(json.dumps(payload, sort_keys=True) + "\\n", encoding="utf-8")
+    m = tmp_path / "data/market_state/latest.json"
+    m.write_text(json.dumps({"asof": "2026-10-29", "provisional": True}), encoding="utf-8")
+    result = check_pair(tmp_path)
+    assert result.status == "OK"  # mirror identity only, not admissible source
+    assert result.settlement_proven is False
+    assert "settlement_unverified" in result.reason
