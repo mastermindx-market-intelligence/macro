@@ -26,7 +26,7 @@ GROUP_KINDS = frozenset(("sector", "industry", "theme"))
 def _hold(reason: str) -> dict:
     return {
         "schema": SCHEMA, "status": "HELD", "reason": reason,
-        "comparison_basis": None, "groups": [], "issuer_overlap": [],
+        "comparison_basis": None, "groups": [], "security_overlap": [],
         "comparison_authority": False, "ranking_authority": False,
         "customer_publication": False, "forecast_or_trading_authority": False,
     }
@@ -109,6 +109,8 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
     """
     if not isinstance(previews, Mapping) or not previews:
         return _hold("no_preview_inputs")
+    if any(_name(gid) is None for gid in previews):
+        return _hold("invalid_group_key")
     baseline: dict | None = None
     result_rows = []
     member_to_groups: dict[str, set[str]] = defaultdict(set)
@@ -225,9 +227,9 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
     return {
         "schema": SCHEMA, "status": "RESEARCH_PREVIEW_ONLY",
         "comparison_basis": dict(baseline or {}),
-        "groups": result_rows, "issuer_overlap": overlap,
+        "groups": result_rows, "security_overlap": overlap,
         "sort_basis": "canonical_group_id_not_performance_rank",
-        "no_independent_votes_from_duplicate_names": True,
+        "no_independent_votes_from_duplicate_securities": True,
         "input_rights_and_original_receipts_authenticated": False,
         "comparison_authority": False, "ranking_authority": False,
         "customer_publication": False, "forecast_or_trading_authority": False,
