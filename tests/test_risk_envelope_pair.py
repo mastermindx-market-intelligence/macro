@@ -146,6 +146,7 @@ def test_original_precommit_and_new_exact_commit_checks_remain_distinct():
     assert "python -m scripts.check_risk_envelope_pair --root ." in content
     assert "python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD" in content
     assert content.index("if push_do origin") < content.index("--git-ref HEAD") < content.index("push_won; exit 0")
+    assert content.index("--git-ref INDEX") < content.index("commit-broad-candidate") < content.index("if push_do origin")
 
 
 def test_provisional_close_cannot_obtain_settlement_from_equal_hashes(tmp_path):
@@ -162,3 +163,26 @@ def test_provisional_close_cannot_obtain_settlement_from_equal_hashes(tmp_path):
     assert result.status == "OK"  # mirror identity only, not admissible source
     assert result.settlement_proven is False
     assert "settlement_unverified" in result.reason
+
+
+def test_index_candidate_catches_staged_mismatch_even_if_worktree_is_healed(tmp_path):
+    _fixture(tmp_path)
+    _commit_fixture(tmp_path)
+    site = tmp_path / "site/riskdata/risk_envelope.json"
+    data = tmp_path / "data/risk_envelope/latest.json"
+    site.write_text('{"source_session":"2026-10-20"}', encoding="utf-8")
+    subprocess.run(("git", "-C", str(tmp_path), "add", "site/riskdata/risk_envelope.json"), check=True)
+    site.write_bytes(data.read_bytes())
+    assert check_pair(tmp_path).status == "OK"
+    assert check_pair(tmp_path, git_ref="INDEX").status == "DIVERGED"
+    assert main(["--root", str(tmp_path), "--git-ref", "INDEX"]) == 1
+    assert check_pair(tmp_path, git_ref="HEAD").status == "OK"
+
+
+def test_index_candidate_can_be_valid_without_promoting_settlement(tmp_path):
+    _fixture(tmp_path)
+    _commit_fixture(tmp_path)
+    result = check_pair(tmp_path, git_ref="INDEX")
+    assert result.status == "OK"
+    assert result.settlement_proven is False
+    assert result.reason == "mirror_bytes_and_market_session_match_settlement_unverified"
