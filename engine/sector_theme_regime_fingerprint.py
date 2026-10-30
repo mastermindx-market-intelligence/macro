@@ -336,21 +336,54 @@ def compose_regime_fingerprint(frames: Mapping[str, Mapping]) -> dict:
                   "interpretation": ("mixed" if 1 in signs.values() and -1 in signs.values()
                                      else "same_sign_or_neutral")}
                  if len(signs) >= 2 else _unmeasured("fewer_than_two_qualified_rs_horizons"))
-    axes = {axis: (
-        {"status": "not_yet_computed", "reason": DEFERRALS[axis]} if axis in DEFERRALS
-        else {"status": "measured_descriptive_view_only"}
-    ) for axis in AXES}
+    # Axis status is MEASURED only if that specific family has at least one
+    # admitted numeric observation, not because a schema node exists.
+    def any_number(func) -> bool:
+        return any(_value(func(per[h])) is not None for h in horizons)
+
+    axes = {axis: _unmeasured(DEFERRALS.get(axis, "no_qualified_measurement"))
+            for axis in AXES}
+    axes["absolute_trend"] = {
+        "status": "measured" if any_number(
+            lambda v: v["absolute_trend"]["group_return"]
+        ) or any(
+            per[h]["absolute_trend"]["uptrend_breadth"].get("status") == "measured"
+            for h in horizons
+        ) else "unmeasured",
+        "group_return_basis": "complete_equal_weight_constituent_returns",
+    }
+    axes["rs_market"] = {
+        "status": "measured" if any_number(lambda v: v["rs_market"]) else "unmeasured",
+    }
+    axes["rs_parent"] = {
+        "status": "measured" if any_number(lambda v: v["rs_parent"]) else "unmeasured",
+    }
+    axes["participation"] = {
+        "status": "measured" if any(
+            b.get("status") == "measured"
+            for h in horizons for b in per[h]["participation"].values()
+        ) else "unmeasured",
+        "bounds_kind": "identification_bounds_not_confidence_interval",
+    }
     axes["multiscale_coherence"] = coherence
     axes["breadth_velocity_acceleration"] = {
-        "status": "first_difference_only",
-        "reason": "three_endpoint_acceleration_not_available",
+        "status": "measured" if any_number(
+            lambda v: v["breadth_velocity_acceleration"]
+                       ["same_member_uptrend_first_difference"]
+        ) else "unmeasured",
+        "second_difference_acceleration":
+            _unmeasured("requires_three_qualified_endpoints"),
     }
     axes["concentration_dispersion"] = {
-        "status": "partial_measured_only",
-        "reason": "no_canonical_issuer_concentration_weights_or_dispersion_quantiles",
+        "status": "measured" if any_number(
+            lambda v: v["concentration_dispersion"]["full_cohort_median_return"]
+        ) or any_number(
+            lambda v: v["concentration_dispersion"]["weighted_minus_equal_return"]
+        ) else "unmeasured",
+        "issuer_hhi": _unmeasured("needs_qualified_lagged_issuer_weights"),
     }
     axes["evidence_quality"] = {
-        "status": "unqualified_source_projection",
+        "status": "measured",
         "source_rights_verified": False,
         "original_known_at_receipts_verified": False,
         "eligible_for_customer_publication": False,
