@@ -597,3 +597,19 @@ def test_p2b_15_missing_fingerprint_authority_is_a_hold_not_exception():
         base, flow_reading(), flow_binding())
     assert ctx["status"] == "HELD"
     assert ctx["reason"] == "missing_fingerprint_authority"
+
+
+@pytest.mark.parametrize("bad", [[], {"malformed": True}])
+@pytest.mark.parametrize("path,expected", [
+    (("membership_mode",), "missing_membership_basis"),
+    (("market", "origin"), "unknown_source_origin"),
+    (("market", "horizon"), "invalid_timeframe_or_price_basis"),
+    (("market", "ma_basis"), "invalid_timeframe_or_price_basis"),
+])
+def test_p2a_35_unhashable_owner_selectors_fail_closed(bad, path, expected):
+    p = fixture()
+    target = p
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = bad
+    held(p, expected)
