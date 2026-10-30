@@ -59,7 +59,7 @@ import os
 import sys
 import tempfile
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -728,6 +728,17 @@ def _write_json(path: Path, data: dict) -> None:
         json.dumps(data, allow_nan=False, default=str, indent=2),
         encoding="utf-8",
     )
+
+
+def _computed_at_now() -> str:
+    """Genuine UTC computation time sampled at the final index-write boundary.
+
+    This clock is not the archive run date (asof/recorded_at), source vintage
+    (source_asof), publication receipt or the protected-reader observation.
+    A rerun can refresh it without advancing the source session; liveness
+    and settlement must continue to use the source clock separately.
+    """
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _read_json(path: Path) -> dict | None:
@@ -3413,6 +3424,9 @@ def main() -> None:
         log.warning("build_prophet: board read join failed (%s: %s)", type(e).__name__, e)
         print(f"::warning title=prophet board read::join failed ({type(e).__name__}) —"
               " index.json ships without the board-read block", flush=True)
+    # V4-A2: stamp the final accepted producer index bytes, once per run.
+    # Never substitute asof/recorded_at or imply publication/reader settlement.
+    index["computed_at"] = _computed_at_now()
     _write_json(INDEX_PATH, index)
     log.info("build_prophet: wrote index.json (%d active plans)", len(active_entries))
 
