@@ -313,3 +313,62 @@ def test_p1a_23_forged_expected_n_denominator_is_rejected():
     f["universe"]["expected_n"] = 300
     with pytest.raises(ValueError, match="denominator"):
         compose_regime_fingerprint({"5d": f})
+
+
+def test_p1a_24_positive_name_vs_parent_with_weak_group_rs():
+    p = fp(
+        rows={"AAA": row(ret=.05), "BBB": row(ret=-.20)},
+        benchmark_return=0.0, parent_return=.02,
+    )
+    a = p["single_names"]["AAA"]
+    assert a["horizons"]["5d"]["rs_parent"]["status"] == "measured"
+    assert "name_outperforming_parent_while_group_lags_market" in {
+        t["id"] for t in a["facets"]
+    }
+    assert a["rank_or_trading_authority"] is False
+
+
+def test_p1a_25_name_above_ma50_bucking_broad_weak_group():
+    p = fp(
+        members=("AAA", "BBB", "CCC"),
+        rows={
+            "AAA": row(ret=.05),
+            "BBB": row(ret=-.02, close=85, ma20=90, ma50=95,
+                       ma200=100, prev_ma50=96),
+            "CCC": row(ret=-.03, close=85, ma20=90, ma50=95,
+                       ma200=100, prev_ma50=96),
+        },
+    )
+    a = p["single_names"]["AAA"]
+    assert a["horizons"]["5d"]["above_ma50"] is True
+    assert "name_above_ma50_while_group_majority_below" in {
+        t["id"] for t in a["facets"]
+    }
+
+
+def test_p1a_26_single_name_can_disagree_across_horizons():
+    f5 = fact(rows={"AAA": row(ret=.05), "BBB": row(ret=.02)})
+    f20 = fact(horizon="20d", rows={
+        "AAA": row(ret=-.10, horizon="20d"),
+        "BBB": row(ret=.05, horizon="20d"),
+    })
+    p = compose_regime_fingerprint({"5d": f5, "20d": f20})
+    assert "name_parent_rs_sign_conflict_across_horizons" in {
+        t["id"] for t in p["single_names"]["AAA"]["facets"]
+    }
+    assert p["single_names"]["AAA"]["horizons"]["20d"]["return"]["value"] == -.1
+
+
+def test_p1a_27_missing_constituent_stays_named_but_unmeasured():
+    p = fp(members=("AAA", "BBB", "CCC"), rows={"AAA": row(ret=.05)})
+    for name in ("BBB", "CCC"):
+        assert p["single_names"][name]["horizons"]["5d"]["rs_parent"][
+            "status"] == "unmeasured"
+        assert p["single_names"][name]["facets"] == []
+
+
+def test_p1a_28_per_name_source_time_and_ma_basis_are_retained():
+    p = fp()
+    assert p["single_names"]["AAA"]["horizons"]["5d"]["period_end"] == END.isoformat()
+    assert p["single_names"]["AAA"]["horizons"]["5d"]["ma_basis"] == "daily_sessions"
+    assert p["single_names"]["AAA"]["horizons"]["5d"]["above_ma200"] is True
