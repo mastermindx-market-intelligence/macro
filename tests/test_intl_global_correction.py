@@ -138,6 +138,27 @@ def test_corrected_receipt_shape_and_keys():
     }
 
 
+def test_corrected_source_publication_clock_comes_from_the_corrected_record():
+    # Kills RM4: original and corrected carry DIFFERENT source_publication
+    # clocks, so a receipt that read the original's clock (or echoed the
+    # original ingestion clock) cannot pass. The corrected record's own
+    # publication clock is the only correct value.
+    original = _observation()  # source_publication 2026-10-09T15:00:00+00:00
+    corrected = _observation(
+        source="b" * 64,
+        clocks=_clocks(ingestion_at="2026-10-10T16:00:00+00:00",
+                       source_publication_at="2026-10-10T15:00:00+00:00",
+                       computation_at="2026-10-10T20:30:00+00:00"))
+    receipt = correction_receipt(original, corrected)
+    assert receipt["state"] == "corrected"
+    assert receipt["clocks"]["original_ingestion"]["at"] == \
+        "2026-10-09T15:00:00+00:00"
+    assert receipt["clocks"]["corrected_source_publication"] == {
+        "at": "2026-10-10T15:00:00+00:00", "precision": "upper_bound"}
+    assert (receipt["clocks"]["corrected_source_publication"]
+            != receipt["clocks"]["original_ingestion"])
+
+
 def test_slot_excludes_source_content_sha256():
     # Same identity apart from the source digest: one slot, so the receipt
     # corrects rather than abstaining not_same_slot.
@@ -369,6 +390,48 @@ def test_display_falls_back_when_no_numeric_path_differs():
     assert receipt["display"]["zh"] == "已更正 10月9日 15:00 UTC · JP 1m"
 
 
+def test_display_normalises_a_whitespace_padded_source_publication_clock():
+    # The observation clock parser strips before parsing, so a padded
+    # publication clock passes the abstain gate and reaches _display; the
+    # display must normalise it the same way and render the full corrected
+    # line, never degrade to a clockless string outside the vocabulary.
+    original = _observation()
+    corrected = _observation(
+        source="b" * 64, values=CORRECTED_VALUES,
+        clocks=_clocks(ingestion_at="2026-10-09T16:00:00+00:00",
+                       source_publication_at=" 2026-10-09T15:00:00+00:00 "))
+    assert corrected["state"] == "qualified"  # the padded clock is admitted
+    receipt = correction_receipt(original, corrected)
+    assert receipt["state"] == "corrected"
+    assert receipt["display"]["en"] == (
+        "Corrected 9 Oct 15:00 UTC · JP 1m return -5.50% → -4.60%")
+    assert receipt["display"]["zh"] == (
+        "已更正 10月9日 15:00 UTC · JP 1m 收益 -5.50% → -4.60%")
+
+
+def test_display_clockless_defensive_branches_stay_in_the_vocabulary():
+    # The two shown-is-None branches are defensive (an unparseable clock
+    # abstains before display is reached); when they do run they must render
+    # the contract's corrected words in the vocabulary shape minus the clock
+    # segment — no dangling "·", no missing universe/horizon leg.
+    import engine.intl_global_correction as correction_module
+    original = _observation()
+    corrected = _observation(
+        source="b" * 64, values=CORRECTED_VALUES,
+        clocks=_clocks(ingestion_at="2026-10-09T16:00:00+00:00"))
+    no_clock = copy.deepcopy(corrected)
+    del no_clock["clocks"]["source_publication"]
+    assert correction_module._display(original, no_clock) == {
+        "en": "Corrected JP 1m return -5.50% → -4.60%",
+        "zh": "已更正 JP 1m 收益 -5.50% → -4.60%"}
+    same_values = _observation(
+        source="b" * 64, clocks=_clocks(ingestion_at="2026-10-09T16:00:00+00:00"))
+    no_clock_same = copy.deepcopy(same_values)
+    del no_clock_same["clocks"]["source_publication"]
+    assert correction_module._display(original, no_clock_same) == {
+        "en": "Corrected JP 1m", "zh": "已更正 JP 1m"}
+
+
 # ---------------------------------------------------------------------------
 # correction_chain
 # ---------------------------------------------------------------------------
@@ -497,6 +560,25 @@ def test_invalidated_shortest_path_wins_with_ascending_ties():
         receipt["original_id"], "disl:sha256:aaa", "watch:target"]
 
 
+def test_invalidated_equal_distance_tie_walks_the_ascending_predecessor():
+    # Kills RM6 (max for min): dep:alpha and dep:beta sit at EQUAL distance 1
+    # from the superseded observation, and dep:target consumes both, so its
+    # predecessor set at distance 1 is a genuine tie. The recorded chain must
+    # walk through dep:alpha (ascending id), never dep:beta.
+    receipt, _derived = _result_invalidated_inputs()
+    original_id = receipt["original_id"]
+    alpha = {"dependency_id": "dep:alpha", "consumes": [original_id]}
+    beta = {"dependency_id": "dep:beta", "consumes": [original_id]}
+    target = {"dependency_id": "dep:target",
+              "consumes": ["dep:beta", "dep:alpha"]}
+    result = invalidated(receipt, [beta, alpha, target])
+    assert result["invalidated"] == ["dep:alpha", "dep:beta", "dep:target"]
+    assert result["paths"]["dep:alpha"] == [original_id, "dep:alpha"]
+    assert result["paths"]["dep:beta"] == [original_id, "dep:beta"]
+    assert result["paths"]["dep:target"] == [
+        original_id, "dep:alpha", "dep:target"]
+
+
 def test_invalidated_withholds_when_receipt_not_corrected():
     abstained = correction_receipt(_observation(), _observation(
         source="b" * 64, window_end="2026-10-08T00:00:00"))
@@ -607,3 +689,40 @@ def test_correction_id_is_deterministic():
     third = _observation(source="c" * 64,
                          clocks=_clocks(ingestion_at="2026-10-09T17:00:00+00:00"))
     assert correction_receipt(original, third)["correction_id"] != first["correction_id"]
+
+
+def test_correction_id_digest_input_is_the_revision_number_not_the_dict():
+    # Kills RM3: the id hashes {contract_version, slot, original_id,
+    # corrected_id, revision NUMBER}. Hashing the revision dict instead must
+    # change the id, and the abstain side must hash null whatever
+    # prior_revision was supplied (a leaked prior would fork the id).
+    def expected_id(receipt):
+        payload = {"contract_version": CONTRACT_VERSION,
+                   "slot": receipt["slot"],
+                   "original_id": receipt["original_id"],
+                   "corrected_id": receipt["corrected_id"],
+                   "revision": (receipt["revision"]["revision"]
+                                if receipt["revision"] is not None else None)}
+        return "corr:sha256:" + hashlib.sha256(json.dumps(
+            payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+
+    original, corrected = _pair()
+    first = correction_receipt(original, corrected)         # revision dict 1
+    fifth = correction_receipt(original, corrected, prior_revision=4)  # dict 5
+    assert first["revision"] == {"revision": 1,
+                                 "supersedes": original["observation_id"]}
+    assert fifth["revision"]["revision"] == 5
+    assert first["correction_id"] == expected_id(first)
+    assert fifth["correction_id"] == expected_id(fifth)
+    # Vice versa: numbers differ, everything else equal, ids differ.
+    assert fifth["correction_id"] != first["correction_id"]
+    # Abstaining pair: revision is None in the digest input whatever the
+    # supplied prior_revision — one pair, one id.
+    abstain_corrected = _observation(source="b" * 64,
+                                     window_end="2026-10-08T00:00:00")
+    a0 = correction_receipt(original, abstain_corrected, prior_revision=0)
+    a6 = correction_receipt(original, abstain_corrected, prior_revision=6)
+    assert a0["state"] == "abstain" and a0["revision"] is None
+    assert a0["correction_id"] == expected_id(a0)
+    assert a6["correction_id"] == a0["correction_id"]

@@ -556,6 +556,37 @@ def test_future_evidence_is_ignored():
     assert row["last_check"]["evidence_considered"] == 0
 
 
+def test_dislocation_with_present_but_unparseable_ingestion_never_becomes_visible():
+    # A dislocation record whose ingestion clock is CARRIED but unreadable
+    # cannot establish when it became visible: the watch must evaluate to the
+    # contract's pending/withheld states, never silently fall back to the
+    # computation clock and drive (or resolve) the lifecycle.
+    watch = _watch()
+    at = "2026-10-31T12:00:00Z"
+    carried = _disl(evidence_id="disl:sha256:unreadable",
+                    window=("2026-09-08T00:00:00", "2026-10-07T00:00:00"),
+                    computation_at="2026-10-09T20:30:00Z",
+                    ingestion_at="not-a-timestamp")
+    assert "ingestion" in carried["clocks"]  # present, not absent
+    row = _eval(watch, [carried], at)
+    assert row["state"] == "pending"
+    assert row["transition"] == "pending"
+    assert row["reasons"] == ["awaiting_first_evidence"]
+    assert row["evidence_ref"] is None
+    assert row["consumes"] == []
+    assert row["last_check"] == {"at": at, "evidence_offered": 1,
+                                 "evidence_considered": 0}
+    # With an active trigger the same unreadable record pauses the watch —
+    # it never re-triggers, resolves or upgrades on unreadable visibility.
+    previous = _triggered_previous(watch)
+    row = _eval(watch, [carried], at, previous=previous)
+    assert row["state"] == "withheld"
+    assert row["transition"] == "paused"
+    assert row["reasons"] == ["evidence_missing"]
+    assert row["active_trigger"] is True
+    assert row["consecutive_triggered"] == 1
+
+
 # ---------------------------------------------------------------------------
 # 4 expiry
 # ---------------------------------------------------------------------------

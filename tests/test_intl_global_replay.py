@@ -270,6 +270,38 @@ def test_slot_key_ignores_only_the_source_hash():
     assert slot_key(v1) != slot_key(_observation("KR", 0, tag="v1"))
 
 
+def test_record_missing_one_identity_field_is_excluded_never_collides():
+    # The slot_key identity-field guard: a record missing one identity field
+    # mints its own slot (or is rejected), never silently joins the complete
+    # record's slot; a step asked for the complete slot over an archive that
+    # holds only the incomplete record withholds subject_not_visible per the
+    # contract instead of standing the broken record in for the subject.
+    complete = _subject_v1()
+    broken = deepcopy(complete)
+    del broken["identity"]["horizon"]
+    broken["observation_id"] = observation_id(broken["identity"])
+    assert slot_key(broken) != slot_key(complete)  # no silent collision
+    # The guard still rejects identities outside the frozen vocabulary.
+    alien = deepcopy(complete)
+    alien["identity"]["mood"] = "grim"
+    alien["observation_id"] = observation_id(alien["identity"])
+    with pytest.raises(AssertionError):
+        slot_key(alien)
+    # Two visible records, two slots: the incomplete record never merges
+    # into (or supersedes within) the complete record's slot.
+    known = as_known_at([broken, complete], NOW)
+    assert [record["observation_id"] for record in known["visible"]] == sorted(
+        [broken["observation_id"], complete["observation_id"]])
+    assert known["superseded"] == []
+    # A step for the complete slot over the broken record alone withholds.
+    step = replay_step([broken], step_at=NOW,
+                       subject_slot=slot_key(complete),
+                       kind="own_history_return")
+    assert step["state"] == "withheld"
+    assert step["withheld_reasons"] == ["subject_not_visible"]
+    assert step["receipt"] is None
+
+
 def test_archive_diagnostics_is_a_whole_archive_view():
     late_precision = _observation("JP", 30, ingested="2026-10-08T06:00:00+00:00",
                                   ingestion_precision="quarterly")
