@@ -67,6 +67,7 @@ EW_P3_PROSPECTIVE_START: UNRECORDED
 - **Not this.**
   - C-RS is not LR1 H1–H3 (LR1 :74–76), and it does not use the reserved name `..._PREREG_V3.md`.
   - C-MKT does not reopen the PB11 SPY verdict.
+  - C-RS does not subtract leg losses (D3). Both legs are reported side by side (§7.3).
   - T14 stays unregistered, is superseded for this label (SD-05a), and its file is untouched.
   - No categorical watch state is scored.
   - The October 2026 narrative sets no constant (X2).
@@ -226,6 +227,7 @@ The first admissible origin is therefore CAL index 62 from 2012-01-03, which is 
 
 **B1 segment rule (I-5).** The P-04 count (contract §3.2.1) found 18 epoch rows across 4 Radar fingerprints.
 - **Matched segment.** It is the Radar `(epoch, model_fingerprint)` pair matched by the **first** issued C-MKT row of the current C-MKT epoch. It is recorded in that row's receipt.
+- **First row unmatched.** If that first issued row has no in-cutoff Radar match, the segment is the pair matched by the first later issued row that has one, and every earlier row has no B1. If no issued row of the epoch has one, C-MKT has no B1 in that epoch. The choice depends only on issue order and Radar metadata, never on an outcome.
 - **Other segments.** A C-MKT row whose same-`asof` Radar row carries a different `(epoch, model_fingerprint)` has **no B1**.
 - **Missing or late.** A row with a missing or late Radar row also has no B1.
 - **Consequence.** A row without B1 leaves **every** C-MKT arm's scored set, following contract §5 item 2. It is never scored with a substituted B1, because substituting B0 for a missing *comparator* would inflate the candidate's apparent skill. It counts as lost coverage, and coverage below 80% gives `SOURCE_LIMITED`.
@@ -250,7 +252,7 @@ The first admissible origin is therefore CAL index 62 from 2012-01-03, which is 
   - Brier deltas against B0 and B2;
   - reliability bins (deciles of issued probability);
   - abstention rate and coverage;
-  - h = 5 and h = 10;
+  - h = 5 and h = 10: the paired Brier deltas against M0, B0, B1 and B2, never a verdict;
   - the `already_down` stratum (SD-16a): `dd63_SPY(t) ≥ 0.05`;
   - `lead_measurement` and `lead_issued` for events.
 - **Never reported.** Watch metrics.
@@ -271,19 +273,23 @@ The first admissible origin is therefore CAL index 62 from 2012-01-03, which is 
 - **Labels.** An immature label is absent. A missing leg at `t` or at any `s` means ABSTAIN.
 - **Horizons.** h ∈ {5, 10, 21}, with h = 21 primary.
 
-**7.2 Both legs (descriptive; R&V :33).** Each event reports `A_SMH`, `A_SPY` and both legs' returns from `t` to onset. Each event is classified as one of three:
+**7.2 Clock chain.**
+- X4 applies.
+- C-RS has no externally issued arm, so no further cutoff applies.
+
+**7.3 Both legs (descriptive; R&V :33).** Each event reports `A_SMH`, `A_SPY` and both legs' returns from `t` to onset. Each event is classified as one of three:
 - BOTH_DOWN (both returns ≤ 0);
 - SECTOR_DOWN_MARKET_UP (SMH ≤ 0 < SPY);
 - BOTH_UP (both > 0).
 
 At onset the ratio has fallen by at least δ, so the fourth sign case cannot occur. No event is labelled "inflow".
 
-**7.3 Models.**
+**7.4 Models.**
 - `M_RS_h` (the candidate): L2 logistic of `E_RS(·,h)` on the B1_RS covariates (`dd63_SPY`, `log rv20_SPY`) plus `L_t`.
 - It is fit under §5.3 on the §9 rows.
 - It lives in its own family on the Grey Deer EW carrier (SD-10a).
 
-**7.4 Baselines on identical rows.** Every arm predicts `E_RS(t,h)`.
+**7.5 Baselines on identical rows.** Every arm predicts `E_RS(t,h)`.
 
 | Arm | Definition | Role at h = 21 |
 |---|---|---|
@@ -294,15 +300,15 @@ At onset the ratio has fallen by at least δ, so the fourth sign case cannot occ
 - **Identical rows.** As in §6.4. An arm abstaining because of its own inputs gets B0_RS (SD-23a).
 - **No external arm.** C-RS has no externally issued arm, so it has no segment rule.
 
-**7.5 Dependence and power.**
+**7.6 Dependence and power.**
 - X7 applies, plus ≥5 ratio-event clusters and ≥12 adverse outcomes.
 - C-RS shares the SPY leg with C-MKT and is not an independent confirmation of it. It also shares the SMH leg with the unregistered C-SEC (contract §7 item 5).
 
-**7.6 Missingness and rights.**
+**7.7 Missingness and rights.**
 - P-01 applies to both legs from the same vintage.
 - §5.1 and X6 apply.
 
-**7.7 Scorecard.**
+**7.8 Scorecard.**
 - **Primary (h = 21, §8).** The IU test passes iff both of these hold at the look's Holm-adjusted level:
   - the upper bound against **B1_RS** is below 0;
   - the upper bound against **B2_RS** is below 0.
@@ -312,12 +318,12 @@ At onset the ratio has fallen by at least δ, so the fourth sign case cannot occ
   - the delta against B0_RS;
   - the both-legs table and the BOTH_DOWN share;
   - the δ band;
-  - h = 5 and h = 10;
+  - h = 5 and h = 10: the paired Brier deltas against B0_RS, B1_RS and B2_RS, never a verdict;
   - log-loss deltas;
   - reliability bins;
   - coverage.
 
-**7.8 Disconfirming outcomes.** At a mature, powered look, each of the following gives **NOT_SUPPORTED**:
+**7.9 Disconfirming outcomes.** At a mature, powered look, each of the following gives **NOT_SUPPORTED**:
 - the upper bound against B2_RS is ≥ 0;
 - the upper bound against B1_RS is ≥ 0;
 - the calibration CI excludes 0.
@@ -345,6 +351,7 @@ A negative mean Δ favours the candidate.
 - **Alpha per look.** The base level is one-sided α = 0.05, which is the "90% upper bound", i.e. `q0.95`, the incumbent RRS convention. Look `k` uses `α_k = 0.05 / 3` (I-4).
 
 **8.4 IU, Holm and calibration (I-4).**
+- **Base level before adjustment.** The contract's "90% upper bound" (`q0.95`; contract §5 and §7, SD-13a) is the base level. The look split (§8.3) and Holm (m = 2) then tighten it, so the bound actually used is stricter than the contract's literal 90% bound. That composition is I-4, which the seat's merge ratifies.
 - **Per-comparator p-value.** `p_j = #{bootstrap mean Δ_j ≥ 0} / 2000`.
 - **IU p-value.** The family's IU p-value is `max_j p_j` over its required comparators. IU needs no adjustment within a family (PB1 :367).
 - **Holm, m = 2.** At look `k`, the two families' IU p-values are ordered. The smaller is tested at `α_k / 2` and the larger, if the first passes, at `α_k`. Equivalently, the upper bound used is the `1 − α_k/2` or `1 − α_k` bootstrap quantile.
@@ -366,7 +373,7 @@ A negative mean Δ favours the candidate.
 ## 9. Fit discipline — SD-20a with seat AMEND A1
 
 **9.1 Development fit.**
-- **Rows.** Fit on admissible rows whose label window ends on or before **2022-12-30**, starting from the 2012-04-02 first origin. This is a purge: no development-fit label overlaps a P1-DEV label (I-2).
+- **Rows.** Calibration window 2012-01-03 → 2022-12-30 (AMEND A1); first admissible origin 2012-04-02 (§5.4, I-1). Fit on admissible rows whose label window ends on or before **2022-12-30**. This is a purge: no development-fit label overlaps a P1-DEV label (I-2).
 - **Output.** One coefficient file for all six fitted arms × three horizons, plus the B0 rates, at `research/grey_deer/ew_completion_20261031/fit/EW_COEF_DEV_v1.json`.
 
 **9.2 P1-DEV, run once.**
@@ -381,7 +388,7 @@ A negative mean Δ favours the candidate.
 - **After a DEVELOPMENT_FAIL.** The fail is recorded in the claim-evidence ledger. The seat decides by recorded decision whether prospective accrual continues. There is **no automatic stop** and **no refit on October data**.
 
 **9.3 Prospective fit, once.**
-- **Rows.** The full admissible calibration window, 2012-04-02 first origin → the last origin whose label ends on or before 2026-09-29 (SD-02a/SD-03a).
+- **Rows.** The full calibration window 2012-01-03 → 2026-09-29 (SD-02a/SD-03a, AMEND A1); its admissible origins run from the first admissible origin 2012-04-02 (§5.4, I-1) → the last origin whose label ends on or before 2026-09-29.
 - **Output.** `research/grey_deer/ew_completion_20261031/fit/EW_COEF_PROSPECTIVE_v1.json`, which is the **only** coefficient file in the fingerprint (X5). The development files are retained as development artifacts and are never fingerprinted.
 
 ---
@@ -468,10 +475,10 @@ The `register_trials` lint covers only `validate_*` and `*_phase0/1*` script nam
 |---|---|---|
 | P-01 | **OPEN** for history | SPY has 8,497 rows (1993-01-29 → 2026-10-30) and SMH has 6,642 rows (2000-06-05 → 2026-10-30), from footer metadata only. History is RECONSTRUCTED, which is why P1-DEV is labelled RECONSTRUCTED. Prospective rows record their vintages (X5), so they do not depend on P-01's historical answer. |
 | P-04 | **OPEN** (one constant fingerprint is refuted historically) | The forward log has 71 rows. 18 carry epoch `2026-09-23-prospective-v1`, across 4 fingerprints. This leads to the §6.4 segment rule. |
-| P-09 | **ESTABLISHED** | Session counts as in §5.4. |
+| P-09 | **ESTABLISHED for the calibration and P1-DEV windows** (contract §3.2.1); **OPEN** for future years (AMEND A2) | Session counts as in §5.4. Future years stay checkable from code: the prospective-window session count is re-derived from `lib/nyse_calendar.py` before the first issued row and at each look, because gate 3 (§11.1) depends on the 2027–2028 calendar. |
 | P-02, P-03 | **NOT REQUIRED** under SD-04a (AMEND A2) | — |
 
-P-01 and P-04 must be re-checked by counts and metadata only before the first issued row. They are never checked by reading a row.
+P-01, P-04 and P-09 must be re-checked by counts and metadata only before the first issued row (AMEND A2). None of them is ever checked by reading a row.
 
 ---
 
@@ -481,11 +488,11 @@ Each item below fills a gap in the frozen text without changing a frozen value. 
 
 | ID | Operationalisation | Frozen text it implements |
 |---|---|---|
-| I-1 | Symmetric admissibility. Feature lookback and label both lie inside [2012-01-03, 2026-09-29], so the first origin is 2012-04-02. | SD-02a, SD-03a |
+| I-1 | Symmetric admissibility. Feature lookback and label both lie inside [2012-01-03, 2026-09-29], so the first origin is 2012-04-02. The calibration window itself stays 2012-01-03 → 2026-09-29 as AMEND A1 states; its first 62 sessions serve only as feature lookback. | SD-02a, SD-03a |
 | I-2 | The development fit uses rows whose labels end on or before 2022-12-30 (purged). P1-DEV origins run 2023-01-03 → the last origin whose label ends on or before 2026-09-29. | A1, SD-20a |
 | I-3 | B2_RS is a univariate L2 logistic of `E_RS` on `RS5_t`, which turns the REVIEW :126 return into a probability for Brier scoring. | contract §7 item 4, SD-13a |
 | I-4 | One-sided α = 0.05 (`q0.95`); `α_k = 0.05/3` per look; Holm m = 2 using `α_k/2` and then `α_k`; an early-look family is tested at `α_k/2`; the IU p-value is the maximum of the per-comparator tail fractions; the calibration CI stays unadjusted at 90%. | SD-11a, SD-13a, SD-15a, seat reply (m = 2) |
-| I-5 | The B1 matched-segment rule. A row with no matched, current, in-cutoff Radar row leaves every C-MKT arm (it is not a B0 substitution). SD-23a substitution applies only to an arm abstaining because of its own inputs. | contract §5 items 2 and 4, SD-23a, X5 |
+| I-5 | The B1 matched-segment rule, including its fallback when the first issued row is unmatched (the first later issued row with an in-cutoff match fixes the segment; none means no B1 in that epoch). A row with no matched, current, in-cutoff Radar row leaves every C-MKT arm (it is not a B0 substitution). SD-23a substitution applies only to an arm abstaining because of its own inputs. | contract §5 items 2 and 4, SD-23a, X5 |
 | I-6 | The reader source is in the fingerprint, so the full scorer lands before the first issue, and the issuer refuses while `SCORER_IMPLEMENTED = False`. | X5, A4 |
 | I-7 | The power artifact simulates at the X7 floors (block 21), with alternative BSS = 0.05, level `α_k/2`, M ≥ 400. The margin is not the decision threshold. | SD-14a |
 | I-8 | P1-DEV PASS/FAIL rule and reason codes. B1 is `NOT_EXECUTABLE_IN_DEVELOPMENT`, so the C-MKT development comparator set is {M0}. | SD-20a, A1, SD-22 note |
