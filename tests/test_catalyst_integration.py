@@ -281,14 +281,21 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             source, "synthetic-no-live-grant", "fixture-only-owner",
             "public_anonymous", now - timedelta(days=1),
             now + timedelta(days=1), True, True, True,
+            document_url=event["source_url"],
         )
 
-    def admitted_context(clock):
+    # Explicit LEGACY v1 synthetic test adapter for the independently tested
+    # Session02 signed-consent and OTP flow. This is not a real Stage-A v2
+    # source adapter: v2 public_scan signing remains disabled until 02 owns
+    # a distinct versioned receipt/security-contract migration.
+    def synthetic_legacy_reader(tickers, *, event_id=None, now_utc=None):
+        clock = now_utc or datetime.now(timezone.utc)
         packet = build_event_packet(event, issuers=issuer, rights_resolver=grants,
                                     as_of=clock)
-        return [packet], issuer
+        return catalyst_scan.compose_scan(
+            tickers, packets=[packet], issuers=issuer, as_of=clock, event_id=event_id)
 
-    monkeypatch.setattr(catalyst_scan, "read_qualified_event_context", admitted_context)
+    monkeypatch.setattr(catalyst_scan, "scan_tickers", synthetic_legacy_reader)
     monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
     monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
     monkeypatch.setenv("CATALYST_SCAN_RECEIPT_SECRET", "test_only_hmac_key_" * 3)
@@ -767,7 +774,7 @@ const window={
   history:{replaceState(a,b,url){replaced=url;}},
   performance:{now(){tick+=4000;return tick;}}
 };
-const sample={schema:'catalyst.scan/v1',as_of_utc:'2026-10-09T15:00:00Z',
+const sample={schema:'catalyst.scan/v1',schema_version:1,as_of_utc:'2026-10-09T15:00:00Z',
   event_id:'synthetic-earnings',coverage_note:'Only fixture evidence',
   scan_receipt:'example.valid_signature',
   results:[{ticker:'NVDA',status:'SUPPORTED',headline:'Synthetic filing',

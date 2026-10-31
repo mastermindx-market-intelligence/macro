@@ -33,6 +33,7 @@ _PUBLIC_COVERAGE = {
     "NOT_COVERED": "This ticker is not covered by the currently qualified public event.",
     "TEMPORARILY_UNAVAILABLE": "Current source evidence is unavailable; please try again later.",
     "RIGHTS_BLOCKED": "Source-display permission is not confirmed, so no event details can be shown.",
+    "NO_QUALIFIED_EVENT": "No qualifying earnings event in the verified checked window for this issuer.",
 }
 _LIMIT = 10
 _FRESHNESS = timedelta(days=7)
@@ -240,16 +241,37 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
     Any malformed SUPPORTED material aborts the whole response, not a partial leak.
     """
     now = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
-    if not isinstance(raw, dict) or raw.get("schema") != "catalyst.scan/v1" or raw.get("schema_version") != 1:
+    if not isinstance(raw, dict):
         raise ValueError("unsupported scan schema")
+    schema = (raw.get("schema"), raw.get("schema_version"))
+    if schema not in (("catalyst.scan/v1", 1), ("catalyst.scan/v2", 2)):
+        raise ValueError("unsupported scan schema")
+    v2 = schema == ("catalyst.scan/v2", 2)
     if raw.get("requested_tickers") != tickers:
         raise ValueError("ticker identity mismatch")
     publication = raw.get("publication_state")
-    if publication not in ("PUBLIC_QUALIFIED", "PARTIAL", "UNAVAILABLE"):
+    if publication not in (("PUBLIC_QUALIFIED", "PARTIAL", "UNAVAILABLE", "COMPLETE_EMPTY")
+                           if v2 else ("PUBLIC_QUALIFIED", "PARTIAL", "UNAVAILABLE")):
         raise ValueError("invalid publication state")
     if publication == "UNAVAILABLE":
         raise ValueError("source unavailable")
     as_of = _utc(raw.get("as_of_utc"), now)
+    checked_window = None
+    if v2:
+        supplied = raw.get("checked_window")
+        if not isinstance(supplied, dict) or supplied.get("kind") != "earnings_8k":
+            raise ValueError("missing attested source window")
+        start = _utc(supplied.get("start_utc"), now, fresh=False)
+        end = _utc(supplied.get("end_utc"), now, fresh=False)
+        checked = _utc(supplied.get("checked_at_utc"), now, fresh=False)
+        times = tuple(datetime.fromisoformat(t.replace("Z", "+00:00"))
+                      for t in (start, end, checked))
+        if (not times[0] <= times[1] <= times[2] <= now
+                or times[0] > now - timedelta(days=7)
+                or now - times[2] > timedelta(minutes=10)):
+            raise ValueError("unqualified source-check coverage")
+        checked_window = {"kind": "earnings_8k", "start_utc": start,
+                          "end_utc": end, "checked_at_utc": checked}
     generation = raw.get("generation")
     if generation is not None and (type(generation) is not int or generation < 0):
         raise ValueError("invalid generation")
@@ -257,13 +279,17 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
     results = raw.get("results")
     if not isinstance(results, list) or len(results) != len(tickers):
         raise ValueError("result mismatch")
+    if publication == "COMPLETE_EMPTY" and (event_id is not None or generation is not None):
+        raise ValueError("complete-empty cannot carry a selected event")
     public_results = []
     for ticker, item in zip(tickers, results):
         if not isinstance(item, dict) or item.get("ticker") != ticker:
             raise ValueError("result identity mismatch")
         status = item.get("status")
-        if status not in _STATUSES:
+        if status not in (_STATUSES | {"NO_QUALIFIED_EVENT"} if v2 else _STATUSES):
             raise ValueError("invalid status")
+        if status == "NO_QUALIFIED_EVENT" and publication != "COMPLETE_EMPTY":
+            raise ValueError("no-event status without complete source window")
         # Never forward an upstream coverage_note on a blocked or supported path:
         # it may contain unqualified proprietary text, PII, or a score.
         coverage = _PUBLIC_COVERAGE[status]
@@ -296,10 +322,21 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
             if sid in seen_source_ids:
                 raise ValueError("ambiguous duplicate source ID")
             seen_source_ids.add(sid)
-            sources.append({"source_id": sid, "rights_receipt_id": receipt,
-                            "display_rights": "ALLOWED", "title": title.strip(),
-                            "url": _public_url(s.get("url")),
-                            "published_at_utc": _utc(s.get("published_at_utc"), now, fresh=False)})
+            raw_publication = s.get("published_at_utc")
+            publication_time = (_utc(raw_publication, now, fresh=False)
+                                if raw_publication is not None else None)
+            raw_verified = s.get("first_verified_at_utc")
+            first_verified = (_utc(raw_verified, now, fresh=False)
+                              if raw_verified is not None else None)
+            if (publication_time is None and (not v2 or first_verified is None)):
+                raise ValueError("no qualified public or first-availability clock")
+            source_out = {"source_id": sid, "rights_receipt_id": receipt,
+                          "display_rights": "ALLOWED", "title": title.strip(),
+                          "url": _public_url(s.get("url")),
+                          "published_at_utc": publication_time}
+            if v2:
+                source_out["first_verified_at_utc"] = first_verified
+            sources.append(source_out)
         ids = {s["source_id"] for s in sources}
         relation_ids = item.get("relationship_evidence_ids", [])
         if (not isinstance(relation_ids, list) or any(x not in ids for x in relation_ids)
@@ -333,11 +370,22 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
                                "scenarios": _claims(item.get("scenarios", []), "trigger", ids, True),
                                "invalidators": _claims(item.get("invalidators", []), "text", ids),
                                "sources": sources, "dossier_path": dossier, "coverage_note": coverage})
+    if publication == "COMPLETE_EMPTY":
+        if not any(row["status"] == "NO_QUALIFIED_EVENT" for row in public_results):
+            raise ValueError("empty window without covered issuer")
+        if any(row["status"] not in ("NO_QUALIFIED_EVENT", "NOT_COVERED")
+               for row in public_results):
+            raise ValueError("complete-empty contains event claims")
     note = "Limited coverage from rights-qualified public sources; source times are shown."
-    return {"schema": "catalyst.scan/v1", "schema_version": 1, "event_id": event_id,
-            "generation": generation, "as_of_utc": as_of, "publication_state": publication,
-            "requested_tickers": tickers, "coverage_note": note,
-            "results": public_results}
+    response = {"schema": "catalyst.scan/v2" if v2 else "catalyst.scan/v1",
+                "schema_version": 2 if v2 else 1,
+                "event_id": event_id, "generation": generation,
+                "as_of_utc": as_of, "publication_state": publication,
+                "requested_tickers": tickers, "coverage_note": note,
+                "results": public_results}
+    if v2:
+        response["checked_window"] = checked_window
+    return response
 
 
 def scan_with_reader(tickers: Any, event_id: Any = None, *,
@@ -469,11 +517,14 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
                     content += '</ul>'
                 content += '<h4>Public source references</h4><ul>'
                 for src in item["sources"]:
+                    official = src.get("published_at_utc")
+                    stamp = official or src.get("first_verified_at_utc")
+                    label = "published" if official else "first verified available"
                     content += (
                         f'<li><a rel="noopener noreferrer" href="{e(src["url"], quote=True)}">'
-                        f'{e(src["title"])}</a> · published '
-                        f'<time datetime="{e(src["published_at_utc"], quote=True)}">'
-                        f'{e(src["published_at_utc"])}</time></li>'
+                        f'{e(src["title"])}</a> · {label} '
+                        f'<time datetime="{e(stamp, quote=True)}">'
+                        f'{e(stamp)}</time></li>'
                     )
                 content += '</ul>'
                 if item["dossier_path"]:
@@ -481,6 +532,10 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
                 content += '<p>Want a meaningful correction/update? Opt-in is optional and requires separate email verification.</p>'
             else:
                 content += f'<p>{e(item["coverage_note"])}</p>'
+                if item["status"] == "NO_QUALIFIED_EVENT" and data.get("checked_window"):
+                    window = data["checked_window"]
+                    content += (f'<p>Checked {e(window["start_utc"])}'
+                                f' through {e(window["end_utc"])}.</p>')
             content += '</section>'
     proof = (data or {}).get("scan_receipt", "")
     if not isinstance(proof, str) or not re.fullmatch(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", proof):

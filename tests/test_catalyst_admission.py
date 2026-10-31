@@ -10,7 +10,9 @@ import pytest
 from app.catalyst_integration import scan_with_reader
 from app.catalyst_scan_authority import ScanReceiptAuthority
 from engine.marketing import catalyst_admission, catalyst_scan
-from engine.marketing.catalyst_packets import PublicSourceGrant
+from engine.marketing.catalyst_packets import (
+    PublicSourceGrant, VerifiedDocumentObservation, VerifiedEarningsFigure)
+from engine.marketing.catalyst_scan import SourceCoverageReceipt
 
 
 def _fixture(now):
@@ -55,8 +57,42 @@ def _source(now, control):
             audience="public_anonymous", effective_at_utc=now - timedelta(days=1),
             expires_at_utc=now + timedelta(days=1),
             display_link=True, display_title=True, display_facts=True,
+            document_url=event["source_url"], document_sha256="a" * 64,
         )
-    return catalyst_admission.AdmittedEdgarSource(read_universe, events, grant)
+
+    def document_observation(source_event, clock):
+        assert source_event is event
+        return VerifiedDocumentObservation(
+            source_id="sec:" + event["filing_key"],
+            document_url=event["source_url"],
+            document_sha256="a" * 64,
+            receipt_id="fixture-document-observation",
+            owner_ref="fixture-retained-edgar-reader",
+            first_verified_at_utc=event["when"],
+            checked_at_utc=clock,
+            source_snapshot_version="fixture-source-snapshot-001",
+            verified_figures=(
+                VerifiedEarningsFigure("eps_actual", event["eps_actual"],
+                                       event["_eps_basis"], "a" * 64, "b" * 64),
+                VerifiedEarningsFigure("rev_actual", event["rev_actual"],
+                                       "reported", "a" * 64, "c" * 64),
+            ),
+        )
+
+    def source_coverage(since, current, checked):
+        return SourceCoverageReceipt(
+            source="edgar_8k_202",
+            receipt_id="fixture-window-success-001",
+            owner_ref="fixture-retained-edgar-reader",
+            snapshot_version="fixture-source-snapshot-001",
+            issuer_tickers=frozenset({"PFE"}),
+            window_start_utc=since, window_end_utc=current, checked_at_utc=checked,
+            outcome="COMPLETE", pagination_exhausted=True, truncated=False,
+            returned_events=1, event_limit=20,
+        )
+
+    return catalyst_admission.AdmittedEdgarSource(
+        read_universe, events, grant, document_observation, source_coverage)
 
 
 @pytest.fixture(autouse=True)
@@ -68,7 +104,7 @@ def _unwire():
 
 def test_missing_source_remains_true_unavailable():
     now = datetime.now(timezone.utc)
-    assert catalyst_admission.read_qualified_event_context(now) == ((), {})
+    assert catalyst_admission.read_qualified_event_context(now) == ((), {}, None)
     response = catalyst_scan.scan_tickers(["PFE"], now_utc=now)
     assert response["publication_state"] == "UNAVAILABLE"
     assert response["event_id"] is None
@@ -86,7 +122,7 @@ def test_registry_refusal_prevents_calling_any_owner_and_issuer(monkeypatch):
     monkeypatch.setattr(rights, "assert_public_emission_allowed",
                         lambda family: (_ for _ in ()).throw(
                             rights.RightsRefusal("sec_edgar not admitted")))
-    assert catalyst_admission.read_qualified_event_context(now) == ((), {})
+    assert catalyst_admission.read_qualified_event_context(now) == ((), {}, None)
     assert all(control[k] == 0 for k in ("issuer_reads", "event_reads", "rights_reads"))
     assert catalyst_scan.scan_tickers(["PFE"], now_utc=now)["publication_state"] == "UNAVAILABLE"
 
@@ -104,7 +140,7 @@ def test_qualified_owner_to_anonymous_scan_and_rights_revocation(monkeypatch):
                "rights_reads": 0, "granted": True}
     catalyst_admission.configure(_source(now, control))
     result = scan_with_reader(["PFE", "ZZZZ"], now_utc=now)
-    assert result["schema"] == "catalyst.scan/v1"
+    assert result["schema"] == "catalyst.scan/v2"
     assert result["generation"] == 0
     assert result["results"][0]["status"] == "SUPPORTED"
     assert result["results"][1]["status"] == "NOT_COVERED"
@@ -112,21 +148,21 @@ def test_qualified_owner_to_anonymous_scan_and_rights_revocation(monkeypatch):
     assert "0.42" in str(result["results"][0]["what_changed"])
     assert called and control["rights_reads"] >= 1
 
-    # Signed scan proof is separate from affirmative consent/GoTrue.
+    # Stage B signed proofs currently accept only vetted v1 scans.
+    # Never misinterpret a newly displayed v2 result as consent, email scope,
+    # or a valid signed proof without separate original Session02 admission.
     proof_owner = ScanReceiptAuthority(
         secret="pure_synthetic_hmac_key_for_tests_only" * 2,
         now=lambda: now)
-    proof = proof_owner.issue(result)
-    assert proof and proof.count(".") == 1
-    confirmed = proof_owner.require_public_scan(proof)
-    assert confirmed.public_safe is True and confirmed.tickers == ("PFE",)
+    assert proof_owner.issue(result) is None
 
-    # The same source can withdraw permission even with a still-valid MAC.
+    # Live source rights can still withdraw after a positive v2 display.
     control["granted"] = False
     blocked = catalyst_scan.scan_tickers(["PFE"], now_utc=now)
     assert all(row["status"] != "SUPPORTED" for row in blocked["results"])
-    with pytest.raises(Exception):
-        proof_owner.require_public_scan(proof)
+    assert all(not row["sources"] and not row["what_changed"]
+               for row in blocked["results"])
+    assert proof_owner.issue(blocked) is None
 
 
 def test_owner_errors_and_unbounded_events_refuse_without_leak(monkeypatch):
@@ -139,7 +175,7 @@ def test_owner_errors_and_unbounded_events_refuse_without_leak(monkeypatch):
         lambda since, current, limit: [event] * 21,
         lambda source, current: None)
     catalyst_admission.configure(bad)
-    assert catalyst_admission.read_qualified_event_context(now) == ((), {})
+    assert catalyst_admission.read_qualified_event_context(now) == ((), {}, None)
 
     def broken(since, current, limit):
         raise RuntimeError("private upstream API token must never leak")
@@ -169,7 +205,8 @@ def test_existing_registry_can_mark_other_names_unsupported_without_hiding_publi
     original_issuers = provider.issuer_universe
     catalyst_admission.configure(catalyst_admission.AdmittedEdgarSource(
         lambda clock: {**original_issuers(clock), "ZZZZ": {"supported": False}},
-        provider.recent_events, provider.public_grant))
+        provider.recent_events, provider.public_grant,
+        provider.document_observation, provider.source_coverage))
     result = scan_with_reader(["PFE", "ZZZZ"], now_utc=now)
     assert result["results"][0]["status"] == "SUPPORTED"
     assert result["results"][1]["status"] == "NOT_COVERED"

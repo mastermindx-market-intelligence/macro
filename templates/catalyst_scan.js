@@ -9,7 +9,7 @@
   const VERIFY_PATH = "/api/catalyst/optin/verify";
   const SCOPE = "catalyst_event_updates/v1";
   const TICKER = /^[A-Z][A-Z0-9.-]{0,9}$/;
-  const STATUSES = new Set(["SUPPORTED", "RIGHTS_BLOCKED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE"]);
+  const STATUSES = new Set(["SUPPORTED", "RIGHTS_BLOCKED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE", "NO_QUALIFIED_EVENT"]);
   const TOKEN_LIMIT = 10;
   const SOURCE_LIMIT = 12;
 
@@ -132,7 +132,7 @@
     TEMPORARILY_UNAVAILABLE: "TEMPORARILY UNAVAILABLE"
   })[state] || "COVERAGE UNKNOWN";
 
-  const renderCard = (item) => {
+  const renderCard = (item, data) => {
     const wrap = document.createElement("article");
     wrap.className = "cs-result-card";
     const header = document.createElement("div");
@@ -164,9 +164,16 @@
       const reason = ({
         RIGHTS_BLOCKED: "Public display permission is unavailable for this event. Evidence is withheld rather than inferred.",
         NOT_COVERED: "No eligible source-backed relationship was established for this symbol in this scan.",
-        TEMPORARILY_UNAVAILABLE: "Qualified event data is temporarily unavailable. Try again later."
+        TEMPORARILY_UNAVAILABLE: "Qualified event data is temporarily unavailable. Try again later.",
+        NO_QUALIFIED_EVENT: "No qualifying earnings event for this issuer in the verified checked window."
       })[item.status];
       body.appendChild(text("p", reason || "Coverage is unavailable.", "cs-unavailable"));
+      if (item.status === "NO_QUALIFIED_EVENT" && data && data.checked_window) {
+        const window = data.checked_window;
+        if (typeof window.start_utc === "string" && typeof window.end_utc === "string") {
+          body.appendChild(text("p", "Checked " + window.start_utc + " through " + window.end_utc));
+        }
+      }
     } else {
       listSection(body, "WHAT CHANGED", item.what_changed, "text");
       if (Array.isArray(item.scenarios) && item.scenarios.length) {
@@ -201,8 +208,12 @@
           a.rel = "noopener noreferrer";
           a.referrerPolicy = "no-referrer";
           row.appendChild(a);
-          const dt = text("time", utc(src.published_at_utc));
-          if (typeof src.published_at_utc === "string") dt.dateTime = src.published_at_utc;
+          const published = typeof src.published_at_utc === "string" && src.published_at_utc;
+          const observed = typeof src.first_verified_at_utc === "string" && src.first_verified_at_utc;
+          const stamp = published || observed;
+          if (!stamp) continue;
+          const dt = text("time", (published ? "Published " : "First verified available ") + utc(stamp));
+          dt.dateTime = stamp;
           row.appendChild(dt);
           sources.appendChild(row);
         }
@@ -220,8 +231,10 @@
   };
 
   const checkScan = (data, tickers) => {
-    if (!data || typeof data !== "object" || data.schema !== "catalyst.scan/v1" ||
-        data.schema_version !== 1 || !Array.isArray(data.results) ||
+    const validWire = data && typeof data === "object" &&
+      ((data.schema === "catalyst.scan/v1" && data.schema_version === 1) ||
+       (data.schema === "catalyst.scan/v2" && data.schema_version === 2));
+    if (!validWire || !Array.isArray(data.results) ||
         !Array.isArray(data.requested_tickers) || data.results.length !== tickers.length ||
         tickers.some((name, i) => data.requested_tickers[i] !== name)) {
       throw new Error("The source returned an incompatible scan. No coverage was displayed.");
@@ -246,7 +259,7 @@
     lastTickers = tickers.slice();
     cards.replaceChildren();
     const eligible = data.results.filter((item) => item.status === "SUPPORTED");
-    for (const item of data.results) cards.appendChild(renderCard(item));
+    for (const item of data.results) cards.appendChild(renderCard(item, data));
     el("cs-summary-status").textContent = eligible.length + " OF " + tickers.length + " SUPPORTED";
     el("cs-summary-clock").textContent = utc(data.as_of_utc);
     el("cs-summary-event").textContent = data.event_id && Number.isInteger(data.generation) ?
@@ -257,7 +270,10 @@
     show(results, true);
     // Proof is a private client capability. It stays only in a closure and is
     // passed solely to the same-origin, positive-consent owner after disclosure.
-    if (eligible.length && typeof data.scan_receipt === "string" &&
+    // The incumbent Session02 proof authority signs v1 only. Never let a
+    // fabricated v2 receipt open an opt-in form before its own admission.
+    if (eligible.length && data.schema === "catalyst.scan/v1" &&
+        typeof data.scan_receipt === "string" &&
         data.scan_receipt.length <= 1024 && data.scan_receipt.length > 20) {
       scanReceipt = data.scan_receipt;
       formShownAt = Date.now();

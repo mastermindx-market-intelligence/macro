@@ -76,6 +76,12 @@
       section.append(make("h2", entry.ticker + " · " + entry.status));
       if (entry.status !== "SUPPORTED") {
         section.append(make("p", entry.coverage_note || "Not covered by this event."));
+        if (entry.status === "NO_QUALIFIED_EVENT" && data.checked_window) {
+          const checked = data.checked_window;
+          if (typeof checked.start_utc === "string" && typeof checked.end_utc === "string") {
+            section.append(make("p", "Checked " + checked.start_utc + " through " + checked.end_utc));
+          }
+        }
         results.append(section);
         continue;
       }
@@ -99,7 +105,11 @@
             a.href = parsed.href;
             a.rel = "noopener noreferrer";
             a.target = "_blank";
-            li.append(a, make("span", " · published " + source.published_at_utc));
+            const published = typeof source.published_at_utc === "string" && source.published_at_utc;
+            const verified = typeof source.first_verified_at_utc === "string" && source.first_verified_at_utc;
+            const stamp = published || verified;
+            if (!stamp) continue;
+            li.append(a, make("span", (published ? " · published " : " · first verified available ") + stamp));
             refs.append(li);
           } catch (_) { /* An invalid source link cannot become a clickable URL. */ }
         }
@@ -151,11 +161,15 @@
     try {
       const data = await post("/api/catalyst/scan", {tickers});
       if (serial !== requestSerial) return;
-      if (data.schema !== "catalyst.scan/v1" || !Array.isArray(data.results)) {
+      if (!((data.schema === "catalyst.scan/v1" && data.schema_version === 1) ||
+            (data.schema === "catalyst.scan/v2" && data.schema_version === 2)) ||
+          !Array.isArray(data.results)) {
         throw new Error("Invalid source");
       }
       render(data); // Show the entire supported scan before revealing email.
-      scanReceipt = typeof data.scan_receipt === "string" ? data.scan_receipt : "";
+      // Stage B's existing verifier accepts v1, never assume v2 tokens.
+      scanReceipt = data.schema === "catalyst.scan/v1" &&
+        typeof data.scan_receipt === "string" ? data.scan_receipt : "";
       invite();
       const share = new URL(window.location.pathname, window.location.origin);
       share.searchParams.set("tickers", tickers.join(","));

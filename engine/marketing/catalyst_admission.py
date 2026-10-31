@@ -14,8 +14,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from engine.marketing.catalyst_packets import (
-    PublicSourceGrant, build_event_packet,
+    PublicSourceGrant, VerifiedDocumentObservation, build_event_packet,
 )
+from engine.marketing.catalyst_scan import SourceCoverageReceipt
 
 _MAX_EVENTS = 20
 _LOOKBACK = timedelta(days=7)
@@ -33,6 +34,10 @@ class AdmittedEdgarSource:
     issuer_universe: Callable[[datetime], Mapping[str, Mapping[str, object]]]
     recent_events: Callable[[datetime, datetime, int], Sequence[Mapping[str, object]]]
     public_grant: Callable[[str, datetime], PublicSourceGrant | None]
+    # Existing retained-source owner's immutable per-document and complete
+    # current-window receipts; never minted by a request or SEC hostname.
+    document_observation: Callable[[Mapping[str, object], datetime], VerifiedDocumentObservation | None] | None = None
+    source_coverage: Callable[[datetime, datetime, datetime], SourceCoverageReceipt | None] | None = None
 
 
 _current: AdmittedEdgarSource | None = None
@@ -52,7 +57,7 @@ def configure(source: AdmittedEdgarSource | None) -> None:
 
 def read_qualified_event_context(
     now_utc: datetime,
-) -> tuple[Sequence[Mapping], Mapping[str, Mapping]]:
+) -> tuple[Sequence[Mapping], Mapping[str, Mapping], SourceCoverageReceipt | None]:
     """Fail closed on absent rights, source, issuer, timezone or owner errors.
 
     This is the source-owned data *read* only. It never contacts EDGAR itself,
@@ -60,9 +65,11 @@ def read_qualified_event_context(
     """
     owner = _current
     if owner is None:
-        return (), {}
+        return (), {}, None
     if not isinstance(now_utc, datetime) or now_utc.tzinfo is None:
-        return (), {}
+        return (), {}, None
+    if not callable(owner.document_observation) or not callable(owner.source_coverage):
+        return (), {}, None
     now = now_utc.astimezone(timezone.utc)
     try:
         # Source rights are stated in ONE canonical registry, not inferred
@@ -72,7 +79,7 @@ def read_qualified_event_context(
 
         issuers = owner.issuer_universe(now)
         if not isinstance(issuers, Mapping) or not 1 <= len(issuers) <= 10_000:
-            return (), {}
+            return (), {}, None
         # Do not synthesize or upgrade an issuer identity on this seam.
         # The incumbent issuer registry can also name known unsupported
         # symbols. They must remain NOT_COVERED, not make every otherwise
@@ -80,28 +87,34 @@ def read_qualified_event_context(
         for symbol, row in issuers.items():
             if (not isinstance(symbol, str) or not isinstance(row, Mapping)
                     or type(row.get("supported")) is not bool):
-                return (), {}
+                return (), {}, None
             if (row["supported"] is True and
                     (not isinstance(row.get("issuer_id"), str)
                      or not row["issuer_id"].strip())):
-                return (), {}
+                return (), {}, None
 
         events = owner.recent_events(now - _LOOKBACK, now, _MAX_EVENTS)
         if not isinstance(events, (list, tuple)) or len(events) > _MAX_EVENTS:
-            return (), {}
+            return (), {}, None
         packets = []
         for event in events:
             # All source events must originate from the incumbent SEC 8-K
             # earnings producer. A stray media/paid feed is not auto-admitted.
             if not isinstance(event, Mapping) or event.get("source") != "edgar_8k_202":
-                return (), {}
+                return (), {}, None
+            observed = owner.document_observation(event, now)
+            if not isinstance(observed, VerifiedDocumentObservation):
+                return (), {}, None
             packet = build_event_packet(
                 event, issuers=issuers, rights_resolver=owner.public_grant,
-                as_of=now, max_age=_LOOKBACK,
+                as_of=now, document_observation=observed, max_age=_LOOKBACK,
             )
             packets.append(packet)
-        return tuple(packets), issuers
+        coverage = owner.source_coverage(now - _LOOKBACK, now, now)
+        if not isinstance(coverage, SourceCoverageReceipt):
+            return (), {}, None
+        return tuple(packets), issuers, coverage
     except Exception:
         # Never expose owner exception text, private feed paths or licensing
         # internals on the anonymous HTTP boundary. A broken source is 503.
-        return (), {}
+        return (), {}, None
