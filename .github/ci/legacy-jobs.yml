@@ -285,6 +285,14 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2270,6 +2278,14 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3291,6 +3307,14 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -5866,6 +5890,14 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -7067,6 +7099,14 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      # Actual composed QLedger owner import closure; no command change.
+      - "engine/qledger_original_conversion.py"
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "scripts/ci/qledger_publication.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -8140,6 +8180,14 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -9757,6 +9805,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -10128,6 +10184,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11059,6 +11123,14 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -13480,6 +13552,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
@@ -13999,6 +14075,17 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
       - "lib/dataos/identity.py"
       - "lib/economic_propagation.py"
@@ -14609,6 +14696,103 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "engine/codex_lane/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/passport.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/regime_vector.py"
+      - "engine/session_anchor.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/dataos/identity.py"
+      - "lib/filing_value_units.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - ".github/workflows/**"
@@ -14972,6 +15156,13 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -16808,6 +16999,14 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "engine/__init__.py"
+      - "engine/qledger_original_conversion.py"
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_conversion.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -17130,6 +17329,63 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - admin/__init__.py
+      - admin/evidence_findings.py
+      - admin/evidence_status.py
+      - admin/intelligence_execution.py
+      - admin/intelligence_os.py
+      - app/mailer.py
+      - engine/allocation_alerts.py
+      - engine/neuralweb/causal_audit.py
+      - engine/neuralweb/confluence.py
+      - engine/neuralweb/contradictions.py
+      - engine/output_health.py
+      - engine/postmortem.py
+      - engine/prophet_live/live_states.py
+      - engine/qledger_original_conversion.py
+      - engine/qledger_original_result.py
+      - engine/qledger_store_conversion.py
+      - engine/thematic_desk.py
+      - engine/theme_discovery.py
+      - scripts/build_allocation.py
+      - scripts/build_output_health.py
+      - scripts/ci/daily_engine_commit_outputs.sh
+      - scripts/ci/push_retry.sh
+      - scripts/ci/qledger_conversion_candidate.py
+      - scripts/ci/qledger_engine_publication.py
+      - scripts/ci/qledger_engine_publisher.py
+      - templates/data_base.js
+      - site/commodities.html
+      - site/start.html
+      - scripts/ci/qledger_daily_entry.py
+      - scripts/ci/qledger_host_gate.py
+      - scripts/ci/qledger_owner_evidence.py
+      - scripts/ci/qledger_owner_controller.py
+      - scripts/ci/qledger_owner_invocation.py
+      - scripts/ci/qledger_publication.py
+      - scripts/ci/qledger_push_original.py
+      - scripts/ci/qledger_runner_bootstrap.py
+      - scripts/freshness_sentinel.py
+      - tests/test_qledger_causal_originals.py
+      - tests/test_qledger_conversion_candidate.py
+      - tests/test_qledger_daily_engine_join.py
+      - tests/test_qledger_daily_normalizer.py
+      - tests/test_qledger_daily_entry.py
+      - tests/test_qledger_native_publication.py
+      - tests/test_qledger_engine_finalizer.py
+      - tests/test_qledger_engine_producer.py
+      - tests/test_qledger_engine_publication.py
+      - tests/test_qledger_host_gate.py
+      - tests/test_qledger_import_boundary.py
+      - tests/test_qledger_original_clocks.py
+      - tests/test_qledger_original_result.py
+      - tests/test_qledger_owner_evidence.py
+      - tests/test_qledger_owner_controller.py
+      - tests/test_qledger_push_original.py
+      - tests/test_qledger_runner_bootstrap.py
+      - tests/test_qledger_store_conversion.py
+      - scripts/ci/options_signal_nightly.sh
+      - scripts/ci/options_index_lock_identity.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -18006,6 +18262,7 @@ jobs:
       - site/basketdata/fear_greed.json
       - site/basketdata/foresight_cascade.json
       - site/basketdata/narrative_emergence.json
+      - site/basketdata/oracle_state.json
       - site/basketdata/radar.json
       - site/basketdata/radar_enriched.json
       - site/chinabasketdata/narrative_emergence.json
@@ -18022,6 +18279,7 @@ jobs:
       - site/factordata/us_track_ledger.json
       - site/flowleaders/leaders.json
       - site/leaderradar/radar.json
+      - site/intelligence/briefing.json
       - site/marketdata/subsector_rotation.json
       - site/master_brief.json
       - site/neuralwebdata/theme_state.json
@@ -18172,6 +18430,27 @@ jobs:
       - engine/research_vault/__init__.py
       - engine/sector_intelligence/__init__.py
       - engine/signal_foundry/__init__.py
+      - engine/china_gold_premium.py
+      - engine/commodity_decision_workspace.py
+      - engine/commodity_index.py
+      - engine/commodity_inputs.py
+      - engine/commodity_mtf.py
+      - engine/commodity_signals.py
+      - scripts/audit_china_gold_premium.py
+      - scripts/check_commodity_publication.py
+      - scripts/check_conflict_markers.py
+      - scripts/check_ms_board_coherence.py
+      - scripts/check_site_asset_refs.py
+      - scripts/check_start_runtime.py
+      - scripts/check_template_site_sync.py
+      - scripts/externalize_css.py
+      - scripts/inject_data_base.py
+      - scripts/optimize_assets.py
+      - scripts/ci/strip_conflict_markers.sh
+      - templates/commodities.html.j2
+      - templates/shared_shell.css
+      - templates/shared_shell_bridge.js
+      - tests/test_commodity_publication.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18197,7 +18476,9 @@ jobs:
       # would put the qledger promotion monitor in a job that does not own its subject,
       # which is the failure mode that left it unowned in the first place.
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        # The thematic original-result fixtures load build_allocation, whose
+        # real rendering imports require Jinja2; keep that owner path exercised.
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2
       - name: qledger cluster-honest Wilson CI unit tests
         run: python -m pytest tests/test_qledger_cluster_honest_ci.py -q
       - name: qledger US nightly batch-registration contract (W2)
@@ -18213,7 +18494,7 @@ jobs:
       # was named by NO legacy job, so every grading-path change shipped dark; it
       # is hermetic (tmp_path store + monkeypatched price layer, no data/** reads).
       - name: qledger contract regression suite
-        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_store_integrity.py -q
+        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_conversion.py tests/test_qledger_conversion_candidate.py tests/test_qledger_host_gate.py tests/test_qledger_runner_bootstrap.py tests/test_qledger_owner_evidence.py tests/test_qledger_owner_controller.py tests/test_qledger_push_original.py tests/test_qledger_daily_engine_join.py tests/test_qledger_engine_publication.py tests/test_qledger_engine_producer.py tests/test_qledger_engine_finalizer.py tests/test_qledger_daily_normalizer.py tests/test_qledger_daily_entry.py tests/test_qledger_native_publication.py tests/test_qledger_import_boundary.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_original_result.py tests/test_qledger_causal_originals.py tests/test_qledger_original_clocks.py tests/test_qledger_store_integrity.py -q
       - name: qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts
         run: python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q
       # P3 — the forward-only desk adapters and the evidence-clock writer. These
@@ -20936,6 +21217,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "scripts/__init__.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -21531,6 +21821,14 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -21866,6 +22164,14 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -24711,6 +25017,14 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -25345,6 +25659,14 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -26134,6 +26456,14 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -26715,6 +27045,9 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -27831,6 +28164,29 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/codex_lane/__init__.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -28356,6 +28712,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -29376,6 +29740,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -30154,6 +30526,10 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -30964,6 +31340,14 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -32150,6 +32534,13 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -33624,6 +34015,13 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36559,6 +36957,14 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -37082,6 +37488,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -40312,6 +40726,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -42077,6 +42499,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/ci/qledger_owner_invocation.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -43664,6 +44090,15 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "scripts/__init__.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -43931,6 +44366,15 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
+      - "scripts/__init__.py"
+      # QLedger original-result and Git-candidate import closure.
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -44963,6 +45407,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/qledger_original_conversion.py"
+      - "scripts/ci/qledger_owner_invocation.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45871,6 +46317,8 @@ jobs:
       - "engine/qledger.py"
       - "engine/qledger_desk_adapter.py"
       - "engine/qledger_evidence_clock.py"
+      - "engine/qledger_original_result.py"
+      - "engine/qledger_store_conversion.py"
       - "engine/qledger_store.py"
       - "engine/qledger_store_native.py"
       - "engine/qledger_store_protocol.py"
@@ -46152,6 +46600,8 @@ jobs:
       - "scripts/externalize_css.py"
       - "scripts/freshness_sentinel.py"
       - "scripts/grade_qledger.py"
+      - "scripts/ci/qledger_conversion_candidate.py"
+      - "scripts/ci/qledger_publication.py"
       - "scripts/inject_data_base.py"
       - "scripts/marketing_media_backfill.py"
       - "scripts/marketing_publisher.py"

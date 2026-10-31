@@ -188,7 +188,12 @@ def _baselines(repo: Path, values: Iterable[str], *, limits: ProtocolLimits) -> 
         out.append(value)
     if not out:
         _fail("PUBLICATION_INPUT", "accepted baseline identities are required")
-    return tuple(out)
+    # Excluding accepted tips prunes their old objects from the introduced walk.
+    # Prove their complete local history first, without reclassifying accepted
+    # blobs as newly introduced or applying the new-blob size ceiling to them.
+    baselines = tuple(out)
+    _reachable_metadata(repo, baselines, (), limits=limits)
+    return baselines
 
 
 def _ancestor(repo: Path, ancestor: str, descendant: str) -> None:
@@ -198,28 +203,30 @@ def _ancestor(repo: Path, ancestor: str, descendant: str) -> None:
         _fail("CONFLICT", "the accepted target tip is not an ancestor of the candidate")
 
 
-def _introduced(
-    repo: Path, roots: tuple[str, ...], baselines: tuple[str, ...], *, limits: ProtocolLimits,
-) -> tuple[BlobInfo, ...]:
-    raw, _ = _git(repo, ["rev-list", "--objects", "--no-object-names", "--missing=print",
-                         *roots, "--not", *baselines],
-                  output_limit=limits.publication_objects * 66)
+def _reachable_metadata(
+    repo: Path, roots: tuple[str, ...], excluded: tuple[str, ...], *, limits: ProtocolLimits,
+) -> tuple[tuple[str, bytes, int], ...]:
+    """Prove bounded local object presence before using a reachability inventory."""
+    args = ["rev-list", "--objects", "--no-object-names", "--missing=print", *roots]
+    if excluded:
+        args.extend(["--not", *excluded])
+    raw, _ = _git(repo, args, output_limit=limits.publication_objects * 66)
     if raw and not raw.endswith(b"\n"):
-        _fail("INCOMPLETE", "truncated newly reachable object inventory")
+        _fail("INCOMPLETE", "truncated reachable-object inventory")
     objects: list[str] = []
     seen: set[str] = set()
     for line in raw.splitlines():
         if len(objects) >= limits.publication_objects:
-            _fail("NONRETRYABLE_CAPACITY", "introduced-object count exceeds the budget")
+            _fail("NONRETRYABLE_CAPACITY", "reachable-object count exceeds the budget")
         try:
             oid = line.decode("ascii")
         except UnicodeError as exc:
-            raise SnapshotIntegrityError("GIT_READ", "invalid introduced-object identity") from exc
+            raise SnapshotIntegrityError("GIT_READ", "invalid reachable-object identity") from exc
         if oid.startswith("?"):
             _fail("INCOMPLETE", "a reachable object is missing locally")
         _oid(oid)
         if oid in seen:
-            _fail("INCOMPLETE", "duplicate introduced-object inventory row")
+            _fail("INCOMPLETE", "duplicate reachable-object inventory row")
         seen.add(oid)
         objects.append(oid)
     if not objects:
@@ -228,22 +235,30 @@ def _introduced(
     raw, _ = _git(repo, ["cat-file", "--batch-check=%(objectname) %(objecttype) %(objectsize)"],
                   input_bytes=supplied, output_limit=len(objects) * 100)
     if not raw.endswith(b"\n"):
-        _fail("INCOMPLETE", "truncated introduced-object metadata")
+        _fail("INCOMPLETE", "truncated reachable-object metadata")
     rows = raw.splitlines()
     if len(rows) != len(objects):
-        _fail("INCOMPLETE", "introduced-object metadata is incomplete")
-    blobs: list[BlobInfo] = []
+        _fail("INCOMPLETE", "reachable-object metadata is incomplete")
+    metadata: list[tuple[str, bytes, int]] = []
     for wanted, row in zip(objects, rows):
         fields = row.split(b" ")
         if len(fields) != 3 or fields[0] != wanted.encode() or not re.fullmatch(rb"[0-9]+", fields[2]):
-            _fail("INCOMPLETE", "missing or malformed introduced-object metadata")
+            _fail("INCOMPLETE", "missing or malformed reachable-object metadata")
         if fields[1] not in (b"commit", b"tree", b"blob", b"tag"):
-            _fail("INCOMPLETE", "unknown introduced object type")
-        if fields[1] == b"blob":
-            size = int(fields[2])
+            _fail("INCOMPLETE", "unknown reachable object type")
+        metadata.append((wanted, fields[1], int(fields[2])))
+    return tuple(metadata)
+
+
+def _introduced(
+    repo: Path, roots: tuple[str, ...], baselines: tuple[str, ...], *, limits: ProtocolLimits,
+) -> tuple[BlobInfo, ...]:
+    blobs: list[BlobInfo] = []
+    for oid, kind, size in _reachable_metadata(repo, roots, baselines, limits=limits):
+        if kind == b"blob":
             if size > limits.git_blob_bytes:
                 _fail("NONRETRYABLE_OVERSIZE", "a newly reachable blob exceeds the publication bound")
-            blobs.append(BlobInfo(wanted, size))
+            blobs.append(BlobInfo(oid, size))
     return tuple(blobs)
 
 
@@ -475,6 +490,7 @@ class PublicationContinuityWitness:
     planned_transaction_ids: tuple[str, ...] = ()
     already_present_transaction_ids: tuple[str, ...] = ()
     source_assurance: str = "EXPLICIT_GIT_OBJECTS_NOT_REMOTE_ACCEPTANCE"
+    source_generation_scope: str = "UNVERIFIED_EXTERNAL_AUTHORITY"
     effect: str = "not_attempted"
     eligible_for_cutover: bool = False
 
@@ -536,6 +552,7 @@ def check_legacy_conversion_candidate(
         original.logical_digest, original.byte_count, original.blob_oid,
         (conversion_transaction_id,), binding.accepted_tip_oid,
         planned_transaction_ids=(conversion_transaction_id,),
+        source_generation_scope="ACCEPTED_PREFIX_ONLY",
     )
 
 
@@ -576,6 +593,7 @@ def check_native_operation_candidate(
         receipt.authorized_transaction_ids, binding.accepted_tip_oid,
         planned_transaction_ids=required.applied,
         already_present_transaction_ids=required.already_applied,
+        source_generation_scope="NATIVE_OPERATION_BOUNDED_NOT_EXTERNAL_AUTHORITY",
     )
 
 
@@ -589,15 +607,35 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target-ref")
     parser.add_argument("--accepted-baseline", action="append", default=[])
     parser.add_argument("--push-arg", action="append", default=[])
+    parser.add_argument("--conversion-result", type=Path)
+    parser.add_argument("--conversion-manifest-sha256")
+    parser.add_argument("--conversion-accepted-tip")
     args = parser.parse_args(argv)
     try:
-        from engine.qledger_store import LegacyClaimsBinding, _production_claims_binding
+        from engine.qledger_store import LegacyClaimsBinding, _production_claims_binding, _require_legacy_namespace
         repo = _repo(args.repo)
+        explicit = (args.conversion_result, args.conversion_manifest_sha256, args.conversion_accepted_tip)
+        if any(value is not None for value in explicit):
+            if not all(value is not None for value in explicit):
+                _fail("PUBLICATION_INPUT", "complete explicit original-conversion invocation required")
+            from scripts.ci.qledger_owner_invocation import load_conversion
+            invocation = load_conversion(repo, result_path=args.conversion_result,
+                                         manifest_digest=args.conversion_manifest_sha256)
+            if args.accepted_baseline and args.accepted_baseline != [args.conversion_accepted_tip]:
+                _fail("PUBLICATION_INPUT", "incumbent baseline differs from original invocation")
+            result = invocation.preflight(boundary=args.boundary,
+                accepted_tip_oid=args.conversion_accepted_tip, tree_oid=args.tree,
+                parent_oid=args.parent, candidate_oid=args.candidate,
+                target_ref=args.target_ref or "refs/heads/main", push_args=tuple(args.push_arg))
+            print(json.dumps({"status": result.status, "boundary": args.boundary,
+                              "effect": "validation_only"}, sort_keys=True))
+            return 0
         binding = _production_claims_binding(repo / BASE_PATH)
         if type(binding) is not LegacyClaimsBinding:
             _fail("PUBLICATION_INPUT", "native publication needs a separately admitted explicit owner binding")
-        # No path discovery, candidate inspection, filesystem change or Git
-        # command is performed by the current production format selection.
+        _require_legacy_namespace(repo / BASE_PATH)
+        # Pure default selection remains legacy. A native checkout requires
+        # the separately bound owner API; this CLI never enrolls it.
         print(json.dumps({"status": "LEGACY_SELECTED", "boundary": args.boundary,
                           "effect": "not_attempted"}, sort_keys=True))
         return 0

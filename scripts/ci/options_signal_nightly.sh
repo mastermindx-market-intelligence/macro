@@ -25,7 +25,10 @@ set -euo pipefail
 
 REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
 # shellcheck source=scripts/ci/push_retry.sh
-. "$REPO_ROOT/scripts/ci/push_retry.sh"
+case "${1:-}" in
+  prepare-broad-candidate) ;; # object preparation has no retry/publish operation
+  *) . "$REPO_ROOT/scripts/ci/push_retry.sh" ;;
+esac
 
 readonly -a OIP_EPISODE_CORE_PATHS=(
   data/options_signal_episode/checkpoint.json
@@ -469,35 +472,9 @@ oip_release_owned_empty_lock() {
   python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" release "$1" "$2"
 }
 
-# Commit the exact live index snapshot while owning Git's real index lock.
-# The same primitive is used for the broad engine tree and the later render-sync
-# tree with different root allowlists.  No validation-then-commit window exists:
-# the lock is acquired before the index copy and released only after the
-# expected-parent ref update and atomic index installation.
-oip_commit_locked_roots() {
-  local message="$1" reject_narrow="$2"
-  shift 2
-  local -a allowed_roots=("$@")
-  local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
-  local diff_path="" tree="" candidate="" restore_target="" status path root matched rc=0 owned=0
-  local qledger_rejected=0 lock_identity="" qledger_baseline=""
-
-  oip_require_main_branch || return 1
-  parent=$(git rev-parse 'refs/heads/main^{commit}') || return 1
-  parent_tree=$(git rev-parse "$parent^{tree}") || return 1
-  # A local unpublished parent is not an accepted remote baseline.
-  # Missing tracking identity remains missing; native validation must refuse it.
-  qledger_baseline=$(git rev-parse 'refs/remotes/origin/main^{commit}' 2>/dev/null || true)
-  index_path=$(git rev-parse --git-path index) || return 1
-  case "$index_path" in /*) ;; *) index_path="$(pwd)/$index_path" ;; esac
-  lock_path="${index_path}.lock"
-  # Capture ownership from the same descriptor that exclusively creates the
-  # lock. A separately reopened pathname could already belong to another writer.
-  if ! lock_identity=$(oip_acquire_owned_empty_lock_identity "$lock_path"); then
-    echo "::error title=engine index busy::cannot acquire and identify the authoritative Git index lock; existing lock and staged state preserved" >&2
-    return 1
-  fi
-  owned=1
+# Caller-local output variables stay under that caller's identified index lock.
+# Both modes preserve the exact same snapshot, scope/exclusion checks and objects.
+oip_freeze_locked_roots() {
   snapshot=$(mktemp "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/oip-locked-index.XXXXXX") \
     || rc=1
   clean_index=$(mktemp "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/oip-clean-index.XXXXXX") \
@@ -516,7 +493,7 @@ oip_commit_locked_roots() {
     tree=$(GIT_INDEX_FILE="$snapshot" git write-tree --missing-ok) || rc=$?
   fi
   oip_after_locked_tree_snapshot || rc=$?
-  if [ "$rc" -eq 0 ]; then
+  if [ "$rc" -eq 0 ] && [ "$validation_mode" = install ]; then
     push_qledger_guard frozen-tree --tree "$tree" --parent "$parent" \
       --target-ref refs/heads/main --accepted-baseline "$qledger_baseline" || {
         rc=$?
@@ -568,6 +545,73 @@ oip_commit_locked_roots() {
   if [ "$rc" -eq 0 ]; then
     candidate=$(printf '%s\n' "$message" | git commit-tree "$tree" -p "$parent") || rc=$?
   fi
+}
+
+# Prepare objects under the live Python owner's EXISTING empty index lock. Never
+# install refs/index or remove this resource; only its creator may release it.
+# Frozen helper code is supplied by the qualified owner, not imported from checkout.
+oip_prepare_locked_roots() {
+  local message="$1" expected_parent="$2" accepted_ref="$3" lock_identity="$4" installed_code="${5:-$2}"
+  local reject_narrow=true validation_mode=native-prepare
+  local -a allowed_roots=(data site reports templates)
+  local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
+  local diff_path="" tree="" candidate="" status path root matched rc=0 qledger_baseline=""
+  [ -n "${OIP_NATIVE_INDEX_HELPER_CODE:-}" ] && [ -n "${OIP_NATIVE_PYTHON:-}" ] || return 1
+  oip_require_main_branch || return 1
+  [ "$(git rev-parse 'refs/heads/main^{commit}')" = "$installed_code" ] || return 1
+  parent=$(git rev-parse "$expected_parent^{commit}") || return 1
+  parent_tree=$(git rev-parse "$parent^{tree}") || return 1
+  # Installed code and accepted data are independently exact; no rebase equivalence.
+  [ "$accepted_ref" = refs/remotes/origin/main ] || return 1
+  qledger_baseline=$(git rev-parse "$accepted_ref^{commit}") || return 1
+  [ "$parent" = "$expected_parent" ] && [ "$qledger_baseline" = "$expected_parent" ] || return 1
+  index_path=$(git rev-parse --git-path index) || return 1
+  case "$index_path" in /*) ;; *) index_path="$(pwd)/$index_path" ;; esac
+  lock_path="${index_path}.lock"
+  "$OIP_NATIVE_PYTHON" -I -c "$OIP_NATIVE_INDEX_HELPER_CODE" check "$lock_path" "$lock_identity" || return 1
+  oip_freeze_locked_roots
+  if [ "$rc" -eq 0 ]; then
+    "$OIP_NATIVE_PYTHON" -I -c "$OIP_NATIVE_INDEX_HELPER_CODE" check "$lock_path" "$lock_identity" || rc=$?
+    [ "$(git rev-parse 'refs/heads/main^{commit}')" = "$installed_code" ] || rc=1
+    [ "$(git rev-parse "$accepted_ref^{commit}")" = "$expected_parent" ] || rc=1
+  fi
+  [ -z "$snapshot" ] || rm -f -- "$snapshot" "$snapshot.lock"
+  [ -z "$clean_index" ] || rm -f -- "$clean_index" "$clean_index.lock"
+  [ -z "$diff_path" ] || rm -f -- "$diff_path"
+  [ "$rc" -eq 0 ] || return "$rc"
+  printf '%s\n' "$candidate" "$tree" "$parent" "$qledger_baseline"
+}
+
+# Commit the exact live index snapshot while owning Git's real index lock.
+# The same primitive is used for the broad engine tree and the later render-sync
+# tree with different root allowlists.  No validation-then-commit window exists:
+# the lock is acquired before the index copy and released only after the
+# expected-parent ref update and atomic index installation.
+oip_commit_locked_roots() {
+  local message="$1" reject_narrow="$2"
+  shift 2
+  local -a allowed_roots=("$@")
+  local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
+  local diff_path="" tree="" candidate="" restore_target="" status path root matched rc=0 owned=0
+  local qledger_rejected=0 lock_identity="" qledger_baseline="" validation_mode=install
+
+  oip_require_main_branch || return 1
+  parent=$(git rev-parse 'refs/heads/main^{commit}') || return 1
+  parent_tree=$(git rev-parse "$parent^{tree}") || return 1
+  # A local unpublished parent is not an accepted remote baseline.
+  # Missing tracking identity remains missing; native validation must refuse it.
+  qledger_baseline=$(git rev-parse 'refs/remotes/origin/main^{commit}' 2>/dev/null || true)
+  index_path=$(git rev-parse --git-path index) || return 1
+  case "$index_path" in /*) ;; *) index_path="$(pwd)/$index_path" ;; esac
+  lock_path="${index_path}.lock"
+  # Capture ownership from the same descriptor that exclusively creates the
+  # lock. A separately reopened pathname could already belong to another writer.
+  if ! lock_identity=$(oip_acquire_owned_empty_lock_identity "$lock_path"); then
+    echo "::error title=engine index busy::cannot acquire and identify the authoritative Git index lock; existing lock and staged state preserved" >&2
+    return 1
+  fi
+  owned=1
+  oip_freeze_locked_roots
   # Prepare the exact post-commit index in our owned lock before the ref CAS.
   if [ "$rc" -eq 0 ]; then
     cp -- "$snapshot" "$lock_path" || rc=$?
@@ -623,8 +667,12 @@ assert_integrity() {
   return 1
 }
 
-if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+if [ "${BASH_SOURCE[0]:-}" = "$0" ] || [ -z "${BASH_SOURCE[0]:-}" ]; then
   case "${1:-}" in
+    prepare-broad-candidate)
+      { [ "$#" -eq 5 ] || [ "$#" -eq 6 ]; } || exit 64
+      oip_prepare_locked_roots "$2" "$3" "$4" "$5" "${6:-$3}"
+      ;;
     publish-episode) publish_episode ;;
     publish-campaign) publish_campaign ;;
     exclude-broad) exclude_broad ;;

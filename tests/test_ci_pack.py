@@ -5368,9 +5368,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_636),
+    ("templates/index.html", 138, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_666),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5379,6 +5379,109 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-10-24 frozen83066 source composition retains its incoming precise
+    QLedger exclusive scope and all prior suites, plus two native-owner/finalizer
+    files. The exact literal closure additions match none of these probes.
+    Their selected sets lose only the old QLedger rider (weight80); free-content
+    also retains protected eval-os-a1 weight19->21. Current measurements are
+    index136/5836, free136/5834, Prophet129/5586, each ten packs. Existing
+    ceilings138/137/130 and5916/5912/5666 already cover them; no limit moves.
+    This planning attribution grants no runtime budget or native activation.
+
+    2026-10-24 normal composition with frozen main8c48e5c8:
+    canonical selected sets remain137/137/130, no additions/removals and
+    ten packs. Exact weights5909/5905/5659 ->5916/5912/5666 are +7 each:
+    existing QLedger regression76->80 (+4 for the causal+clock test files),
+    protected billing-emails23->25 (+2 frozen-options account suite), and
+    protected data-base-shim22->23 (+1 Shared Shell Node handshake).
+    Only these measured planning-weight literals move; job ceilings138/137/130,
+    ten packs, commands, selectors, estimator, timeouts and96/64MiB stay fixed.
+    Literal import/ancestor closure additions match none of these probes.
+
+    2026-10-24 normal composition with frozen main74aa06c9:
+    exact canonical memberships remain137/137/130, with no job added or
+    removed and ten packs. Against published4e the QLedger job66->76 adds10
+    units (accepted adapter+2; four registered component files+8), while
+    protected prelaunch-hardening51->49 contributes-2. Thus final weights
+    are5909/5905/5659, exactly+8 per probe; no extra headroom. Preserve the
+    incoming commands, job ceilings138/137/130, ten packs and all runtime/
+    storage limits. Six composed Options owner-closure paths match none
+    of these probes. No selector/estimator or assertion changes.
+
+    2026-10-24 inert owner/engine component registration on2ab57a91:
+    four actual test-file tokens in the existing QLedger regression command
+    change its measured estimate68->76 (+8, with no length-bucket increase).
+    Existing selected-job memberships contain QLedger in all three probes;
+    the registration weights5903/5899/5653 become5911/5907/5661. Preserve
+    job ceilings138/137/130, ten packs and all runtime/storage limits.
+
+    2026-10-24 ordinary publication-evidence adapter on accepted4e1be5f:
+    one new test-file token changes the existing QLedger estimate66->68.
+    Changed-job inference adds only its source/test paths, removes no path
+    and preserves every fallback and each retained probe selection. Reuse
+    exact137/137/130 selected sets: weights5901/5897/5651 become5903/5899/5653.
+    Keep ceilings138/137/130, ten packs, selector/estimator, commands and
+    every runtime/storage limit. No original operation or census replay.
+
+    2026-10-24 accepted bootstrap composition with frozen main546f0acd:
+    canonical selected sets remain137/137/130 jobs, ten packs. The bootstrap
+    test token alone changes the selected QLedger job64->66, so exact weights
+    become5901/5897/5651 (+2 each). Incoming entry-radar6->10 and prospective
+    reference61->63 jobs are not selected by these probes. Protected GovRev
+    memo coverage is already included; do not fund it again. All32 affected
+    definition closures are covered. Preserve ceilings138/137/130, ten packs,
+    selectors, estimator, commands, timeouts and storage/runtime budgets.
+
+    2026-10-24 inert host-gate composition with frozen main153fb1e3:
+    one test-file token in the already-selected QLedger regression command
+    changes that job's estimate62->64. Canonical inference for this job adds
+    only its gate source/test paths, removes nothing and preserves every
+    fallback and all three probe selections. Reuse the retained membership:
+    exact weights5897/5893/5647 become5899/5895/5649, with137/137/130 jobs
+    and ten packs. Preserve ceilings138/137/130, estimator, selectors,
+    commands, timeouts and storage budgets; this adds no runtime allowance.
+
+    2026-10-24 protected maindfb1cfc7 adds the dossier-validation memo
+    suite to the already-selected unrun-government-revenue job:104->106
+    estimator units. Membership is unchanged on every retained probe;
+    exact weights become5897/5893/5647 (+2 each), with137/137/130 jobs and
+    ten packs. The memo dependency closure adds only its own test file.
+    Preserve job ceilings138/137/130, commands, selector, estimator,
+    timeouts and storage limits; only the three expectations change.
+
+    2026-10-24 composition with protected maind8e8f1a4 adds only the
+    qualified eval-os-a1 job (19 planning units) to free-content:136/5872
+    becomes137/5891. No job leaves and no common selected weight changes;
+    index137/5895 and Prophet130/5645 are unchanged, all ten packs. Correct
+    only free-content's max-parent5873 literal to the measured5891. Four
+    exact Eval import-closure declarations match none of these probes.
+    Preserve job ceilings138/137/130, ten packs and every command, selector,
+    estimator, runtime timeout and storage limit. Both histories follow.
+
+    2026-10-23 QLedger initial-owner composition with protected main101e9b12:
+    accepted67 actual weights5888/5860/5632 become5895/5872/5645. Existing
+    selected coverage adds22 units: Press issuer-release+2, signal native
+    quote metadata+2, eight Brain suites+16 and theme W2 qualification+2.
+    Protected Ontology exclusive ownership removes its15-unit job from all
+    probes; free-content adds native-divergence+3 and issuer-release+2;
+    Prophet adds the existing Catalyst opportunity job+6. Thus exact deltas
+    are+7/+12/+13, with137/136/130 jobs and ten packs. The new owner adds no
+    command or estimator unit; its six closure paths match none of these
+    probes. Preserve job ceilings138/137/130, ten packs and every command,
+    selector, estimator and timeout. These are planning weights, not runtime
+    budgets; Prophet's old5636 literal included four units of headroom.
+
+    2026-10-22 QLedger original-result composition at protected main8fda9075:
+    the actual shared compiler measured index138/5888, free137/5860 and
+    Prophet130/5632, all ten packs. The conservative transitive closure of
+    qledger_store now includes original-result/Git-candidate owner paths,
+    adding evidence-clock and grader-manifest (6 units each) to all three
+    probes. The existing QLedger job gains6 units from the compatibility
+    suites: the total measured increase is18. Preserve that real closure
+    and protected main's autosave
+    coverage; fund only the measured breached job/weight bounds. Prophet's
+    existing130-job ceiling and the ten-pack bound stay fixed. No selector,
+    test assertion, execution timeout or suite is weakened.
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,
     not DATA support-email-spine. Hosted 40073480536 measured base 5,875

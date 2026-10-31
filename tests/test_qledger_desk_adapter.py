@@ -882,3 +882,43 @@ def test_dry_run_reports_the_control_accounting_too(tmp_path, capsys):
                 "control_refusals"):
         assert dry[key] == live[key], key
     assert dry["n_control_valid"] == 1 and dry["n_control_missing"] == 1
+
+
+def test_explicit_native_intent_is_forwarded_for_exact_prospective_batch(tmp_path, monkeypatch):
+    from engine.qledger_store_native import NativeClaimsIntent
+    intent = NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write")
+    observed = []
+    def register(claims, **kwargs):
+        observed.append((list(claims), kwargs))
+        return []
+    monkeypatch.setattr(qda.qledger, "register_batch", register)
+    from engine.qledger_store import _NativeClaimsBinding, _synthetic_claims_binding
+    from engine.qledger_store_protocol import ProtocolLimits
+    path = tmp_path / "data/qledger/claims.jsonl"
+    binding = _NativeClaimsBinding(path, operation_id=intent.operation_id,
+                                  lane_id=intent.lane_id, limits=ProtocolLimits())
+    with _synthetic_claims_binding(path, binding):
+        result = qda.register_prospective([_thematic_desk_row()], family="thematic_desk",
+            today=TODAY, root=tmp_path, native_intent=intent)
+    assert result["error"] is None and len(observed) == 1
+    assert observed[0][1]["native_intent"] is intent
+    assert observed[0][1]["root"] == tmp_path
+
+
+def test_native_intent_cannot_be_consumed_by_throwaway_dry_run(tmp_path, monkeypatch):
+    from engine.qledger_store_native import NativeClaimsIntent
+    monkeypatch.setattr(qda.qledger, "register_batch", lambda *a, **k: pytest.fail("native identity sent to temporary legacy store"))
+    result = qda.register_prospective([_thematic_desk_row()], family="thematic_desk",
+        today=TODAY, root=tmp_path, dry_run=True,
+        native_intent=NativeClaimsIntent("synthetic-operation", "thematic", "explicit-write"))
+    assert "dry_run" in result["error"]
+    assert not (tmp_path / "data").exists()
+
+
+
+def test_legacy_unavailable_clock_is_not_reported_as_started(tmp_path,monkeypatch):
+    monkeypatch.setattr(qclock,'record_start',lambda *a,**k:None)
+    stats=qda.register_prospective([_stock_desk_row()],family='stock_desk',root=tmp_path,today=TODAY)
+    assert stats['n_accepted']==1 and stats['error'] is None
+    assert stats['clock_started'] is False and stats['clock_record'] is None
+    assert stats['family_clock_status']=='unavailable'

@@ -38,6 +38,7 @@ from engine.qledger_store_protocol import (
     VerifiedSnapshot,
     plan_append,
     plan_replace_view,
+    plan_reconcile_original,
     validate_plan,
     validate_publication,
 )
@@ -575,16 +576,19 @@ class NativeClaimsSession:
     """One explicit exclusive read/dedupe/plan/materialize lifetime.
 
     The caller may inspect read_snapshot() and perform its unchanged dedupe or
-    domain transformation while this context remains open. Serialized bytes are
+    domain transformation while this context remains open. Identity-free sessions
+    may only read; all write preparation and application require explicit intent.
+    Serialized bytes are
     passed unchanged to the existing pure planners. Failed materialization stops
     this session; a retry requires a new explicit session with the same intent.
     """
 
     def __init__(
-        self, location: Path, *, intent: NativeClaimsIntent, limits: ProtocolLimits,
+        self, location: Path, *, intent: NativeClaimsIntent | None = None, limits: ProtocolLimits,
         lock_timeout: float = 30.0,
     ):
-        _identity(intent)
+        if intent is not None:
+            _identity(intent)
         if not isinstance(location, Path) or not location.is_absolute() or ".." in location.parts:
             _fail("UNSAFE_PATH", "native location requires an explicit absolute repository root")
         self.location = location
@@ -694,8 +698,9 @@ class NativeClaimsSession:
         self._stopped = True
         return ClaimsStorageError(self._last_outcome)
 
-    def append_serialized_rows(self, rows: Iterable[bytes]) -> ClaimsStorageOutcome:
+    def prepare_append(self, rows: Iterable[bytes]) -> PublicationPlan:
         self._require_open()
+        _identity(self.intent)
         snapshot = self.read_snapshot()
         try:
             plan = plan_append(
@@ -704,12 +709,13 @@ class NativeClaimsSession:
             )
         except Exception as exc:
             raise self._planning_error(snapshot, exc) from exc
-        return self._apply(plan)
+        return plan
 
-    def replace_serialized_rows(
+    def prepare_replace(
         self, rows: Iterable[bytes], *, expected_view_digest: str,
-    ) -> ClaimsStorageOutcome:
+    ) -> PublicationPlan:
         self._require_open()
+        _identity(self.intent)
         snapshot = self.read_snapshot()
         try:
             plan = plan_replace_view(
@@ -719,4 +725,28 @@ class NativeClaimsSession:
             )
         except Exception as exc:
             raise self._planning_error(snapshot, exc) from exc
+        return plan
+
+    def apply_prepared(self, plan: PublicationPlan) -> ClaimsStorageOutcome:
+        """Apply a caller-retained original plan, with the existing root CAS."""
+        self._require_open()
+        _identity(self.intent)
+        validate_plan(plan, limits=self.limits)
         return self._apply(plan)
+
+    def prepare_reconciliation(self, original_plan: PublicationPlan) -> PublicationPlan:
+        self._require_open()
+        _identity(self.intent)
+        validate_plan(original_plan, limits=self.limits)
+        if (original_plan.transaction is None
+                or original_plan.transaction.transaction_id != self.intent.transaction_id):
+            _fail("CONFLICT", "original write differs from the native intent")
+        return plan_reconcile_original(self.read_snapshot(), original_plan, limits=self.limits)
+
+    def append_serialized_rows(self, rows: Iterable[bytes]) -> ClaimsStorageOutcome:
+        return self.apply_prepared(self.prepare_append(rows))
+
+    def replace_serialized_rows(
+        self, rows: Iterable[bytes], *, expected_view_digest: str,
+    ) -> ClaimsStorageOutcome:
+        return self.apply_prepared(self.prepare_replace(rows, expected_view_digest=expected_view_digest))

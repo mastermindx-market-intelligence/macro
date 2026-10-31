@@ -1239,3 +1239,49 @@ def rebase_verified_pending(
             yield plan
 
     return rebase_pending(remote_snapshot, reconstructed_plans(), limits=limits)
+
+
+@_typed
+def plan_reconcile_original(
+    current_snapshot: VerifiedSnapshot, original_plan: PublicationPlan, *, limits: ProtocolLimits,
+) -> PublicationPlan:
+    """Reconcile one retained original write; never re-run a domain transform.
+
+    This pure result grants no storage, identity, retention or retry authority.
+    The caller must retain the sealed original plan and its native intent.
+    """
+    validate_plan(original_plan, limits=limits)
+    transaction = original_plan.transaction
+    if transaction is None:
+        _fail("CONFLICT", "reconciliation requires an original non-noop write")
+    checked = rebase_verified_pending(
+        current_snapshot, original_base_snapshot=original_plan._before,
+        original_candidate_snapshot=original_plan.snapshot,
+        authorized_transaction_ids=(transaction.transaction_id,), limits=limits,
+    )
+    rebuilt = _restart_plan(current_snapshot, original_plan.snapshot, transaction, limits)
+    if rebuilt.snapshot.root_bytes != checked.snapshot.root_bytes:
+        _fail("CONFLICT", "original write reconciliation differs from verified rebase")
+    return rebuilt
+
+
+@_typed
+def restore_original_plan(
+    original_base_snapshot: VerifiedSnapshot, original_candidate_snapshot: VerifiedSnapshot,
+    *, transaction_id: str, limits: ProtocolLimits,
+) -> PublicationPlan:
+    """Restore ONE retained write via existing exact pending verification.
+
+    Source adapters own durable inputs and custody; this pure reconstruction
+    grants neither. No claim preparation, timestamp or clock is regenerated.
+    """
+    checked = rebase_verified_pending(
+        original_base_snapshot, original_base_snapshot=original_base_snapshot,
+        original_candidate_snapshot=original_candidate_snapshot,
+        authorized_transaction_ids=(transaction_id,), limits=limits)
+    transaction = original_candidate_snapshot._transactions[-1]
+    plan = _restart_plan(original_base_snapshot, original_candidate_snapshot, transaction, limits)
+    if plan.is_noop or plan.snapshot.root_bytes != checked.snapshot.root_bytes:
+        _fail("CONFLICT", "original snapshots do not restore exactly one write")
+    validate_plan(plan, limits=limits)
+    return plan

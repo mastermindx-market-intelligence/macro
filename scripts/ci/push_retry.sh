@@ -69,8 +69,62 @@
 # `bash -e` shell is safe.
 # ---------------------------------------------------------------------------
 
+# Optional fresh-original facts binding. Bash arrays cannot be inherited as
+# environment scalars; preserve an existing local binding when sourced again.
+case "$(declare -p PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS 2>/dev/null)" in
+  'declare -a '*) ;;
+  *) PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS=(); PUSH_QLEDGER_ORIGINAL_STARTED=0
+     PUSH_QLEDGER_ORIGINAL_DIGEST=""; PUSH_RETRY_INITIALIZED=0 ;;
+esac
+push_bind_qledger_original_bootstrap() {
+  [ "$#" -eq 3 ] && [ "${PUSH_RETRY_INITIALIZED:-0}" -eq 0 ] || return 2
+  if [ "${#PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[@]}" -ne 0 ]; then
+    [ "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[0]}" = "$1" ] &&
+    [ "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[1]}" = "$2" ] &&
+    [ "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[2]}" = "$3" ]
+    return $?
+  fi
+  PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS=("$1" "$2" "$3")
+}
+
+_push_qledger_original() {
+  local mode="$1" py out rc=0
+  [ "${#PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[@]}" -ne 0 ] || return 0
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 10 ]; then
+    PUSH_TERMINAL_RC=2; PUSH_STOP="original QLedger conversion binding unavailable"; return 2
+  fi
+  if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  out=$("$py" -I "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[0]}/bootstrap.py" \
+    --owner-root "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[0]}" --repo "$(pwd -P)" \
+    --config-path "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[1]}" \
+    --config-digest "${PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[2]}" --entry "${mode}-push-original" \
+    --owner-pid "$$" --retry-deadline "$PUSH_DEADLINE" --retry-budget-secs "$PUSH_BUDGET_SECS" \
+    --max-attempts "$PUSH_MAX_ATTEMPTS" --push-alarm "${PUSH_ALARM:-0}" --attempt "$PUSH_ATTEMPT" \
+    --original-sha256 "${PUSH_QLEDGER_ORIGINAL_DIGEST:-}" \
+    --original-binding "${PUSH_QLEDGER_CONVERSION_ARGS[1]}" "${PUSH_QLEDGER_CONVERSION_ARGS[3]}" \
+    "${PUSH_QLEDGER_CONVERSION_ARGS[5]}" "${PUSH_QLEDGER_CONVERSION_ARGS[7]}" "${PUSH_QLEDGER_CONVERSION_ARGS[9]}") || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    PUSH_TERMINAL_RC="$rc"; PUSH_FAIL_CLASS="qledger-original-facts"
+    PUSH_STOP="original facts unavailable or uncertain; no recapture/restart"; return "$rc"
+  fi
+  if [ "$mode" = capture ]; then
+    case "$out" in ''|*[!0-9a-f]*) PUSH_TERMINAL_RC=2; PUSH_STOP="original capture acknowledgement invalid"; return 2 ;; esac
+    [ "${#out}" -eq 64 ] || { PUSH_TERMINAL_RC=2; PUSH_STOP="original capture acknowledgement invalid"; return 2; }
+    PUSH_QLEDGER_ORIGINAL_DIGEST="$out"
+  else
+    case "$out" in first|retry|exhausted) PUSH_QLEDGER_ORIGINAL_STATE="$out" ;;
+      *) PUSH_TERMINAL_RC=2; PUSH_STOP="original inspection acknowledgement invalid"; return 2 ;;
+    esac
+  fi
+}
+
 # Begin a retry loop. $1 = human label used in logs and the step summary.
 push_retry_init() {
+  # An uncertain/captured native original is never reset by another init.
+  if [ "${PUSH_QLEDGER_ORIGINAL_STARTED:-0}" -eq 1 ]; then
+    if [ "${PUSH_TERMINAL_RC:-0}" -ne 0 ]; then return "$PUSH_TERMINAL_RC"; fi
+    return 2
+  fi
   PUSH_LABEL="${1:-push}"
   PUSH_MAX_ATTEMPTS="${PUSH_MAX_ATTEMPTS:-10}"
   PUSH_BUDGET_SECS="${PUSH_BUDGET_SECS:-420}"
@@ -99,6 +153,11 @@ push_retry_init() {
   # Sticky for this retry operation. Once exact recovery cannot be proven, no
   # later attempt may recapture authority from the damaged post-failure state.
   PUSH_RECOVERY_FAILED=0
+  PUSH_RETRY_INITIALIZED=1
+  if [ "${#PUSH_QLEDGER_ORIGINAL_BOOTSTRAP_ARGS[@]}" -ne 0 ]; then
+    PUSH_QLEDGER_ORIGINAL_STARTED=1
+    _push_qledger_original capture || return $?
+  fi
   return 0
 }
 
@@ -109,6 +168,24 @@ _push_terminal_failure() {
 
 
 
+# Explicit process-local original binding; never inherited from environment.
+PUSH_QLEDGER_CONVERSION_ARGS=()
+push_bind_qledger_conversion() {
+  if [ "$#" -ne 5 ]; then return 2; fi
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    # A settled or uncertain original cannot be silently replaced in this process.
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[1]}" = "$1" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[3]}" = "$2" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[5]}" = "$3" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[7]}" = "$4" ] &&
+    [ "${PUSH_QLEDGER_CONVERSION_ARGS[9]}" = "$5" ]
+    return $?
+  fi
+  PUSH_QLEDGER_CONVERSION_ARGS=(--conversion-result "$1"
+    --conversion-manifest-sha256 "$2" --conversion-accepted-tip "$3"
+    --candidate "$4" --tree "$5")
+}
+
 # Query the claims owner's one production selector. The current selector is
 # unconditionally legacy. Explicit native APIs are tested separately; there is
 # no environment or filesystem activation switch in this command.
@@ -118,6 +195,11 @@ push_qledger_preflight() {
   library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
   # Prefer the explicit Python 3 executable over a legacy system python.
   if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  # Bash 3 + nounset treats an empty array expansion as unbound. Leave the
+  # legacy argv untouched; prepend a binding only when explicitly supplied.
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    set -- "${PUSH_QLEDGER_CONVERSION_ARGS[@]}" "$@"
+  fi
   PYTHONPATH="$library_root${PYTHONPATH:+:$PYTHONPATH}" "$py" \
     -m scripts.ci.qledger_publication --repo "$(pwd -P)" --boundary "$boundary" "$@"
 }
@@ -288,6 +370,7 @@ push_prepare_inherited_rebase() {
 # always allowed regardless of the deadline.
 push_attempt() {
   if _push_terminal_failure; then return 1; fi
+  _push_qledger_original inspect || return 1
   if [ "${PUSH_RECOVERY_FAILED:-0}" -eq 1 ]; then
     PUSH_STOP="recovery failed earlier in this retry operation"
     return 1
@@ -360,6 +443,11 @@ push_do() {
   else
     for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
     push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
+  fi
+  # A validated native candidate is pushed by immutable OID, not a mutable
+  # local branch that could move between preflight and Git's ref resolution.
+  if [ "${#PUSH_QLEDGER_CONVERSION_ARGS[@]}" -ne 0 ]; then
+    set -- origin "${PUSH_QLEDGER_CONVERSION_ARGS[7]}:refs/heads/main"
   fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?

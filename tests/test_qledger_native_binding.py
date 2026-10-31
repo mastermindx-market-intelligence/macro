@@ -87,7 +87,7 @@ def owner(tmp_path, limits, raw=b"", *, native, transaction_id="fixture-tx", ses
     snapshot = verified(raw, limits)
     (root / p.ROOT_PATH).write_bytes(snapshot.root_bytes)
     intent = n.NativeClaimsIntent("fixture-operation", "fixture-lane", transaction_id)
-    binding = s._NativeClaimsBinding(path, intent=intent, limits=limits, session_factory=session_factory)
+    binding = s._NativeClaimsBinding(path, operation_id=intent.operation_id, lane_id=intent.lane_id, limits=limits, session_factory=session_factory)
     with s._synthetic_claims_binding(path, binding):
         yield root, binding
 
@@ -251,7 +251,7 @@ def test_registrar_keeps_first_existing_and_batch_result_slots(native, tmp_path,
             {"claim_id": "new", "value": "later-new"},
             {"prepare_error": True},
             {"claim_id": "last"},
-        ], root)
+        ], root, native_intent=explicit_intent("fixture-tx") if native else None)
         assert len(result) == 5 and result[0] == rows[0]
         assert result[1] is result[2] and result[1]["value"] == "first-new"
         assert result[3] == {"status": "error", "error": "synthetic preparation failure"}
@@ -266,9 +266,9 @@ def test_registrar_keeps_first_existing_and_batch_result_slots(native, tmp_path,
 def test_single_existing_return_and_intentional_duplicate_batch(native, tmp_path, limits, registrar):
     old = {"claim_id": "same", "value": "first"}
     with owner(tmp_path, limits, serialized([old]), native=native) as (root, binding):
-        assert q.register({"claim_id": "same", "value": "new"}, root) == old
+        assert q.register({"claim_id": "same", "value": "new"}, root, native_intent=explicit_intent("fixture-tx") if native else None) == old
         assert registrar == []
-        result = q.register_batch([old, old], root, dedupe=False)
+        result = q.register_batch([old, old], root, dedupe=False, native_intent=explicit_intent("fixture-tx") if native else None)
         assert result == [old, old]
         assert q.load_claims(root) == [old, old, old]
         assert registrar == [[old, old]]
@@ -279,7 +279,7 @@ def test_scalar_loader_values_are_not_normalized_for_registrar_dedupe(native, tm
     with owner(tmp_path, limits, b"null\n[]\nfalse\n1\n", native=native) as (root, _):
         assert q.load_claims(root) == [None, [], False, 1]
         with pytest.raises(AttributeError):
-            q.register({"claim_id": "new"}, root)
+            q.register({"claim_id": "new"}, root, native_intent=explicit_intent("fixture-tx") if native else None)
         assert not registrar
 
 
@@ -306,9 +306,9 @@ def test_native_serialization_failure_is_structured_before_root_and_clock(batch,
         bad = {"claim_id": "broken", "cycle": cycle}
         with pytest.raises(n.ClaimsStorageError) as caught:
             if batch:
-                q.register_batch([{"claim_id": "first"}, bad], root, dedupe=False)
+                q.register_batch([{"claim_id": "first"}, bad], root, dedupe=False, native_intent=explicit_intent("fixture-tx"))
             else:
-                q.register(bad, root, dedupe=False)
+                q.register(bad, root, dedupe=False, native_intent=explicit_intent("fixture-tx"))
         assert caught.value.outcome.status == "failed_before_root"
         assert binding.last_outcome == caught.value.outcome
         assert (root / p.ROOT_PATH).read_bytes() == original
@@ -318,11 +318,14 @@ def test_native_serialization_failure_is_structured_before_root_and_clock(batch,
 def test_native_retry_keeps_stable_intent_and_never_restarts_clock(tmp_path, limits, registrar):
     row = {"claim_id": "same", "timestamp": "2026-10-09T00:00:00Z"}
     with owner(tmp_path, limits, native=True) as (root, binding):
-        intent = binding.intent
-        assert q.register(row, root, dedupe=False) == row
+        intent = explicit_intent("fixture-tx")
+        assert q.register(row, root, dedupe=False, native_intent=intent) == row
+        original = binding.attempts[0].write
         assert binding.last_outcome.intent is intent
         assert binding.last_outcome.status == "materialized" and binding.last_outcome.clock_status == "uncertain"
-        assert q.register(row, root, dedupe=False) == row
+        with pytest.raises(p.SnapshotIntegrityError, match="reconciliation"):
+            q.register(row, root, dedupe=False, native_intent=intent)
+        binding.reconcile_original_write(original)
         assert binding.last_outcome.intent is intent
         assert binding.last_outcome.status == "already_applied"
         assert q.load_claims(root) == [row] and registrar == [[row]]
@@ -332,9 +335,9 @@ def test_writer_ignores_read_scope_for_fresh_dedupe_and_scope_stays_coherent(tmp
     with owner(tmp_path, limits, native=True) as (root, binding):
         with s.ClaimsReadScope(root):
             assert q.load_claims(root) == []
-            first = q.register({"claim_id": "new", "value": "stored"}, root)
+            first = q.register({"claim_id": "new", "value": "stored"}, root, native_intent=explicit_intent("fixture-tx"))
             assert q.load_claims(root) == []
-            assert q.register({"claim_id": "new", "value": "different"}, root) == first
+            assert q.register({"claim_id": "new", "value": "different"}, root, native_intent=explicit_intent("fixture-tx")) == first
             with s.ClaimsReadScope(root):
                 assert q.load_claims(root) == []
         assert q.load_claims(root) == [first]
@@ -352,7 +355,7 @@ def test_backfill_rewrites_all_parsed_rows_only_on_real_modification(native, tmp
     original = b"malformed\n" + serialized(rows)
     monkeypatch.setattr(q, "_regime_stamp_for_asof", lambda asof: {"vector_asof": "covered", "risk_mode": "mixed"} if asof == "covered" else {"vector_asof": None})
     with owner(tmp_path, limits, original, native=native) as (root, binding):
-        result = q.backfill_regime_stamps(root)
+        result = q.backfill_regime_stamps(root, native_intent=explicit_intent("fixture-tx") if native else None)
         assert result == {"n_claims": 4, "n_backfilled": 1, "n_unstamped": 2, "n_precoverage": 1}
         expected = [dict(row) for row in rows]
         expected[0].update(vector_asof="covered", risk_mode="mixed", regime_stamp_basis="recomputed_history")
@@ -372,7 +375,7 @@ def test_backfill_noop_preserves_unparsed_raw_bytes(native, tmp_path, limits, re
     monkeypatch.setattr(q, "_regime_stamp_for_asof", lambda *a: pytest.fail("stamped row recomputed"))
     with owner(tmp_path, limits, original, native=native) as (root, binding):
         before_root = (root / p.ROOT_PATH).read_bytes() if native else None
-        assert q.backfill_regime_stamps(root)["n_backfilled"] == 0
+        assert q.backfill_regime_stamps(root, native_intent=explicit_intent("fixture-tx") if native else None)["n_backfilled"] == 0
         assert (root / p.BASE_PATH).read_bytes() == original and not registrar
         if native:
             assert (root / p.ROOT_PATH).read_bytes() == before_root
@@ -399,7 +402,7 @@ def test_clock_attempt_survives_stronger_session_release_error(tmp_path, limits,
 
     with owner(tmp_path, limits, native=True, session_factory=ReleaseFailure) as (root, binding):
         with pytest.raises(n.ClaimsStorageError) as caught:
-            q.register({"claim_id": "new"}, root)
+            q.register({"claim_id": "new"}, root, native_intent=explicit_intent("fixture-tx"))
         outcome = caught.value.outcome
         assert outcome.status == "materialized" and outcome.root_visibility == "visible"
         assert outcome.failure_code == "SYNTHETIC_RELEASE" and outcome.clock_status == "uncertain"
@@ -423,7 +426,7 @@ def test_native_backfill_rejects_changed_root_before_replacement(tmp_path, limit
         def read_snapshot(self):
             return self.session.read_snapshot()
 
-        def replace_serialized_rows(self, rows, *, expected_view_digest):
+        def prepare_replace(self, rows, *, expected_view_digest):
             # Synthetic non-cooperating owner changes only this fixture's root.
             other = p.plan_append(self.read_snapshot(), transaction_id="external", serialized_rows=[b'{"claim_id":"external"}\n'], limits=limits)
             for path, value in other.members.items():
@@ -431,18 +434,287 @@ def test_native_backfill_rejects_changed_root_before_replacement(tmp_path, limit
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(value)
             (self.location / p.ROOT_PATH).write_bytes(other.root_bytes)
-            return self.session.replace_serialized_rows(rows, expected_view_digest=expected_view_digest)
+            return self.session.prepare_replace(rows, expected_view_digest=expected_view_digest)
+
+        def apply_prepared(self, plan):
+            return self.session.apply_prepared(plan)
 
     monkeypatch.setattr(q, "_regime_stamp_for_asof", lambda *a: {"vector_asof": "covered"})
     old = {"claim_id": "old", "asof": "covered", "vector_asof": None}
     with owner(tmp_path, limits, serialized([old]), native=True, session_factory=ChangedRoot) as (root, binding):
         with pytest.raises(n.ClaimsStorageError) as caught:
-            q.backfill_regime_stamps(root)
+            q.backfill_regime_stamps(root, native_intent=explicit_intent("fixture-tx"))
         assert caught.value.outcome.status == "failed_before_root"
         assert binding.last_outcome == caught.value.outcome and not registrar
         assert q.load_claims(root) == [old, {"claim_id": "external"}]
 
 
+# Explicit caller identities below are fixture inputs, never generated retry IDs.
+def explicit_intent(transaction_id):
+    return n.NativeClaimsIntent("fixture-operation", "fixture-lane", transaction_id)
+
+
+def test_two_explicit_writes_and_original_reconciliation(tmp_path, limits, registrar):
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        original = binding.attempts[0].write
+        q.register_batch([{"claim_id": "two"}], root, native_intent=explicit_intent("two"))
+        assert [a.write.intent.transaction_id for a in binding.attempts] == ["one", "two"]
+        before = (root / p.ROOT_PATH).read_bytes()
+        result = binding.reconcile_original_write(original)
+        assert result.status == "already_applied" and result.clock_status == "uncertain"
+        assert (root / p.ROOT_PATH).read_bytes() == before
+        assert q.load_claims(root) == [{"claim_id": "one"}, {"claim_id": "two"}]
+        assert registrar == [[{"claim_id": "one"}], [{"claim_id": "two"}]]
+
+
+def test_missing_identity_only_refuses_actual_native_write(tmp_path, limits, registrar):
+    old = {"claim_id": "old", "vector_asof": "set"}
+    with owner(tmp_path, limits, serialized([old]), native=True) as (root, binding):
+        before = (root / p.ROOT_PATH).read_bytes()
+        assert q.register(old, root) == old
+        assert q.register_batch([], root) == []
+        assert q.backfill_regime_stamps(root)["n_backfilled"] == 0
+        assert not binding.attempts and not registrar
+        with pytest.raises(p.SnapshotIntegrityError, match="intent"):
+            q.register({"claim_id": "new"}, root)
+        assert not binding.attempts and (root / p.ROOT_PATH).read_bytes() == before
+
+
+def test_native_tracked_read_resolves_owner_binding_without_fixture_context(tmp_path, limits, monkeypatch):
+    path = tmp_path / p.BASE_PATH
+    binding = RetainedBinding(path, verified(b"complete history\n", limits))
+    monkeypatch.setattr(s, "_production_claims_binding", lambda selected: binding)
+    text, source = s.read_tracked_claims_text(
+        tmp_path, Path(p.BASE_PATH), legacy_reader=lambda *a: pytest.fail("legacy fallback"))
+    assert text == "complete history\n" and source.startswith("qledger-native:")
+    binding.snapshots = (p.SnapshotIntegrityError("MISSING", "fixture corrupt native source"),)
+    with pytest.raises(p.SnapshotIntegrityError):
+        s.read_tracked_claims_text(tmp_path, Path(p.BASE_PATH), legacy_reader=lambda *a: pytest.fail("legacy fallback"))
+
+
+def test_post_apply_response_loss_retains_original_and_blocks_fresh_write(tmp_path, limits, registrar, monkeypatch):
+    apply = n.NativeClaimsSession.apply_prepared
+
+    def response_lost(session, plan):
+        result = apply(session, plan)
+        raise RuntimeError("fixture response lost after native materialization")
+
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", response_lost)
+        with pytest.raises(RuntimeError, match="response lost"):
+            q.register({"claim_id": "one", "timestamp": "original"}, root,
+                       native_intent=explicit_intent("one"))
+        original = binding.attempts[0].write
+        assert binding.attempts[0].outcome is None and binding.last_outcome is None
+        assert q.load_claims(root) == [{"claim_id": "one", "timestamp": "original"}]
+        with pytest.raises(p.SnapshotIntegrityError, match="unsettled"):
+            q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert len(binding.attempts) == 1 and not registrar
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", apply)
+        monkeypatch.setattr(q, "_prepare_claim", lambda *a: pytest.fail("recovery re-prepared domain data"))
+        outcome = binding.reconcile_original_write(original)
+        assert outcome.status == "already_applied" and outcome.clock_status == "uncertain"
+        assert len(binding.attempts) == 2 and binding.attempts[0].outcome is None
+        assert not registrar
+
+
+def test_uncertain_root_retained_until_same_original_reconciliation(tmp_path, limits, registrar, monkeypatch):
+    real_replace = n.os.replace
+
+    def uncertain(source, target, *args, **kwargs):
+        result = real_replace(source, target, *args, **kwargs)
+        if str(target) == Path(p.ROOT_PATH).name:
+            raise OSError("fixture lost root replacement return")
+        return result
+
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        monkeypatch.setattr(n.os, "replace", uncertain)
+        with pytest.raises(n.ClaimsStorageError) as caught:
+            q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        original = binding.attempts[0].write
+        unknown = caught.value.outcome
+        assert unknown.status == "root_effect_uncertain" and not registrar
+        with pytest.raises(p.SnapshotIntegrityError, match="unsettled"):
+            q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert binding.last_outcome is unknown
+        # Matching a copied wrapper alone is insufficient: all original inputs
+        # must still match, including the caller's transaction intent.
+        with pytest.raises(p.SnapshotIntegrityError, match="unsettled"):
+            binding.reconcile_original_write(replace(original, intent=explicit_intent("different")))
+        monkeypatch.setattr(n.os, "replace", real_replace)
+        assert binding.reconcile_original_write(replace(original)).status == "already_applied"
+        assert binding.attempts[0].outcome is unknown
+        q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert q.load_claims(root) == [{"claim_id": "one"}, {"claim_id": "two"}]
+        assert registrar == [[{"claim_id": "two"}]]
+
+
+def test_reconciliation_refuses_same_id_different_payload_and_foreign_owner(tmp_path, limits, registrar):
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        original = binding.attempts[0].write
+        different = p.plan_append(original.plan._before, transaction_id="one",
+                                  serialized_rows=[b'{"claim_id":"different"}\n'], limits=limits)
+        before = (root / p.ROOT_PATH).read_bytes()
+        with pytest.raises(p.SnapshotIntegrityError, match="conflict"):
+            binding.reconcile_original_write(replace(original, plan=different))
+        foreign = n.NativeClaimsIntent("other-operation", "fixture-lane", "one")
+        with pytest.raises(p.SnapshotIntegrityError, match="owner"):
+            binding.reconcile_original_write(replace(original, intent=foreign))
+        assert (root / p.ROOT_PATH).read_bytes() == before and len(binding.attempts) == 1
+
+
+def test_identity_free_snapshot_and_legacy_intent_refusal(tmp_path, limits, monkeypatch):
+    supplied = []
+    class ReadSession(n.NativeClaimsSession):
+        def __init__(self, *args, **kwargs):
+            supplied.append(kwargs["intent"])
+            super().__init__(*args, **kwargs)
+    with owner(tmp_path, limits, native=True, session_factory=ReadSession) as (root, binding):
+        assert logical(binding.read_snapshot()) == b""
+        assert not binding.attempts and supplied == [None]
+    with pytest.raises(p.SnapshotIntegrityError, match="binding"):
+        q.register({"claim_id": "one"}, tmp_path / "legacy", native_intent=explicit_intent("one"))
+    assert not (tmp_path / "legacy" / p.BASE_PATH).exists()
+
+
+def test_changed_backfill_requires_intent_and_original_replacement_stays_exact(tmp_path, limits, registrar, monkeypatch):
+    raw = serialized([{"claim_id": "old", "asof": "covered", "vector_asof": None}])
+    monkeypatch.setattr(q, "_regime_stamp_for_asof", lambda *a: {"vector_asof": "covered"})
+    with owner(tmp_path, limits, raw, native=True) as (root, binding):
+        before = (root / p.ROOT_PATH).read_bytes()
+        with pytest.raises(p.SnapshotIntegrityError, match="intent"):
+            q.backfill_regime_stamps(root)
+        assert not binding.attempts and (root / p.ROOT_PATH).read_bytes() == before
+        q.backfill_regime_stamps(root, native_intent=explicit_intent("backfill"))
+        original = binding.attempts[0].write
+        q.register({"claim_id": "later"}, root, native_intent=explicit_intent("append"))
+        expected = logical(binding.read_snapshot())
+        monkeypatch.setattr(q, "_regime_stamp_for_asof", lambda *a: pytest.fail("backfill recomputed on reconciliation"))
+        assert binding.reconcile_original_write(original).status == "already_applied"
+        assert logical(binding.read_snapshot()) == expected
+        assert len(registrar) == 1  # only the independent append
+
+
+def test_task_local_write_inputs_feed_existing_publication_receipt_validator(tmp_path, limits, registrar):
+    from scripts.ci.qledger_publication import NativeOperationReceipt, classify_pending
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        a, b = binding.attempts
+        receipt = NativeOperationReceipt(binding.operation_id, binding.lane_id,
+            a.write.plan._before, b.write.plan.snapshot, ("one", "two"), limits)
+        assert classify_pending(b.write.plan.snapshot, native_operation_receipt=receipt)["status"] == "KNOWN_NATIVE_PENDING"
+        for ids in (("one",), ("two", "one"), ("one", "two", "foreign")):
+            with pytest.raises(p.SnapshotIntegrityError):
+                classify_pending(b.write.plan.snapshot, native_operation_receipt=replace(receipt, authorized_transaction_ids=ids))
+
+
+def test_original_write_is_path_bound_and_stale_unapplied_replacement_refuses(tmp_path, limits, registrar):
+    with owner(tmp_path, limits, serialized([{"claim_id": "old"}]), native=True) as (root, binding):
+        base = binding.read_snapshot()
+        original_plan = p.plan_replace_view(base, transaction_id="replace",
+            expected_view_digest=base.root.logical_digest,
+            replacement_rows=[b'{"claim_id":"replacement"}\n'], limits=limits)
+        write = s.NativeClaimsWrite(explicit_intent("replace"), original_plan, binding.claims_path)
+        with pytest.raises(p.SnapshotIntegrityError, match="claims path"):
+            binding.reconcile_original_write(replace(write, claims_path=tmp_path / "other" / p.BASE_PATH))
+        q.register({"claim_id": "intervening"}, root, native_intent=explicit_intent("append"))
+        before = (root / p.ROOT_PATH).read_bytes()
+        with pytest.raises(p.SnapshotIntegrityError, match="stale"):
+            binding.reconcile_original_write(write)
+        assert (root / p.ROOT_PATH).read_bytes() == before and len(binding.attempts) == 1
+
+
+def test_task_local_attempt_retention_has_finite_budget(tmp_path, limits, registrar):
+    bounded = replace(limits, history_operations=1)
+    with owner(tmp_path, bounded, native=True) as (root, binding):
+        q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        before = (root / p.ROOT_PATH).read_bytes()
+        assert binding.reconcile_original_write(binding.attempts[0].write).status == "already_applied"
+        with pytest.raises(p.SnapshotIntegrityError, match="attempt budget"):
+            q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert len(binding.attempts) == 1 and (root / p.ROOT_PATH).read_bytes() == before
+
+
+def test_unapplied_original_append_reconciles_after_independent_append_without_restamp(tmp_path, limits, registrar, monkeypatch):
+    apply = n.NativeClaimsSession.apply_prepared
+    def before_apply(session, plan):
+        raise RuntimeError("fixture loss after prepare before materialization")
+    with owner(tmp_path, limits, native=True) as (root, binding):
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", before_apply)
+        with pytest.raises(RuntimeError, match="after prepare"):
+            q.register({"claim_id": "original", "timestamp": "fixed-original"}, root,
+                       native_intent=explicit_intent("original"))
+        original = binding.attempts[0].write
+        assert binding.attempts[0].outcome is None and q.load_claims(root) == []
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", apply)
+        with n.NativeClaimsSession(root, intent=n.NativeClaimsIntent("independent", "other", "other"), limits=limits) as session:
+            session.append_serialized_rows([b'{"claim_id":"independent"}\n'])
+        monkeypatch.setattr(q, "_prepare_claim", lambda *a: pytest.fail("original recovery restamped"))
+        result = binding.reconcile_original_write(original)
+        assert result.status == "materialized" and result.clock_status == "not_attempted"
+        assert q.load_claims(root) == [
+            {"claim_id": "independent"}, {"claim_id": "original", "timestamp": "fixed-original"}]
+        assert not registrar
+
+
+def test_original_input_retention_refuses_over_budget_before_second_effect(tmp_path, limits, registrar):
+    bounded = replace(limits, snapshot_bytes=12000)
+    raw = serialized([{"claim_id": "base", "pad": "x" * 4000}])
+    with owner(tmp_path, bounded, raw, native=True) as (root, binding):
+        q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        before = (root / p.ROOT_PATH).read_bytes()
+        with pytest.raises(p.SnapshotIntegrityError, match="retention budget"):
+            q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert (root / p.ROOT_PATH).read_bytes() == before and len(binding.attempts) == 1
+        assert registrar == [[{"claim_id": "one"}]]
+
+
+@pytest.mark.parametrize("applied", [False, True])
+def test_unsettled_at_attempt_limit_only_permits_verified_no_effect_reconciliation(applied, tmp_path, limits, registrar, monkeypatch):
+    bounded = replace(limits, history_operations=1)
+    real_apply = n.NativeClaimsSession.apply_prepared
+    def lose_response(session, plan):
+        if applied:
+            result = real_apply(session, plan)
+            raise n.ClaimsStorageError(replace(result, status=n.StorageStatus.ROOT_EFFECT_UNCERTAIN,
+                durability_status="uncertain", root_visibility="unknown", clock_status="uncertain"))
+        raise RuntimeError("fixture prepared original has no effect receipt")
+    with owner(tmp_path, bounded, native=True) as (root, binding):
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", lose_response)
+        with pytest.raises(n.ClaimsStorageError if applied else RuntimeError):
+            q.register({"claim_id": "one"}, root, native_intent=explicit_intent("one"))
+        original_attempt = binding.attempts[0]
+        before = (root / p.ROOT_PATH).read_bytes()
+        monkeypatch.setattr(n.NativeClaimsSession, "apply_prepared", real_apply)
+        if applied:
+            result = binding.reconcile_original_write(original_attempt.write)
+            assert result.status == "already_applied" and result.clock_status == "uncertain"
+            assert result.durability_status == "uncertain"
+        else:
+            with pytest.raises(p.SnapshotIntegrityError, match="effectful original reconciliation"):
+                binding.reconcile_original_write(original_attempt.write)
+        with pytest.raises(p.SnapshotIntegrityError):
+            q.register({"claim_id": "two"}, root, native_intent=explicit_intent("two"))
+        assert binding.attempts == (original_attempt,)
+        assert (root / p.ROOT_PATH).read_bytes() == before and not registrar
+
+
+def test_caught_clock_input_serialization_failure_remains_visible_before_attempt(tmp_path,limits,registrar):
+    with owner(tmp_path,limits,native=True) as (root,binding):
+        before=(root/p.ROOT_PATH).read_bytes()
+        cycle={};cycle['cycle']=cycle
+        with s._claims_mutation(binding.claims_path,native_intent=explicit_intent('fixture-caught-input')) as writer:
+            with pytest.raises(n.ClaimsStorageError) as caught:
+                writer.bind_registration_clocks([{'claim_id':'bad-clock-input','cycle':cycle}],today=None)
+        assert caught.value.outcome.status=='failed_before_root'
+        assert caught.value.outcome.root_visibility=='unchanged'
+        assert caught.value.outcome.clock_status=='not_attempted'
+        assert binding.pre_attempt_failure.stage=='registration-clock-input'
+        assert not binding.attempts and not registrar
+        assert (root/p.ROOT_PATH).read_bytes()==before
 
 def test_t1_complete_stream_reuses_selected_generation_and_receipt(tmp_path, limits, monkeypatch):
     from scripts import build_intelligence_registry as builder
