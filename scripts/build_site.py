@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.sponsors import flows_table  # noqa: E402
 from engine.i18n import prettify as _prettify, t as T  # noqa: E402
 from engine.inputs import build_features  # noqa: E402
+from engine import tech_volatility_shock  # noqa: E402 — EOD descriptive SPY/QQQ lens
 from engine.market_gamma import view as market_gamma_view  # noqa: E402 — SHARED deriver: FE banner + contract (engine/run.py) call the SAME function so they can't drift
 # P-MP1-SHELL §8a (MP-1-prophet-board.md, b1 ruling): the SAME Q7 bucket table
 # engine/us_board_rank.py already ships for the entry/actionability axis — imported
@@ -7312,6 +7313,7 @@ def main() -> int:
         chart_liquidity=chart_liquidity(f),
         chart_credit_breadth=chart_credit_breadth(f),
         market_tiles=market_tiles(f),
+        tech_shock=tech_volatility_shock.build_snapshot(),  # raw RTH OHLC; full-day volume, fail-visible
         vix=vix_monitor(f),
         chart_vix=chart_vix(f),
         chart_liquidity_meta=_chart_liq_meta,   # MSX-2: {chg_4w_bn, state} for panel chip
@@ -7385,7 +7387,8 @@ def main() -> int:
     # dashboard out of index.html is what stops Home (-> index.html) from
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
-    write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    from scripts.tech_shock_macro import render_macro_with_shock
+    write_page(out, render_macro_with_shock(env, vm))
 
     # The cross-market component belongs to intl.html, not the primary US route.
     # Publish the same rendered view, preserving all per-market evidence/clocks.
