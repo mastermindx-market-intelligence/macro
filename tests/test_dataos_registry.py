@@ -615,3 +615,264 @@ def test_bea_stage_nested_source_import_failure_is_not_hidden(tmp_path, monkeypa
             expected_index_sha256="c" * 64)
     assert not tuple(tmp_path.iterdir())
 
+
+
+# Unadmitted BEA byte-readback contract; never a new Data OS source reader.
+def _synthetic_bea_full_stage(tmp_path, *, correction_revision=0):
+    """Synthetic full 72x138 index. NO original BEA source is involved."""
+    import hashlib
+    import json
+    from lib.dataos import bea_gvc_staging as bea
+
+    def encoded(obj):
+        return json.dumps(obj, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False).encode("utf-8")
+
+    def digest(blob):
+        return hashlib.sha256(blob).hexdigest()
+
+    years = list(range(2017, 2025))
+    tables = (
+        "Use", "ImMatAll", "ImMatCan", "ImMatChi", "ImMatEur",
+        "ImMatJap", "ImMatMex", "ImMatRoa", "ImMatRow",
+    )
+    lineage_bytes = encoded({"synthetic": True, "years": years})
+    lineage_sha = digest(lineage_bytes)
+    producer_sha = "4" * 64
+    source = []
+    files = {"source_lineage.json": lineage_bytes}
+    capture = {}
+    for year in years:
+        for group in range(3):
+            body = encoded({"synthetic": "capture", "year": year, "group": group})
+            capture[year, group] = digest(body)
+            files["capture_receipts/" + capture[year, group] + ".json"] = body
+        for i, table in enumerate(tables):
+            body = encoded({"synthetic": "original", "year": year, "table": table})
+            sha = digest(body)
+            source.append({
+                "accounting_year": year, "source_table_id": table,
+                "original_response_sha256": sha, "original_response_bytes": len(body),
+                "capture_receipt_sha256": capture[year, i % 3],
+                "research_source_capture_completed_at": "2026-10-19T00:00:00+00:00",
+            })
+            files[f"original_responses/{table}/{sha}.json"] = body
+    manifest = {
+        "schema": "mastermind.bea_gvc_source_candidate/v1",
+        "l0_dataset_id": "bea.gvc.may2026.original_responses",
+        "l1_dataset_id": "bea.gvc.may2026.industry_import_inputs",
+        "candidate_state": "BYTE_VERIFIED_NOT_INSTALLED",
+        "accounting_years": years, "source_response_count": 72,
+        "expected_l1_rows": 138 * 139 * 8,
+        "complete_2017_2024_panel": True,
+        "publisher_edition_date": "2026-05-21",
+        "publication_precision": "DAY",
+        "source_lineage_sha256": lineage_sha,
+        "producer_code_sha256": producer_sha,
+        "candidate_revision_seq": correction_revision,
+        "supersedes_candidate_generation":
+            ("1" * 64 if correction_revision else None),
+        "native_ingested_at": None, "native_revision_seq": None,
+        "native_known_at": None, "published_at": None,
+        "original_historical_available_at": None,
+        "dataos_native_admitted": False, "may_publish": False,
+        "may_rank": False, "may_trade": False, "may_train": False,
+        "historical_pit_eligible": False, "named_company_relationship": False,
+        "sources": source,
+    }
+    manifest_bytes = encoded(manifest)
+    gen = digest(manifest_bytes)
+    files["candidate_manifest.json"] = manifest_bytes
+    views = []
+    for i in range(138):
+        code = f"I{i:03d}"
+        body = (encoded({"synthetic": "industry", "code": code}) + b"\n") * (139 * 8)
+        sha = digest(body)
+        files[f"industry_inputs/industry_{code}.jsonl"] = body
+        views.append({
+            "industry_code_exact": code,
+            "relative_storage_path_proposed_only":
+                f"data/bea/gvc/may2026/industry_inputs/industry_{code}.jsonl",
+            "jsonl_sha256": sha, "jsonl_bytes": len(body), "row_count": 139 * 8,
+        })
+    index = {
+        "schema": "mastermind.bea_gvc_l1_candidate_index/v1",
+        "dataset_id": "bea.gvc.may2026.industry_import_inputs",
+        "source_generation_id": gen,
+        "candidate_state": "BYTE_VERIFIED_NOT_INSTALLED",
+        "source_lineage_sha256": lineage_sha, "producer_code_sha256": producer_sha,
+        "accounting_years": years, "source_response_count": 72,
+        "industry_count": 138, "row_count": 138 * 139 * 8,
+        "publisher_edition_date": "2026-05-21",
+        "publication_precision": "DAY",
+        "native_ingested_at": None, "native_revision_seq": None,
+        "dataos_native_admitted": False, "may_publish": False,
+        "views": views,
+    }
+    index_bytes = encoded(index)
+    files["candidate_index.json"] = index_bytes
+    index_sha = digest(index_bytes)
+    receipt = bea.BEAGVCStageReceipt(
+        source_generation_id=gen,
+        candidate_manifest_sha256=gen,
+        candidate_index_sha256=index_sha,
+        relative_directory="candidate-" + gen,
+        source_response_count=72, source_file_count=72,
+        capture_receipt_count=24, industry_count=138,
+        total_industry_rows=138 * 139 * 8)
+    bea._stage_verified_bytes(tmp_path.resolve(), generation=gen, files=files,
+                              receipt=receipt)
+    return {
+        "kwargs": {
+            "root": tmp_path.resolve(),
+            "source_generation_id": gen,
+            "expected_manifest_sha256": gen,
+            "expected_index_sha256": index_sha,
+        },
+        "directory": tmp_path.resolve() / receipt.relative_directory,
+        "files": files,
+        "receipt": receipt,
+    }
+
+
+@pytest.mark.parametrize("revision", [0, 1])
+def test_bea_stage_readback_full_synthetic_generation_and_correction(tmp_path, revision):
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path, correction_revision=revision)
+    actual = bea.verify_unadmitted_bea_gvc_stage(**staged["kwargs"])
+    assert actual == staged["receipt"]
+    assert actual.state == "STAGED_NOT_INSTALLED"
+    assert actual.industry_count == 138 and actual.total_industry_rows == 153456
+    assert not (actual.dataos_native_admitted or actual.may_publish or actual.may_trade)
+    assert len([p for p in staged["directory"].rglob("*.jsonl")]) == 138
+
+
+@pytest.mark.parametrize("kind", (
+    "original", "industry", "capture", "lineage", "manifest", "index", "receipt",
+    "missing", "extra", "link", "mode", "forged_authority",
+))
+def test_bea_stage_readback_rejects_modified_or_untrusted_bytes(tmp_path, kind):
+    import json
+    import os
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path)
+    directory = staged["directory"]
+    files = staged["files"]
+    name = (
+        next(p for p in files if p.startswith("original_responses/"))
+        if kind == "original" else
+        next(p for p in files if p.startswith("industry_inputs/"))
+        if kind == "industry" else
+        next(p for p in files if p.startswith("capture_receipts/"))
+        if kind == "capture" else
+        {"lineage": "source_lineage.json", "manifest": "candidate_manifest.json",
+         "index": "candidate_index.json", "receipt": "stage_receipt.json"}.get(kind))
+    if name is not None:
+        (directory / name).write_bytes((directory / name).read_bytes() + b" ")
+    elif kind == "missing":
+        (directory / "candidate_index.json").unlink()
+    elif kind == "extra":
+        (directory / "unexpected_extra_file").write_bytes(b"extra")
+    elif kind == "link":
+        target = tmp_path / "outside"
+        target.write_bytes(b"outside")
+        (directory / "extra_symlink").symlink_to(target)
+    elif kind == "mode":
+        os.chmod(directory / "candidate_index.json", 0o644)
+    elif kind == "forged_authority":
+        path = directory / "stage_receipt.json"
+        doc = json.loads(path.read_bytes())
+        doc["may_publish"] = True
+        path.write_bytes(bea._canonical(doc))
+    with pytest.raises(bea.BEAGVCStageRefused):
+        bea.verify_unadmitted_bea_gvc_stage(**staged["kwargs"])
+
+
+def test_bea_stage_readback_refuses_caller_pin_and_missing_generation(tmp_path):
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path)
+    wrong = dict(staged["kwargs"])
+    wrong["expected_index_sha256"] = "f" * 64
+    with pytest.raises(bea.BEAGVCStageRefused):
+        bea.verify_unadmitted_bea_gvc_stage(**wrong)
+    wrong = dict(staged["kwargs"])
+    wrong["source_generation_id"] = "e" * 64
+    with pytest.raises(bea.BEAGVCStageRefused):
+        bea.verify_unadmitted_bea_gvc_stage(**wrong)
+    assert bea.verify_unadmitted_bea_gvc_stage(**staged["kwargs"]) == staged["receipt"]
+
+
+def test_bea_stage_readback_rejects_forged_row_count_with_matching_digests(tmp_path):
+    """A consistent forged index digest must not make one row into 1,112."""
+    import hashlib
+    import json
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path)
+    root = staged["directory"]
+    victim = root / "industry_inputs/industry_I000.jsonl"
+    victim.write_bytes(b'{"synthetic":"one row"}\n')
+    index_file = root / "candidate_index.json"
+    index = json.loads(index_file.read_bytes())
+    view = index["views"][0]
+    assert view["industry_code_exact"] == "I000"
+    view["jsonl_sha256"] = hashlib.sha256(victim.read_bytes()).hexdigest()
+    view["jsonl_bytes"] = len(victim.read_bytes())
+    index_raw = bea._canonical(index)
+    index_file.write_bytes(index_raw)
+    pin = hashlib.sha256(index_raw).hexdigest()
+    receipt_file = root / "stage_receipt.json"
+    receipt = json.loads(receipt_file.read_bytes())
+    receipt["candidate_index_sha256"] = pin
+    receipt_file.write_bytes(bea._canonical(receipt))
+    kwargs = dict(staged["kwargs"])
+    kwargs["expected_index_sha256"] = pin
+    with pytest.raises(bea.BEAGVCStageRefused, match="row count"):
+        bea.verify_unadmitted_bea_gvc_stage(**kwargs)
+
+
+def test_bea_stage_intermediate_parents_remain_private_with_umask_022(tmp_path):
+    """Linux mkdir(parents=True) must not create 0755 intermediate parents."""
+    import os
+    import stat
+    from lib.dataos import bea_gvc_staging as bea
+    root = tmp_path.resolve()
+    old = os.umask(0o022)
+    try:
+        receipt = bea._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"original_responses/Use/synthetic.json": b'{"fake":true}'},
+            receipt=_bea_staging_receipt())
+    finally:
+        os.umask(old)
+    final = root / receipt.relative_directory
+    for dirname in (final, final / "original_responses",
+                    final / "original_responses/Use"):
+        assert stat.S_IMODE(dirname.stat().st_mode) == 0o700
+    assert bea._stage_stat.S_IMODE(
+        (final / "original_responses/Use/synthetic.json").stat().st_mode
+    ) == 0o600
+
+
+def test_bea_stage_readback_fifo_metadata_fails_without_blocking(tmp_path, monkeypatch):
+    """A FIFO at the first metadata read must refuse, never hang CI."""
+    import os
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path)
+    fifo = staged["directory"] / "stage_receipt.json"
+    fifo.unlink()
+    os.mkfifo(fifo, 0o600)
+    original_open = os.open
+    observed_leaf_open = []
+
+    def guarded_open(path, flags, *args, **kwargs):
+        if path == "stage_receipt.json":
+            # This assertion ensures the test itself cannot hang if a future
+            # change accidentally drops O_NONBLOCK from the metadata open.
+            assert flags & os.O_NONBLOCK, "metadata FIFO open must be nonblocking"
+            observed_leaf_open.append(True)
+        return original_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(bea.os, "open", guarded_open)
+    with pytest.raises(bea.BEAGVCStageRefused, match="unsafe shape"):
+        bea.verify_unadmitted_bea_gvc_stage(**staged["kwargs"])
+    assert observed_leaf_open
