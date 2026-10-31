@@ -480,7 +480,7 @@ waves:
     title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
     status: awaiting_ci
     pr: 10325
-    # Draft #10325 head f2532edbaa2d (parent main f2efb8faf983) by ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; review lane gd-ew-p2-r1 APPROVE (R1-R11 hold); flag gate ROTATION_OBSERVATION_RECORDING_ENABLED != "1" keeps recording off.
+    # Draft #10325 head f2532edbaa2d (parent main f2efb8baf983) by ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; review lane gd-ew-p2-r1 APPROVE (R1-R11 hold); flag gate ROTATION_OBSERVATION_RECORDING_ENABLED != "1" keeps recording off.
     # #10104 (head a324b7fc, merge-base c9608be2) left open; successor pointer comment posted once 2026-10-31. Activation (T2+) needs its own gate.
     depends_on: [EW-P0]
   - id: EW-P3
