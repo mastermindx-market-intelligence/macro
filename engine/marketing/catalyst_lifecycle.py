@@ -418,7 +418,8 @@ class FunnelService:
     def __init__(self, *, secret: str, scan: ScanAuthority, identity: OtpIdentityAuthority,
                  consent: ConsentOwner, suppression: SuppressionAuthority,
                  revisions: RevisionAuthority, sender: DeliveryAuthority,
-                 rights_clock: Callable[[datetime], datetime] | None = None):
+                 rights_clock: Callable[[datetime], datetime] | None = None,
+                 confirm_gate: Callable[[], bool] | None = None):
         self.secret = secret
         self.scan = scan
         self.identity = identity
@@ -426,6 +427,8 @@ class FunnelService:
         self.suppression = suppression
         self.revisions = revisions
         self.sender = sender
+        # Existing app/operations gate only; a missing binding denies confirmation.
+        self._confirm_gate = confirm_gate
         # Production reads real wall time separately for EACH rights check;
         # deterministic tests may inject a frozen/advancing clock. A caller's
         # initial batch "now" cannot extend a license across a long send.
@@ -645,6 +648,18 @@ class FunnelService:
             raise
         except Exception as exc:
             raise FunnelGate("SUPPRESSION_CHECK_UNAVAILABLE") from exc
+        # Rights/corrections may change while GoTrue verifies an OTP.
+        final_scan = self._qualified_scan(signed_scan, now=now)
+        if (final_scan.event_id != payload["event_id"] or
+                list(final_scan.tickers) != payload["tickers"]):
+            raise FunnelGate("SCAN_PROOF_SUPERSEDED", 403)
+        try:
+            if self._confirm_gate is None or self._confirm_gate() is not True:
+                raise FunnelGate("CATALYST_OPTIN_DISABLED", 503)
+        except FunnelGate:
+            raise
+        except Exception:
+            raise FunnelGate("CATALYST_OPTIN_DISABLED", 503) from None
         record = ConsentRecord(user_id=uid, email=addr, event_id=payload["event_id"],
                                tickers=tuple(payload["tickers"]), scope=SCOPE,
                                verified_at_utc=now.isoformat(), intent_id=payload["nonce"],
@@ -728,6 +743,7 @@ class FunnelService:
             raise FunnelGate("DELIVERY_ROSTER_UNAVAILABLE") from exc
         out: list[dict[str, str]] = []
         for rec in subscribers[:limit]:
+            attempted_sender = False
             try:
                 current = self._current_consent(rec.user_id, revision.event_id)
                 if current is _CONSENT_OWNER_UNAVAILABLE:
@@ -782,6 +798,7 @@ class FunnelService:
                             state = "OUTDATED_OR_UNVERIFIED_REVISION"
                         else:
                             idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
+                            attempted_sender = True
                             raw = self.sender.deliver(latest, revision, idem)
                             state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
                                      "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
@@ -792,12 +809,16 @@ class FunnelService:
                             # QUEUED mailer claim is *not* automatically resumable
                             # for Catalyst: the incumbent parked drain rebuilds
                             # welcome/campaign only, not this event-specific copy.
-            except Exception:  # transport could have fired; never call it a safe failure
-                state = "EFFECT_UNKNOWN"
+            except FunnelGate as exc:
+                state = ("EFFECT_UNKNOWN" if attempted_sender else
+                         "CONSENT_OWNER_PROTOCOL_MISMATCH" if exc.code == "INVALID_SOURCE_TIME"
+                         else "DELIVERY_PRECHECK_UNAVAILABLE")
+            except Exception:
+                state = "EFFECT_UNKNOWN" if attempted_sender else "DELIVERY_PRECHECK_UNAVAILABLE"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
                         "event_id": revision.event_id, "generation": str(revision.generation),
                         **first_touch(rec.first_touch)})
-            if state in ("EFFECT_UNKNOWN", "QUEUED_NOT_SENT",
+            if state in ("EFFECT_UNKNOWN", "DELIVERY_PRECHECK_UNAVAILABLE", "QUEUED_NOT_SENT",
                          "SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE",
                          "CONSENT_OWNER_UNAVAILABLE", "CONSENT_OWNER_PROTOCOL_MISMATCH",
                          "OUTDATED_OR_UNVERIFIED_REVISION"):

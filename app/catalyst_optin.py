@@ -66,6 +66,11 @@ def _safe_gate(exc: FunnelGate) -> HTTPException:
     return HTTPException(status_code=exc.status, detail=exc.code)
 
 
+def _optin_enabled() -> bool:
+    return (os.environ.get("CATALYST_PUBLIC_ENABLED") == "1" and
+            os.environ.get("CATALYST_OPTIN_ENABLED") == "1")
+
+
 def request_optin(body: dict) -> dict:
     """Private Session 00 callback: require an actual signed first-value scan.
 
@@ -74,6 +79,8 @@ def request_optin(body: dict) -> dict:
     current source rights and supported names before an OTP is requested.
     This does not add a second public request route or an identity store.
     """
+    if not _optin_enabled():
+        raise FunnelGate("CATALYST_OPTIN_DISABLED", 503)
     allowed = {"email", "scope", "consent_checked", "scan_receipt",
                "first_touch", "honeypot", "form_elapsed_ms"}
     if not isinstance(body, dict) or set(body) - allowed:
@@ -116,6 +123,8 @@ def verify_optin(body: VerifyOptin, request: Request) -> dict:
     if body.honeypot:
         raise HTTPException(status_code=400, detail="ABUSE_CHECK_FAILED")
     _abuse_guard(request)
+    if not _optin_enabled():
+        raise HTTPException(status_code=503, detail="CATALYST_OPTIN_DISABLED")
     try:
         return _active().verify(email=body.email, otp=body.otp,
                                 public_ref=body.public_ref, now=datetime.now(timezone.utc))
@@ -438,7 +447,8 @@ def build_existing_owner_service(revisions: Any, *, scan: ScanAuthority | None =
                          identity=identity or SupabaseOtpIdentity(endpoint=url, anon_key=_anon_key()),
                          consent=consent if consent is not None else SupabaseConsentRpcOwner(),
                          suppression=ExistingMailerSuppression(), revisions=revisions,
-                         sender=ExistingMailerDelivery())
+                         sender=ExistingMailerDelivery(),
+                         confirm_gate=_optin_enabled)
 
 
 def deliver_update(event_id: str, generation: int) -> dict:
@@ -471,6 +481,7 @@ def deliver_update(event_id: str, generation: int) -> dict:
                                   "CONSENT_OWNER_PROTOCOL_MISMATCH"})
     revision_held = "OUTDATED_OR_UNVERIFIED_REVISION" in states
     delivery_held = bool(states & {"QUEUED_NOT_SENT", "SEND_FAILED", "SEND_BLOCKED",
+                                   "DELIVERY_PRECHECK_UNAVAILABLE",
                                    "SEND_UNCONFIRMED"})
     # A parked Catalyst row is not rebuilt by the current generic parked drain.
     # If a sender's durable ledger claim is queued, the original mailer owner
