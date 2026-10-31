@@ -1,6 +1,8 @@
 # Market OS: flagship product audit and open-ended Fable delivery mandate
 ## An outcome-bound charter, not a prescriptive implementation script
 
+**Receiver note (2026-10-31).** Received by the Fable session `0462057d-2941-4c08-b832-d18a0ed46b52` under the Chairman's direct `WS:MARKET-OS` delivery. The requested independent read-only audit `marketos-charter-independent-audit-20261030` returned PASS with six non-blocking findings; this revision folds all six (eligible-writer qualifier, portfolio-workspace carrier row, ledger-date clarifications, merged research carriers, named public-access gate, rights admission and pre-registered acceptance in Phase C). The canonical takeover record is the dated `agentos/handoffs/WS-MARKET-OS-2026-10-31-*` handoff; this document remains the audit and charter, not the Agent OS wave state.
+
 **Prepared:** 2026-10-30, Vancouver date  
 **Status:** Draft for source review and Fable adoption; this document does not claim installation, start, delivery, accepted program-state mutation or production acceptance.  
 **Existing parent:** WS:MARKET-OS, owner coo-fable; MarketOntology original parent Macro #6819; existing A/B delivery operations and Shared Shell program remain incumbent.  
@@ -52,7 +54,7 @@ The key audit disagreement is not simply that "nothing is built." It is the mism
 
 ## 3.2 Complete 130-row MarketOntology ledger counts
 
-The current F00C ledger parsed cleanly: **130 rows, 15 columns, zero malformed rows**. Its source-classification tally is:
+The current F00C ledger parsed cleanly: **130 rows, 15 columns, zero malformed rows**. Its source-classification tally is: The CSV keeps its 2026-09-02 filename while rows are updated in place (for example `UPDATED 2026-10-11 W17/W18` on MO-DELTA-008); the counts are current at the pin, not at the filename date.
 
 | Source-ledger classification | Rows |
 | --- | ---: |
@@ -91,7 +93,7 @@ Grouped areas of particular product significance:
 - **Broader security coverage.** The original B1A AAPL proof is strong. Current code supports an AAPL/MSFT compiler allowlist, while the workstream still describes a general ListingAlias -> ListingKey renderer/CIK-read expansion gate and original AAPL-only limits. Verify exact owner-backed identity and coverage before broad rollout; do not treat a ticker string as identity.
 - **Actual valuation, risk and personal relevance.** F07/F08 and Market OS A2-A6/D1-D9/E1-E3 are incomplete as whole product waves. Existing risk and portfolio engines are significant; the missing capability is legible source-grounded personal meaning, scenario handling, and correct auth/identity behavior in the joined consumer.
 - **Market discovery and theme interpretation.** GMI explorer Macro #10099 is still open in the observed source census; breadth and RS leadership streams have separate current drafts (#10212, #10225, #10227). Discover should be designed to consume accepted theme/relative leadership evidence, not delay its entire release until every experimental predictor is complete.
-- **Research saving and sharing.** Macro #10115 / Terminal #1144 and #1173 are existing source carriers. The original P052 proof still distinguishes Save A -> inspect B -> reopen A, grant/consent, stale result and denied recipient; source presence alone is not that completed journey.
+- **Research saving and sharing.** Macro #10115 (merged 2026-10-24), Terminal #1144 (merged 2026-10-24) and #1173 (merged 2026-10-24) are merged source carriers; merged source is not the completed P052 journey. The original P052 proof still distinguishes Save A -> inspect B -> reopen A, grant/consent, stale result and denied recipient; source presence alone is not that completed journey.
 - **Meaningful monitoring.** Existing nightly/daily/current sources and alert owners must reach a real returning user as a reasoned change, not another static list. Missing, delayed, withdrawn, contradictory, unentitled and rights-denied sources must never present as positive monitoring.
 - **Future prediction and alpha.** Strong relative leadership, catalyst inference, probabilistic opportunity and entries can make the flagship exceptional, but source summaries and unvalidated models have no rank, signal, gate, sizing or trading authority. Prediction claims require PIT replay, baselines, calibration, independent holdout and forward proof before promotion.
 
@@ -106,6 +108,7 @@ Fable must start by distinguishing *accountable ownership* from a specific live 
 | MarketOntology CEO B root 01a128b7-bd2b-7a91-891d-39d38f74ad55 | F06-F13, J1, independent F00C verification, saved-research/role-label work | Replacing B's PR and exact transport/CI obligations |
 | Shared Shell original native parent 01a15e6c-42f8-7941-ac2b-296021932fbb and companion Macro #7949 / Terminal #859 | Existing AppShell, route registry/export, document bridge, beta release lifecycle, original product integration/checkpoints | Building a second shell, page registry, auth layer or beta release owner |
 | GMI / breadth / RS / News / rotation programs | Currently occupied producer and UI carriers (#10099, #10212/#10227, #10225, #9612, #10104); consume when lawful | Parallel writers, copied ontology, new pollers, fabricated trade/alert authority |
+| Terminal portfolio-workspace continuation (PR #1044 lineage; successor session named in the 2026-10-21 recovery handoff; merged lanes Terminal #1143, Macro #10073/#10071) | Occupied Portfolio surfaces that Phase D extends; the beta installer-repair lane concluded COMPLETE/DO_NOT_REDO (WS 2026-10-20 section) with public beta access still unaccepted at the audit pin | A second portfolio-workspace writer, or re-running the installer lane |
 | Identity, Portfolio, Watchlist, Research, Evaluation, source-rights and entitlements owners | Canonical data and permission contracts, PIT, revision history, independent evaluation | Using UI or model output as a substitute for owner truth |
 
 Relevant original continuity: WS-MARKET-OS-2026-10-24-marketontology-census.md and research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md. Their pending-PR, source and child-liveness statements are snapshots; refresh exact affected identities, not unrelated history.
@@ -123,7 +126,7 @@ Fable **may**:
 - Run safe research and design experiments, build contrasting prototypes, interview/test against approved non-sensitive personas or fixtures, and abandon poor ideas.
 - Choose the most economic appropriate Fabric worker/operator composition, parallelize independent tasks, use strong independent reviewers, and change tactics when a plan is producing no meaningful product progress.
 - Introduce **within the authorized product mission** new read-side presentation, discovery, interaction and explanation capabilities supported by lawful incumbent data; propose justified architecture adjustments through the owning review path when warranted.
-- Amend the existing task tree, acceptance strategy and execution order after reconciling source truth; explain important changes and preserve accepted work and required review.
+- Amend the existing task tree, acceptance strategy and execution order after reconciling source truth; explain important changes and preserve accepted work and required review, through each owning tree's eligible writer (the MarketOntology A/B trees and Shared Shell records stay with their owners).
 
 Fable **may not silently** change canonical identity/portfolio truth, historical accepted evidence, rights/entitlements, security and privacy boundaries, financial/trade authority, provider/account permission, protected release rules, active source leases or effect-unknown operations. Material new spend, vendors, credentials, trading, live user-data acquisition or expanded data-sharing needs its actual separate authorization. This small set of boundaries protects the goal; it is not a ban on creativity.
 
@@ -172,7 +175,7 @@ The phases below define *decision and acceptance milestones*, not a rigid waterf
 
 ## Phase A — Truth convergence and product problem selection
 Recover the current live Market OS/MarketOntology/Shared Shell trees, exact PR merges and installed source, runtime source/effect/receiver custody, current signed-in beta behavior and actual principal/worker capacity. Read existing master plan/task tree and latest dated handoff, reconcile stale todo labels and old PR state. Compare real working product with the six candidate jobs. Produce a compact capabilities/contradictions/owners matrix and identify the **highest-value first production journey**. 
-**Exit:** no duplicate writer or effect replay; one real acceptance target and source map; named gaps with falsifiers. Do not require perfect 130-row validation before useful disjoint work.
+**Exit:** no duplicate writer or effect replay; one real acceptance target and source map; named gaps with falsifiers. Do not require perfect 130-row validation before useful disjoint work. Name the public first-user access gate and its owner explicitly: at the 2026-10-31 receiver check, `beta.mastermind-x.com` served a valid TrustAsia certificate (2026-10-21 to 2027-01-18) through EdgeOne and redirected to `/today`, which renders a sign-in wall for anonymous visitors; signed-in real-browser acceptance remains owed, and any remaining DNS/TLS/domain-owner action is an attended lane, never a certificate bypass.
 
 ## Phase B — Experience thesis and rapid qualified prototypes
 Fable chooses the target IA and narrative, examines existing Paper references and installed UI, runs desktop/mobile/keyboard/a11y sketches or source-level prototypes where safe, contrasts at least a straightforward baseline with a genuinely differentiated concept, and verifies the design against actual current data and negative states. All samples are clearly illustrative; never publish fake market or portfolio evidence.
@@ -180,7 +183,7 @@ Fable chooses the target IA and narrative, examines existing Paper references an
 
 ## Phase C — First joined flagship vertical
 Build and prove the shortest complete high-value journey through existing Macro and Terminal contracts and a real publisher/consumer. Default candidate is MarketOntology J1 / Discover -> understand one qualified security -> chart and evidence -> a supported scenario or save -> reopen and authorized return. Fable may choose a stronger first vertical if evidence supports it. Use a current user-accessible beta/production path rather than a fixture-only page. Preserve full error, authentication, rights, drift, correction and unavailable states.
-**Exit:** independent source review; exact release SHA; signed-in and applicable anonymous real-browser proof; persistent/returning state proof; responsive and locale coverage; no regression to normal Terminal or Macro; rollback prepared. No "complete" claim from local tests alone.
+**Exit:** independent source review; exact release SHA; signed-in and applicable anonymous real-browser proof; persistent/returning state proof; responsive and locale coverage; no regression to normal Terminal or Macro; rollback prepared. No "complete" claim from local tests alone. Per-source public-display admission is confirmed for every producer the vertical surfaces, or that surface is held/private. Minimal quantitative acceptance criteria are pre-registered before the vertical ships (journey completion on the real path, negative-state correctness, time to first meaningful answer) without inventing retrospective baselines.
 
 ## Phase D — My Market, monitoring and research depth
 Extend the accepted first journey with canonical user holdings/Watchlists, real change and monitor information, revisions, alerts when live/proven, and appropriate professional evidence drilldowns. Focus on the most impactful holes revealed by F07, F08, F11 and practical F04/F12 consumer gaps. Integrate GMI, RS, breadth and defensive research only when their actual owner proofs allow it.
@@ -259,7 +262,7 @@ A meaningful first return contains:
 
 - [Market OS workstream, immutable Macro main pin](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/agentos/workstreams/WS-MARKET-OS.md).
 - [Market OS 2026-10-24 cumulative census handoff](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/agentos/handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md).
-- [Complete 130-row F00C source-ledger CSV](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv).
+- [Complete 130-row F00C source-ledger CSV](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv) (filename dated 2026-09-02; rows updated in place through 2026-10-11).
 - [Original Market Intelligence Productization masterplan](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/research/market_intelligence_productization/MASTERMIND_MARKET_INTELLIGENCE_PRODUCTIZATION_MASTERPLAN_2026-08-23.md).
 - [Existing Shared Shell production architecture](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md) and [original continuation](https://github.com/mastermindx-market-intelligence/macro/blob/ce6e1cba2f265f2efa3e2a4669a2bf14c8551b94/research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md).
 - [Terminal beta release contract](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/729a781acdb639f9e8ef9aaaba043c7624b6ceda/ops/SHARED_SHELL_BETA_DEPLOYMENT.md).
