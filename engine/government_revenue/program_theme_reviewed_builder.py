@@ -149,7 +149,7 @@ def load_current_reviewed_theme_inputs(root,*,as_of,review_path=t.THEME_REVIEW_P
   assignments,owners=t.load_reviewed_program_theme_inputs(root,review_path=review_path)
   return review,assignments,owners
  fields={'contract','schema_version','reviewed_at','reviewer','owners','assignments','reference_fingerprints'}
- if not isinstance(review,dict) or set(review)!=fields or review['contract']!=t.THEME_REVIEW_CONTRACT or review['schema_version'] not in ('1.1.0','1.2.0') or not review['reviewer'].strip():raise ValueError('theme_review_invalid')
+ if not isinstance(review,dict) or set(review)-{'commercial_space_context'}!=fields or review['contract']!=t.THEME_REVIEW_CONTRACT or review['schema_version'] not in ('1.1.0','1.2.0') or not review['reviewer'].strip():raise ValueError('theme_review_invalid')
  if t._instant(review['reviewed_at'])>t._instant(as_of):raise ValueError('theme_review_not_yet_known')
  owners={};unavailable=set();current_company_snapshot=None
  for key,ref in review['owners'].items():
@@ -208,8 +208,14 @@ no candidate rejection, source retrieval, or authority remint occurs here.
   for row in display['themes']:
    for theme,rail in stale:
     if row['theme_id']==theme:row['rail_states'][rail]='stale'
+  result=dict(state='qualified_partial',reference_snapshot=canonical,public_disclosure=display)
+  if 'commercial_space_context' in review:
+   from .defense_participation_context import load_commercial_space_context
+   context=load_commercial_space_context(root,review['commercial_space_context'],as_of=as_of)
+   result['optional_context']={k:context[k] for k in ('state','reason') if k in context}
+   d.append_commercial_space_context(display,context)
   display['content_id']=d.disclosure_content_id(display);d.validate_public_theme_disclosure(display)
-  return dict(state='qualified_partial',reference_snapshot=canonical,public_disclosure=display)
+  return result
  except (OSError,ValueError,TypeError,KeyError,StopIteration):
   canonical=t.compose_program_theme_context({},owners={},generated_at=generated_at,as_of=as_of)
   display=d.disclose_program_themes(canonical,owners={},current_owner_receipts={})

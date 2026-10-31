@@ -9,6 +9,7 @@ from datetime import date, datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 import json
+import math
 import re
 
 from engine.company_intelligence.defense_profiles import defense_issuer
@@ -212,3 +213,98 @@ def qualify_participation_context(inputs, financial_inputs, *, generated_at):
     return {'axes_by_ticker': axes, 'source_bindings': bindings,
             'local_proof': {'state': 'replayed_current_group_context', 'market_as_of': market_date,
                             'observed_at': inputs['observed_at'], 'source_sha256': inputs['source_sha256']}}
+
+
+def load_commercial_space_context(root, binding, *, as_of):
+    """Verify a retained published-owner bundle at build time, without replaying metrics.
+
+    This independent bundle is never an issuer participation axis or source
+    admission receipt. A change requires a new explicit source verification;
+    the old financial/theme review cannot qualify changed group bytes.
+    """
+    if binding is None:
+        return {'state': 'absent', 'reason': 'optional_binding_absent'}
+    try:
+        if (not isinstance(binding, dict)
+                or set(binding) != {'basket_id', 'source_commit', 'verified_at', 'decision_ref', 'sources'}
+                or binding['basket_id'] != 'space_economy'
+                or not re.fullmatch('[a-f0-9]{40}', binding['source_commit'])
+                or not isinstance(binding['decision_ref'], str) or not binding['decision_ref'].strip()
+                or set(binding['sources']) != set(OWNER_PATHS[:3])):
+            raise ValueError('commercial_space_binding_invalid')
+        cutoff = _instant(as_of)
+        verified = _instant(binding['verified_at'])
+        if verified > cutoff:
+            raise ValueError('commercial_space_verification_after_cutoff')
+        root = Path(root).resolve()
+        raw = {}
+        for path in OWNER_PATHS[:3]:
+            # _checked_path rejects symlinks and non-regular native inputs.
+            raw[path] = _checked_path(root, path).read_bytes()
+            digest = binding['sources'][path]
+            if not isinstance(digest, str) or not re.fullmatch('[a-f0-9]{64}', digest):
+                raise ValueError('commercial_space_source_hash_invalid')
+            if sha256(raw[path]).hexdigest() != digest:
+                raise ValueError('commercial_space_source_changed')
+        membership, pulses, baskets = (json.loads(raw[p]) for p in OWNER_PATHS[:3])
+        basket = membership['baskets']['space_economy']
+        pulse = pulses['space_economy']
+        from engine import group_pulse as gp
+        if gp.validate_pulse(pulse) or pulse['basket_id'] != 'space_economy':
+            raise ValueError('commercial_space_pulse_invalid')
+        rows = [r for r in baskets['baskets'] if r['id'] == 'space_economy']
+        if len(rows) != 1:
+            raise ValueError('commercial_space_basket_ambiguous')
+        row = rows[0]
+        observation = row['observation']
+        pulse_date = date.fromisoformat(pulse['as_of'])
+        close_date = date.fromisoformat(observation['effective_as_of'])
+        if (baskets['as_of'] != observation['effective_as_of']
+                or max(pulse_date, close_date) > cutoff.date()
+                or _instant(pulse['generated_at']) > min(cutoff, verified)
+                or pulse_date > _instant(pulse['generated_at']).date()):
+            raise ValueError('commercial_space_clock_invalid')
+        for stamp in (membership['version'], basket['created'], basket['curated']):
+            if date.fromisoformat(stamp) > min(pulse_date, close_date):
+                raise ValueError('commercial_space_membership_after_observation')
+        # Use the incumbent inclusion semantics; do not infer historical/PIT curation.
+        import pandas as pd
+        pulse_members = set(gp.live_members(basket, pd.Timestamp(pulse_date)))
+        close_members = set(gp.live_members(basket, pd.Timestamp(close_date)))
+        configured = observation['configured_members']
+        observed = observation['observed_members']
+        count = observation['configured_n']
+        covered = observation['observed_n']
+        if (not isinstance(configured, list) or not isinstance(observed, list)
+                or len(set(configured)) != len(configured) or len(set(observed)) != len(observed)
+                or type(count) is not int or type(covered) is not int
+                or not 0 < covered <= count
+                or count != len(configured) or covered != len(observed)
+                or set(configured) != close_members or not set(observed) <= close_members
+                or observation['missing_at_asof'] != sorted(close_members - set(observed))
+                or pulse['n_members'] != len(pulse_members)
+                or observation['basis'] != 'exact_close_at_effective_as_of'
+                or not isinstance(observation['coverage'], (int, float))
+                or isinstance(observation['coverage'], bool)
+                or not math.isfinite(observation['coverage'])
+                or abs(observation['coverage'] - covered / count) > 0.0001):
+            raise ValueError('commercial_space_denominator_invalid')
+        if not isinstance(membership['history_note'], str) or not membership['history_note'].strip():
+            raise ValueError('commercial_space_history_disclosure_missing')
+        # Retain the publisher's two different observation dates and denominators.
+        # A local verification clock is house knowledge, never source availability.
+        result = {'state': 'verified_native_published_context', 'basket_id': 'space_economy',
+                  'source_commit': binding['source_commit'], 'source_sha256': dict(binding['sources']),
+                  'verified_at': binding['verified_at'], 'pulse_generated_at': pulse['generated_at'],
+                  'pulse_as_of': pulse['as_of'], 'pulse_covered': pulse['n_covered'],
+                  'pulse_members': pulse['n_members'], 'close_as_of': observation['effective_as_of'],
+                  'close_observed': covered, 'close_configured': count,
+                  'close_missing': observation['missing_at_asof'],
+                  'membership_version': membership['version'], 'curated': basket['curated'],
+                  'freshness': 'stale' if any(nyse_calendar.sessions_behind(day, now=cutoff)
+                                            for day in (pulse_date, close_date)) else 'partial'}
+        if any(_checked_path(root, p).read_bytes() != raw[p] for p in OWNER_PATHS[:3]):
+            raise ValueError('commercial_space_sources_changed_during_read')
+        return result
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+        return {'state': 'source_unavailable', 'reason': str(exc) or type(exc).__name__}
