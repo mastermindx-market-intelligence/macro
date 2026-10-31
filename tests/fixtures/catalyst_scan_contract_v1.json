@@ -1,0 +1,77 @@
+{
+  "_fixture_warning": "SYNTHETIC CONTRACT EXAMPLE ONLY — NOT A REAL MARKET EVENT OR DISPLAY RIGHTS RECEIPT",
+  "schema": "catalyst.scan/v1",
+  "schema_version": 1,
+  "event_id": "fixture-earnings-20261008",
+  "generation": 2,
+  "publication_state": "PARTIAL",
+  "as_of_utc": "2026-10-09T02:00:00Z",
+  "requested_tickers": [
+    "NVDA",
+    "ZZZZ"
+  ],
+  "coverage_note": "Synthetic fixture only; production data must be separately qualified",
+  "results": [
+    {
+      "ticker": "NVDA",
+      "status": "SUPPORTED",
+      "public_safe": true,
+      "correction_state": "CORRECTED",
+      "as_of_utc": "2026-10-09T02:00:00Z",
+      "relationship": "DIRECT",
+      "relationship_evidence_ids": [
+        "fixture-source-1"
+      ],
+      "headline": "Synthetic issuer result was corrected",
+      "headline_evidence_ids": [
+        "fixture-source-1"
+      ],
+      "what_changed": [
+        {
+          "text": "The synthetic evidence entry records a correction.",
+          "evidence_ids": [
+            "fixture-source-1"
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "case": "BASE",
+          "trigger": "Watch for a synthetic next issuer update",
+          "evidence_ids": [
+            "fixture-source-1"
+          ]
+        }
+      ],
+      "invalidators": [
+        {
+          "text": "Further corrections replace this synthetic read",
+          "evidence_ids": [
+            "fixture-source-1"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "source_id": "fixture-source-1",
+          "url": "https://www.sec.gov/edgar/search/",
+          "title": "SEC search link (synthetic receipt only)",
+          "published_at_utc": "2026-10-08T22:00:00Z",
+          "display_rights": "ALLOWED",
+          "rights_receipt_id": "test-only-fake-rights-receipt"
+        }
+      ],
+      "dossier_path": "/stocks/NVDA/",
+      "coverage_note": "Synthetic fixture"
+    },
+    {
+      "ticker": "ZZZZ",
+      "status": "NOT_COVERED",
+      "coverage_note": "Not supported",
+      "what_changed": [],
+      "scenarios": [],
+      "invalidators": [],
+      "sources": []
+    }
+  ]
+}
