@@ -1532,6 +1532,115 @@
     "</section>";
   }
 
+  // ── Open checks: what would break each of today's reads ────────────────────
+  // Each day's radar logs a handful of theses, and every one carries a pre-set
+  // mechanical check plus the fixed date it settles on. This prints that check
+  // in words — the theme, its proxy, the condition, the date — and never the
+  // engine's own thesis prose, its lean enum, or the raw kind/op, so a reader
+  // sees what would break each of today's reads before anything settles.
+  // Themes can share one proxy; when they do their checks settle together, and
+  // the section says so once in a note rather than letting the rows imply more
+  // independent tests than there are.
+  //
+  // Artifact values (as_of, vs, subject) reach the page through bi()/esc(), so
+  // they are escaped exactly once here: bi() escapes its own arguments.
+  function checksHTML(radar, flagIndex) {
+    var hs = radar && radar.hypotheses;
+    if (Object.prototype.toString.call(hs) !== "[object Array]") return "";
+    flagIndex = flagIndex || {};
+    var rows = [];
+    var i;
+    for (i = 0; i < hs.length; i++) {
+      var h = hs[i];
+      if (!h || typeof h !== "object") continue;
+      if (typeof h.subject !== "string" || !h.subject) continue;
+      rows.push(h);
+    }
+    if (!rows.length) return "";
+
+    var asOf = (radar.as_of == null || radar.as_of === "") ? "" : String(radar.as_of);
+    var leadEn = asOf ? "On " + asOf + " the radar logged " : "Today the radar logged ";
+    var leadZh = asOf ? asOf + " 雷达记录了 " : "今日雷达记录了 ";
+    var tailEn = " theses. Each is checked on a fixed date against the condition shown; " +
+      "it holds if that condition has not triggered by then — a low bar, not proof.";
+    var tailZh = " 条论点。每条在固定日期按所示条件核对；届时条件未触发即视为成立 —— " +
+      "门槛很低，并非证明。";
+    var rowHTML = [];
+    var seen = {}, order = [], count = {};
+
+    for (i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var s = r.subject;
+      var theme = themeLink(flagIndex[s] || { name: s.replace(/_/g, " ") }, "rx-ck-theme");
+      var c = (r.falsifier || {}).check;
+      if (!c || typeof c !== "object") c = {};
+      var n = c.horizon_d;
+      if (typeof n !== "number" || !isFinite(n)) n = r.horizon_d;
+      var okN = (typeof n === "number" && isFinite(n) && n > 0);
+      var t = c.threshold;
+      var okT = (typeof t === "number" && isFinite(t));
+      var vs = c.vs || "SPY";
+      var x = okT ? String(+(Math.abs(t) * 100).toFixed(1)) : "";
+      var mo = okN ? Math.round(n / 21) : 0;
+      var moEn = mo >= 1 ? " (about " + mo + (mo === 1 ? " month)" : " months)") : "";
+      var moZh = mo >= 1 ? "（约 " + mo + " 个月）" : "";
+      var condEn, condZh;
+      if (c.kind === "rel_return" && okN && c.op === "<" && okT && t < 0) {
+        condEn = "breaks if it trails " + vs + " by more than " + x + "% over " + n +
+          " sessions" + moEn;
+        condZh = "若 " + n + " 个交易日" + moZh + "内落后 " + vs + " 超过 " + x + "%，则不成立";
+      } else if (c.kind === "rel_return" && okN && c.op === ">" && okT && t > 0) {
+        condEn = "breaks if it beats " + vs + " by more than " + x + "% over " + n +
+          " sessions" + moEn;
+        condZh = "若 " + n + " 个交易日" + moZh + "内跑赢 " + vs + " 超过 " + x + "%，则不成立";
+      } else if (c.kind === "rel_return" && okN) {
+        condEn = "graded on its return against " + vs + " over " + n + " sessions";
+        condZh = "按 " + n + " 个交易日内相对 " + vs + " 的收益评分";
+      } else {
+        condEn = "no machine check — logged, not graded";
+        condZh = "无机械核对 —— 仅记录，不评分";
+      }
+      var when = "";
+      var cb = r.check_by;
+      if (typeof cb === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(cb)) {
+        when = '<span class="rx-ck-when">' + bi("check by ", "核对日 ") +
+          esc(cb.slice(0, 10)) + "</span>";
+      }
+      rowHTML.push('<div class="rx-ck-row">' + theme + tickerLink(r.subject_ticker) +
+        '<span class="rx-ck-cond">' + bi(condEn, condZh) + "</span>" + when + "</div>");
+      var tk = String(r.subject_ticker || "").trim().toUpperCase();
+      if (tk) {
+        if (!seen[tk]) { seen[tk] = true; order.push(tk); count[tk] = 0; }
+        count[tk] += 1;
+      }
+    }
+
+    var noteHTML = "";
+    for (i = 0; i < order.length; i++) {
+      var k = order[i];
+      if (count[k] < 2) continue;
+      noteHTML += '<p class="rx-ck-note">' + bi(
+        k + " stands in for " + count[k] + " of these themes, so those checks will " +
+          "settle together — read them as one test, not " + count[k] + ".",
+        k + " 同时代表其中 " + count[k] + " 个主题，这些核对将一同结算 —— 应视为一次检验，" +
+          "而非 " + count[k] + " 次。") + "</p>";
+    }
+
+    return '<section class="rx-checks" id="rx-checks">' +
+      '<div class="rx-h-head">' +
+        '<span class="rx-h-eyebrow">' + bi("WHAT WOULD BREAK EACH READ", "每条解读的否定条件") +
+        "</span>" +
+        '<h2 class="rx-h-title">' +
+          bi("Today's theses, and the check that settles each", "今日论点及各自的核对条件") +
+        "</h2>" +
+      "</div>" +
+      '<p class="rx-h-para">' + bi(leadEn + rows.length + tailEn, leadZh + rows.length + tailZh) +
+        "</p>" +
+      '<div class="rx-ck-rows">' + rowHTML.join("") + "</div>" +
+      noteHTML +
+    "</section>";
+  }
+
   // ── One merged footnote (Law 4: merge, never stack) ───────────────────────
   // The engine's own caveats name the vendor behind a feed and describe the
   // weighting in engine terms, so the page states the same three facts — what the
@@ -1935,6 +2044,17 @@
       ".rx-receipt{font-size:12px;color:var(--muted)}",
       ".rx-receipt summary{cursor:pointer;color:var(--link);font-weight:600}",
       ".rx-receipt p{margin:8px 0 0;line-height:1.55}",
+      /* ── OPEN CHECKS: what would break each of today's reads ── */
+      ".rx-checks{margin-top:18px;padding:18px 20px 14px;border-radius:14px;" +
+        "border:1px solid var(--line);background:var(--panel)}",
+      ".rx-checks .rx-h-eyebrow{color:var(--muted)}",
+      ".rx-ck-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;" +
+        "padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.5}",
+      ".rx-ck-rows .rx-ck-row:last-child{border-bottom:none}",
+      ".rx-ck-theme{font-weight:700}",
+      ".rx-ck-cond{color:var(--text)}",
+      ".rx-ck-when{margin-left:auto;font-family:var(--font-mono);color:var(--muted)}",
+      ".rx-ck-note{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}",
       /* the AI read */
       ".rx-brain{margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--info) 4%,var(--panel))}",
       ".rx-brain-off{background:var(--panel)}",
@@ -2122,6 +2242,7 @@
       var flagIndex = {};
       radar.flags.forEach(function (f) { if (f.basket) flagIndex[f.basket] = f; });
       h += honestyHTML(ic, track, flagIndex);
+      h += checksHTML(radar, flagIndex);
       h += brainRx(brain, flagIndex);
       h += footNote(radar);
 
