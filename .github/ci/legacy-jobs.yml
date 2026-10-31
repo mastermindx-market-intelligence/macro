@@ -16638,6 +16638,13 @@ jobs:
       - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/__init__.py"
       - "tests/test_consumer_cyclical_plnt_page.py"
+      - "tests/test_consumer_cyclical_plnt_public_hold.py"
+      # Read-only input of the public-hold suite: no sitemap, registry or SEO row may name the card.
+      - "site/sitemap.xml"
+      - "data/product_experience/page_registry.json"
+      - "config/product_experience/page_registry_overrides.yml"
+      - "data/marketing/seo/seo_audit.json"
+      - "data/marketing/seo/seo_work_orders.json"
       # Read-only input of the PLNT suite: the public route list.
       - "config/site_access.yml"
       - "engine/sector_intelligence/contracts.py"
@@ -16679,7 +16686,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py tests/test_consumer_cyclical_plnt_public_hold.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
