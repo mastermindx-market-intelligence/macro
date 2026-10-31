@@ -188,7 +188,17 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
     <div class="card"><h3>{{ t('Growth of $1 (log) — vs buy & hold','1美元增长（对数）— 对比买入持有') }}</h3>{{ charts.growth|safe }}</div>
     <div class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</div>
   </div>
-  <div class="note b" style="margin-top:14px">{{ t('Honest framing: this does NOT reliably beat buy-and-hold on CAGR — sitting in the cash leg through stress gives up some carry. The edge is the higher Sharpe and the much shallower max drawdown: it times the LEFT TAIL that destroys the yield (the recession/credit/rate shock), not the yield itself.','诚实说明：本策略在年化收益上并不稳定跑赢买入持有 —— 压力期退守现金腿会让出部分套息。优势在于更高的夏普与明显更浅的最大回撤：它择时的是吞噬收益的左尾（衰退/信用/利率冲击），而非收益本身。') }}</div>
+  <div class="note b" style="margin-top:14px">{%- set cagr_ahead = sc.cagr >= sc.hodl_cagr -%}
+{%- set sharpe_ahead = sc.sharpe >= sc.hodl_sharpe -%}
+{%- set dd_ahead = sc.maxdd >= sc.hodl_maxdd -%}
+{%- set y = sc.years|string -%}
+{%- if not cagr_ahead and sharpe_ahead and dd_ahead -%}
+{{ t('Honest framing: this does NOT reliably beat buy-and-hold on CAGR — sitting in the cash leg through stress gives up some carry. The edge is the higher Sharpe and the much shallower max drawdown: it times the LEFT TAIL that destroys the yield (the recession/credit/rate shock), not the yield itself.','诚实说明：本策略在年化收益上并不稳定跑赢买入持有 —— 压力期退守现金腿会让出部分套息。优势在于更高的夏普与明显更浅的最大回撤：它择时的是吞噬收益的左尾（衰退/信用/利率冲击），而非收益本身。') }}
+{%- elif cagr_ahead and sharpe_ahead and dd_ahead -%}
+{{ t('Over this ' ~ y ~ '-year backtest it beat buy-and-hold on CAGR, Sharpe and max drawdown (tiles below). That is one backtest, not a promise of the same lead.', '在这 ' ~ y ~ ' 年回测中，本策略的年化收益、夏普和最大回撤均优于买入持有（见下方数据）。这只是一段回测，不代表未来仍有同样的领先。') }}
+{%- else -%}
+{{ t('Over this ' ~ y ~ '-year backtest, against buy-and-hold: CAGR ' ~ ('ahead' if cagr_ahead else 'behind') ~ ', Sharpe ' ~ ('ahead' if sharpe_ahead else 'behind') ~ ', max drawdown ' ~ ('shallower' if dd_ahead else 'deeper') ~ ' (tiles below).', '在这 ' ~ y ~ ' 年回测中，对比买入持有：年化收益' ~ ('领先' if cagr_ahead else '落后') ~ '，夏普' ~ ('领先' if sharpe_ahead else '落后') ~ '，最大回撤' ~ ('更浅' if dd_ahead else '更深') ~ '（见下方数据）。') }}
+{%- endif -%}</div>
 
   <!-- ===== scorecard tiles ===== -->
   <div class="section-title">{{ t('Backtest scorecard · {y} years vs buy & hold'|replace('{y}', sc.years|string), '回测记分卡 · {y} 年对比买入持有'|replace('{y}', sc.years|string)) }}</div>
