@@ -3336,13 +3336,13 @@ def test_unmarked_brain_unknown_installer_preserves_settlement_fence(monkeypatch
     assert result.steps[0]["outcome"] == "infrastructure_blocked"
 
 
-def test_explicit_owner_manifest_activation_keeps_brain900_and_international720():
+def test_explicit_owner_manifest_activation_keeps_brain900_and_international900():
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
     native = [job.job_id for job in jobs.values()
               if any(spec.get("acquisition") == "native_parallel" for spec in PACK._browser_setup_contract(job))]
     assert native == ["bea-gvc-current-descriptive-consumer", "ontology-explorer", "unrun-brain-gateway"]
     assert jobs["unrun-brain-gateway"].definition["timeout-minutes"] == 15
-    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 12
+    assert jobs["international-workspace-browser"].definition["timeout-minutes"] == 15
     brain = PACK._browser_setup_contract(jobs["unrun-brain-gateway"])[0]
     assert brain["activation_job_id"] == "unrun-brain-gateway"
     assert brain["logical_job_timeout_minutes"] == 15 and brain["timeout_minutes"] == 10

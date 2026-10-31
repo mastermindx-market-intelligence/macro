@@ -11797,7 +11797,9 @@ jobs:
       - "tests/intl_gs_dossier_fixture.py"
       - "tests/intl_gs_dossier_browser.test.cjs"
       - "tests/__init__.py"
-    timeout-minutes: 12
+    # 15, not 12: fixed steps take ~10m20s and the canonical-main fetch alone
+    # measured 1m02s-2m08s, so 12 timed out whenever that fetch ran slow.
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
