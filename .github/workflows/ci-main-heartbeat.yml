@@ -268,14 +268,41 @@ jobs:
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: tier-preview split contract (no paid row in the free shell)
         run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
+
+  # MIRROR OF .github/ci/legacy-jobs.yml's paywall-contracts job. Out of tier-gate
+  # for the same reason as site-access-boundary below.
+  paywall-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
         run: python -m pytest tests/test_paywall_pro_gate.py -q
-      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py -q
       - name: registration wall (anonymous stage + /factordata /labdata JSON gate)
         run: python -m pytest tests/test_regwall.py tests/test_regwall_json_gate.py -q
+
+  # MIRROR OF .github/ci/legacy-jobs.yml's site-access-boundary job. Its own job
+  # because a failed step skips the rest of its job: while this sat in tier-gate,
+  # a red in the bake-dependent tier-preview step kept it from running.
+  site-access-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
+        run: python -m pytest tests/test_site_access_boundary.py -q
 
   # ── engine + render-guard contract batch (mirror ci.yml: engine-render-guards)
   # The rot-prone one: the 2026-07-02 sweep exists because these test files silently
