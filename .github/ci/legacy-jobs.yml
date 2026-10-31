@@ -37242,6 +37242,7 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_oscillator_mtf_research.py"
       - "tests/test_entry_radar_oscillator_owner_integration.py"
+      - "tests/test_rs_mtf_revision_prefix_qa.py"
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
@@ -37474,6 +37475,7 @@ jobs:
           tests/test_entry_radar_rs_pullback_phase1.py
           tests/test_entry_radar_oscillator_mtf_research.py
           tests/test_entry_radar_oscillator_owner_integration.py
+          tests/test_rs_mtf_revision_prefix_qa.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
