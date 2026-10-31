@@ -2,10 +2,14 @@ name: regime-self-heal
 
 on:
   schedule:
+    # Morning recovery catches a prior close missed overnight.
     - cron: "5 14 * * 1-5"
+    # 21:15 UTC is after the regular US close in both EST and EDT.
+    - cron: "15 21 * * 1-5"
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -15,8 +19,8 @@ concurrency:
 jobs:
   reconcile:
     # intraday-fastpath used to carry this canonical repair every 30 minutes.
-    # After VPS cutover retain one local reconciliation pass without making the
-    # VPS a second writer for regime/market-state/reflex ledgers.
+    # After VPS cutover retain one local reconciliation writer with morning and
+    # post-close passes; the VPS remains a reader of these canonical ledgers.
     if: ${{ github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY == 'true' }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 12
@@ -32,8 +36,10 @@ jobs:
       - name: repair stale canonical regime pointer
         run: python -m scripts.refresh_regime_if_stale
       - name: commit only canonical repair artifacts
+        id: commit
         run: |
           set -euo pipefail
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -f data/regime/latest.json data/market_state/latest.json data/reflexes/ 2>/dev/null || true
@@ -42,10 +48,27 @@ jobs:
           if git diff --cached --quiet; then echo "canonical regime pointer already fresh"; exit 0; fi
           git commit -m "repair: reconcile stale regime pointer $(date -u +%FT%H:%MZ)"
           for i in 1 2 3 4 5; do
-            if git pull --rebase -X theirs origin main && git push; then echo "pushed (attempt $i)"; exit 0; fi
+            if git pull --rebase -X theirs origin main && git push; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              echo "pushed (attempt $i)"
+              exit 0
+            fi
             git rebase --abort 2>/dev/null || true
             echo "push attempt $i lost a race"
             sleep $((i * 5))
           done
           echo "::error::could not push canonical regime repair after 5 attempts"
           exit 1
+      - name: dispatch visible Macro render
+        if: ${{ steps.commit.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # render-linux had a corrupt persistent venv on 2026-09-21; use the
+          # documented Mac fallback until that runner's own owner repairs it.
+          gh workflow run render.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f scope=macro \
+            -f runner=macstudio
