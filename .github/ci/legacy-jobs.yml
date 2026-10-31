@@ -42044,6 +42044,7 @@ jobs:
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
       - "tests/catalyst_scan_browser.js"
+      - "tests/fixtures/catalyst_scan_contract_v1.json"
       - "tests/test_catalyst_admission.py"
       - "tests/test_catalyst_integration.py"
       - "tests/test_catalyst_lifecycle.py"
