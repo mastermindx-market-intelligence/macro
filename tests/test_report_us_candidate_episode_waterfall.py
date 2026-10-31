@@ -130,7 +130,7 @@ def test_waterfall_has_explicit_denominators_per_session_and_typed_classes(tmp_p
     assert totals == {"sessions": 2, "inputs": 10, "mapped": 3, "refused": 7,
                       "refused_by_class": {"IDENTITY_UNRESOLVED": 5, "ISSUER_UNRESOLVED": 0,
                                            "MISSING_STRUCTURAL_ANCHOR": 1, "ACTIVE_EPISODE_DIFFERENT_ANCHOR": 1},
-                      "unsessioned_events": 0,
+                      "unsessioned_events": 0, "unsessioned_suppressions": 0,
                       "unrecovered_turn_watch": {"events": 1, "suppressions": 1}}
     assert "identity_replay" not in doc
 

@@ -32,8 +32,8 @@ produced for the rows whose document is still tracked, and the rest are reported
 | Selected B1 generation (HEAD.json at this checkout) | `peg:23be3409c3a57944dd08e09e38e3b7541926c0f244e9d0d3b4a0b4a8aacedbf9` |
 | Events in the generation (mapped observations, `OPENED` + `OBSERVED`) | 15,511 (OPENED 1,087 = one per episode, all from turn_watch, the only source with a structural anchor; OBSERVED 14,424) |
 | Suppression ledger rows (typed refusals, all sessions) | 72,814 |
-| turn_watch source documents recovered by receipt | 77 distinct documents (54 commits of `episode_inputs/turn_watch/` on `origin/main`); every one of the 1,694 turn_watch events and 13,649 turn_watch suppressions resolved to a document (0 unrecovered) |
-| Identity reference replayed against | `data/reference/vendor_aliases.parquet` `sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306` (membership vendor: 1,941 rows; 3 carry a validity bound; principal `ingested_at` ingests 2026-08-13: 702, 08-21: 508, 09-04: 3, 10-11: 721, plus a 2026-10-07 ingest visible in history) |
+| turn_watch source documents recovered by receipt | 54 distinct documents (54 blobs over the full history of `episode_inputs/turn_watch/` on `origin/main`); every one of the 1,694 turn_watch events and 13,649 turn_watch suppressions resolved to a document (0 unrecovered) |
+| Identity reference replayed against | `data/reference/vendor_aliases.parquet` `sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306` (membership vendor: 1,941 rows; 3 carry a validity bound; principal `ingested_at` ingests 2026-08-13: 702, 08-21: 508, 09-04: 3, 10-11: 721; single-symbol ingests 09-21, 10-07, 10-09, 10-19; the 08-13 and 08-21 ingests precede every session of the generation) |
 | Reference the generation's Oct 25 nightly receipt was built against | `sha256:eeb880747bee9d23ff0c5714b608dda399997d567a61936b78b4e43231c9da31` (main at `e1e1b5d35`, 2026-10-24); that receipt is incremental (`mode: nightly`, 70 appended events, 2,072 inputs) and pins only the 10-25 run |
 
 The denominator is `inputs = mapped + refused` per observation session, where the observation
@@ -55,8 +55,11 @@ suppressions is not uniformly the document session either. Measured on this gene
 | Suppressions recovered to their source document | 13,649 of 13,649 |
 | … whose ledger `observation_session` differs from the document session | 3,302 |
 
-The first turn_watch document is 2026-08-26, so no session before 2026-08-26 exists in the
-corrected table. **Consequence for W2:** a turn_watch event's `known_at` is the trigger date, not
+The earliest session any row of this generation was read from is 2026-08-26, so no earlier
+session exists in the corrected table. Two earlier turn_watch documents are tracked
+(`2026-08-21.json`, 2,089 rows; `2026-08-25.json`, 1,790 rows; both digest-valid) and no row of
+the generation cites either: the denominator is what the generation took in, not every source
+document that exists, and those 3,879 rows were never read into it. **Consequence for W2:** a turn_watch event's `known_at` is the trigger date, not
 an as-known clock; the earliest defensible decision instant for an episode is the session of the
 document that first carried it (recoverable by receipt as above), never `known_at`. The intake's
 clock stamping is a Data OS / intake contract question routed to its owner; this note does not
@@ -113,7 +116,7 @@ reference, then split by the alias row's `ingested_at` relative to the session:
 | Class | Rows | Distinct (ticker, session) | Meaning |
 |---|---:|---:|---|
 | `no_current_reference` | 51,347 | 49,199 | no membership alias covers the ticker on that session today either — a reference-coverage gap, owner `scripts/build_security_master.py` (Data OS); not an intake defect |
-| `reference_widened_after_session` | 11,153 | 9,986 | the alias resolves today but was ingested after the session (the 2026-10-11 membership ingest added 721 symbols; the 08-21 and 09-04 ingests the rest); the refusal stood on the reference the nightly had at the time |
+| `reference_widened_after_session` | 11,153 | 9,986 | the alias resolves today but was ingested after the session (the 2026-10-11 membership ingest added 721 symbols; the 09-04 ingest 3 and the single-symbol ingests of 09-21, 10-07, 10-09 and 10-19 the rest — only ingests after 2026-08-26 can widen, so the 08-13 and 08-21 ingests explain none); the refusal stood on the reference the nightly had at the time |
 | `resolvable_at_session` | **0** | **0** | the only class that could indicate an intake or snapshot defect |
 
 **On "lawful as-known".** The refusals in the second class stand because the suppression ledger is
@@ -129,7 +132,7 @@ correctly classed as widened. A reference row with no ingest stamp would be coun
 
 **Finding.** No `IDENTITY_UNRESOLVED` row was resolvable by a reference that was already ingested on
 its session. The join is correct and fail-closed; the loss is entirely reference coverage. From
-2026-10-09 onward the per-session `IDENTITY_UNRESOLVED` count (1,560–2,796 of ~1,650–4,900 inputs)
+2026-10-09 onward the per-session `IDENTITY_UNRESOLVED` count (88–2,796 of ~300–4,900 inputs, the low end on turn_watch-only sessions)
 is `no_current_reference` for all but 3 rows (10-13: 1, 10-14: 2): the candidate universe is
 several times wider than the 1,941-symbol membership reference. Widening the reference is Data OS
 work with its own identity evidence rules; it must not be done by forcing ticker matches or by

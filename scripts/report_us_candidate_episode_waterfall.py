@@ -121,8 +121,9 @@ def turn_watch_receipt_sessions(data_root: Path, *, git_ref: str | None = None) 
 
     Tracked files under ``<data_root>/us_prophet_rank/episode_inputs/turn_watch``
     always; with ``git_ref`` also every historical blob of that directory
-    reachable from the ref (the nightly rewrites ``<session>.json`` in place,
-    so an older receipt only survives in history).  Documents whose stored
+    reachable from the ref, full history without simplification (the nightly
+    rewrites ``<session>.json`` in place, so an older receipt only survives in
+    history, possibly on a side branch of a merge).  Documents whose stored
     ``content_sha256`` does not match their content are ignored, never guessed.
     """
     sessions: dict[str, str] = {}
@@ -137,7 +138,7 @@ def turn_watch_receipt_sessions(data_root: Path, *, git_ref: str | None = None) 
     if git_ref:
         repo = data_root.parent
         rel = str(Path(data_root.name) / TURN_WATCH_INPUTS)
-        commits = subprocess.run(["git", "-C", str(repo), "log", "--format=%H", git_ref, "--", rel],
+        commits = subprocess.run(["git", "-C", str(repo), "rev-list", "--full-history", git_ref, "--", rel],
                                  capture_output=True, text=True, check=True).stdout.split()
         blobs: set[str] = set()
         for commit in commits:
@@ -263,6 +264,7 @@ def waterfall(events: list[dict], suppressions: list[dict], receipt_sessions: di
     refused: dict[str, Counter] = defaultdict(Counter)
     tickers: dict[str, set] = defaultdict(set)
     unsessioned_events = 0
+    unsessioned_suppressions = 0
     unrecovered = Counter()
     clock = Counter()
     for event in events:
@@ -284,7 +286,7 @@ def waterfall(events: list[dict], suppressions: list[dict], receipt_sessions: di
             if str(row.get("source_system")) == TURN_WATCH:
                 unrecovered["suppressions"] += 1
             else:
-                unsessioned_events += 1
+                unsessioned_suppressions += 1
             continue
         if str(row.get("source_system")) == TURN_WATCH:
             clock["turn_watch_suppressions_recovered"] += 1
@@ -319,6 +321,7 @@ def waterfall(events: list[dict], suppressions: list[dict], receipt_sessions: di
         "refused": sum(s["refused"] for s in sessions),
         "refused_by_class": {k: sum(s["refused_by_class"][k] for s in sessions) for k in REFUSAL_CLASSES},
         "unsessioned_events": unsessioned_events,
+        "unsessioned_suppressions": unsessioned_suppressions,
         "unrecovered_turn_watch": {"events": int(unrecovered["events"]),
                                    "suppressions": int(unrecovered["suppressions"])},
     }
