@@ -147,3 +147,28 @@ The seat ruled that the composed head carries PR #8700 head ddbb5829's producer 
   - Is a per-document grant minted from a family/filing decision acceptable?
   - Or must each document be reviewed?
 - **This addendum grants nothing, proposes no grant YAML and edits no registry.** It also does not change items (i), (ii), (iv) or (v).
+
+## Addendum 2 (2026-10-31T13:3xZ, seat ce215fa3): statements superseded at the committed head
+
+This record's body was pinned to 55dc7cab, but it is committed on a head where `p`
+(`engine/marketing/catalyst_packets.py`) carries PR #8700 head ddbb5829 (blob 5b9e2a2a became
+428bda74). An independent read-only review (PR #10257, 2026-10-31) found the following body
+statements false at head. They are superseded here; the addendum above remains in force.
+
+- **(i) "Byte binding today is NONE" is superseded.** At head, `VerifiedDocumentObservation` is
+  defined at p:101 (fields include `document_sha256`), and the `_allowed` call site passes
+  `document_sha256` for the primary source when a verified observation exists (p:365, p:384, p:677).
+  The binding is as the first addendum describes: exact `document_url`, plus exact bytes when observed.
+- **(ii) The row "Flags on: admission import fails" no longer describes head.** `adm` imports
+  `VerifiedDocumentObservation`, which `p` now defines; the import resolves. The remaining
+  negative behaviour with no grant is unchanged: the resolver returns no grant, the primary source
+  is blocked, and the packet is `BLOCKED_PUBLIC` with `primary_source_public_rights_unavailable`.
+- **Stale line references.** p:24 (the source constant) is now p:26; the grant and its validation
+  at p:51-67 / p:144-162 are now p:69-82 / p:400-412.
+- **The config grep claim is narrowed.** At head, `git grep -l sec_edgar -- config/` matches
+  `config/capital_structure_*.json` and `config/fundamental_forensics/*` (unrelated packs, not the
+  family registry). The claim that matters is unchanged and still true: `config/theme_sources.yml`
+  has zero `sec_edgar` rows.
+
+Decisions D1–D5 are unchanged. This addendum grants nothing, proposes no grant YAML and edits no
+registry.

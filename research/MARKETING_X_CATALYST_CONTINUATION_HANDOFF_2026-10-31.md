@@ -85,6 +85,23 @@ docket README. Nothing in this file is a completion claim beyond the rung each l
   Next: judge+merge the ORCH-B final, CI green on the final head, fresh non-authoring review of the
   PR, READY, merge `--match-head-commit`, deploy observation with flags OFF.
 
+- **2026-10-31 13:3xZ** — ORCH-B FINAL judged and merged → PR #10257 head d67754e9 (all lanes
+  integrated: A1/A1B/A2/B-NEG/C1 pack + enrollment + rights/D1 records; body v3; #8683 adoption note
+  6543624126). Independent non-authoring review (Opus, read-only) of the integration delta:
+  **ACCEPT_WITH_FINDINGS** — merges are faithful unions, pack closure = declared (1093), producer
+  blobs = ddbb5829, docket blobs = 9651a77e, all routes 503 with flags OFF, no scheduler/sender/
+  migration. Findings: F1 minor — `app/catalyst_optin.py` verify route runs `_abuse_guard` before
+  `_optin_enabled()` (books the shared support rate budget in memory before the 503; producer-owned
+  Stage-B file, blob = 55dc7cab, so NOT edited by the seat → routed producer repair beside B04-DEDUP;
+  fix = move the flag check first, as `/api/catalyst/optin/request` does); F2 minor — rights record
+  body stale at head → Addendum 2 written (this commit); F3 note — docket files landed in 634bced0,
+  not f910ffca (history label only; bytes correct); F4 note — update.sh restart fence omits three
+  lazily imported modules (binding.py, sec_document_spine.py, attribution.py) → widen when the routes
+  are enabled; F5 note — `.cs-hero-aside` 1px `--line` divider, not an accent stripe. CI on d67754e9:
+  ci-authority / contract-delta / fence-pack / contracts green; ci-pack-0..11 pending at read time.
+  Next: CI green → reviewDecision → READY → merge `--match-head-commit <head>` → deploy observation
+  with flags OFF → steward rights message (source-linked, after merge) → Agent OS handoff record.
+
 ## 5. Never
 
 Push `sol/*` or `web/mmx-acq-*`; edit the adopted producer files' semantics; enable a catalyst flag; edit `config/theme_sources.yml`; stage `data/`/`site/`;
