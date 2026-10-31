@@ -1,0 +1,13 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl_workspace/dislocations.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+  - lib/intl_gs_dislocations_view.py
+  - tests/intl_gs_dislocations_fixture.py
+  - tests/test_intl_gs_dislocations_view.py
+  - tests/intl_gs_dislocations_browser.test.cjs
+  - tests/test_intl_gs_foundation.py
+  - .github/ci/legacy-jobs.yml
+  - tests/test_ci_pack.py
+manifest: mockups/evidence/intl-gs-w3u/manifest.json

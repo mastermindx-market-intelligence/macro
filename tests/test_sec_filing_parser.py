@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+from types import SimpleNamespace
 import builtins
 import json
 import re
@@ -1004,26 +1005,168 @@ def test_exclude_is_owner_relative_so_a_nested_fact_retains_its_own_text():
     assert facts["inner"]["raw_value"] == "inner"
 
 
+def _xsi_inline(body: str) -> bytes:
+    content = _inline(body)
+    # Add xsi only to this intentionally local helper construction.
+    return content.replace(b'xmlns:i4=', b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:i4=', 1)
+
+
+@pytest.mark.parametrize(
+    ("body", "attributes"),
+    [
+        ('<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="0" xsi:nil="true"/>', ["decimals"]),
+        ('<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" scale="3" xsi:nil="true"/>', ["scale"]),
+        (
+            '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="2" scale="3" sign="-" xsi:nil="true"/>',
+            ["decimals", "scale", "sign"],
+        ),
+        (
+            '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" precision="4" format="i3:numdotdecimal" xsi:nil="true"/>',
+            ["format", "precision"],
+        ),
+    ],
+)
+def test_nil_numeric_fact_inert_accuracy_attributes_are_tolerated(body, attributes):
+    # DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031: a nil fact
+    # has no value, so its value-shaping attributes are inert and dropped.
+    result = parse_sec_filing_document(
+        _xsi_inline(body), document_name="nil-inert.xhtml"
+    )
+    fact = result["facts"][0]
+    assert fact["nil"] is True
+    assert fact["status"] == "nil"
+    assert all(fact[field] is None for field in ("decimals", "precision", "format", "sign", "scale"))
+    assert result["diagnostics"] == [
+        {
+            "code": "nil_fact_inert_attributes_dropped",
+            "fact_start": fact["source_span"]["start"],
+            "attributes": attributes,
+        }
+    ]
+    assert result["coverage"]["diagnostic_count"] == 1
+    validate_sec_filing_parse_result(result)
+
+
 @pytest.mark.parametrize(
     "body",
     [
+        # Tolerance drops inert attributes only; a nil fact still cannot carry content.
         '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="0" xsi:nil="true">1</ix:nonFraction>',
-        '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="0" xsi:nil="true"/>',
         '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u">1</ix:nonFraction>',
         '<ix:nonNumeric name="ex:F" contextRef="c" decimals="0">text</ix:nonNumeric>',
         '<ix:nonNumeric name="ex:F" contextRef="c" unitRef="u">text</ix:nonNumeric>',
         '<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="0" precision="0">1</ix:nonFraction>',
     ],
 )
-def test_nil_accuracy_and_nonnumeric_attribute_combinations_fail_closed(body):
-    content = _inline(
-        body,
-        resources=f'''<xbrli:context id="c"><xbrli:entity><xbrli:identifier scheme="s">1</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context><xbrli:unit id="u"><xbrli:measure>ex:USD</xbrli:measure></xbrli:unit>''',
-    )
-    # Add xsi only to this intentionally local helper construction.
-    content = content.replace(b'xmlns:i4=', b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:i4=', 1)
+def test_nil_fact_with_content_and_nonnil_accuracy_combinations_fail_closed(body):
     with pytest.raises(SecFilingParseError):
-        parse_sec_filing_document(content, document_name="bad-nil.xhtml")
+        parse_sec_filing_document(_xsi_inline(body), document_name="bad-nil.xhtml")
+
+
+def test_nil_numeric_fact_with_inert_attributes_is_tolerated_and_diagnosed():
+    nil_decimals_scale = (
+        '<ix:nonFraction name="ex:NilScale" contextRef="c" unitRef="u" decimals="-3" scale="6" xsi:nil="true"/>'
+    )
+    nil_decimals_format_sign = (
+        '<ix:nonFraction name="ex:NilFormat" contextRef="c" unitRef="u" decimals="INF" '
+        'format="i3:numdotdecimal" sign="-" xsi:nil="true"/>'
+    )
+    plain = '<ix:nonFraction name="ex:Plain" contextRef="c" unitRef="u" decimals="0">42</ix:nonFraction>'
+    content = _xsi_inline(nil_decimals_scale + nil_decimals_format_sign + plain)
+
+    result = parse_sec_filing_document(content, document_name="nil-inert-two.xhtml")
+
+    facts = {fact["concept_qname"]: fact for fact in result["facts"]}
+    assert set(facts) == {"{urn:example}NilScale", "{urn:example}NilFormat", "{urn:example}Plain"}
+    for concept in ("{urn:example}NilScale", "{urn:example}NilFormat"):
+        fact = facts[concept]
+        assert fact["nil"] is True
+        assert fact["status"] == "nil"
+        assert fact["raw_value"] == ""
+        assert fact["transformed_value"] is None
+        assert fact["normalized_value"] is None
+        assert all(fact[field] is None for field in ("decimals", "precision", "format", "sign", "scale"))
+    assert result["diagnostics"] == [
+        {
+            "code": "nil_fact_inert_attributes_dropped",
+            "fact_start": facts["{urn:example}NilScale"]["source_span"]["start"],
+            "attributes": ["decimals", "scale"],
+        },
+        {
+            "code": "nil_fact_inert_attributes_dropped",
+            "fact_start": facts["{urn:example}NilFormat"]["source_span"]["start"],
+            "attributes": ["decimals", "format", "sign"],
+        },
+    ]
+    assert result["coverage"]["diagnostic_count"] == len(result["diagnostics"]) == 2
+    validate_sec_filing_parse_result(result)
+    validate_sec_filing_parse_result(result, source_content=content)
+    plain_fact = facts["{urn:example}Plain"]
+    assert plain_fact["nil"] is False
+    assert plain_fact["decimals"] == "0"
+    assert plain_fact["raw_value"] == "42"
+    assert plain_fact["normalized_value"] == "42"
+
+
+def test_native_xbrl_nil_fact_with_inline_attributes_still_fails():
+    content = _instance('<ex:F contextRef="c" unitRef="u" decimals="0" scale="2" xsi:nil="true"/>').replace(
+        b'xmlns:ex=', b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ex=', 1
+    )
+    # The native attribute-admission set excludes scale, so the member is
+    # refused one layer before the fact-accuracy contract sees it.
+    with pytest.raises(SecFilingParseError, match="native XBRL fact has unsupported attributes"):
+        parse_sec_filing_document(content, document_name="native-nil-scale.xml")
+    # And _fact_accuracy itself still refuses Inline-only attributes on a nil
+    # native fact before the nil tolerance: a structural violation is not inert.
+    node = SimpleNamespace(attrs={"decimals": "0", "scale": "2"}, namespaces={})
+    with pytest.raises(SecFilingParseError, match="native XBRL fact cannot carry Inline XBRL attributes"):
+        parser_module._fact_accuracy(node, numeric=True, nil=True, inline=False, limits=dict(PARSER_LIMITS))
+
+
+def test_validator_rejects_forged_nil_fact_inert_diagnostics():
+    nil_fact_markup = (
+        '<ix:nonFraction name="ex:NilScale" contextRef="c" unitRef="u" decimals="-3" scale="6" xsi:nil="true"/>'
+    )
+    plain_markup = '<ix:nonFraction name="ex:Plain" contextRef="c" unitRef="u" decimals="0">42</ix:nonFraction>'
+    canonical = parse_sec_filing_document(
+        _xsi_inline(nil_fact_markup + plain_markup), document_name="forged-inert.xhtml"
+    )
+    nil_fact, plain_fact = canonical["facts"]
+    inert = {
+        "code": "nil_fact_inert_attributes_dropped",
+        "fact_start": nil_fact["source_span"]["start"],
+        "attributes": ["decimals", "scale"],
+    }
+
+    misdirected = deepcopy(canonical)
+    misdirected["diagnostics"] = [dict(inert, fact_start=plain_fact["source_span"]["start"])]
+    with pytest.raises(SecFilingParseError, match="does not point at a nil numeric fact"):
+        validate_sec_filing_parse_result(misdirected)
+
+    duplicated = deepcopy(canonical)
+    duplicated["diagnostics"] = [inert, dict(inert)]
+    with pytest.raises(SecFilingParseError, match="duplicated"):
+        validate_sec_filing_parse_result(duplicated)
+
+    for attributes in (["scale", "decimals"], ["decimals", "bogus"], []):
+        malformed = deepcopy(canonical)
+        malformed["diagnostics"] = [dict(inert, attributes=attributes)]
+        with pytest.raises(SecFilingParseError, match="malformed"):
+            validate_sec_filing_parse_result(malformed)
+
+    removed = deepcopy(canonical)
+    removed["diagnostics"] = []
+    # Removing the diagnostic is caught by the coverage count check: the
+    # stale coverage.diagnostic_count no longer equals len(diagnostics).
+    with pytest.raises(SecFilingParseError, match="coverage is not derived"):
+        validate_sec_filing_parse_result(removed)
+
+    plain_only = parse_sec_filing_document(
+        _inline('<ix:nonFraction name="ex:F" contextRef="c" unitRef="u" decimals="0">1</ix:nonFraction>'),
+        document_name="forged-inert-none.xhtml",
+    )
+    assert plain_only["diagnostics"] == []
+    validate_sec_filing_parse_result(plain_only)
 
 
 @pytest.mark.parametrize("parent_attrs", [' format="i3:numdotdecimal"', ' scale="2"', ' sign="-"'])
