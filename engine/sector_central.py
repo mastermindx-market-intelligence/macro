@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 import numpy as np
 import pandas as pd
@@ -685,6 +686,34 @@ def _load_rotation_artifact() -> dict:
         return {}
 
 
+def _lens_date(value) -> str | None:
+    """A YYYY-MM-DD from an artifact field, or None. The page prints this date."""
+    m = re.match(r"\d{4}-\d{2}-\d{2}", str(value or ""))
+    return m.group(0) if m else None
+
+
+def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
+    """What the page tells the reader about the fast lens: state fresh, stale or absent.
+
+    _load_rotation_artifact() answers "may this re-order the board" and returns {} for both
+    a missing and an old file. The reader needs the difference. A file that holds instruments
+    but did not arm the board can only have failed the age guard, so it is stale, and its own
+    asof is the date to name. Read-only; never changes the order.
+    """
+    if armed:
+        return {"state": "fresh", "asof": _lens_date((rotation_raw or {}).get("asof"))}
+    try:
+        p = config.data_dir() / "us_sector_rotation" / "latest.json"
+        raw = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    except Exception:  # noqa: BLE001
+        raw = {}
+    if isinstance(raw, dict) and raw.get("instruments"):
+        date = _lens_date(raw.get("asof")) or _lens_date(raw.get("ts"))
+        if date:
+            return {"state": "stale", "asof": date}
+    return {"state": "absent", "asof": None}
+
+
 def _load_rotation_events():
     """Load the published rotation_events payload (site/marketdata/rotation_events.json).
 
@@ -923,6 +952,7 @@ def compute() -> dict | None:
     mkt["n_sectors"] = len(sectors)
     rotation_armed = bool(rotation_raw and rotation_raw.get("instruments"))
     mkt["rotation_board_order"] = "fast-lens" if rotation_armed else "conviction"
+    mkt["fast_lens"] = _fast_lens_status(rotation_armed, rotation_raw)
 
     return {
         "as_of": cyc["meta"]["asOf"],

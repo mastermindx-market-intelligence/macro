@@ -4397,6 +4397,8 @@ CURATED_EXCLUSIVE = {
     "market-ontology-f09-petroleum-flow",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    # DR3: exact closure isolates the observation consumer; no packing ceiling change.
+    "rotation-observation-delivery",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
@@ -4784,6 +4786,9 @@ CURATED_EXCLUSIVE = {
     # observation and IM15 dislocation chains; the exclusive scope pins the
     # measured suite closure (engine/test import chain plus configs and inits).
     "international-global-replay",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.
@@ -4950,6 +4955,11 @@ CURATED_EXCLUSIVE = {
     # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
     # measured 63-path closure; closure findings (); ceilings stay fixed.
     "grey-deer-pullback-forward",
+    # 2026-10-31 Grey Deer EW-P3 (amends #10219, EW-P3.T1): the forecast reader
+    # STUB suite is hermetic (tmp_path only) and imports stdlib, lib.nyse_calendar
+    # and engine.trial_ledger. scope: exclusive pins it to that declared 9-path
+    # closure (prereg section 11.4); ceilings stay fixed.
+    "grey-deer-ew-forecast-reader",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
@@ -5080,6 +5090,14 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # 2026-10-10 Catalyst Loop #8678: eight focused suites have one
+    # gate:code exclusive CI home with a measured transitive source closure.
+    # Keep the curated contract aligned; do not loosen pack ceilings.
+    "catalyst-loop-integrated",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 

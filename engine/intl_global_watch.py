@@ -195,16 +195,21 @@ def _visibility(record: dict) -> "datetime | None":
     """Instant from which the record is visible, or None when never.
 
     Dislocation: the computation clock, pushed later by the ingestion clock
-    when one is carried. Observation: the ingestion rule — exact/upper_bound
-    from its instant, session_date from the next day 00:00Z, missing never.
+    when one is carried (a carried but unreadable clock is never visible).
+    Observation: the ingestion rule — exact/upper_bound from its instant,
+    session_date from the next day 00:00Z, missing never.
     """
     if _is_dislocation(record):
         seen = _clock_instant(record, "computation")
         if seen is None:
             return None
-        ingested = _clock_instant(record, "ingestion")
-        if ingested is not None and ingested > seen:
-            seen = ingested
+        clock = _clocks(record).get("ingestion")
+        if isinstance(clock, dict):
+            ingested = _parse_instant(clock.get("at"))
+            if ingested is None:
+                return None  # carried but unreadable: visibility unknowable
+            if ingested > seen:
+                seen = ingested
         return seen
     if _is_observation(record):
         clock = _clocks(record).get("ingestion")

@@ -26,6 +26,10 @@ import pytest
 from scripts import build_research_vault as bld
 
 
+EMPTY_SUMMARY_EN = "No summary is available for this report. The full report is available to read."
+EMPTY_SUMMARY_ZH = "本篇暂无摘要。全文已可查看。"
+
+
 # --- fixtures ---------------------------------------------------------------
 
 _SEED = {
@@ -178,8 +182,20 @@ def test_ssr_cards_baked_when_seeded(page_seeded):
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     assert "T('Highlighted', '精选')" in js
     assert "rep glass needs" in page_seeded              # needs-metadata card
-    assert "Summary pending" in page_seeded              # empty-summary fallback
+    assert EMPTY_SUMMARY_EN in page_seeded               # empty-summary fallback
+    assert EMPTY_SUMMARY_ZH in page_seeded
     assert 'class="rep-titlelink"' not in page_seeded
+
+
+def test_empty_summary_wording_promises_nothing_on_either_surface(page_seeded):
+    """Upstream never summarized these records, so no summary is on its way."""
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert f"T('{EMPTY_SUMMARY_EN}', '{EMPTY_SUMMARY_ZH}')" in js
+    assert f'<span class="l-en">{EMPTY_SUMMARY_EN}</span>' in page_seeded
+    assert f'<span class="l-zh">{EMPTY_SUMMARY_ZH}</span>' in page_seeded
+    for surface in (page_seeded, js):
+        for promise in ("Summary pending", "摘要生成中", "still being prepared", "整理中"):
+            assert promise not in surface, promise
 
 
 def test_public_ssr_preview_stops_at_three_and_shows_pro_gate(monkeypatch):
