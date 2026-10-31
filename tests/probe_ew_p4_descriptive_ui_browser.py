@@ -101,12 +101,16 @@ def radar_html(env: dict, lang: str, theme: str) -> str:
     # fixed overlay geometry; the backdrop click-catcher is hidden with it.
     # P1: also remove the dialog's own max-height/overflow clip so the WHOLE band
     # (undo, Study disclosure, policy footer included) lands in the screenshot.
-    # Static harness only — the live dialog keeps its scroll geometry.
+    # The panel's closed-state opacity:0/transform:scale is neutralized too:
+    # without JS the dialog never gains .open/.mx5-dlg-in, and the closed panel
+    # painted fully transparent (the stale-family shots were blank pixels).
+    # Static harness only — the live dialog keeps its scroll and open geometry.
     harness_css = ("#dlg-risk{display:block!important;position:static!important;}"
                    ".mx5-dlg-backdrop{display:none!important}"
                    "#dlg-risk,#dlg-risk *{max-height:none!important}"
                    '#dlg-risk,#dlg-risk .mx5-dlg-body,#dlg-risk [class*="body"],#dlg-risk [class*="scroll"]'
-                   "{overflow:visible!important;height:auto!important}")
+                   "{overflow:visible!important;height:auto!important}"
+                   "#dlg-risk .mx5-dlg-panel{opacity:1!important;transform:none!important}")
     return (f'<!doctype html><html lang="{lang}" data-lang="{lang}" data-theme="{theme}">'
             '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f"<style>{theme_css}</style>"
@@ -225,7 +229,8 @@ def tab_to(page, selector: str) -> dict:
 
 def assert_band_unclipped(page, label: str) -> None:
     """P1: fail the case loudly if the band (or its nearest clipping ancestor)
-    still hides any of its content — scrollHeight must fit inside clientHeight."""
+    still hides any of its content — scrollHeight must fit inside clientHeight —
+    or if the dialog panel is not actually painted (closed-state opacity/transform)."""
     info = page.evaluate(
         """() => {
             const el = document.querySelector('#risk-envelope-band');
@@ -242,10 +247,16 @@ def assert_band_unclipped(page, label: str) -> None:
                 }
                 a = a.parentElement;
             }
-            return {missing: false, clipped};
+            const panel = el.closest ? el.closest('.mx5-dlg-panel') : null;
+            const pcs = panel ? getComputedStyle(panel) : null;
+            return {missing: false, clipped,
+                    panel: pcs ? {opacity: pcs.opacity, transform: pcs.transform} : null};
         }""")
     assert info is not None and not info.get("missing"), f"{label}: #risk-envelope-band missing"
     assert not info["clipped"], f"{label}: band clipped by scroll geometry: {info['clipped']}"
+    panel = info.get("panel")
+    assert panel and panel["opacity"] == "1" and panel["transform"] == "none", \
+        f"{label}: dialog panel not painted (opacity/transform not neutralized): {panel}"
 
 
 def open_radar_disclosures(page) -> None:
