@@ -179,8 +179,10 @@ test('B13 correction note separator and clock share ONE line box at 390', async 
       const spans = await page.locator('.intl-gs__corr-when').count();
       assert.equal(spans, notes, `${lang}: one corr-when span per note`);
       const rects = await page.locator('.intl-gs__corr-when').first()
-        .evaluate(el => el.getClientRects().length);
-      assert.equal(rects, 1, `${lang}/${theme}: separator and clock share one line box`);
+        .evaluate(el => ({ rects: el.getClientRects().length,
+          whiteSpace: getComputedStyle(el).whiteSpace }));
+      assert.equal(rects.rects, 1, `${lang}/${theme}: separator and clock share one line box`);
+      assert.equal(rects.whiteSpace, 'nowrap', `${lang}/${theme}: corr-when is nowrap`);
       await context.close();
     }
   } finally {
