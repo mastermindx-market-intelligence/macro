@@ -42295,6 +42295,8 @@ jobs:
       - "templates/_risk_envelope_band.html.j2"
       - "templates/_risk_envelope_band.css.j2"
       - "templates/rotation_events.js"
+      # The route test reads the Sector Central hash router.
+      - "templates/si_workspace.js"
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
