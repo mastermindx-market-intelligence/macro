@@ -53,7 +53,7 @@ from datetime import date, datetime, timedelta
 import math
 import sys
 
-from engine.portfolio_changes import (CURSOR_DISCLOSURE, EARNINGS_WINDOW_DAYS,
+from engine.portfolio_changes import (CURSOR_DISCLOSURE, EARNINGS_WINDOW_DAYS, _stage_number,
                                       compose_since_section, earnings_days_to,
                                       snapshot_state)
 from engine.portfolio_vocab import SECTOR_ALIASES as _SECTOR_ALIASES
@@ -461,17 +461,17 @@ def _signals_section(ctx: dict, covered: list[str]) -> dict | None:
     ctx_tk = ctx.get("tickers", {})
     lines: list[dict] = []
 
-    # Stage tally over covered names carrying a stage block.
+    # Stage tally over covered names carrying a known integral stage block.
     staged = [(t, (ctx_tk.get(t) or {}).get("stage")) for t in covered]
-    staged = [(t, s) for t, s in staged if isinstance(s, dict) and s.get("n") is not None]
+    staged = [(t, s) for t, s in staged
+              if isinstance(s, dict) and _stage_number(s.get("n")) is not None]
     n_staged = len(staged)
     if n_staged:
         by_n: dict[int, int] = {}
         fresh_by_n: dict[int, int] = {}
         for _t, s in staged:
-            try:
-                sn = int(s.get("n"))
-            except (TypeError, ValueError):
+            sn = _stage_number(s.get("n"))
+            if sn is None:
                 continue
             by_n[sn] = by_n.get(sn, 0) + 1
             if s.get("fresh"):
