@@ -21,6 +21,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tech-volatility-shock-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   source-bound-shock:
     name: source-bound-shock
@@ -28,6 +32,19 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Huge data/site histories are irrelevant to these synthetic tests.
+          # Mirror the proven ci.yml blobless non-cone checkout instead of
+          # downloading the site's multi-GB market-data artifact trees.
+          filter: blob:none
+          fetch-depth: 1
+          sparse-checkout: |
+            /*
+            !/data/
+            !/site/
+            !/mockups/
+            !/verify_shots/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
