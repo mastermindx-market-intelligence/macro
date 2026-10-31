@@ -10184,6 +10184,10 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # B-17 frozen-input research verifier: keep the regression in the existing
+      # Prophet code gate; test-only and source-only edits both select this job.
+      - "research/prophet_v4/b17_frozen_input_recovery.py"
+      - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
@@ -10272,6 +10276,11 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B-17 recovers immutable inputs and exercises the existing selector.
+      # CI runs only the focused hermetic tests, never full archive reconstruction.
+      - name: Prophet B-17 frozen-input recovery — immutable sources, cutoff clocks, and unknown inputs
+        run: python -m pytest tests/test_prophet_b17_frozen_input_recovery.py -q
 
       # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
       # and admissibility literals for the Prophet Lab dossier reader. Hermetic
