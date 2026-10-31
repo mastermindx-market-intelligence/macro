@@ -317,6 +317,9 @@ def document_walk(sessions: list[str], buffer_minutes: int) -> dict:
             "commits_walked": len(log) // 2, "blobs": len(seen), "receipts": len(earliest), "knowable": knowable}
 
 
+UNITS_OUT: list[dict] = []   # per-R-unit freeze inputs (sessions and ids only), filled by freeze_basis
+
+
 def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk=None, dwalk=None, k_fixed=2) -> dict:
     """v5: security-first identity join over EVERY window session for EVERY unit (uniform span;
     all candidate symbols of a multi-symbol security are tested), lane state and coverage from
@@ -407,6 +410,9 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
             continue
         counts["in_R"] += 1
         i0 = si[s]
+        _u = {"episode_id": o["episode_id"], "security_id": o["security_id"], "ticker": o["ticker"], "t_disc": s,
+              "k_disc": (_dk or {}).get("knowable_session"), "status": None, "t_cur": None, "k_cur": None, "strict": None}
+        UNITS_OUT.append(_u)
         fill0 = t0_fill_instant(o["receipt"])
         if not o.get("recorded_at"):
             counts["recorded_at_missing"] += 1
@@ -432,15 +438,18 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
                 break
         if led:
             counts["incumbent_led"] += 1
+            _u["status"] = "INCUMBENT_LED"
             continue
         if pre_gap or pre_unknown:
             counts["incumbent_led_unknown"] += 1
             counts["incumbent_led_unknown_pre_gap"] += pre_gap
             counts["incumbent_led_unknown_pre_identity"] += pre_unknown
         strict = not pre_gap and not pre_unknown
+        _u["strict"] = strict
         # uniform span: identity is tested on EVERY healthy window session for EVERY unit
         if any(not syms(sid, d) for d in window if d in healthy):
             counts["t1_unknown_identity"] += 1
+            _u["status"] = "UNKNOWN_IDENTITY"
             continue
         t_cur, t_sym, unknown, gap_before = None, None, None, []
         for d in window:
@@ -461,20 +470,26 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
                 break
         if unknown:
             counts[f"t1_unknown_{unknown}"] += 1
+            _u["status"] = f"UNKNOWN_{unknown.upper()}"
             continue
         if t_cur is None:
             counts["t1_censored_gap_no_stamp" if gap_before else "t1_cash_window_covered"] += 1
+            _u["status"] = "CENSORED" if gap_before else "CASH"
             if not gap_before and strict:
                 sessions_primary.add(s)
                 cohort[s] = cohort.get(s, 0) + 1
             continue
+        _u["t_cur"] = t_cur
         if gap_before:
             counts["t1_identified_interval"] += 1
+            _u["status"] = "IDENTIFIED_INTERVAL"
             lag_interval_obs.append(si[t_cur] - i0)
             lag_interval_early.append(si[gap_before[0]] - i0)
             continue
         counts["t1_identified_exact"] += 1
         window_gap_free = all(d in healthy for d in window)
+        _u["status"] = "IDENTIFIED_EXACT"; _u["window_gap_free"] = window_gap_free
+        _u["k_cur"] = knowable_stamp.get(t_cur) if walk is not None else None
         counts["t1_identified_exact_gap_after_admission"] += not window_gap_free
         counts["exact_zero_lag"] += (si[t_cur] - i0) == 0
         counts["exact_symbol_differs_from_ticker_at_observation"] += t_sym != o["ticker"]
@@ -562,14 +577,16 @@ def main() -> None:
     ap.add_argument("--buffer-minutes", type=int, default=30)
     ap.add_argument("--document-walk", action="store_true")
     ap.add_argument("--server-arrival", action="store_true")
-    ap.add_argument("--main-sha", help="pin the WALK to this commit (must be an ancestor of origin/main) instead of resolving origin/main (round-7 N2); working-tree inputs are digested separately in the inputs block")
+    ap.add_argument("--units-out", type=Path, help="write per-R-unit sessions and ids (no outcome column) for the freeze inputs")
+    ap.add_argument("--main-sha", help="pin the WALK to this commit (must be on origin/main's first-parent line) instead of resolving origin/main (round-7 N2); working-tree inputs are digested separately in the inputs block")
     a = ap.parse_args()
     global MAIN_SHA
     if a.main_sha:
         MAIN_SHA = subprocess.run(["git", "rev-parse", "--verify", a.main_sha + "^{commit}"], capture_output=True, text=True, check=True).stdout.strip()
         # round-8 nit 2: the walk claims an origin/main first-parent history, so the pin must lie on it
-        if subprocess.run(["git", "merge-base", "--is-ancestor", MAIN_SHA, "origin/main"]).returncode != 0:
-            raise SystemExit(f"--main-sha {a.main_sha} is not an ancestor of origin/main")
+        fp = subprocess.run(["git", "rev-list", "--first-parent", "origin/main"], capture_output=True, text=True, check=True).stdout.split()
+        if MAIN_SHA not in fp:
+            raise SystemExit(f"--main-sha {a.main_sha} is not on the first-parent line of origin/main")
     global USE_SERVER_ARRIVAL
     USE_SERVER_ARRIVAL = bool(a.server_arrival)
     c, opened, sessions = _stamps(), _opened(), _sessions()
@@ -587,6 +604,8 @@ def main() -> None:
         out["freeze_basis"] = freeze_basis(c, opened, raw.get("sessions", raw), sessions, k=a.k,
                                            r_from=a.r_from, r_to=a.r_to, walk=walk, dwalk=dwalk)
     out["inputs"] = input_digests(a)   # round-8 nit 1: the walk is pinned by SHA; these are not
+    if a.units_out:
+        a.units_out.write_text(json.dumps({"walk_sha": pinned_main(), "k_sessions": a.k, "units": UNITS_OUT}, indent=1, default=str) + "\n")
     print(json.dumps(out, indent=1, default=str))
 
 

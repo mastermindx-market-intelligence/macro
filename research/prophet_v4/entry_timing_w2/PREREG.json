@@ -1,0 +1,561 @@
+{
+ "schema": "us.prophet_entry_timing_w2_freeze/v1",
+ "status": "FROZEN",
+ "frozen_date": "2026-10-31",
+ "freeze_commit": null,
+ "registration": {
+  "path": "research/prophet_v4/ENTRY_TIMING_W2_DESIGN_REGISTRATION_2026-10-31.md",
+  "revision": 8,
+  "sha256_at_freeze": "eaea753ec642bb02cfa8f7829e451a562e00f0a5deb4402414c0a28493329fe6",
+  "schema": "us.prophet_entry_timing_w2_design/v8"
+ },
+ "independent_review": {
+  "head_passed": "51ea53823b8e",
+  "note": "round-8 Opus reviewer PASS on 51ea53823b8e (2026-10-31); nit commit 90c54a11 CONFIRMED by the same reviewer as the three prescribed nits only; YAML block unchanged since 51ea5382 except walk_sha_rule (nit 1)"
+ },
+ "authority": "measurement only; no trade/sizing/alert; never amends #7751 A1; B4 t_auth descriptive only",
+ "parents": [
+  "B4 PREREG.json (quoted constants only)",
+  "W3_RACE_PREREG.md (session_missing class only)",
+  "ENTRY_TIMING_W1 r3 (d03acfd0)"
+ ],
+ "census": {
+  "path": "research/prophet_v4/entry_timing_w2_t1_census_2026-10-31.json",
+  "version": "v8",
+  "sha256": "484d2a493c87bbfb0e0752124046dbfe081ee8b0a1735b56486c5b1c1e196afa",
+  "walk_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
+  "inputs": {
+   "checkout_head": "51ea53823b8e59eb3d99a84b199c63d3a5365b48",
+   "walk_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
+   "candidates_parquet_files": 4,
+   "generation_event_files": 3,
+   "candidates_and_events_sha256": "d243af3db0b5dc3c58bc7263b49076fb8f1ca1b92566d860a68a31cf74748919",
+   "spy_parquet_sha256": "bfb908a59386cc032261999fedcb7354c3a36c4e8d6c3f49a8cfd26dd723592f",
+   "receipt_sessions_sha256": "a706b757e83b74aa9579040b96930a04dd82d3a7826fdccfab03c6f6a31fc6cd",
+   "note": "--main-sha pins the git walks only; a freeze re-run must also match these digests to reproduce the freeze basis"
+  },
+  "units_path": "research/prophet_v4/entry_timing_w2_units_2026-10-31.json",
+  "units_sha256": "6a39d85b7d1eac888e5bda4107c3a93a628c1aac24788c6d4331101130de2fff",
+  "units_walk_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
+  "counts": {
+   "opened": 1087,
+   "t_disc_recovered": 1087,
+   "t_disc_unrecovered": 0,
+   "t_disc_not_a_session": 0,
+   "in_R": 1087,
+   "incumbent_led": 98,
+   "incumbent_led_unknown": 989,
+   "incumbent_led_unknown_pre_gap": 989,
+   "incumbent_led_unknown_pre_identity": 0,
+   "t1_identified_exact": 26,
+   "t1_identified_interval": 44,
+   "t1_cash_window_covered": 0,
+   "t1_censored_gap_no_stamp": 918,
+   "t1_unknown_signal_asof": 1,
+   "t1_unknown_identity": 0,
+   "t1_buy_stamp_inside_k_but_knowable_outside": 21,
+   "t1_identified_exact_gap_after_admission": 26,
+   "exact_zero_lag": 15,
+   "exact_knowable_missing": 0,
+   "exact_disc_knowable_missing": 0,
+   "exact_knowable_later_than_stamp": 26,
+   "exact_disc_knowable_later_than_session": 26,
+   "exact_symbol_differs_from_ticker_at_observation": 0,
+   "exact_multi_symbol_security": 0,
+   "recorded_at_missing": 0,
+   "recorded_at_le_t0_fill": 1087,
+   "recorded_at_gt_t0_fill": 0,
+   "late_discovery_arrival_gt1_session": 11
+  }
+ },
+ "entitlement_exclusion": {
+  "owner_role": "Data OS owner",
+  "pinned_security_ids": [],
+  "count": 0,
+  "source": "none exists in the repository at the freeze (searched docs/, research/, config/, engine/, scripts/ for an entitlement exclusion list); a list supplied later is pinned at its own look and never applied retroactively to a look already taken"
+ },
+ "t3_availability_gate": {
+  "rule": "panel DATE INDEX holds every one of the 120 NYSE sessions ending at t_disc - 1 (3-session buckets x 40 = 120; MIN_BARS 90 daily) for >= 90% of R exact pairs; dates only, no close read",
+  "exact_pairs": 26,
+  "pairs_passing": 26,
+  "share": 1.0,
+  "t3_in_p_family": true,
+  "pairs": [
+   {
+    "episode_id": "pe:SEC:US-XNAS-ACIW:epoch_0:sa:c40679d503dc6c2caa383d8a:1",
+    "ticker": "ACIW",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-PM:epoch_0:sa:d67d327d0f38f1d6c4938ede:1",
+    "ticker": "PM",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-HUBG:epoch_0:sa:235d6c2eef84dcead49208fe:1",
+    "ticker": "HUBG",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-MPT:epoch_0:sa:66a9373081e455b50463e5af:1",
+    "ticker": "MPT",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-VRSN:epoch_0:sa:b7a20d6d12b2385d6d4fd6c2:1",
+    "ticker": "VRSN",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-WHR:epoch_0:sa:276a3aeea13a6cbd5c06146a:1",
+    "ticker": "WHR",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-GEN:epoch_0:sa:ef7bc6226c58be516b5da803:1",
+    "ticker": "GEN",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-SFM:epoch_0:sa:e2b5df75a005f6f1a4f4f18e:1",
+    "ticker": "SFM",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-PFGC:epoch_0:sa:3f1584f86615041c5a84a7b2:1",
+    "ticker": "PFGC",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-VIRT:epoch_0:sa:ffc8b25428943a6678b5a89d:1",
+    "ticker": "VIRT",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-KEX:epoch_0:sa:d6823c0d09673c6a6b9da5d3:1",
+    "ticker": "KEX",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-TRV:epoch_0:sa:1e3108c5a887a9143ba9b68b:1",
+    "ticker": "TRV",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-CDW:epoch_0:sa:c1198a75faec5d7cdfc6bbb8:1",
+    "ticker": "CDW",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-TTD:epoch_0:sa:32dead9ec9200e919aa4c470:1",
+    "ticker": "TTD",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-AGCO:epoch_0:sa:2b57ab2a246a8100c0b56976:1",
+    "ticker": "AGCO",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-PGR:epoch_0:sa:3c4aa4aa8df09bcc1303c8a6:1",
+    "ticker": "PGR",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XASE-UEC:epoch_0:sa:419ed0e014204e58aa33506c:1",
+    "ticker": "UEC",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-CTVA:epoch_0:sa:09022ab2fa0f2a7de040ae54:1",
+    "ticker": "CTVA",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-CCJ:epoch_0:sa:f1fd7a7c30c7ee3bda81f8a0:1",
+    "ticker": "CCJ",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-RIVN:epoch_0:sa:a95f21eacb208887d4585a45:1",
+    "ticker": "RIVN",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-EU:epoch_0:sa:aca5d9146f243d60a1d3dfbf:1",
+    "ticker": "EU",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-ELV:epoch_0:sa:36d68993be9875f3f26eee51:1",
+    "ticker": "ELV",
+    "t_disc": "2026-08-26",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNYS-CMC:epoch_0:sa:342531ff88ebe06b40cb6254:1",
+    "ticker": "CMC",
+    "t_disc": "2026-09-04",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-ANDE:epoch_0:sa:1a37c1f675b332aa8a7b3b85:1",
+    "ticker": "ANDE",
+    "t_disc": "2026-09-04",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-AFRM:epoch_0:sa:98ce486b69a736f0fd77e5ce:1",
+    "ticker": "AFRM",
+    "t_disc": "2026-09-17",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   },
+   {
+    "episode_id": "pe:SEC:US-XNAS-FCFS:epoch_0:sa:c75f9321577ecdd60895d5a7:1",
+    "ticker": "FCFS",
+    "t_disc": "2026-10-14",
+    "panel": "present",
+    "missing_sessions": 0,
+    "first_missing": [],
+    "pass": true
+   }
+  ]
+ },
+ "r_maturity": {
+  "rule": "first session after max over R units and arms of t_exec + H; t_exec(T0)=k_disc+1, t_exec(T1)=k_cur+1, t_exec(T2)=k_disc+3 observed; T3 uses its latest admissible fill t_disc+K+1 (its own t_exec needs a close read)",
+  "H_sessions": 10,
+  "K_sessions": 10,
+  "latest_t_exec": {
+   "T0": "2026-10-22",
+   "T1": "2026-10-16",
+   "T2": "2026-10-26",
+   "T3_bound": "2026-11-04"
+  },
+  "maturity_session_observed_arms": "2026-11-10",
+  "maturity_session_with_t3_bound": "2026-11-19",
+  "projected_sessions_after_calendar_end": {
+   "calendar_last": "2026-10-30",
+   "holidays_declared": [
+    "2026-11-26",
+    "2026-12-25",
+    "2027-01-01",
+    "2027-01-18",
+    "2027-02-15"
+   ]
+  }
+ },
+ "frozen_fields": {
+  "schema": "us.prophet_entry_timing_w2_design/v8",
+  "status": "DRAFT_UNFROZEN",
+  "adjudications": [
+   "W2-ADJ-01 policy contrast is the primary (P only)",
+   "W2-ADJ-02 timing co-condition on exact pairs only",
+   "W2-ADJ-03 both arms timed by first-parent arrival",
+   "W2-ADJ-04 one heal rule (healed session = GAP)",
+   "W2-ADJ-05 block bootstrap + session floors",
+   "W2-ADJ-06 margin differential only + T0 lower bound >= 0 + timing point estimate >= 0",
+   "W2-ADJ-07 block 44 + full-block floors + conservative-of-two-bounds",
+   "W2-ADJ-08 commit clock corrected by server witness",
+   "W2-ADJ-09 T1 never reads the anchor",
+   "W2-ADJ-10 t-bound SE inflated for block-mean autocorrelation"
+  ],
+  "parents": [
+   "B4 PREREG.json (quoted constants only)",
+   "W3_RACE_PREREG.md (session_missing class only)",
+   "ENTRY_TIMING_W1 r3 (d03acfd0)"
+  ],
+  "generation_id": "peg:23be3409c3a57944dd08e09e38e3b7541926c0f244e9d0d3b4a0b4a8aacedbf9",
+  "session_calendar": "data/yahoo/SPY.parquet date index (NYSE sessions); all units in sessions",
+  "lane_state_basis": "first blob carrying each stamp_date on first-parent origin/main fixes its BUY rows, curated coverage and signal_asof; a later blob changing that date's BUY set = HEAL -> session is a GAP; healed rows never read; HEAD never read; walked at the pinned origin/main SHA below (per look record in P)",
+  "walk_sha_R": "a7eef2ce9737",
+  "walk_sha_rule": "origin/main resolved once at census start-up, or passed as --main-sha (ancestor of origin/main) so the WALK reproduces; working-tree inputs (candidate parquets, generation events, SPY calendar, receipt map) are digested in the census output inputs block and must match for a freeze-basis re-run (round-7 N2, round-8 nits 1-2); the SHA is passed to every git read of both walks and recorded in each walk's output (never the symbolic ref)",
+  "arrival_clock": "first-parent commit instant corrected to max(commit, earliest check-suite createdAt on branch main for that commit; suites on other branches ignored); witness 31/44 stamp commits + 23/54 document commits, 0 on another branch, none changes a session; commits without a witness keep the commit clock and are listed; R readout and every deciding P look record (futility, fixed) also reported with c_disc +1 alone, c_cur +1 alone, both +1 (descriptive; round-7 N1)",
+  "anchor_gates": "AVOIDED and REFUSED apply to T0, T2, T3 only; T1 enters whenever the lane admitted inside K (gates = _classify_buy_row); the anchor is a false-start yardstick for every arm, never a gate for T1",
+  "late_discovery_arrival": "unit whose discovery document became knowable > 1 session after its data session; flagged, kept; timing readout also reported without them (R: 11 of 1,087)",
+  "late_knowable_buy_rows": "BUY rows inside K whose stamp became knowable after t_disc + K are skipped and the window scan continues; counted once per unit (R: 21 units, 23 rows; stamp lag 9 for 4 rows, 10 for 19)",
+  "coverage": "session COVERED iff its first-arrival stamp has >= 1 curated-tier row AND the session is not healed; else GAP",
+  "identity_join": "security-first; EVERY membership symbol recorded for the security confirmed by VendorAliasTable.resolve(\"membership\", symbol, on=session) == security_id, on every covered window session for every unit (uniform span); none confirmed -> UNKNOWN; P looks pin the alias blob current on first-parent origin/main at the look (sha256 in the look record; a unit is never re-resolved under a later blob); R census snapshot sha256 ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306 (disclosed look-ahead on labels)",
+  "decision_window_K_sessions": 10,
+  "pre_window_sessions": 10,
+  "incumbent_led": "BUY row on a covered pre-window session -> excluded",
+  "incumbent_led_unknown": "pre-window contains a GAP or a covered session with no confirmed symbol -> excluded from P primary and co-condition; R descriptive sensitivity",
+  "admission_inside_K": "BUY row on a covered window session whose knowable session k(c_cur) <= t_disc + K",
+  "t1_status": [
+   "IDENTIFIED_EXACT",
+   "IDENTIFIED_INTERVAL (descriptive; bounds = first gap session in window .. observed stamp)",
+   "CASH (no gap, no admission inside K)",
+   "CENSORED (gap, no admission inside K)",
+   "UNKNOWN (identity on any covered window session; signal_asof > stamp_date on the row that would set t_cur; anchor when recorded_at > T0 fill instant)"
+  ],
+  "primary_units": "fully covered window + pre-window; IDENTIFIED_EXACT or CASH; not INCUMBENT_LED(_UNKNOWN); not UNKNOWN; not entitlement-excluded",
+  "floors": {
+   "primary_units": 300,
+   "co_condition_pairs": 100,
+   "full_blocks_of_44_sessions_min": 5,
+   "calendar_sessions_min": 220,
+   "each_full_block_has": "primary unit and co-condition pair",
+   "futility_full_blocks_min": 3
+  },
+  "co_condition_pairs": "primary units with IDENTIFIED_EXACT",
+  "primary_estimand": "D_policy = outcome(T0) - outcome(T1), ITT, T1 = cash (0, no cost) when not admitted inside K; P only; decomposition printed",
+  "co_condition": "D_timing and executable lead L = t_exec(T1) - t_exec(T0) on co-condition pairs; guard, never a promotion basis; binds on point estimate >= 0 and lower bound >= -25",
+  "knowable_session": "first NYSE session whose 16:00 ET close > first-parent ARRIVAL instant on origin/main (commit clock corrected by the server witness) + 30 min; applied to the discovery document (c_disc) and the BUY stamp (c_cur, one instant per stamp_date)",
+  "anchor_knowability": "payload used only if recorded_at <= T0 fill instant; else UNKNOWN (anchor); R 1087/1087 satisfy",
+  "fill": "close of the session after the knowable session (engine/us_prophet_grades.py next-close basis)",
+  "price_panel": {
+   "path": "data/yahoo/<TICKER>.parquet",
+   "column": "close",
+   "benchmark": "data/yahoo/SPY.parquet",
+   "commit": "pinned per look record"
+  },
+  "arms": {
+   "T0": "k(c_disc)+1",
+   "T1": "k(c_cur)+1 or cash; never anchor-gated",
+   "T2": "k(c_disc)+1+2",
+   "T2m": "UNIDENTIFIED (k_star 0 coincides with T0; a k_star of 2 would coincide with T2)",
+   "T3": "union early-turn if availability gate >= 90% (panel INDEX through t_disc - 1, no close read before freeze); P Holm family member if the gate passes, descriptive at R"
+  },
+  "k_fixed_sessions": 2,
+  "k_star_sessions_exact_basis": 0,
+  "k_star_basis": "median executable lead over R exact pairs (gap-tolerant, descriptive); median stamp lag also 0",
+  "horizon_sessions": 10,
+  "exit": "time_exit_at_h10_close",
+  "cost_floor_bps_round_trip": 50,
+  "estimator": {
+   "method": "conservative of circular_moving_block_bootstrap percentile bound and student_t bound with B-1 df on full non-overlapping block means",
+   "unit": "per-session t_disc cohort over the look's NYSE calendar (empty cohorts kept)",
+   "block_length_sessions": 44,
+   "block_alignment_for_t": "from the first session of the look's calendar; trailing partial block excluded from the t bound only",
+   "statistic": "unit-weighted mean",
+   "resamples": 4000,
+   "rng": "numpy Generator(PCG64(20261031))",
+   "shared_index_set": "every endpoint + bound + tolerance of the look",
+   "bound": "one-sided 95%; lower = min of the two lower bounds, upper = max of the two upper bounds; the look record names which decided",
+   "t_bound_se_inflation": "sqrt((1 + 2r(B-1)/B) / (1 - 2r/B)), r = max(observed lag-1 autocorrelation of adjacent full-block means, 0.17); observed r, used r and factor recorded per look (ADJ-10)",
+   "implementation": "research/prophet_v4/entry_timing_w2_estimator.py",
+   "diagnostic_only": "per-session cluster bound"
+  },
+  "promote": {
+   "segment": "P only",
+   "bound": "deciding (ADJ-07)",
+   "policy_lower_bound_bps": -25,
+   "t0_outcome_lower_bound_bps": 0,
+   "timing_point_estimate_bps_min": 0,
+   "timing_lower_bound_bps": -25,
+   "min_median_executable_lead_sessions": 1,
+   "tolerances": "hold",
+   "fragile": "blocks",
+   "floors": "all \u00a72 floors"
+  },
+  "reject": {
+   "segment": "P only",
+   "rule": "deciding policy_upper_one_sided_95_bound < -25 bps at the fixed look with floors met"
+  },
+  "futility_w2": {
+   "at_primary_units": 150,
+   "at_full_blocks_min": 3,
+   "rule": "deciding policy_upper_one_sided_95_bound < -25 bps",
+   "disposition": "REJECT_FUTILITY (terminal; B4 rule quoted, not borrowed)"
+  },
+  "looks_P": {
+   "monitoring": "[50, 100] primary units; point estimates and waterfall only, no bound",
+   "futility": "first session with >= 150 primary units and >= 3 full blocks",
+   "fixed": "first session on which every \u00a72 floor holds; pair-floor deadline 126 sessions (~6 calendar months) after the primary unit floor and block floor are met -> UNIDENTIFIED-terminal",
+   "clock_sensitivities": "every deciding look record also reports c_disc +1, c_cur +1, both +1 (descriptive)"
+  },
+  "look_R": {
+   "t_disc_from": "2026-08-26",
+   "t_disc_to": "2026-10-23",
+   "looks": 1,
+   "after_freeze": true,
+   "may_promote": false,
+   "may_reject": false,
+   "changes_P_constants": false,
+   "maturity_session": "set at freeze = first session after max over R units and arms of t_exec + H (observed, not assumed)",
+   "sensitivities": [
+    "c_disc +1 session alone",
+    "c_cur +1 session alone",
+    "both +1 session",
+    "without LATE_DISCOVERY_ARRIVAL units"
+   ]
+  },
+  "secondary_family_holm": [
+   "D_policy(T2 - T1)",
+   "D_policy(T3 - T1) if gate passes"
+  ],
+  "descriptive": [
+   "decomposition terms",
+   "interval units both bounds",
+   "T1b buyable==True",
+   "incumbent_led(_unknown) negative lead",
+   "R 26 exact pairs with pre-gap flag",
+   "placebo T0 at t_disc - 5",
+   "mdv20_usd terciles",
+   "anchor era",
+   "lead terciles",
+   "t_vis",
+   "t_auth"
+  ],
+  "avoided_window": "[t_disc, t_exec - 1] for T0, T2 and T3 only (ADJ-09); T1 is never AVOIDED",
+  "refused": "fill-session close below the anchor -> no fill, cash 0, counted; T0, T2 and T3 only (ADJ-09); T1 is never REFUSED",
+  "t1_entered_below_anchor": "co-condition pair whose T1 fill close < anchor -> class ENTERED_BELOW_ANCHOR; counted in the waterfall, kept in every endpoint except the (i) false-start rate, where the pair leaves the denominator for both arms (conservative against PROMOTE)",
+  "false_start": "close < anchor within hold before any close >= fill + ATR14 ; ATR14 = mean |dclose| over 14 sessions strictly before t_disc",
+  "tolerance": {
+   "false_start_rate_delta_pp_max": 10,
+   "false_start_rate_population": "co-condition pairs excluding ENTERED_BELOW_ANCHOR; binds at the fixed look",
+   "false_start_loss_differential_mean_bps_min": -50,
+   "false_start_loss_definition": "mean of loss_T0 - loss_T1 over primary units; loss_arm = min(outcome, 0) * 1[arm false start], 0 for cash; binds at the fixed look; never a REJECT trigger"
+  },
+  "bounds": [
+   "cost_x1",
+   "cost_x2",
+   "drop_top_5pct_abs_D (trimmed once on the full-sample ranking, before resampling)"
+  ],
+  "bounds_rule": "shared index set; any flip -> FRAGILE -> blocks PROMOTE",
+  "critical_values": {
+   "planning_unit": "full block of 44 sessions",
+   "assumed_sd_policy_bps": 500,
+   "assumed_sd_timing_bps": 400,
+   "assumed_intra_block_correlation": "0.04-0.05",
+   "block_mean_sd_policy_bps": "100-112",
+   "blocks": 5,
+   "t_095_df4": 2.132,
+   "se_inflation_factor_r017_B5": 1.17,
+   "policy_se_bps": "52-59",
+   "policy_critical_mean_bps": "86-100",
+   "policy_80pct_power_bps": "136-155",
+   "pass_rate_at_true_zero": "0.10-0.11 (noncentral t, 4 df; upper limit for the deciding rule)",
+   "timing_pairs_per_block": 20,
+   "block_mean_sd_timing_bps": "119-125",
+   "timing_se_bps": "62-65",
+   "timing_critical_mean_bps": "107-114",
+   "point_estimate_binds_first": false,
+   "r5_and_r6_figures": "superseded"
+  },
+  "generation_recorded_at": "reported per unit as an instant against the T0 fill (R 1087/1087 at or before); not the T0 clock",
+  "falsifiers": {
+   "descriptive": [
+    "placebo at t_disc - 5",
+    "D_timing by lead tercile"
+   ],
+   "binding_via_promote": "decomposition sign pattern (timing point estimate < 0 blocks PROMOTE)"
+  },
+  "dependence_diagnostic": [
+   "both bounds and which decided",
+   "per-session cluster bound",
+   "distinct t_disc sessions",
+   "full blocks",
+   "SD of block means",
+   "implied design effect"
+  ],
+  "implementation_invariant": "numerators invariant to refused-unit count (not a falsifier of H_W2)",
+  "dispositions": [
+   "PROMOTE (P only)",
+   "RETAIN_IN_SHADOW",
+   "REJECT (P only)",
+   "REJECT_FUTILITY (P only, terminal)",
+   "UNIDENTIFIED",
+   "FRAGILE",
+   "FAILED_TOLERANCE"
+  ],
+  "authority": "measurement only; no trade/sizing/alert; never amends #7751 A1; B4 t_auth descriptive only"
+ },
+ "frozen_at_head": "90c54a11784097413e8fb4715a0ef44812be017c",
+ "reads": "dates, ids and the price-panel DATE INDEX only; no close/outcome column opened"
+}

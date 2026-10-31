@@ -1016,7 +1016,7 @@
  },
  "provenance": {
   "census_version": "v8",
-  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737",
+  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737 --units-out research/prophet_v4/entry_timing_w2_units_2026-10-31.json",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
   "lane_state": "first-parent ARRIVAL on origin/main pinned at a7eef2ce9737 (resolved once at start-up and passed to every git read of both walks) (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
   "identity_join": "security-first: candidate symbols from the membership alias records, EVERY candidate confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id, tested on every healthy window session for every unit (uniform span); alias parquet sha256 pinned",
@@ -1036,8 +1036,9 @@
   "v8_changes": [
    "--main-sha <sha> pins the walk for a reproducible re-run (round-7 N2); this file is the re-run at --main-sha a7eef2ce9737 and reproduces v7 on every top-level key (freeze_basis.counts, both walks, witness 31/44 + 23/54 on main, 0 off-main, skipped blobs/docs [])",
    "no census logic change; v7 facts stand",
-   "round-8 nits: sorted set iteration (byte-stable), --main-sha must be an ancestor of origin/main, inputs block digests every working-tree input"
+   "round-8 nits: sorted set iteration (byte-stable), --main-sha must be an ancestor of origin/main, inputs block digests every working-tree input",
+   "--units-out writes the per-R-unit sessions/ids file (freeze population; no outcome column); --main-sha must be on origin/main's first-parent line"
   ],
-  "rerun_command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737"
+  "rerun_command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737 --units-out research/prophet_v4/entry_timing_w2_units_2026-10-31.json"
  }
 }

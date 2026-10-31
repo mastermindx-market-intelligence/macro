@@ -10234,7 +10234,9 @@ jobs:
       - "tests/test_us_candidate_episode_identity_retry.py"
       # entry-timing W2 estimator (conservative-of-two block bounds)
       - "research/prophet_v4/entry_timing_w2_estimator.py"
+      - "research/prophet_v4/entry_timing_w2_freeze.py"
       - "tests/test_entry_timing_w2_estimator.py"
+      - "tests/test_entry_timing_w2_freeze.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -10290,7 +10292,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: entry-timing W2 estimator (conservative-of-two block bounds)
-        run: python -m pytest tests/test_entry_timing_w2_estimator.py -q
+        run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
 

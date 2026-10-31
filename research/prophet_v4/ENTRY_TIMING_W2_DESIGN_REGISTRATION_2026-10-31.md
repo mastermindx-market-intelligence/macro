@@ -1,11 +1,21 @@
 # Entry Timing W2 — design registration: does entering at first persisted discovery beat following the BUY lane? (2026-10-31, revision 8)
 
-**Status: DRAFT — UNFROZEN.** Nothing in this document is registered until (a) an independent
-non-author review returns APPROVE-READY-TO-FREEZE on the exact revision, (b) the frozen-field block
-below is mirrored into a machine freeze, and (c) the freeze commit SHA is written into this header.
-Until then every number here may change, and no outcome, price, grade or paired-race surface has
-been or may be read for the population it names. Authority: measurement design only. No trade,
-sizing, alert or capability authority follows from any result of this study.
+**Status: FROZEN 2026-10-31.** Independent non-author review PASS on revision 8 at `51ea53823b8e`
+(round 8, Opus reviewer, read-only); the three prescribed nits at `90c54a11784097` were confirmed by the
+same reviewer as the only change. The frozen-field block below is mirrored into the machine freeze
+`research/prophet_v4/entry_timing_w2/PREREG.json` (built by `research/prophet_v4/entry_timing_w2_freeze.py`
+from dates, ids and panel DATE indexes only), which also records the freeze inputs: the pinned census
+(walk `a7eef2ce9737`, inputs digested), the per-unit population file
+`research/prophet_v4/entry_timing_w2_units_2026-10-31.json` (1,087 R units: 26 exact / 44 interval /
+918 censored / 98 incumbent-led / 1 unknown), the Data OS entitlement exclusion list (none exists —
+pinned EMPTY under the owner role; a later list applies from its own pin), the T3 availability gate
+(26 of 26 exact pairs hold the 120-session 3-day-bucket lookback through `t_disc − 1`: **T3 is in the P
+Holm family**, descriptive at R), and the R maturity session (**2026-11-19** = first session after the
+latest admissible T3 fill `t_disc + K + 1` plus H; observed T0/T1/T2 alone would give 2026-11-10). Freeze
+commit SHA: FREEZE_COMMIT_SHA_PENDING (written by the commit that follows the freeze record; the
+`sha256_at_freeze` in the record is this file's digest at that freeze commit, before this line changed).
+No outcome, price, grade or paired-race surface has been read for the population it names. Authority:
+measurement design only. No trade, sizing, alert or capability authority follows from any result of this study.
 
 **Revision history.** r1 → REVISE (the "first curated-tier stamp" incumbent was a universe). r2 →
 REVISE (ITT primary with T1 = cash judged a selection contrast; coverage gaps inside the window).
