@@ -286,6 +286,55 @@ verified:
       armed, not reviewed, not accepted, not released; hosted CI not yet consumed.
       The fabric operation prophet-v4-a2-source-issuer-preflight-20261031-01 stays
       TERMINAL / NOT_ACCEPTED and is not re-run.
+  - claim: W2 rounds 6 and 7 returned REVISE (no blocker); revision 8 (51ea53823b8e) answers every finding, the estimator is a tested module, and the census re-run at the pinned SHA reproduces v7 exactly.
+    command: >
+      Opus reviewer (read-only) rounds 6 and 7 on 2d81bf31 and 1116bb7e; r7 edits
+      (ADJ-10 SE inflation, pinned origin/main walk, main-branch check-suite witness,
+      per-unit late counter, three-way +1 sensitivities, ENTERED_BELOW_ANCHOR
+      exclusion); r8 edits (+1-clock readouts on every deciding P look, census
+      --main-sha, 126-session pair-floor deadline, constant 1.1682, bootstrap
+      rationale, N8 test); python3 research/prophet_v4/entry_timing_w2_t1_census.py
+      --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737;
+      python3 -m pytest tests/test_entry_timing_w2_estimator.py -q;
+      python3 scripts/check_contract_delta.py --base a7eef2ce9737.
+    result: >
+      Round 6 REVISE (B1 YAML avoided window, M1 t bound ignored lag-1 block-mean
+      autocorrelation, M2 walk SHA read after the walk, m1-m7, n1-n2) -> r7 1116bb7e;
+      round 7 REVISE on minor items only (N1 P looks had no +1-clock readout, N2 census
+      not re-runnable at the pinned SHA, N3-N8 text/constant/rationale/test) with the
+      planning numbers reproduced independently (policy critical +86..+100 bps, timing
+      +107..+114, pass-at-zero 0.099-0.106, inflation 1.1682 at r=0.17 B=5) -> r8
+      51ea53823b8e. Estimator research/prophet_v4/entry_timing_w2_estimator.py (MBB
+      l=44 circular, shared index set, t(B-1) with inflated SE, conservative-of-two
+      bounds) 9 tests passed; wired into legacy-jobs.yml + ci.yml paths (contract-delta
+      0 introduced / 0 inherited at base a7eef2ce9737). Census v8 at --main-sha
+      a7eef2ce9737: identical top-level output to v7 (in_R 1087, 26 exact / 44 interval /
+      918 censored, 21 late-knowable units, witness 31/44 + 23/54 on main, 0 off-main).
+      Round-8 bounded delta review commissioned on 51ea5382 (session bcc7e91f). Still
+      DRAFT, UNFROZEN, no outcome read; #7751 A1 untouched.
+  - claim: A2 #10289 round-1 and round-2 independent reviews returned REVISE (no blocker); round-3 repairs at 645caaa6cf60 with 70 tests passing.
+    command: >
+      Opus reviewer (read-only) on 0cfffbab then dd9c840c; repairs in the A2 worktree
+      (claude/a2-prophet-fullpop-preflight-salvage-20261031); python3 -m pytest
+      tests/test_prophet_settlement_preflight.py tests/test_prophet_durable_checkpoint.py -q.
+    result: >
+      Round 1 (M1 identity-hash conflation, M2 no pass-through test, M3 snapshot
+      InfrastructureError left no receipt, M4 inventory write could withhold
+      publication, m1-m6) -> dd9c840c: raw-to-raw / semantic-to-semantic identity
+      binding, pass-through test under a lifted owner ceiling (tripwire fails when W3B
+      lifts it), typed SOURCE_SNAPSHOT_MISSING/UNBOUND, SNAPSHOT_PATH_UNQUALIFIED,
+      INVENTORY_MALFORMED, CANDIDATE_STORE_EMPTY, receipt refused inside the repo,
+      nightly inventory write wrapped (warning only), ::warning/::notice + step summary.
+      Round 2 (N1 zlib.error crash, N2 unvalidated receipt content echoed, N3
+      precedence, N4 docstring vocabulary, N5 heredoc-only test, N6 VALID_EMPTY
+      decision) -> 645caaa6: zlib.error typed as DURABLE_SOURCE_SNAPSHOT_MISSING,
+      receipt fields echoed only after owner validation and only as str / list[str],
+      executed nightly-write test, VALID_EMPTY adjudicated as an accepted reference
+      (empty candidate store still refused). 37 + 33 = 70 passed. Round-3 bounded delta
+      review commissioned (session bcc7e91f). Draft, never armed, stacked on #10209
+      (HOLD); ci-authority/main rejects the non-main base as expected; the dag.yml
+      entry is a declaration only (dag-conformance), the nightly runs the preflight
+      inside scripts/ci/daily_engine_prophet_nightly.sh after delta_manifest.
   - claim: PR #10255 round 2 (fresh bounded reviewer at 6454a74a) returned APPROVE-READY and the PR is armed merge-on-green.
     command: gh pr view 10255 --comments (the round-2 verdict comment); one GraphQL read of mergeStateStatus/labels.
     result: >
@@ -295,8 +344,8 @@ verified:
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
 unverified:
-  - claim: W2 registration r6 (2d81bf311b88) is ready to freeze.
-    what_would_verify: the round-6 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
+  - claim: W2 registration r8 (51ea53823b8e) is ready to freeze.
+    what_would_verify: the round-8 independent review's PASS / APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
   - claim: PR #10277 (head 82812b81) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
@@ -359,25 +408,24 @@ next_actions:
     preregistration (#7751 A1), its prospective population, H10 MAE endpoint, cost
     floor, multiplicity treatment, fixed looks and refusal handling unchanged.
   - >
-    5. A2: the retained preflight patch now lives on Draft PR #10289 (head 0cfffbab,
-    stacked on #10209's head da3a0451). Consume its hosted CI once; commission one
-    independent non-author review of the preflight's refusal semantics (NOT_SETTLED
-    receipt, non-fatal alarm, no publication); it inherits #10209's HOLD and is never
-    armed or merged ahead of its base. Do not re-run the fabric operation.
-    ci-authority/main rejects it (unsupported_base_ref / inactive_base_context) because
-    its base is not main — expected for a stacked draft; retarget to main only after
-    #10209 lands, never before.
+    5. A2 Draft PR #10289 (head 645caaa6, stacked on #10209's head da3a0451): consume
+    the round-3 bounded delta review (commissioned on 645caaa6); APPROVE-READY -> record
+    on the PR and keep it draft; REVISE -> repair in the A2 worktree, push, round 4.
+    It inherits #10209's HOLD: never armed or merged ahead of its base, retarget to main
+    only after #10209 lands. ci-authority/main's unsupported_base_ref is expected. Do
+    not re-run the fabric operation.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r6 at 2d81bf31, DRAFT -
-    UNFROZEN; census v6 committed): consume the round-6 review; apply any REVISE on
-    the branch as r7; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census v6
-    re-run with --server-arrival at a pinned origin/main SHA, the per-unit alias blob
-    at c_disc, T3 availability gate on the panel index, panel commit SHA per look, Data
-    OS exclusion list, R maturity session from observed t_exec, the +1-clock and
-    no-LATE_DISCOVERY_ARRIVAL sensitivities declared) and mirror a machine freeze from the parsed YAML block; R can never promote; no outcome
-    read before freeze; a separate registration, never a change to #7751 A1. B-17
-    34-session window census (7,918 C0 episodes, none complete) stays null — no
-    favorable subset.
+    6. Entry Timing W2 (Draft PR #10283, registration r8 at 51ea5382, DRAFT - UNFROZEN;
+    census v8 = pinned re-run committed; estimator module + CI wiring on the branch):
+    consume the round-8 bounded delta review; REVISE -> r9 on the branch, post on
+    #10283, round 9; PASS -> run the freeze inputs (census re-run with --main-sha
+    a7eef2ce9737, the per-unit alias blob at c_disc, T3 availability gate on the panel
+    index, panel commit SHA per look, Data OS exclusion list pinned (none found -> empty
+    list with owner role), R maturity session from observed t_exec, the +1-clock and
+    no-LATE_DISCOVERY_ARRIVAL sensitivities declared) and mirror a machine freeze from
+    the parsed YAML block; R can never promote; no outcome read before freeze; a separate
+    registration, never a change to #7751 A1. B-17 34-session window census (7,918 C0
+    episodes, none complete) stays null - no favorable subset.
   - >
     7. Reference coverage (the whole W1 loss): ROUTED 10-31 by a
     HANDOFF_SOURCE_LINK_V1 comment on program issue #6805 to the Data OS owner role
@@ -467,9 +515,12 @@ bootstrap with session floors, one heal rule, a T0 lower bound and a binding tim
 guard; round 5 returned REVISE (block too short, floors in units not blocks, bot clock,
 anchor gates on T1, unpinned walk) and revision 6 (2d81bf31) answers it with a 44-session
 block, full-block floors, the more conservative of two bounds, a server-witness arrival
-clock and a T1 that is never anchor-gated; round 6 is running. The A2 preflight patch
-gained a carrier (Draft #10289, stacked on #10209, 27 tests, unreviewed; ci-authority
-rejects the non-main base as expected). #10277's contract-delta red is repaired at
+clock and a T1 that is never anchor-gated; rounds 6 and 7 returned REVISE (no blocker)
+and revision 8 (51ea5382: +1-clock readouts on every deciding P look, census --main-sha
+with the pinned re-run committed, tested estimator module) is under a round-8 delta
+review. The A2 preflight patch's carrier (Draft #10289, stacked on #10209) went through
+two REVISE rounds and is at 645caaa6 (70 tests) under a round-3 delta review;
+ci-authority rejects the non-main base as expected. #10277's contract-delta red is repaired at
 82812b81 (ci-pack running; merge-blocked stays until green). Still nothing merged,
 frozen or production-proven.
 
