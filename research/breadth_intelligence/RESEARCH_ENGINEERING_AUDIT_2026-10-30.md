@@ -83,15 +83,21 @@ Company-to-basket `MEMBER_OF` and basket-to-theme `EXPRESSES` joins remain read-
 
 The parent projection's belief-time check is not a complete bitemporal resolver. Distinguish source event/valuation time, actual receipt/knowledge time, membership effective time, revision knowledge time and build time. A delayed observation can be received after its market timestamp; these clocks are not interchangeable.
 
+A concrete example: [MSCI's October 1, 2026 announcement](https://app2.msci.com/webapp/index_ann/DocGet?format=html&lang=en&pub_key=hYJaea5Qogw%3D) specified changes effective at the **close of October 30**, including Circle Internet Group's move from Application Software to Transaction & Payment Processing Services. Applying the new group during October 30's regular session because the change had already been announced would use the wrong effective cohort. Public announcement time is also not the same as a locally evidenced receipt.
+
 ## 4. Commercial rights, access and retention
 
 **Commercial gate: `APPROVED_BY_CHAIRMAN_ATTESTATION`.** [Protected commercial-rights law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/bb85b429f2ffffd38408080ce4df7d6378c34100/docs/COMMERCIAL_DATA_RIGHTS.md) and [Macro's decision](https://github.com/mastermindx-market-intelligence/macro/blob/3c8546e8aa56a0310e49fbcfba2c3debf84d8127/agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) already cover Massive/Polygon, Tiingo, ThetaData options, and the named Research Factory Yahoo/yfinance route including XLB/XLE/XLF/XLI/XLK/XLP/XLU/XLV/XLY. Do not request repeated approval, contract upload or public-terms reproof. The parent plan's older generic licence-unqualified wording is superseded for those named sources.
 
 That recorded approval does not establish unmentioned GICS/EquityDesk/other reference-source rights, an authenticated current feed receipt, actual historical vintages, scientific validity or a retention implementation. Do not invent contract clauses, retention duration or new providers. Existing GMI source-local call-time usage checks remain canonical; a stored rights boolean is not an evergreen permission.
 
+On a denied/unknown group, the parent projection blanks cohort counts and measurements. It still returns group identity/name, source, membership revision and belief timestamp. Those fields may be permitted independently, but the projection is not a field-level disclosure authority. The current-use owner must authorize the metadata passed for display, particularly where a revision or group label can identify a restricted source cohort.
+
 [Massive's full-market snapshot documentation](https://massive.com/docs/rest/stocks/snapshots/full-market-snapshot) describes daily reset/repopulation, plan-dependent delayed or real-time data, and no historical-snapshot plan history for this endpoint. [Its day-bar explanation](https://massive.com/knowledge-base/article/why-is-the-stocks-snapshots-day-bar-zero-before-the-open-and-how-do-i-get-the-pre-market-change) distinguishes regular-session day fields from premarket trade/minute information. The entitled feed's actual delay must remain visible; polling frequency does not remove source delay.
 
 A latest JSON view or occasional Git snapshot is not evidence of a complete intraday observation archive. The existing retention owner must demonstrate retained original observations and receipts, correction lineage, membership and threshold revisions, deduplication, actual horizon/completeness, permitted fields/duration and reproducible replay before observed-history claims. A later vendor backfill may support a clearly labeled reconstruction, not an invented original observation. No archive is created here.
+
+There are concrete existing retention contracts to consult. The [Terminal minute-reader contract](https://github.com/mastermindx-market-intelligence/macro/blob/3c8546e8aa56a0310e49fbcfba2c3debf84d8127/research/live_entry_radar/rs_pullback_launch/SOURCE_RETENTION_READER_CONTRACT_2026-10-07.md) identifies Terminal's `ingest/backfill_intraday.py` / `ingest/intraday_capture.py` as the owner of a bounded per-symbol atomic store and Macro's `engine/entry_radar/replay/terminal_minute_observations.py` as its downstream reader. Its explicit retention invocation covers 1–16 validated symbols and true one-minute requests; it does not enroll a runtime cohort. Source response receipts and actual reader receipts are distinct. This is evidence of a reusable owner and replay discipline, not evidence of retained 1,500-name breadth snapshots or permission to expand enrollment. [Rotation #9196's backend review](https://github.com/mastermindx-market-intelligence/macro/blob/3c8546e8aa56a0310e49fbcfba2c3debf84d8127/research/rotation_intelligence/intraday_sessions_20261013/FINAL_BACKEND_REVIEW.md) separately preserves an unchanged settled basket observation with its original clocks and a `not new` delivery state. That retained comparison is not a fixed-horizon history archive. Preserve both owners.
 
 ## Validation and review receipts
 
@@ -104,7 +110,21 @@ The baseline was staged from complete original source files with Git blob identi
 
 Baseline focused execution: **51 passed** with Python 3.12, pytest 9.2.0, real source imports and test-only dependencies. This focused isolated invocation uses `-c /dev/null` and disables plugin autoload; it is not full repository CI. Test responses are synthetic; no production feed was queried.
 
-Fabric root: `breadth-intelligence-research-engineering-20261030-c3`. Builder run: `breadth-quote-qualification-builder-20261030-01`, patch-proposal-only leaf, with no source-write/push authority. Its result, candidate execution and separate independent review must be recorded in the exact-head PR/handoff before acceptance. No review or implementation completion is inferred from a launch acknowledgement.
+Fabric root: `breadth-intelligence-research-engineering-20261030-c3`. Builder run: `breadth-quote-qualification-builder-20261030-01`, GLM patch-proposal leaf, no shared source-write/push authority. The retained 29,970-byte response SHA-256 was `f7dfe8e92f42afc3d470d11392eda13d3f43ada2762a26980990a28fb351fd35`; the original-root terminal return was verified. Its exact append passed 67 tests (51 existing + 16 new) in the builder's environment and again in principal staging. The raw proposal was not approved unchanged.
+
+Principal challenge reproduced four gaps in that proposal: an empty member string could enter the eligible denominator; two same-zone datetimes in a repeated DST hour could admit a receipt actually later than the query; an out-of-range UTC conversion or an integer outside the finite float range could abort the whole cohort. The final candidate compares validated global clocks in UTC, rejects empty members, and excludes the unrepresentable row while preserving valid peers. Three additional regression cases cover those defects, including invalid global age. Exact focused suite on the final candidate: **70 passed** (51 baseline + 19 new). Both baseline source/test files remain exact byte prefixes; parser and poller blobs are unchanged. Final implementation/test blobs: `8e85ef89ed9741cfbb6fff9e51c37e3eb0a57825` / `9fc27211515c209c532ecd2bfad5047c7fb9cbe1`.
+
+### Offline composition with the parent candidate
+
+An additional controlled experiment composed the real parser, incumbent poller and counter, this helper, and the pinned #10212 default `project_groups` adapter. The same 1,500 synthetic members had compatible synthetic prior closes and explicit synthetic membership/rights inputs. All calls used the October 30 RTH fixture; only HTTP response/configured credential lookup were simulated on the fetch path. No production producer was rewired. The original view measured all three inputs; the qualified composition yielded:
+
+| Input | Qualified observations | Parent group after qualification |
+| --- | ---: | --- |
+| One fresh advance, 1,499 flat trades 75 minutes old | 1/1,500 (0.067%) | `unmeasured: coverage_insufficient`; advance/unchanged counts null |
+| 1,500 daily fallbacks with current refresh stamps | 0/1,500 | `unmeasured: coverage_insufficient`; advance/unchanged counts null |
+| One fresh advance and 1,499 genuinely fresh flat trades | 1,500/1,500 | `measured`: one advance, 1,499 unchanged |
+
+Independent review and hosted checks are separate from these local receipts. The review verdict, exact reviewed head, actual CI state and any remaining hold belong in the reviewed `HANDOFF_SOURCE_LINK_V1` on #10212. This report is never its own independent approval.
 
 ## Chris's reserved continuation
 

@@ -336,3 +336,203 @@ def empty_payload(
         "comp": comp,
         "meta": {"missing": {}, "note": note},
     }
+
+
+# ── snapshot-source qualification (additive consumer-side check) ─────────────
+# New below-the-line helper; every function above is byte-unchanged and the
+# poller path does not call into this block.
+import math
+from collections.abc import Mapping
+from datetime import datetime, timezone
+
+
+def _utc_clock(name: str, value: Any) -> datetime:
+    """Compare actual instants, including both occurrences of a DST fold."""
+    try:
+        if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError
+        return value.astimezone(timezone.utc)
+    except (OverflowError, TypeError, ValueError):
+        raise ValueError(f"{name} must be an aware datetime representable in UTC") from None
+
+
+def _positive_finite_number(value: Any) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:  # e.g. an integer outside the finite float range
+        return False
+
+
+def _parse_source_ts(value: Any) -> datetime | None:
+    """An ISO source-timestamp string -> aware UTC, else None (unknown clock)."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if text[-1:] in ("Z", "z"):
+        text = text[:-1] + "+00:00"
+    try:
+        return _utc_clock("quote_ts", datetime.fromisoformat(text))
+    except ValueError:
+        return None
+
+
+def _qualify_row(
+    rec: Any,
+    vendor_key: str,
+    *,
+    observed_at: datetime,
+    asof: datetime,
+    session_start: datetime,
+    session_end: datetime,
+    max_age_min: float,
+) -> tuple[str | None, datetime | None]:
+    """Admit one parsed quote row or name its FIRST disqualifier.
+
+    Checks fire in the qualification contract's require order: mapping, price,
+    source vendor, native identity, price basis, synthetic-clock flag, source
+    clock validity, receipt, session, age. A rejected row is excluded under a
+    stable reason — its price is never coerced to zero/unchanged."""
+    if not isinstance(rec, Mapping):
+        return "malformed_quote", None
+    price = rec.get("price")
+    if not _positive_finite_number(price):
+        return "invalid_price", None
+    if rec.get("source") != "polygon":
+        return "unknown_source", None
+    ident = rec.get("native_quote_identity")
+    if (not isinstance(ident, Mapping)
+            or ident.get("schema") != "native_quote_identity.v1"
+            or ident.get("vendor") != "polygon"
+            or ident.get("vendor_symbol") != vendor_key
+            or ident.get("response_field") != "tickers[].ticker"):
+        return "identity_mismatch", None
+    if rec.get("price_basis") not in ("trade", "minute"):
+        return "unsupported_price_basis", None
+    if rec.get("quote_ts_synthetic") is not False:   # literally False — never 0/None/"false"
+        return "synthetic_quote_ts", None
+    ts = _parse_source_ts(rec.get("quote_ts"))
+    if ts is None:
+        return "invalid_quote_ts", None
+    if ts > observed_at:                             # a future print cannot be known at receipt
+        return "quote_ts_after_receipt", None
+    if not session_start <= ts < session_end:        # half-open [start, end), caller-resolved
+        return "out_of_session", None
+    if (asof - ts).total_seconds() / 60.0 > max_age_min:  # ts <= observed_at <= asof
+        return "stale_quote", None
+    return None, ts
+
+
+def qualify_snapshot_members(
+    quotes: Any,
+    members: Any,
+    *,
+    observed_at: datetime,
+    asof: datetime,
+    session_start: datetime,
+    session_end: datetime,
+    max_source_age_min: float = DEFAULT_MAX_SOURCE_AGE_MIN,
+) -> dict[str, Any]:
+    """Qualify one parsed snapshot's rows as snapshot-source evidence for a cohort.
+
+    Pure, no I/O, no wall clock — every instant is an explicit aware-datetime
+    argument. For each canonical member, the row is admitted ONLY when it is a
+    real Polygon trade/minute print whose ``native_quote_identity`` matches the
+    exact vendor key, whose source clock is non-synthetic, aware, not ahead of
+    the receipt (``quote_ts <= observed_at``), inside the caller-resolved
+    half-open session ``[session_start, session_end)``, and no older than
+    ``max_source_age_min`` on the ``asof`` clock. Everything else is excluded
+    under a stable reason and its value is never coerced; out-of-cohort rows
+    cannot refresh cohort members or the admitted source clock; distinct
+    vendor keys canonicalising to one member (``BRK.B``/``BRK-B``) are a
+    collision, never last-wins. Members absent from the snapshot are
+    ``missing_quote``; malformed per-symbol rows fail closed for that symbol.
+
+    SCOPE: snapshot-source qualification ONLY. It is not proof of point-in-time
+    membership, of same-basis prior-close/MA thresholds, of rights, feed
+    entitlement, or of historical receipt authenticity — the caller owns those
+    and still needs compatible baked thresholds downstream. ``qualified_n`` is
+    therefore NOT the breadth observed denominator, and no overall
+    measured/usability verdict is emitted here.
+
+    Returns an ordinary dict:
+      last_by_symbol             {member: admitted price}
+      source_asof_by_symbol      {member: admitted source ISO stamp, normalised UTC}
+      excluded_by_symbol         {member: stable reason} — every non-admitted member
+      eligible_n / qualified_n   cohort size / admitted count
+      qualification_coverage_pct admitted/eligible * 100 (None when no members)
+      oldest_source_asof / newest_source_asof  from ADMITTED rows only, else None
+    """
+    if not isinstance(quotes, Mapping):
+        raise ValueError("quotes must be a mapping of vendor_symbol -> quote record")
+    if isinstance(members, (str, bytes)):
+        raise ValueError("members must be a sequence of canonical symbols, not one string")
+    try:
+        member_list = list(members)
+    except TypeError:
+        raise ValueError("members must be a sequence of canonical symbols") from None
+    seen: set[str] = set()
+    for sym in member_list:
+        if not isinstance(sym, str) or not sym or canonical_symbol(sym) != sym:
+            raise ValueError(f"member symbol is not canonical: {sym!r}")
+        if sym in seen:
+            raise ValueError(f"duplicate member symbol: {sym}")
+        seen.add(sym)
+    observed_at = _utc_clock("observed_at", observed_at)
+    asof = _utc_clock("asof", asof)
+    session_start = _utc_clock("session_start", session_start)
+    session_end = _utc_clock("session_end", session_end)
+    if session_start >= session_end:
+        raise ValueError("session_start must precede session_end")
+    if observed_at > asof:
+        raise ValueError("observed_at must not be after asof")
+    if not _positive_finite_number(max_source_age_min):
+        raise ValueError("max_source_age_min must be a finite positive number of minutes")
+
+    vendor_key: dict[str, str] = {}
+    collided: set[str] = set()
+    for raw in quotes:
+        if not isinstance(raw, str):
+            continue                     # out-of-contract keys cannot match a canonical member
+        canon = canonical_symbol(raw)
+        if canon not in seen:
+            continue
+        if canon in vendor_key:
+            collided.add(canon)          # two distinct vendor keys -> one member
+        else:
+            vendor_key[canon] = raw
+
+    last_by_symbol: dict[str, Any] = {}
+    source_asof_by_symbol: dict[str, str] = {}
+    excluded_by_symbol: dict[str, str] = {}
+    admitted_ts: list[datetime] = []
+    for sym in member_list:
+        if sym in collided:
+            excluded_by_symbol[sym] = "vendor_key_collision"
+            continue
+        raw = vendor_key.get(sym)
+        if raw is None:
+            excluded_by_symbol[sym] = "missing_quote"
+            continue
+        quote = quotes[raw]
+        reason, ts = _qualify_row(
+            quote, raw, observed_at=observed_at, asof=asof,
+            session_start=session_start, session_end=session_end, max_age_min=max_source_age_min)
+        if reason is not None:
+            excluded_by_symbol[sym] = reason
+            continue
+        last_by_symbol[sym] = quote["price"]
+        source_asof_by_symbol[sym] = ts.isoformat()      # already normalised UTC
+        admitted_ts.append(ts)
+    n = len(member_list)
+    return {
+        "last_by_symbol": last_by_symbol,
+        "source_asof_by_symbol": source_asof_by_symbol,
+        "excluded_by_symbol": excluded_by_symbol,
+        "eligible_n": n,
+        "qualified_n": len(last_by_symbol),
+        "qualification_coverage_pct": (100.0 * len(last_by_symbol) / n) if n else None,
+        "oldest_source_asof": min(admitted_ts).isoformat() if admitted_ts else None,
+        "newest_source_asof": max(admitted_ts).isoformat() if admitted_ts else None,
+    }
