@@ -73,10 +73,23 @@ _qledger_carve_parked_ok() {
     && git diff --cached --quiet -- $QLEDGER_CARVE_PATHS
 }
 
+# The snapshot id outlives this process: a step timeout or job cancel can
+# SIGKILL the committer before its EXIT trap runs, so the workflow's
+# `if: always()` restore step reads the id back from here (per run id; the
+# runner's temp dir is job-scoped). Removed once a restore fully succeeds.
+_qledger_carve_snapshot_file() {
+  printf '%s/qledger_carve_snapshot.%s' "${RUNNER_TEMP:-${TMPDIR:-/tmp}}" "${GITHUB_RUN_ID:-local}"
+}
+
 _qledger_carve_arm_restore() {
-  local prior
-  prior=$(trap -p EXIT | sed -n "s/^trap -- '\(.*\)' EXIT$/\1/p")
-  prior=${prior//\'\\\'\'/\'}
+  # Chain a pre-existing EXIT trap verbatim. `trap -p` prints it shell-quoted
+  # (possibly multi-line), so it is re-parsed with `set --`, not a line regex.
+  local prior_decl prior=""
+  prior_decl=$(trap -p EXIT)
+  if [ -n "$prior_decl" ]; then
+    eval "set -- ${prior_decl#trap }"
+    prior="${2:-}"
+  fi
   if [ -n "$prior" ]; then
     # shellcheck disable=SC2064
     trap "qledger_carve_restore; $prior" EXIT
@@ -97,6 +110,7 @@ qledger_carve_staged() {
     _qledger_carve_summary "### Publication withheld: qledger carve snapshot failed" "" "- oversize qledger blob(s):${QLEDGER_CARVE_OVER}" "- nothing committed or pushed by this step" "- owner: qledger publication program"
     return 2
   fi
+  printf '%s\n' "$snapshot" > "$(_qledger_carve_snapshot_file)" 2>/dev/null || true
   git reset -q -- $QLEDGER_CARVE_PATHS
   if ! _qledger_carve_parked_ok; then
     local qplane
@@ -119,18 +133,58 @@ qledger_carve_staged() {
   return 0
 }
 
+# Per-path delta restore — #9556's restore step semantics, verbatim: only the
+# paths THIS run's snapshot changed against its parent are written back (or
+# removed), so a qledger file that origin/main added or changed underneath
+# (HEAD has moved by the post-push rebase) is left exactly as main has it.
+# Idempotent: the EXIT trap and the workflow's always() step may both run it.
+# A path it cannot restore is reported LOST (::error), never as success.
 qledger_carve_restore() {
-  [ -n "${QLEDGER_SNAPSHOT:-}" ] || return 0
-  local snapshot="$QLEDGER_SNAPSHOT"
+  local snapshot="${1:-${QLEDGER_SNAPSHOT:-}}"
+  [ -n "$snapshot" ] || return 0
   QLEDGER_SNAPSHOT=""
-  local qplane
-  for qplane in $QLEDGER_CARVE_PATHS; do
-    git restore --source="$snapshot" --worktree -- "$qplane" 2>/dev/null || true
-  done
-  if git diff --quiet "$snapshot" -- $QLEDGER_CARVE_PATHS 2>/dev/null; then
-    echo "qledger carve: restored ${QLEDGER_CARVE_PATHS} byte-identical from snapshot $snapshot (runner-local; not published)"
-  else
-    echo "::warning title=qledger carve restore incomplete::${QLEDGER_CARVE_PATHS} differ from snapshot $snapshot after restore (runner-local bytes; the ledger re-accrues from committed state)"
+  local restored="" lost="" qpaths qpath want have
+  qpaths=$(git -c core.quotePath=false diff --name-only --no-renames "$snapshot^" "$snapshot" -- $QLEDGER_CARVE_PATHS 2>/dev/null) || qpaths=""
+  if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$snapshot"; fi
+  while IFS= read -r qpath; do
+    [ -n "$qpath" ] || continue
+    if git cat-file -e "$snapshot:$qpath" 2>/dev/null; then
+      want=$(git rev-parse "$snapshot:$qpath" 2>/dev/null) || want=""
+      have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+      if [ -n "$want" ] && [ "$have" != "$want" ]; then
+        mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
+        git cat-file blob "$snapshot:$qpath" > "$qpath" 2>/dev/null || true
+        have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+      fi
+      if [ -n "$want" ] && [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+    else
+      rm -f -- "$qpath" 2>/dev/null || true
+      if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
+    fi
+  done <<< "$qpaths"
+  if [ -n "$lost" ]; then
+    echo "::error title=qledger carve custody LOST::carved qledger bytes could not be restored in this workspace:${lost}; they survive only in the unreachable runner-local snapshot $snapshot until git gc, and were NOT published (owner: qledger publication program)"
+    return 0
   fi
+  echo "qledger carve: restored byte-identical from snapshot $snapshot:${restored} (runner-local; not published)"
+  rm -f -- "$(_qledger_carve_snapshot_file)" 2>/dev/null || true
   return 0
+}
+
+# The workflow's `if: always()` safety net after each committer step: restore
+# from the snapshot id the carve recorded, if the committer's own EXIT trap
+# never got to (SIGKILL on timeout/cancel). Quiet no-op when nothing is owed.
+qledger_carve_restore_from_file() {
+  local file snapshot
+  file=$(_qledger_carve_snapshot_file)
+  if [ ! -s "$file" ]; then
+    echo "qledger carve: no runner-local snapshot recorded for this run (nothing to restore)"
+    return 0
+  fi
+  snapshot=$(head -n1 "$file" | tr -d '[:space:]')
+  if [ -z "$snapshot" ] || ! git cat-file -e "$snapshot^{commit}" 2>/dev/null; then
+    echo "::error title=qledger carve custody LOST::recorded snapshot '$snapshot' is unreadable in this workspace; carved qledger bytes were NOT published and could not be restored (owner: qledger publication program)"
+    return 0
+  fi
+  qledger_carve_restore "$snapshot"
 }

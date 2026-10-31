@@ -289,6 +289,9 @@ while push_attempt; do
       # guarded engine commit alone — same forfeit as a failed render-sync.
       git add site/
       git add templates/ 2>/dev/null || true
+      # the carved qledger planes stay out of the render-sync commit too: the
+      # re-add above would re-stage a NEW site/qledger file the carve unstaged
+      if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger 2>/dev/null || true; fi
       if push_staged_clean site/ templates/; then
         bash scripts/ci/options_signal_nightly.sh commit-render-sync \
           "render-sync: post-rebase guards (template re-copy + ms-board coherence)" \

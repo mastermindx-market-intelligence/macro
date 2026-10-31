@@ -3590,6 +3590,13 @@ jobs:
         timeout-minutes: 25
         continue-on-error: true
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      # QLEDGER CARVE CUSTODY (scripts/ci/qledger_carve.sh): the committer restores the
+      # carved runner-local ledger bytes from its EXIT trap; the 25m step timeout or a
+      # job cancel can SIGKILL it first, so this always() step restores from the
+      # recorded snapshot (idempotent; never stages, commits or pushes; LOST is ::error).
+      - name: restore carved qledger bytes after the core checkpoint (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -5192,6 +5199,9 @@ jobs:
       - name: commit engine outputs
         if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      - name: restore carved qledger bytes after the engine commit (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       - name: assemble machine-consumable feeds (site/feeds -> R2)
         if: always()
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation

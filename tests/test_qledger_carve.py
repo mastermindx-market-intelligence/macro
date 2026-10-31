@@ -187,7 +187,7 @@ def test_carve_unstages_parks_restores_and_keeps_a_custody_snapshot(tmp_path):
     # (5) restored byte-identical by the EXIT trap after the step ends
     assert _size(claims) == LIMIT + 4096
     assert (repo / "site" / "qledger" / "track_record.json").read_bytes() == b'{"n":1}'
-    assert "restored data/qledger site/qledger byte-identical" in proc.stdout
+    assert "restored byte-identical from snapshot" in proc.stdout
     assert "qledger carved out of this commit" in proc.stdout
     # (1) custody snapshot: unreachable from every ref, parent = HEAD, carries the bytes
     assert _git(repo, "rev-parse", f"{snapshot}^", env=env) == _git(repo, "rev-parse", "HEAD", env=env)
@@ -209,15 +209,26 @@ def test_only_the_ledger_changed_leaves_nothing_staged(tmp_path):
     assert _git(repo, "diff", "--cached", "--quiet", env=env, check=False) == ""
 
 
-def test_restore_chains_a_pre_existing_exit_trap(tmp_path):
+@pytest.mark.parametrize(
+    "prior",
+    [
+        "trap 'echo PRIOR_TRAP_RAN' EXIT",
+        "trap $'echo PRIOR_TRAP_RAN\\necho PRIOR_SECOND_LINE' EXIT",   # multi-line prior trap
+        "trap 'echo \"PRIOR_TRAP_RAN it'\\''s quoted\"' EXIT",           # a quote inside the prior trap
+    ],
+    ids=["one-line", "multi-line", "quoted"],
+)
+def test_restore_chains_a_pre_existing_exit_trap(tmp_path, prior):
     env = _env(tmp_path)
     repo, _ = _seed(tmp_path, env)
     _grow(repo / "data" / "qledger" / "claims.jsonl", LIMIT + 4096)
     _git(repo, "add", "data/", env=env)
-    proc = _bash(repo, f'''trap 'echo PRIOR_TRAP_RAN' EXIT; . "{HELPER}"; qledger_carve_staged''', env)
+    proc = _bash(repo, f'''{prior}; . "{HELPER}"; qledger_carve_staged''', env)
     assert proc.returncode == 0, proc.stderr
     assert "PRIOR_TRAP_RAN" in proc.stdout
-    assert "restored data/qledger site/qledger byte-identical" in proc.stdout
+    if "SECOND_LINE" in prior:
+        assert "PRIOR_SECOND_LINE" in proc.stdout, "a multi-line prior trap must be chained whole"
+    assert "restored byte-identical from snapshot" in proc.stdout
     assert _size(repo / "data" / "qledger" / "claims.jsonl") == LIMIT + 4096
 
 
@@ -319,7 +330,7 @@ def _run_of(job: str, name_fragment: str) -> str:
     "job,step,stage_line,commit_prefix",
     [
         ("collect_tail", "commit tail data", "git add data/ site/basketdata/", 'git commit -m "data: collect-tail accrual'),
-        ("stock_briefs", "commit", "git add data/qledger 2>/dev/null || true", 'git commit -m "stock-briefs:'),
+        ("stock_briefs", "commit stock briefs", "git add data/qledger 2>/dev/null || true", 'git commit -m "stock-briefs:'),
     ],
 )
 def test_inline_wholesale_committers_carve_before_committing(job, step, stage_line, commit_prefix):
@@ -335,3 +346,125 @@ def test_collect_market_commit_keeps_its_own_accepted_carve():
     run = _run_of("collect", "commit market data")
     assert 'echo "qledger_carved=true" >> "$GITHUB_OUTPUT"' in run
     assert "qledger_carve_staged" not in run
+
+
+# ── custody after the push-loop rebase, a hard kill, a park failure, a new file ──
+
+def test_restore_after_rebase_leaves_mains_qledger_changes_alone(tmp_path):
+    """Reviewer finding (PR #10255 round 1): after the push loop's rebase HEAD is
+    origin/main's tip; a whole-plane restore from the snapshot would delete a
+    qledger file main added and revert one main changed. #9556's restore only
+    writes back the paths THIS run's snapshot changed; the helper must match."""
+    env = _env(tmp_path)
+    repo, bare = _seed(tmp_path, env)
+    other = tmp_path / "other"
+    subprocess.run(["git", "clone", "-q", str(bare), str(other)], check=True, env=env)
+    (other / "data" / "qledger" / "upstream_added.json").write_bytes(b'{"from":"main"}')
+    (other / "data" / "qledger" / "grades.jsonl").write_bytes(b'{"grade_id":"g1-from-main"}\n')
+    _git(other, "add", "data/", env=env)
+    _git(other, "commit", "-q", "-m", "main moved qledger", env=env)
+    _git(other, "push", "-q", "origin", "main", env=env)
+
+    claims = repo / "data" / "qledger" / "claims.jsonl"
+    _grow(claims, LIMIT + 4096)
+    (repo / "data" / "us_prophet_rank" / "candidates" / "2026-10.parquet").write_bytes(b"curated-v2")
+    proc = _bash(repo, _push_script(carve=True), env)
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert "PUSHED" in proc.stdout
+    assert "custody LOST" not in proc.stdout
+    # main's additions/changes survive the restore exactly as main has them ...
+    assert (repo / "data" / "qledger" / "upstream_added.json").read_bytes() == b'{"from":"main"}'
+    assert (repo / "data" / "qledger" / "grades.jsonl").read_bytes() == b'{"grade_id":"g1-from-main"}\n'
+    # ... and only this run's grown ledger is dirty-unstaged
+    assert _size(claims) == LIMIT + 4096
+    assert _git(repo, "diff", "--name-only", "--", "data/qledger", "site/qledger", env=env).split() == ["data/qledger/claims.jsonl"]
+    assert _git(repo, "diff", "--cached", "--name-only", env=env) == ""
+    # the always() step afterwards has nothing to do: the trap's restore cleared the record
+    after = _bash(repo, f'. "{HELPER}"; qledger_carve_restore_from_file', env)
+    assert "no runner-local snapshot recorded" in after.stdout
+
+
+def test_a_hard_kill_skips_the_trap_and_the_always_step_restores_from_the_record(tmp_path):
+    """Reviewer finding (round 1): the EXIT trap never runs under SIGKILL (step
+    timeout / job cancel). The carve records the snapshot id; the workflow's
+    always() step restores from it in a fresh process."""
+    env = {**_env(tmp_path), "RUNNER_TEMP": str(tmp_path / "runner_temp"), "GITHUB_RUN_ID": "424242"}
+    (tmp_path / "runner_temp").mkdir()
+    repo, _ = _seed(tmp_path, env)
+    claims = repo / "data" / "qledger" / "claims.jsonl"
+    head_size = _size(claims)
+    _grow(claims, LIMIT + 4096)
+    _git(repo, "add", "data/", env=env)
+    killed = _bash(repo, f'. "{HELPER}"; qledger_carve_staged; kill -9 $$', env)
+    assert killed.returncode == -9 or killed.returncode == 137
+    assert "restored byte-identical" not in killed.stdout
+    # parked at HEAD, bytes only in the unreachable snapshot + the record
+    assert _size(claims) == head_size
+    record = tmp_path / "runner_temp" / "qledger_carve_snapshot.424242"
+    assert record.is_file() and len(record.read_text().strip()) >= 40
+    restored = _bash(repo, f'. "{HELPER}"; qledger_carve_restore_from_file', env)
+    assert restored.returncode == 0, restored.stderr
+    assert "restored byte-identical from snapshot" in restored.stdout
+    assert _size(claims) == LIMIT + 4096
+    assert not record.exists(), "a complete restore clears the record so the step stays quiet"
+    again = _bash(repo, f'. "{HELPER}"; qledger_carve_restore_from_file', env)
+    assert "no runner-local snapshot recorded" in again.stdout and _size(claims) == LIMIT + 4096
+
+
+def test_park_failure_withholds_and_still_puts_the_bytes_back(tmp_path):
+    env = _env(tmp_path)
+    repo, _ = _seed(tmp_path, env)
+    claims = repo / "data" / "qledger" / "claims.jsonl"
+    _grow(claims, LIMIT + 4096)
+    _git(repo, "add", "data/", "site/", env=env)
+    shim = tmp_path / "shim"
+    shim.mkdir()
+    real_git = subprocess.run(["bash", "-c", "command -v git"], capture_output=True, text=True).stdout.strip()
+    (shim / "git").write_text(f'#!/usr/bin/env bash\nif [ "$1" = restore ]; then exit 1; fi\nexec "{real_git}" "$@"\n')
+    (shim / "git").chmod(0o755)
+    env2 = {**env, "PATH": f"{shim}:{env['PATH']}"}
+    proc = _bash(repo, f'. "{HELPER}"; rc=0; qledger_carve_staged || rc=$?; echo "rc=$rc carved=$QLEDGER_CARVED"; echo "staged=$(git diff --cached --name-only | tr \'\\n\' \' \')"', env2)
+    assert "rc=2 carved=false" in proc.stdout
+    assert "qledger park failed" in proc.stdout
+    assert "qledger" not in proc.stdout.split("staged=")[1].splitlines()[0]
+    # the EXIT trap was armed on the failure path: the grown bytes are back
+    assert "restored byte-identical from snapshot" in proc.stdout
+    assert _size(claims) == LIMIT + 4096
+
+
+def test_a_new_qledger_file_is_carved_out_and_comes_back_untracked(tmp_path):
+    env = _env(tmp_path)
+    repo, bare = _seed(tmp_path, env)
+    _grow(repo / "data" / "qledger" / "claims.jsonl", LIMIT + 4096)
+    new = repo / "site" / "qledger" / "new_part.json"
+    new.write_bytes(b'{"new":1}')
+    (repo / "site" / "index.html").write_bytes(b"<html>v2</html>")
+    proc = _bash(repo, _push_script(carve=True), env)
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert "PUSHED" in proc.stdout
+    assert _git(bare, "cat-file", "-p", "main:site/index.html", env=env) == "<html>v2</html>"
+    assert _git(bare, "ls-tree", "--name-only", "main", "site/qledger/", env=env).split() == ["site/qledger/track_record.json"]
+    assert new.read_bytes() == b'{"new":1}'
+    assert "?? site/qledger/new_part.json" in _git(repo, "status", "--porcelain", "--", "site/qledger", env=env)
+
+
+# ── wiring: the always() restore steps and the render-sync re-add ─────────────
+
+def test_engine_job_restores_after_each_committer_step_even_when_killed():
+    steps = _job_steps("engine")
+    names = [s.get("name") or "" for s in steps]
+    for committer in ("checkpoint core engine outputs to main", "commit engine outputs"):
+        i = next(i for i, n in enumerate(names) if n.startswith(committer))
+        assert steps[i]["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+        nxt = steps[i + 1]
+        assert nxt["name"].startswith("restore carved qledger bytes"), f"no always() restore after {committer!r}"
+        assert str(nxt.get("if")).strip() == "always()"
+        assert nxt["run"].strip() == ". scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file"
+
+
+def test_engine_render_sync_readd_keeps_the_carved_planes_out():
+    text = ENGINE.read_text()
+    readd = text.index("      git add site/\n      git add templates/ 2>/dev/null || true\n")
+    guard = text.index('if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger')
+    clean = text.index("if push_staged_clean site/ templates/; then")
+    assert readd < guard < clean
