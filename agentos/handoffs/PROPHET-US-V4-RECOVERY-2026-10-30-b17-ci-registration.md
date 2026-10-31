@@ -153,7 +153,8 @@ unresolved:
   - Fabric C3 gateway HTTP 429 is a transport blocker, not a review verdict.
   - Two failed Create Tree calls have no branch effect; orphan tree objects were not proven absent.
   - Source archive starts June 2026; earlier full-population PIT history may exist elsewhere but is not qualified.
-  - Existing #10176 correction at 228c25d37617 is unchanged and CI green; independently source-reviewed SOURCE_PASS by mastermindx-2 in comment 6522731353, but formal GitHub APPROVED review, current integration, and authenticated production correction proof remain unavailable and not released.
+  - >
+    Existing #10176 correction at 228c25d37617 is unchanged and CI green; independently source-reviewed SOURCE_PASS by mastermindx-2 in comment 6522731353, but formal GitHub APPROVED review, current integration, and authenticated production correction proof remain unavailable and not released.
 next_actions:
   - >
     Preserve the qualified B-17 CI and 7,918-episode source receipts.
