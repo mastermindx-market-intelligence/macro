@@ -143,20 +143,31 @@ decisions:
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
   - DEC:FIF-HELD-OUT-BYTES-ARE-STAGED-NOT-COMMITTED
   - DEC:FIF-PACK-PATTERN-REPINS-ARE-DIGEST-ONLY
+  - DEC:FIF-Q1-PRECISION-FLOOR-PREDECLARED-0-80
+  - DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED
+  - DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT
+  - DEC:FIF-Q1-SECOND-GENERATION-SCOPE
+  - DEC:FIF-PACK-GENERALIZATION-DEV-CORPUS
+  - DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE
 next_action: >
-  2026-10-31 resumption ladder (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-fif-resumption-wave).
-  Lab-a held-out labels merged (#9915 → 24ae12d64a91aee63edbb2b1be49e4c73078caca).
-  PK09 fix4 (#9907), held-out tidy (#9916) and PK08 F3-1 (#10246) passed
-  independent fabric review (PASS_WITH_NOTES, accepted on the PRs); PK10 fix4
-  (#9906) and A33 fix2 (#9910) were accepted earlier. Every open branch carries
-  origin/main f2efb8ba so CI re-runs on current main. Ladder: (1) merge
-  #9916/#9906/#9910/#9907/#10246 pinned to their refreshed heads on CONCLUDED;
-  (2) consume labeler lanes lab-b (PK02/PK03/PK04/PK05) and lab-c
-  (PK07/PK08/PK12) from mmx-ubuntu2, one PR each, merge pinned; (3) commission
-  the held-out evaluator lane and re-adjudicate A37 per pack (PK10 stays
-  not_measurable); (4) launch PK09 B.3 v6 (F4-1..F4-4) after #9907 merges, then
-  the PK08 F3-2 tidy; (5) A34 ledger #9901 last. A42/A45/A46 remain
-  EXACT_HUMAN_GATE.
+  2026-10-31 post-Q1 ladder (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-q1-held-out-wave).
+  Held-out labels for eleven packs are on main (#9915, #10260, #10263); the
+  independent evaluator and its first generation of reports are on main (#10293
+  → 594a7429); the first Q1 result is an honest negative: all 12 packs
+  unavailable_research_only, only PK01 at or above the predeclared 0.80 floor,
+  PK04/PK11/PK12 never measured (sic unbound), 30 BAC 10-K trials excluded
+  (primary_unparseable); A37 re-adjudicated to PARTIAL for all twelve (#10299).
+  PK09 v7 (#10272), PK08 F3-3 (#10271) merged; PK09 follow-up (#10298) and the
+  A34 ledger refresh (#9901) merge pinned on CONCLUDED. Ladder: (1) consume
+  build lanes fif-bacnil-20261031-r1 (parser nil-fact tolerance) and
+  fif-evalsic-20261031-r2 (evaluator SIC binding + E1-3), one independent review
+  each, PR, merge pinned; (2) second Q1 generation under a new evaluator lane id
+  and a new reports directory once a stage host is admissible — first
+  measurement for PK04/PK11/PK12 and the BAC trials, failed families keep their
+  disposition; (3) per-pack repairs from the failed-family descriptions, one PR
+  + review each, dispositions unchanged until fresh labels under a new Q0 split
+  decision; (4) format-axis and PK12/PK05 form-scope rulings. PK10 stays
+  not_measurable. A42/A45/A46 remain EXACT_HUMAN_GATE.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -226,6 +237,11 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not edit or regenerate research/financial_intelligence_fabric/reports/q1_held_out_20261031/; a second generation is a new directory under a new evaluator lane id, and the 2026-10-31 failed families reopen only on fresh labels under a new Q0 split decision.
+  - Do not move the predeclared 0.80 floor, lower N, relabel a failed family accepted or drop a failed cell from the denominator (DEC:FIF-Q1-PRECISION-FLOOR-PREDECLARED-0-80).
+  - Do not rebuild or re-review PK09 B.3 v7 (#10272), PK08 F3-3 (#10271), the PK09 follow-up bundle (#10298), the evaluator (#10293) or the A37 Q1 record (#10299); returns are accepted on the PRs.
+  - Do not rewrite the staged held-out witnesses to add a SIC; the evaluator binds it from held_out_contract.json (DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT).
+  - Do not edit reports/q1_held_out_20261031 after the kernel repairs; the second measurement is a new directory q1_held_out_20261031_g2 from a new evaluator lane (DEC:FIF-Q1-SECOND-GENERATION-SCOPE).
   - Do not rebuild the A33 receipt (PASS, #9910), PK10 fix4 (PASS, #9906), PK09 B.3 v5 (#9907, review r2 PASS_WITH_NOTES) or PK08 F3-1 (#10246, review PASS_WITH_NOTES); the notes are commissioned as B.3 v6 and F3-2 follow-ups.
   - Do not relabel or re-seal the lab-a held-out labels (#9915, 107 records); labels come only from independent labeler lanes and are merged unchanged.
   - Do not re-review PK09 fix4, the held-out tidy or PK08 F3-1; the fabric review returns are recorded in the 2026-10-31 handoff.
