@@ -58,6 +58,10 @@ depends_on:
   - WS:LIVE-ENTRY-RADAR
   - WS:DEFENSE-PROCUREMENT-V3
 artifacts:
+  - research/alpha_intelligence/MASTERMIND_ALPHA_INTELLIGENCE_INTEGRATION_MASTERPLAN.md
+  - research/alpha_intelligence/censuses/INTEGRATION_CENSUS_2026-10-31.md
+  - research/alpha_intelligence/censuses/INTEGRATION_CENSUS_2026-10-31.json
+  - agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-31.md
   - agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-03-exp1.md
   - research/alpha_intelligence/expectation_market_dynamics/handoffs/EXP_1.md
   - research/alpha_intelligence/expectation_market_dynamics/EXP_1_NATIVE_CONSUMER_RECEIPT_2026-10-03.json
@@ -370,3 +374,9 @@ claims. No native source acquisition, identity/rights admission, Graph1 writer,
 store, grading/ranking/sizing/trading authority or product rollout is added.
 The K3E children, ownership inspector #8793 and source diagnostic #8803 retain
 their separate custody and acceptance boundaries.
+
+
+## Maintained integration task tree
+
+The maintained task tree is `research/alpha_intelligence/MASTERMIND_ALPHA_INTELLIGENCE_INTEGRATION_MASTERPLAN.md`, with a dated October 31 census and source index. It preserves K1–K7 and gives Fable implementation, sequencing and staffing discretion within current owner law. The August PASS-0 remains an unchanged historical snapshot. Organizational waves and the latest dated handoff remain the recovery frontier; this plan is not a runtime registry or an authority grant. While the source change is unmerged, its plan/org link is proposed, not adopted. Inclusion of this pointer changes no wave status, owner, dependency, scientific freeze, existing source carrier or runtime authority.
+
