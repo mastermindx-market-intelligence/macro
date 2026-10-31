@@ -1,0 +1,104 @@
+{
+  "schema": "forex.r26.batch_candidate_qualification.v1",
+  "recorded_at_utc": "2026-10-22T10:42:17.878985+00:00",
+  "parent_commit": "9d7e32dced02f58142fa544d76c55db1d7038085",
+  "candidate_identity": "source hashes; containing commit resolves publication identity",
+  "skillpack_pin": "230e9a301ed774e79410829f1b5c049226fa59f1",
+  "execution_exception": "LOWER_TOTAL_OVERHEAD: bounded existing-owner source/test/plan changes; consultation is not review acceptance",
+  "source_hashes": {
+    "lib/dataos/tiingo_forex.py": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+    "tests/test_tiingo_forex_source.py": "0c4e6ce7ba22b94cfe15b1aa8232d1249aa93e4cfbea70e14a1ff6f07fe6153a"
+  },
+  "individual_helper_prefix_preserved": true,
+  "individual_source_sha256": "f3e3849f91bc677a3de641f1affee292549f39902a97668a0ddddaf978647afa",
+  "qualified_case_union": 169,
+  "qualification_basis": "168 unchanged passes plus one passing corrected-fixture case; not a single all-green run",
+  "receipts": {
+    "source-written.json": {
+      "sha256": "1f118577679dff864fb448cdd01a5c950fc60ede9d2bf100ff9bc28a6d656b07",
+      "record": {
+        "schema": "forex.r26.batch_source_written.v1",
+        "at": "2026-10-22T10:27:21.792009+00:00",
+        "parent": "9d7e32dced02f58142fa544d76c55db1d7038085",
+        "individual_candidate_prefix_unchanged": true,
+        "original_source_sha256": "f3e3849f91bc677a3de641f1affee292549f39902a97668a0ddddaf978647afa",
+        "current": {
+          "lib/dataos/tiingo_forex.py": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+          "tests/test_tiingo_forex_source.py": "4031175866a941f9b1115f3613501cf4524cd106e531a632c281c8f322b23642"
+        },
+        "status": "TESTS_STARTED",
+        "admission": false
+      }
+    },
+    "source-tests.json": {
+      "sha256": "8f9f0725ead5260a9e05777e9c98295676799c1399d536b6dfbd70bcf0b0f0d3",
+      "record": {
+        "schema": "forex.r26.batch_source_tests.v1",
+        "at": "2026-10-22T10:27:29.733507+00:00",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_tiingo_forex_source.py",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "before": {
+          "lib/dataos/tiingo_forex.py": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+          "tests/test_tiingo_forex_source.py": "4031175866a941f9b1115f3613501cf4524cd106e531a632c281c8f322b23642"
+        },
+        "after": {
+          "lib/dataos/tiingo_forex.py": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+          "tests/test_tiingo_forex_source.py": "4031175866a941f9b1115f3613501cf4524cd106e531a632c281c8f322b23642"
+        },
+        "source_unchanged": true,
+        "log_sha256": "3630831e1caa90a3a0fe2b83f5225ffac2f0dd1d725518395eaee66f7e602336"
+      }
+    },
+    "corrected-unplaced-fixture.json": {
+      "sha256": "0de482b81d781d069e552c32368fafc4e9f522347065bac8fa19221508f40948",
+      "record": {
+        "schema": "forex.r26.batch_fixture_correction.v1",
+        "at": "2026-10-22T10:28:47.956826+00:00",
+        "reason": "Reader already refuses unplaceable raw timestamp; inject an invalid view row only to test the separate pure boundary. Production source unchanged.",
+        "original_result": "168 passed,1 fixture failure",
+        "original_test_sha256": "4031175866a941f9b1115f3613501cf4524cd106e531a632c281c8f322b23642",
+        "corrected_test_sha256": "0c4e6ce7ba22b94cfe15b1aa8232d1249aa93e4cfbea70e14a1ff6f07fe6153a",
+        "source_sha256": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+        "command": [
+          "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+          "-m",
+          "pytest",
+          "tests/test_tiingo_forex_source.py::test_batch_closed_minute_ambiguity_withholds_even_with_a_good_reference[unplaced]",
+          "-q",
+          "--disable-warnings",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 0,
+        "log_sha256": "4ede43d8b8605b1895f340ae61b1f8dcf8d0065205a747c094b11256a44f4ed0",
+        "reuse_previous_168_passing_cases": true
+      }
+    }
+  },
+  "prior_accepted_ci": 39748968367,
+  "prior_ci_commit": "9d7e32dced02f58142fa544d76c55db1d7038085",
+  "current_commit_ci": "consume automatically created exact-head CI after normal existing-PR push",
+  "review": {
+    "operation": "forex-r26-candidate-policy-review-20261022-sol-001",
+    "controller_pid": 50810,
+    "reviewed_candidate": "9d7e32dced02f58142fa544d76c55db1d7038085",
+    "result_sha256": "aaa15c5bbc2e99cb34a07f8a8e6ef8cab50ff9a56a29e4ce0505d38225a26e31",
+    "terminal": true,
+    "accepted": false,
+    "retry_allowed": false,
+    "new_review_attempted": false
+  },
+  "admission": false,
+  "monitoring": false,
+  "product_use_approval": "COMPLETE by Chairman attestation",
+  "private_proof_directory": "/Volumes/Mastermind/agent-workspaces/macro/web/forex-r26-candidate-policy-20261022-sol-001/.forex-batch-proof/20261022"
+}

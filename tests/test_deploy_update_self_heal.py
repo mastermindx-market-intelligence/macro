@@ -822,6 +822,15 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Private dated-reference Plan: load-time identity/terms plus request-time math.
+    "app/options_plan.py",
+    "app/options_plan_source.py",
+    "engine/options_nbbo_cohort.py",
+    "lib/options_source_receipts.py",
+    "engine/options_plan_expiry.py",
+    "engine/options_payoff.py",
+    "engine/greeks.py",
+    "engine/intraday_greeks.py",
     # Native supplier conditional research imports and cached K3 validators.
     'app/company_supplier_research.py',
     'engine/company_intelligence/h20_reported_event.py',
@@ -951,6 +960,8 @@ MUST_RESTART = [
     "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
+    # T11's native request lazily imports and then caches its numeric checker.
+    "engine/neuralweb/response_eval.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
     "engine/intelligence_workspace/runtime.py",
@@ -1104,6 +1115,9 @@ MUST_NOT_RESTART = [
     "engine/theme_graph/materialize.py",
     "collectors/equity_earnings.py.bak",
     "engine/earnings_catalysts.py",
+    "engine/neuralweb/response_eval.py.bak",
+    "engine/neuralweb/response_evaluation.py",
+    "scripts/run_brain_eval.py",
 ]
 
 

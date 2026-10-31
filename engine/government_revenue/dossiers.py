@@ -886,6 +886,28 @@ def _dossier_validation_validator() -> Any:
     if digest != expected_schema_sha256 or not _dossier_has_closed_refs(frozen):
         return original
     memo, resolved_refs = OrderedDict(), {}
+    memo_property_nodes = set()
+    cheap_property_keywords = {"type", "minLength", "maxLength"}
+    cheap_refs = {
+        f"#/$defs/{name}"
+        for name, subschema in frozen["$defs"].items()
+        if isinstance(subschema, dict) and not (subschema.keys() - cheap_property_keywords)
+    }
+
+    def collect_property_nodes(node):
+        if isinstance(node, dict):
+            for subschema in node.get("properties", {}).values():
+                # Cheap primitive checks do not justify constructing keys or
+                # displacing reusable reference checks with one-use identifiers.
+                if isinstance(subschema, dict) and subschema.keys() - cheap_property_keywords:
+                    memo_property_nodes.add(id(subschema))
+            for child in node.values():
+                collect_property_nodes(child)
+        elif isinstance(node, list):
+            for child in node:
+                collect_property_nodes(child)
+
+    collect_property_nodes(frozen)
 
     def hit(key):
         if key is not None and key in memo:
@@ -901,7 +923,8 @@ def _dossier_validation_validator() -> Any:
                 memo.popitem(last=False)
 
     def cached(validator, ref, value, source_schema):
-        key = _dossier_ref_memo_key(ref, value)
+        # Keep cheap reference checks native without displacing reusable checks.
+        key = None if ref in cheap_refs else _dossier_ref_memo_key(ref, value)
         if hit(key):
             return
         if ref not in resolved_refs:
@@ -921,6 +944,9 @@ def _dossier_validation_validator() -> Any:
             if name not in value:
                 continue
             item = value[name]
+            if id(subschema) not in memo_property_nodes:
+                yield from validator.descend(item, subschema, path=name, schema_path=name)
+                continue
             token = _dossier_memo_value_key(item)
             # Every node stays alive in this call's qualified schema snapshot.
             # A successful value under a different node proves nothing here.

@@ -394,7 +394,8 @@ def _vintage_tag(dated: Any, as_of: Any, date_role: Any = None) -> str:
 
 # W2: extract to chronicle injection helper
 def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
-                 prior_failures: list[str] | None = None) -> tuple[str, str]:
+                 prior_failures: list[str] | None = None,
+                 single_attempt: bool = False) -> tuple[str, str]:
     """Assemble (system_prompt, user_prompt) for one slot.
 
     Everything that decides what the model sees lives in this one function on
@@ -443,6 +444,8 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         )
 
     story = slot.get("story") or {}
+    market_snapshot = (desk == "brief" and isinstance(story, dict)
+                       and story.get("kind") == "native_market_snapshot")
     primary = slot.get("primary_source") or {}
     approved_claim_ids = sorted({
         str(claim_id)
@@ -506,13 +509,31 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         + "\n" + _ENVELOPE
     )
 
+    if single_attempt:
+        system_prompt = system_prompt.replace(
+            "  A draft that breaks one is regenerated at most twice and then dropped.", "", 1)
+
+    if market_snapshot:
+        system_prompt = system_prompt.replace(
+            '- Say what happened, why it matters, and what to watch. Where the honest answer\n'
+            '  is "watch, do not chase", write that.',
+            '- Describe what the measurements show and which later evidence would change\n'
+            '  that assessment. Do not recommend an action to the reader.', 1)
+
+    # Match the incumbent validators' effective limits only for this opt-in
+    # story kind. Legacy/native-plan prompt bytes remain unchanged.
+    min_words = (int(slot.get('min_words') or 300) if market_snapshot else slot.get('min_words'))
+    max_words = (int(slot.get('max_words') or 900) if market_snapshot else slot.get('max_words'))
+    receipts = (int(slot.get('min_anchored_receipts') or v.get('min_anchored_receipts') or 0)
+                if market_snapshot else slot.get('min_anchored_receipts') or 0)
+
     parts: list[str] = []
     parts.append(f"RUN DATE: {slot.get('as_of')}")
     parts.append(f"BYLINE (use verbatim): {slot.get('byline')}")
     parts.append(f"FOOTER (use verbatim): {footer_text}")
-    parts.append(f"WORD BUDGET: {slot.get('min_words')}–{slot.get('max_words')} words "
+    parts.append(f"WORD BUDGET: {min_words}–{max_words} words "
                  f"in the body, byline and footer excluded.")
-    parts.append(f"MINIMUM RECEIPTS: {slot.get('min_anchored_receipts') or 0} distinct "
+    parts.append(f"MINIMUM RECEIPTS: {receipts} distinct "
                  f"numbers anchored to [first_party] SOURCE FACTS.")
     if approved_claim_ids:
         parts.append(
@@ -680,6 +701,22 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
             "No numerical padding, invented observation or copying exemption; "
             "all unchanged paraphrase, quote and similarity gates still apply.")
 
+    if market_snapshot:
+        parts.append(
+            "FINAL MARKET SELF-CHECK before returning JSON: "
+            f"body {min_words}–{max_words} words, including headings and "
+            "excluding genuine byline/footer; "
+            f"at least {_pct_text(float(v.get('our_value_min') or .40))} of body words "
+            "in sentences carrying a numeric receipt anchored to [first_party] "
+            f"SOURCE FACTS; at least {receipts} distinct anchored receipts. "
+            "Nonnumeric explanation stays neutral. Use meaningful measurements; "
+            "do not pad evidence with scale ceilings, weights, windows, counts "
+            "or repeated values. Selected components are not exhaustive; "
+            "shared lineages are not independent observations. No unsupported "
+            "superlative, causality, return/flow or predictive claim, and no "
+            "action recommendation. All existing paraphrase and similarity "
+            "checks still apply.")
+
     if attempt and prior_failures:
         parts.append("")
         parts.append(f"THIS IS REWRITE {attempt}. The previous draft was rejected by "
@@ -763,6 +800,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
           attempt: int = 0, prior_failures: list[str] | None = None,
           single_provider_attempt: bool = False,
           admitted_token_cap: bool = False,
+          single_attempt: bool = False,
           private_admission_check: Callable[[], None] | None = None) -> dict:
     """Write one draft.  Returns {"ok", "draft"|None, "reason", "provider", ...}.
 
@@ -798,8 +836,11 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
         return _fail(state, readiness['reason'], charge=False, record=False,
                      native_plan_preflight=readiness)
 
+    if single_attempt and (not single_provider_attempt or attempt != 0):
+        return _fail(state, "invalid_single_attempt_mode", charge=False, record=False)
+    prompt_mode = {"single_attempt": True} if single_attempt else {}
     system_prompt, user_prompt = build_prompt(
-        slot, cfg, attempt=attempt, prior_failures=prior_failures)
+        slot, cfg, attempt=attempt, prior_failures=prior_failures, **prompt_mode)
     max_tokens = int(llm_cfg.get("max_tokens") or 4000)
     token_cap: dict[str, Any] | None = None
     if admitted_token_cap:

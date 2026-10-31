@@ -694,10 +694,10 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
     # successor generation. Query-preserving HTTP redirects still fail READY.
     match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
     assert match
-    assert " ".join(match.group(1).split()) == " ".join("""path /baskets_china.html
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /baskets_china.html
         not {
             query mmx_shell=1
-            header Referer https://beta.mastermind-x.com/*
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
         }""".split())
     assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
     assert "redir /baskets_china.html " not in CADDY
@@ -706,10 +706,10 @@ def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
 def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
     match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
     assert match
-    assert " ".join(match.group(1).split()) == " ".join("""path /movers.html
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /movers.html
         not {
             query mmx_shell=1
-            header Referer https://beta.mastermind-x.com/*
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
         }""".split())
     assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
     assert "redir /movers.html " not in CADDY

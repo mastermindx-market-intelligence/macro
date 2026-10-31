@@ -289,17 +289,15 @@ def test_f_health_carries_server_timing_and_records_its_template(
 def test_f_recorder_failure_never_changes_status_or_body(
     paid_client, monkeypatch
 ) -> None:
-    # Hold the health evaluation clock constant so response equality isolates
-    # recorder behavior even when the requests cross a wall-clock second.
-    evaluation_time = datetime(2026, 10, 20, 11, 16, 30, tzinfo=timezone.utc)
+    # Compare the recorder's effect at the same evaluation instant. Otherwise
+    # crossing a second changes evaluated_at independently of recorder failure.
+    evaluation_time = forensics_api.datetime.now(forensics_api.timezone.utc)
     evaluate_health = forensics_api.evaluate_health
 
-    def _evaluate_with_fixed_clock(repo, *, now):
-        return evaluate_health(repo, now=evaluation_time)
+    def _same_instant(root, **kwargs):
+        return evaluate_health(root, **{**kwargs, "now": evaluation_time})
 
-    monkeypatch.setattr(
-        forensics_api, "evaluate_health", _evaluate_with_fixed_clock
-    )
+    monkeypatch.setattr(forensics_api, "evaluate_health", _same_instant)
     baseline = paid_client.get(_HEALTH_PATH)
     assert baseline.status_code == 200
 
