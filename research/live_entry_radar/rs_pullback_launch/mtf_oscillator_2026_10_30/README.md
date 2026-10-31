@@ -97,12 +97,18 @@ Eight native-owner integration tests now live under
 real `rs_pullback_launch_data._aggregate` and its existing
 `_metadata_errors` source refusal guard before reading synthetic minute
 slots, including negative first-seen, identity and basis witnesses.
-The earlier five integration tests passed in an isolated immutable
-M2 Studio checkout on the previous code head; **the eight-test current
-head has not yet completed native-source qualification**.
+A new immutable-source M2 Studio run of the **repaired exact source head**
+`b55f71772ed9df97adabcd918febf7bbbc10a8ef` completed with process
+exit code 0: **52 passing synthetic tests, plus two unittest subtests**
+(44 standalone oscillator/revision regressions + 8 native owner integration
+tests). The source was copied with `git archive` into a fresh private
+temporary scratch folder; only public code and synthetic fixtures were
+used, with no private Parquet/credentials/real market dataset. No
+genuine source entitlement or historical-adjustment vintage was proven.
 All three suites are enrolled in the original existing `research-price-panel`
 CODE-gate CI manifest, with no additional workflow or new source authority;
-exact-head hosted CI must still be observed and independently reviewed.
+current complete hosted CI and independent exact-head review are still separate
+acceptance gates.
 These are software falsifiers, not market trials, strategy win rates,
 a point-in-time data audit or Pine parity.
 
