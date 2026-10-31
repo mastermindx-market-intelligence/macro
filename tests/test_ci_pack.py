@@ -4792,6 +4792,10 @@ CURATED_EXCLUSIVE = {
     # + CSS through the test-only builder); its curated scope pins the
     # measured render-path import closure, so it must be pinned here too.
     "international-transmission-board",
+    # INTL-GS §14 closures: graph-boundary label rule and the cross-surface
+    # observation-identity test; the curated scope pins the two suites'
+    # measured import/read closure.
+    "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
