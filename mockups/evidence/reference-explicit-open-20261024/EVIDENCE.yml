@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/reference.html.j2
+  - site/reference.html
+  - site/assets/css/b889eeca.css
+manifest: mockups/evidence/reference-explicit-open-20261024/manifest.json

@@ -1,0 +1,79 @@
+{
+  "schema": "eval-os.a1-dependency-agentos-repair-acceptance.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "carrier": "PR6651",
+  "base_head": "30c61c5c838b63730cc5ef6c82f9f3b106c5b6f0",
+  "source_state": "30c61c5c + four-file repair + five canonical evidence files; root freeze beforecommit/current-mainintegration. Containingcommit/publicationnotattested.",
+  "ruling": "ACCEPTED_SOURCE_AND_ISOLATED_LOCAL_VERIFICATION",
+  "findings": [],
+  "reviewed_sha256": {
+    ".github/ci/legacy-jobs.yml": "abc4c3ce93017fbc5d8373e7f87890ec99b8e59c95b18305805c6a6dae39a089",
+    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md": "b5bb29f4d7c60d5d2205455bbc433d80169110c576dca975a598e2ed460b8fc1",
+    "research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md": "b8d0dfc3e2cd72d68e4172d01ff4a93e0d90455488b6893c3f1d58954334d806",
+    "research/EVAL_OS_CONTINUATION_2026-10-12.md": "da7b6bbf68e2de6ea5a19564f2cce16aeeff9fb5a5f57d69c1e6741df284cdcb"
+  },
+  "hashes_unchanged_at_receipt_write": true,
+  "scope_review": {
+    "only_four_files_changed": true,
+    "other300_job_objects_unchanged": true,
+    "A1_only_step_delta": "Existing install minimal deps adds jsonschema and markupsafe; eight-suite command, Node,1166paths and assertions unchanged",
+    "AgentOS_metadata": "Key/owner/dependencies/owns_paths/artifacts/waves preserved; next_action only updated to Chairman-authorized governedmerge. Narrative preserved outside closed YAML; handoff references retained.",
+    "product_science_test_behavior_changes": false,
+    "validator_law_or_skips_weakened": false
+  },
+  "consumed_verification": {
+    "AgentOS": {
+      "records": 1732,
+      "errors": 0,
+      "warnings": 164,
+      "receipt": "integration/agentos-repaired-20261014.txt"
+    },
+    "isolated": {
+      "tests": 373,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "console_elapsed_s": 195.36,
+      "JUnit_suite_elapsed_s": 196.404,
+      "warnings": 31,
+      "environment": "Parent executed freshPython3.12/no-system-site-packages with exactlynine declared directdependencies; reviewer consumed retainedlog/XML and didnot reproduceenvironment",
+      "both_previous_failures": "descriptive-valid actualcanonicalfingerprint and ZHcanonicalglossary testcases each present and pass; neither skipped or mocked",
+      "xml": "integration/a1-isolated-20261014.xml",
+      "log": "integration/a1-isolated-20261014.txt",
+      "python": "3.12.13",
+      "node": "Localv26.5.0; priorhostedNode20.20.2 actuallyexecutedunchangedrenderertests. LocalreceiptisnotLinux/Node20executionprofileattestation; freshhostedqualificationowed.",
+      "installed_required_versions": {
+        "jsonschema": "4.26.0",
+        "MarkupSafe": "3.0.4"
+      }
+    }
+  },
+  "receipt_sha256": {
+    "integration/agentos-repaired-20261014.txt": "a2c6adcb1c5f2570ec302e90f4c7bd8cae08e2ea3865fc2d882e017d1a4c53b4",
+    "integration/a1-isolated-20261014.xml": "6b6b33e84b43d550d44230fbd78b534d60512b601fda5b4e6b3a21729e9c6185",
+    "integration/a1-isolated-20261014.txt": "4a32a4e3738d7fb75bce214714a88e57e665a73a8c6ef466457bc3c3d9bf19bd"
+  },
+  "release_authority": "Consumed canonical release-decision-approved.json retaining Chris directapproval forPR6651existingcontroller/baseupdatesfreshchecks/autonomousdeploymentprodverification. No bindingcheckwaiver; no merge/productionclaim. ActualGitHubcomment/push notqueriedbyreviewer.",
+  "limits": [
+    "No hostednewheadPASS or merge/install/prodacceptance asserted",
+    "Added dependencies change A1executiondigest; nextpublishedhead must bind revisedcontract andfreshsuccessfulhostedexecution",
+    "Incoming6b154e currentmainintegration notcoveredbythisfourfilequalification; rootowns affectedclosure/priceladderverification",
+    "T21/A39 retained; postreleaseT23/live/operator/originallegacy obligations remain"
+  ],
+  "reviewer_effects": {
+    "new_tests": false,
+    "network_CI_queries": false,
+    "source_Git_writes": false,
+    "new_Fabric_native_labor": false
+  },
+  "post_test_document_delta": "Root changed only the three records pending-qualification sentence to actual373PASS/AgentOS0errors with canonicalreceiptreference. Reviewed finalprose accurately records these results and stillrequires freshhostedchecks beforecontrollerarming; metadata and manifest unchanged from initialreview.",
+  "canonical_artifact_sha256": {
+    "ci-execution-repair-20261014.json": "9becb2c2641378e7c4b77b889af90c38f88194525df66477633df50372fbe8de",
+    "a1-isolated-20261014.xml": "6b6b33e84b43d550d44230fbd78b534d60512b601fda5b4e6b3a21729e9c6185",
+    "a1-isolated-20261014.txt": "4a32a4e3738d7fb75bce214714a88e57e665a73a8c6ef466457bc3c3d9bf19bd",
+    "a1-isolated-packages.txt": "7342980124b0eadf6f4a1992870e390ff1e87b8e1e2c48e0caefb21d2775c5a4",
+    "release-decision-approved.json": "f3e6cd21f7e7145b3f0bd8de23416ae1cd5ef1925efc8bbc0589815f5b6c61ec"
+  },
+  "canonical_copy_matches_declared_hashes": true
+}

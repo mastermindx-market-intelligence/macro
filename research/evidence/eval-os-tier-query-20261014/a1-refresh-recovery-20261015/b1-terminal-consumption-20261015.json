@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-15T06:29:57.774241+00:00",
+  "source": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "base": "9b8cb7526390830669ab6b563e1eaeab0bbb0d32",
+  "tested": "f4c3d4fb57701fad0c04f64b42b45acb0943aeff",
+  "run": "38601317870",
+  "gate_clear": true,
+  "jobs": 126,
+  "passed_semantic_command_steps": 348,
+  "inherited_semantic_command_steps": 0,
+  "blocking_semantic_command_steps": 0,
+  "infrastructure_blocking": false,
+  "plan_job_execution_identity_equal": true,
+  "evidence_sha256": "cd49947424e4ed6fb86fd81acdc79117102956927890a041283199df30079c2a",
+  "artifact_zip_sha256": "726cff115f0620ae2810461c58f74e4b535ec97cfc2a2a469b039158794d7706",
+  "superseded_for_current_pr": true,
+  "current_pr_head_observed": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+  "claim_limit": "Passed original b1 source, not current refreshed head or production. Step count is not unit-test or zero-skip count."
+}

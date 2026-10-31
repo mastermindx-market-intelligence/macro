@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=048314d5"></script><!-- mmx-shared-shell:end -->
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
   var B = window.DATA_BASE;
@@ -36,7 +36,7 @@
 <title>Mastermind Chat</title>
 <link rel="stylesheet" href="theme.css?v=29ec9caa">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="stylesheet" href="chat.css?v=a22a1009">
+<link rel="stylesheet" href="chat.css?v=043131b3">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
 <body>
@@ -292,9 +292,10 @@
 <div id="chat-shell">
 
   <!-- left: thread rail -->
-  <div id="thread-rail">
+  <div id="thread-rail" role="navigation" aria-label="Conversations">
     <div id="thread-rail-head">
       <h2><span class="l-en">Threads</span><span class="l-zh">对话</span></h2>
+      <button id="chat-history-close" type="button"><span class="l-en">Close</span><span class="l-zh">关闭</span></button>
       <button id="new-thread-btn" type="button">
         <span class="l-en">+ New</span><span class="l-zh">+ 新建</span>
       </button>
@@ -308,6 +309,7 @@
 
   <!-- center: messages + composer -->
   <div id="chat-main" class="is-empty">
+    <button id="chat-history-toggle" type="button" aria-expanded="false" aria-controls="thread-rail"><span class="l-en">History</span><span class="l-zh">历史对话</span></button>
 
     <!-- auth gate — shown when signed out -->
     <div id="auth-gate" style="display:none">
@@ -445,7 +447,9 @@
 
 </div>
 
-<script src="theme.js?v=a46f6677" defer></script>
+<script src="theme.js?v=2454e0ca" defer></script>
+<script src="mm_brain_presentation.js?v=88e1f94b" charset="utf-8" defer></script>
+<script src="mm_brain_markdown.js?v=9b93741c" charset="utf-8" defer></script>
 <script>
 (function () {
   'use strict';
@@ -499,31 +503,40 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* Minimal markdown-lite: paragraphs, bold, lists — nothing else */
-  function renderMd(text) {
-    if (!text) return '';
-    var lines = text.split('\n');
-    var out = [], inList = false;
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i];
-      var liMatch = /^[\-\*]\s+(.*)/.exec(line) || /^\d+\.\s+(.*)/.exec(line);
-      if (liMatch) {
-        if (!inList) { out.push('<ul>'); inList = true; }
-        out.push('<li>' + boldify(esc(liMatch[1])) + '</li>');
-      } else {
-        if (inList) { out.push('</ul>'); inList = false; }
-        var t = line.trim();
-        if (t) out.push('<p>' + boldify(esc(t)) + '</p>');
-      }
-    }
-    if (inList) out.push('</ul>');
-    return out.join('');
+  /* Exact generated companion of the shared widget's DOM-only Markdown owner. */
+  function paintMessage(bubble, content) {
+    var prose = bubble.querySelector('.msg-prose');
+    if (!prose) { prose = document.createElement('div'); prose.className = 'msg-prose'; bubble.insertBefore(prose, bubble.firstChild); }
+    if (window.MMBrainMarkdown) window.MMBrainMarkdown.renderInto(prose, content);
+    else prose.textContent = content || '';
+    if (window.MMBrainPresentation) window.MMBrainPresentation.renderMath(prose);
   }
-  function boldify(s) {
-    /* **bold** and *italic* */
-    return s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  function visualHost(bubble) {
+    var host = bubble.querySelector('.msg-visuals');
+    if (!host) { host = document.createElement('div'); host.className = 'msg-visuals'; bubble.appendChild(host); }
+    return host;
   }
+  function mountVisual(bubble, wire) {
+    if (window.MMBrainPresentation && wire && wire.visual) window.MMBrainPresentation.mount(visualHost(bubble), wire);
+  }
+  function mountVisualNotices(bubble, notices) {
+    if (!Array.isArray(notices) || !notices.slice(0, 4).some(function (n) {
+      return n && n.type === 'membership_required' && n.template === 'transcript';
+    })) return;
+    var host = visualHost(bubble);
+    if (host.querySelector('.mmb-visual-notice')) return;
+    var note = document.createElement('p'); note.className = 'mmb-visual-notice'; note.setAttribute('role', 'status');
+    [['l-en', 'Some saved transcript evidence requires membership and is unavailable for this account.'],
+     ['l-zh', '部分已保存的电话会证据需要会员权限，当前账户暂不可查看。']].forEach(function (v) {
+      var span = document.createElement('span'); span.className = v[0]; span.textContent = v[1]; note.appendChild(span);
+    });
+    host.appendChild(note);
+  }
+  function clearVisuals(bubble) {
+    var host = bubble && bubble.querySelector('.msg-visuals');
+    if (host && window.MMBrainPresentation) window.MMBrainPresentation.clear(host);
+  }
+  var conversationEpoch = 0, activeStreamAbort = null, principalId = '';
 
   /* Map known artifact paths to friendly page links */
   function citationLink(cite) {
@@ -555,6 +568,22 @@
     return null;
   }
 
+  function setMobileHistory(open) {
+    document.getElementById('thread-rail').classList.toggle('mobile-open', open);
+    document.getElementById('chat-history-toggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  document.getElementById('chat-history-toggle').addEventListener('click', function () {
+    var open = this.getAttribute('aria-expanded') !== 'true';
+    setMobileHistory(open);
+    if (open) document.getElementById('chat-history-close').focus();
+  });
+  document.getElementById('chat-history-close').addEventListener('click', function () {
+    setMobileHistory(false); document.getElementById('chat-history-toggle').focus();
+  });
+  document.getElementById('thread-rail').addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') { setMobileHistory(false); document.getElementById('chat-history-toggle').focus(); }
+  });
+
   /* ── auth wiring ────────────────────────────────────────────────────────── */
   function showAuthGate(on) {
     authGate.style.display = on ? 'flex' : 'none';
@@ -563,10 +592,16 @@
     document.getElementById('chat-footer').style.display = on ? 'none' : '';
     /* Show the chat-history rail only when signed in (the auth hero owns the width when out). */
     document.getElementById('thread-rail').style.display = on ? 'none' : '';
+    document.getElementById('chat-history-toggle').style.display = on ? 'none' : '';
+    if (on) setMobileHistory(false);
   }
 
   var _authed = false;
   function onAuthState(user) {
+    var nextPrincipal = user && user.id || '';
+    if (nextPrincipal !== principalId) {
+      principalId = nextPrincipal; threadId = null; clearMessages(); renderThreads([]);
+    }
     _authed = !!user;
     showAuthGate(!user);
     if (user) {
@@ -676,11 +711,13 @@
 
   /* ── threads ────────────────────────────────────────────────────────────── */
   function loadThreads() {
+    var listEpoch = conversationEpoch;
     withAuth().then(function (h) {
       return fetch('/api/brain/threads', { headers: h, credentials: 'include' });
     })
       .then(function (r) { return r.ok ? r.json() : { threads: [] }; })
       .then(function (d) {
+        if (listEpoch !== conversationEpoch) return;
         var threads = (d && d.threads) || [];
         renderThreads(threads);
       }).catch(function () {});
@@ -688,12 +725,13 @@
   function renderThreads(threads) {
     /* Keep the chat-history rail visible (ChatGPT/Claude-style) — it shows past
        conversations and the New-chat button; empty is fine for a first-time user. */
+    threadList.textContent = '';
     if (!threads.length) {
       threadEmpty.style.display = '';
+      threadList.appendChild(threadEmpty);
       return;
     }
     threadEmpty.style.display = 'none';
-    threadList.innerHTML = '';
     threads.forEach(function (t) {
       var div = document.createElement('div');
       div.className = 'thread-item' + (t.id === threadId ? ' active' : '');
@@ -707,6 +745,8 @@
     });
   }
   function openThread(id) {
+    clearMessages();
+    var loadEpoch = conversationEpoch;
     threadId = id;
     document.querySelectorAll('.thread-item').forEach(function (el) {
       el.classList.toggle('active', el.dataset.id === id);
@@ -716,10 +756,10 @@
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
-        if (!d) return;
-        clearMessages();
+        if (!d || loadEpoch !== conversationEpoch) return;
         (d.messages || []).forEach(function (m) {
-          appendMessage(m.role, m.content, []);
+          var bubble = appendMessage(m.role, m.content, m.citations || []);
+          if (m.role === 'assistant') { (m.visuals || []).forEach(function (wire) { mountVisual(bubble, wire); }); mountVisualNotices(bubble, m.visual_notices); }
         });
       }).catch(function () {});
   }
@@ -733,6 +773,13 @@
 
   /* ── messages ───────────────────────────────────────────────────────────── */
   function clearMessages() {
+    setMobileHistory(false);
+    conversationEpoch++;
+    if (activeStreamAbort) { activeStreamAbort.abort(); activeStreamAbort = null; }
+    streaming = false;
+    sendBtn.disabled = !msgInput.value.trim();
+    researchProgress.classList.remove('visible'); researchBtn.disabled = false;
+    msgList.querySelectorAll('.msg-bubble').forEach(clearVisuals);
     /* remove all .msg children; keep #empty-state and #upgrade-card */
     var kids = Array.prototype.slice.call(msgList.children);
     kids.forEach(function (k) {
@@ -750,9 +797,10 @@
     var div = document.createElement('div');
     div.className = 'msg ' + role;
     var bubble = document.createElement('div');
-    bubble.className = 'msg-bubble';
+    bubble.className = 'msg-bubble' + (role === 'assistant' ? ' mmb-visual-surface' : '');
     /* Always escape/render through the safe pipeline — never set innerHTML to raw content */
-    bubble.innerHTML = role === 'user' ? '<p>' + esc(content) + '</p>' : renderMd(content);
+    if (role === 'user') { var userText = document.createElement('p'); userText.textContent = content; bubble.appendChild(userText); }
+    else paintMessage(bubble, content);
     div.appendChild(bubble);
     if (citations && citations.length) {
       var cc = document.createElement('div');
@@ -921,7 +969,18 @@
     /* start typing indicator */
     var typingBubble = appendTyping();
     var replyBubble = null;
-    var replyText = '';
+    var replyText = '', visualsSuppressed = false, doneReceived = false;
+    var turnEpoch = conversationEpoch;
+    activeStreamAbort = new AbortController();
+    var turnAbort = activeStreamAbort;
+    function ensureReplyBubble() {
+      if (!replyBubble) {
+        var typing = document.getElementById('typing-msg');
+        if (typing) msgList.removeChild(typing);
+        replyBubble = appendMessage('assistant', '', []);
+      }
+      return replyBubble;
+    }
 
     /* Show research progress affordance */
     if (researchMode) {
@@ -942,9 +1001,11 @@
         method: 'POST',
         headers: h,
         credentials: 'include',
+        signal: turnAbort.signal,
         body: body
       });
     }).then(function (res) {
+      if (turnEpoch !== conversationEpoch) return;
       if (res.status === 401) {
         /* session expired mid-stream — clear and re-prompt sign-in */
         var typing = document.getElementById('typing-msg');
@@ -993,7 +1054,9 @@
       var buf = '';
 
       function read() {
+        if (turnEpoch !== conversationEpoch) { reader.cancel().catch(function () {}); return; }
         reader.read().then(function (chunk) {
+          if (turnEpoch !== conversationEpoch) return;
           if (chunk.done) {
             finishStream();
             return;
@@ -1018,6 +1081,7 @@
       }
 
       function handleEvent(ev) {
+        if (turnEpoch !== conversationEpoch) return;
         if (ev.type === 'meta') {
           threadId = ev.thread_id || threadId;
           if (ev.quota) {
@@ -1026,20 +1090,16 @@
             renderQuotas();
           }
         } else if (ev.type === 'delta') {
-          if (!replyBubble) {
-            /* swap typing indicator for real bubble */
-            var typing = document.getElementById('typing-msg');
-            if (typing) msgList.removeChild(typing);
-            var msgDiv = document.createElement('div');
-            msgDiv.className = 'msg assistant';
-            replyBubble = document.createElement('div');
-            replyBubble.className = 'msg-bubble';
-            msgDiv.appendChild(replyBubble);
-            msgList.appendChild(msgDiv);
-          }
+          ensureReplyBubble();
           replyText += ev.text;
-          replyBubble.innerHTML = renderMd(replyText);
+          paintMessage(replyBubble, replyText);
           msgList.scrollTop = msgList.scrollHeight;
+        } else if (ev.type === 'chart') {
+          if (!visualsSuppressed) mountVisual(ensureReplyBubble(), ev);
+        } else if (ev.type === 'retract') {
+          visualsSuppressed = true;
+          ensureReplyBubble(); clearVisuals(replyBubble);
+          replyText = ev.text || ''; paintMessage(replyBubble, replyText);
         } else if (ev.type === 'tool') {
           appendToolMsg(ev.name);
         } else if (ev.type === 'annotate') {
@@ -1051,6 +1111,9 @@
           /* Chart-command bus (W6b): dashboard ignores command events (no chart controller here).
              Unknown event types are silently ignored per contract. */
         } else if (ev.type === 'done') {
+          doneReceived = true;
+          if (ev.filtered) { visualsSuppressed = true; clearVisuals(replyBubble); }
+          if (!visualsSuppressed) (ev.charts || []).forEach(function (wire) { mountVisual(ensureReplyBubble(), wire); });
           if (ev.quota) {
             if (lane === 'fast') quotas.fast = ev.quota;
             else quotas.pro = ev.quota;
@@ -1088,6 +1151,9 @@
       }
 
       function finishStream() {
+        if (turnEpoch !== conversationEpoch) return;
+        if (!doneReceived) { visualsSuppressed = true; clearVisuals(replyBubble); }
+        activeStreamAbort = null;
         var typing = document.getElementById('typing-msg');
         if (typing) msgList.removeChild(typing);
         streaming = false;
@@ -1101,6 +1167,8 @@
 
       read();
     }).catch(function () {
+      if (turnEpoch !== conversationEpoch) return;
+      clearVisuals(replyBubble);
       var typing = document.getElementById('typing-msg');
       if (typing) msgList.removeChild(typing);
       appendError(L('Network error. Please check your connection and try again.', '网络错误，请检查连接后重试。'));
