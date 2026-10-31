@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import contextlib
 import hashlib
+import json
 import logging
 import os
 import re
@@ -877,6 +878,94 @@ def stamp_value_gate(
         return False
 
 
+MEDIA_REPAIR_STATES: frozenset[str] = frozenset({
+    "no_specification",
+    "render_failure",
+    "upload_pending",
+    "public_fetch_failure",
+    "complete",
+    "expired",
+})
+
+
+def chart_bearing_kinds() -> frozenset[str]:
+    """Kinds that owe a publishable chart, from the publisher's live contract.
+
+    The publisher remains the authority. The literal set is only a fail-soft
+    floor for isolated tests or an import failure, matching Approval Desk's
+    existing dependency pattern.
+    """
+    try:
+        from scripts.marketing_publisher import (  # noqa: PLC0415
+            _CHART_BEARING_KINDS, _TICKER_ROLLUP_KINDS,
+        )
+        return frozenset(_CHART_BEARING_KINDS) | frozenset(_TICKER_ROLLUP_KINDS)
+    except Exception:  # noqa: BLE001
+        return frozenset({"signal", "chart", "watchlist", "receipt",
+                          "theme_list", "mover"})
+
+
+def media_repair_observation(
+    media: list[dict] | None,
+    *,
+    chart_id: object = None,
+    producer_observation: dict | None = None,
+) -> dict[str, Any]:
+    """Project media readiness without inventing an outbox lifecycle state.
+
+    The projection is additive metadata. `no_specification` is deliberately not
+    called upload-pending: the backfill cannot rebuild bytes it cannot identify.
+    """
+    entries = [m for m in (media or []) if isinstance(m, dict)]
+    for entry in entries:
+        url = str(entry.get("media_url") or "").strip().lower()
+        if url.startswith(("http://", "https://")):
+            return {"state": "complete", "reason": "hosted_media_present",
+                    "repair_process": "", "repairable": False}
+
+    # A media entry is stamped by the deferred raster/upload pass AFTER the plan
+    # item received its producer-side projection. It is therefore the newer
+    # observation. Prefer a concrete entry-level failure over a stale pre-raster
+    # "upload_pending" stamp, or an actual render failure gets routed to the
+    # backfill process that cannot repair it.
+    for entry in entries:
+        observed = entry.get("media_repair")
+        if not isinstance(observed, dict):
+            continue
+        state = str(observed.get("state") or "")
+        if state in {
+            "no_specification", "render_failure", "upload_pending",
+            "public_fetch_failure", "expired",
+        }:
+            return {
+                "state": state,
+                "reason": str(observed.get("reason") or "unknown"),
+                "repair_process": str(observed.get("repair_process") or ""),
+                "repairable": bool(observed.get("repairable")),
+            }
+
+    if isinstance(producer_observation, dict):
+        producer_state = str(producer_observation.get("state") or "")
+        if producer_state in {
+            "no_specification", "render_failure", "upload_pending",
+            "public_fetch_failure", "expired",
+        }:
+            return {
+                "state": producer_state,
+                "reason": str(producer_observation.get("reason") or "unknown"),
+                "repair_process": str(
+                    producer_observation.get("repair_process") or ""
+                ),
+                "repairable": bool(producer_observation.get("repairable")),
+            }
+    if entries:
+        return {"state": "upload_pending", "reason": "hosted_media_missing",
+                "repair_process": "marketing_media_backfill", "repairable": True}
+    return {"state": "no_specification",
+            "reason": "missing_chart_specification",
+            "repair_process": "content_studio", "repairable": False}
+
+
 def make_item(
     *,
     account: str,
@@ -1708,6 +1797,29 @@ def transition(
                     current, to, item_id, sorted(TRANSITIONS.get(current, frozenset())),
                 )
                 return False
+
+            # Media backfill is a late overlay. An approval that was valid when
+            # applied can therefore become stale before the publisher enters the
+            # network call. Re-check the same effective payload at the last safe
+            # boundary. Direct/internal approved items with no operator decision
+            # retain their existing transition semantics.
+            if current == "approved" and to == "posting":
+                decision = (state.get("decisions") or {}).get(item_id) or {}
+                if decision.get("decision") == "approve":
+                    item = state["items"].get(item_id)
+                    expected_digest = str(decision.get("payload_digest") or "")
+                    actual_digest = (
+                        _approval_payload_digest(item, root=root)
+                        if item is not None else ""
+                    )
+                    if not expected_digest or expected_digest != actual_digest:
+                        log.warning(
+                            "outbox.transition: approval payload changed before "
+                            "dispatch for %r; fresh operator approval required",
+                            item_id,
+                        )
+                        return False
+
             row: dict[str, Any] = {
                 "id": item_id,
                 "from": current,
@@ -1869,6 +1981,77 @@ def supersede_lane(
 # Operator decisions
 # ─────────────────────────────────────────────────────────────────────────────
 
+
+def _approval_media_sidecar(
+    root: Path | str | None = None,
+) -> dict[str, str]:
+    """Return the media-backfill projection consumed by the publisher.
+
+    Approval has to bind the effective publish payload, including a late media
+    sidecar repair. Otherwise an operator can approve a text-only post and have
+    a chart attached later without reviewing the changed payload.
+
+    Fail closed: an unavailable sidecar is treated as empty for this digest, so
+    a decision made without the overlay cannot silently authorize a later one.
+    """
+    try:
+        from scripts.marketing_media_backfill import load_sidecar  # noqa: PLC0415
+
+        return load_sidecar(root)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("outbox: media approval projection unavailable: %s", exc)
+        return {}
+
+
+def _approval_media_urls(
+    item: dict,
+    *,
+    sidecar: dict[str, str],
+) -> list[str]:
+    """Resolve media exactly as the publisher's sidecar overlay does."""
+    urls: list[str] = []
+    as_of = str(item.get("as_of") or "").strip()
+    for media in item.get("media") or []:
+        if not isinstance(media, dict):
+            continue
+        url = str(media.get("media_url") or "").strip()
+        if not url:
+            chart_id = str(media.get("chart_id") or "").strip()
+            if chart_id:
+                url = str(sidecar.get(f"{as_of}/{chart_id}") or "").strip()
+        if url.lower().startswith(("http://", "https://")):
+            urls.append(url)
+    return urls
+
+
+def _approval_payload_digest(
+    item: dict,
+    *,
+    root: Path | str | None = None,
+    sidecar: dict[str, str] | None = None,
+) -> str:
+    """SHA-256 of publish-affecting fields the operator approved."""
+    media_sidecar = _approval_media_sidecar(root) if sidecar is None else sidecar
+    payload = {
+        "schema": "marketing.approval_payload/v1",
+        "account": str(item.get("account") or ""),
+        "kind": str(item.get("kind") or ""),
+        "text": str(item.get("text") or ""),
+        "as_of": str(item.get("as_of") or ""),
+        "scheduled_at": str(item.get("scheduled_at") or ""),
+        "slot": str(item.get("slot") or ""),
+        "link": str(item.get("link") or ""),
+        "media_urls": _approval_media_urls(item, sidecar=media_sidecar),
+    }
+    encoded = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 _VALID_DECISIONS = frozenset({"approve", "hold"})
 
 
@@ -1891,8 +2074,9 @@ def record_decision(
             return False
 
         with _outbox_lock(root):
-            existing_ids = {i.get("id") for i in read_items(root)}
-            if item_id not in existing_ids:
+            state = fold_state(root)
+            item = state["items"].get(item_id)
+            if item is None:
                 log.warning("outbox.record_decision: unknown item_id %r", item_id)
                 return False
 
@@ -1902,6 +2086,7 @@ def record_decision(
                 "at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "actor": actor,
                 "note": note,
+                "payload_digest": _approval_payload_digest(item, root=root),
             }
             if not append_jsonl(_decisions_path(root), row):
                 log.warning("outbox.record_decision: append_jsonl failed for %r on %r",
@@ -1970,11 +2155,29 @@ def apply_decisions(
     try:
         with _outbox_lock(root):
             state = fold_state(root)
+            media_sidecar = _approval_media_sidecar(root)
             for item_id, dec in state["decisions"].items():
                 if only is not None and item_id not in only:
                     continue
                 if dec.get("decision") != "approve":
                     continue
+
+                item = state["items"].get(item_id)
+                expected_digest = str(dec.get("payload_digest") or "")
+                actual_digest = (
+                    _approval_payload_digest(
+                        item, root=root, sidecar=media_sidecar,
+                    )
+                    if item is not None else ""
+                )
+                if not expected_digest or expected_digest != actual_digest:
+                    log.warning(
+                        "outbox.apply_decisions: approval payload changed for %r; "
+                        "fresh operator approval required",
+                        item_id,
+                    )
+                    continue
+
                 status = state["status"].get(item_id)
                 if status == "queued":
                     if transition(item_id, "approved", actor=actor, root=root,
@@ -2726,6 +2929,12 @@ def emit_from_content_plan(
                                 media_entry["media_url"] = fc.get("media_url")
                             if fc.get("media_png_path"):
                                 media_entry["media_png_path"] = fc.get("media_png_path")
+                            if fc.get("media_asset_key"):
+                                media_entry["media_asset_key"] = fc.get("media_asset_key")
+                            if fc.get("media_sha256"):
+                                media_entry["media_sha256"] = fc.get("media_sha256")
+                            if isinstance(fc.get("media_repair"), dict):
+                                media_entry["media_repair"] = dict(fc["media_repair"])
                             media.append(media_entry)
 
                     scheduled_at = _scheduled_at_for_slot(slot, as_of)
@@ -2748,6 +2957,19 @@ def emit_from_content_plan(
                             source["media_url"] = _fc.get("media_url")
                         if _fc.get("media_png_path"):
                             source["media_png_path"] = _fc.get("media_png_path")
+                        if _fc.get("media_asset_key"):
+                            source["media_asset_key"] = _fc.get("media_asset_key")
+                        if _fc.get("media_sha256"):
+                            source["media_sha256"] = _fc.get("media_sha256")
+                    if _kind in chart_bearing_kinds():
+                        source["media_repair"] = media_repair_observation(
+                            media, chart_id=chart_id,
+                            producer_observation=(
+                                qi.get("media_repair")
+                                if isinstance(qi.get("media_repair"), dict)
+                                else None
+                            ),
+                        )
                     # W1 telemetry provenance (contract §Emit): the mixer's
                     # shape, the allocator's angle and the writer's mode travel
                     # with the item so the learning lane (W1.5 per-shape

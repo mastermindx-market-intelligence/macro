@@ -3321,12 +3321,15 @@ def _attach_chart_media(
                 fc.get("ticker") or "", dates or [], closes,
                 marker_index=marker_index, subtitle=subtitle),
         )
-        for key in ("media_png_path", "media_render"):
+        for key in ("media_png_path", "media_render", "media_asset_key",
+                    "media_sha256"):
             if stamped.get(key):
                 fc[key] = stamped[key]
         if "media_url" in stamped:
             # explicit None documents "rendered but not hosted"
             fc["media_url"] = stamped["media_url"]
+        if isinstance(stamped.get("media_repair"), dict):
+            fc["media_repair"] = dict(stamped["media_repair"])
 
         # THE DEGRADED IMAGE HAS TO BE AUDIBLE (2026-07-30).
         #
@@ -6571,6 +6574,70 @@ def content_plan(
             _followups = {}
     else:
         _followups = {"originations_pending": len(_origination_rows)}
+
+    # ── Claim-local media dependency projection ──────────────────────────────
+    # A D1 chart-family post is not publication-ready merely because it reached
+    # the queue. Name the exact producer-side state before Outbox serialises it:
+    # a missing specification belongs to Content Studio/source revalidation,
+    # while a rendered card with no hosted URL belongs to media backfill.
+    _chart_by_id = {
+        str(fc.get("id") or ""): fc for fc in featured_charts if fc.get("id")
+    }
+    _media_kinds = set(_CHARTABLE_TYPES) | {"theme_list", "mover"}
+    for _row in account_rows:
+        for _item in (_row.get("queue") or []):
+            if not str(_item.get("slot") or "").startswith("D1-"):
+                continue
+            if str(_item.get("type") or "") not in _media_kinds:
+                continue
+            _cid = str(_item.get("chart_id") or "")
+            if not _cid:
+                _item["media_repair"] = {
+                    "state": "no_specification",
+                    "reason": "trusted_chart_specification_unavailable",
+                    "repair_process": "content_studio",
+                    "repairable": False,
+                }
+                continue
+            _card = _chart_by_id.get(_cid)
+            if not isinstance(_card, dict):
+                _item["media_repair"] = {
+                    "state": "no_specification",
+                    "reason": "chart_specification_record_missing",
+                    "repair_process": "content_studio",
+                    "repairable": False,
+                }
+            elif not (_card.get("svg") or _card.get("svg_path")):
+                _item["media_repair"] = {
+                    "state": "render_failure",
+                    "reason": "chart_render_produced_no_artifact",
+                    "repair_process": "content_studio",
+                    "repairable": True,
+                }
+            elif str(_card.get("media_url") or "").lower().startswith(("http://", "https://")):
+                _item["media_repair"] = {
+                    "state": "complete",
+                    "reason": "public_bytes_verified",
+                    "repair_process": "",
+                    "repairable": False,
+                }
+            elif isinstance(_card.get("media_repair"), dict):
+                _observed = _card["media_repair"]
+                _item["media_repair"] = {
+                    "state": str(_observed.get("state") or "upload_pending"),
+                    "reason": str(_observed.get("reason") or "hosted_media_missing"),
+                    "repair_process": str(
+                        _observed.get("repair_process") or "marketing_media_backfill"
+                    ),
+                    "repairable": bool(_observed.get("repairable", True)),
+                }
+            else:
+                _item["media_repair"] = {
+                    "state": "upload_pending",
+                    "reason": "hosted_media_missing",
+                    "repair_process": "marketing_media_backfill",
+                    "repairable": True,
+                }
 
     # Distinctness check
     dist = distinctness(all_items)
