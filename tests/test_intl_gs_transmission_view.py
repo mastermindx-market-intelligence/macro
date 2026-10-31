@@ -435,6 +435,21 @@ def test_native_radio_switch_contract():
     out = present_transmission(payload)
     panes = _panes(section)
     assert len(panes) == len(out["origins"])
+    # R-01 pin (review r1): the pane's own-origin picker label is the visible selected
+    # option — class is-active (estate rule .intl-gs__seg__opt.is-active supplies the
+    # visible selected state) + aria-current="true"; every other option carries neither.
+    for pane in panes:
+        pane_i = re.match(r"(\d+)", pane).group(1)
+        labels = re.findall(
+            r'<label[^>]*class="intl-gs__seg__opt intl-transmission__olabel[^"]*"[^>]*>',
+            pane)
+        assert labels, "no picker labels inside the pane"
+        own = [lab for lab in labels if f'data-i="{pane_i}"' in lab]
+        other = [lab for lab in labels if f'data-i="{pane_i}"' not in lab]
+        assert len(own) == 1, "exactly one own-origin label per pane"
+        assert "is-active" in own[0] and 'aria-current="true"' in own[0]
+        assert all("is-active" not in lab and "aria-current" not in lab
+                   for lab in other), "inactive options must carry neither hook"
     assert section.count('class="intl-transmission__insp" data-e="') == sum(
         len(o["edges"]) for o in out["origins"])
     module = _load_build_intl()
