@@ -393,8 +393,10 @@ def test_attach_surveillance_none_is_none():
     assert _load_mount().attach_surveillance(None) is None
 
 
-def test_absent_builders_are_not_built_and_leave_workspace_intact():
+def test_absent_builders_are_not_built_and_leave_workspace_intact(monkeypatch):
     mount = _load_mount()
+    for name in mount.BUILDERS.values():
+        monkeypatch.setitem(sys.modules, name, None)
     workspace = _base_workspace()
     result = mount.attach_surveillance(workspace, universe_loader=lambda: {}, rights_loader=lambda: {})
     assert set(result["surveillance"]["views"]) == set(GS_VIEWS)

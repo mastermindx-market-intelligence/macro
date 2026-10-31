@@ -1,15 +1,15 @@
 {
-  "appended": 22,
-  "asof": "2026-10-29",
+  "appended": 6,
+  "asof": "2026-10-30",
   "candidates": {
-    "R": 4,
-    "T": 12,
-    "W": 41
+    "R": 3,
+    "T": 9,
+    "W": 39
   },
   "deduped": {
-    "R": 1,
-    "T": 0,
-    "W": 34
+    "R": 3,
+    "T": 3,
+    "W": 39
   },
   "dry_run": false,
   "feature_source": {
@@ -27,31 +27,32 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 29
+        "no_bar_on_flag_date": 1,
+        "ohlcv_absent": 43
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Defense & Aerospace": {
-          "theme_thrust_frac": 0.3684,
+        "Electric Vehicles": {
+          "theme_thrust_frac": 0.0588,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Environmental Sustainability": {
-          "theme_thrust_frac": 0.1905,
+        "Energy Renewable": {
+          "theme_thrust_frac": 0.2326,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Real Estate & REITs": {
-          "theme_thrust_frac": 0.2647,
+        "Transportation & Logistics": {
+          "theme_thrust_frac": 0.129,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 77,
-      "tickers_read": 106
+      "tickers_ok": 96,
+      "tickers_read": 140
     },
     "keys": [
       "relay_count_3d",
@@ -71,14 +72,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 138,
-      "n_covered": 111,
+      "members_indexed": 170,
+      "n_covered": 96,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-29",
+      "last_session": "2026-10-30",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -88,14 +89,9 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 7,
-      "n_covered": 7,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -116,34 +112,16 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "ENSG",
-      "SWKS",
-      "MIR"
-    ],
+    "R": [],
     "T": [
-      "BXP",
-      "DLR",
-      "EQIX",
-      "SBRA",
-      "VNO",
-      "PLD",
-      "CWT",
-      "FSLR",
-      "BWXT",
-      "GE",
-      "KTOS",
-      "VSAT"
+      "GM",
+      "ITRI",
+      "ORA",
+      "RUN",
+      "FWRD",
+      "OSK"
     ],
-    "W": [
-      "BWXT",
-      "CRH",
-      "DTE",
-      "DKS",
-      "TXT",
-      "VICI",
-      "D"
-    ]
+    "W": []
   },
   "n_universe": 1491,
   "overflow": {
@@ -151,41 +129,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-30 20:45:01",
-  "runtime_s": 94.3,
+  "run_utc": "2026-10-31 10:26:14",
+  "runtime_s": 113.0,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 3,
-    "asof": "2026-10-26",
-    "n_members": 138,
+    "age_days": 0,
+    "asof": "2026-10-30",
+    "n_members": 170,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.775,
+        "emerging_score": 3.213,
         "rank": 1,
-        "theme": "Biometrics"
-      },
-      {
-        "emerging_score": 1.702,
-        "rank": 2,
-        "theme": "Cybersecurity"
-      },
-      {
-        "emerging_score": 1.336,
-        "rank": 3,
-        "theme": "Real Estate & REITs"
-      },
-      {
-        "emerging_score": 1.188,
-        "rank": 4,
-        "theme": "Environmental Sustainability"
-      },
-      {
-        "emerging_score": 1.127,
-        "rank": 5,
         "theme": "Defense & Aerospace"
+      },
+      {
+        "emerging_score": 2.021,
+        "rank": 2,
+        "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 1.907,
+        "rank": 3,
+        "theme": "Electric Vehicles"
+      },
+      {
+        "emerging_score": 1.893,
+        "rank": 4,
+        "theme": "Energy Renewable"
+      },
+      {
+        "emerging_score": 1.868,
+        "rank": 5,
+        "theme": "Transportation & Logistics"
       }
     ]
   },
@@ -194,19 +172,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 41,
+    "aligned": 39,
     "asof_max": "2026-10-30",
-    "asof_mismatch": 41,
-    "asof_run": "2026-10-29",
+    "asof_mismatch": 0,
+    "asof_run": "2026-10-30",
     "evaluated": 712,
-    "fresh": 42,
+    "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 16.0,
+    "runtime_s": 21.7,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 60,
+    "state_turn": 56,
     "universe_n": 717
   }
 }
