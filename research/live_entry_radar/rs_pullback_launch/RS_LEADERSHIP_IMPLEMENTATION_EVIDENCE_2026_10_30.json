@@ -102,7 +102,45 @@
     "rule_sample_disposition": "Original-source sample and corrections adjudicated, published in source ledger; child STOP confirmed; no watcher armed",
     "rule_sample_reported_reads": 9,
     "rule_sample_selected_dated_ids": 39,
-    "rule_sample_selected_undated_claim_ids": 1
+    "rule_sample_selected_undated_claim_ids": 1,
+    "p0_4a": {
+      "thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793409889567149",
+      "brief": "https://github.com/mastermindx-market-intelligence/macro/pull/10225#issuecomment-6537129514",
+      "scope": "all retrievable author originals/replies/quotes excluding retweets in calendar2025, max80reads, metadata inventory only",
+      "observed_delivery": "ACK/START in original thread",
+      "result_observed": true,
+      "runtime_job_proven": false,
+      "watcher": "WATCH_UNAVAILABLE",
+      "full_account_census": false,
+      "reported_read_count": 67,
+      "reported_unique_ids": 965,
+      "reported_duplicates": 0,
+      "earliest_reported": "2025-11-03T16:23:35Z",
+      "latest_reported": "2025-12-31T09:24:20Z",
+      "has_next_cursor": true,
+      "cursor_retained": false,
+      "coverage": "PARTIAL_PAGINATION",
+      "research_child_stopped": true,
+      "reader_file_bytes_verified_by_parent": false,
+      "artifact_delivery_thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793410576822409",
+      "report": "research/live_entry_radar/rs_pullback_launch/CHARTMASTER_2025_CHRONOLOGICAL_CENSUS_PARTIAL_2026_10_30.md",
+      "artifact_delivery": {
+        "inventory_file_id": "F0CDT0T11UH",
+        "inventory_reported_bytes": 317228,
+        "inventory_reported_lines": 965,
+        "inventory_reported_sha256": "5372637b748591c5265e847e6261a680231cb55e061d0d3f8445f7dbc719daa6",
+        "receipts_file_id": "F0CDJSFNXJ7",
+        "receipts_reported_bytes": 24031,
+        "receipts_reported_lines": 67,
+        "receipts_reported_sha256": "2bdd2d7b9ab4f559de8354c6c46e3104718ee88d149480140ee097981731e1a3",
+        "source_reader_upload_and_readback_verification_reported": true,
+        "parent_file_read_result": "native Slack.slack_read_file F0CDJSFNXJ7 returned empty object; no byte/file-reference response",
+        "parent_independent_hash_verification": false,
+        "child_stopped": true,
+        "watcher_armed": false,
+        "ruling": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793410715581279"
+      }
+    }
   },
   "limitations": [
     "136 passing existing tests and 113 passing subtests are not proof of the requested new code",
@@ -185,5 +223,99 @@
     "market_source_admitted": false,
     "live_feature_delivered": false,
     "economic_edge_validated": false
+  },
+  "code_review_attempt": {
+    "run_id": "rs10225-two-red-code-review-20261031-01",
+    "root_id": "chartmaster-rs-audit-20261030",
+    "target_source_sha": "ab318673b5ef916298121b397491c1c3af8ca59f",
+    "scope": "new65-line two-red code delta,49 tests and3 CI lines only; not the earlier denied plan review",
+    "initial_request_result": "INVALID_ARGUMENT/max_turns for Grok pool; original status NOT_FOUND",
+    "source_diagnostic": "protected fabric-backend.mjs validates the unsupported pool+turn parameter before controller/run reservation",
+    "corrected_same_request_result": "MANUAL_ROUTE_UNAVAILABLE, execution_absence_proven=false, retry_allowed=false; no controller receipt",
+    "final_read_only_status": "NOT_FOUND, result_available=false, root_verified=false, execution_absence_proven=false, retry_allowed=false",
+    "review_result": null,
+    "independent_review_completed": false,
+    "disposition": "No review launch/result claimed; no automatic fallback or repeated unchanged request. Gate stays open."
+  },
+  "next_close_milestone": {
+    "source_base": "ab318673b5ef916298121b397491c1c3af8ca59f",
+    "source_path": "engine/entry_radar/replay/first_green_reversal_descriptor.py",
+    "contract_path": "research/live_entry_radar/rs_pullback_launch/FIRST_GREEN_NEXT30M_CLOSE_RESEARCH_CONTRACT.md",
+    "test_path": "tests/test_entry_radar_first_green_next_close.py",
+    "definition_id": "immediate-next-green30m-close-above-pivot-v1",
+    "origin_species": "incumbent one-red only; no two-red reference promotion",
+    "native_preexisting_function_asts_unchanged": 9,
+    "test_command": "python3 -m pytest -q tests/test_entry_radar_first_green_next_close.py tests/test_entry_radar_first_green_variants.py tests/test_entry_radar_first_green_descriptor.py tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py tests/test_entry_radar_rs_pullback_phase1.py",
+    "test_result": {
+      "passed_tests": 242,
+      "next_close_cases": 36,
+      "two_red_cases": 49,
+      "existing_cases": 157,
+      "passed_subtests": 113,
+      "exit_code": 0,
+      "duration_seconds": 12.92,
+      "process_id": 44273
+    },
+    "test_log": "/Users/chriswong/mmx-worktrees/rs10225-next-close-final-tests.log",
+    "mutation_receipt": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_NEXT_CLOSE_MUTATION_EVIDENCE_2026_10_30.json",
+    "caught_mutations": [
+      "red_or_doji_confirmation",
+      "high_touch_not_close",
+      "ignore_preformation_window_low",
+      "premature_complete_window"
+    ],
+    "ci_registration": {
+      "job": "research-price-panel",
+      "new_jobs": 0,
+      "new_scope_paths": [
+        "tests/test_entry_radar_first_green_next_close.py"
+      ],
+      "new_actual_test_arguments": [
+        "tests/test_entry_radar_first_green_next_close.py"
+      ],
+      "all_355_other_jobs_unchanged": true,
+      "source_semantics_assertion": "PASS",
+      "hosted_result": "NOT_YET_PUBLISHED_OR_RUN"
+    },
+    "file_sha256": {
+      "engine/entry_radar/replay/first_green_reversal_descriptor.py": "d0433eff405459e42e4da220facd71d1be092ccc4058d70db823fd2b8d6efe0e",
+      "tests/test_entry_radar_first_green_next_close.py": "6df88f4a50d592823c0960837a4faa16e617788ecaecb62f887833c8ccfac603",
+      "tests/test_entry_radar_first_green_variants.py": "751c6e82be01db22f0e86edde971daefa748c7ab679ad58a4b051619f2f80b6f",
+      ".github/ci/legacy-jobs.yml": "db1b53b562bf0c4359d13484c8cf4c61d94f31d91c9583d53a36fd3d1ff20e5f"
+    },
+    "independent_review_completed": false,
+    "source_admitted": false,
+    "actual_issuance_proven": false,
+    "live_customer_feature_delivered": false,
+    "economic_edge_validated": false,
+    "ci_local_checks": [
+      {
+        "command": "python3 -m pytest -q tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_declared_scope_must_cover_paths_the_job_itself_reads tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+        "passed_tests": 3,
+        "duration_seconds": 2.44,
+        "exit_code": 0,
+        "process_id": 52074,
+        "log": "/Users/chriswong/mmx-worktrees/rs10225-ci-scope-tests.log"
+      },
+      {
+        "command": "python3 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "passed_tests": 2,
+        "duration_seconds": 130.47,
+        "exit_code": 0,
+        "process_id": 53763,
+        "log": "/Users/chriswong/mmx-worktrees/rs10225-ci-import-packing-tests.log"
+      }
+    ],
+    "local_ci_tests_total": 5
+  },
+  "first_increment_hosted_ci_observation": {
+    "head": "ab318673b5ef916298121b397491c1c3af8ca59f",
+    "fences_run": 41154838613,
+    "fences_conclusion": "success",
+    "ci_run": 41154838583,
+    "ci_status": "in_progress",
+    "ci_plan_conclusion": "success",
+    "owner_tests_executed": "not yet observed",
+    "limitation": "This earlier-head observation cannot qualify the later uncommitted next-close delta."
   }
 }

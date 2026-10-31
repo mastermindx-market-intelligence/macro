@@ -1,0 +1,53 @@
+{
+  "source_base": "ab318673b5ef916298121b397491c1c3af8ca59f",
+  "scope": "author-run normal native synthetic mutation tests; no independent review or market-data evidence",
+  "preexisting_function_asts_unchanged": 9,
+  "mutations": [
+    {
+      "name": "red_or_doji_confirmation",
+      "command": "python3 -m pytest -q tests/test_entry_radar_first_green_next_close.py -k nonqualifying_second_bar",
+      "exit_code": 1,
+      "caught": true,
+      "summary": [
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_nonqualifying_second_bar_cannot_confirm[105.0-104.0-105.2]",
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_nonqualifying_second_bar_cannot_confirm[104.0-104.0-104.2]",
+        "2 failed, 2 passed, 32 deselected in 2.30s"
+      ]
+    },
+    {
+      "name": "high_touch_not_close",
+      "command": "python3 -m pytest -q tests/test_entry_radar_first_green_next_close.py -k nonqualifying_second_bar or earlier_1m_break",
+      "exit_code": 1,
+      "caught": true,
+      "summary": [
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_nonqualifying_second_bar_cannot_confirm[102.9-103.1-104.2]",
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_nonqualifying_second_bar_cannot_confirm[102.9-103.21-104.2]",
+        "2 failed, 3 passed, 31 deselected in 2.18s"
+      ]
+    },
+    {
+      "name": "ignore_preformation_window_low",
+      "command": "python3 -m pytest -q tests/test_entry_radar_first_green_next_close.py -k whole_window_low_protects",
+      "exit_code": 1,
+      "caught": true,
+      "summary": [
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_whole_window_low_protects_delayed_formation",
+        "1 failed, 35 deselected in 1.97s"
+      ]
+    },
+    {
+      "name": "premature_complete_window",
+      "command": "python3 -m pytest -q tests/test_entry_radar_first_green_next_close.py -k incomplete_window_waits",
+      "exit_code": 1,
+      "caught": true,
+      "summary": [
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_incomplete_window_waits_even_after_native_1m_confirmation[2026-10-06T16:10:00Z]",
+        "FAILED tests/test_entry_radar_first_green_next_close.py::test_incomplete_window_waits_even_after_native_1m_confirmation[2026-10-06T16:29:59Z]",
+        "3 failed, 33 deselected in 2.10s"
+      ]
+    }
+  ],
+  "restored_source_sha256": "d0433eff405459e42e4da220facd71d1be092ccc4058d70db823fd2b8d6efe0e",
+  "test_sha256": "6df88f4a50d592823c0960837a4faa16e617788ecaecb62f887833c8ccfac603"
+}

@@ -87,3 +87,7 @@ Scientific acceptance remains Macro Setup Species/Evaluation OS, not the browser
 ## 9. Immediate implementation boundary
 
 P1 additive two-red formation and its synthetic tests can proceed independently; incumbent one-red formation/progress already exist. P1.4 common reference integration follows exact source tests/review and explicit owner compatibility. Real customer delivery additionally requires P2 source admission/latency and the accepted transport route. This contract eliminates concrete clock/species/renderer integration ambiguities; it does not waive those gates or modify Terminal source.
+
+## Version2.2 implementation delta
+
+The immediate-next30m-close comparator is now source-built in the existing first-green owner and covered by36 native synthetic tests. It consumes a distinct wrapper around the incumbent one-red reference; no browser-side alternate detector or new price feed was added. A historical `GREEN30M_CLOSE_CONFIRMED` observation is not the native1m `GREEN_BREAK_CONFIRMED` policy and is not a live entry. UI integration must display the actual policy/period/known-at and cannot borrow the old Terminal research study's event-time/RS definition. The new source remains research-only and requires exact-head release review and real owner input before customer publication.

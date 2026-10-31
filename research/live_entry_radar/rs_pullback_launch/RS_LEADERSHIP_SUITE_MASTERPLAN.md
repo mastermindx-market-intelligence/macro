@@ -1,7 +1,7 @@
 # RS Leadership and Accessible Entry Suite - execution masterplan
 
-Version: 2.1, recorded 2026-10-31 UTC / 2026-10-30 America/Edmonton.
-Parent: **WS:LIVE-ENTRY-RADAR / RS Pullback Launch**. Related source owners: WS:LEADERSHIP-ROTATION-INTELLIGENCE and WS:GMI-THEME-GRAPH. Current source carrier: Macro **#10225**, `sol/chartmaster-rs-leader-social-audit-20261030-c1-8ab7`, task-tree predecessor `680b298e42c6e78100980d953582cc73f76a8e53`; implementation source parent `95438b49b94cacce6ff196def6852f4e76e16ed4`; Macro base `3c8546e8aa56a0310e49fbcfba2c3debf84d8127`.
+Version: 2.2, recorded 2026-10-31 UTC / 2026-10-30 America/Edmonton.
+Parent: **WS:LIVE-ENTRY-RADAR / RS Pullback Launch**. Related source owners: WS:LEADERSHIP-ROTATION-INTELLIGENCE and WS:GMI-THEME-GRAPH. Current source carrier: Macro **#10225**, `sol/chartmaster-rs-leader-social-audit-20261030-c1-8ab7`, task-tree and implementation predecessor `ab318673b5ef916298121b397491c1c3af8ca59f`; Macro base `3c8546e8aa56a0310e49fbcfba2c3debf84d8127`.
 Protected procedure: Mastermind `bb85b429f2ffffd38408080ce4df7d6378c34100`, skillpack 1.0.1, bootstrap major 1 compatible.
 Current Chairman directive: harden and enhance the plan, publish it, assume leadership and start implementation, using admitted Fabric and Secretary assistance where useful. This authorizes routine in-scope source work, not bypassing runtime, source, access, spend, review or release gates.
 
@@ -208,7 +208,7 @@ Editorial labels only; they are not Executive runtime states. Each row is comple
 | P1.2 | P1.1 | Adversarial synthetic and normal-import tests | Native parity, causal/source counterexamples and mutation evidence; no market-efficacy claim | implementation_complete |
 | P1.3 | P1.2 | Existing CI pack registration and exact-head non-author code review | Actual owner command runs; new-code findings resolved; blocked plan-review action is not retried | in_progress |
 | P1.4 | P1.3 | Add two-red frozen-reference compatibility within incumbent first-green owner | One-red/rejection outputs unchanged, identities distinct; gaps/order/expiry tested | proposed |
-| P1.5 | P0.3,P1.3 | Freeze and implement second30m-close confirmation challenger | Exact next-bar/time/entry/invalidation rules before outcomes; distinct from1m or quote-touch arms | proposed |
+| P1.5 | P0.3,P1.2; release still needs P1.3 | Freeze and implement immediate next30m green close-above comparator using native one-red reference/progress | Source contract frozen before outcomes;36 native cases and4 mutations pass; no entry/issuance/source-admission claim | implementation_complete |
 | P2.1 | Existing source owners | Qualify identity/basis/calendar/native minute source for real cohort | Actual immutable inputs/read receipts; no fabricated historical first-seen | blocked |
 | P2.2 | P1.2,P2.1 | One admitted real source-to-30m witness | Independent OHLC/clock reconstruction and negative controls | blocked |
 | P2.3 | P2.2 | Establish actionable-source latency envelope | Measured first-known/processing lag and executable reference; delayed source labeled | blocked |
@@ -253,3 +253,13 @@ The next concrete action after publication/readback is P1.1/P1.2 admission and i
 Consume [group-context contract](RS_LEADERSHIP_GROUP_CONTEXT_CONTRACT.md) and [Terminal contract](RS_LEADERSHIP_TERMINAL_INTEGRATION_CONTRACT.md). The inspected #10213 interface has no30m horizon; preserve actual15m/60m/daily periods and age. Terminal historical study display epochs are NOT UTC, and its two-left/two-right swing pivots and65/260-bar RS gate are different species from native daily leader plus first-green. Terminal is currently dark-only: EN/ZH and supported responsive/accessibility states are required, not an unrelated light-theme build. Existing first-green formation/reference/progress source is now an explicit DO_NOT_REDO item.
 
 Source milestones and test counts must be read from the current implementation verification receipt; the discarded prototype's58 tests are not the delivered delta. Source publication, authored tests, independent review, hosted CI, source admission, browser acceptance and prospective economics remain separate facts. No automatic publication/alert/ranking/capital authority was added.
+
+### 12.2 Version2.2: source-evidenced second-candle confirmation
+
+P1.5 now has a frozen [next30m-close contract](FIRST_GREEN_NEXT30M_CLOSE_RESEARCH_CONTRACT.md) and an additive pure implementation in the incumbent first-green module. It composes the existing one-red formation/reference/progress instead of copying minute-risk logic. The sole next full30m candle must close green and strictly above the frozen high plus research buffer; a high touch, early1m close or later third candle cannot substitute. Whole-window low/coverage checks retain conservative risk protection when the formation receipt was delayed. Missing source remains unavailable, and event close, actual knowability and null issuance remain distinct.
+
+The original eight functions plus the previously published two-red function are AST-identical. The combined normal native suite now has242 tests (36 next-close,49 two-red and157 existing) plus113 subtests. Four next-close mutations are caught in addition to the four prior variant mutations. These are author-run conformance checks, not independent review or financial efficacy. Test and exact source digests are in the implementation evidence and dedicated mutation receipts.
+
+P1.5 source work does not depend on source RELEASE of P1.3; it is an independently testable comparison. Release still requires exact-head hosted CI and independent non-author code review, so this is not a bypass of the review gate. The first code review's Grok max_turns argument was rejected before any run existed; the same-ID corrected request then reported MANUAL_ROUTE_UNAVAILABLE, and read-only reconciliation returned NOT_FOUND with no result. No review was performed and no alternate-carrier replay is permitted. The earlier explicit plan-review denial is separately preserved.
+
+The two-red frozen-reference extension P1.4, qualified real-data witness P2, leader/group joins P3 and signed-in customer journey P4 remain unfinished. Adding another tested policy does not make the research suite live or profitable.
