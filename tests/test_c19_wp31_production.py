@@ -786,6 +786,18 @@ def test_not_evaluable_detail_empty() -> None:
     assert cli._not_evaluable_detail([]) == {}
 
 
+def test_not_evaluable_detail_sorts_reasons_and_s_reasons() -> None:
+    from scripts import c19_wp31_evaluate as cli
+
+    detail = cli._not_evaluable_detail([
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "zz_late", "s": {"reason": "b_s"}},
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "aa_early", "s": {"reason": "z_s"}},
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "aa_early", "s": {"reason": "a_s"}},
+    ])
+    assert list(detail) == ["aa_early", "zz_late"]
+    assert list(detail["aa_early"]) == ["a_s", "z_s"]
+
+
 def test_cli_payload_and_stdout_carry_not_evaluable_detail(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture
 ) -> None:
@@ -809,15 +821,19 @@ def test_cli_payload_and_stdout_carry_not_evaluable_detail(
         "label_pending": 0,
         "exhibit_failures": [],
         "episode_count": 4,
+        # Unsorted on purpose; the NOT_EVALUABLE episodes also carry the
+        # sentinel so a wrong-field read on them would leak it.
         "episodes": [
+            {"issuer": "ZZWQ", "q": "2026Q2", "status": "NOT_EVALUABLE",
+             "label": sentinel, "a0": sentinel,
+             "not_evaluable_reason": None, "s": None},
+            {"issuer": "ZZWP", "q": "2026Q2", "status": "NOT_EVALUABLE",
+             "label": sentinel,
+             "not_evaluable_reason": "pit_unrecoverable",
+             "s": {"reason": "q_release_time_unresolved"}},
             {"issuer": "ZZWP", "q": "2026Q1", "status": "NOT_EVALUABLE",
              "not_evaluable_reason": "pit_unrecoverable",
              "s": {"reason": "chain_unreadable"}},
-            {"issuer": "ZZWP", "q": "2026Q2", "status": "NOT_EVALUABLE",
-             "not_evaluable_reason": "pit_unrecoverable",
-             "s": {"reason": "q_release_time_unresolved"}},
-            {"issuer": "ZZWQ", "q": "2026Q2", "status": "NOT_EVALUABLE",
-             "not_evaluable_reason": None, "s": None},
             {"issuer": "ZZWQ", "q": "2026Q3", "label": sentinel,
              "status": "ELIGIBLE", "s": {"reason": None}},
         ],
@@ -853,13 +869,13 @@ def test_cli_payload_and_stdout_carry_not_evaluable_detail(
     assert sentinel not in text
 
     captured = capsys.readouterr()
-    for line in (
+    out_lines = captured.out.splitlines()
+    assert [ln for ln in out_lines if ln.startswith("not_evaluable_detail.")] == [
         "not_evaluable_detail.pit_unrecoverable.chain_unreadable=1",
         "not_evaluable_detail.pit_unrecoverable.q_release_time_unresolved=1",
         "not_evaluable_detail.unspecified.none=1",
-        "adapter_counts.revisions_reader_final_failures=0",
-    ):
-        assert line in captured.out.splitlines()
+    ]
+    assert "adapter_counts.revisions_reader_final_failures=0" in out_lines
     assert sentinel not in captured.out
     assert sentinel not in captured.err
     assert "episodes" not in captured.out
