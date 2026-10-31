@@ -12807,8 +12807,15 @@ jobs:
     # ceilings stay fixed.
     # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
     # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
+    # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
+    # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/china_narrative_radar.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/grading_stats.py"
       - "tests/test_china_altdata.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
