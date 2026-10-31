@@ -10,13 +10,14 @@ future-owner interposition) — the only new fixture material is the durable
 candidates-store parquet part and the committed standouts file the capture
 script itself reads.
 
-At BASE the alias seam is unbound (``resolve_alias_table() -> None``) and the
+Without the committed Data OS reference the alias seam is unbound (``None``) and the
 entry-geometry/metric owners do not exist, so every capture row is honestly
 ``UNAVAILABLE_DATA`` with the owners' typed reasons — that census is the
 deliverable, and these tests assert it byte for byte.
 """
 import json
-from datetime import datetime, timezone
+import subprocess
+from datetime import date, datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -45,6 +46,7 @@ from tests.test_prophet_strategy_definition import (
     _b4_reader_world,
 )
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
 _SESSION = "2026-09-17"
 _CAPTURE_REL = Path("data") / "us_prophet_rank" / "b4_capture"
 _FIRST_CAPTURED_AT = datetime(2026, 9, 17, 20, 5, 0, tzinfo=timezone.utc)
@@ -72,17 +74,22 @@ def _write_candidates_part(root, tickers):
     pd.DataFrame(rows).to_parquet(part / f"{_SESSION[:7]}.parquet", index=False)
 
 
-def _world(tmp_path, *, tickers=("UNIT",), session=_SESSION):
+def _world(tmp_path, *, tickers=("UNIT",), session=_SESSION, alias_reference=True):
     """One complete capture world: candidates store, episode store, live owners.
 
-    Built ON the imported reader-world fixture; the only additions are the two
+    Built ON the imported reader-world fixture; the only additions are the
     committed artifacts the capture script itself reads — the candidates store
-    part and the board standouts file.  Each observation's source receipt is
-    DERIVED from the actual durable store row exactly as production intake
-    derives it, so the script's builder-identical derivation resolves the very
-    event the episode store carries.
+    part, the board standouts file and (by default) an EMPTY but lawful Data OS
+    alias reference, so the durable nightly path has its tracked file while the
+    seam still resolves nothing and the adapter's own typed refusal stays the
+    row reason.  Each observation's source receipt is DERIVED from the actual
+    durable store row exactly as production intake derives it, so the script's
+    builder-identical derivation resolves the very event the episode store
+    carries.
     """
     _write_candidates_part(tmp_path, tickers)
+    if alias_reference:
+        _write_alias_reference(tmp_path, [])
     native = {row["ticker"]: row for row in _stamp_native_rows(tmp_path)}
     observations = []
     for ticker in tickers:
@@ -314,7 +321,7 @@ def test_row_key_set_is_closed_and_no_state_token_is_ever_persisted(
 def test_evaluated_row_persists_facts_only_and_round_trips_the_verdict(
         tmp_path, monkeypatch):
     world = _world(tmp_path)
-    monkeypatch.setattr(capture, "resolve_alias_table", lambda: _B4Aliases("UNIT"))
+    monkeypatch.setattr(capture, "resolve_alias_table", lambda *_, **__: _B4Aliases("UNIT"))
     _inject_future_geometry_metric_owners(monkeypatch)
 
     assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
@@ -443,16 +450,135 @@ def test_live_root_override_is_report_only(tmp_path, monkeypatch, capsys):
     assert json.loads(capsys.readouterr().out)["mode"] == "report"
 
 
-def test_alias_seam_is_unbound_at_base_and_the_gap_is_typed_not_guessed(
-        tmp_path, monkeypatch):
-    world = _world(tmp_path)
+def test_alias_seam_is_unbound_without_the_reference_in_dry_run_and_the_gap_is_typed_not_guessed(
+        tmp_path, monkeypatch, capsys):
+    """Report / dry-run: no reference -> unbound seam, the adapter's own typed
+    refusal is the row reason, nothing durable is written."""
+    world = _world(tmp_path, alias_reference=False)
 
-    assert capture.resolve_alias_table() is None
+    assert not (tmp_path / "data" / "reference" / "vendor_aliases.parquet").exists()
+    assert capture.resolve_alias_table(tmp_path) is None
+    assert _run(monkeypatch, tmp_path, world, "--nightly", "--dry-run") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["alias_table"] == {"bound": False, "receipt": None}
+    assert doc["counts_by_state"] == {"UNAVAILABLE_DATA": len(capture.STRATEGY_DEFINITIONS)}
+    # The adapter's own refusal is the reported reason — never a guessed alias.
+    assert set(doc["counts_by_reason"]) == {"IDENTITY_ALIAS_UNRESOLVED"}
+    assert not (tmp_path / _CAPTURE_REL).exists()
+
+
+@pytest.mark.parametrize("shape", ["absent", "directory"])
+def test_a_durable_nightly_capture_refuses_an_absent_reference_instead_of_degrading_rows(
+        tmp_path, monkeypatch, capsys, shape):
+    """The reference is a tracked file: its absence is an incomplete checkout,
+    not a lawful "no alias" state.  A durable row written against the unbound
+    seam could never be told apart from a security with no store alias, nor
+    corrected later (the day file keeps the first row under each key), so the
+    nightly write is a typed refusal with nothing persisted."""
+    world = _world(tmp_path, alias_reference=False)
+    path = tmp_path / "data" / "reference" / "vendor_aliases.parquet"
+    if shape == "directory":
+        path.mkdir(parents=True)
+    assert capture.resolve_alias_table(tmp_path) is None
+    with pytest.raises(capture.TypedRefusal) as refusal:
+        capture.resolve_alias_table(tmp_path, required=True)
+    assert refusal.value.token == "ALIAS_REFERENCE_MISSING"
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 3
+    assert json.loads(capsys.readouterr().out)["refused"] == "ALIAS_REFERENCE_MISSING"
+    assert not (tmp_path / _CAPTURE_REL).exists()
+
+
+def _write_alias_reference(root, rows):
+    path = root / "data" / "reference" / "vendor_aliases.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame = pd.DataFrame(rows, columns=[
+        "vendor", "vendor_symbol", "security_id", "valid_from", "valid_to",
+        "ingested_at", "known_at", "evidence_sha256", "binding_sha256", "alias_kind",
+    ])
+    frame.to_parquet(path, index=False)
+    return path
+
+
+def test_alias_seam_binds_the_committed_data_os_reference_and_the_row_evaluates(
+        tmp_path, monkeypatch, capsys):
+    """The bound seam resolves the candidate's canonical security_id to its
+    ``store`` symbol through the ONE identity reader; the same world that was
+    IDENTITY_ALIAS_UNRESOLVED without the reference now EVALUATES, and the run
+    document names the exact reference bytes (sha256) it resolved against."""
+    world = _world(tmp_path)
+    path = _write_alias_reference(tmp_path, [
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-AAPL"},
+        {"vendor": "yahoo", "vendor_symbol": "AAPL", "security_id": "SEC:US-XNAS-AAPL"},
+    ])
+    _inject_future_geometry_metric_owners(monkeypatch)
+
+    table = capture.resolve_alias_table(tmp_path)
+    assert table is not None
+    assert table.vendor_symbol_for("store", "SEC:US-XNAS-AAPL", date(2026, 9, 17)) == "UNIT"
+    assert table.resolve("store", "UNIT", date(2026, 9, 17)) == "SEC:US-XNAS-AAPL"
+    assert table.receipt == {
+        "path": str(path),
+        "sha256": "sha256:" + sha256(path.read_bytes()).hexdigest(),
+    }
+
     assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["alias_table"] == {"bound": True, "receipt": table.receipt}
+    assert doc["counts_by_state"] == {"EVALUATED": 1}
+    assert doc["counts_by_reason"] == {}
     row = _read_rows(_capture_file(tmp_path))[0]
-    assert row["state"] == "UNAVAILABLE_DATA"
-    # The adapter's own refusal is the captured reason — never a guessed alias.
-    assert row["unavailable_reasons"] == ["IDENTITY_ALIAS_UNRESOLVED"]
+    assert row["state"] == "EVALUATED"
+    assert row["unavailable_reasons"] == []
+    assert not set(row["facts"]) & set(capture.VERDICT_FIELDS)
+
+
+def test_a_present_but_unlawful_alias_reference_is_a_typed_refusal_not_a_silent_unbind(
+        tmp_path, monkeypatch, capsys):
+    world = _world(tmp_path)
+    # two timeless rows claim the same store symbol: an ambiguous translation layer
+    _write_alias_reference(tmp_path, [
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-AAPL"},
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-OTHER"},
+    ])
+    with pytest.raises(capture.TypedRefusal) as info:
+        capture.resolve_alias_table(tmp_path)
+    assert info.value.token == "ALIAS_TABLE_MALFORMED"
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 3
+    assert json.loads(capsys.readouterr().out)["refused"] == "ALIAS_TABLE_MALFORMED"
+    assert not (tmp_path / _CAPTURE_REL).exists()
+
+
+def _reference_is_sparse_omitted(relative: Path) -> bool:
+    """True when the tracked reference is skip-worktree (sparse session tree)."""
+    proc = subprocess.run(
+        ["git", "ls-files", "-v", "--", str(relative)],
+        cwd=_REPO_ROOT, capture_output=True, text=True, check=False)
+    return proc.returncode == 0 and proc.stdout[:1] == "S"
+
+
+def test_the_production_reference_binds_and_resolves_a_store_symbol():
+    """The committed estate reference loads through the seam as production will
+    read it: a currently valid ``store`` alias round-trips both ways.  A sparse
+    session worktree that omits ``data/`` skips; a tracked-but-missing file in
+    a full checkout fails, exactly as the durable nightly write would refuse."""
+    relative = Path(*capture.ALIAS_REFERENCE_PARTS)
+    if not (_REPO_ROOT / relative).is_file():
+        if _reference_is_sparse_omitted(relative):
+            pytest.skip("sparse worktree omits data/reference (skip-worktree)")
+        pytest.fail(f"{relative} is tracked but missing from this checkout")
+    table = capture.resolve_alias_table(_REPO_ROOT, required=True)
+    assert table.receipt["sha256"].startswith("sha256:")
+    frame = pd.read_parquet(_REPO_ROOT / relative)
+    on = date(2026, 10, 30)
+    store = frame[(frame["vendor"] == "store") & frame["valid_to"].isna()
+                  & (frame["valid_from"].isna() | (pd.to_datetime(frame["valid_from"]).dt.date <= on))]
+    assert not store.empty, "the production reference carries at least one store alias open on the probe date"
+    probe = store.iloc[0]
+    symbol = table.vendor_symbol_for("store", str(probe["security_id"]), on)
+    assert symbol == str(probe["vendor_symbol"])
+    assert table.resolve("store", symbol, on) == str(probe["security_id"])
 
 
 # ── Spec 8: ZERO AUTHORITY — no product builder or template reads the stream ─

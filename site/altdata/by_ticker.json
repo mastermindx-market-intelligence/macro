@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-31",
-  "generated_utc": "2026-10-31T06:06:36.664994+00:00",
-  "n_tickers": 2921,
+  "generated_utc": "2026-10-31T19:38:01.178402+00:00",
+  "n_tickers": 2920,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -9440,6 +9440,16 @@
       "ticker": "PRV",
       "channels": [
         "activist_13d"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "NHP": {
+      "ticker": "NHP",
+      "channels": [
+        "special_situation"
       ],
       "weighted_score": 0.2,
       "convergence_score": 1,
@@ -19838,16 +19848,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "HLTC": {
-      "ticker": "HLTC",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "NCPLW": {
       "ticker": "NCPLW",
       "channels": [
@@ -20238,8 +20238,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "PRIF-PL": {
-      "ticker": "PRIF-PL",
+    "PRIF-PK": {
+      "ticker": "PRIF-PK",
       "channels": [
         "special_situation"
       ],
@@ -21288,6 +21288,16 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "IRLA": {
+      "ticker": "IRLA",
+      "channels": [
+        "special_situation"
+      ],
+      "weighted_score": 0.2,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "RPC": {
       "ticker": "RPC",
       "channels": [
@@ -21338,8 +21348,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TRPRF": {
-      "ticker": "TRPRF",
+    "TRPPF": {
+      "ticker": "TRPPF",
       "channels": [
         "special_situation"
       ],
@@ -21468,8 +21478,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "CBGGF": {
-      "ticker": "CBGGF",
+    "CBRGF": {
+      "ticker": "CBRGF",
       "channels": [
         "special_situation"
       ],
@@ -21738,8 +21748,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "AETND": {
-      "ticker": "AETND",
+    "AETN": {
+      "ticker": "AETN",
       "channels": [
         "special_situation"
       ],
@@ -22230,16 +22240,6 @@
     },
     "VOXR": {
       "ticker": "VOXR",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "CMLSQ": {
-      "ticker": "CMLSQ",
       "channels": [
         "special_situation"
       ],
@@ -24178,8 +24178,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "LGNZZ": {
-      "ticker": "LGNZZ",
+    "LGNYZ": {
+      "ticker": "LGNYZ",
       "channels": [
         "special_situation"
       ],
@@ -24678,8 +24678,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "SKK": {
-      "ticker": "SKK",
+    "RNTZ": {
+      "ticker": "RNTZ",
       "channels": [
         "special_situation"
       ],
@@ -24898,8 +24898,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TDS-PU": {
-      "ticker": "TDS-PU",
+    "TDS-PV": {
+      "ticker": "TDS-PV",
       "channels": [
         "special_situation"
       ],
@@ -28838,16 +28838,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "BWOW": {
-      "ticker": "BWOW",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "CPRT": {
       "ticker": "CPRT",
       "channels": [
@@ -28868,8 +28858,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "RWTQ": {
-      "ticker": "RWTQ",
+    "RWTN": {
+      "ticker": "RWTN",
       "channels": [
         "special_situation"
       ],
@@ -29238,8 +29228,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "BBLGW": {
-      "ticker": "BBLGW",
+    "BBLG": {
+      "ticker": "BBLG",
       "channels": [
         "special_situation"
       ],

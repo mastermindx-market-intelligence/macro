@@ -54453,7 +54453,7 @@
     "horizon": 10,
     "n_matured": 519,
     "n_inflight": 127,
-    "n_skipped_no_price": 1,
+    "n_skipped_no_price": 0,
     "n_board_days": 23,
     "win_pct": 52.0,
     "expectancy_pct": 0.12,
@@ -54475,7 +54475,7 @@
     "mae_p10_pct": -13.33,
     "n_logged": 646,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 48,
+    "n_skipped_awaiting_t1": 49,
     "n_skipped_total": 49,
     "board_definition": "cn_prophet_v4_more_actionable"
    },
@@ -68700,8 +68700,8 @@
     "closed": false,
     "survivorship": {
      "n_locked_excluded": 0,
-     "n_skipped_no_price": 1,
-     "n_skipped_awaiting_t1": 48,
+     "n_skipped_no_price": 0,
+     "n_skipped_awaiting_t1": 49,
      "n_skipped_total": 49,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
@@ -68768,8 +68768,8 @@
      "xr": null,
      "ed": "2026-10-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.46,
+     "erw": "re-derivation on today's bars gives 7.4600 (t1_open) against the published entry 7.6850 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300007.SZ",
@@ -68790,8 +68790,8 @@
      "xr": null,
      "ed": "2026-10-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 37.0,
+     "erw": "re-derivation on today's bars gives 37.0000 (t1_open) against the published entry 36.8600 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300115.SZ",
@@ -68812,8 +68812,8 @@
      "xr": null,
      "ed": "2026-10-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 27.03,
+     "erw": "re-derivation on today's bars gives 27.0300 (t1_open) against the published entry 27.3400 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300296.SZ",
@@ -68856,8 +68856,8 @@
      "xr": null,
      "ed": "2026-10-30",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 30.8,
+     "erw": "re-derivation on today's bars gives 30.8000 (t1_open) against the published entry 29.8500 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300660.SZ",
@@ -68900,8 +68900,8 @@
      "xr": null,
      "ed": "2026-10-30",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 21.02,
+     "erw": "re-derivation on today's bars gives 21.0200 (t1_open) against the published entry 20.7500 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600480.SS",

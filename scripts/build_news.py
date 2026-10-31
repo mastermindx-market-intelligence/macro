@@ -284,6 +284,8 @@ def build(write: bool = True) -> dict:
         # and stamp refresh_skipped_reason so the JSON state remains honest.
         _fin_out_path = outdir / "financial.json"
         _fin_to_write = fin
+        _retained = False          # True only on the never-darken guard path below
+        _skip_reason = None
         try:
             if _fin_out_path.exists():
                 _existing = json.loads(_fin_out_path.read_text())
@@ -298,14 +300,25 @@ def build(write: bool = True) -> dict:
                                 _skip_reason)
                     _existing["refresh_skipped_reason"] = _skip_reason
                     _fin_to_write = _existing
+                    _retained = True
         except Exception as _guard_exc:  # noqa: BLE001 — guard must never block the build
             log.warning("never-darken guard read failed (%s) — writing candidate", _guard_exc)
         _write("financial.json", _fin_to_write)
         try:
             from engine import financial_news as fnews
             bt = fnews.mastermind_by_ticker(_fin_to_write)
-            _write("by_ticker.json", {"schema": "news_flow.v1", "is_context_only": True,
-                                      "asof": vm["built_date"], "tickers": bt})
+            # Freshness honesty: WHEN the written feed was actually fetched and
+            # WHETHER it was retained from a previous build by the guard. `asof`
+            # stays the BUILD date; source_asof is the fetch stamp of the feed
+            # actually written (never invented — None when the feed has none).
+            _by_ticker = {"schema": "news_flow.v1", "is_context_only": True,
+                          "asof": vm["built_date"], "tickers": bt,
+                          "source_asof": _fin_to_write.get("fetched_at") or None,
+                          "source_asof_basis": "financial_news.fetched_at",
+                          "retained_from_previous_build": _retained}
+            if _retained:
+                _by_ticker["retained_reason"] = _skip_reason
+            _write("by_ticker.json", _by_ticker)
             log.info("news by_ticker: %d tickers", len(bt))
         except Exception as e:  # noqa: BLE001
             log.warning("by_ticker artifact failed (%s)", e)

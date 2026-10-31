@@ -285,7 +285,7 @@ ARTIFACT_MANIFEST = [
     # write, so it is a required top-level field rather than an optional one.
     {"artifact": "site/factordata/us_standouts.json",
      "kind": "board",
-     "schema_version": "1.10.0",
+     "schema_version": "1.11.0",
      "schema_fields": [
          # 1.6.0 GRADUATION (2026-08-03): board_definition / ran / ranking /
          # themes_in_favour moved up from optional_fields after the first committed
@@ -318,7 +318,7 @@ ARTIFACT_MANIFEST = [
          # complete universe — absence means the disclosure itself failed.
          # (List order is alphabetical — test_contract_drift asserts it sorted.)
          "anchor", "candidate_pool", "earnings_soon", "post_earnings_move",
-         "universe_sources",
+         "universe_sources", "w3c_source",
      ],
      "schema_item_fields": [
          "above_trend", "adv_dollar_20d_median", "adv_dollar_21d", "align_tier", "alpha",
@@ -349,7 +349,7 @@ ARTIFACT_MANIFEST = [
     # ("a zero-name collapse is exactly when the reader most needs to know").
     {"artifact": "site/factordata/china_standouts.json",
      "kind": "board",
-     "schema_version": "2.2.0",
+     "schema_version": "2.3.0",
      "schema_fields": [
          "actionable", "as_of", "board_definition", "buy", "cap_composition",
          "coverage", "eligible", "execution_coverage", "forming", "laggards",
@@ -370,7 +370,7 @@ ARTIFACT_MANIFEST = [
          # lossless during migration.
          # (List order is alphabetical — test_contract_drift asserts optional_fields sorted.)
          "board_track", "data_outage", "definition_change", "dispersion_regime",
-         "qvix_regime", "reversal_ledger", "reversal_watch", "watch",
+         "qvix_regime", "reversal_ledger", "reversal_watch", "w3c_source", "watch",
      ],
      "schema_item_fields": [
          "ab_tier", "adv_yi", "align_tier", "alpha", "alpha_entry",
@@ -600,13 +600,16 @@ ARTIFACT_MANIFEST = [
     # freezes, so a freshness read against it can score green on stale data.
     {"artifact": "site/prophet/index.json",
      "kind": "plan_book",
-     "schema_version": "1.1.0",
+     "schema_version": "1.2.0",
      "schema_fields": [
          "active_count", "active_count_by_age", "asof", "authority_tier", "cadence",
-         "gate_go", "intake", "ledger_corrections", "ledger_quarantine", "note",
+         "gate_go", "intake", "leader_observation_summary", "ledger_corrections",
+         "ledger_quarantine", "note",
          "open_count", "plan_count", "plan_integrity", "plans", "plans_sort_key",
          "record", "recorded_at", "schema", "selection_era", "source_asof",
-         "source_basis", "source_board_asof", "source_delayed", "source_mixed_vintage",
+         "source_basis", "source_board_asof", "source_board_sha256",
+         "source_board_snapshot_encoding", "source_board_snapshot_path",
+         "source_delayed", "source_mixed_vintage",
          "source_unknown",
      ],
      "optional_fields": [
