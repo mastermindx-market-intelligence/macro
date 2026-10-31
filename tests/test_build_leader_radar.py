@@ -3508,3 +3508,14 @@ def test_ticker_links_open_the_stock_page():
     assert src.count("stock.html#") == 17
     assert 'class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}"' in src
     assert '<a href="stock.html#\' + ticker' in src  # the one link built in script
+
+
+
+def test_ticker_link_labels_name_the_page_they_open():
+    """A screen reader announces the label, so it must name where the link goes."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "leader_radar.html.j2").read_text(encoding="utf-8")
+    labels = re.findall(r'href="stock\.html#[^"]*" aria-label="([^"]*)"', src)
+    assert len(labels) == 2
+    for label in labels:
+        assert label == "Open the {{ item.ticker|e }} stock page"
+    assert "stocks board" not in src

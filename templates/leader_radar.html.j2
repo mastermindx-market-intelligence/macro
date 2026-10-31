@@ -977,7 +977,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% if _hs|length > 0 %}
       <div class="rs-highs-tickers">
       {% for item in _hs[:18] %}
-        <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">
+        <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="Open the {{ item.ticker|e }} stock page">
           {{ item.ticker|e }}{% if item.rs_leads_price %}<span class="rs-highs-leads">{{ t('RS first','强度领先') }}</span>{% endif %}{{ _rs_entry_stance(item) }}
         </a>
       {% endfor %}
@@ -1078,7 +1078,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
   {% set _dates = [_ep.opened_on, _ep.trough_on, _ep.repair_started_on, _ep.last_failure_on, _ep.recovered_on]|select('string')|list %}
   {% set _last = _dates|max if _dates else '' %}
     <div class="lr-rec-row" data-ticker="{{ item.ticker|e }}" data-state="{{ _st }}" data-stage="{{ _REC_STAGE.get(_st, 'none') }}" data-depth="{{ ('%.4f'|format((_dd|abs) * 100)) if _dd is not none else '' }}" data-below200="{{ _b200 }}" data-last="{{ _last }}">
-      <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">{{ item.ticker|e }}</a>
+      <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="Open the {{ item.ticker|e }} stock page">{{ item.ticker|e }}</a>
       <div class="lr-rec-state">
         <span class="lr-rec-label"><span class="lr-rec-dot" aria-hidden="true"></span>{{ t(_REC_PLAIN_EN.get(_st, 'Recovery evidence unavailable'), _REC_PLAIN_ZH.get(_st, '修复证据不可用')) }}</span>
         <span class="lr-rec-stance">{{ t(_REC_STANCE_EN.get(_st, "Watch, don't chase"), _REC_STANCE_ZH.get(_st, '观察，不追高')) }}</span>
