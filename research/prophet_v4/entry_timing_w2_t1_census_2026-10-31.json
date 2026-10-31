@@ -1,32 +1,6 @@
 {
  "screening": {
   "stamp_dates": 54,
-  "first_last_stamp": [
-   "2026-07-31",
-   "2026-10-29"
-  ],
-  "dates_with": {
-   "tier_curated": 35,
-   "lane_buy": 35,
-   "featured": 35,
-   "buyable": 54,
-   "eligible": 54
-  },
-  "last_date_with": {
-   "tier_curated": "2026-10-19",
-   "lane_buy": "2026-10-19",
-   "featured": "2026-10-19",
-   "buyable": "2026-10-29",
-   "eligible": "2026-10-29"
-  },
-  "median_rows_per_date": {
-   "tier_curated": 2932.0,
-   "lane_buy": 61.0,
-   "featured": 10.0,
-   "buyable": 151.0,
-   "eligible": 219.0
-  },
-  "signal_asof_after_stamp_rows": 425,
   "opened": 1087,
   "t1_defs": {
    "curated": {
@@ -34,109 +8,123 @@
     "never": 117,
     "already_before": 916,
     "zero_lag_share": 0.773,
-    "median_lag_grid": 0.0,
-    "iqr_grid": [
-     0.0,
-     0.0
-    ],
-    "lag_le_10_grid": 967
+    "median_lag_grid": 0.0
    },
    "lane_buy": {
     "with_stamp": 365,
     "never": 722,
     "already_before": 174,
     "zero_lag_share": 0.06,
-    "median_lag_grid": 14.0,
-    "iqr_grid": [
-     5.0,
-     23.0
-    ],
-    "lag_le_10_grid": 140
+    "median_lag_grid": 14.0
    },
    "buyable": {
     "with_stamp": 509,
     "never": 578,
     "already_before": 201,
     "zero_lag_share": 0.035,
-    "median_lag_grid": 20.0,
-    "iqr_grid": [
-     9.0,
-     27.0
-    ],
-    "lag_le_10_grid": 147
+    "median_lag_grid": 20.0
    },
    "featured": {
     "with_stamp": 84,
     "never": 1003,
     "already_before": 24,
     "zero_lag_share": 0.048,
-    "median_lag_grid": 17.0,
-    "iqr_grid": [
-     5.0,
-     24.0
-    ],
-    "lag_le_10_grid": 32
+    "median_lag_grid": 17.0
    },
    "eligible": {
     "with_stamp": 677,
     "never": 410,
     "already_before": 288,
     "zero_lag_share": 0.049,
-    "median_lag_grid": 15.0,
-    "iqr_grid": [
-     7.0,
-     23.0
-    ],
-    "lag_le_10_grid": 228
+    "median_lag_grid": 15.0
    }
-  }
+  },
+  "note": "revision-2 screening basis: opened_session stand-in, ticker join, stamp-grid lags"
+ },
+ "commit_walk": {
+  "commits_walked": 275,
+  "buy_rows": 2164
  },
  "freeze_basis": {
-  "basis": "W1 receipt-recovered data_session + VendorAliasTable membership join",
+  "basis": "W1 r3 receipt sessions + VendorAliasTable membership join; NYSE trading sessions; producer-health coverage",
   "alias_receipt": {
    "path": "data/reference/vendor_aliases.parquet",
    "sha256": "sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306"
   },
   "k_sessions": 10,
-  "lane_coverage_end": "2026-10-19",
   "R": [
    "2026-08-26",
    "2026-10-23"
+  ],
+  "sessions_in_R": 42,
+  "healthy_stamp_dates_in_R": 26,
+  "gap_sessions_from_r_from": [
+   "2026-09-01",
+   "2026-09-02",
+   "2026-09-15",
+   "2026-09-18",
+   "2026-09-28",
+   "2026-09-29",
+   "2026-10-07",
+   "2026-10-09",
+   "2026-10-12",
+   "2026-10-13",
+   "2026-10-15",
+   "2026-10-16",
+   "2026-10-20",
+   "2026-10-21",
+   "2026-10-22",
+   "2026-10-23",
+   "2026-10-26",
+   "2026-10-27",
+   "2026-10-28",
+   "2026-10-29",
+   "2026-10-30"
   ],
   "counts": {
    "opened": 1087,
    "t_disc_recovered": 1087,
    "t_disc_unrecovered": 0,
+   "t_disc_not_a_session": 0,
    "in_R": 1087,
-   "t1_identified": 116,
-   "t1_cash_window_covered": 949,
-   "t1_censored_coverage": 22,
-   "t1_unknown_identity_stamps": 0,
-   "t1_unknown_signal_asof_stamps": 1,
-   "already_before_t_disc": 214,
-   "zero_lag": 33
+   "incumbent_led": 98,
+   "t1_identified_exact": 31,
+   "t1_identified_interval": 65,
+   "t1_cash_window_covered": 0,
+   "t1_censored_gap_no_stamp": 892,
+   "t1_unknown_signal_asof": 1,
+   "t1_unknown_identity": 0,
+   "zero_lag": 18,
+   "knowable_later_than_stamp": 96,
+   "knowable_missing": 0
   },
-  "identified_pairs_by_t_disc_month": {
-   "2026-08": 62,
-   "2026-09": 48,
+  "identified_pairs": 96,
+  "identified_by_t_disc_month": {
+   "2026-08": 54,
+   "2026-09": 36,
    "2026-10": 6
   },
-  "lag_busdays": {
-   "median": 3.0,
+  "lag_sessions_earliest_possible": {
+   "median": 2.0,
    "iqr": [
-    0.0,
-    6.0
-   ],
-   "k_star_candidate": 3.0
+    1.0,
+    4.0
+   ]
   },
-  "lag_grid_median": 3.0,
-  "primary_pairs_itt": 1065,
+  "lag_sessions_observed_stamp": {
+   "median": 6.0
+  },
+  "k_star_candidate_sessions": 2.0,
+  "knowability_shift_sessions": {
+   "1": 70,
+   "2": 26
+  },
   "floor_30_met": true
  },
  "provenance": {
-  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 receipt map> --k 10 --lane-coverage-end 2026-10-19 --r-from 2026-08-26 --r-to 2026-10-23",
-  "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); the map is re-derived at freeze, never hand-edited",
-  "columns_read": "stamp_date, ticker, tier, lane, eligible, buyable, featured, pool_in_buy_lane, signal_asof; OPENED episode_id/source_receipt/payload.{ticker_at_observation,opened_session,security_id}; data/reference/vendor_aliases.parquet",
+  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 receipt map> --commit-walk --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
+  "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
+  "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof (+ lane-only blobs over 275 origin/main commits); OPENED episode_id/source_receipt/payload.{ticker_at_observation,opened_session,security_id}; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
   "outcome_columns_read": "none",
   "generated": "2026-10-31"
  }
