@@ -406,10 +406,26 @@ def test_b8_build_view_never_sets_specimen(obs_set):
 
 
 def test_b8_no_specimen_true_in_production_sources():
+    # Merged world (W3U landed on main): lib/intl_gs_dislocations_view.py
+    # legitimately declares ``specimen=False`` defaults and its docstring names
+    # ``specimen=True`` in prose (only its TEST fixture ever passes True). The
+    # invariant is that no production CODE path can set the flag, so scan the
+    # AST for a ``specimen=`` keyword with a truthy constant on any call in
+    # lib/ or templates/, and keep the literal check for templates.
+    import ast
     for directory in (ROOT / "lib", ROOT / "templates"):
         for path in directory.rglob("*"):
-            if path.is_file() and path.suffix in (".py", ".j2"):
-                assert "specimen=True" not in path.read_text(encoding="utf-8"), path
+            if not path.is_file() or path.suffix not in (".py", ".j2"):
+                continue
+            text = path.read_text(encoding="utf-8")
+            if path.suffix == ".j2":
+                assert "specimen=True" not in text, path
+                continue
+            for node in ast.walk(ast.parse(text)):
+                if isinstance(node, ast.keyword) and node.arg == "specimen":
+                    assert not (isinstance(node.value, ast.Constant)
+                                and bool(node.value.value)), (
+                        f"{path}:{node.lineno}: production call sets specimen=")
 
 
 def test_b8_specimen_page_board11(specimen_page):
