@@ -1,0 +1,28 @@
+# CI registration PROPOSAL — GMI ORCH-REL M2 harvest (REL-M2-HARVEST lane, 2026-10-22).
+#
+# FRAGMENT for the GMI COMPLETION seat to fold into job
+# `company-intelligence-relationships` (the M1 proposal in
+# ci_registration_proposal.yml).  Registration is a CI-authority change owned
+# by the seat, NOT by this lane: this file proposes `paths_add:` / `steps_add:`
+# and touches no .github/ or config/ path.
+#
+# `paths_add` lists every repo path the M2 suite imports or opens that is NOT
+# already in the M1 `paths:` (the M1 closure already covers the relationship
+# engine modules, lib/dataos, the excerpt contract, conftest and the three M1
+# suites).  `scripts/__init__.py` is included because the suite imports
+# `scripts.relationship_m2_harvest` as a module.  Proven by exporting exactly
+# the union of M1 paths + paths_add with `git archive` and running the M2
+# suite inside that export (rc 0 — see the lane return).
+paths_add:
+  - "engine/company_intelligence/relationships/edgar.py"
+  - "engine/company_intelligence/relationships/harvest.py"
+  - "scripts/__init__.py"
+  - "scripts/relationship_m2_harvest.py"
+  - "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json"
+  - "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json"
+  - "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json"
+  - "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json"
+  - "tests/test_relationship_m2_harvest.py"
+steps_add:
+  - name: Relationship M2 EDGAR harvest
+    run: python -m pytest tests/test_relationship_m2_harvest.py -q
