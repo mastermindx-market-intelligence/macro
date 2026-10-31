@@ -533,6 +533,64 @@ def test_a10_zh_names_labels_and_semantic_ink():
     assert html_zh_cells, "no signed numerals with direction ink"
 
 
+def test_a10b_sign_to_direction_ink_pinned(tmp_path):
+    # R-03 (review r2): a known positive qualified cell carries intl-gs__num--up and a
+    # known negative one intl-gs__num--down, computed from the observation set (never
+    # typed). EN and ZH renders are the same document (t() emits both spans); the ZH
+    # up=red/down=green mapping is the theme.css token swap, never lane CSS (test_a10).
+    workspace, observations = _production_mounted(tmp_path)
+    index = _observation_index(observations)
+    html = _production_html()
+    panel = _scanner_panel(html)
+    neg = [(o["identity"]["market_id"], o["value"]["pct"])
+           for o in observations["bases"]["local"]
+           if o["state"] == "qualified" and o["value"]["pct"] < 0]
+    pos = [(o["identity"]["market_id"], o["value"]["pct"])
+           for o in observations["bases"]["usd_unhedged"]
+           if o["state"] == "qualified" and o["value"]["pct"] > 0]
+    assert neg and pos, "fixture must admit one declining and one rising qualified series"
+    neg_market, neg_pct = neg[0]
+    pos_market, pos_pct = pos[0]
+    neg_row = re.search(r'<tr data-gs-market-row="%s".*?</tr>' % neg_market, panel, re.DOTALL).group(0)
+    pos_row = re.search(r'<tr data-gs-market-row="%s".*?</tr>' % pos_market, panel, re.DOTALL).group(0)
+    neg_cell = re.search(r'data-leg="local"[^>]*>(.*?)</td>', neg_row, re.DOTALL).group(1)
+    pos_cell = re.search(r'data-leg="usd"[^>]*>(.*?)</td>', pos_row, re.DOTALL).group(1)
+    assert 'class="intl-gs__num intl-gs__num--down"' in neg_cell, (neg_market, neg_cell[:120])
+    assert 'class="intl-gs__num intl-gs__num--up"' in pos_cell, (pos_market, pos_cell[:120])
+    assert _signed(neg_pct) in neg_cell.replace("&amp;", "&")
+    assert _signed(pos_pct) in pos_cell.replace("&amp;", "&")
+    # the ZH render is the same markup: the row carries the ZH market name and the
+    # direction class once per numeral (never a raw --up/--down hue in lane CSS)
+    assert NAMES_ZH[neg_market] in neg_row and NAMES_ZH[pos_market] in pos_row
+    assert neg_row.count('intl-gs__num--down') >= 1 and pos_row.count('intl-gs__num--up') >= 1
+
+
+# ------------------------------------------- R-02 fixed table layout pin (review r2)
+
+def test_a17_scanner_table_fixed_layout_and_widths_fit_wrap():
+    # R-02: all ten section 10.1 columns must stay visible inside the clip wrap
+    # (smallest measured desktop wrap inner width is 794px at 1440 beside-rail).
+    region = _w2a_css_region()
+    m = re.search(r"\.intl-gs \.intl-gs__table--scanner\{([^}]*)\}", region)
+    assert m, "no .intl-gs__table--scanner block rule"
+    assert "table-layout:fixed" in m.group(1).replace(" ", ""), m.group(1)
+    # pull every declared scanner column width straight from the region
+    widths = {}
+    for cols, width in re.findall(r"([^{}]+)\{width:(\d+)px", region):
+        if "intl-gs__table--scanner" in cols:
+            for col in re.findall(r'data-col=\"([a-z0-9]+)\"', cols):
+                widths[col] = int(width)
+    assert set(widths) == {"market", "local", "fx", "usd", "minibar", "common",
+                           "divergence", "usd20d", "tier", "stance"}, widths
+    total = sum(widths.values())
+    assert total <= 790, (total, widths)  # fits the 794px wrap with border
+    for name in ("tier", "stance", "market"):
+        assert widths[name] >= 80, (name, widths[name])
+    # labels wrap (11.2) while values keep their fixed nowrap slot
+    assert re.search(r"__table--scanner th,\.intl-gs \.intl-gs__table--scanner td\{white-space:normal", region)
+    assert re.search(r"__table--scanner \.intl-gs__num\{white-space:nowrap", region)
+
+
 # ------------------------------------------------- A13 horizon vocabulary
 
 

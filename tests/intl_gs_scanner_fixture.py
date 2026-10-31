@@ -64,7 +64,13 @@ def synthetic_closes(tmp_path):
                 series.append(symbol)
     cols = {}
     for slot, symbol in enumerate(series):
-        value = [float(100 + slot * 4 + 0.125 * i) for i in range(len(dates))]
+        if symbol == "^AXJO":
+            # R-03 (review r2): one admitted declining series, so a QUALIFIED
+            # negative observation exists and the sign -> direction ink is
+            # pinnable on the production variant (every other series rises).
+            value = [float(200 - 0.0625 * i) for i in range(len(dates))]
+        else:
+            value = [float(100 + slot * 4 + 0.125 * i) for i in range(len(dates))]
         cols[symbol] = pd.Series(value, index=dates)
         path = tmp_path / "intl" / (
             symbol.replace("^", "_").replace("=", "_").replace("/", "_") + ".parquet")
