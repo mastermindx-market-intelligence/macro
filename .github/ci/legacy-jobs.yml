@@ -10052,6 +10052,21 @@ jobs:
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
       # W2A (IM13) paths: insert below this line
+      - "lib/intl_gs_scanner_view.py"
+      - "lib/intl_gs_coverage_view.py"
+      - "templates/intl_workspace/scanner.html.j2"
+      - "templates/intl_workspace/coverage.html.j2"
+      - "templates/intl_workspace/_gs_scanner_macros.html.j2"
+      - "tests/test_intl_gs_scanner.py"
+      - "tests/test_intl_gs_coverage.py"
+      - "tests/intl_gs_scanner_browser.test.cjs"
+      - "tests/intl_gs_scanner_fixture.py"
+      - "tests/__init__.py"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
@@ -10093,6 +10108,10 @@ jobs:
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
+      - name: IM13 global scanner + coverage tests (W2A)
+        run: python -m pytest tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py -q
+      - name: IM13 scanner + coverage browser proof (W2A)
+        run: node --test tests/intl_gs_scanner_browser.test.cjs
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) test steps: insert below this line
