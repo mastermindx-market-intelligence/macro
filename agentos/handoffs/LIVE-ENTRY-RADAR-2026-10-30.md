@@ -110,6 +110,14 @@ verified:
 - claim: Existing research-price-panel CI path selection retains native ownership.
   command: python3 -m pytest -q tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered tests/test_ci_pack.py::test_declared_scope_must_cover_paths_the_job_itself_reads
   result: 3 passed, exit0, PID45842, 3.92s; hosted check on new head is still owed.
+- claim: Current-session RS-onset adversarial clock/missingness/math protection passed locally.
+  command: python3 -m pytest -q tests/test_entry_radar_rs_onset_features.py tests/test_entry_radar_first_green_variants.py tests/test_entry_radar_first_green_next_close.py tests/test_entry_radar_first_green_descriptor.py tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py tests/test_entry_radar_rs_pullback_phase1.py
+  result: 274 normal tests plus 113 subtests passed,exit0,PID9486,18.24s.
+    Ten new source-clock/magnitude/digest/coverage adversarial cases, total32 onset cases; no
+    admitted tape,prediction,issuer ranks,forecasts,alert issuance or actual market outcome.
+- claim: Existing legacy CI owns bounded daily-onset changes.
+  command: python3 -m pytest -q tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered tests/test_ci_pack.py::test_declared_scope_must_cover_paths_the_job_itself_reads
+  result: 3 passed,exit0,PID9486,3.36s; hosted CI on revised head still owed.
 unverified:
 - claim: Second increment source publication and exact-head hosted CI/non-author review.
   what_would_verify: Read back the commit containing this cumulative checkpoint and native source digests,
@@ -194,3 +202,15 @@ live customer data.
 ## Daily onset continuation
 
 P3.2 source implementation added engine/entry_radar/replay/rs_onset_features.py and tests/test_entry_radar_rs_onset_features.py. This is independently scoped from the native 30m comparators and the still-blocked source-admission route. The 22 new tests pass in a 264-test native suite with 113 subtests; 3 focused CI-scope tests also pass. All source-admission, detector, rank, issuance and trade authority remain false. Subsequent exact-head hosted checks and independent non-author review are required.
+
+## Resumed P3.2 integrity hardening milestone
+
+This successor improved the source-only `rs_onset_features.py` (same PR #10225 and
+source writer) to require completed owner-declared daily period ends, coherent stock and benchmark
+session close, explicit target-cutoff refusal, bounded source rows, stable consumed-field digests,
+and finite numeric endpoints/medians. Updated fixture/tests and the existing masterplan/protocol
+on the same carrier. Ten new synthetic cases prove wrong-session/clock/metadata/overflow refusal.
+Source admission remains NOT_ADMITTED; no Fabric review or original-X research is claimed.
+The protected original first-green/rejection modules were not modified. Before releasing this
+revision verify new remote head, exact-head CI/fences and independent non-author review; if
+required evidence is absent keep DRAFT and continue disjoint authorized lanes only.

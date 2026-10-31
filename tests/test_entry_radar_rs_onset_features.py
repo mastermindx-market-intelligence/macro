@@ -31,8 +31,10 @@ def fixture(count: int = 70):
         current += timedelta(days=1)
     stock_id, bench_id = "SYNTH:security", "SYNTH:market"
     rows = []
+    ends = {}
     for i, day in enumerate(days):
         close_time = datetime.fromisoformat(day).replace(tzinfo=timezone.utc, hour=20)
+        ends[day] = iso(close_time)
         for role, sec, close in (("stock", stock_id, 100.0 + i),
                                  ("benchmark", bench_id, 100.0 + 0.3 * i)):
             rows.append({
@@ -46,7 +48,8 @@ def fixture(count: int = 70):
         "asof_session": days[-1],
         "decision_at": iso(datetime.fromisoformat(days[-1]).replace(
             tzinfo=timezone.utc, hour=20, minute=5)),
-        "calendar": {"known_at": iso(start - timedelta(days=1)), "sessions": days},
+        "calendar": {"known_at": iso(start - timedelta(days=1)),
+                     "sessions": days, "session_ends": ends},
         "streams": {
             "stock": {"security_id": stock_id, "basis_id": "fixture-total-return",
                       "basis_kind": "total_return", "identity_known_at": iso(start - timedelta(days=1)),
@@ -266,3 +269,120 @@ def test_inputs_unchanged_and_digest_deterministic():
     assert a == c
     assert b == frozen
     assert_sealed(a)
+
+
+def test_declared_session_end_clock_is_mandatory_even_for_early_date():
+    b = fixture()
+    del b["calendar"]["session_ends"]
+    with pytest.raises(InputContractError, match="per-session"):
+        describe_onset_features(b)
+
+
+def test_visible_wrong_session_bar_cannot_masquerade_as_todays_close():
+    b = fixture()
+    prior, target = b["calendar"]["sessions"][-2:]
+    # Knowledge and close are ordered; the original v0 accepted this stale
+    # earlier day's period_end under the *target* day's session label.
+    lookup(b, "stock", target)["period_end"] = b["calendar"]["session_ends"][prior]
+    with pytest.raises(InputContractError, match="period-end mismatches"):
+        describe_onset_features(b)
+
+
+def test_completed_early_close_and_changed_utc_offset_are_not_fixed_to_20z():
+    b = fixture()
+    target = b["asof_session"]
+    revised_close = datetime.fromisoformat(target).replace(
+        tzinfo=timezone.utc, hour=17)
+    b["calendar"]["session_ends"][target] = iso(revised_close)
+    for role in ("stock", "benchmark"):
+        r = lookup(b, role, target)
+        r["period_end"] = iso(revised_close)
+        r["known_at"] = iso(revised_close + timedelta(minutes=1))
+    b["decision_at"] = iso(revised_close + timedelta(minutes=5))
+    assert describe_onset_features(b)["windows"]["5"]["status"] == "measured"
+
+    b = fixture()
+    target = b["asof_session"]
+    revised_close = datetime.fromisoformat(target).replace(
+        tzinfo=timezone.utc, hour=21)
+    b["calendar"]["session_ends"][target] = iso(revised_close)
+    for role in ("stock", "benchmark"):
+        r = lookup(b, role, target)
+        r["period_end"] = iso(revised_close)
+        r["known_at"] = iso(revised_close + timedelta(minutes=1))
+    b["decision_at"] = iso(revised_close + timedelta(minutes=5))
+    assert describe_onset_features(b)["windows"]["5"]["status"] == "measured"
+
+
+def test_target_not_yet_closed_is_unknown_not_current_day_signal():
+    b = fixture()
+    end = datetime.fromisoformat(b["asof_session"]).replace(
+        tzinfo=timezone.utc, hour=20)
+    b["decision_at"] = iso(end - timedelta(minutes=1))
+    r = describe_onset_features(b)
+    assert r["state"] == "UNAVAILABLE"
+    assert "TARGET_SESSION_NOT_CLOSED_AT_DECISION" in r["refusals"]
+    assert_sealed(r)
+
+
+def test_out_of_order_declared_session_ends_fail_closed():
+    b = fixture()
+    prior, target = b["calendar"]["sessions"][-2:]
+    b["calendar"]["session_ends"][target] = b["calendar"]["session_ends"][prior]
+    with pytest.raises(InputContractError, match="strictly increase"):
+        describe_onset_features(b)
+
+
+def test_extreme_integer_price_refuses_typed_not_unhandled_overflow():
+    b = fixture()
+    lookup(b, "stock", b["asof_session"])["close"] = 10 ** 400
+    with pytest.raises(InputContractError, match="finite positive"):
+        describe_onset_features(b)
+
+
+def test_extreme_finite_prices_never_create_nonfinite_metrics_or_digest():
+    b = fixture()
+    prior, target = b["calendar"]["sessions"][-2:]
+    lookup(b, "stock", prior)["close"] = 1e-308
+    lookup(b, "stock", target)["close"] = 1e308
+    r = describe_onset_features(b)
+    assert r["windows"]["1"] == {
+        "status": "unmeasured", "reason": "nonfinite_window_return"
+    }
+    assert r["down_market_resilience_20"] == {
+        "status": "unmeasured", "reason": "nonfinite_daily_return"
+    }
+    assert_sealed(r)
+
+
+def test_extra_unconsumed_metadata_neither_affects_digest_nor_crashes():
+    b = fixture()
+    original = describe_onset_features(b)
+    b["streams"]["stock"]["unadmitted_extra"] = object()
+    b["streams"]["benchmark"]["late_sentiment"] = {"prediction": 100}
+    assert describe_onset_features(b) == original
+
+
+def test_bounded_reader_refuses_uncontrolled_source_bulk():
+    b = fixture()
+    b["rows"] *= 100
+    with pytest.raises(InputContractError, match="research bound"):
+        describe_onset_features(b)
+
+
+def test_even_sample_extreme_resilience_median_abstains_before_serialization():
+    b = fixture()
+    tail = b["calendar"]["sessions"][-21:]
+    lookup(b, "stock", tail[0])["close"] = 1.0
+    market = lookup(b, "benchmark", tail[0])["close"]
+    for i, day in enumerate(tail[1:]):
+        down = i in (0, 3, 6, 9)
+        market *= .99 if down else 1.005
+        lookup(b, "benchmark", day)["close"] = market
+        lookup(b, "stock", day)["close"] = 1e308 if down else 1.0
+    r = describe_onset_features(b)
+    assert r["windows"]["20"]["status"] == "measured"
+    assert r["down_market_resilience_20"] == {
+        "status": "unmeasured", "reason": "nonfinite_resilience_median"
+    }
+    assert_sealed(r)

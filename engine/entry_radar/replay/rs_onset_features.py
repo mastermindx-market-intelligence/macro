@@ -49,10 +49,18 @@ def _session(value: object) -> str:
 def _price(value: object) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise InputContractError("price must be a finite positive number")
-    result = float(value)
+    try:
+        result = float(value)
+    except (OverflowError, ValueError, TypeError) as exc:
+        raise InputContractError("price must be a finite positive number") from exc
     if not math.isfinite(result) or result <= 0:
         raise InputContractError("price must be a finite positive number")
     return result
+
+
+def _finite_return(first: float, last: float) -> float | None:
+    result = last / first - 1.0
+    return result if math.isfinite(result) else None
 
 
 def _unmeasured(reason: str) -> dict[str, Any]:
@@ -75,17 +83,26 @@ def _meta(value: object) -> Mapping[str, Any]:
     for key in ("security_id", "basis_id", "basis_kind"):
         if not isinstance(value.get(key), str) or not value[key]:
             raise InputContractError("stream identity and basis required")
-    _clock(value.get("identity_known_at"))
-    _clock(value.get("basis_known_at"))
-    return value
+    # Only identity/basis evidence that this descriptor actually consumes may
+    # affect its digest. Unknown provider metadata is not an as-of measurement.
+    return {
+        "security_id": value["security_id"],
+        "basis_id": value["basis_id"],
+        "basis_kind": value["basis_kind"],
+        "identity_known_at": _iso(_clock(value.get("identity_known_at"))),
+        "basis_known_at": _iso(_clock(value.get("basis_known_at"))),
+    }
 
 
 def _select_visible(
     rows: object, streams: Mapping[str, Mapping[str, Any]],
-    prefix: tuple[str, ...], cutoff: datetime,
+    prefix: tuple[str, ...], expected_ends: Mapping[str, datetime],
+    cutoff: datetime,
 ) -> dict[str, dict[str, dict[str, Any]]]:
     if not isinstance(rows, list):
         raise InputContractError("source rows must be a list")
+    if len(rows) > 8192:
+        raise InputContractError("source rows exceed research bound")
     included = set(prefix)
     selected: dict[str, dict[str, dict[str, Any]]] = {role: {} for role in STREAMS}
     timestamps: dict[tuple[str, str], datetime] = {}
@@ -108,6 +125,8 @@ def _select_visible(
         period_end = _clock(raw.get("period_end"))
         if not period_end <= known:
             raise InputContractError("daily bar known before its period ended")
+        if period_end != expected_ends[day]:
+            raise InputContractError("daily bar period-end mismatches declared session close")
         revision = raw.get("revision_id")
         if not isinstance(revision, str) or not revision:
             raise InputContractError("visible revision identity required")
@@ -151,6 +170,15 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
     if not days or days != tuple(sorted(set(days))) or target not in days:
         raise InputContractError("calendar sessions must be unique ordered dates")
     prefix = days[:days.index(target) + 1]
+    # A date label is not a bar close: preserve the owner calendar's actual
+    # absolute session-end clock (including DST and exceptional closes).
+    # Caller-supplied clocks are NEVER independently authenticated here.
+    raw_ends = calendar.get("session_ends")
+    if not isinstance(raw_ends, Mapping):
+        raise InputContractError("per-session completed close clocks required")
+    session_ends = {day: _clock(raw_ends.get(day)) for day in prefix}
+    if any(session_ends[a] >= session_ends[b] for a, b in zip(prefix, prefix[1:])):
+        raise InputContractError("owner session ends must strictly increase")
     streams = bundle.get("streams")
     if not isinstance(streams, Mapping) or set(streams) != set(STREAMS):
         raise InputContractError("stock and benchmark streams required")
@@ -180,6 +208,9 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
     if _clock(calendar.get("known_at")) > cutoff:
         result["refusals"].append("CALENDAR_NOT_KNOWN_AT_DECISION")
         return _finish(result)
+    if session_ends[target] > cutoff:
+        result["refusals"].append("TARGET_SESSION_NOT_CLOSED_AT_DECISION")
+        return _finish(result)
     if meta["stock"]["basis_kind"] != meta["benchmark"]["basis_kind"]:
         result["refusals"].append("MIXED_RETURN_BASIS")
         return _finish(result)
@@ -188,11 +219,12 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
         result["refusals"].append("IDENTITY_OR_BASIS_NOT_KNOWN_AT_DECISION")
         return _finish(result)
 
-    selected = _select_visible(bundle.get("rows"), meta, prefix, cutoff)
+    selected = _select_visible(bundle.get("rows"), meta, prefix, session_ends, cutoff)
     # Exclude unseen future revisions, future sessions and unrelated input from
     # descriptor identity. Hashes are consistency, never source admission.
     result["visible_input_sha256"] = digest({
-        "calendar": {"sessions": prefix, "known_at": _iso(_clock(calendar["known_at"]))},
+        "calendar": {"sessions": prefix, "session_ends": {d: _iso(session_ends[d]) for d in prefix},
+                     "known_at": _iso(_clock(calendar["known_at"]))},
         "streams": {k: dict(v) for k, v in meta.items()},
         "selected": selected,
     })
@@ -206,7 +238,9 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
             return _unmeasured("missing_or_future_known_daily_observation")
         first_s, last_s = selected["stock"][seq[0]]["close"], selected["stock"][seq[-1]]["close"]
         first_b, last_b = selected["benchmark"][seq[0]]["close"], selected["benchmark"][seq[-1]]["close"]
-        r_s, r_b = last_s / first_s - 1.0, last_b / first_b - 1.0
+        r_s, r_b = _finite_return(first_s, last_s), _finite_return(first_b, last_b)
+        if r_s is None or r_b is None:
+            return _unmeasured("nonfinite_window_return")
         rw = relative_wealth(r_s, r_b)
         if isinstance(rw, Unmeasured) or not isinstance(rw, (int, float)):
             return _unmeasured("invalid_relative_wealth")
@@ -237,18 +271,28 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
     else:
         tail = prefix[index - 20:index + 1]
         differences = []
+        invalid_step = False
         for earlier, later in zip(tail, tail[1:]):
             s0, s1 = selected["stock"][earlier]["close"], selected["stock"][later]["close"]
             b0, b1 = selected["benchmark"][earlier]["close"], selected["benchmark"][later]["close"]
-            stock_ret, benchmark_ret = s1 / s0 - 1.0, b1 / b0 - 1.0
+            stock_ret, benchmark_ret = _finite_return(s0, s1), _finite_return(b0, b1)
+            if stock_ret is None or benchmark_ret is None:
+                invalid_step = True
+                break
             if benchmark_ret < 0:
                 differences.append(stock_ret - benchmark_ret)
-        result["down_market_resilience_20"] = (
-            {"status": "measured", "value": median(differences), "unit": "fraction",
-             "down_sessions": len(differences),
-             "definition": "median_simple_return_excess_on_down_benchmark_sessions"}
-            if len(differences) >= 3 else _unmeasured("too_few_down_benchmark_sessions")
-        )
+        if invalid_step:
+            result["down_market_resilience_20"] = _unmeasured("nonfinite_daily_return")
+        elif len(differences) < 3:
+            result["down_market_resilience_20"] = _unmeasured("too_few_down_benchmark_sessions")
+        else:
+            middle = median(differences)
+            result["down_market_resilience_20"] = (
+                {"status": "measured", "value": middle, "unit": "fraction",
+                 "down_sessions": len(differences),
+                 "definition": "median_simple_return_excess_on_down_benchmark_sessions"}
+                if math.isfinite(middle) else _unmeasured("nonfinite_resilience_median")
+            )
     result["state"] = ("RESEARCH_METRICS_AVAILABLE" if any(
         x["status"] == "measured" for x in result["windows"].values()) else "UNAVAILABLE")
     return _finish(result)
