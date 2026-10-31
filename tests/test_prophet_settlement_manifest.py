@@ -897,6 +897,7 @@ def test_failure_vocabulary_is_closed_and_fully_exercised():
         ({"reader_observed_at": "garbage"}, {"reader_clock_unqualified"}),
         ({"computed_at": None}, {"computed_at_missing"}),
         ({"computed_at": "2026-10-30 21:58:41"}, {"computed_at_unqualified"}),
+        ({"computed_at": "2099-01-01T00:00:00Z"}, {"clock_chain_incoherent"}),
         ({"health_kw": {"published_at": None}}, {"published_at_missing"}),
         ({"health_kw": {"published_at": "nope"}}, {"published_at_unqualified"}),
         ({"health_kw": {"checkpoint": ""}}, {"checkpoint_missing"}),
