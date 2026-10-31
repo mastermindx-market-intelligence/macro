@@ -44180,6 +44180,140 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+
+  robotics-theme-research:
+    # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
+    # job for the Robotics vertical. paths: is the measured static import
+    # closure of the eight suites on this head, including the #7870 shared
+    # shell (engine.theme_graph.curation_assertion,
+    # semiconductor_theme_research, theme_research_binding,
+    # rights.load_registry_snapshot) and the modules those imports reach.
+    # A dependency edit schedules this job, and contract-delta does not
+    # see the suites as unwired.
+    # Measured on this head: suite_dependency_closure over the eight
+    # suites on the run line is 66 files, and declared paths: is 69 (the
+    # 66, engine/__init__.py and the two tests/fixtures/** patterns).
+    # curated_exclusive_closure_findings is UNCOVERED 0.
+    # engine/__init__.py is declared although the closure does not list it:
+    # suite_dependency_closure does not emit ancestor package __init__.py
+    # files, yet importing any engine.* module executes it, so an edit to
+    # it must still schedule this job. engine/market_ontology/__init__.py
+    # has the same gap and was undeclared before this re-land; it stays
+    # with the ancestor-init follow-up to ci_scope_dependencies.
+    # config/sparse_worktree.json and scripts/worktree_sparse.py are not
+    # declared (in no suite's closure, and neither is a package __init__).
+    # run_ci_pack weight 18 (_job_weight: two commands, pip install and
+    # pytest, + eight tests/test_ mentions x2 + len//800 = 0). Its pack
+    # slot is not fixed: partition_jobs packs only the jobs a diff selects.
+    # Earlier, on 94b86c4 (120893 tracked paths), the six suites of that
+    # head had a 64-file suite_dependency_closure and
+    # curated_exclusive_closure_findings UNCOVERED 0. The same 64-file
+    # union on fe6d00ec still excludes engine/theme_graph/store.py,
+    # engine/market_ontology/theme_research_mounts.py and
+    # engine/research_priority_ordering.py (curated_exclusive_closure_findings
+    # uncovered 0 before and after the drop; probes stayed 134/5787/10,
+    # 134/5590/10, 129/5550/10), so those three are not declared. Unmarked literals
+    # PUBLIC_PAGE_PATHS and EXTRA_PUBLIC_JSON
+    # (site/state_of_themes.html, site/basket/robotics_automation.html,
+    # site/basketdata/foresight_cascade.json) are reads and stay. Not reads,
+    # so not declared: data/baskets/membership.json,
+    # data/neuralweb/theme_state.json, data/theme_graph/evidence.parquet,
+    # site/marketdata/basket_confluence.json, site/prophet/index.json,
+    # scripts/build_state_of_themes.py (its literal is ci-trigger-closure: data).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/market_ontology/robotics_theme_research.v1.schema.json"
+      - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/guidance_history.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/market_ontology/robotics_owner_bundle.py"
+      - "engine/market_ontology/robotics_theme_research.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
+      - "lib/pages.py"
+      - "site/basket/robotics_automation.html"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/state_of_themes.html"
+      - "tests/fixtures/robotics_non_regression/**"
+      - "tests/fixtures/robotics_theme_research/**"
+      - "tests/robotics_research_helpers.py"
+      - "tests/test_market_ontology_robotics_theme_research.py"
+      - "tests/test_robotics_known_revisions_replay.py"
+      - "tests/test_robotics_owner_bundle.py"
+      - "tests/test_robotics_research_composition.py"
+      - "tests/test_robotics_research_inputs.py"
+      - "tests/test_robotics_research_temporal.py"
+      - "tests/test_robotics_shared_type_mirror.py"
+      - "tests/test_robotics_theme_non_regression.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Robotics theme-research suites
+        run: pip install pytest jsonschema pyyaml pandas pyarrow
+      - name: robotics theme research suites
+        run: |
+          TZ=UTC python -m pytest \
+            tests/test_market_ontology_robotics_theme_research.py \
+            tests/test_robotics_known_revisions_replay.py \
+            tests/test_robotics_owner_bundle.py \
+            tests/test_robotics_research_composition.py \
+            tests/test_robotics_research_inputs.py \
+            tests/test_robotics_research_temporal.py \
+            tests/test_robotics_shared_type_mirror.py \
+            tests/test_robotics_theme_non_regression.py \
+            -q
   ric-f0-a10-canonical-calendar:
     if: ${{ false }}
     gate: code
