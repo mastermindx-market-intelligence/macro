@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "RGTI-BULL-20260805",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.3,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.239,
+    "dist_to_stop_r": -0.232,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 186.7,
-    "p1": -0.8263,
-    "p2": -0.4131,
+    "horizon_pct_used": 188.9,
+    "p1": -0.8214,
+    "p2": -0.4107,
     "p3": null,
-    "move_r": -1.239,
+    "move_r": -1.232,
     "mfe_r": 0.134,
     "mae_r": -1.239
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "EXPIRED"
 }

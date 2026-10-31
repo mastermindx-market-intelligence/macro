@@ -463,7 +463,41 @@ waves:
     # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
+  - id: EW-P0
+    title: EW-P0 records - adopt the 2026-10-31 Chairman packet as an amendment to the #10219 task tree; takeover record; refreshed invalidators
+    status: awaiting_ci
+    # Seat 00dea969 (Fable CEO). Adoption record research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md; handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md.
+    depends_on: [GD-RR-CENSUS-20261017]
+  - id: EW-P1
+    title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
+    status: in_progress
+    # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
+    # T2 on ORCH-P1 (Opus orchestrator, fabric lanes): helper scripts/ci/qledger_oversize_carve.sh, one hunk in daily_engine_commit_outputs.sh, commit tail data extracted to scripts/ci/daily_collect_tail_commit.sh, tests registered. No QLedger publication (owner #10079). Disjoint from #10221's hunks.
+    depends_on: [EW-P0]
+  - id: EW-P2
+    title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
+    status: in_progress
+    # ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; #10104 (head a324b7fc, merge-base c9608be2) left open with a successor pointer. Activation (T2+) needs its own gate.
+    depends_on: [EW-P0]
+  - id: EW-P3
+    title: EW-P3 forecast-science prereg lane (product B) per the masterplan - own blob pin, size/power before any read
+    status: todo
+    depends_on: [EW-P1]
+  - id: EW-P4
+    title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
+    status: todo
+    depends_on: [EW-P2]
+  - id: EW-P5
+    title: EW-P5 acceptance and release - packs S01-S12, Q01-Q08, O01-O08, C01-C16, U01-U11, R01-R08 per ACCEPTANCE_AND_RELEASE.md; natural production proof
+    status: todo
+    depends_on: [EW-P1, EW-P2, EW-P3, EW-P4]
 next_action: >
+  2026-10-31 (Fable CEO seat 00dea969, Chairman packet adopted as amendment to #10219): EW-P1.T2 QLedger
+  carve-out parity (ORCH-P1) and EW-P2.T1 #10104 successor (ORCH-P2) are in flight on fabric lanes; seat
+  judges by artifact, fresh non-authoring review, merge --match-head-commit, then a durable watcher for two
+  natural nightly sessions. See research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md and
+  handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md. Older frontier retained below.
+
   Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
   Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
   on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
