@@ -35,6 +35,7 @@ landmines:
   - "Labor runs on the Mastermind fabric (glm-5.3-flash leaf, MiniMax-M3 medium, glm-5.3 only with an escalation reason) under Opus orchestrators; no native builder/reviewer children; seat-only acts are ready/merge --match-head-commit, labels and carrier posts."
 do_not_redo:
   - "Wave-1 commissions ORCH-DELIVERY (A1 matrix, A3 propagation tests, P1D news_llm fail-closed, A5 observability gaps, E custody matrix) and ORCH-FACTS (B1 schema inventory, D1 news input trace, B4 frontier, B2/B5 scope, gated_v3 lane) were issued 2026-10-22 07:5xZ; never re-spawn them, consume their returns by artifact."
+  - "2026-10-31: #10043/#10044/#10046/#10048/#10049/#10056 and #10280 are MERGED at reviewed heads — DO_NOT_REDO. ORCH-1/ORCH-2 are consumed and halted; ORCH-3 scope is seat-direct fabric lanes (parent run orch3-seat-direct-20261031): run-ids news-orch3-{claim-r1,prov-r1,prov-r2,route-r1,route-r2,samp-r1,samp-r2} are spent, never relaunched; the claim matrix verdict DEFENSIBLE_NEGATIVE is accepted by artifact."
 waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
@@ -42,14 +43,14 @@ waves:
     next_action: "Done 2026-10-31: takeover handoff, DEC:NEWS-ESTATE-B1-JOINS recorded."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
-    status: in_progress
+    status: done
     depends_on: [W0]
-    next_action: "2026-10-31: ORCH-1 FACTUAL-LANDING repairs/reviews #10043 #10044 #10046 #10048 #10049 #10056 in place on fabric lanes; seat consumes its return by artifact, then gh pr ready + merge --squash --match-head-commit after reviewDecision and HOLD checks. #10063 B4 moves to W2 ORCH-3 QUANT."
+    next_action: "2026-10-31 16:1xZ: MERGED #10043 P1D e0566cb7, #10046 A1 603d98a5, #10048 D1 a8c4c78b, #10049 B1 8ecd4701, #10056 A5 6135e2c3 (ORCH-1 fabric review lanes PASS / PASS-WITH-GAPS). #10044 A3 ef7a628b -> 87d7158a (16:56Z). Wave 1 landed in full. Gaps carried: tests/test_news_llm.py unregistered in CI; A3 fold not lane-re-reviewed after registration. #10063 B4 is W2 ORCH-3 QUANT."
   - id: W2
     title: Wave 2 — E3 convergence, B2 numeric fact adapter, D2 consumer wiring (get_intelligence, portfolio lens, engine/intelligence.py), A5 observability build, first corrected-event vertical
     status: in_progress
     depends_on: [W1]
-    next_action: "2026-10-31: ORCH-2 CONSUMER-D2 RUNNING (Mastermind get_news/get_intelligence + lenses freshness fields, macro build_news source_asof/retained flag, adapter PROPOSAL); ORCH-3 QUANT (B4 #10063, sampler _share_ok, 40 pending cases without redraw) and ORCH-4 PRODUCT (Journey 6 corrected-event proof on the Terminal authenticated rail, E1 reconcile) spawn as native slots free (cap 2)."
+    next_action: "2026-10-31 19:2xZ: Mastermind #1897 MERGED via merge queue -> master 3b7e002a; ORCH-3 QUANT integrated + reviewed PASS_WITH_NOTES -> macro draft #10338 head 2981b4ed (CI pending; merge --match-head-commit after reviewDecision); ORCH-4 PRODUCT Journey 6 MERGED terminal #1196 -> master 7f1fdafe, E1 comments posted once. Earlier: D2 macro #10280 MERGED 5b3c2e05 (16:11Z). MMREV-03 producer follow-on open. ORCH-3 QUANT now seat-direct on the fabric (Opus orchestrators halted by 429): claim-r1 RETURNED PASS head 9f96188b QUANT CLAIM VERDICT DEFENSIBLE_NEGATIVE; prov-r2 / samp-r2 / route-r2 RUNNING on ubuntu3 since 16:47Z; then one glm-5.3 review lane, integration branch claude/news-quant-b4-adjudication-20261031, one draft PR, #10063 disposition recommended (never pushed). ORCH-4 PRODUCT (terminal census + E1 reconcile, then Journey 6 on the authenticated R2 rail) runs seat-direct next."
   - id: W3
     title: Wave 3 — Section C (dated exposure mapping, F05 per-family proof) and Section F (claim/evidence matrices, independent READ_ONLY reviews)
     status: todo
@@ -60,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 — consume ORCH-1 and ORCH-2 returns by artifact; ready/merge with --match-head-commit after independent review verdict + reviewDecision; then ORCH-3 QUANT and ORCH-4 PRODUCT; Section C/F orchestrators after W2 lands."
+next_action: "2026-10-31 19:2xZ — ORCH-3 and ORCH-4 landed (macro #10338 pending CI/merge; terminal #1196 merged); next: merge #10338 at 2981b4ed, then W3 Section C/F and W4 brief + production proof; Chairman disk law 2026-10-31 binds every lane (no reclaim on any host)."
 ---
 
 # News Intelligence Estate convergence
