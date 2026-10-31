@@ -529,7 +529,11 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
     triggers = ci.get("on") or ci.get(True)
     matchers = [_gh_path_filter_to_re(p) for p in triggers["pull_request"]["paths"]]
 
-    steps = manifest["jobs"]["tier-gate"]["steps"]
+    steps = [
+        step
+        for job in ("tier-gate", "paywall-contracts", "site-access-boundary")
+        for step in manifest["jobs"][job]["steps"]
+    ]
     required = set(re.findall(
         r"tests/test_[A-Za-z0-9_]+\.py",
         "\n".join(s["run"] for s in steps if "run" in s),
@@ -546,6 +550,33 @@ def test_tier_gate_is_reachable_from_its_own_inputs():
         "A PR touching only these would run no serving-boundary guard at all — the "
         "#3488 failure mode. Add each to the paths list."
     )
+
+
+def test_boundary_suites_report_apart_from_the_tier_preview_step():
+    """A failed step skips the rest of its job, so no shell check may run ahead of these.
+
+    They used to follow the bake-dependent tier-preview step inside tier-gate, and
+    that step's reds kept them from running at all in the main heartbeat.
+    """
+    suite = "tests/test_site_access_boundary.py"
+    for path in (".github/ci/legacy-jobs.yml", ".github/workflows/ci-main-heartbeat.yml"):
+        jobs = yaml.safe_load((ROOT / path).read_text())["jobs"]
+
+        def owners(test_file):
+            return [
+                name
+                for name, job in jobs.items()
+                if any(test_file in step.get("run", "") for step in job["steps"])
+            ]
+
+        assert owners(suite) == ["site-access-boundary"], path
+        assert [
+            step["run"] for step in jobs["site-access-boundary"]["steps"]
+            if " -m pytest " in step.get("run", "")
+        ] == [f"python -m pytest {suite} -q"], path
+        assert owners("tests/test_paywall.py") == ["paywall-contracts"], path
+        assert owners("tests/test_regwall.py") == ["paywall-contracts"], path
+        assert "tier-gate" in owners("tests/test_us_board_gate.py"), path
 
 
 def test_generated_data_is_not_accidentally_public():
