@@ -1,7 +1,7 @@
 # RS Leadership and Accessible Entry Suite - execution masterplan
 
-Version: 2.0, recorded 2026-10-31 UTC / 2026-10-30 America/Edmonton.
-Parent: **WS:LIVE-ENTRY-RADAR / RS Pullback Launch**. Related source owners: WS:LEADERSHIP-ROTATION-INTELLIGENCE and WS:GMI-THEME-GRAPH. Current source carrier: Macro **#10225**, `sol/chartmaster-rs-leader-social-audit-20261030-c1-8ab7`, predecessor head `a69e99554b882a86b9b8d6c17706a693ffdd48bb`; Macro base `3c8546e8aa56a0310e49fbcfba2c3debf84d8127`.
+Version: 2.1, recorded 2026-10-31 UTC / 2026-10-30 America/Edmonton.
+Parent: **WS:LIVE-ENTRY-RADAR / RS Pullback Launch**. Related source owners: WS:LEADERSHIP-ROTATION-INTELLIGENCE and WS:GMI-THEME-GRAPH. Current source carrier: Macro **#10225**, `sol/chartmaster-rs-leader-social-audit-20261030-c1-8ab7`, task-tree predecessor `680b298e42c6e78100980d953582cc73f76a8e53`; implementation source parent `95438b49b94cacce6ff196def6852f4e76e16ed4`; Macro base `3c8546e8aa56a0310e49fbcfba2c3debf84d8127`.
 Protected procedure: Mastermind `bb85b429f2ffffd38408080ce4df7d6378c34100`, skillpack 1.0.1, bootstrap major 1 compatible.
 Current Chairman directive: harden and enhance the plan, publish it, assume leadership and start implementation, using admitted Fabric and Secretary assistance where useful. This authorizes routine in-scope source work, not bypassing runtime, source, access, spend, review or release gates.
 
@@ -39,6 +39,14 @@ The earlier account-evidence document remains an immutable record of its researc
 ### 1.2 Preserve prior negative and incomplete evidence
 
 The source-reported Terminal #879 three-symbol historical demonstration had negative mean net R in the default arms. That is not a universal null, but it rules out treating that UI demonstration as profitable strategy validation. The incumbent theme-discovery/scoring research also records weak or negative incremental early-entry results. Preserve those studies, their biased/current-vintage limitations, sample definitions and full denominators. Any new claim must beat an appropriate strong baseline, not evade prior findings by renaming the setup.
+
+### 1.3 Original-source and incumbent reconciliation (version 2.1)
+
+The source reader now demonstrated original X historical search and returned a bounded original-post sample. See [the corrected evidence ledger](CHARTMASTER_ORIGINAL_POST_EVIDENCE_2026_10_30.md) and [census protocol](CHARTMASTER_ORIGINAL_POST_CENSUS_PROTOCOL.md): 67 reported raw search hits, 62 unique encountered per acquisition notes, 39 unique dated selected IDs and one separately mentioned undated claimed-return ID. All seven search pages remain partially paginated. This supersedes the earlier access-only limitation, NOT the incomplete-census and unaudited-performance limits. Some original replies explicitly require a second green 30m candle to CLOSE above the first high; generic break wording does not prove touch execution. Previous-candle stop identity and trim-percentage units remain unknown. A follower's 1R question is not an author's rule.
+
+A late CI/source census found the already merged `engine/entry_radar/replay/first_green_reversal_descriptor.py` and its existing tests. Its one-red formation, first-green-specific frozen reference, 1m-close confirmation, invalidation and expiry are real source implementations. The earlier plan incorrectly treated that first-green owner as missing. The temporary new `first_green_pivot.py` prototype and its tests were removed before publication. **Do not recreate them.** Preserve the original definition `first-green-after-immediate-red30m-v0` and all existing outputs. The implementation delta is now an additive two-red variant and strengthened native conformance in the incumbent file, not another first-green engine or duplicated confirmation owner.
+
+The rejected model-adapter build attempt delivered no code; direct permitted source implementation now supplies the delta. Runtime lineage and reviewer dispositions belong in the cumulative handoff/evidence receipt, not this task tree. Source review and release acceptance remain distinct.
 
 ## 2. Ownership and collision map
 
@@ -91,34 +99,35 @@ Rules:
 
 New pure outputs must keep `source_admitted`, `detector_registered`, `outcomes_computed`, `actual_issuance_proven` false; `issued_at` null; existing authority block preserved. Do not generate an event ID that impersonates the canonical live event owner.
 
-## 5. Frozen first implementation: first-green formation, not a new engine
+### 4.1 Settled commercial rights and outstanding factual source checks
 
-### 5.1 Interface and scope
+Protected `docs/COMMERCIAL_DATA_RIGHTS.md` at the pinned Mastermind revision records Yahoo/yfinance, Massive/Polygon, Tiingo and ThetaData options commercial rights as APPROVED_BY_CHAIRMAN_ATTESTATION. Do not ask for licensing approval or contracts again for those named routes. Actual access, historical vintage, original known-at, identity/basis, source quality, latency and scientific admission remain separate factual checks. X archives and unmentioned alternative-data providers do not inherit that attestation.
 
-New additive module `engine/entry_radar/replay/first_green_pivot.py`, test file `tests/test_entry_radar_first_green_pivot.py`. Reuse `build_input_panel`, `_aggregate`, `_calendar_at`, native clock parsing and digest from existing RS source owner. One public pure function accepts the existing bundle and a unique candidate ID plus a **closed variant choice**. No network, wall clock, filesystem writes, collection, registration, signals, policy or outcomes.
+## 5. Frozen implementation: extend the existing first-green owner
 
-Versioned variants:
+### 5.1 Incumbent-preserving API and definitions
 
-- `completed30m-first-green-1red-same-session-v0`: current complete 30m close strictly above open, immediately preceded by one fully covered complete red 30m candle (close strictly below open), in the same supplied exchange session.
-- `completed30m-first-green-2red-same-session-v0`: same, with two contiguous preceding red candles. Secondary comparator, not a threshold tuned after results.
+Extend only `engine/entry_radar/replay/first_green_reversal_descriptor.py`; add `tests/test_entry_radar_first_green_variants.py`. Keep the existing `describe_first_green_candidate`, frozen-reference and progress functions unchanged. The additive `describe_first_green_variant(bundle, candidate_id, *, variant="one_red")` has a closed one_red/two_red choice. One-red returns the EXACT incumbent output, including its schema, definition, fields, refusals and digest. Two-red is separately identified by `mastermind.rs_pullback_launch.first_green_variant.v1` / `first-green-after-two-immediate-red30m-v1`.
 
-The function establishes first-green-after-required-red-suffix, **not** first green of the day, full length of a decline or an all-day downtrend. Doji is neither red nor green and breaks the required contiguous red suffix. No requirement to undercut an earlier low or close in the upper half. No minimum wick/body percentage invented from anecdotes.
+Two-red requires a completed current green30m candle C>O and BOTH immediately preceding contiguous completed same-session30m candles C<O. Doji is neither; an intervening green/doji breaks the suffix. Earlier unrelated green candles are not an all-day-decline filter. No undercut, upper-half close, hindsight low selection or exact private-method claim is added. The earliest nominal one-red RTH formation is the second completed candle (10:30 ET on a normal09:30 open); two-red is the third (11:00 ET). Actual knowability can be later. Neither borrows overnight bars to qualify the first RTH candle.
 
-Target bar comes from the existing owner frame, preserving its event anchor. Prior bars use the same stream, source/basis, session and decision cutoff. Incomplete/missing/future-known required bars -> UNAVAILABLE with native refusal. Insufficient earlier same-session history -> explicit UNAVAILABLE; a fully observed nonmatching pattern -> NO_PIVOT; unqualified daily context -> NOT_ELIGIBLE. Qualifying pattern -> FIRST_GREEN_FORMED, frozen high/low and interval, with actual structure-known-at and owner snapshot digest.
+Reuse the incumbent one-red result, native `_aggregate`, `_only_candidate`, `_visible_session` and decision clocks. Additional earlier-minute gaps, future receipts, identity/basis mismatches and late revisions retain native refusals. Two-red UNAVAILABLE is not a false/nonfire event. A known false target must not hide unavailable required earlier source. `price_structure_known_at` covers all required bars. Existing V2 event anchoring preserves geometry separately from late decision/receipt time; V1 continues to select the newest COMPLETE bar, not an unfinished current candle.
 
-Do not count only successful signals. Exactly one output per requested candidate. Preserve catalyst availability and source refusals. Never mutate the supplied bundle. Reject malformed/ambiguous candidate IDs and unsupported variant values.
+The new record retains incumbent owner/source snapshot, eligibility, previous/target bars, pivot geometry and authority; adds two reference bars and strict sequence result. All admission, issuance, detector, outcome and financial authority remain false; issued_at remains null. The descriptor is a pure research calculation: no I/O, collector, event store, scheduler, forecast, ranking, sizing or trade. Optional group/catalyst joins remain separate owner-qualified annotations, not invented fields from this predicate.
 
-### 5.2 Required tests before source acceptance
+### 5.2 Native tests, compatibility and CI
 
-Positive one-red and two-red examples; green higher-low that is not an undercut; red undercut that is not first-green; doji; consecutive greens; a red suffix interrupted by a doji; insufficient early-session history; earliest valid second RTH candle; missing prior minute; future-known prior observation; late correction prefix invariance; rejected identity/basis; future target/incomplete bar; prior-session contamination; duplicate candidate IDs; all authority ceilings; caller input immutability; deterministic digest and variant distinction; native owner integration and legacy rejection regressions.
+Test the actual owner module through normal repository pytest, not extracted functions or indicator substitutes. Exact one-red wrapper parity covers formed, red, doji, missing, ineligible, early-session and later-decision cases. Two-red tests cover strict green/red/doji inequalities, additional-bar gaps, timestamp delay, future-prefix and revision invariance, identity/basis, source non-admission, input immutability, distinct definition/digest, native calendar/early-close/stub semantics and V2 event clocks.
 
-Tests must run under normal repository pytest imports, not only a copied-function surrogate. Synthetic conformance is not market efficacy. Register exact engine and test paths in the **existing** `research-price-panel` CI pack and command after checking current shared-file custody; no new job or workflow. Preserve #10216 and all adjacent test registrations. Exact-head CI must actually run the new tests.
+Retain existing first-green/rejection/progress/input-owner tests; compare the original functions' ASTs and source behavior. Deliberate mutations must fail relevant tests. Enroll the new test in existing `research-price-panel` exclusive scope AND actual pytest command; make the incumbent first-green suite explicit there as well. No new job, workflow, dependency, permission, timeout or test-cap change. Exact tested source, command, counts and limitations belong in the verification receipt. Local synthetic success is not hosted CI, independent review, real-market data qualification or predictive evidence.
 
-### 5.3 Confirmation and accessibility follow-up
+### 5.3 Confirmation comparisons and integration
 
-Formation ships first as an inert research descriptor. Next add a common owner-approved structural-reference adapter to existing confirmation/invalidation logic without relabeling an old schema or duplicating its lifecycle. Preserve existing rejection-v0 behavior byte-for-byte or by explicit accepted compatibility tests.
+The incumbent one-red freezer/progress already implements frozen levels, later completed1m-close confirmation, low-based invalidation, gaps and expiry. Use it rather than a new universal owner. The additive two-red schema is intentionally refused by that v0 freezer until a reviewed versioned integration preserves both definitions and old outputs. Do not coerce its record into the old schema or duplicate the progress loop.
 
-Compare two distinct semantics only after registration: later completed-1m-close above high+declared buffer, and quote-supported touch/fill. The latter cannot be reconstructed exactly from OHLC alone. A minute containing both entry and stop crossings with unknown order is ambiguous/conservative, not an invented profitable path. Keep gaps, nonfills, halt/auction rules, spread, timestamp latency, max entry distance, expiry and rearm explicit. No actual position sizing or execution in this program slice.
+Original-source evidence now motivates an additional **second completed30m candle close-above** arm. Freeze immediate-next-bar versus later-bar policy, required color, delay, invalidation, expiry and reference entry BEFORE outcomes; the explicit second-candle wording does not authorize an unlimited eventual-reclaim search. Keep incumbent1m-close as an engineering comparator. Quote-supported high-touch is another possible experiment, not an established author rule, and requires actual quote/execution ordering evidence.
+
+Formation, confirmation and an executable entry are separate. No intrabar-touch/stop order is invented from OHLC. Keep original failures, never-confirmed opportunities, later reentries and missed rallies in the common opportunity denominator. Pivot-low risk is a research reference, not a guaranteed fill or automatic position size. The existing Entry Engine remains the entry-permission owner.
 
 ## 6. Earlier leadership: hypotheses and measurement discipline
 
@@ -191,20 +200,22 @@ Editorial labels only; they are not Executive runtime states. Each row is comple
 
 | Task | Dependency | Capability and allowed scope | Acceptance / falsifier | Initial label |
 |---|---|---|---|---|
-| P0.1 | Existing #10225 | Publish this hardened task tree and evidence corrections | Exact Git readback; archived 14 chapters unchanged; no full-census claim | ready |
-| P0.2 | P0.1 | Link one cumulative Agent OS handoff/workstream artifact through existing writer | Schema valid and readback; no orphan plan or second workstream | proposed |
-| P0.3 | P0.1 | Account evidence coverage specification and legitimate archive route assessment | Original IDs/types, scope, retrieval, coverage gaps; no paid acquisition or authentication bypass | ready |
-| P1.1 | P0.1 | Add pure first-green formation descriptor in new replay leaf | Native owner reuse, frozen variants, no input mutation or authority change | ready |
-| P1.2 | P1.1 | Adversarial synthetic and normal-import tests | Counterexamples and future-invariance; legacy suite unchanged | proposed |
-| P1.3 | P1.2 | Existing CI pack registration and exact-head non-author review | Actual owner test command runs; reviewer findings resolved; no self-approval | proposed |
-| P1.4 | P1.3 | Owner-approved common frozen-reference confirmation adapter | First-green/rejection identities remain distinct; gaps/order/expiry tested | proposed |
+| P0.1 | Existing #10225 | Publish hardened task tree and corrected incumbent/original-post evidence | Exact Git readback; archived14 chapters unchanged; no full-census claim | implementation_complete |
+| P0.2 | P0.1 | Link one cumulative Agent OS handoff/workstream artifact through existing writer | Schema-valid draft/readback; accepted organizational linkage remains separate | in_progress |
+| P0.3 | P0.1 | Account evidence coverage and original historical-search capability assessment | Bounded original-ID sample and query gaps retained; not complete account census | implementation_complete |
+| P0.4 | P0.3, scoped source/quota freeze | Enumerate the retrievable eligible original-post universe | Exhausted cursors per fixed window, original IDs, rights/retention and gaps; no deleted-post completeness fiction | proposed |
+| P1.1 | P0.1 | Add two-red comparator to incumbent first-green owner; exact one-red passthrough | Native owner reuse, separate definition, no duplicate module or authority change | implementation_complete |
+| P1.2 | P1.1 | Adversarial synthetic and normal-import tests | Native parity, causal/source counterexamples and mutation evidence; no market-efficacy claim | implementation_complete |
+| P1.3 | P1.2 | Existing CI pack registration and exact-head non-author code review | Actual owner command runs; new-code findings resolved; blocked plan-review action is not retried | in_progress |
+| P1.4 | P1.3 | Add two-red frozen-reference compatibility within incumbent first-green owner | One-red/rejection outputs unchanged, identities distinct; gaps/order/expiry tested | proposed |
+| P1.5 | P0.3,P1.3 | Freeze and implement second30m-close confirmation challenger | Exact next-bar/time/entry/invalidation rules before outcomes; distinct from1m or quote-touch arms | proposed |
 | P2.1 | Existing source owners | Qualify identity/basis/calendar/native minute source for real cohort | Actual immutable inputs/read receipts; no fabricated historical first-seen | blocked |
 | P2.2 | P1.2,P2.1 | One admitted real source-to-30m witness | Independent OHLC/clock reconstruction and negative controls | blocked |
 | P2.3 | P2.2 | Establish actionable-source latency envelope | Measured first-known/processing lag and executable reference; delayed source labeled | blocked |
-| P3.1 | P0.1,#10213/GMI acceptance | Freeze group-first/stock-first read interface and cohort definitions | Ex-self, dual-clock membership, missing/young listing paths; no duplicate engine | ready |
+| P3.1 | P0.1 | Freeze group/stock read contract; runtime joins await #10213/GMI acceptance | Published field/clock/coverage/ex-issuer contract; no30m relabel or source-admission claim | implementation_complete |
 | P3.2 | P3.1,P2.1 | Add pure onset/acceleration/resilience projection | Same information baseline; descriptive-only output; PIT mutation tests | proposed |
 | P3.3 | P3.2 | Register discovery incremental-value experiment | Fixed attention budget, lead-time/false seeds, full cohort and dependence controls | proposed |
-| P4.1 | P1.4,P2.2,P3.1 | Design one native Terminal vertical and API contract | Explicit formed/confirmed/failed/unavailable plus optional evidence; all required journeys | proposed |
+| P4.1 | P1.4,P2.2,P3.1 | Native Terminal vertical, clock and API design | Source contract published; actual UI design/qualified input and journey proof still owed | in_progress |
 | P4.2 | P4.1 | Implement existing consumer route, source health and replay | Real authenticated payload->chart and mobile/EN/ZH proof | proposed |
 | P4.3 | P4.2,P2.3 | Enroll factual observation notices in existing outbox, if approved | True issue receipts, idempotence/tenant isolation, no trade instruction or duplicate scheduler | proposed |
 | P5.1 | Accepted prereg,P2.2 | Execute only admitted chronological experiments | Costs, full denominators, all registered variants, genuine untouched holdout | blocked |
@@ -217,7 +228,7 @@ Critical path for descriptive user value: P0.1 -> P1.1/1.2 -> P2.2 -> P1.4 -> P4
 
 ## 11. Worker boundaries and execution policy
 
-**Initial builder:** one economical Fabric leaf for P1.1/P1.2, C2_COMPLEX_BOUNDED, material business impact, routine reversible source risk, low ambiguity after this freeze. WHY NOT FABLE: two bounded pure files and deterministic tests do not require principal-level architecture. Allow only new module/test files in an isolated source workspace; no shared source edits, no publication, no source acquisition, no deployment. Return exact paths/hashes, normal pytest command/result and suggested existing-pack registration. Parent integrates through the sole #10225 publishing carrier.
+**Initial builder contract, superseded by reconciled source execution:** the original economical Fabric request targeted two new files before the incumbent first-green implementation was discovered. It returned a terminal provider-model error without a code artifact. Do not repeat that request or retain its obsolete new-module scope. Current P1 source work is an additive extension of the existing first-green owner plus one new test file and minimal registration in the existing CI pack. Parent source integration remains on #10225. New eligible bounded labor should use admitted economical Fabric; a source-contract/code review must name the actual new artifact rather than replay the blocked earlier plan-review action.
 
 **Independent reviewer:** a separate actual non-author reviews the newly implemented exact code and native-source tests, not the previously refused historical account-review action. Review cannot grant itself merge/admission. This is a new code artifact/task, not a replay of the earlier refusal.
 
@@ -236,3 +247,9 @@ At each material milestone update this same task tree with exact evidence and th
 Current known historical effect: account-source review `chartmaster-rs-social-source-review-20261030-01`, original root `chartmaster-rs-audit-20261030`, was REQUEST_REFUSED_BEFORE_LAUNCH / EXECUTION_NOT_ELIGIBLE; no independent result. Preserve its refusal and do not retry it. New authorized implementation uses the same root lineage with a distinct genuinely separable task. No pending modifying effect is inferred from that refused review.
 
 The next concrete action after publication/readback is P1.1/P1.2 admission and implementation, while the principal resolves interface and evidence questions without shadow-coding the assigned files. Parent mission remains incomplete until the product, scientific-disposition and production gates above are met.
+
+### 12.1 Version2.1 integration decisions
+
+Consume [group-context contract](RS_LEADERSHIP_GROUP_CONTEXT_CONTRACT.md) and [Terminal contract](RS_LEADERSHIP_TERMINAL_INTEGRATION_CONTRACT.md). The inspected #10213 interface has no30m horizon; preserve actual15m/60m/daily periods and age. Terminal historical study display epochs are NOT UTC, and its two-left/two-right swing pivots and65/260-bar RS gate are different species from native daily leader plus first-green. Terminal is currently dark-only: EN/ZH and supported responsive/accessibility states are required, not an unrelated light-theme build. Existing first-green formation/reference/progress source is now an explicit DO_NOT_REDO item.
+
+Source milestones and test counts must be read from the current implementation verification receipt; the discarded prototype's58 tests are not the delivered delta. Source publication, authored tests, independent review, hosted CI, source admission, browser acceptance and prospective economics remain separate facts. No automatic publication/alert/ranking/capital authority was added.

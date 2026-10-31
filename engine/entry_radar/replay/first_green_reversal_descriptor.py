@@ -315,3 +315,68 @@ def describe_first_green_progress(bundle: Mapping[str, Any], candidate_id: str, 
         else:
             value["state"] = "EXPIRED"
     return finish()
+
+
+# Additive comparator. Existing formation/reference/progress functions above
+# retain their exact v0 behavior; no new detector or source owner is created.
+TWO_RED_SCHEMA = "mastermind.rs_pullback_launch.first_green_variant.v1"
+TWO_RED_DEFINITION_ID = "first-green-after-two-immediate-red30m-v1"
+
+
+def describe_first_green_variant(bundle: Mapping[str, Any], candidate_id: str, *,
+                                 variant: str = "one_red") -> dict[str, Any]:
+    """Return exact incumbent one-red output, or an additive two-red descriptor.
+
+    Two-red requires both immediately preceding complete same-session 30m
+    candles to be strictly red. It is not an all-day decline reconstruction.
+    Its formation schema is deliberately not accepted by the incumbent v0
+    reference freezer; confirmation integration requires a separate contract.
+    """
+    if not isinstance(variant, str) or variant not in {"one_red", "two_red"}:
+        raise InputContractError("variant must be one_red or two_red")
+    original = describe_first_green_candidate(bundle, candidate_id)
+    if variant == "one_red":
+        return original
+
+    value = copy.deepcopy(original)
+    value.pop("descriptor_sha256")
+    value.update(schema=TWO_RED_SCHEMA, definition_id=TWO_RED_DEFINITION_ID,
+                 variant="two_red", required_red_bars=2,
+                 reference_bars=[], prior_red_sequence=None)
+
+    def finish():
+        return _seal(value, "descriptor_sha256")
+
+    if original["state"] in {"UNAVAILABLE", "NOT_ELIGIBLE"}:
+        return finish()
+    candidate = _only_candidate(bundle, candidate_id)
+    cutoff = _clock(original["decision_at"])
+    _, law = _visible_session(bundle, cutoff, original["session"])
+    start = _clock(original["target_bar"]["start"])
+    first = start - 2 * BAR_WIDTH
+    if first < _clock(law["open"]):
+        value.update(state="UNAVAILABLE", condition_met=None, pivot=None,
+                     price_structure_known_at=None)
+        value["refusals"].append("NO_TWO_PREVIOUS_COMPLETED_SAME_SESSION_30M")
+        return finish()
+
+    stream = candidate["streams"]["stock"]
+    earlier = _aggregate(bundle.get("minutes", []), stream, bundle["streams"][stream],
+                         first, first + BAR_WIDTH, cutoff)
+    value["reference_bars"] = [copy.deepcopy(earlier), copy.deepcopy(original["previous_bar"])]
+    value["refusals"].extend("earlier:" + reason for reason in earlier["refusals"])
+    if value["refusals"]:
+        value.update(state="UNAVAILABLE", condition_met=None, pivot=None,
+                     price_structure_known_at=None)
+        return finish()
+    previous = earlier["ohlcv"]
+    red_sequence = original["previous_red"] and previous["close"] < previous["open"]
+    met = bool(red_sequence and original["current_green"])
+    value["prior_red_sequence"] = bool(red_sequence)
+    value["price_structure_known_at"] = _iso(max(
+        _clock(earlier["known_at"]), _clock(original["price_structure_known_at"])))
+    value["condition_met"] = met
+    value["state"] = "FIRST_GREEN_FORMED" if met else "NO_FIRST_GREEN"
+    if not met:
+        value["pivot"] = None
+    return finish()

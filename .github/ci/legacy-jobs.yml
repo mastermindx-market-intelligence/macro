@@ -36370,6 +36370,7 @@ jobs:
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
       - "engine/entry_radar/replay/leader_pivot_descriptor.py"
       - "tests/test_entry_radar_first_green_descriptor.py"
+      - "tests/test_entry_radar_first_green_variants.py"
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
@@ -37468,6 +37469,8 @@ jobs:
         run: >-
           python -m pytest
           tests/test_research_price_panel.py
+          tests/test_entry_radar_first_green_descriptor.py
+          tests/test_entry_radar_first_green_variants.py
           tests/test_entry_radar_rs_pullback_phase1.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py

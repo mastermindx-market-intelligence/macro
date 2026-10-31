@@ -44,27 +44,44 @@
     "limitation": "synthetic source-contract probe only; no first-green formation or confirmation implementation verified"
   },
   "source_publications": [
-    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_SUITE_MASTERPLAN.md", "commit": "680b298e42c6e78100980d953582cc73f76a8e53", "readback": true},
-    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_GROUP_CONTEXT_CONTRACT.md", "commit": "fa10937520596eb3e12163b63ce230e0754f2001", "readback": true},
-    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_TERMINAL_INTEGRATION_CONTRACT.md", "commit": "6b3ae96372bfe81ba22d86f15fb6aa03cdc60709", "readback": false},
-    {"path": "research/live_entry_radar/rs_pullback_launch/CHARTMASTER_ORIGINAL_POST_CENSUS_PROTOCOL.md", "commit": "cb5c46f216f1e30d8fd7d5223c4983aaf22660e7", "readback": true}
+    {
+      "path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_SUITE_MASTERPLAN.md",
+      "commit": "680b298e42c6e78100980d953582cc73f76a8e53",
+      "readback": true
+    },
+    {
+      "path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_GROUP_CONTEXT_CONTRACT.md",
+      "commit": "fa10937520596eb3e12163b63ce230e0754f2001",
+      "readback": true
+    },
+    {
+      "path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_TERMINAL_INTEGRATION_CONTRACT.md",
+      "commit": "6b3ae96372bfe81ba22d86f15fb6aa03cdc60709",
+      "readback": false
+    },
+    {
+      "path": "research/live_entry_radar/rs_pullback_launch/CHARTMASTER_ORIGINAL_POST_CENSUS_PROTOCOL.md",
+      "commit": "cb5c46f216f1e30d8fd7d5223c4983aaf22660e7",
+      "readback": true
+    }
   ],
   "builder_observation": {
     "run_id": "rs10225-first-green-builder-20261030-01",
     "root_id": "chartmaster-rs-audit-20261030",
-    "parent_id": "chartmaster-rs-audit-20261030",
     "controller_pid": 14786,
-    "last_observed_state": "ACTIVE_OR_WAITING",
-    "last_poll_elapsed_seconds": 979,
-    "worker_state": "UNKNOWN",
-    "root_verified": false,
-    "result_available": false,
-    "accepted": null,
+    "last_observed_state": "TERMINAL",
+    "lineage_state": "VERIFIED_TERMINAL",
+    "root_verified": true,
+    "rc": 1,
+    "result_available": true,
+    "result_bytes": 370,
+    "accepted": false,
     "retry_allowed": false,
-    "source_scope": ["engine/entry_radar/replay/first_green_pivot.py", "tests/test_entry_radar_first_green_pivot.py"],
-    "interpretation": "request/controller and local poll observations exist; no worker START, returned code, independent review or accepted execution is claimed",
-    "reconciliation": "original Fabric result read returned CONTROLLER_RETURN_UNCONFIRMED; native original observe-run request returned REFUSED/original_run_observation_unconfirmed with transport not attempted",
-    "fence": "do not duplicate, reassign, retry or shadow-code these two files until the original run and any effects are reconciled"
+    "response_sha256": "084b69c65d04b8e3e7b2bd76a7d682f8512f6b49fcc216e41337da06021b7c6b",
+    "observed_error": "[claude-code:unrecognized_model] glm-5.3-flash; PROVIDER_TERMINAL kind=turn_limit rc=1",
+    "disposition": "Terminal adapter failure; no source artifact delivered; no same-run retry or replacement worker",
+    "followup": "Direct implementation on admitted separate parent workspace; original new-module scope retired after incumbent discovery",
+    "limitation": "No full remote filesystem-effect attestation; native observe-run support metadata remained unavailable. Terminal result is not an accepted code result."
   },
   "plan_review": {
     "run_id": "rs10225-masterplan-contract-review-20261031-01",
@@ -82,7 +99,10 @@
     "full_archive_search_available": "reported original-interface capability with successful historical query receipts",
     "complete_account_census_proven": false,
     "rule_sample_thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793408254439929",
-    "rule_sample_disposition": "original-post sample returned; count and rule-context clarifications requested, no implementation change"
+    "rule_sample_disposition": "Original-source sample and corrections adjudicated, published in source ledger; child STOP confirmed; no watcher armed",
+    "rule_sample_reported_reads": 9,
+    "rule_sample_selected_dated_ids": 39,
+    "rule_sample_selected_undated_claim_ids": 1
   },
   "limitations": [
     "136 passing existing tests and 113 passing subtests are not proof of the requested new code",
@@ -90,6 +110,80 @@
     "No real one-minute cohort, source admission, forecast, live entry, production or trading result",
     "Draft source publication is not accepted Agent OS linkage or source merge",
     "The original rejected account-review operation remains separately preserved; no failed operation was replayed",
-    "Studio fleet status reported FLEET_STATUS_FABRIC_LAUNCHER_DRIFT, which does not by itself prove the individual worker failed"
-  ]
+    "Studio fleet status reported FLEET_STATUS_FABRIC_LAUNCHER_DRIFT, which does not by itself prove the individual worker failed",
+    "Final delivered delta is49 new cases plus157 existing tests; earlier194-test prototype pass is deliberately not counted as delivered implementation."
+  ],
+  "builder_observation_history": [
+    {
+      "run_id": "rs10225-first-green-builder-20261030-01",
+      "root_id": "chartmaster-rs-audit-20261030",
+      "parent_id": "chartmaster-rs-audit-20261030",
+      "controller_pid": 14786,
+      "last_observed_state": "ACTIVE_OR_WAITING",
+      "last_poll_elapsed_seconds": 979,
+      "worker_state": "UNKNOWN",
+      "root_verified": false,
+      "result_available": false,
+      "accepted": null,
+      "retry_allowed": false,
+      "source_scope": [
+        "engine/entry_radar/replay/first_green_pivot.py",
+        "tests/test_entry_radar_first_green_pivot.py"
+      ],
+      "interpretation": "request/controller and local poll observations exist; no worker START, returned code, independent review or accepted execution is claimed",
+      "reconciliation": "original Fabric result read returned CONTROLLER_RETURN_UNCONFIRMED; native original observe-run request returned REFUSED/original_run_observation_unconfirmed with transport not attempted",
+      "fence": "do not duplicate, reassign, retry or shadow-code these two files until the original run and any effects are reconciled"
+    }
+  ],
+  "implementation_milestone": {
+    "source_base": "95438b49b94cacce6ff196def6852f4e76e16ed4",
+    "workspace": "/Users/chriswong/mmx-worktrees/claude/14851c4656838a3b/rs10225-first-green-direct-20261031-8b3f7a17d65cf28d",
+    "workspace_admission": "canonical worktree_storage.py create/check-path; installed Oct29 internal fallback explicitly enabled; SSD preferred; no policy edit",
+    "scope": "additive two-red formation variant in existing first_green_reversal_descriptor.py; exact one-red passthrough; no new data/lifecycle/forecast/trade owner",
+    "incumbent_source_commit": "7b61e274a4392584fcf3dff6fe9d9bf361eda2ed",
+    "incumbent_discovery": "existing one-red formation, frozen reference, 1m-close confirmation, invalidation and expiry were missed by earlier census; current plan v2.1 corrects that",
+    "discarded_prototype": [
+      "engine/entry_radar/replay/first_green_pivot.py",
+      "tests/test_entry_radar_first_green_pivot.py"
+    ],
+    "discarded_prototype_status": "created/tested locally then removed before publication; 58 prototype tests are not delivered-code evidence",
+    "test_command": "python3 -m pytest -q tests/test_entry_radar_first_green_variants.py tests/test_entry_radar_first_green_descriptor.py tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py tests/test_entry_radar_rs_pullback_phase1.py",
+    "test_result": {
+      "passed_tests": 206,
+      "new_variant_cases": 49,
+      "existing_tests": 157,
+      "passed_subtests": 113,
+      "exit_code": 0,
+      "duration_seconds": 11.0,
+      "process_id": 25626
+    },
+    "test_log": "/Users/chriswong/mmx-worktrees/rs10225-incumbent-final-tests.log",
+    "source_behavior_probe": "insufficient two-red same-session history now has null complete-structure known_at; one-red output remains exact",
+    "mutation_receipt": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_VARIANT_MUTATION_EVIDENCE_2026_10_30.json",
+    "original_functions_ast_unchanged": 8,
+    "ci_registration": {
+      "job": "research-price-panel",
+      "new_jobs": 0,
+      "all_other_jobs_semantically_unchanged": 355,
+      "total_jobs": 356,
+      "new_scope_paths": [
+        "tests/test_entry_radar_first_green_variants.py"
+      ],
+      "new_explicit_test_arguments": [
+        "tests/test_entry_radar_first_green_descriptor.py",
+        "tests/test_entry_radar_first_green_variants.py"
+      ],
+      "assertion_process_id": 20655,
+      "hosted_exact_head_result": "NOT_YET_OBSERVED"
+    },
+    "file_sha256": {
+      "engine/entry_radar/replay/first_green_reversal_descriptor.py": "cae51594e9ba2bbf667be3040fdc09bbd8841b2c13f82b8572b3f15d0f8f80bd",
+      "tests/test_entry_radar_first_green_variants.py": "751c6e82be01db22f0e86edde971daefa748c7ab679ad58a4b051619f2f80b6f",
+      ".github/ci/legacy-jobs.yml": "196d7e5cf2c0af53fb7cceaf8717aef496f563a4b5eb9f9057d982c27267309b"
+    },
+    "independent_code_review": "NOT_YET_REQUESTED_ON_PUBLISHED_IMPLEMENTATION",
+    "market_source_admitted": false,
+    "live_feature_delivered": false,
+    "economic_edge_validated": false
+  }
 }

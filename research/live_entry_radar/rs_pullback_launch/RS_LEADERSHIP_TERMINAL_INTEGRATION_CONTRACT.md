@@ -20,7 +20,7 @@ The prior Terminal #879 acceptance remains evidence for the historical research 
 |---|---|---|
 | Existing Terminal `rs30-causal-v2` | Swing low with two left and two right completed bars; later reclaim; simulated next-permitted-open entry | Keep all four historical study arms and exported meanings unchanged |
 | Existing Macro rejection v0 | Four prior same-session 30m lows; current undercut/reclaim and upper-half close; later completed 1m-close break | Preserve its exact descriptor and progress behavior |
-| New first-green research variants | Current completed green 30m bar after one or two immediately preceding complete red bars; later confirmation is a separate step | Distinct definition, evidence and comparison arm; never rename it as either existing species |
+| Incumbent one-red and additive two-red first-green | Current completed green 30m bar after one or two immediately preceding complete red bars; later confirmation is a separate step | Distinct definition, evidence and comparison arm; never rename it as either existing species |
 
 The existing Terminal RS gate uses positive benchmark excess log returns over 65 and 260 aligned completed 30m bars. It is neither a market-wide percentile nor the existing daily leader owner's eligibility. A new qualified daily-leader annotation must state its own owner, definition, original as-of and coverage. Do not silently inherit the old research gate and call it the new leadership system.
 
@@ -36,22 +36,13 @@ Use the existing accepted exchange/session clock and chart conversion utilities 
 
 Example only: an October regular-session 09:30 ET bar corresponds to 13:30 UTC while daylight saving time applies; this is not a year-round four-hour offset. The actual calendar owner must determine each conversion.
 
-## 4. Formation-to-confirmation seam
+## 4. Formation-to-confirmation seam - incumbent correction
 
-The inspected Macro `_reference_value` deliberately accepts only the old rejection schema, exact old definition, `PIVOT_FORMED` state, valid digest, eligible source context, no refusals and all-false authority. It rejects a first-green schema/state even with a self-consistent digest. A native synthetic probe in the isolated parent workspace reproduced that refusal without changing source.
+The rejection-v0 `_reference_value` correctly rejects a first-green schema. However, the expanded census found the ALREADY EXISTING `first_green_reversal_descriptor.py` in the same Macro source revision, with its own `freeze_first_green_reference` and `describe_first_green_progress`. It supplies native1m-close confirmation, low invalidation, gap/expiry semantics and original authority ceilings. The earlier inference that first-green freezing was missing was incorrect. Preserve and consume that implementation; do not build a new shared universal owner or copy its progress loop.
 
-Therefore P1 formation does not automatically complete P1.4. The later change must be an additive, versioned common-structure integration within the existing pivot owner, with separate accepted formation types. It must not coerce the first-green record into rejection-v0, monkeypatch constants, copy the entire progress engine, or create a second runtime lifecycle.
+The current additive implementation changes only a separately typed two-red FORMATION comparator and exact one-red passthrough. Old formation/reference/progress outputs remain unchanged. Two-red records deliberately cannot impersonate the incumbent v0 frozen-reference schema. P1.4 is now a later reviewed compatibility extension inside that incumbent owner, not creation of first-green confirmation from scratch.
 
-Required compatibility constraints:
-
-- All existing rejection-v0 descriptor, frozen-reference and progress outputs remain unchanged for existing inputs; retain the original regression suite.
-- New formation references preserve definition/variant, original source snapshot, frozen high/low, decision/known-at and all authority ceilings. Their identities remain distinct even if two variants happen to share price levels.
-- The existing later-minute confirmation, invalidation precedence, source-gap handling, expiry, decimal buffer normalization and history retention remain single-owner behaviors.
-- A source-supplied exchange tick and a caller-declared research buffer are different. Do not relabel the latter as exchange qualification.
-- Confirmation is a supported structural observation, not renewed daily eligibility or entry permission. Failed and expired setups remain in history; no retroactive rearm or winner substitution.
-- A same-minute break and invalidation cannot be given invented intrabar ordering. The existing conservative rule and explicitly unknown cases remain visible.
-
-The exact public API/schema design must be reviewed with the owning source before implementation. This contract is not evidence that a shared first-green confirmation adapter exists.
+The original-author sample also contains explicit second30m-candle-close-above wording. That is a separate registered comparison, not the existing1m-close definition and not evidence for intrabar-touch execution. Keep immediate-next versus eventual confirmation, event/known/decision/issue clocks, source gaps, expiry, failure precedence and research buffer versus exchange tick distinct. A source digest is consistency evidence, not historical availability or financial authority.
 
 ## 5. Source and transport boundary
 
@@ -95,4 +86,4 @@ Scientific acceptance remains Macro Setup Species/Evaluation OS, not the browser
 
 ## 9. Immediate implementation boundary
 
-P1 first-green formation and its synthetic tests can proceed independently. P1.4 common reference integration follows exact source tests/review and explicit owner compatibility. Real customer delivery additionally requires P2 source admission/latency and the accepted transport route. This contract eliminates concrete clock/species/renderer integration ambiguities; it does not waive those gates or modify Terminal source.
+P1 additive two-red formation and its synthetic tests can proceed independently; incumbent one-red formation/progress already exist. P1.4 common reference integration follows exact source tests/review and explicit owner compatibility. Real customer delivery additionally requires P2 source admission/latency and the accepted transport route. This contract eliminates concrete clock/species/renderer integration ambiguities; it does not waive those gates or modify Terminal source.
