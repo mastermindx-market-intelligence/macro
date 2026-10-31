@@ -18770,6 +18770,7 @@ jobs:
       - "site/sector_cycles_narr_data.js"
       - "site/sectors/XLB.html"
       - "site/signal_lab.html"
+      - "site/start.html"
       - "site/stock_seasonality.html"
       - "site/us_stocks.html"
       - "templates/_desk_grader_panel.html.j2"
