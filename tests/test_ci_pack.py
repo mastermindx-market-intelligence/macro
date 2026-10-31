@@ -5090,6 +5090,10 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # 2026-10-10 Catalyst Loop #8678: eight focused suites have one
+    # gate:code exclusive CI home with a measured transitive source closure.
+    # Keep the curated contract aligned; do not loosen pack ceilings.
+    "catalyst-loop-integrated",
     # AI Brief render-date countdown: an intentionally curated code-gated
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
