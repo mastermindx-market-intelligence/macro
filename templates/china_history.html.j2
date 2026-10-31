@@ -89,7 +89,9 @@
       {{ help("Every regime period since ~2006 in this classifier: how many there were, how long they typically lasted, and where they went next. China regimes are shorter and less stable than the US — treat as context.", "本分类器自约 2006 年以来的每个周期时段：共出现多少次、通常持续多久、结束后转向何处。中国的周期比美国更短、更不稳定 — 仅供参考。") }}
     </h2>
     <table>
-      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th><th>{{ t('median length (days)', '存续中位数（天）') }}</th><th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
+      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
+        <th>{{ t('median length (weekdays)', '存续中位数（周一至周五计，天）') }}</th>
+        <th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
       {% for row in lifespan_rows %}
       <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td><td>{{ t(row.next, row.next_zh) }}</td></tr>
       {% endfor %}
@@ -190,6 +192,10 @@
         <th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('Dist', '距离') }}</th>
         <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('SHCOMP 20d', '上证20日') }}</th>
         <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600">{{ t('CSI300 60d', '沪深300 60日') }}</th>
+        <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);
+color:var(--muted);font-weight:600">{{ t('SHCOMP 120d', '上证120日') }}</th>
+        <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--line);
+color:var(--muted);font-weight:600">{{ t('CSI300 120d', '沪深300 120日') }}</th>
       </tr>
       {% for a in analogs %}
       {% set fsh = a.get('fwd_shcomp') or {} %}
@@ -202,6 +208,18 @@
         <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:{{ 'var(--up)' if sh20 is not none and sh20 > 0 else ('var(--down)' if sh20 is not none and sh20 < 0 else 'var(--muted)') }}">{{ ('%+.1f%%'|format(sh20 * 100)) if sh20 is not none else '—' }}</td>
         {% set csi60 = fcsi.get('h60') %}
         <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;color:{{ 'var(--up)' if csi60 is not none and csi60 > 0 else ('var(--down)' if csi60 is not none and csi60 < 0 else 'var(--muted)') }}">{{ ('%+.1f%%'|format(csi60 * 100)) if csi60 is not none else '—' }}</td>
+        {% set sh120 = fsh.get('h120') %}
+        {% set sh120c = 'var(--up)' if sh120 is not none and sh120 > 0 else
+                        ('var(--down)' if sh120 is not none and sh120 < 0 else 'var(--muted)') %}
+        <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;
+color:{{ sh120c }}">
+          {{ ('%+.1f%%'|format(sh120 * 100)) if sh120 is not none else '—' }}</td>
+        {% set csi120 = fcsi.get('h120') %}
+        {% set csi120c = 'var(--up)' if csi120 is not none and csi120 > 0 else
+                         ('var(--down)' if csi120 is not none and csi120 < 0 else 'var(--muted)') %}
+        <td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;
+color:{{ csi120c }}">
+          {{ ('%+.1f%%'|format(csi120 * 100)) if csi120 is not none else '—' }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -233,7 +251,7 @@
   </script>
   {% endif %}
 
-  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }} UTC</p>
+  <p class="muted">{{ t('Generated', '生成于') }} {{ generated_utc }}</p>
 <script>
 window.__CHART_SWAP__ = {
   /* zh 红涨绿跌 (operator ruling 2026-07-21): direction phase pairs swap.
