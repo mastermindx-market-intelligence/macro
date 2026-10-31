@@ -95,9 +95,12 @@ def _specimen_panel():
         "reason_pairs": None, "reason_tokens": [],
     }
     # Decomposition verbatim from the contract shape: 1.2 + 2.2 + 0.0 = 3.4.
+    # (R-06: fx_pct is 2.2 so the printed table satisfies Local + FX +
+    #  interaction = USD exactly at the printed precision, matching the
+    #  identity sentence and the additive contribution leg.)
     br["decomposition"] = {
         "available": True,
-        "local_pct": 1.2, "fx_pct": 2.26, "usd_pct": 3.4,
+        "local_pct": 1.2, "fx_pct": 2.2, "usd_pct": 3.4,
         "additive_fx_contribution_pp": 2.2, "interaction_pp": 0.0,
         "identity_residual": 0.0,
         "identity_en": ("Identity check: local +1.20% + FX contribution +2.20pp "
