@@ -349,8 +349,10 @@
   
   
   
-  <div class="span12 hk-fresh-degraded" id="hk-freshness-banner">
-    <span class="hfd-i">&#9680;</span> <span class="l-en">Some background feeds are a step behind — prices and picks are current. (prices current as of 2026-10-30)</span><span class="l-zh">部分后台数据来源稍有滞后 — 价格和选股仍是最新的。（价格截至 2026-10-30 为最新）</span>
+  <div class="panel span12 hk-fresh-stale" id="hk-freshness-banner">
+    <p class="hb-h">&#9888; <span class="l-en">HK data problem — numbers may be from an older session</span><span class="l-zh">港股数据异常 — 数值可能来自较早交易日</span></p>
+    <p class="hb-msg"><span class="l-en">HK data is stale — some numbers may be from an older session. Treat them as yesterday's until tonight's update. (today's prices came in older than yesterday's (back to 2026-10-30))</span><span class="l-zh">港股数据已过期 — 部分数值可能来自较早的交易日，在今晚更新前请当作昨日数据看待。（今日价格比昨日更旧（回退至 2026-10-30））</span></p>
+    <p class="hb-exp"><span class="l-en">Expected session 2026-10-30</span><span class="l-zh">预期交易日 2026-10-30</span></p>
   </div>
   
   
@@ -474,8 +476,8 @@
           </div>
           
           <div class="hkx-pop-row">
-            <div class="hkx-pop-rt"><span><span class="l-en">Risk appetite</span><span class="l-zh">风险偏好</span></span><b style="color:var(--warn)">47</b></div>
-            <div class="hkx-pop-bar"><i style="width:47%;background:var(--warn)"></i></div>
+            <div class="hkx-pop-rt"><span><span class="l-en">Risk appetite</span><span class="l-zh">风险偏好</span></span><b style="color:var(--warn)">46</b></div>
+            <div class="hkx-pop-bar"><i style="width:46%;background:var(--warn)"></i></div>
           </div>
           
           <div class="hkx-pop-row">
@@ -1102,8 +1104,8 @@
       
       
       <div class="hkx-stk">
-        <a class="hkx-tkr-btn" href="hk_lookup.html#0386.HK"><span class="l-en">Sinopec</span><span class="l-zh">中国石油化工</span></a>
-        <div class="hkx-stk-meta"><b>0386.HK</b> · <span class="l-en">Energy</span><span class="l-zh">能源</span></div>
+        <a class="hkx-tkr-btn" href="hk_lookup.html#0003.HK"><span class="l-en">HK & China Gas</span><span class="l-zh">香港中华煤气</span></a>
+        <div class="hkx-stk-meta"><b>0003.HK</b> · <span class="l-en">Telecom &amp; Utilities</span><span class="l-zh">电信与公用事业</span></div>
         
         <span class="hkx-stage"><span class="l-en">Almost ready</span><span class="l-zh">接近就绪</span></span>
       </div>
@@ -1111,13 +1113,6 @@
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#1299.HK"><span class="l-en">AIA Group</span><span class="l-zh">友邦保险</span></a>
         <div class="hkx-stk-meta"><b>1299.HK</b> · <span class="l-en">Insurance</span><span class="l-zh">保险</span></div>
-        
-        <span class="hkx-stage"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
-      </div>
-      
-      <div class="hkx-stk">
-        <a class="hkx-tkr-btn" href="hk_lookup.html#1398.HK"><span class="l-en">ICBC</span><span class="l-zh">中国工商银行</span></a>
-        <div class="hkx-stk-meta"><b>1398.HK</b> · <span class="l-en">Financials &amp; Banks</span><span class="l-zh">金融与银行</span></div>
         
         <span class="hkx-stage"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
       </div>
@@ -1132,6 +1127,13 @@
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#0883.HK"><span class="l-en">CNOOC</span><span class="l-zh">中国海洋石油</span></a>
         <div class="hkx-stk-meta"><b>0883.HK</b> · <span class="l-en">Energy</span><span class="l-zh">能源</span></div>
+        
+        <span class="hkx-stage"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
+      </div>
+      
+      <div class="hkx-stk">
+        <a class="hkx-tkr-btn" href="hk_lookup.html#1398.HK"><span class="l-en">ICBC</span><span class="l-zh">中国工商银行</span></a>
+        <div class="hkx-stk-meta"><b>1398.HK</b> · <span class="l-en">Financials &amp; Banks</span><span class="l-zh">金融与银行</span></div>
         
         <span class="hkx-stage"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
       </div>
@@ -1206,7 +1208,100 @@
       </div>
       
       
-      <p style="font-size:12px;color:var(--muted)"><span class="l-en">Building…</span><span class="l-zh">积累中…</span></p>
+      
+      
+      
+      
+      <div class="hkx-lbl"><span class="l-en">Hot — already run, don’t chase</span><span class="l-zh">热门 — 已涨，勿追</span></div>
+      <div class="hkx-chips"><span class="hkx-chip hot"><span class="l-en">Consumer</span><span class="l-zh">消费</span></span><span class="hkx-chip hot"><span class="l-en">Exchange &amp; Diversified</span><span class="l-zh">交易所与综合企业</span></span><span class="hkx-chip hot"><span class="l-en">Energy</span><span class="l-zh">能源</span></span></div>
+      
+      
+      <div class="hkx-lbl"><span class="l-en">Turning up — cheap and getting bought</span><span class="l-zh">转强 — 便宜且被资金买入</span></div>
+      <div class="hkx-chips"><span class="hkx-chip turn"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="hkx-chip turn"><span class="l-en">Consumer</span><span class="l-zh">消费</span></span></div>
+      
+      <div class="hkx-lbl"><span class="l-en">Sector heat · green = leading · red = lagging</span><span class="l-zh">板块温度 · 绿=领涨 · 红=滞涨</span></div>
+      <div class="hkx-heat">
+        
+        
+        
+        
+        <i class="h"
+           data-tip-en="Energy: +5.8% over 20 days"
+           data-tip-zh="能源：20日 +5.8%"></i>
+        
+        
+        
+        <i class="h2"
+           data-tip-en="Healthcare & Pharma: +1.6% over 20 days"
+           data-tip-zh="医疗与制药：20日 +1.6%"></i>
+        
+        
+        
+        <i class="h"
+           data-tip-en="Financials & Banks: +4.8% over 20 days"
+           data-tip-zh="金融与银行：20日 +4.8%"></i>
+        
+        
+        
+        <i class="h"
+           data-tip-en="Exchange & Diversified: +6.5% over 20 days"
+           data-tip-zh="交易所与综合企业：20日 +6.5%"></i>
+        
+        
+        
+        <i class="h"
+           data-tip-en="Telecom & Utilities: +5.5% over 20 days"
+           data-tip-zh="电信与公用事业：20日 +5.5%"></i>
+        
+        
+        
+        <i class="h"
+           data-tip-en="Consumer: +7.6% over 20 days"
+           data-tip-zh="消费：20日 +7.6%"></i>
+        
+        
+        
+        <i class="h2"
+           data-tip-en="Industrials & Transport: +2.2% over 20 days"
+           data-tip-zh="工业与运输：20日 +2.2%"></i>
+        
+        
+        
+        <i class="h2"
+           data-tip-en="Property: +2.2% over 20 days"
+           data-tip-zh="地产：20日 +2.2%"></i>
+        
+        
+        
+        <i class="c"
+           data-tip-en="Materials: -1.2% over 20 days"
+           data-tip-zh="原材料：20日 -1.2%"></i>
+        
+        
+        
+        <i class="c"
+           data-tip-en="Insurance: -2.7% over 20 days"
+           data-tip-zh="保险：20日 -2.7%"></i>
+        
+        
+        
+        <i class="c"
+           data-tip-en="Internet & Tech: -3.1% over 20 days"
+           data-tip-zh="互联网与科技：20日 -3.1%"></i>
+        
+        
+        
+        <i class="c"
+           data-tip-en="Auto & EV: -3.5% over 20 days"
+           data-tip-zh="汽车与新能源车：20日 -3.5%"></i>
+        
+      </div>
+      <div class="hkx-heat-legend"><span class="heat-up"><span class="l-en">▲ Heating</span><span class="l-zh">▲ 升温</span></span><span class="heat-dn"><span class="l-en">Cooling ▼</span><span class="l-zh">降温 ▼</span></span></div>
+      
+      
+      <div class="hkx-lbl"><span class="l-en">How many stocks are above their 50-day line</span><span class="l-zh">站上50日线的个股占比</span></div>
+      <div class="hkx-ilx"><figure class="ilx ilx-baseline" style="color:var(--up);--ilx-len:1658.1;--ilx-h:104px" role="img" aria-label="Share of HK names above their 50-day average"><svg viewBox="0 0 560 104" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="ilxct-bbac6f95"><rect x="0" y="0" width="560" height="53.67"/></clipPath><clipPath id="ilxcb-bbac6f95"><rect x="0" y="53.67" width="560" height="50.33"/></clipPath><linearGradient id="ilxgu-bbac6f95" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--up)" stop-opacity=".40"/><stop offset="1" stop-color="var(--up)" stop-opacity="0"/></linearGradient><linearGradient id="ilxgd-bbac6f95" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--down)" stop-opacity=".40"/><stop offset="1" stop-color="var(--down)" stop-opacity="0"/></linearGradient><path id="ilxa-bbac6f95" d="M0.0 53.67 L0.0 34.96 L2.53 37.21 L5.07 33.87 L7.6 29.53 L10.14 38.3 L12.67 42.64 L15.2 71.3 L17.74 62.44 L20.27 72.39 L22.81 85.59 L25.34 81.16 L27.87 83.33 L30.41 70.13 L32.94 74.56 L35.48 54.76 L38.01 55.84 L40.54 66.87 L43.08 64.7 L45.61 55.84 L48.14 54.76 L50.68 64.7 L53.21 65.79 L55.75 73.47 L58.28 74.56 L60.81 78.99 L63.35 71.3 L65.88 53.67 L68.42 65.79 L70.95 52.58 L73.48 56.93 L76.02 48.16 L78.55 50.41 L81.09 40.47 L83.62 32.78 L86.15 38.3 L88.69 36.04 L91.22 29.53 L93.76 34.96 L96.29 27.27 L98.82 22.93 L101.36 18.5 L103.89 24.01 L106.43 17.41 L108.96 16.32 L111.49 20.67 L114.03 21.76 L116.56 39.38 L119.1 34.96 L121.63 88.84 L124.16 87.76 L126.7 75.64 L129.23 77.82 L131.76 67.96 L134.3 59.19 L136.83 65.79 L139.37 59.19 L141.9 49.24 L144.43 50.41 L146.97 32.78 L149.5 30.61 L152.04 38.3 L154.57 34.96 L157.1 36.04 L159.64 34.96 L162.17 30.61 L164.71 31.7 L167.24 27.27 L169.77 20.67 L172.31 24.01 L174.84 24.01 L177.38 36.04 L179.91 33.87 L182.44 26.18 L184.98 28.36 L187.51 30.61 L190.05 29.53 L192.58 31.7 L195.11 32.78 L197.65 25.1 L200.18 26.18 L202.71 14.07 L205.25 14.07 L207.78 21.76 L210.32 24.01 L212.85 27.27 L215.38 29.53 L217.92 25.1 L220.45 21.76 L222.99 33.87 L225.52 36.04 L228.05 31.7 L230.59 28.36 L233.12 42.64 L235.66 39.38 L238.19 45.98 L240.72 42.64 L243.26 33.87 L245.79 30.61 L248.33 37.21 L250.86 41.56 L253.39 60.27 L255.93 63.53 L258.46 50.41 L261.0 47.07 L263.53 61.36 L266.06 54.76 L268.6 75.64 L271.13 73.47 L273.67 53.67 L276.2 54.76 L278.73 47.07 L281.27 51.5 L283.8 58.1 L286.33 49.24 L288.87 32.78 L291.4 29.53 L293.94 37.21 L296.47 42.64 L299.0 53.67 L301.54 48.16 L304.07 44.9 L306.61 43.81 L309.14 47.07 L311.67 52.58 L314.21 55.84 L316.74 51.5 L319.28 64.7 L321.81 56.93 L324.34 53.67 L326.88 61.36 L329.41 48.16 L331.95 45.98 L334.48 51.5 L337.01 42.64 L339.55 36.04 L342.08 42.64 L344.62 39.38 L347.15 40.47 L349.68 28.36 L352.22 32.78 L354.75 38.3 L357.29 39.38 L359.82 29.53 L362.35 34.96 L364.89 37.21 L367.42 28.36 L369.95 42.64 L372.49 47.07 L375.02 64.7 L377.56 55.84 L380.09 66.87 L382.62 67.96 L385.16 61.36 L387.69 69.04 L390.23 86.67 L392.76 72.39 L395.29 74.56 L397.83 64.7 L400.36 54.76 L402.9 59.19 L405.43 52.58 L407.96 55.84 L410.5 61.36 L413.03 60.27 L415.57 53.67 L418.1 55.84 L420.63 47.07 L423.17 44.9 L425.7 42.64 L428.24 42.64 L430.77 59.19 L433.3 56.93 L435.84 72.39 L438.37 76.73 L440.9 60.27 L443.44 70.13 L445.97 82.24 L448.51 81.16 L451.04 74.56 L453.57 77.82 L456.11 84.42 L458.64 86.67 L461.18 88.84 L463.71 89.93 L466.24 80.07 L468.78 81.16 L471.31 78.99 L473.85 72.39 L476.38 48.16 L478.91 50.41 L481.45 39.38 L483.98 42.64 L486.52 35.96 L489.05 36.54 L491.58 46.74 L494.12 41.89 L496.65 54.17 L499.19 54.76 L501.72 49.91 L504.25 49.66 L506.79 37.96 L509.32 41.14 L511.86 53.42 L514.39 55.01 L516.92 47.57 L519.46 53.92 L521.99 65.62 L524.52 70.97 L527.06 66.7 L529.59 68.29 L532.13 75.73 L534.66 70.46 L537.19 78.99 L539.73 77.9 L542.26 69.88 L544.8 70.97 L547.33 66.7 L549.86 67.21 L552.4 83.25 L554.93 72.55 L557.47 76.81 L560.0 65.12 L560.0 53.67 Z"/><path id="ilxl-bbac6f95" d="M0.0 34.96 L2.53 37.21 L5.07 33.87 L7.6 29.53 L10.14 38.3 L12.67 42.64 L15.2 71.3 L17.74 62.44 L20.27 72.39 L22.81 85.59 L25.34 81.16 L27.87 83.33 L30.41 70.13 L32.94 74.56 L35.48 54.76 L38.01 55.84 L40.54 66.87 L43.08 64.7 L45.61 55.84 L48.14 54.76 L50.68 64.7 L53.21 65.79 L55.75 73.47 L58.28 74.56 L60.81 78.99 L63.35 71.3 L65.88 53.67 L68.42 65.79 L70.95 52.58 L73.48 56.93 L76.02 48.16 L78.55 50.41 L81.09 40.47 L83.62 32.78 L86.15 38.3 L88.69 36.04 L91.22 29.53 L93.76 34.96 L96.29 27.27 L98.82 22.93 L101.36 18.5 L103.89 24.01 L106.43 17.41 L108.96 16.32 L111.49 20.67 L114.03 21.76 L116.56 39.38 L119.1 34.96 L121.63 88.84 L124.16 87.76 L126.7 75.64 L129.23 77.82 L131.76 67.96 L134.3 59.19 L136.83 65.79 L139.37 59.19 L141.9 49.24 L144.43 50.41 L146.97 32.78 L149.5 30.61 L152.04 38.3 L154.57 34.96 L157.1 36.04 L159.64 34.96 L162.17 30.61 L164.71 31.7 L167.24 27.27 L169.77 20.67 L172.31 24.01 L174.84 24.01 L177.38 36.04 L179.91 33.87 L182.44 26.18 L184.98 28.36 L187.51 30.61 L190.05 29.53 L192.58 31.7 L195.11 32.78 L197.65 25.1 L200.18 26.18 L202.71 14.07 L205.25 14.07 L207.78 21.76 L210.32 24.01 L212.85 27.27 L215.38 29.53 L217.92 25.1 L220.45 21.76 L222.99 33.87 L225.52 36.04 L228.05 31.7 L230.59 28.36 L233.12 42.64 L235.66 39.38 L238.19 45.98 L240.72 42.64 L243.26 33.87 L245.79 30.61 L248.33 37.21 L250.86 41.56 L253.39 60.27 L255.93 63.53 L258.46 50.41 L261.0 47.07 L263.53 61.36 L266.06 54.76 L268.6 75.64 L271.13 73.47 L273.67 53.67 L276.2 54.76 L278.73 47.07 L281.27 51.5 L283.8 58.1 L286.33 49.24 L288.87 32.78 L291.4 29.53 L293.94 37.21 L296.47 42.64 L299.0 53.67 L301.54 48.16 L304.07 44.9 L306.61 43.81 L309.14 47.07 L311.67 52.58 L314.21 55.84 L316.74 51.5 L319.28 64.7 L321.81 56.93 L324.34 53.67 L326.88 61.36 L329.41 48.16 L331.95 45.98 L334.48 51.5 L337.01 42.64 L339.55 36.04 L342.08 42.64 L344.62 39.38 L347.15 40.47 L349.68 28.36 L352.22 32.78 L354.75 38.3 L357.29 39.38 L359.82 29.53 L362.35 34.96 L364.89 37.21 L367.42 28.36 L369.95 42.64 L372.49 47.07 L375.02 64.7 L377.56 55.84 L380.09 66.87 L382.62 67.96 L385.16 61.36 L387.69 69.04 L390.23 86.67 L392.76 72.39 L395.29 74.56 L397.83 64.7 L400.36 54.76 L402.9 59.19 L405.43 52.58 L407.96 55.84 L410.5 61.36 L413.03 60.27 L415.57 53.67 L418.1 55.84 L420.63 47.07 L423.17 44.9 L425.7 42.64 L428.24 42.64 L430.77 59.19 L433.3 56.93 L435.84 72.39 L438.37 76.73 L440.9 60.27 L443.44 70.13 L445.97 82.24 L448.51 81.16 L451.04 74.56 L453.57 77.82 L456.11 84.42 L458.64 86.67 L461.18 88.84 L463.71 89.93 L466.24 80.07 L468.78 81.16 L471.31 78.99 L473.85 72.39 L476.38 48.16 L478.91 50.41 L481.45 39.38 L483.98 42.64 L486.52 35.96 L489.05 36.54 L491.58 46.74 L494.12 41.89 L496.65 54.17 L499.19 54.76 L501.72 49.91 L504.25 49.66 L506.79 37.96 L509.32 41.14 L511.86 53.42 L514.39 55.01 L516.92 47.57 L519.46 53.92 L521.99 65.62 L524.52 70.97 L527.06 66.7 L529.59 68.29 L532.13 75.73 L534.66 70.46 L537.19 78.99 L539.73 77.9 L542.26 69.88 L544.8 70.97 L547.33 66.7 L549.86 67.21 L552.4 83.25 L554.93 72.55 L557.47 76.81 L560.0 65.12"/></defs><use href="#ilxa-bbac6f95" class="ilx-area" fill="url(#ilxgu-bbac6f95)" clip-path="url(#ilxct-bbac6f95)"/><use href="#ilxa-bbac6f95" class="ilx-area" fill="url(#ilxgd-bbac6f95)" clip-path="url(#ilxcb-bbac6f95)"/><line class="ilx-water" x1="0" y1="53.67" x2="560" y2="53.67"/><use href="#ilxl-bbac6f95" class="ilx-path ilx-up" clip-path="url(#ilxct-bbac6f95)"/><use href="#ilxl-bbac6f95" class="ilx-path ilx-down" clip-path="url(#ilxcb-bbac6f95)"/><circle class="ilx-dot ilx-dot-down" cx="560.0" cy="65.12" r="3.2"/></svg><span class="ilx-d ilx-d0">2024-10-30</span><span class="ilx-d ilx-d1">2026-10-30</span><span class="ilx-tag">36<span class="ilx-u"><span class="l-en">%</span><span class="l-zh">%</span></span></span></figure></div>
+      
       
     </div>
   </div>
@@ -1394,8 +1489,8 @@
         
         <div class="hkx-frow">
           <span><span class="l-en">Risk appetite</span><span class="l-zh">风险偏好</span></span>
-          <span><div class="hkx-fbar"><i style="width:47%;background:var(--warn)"></i></div></span>
-          <span class="hkx-fscore" style="color:var(--warn)">47</span>
+          <span><div class="hkx-fbar"><i style="width:46%;background:var(--warn)"></i></div></span>
+          <span class="hkx-fscore" style="color:var(--warn)">46</span>
         </div>
         
         <div class="hkx-frow">
@@ -1861,7 +1956,7 @@
           
         </div>
         
-        <div class="hkx-fresh"><span class="l-en">Weakest evidence tier — news volume, not a buy signal.</span><span class="l-zh">最弱证据层 — 新闻热度，非买入信号。</span> · <span class="l-en">slow-moving</span><span class="l-zh">缓慢更新</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-30</div>
+        <div class="hkx-fresh"><span class="l-en">Weakest evidence tier — news volume, not a buy signal.</span><span class="l-zh">最弱证据层 — 新闻热度，非买入信号。</span> · <span class="l-en">slow-moving</span><span class="l-zh">缓慢更新</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-31</div>
         
         <div class="hkx-receipt"><span class="l-en">Official filings from the Hong Kong exchange. Buyback = company buying its own shares (supports price). Placement = new shares sold (dilution). News attention comes from English-language news volume; it is context, not a signal.</span><span class="l-zh">来自港交所的正式公告。回购 = 公司买回自家股份（支撑股价）。配股 = 新发股份（稀释）。新闻关注度来自英文媒体报道量，仅供参考，非信号。</span></div>
       </div>
@@ -2342,17 +2437,17 @@
         <div class="hkx-eyebrow"><span class="l-en">Turning up — cheap and getting bought</span><span class="l-zh">转强 — 便宜且被资金买入</span></div>
         <div class="hkx-chips">
           
-          <span class="hkx-chip turn"><span class="l-en">Sinopec</span><span class="l-zh">中国石油化工</span></span>
+          <span class="hkx-chip turn"><span class="l-en">HK & China Gas</span><span class="l-zh">香港中华煤气</span></span>
           
           <span class="hkx-chip turn"><span class="l-en">AIA Group</span><span class="l-zh">友邦保险</span></span>
-          
-          <span class="hkx-chip turn"><span class="l-en">ICBC</span><span class="l-zh">中国工商银行</span></span>
           
           <span class="hkx-chip turn"><span class="l-en">Sinopec Kantons</span><span class="l-zh">新域天然气</span></span>
           
           <span class="hkx-chip turn"><span class="l-en">CNOOC</span><span class="l-zh">中国海洋石油</span></span>
           
-          <span class="hkx-chip turn"><span class="l-en">MTR Corporation</span><span class="l-zh">香港铁路</span></span>
+          <span class="hkx-chip turn"><span class="l-en">ICBC</span><span class="l-zh">中国工商银行</span></span>
+          
+          <span class="hkx-chip turn"><span class="l-en">Sinopec</span><span class="l-zh">中国石油化工</span></span>
           
         </div>
         
@@ -2368,9 +2463,9 @@
           
           <span class="hkx-chip hot"><span class="l-en">Standard Chartered</span><span class="l-zh">渣打集团</span></span>
           
-          <span class="hkx-chip hot"><span class="l-en">Jiangxi Copper</span><span class="l-zh">江西铜业</span></span>
-          
           <span class="hkx-chip hot"><span class="l-en">CMOC Group</span><span class="l-zh">洛阳钼业</span></span>
+          
+          <span class="hkx-chip hot"><span class="l-en">Jiangxi Copper</span><span class="l-zh">江西铜业</span></span>
           
         </div>
         
@@ -2384,6 +2479,91 @@
         
         
         
+        
+        <div class="hkx-sep" style="margin:10px 0"></div>
+        <div class="hkx-eyebrow"><span class="l-en">All sectors — ranked</span><span class="l-zh">全部板块 — 排名</span></div>
+        <table class="hkx-mt">
+          <tr><th><span class="l-en">Sector</span><span class="l-zh">板块</span></th><th class="r"><span class="l-en">20d RS</span><span class="l-zh">20日相对</span></th><th class="r"><span class="l-en">State</span><span class="l-zh">状态</span></th></tr>
+          
+          <tr>
+            <td><span class="l-en">Energy</span><span class="l-zh">Energy</span></td>
+            <td class="r hkx-up">+5.8%</td>
+            <td class="r"><span class="hkx-stword ok"><span class="l-en">BOTTOMING</span><span class="l-zh">筑底中</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Healthcare & Pharma</span><span class="l-zh">Healthcare & Pharma</span></td>
+            <td class="r hkx-up">+1.6%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Financials & Banks</span><span class="l-zh">Financials & Banks</span></td>
+            <td class="r hkx-up">+4.8%</td>
+            <td class="r"><span class="hkx-stword warn"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Exchange & Diversified</span><span class="l-zh">Exchange & Diversified</span></td>
+            <td class="r hkx-up">+6.5%</td>
+            <td class="r"><span class="hkx-stword warn"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Telecom & Utilities</span><span class="l-zh">Telecom & Utilities</span></td>
+            <td class="r hkx-up">+5.5%</td>
+            <td class="r"><span class="hkx-stword warn"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Consumer</span><span class="l-zh">Consumer</span></td>
+            <td class="r hkx-up">+7.6%</td>
+            <td class="r"><span class="hkx-stword ok"><span class="l-en">BOTTOMING</span><span class="l-zh">筑底中</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Industrials & Transport</span><span class="l-zh">Industrials & Transport</span></td>
+            <td class="r hkx-up">+2.2%</td>
+            <td class="r"><span class="hkx-stword warn"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Property</span><span class="l-zh">Property</span></td>
+            <td class="r hkx-up">+2.2%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
+            <td class="r hkx-dn">-1.2%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Insurance</span><span class="l-zh">Insurance</span></td>
+            <td class="r hkx-dn">-2.7%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Internet & Tech</span><span class="l-zh">Internet & Tech</span></td>
+            <td class="r hkx-dn">-3.1%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Auto & EV</span><span class="l-zh">Auto & EV</span></td>
+            <td class="r hkx-dn">-3.5%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+          <tr>
+            <td><span class="l-en">Gaming & Leisure</span><span class="l-zh">Gaming & Leisure</span></td>
+            <td class="r hkx-dn">-4.1%</td>
+            <td class="r"><span class="hkx-stword bad"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span></td>
+          </tr>
+          
+        </table>
         
         <div class="hkx-receipt"><span class="l-en">Display-only — not a buy or sell call.</span><span class="l-zh">仅供展示 — 非买卖指令。</span></div>
       </div>
@@ -2566,8 +2746,8 @@ Hong Kong sits near Reflation, but conviction is weak. Mainland selling is the m
         <div class="hkx-sep"></div>
         <div class="hkx-eyebrow"><span class="l-en">Sector playbook</span><span class="l-zh">板块操盘</span></div>
         <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Favour</span><span class="l-zh">偏好</span></span><span class="hkx-v"><span class="hkx-nchip"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="hkx-nchip"><span class="l-en">Materials</span><span class="l-zh">原材料</span></span><span class="hkx-nchip"><span class="l-en">Financials &amp; Banks</span><span class="l-zh">金融与银行</span></span><span class="hkx-nchip"><span class="l-en">Property</span><span class="l-zh">地产</span></span></span></div>
-        
-        
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Leaders</span><span class="l-zh">领先</span></span><span class="hkx-v"><span class="hkx-nchip"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="hkx-nchip"><span class="l-en">Consumer</span><span class="l-zh">消费</span></span></span></div>
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Avoid</span><span class="l-zh">回避</span></span><span class="hkx-v"><span class="hkx-nchip" style="color:var(--ink-down, var(--down))"><span class="l-en">Healthcare &amp; Pharma</span><span class="l-zh">医疗与制药</span></span><span class="hkx-nchip" style="color:var(--ink-down, var(--down))"><span class="l-en">Financials &amp; Banks</span><span class="l-zh">金融与银行</span></span><span class="hkx-nchip" style="color:var(--ink-down, var(--down))"><span class="l-en">Exchange &amp; Diversified</span><span class="l-zh">交易所与综合企业</span></span><span class="hkx-nchip" style="color:var(--ink-down, var(--down))"><span class="l-en">Telecom &amp; Utilities</span><span class="l-zh">电信与公用事业</span></span><span class="hkx-nchip" style="color:var(--ink-down, var(--down))"><span class="l-en">Industrials &amp; Transport</span><span class="l-zh">工业与运输</span></span></span></div>
         
         <div class="hkx-receipt"><span class="l-en">Research context only — never a buy or sell signal.</span><span class="l-zh">仅供研究参考 — 绝非买卖信号。</span></div>
       </div>
@@ -2689,7 +2869,7 @@ Hong Kong sits near Reflation, but conviction is weak. Mainland selling is the m
         
         
         
-        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Detail</span><span class="l-zh">详情</span></span><span class="hkx-v" style="color:var(--ink-warn, var(--warn))"><span class="l-en">Some background feeds are a step behind — prices and picks are current. (prices current as of 2026-10-30)</span><span class="l-zh">部分后台数据来源稍有滞后 — 价格和选股仍是最新的。（价格截至 2026-10-30 为最新）</span></span></div>
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Detail</span><span class="l-zh">详情</span></span><span class="hkx-v" style="color:var(--ink-warn, var(--warn))"><span class="l-en">HK data is stale — some numbers may be from an older session. Treat them as yesterday's until tonight's update. (today's prices came in older than yesterday's (back to 2026-10-30))</span><span class="l-zh">港股数据已过期 — 部分数值可能来自较早的交易日，在今晚更新前请当作昨日数据看待。（今日价格比昨日更旧（回退至 2026-10-30））</span></span></div>
         
         
         <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Expected session</span><span class="l-zh">预期交易日</span></span><span class="hkx-v">2026-10-30</span></div>
@@ -2830,7 +3010,7 @@ Hong Kong sits near Reflation, but conviction is weak. Mainland selling is the m
 
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-31 06:55 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-31 08:54 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 
