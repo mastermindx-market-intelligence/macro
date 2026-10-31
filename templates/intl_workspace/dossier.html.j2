@@ -1,5 +1,5 @@
-{% import "intl_workspace/_gs_macros.html.j2" as gs %}
-{% import "intl_workspace/_gs_dossier_macros.html.j2" as ds %}
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}{# R-01a: publication harnesses pass t() as a render kwarg / caller macro, not an env global #}
+{% import "intl_workspace/_gs_dossier_macros.html.j2" as ds with context %}
 {# IM14 market dossier (INTL-GS-W2B, spec R14 §10.5 board 11). One include
    per dossier panel; gs_panel.payload is built by lib.intl_gs_dossier_view.
    A number prints ONLY from a qualified Wave 1 observation (L10); everything
