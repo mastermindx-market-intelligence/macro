@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1461751,
+  "byte_start": 1459895,
+  "normalized": "DRS Network & Imaging Systems, LLC 62% 65 %",
+  "normalized_sha256": "8aa30ef8030da3f4579f24da3e9bd2507cf221c1d50d20cf21dbd478e9fb3acc",
+  "raw": "<tr style=\"vertical-align: bottom; background-color: White\">\n    <td style=\"width: 60%; text-align: left\">DRS Network &amp; Imaging Systems, LLC</td><td style=\"width: 2%; font-weight: bold\">&#160;</td>\n    <td style=\"width: 1%; font-weight: bold; text-align: left\">&#160;</td><td id=\"xdx_987_eus-gaap--ConcentrationRiskPercentage1_dp_c20241229__20251227__us-gaap--ConcentrationRiskByBenchmarkAxis__us-gaap--SalesRevenueNetMember__us-gaap--ConcentrationRiskByTypeAxis__us-gaap--CustomerConcentrationRiskMember__srt--MajorCustomersAxis__custom--DRSNetworkAndImagingSystemsLLCMember_zuW3vk8EZ6c1\" style=\"width: 16%; font-weight: bold; text-align: right\"><ix:nonFraction name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember\" id=\"Fact001488\" format=\"ixt:numdotdecimal\" decimals=\"INF\" scale=\"-2\" unitRef=\"Pure\">62</ix:nonFraction></td><td style=\"width: 1%; font-weight: bold; text-align: left\">%</td><td style=\"width: 2%\">&#160;</td>\n    <td style=\"width: 1%; text-align: left\">&#160;</td><td id=\"xdx_986_eus-gaap--ConcentrationRiskPercentage1_dp_c20231231__20241228__us-gaap--ConcentrationRiskByBenchmarkAxis__us-gaap--SalesRevenueNetMember__us-gaap--ConcentrationRiskByTypeAxis__us-gaap--CustomerConcentrationRiskMember__srt--MajorCustomersAxis__custom--DRSNetworkAndImagingSystemsLLCMember_zkCv4Kvl1Km\" style=\"width: 16%; text-align: right\"><ix:nonFraction name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember\" id=\"Fact001489\" format=\"ixt:numdotdecimal\" decimals=\"INF\" scale=\"-2\" unitRef=\"Pure\">65</ix:nonFraction></td>\n    <td style=\"width: 1%; text-align: left\">%</td></tr>",
+  "raw_sha256": "5fb624c84b542cb1663d232e4b2f08eb0ed05ed83befa68f37fcb4ca2418150d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 159544,
+   "byte_start": 158618,
+   "context_ref": "From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember",
+   "raw": "<xbrli:context id=\"From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember\">\n      <xbrli:entity>\n        <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000771266</xbrli:identifier>\n        <xbrli:segment>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">KOPN:DRSNetworkAndImagingSystemsLLCMember</xbrldi:explicitMember>\n        </xbrli:segment>\n      </xbrli:entity>\n      <xbrli:period>\n        <xbrli:startDate>2024-12-29</xbrli:startDate>\n        <xbrli:endDate>2025-12-27</xbrli:endDate>\n      </xbrli:period>\n    </xbrli:context>",
+   "raw_sha256": "294197e0f946d40e4e5e6c92fff3c311a401f8146d685d5f3b1e9469c394fbee"
+  },
+  {
+   "byte_end": 160475,
+   "byte_start": 159549,
+   "context_ref": "From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember",
+   "raw": "<xbrli:context id=\"From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_DRSNetworkAndImagingSystemsLLCMember\">\n      <xbrli:entity>\n        <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000771266</xbrli:identifier>\n        <xbrli:segment>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">KOPN:DRSNetworkAndImagingSystemsLLCMember</xbrldi:explicitMember>\n        </xbrli:segment>\n      </xbrli:entity>\n      <xbrli:period>\n        <xbrli:startDate>2023-12-31</xbrli:startDate>\n        <xbrli:endDate>2024-12-28</xbrli:endDate>\n      </xbrli:period>\n    </xbrli:context>",
+   "raw_sha256": "2db5e6c7068664bbf008eba5b61bf945f1027a5c6052c93ec535b450be7eec38"
+  }
+ ]
+}
