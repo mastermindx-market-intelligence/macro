@@ -1,0 +1,86 @@
+[
+  {
+    "name": "CONTROL (pre-render macro.html): legacy menu paints during the chain",
+    "ok": true,
+    "detail": "barrier=False bad_frames=71/71 displays=['block']",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 dark EN: zero legacy frames while chained (rAF-sampled 1.5s)",
+    "ok": true,
+    "detail": "barrier=True displays=['none'] frames=92 bad=0",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 dark EN: mega menu open after boot",
+    "ok": true,
+    "detail": "display=grid isMega=True",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 light EN: zero legacy frames while chained (rAF-sampled 1.5s)",
+    "ok": true,
+    "detail": "barrier=True displays=['none'] frames=92 bad=0",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 light EN: mega menu open after boot",
+    "ok": true,
+    "detail": "display=grid isMega=True",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 dark ZH: zero legacy frames while chained (rAF-sampled 1.5s)",
+    "ok": true,
+    "detail": "barrier=True displays=['none'] frames=92 bad=0",
+    "shot": null
+  },
+  {
+    "name": "treated macro 1440 dark ZH: mega menu open after boot",
+    "ok": true,
+    "detail": "display=grid isMega=True",
+    "shot": null
+  },
+  {
+    "name": "keyboard: immediate focus shows no legacy menu",
+    "ok": true,
+    "detail": "barrier=True bad=0",
+    "shot": null
+  },
+  {
+    "name": "keyboard: mega menu opens on focus after boot",
+    "ok": true,
+    "detail": "display=grid",
+    "shot": null
+  },
+  {
+    "name": "mobile 390: immediate accordion tap shows no legacy menu",
+    "ok": true,
+    "detail": "barrier=True bad=0",
+    "shot": null
+  },
+  {
+    "name": "mobile 390: mega accordion opens after boot",
+    "ok": true,
+    "detail": "display=block",
+    "shot": null
+  },
+  {
+    "name": "fallback: nav_market.js blocked -> onerror lift, legacy menu usable",
+    "ok": true,
+    "detail": "display=block legacy=True",
+    "shot": null
+  },
+  {
+    "name": "fallback: account.js blocked -> theme.js onerror lift, legacy menu usable",
+    "ok": true,
+    "detail": "display=block",
+    "shot": null
+  },
+  {
+    "name": "no-JS: barrier class never armed, legacy nav markup present",
+    "ok": true,
+    "detail": "html_class='' legacy_menu_present=True",
+    "shot": null
+  }
+]

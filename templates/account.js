@@ -1280,8 +1280,16 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261018-shared-shell-source-join';
+    s.src = pfx + 'nav_market.js?v=20261030-nav-prehydration';
     s.async = true;
+    /* nav_market.js failed to fetch: its boot can never lift the pre-hydration
+       nav barrier (_navlinks.html.j2), so lift it here and let the
+       server-rendered legacy menus serve. Guarded documentElement access —
+       a bare-object DOM (test sandboxes) simply no-ops. */
+    s.onerror = function () {
+      var el = document.documentElement;
+      if (el && el.classList) el.classList.remove('mdx-nav-boot');
+    };
     (document.head || document.documentElement).appendChild(s);
   })();
 })();

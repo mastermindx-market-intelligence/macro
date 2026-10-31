@@ -24,6 +24,52 @@
 <span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}
 {% set NP = nav_prefix if (nav_prefix is defined and nav_prefix) else '' %}
+    {# Pre-hydration market-menu barrier (2026-10-30 mega-menu flash fix).
+
+       The server-rendered market panels below are the LEGACY compact lists;
+       nav_market.js replaces their markup with the full-width mega menu — but
+       it loads last in the deferred theme.js -> account.js -> nav_market.js
+       chain, so the first hover/focus/tap could paint the old menu for whole
+       seconds before the swap. This inline script runs while the parser is
+       still ABOVE the nav markup, so `mdx-nav-boot` is on <html> before the
+       nav's first paint; navigation-refresh.css then withholds every
+       not-yet-enhanced market panel (`.nav-dd-menu` under a .nav-dd that is
+       neither the Research mega nor already enhanced) until nav_market.js
+       boot() lifts the class.
+
+       It is a visibility barrier, not the fix itself and not a delay: the
+       legacy menu never paints, and the mega menu replaces it the moment the
+       runtime arrives. Failure paths leave the nav usable:
+       • JS disabled or this inline script stripped -> the class never exists,
+         the legacy menus work as always.
+       • theme.js/account.js/nav_market.js fails to LOAD -> its script tag's
+         onerror (theme.js loadAccount, account.js loadNavMarket) lifts the
+         class immediately.
+       • scripts load but the runtime never boots (stall) -> the watchdog
+         below lifts it. It re-arms while the loader chain is demonstrably
+         still in flight (__mmAccountLoading / __mmNavMarketLoading are set
+         synchronously by their loaders before the fetch), up to a hard cap,
+         so a legitimately slow cold cache never regresses to the old flash.
+       A second include of this partial is a no-op (the class is already
+       present), and a stray late watchdog tick after a successful boot sees
+       the class gone and returns. #}
+    <script>
+    (function (doc) {
+      var root = doc.documentElement;
+      if (!root || !root.classList || root.classList.contains('mdx-nav-boot')) return;
+      root.classList.add('mdx-nav-boot');
+      var rearms = 3;
+      var wake = function () {
+        if (!root.classList.contains('mdx-nav-boot')) return;
+        if ((window.__mmNavMarketLoading || window.__mmAccountLoading) && rearms-- > 0) {
+          setTimeout(wake, 5000);
+          return;
+        }
+        root.classList.remove('mdx-nav-boot');
+      };
+      setTimeout(wake, 5000);
+    })(document);
+    </script>
     <link rel="stylesheet" href="{{ NP }}navigation-refresh.css">
     <div class="nav-links">
     {# Brand mark — the crafted Mastermind “M” logomark (gradient tile + ascending

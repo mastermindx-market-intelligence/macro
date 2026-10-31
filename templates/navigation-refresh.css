@@ -1763,6 +1763,22 @@ html[data-lang="zh"] .nav-market-heading { letter-spacing: .02em; }
   }
 }
 
+/* Pre-hydration market-menu barrier (2026-10-30 mega-menu flash fix).
+   The inline boot script in _navlinks.html.j2 sets `mdx-nav-boot` on <html>
+   before the nav's first paint and nav_market.js boot() lifts it once the
+   market mega-menus exist, so this rule is active only across that window.
+   It withholds the server-rendered LEGACY compact panels for the exact
+   duration they would otherwise flash: display:none beats the :hover /
+   :focus-within reveal above (0,5,1 vs 0,3,1) and the mobile .open accordion
+   (0,4,1). The Research mega (.nav-mega-dd) already ships its final markup
+   and an enhanced market dd carries .nav-market-dd, so neither is ever
+   hidden; with JS disabled the class never exists and the legacy menus stay
+   fully usable, and the boot script's watchdog plus the loaders' script
+   onerror handlers lift the class if the runtime never arrives. */
+html.mdx-nav-boot .nav-dd:not(.nav-mega-dd):not(.nav-market-dd) > .nav-dd-menu {
+  display: none;
+}
+
 /* In the content-aware two-row state, an icon-only brand recovers enough room
    for every opted-in market at compact desktop/iPad widths. One- and two-market
    profiles stay in the single-row state and retain the full wordmark. */

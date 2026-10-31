@@ -1316,24 +1316,59 @@
 
   function boot() {
     var links = document.querySelector('.site-nav .nav-links, .topbar .nav-links');
-    if (links) {
-      removeLegacyCryptoMenu(links);
-      enhanceMarketMenus(links);
-      enhanceResearchMenu(links);
-      capture(links);
-      remarkActive(links);
-      bindHoverSafeDropdowns(links);
+    try {
+      if (links) {
+        removeLegacyCryptoMenu(links);
+        enhanceMarketMenus(links);
+        enhanceResearchMenu(links);
+        capture(links);
+        remarkActive(links);
+        bindHoverSafeDropdowns(links);
+      }
+    } finally {
+      /* Lift the pre-hydration barrier (see _navlinks.html.j2): the mega menus
+         exist now, so the legacy panels can come out of hiding. `finally`
+         because a failed enhancement must restore the legacy menus too, not
+         leave the nav dark until the boot script's watchdog fires. */
+      var root = document.documentElement;
+      if (root && root.classList) root.classList.remove('mdx-nav-boot');
     }
-    if (!window.MDXAuth || !window.MDXAuth.onChange) return;
-    window.MDXAuth.onChange(function (user) {
-      try {
-        currentPreference = preferenceOf(user);
-        apply(keptMarketsOf(user));
-        document.dispatchEvent(new CustomEvent('mmx-markets-change', {
-          detail: { home: currentPreference.home, enabled: currentPreference.enabled.slice() }
-        }));
-      } catch (e) { /* nav must never break a page */ }
-    });
+    bindMarketPreferenceStream();
+  }
+
+  /* Signed-in market folding rides MDXAuth.onChange. This file is appended by
+     account.js asynchronously, so the load order versus theme.js's MDXAuth
+     definition is not guaranteed by any contract — bind immediately when the
+     seam exists, and while the account pipeline is demonstrably still in
+     flight (__mmNavMarketLoading / __mmAccountLoading are set synchronously
+     by account.js / theme.js before their fetches), retry on a short bounded
+     schedule instead of silently skipping the subscription forever. Order
+     converges either way: MDXAuth.onChange re-delivers the resolved session
+     to a late subscriber (INITIAL_SESSION). */
+  function onAuthUser(user) {
+    try {
+      currentPreference = preferenceOf(user);
+      apply(keptMarketsOf(user));
+      document.dispatchEvent(new CustomEvent('mmx-markets-change', {
+        detail: { home: currentPreference.home, enabled: currentPreference.enabled.slice() }
+      }));
+    } catch (e) { /* nav must never break a page */ }
+  }
+  function bindMarketPreferenceStream() {
+    if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
+      window.MDXAuth.onChange(onAuthUser);
+      return;
+    }
+    if (!window.__mmNavMarketLoading && !window.__mmAccountLoading) return;
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
+        clearInterval(timer);
+        window.MDXAuth.onChange(onAuthUser);
+      } else if (++tries >= 30) {
+        clearInterval(timer);
+      }
+    }, 100);
   }
 
   window.MMXMarkets = window.MMXMarkets || {};
