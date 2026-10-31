@@ -123,6 +123,49 @@ class CandidateEpisodeByteToken:
     head_sha256: str
 
 
+#: Closed vocabulary for one exact episode identity inside one validated B1
+#: generation: the episode is live, the episode was withdrawn by its own owner
+#: correction, or this generation holds no history for that exact identity.
+EPISODE_IDENTITY_CURRENT = "current"
+EPISODE_IDENTITY_WITHDRAWN = "withdrawn"
+EPISODE_IDENTITY_UNKNOWN = "unknown"
+
+
+class EpisodeIdentityError(EpisodeContractError):
+    """The exact episode identity cannot be resolved against one validated generation."""
+
+
+@dataclass(frozen=True)
+class EpisodeIdentityLookup:
+    """Exact-identity classification of one episode inside one validated generation.
+
+    Every timestamp below is the owner event's own ``known_at``. This module
+    never reads a wall clock, never mints a tombstone, and never widens the
+    exact identity to a ticker, a security, or a population.
+    """
+
+    outcome: str
+    generation_id: str
+    episode: Mapping[str, object] | None = None
+    opened_event_id: str | None = None
+    opened_known_at: str | None = None
+    withdrawal_event_id: str | None = None
+    withdrawal_correction_of: str | None = None
+    withdrawal_known_at: str | None = None
+
+    @property
+    def is_current(self) -> bool:
+        return self.outcome == EPISODE_IDENTITY_CURRENT
+
+    @property
+    def is_withdrawn(self) -> bool:
+        return self.outcome == EPISODE_IDENTITY_WITHDRAWN
+
+    @property
+    def is_unknown(self) -> bool:
+        return self.outcome == EPISODE_IDENTITY_UNKNOWN
+
+
 def canonical_json(value: object) -> str:
     """Return canonical UTF-8 JSON text, refusing non-finite values."""
     try:
@@ -1653,6 +1696,111 @@ def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSn
         expected_manifest_sha256=token.manifest_sha256,
     )
     return CandidateEpisodeStoreSnapshot(generation_id=token.generation_id, generation=validated)
+
+
+def _opening_withdrawals(
+    events: Sequence[Mapping[str, object]], opened_event_id: str,
+) -> list[Mapping[str, object]]:
+    """Every ``RETRACTED`` event aimed at one exact ``OPENED`` event."""
+    return [
+        event for event in events
+        if event.get("event_type") == "RETRACTED"
+        and event.get("correction_of") == opened_event_id
+    ]
+
+
+def lookup_candidate_episode_identity(
+    snapshot: CandidateEpisodeStoreSnapshot, episode_id: str,
+) -> EpisodeIdentityLookup:
+    """Resolve one exact episode identity against ONE validated B1 generation.
+
+    Pure: this reads only the already-validated generation the snapshot
+    carries. It opens no store, reads no clock, mints no tombstone, and never
+    widens the exact identity to a ticker, a security, or a population.
+
+    The three lawful outcomes:
+
+    * ``current``   — the exact projection row is present;
+    * ``withdrawn`` — the exact ``OPENED`` event carries a legal
+      opening-targeted ``RETRACTED`` event, so the row is gone by owner
+      correction and the withdrawal itself is the fact to surface;
+    * ``unknown``   — this generation holds no history for that exact identity.
+
+    An absent row the generation cannot explain — a duplicated identity, an
+    event without its ``OPENED``, a withdrawal aimed at another episode, or an
+    absent row with no opening-targeted retraction — raises
+    :class:`EpisodeIdentityError` instead of guessing. A retraction of an
+    ``OBSERVED`` or ``EXPERT_EVENT_ATTACHED`` event is NOT an opening
+    withdrawal: the owner keeps that episode, and so does this lookup.
+    """
+    if not isinstance(episode_id, str) or not episode_id:
+        raise EpisodeIdentityError("episode identity must be a non-empty string")
+    generation = snapshot.generation
+    events = generation.events
+    rows = [row for row in generation.episodes if row.get("episode_id") == episode_id]
+    opened = [
+        event for event in events
+        if event.get("episode_id") == episode_id and event.get("event_type") == "OPENED"
+    ]
+    if len(rows) > 1:
+        raise EpisodeIdentityError("B1 generation contains duplicate episode identity")
+    if len(opened) > 1:
+        raise EpisodeIdentityError("B1 episode must have exactly one OPENED event")
+
+    if rows:
+        if not opened:
+            raise EpisodeIdentityError("B1 current episode row has no OPENED event")
+        opened_event = opened[0]
+        opened_known_at = opened_event.get("known_at")
+        if not isinstance(opened_known_at, str) or not opened_known_at:
+            raise EpisodeIdentityError("B1 OPENED event known_at is invalid")
+        opened_event_id = opened_event.get("event_id")
+        if isinstance(opened_event_id, str) and opened_event_id:
+            if _opening_withdrawals(events, opened_event_id):
+                raise EpisodeIdentityError(
+                    "B1 generation holds a live episode row beside its opening withdrawal"
+                )
+        return EpisodeIdentityLookup(
+            outcome=EPISODE_IDENTITY_CURRENT,
+            generation_id=snapshot.generation_id,
+            episode=rows[0],
+            opened_event_id=opened_event_id if isinstance(opened_event_id, str) else None,
+            opened_known_at=opened_known_at,
+        )
+
+    if not opened:
+        related = [event for event in events if event.get("episode_id") == episode_id]
+        if related:
+            raise EpisodeIdentityError("B1 generation holds events without their OPENED event")
+        return EpisodeIdentityLookup(
+            outcome=EPISODE_IDENTITY_UNKNOWN, generation_id=snapshot.generation_id,
+        )
+
+    opened_event = opened[0]
+    opened_event_id = opened_event.get("event_id")
+    if not isinstance(opened_event_id, str) or not opened_event_id:
+        raise EpisodeIdentityError("B1 OPENED event has no content address")
+    withdrawals = _opening_withdrawals(events, opened_event_id)
+    if not withdrawals:
+        raise EpisodeIdentityError("B1 episode row is absent without an owner withdrawal")
+    for event in withdrawals:
+        if event.get("episode_id") != episode_id:
+            raise EpisodeIdentityError("B1 withdrawal targets another episode")
+    withdrawal = min(withdrawals, key=_event_order)
+    withdrawal_known_at = withdrawal.get("known_at")
+    if not isinstance(withdrawal_known_at, str) or not withdrawal_known_at:
+        raise EpisodeIdentityError("B1 withdrawal known_at is invalid")
+    withdrawal_event_id = withdrawal.get("event_id")
+    if not isinstance(withdrawal_event_id, str) or not withdrawal_event_id:
+        raise EpisodeIdentityError("B1 withdrawal has no content address")
+    return EpisodeIdentityLookup(
+        outcome=EPISODE_IDENTITY_WITHDRAWN,
+        generation_id=snapshot.generation_id,
+        opened_event_id=opened_event_id,
+        withdrawal_event_id=withdrawal_event_id,
+        withdrawal_correction_of=opened_event_id,
+        withdrawal_known_at=withdrawal_known_at,
+    )
 
 
 def load_candidate_episode_store(root: Path) -> list[dict[str, object]]:
