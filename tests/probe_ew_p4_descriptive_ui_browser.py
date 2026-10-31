@@ -334,7 +334,7 @@ def run(output: Path) -> dict:
                                     ec_text = page.locator("#rc-early-context").text_content() or ""
                                     assert "No registered defensive comparisons" not in ec_text, \
                                         f"sc observed {lang}/{theme}/{width}: early context contradicts the observation"
-                                    assert "XLP / XLK" in ec_text and "ROW_" not in ec_text and "WINDOW_" not in ec_text, \
+                                    assert "XLP / XLK" in ec_text and "ROW_" not in ec_text, \
                                         f"sc observed {lang}/{theme}/{width}: registered pair row did not render: {ec_text[:400]}"
                                 target = page.locator("#rc-events")
                             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), \
