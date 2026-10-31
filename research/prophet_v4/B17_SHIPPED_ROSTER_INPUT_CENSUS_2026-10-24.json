@@ -1,0 +1,420 @@
+{
+  "sources": [
+    {
+      "as_of": "2026-10-20",
+      "buy_rows": 108,
+      "emit_pair_id": "85168e19a4994b04ba3b7a9398d3f32f",
+      "expected_session": "2026-10-20",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 27,
+      "path": "data/prophet/origination_sources/056fe334e49275fec5d0538cabada081d022f131e90ec56dea966f98d1c37588.json.gz",
+      "sha256": "056fe334e49275fec5d0538cabada081d022f131e90ec56dea966f98d1c37588"
+    },
+    {
+      "as_of": "2026-10-02",
+      "buy_rows": 75,
+      "emit_pair_id": "8790bc1ebf8b49dd8d465c865c31baed",
+      "expected_session": "2026-10-02",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 7,
+      "path": "data/prophet/origination_sources/0c9c44dc273883b6af1696a935e084e5b03260d70e7ea38ebf14512e9bc806c7.json.gz",
+      "sha256": "0c9c44dc273883b6af1696a935e084e5b03260d70e7ea38ebf14512e9bc806c7"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 101,
+      "emit_pair_id": "8dac63264e704177a9472a85478cb2cd",
+      "expected_session": "2026-10-16",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/12ef1ecf03900c2779f442c64c241913c6a1e816f86a56a79f5b76ddae1f4720.json.gz",
+      "sha256": "12ef1ecf03900c2779f442c64c241913c6a1e816f86a56a79f5b76ddae1f4720"
+    },
+    {
+      "as_of": "2026-10-08",
+      "buy_rows": 107,
+      "emit_pair_id": "f7ebf74f41224cf5b9e9aa76885aaf4d",
+      "expected_session": "2026-10-13",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 22,
+      "path": "data/prophet/origination_sources/1ea2503cc680ec13712cc70f18b1c4d672b00cd7833d1b64420c64505c6eabc5.json.gz",
+      "sha256": "1ea2503cc680ec13712cc70f18b1c4d672b00cd7833d1b64420c64505c6eabc5"
+    },
+    {
+      "as_of": "2026-09-30",
+      "buy_rows": 62,
+      "emit_pair_id": "1a02a40ff1674f00a7c93162a716b89c",
+      "expected_session": "2026-09-30",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 11,
+      "path": "data/prophet/origination_sources/301762a6ad6845a47bf760d3282c50b70fa8ef3133c01bf687931bbc18f4a894.json.gz",
+      "sha256": "301762a6ad6845a47bf760d3282c50b70fa8ef3133c01bf687931bbc18f4a894"
+    },
+    {
+      "as_of": "2026-10-21",
+      "buy_rows": 100,
+      "emit_pair_id": "5b81eb2fd43147559f4f99483422090a",
+      "expected_session": "2026-10-21",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 19,
+      "path": "data/prophet/origination_sources/3c9b1c1b41fcb43cd75e6431b0479defbbcaeb43da2b21ae8894bb896b9d56f5.json.gz",
+      "sha256": "3c9b1c1b41fcb43cd75e6431b0479defbbcaeb43da2b21ae8894bb896b9d56f5"
+    },
+    {
+      "as_of": "2026-10-23",
+      "buy_rows": 107,
+      "emit_pair_id": "7e8963b825c74b4ba7094859039bb788",
+      "expected_session": "2026-10-23",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 20,
+      "path": "data/prophet/origination_sources/3cb2f40731fd0935fde814b6ad888d844638c3bae41674fb9a3df46705972576.json.gz",
+      "sha256": "3cb2f40731fd0935fde814b6ad888d844638c3bae41674fb9a3df46705972576"
+    },
+    {
+      "as_of": "2026-10-22",
+      "buy_rows": 102,
+      "emit_pair_id": "1831842e7efe43f5966aaa9e31bac0cf",
+      "expected_session": "2026-10-22",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 18,
+      "path": "data/prophet/origination_sources/51fe9e2510b921bd7a217b7e3e6d637ed61461bf7b74eff65f72477beb27d29e.json.gz",
+      "sha256": "51fe9e2510b921bd7a217b7e3e6d637ed61461bf7b74eff65f72477beb27d29e"
+    },
+    {
+      "as_of": "2026-10-02",
+      "buy_rows": 75,
+      "emit_pair_id": "35d5ba4c8f5b4c8a894c5657c70fddd5",
+      "expected_session": "2026-10-02",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 6,
+      "path": "data/prophet/origination_sources/59ac53c1bdfdf110a438ce01f70bc83fadccfde1d0857ce11c12dd755bcd2aa9.json.gz",
+      "sha256": "59ac53c1bdfdf110a438ce01f70bc83fadccfde1d0857ce11c12dd755bcd2aa9"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 101,
+      "emit_pair_id": "cfa5f378a67549ca9686e625aae31dd3",
+      "expected_session": "2026-10-16",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/5edd46672a861690d7ecff98f50a5235887d132c5739713bafff83f03cded86c.json.gz",
+      "sha256": "5edd46672a861690d7ecff98f50a5235887d132c5739713bafff83f03cded86c"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 101,
+      "emit_pair_id": "6f90797360a4454a9808f93d29053248",
+      "expected_session": "2026-10-16",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/64e5c6f11af9885064af7c452adc62e268936986536abebf676534c86878e452.json.gz",
+      "sha256": "64e5c6f11af9885064af7c452adc62e268936986536abebf676534c86878e452"
+    },
+    {
+      "as_of": "2026-09-25",
+      "buy_rows": 68,
+      "emit_pair_id": "4082fc6e3c4d4f0a9f5d54170064aeeb",
+      "expected_session": "2026-09-29",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 11,
+      "path": "data/prophet/origination_sources/652fb914c4d0bc212151a8c4efebb97d15e30e14221dba5d2b56ae8fb833a40f.json.gz",
+      "sha256": "652fb914c4d0bc212151a8c4efebb97d15e30e14221dba5d2b56ae8fb833a40f"
+    },
+    {
+      "as_of": "2026-09-25",
+      "buy_rows": 69,
+      "emit_pair_id": "0eb1898bedbf46238ac6eacff74b8308",
+      "expected_session": "2026-09-25",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 10,
+      "path": "data/prophet/origination_sources/716c0da79512aceb44b2e0359f755590631a0e53276d6bbb2860863d17a63ebe.json.gz",
+      "sha256": "716c0da79512aceb44b2e0359f755590631a0e53276d6bbb2860863d17a63ebe"
+    },
+    {
+      "as_of": "2026-09-25",
+      "buy_rows": 69,
+      "emit_pair_id": "7910ed21628b4e10ba6d20b5ff3c8fa4",
+      "expected_session": "2026-09-28",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 10,
+      "path": "data/prophet/origination_sources/764c921190d2313e92b622b6dbf4686d679464ad2e7d99899085d1221b40c846.json.gz",
+      "sha256": "764c921190d2313e92b622b6dbf4686d679464ad2e7d99899085d1221b40c846"
+    },
+    {
+      "as_of": "2026-10-08",
+      "buy_rows": 107,
+      "emit_pair_id": "e268b7ef4bfc40a4a01e21d738cd34eb",
+      "expected_session": "2026-10-13",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 22,
+      "path": "data/prophet/origination_sources/78c29d5a08f27078a217b87c8c8a708adee9b646bf9758410abdd03b23e95feb.json.gz",
+      "sha256": "78c29d5a08f27078a217b87c8c8a708adee9b646bf9758410abdd03b23e95feb"
+    },
+    {
+      "as_of": "2026-10-05",
+      "buy_rows": 77,
+      "emit_pair_id": "4cdcb14297444f27af2c587310cdb25f",
+      "expected_session": "2026-10-05",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 13,
+      "path": "data/prophet/origination_sources/80c672c79a8e66aa2b11660dda6a91bc4e50041e3bb2b784d126d7e84bb4dcf2.json.gz",
+      "sha256": "80c672c79a8e66aa2b11660dda6a91bc4e50041e3bb2b784d126d7e84bb4dcf2"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 106,
+      "emit_pair_id": "4ac48eeabd9440ee8e12fac4a7f0d439",
+      "expected_session": "2026-10-15",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 23,
+      "path": "data/prophet/origination_sources/852187537e7ab77d50da2936a1c35d4eadee43a7b3628509221c365f9f28e91b.json.gz",
+      "sha256": "852187537e7ab77d50da2936a1c35d4eadee43a7b3628509221c365f9f28e91b"
+    },
+    {
+      "as_of": "2026-10-22",
+      "buy_rows": 105,
+      "emit_pair_id": "54b00eed8daf4dd49a824e1ede6655e4",
+      "expected_session": "2026-10-22",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 16,
+      "path": "data/prophet/origination_sources/8ae9156aabb387dc3de338bdd9558264aaca01bdac08e52aab4b53f0eb7d578a.json.gz",
+      "sha256": "8ae9156aabb387dc3de338bdd9558264aaca01bdac08e52aab4b53f0eb7d578a"
+    },
+    {
+      "as_of": "2026-10-08",
+      "buy_rows": 105,
+      "emit_pair_id": "bc7c6a85ba074a6ab2af5feea0134e4b",
+      "expected_session": "2026-10-08",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/8bdf261a8ef953e5f373e9fd8d052f2e11afb72fbc79c704676f536611221ae9.json.gz",
+      "sha256": "8bdf261a8ef953e5f373e9fd8d052f2e11afb72fbc79c704676f536611221ae9"
+    },
+    {
+      "as_of": "2026-10-19",
+      "buy_rows": 104,
+      "emit_pair_id": "8b872284c221461ca855d49c0df0d280",
+      "expected_session": "2026-10-20",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 25,
+      "path": "data/prophet/origination_sources/8df5eca9d36aaa93736d3ba61468334dc22c594b02c81fe712b2f1c4c491534d.json.gz",
+      "sha256": "8df5eca9d36aaa93736d3ba61468334dc22c594b02c81fe712b2f1c4c491534d"
+    },
+    {
+      "as_of": "2026-10-05",
+      "buy_rows": 77,
+      "emit_pair_id": "0dcacf5268b649f783d1a388280f1c71",
+      "expected_session": "2026-10-05",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 13,
+      "path": "data/prophet/origination_sources/915c019b6a13542ea404ef364522658ee0a1317c644217d6e0d45b75482e8037.json.gz",
+      "sha256": "915c019b6a13542ea404ef364522658ee0a1317c644217d6e0d45b75482e8037"
+    },
+    {
+      "as_of": "2026-10-21",
+      "buy_rows": 106,
+      "emit_pair_id": "90f48c8d22604a978436b90d829fd0f6",
+      "expected_session": "2026-10-21",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 27,
+      "path": "data/prophet/origination_sources/a3114673658e8e73e51120031e09bebc97bbb6e73ee81fd018dea5fd2ec1d0fb.json.gz",
+      "sha256": "a3114673658e8e73e51120031e09bebc97bbb6e73ee81fd018dea5fd2ec1d0fb"
+    },
+    {
+      "as_of": "2026-10-08",
+      "buy_rows": 105,
+      "emit_pair_id": "aaddf549c4b24b079c25c9e55a9f0c59",
+      "expected_session": "2026-10-08",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/a7a50fea31152a704276c87f5904efa1383bffb2d359e2d321b76248072c61b2.json.gz",
+      "sha256": "a7a50fea31152a704276c87f5904efa1383bffb2d359e2d321b76248072c61b2"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 101,
+      "emit_pair_id": "f3e9c115431244aaa53f182d9a9b92df",
+      "expected_session": "2026-10-16",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/ab42ee610f288b8b9a05d9b5ce0aa506ef841c9d56be7b6b73f865eca402a8a1.json.gz",
+      "sha256": "ab42ee610f288b8b9a05d9b5ce0aa506ef841c9d56be7b6b73f865eca402a8a1"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 106,
+      "emit_pair_id": "990883fc1e304135b3ca77192ca54541",
+      "expected_session": "2026-10-15",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 25,
+      "path": "data/prophet/origination_sources/b0b269f1b884b7563b55807583cd5278739569231fc14314c3db8a71b72f8e88.json.gz",
+      "sha256": "b0b269f1b884b7563b55807583cd5278739569231fc14314c3db8a71b72f8e88"
+    },
+    {
+      "as_of": "2026-10-19",
+      "buy_rows": 104,
+      "emit_pair_id": "6e3401b0ff2c47199c7d47544ee1d583",
+      "expected_session": "2026-10-19",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/b16040c9b350b1a7dc00485ffb8cf094818e14699facad6453d442fa7539d363.json.gz",
+      "sha256": "b16040c9b350b1a7dc00485ffb8cf094818e14699facad6453d442fa7539d363"
+    },
+    {
+      "as_of": "2026-09-25",
+      "buy_rows": 69,
+      "emit_pair_id": "fca202f8ce50496fbd916bd17b26d1a9",
+      "expected_session": "2026-09-25",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 10,
+      "path": "data/prophet/origination_sources/b282000ae20d3f4cbb339da78d3131e743b13abd039bcc2454b885213b3bc576.json.gz",
+      "sha256": "b282000ae20d3f4cbb339da78d3131e743b13abd039bcc2454b885213b3bc576"
+    },
+    {
+      "as_of": "2026-10-02",
+      "buy_rows": 75,
+      "emit_pair_id": "e2e89a20ba8e4aa0978c1fa5b9061a7c",
+      "expected_session": "2026-10-02",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 7,
+      "path": "data/prophet/origination_sources/baa2eb14e257e22afe66a7d0c1f964d0673c29dc0a33512036c5f5905fdfc135.json.gz",
+      "sha256": "baa2eb14e257e22afe66a7d0c1f964d0673c29dc0a33512036c5f5905fdfc135"
+    },
+    {
+      "as_of": "2026-09-25",
+      "buy_rows": 69,
+      "emit_pair_id": "9b135826e02f4036b9206d69cd805844",
+      "expected_session": "2026-09-25",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 10,
+      "path": "data/prophet/origination_sources/c785c0ea24233464e493421f0ff73800abafad935fed092bc9d534d324552849.json.gz",
+      "sha256": "c785c0ea24233464e493421f0ff73800abafad935fed092bc9d534d324552849"
+    },
+    {
+      "as_of": "2026-10-07",
+      "buy_rows": 79,
+      "emit_pair_id": "f1a1a5cd784743229a9c29f4c865983c",
+      "expected_session": "2026-10-07",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 17,
+      "path": "data/prophet/origination_sources/ea9a1a6412e6b7c7dd8d390ffa28bd72d2e6e7f2db98713fc8b67f3e0a50eb91.json.gz",
+      "sha256": "ea9a1a6412e6b7c7dd8d390ffa28bd72d2e6e7f2db98713fc8b67f3e0a50eb91"
+    },
+    {
+      "as_of": "2026-10-06",
+      "buy_rows": 89,
+      "emit_pair_id": "1336e03f12ac44f193000ba8ff459910",
+      "expected_session": "2026-10-06",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 18,
+      "path": "data/prophet/origination_sources/ed967d68adbc2fa73d2704612d82071c61abfd903099a5cbf18e7cbc1ba7c21a.json.gz",
+      "sha256": "ed967d68adbc2fa73d2704612d82071c61abfd903099a5cbf18e7cbc1ba7c21a"
+    },
+    {
+      "as_of": "2026-10-14",
+      "buy_rows": 105,
+      "emit_pair_id": "dd796c12ada24b64aea3829f8a7aefa6",
+      "expected_session": "2026-10-14",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 24,
+      "path": "data/prophet/origination_sources/f04429104ba64d5276a5398ae0bcb011d2517e174e5b5953fdbddbbbc56dbbb1.json.gz",
+      "sha256": "f04429104ba64d5276a5398ae0bcb011d2517e174e5b5953fdbddbbbc56dbbb1"
+    },
+    {
+      "as_of": "2026-10-01",
+      "buy_rows": 70,
+      "emit_pair_id": "343270a046e54dfabcb2ed0890e0a80b",
+      "expected_session": "2026-10-02",
+      "hash_matches_name": true,
+      "panel_names_in_buy": 7,
+      "path": "data/prophet/origination_sources/f0e992b7b29234ded763efcaf19a11ef0f8841b167ecd9bd00bf914b2bb0a951.json.gz",
+      "sha256": "f0e992b7b29234ded763efcaf19a11ef0f8841b167ecd9bd00bf914b2bb0a951"
+    }
+  ],
+  "summary": {
+    "as_of_dates": [
+      "2026-09-25",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-14",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22",
+      "2026-10-23"
+    ],
+    "bakeoff_calls_select_candidates": false,
+    "buy_row_range": [
+      62,
+      108
+    ],
+    "distinct_as_of_count": 14,
+    "earliest_as_of": "2026-09-25",
+    "episode_fields": [
+      "ticker",
+      "date",
+      "pos",
+      "construction",
+      "addon",
+      "close",
+      "p_low",
+      "p_low_date",
+      "entry_vs_low",
+      "near_low",
+      "entry_vs_low_open",
+      "near_low_open",
+      "open_slip",
+      "td_to_trough",
+      "false_bounce",
+      "mae_21",
+      "stop_a",
+      "stop_b",
+      "survive_a",
+      "survive_b",
+      "mfe_42",
+      "reached_2r",
+      "fwd21",
+      "fwd42",
+      "ex21",
+      "ex42",
+      "fwd_sessions",
+      "window_sessions",
+      "c1z",
+      "meta",
+      "entry_vs_trough",
+      "near_low_trough",
+      "atr14",
+      "stop_fix8",
+      "stop_atr2",
+      "stop_atr3",
+      "survive_fix8",
+      "survive_atr2",
+      "survive_atr3",
+      "r_mult_42",
+      "r2_target_pct"
+    ],
+    "frozen_price_right_edge": "2026-08-10",
+    "frozen_results_blob": "e018ae663b7f0eed234f0567ea0374af45a04810",
+    "frozen_run_utc": "2026-08-11T12:36:43+00:00",
+    "latest_as_of": "2026-10-23",
+    "origination_source_count": 33,
+    "primary_panel_count": 240,
+    "scope": "input availability census only; no shipped-roster coverage/lead recomputation",
+    "separate_addons": [
+      "HL",
+      "UEC"
+    ],
+    "source_head": "228c25d37617a7217c8f65f1613ade701a2fe01a",
+    "sources_at_or_before_frozen_edge": 0,
+    "store_names": 241,
+    "unpriced_store_names": [
+      "SATS"
+    ],
+    "verified_content_hashes": 33
+  }
+}

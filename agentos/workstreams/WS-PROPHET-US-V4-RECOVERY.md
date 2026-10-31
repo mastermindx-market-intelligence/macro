@@ -40,6 +40,7 @@ owns_paths:
   - tests/test_us_candidate_episode_wiring.py
   - engine/prophet_b2_disposition.py
   - tests/test_prophet_b2_disposition.py
+  - tests/test_prophet_b17_frozen_input_recovery.py
   - research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md
 depends_on:
   - WS:PROPHET-US-AVAILABILITY
@@ -63,6 +64,12 @@ decisions:
   - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
   - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
+  - "RECOVERY 2026-10-25: current next_action and the dated recovery handoffs supersede
+    obsolete task instructions in dated title/history paragraphs. The original
+    wave ids, dependencies, acceptance scope and accepted receipts remain. The
+    current assigned recovery session owns the next bounded turn; historical
+    author names alone are not evidence of a live writer. Actual live/effect-unknown
+    custody, including #9634/#9610 and the #7264 Lab overlap, must be preserved."
   - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
     to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
     prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
@@ -108,9 +115,11 @@ landmines:
   - "QLedger's control leg has never been populated on any of 46,630 claims
     (DSC:NO-QLEDGER-CLAIM-EVER-CARRIED-A-CONTROL-LEG); the plan ledger has no
     benchmark column. Do not describe V4 grading as control-matched until wired."
-  - "Radar W4 activation proof is structurally owed (operator arm of
-    ENTRY_RADAR_LIVE_ENABLE); B-15..B-19 dispositions post-#5370-heal are UNKNOWN —
-    B2 opens with the matrix, do not assume the heal closed them."
+  - "Radar full-RTH and current consumer acceptance remain separate from historical
+    commissioning. B2-0 #6840 froze the B-15..B-19 matrix: B-15/16/18/19 are closed
+    within its dated audit scope; B-17 shipped-roster measurement remains open.
+    B2-1 must prove the canonical correction-to-private-reader seam; do not repeat
+    B2-0 or infer whole-wave closure from its research helper."
 do_not_redo:
   - "D5 v1 does NOT mutate or widen engine/us_context_vector.py; Context Vector is a
     read/reference-only PIT history/research substrate for D5."
@@ -149,6 +158,10 @@ do_not_redo:
     absorbed it. Reconstructed rows remain unmarked and this authority does not extend
     to data-defect windows or a second replay."
 artifacts:
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-31.md
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-30.md
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md
+  - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md
   - research/prophet_v4/LAB0_B5_RECUT_OPERATOR_LAB_2026-08-18.md
   - research/prophet_v4/PROPHET_US_V4_RECOVERY_AND_INTELLIGENCE_GRAPH_OS_MASTERPLAN_BY_SOL_2026-08-17.md
   - research/prophet_v4/FABLE_HANDOFF_PROPHET_US_V4_0A_2026-08-17.md
@@ -177,6 +190,9 @@ waves:
       (squash ebce73b97288, 2026-08-17T13:18:55Z)."
     status: done
     pr: 5832
+    next_action: >
+      DONE. Preserve #5832 / ebce73b97288 and the frozen architecture. The 2026-10-24 census
+      adopts the existing 30-wave graph; it does not commission another masterplan.
   - id: 0b
     depends_on: [0a]
     title: "V4-0B — post-0A records reconciliation (records only; scope narrowed by
@@ -184,6 +200,9 @@ waves:
       research/prophet_v4/POST_0A_RECONCILIATION_2026-08-17.md."
     status: done
     pr: 5847
+    next_action: >
+      DONE. Preserve #5847 and POST_0A_RECONCILIATION_2026-08-17.md. Current recovery updates
+      this workstream and a dated handoff only; sibling records retain their owners.
   - id: a1
     depends_on: [0a]
     title: "V4-A1 — owed-session settlement recovery. Accepted by Chairman-authorized
@@ -191,59 +210,160 @@ waves:
       reader packet; this is not a claim of separate Sol review."
     status: done
     next_action: >
-      DONE. Preserve the exact receipt in
-      agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md; never rerun
-      the Aug-14 replay. B1 is dependency-ready. A2/A3/A4 remain distinct waves.
+      DONE. Preserve the accepted #6320 / run 32786919396 / private reader receipt in
+      PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md. Never rerun the Aug-14 replay.
+      Current A2/A3/A4 proof is separate from this closed historical recovery.
   - id: a2
     depends_on: [a1]
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
-    status: todo
+    status: in_progress
     next_action: >
-      ADOPT FIRST: before any spawn, map the accepted Availability/outage return onto
-      this capability; if the sibling durable fix already satisfies it, close by
-      reference — only the unresolved delta may become a V4 wave.
+      2026-10-31 NEXT SOURCE GATES. #10202 2ea0bf0b remains
+      independently SOURCE_PASS and exact-head CI/fences GREEN;
+      #10209 da3a0451 genuine producer clock remains independently
+      SOURCE_PASS and CI/fences GREEN. Both are Draft/HOLD and unmerged,
+      NOT live SETTLED. Original external Fabric issuer preflight
+      prophet-v4-a2-source-issuer-preflight-20261031-01 returned
+      TERMINAL rc0, sha256
+      3e8b2f130d310861a91049963a25a2b354373e5050424132e220980289548fcb,
+      five-file LOCAL-ONLY patch +1533/-1, 27 focused tests passed
+      via direct independent shell/venv rerun. It never issues
+      an accepted bundle. Independent review for this candidate
+      TERMINAL rc75 / REMOTE_SUB_ADMISSION_REFUSED
+      host_temperature_at_or_above_limit, response sha256
+      e66b66376d22b14d7f87bc09a6b56b8f14edaac97c74680d8b75ae61b4584956.
+      Do not promote or reroute it without real clearance.
+      New disjoint Availability Check E consumer Draft/HOLD #10256
+      head 8c6f946842af4fbf61d49b588448d39a677b4d45,
+      source files scripts/check_nightly_liveness.py and
+      tests/test_nightly_liveness.py only. Parent integrated
+      original terminal GLM two-file patch, fixed worker's
+      false schema sentinel.prophet_settlement/v1 to real
+      prophet.settlement_manifest/v1, and required no
+      stale-source or missing/nonempty failures on SETTLED.
+      Direct immutable Git blob test 111 PASS, exit zero.
+      Its hosted fences 41179369155 SUCCESS, full hosted
+      CI 41179369046 QUEUED at last check. Independent
+      nonauthor Fabric review request for #10256 also
+      TERMINAL rc75 from thermal admission refusal, response
+      sha256 55795ea66889c25f87472a55d591aac17bbef7e132e6d05892dc768292900c47;
+      no SOURCE_PASS or GitHub approval exists.
+      Availability owner/custody inquiry on Slack
+      C0CBC6AEAQZ thread 1793430537.066329
+      (operation prophet-v4-a2-availability-checke-owner-custody-20261031-01)
+      has PICKUP_ACK and START, not yet RESULT.
+      Previous records #10174 29cfb98b had full CI
+      41173519773 plus fences 41173519527 SUCCESS.
+      This records revision must be separately qualified.
+      Next consume #10256 exact-head CI and owner RESULT,
+      adjudicate source custody, then obtain lawful nonauthor
+      review after genuinely changed admission eligibility.
+      The original GMI W3B production ThemeState current-use
+      and accepted generation remains unavailable, leaving
+      no real four-asset issuer/reader bundle ID; A2 PENDING.
+      Preserve A3 atomic publisher and Availability sole
+      rescue/dispatch invariants; no self-merge/deploy.
+      #10174/#10202/#10209/#10256 remain Draft/HOLD.
+
   - id: a3
     depends_on: [a1]
     title: "V4-A3 — atomic publication + split-brain fence"
     status: todo
     next_action: >
-      ADOPT FIRST: same rule as a2 — map the sibling return (and #5840's premium-plane
-      split) before spawning; only the unresolved delta becomes a V4 wave.
+      ADOPT FIRST. Inspect the incumbent publisher/checkpoint, immutable origination_sources
+      and public/private split from #7180/#5840 against the original atomic publication and
+      split-brain criteria. Bind source, committed bytes and served bytes in one receipt
+      before closure. Do not create another publication owner or replay closed releases.
   - id: a4
     depends_on: [a2, a3]
     title: "V4-A4 — availability fire-drill week"
     status: todo
+    next_action: >
+      After A2/A3 acceptance, collect the original availability fire-drill week across the
+      ordinary delivery path, including refusal/recovery and owed-session evidence. A single
+      green run or current page is not the week-long acceptance proof.
   - id: b1
     depends_on: [a1]
     title: "V4-B1 — canonical candidate episode registry (prophet.candidate_episode/v1)"
     status: done
     next_action: >
-      ACCEPTED / PROVEN_LIVE for the canonical episode data plane. Natural scheduled
-      run 33147282433 at descendant head 24ccea3fe482 published generation
-      peg:c025bb50c45f319f989a4848249b8a85b65354143e3262f2ad09d07841311b08;
-      commit a8ee11ba0e48 pushed the exact HEAD-selected bytes to main. The shared
-      validator and sole canonical loader read 467 lawful episodes / 915 events / 5,435
-      suppressions with zero duplicate episode, event, or source identities. The
-      unrelated standout_audit_us timed out before us_prophet_ledgers began; the workflow
-      continued, B1 then succeeded and pushed its durable generation, while the final run
-      conclusion remained cancelled solely because of that earlier unrelated timeout. Radar forward lineage
-      remains PROPOSED/STAGED_NOT_ARMED and is not widened by this acceptance.
+      DONE / accepted canonical episode data plane. Preserve run 33147282433, durable commit
+      a8ee11ba0e48, generation
+      peg:c025bb50c45f319f989a4848249b8a85b65354143e3262f2ad09d07841311b08 and the
+      467-episode/915-event/5,435-suppression acceptance receipt. Later data-health incidents
+      do not erase this bounded acceptance. Use the sole validated HEAD-backed snapshot for
+      B2; do not redo B1 or widen Radar lineage.
   - id: b2
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
     status: in_progress
+    pr: [6840, 10176, 10180]
     next_action: >
-      B2-0 records packet frozen: the B-15..B-19 disposition matrix + correction/
-      supersession/PIT-replay/mutation law — see
-      research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md.
+      B2-1 SOURCE_PASS ON EXACT HEAD; B-17 SCIENCE AND PRODUCTION STILL OPEN.
+      Draft #10180 at 943906af5c04 contains the verifier and its 28 hosted-
+      passing tests (ci-pack-5, 1.78 seconds), immutable source receipts and
+      original-cutoff point replay. All 241 signal files and 240 price
+      candidates were recovered; 57 buy snapshots cover 32 source dates,
+      but no C0 episode has a complete 34-session admission-date window.
+      Of 7918 original C0 episodes, 7775 (98.19 percent) predate the
+      first archived board on 2026-06-16; only 143 postdate/meet the boundary.
+      This is absence of source history, NOT zero shipped-roster coverage.
+      B-17 remains STILL_LIVE with null full coverage and lead.
+      DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT
+      shows that close-only replay does not reproduce shipped buy[] and a
+      vintage-main replay cannot qualify the pre-2026 board history.
+      Recover historically bound full-population admission inputs
+      and availability clocks for the missing original dates, then measure the
+      actual union-and-gate roster with the frozen denominator and rulers.
+      The reproduced 60.62 percent / 12-session baseline is C1-relaxed, not a
+      measured union or shipped-roster result; preserve the price-vintage proof limit.
+      Repaired CI 41043491441 passed contract-delta, all 12 packs and ci-gate;
+      pack-5 logged the actual B-17 step and 28 tests passing in 1.78s;
+      fences 41043491265 passed. Recovery CI 41044730818 also passed.
+      This is CI proof, NOT scientific acceptance or approval.
+      Correction Draft #10176 remains at 228c25d37617, with 184 focused tests,
+      two metadata smokes and CI 40147024285 passed. The current owner reconciled
+      original review -01 terminal rc1/HTTP429, STOP WITHOUT ACCEPTANCE.
+      Under the latest explicit directive, exactly one fresh non-Qwen request
+      prophet-v4-b2-withdrawal-review-20261025-04 was pinned to GLM and refused:
+      MANUAL_ROUTE_UNAVAILABLE, INVALID_ARGUMENT, execution_absence_proven=false,
+      retry_allowed=false; no controller or verdict returned. The separate
+      GitHub Copilot request returned no assigned reviewer/verdict; Cursor
+      Bugbot replied unable to authenticate this repo (comment 6521998829).
+      Those denied review routes remain historical receipt facts, but
+      independent reviewer mastermindx-2 issued SOURCE_PASS with zero blocking
+      source findings on exact #10176 head 228c25d37617, GitHub comment
+      6522731353, 2026-10-30T12:21:52Z. This is a comment-level independent
+      source verdict, NOT submitted GitHub approval, integration, merge or
+      authenticated production acceptance. Do not redo unchanged B2-1 source.
+      NEXT B2 GATE: compose the reviewed exact B1 lookup in incumbent native
+      Lab Draft #7264 or qualified successor, preserving private auth-first
+      headers, stale-generation 409 and one snapshot, then qualify production
+      current/withdrawn/unknown proof. Keep B-17 original 7918 denominator
+      and missing inputs open, #6840 audit closures, and release HOLD.
+      Current receipts and exact proof gaps are in October 30 handoff.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
-    status: todo
+    status: in_progress
+    pr: [7356, 7506]
+    next_action: >
+      SOURCE PARTIAL. #7356 / 71d46b1416e6 and identity-epoch repair #7506 / e016e96beef9
+      merged; current engine/prophet_candidate_state.py retains orthogonal states and
+      non-authoritative projection. Adopt these cores, then verify original consumer and
+      production acceptance with exact B1 identity and same-generation evidence. R6 B03 is a
+      different label, not automatic V4-B3 completion.
   - id: b4
     depends_on: [b2, b3]
     title: "V4-B4 — deterministic buyability/chase firewall (prophet.entry_availability/v1)"
-    status: todo
+    status: in_progress
+    pr: [7569, 7687]
+    next_action: >
+      SOURCE PARTIAL. Strategy-bound core #7569 / e0e89029db25 and structural overlay #7687 /
+      b5cb845812a6 merged. Adopt current entry_availability and same-read sources; complete
+      B2/B3 acceptance and current quote/source/basis-clock proof with existing Entry
+      Timing/R7 owners. Green means ENTRY_OPEN only; Lab dossiers and display work do not
+      confer B4 authority.
   - id: b5a
     depends_on: [0a]
     title: "V4-B5A — Prophet Operator Lab (LAB-0 recut of b5, Chairman commission
@@ -389,15 +509,30 @@ waves:
       DEC:B1A-M1-RUNTIME-RECOVERED-NO-SUPERSESSION. Handoff:
       agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-21-lab-day5.md."
     status: in_progress
+    next_action: >
+      Retain the accepted dated Lab/API/shell and commercial-boundary receipts; do not replay
+      their commissioning. Reconcile remaining Operator Lab product/entitlement evidence with
+      current R7 and native-Lab carrier #7264, preserving its Draft/HOLD. #9935 is a merged
+      pure dossier wrapper, not complete Lab or authoritative-desk acceptance.
   - id: b5b
     depends_on: [b3, b4]
     title: "V4-B5B — authoritative Early Entry Desk MVP (TURN WATCH finally visible;
       retains B3/B4 deps; adopts B5A plumbing instead of rebuilding — LAB-0 recut)"
     status: todo
+    next_action: >
+      Wait for accepted B3/B4 and adopt B5A plumbing. Current R6/R7 observation UI, #9495
+      detailed-card work, and #9634 Turn Watch capture do not by themselves prove an
+      authoritative Early Entry Desk. Complete the original server-state-to-desk product
+      journey without a second selector.
   - id: b6
     depends_on: [b2]
     title: "V4-B6 — Radar observation-only activation (full-RTH-session proof)"
     status: todo
+    next_action: >
+      After B2 acceptance, reconcile Radar's own W4/commissioning and full-RTH-session
+      receipts with its current prospective-consumer gap. Preserve historical commissioning;
+      neither a source merge nor one observed pass closes the original full-session gate. Keep
+      Radar's activation/runtime ownership.
   - id: b7
     depends_on: [b6]
     title: "V4-B7 — Radar production UI + Prophet integration (executes Radar W9 under
@@ -405,19 +540,37 @@ waves:
       ACCRUING attention ordering, commissioning owed, zero Prophet authority); W8
       (#5737) still open/reference-only; W9 absent. b7 inherits Radar's W9 deps."
     status: todo
+    next_action: >
+      Execute through Radar W9 only after B6 and Radar W4/W6/W8 acceptance. Radar's current
+      record leaves W6/W8 in progress and W9 todo; adopt its existing ranking/UI machinery
+      without assigning Prophet trade authority to observation-only outputs.
   - id: c1
     depends_on: [b1]
     title: "V4-C1 — cohort-separated all-candidate ledger"
     status: todo
+    next_action: >
+      Use accepted B1 and the existing Evaluation OS/QLedger owners to prove complete
+      all-candidate outcomes, separate prospective/backfill/shadow cohorts, benchmark/control
+      joins and missingness. A plan book or B03 browser directory is not the all-candidate
+      grading ledger. No complete original acceptance receipt was found in this census.
   - id: c2
     depends_on: [c1]
     title: "V4-C2 — us_prophet_v3_legacy_shadow (activates at cutover)"
     status: todo
+    next_action: >
+      After C1, bind the frozen V3 algorithm and same tape at actual V4 cutover under the
+      exact us_prophet_v3_legacy_shadow identity. Existing legacy_shadow artifacts are
+      adoption candidates, not proof of this original cutover contract. The exact name was not
+      found in runtime source at the census pin; do not create a second grader.
   - id: c3
     depends_on: [b5b]
     title: "V4-C3 — operator decision instrumentation (keys on the authoritative desk
       b5b per LAB-0 ruling 14)"
     status: todo
+    next_action: >
+      Instrument operator decisions against the authoritative B5B episode/availability
+      identity once that desk is accepted. R7 journey/alert work is reusable evidence but not
+      proof that the original decision/outcome contract is wired.
   - id: d1
     depends_on: [0a]
     title: "V4-D1 — theme-source and identity census. DONE 2026-08-18: master census
@@ -428,6 +581,10 @@ waves:
       OPERATOR_HELD_ONLY; Theia DEC stands; 5 rights decisions routed."
     status: done
     pr: 5859
+    next_action: >
+      DONE. Preserve #5859 and D1_THEME_SOURCE_AND_IDENTITY_CENSUS_2026-08-18.md. Subsequent
+      GMI identity/ontology work belongs to D2 and the GMI owner; do not repeat the source
+      census.
   - id: d2
     depends_on: [d1]
     title: "V4-D2 — canonical ontology + probation mapping, executing INSIDE/WITH the
@@ -578,6 +735,11 @@ waves:
       receipt live, 1,210-resolved coverage non-regressed. STOP unchanged:
       no D2C/D2D/D2E/D3/D5/Canada."
     status: in_progress
+    next_action: >
+      Continue inside GMI: its current record marks D2C/D2D done and D2E/W3B/W3C in progress.
+      Adopt accepted identity/PIT/ontology repairs; finish only outstanding rights and
+      product/consumer acceptance. Historical D2 title paragraphs are dated receipts, not
+      current authorization or live-writer facts.
   - id: d3
     depends_on: [d2]
     title: "V4-D3 — ThemeState consumption contract. Sol ADJUDICATED 2026-08-18
@@ -591,10 +753,18 @@ waves:
       node resolves through the exact identity bridge, or the feature explicitly
       operates at local-theme/node grain."
     status: todo
+    next_action: >
+      After D2's applicable acceptance, implement/verify the Prophet-side exact-identity
+      ThemeState join from the sole GMI owner. GMI ThemeState production alone does not prove
+      Prophet consumption. Respect PIT membership and rights; no parallel theme engine.
   - id: d4
     depends_on: [d3]
     title: "V4-D4 — peer and transmission features"
     status: todo
+    next_action: >
+      After accepted D3, adopt canonical peer/transmission features with exact identity, PIT
+      clocks and missingness. Current GMI graph progress does not close this Prophet-side
+      feature wave.
   - id: d5
     depends_on: [b1]
     title: "V4-D5 — V4 intelligence-vector contract (prophet.intelligence_vector/v1).
@@ -630,13 +800,14 @@ waves:
       merge to main, deploy, and authenticated covered plus typed-unresolved live receipts
       remain pending. D6 and every other downstream wave remain gated."
     status: in_progress
+    pr: 6705
     next_action: >
-      Complete D5 delivery from exact post-reconciliation proof without widening scope:
-      push the records-only child of merge head bb34c575f58879f4944ca353e17ca6a6fa4512ca,
-      open one PR, wait for concluded hosted CI, squash-merge, verify main and the normal
-      deploy, and collect authenticated covered plus typed-unresolved production receipts.
-      Fill the PR/merge/CI/deploy/live placeholders in the 2026-08-30 D5 pre-delivery
-      handoff before any `PROVEN_LIVE` claim.
+      SOURCE MERGED. #6705 / f4fbfa19f4e8 landed the bounded private earnings intelligence
+      vector on 2026-09-01; the old push/open-PR instruction is obsolete. Preserve B1
+      generation, dual-clock PIT revisions, private/no-store and all authority false. Adopt
+      existing source and later scoped repairs; obtain exact installed-source plus
+      authenticated covered and typed-unresolved receipts before full wave acceptance. Theme
+      family still depends on D3, not all D5 work.
   - id: d6
     depends_on: [d5]
     title: "V4-D6 — earnings adapter. Premise updated 0B: EIOS E1P is LIVE for the
@@ -644,130 +815,124 @@ waves:
       golden event is not broad issuer coverage; d6 still waits on d5 and must not
       infer coverage from it."
     status: todo
+    next_action: >
+      Still GATED. #6705 explicitly delivered a bounded D5 earnings slice and kept D6/later
+      waves gated; do not count it twice as D6 completion. After D5 acceptance, adopt that
+      adapter and EIOS's golden-event proof, then close the original broader earnings-family
+      coverage/PIT acceptance with typed uncovered cases.
   - id: d7
     depends_on: [d5]
     title: "V4-D7 — alt-data family adapters (one per family)"
     status: todo
+    next_action: >
+      After D5 acceptance, commission only an evidenced missing family adapter with its
+      existing source/rights owner, clocks, provenance and coverage contract. Unbuilt families
+      emit no envelope; missing values are not zero.
   - id: e1
     depends_on: [b4, c1, d5]
     title: "V4-E1 — explainable deterministic V4 priority (extends Fusion registry
       post-3D). 0B note: Fusion PR-3B AND PR-3C (#5839) are merged; PR-3D remains the
       sibling acceptance boundary; V4 does not read/tune from the W3 forward race."
     status: todo
+    next_action: >
+      After B4/C1/D5 acceptance, extend the accepted Conditional Fusion registry with
+      deterministic explainable missing-aware priority inside availability lanes. Consume
+      accepted PR-3D boundaries; do not tune on the forward race or create a rival ranker.
   - id: e2
     depends_on: [e1, b7, c2, a4]
     title: "V4-E2 — Prophet V4 primary experience + cutover"
     status: todo
+    next_action: >
+      Retain existing R7 product implementation and prior scoped live receipts, but keep
+      original cutover gated on E1/B7/C2/A4. Preserve #8444's Draft/design-acceptance hold and
+      active #9634/#9610 writers. #8249 source merge and later pure-wrapper work are not V4
+      cutover acceptance.
   - id: e3
     depends_on: [c1, e1]
     title: "V4-E3 — listwise ranker challenger (shadow only)"
     status: todo
+    next_action: >
+      After C1/E1 acceptance, evaluate a listwise challenger in shadow using the original
+      frozen cohort, leakage, control and evaluation contract. No promotion or efficacy claim
+      follows from product/source progress.
   - id: e4
     depends_on: [e3]
     title: "V4-E4 — conditional router/multi-head challenger (shadow only)"
     status: todo
+    next_action: >
+      After E3, evaluate the conditional router/multi-head challenger in shadow with the
+      original comparative evidence. Preserve separate champion and challenger authority.
   - id: e5
     depends_on: [d4, e3]
     title: "V4-E5 — temporal heterogeneous graph challenger (shadow only)"
     status: todo
+    next_action: >
+      After D4/E3, evaluate temporal heterogeneous graph features in shadow on canonical
+      identity/PIT graph inputs. Do not infer a V4 challenger from an existing GMI graph.
   - id: e6
     depends_on: [e3, e4, e5]
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
+    next_action: >
+      Only after E3/E4/E5 acceptance, execute the original promotion gauntlet and explicit V3
+      retirement ruling. No source merge, green build or missing-data substitution authorizes
+      promotion or retirement.
 next_action: >
-  2026-10-12 02:50 source progress: independent object comparison PR8874 is
-  normally squash-merged to a278075e6197 with 88 logical CI jobs and 310 passing
-  proof steps, zero blocking or inherited failures. Its source/CI/review gates are
-  closed. Original DailyBrief8249 corrected-source review is accepted within its
-  source/helper scope; 139 parent tests and two planner checks passed. Integrate
-  this newly released shared workstream record on the original Brief carrier,
-  preserve exact reviewed module/test/dependency bytes, then complete exact-head
-  CI and normal source release. P1a fresh native build is active; actual generated
-  access and browser evidence remain owed. Both human reopen approvals remain
-  received. No new human decision is pending. Earlier entries are historical.
-  2026-10-12 approved four-market continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-12-daily-brief-repair.md and programme6107291350.
-  The human explicitly reopened original P1a8444 integration and selected original
-  DailyBrief8249 for repair. B03 and Return live acceptance completed20:33UTC
-  October11; do not replay those closed checks. The Brief repair preserves native
-  independent clocks and malformed-input regressions;139 tests pass on integrated
-  main f65b8376. Corrected-source review is accepted within source/helper scope;
-  two planner checks pass. Finish exact-head CI and normal release,
-  then native selection/provenance binding and product integration. Today/standouts
-  already owns selection; do not create a second selector. P1a fresh generated
-  access proof and browser recapture remain in progress on its original carrier.
-  All unrelated custody/refusals remain. Earlier checkpoints below are historical.
-  2026-10-11 authenticated paging continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-b03-attested-relations.md and programme6107291350.
-  PR8832 and8845 are merged and closed. Live browse/filter succeeded but offset8
-  still aborted at15s. Return to candidate is verified live in grid and filtered
-  table. The new bounded one-entry relation cache reattests all actual B1 bytes
-  on every read through the B1 owner; cold construction retains full semantics
-  and post-attestation. Parent213 tests and complete371-row byte comparison pass.
-  Finish normal exact-head CI/release, ordinary API adoption and live paging/sign-out.
-  2026-10-12 four-market continuation: use programme6107291350 and the
-  PROPHET-US-V4-RECOVERY-2026-10-11-object-change.md handoff. PR8857 merged
-  normally to31afbfe1237e; B03 paging/filter/exact relation/sign-out and candidate
-  Return in EN grid/table/Today and settled ZH are accepted live in the retained
-  b03-and-return-live-acceptance-20261011.json receipt. All corresponding source,
-  review, CI, adoption and live checks are closed; do not repeat them.
-  Complete PR8874 with the upstream PR8870 calendar-dependency scope repair:
-  first CI38187164735 failed the unchanged import-closure test; its final semantic
-  evidence is consumed and closed. The reviewed comparison source/test bytes are
-  unchanged by current-main composition. Route integration remains behind
-  DailyBrief8249. Human explicitly reopened original P1a8444 main integration and
-  chose DailyBrief8249 as canonical with source repair; only refusals6029541334
-  and5924461491 are superseded. Both original operations are active, so do not
-  duplicate them or ask again. HK/China adoption waits for actual P1a release.
-  Today/standouts remains the selection owner; native object binding is required
-  before its own selection provenance can be emitted. No second selector or
-  manufactured owner/review/history receipt.
-  Earlier progression below is historical and does not reopen closed evidence.
-  2026-10-11 B1 validation continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-b1-validation-performance.md and programme
-  comment6107291350. PR8832 source is closed at3cb4bfcc and its exact engine was
-  installed before a normal API restart, but entitled B03 still aborted after15s.
-  Current isolated read25.57s spent24.57s in B1 semantics; request arrival remains
-  unknown. The new bounded repair removes repeated envelope validation and final
-  per-episode relation scans without weakening any per-request integrity check.
-  Parent190 affected tests pass; full371-row retained-input result is identical
-  and independent exact-diff review approved. PR8845's first exact plan exposed
-  a CI ownership gap: B1's four-suite command was in a nightly-only data job.
-  The same branch moves that unchanged proof to the existing Prophet code job
-  and tightens unique-owner/source-selector regression tests. Complete normal CI/merge/adoption
-  and live B03 proof; candidate return still awaits coherent generated HTML.
-  Earlier progress below is historical and does not reopen closed evidence.
-  2026-10-11 B03 runtime continuation: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-b03-read-performance.md and programme comment
-  6107291350. B03/8798/8801/8806/8827 source releases are closed; 8827 merged as
-  f6ab52870283d0b1f782a6b0978a81b672864285. Earlier four-feature publication
-  completed, and live bilingual entry/source copy plus exact related Plan filter
-  were observed. Live B03 read aborted at its existing 15-second deadline;
-  original request arrival and first fault remain unknown. The current bounded
-  per-request relation index preserves full B1 validation, passes 53 affected
-  tests and exact 371-row retained-input comparison, and has independent scoped
-  review. Publish and consume exact-head CI before normal source release; actual
-  installed-source/live timeout resolution and 8827 candidate return remain owed.
-  The older progression below is historical and does not reopen closed releases.
-  2026-10-11 human-approved continuation under 6817/6805 and original root
-  01a11e89-b35d-7a81-9404-5fce2c6170cb: use
-  PROPHET-US-V4-RECOVERY-2026-10-11-entry-copy.md and programme comment 6107291350.
-  B03 PR8762 is source-merged at 395e5d6089e95aa907c48fae811ecb918fb26f95 after
-  accepted source, current-head hosted CI and explicit human component visual
-  approval. Existing automatic render 38133349439 and authenticated B03 production
-  proof remain owed. Deliver the current-main mixed Buy/Near group copy repair
-  through normal source/CI/release. B04 PR7869 and B06 PR8670 source releases and
-  reviews are closed. P1a PR8444 access/cached-render deltas are independently
-  accepted within scope at a8d84782b3d2f1e6a875012067584c0b4234d7c0; its original
-  explicit integration refusal and generated public-shell repair remain separate.
-  Resume prepared HK P1b then China P1c at the actual shared P1a acceptance/release
-  edge, preserving incumbent source effects. Daily Brief original PR8249 retains
-  its refused source edit and owner-issued exact selection tuple obligation.
-  Continue native evidence, truthful entry and Model Plans to four-market
-  authenticated production acceptance; do not replay closed operations or infer
-  mission completion from source delivery. Native same-parent children are
-  admitted within actual runtime limits; existing M2 remains preferred and no
-  Executive plugin is used.
+  2026-10-31 CURRENT A2 SOURCE AND REVIEW FRONTIER. The original
+  thirty V4 waves remain five done, seven in_progress, eighteen todo.
+  A2, B2, B3 and B4 retain their distinct original ownership
+  and dependencies; do not redo accepted A1/B1 or B2-1 source work.
+  Use the latest current cumulative handoff
+  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-31.md,
+  original recovery Draft #10174 and its current reviews.
+  Historical 2026-10-30 B17 discovery and source receipts remain
+  scientific evidence, not a new pending worker or permission to
+  manufacture pre-history.
+  A2 reader-side #10202 advanced to exact Draft/HOLD
+  eee773ad13236a15753c681217f91bc75c837217 after a
+  narrow fail-closed public-report correction; its prior
+  independent SOURCE_PASS at 2ea0bf0b is old-head only.
+  New-head CI 41192866361 and fences 41192866050
+  need exact terminal readback and new non-author review,
+  requested through Grok Secretary in Slack #dotsandgroksecretary.
+  Producer UTC clock #10209 remains Draft/HOLD at da3a0451
+  with exact prior green CI and independent SOURCE_PASS.
+  Availability Check E consumer Draft/HOLD #10256 stays at
+  c155e2781c81b7363f68b9d1e7d6790b89c7c49d,
+  exact hosted CI 41179807210/fences 41179807192 GREEN.
+  Independent nonauthor mastermindxryan submitted native
+  CHANGES_REQUESTED review 5722359885 on that head:
+  malformed trailing date text is accepted by the generic
+  date parser, and stale/unreadable PENDING/UNAVAILABLE_DATA
+  can enter typed facts. This code-fix operation was explicitly
+  safety-blocked during its attempted modification; no
+  rephrased/cross-carrier retry is authorized and no fix
+  was applied here. Preserve that Draft and review HOLD.
+  This recovery records Draft #10174 had CI 41179708571
+  and fences 41179708525 success at old head a758b483;
+  native nonauthor review 5722371541 requested correction
+  of this top-level wave count/current action, the Oct-31
+  handoff unresolved worker-return line and Oct-30 B17
+  source-review phrasing. Requalify this amended records
+  head with hosted CI and a fresh independent review
+  before any release.
+  The V4-A2 adoption audit returned terminal long ago;
+  original bounded source-issuer preflight also returned
+  TERMINAL rc0 with locally proven 27-test patch but no
+  independent admitted source review and no accepted bundle.
+  GMI W3B has no accepted current-use-qualified ThemeState
+  generation. Public R2 health was observed on 2026-10-31
+  with source_asof 2026-10-30, while public
+  /live/staleness.json still had no A2 settlement field.
+  Accepted full four-asset issuer bundle/protected served
+  reader attestation, Availability rescue liveness integration,
+  A3 atomic publication and A4 fire drills remain unmet.
+  B17 historical full-population PIT admission evidence
+  remains scientifically unavailable for the frozen
+  denominator; preserve original scope and source-owner
+  obligations without silently changing the 7918 population.
+  Do not claim new SETTLED, self-approve, merge, deploy or
+  bypass a host/permission/safety denial.
 ---
 
 ## Context
@@ -796,3 +961,21 @@ workstream's) so the AgentOS collision detector can see them. Sibling wave
 IDs (Radar W0-W9, Fusion PR-3x, GMI W3x, EIOS E0-E2) are never renamed by this program.
 Future stores (candidate episode registry, availability artifacts, V4 rank projection)
 enter `owns_paths:` when their waves create them — not before.
+
+## Recovery census — 2026-10-24
+
+The [dated handoff](../handoffs/PROPHET-US-V4-RECOVERY-2026-10-24-wave-census.md)
+records every original wave, source versus acceptance proof, preserved carriers,
+and the top bounded action. Dated title narratives above remain historical;
+the current status and next_action fields describe the recovery frontier.
+R6/R7 names such as B03, B04, B06 and P1a are separate namespaces and do not
+silently complete the similarly numbered original V4 waves.
+
+## B2 continuation — 2026-10-25
+
+The [frozen-input handoff](../handoffs/PROPHET-US-V4-RECOVERY-2026-10-25-b17-frozen-inputs.md)
+records the one fresh non-Qwen Fabric refusal and the separately published
+[B-17 implementation Draft #10180](https://github.com/mastermindx-market-intelligence/macro/pull/10180).
+It advances the original B2 wave without changing its acceptance criteria or
+the thirty-wave census. B-17 remains open because the recovered source-date sample
+does not cover the original historical population's admission windows.
