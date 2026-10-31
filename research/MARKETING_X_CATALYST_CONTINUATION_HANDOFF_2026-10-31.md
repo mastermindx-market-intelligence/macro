@@ -66,6 +66,24 @@ docket README. Nothing in this file is a completion claim beyond the rung each l
   ACCEPT-WITH-FINDINGS (F1/F2 minor → REPAIR-B-r1; F3/F4 gaps for the seat); rights request and D1
   readiness note drafted in `$S/orch/b/`. Fleet lane tokens cannot push new refs on this lineage
   (workflow scope) — orchestrators fetch read-only over SSH and publish judged refs themselves.
+- **2026-10-31 12:0xZ** — A1B judged PASS → seat head d5ef1530; its CI was red in ci-pack-1 +
+  contract-delta (the new pack's import closure reaches 7 tracked site data files the paths did not
+  name; the finder emits only for files on disk, so sparse lanes under-report). Seat merged
+  origin/main b59c1d7a (clean) and widened the pack paths (3514839b). ORCH-A FINAL: ACCEPT
+  `lane/mx-cat-orch-a-judged` = 5a0079da (A2 witnesses 2b6d98be + B01–B04 d49edd41, tests-only over
+  A1B; REVIEW-A-r1 on ubuntu0 ACCEPT_WITH_FINDINGS, 1 minor R7-F1 = `tests/fixtures/
+  catalyst_scan_contract_v1.json` missing from the pack paths → seat-fixed; 6 mutation tests) —
+  merged --no-ff → 4743609e. Seat also: deduplicated the doubled Jinja2 requirement line; adopted the
+  seven docket files byte-exact from 9651a77e (they lived only on #10241's sol/* branch, never pushed
+  by the seat) and committed the two ORCH-B records (RIGHTS_CLASSIFICATION_REQUEST.md,
+  D1_READINESS_NOTE.md) beside them. Gaps carried (never silently closed): A07(c)/(d) browser-only;
+  A04 clock packet-level; `templates/catalyst_scan.js` publicState() lacks a NO_QUALIFIED_EVENT pill
+  (producer-fenced); B04-DEDUP (`catalyst_lifecycle.py:800` dedup key includes ticker → one event can
+  dispatch twice across two followed tickers; strict-xfail pin; consequential exactly-once semantics →
+  separate reviewed repair, not folded into this integration). ORCH-B: C1-ENROLL-r3 PASS 1f3b8088 →
+  T2C grant-binding fixture → REVIEW-B-r3 → final `lane/mx-cat-orch-b-judged` (interim 43da56d7).
+  Next: judge+merge the ORCH-B final, CI green on the final head, fresh non-authoring review of the
+  PR, READY, merge `--match-head-commit`, deploy observation with flags OFF.
 
 ## 5. Never
 
