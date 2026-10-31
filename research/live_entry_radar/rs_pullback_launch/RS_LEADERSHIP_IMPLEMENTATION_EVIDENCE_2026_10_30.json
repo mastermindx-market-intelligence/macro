@@ -1,0 +1,95 @@
+{
+  "kind": "research_implementation_evidence_not_runtime_authority",
+  "recorded_date_utc": "2026-10-31",
+  "recorded_date_edmonton": "2026-10-30",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 10225,
+  "branch": "sol/chartmaster-rs-leader-social-audit-20261030-c1-8ab7",
+  "protected_procedure_sha": "bb85b429f2ffffd38408080ce4df7d6378c34100",
+  "tested_source_sha": "680b298e42c6e78100980d953582cc73f76a8e53",
+  "workspace": "/private/tmp/mmx-rs10225-integration-20261031",
+  "workspace_scope": "isolated sparse source-only checkout; no licensed market-data files acquired",
+  "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "pytest_version": "9.1.1",
+  "pandas_version": "3.0.5",
+  "executed_tests": [
+    {
+      "command": "python3 -m pytest -q tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py",
+      "passed_tests": 65,
+      "passed_subtests": 8,
+      "failures": 0,
+      "exit_code": 0,
+      "reported_duration_seconds": 3.15,
+      "process_id": 18739,
+      "retained_log": "/private/tmp/mmx-rs10225-baseline-tests.log",
+      "scope": "unchanged existing rejection descriptor/progress native synthetic baseline; not the new first-green tests"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_entry_radar_rs_pullback_phase1.py",
+      "passed_tests": 71,
+      "passed_subtests": 105,
+      "failures": 0,
+      "exit_code": 0,
+      "reported_duration_seconds": 6.44,
+      "process_id": 31682,
+      "retained_log": "/private/tmp/mmx-rs10225-input-owner-tests.log",
+      "scope": "existing native input-owner synthetic conformance; not market-data admission"
+    }
+  ],
+  "executed_guard_probe": {
+    "process_id": 31682,
+    "construction": "existing witness -> describe_candidate -> replace only species schema/definition/state with first-green research values -> recompute consistency digest -> call existing _reference_value",
+    "observed_result": "InputContractError: only a sealed zero-authority formed pivot can be frozen",
+    "conclusion": "existing rejection freezer does not accept a first-green species merely because its digest is coherent",
+    "limitation": "synthetic source-contract probe only; no first-green formation or confirmation implementation verified"
+  },
+  "source_publications": [
+    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_SUITE_MASTERPLAN.md", "commit": "680b298e42c6e78100980d953582cc73f76a8e53", "readback": true},
+    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_GROUP_CONTEXT_CONTRACT.md", "commit": "fa10937520596eb3e12163b63ce230e0754f2001", "readback": true},
+    {"path": "research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_TERMINAL_INTEGRATION_CONTRACT.md", "commit": "6b3ae96372bfe81ba22d86f15fb6aa03cdc60709", "readback": false},
+    {"path": "research/live_entry_radar/rs_pullback_launch/CHARTMASTER_ORIGINAL_POST_CENSUS_PROTOCOL.md", "commit": "cb5c46f216f1e30d8fd7d5223c4983aaf22660e7", "readback": true}
+  ],
+  "builder_observation": {
+    "run_id": "rs10225-first-green-builder-20261030-01",
+    "root_id": "chartmaster-rs-audit-20261030",
+    "parent_id": "chartmaster-rs-audit-20261030",
+    "controller_pid": 14786,
+    "last_observed_state": "ACTIVE_OR_WAITING",
+    "last_poll_elapsed_seconds": 979,
+    "worker_state": "UNKNOWN",
+    "root_verified": false,
+    "result_available": false,
+    "accepted": null,
+    "retry_allowed": false,
+    "source_scope": ["engine/entry_radar/replay/first_green_pivot.py", "tests/test_entry_radar_first_green_pivot.py"],
+    "interpretation": "request/controller and local poll observations exist; no worker START, returned code, independent review or accepted execution is claimed",
+    "reconciliation": "original Fabric result read returned CONTROLLER_RETURN_UNCONFIRMED; native original observe-run request returned REFUSED/original_run_observation_unconfirmed with transport not attempted",
+    "fence": "do not duplicate, reassign, retry or shadow-code these two files until the original run and any effects are reconciled"
+  },
+  "plan_review": {
+    "run_id": "rs10225-masterplan-contract-review-20261031-01",
+    "target_source_sha": "fa10937520596eb3e12163b63ce230e0754f2001",
+    "observed_result": "tool call blocked by OpenAI safety checks before a dispatch receipt",
+    "worker_start_claimed": false,
+    "independent_review_claimed": false,
+    "retry_or_alternate_carrier": false,
+    "disposition": "that review action stopped; exact independent-review gate remains open"
+  },
+  "secretary_source_evidence": {
+    "capability_thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793407574808779",
+    "capability_child_closed": true,
+    "reported_original_x_reads": 10,
+    "full_archive_search_available": "reported original-interface capability with successful historical query receipts",
+    "complete_account_census_proven": false,
+    "rule_sample_thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793408254439929",
+    "rule_sample_disposition": "original-post sample returned; count and rule-context clarifications requested, no implementation change"
+  },
+  "limitations": [
+    "136 passing existing tests and 113 passing subtests are not proof of the requested new code",
+    "No hosted exact-head test result for a first-green implementation exists in this receipt",
+    "No real one-minute cohort, source admission, forecast, live entry, production or trading result",
+    "Draft source publication is not accepted Agent OS linkage or source merge",
+    "The original rejected account-review operation remains separately preserved; no failed operation was replayed",
+    "Studio fleet status reported FLEET_STATUS_FABRIC_LAUNCHER_DRIFT, which does not by itself prove the individual worker failed"
+  ]
+}
