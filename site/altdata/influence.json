@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-29T23:57:49.730575+00:00",
+  "generated_utc": "2026-10-30T23:44:12.243943+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -799,11 +799,10 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.15,
+      "alt_score": 3,
+      "alt_weighted": 0.85,
       "alt_channels": [
         "affiliation",
-        "github_momentum",
         "special_situation",
         "stocktwits_bull"
       ],
@@ -847,11 +846,10 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 0.95,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
       "alt_channels": [
         "affiliation",
-        "cnbc_pick",
         "special_situation"
       ],
       "top_holder": {
@@ -894,11 +892,12 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 5,
+      "alt_weighted": 1.95,
       "alt_channels": [
         "13f_add",
         "affiliation",
+        "hf_model_momentum",
         "lobbying",
         "patent_cluster"
       ],
@@ -997,12 +996,13 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.4,
+      "alt_score": 7,
+      "alt_weighted": 2.75,
       "alt_channels": [
         "affiliation",
         "app_demand",
         "github_momentum",
+        "hf_model_momentum",
         "lobbying",
         "patent_cluster",
         "trump"
@@ -1094,10 +1094,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 5,
+      "alt_weighted": 1.55,
       "alt_channels": [
         "affiliation",
+        "github_momentum",
         "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
@@ -1242,31 +1243,6 @@
       }
     },
     {
-      "ticker": "GOOG",
-      "actors": [
-        {
-          "actor": "Dan Crenshaw",
-          "kind": "politician",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.0,
-      "alt_channels": [
-        "affiliation",
-        "trump"
-      ],
-      "top_holder": {
-        "owner": "VANGUARD GROUP INC",
-        "title": "Institution",
-        "shares": 421013782
-      }
-    },
-    {
       "ticker": "AXP",
       "actors": [
         {
@@ -1351,13 +1327,12 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 3,
+      "alt_weighted": 1.1,
       "alt_channels": [
         "affiliation",
         "app_demand",
-        "special_situation",
-        "stocktwits_bull"
+        "special_situation"
       ],
       "top_holder": {
         "owner": "VOYA INVESTMENT MANAGEMENT LLC",
@@ -1588,6 +1563,30 @@
       "top_holder": null
     },
     {
+      "ticker": "GOOG",
+      "actors": [
+        {
+          "actor": "Dan Crenshaw",
+          "kind": "politician",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": false,
+      "alt_score": 1,
+      "alt_weighted": 0.5,
+      "alt_channels": [
+        "affiliation"
+      ],
+      "top_holder": {
+        "owner": "VANGUARD GROUP INC",
+        "title": "Institution",
+        "shares": 421013782
+      }
+    },
+    {
       "ticker": "OXY",
       "actors": [
         {
@@ -1676,6 +1675,30 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-10-28",
+      "form": "6-K",
+      "company": "SunScout Holding Ltd",
+      "ticker": "SNSC",
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/2101240/000121390026113292/ea030983701ex99-1.htm"
+    },
+    {
+      "date": "2026-10-26",
+      "form": "8-K",
+      "company": "Praetorian Acquisition Corp.",
+      "ticker": null,
+      "items": "5.02,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/2093912/000121390026112505/ea030946801ex99-1.htm"
+    },
+    {
+      "date": "2026-10-26",
+      "form": "8-K",
+      "company": "Soren Acquisition Corp.",
+      "ticker": null,
+      "items": "5.02,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/2086263/000121390026112511/ea030946701ex99-1.htm"
+    },
+    {
       "date": "2026-10-23",
       "form": "S-1/A",
       "company": "Cryptex Digital Market Cap ETF",
@@ -1713,7 +1736,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
     },
     {
       "date": "2026-10-15",
@@ -1721,7 +1744,7 @@
       "company": "New America Acquisition I Corp.",
       "ticker": null,
       "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
     },
     {
       "date": "2026-10-01",
@@ -1737,39 +1760,15 @@
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020087.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020582.htm"
     },
     {
       "date": "2026-09-30",
-      "form": "8-K",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "1.01,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/djt20260930_8k.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-1/A",
-      "company": "Cryptex Digital Market Cap ETF",
-      "ticker": "BAGZ",
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026105231/ea0307021-s1a5_cryptex.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "8-K",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "1.01,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/ex_1020869.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "425",
+      "form": "S-4",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031600/djt20260930c_425.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
     }
   ]
 }
