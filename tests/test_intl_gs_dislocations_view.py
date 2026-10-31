@@ -589,8 +589,13 @@ def test_v18_scatter_geometry(builder, fixture):
     assert 'viewBox="0 0 640 420"' in svg
     assert 'role="img"' in svg and "aria-label" in svg
     assert re.search(r'<line[^>]*x1="395\.2"', svg), "threshold line not at 60"
+    threshold_text = re.search(
+        r'<text class="intl-dislocations__thresholdlabel"[^>]*>(.*?)</text>', svg,
+        re.DOTALL)
+    assert threshold_text, "threshold line carries no text label element"
     threshold_copy = builder.COPY["threshold_label"]
-    assert threshold_copy[0] in svg or threshold_copy[1] in svg
+    assert threshold_copy[0] in threshold_text.group(1) \
+        or threshold_copy[1] in threshold_text.group(1)
     y_title = builder.COPY["y_axis_title"]
     assert y_title[0] in svg or y_title[1] in svg
     assert "σ" not in svg and "sigma" not in svg.lower()
