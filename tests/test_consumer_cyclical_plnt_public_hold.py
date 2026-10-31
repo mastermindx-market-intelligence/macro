@@ -9,6 +9,7 @@ as a designed outcome (exit 0, one stderr line). These tests pin that hold.
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -111,3 +112,21 @@ def test_committed_tree_has_no_public_card() -> None:
     sitemap = ROOT / "site" / "sitemap.xml"
     if sitemap.exists():
         assert PAGE_NAME not in sitemap.read_text(encoding="utf-8")
+
+
+def test_no_registry_or_seo_row_names_the_card() -> None:
+    """The deleted page leaves no route, override or SEO row behind."""
+    registry = json.loads(
+        (ROOT / "data/product_experience/page_registry.json").read_text(encoding="utf-8")
+    )
+    assert not [
+        row["page_id"] for row in registry["pages"]
+        if "consumer_cyclical_plnt" in row["page_id"]
+        or "consumer_cyclical_plnt" in row["route"]
+    ]
+    for rel in (
+        "config/product_experience/page_registry_overrides.yml",
+        "data/marketing/seo/seo_audit.json",
+        "data/marketing/seo/seo_work_orders.json",
+    ):
+        assert "consumer_cyclical_plnt" not in (ROOT / rel).read_text(encoding="utf-8"), rel
