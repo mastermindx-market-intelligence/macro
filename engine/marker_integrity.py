@@ -54,6 +54,7 @@ Pure functions; no I/O.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import date, timedelta
 
 TOL_DAYS = 4        # same-type prints this close (calendar days) are the same marker
@@ -209,6 +210,12 @@ def merge_markers(prev: list[dict] | None, new: list[dict] | None,
                     row["quality"] = nm.get("quality", pm.get("quality"))
                     if nm.get("reason") is not None:
                         row["reason"] = nm["reason"]
+                        # This companion belongs to the admitted primary verdict.
+                        # Retaining the old one would mix observation vintages.
+                        if "reasons" in nm:
+                            row["reasons"] = deepcopy(nm["reasons"])
+                        else:
+                            row.pop("reasons", None)
                     stats["refined"] += 1
                 else:
                     stats["relabel_blocked"] += 1
