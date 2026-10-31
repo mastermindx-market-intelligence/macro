@@ -11871,6 +11871,21 @@ jobs:
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
       # W2A (IM13) paths: insert below this line
+      - "lib/intl_gs_scanner_view.py"
+      - "lib/intl_gs_coverage_view.py"
+      - "templates/intl_workspace/scanner.html.j2"
+      - "templates/intl_workspace/coverage.html.j2"
+      - "templates/intl_workspace/_gs_scanner_macros.html.j2"
+      - "tests/test_intl_gs_scanner.py"
+      - "tests/test_intl_gs_coverage.py"
+      - "tests/intl_gs_scanner_browser.test.cjs"
+      - "tests/intl_gs_scanner_fixture.py"
+      - "tests/__init__.py"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
@@ -11888,9 +11903,19 @@ jobs:
       - "tests/intl_gs_dossier_fixture.py"
       - "tests/intl_gs_dossier_browser.test.cjs"
       - "tests/__init__.py"
-    # 15, not 12: fixed steps take ~10m20s and the canonical-main fetch alone
-    # measured 1m02s-2m08s, so 12 timed out whenever that fetch ran slow.
-    timeout-minutes: 15
+    # Measured cost, not a guess (DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
+    # run 41227508685 (ci-pack-9, job 124615360658, head 2c5d125e) hit the 12-minute
+    # cap at 18:27:48Z (job start 18:15:48Z) with every completed subtest passing —
+    # install 36s, canonical base (prepare_canonical_main) 60s, builder and template
+    # contracts 4m20s, DOM controller 4m24s (`# pass 198 # fail 0`), tablesort 10s
+    # (`# pass 31`, 2 skipped), then the IM13 W2A tests step cut off 90s in.  On a
+    # nominal runner (run 41223549652, head 9b0fef84) the same builder and DOM steps
+    # ran ~1.8x faster, and W2A's own IM13 step costs 95s tests + 78s browser proof,
+    # with the IM14 dossier step still to run at 9m45s.  12 → 20.
+    # Weight is not derived from timeout-minutes, so this does not rebalance packs.
+    # The structural fix — dropping the redundant base fetch after the fetch-depth 0
+    # checkout, or a job split — is deferred to a separate intl-GS CI-budget lane.
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11928,6 +11953,10 @@ jobs:
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
+      - name: IM13 global scanner + coverage tests (W2A)
+        run: python -m pytest tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py -q
+      - name: IM13 scanner + coverage browser proof (W2A)
+        run: node --test tests/intl_gs_scanner_browser.test.cjs
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) test steps: insert below this line
