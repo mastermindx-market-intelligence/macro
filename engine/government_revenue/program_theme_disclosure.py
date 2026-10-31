@@ -396,6 +396,11 @@ def append_commercial_space_context(display, context):
   f"(owner generated {context['pulse_generated_at']}); exact-close coverage "
   f"{context['close_observed']}/{context['close_configured']} at {context['close_as_of']} "
   f"(missing: {missing}). The coverage measures and observation dates are separate. "
+  f"Activity at {context['pulse_as_of']}: {context['activity_n']}/{context['pulse_covered']} "
+  f"covered members ({context['activity_share'] * 100:.1f}% reported share) met the activity criteria. "
+  'A covered member is active when its absolute SPY-adjusted daily return has a z-score of at least 1.5 '
+  'against its own 63-session history, or volume is at least 1.5 times its own 63-session median. '
+  'Activity is direction-free; it is not capital flow or alpha. '
   f"Current roster version {context['membership_version']}, curated {context['curated']}; "
   'history is back-projected, not a point-in-time track record. This is a commercial-space '
   'basket, not a government-space portfolio, quartet membership, program exposure or issuer economics.')
@@ -404,6 +409,11 @@ def append_commercial_space_context(display, context):
   f"（来源生成时间{context['pulse_generated_at']}）；精确收盘覆盖{context['close_observed']}/"
   f"{context['close_configured']}，截至{context['close_as_of']}（缺失：{missing_zh}）。"
   '两项覆盖口径和观测日期分别列示。'
+  f"截至{context['pulse_as_of']}，{context['pulse_covered']}个已覆盖成员中{context['activity_n']}个"
+  f"（来源报告占比{context['activity_share'] * 100:.1f}%）达到活跃标准。"
+  '已覆盖成员的SPY调整后单日回报绝对值相对自身63个交易日历史的z分数不低于1.5，'
+  '或成交量至少为自身63个交易日成交量中位数的1.5倍，即被计为活跃。'
+  '活跃度不区分涨跌方向，不代表资金流或超额收益。'
   f"当前成员版本{context['membership_version']}，整理日期{context['curated']}；"
   '历史按当前成员回溯，并非时点有效的业绩记录。该篮子属于商业航天，'
   '不代表政府航天组合、四家公司成员关系、项目敞口或发行人财务。')

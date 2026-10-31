@@ -291,12 +291,22 @@ def load_commercial_space_context(root, binding, *, as_of):
             raise ValueError('commercial_space_denominator_invalid')
         if not isinstance(membership['history_note'], str) or not membership['history_note'].strip():
             raise ValueError('commercial_space_history_disclosure_missing')
+        activity = pulse['participation']['activity_n']
+        share = pulse['participation']['activity_share']
+        denominator = pulse['n_covered']
+        if (type(activity) is not int or type(denominator) is not int
+                or not 0 <= activity <= denominator or denominator <= 0
+                or not isinstance(share, (int, float)) or isinstance(share, bool)
+                or not math.isfinite(share) or not 0 <= share <= 1
+                or abs(share - activity / denominator) > 0.0001):
+            raise ValueError('commercial_space_activity_denominator_invalid')
         # Retain the publisher's two different observation dates and denominators.
         # A local verification clock is house knowledge, never source availability.
         result = {'state': 'verified_native_published_context', 'basket_id': 'space_economy',
                   'source_commit': binding['source_commit'], 'source_sha256': dict(binding['sources']),
                   'verified_at': binding['verified_at'], 'pulse_generated_at': pulse['generated_at'],
                   'pulse_as_of': pulse['as_of'], 'pulse_covered': pulse['n_covered'],
+                  'activity_n': activity, 'activity_share': share,
                   'pulse_members': pulse['n_members'], 'close_as_of': observation['effective_as_of'],
                   'close_observed': covered, 'close_configured': count,
                   'close_missing': observation['missing_at_asof'],

@@ -144,6 +144,9 @@ def test_builder_consumes_direct_commercial_space_without_quartet_substitution(t
  assert 'Commercial-space basket context (space_economy; stale)' in space['known_en']
  assert 'pulse coverage 15/15 at 2026-10-14' in space['known_en']
  assert 'exact-close coverage 14/15 at 2026-10-14 (missing: KRMN)' in space['known_en']
+ assert 'Activity at 2026-10-14: 6/15 covered members (40.0% reported share)' in space['known_en']
+ assert '63-session' in space['known_en'] and 'direction-free' in space['known_en']
+ assert '15个已覆盖成员中6个' in space['known_zh'] and '来源报告占比40.0%' in space['known_zh']
  assert 'back-projected' in space['known_en'] and 'not a government-space portfolio' in space['known_en']
  assert '商业航天' in space['known_zh'] and '脉冲覆盖15/15' in space['known_zh'] and '精确收盘覆盖14/15' in space['known_zh']
  sources=[s for s in space['sources'] if s['owner_key']=='commercial_space_context']
@@ -152,7 +155,7 @@ def test_builder_consumes_direct_commercial_space_without_quartet_substitution(t
  assert all(r['research_state']=='EVIDENCE_INSUFFICIENT' for r in after['public_disclosure']['themes'])
  assert d.validate_public_theme_disclosure(after['public_disclosure'])
 
-@pytest.mark.parametrize('fault',['missing','changed_hash','wrong_basket','future_clock','coverage','missing_coverage','wrong_cutoff','bool_count','symlink','binding_shape','coverage_nan','coverage_inf','coverage_bool','source_shape','pulse_shape','observation_shape'])
+@pytest.mark.parametrize('fault',['missing','changed_hash','wrong_basket','future_clock','coverage','missing_coverage','wrong_cutoff','bool_count','symlink','binding_shape','coverage_nan','coverage_inf','coverage_bool','source_shape','pulse_shape','observation_shape','activity_nan','activity_inf','activity_ratio','activity_bool','activity_missing','activity_over_covered','activity_denominator_zero'])
 def test_invalid_optional_group_is_local_and_drops_every_new_claim(tmp_path,fault):
  from hashlib import sha256
  from engine.government_revenue import defense_participation_context as ctx
@@ -165,7 +168,7 @@ def test_invalid_optional_group_is_local_and_drops_every_new_claim(tmp_path,faul
  elif fault=='binding_shape':binding['sources']['other.json']='a'*64
  elif fault=='source_shape':binding['sources']=None
  else:
-  relative=ctx.OWNER_PATHS[1] if fault in ('wrong_basket','future_clock','pulse_shape') else ctx.OWNER_PATHS[2]
+  relative=ctx.OWNER_PATHS[1] if fault in ('wrong_basket','future_clock','pulse_shape') or fault.startswith('activity_') else ctx.OWNER_PATHS[2]
   file=tmp_path/relative;value=json.loads(file.read_bytes())
   if fault=='wrong_basket':value['space_economy']['basket_id']='defense'
   elif fault=='future_clock':value['space_economy']['generated_at']='2999-01-01T00:00:00Z'
@@ -178,6 +181,13 @@ def test_invalid_optional_group_is_local_and_drops_every_new_claim(tmp_path,faul
   elif fault=='coverage_bool':value['baskets'][0]['observation']['coverage']=True
   elif fault=='pulse_shape':value['space_economy']=[]
   elif fault=='observation_shape':value['baskets'][0]['observation']=None
+  elif fault=='activity_nan':value['space_economy']['participation']['activity_share']=float('nan')
+  elif fault=='activity_inf':value['space_economy']['participation']['activity_share']=float('inf')
+  elif fault=='activity_ratio':value['space_economy']['participation']['activity_share']=6/14
+  elif fault=='activity_bool':value['space_economy']['participation']['activity_n']=True
+  elif fault=='activity_missing':del value['space_economy']['participation']['activity_share']
+  elif fault=='activity_over_covered':value['space_economy']['participation']['activity_n']=16
+  elif fault=='activity_denominator_zero':value['space_economy']['n_covered']=0
   file.write_text(json.dumps(value));binding['sources'][relative]=sha256(file.read_bytes()).hexdigest()
  r['commercial_space_context']=binding;path.write_text(json.dumps(r))
  after=b.build_public_theme_candidate(tmp_path,generated_at=SPACE_NOW,as_of=SPACE_NOW)
@@ -202,3 +212,21 @@ def test_optional_context_keeps_distinct_dates_and_localized_empty_missing(tmp_p
  assert '缺失：无' in row['known_zh'] and 'none' not in row['known_zh']
  assert 'recomputing' not in row['known_en'] and '重新计算' not in row['known_zh']
  assert {s['title'] for s in row['sources'] if s['owner_key']=='commercial_space_context'}=={'Space Economy membership','Space Economy pulse','Space Economy exact-close coverage'}
+
+
+def test_native_zero_activity_is_reported_zero_with_covered_denominator(tmp_path):
+ from hashlib import sha256
+ from engine.government_revenue import defense_participation_context as ctx
+ r,path=reviewed(tmp_path);binding=space_context_bundle(tmp_path)
+ file=tmp_path/ctx.OWNER_PATHS[1];value=json.loads(file.read_bytes());pulse=value['space_economy']
+ pulse['participation'].update(activity_n=0,activity_share=0.0,activity_basis={'ret_only':0,'ret_and_volume':0})
+ pulse['direction'].update(n_active=0,agreement_pct=None,sign='mixed',leader=None)
+ file.write_text(json.dumps(value));binding['sources'][ctx.OWNER_PATHS[1]]=sha256(file.read_bytes()).hexdigest()
+ r['commercial_space_context']=binding;path.write_text(json.dumps(r))
+ out=b.build_public_theme_candidate(tmp_path,generated_at=SPACE_NOW,as_of=SPACE_NOW)
+ assert out['optional_context']['state']=='verified_native_published_context'
+ row=out['public_disclosure']['themes'][2]
+ assert 'Activity at 2026-10-14: 0/15 covered members (0.0% reported share)' in row['known_en']
+ assert '15个已覆盖成员中0个（来源报告占比0.0%）' in row['known_zh']
+ assert 'not capital flow or alpha' in row['known_en'] and '不代表资金流或超额收益' in row['known_zh']
+ assert 'stale' in row['known_en'] and row['research_state']=='EVIDENCE_INSUFFICIENT'
