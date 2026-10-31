@@ -1,6 +1,22 @@
-# Claim-to-Evidence Contract v1 — DRAFT — NOT a preregistration; reads NO outcomes; claims no forecast
+# Claim-to-Evidence Contract v1 — FROZEN 2026-10-31 — NOT a preregistration; reads NO outcomes; claims no forecast
 
-> **NOT A PREREGISTRATION.** This file registers nothing, freezes nothing, fits nothing and binds no trial budget. Every design value below is a PROPOSAL until the seat's `FROZEN:` reply; the preregistration is a separate PHASE 3 file.
+> **FROZEN by the commissioning seat (Fable CEO `00dea969`), 2026-10-31.** The seat's `FROZEN:` reply is quoted verbatim below. It froze the DRAFT at `40754ac0d47c26e278d9887ec922e56d91010c20` (file then named `CLAIM_EVIDENCE_CONTRACT_v1_DRAFT_2026-10-31.md`; this file is its git rename). Order of precedence: (1) the reply below; (2) this file's body as frozen; (3) the restatements in `EW_FORECAST_PREREG_v1_2026-10-31.md`. A difference between (2) and (3) is a defect to repair by a recorded seat decision, never a silent change. Body text written as "proposal" or "→ SD-nn" now reads as the adopted value named in the reply (every §10 PROPOSAL, except SD-07 and SD-08, which are n/a because C-SEC is not frozen). The only edits made at freeze are this banner, the title, the Lifecycle row, the §3.2 PHASE 3 notes (seat AMEND A2) and the §1 erratum note; no frozen value changed.
+
+```text
+FROZEN: claude/gd-ew-p3-prereg-contract-20261031@40754ac0d47c26e278d9887ec922e56d91010c20 ALL=PROPOSAL SD-01=a SD-07=n/a SD-08=n/a SD-18=ii+i-pointer SD-19=accept SD-21=a
+
+Seat judgment (Fable CEO 00dea969) after opening the draft in full: §2 D1–D3 corrections hold; X1–X10 and the C-MKT / C-RS estimands are frozen exactly as written; every PROPOSAL value in §10 is adopted unless named above. Holm m = 2 (two frozen families). C-SEC is NOT frozen: the prereg must say so explicitly and state that any later C-SEC registration is a NEW family with its own budget and fingerprint, never a reuse of the EW-P3 budget.
+
+AMEND (bind these into the prereg text; they resolve ambiguities, they change no frozen value):
+A1 — SD-20 fit discipline. P1-DEV uses coefficients fit on admissible rows 2012-01-03→2022-12-30 and is run ONCE on 2023-01-03→2026-09-29; its result (DEVELOPMENT_PASS|DEVELOPMENT_FAIL) and its coefficient file are retained as development artifacts. The PROSPECTIVE coefficient file is then fit ONCE on the full admissible calibration window 2012-01-03→2026-09-29 (SD-02a/SD-03a) and that file alone is fingerprinted (X5). A DEVELOPMENT_FAIL is recorded in the ledger and the seat decides, by a recorded decision, whether prospective accrual continues; no automatic stop and no refit on October data.
+A2 — P-02/P-03 are marked NOT REQUIRED under SD-04=a (keep the rows, change their consequence column). P-01, P-04, P-09 stay OPEN and must be checked by counts/metadata only in phase 3 before any issue; P-04's fingerprint count is a phase 3 task (counts only, never a row read).
+A3 — Pins: the prereg pins REVIEW and the increment doc by BLOB sha (43682d12 / 95ed92a3 at #10219 head ff4b0aab) and names that head; line numbers are secondary.
+A4 — The reader stub returns NOT_EXECUTABLE until BOTH the registered prospective window has elapsed to its first look AND an X10 engine-lane run has issued ≥1 receipted row; its test proves the refusal with zero outcome rows read.
+
+PHASE 3 now, per the packet: cut from fresh main (merge origin/main into the branch; never force-push; keep 40754ac0 in history), one C1 build lane (push host explicit: ubuntu0/1/3) + one independent fabric review lane on the final head, ≤2 numbered repair rounds. Prereg file `research/grey_deer/ew_completion_20261031/EW_FORECAST_PREREG_v1_2026-10-31.md` (use the draft date; the merge date is recorded inside the file at merge by the seat's records lane, never by renaming). Also: move the contract DRAFT to its final name `CLAIM_EVIDENCE_CONTRACT_v1_2026-10-31.md` with a FROZEN banner quoting this reply verbatim (keep the git rename). Ledger per SD-18: new `CLAIM_EVIDENCE_LEDGER_v1.md` + one pointer row appended to GD1_CAUSAL_HYPOTHESIS_LEDGER.md (append only). Trial-ledger family registration + legacy-jobs test registration as in the packet. Draft PR with the packet's exact title, ONE body write, `Supersedes nothing; amends #10219 (EW-P3.T1)` line, ends with the Claude Code footer. Return in the RETURN FORMAT with NEXT SEAT ACT. Zero outcome rows read remains binding.
+```
+
+> **NOT A PREREGISTRATION.** This file registers nothing, fits nothing and binds no trial budget. Its design values were PROPOSALS until the seat's `FROZEN:` reply quoted above; the preregistration is the separate PHASE 3 file `EW_FORECAST_PREREG_v1_2026-10-31.md` in this directory.
 > **READS NO OUTCOMES.** The author opened no forward log, claims row, label, graded row or scored outcome. No file under `data/` was opened. The only `data/` facts used are blob ids and names from `git ls-tree`, commit dates from `git log` on three store paths, and row COUNTS already recorded in the census.
 > **CLAIMS NO FORECAST.** No candidate below is a validated model or an issued probability. None is evidence that leadership deterioration predicts anything. Nothing here changes any rank, gate, size or execute authority.
 
@@ -12,7 +28,7 @@
 | Base | `main` at `e0566cb74e9463a808abae9b8c954c89cb9e1d84`, which contains `1d937d7e2b36` (#10249). |
 | Census | GD-EW-P3-C1, taken at `48ac483c`. Every blob pin it records was re-verified identical at `e0566cb7`. |
 | Governing spec | `research/grey_deer/ew_completion_20261031/RESEARCH_AND_VALIDATION.md`, blob `283f98e8e165d5064a755d4a443edb0b0b5b30ea`. This draft follows §3 (types and math), §4 items 1–7, §5 (ledger and verdict classes) and §7 (freedom clause). |
-| Lifecycle | DRAFT → seat `FROZEN:` reply → PHASE 3. PHASE 3 creates the prereg file, reader stub, test, ledger entry, trial-ledger registration and legacy-jobs registration. None of those exists yet. |
+| Lifecycle | DRAFT (`40754ac0`) → seat `FROZEN:` reply (2026-10-31, quoted above) → PHASE 3 on the same branch. PHASE 3 creates the prereg file, the reader stub and its test, the claim-evidence ledger and its GD1 pointer, the legacy-jobs registration, and the trial-ledger registration code. The trial-ledger append itself and the prereg's merge-date lines are records-lane acts at merge (prereg §2, §12). |
 
 **How to read this file.**
 - Each candidate fills R&V §4 items 1–7 as proposals.
@@ -24,6 +40,8 @@
 ## 1. Source pins
 
 All blob ids are at `e0566cb7`, and line numbers are in those blobs. The review blob is not on `main`. It is pinned at the #10219 Draft head `ff4b0aab3f9c2e0130f4a98d20502dde257ee575`.
+
+**Erratum found in PHASE 3 (line numbers only; seat AMEND A3 makes blobs primary).** In TL blob `b9b44401…`, `log_declared_budget` is at :593 and `register_trials` at :694, not :204 and :298 as cited in this table and in X5, §8 and SD-19. The blob is unchanged; every other definition cited by line in RRA, RR, GPF, GPG and RRS was spot-checked at its stated line in PHASE 3.
 
 | Ref | Path | Blob | Lines used |
 |---|---|---|---|
@@ -87,17 +105,29 @@ Rights follow the standing Chairman attestation `DEC:COMMERCIAL-DATA-RIGHTS-CHAI
 
 Each row below is an OPEN fact. None is assumed. PHASE 3 or later must check each one, using counts and metadata only, before any read.
 
+**PHASE 3 status (seat AMEND A2).** P-02 and P-03 are NOT REQUIRED under SD-04=a; their rows are kept. P-01, P-04 and P-09 were checked on 2026-10-31 by counts and metadata only (§3.2.1). No row of any store was read.
+
 | Id | Store (blob at e0566cb7) | What would have to be true | What is witnessed now | Consequence if not established |
 |---|---|---|---|---|
 | P-01 | `data/yahoo/SPY.parquet` `aa8076350333646730bc304de9a528c6c602a712`, `SMH.parquet` `8ee05c76bdacafbd020cb8880e83eaaa96b1b30b`, `XLK.parquet` `05af6a0d45b23e1e0de10831090da8f378b38046`, `QQQ.parquet` `7684895288699b6af619f4d9820fb5ed2ad3f547` | (a) The vendor `available_at` for each close is known. (b) The as-of-t vintage of total-return-adjusted closes can be recovered. Adjustment rewrites history at each distribution, so the current file is not the as-of-t file. (c) There is one ingested vintage per session. | (a) UNKNOWN. (b) This clone is shallow, with its boundary at 2026-08-21. In it, 75 commits touch `SPY.parquet` and 75 touch `SMH.parquet`, from 2026-08-23 to 2026-10-30. Earlier vintages are OPEN (unshallow remote, R2, or pre-rewrite history), not absent. (c) OPEN. | Reconstructed history is labelled RECONSTRUCTED and is never relabelled original PIT (R&V :48). Prospective rows record the blob of each vintage they use (X5, SD-17). |
-| P-02 | `data/baskets/membership.json` `42149e59b72987f8510df149322c41b266aa6f92` | The cohort membership known at each historical session can be recovered. | Three commits are visible, from 2026-08-23 to 2026-10-12. A `removed` field exists (LC :109), but add dates are OPEN. GD1C :2 says PIT membership is not reconstructable for 2016-01-04..2026-07-31. | Member-based inputs are non-PIT before prospective issue. This matters only if SD-04 picks option (c). |
-| P-03 | `data/baskets/ohlcv/<member>.parquet` (LC :82–83) | The provider route and the vintage chain of member closes are known. | OPEN (see the rights table). | Same as P-02. |
+| P-02 | `data/baskets/membership.json` `42149e59b72987f8510df149322c41b266aa6f92` | The cohort membership known at each historical session can be recovered. | Three commits are visible, from 2026-08-23 to 2026-10-12. A `removed` field exists (LC :109), but add dates are OPEN. GD1C :2 says PIT membership is not reconstructable for 2016-01-04..2026-07-31. | NOT REQUIRED under SD-04=a (seat AMEND A2). No member-based input is used. Had SD-04 picked option (c), member-based inputs would be non-PIT before prospective issue. |
+| P-03 | `data/baskets/ohlcv/<member>.parquet` (LC :82–83) | The provider route and the vintage chain of member closes are known. | OPEN (see the rights table). | NOT REQUIRED under SD-04=a (seat AMEND A2). Kept for the record. |
 | P-04 | `data/risk_radar/forward_log.jsonl` (census count: 71 rows, 2026-06-23→2026-10-20; blob `a967f5b4…`) | The rows used as C-MKT comparator B1 carry epoch `2026-09-23-prospective-v1`, a first-writer `issued_at` and one constant `model_fingerprint` (RRA :37–38, :139–152, :224). | The census count of rows under the current fingerprint is OPEN. Git commit time is the independent first-writer witness. | B1 rows from other epochs or fingerprints are never pooled (R&V :14, :63). Rows without B1 are excluded from every arm of C-MKT. |
 | P-05 | `data/leadership_crack/forward_log.jsonl` (census count: 45 rows; blob `914703a1…`) | — | Rows carry `logged_at` only, with no model fingerprint or source hash (LC :424–427). | These rows can never be issued-model rows. They are display records only. |
 | P-06 | `data/massive`, `data/massive_stock_day`, `data/polygon`, `data/polygon_universe` (directory names only) | Daily bars for SPY, SMH and XLK exist. The history depth, the unadjusted-versus-adjusted basis, the corporate-action records and any as-of vintages are known. | OPEN. The directories were not opened. | Optional. These would provide an independent measure of the Yahoo revision effect. |
 | P-07 | Tiingo (no `data/tiingo` directory at e0566cb7) | Authenticated access and technical enrollment are in place. | OPEN. | Optional. |
 | P-08 | `data/pit_release_log`, `data/pit_replay` (directory names only) | Either one covers equity price vintages. | OPEN. | Optional. If it covers them, it could close part of P-01(b). |
 | P-09 | NYSE calendar (CAL) | The holidays and early closes for the calibration and prospective windows are correct. Only the US calendar applies, since all three instruments are NYSE-listed. CN, HK and CA (R&V :48) do not apply. | Checkable from code. Not yet checked. | A wrong session axis voids the labels for the affected rows (`VOIDED:calendar`). |
+
+#### 3.2.1 PHASE 3 count-and-metadata results (2026-10-31)
+
+Method: blobs read through `git cat-file blob` at merge commit `f3508118` (main `af6d63be`); parquet footer metadata only (row count, column names, row-group min/max of the date column); the forward log by a regex projection of three metadata keys over raw bytes, with no JSON decode and no row printed; the calendar from code. No path under `data/` was opened.
+
+| Id | Result | Status | Consequence |
+|---|---|---|---|
+| P-01 | `SPY.parquet` blob `aa807635…`: 8,497 rows, dates 1993-01-29→2026-10-30. `SMH.parquet` blob `8ee05c76…`: 6,642 rows, 2000-06-05→2026-10-30. Columns in both: `Date`, `close`, `close_price`, `volume`. `close` is the total-return (split- and dividend-adjusted) basis per `collectors/yahoo.py` (blob `37547ac5…`) :6–8; `close_price` is dividend-unadjusted. | Coverage of the calibration window 2012-01-03→2026-09-29 is present for both legs by date range. (a) `vendor_available_at`, (b) as-of vintages before the 2026-08-21 shallow boundary and (c) one vintage per session remain OPEN. | Unchanged: calibration and P1-DEV history is RECONSTRUCTED; prospective rows record each vintage blob (X5, SD-17a). Every arm uses the `close` column. |
+| P-04 | `forward_log.jsonl` blob `a967f5b4…`: 71 rows; 18 carry epoch `2026-09-23-prospective-v1` and an `issued_at`. Those 18 carry **4 distinct `model_fingerprint` values** in contiguous runs (prefixes `60d2bd2e`×2, `8d3429a1`×7, `e636ae29`×5, `030275cf`×4). | "One constant `model_fingerprint`" is REFUTED for the existing issued rows. Prospective constancy is OPEN. | The frozen consequence governs: B1 rows from other epochs or fingerprints are never pooled, and rows without B1 leave every C-MKT arm. The prereg (§6.4) binds which B1 segment is scored and states the starvation risk. |
+| P-09 | `lib/nyse_calendar.py` (CAL): session counts per calendar year 2012–2027 match the published NYSE trading-day counts, with one-off closures excluded. Window counts: 3,706 sessions 2012-01-03→2026-09-29; 2,768 sessions 2012-01-03→2022-12-30; 938 sessions 2023-01-03→2026-09-29. | ESTABLISHED for the calibration and P1-DEV windows. Future years remain checkable from code at each look. | None. |
 
 ---
 
