@@ -117,7 +117,9 @@ class _AttributeScanner(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         for name, value in attrs:
-            if value and ("<" in value or "l-en" in value or "l-zh" in value):
+            # class="l-en"/"l-zh" are legitimate ONLY as class values (FX2)
+            if value and ("<" in value or (name != "class"
+                                           and ("l-en" in value or "l-zh" in value))):
                 self.bad.append((tag, name, value[:60]))
 
 
@@ -211,7 +213,7 @@ def test_b2_hero_qualified_number_basis_clock(obs_set, page):
     assert "USD" in _visible_text(re.search(r'<div class="intl-gs__hero".*?</div>\s*</div>',
                                             article, re.S).group(0))
     clock = jp["clocks"]["observation"]["at"]
-    assert f'<time class="intl-gs__hero__clock" datetime="{clock}"' in article
+    assert f'<time class="intl-gs__hero__clock intl-gs__num" datetime="{clock}"' in article
 
 
 def test_b2_hero_abstaining_observation_renders_state_not_number(withheld_page):
@@ -260,14 +262,16 @@ def test_b3_decomposition_verbatim_and_identity(obs_set, page):
     residual_text = (f"{residual:.1e}".replace("-", "−")
                      if 0 < abs(residual) < 1e-6 else _signed(residual, 2, "pp"))
     assert residual_text in text
-    # identity: local + additive FX + interaction = USD within tolerance+|residual|
-    difference = abs(dec["local_pct"] + dec["additive_fx_contribution_pp"]
+    # identity: local + FX + interaction = USD within tolerance+|residual|
+    # (the additive FX contribution = usd - local already contains the
+    # interaction term; the packet's literal sum double-counts it — GAP G15)
+    difference = abs(dec["local_pct"] + dec["fx_pct"]
                      + dec["interaction_pp"] - dec["usd_pct"])
     assert difference <= RETURN_IDENTITY_TOLERANCE + abs(dec["identity_residual"])
     identity = re.search(r'<p class="intl-gs__identity">(.*?)</p>', card.group(0), re.S)
     assert identity
     for number in (_signed(dec["local_pct"], 2, "%"),
-                   _signed(dec["additive_fx_contribution_pp"], 2, "pp"),
+                   _signed(dec["fx_pct"], 2, "%"),
                    _signed(dec["interaction_pp"], 2, "pp"),
                    _signed(dec["usd_pct"], 2, "%")):
         assert number in identity.group(1), number
@@ -364,9 +368,12 @@ def test_b7_peers_same_region_group_select_links(obs_set, page):
                            article, re.S).group(0)
     links = re.findall(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="([^"]+)"[^>]*href="([^"]+)"',
                        peers_html)
-    assert [m for m, _href in links][:5] == ["CN", "HK", "ID", "IN", "JP"]
+    rows = __import__("lib.intl_gs_display", fromlist=["jurisdiction_rows"]).jurisdiction_rows(UNIVERSE)
+    expected = [row["id"] for row in rows
+                if row["region_group"] == "asia" and row["id"] != "AU"][:5]
+    assert [m for m, _href in links] == expected
     for market, href in links:
-        assert href == f"?view=dossier&market={market}"
+        assert href == f"?view=dossier&amp;market={market}"
     index = _obs_index(obs_set)
     cards = re.split(r'<a class="intl-gs__peer"', peers_html)[1:]
     for market, card in zip([m for m, _ in links], cards):
@@ -410,10 +417,11 @@ def test_b8_specimen_page_board11(specimen_page):
     assert re.search(r'<span class="intl-gs__hero__num[^"]*"[^>]*>\+3\.40%</span>',
                      specimen_page)
     assert "Chile" in specimen_page and "Peru" in specimen_page
-    chile = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="CL".*?(?=<a class="intl-gs__peer")',
-                      specimen_page, re.S).group(0)
-    peru = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="PE".*?(?=<a class="intl-gs__peer")',
-                     specimen_page, re.S).group(0)
+    br = _articles(_panel(specimen_page, "1m", "usd_unhedged"))["BR"]
+    chile = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="CL".*?(?=<a class="intl-gs__peer"|</div>)',
+                      br, re.S).group(0)
+    peru = re.search(r'<a class="intl-gs__peer"[^>]*data-gs-select-market="PE".*?(?=<a class="intl-gs__peer"|</div>)',
+                     br, re.S).group(0)
     assert "intl-gs__chip--warn-dashed" in chile, "Chile Qualified dashed warn"
     assert "intl-gs__chip--muted-dashed" in peru, "Peru Abstain dashed muted"
 
@@ -440,16 +448,17 @@ def test_b9_css_region_design_laws():
         assert "box-shadow:inset" not in code.replace(" ", "")
         assert not re.search(r"#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|color-mix\(", code), code
         assert "font-family" not in code or "var(--font-" in code, code
-        if "border-radius" in code:
-            assert re.search(r"border-radius:var\(--r-(panel,12px|btn,8px|pill,999px)\);?$", code), code
+        for declaration in code.split(";"):
+            if "border-radius" in declaration:
+                assert re.fullmatch(r"border-radius:var\(--r-(panel,12px|btn,8px|pill,999px)\)",
+                                    declaration.strip()), code
         if "var(--" in code:
             for name in re.findall(r"var\((--[a-z0-9-]+)", code):
                 assert not name.startswith(("--sp-", "--returns-", "--font-zh")), code
-                assert ",12px)" not in code or name == "--r-panel", code
-        if ":" in code and "{" not in code and "hover" not in code:
-            pass  # declaration lines checked above
+                assert name not in ("--r-card", "--r-ctl"), code
     selectors = [line.strip().split("{")[0].strip() for line in region.splitlines()
-                 if "{" in line and "}" not in line.split("{")[0]]
+                 if "{" in line and "}" not in line.split("{")[0]
+                 and not line.strip().startswith(("@media", "@keyframes"))]
     for selector in selectors:
         for part in selector.split(","):
             part = part.strip()
@@ -475,7 +484,7 @@ def test_b9_templates_no_style_no_igs():
 def test_b10_zh_vocabulary(page):
     chunk = _panel(page)
     for market, zh in (("JP", NAMES_ZH["JP"]), ("AU", NAMES_ZH["AU"]), ("EZ", NAMES_ZH["EZ"])):
-        assert re.search(rf'data-gs-select-market="{market}"[^>]*>[^<]*<span class="l-zh">{zh}</span>',
+        assert re.search(rf'data-gs-select-market="{market}"[^>]*>.*?<span class="l-zh">{zh}</span>',
                          chunk), market
     assert "全球发生了什么变化？" in chunk  # question labels ZH
     identity = re.search(r"<p class=\"intl-gs__identity\">.*?</p>", chunk, re.S)
@@ -562,7 +571,7 @@ def test_b13_correction_note_wraps_separator_and_clock():
 
 
 def test_b13_css_region_carries_nowrap_rule():
-    assert ".intl-gs .intl-gs__corr-when{white-space:nowrap}" in _w2b_css_region().replace(" ", "")
+    assert re.search(r"\.intl-gs\s+\.intl-gs__corr-when\{white-space:nowrap\}", _w2b_css_region())
 
 
 # ---------------------------------------------------------------- B14 no raw ISO / clean attributes

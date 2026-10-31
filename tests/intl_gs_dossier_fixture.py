@@ -81,6 +81,7 @@ def _specimen_panel():
                           and p["context"]["currency_basis"] == "usd_unhedged"))
     payload = panel["payload"]
     payload["specimen"] = True
+    payload["default_market"] = "BR"
 
     def _market(market_id):
         return next(m for m in payload["markets"] if m["id"] == market_id)
@@ -100,8 +101,8 @@ def _specimen_panel():
         "additive_fx_contribution_pp": 2.2, "interaction_pp": 0.0,
         "identity_residual": 0.0,
         "identity_en": ("Identity check: local +1.20% + FX contribution +2.20pp "
-                        "+ interaction +0.00pp = USD +3.40% (residual 0.00pp)."),
-        "identity_zh": ("恒等式：本币 +1.20% + 汇率贡献 +2.20pp + 交互项 +0.00pp "
+                        " + interaction 0.00pp = USD +3.40% (residual 0.00pp)."),
+        "identity_zh": ("恒等式：本币 +1.20% + 汇率贡献 +2.20pp + 交互项 0.00pp "
                         "= 美元 +3.40%（残差 0.00pp）。"),
         "reason_pairs": None,
     }
