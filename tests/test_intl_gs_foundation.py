@@ -1753,8 +1753,10 @@ def test_fx5_horizon_label_vocabulary():
     assert horizon_label("1m") == ("1M", "1月")
     assert horizon_label("3m") == ("3M", "3月")
     assert horizon_label("20d") == ("20D", "20日")
-    assert horizon_label("6m") == ("6m", "6m")
-    assert horizon_label("ytd") == ("ytd", "ytd")
+    assert horizon_label("6m") == ("6M", "6个月")
+    assert horizon_label("12m") == ("1Y", "1年")
+    assert horizon_label("ytd") == ("YTD", "年初至今")
+    assert horizon_label("2y") == ("2y", "2y")
 
 
 def test_fx5_snapshot_readout_and_control_share_one_vocabulary():
