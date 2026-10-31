@@ -28,28 +28,29 @@ owns_paths:
   - tests/test_qbus_news_propagation_estate.py
   - agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-*.md
 landmines:
-  - "Masterplan §10 custody is stale: macro #9963 and Mastermind #1661 are MERGED; Sol CEO writes live on macro #8697 (Tiingo DRAFT/HOLD), #9612 (HOLD-FOR-SOL) and #9639 — all READ-ONLY for this workstream. Terminal #1081 shares TickerNewsPanel with seat fd47d431's R2 L2 (#1111): no terminal news-UI writes until that seat says R2 ON MASTER."
+  - "Custody 2026-10-31: Sol CEO writes live on macro #9612 and #10136 and on sol/* branches — READ-ONLY here. Sol's completed census/masterplan lives on macro #10244 (head e16dbdda392f, not on main): accepted input, never re-censused, never pushed to. Terminal R2 is MERGED (#1081/#1129/#1130 reconciliation is E1 work for ORCH-4), so the 10-22 terminal news-UI fence is lifted. Leadership passed from seat e3d62d36 (returns lost) to seat 602cd180 under the Chairman's leadership-continuity ruling; no owner wait."
   - "Program law (masterplan §11): do not build another news/event/identity/graph/thesis/outcome store, answer warehouse, scheduler, model router, publication system, runtime registry or retry plane. Converge existing owners; a gap is a wiring task against an incumbent, never a new system."
   - "P0-D corpus honesty: the news_impact benchmark is 600 frozen cases of which 74 are scorable; shortfalls stay printed, the system under test never generates gold, and gated_v3 is drawn exactly as registered (seeds, strata, thresholds unchanged). WS:PROPHET-NEWS-IMPACT owns engine/news_impact/ and the benchmark; this workstream consumes, never redraws."
   - "P1-D: engine/news_llm.py must fail closed when news_llm.enabled is absent; config.yml stays untouched; the rights basis for every delivered source is DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS plus the A1 matrix, and Tiingo commercial permission is Chairman-confirmed (technical admission only remains)."
   - "Labor runs on the Mastermind fabric (glm-5.3-flash leaf, MiniMax-M3 medium, glm-5.3 only with an escalation reason) under Opus orchestrators; no native builder/reviewer children; seat-only acts are ready/merge --match-head-commit, labels and carrier posts."
 do_not_redo:
   - "Wave-1 commissions ORCH-DELIVERY (A1 matrix, A3 propagation tests, P1D news_llm fail-closed, A5 observability gaps, E custody matrix) and ORCH-FACTS (B1 schema inventory, D1 news input trace, B4 frontier, B2/B5 scope, gated_v3 lane) were issued 2026-10-22 07:5xZ; never re-spawn them, consume their returns by artifact."
+  - "2026-10-31: #10043/#10044/#10046/#10048/#10049/#10056 and #10280 are MERGED at reviewed heads — DO_NOT_REDO. ORCH-1/ORCH-2 are consumed and halted; ORCH-3 scope is seat-direct fabric lanes (parent run orch3-seat-direct-20261031): run-ids news-orch3-{claim-r1,prov-r1,prov-r2,route-r1,route-r2,samp-r1,samp-r2} are spent, never relaunched; the claim matrix verdict DEFENSIBLE_NEGATIVE is accepted by artifact."
 waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
-    status: in_progress
-    next_action: "Land this workstream and the WAVE1-COMMISSIONED handoff on the seat branch; record DEC:NEWS-ESTATE-B1-JOINS once the B1 inventory returns."
+    status: done
+    next_action: "Done 2026-10-31: takeover handoff, DEC:NEWS-ESTATE-B1-JOINS recorded."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
-    status: in_progress
+    status: done
     depends_on: [W0]
-    next_action: "Consume $S/records/ORCH-DELIVERY_RETURN.md and ORCH-FACTS_RETURN.md by diff; ready and merge green [news-estate <PKG>] DRAFT PRs with --match-head-commit after reviewDecision and HOLD checks; rule B1 joins."
+    next_action: "2026-10-31 16:1xZ: MERGED #10043 P1D e0566cb7, #10046 A1 603d98a5, #10048 D1 a8c4c78b, #10049 B1 8ecd4701, #10056 A5 6135e2c3 (ORCH-1 fabric review lanes PASS / PASS-WITH-GAPS). #10044 A3 ef7a628b -> 87d7158a (16:56Z). Wave 1 landed in full. Gaps carried: tests/test_news_llm.py unregistered in CI; A3 fold not lane-re-reviewed after registration. #10063 B4 is W2 ORCH-3 QUANT."
   - id: W2
     title: Wave 2 — E3 convergence, B2 numeric fact adapter, D2 consumer wiring (get_intelligence, portfolio lens, engine/intelligence.py), A5 observability build, first corrected-event vertical
-    status: todo
+    status: in_progress
     depends_on: [W1]
-    next_action: "Commission from the wave-1 returns; the first vertical proof must include a correction propagating end to end."
+    next_action: "2026-10-31 ~17:0xZ: D2 macro #10280 MERGED 5b3c2e05 (16:11Z); Mastermind #1897 head 8bac8a4b BEHIND master + pytest shard pending -> update-branch, reviewDecision, merge. MMREV-03 producer follow-on open. ORCH-3 QUANT now seat-direct on the fabric (Opus orchestrators halted by 429): claim-r1 RETURNED PASS head 9f96188b QUANT CLAIM VERDICT DEFENSIBLE_NEGATIVE; prov-r2 / samp-r2 / route-r2 RUNNING on ubuntu3 since 16:47Z; then one glm-5.3 review lane, integration branch claude/news-quant-b4-adjudication-20261031, one draft PR, #10063 disposition recommended (never pushed). ORCH-4 PRODUCT (terminal census + E1 reconcile, then Journey 6 on the authenticated R2 rail) runs seat-direct next."
   - id: W3
     title: Wave 3 — Section C (dated exposure mapping, F05 per-family proof) and Section F (claim/evidence matrices, independent READ_ONLY reviews)
     status: todo
@@ -60,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "W1 — consume the two orchestrator returns by artifact, merge green lane PRs, rule B1 joins; then commission W2 and spawn the Section C/F orchestrators as slots free."
+next_action: "2026-10-31 ~17:0xZ — Wave 1 landed (six PRs merged); merge Mastermind #1897 (update-branch) at their exact heads; judge prov-r2/samp-r2/route-r2 by artifact, review lane, integrate the B4 adjudication PR; then ORCH-4 PRODUCT seat-direct; Section C/F after W2 lands. Never re-spawn ORCH-1/ORCH-2; never relaunch a used fabric run-id."
 ---
 
 # News Intelligence Estate convergence
