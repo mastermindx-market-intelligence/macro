@@ -3,8 +3,9 @@ key: EDGAR-SUBMISSIONS-ACCEPTANCE-DATETIME-IS-TRUE-UTC
 claim: >
   The EDGAR submissions-JSON `acceptanceDateTime` (for example
   `2026-01-28T21:04:38.000Z`) is true UTC: it equals the SGML header
-  `<ACCEPTANCE-DATETIME>` (America/New_York wall time) converted to UTC. It is
-  not New York wall time labelled `Z`, which is what WP31 prereg §10 A2 assumed.
+  `<ACCEPTANCE-DATETIME>` (America/New_York wall time) converted to UTC. It does
+  not read 4 h (EDT) / 5 h (EST) later than true UTC, which is what WP31 prereg
+  §10 A2 assumed.
 falsifier: >
   For a non-universe filing, read
   data.sec.gov/submissions/CIK##########.json `filings.recent.acceptanceDateTime`
@@ -22,7 +23,7 @@ so_what: >
   Prereg §10 is append-only, so the correction is withdrawn prospectively by
   §10 A5 (Macro #10302) for clocks at or after its E (2026-11-16T00:00Z), and
   clocks before E keep A2. Do not build a shared reader-side correction on
-  A2's premise; Macro #10295 is closed unmerged for that reason. Check a stored
+  A2's premise; Macro #10295 was closed unmerged for that reason. Check a stored
   capture's vintage against the headers before trusting its clock: the
   2026-07-05 8-K store capture held New York wall time labelled `Z` for 27
   non-universe issuers, and the 2026-10-04 capture does not.
@@ -32,7 +33,7 @@ verified_by: >
   The C19 seat read live SEC data on non-universe filers only, reading headers
   only. A2's four cited filings (MSFT, JPM) agreed 4/4. A census of 9 filers
   (Berkshire, Bridgewater, Renaissance, Citadel, JPMorgan, Walmart, Microsoft,
-  Lennar and one more) across forms 10-K, 10-Q, 13F-HR, 4 and 8-K, 2015-2026,
+  Exxon and Lennar) across forms 10-K, 10-Q, 13F-HR, 4 and 8-K, 2015-2026,
   EST and EDT, agreed 117/117, with 2 index-headers 404s excluded. A sample of
   the October 2026 8-K store capture agreed 76/76. The evidence table is in
   Macro #10302 (prereg §10 A5).

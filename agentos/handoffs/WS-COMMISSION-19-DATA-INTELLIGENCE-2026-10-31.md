@@ -75,7 +75,7 @@ unresolved:
 next_actions:
   - "#1899 and #1246 are merged. When #1898's required test check is green at c9d30d7d: enqueue it with --match-head-commit, read the queue entry back over GraphQL, keep one watcher, land-check, then post the #1243 pointer."
   - "Macro #10302: on an accepting lane S2 verdict, add merge-on-green and keep one watcher; it must merge before 2026-11-16T00:00Z or A5 is void. On REQUEST_CHANGES, repair and commission a changed-lines re-review under a new run id. Never self-approve. Then remove the lane trees ~/lanes/wt/c19-w15-s (ubuntu1) and ~/lanes/wt/c19-w15-s2 (ubuntu0)."
-  - "Macro #10295: close unmerged with a retraction comment (its premise is refuted and lane Q2's approval is superseded), then remove the sparse lane tree ~/lanes/wt/c19-w15-q on ubuntu2."
+  - "Macro #10295 was closed unmerged 2026-10-31T12:16:54Z with a retraction comment (its premise is refuted and lane Q2's approval is superseded); remove the sparse lane tree ~/lanes/wt/c19-w15-q on ubuntu2 if it is still there."
   - "Let the Macro sweeper merge #10284, #10259, #10273 and #9569 on concluded green; no manual update-branch; when a watcher exits on a head change, re-arm one watcher at the new head; land-check each merge against fresh main."
   - "After #10284 lands: re-read universe EDGAR submission headers only, then run read 2b once (counts only) -> ledger r17."
   - "After #10259 lands: the note on #8125 and the U6 production proof."
@@ -109,6 +109,6 @@ red on pytest 9.2.0; the reviewed pin in #1899 merged at 10:23:46Z and the queue
 independent lane caught an inverted A2 direction in it, the seat repaired it, and a changed-lines
 re-review approved. The seat then tested A2's premise rather than only its arithmetic: live
 SEC headers show the submissions-JSON acceptance clock is already true UTC, so A2's correction
-puts WP31's release clock 4-5 h early. Macro #10295, built on that premise, is withdrawn, and
+puts WP31's release clock 4-5 h early. Macro #10295, built on that premise, is closed unmerged, and
 Macro #10302 adds prereg §10 A5, which reads the clock as given from 2026-11-16 and is under
 independent review.
