@@ -143,6 +143,14 @@ bash scripts/ci/options_signal_nightly.sh exclude-broad
 # and correctly excluded here on a fallback run (no double-commit hazard since
 # asia-close won't push a commit for those paths on a fallback day).
 git reset -q -- data/hk data/hk_* data/hkma data/china data/china_* 2>/dev/null || true
+# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the engine commit, as the
+# collect job has since #9556. Run 40803269874 / engine job 123688873047 was rejected with GH001
+# (a QLedger blob over GitHub's 100 MB file limit) and the durable mirror
+# data/risk_envelope/ has not advanced since 2026-10-21. Helper: scripts/ci/qledger_oversize_carve.sh.
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_oversize_carve.sh"
+qledger_carve_staged engine
+if [ "${QLEDGER_WITHHELD:-}" = true ]; then exit 0; fi
+if [ "${QLEDGER_CARVED:-}" = true ]; then trap 'qledger_restore' EXIT; qledger_park; if [ "${QLEDGER_PARKED:-}" != true ]; then exit 0; fi; fi
 # W6b per-lane push dedup ledgers: covered by 'git add data/' above since
 # data/alert_triage/ is under data/. Explicit add as staging-law documentation:
 # basket_freeze lane (single-writer: engine/basket_freeze.py),

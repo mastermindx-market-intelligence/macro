@@ -45696,3 +45696,32 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+
+  qledger-oversize-carve:
+    if: ${{ false }}
+    gate: code
+    # EW-P1 QLedger oversize carve helper + engine/collect-tail carve parity.
+    # No `scope: exclusive`: the exclusive tier is the pinned CURATED_EXCLUSIVE
+    # set in tests/test_ci_pack.py, which this job is not curated into. The
+    # declared paths below stay validated + coverage-audited and are unioned
+    # with inference; the two ancestor __init__.py entries keep the
+    # ancestor-init census at its ceiling (its own printed remedy).
+    paths:
+      - "tests/test_qledger_oversize_carve.py"
+      - "scripts/ci/qledger_oversize_carve.sh"
+      - "scripts/ci/daily_collect_tail_commit.sh"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
+      - ".github/workflows/daily.yml"
+      - "scripts/workflow_run_source.py"
+      - "scripts/__init__.py"
+      - "tests/__init__.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: qledger oversize carve (EW-P1)
+        run: python -m pytest tests/test_qledger_oversize_carve.py -q
