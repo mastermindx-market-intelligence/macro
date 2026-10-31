@@ -63,9 +63,40 @@ def _clock(value, label):
         raise ValueError(f'{label} requires a timezone-qualified instant') from exc
 
 
+# Match unsigned decimal/percent tokens and comma-grouped amounts as units.
+# A comma followed by a space is ordinary punctuation, not numeric grouping.
+# This is a source-boundary check, not a signed/locale/notation parser.
+_NUMERIC_SOURCE_TOKEN = re.compile(r'[0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?%?|[0-9]+(?:\.[0-9]+)?%?')
+
+
+def _whole_numeric_occurrence(value: str, source: str) -> bool:
+    """Require one exact occurrence whose numeric tokens are complete in source.
+
+    Search ALL occurrences: an earlier truncated match must not hide a later
+    complete one. Non-numeric prose stays under the existing literal contract.
+    """
+    source_tokens = [(m.start(), m.end()) for m in _NUMERIC_SOURCE_TOKEN.finditer(source)]
+    value_tokens = [(m.start(), m.end()) for m in _NUMERIC_SOURCE_TOKEN.finditer(value)]
+    for occurrence in re.finditer(re.escape(value), source):
+        start, end = occurrence.span()
+        # A matched numeric literal must not stop in the middle of an
+        # alphanumeric source token (e.g. $1M, $1,000USD, FY1).
+        # Word-only literals retain their existing exact-substring behavior.
+        if value_tokens and (
+                (start and (source[start - 1].isalnum() or source[start - 1] == '_'))
+                or (end < len(source) and (source[end].isalnum() or source[end] == '_'))):
+            continue
+        if all((start + left, start + right) in source_tokens
+               for left, right in value_tokens):
+            return True
+    return False
+
+
 def _literal(value, body, label, limit=3000):
     if (not isinstance(value, str) or not value.strip() or len(value) > limit
-            or value not in body):
+            or value not in body
+            or (label in ('claim', 'source qualifier')
+                and not _whole_numeric_occurrence(value, body))):
         raise ValueError(f'{label} is not a literal source span')
     return value
 
@@ -190,7 +221,8 @@ def plan_issuer_release_candidate(*, document_path, document_sha256,
         values = []
         for atom in atoms:
             if (not isinstance(atom, str) or not re.fullmatch(r'[0-9]+(?:\.[0-9]+)?', atom)
-                    or not re.search(r'(?<![\w.])' + re.escape(atom) + r'(?![\w.])', literal)):
+                    or not re.search(r'(?<![\w.])' + re.escape(atom) + r'(?![\w.])', literal)
+                    or not _whole_numeric_occurrence(atom, literal)):
                 raise ValueError('claim quantity is not a whole source atom')
             values.append(atom)
         facts.append({'id': claim['id'], 'text': literal, 'values': values, 'ref': ref,
