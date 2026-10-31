@@ -226,7 +226,8 @@ def apple_registry() -> IssuerRegistry:
 
 
 def production_registry() -> IssuerRegistry:
-    """``apple_registry()`` plus the four A5A homebuilders (DHI/PHM/KBH/TOL).
+    """``apple_registry()`` plus the four A5A homebuilders (DHI/PHM/KBH/TOL),
+    plus the T05a semiconductor witnesses (TSM/ON).
 
     Identity for DHI/PHM/KBH/TOL lives in ``engine/company_intelligence/
     issuer_profiles.py`` (CIKs sourced from ``data/edgar/ticker_cik_ledger.json``
@@ -236,12 +237,21 @@ def production_registry() -> IssuerRegistry:
     private helpers from this module for its Apple transcript-claims profile,
     so a module-level import here would cycle.
     """
-    from .issuer_profiles import dhi_issuer, kbh_issuer, phm_issuer, tol_issuer
+    from .issuer_profiles import dhi_issuer, kbh_issuer, on_issuer, phm_issuer, tol_issuer, tsm_issuer
 
     from .defense_profiles import DEFENSE_TICKERS, defense_issuer
     from .gd_profile import gd_issuer
-    return IssuerRegistry([apple_issuer(), dhi_issuer(), phm_issuer(), kbh_issuer(), tol_issuer(),
-                           *(defense_issuer(ticker) for ticker in DEFENSE_TICKERS), gd_issuer()])
+    return IssuerRegistry([
+        apple_issuer(),
+        dhi_issuer(),
+        phm_issuer(),
+        kbh_issuer(),
+        tol_issuer(),
+        tsm_issuer(),
+        on_issuer(),
+        *(defense_issuer(ticker) for ticker in DEFENSE_TICKERS),
+        gd_issuer(),
+    ])
 
 
 def flagship_fiscal_period() -> FiscalPeriod:
