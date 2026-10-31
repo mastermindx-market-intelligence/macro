@@ -27,11 +27,20 @@
     800,
     900
   ],
+  "sf_metric_families": {
+    "families": [
+      "-apple-system",
+      "system-ui",
+      "SF Pro Text",
+      "SF Pro Display"
+    ],
+    "descriptors": "ascent-override:96.6796875%;descent-override:21.09375%;line-gap-override:0%"
+  },
   "files": {
     "cjk-400.woff2": "ac02a6519f8b4efb8ebce4411d22f731e7cc0831ad4856efde4def4f622e17a0",
     "cjk-700.woff2": "72cc73785af5c648b24f7c1ea72c6d5cf049c3652bda1839105e6bbb10a89a71",
     "emoji.woff2": "5c3b63d79b1df63a439061d8b446c2b9a0d39d0ffba9a913284f574831f26b66",
-    "pin.css": "402c9710b97fbe3093cef5f49a64023ed0c5f82802c2af6f2a2e44f3273b6a35",
+    "pin.css": "c45b4a8e41bff5def0b1f55ea2097832bb75dcaa3cee7af2e2628a1e0be2ada1",
     "symbol-400.woff2": "4861f855e4d627c72dc9a0d5e5ccea06a5ff75afdeee3b5967be9ed52a294dc4",
     "symbol-700.woff2": "c3eff6b66b01322f570db903f794c0882e7485c51994d2c6e2bce8a58523d2cd"
   },

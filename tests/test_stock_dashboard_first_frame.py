@@ -2234,6 +2234,25 @@ def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -
     )
 
 
+def test_font_pin_gives_platform_ui_families_san_francisco_line_metrics() -> None:
+    """Inter stands in for SF; ``line-height: normal`` must keep SF's box height.
+
+    Without the overrides the Canada desktop action panel grows to 240.45px and
+    fails its <= 240 acceptance bound, which was set against macOS rendering.
+    """
+    manifest = json.loads(_read(FONT_PIN / "font-pin.json"))
+    sf = manifest["sf_metric_families"]
+    assert sf["families"] == ["-apple-system", "system-ui", "SF Pro Text", "SF Pro Display"]
+    assert sf["descriptors"] == (
+        "ascent-override:96.6796875%;descent-override:21.09375%;line-gap-override:0%"
+    )
+    faces = re.findall(r"@font-face\{([^}]*)\}", _read(FONT_PIN / "pin.css"))
+    for face in faces:
+        family = re.search(r'font-family:"([^"]+)"', face).group(1)
+        base = re.search(r'url\("/fonts/Inter-\d+\.woff2"\)', face)
+        assert (sf["descriptors"] in face) == bool(base and family in sf["families"]), face
+
+
 def test_mobile_layout_receipt_has_valid_javascript() -> None:
     node = shutil.which("node")
     assert node, "node is required for the stock-dashboard code gate"

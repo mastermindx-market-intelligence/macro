@@ -49,6 +49,14 @@ UI_FAMILIES = (
     "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Helvetica", "Times",
 )
 CJK_FAMILIES = ("PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC")
+# The families that name the platform UI face stand Inter in for San Francisco.
+# Inter's ascent+descent is taller, so a ``line-height: normal`` box grows a
+# pixel at small sizes and the receipts' acceptance bounds stop matching the
+# layout they were set against. Those faces borrow SF's vertical metrics
+# (SFNS.ttf hhea: unitsPerEm 2048, ascender 1980, descender -432, lineGap 0);
+# glyph advances stay Inter's.
+SF_FAMILIES = ("-apple-system", "system-ui", "SF Pro Text", "SF Pro Display")
+SF_METRICS = "ascent-override:96.6796875%;descent-override:21.09375%;line-gap-override:0%"
 # theme.css owns the Inter faces; the pin adds fallback pieces only.
 INTER = "Inter"
 
@@ -153,10 +161,12 @@ def unicode_range(cps: set[int]) -> str:
     return ",".join(ranges)
 
 
-def face(family: str, url: str, weight: int, cps: set[int] | None = None) -> str:
+def face(family: str, url: str, weight: int, cps: set[int] | None = None,
+         metrics: str = "") -> str:
     rng = f";unicode-range:{unicode_range(cps)}" if cps else ""
+    extra = f";{metrics}" if metrics else ""
     return (f'@font-face{{font-family:"{family}";src:url("{url}") format("woff2");'
-            f"font-weight:{weight};font-style:normal;font-display:block{rng}}}")
+            f"font-weight:{weight};font-style:normal;font-display:block{extra}{rng}}}")
 
 
 def build(args: argparse.Namespace) -> dict:
@@ -217,7 +227,8 @@ def build(args: argparse.Namespace) -> dict:
         for weight in WEIGHTS:
             rules.extend(pieces(family, weight))
             if family != INTER:
-                rules.append(face(family, f"/fonts/Inter-{weight}.woff2", weight))
+                metrics = SF_METRICS if family in SF_FAMILIES else ""
+                rules.append(face(family, f"/fonts/Inter-{weight}.woff2", weight, metrics=metrics))
     for family in CJK_FAMILIES:
         for weight in WEIGHTS:
             rules.extend(pieces(family, weight))
@@ -231,6 +242,7 @@ def build(args: argparse.Namespace) -> dict:
         "stylesheet": f"{ROUTE}/pin.css",
         "shadowed_families": [INTER, *UI_FAMILIES, *CJK_FAMILIES],
         "weights": list(WEIGHTS),
+        "sf_metric_families": {"families": list(SF_FAMILIES), "descriptors": SF_METRICS},
         "files": {name: sha256(out / name) for name in sorted([*files, "pin.css"])},
         "site_faces": {f"fonts/Inter-{w}.woff2": sha256(ROOT / "site/fonts" / f"Inter-{w}.woff2")
                        for w in WEIGHTS},
