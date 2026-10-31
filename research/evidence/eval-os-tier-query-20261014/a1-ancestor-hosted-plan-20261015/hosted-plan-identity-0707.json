@@ -1,0 +1,55 @@
+{
+  "schema": "eval_os.hosted_plan_identity.v1",
+  "observed_at": "2026-10-15T07:07:24.651098+00:00",
+  "workflow_run_id": 38695328397,
+  "attempt": 1,
+  "subject_head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "tested_commit": "0ec629a508fe96af93d1b1bc1d5405343952b30e",
+  "tested_parents": [
+    "3f62e87835b22a2239f031f4fd6253d9e3aff7fa",
+    "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17"
+  ],
+  "base": "3f62e87835b22a2239f031f4fd6253d9e3aff7fa",
+  "tested_tree": "1e6ba68177e4a60af5e5d3c0f6071ee693262043",
+  "admitted_preview_tree": "1e6ba68177e4a60af5e5d3c0f6071ee693262043",
+  "tree_matches": true,
+  "canonical_plan_sha256": "ea55a20a03810631fde72532253b9847fe5d7231291e4936f3ff266a8e827b64",
+  "plan_zip_sha256": "983194bf0684d9e78bc4d047f7732b0f6b6d82d15f118e339d0317556bf22d4d",
+  "eligible_jobs": 127,
+  "a1_job": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "production_paths": [
+    "admin/evidence_findings.py",
+    "admin/evidence_status.py",
+    "admin/intelligence_os.py",
+    "admin/server.py",
+    "admin/static/app.js",
+    "admin/static/index.html",
+    "admin/static/preferences.js",
+    "admin/static/styles.css",
+    "app/deploy/update.sh",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+    "engine/neuralweb/response_eval.py",
+    "engine/qledger.py",
+    "scripts/build_intelligence_registry.py",
+    "scripts/grade_qledger.py",
+    "admin/theme_tokens.py",
+    "templates/theme.css",
+    "engine/qledger_desk_adapter.py"
+  ],
+  "production_paths_changed": [],
+  "limits": "Plan/source identity only; 12 packs and contract-delta pending at07:04; no terminal checks/merge/production claim."
+}

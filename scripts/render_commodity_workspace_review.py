@@ -17,6 +17,7 @@ import re
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -165,14 +166,104 @@ def render_review(base: str) -> tuple[str, dict, str]:
     return html, report, component
 
 
+class WorkspaceSpan(WrapSpan):
+    """Locate the existing workspace without consuming its legacy sibling."""
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "section" or self.end is not None:
+            return
+        if self.start is None and dict(attrs).get("id") == "commodity-workspace":
+            self.start = self.absolute_offset()
+            self.depth = 1
+        elif self.start is not None:
+            self.depth += 1
+
+    def handle_endtag(self, tag):
+        if tag == "section" and self.start is not None and self.end is None:
+            self.depth -= 1
+            if self.depth == 0:
+                self.end = self.absolute_offset() + len("</section>")
+
+
+def render_published_workspace(base: str) -> tuple[str, dict, str]:
+    """Recompose only presentation from a published workspace; never recompute data."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    if not re.fullmatch(r"[0-9a-f]{40}", base):
+        raise ValueError("Review base must be an exact 40-character Git commit")
+    original = git_bytes(base, "site/commodities.html").decode("utf-8")
+    data_pattern = r'<script\b[^>]*\bid="cw-data"[^>]*>(.*?)</script>'
+    payloads = re.findall(data_pattern, original, re.S)
+    if len(payloads) != 1 or original.count('id="commodity-workspace"') != 1:
+        raise ValueError("Accepted page must contain exactly one published workspace")
+    workspace = json.loads(payloads[0])
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True, undefined=StrictUndefined)
+    macro = '{% macro t(en,zh) %}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{% endmacro %}'
+    component = env.from_string(macro + '{% include "_commodity_decision_workspace.html.j2" %}').render(commodity_workspace=workspace)
+    generated_payloads = re.findall(data_pattern, component, re.S)
+    if len(generated_payloads) != 1 or generated_payloads[0] != payloads[0]:
+        raise ValueError("Presentation review changed the published payload bytes")
+    span = WorkspaceSpan(original)
+    if span.start is None or span.end is None:
+        raise ValueError("Published workspace section could not be bounded")
+    html = original[:span.start] + component + original[span.end:]
+
+    # Replace the exact standalone consumer script, preserving all other scripts.
+    previous_js = git_bytes(base, "templates/commodity-workspace.js").decode("utf-8").strip()
+    js = (ROOT / "templates/commodity-workspace.js").read_text()
+    scripts = [m for m in re.finditer(r"<script\b[^>]*>(.*?)</script>", html, re.S)
+               if m.group(1).strip() == previous_js]
+    if len(scripts) != 1 or "</script" in js.lower():
+        raise ValueError("Published workspace script binding is not unique or safe")
+    match = scripts[0]
+    html = html[:match.start()] + "<script>\n" + js + "\n</script>" + html[match.end():]
+
+    # Existing asset freezing owns the rest of the cohort. Locate this consumer's
+    # exact frozen stylesheet, then leave its replacement inline for the same owner.
+    previous_css = git_bytes(base, "templates/commodity-workspace.css").decode("utf-8").strip()
+    css = (ROOT / "templates/commodity-workspace.css").read_text()
+    candidates = []
+    for match in re.finditer(r'<link\b[^>]*\bhref="([^"]+)"[^>]*>', html):
+        target = urlsplit(match.group(1))
+        if target.scheme or target.netloc or not target.path.endswith(".css"):
+            continue
+        if target.path.startswith("/") or ".." in Path(target.path).parts:
+            continue
+        body = git_bytes(base, "site/" + target.path).decode("utf-8")
+        if body.strip() == previous_css:
+            candidates.append(match)
+    if len(candidates) != 1 or "</style" in css.lower():
+        raise ValueError("Published workspace stylesheet binding is not unique or safe")
+    match = candidates[0]
+    html = html[:match.start()] + "<style>\n" + css + "\n</style>" + html[match.end():]
+    if html.count('id="commodity-workspace"') != 1 or html.count('id="cw-data"') != 1:
+        raise ValueError("Review created duplicate workspace mounts")
+    report = {
+        "schema": "mmx.commodities.review_receipt.v1", "accepted_base": base,
+        "mode": "published_payload_presentation_only", "research_as_of": workspace["as_of"],
+        "workspace_fingerprint": workspace["fingerprint"],
+        "accepted_page_sha256": sha256(original.encode()).hexdigest(),
+        "review_page_sha256": sha256(html.encode()).hexdigest(),
+        "payload_sha256": sha256(payloads[0].encode()).hexdigest(),
+        "payload_bytes_unchanged": True, "legacy_content_preserved": True,
+        "assets": len(workspace["assets"]), "chains": len(workspace["chains"]),
+        "economic_recomputation": False, "collectors_run": False,
+        "scoring_run": False, "forecasts_run": False, "production_acceptance": False,
+    }
+    return html, report, component
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--component", type=Path)
+    parser.add_argument("--reuse-published-workspace", action="store_true",
+                        help="Recompose only UI from the exact published payload; no economic recomputation")
     args = parser.parse_args()
-    html, report, component = render_review(args.base)
+    renderer = render_published_workspace if args.reuse_published_workspace else render_review
+    html, report, component = renderer(args.base)
     for path, content in [(args.output, html), (args.receipt, json.dumps(report, indent=2) + "\n"), (args.component, component)]:
         if path:
             path.resolve().relative_to(ROOT)
@@ -183,3 +274,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

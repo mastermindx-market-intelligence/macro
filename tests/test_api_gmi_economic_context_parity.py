@@ -215,13 +215,19 @@ def test_refusal_envelope_is_invariant_to_the_reason(c01, monkeypatch):
     with monkeypatch.context() as patch:
         mutate_selected(patch, lambda payload: payload.__setitem__("generation", "0" * 64))
         observe()
-    with monkeypatch.context() as patch:
-        def broken():
-            raise OSError("store offline")
-        patch.setattr(client.app.state, "company_disclosure_reader",
-                      api.PrivateDisclosureReader(current, broken, current))
+    def broken():
+        raise OSError("store offline")
+
+    # Starlette State stores attributes outside __dict__. Restore through its
+    # public interface: pytest 9.2 setattr undo otherwise removes this reader.
+    original_reader = client.app.state.company_disclosure_reader
+    try:
+        client.app.state.company_disclosure_reader = api.PrivateDisclosureReader(current, broken, current)
         reasons.add(direct(current, broken, issuer)["reason"])
         bodies.add(refused(economic(client, issuer)))
+    finally:
+        client.app.state.company_disclosure_reader = original_reader
+    assert client.app.state.company_disclosure_reader is original_reader
     revoked = replace(source.value, ruling_revision="0" * 64)
     original, source.value = source.value, revoked
     try:
