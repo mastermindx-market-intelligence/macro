@@ -8965,6 +8965,11 @@ jobs:
         # `from playwright.sync_api import sync_playwright` at test level for the
         # computed-style probe — the suite died ModuleNotFoundError without it.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+      # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
+      # commit, and this checkout is one commit deep. Fetch only that commit's trees;
+      # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
+      - name: fetch the pre-fold commit for the red-first proof
+        run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       - name: Install Chromium for the browser-backed render guards
         run: python -m playwright install --with-deps chromium
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
