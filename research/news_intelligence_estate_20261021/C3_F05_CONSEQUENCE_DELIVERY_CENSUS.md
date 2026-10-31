@@ -21,7 +21,10 @@ news-family-inspection/` was read from the object store via
 absent); `data/chronicle/events.jsonl` and `site/news.html` are MISSING in this
 worktree — the corpus is nevertheless git-tracked at HEAD (18,761 lines by
 `git show HEAD:data/chronicle/events.jsonl | wc -l`; `state_log.jsonl` 60
-lines), while `site/news.html` is a generated, untracked render product.
+lines), and `site/news.html` is likewise tracked at HEAD — a committed
+nightly-render page carrying the rendered `#nxConsequence` section (blob, last
+render commits and section counts under "Evidence receipts" below). Its
+absence from this worktree is sparse-profile omission, not git absence.
 `research/news_intelligence_estate_20261021/D1_NEWS_INPUT_TRACE.md` (243 lines)
 contains no Chronicle/consequence/glance row — this chain is outside D1's
 traced input set.
@@ -33,7 +36,7 @@ traced input set.
 | Event spine (upstream) | `scripts/build_chronicle.py:1-8`; `engine/chronicle/spine.py:85` `build_events`, `:202` `load_events_jsonl` | source adapters + forward ledgers | `data/chronicle/events.jsonl` (committed; 18,761 lines at HEAD) | MarketOntology F05 "Chronicle event spine/state log/rollups" (MASTERPLAN.md:88) |
 | Per-family projection producer | `engine/chronicle/impact.py:464` `project_family_impact`; `:360` `project_events_impact`; `:227` `project_event_impact` | chronicle.event.v1 records | projections grouped by `source` family; closed-key glance rows | MarketOntology F05 "per-family projection" (MASTERPLAN.md:88) |
 | Glance surface (window + family views) | `engine/chronicle/impact.py:1012` `glance_consequence_surface` | full event list | dict with `rows`, `family_tally`, `family_views` (six families, `available_count`, ≤4 rows each) | MarketOntology F05 "seven-day consequence glance" (MASTERPLAN.md:88) |
-| Build consumer | `scripts/build_site.py:7676-7680` (import + `load_events_jsonl(data/chronicle/events.jsonl)` + `glance_consequence_surface(_evs)`) | `data/chronicle/events.jsonl` | template context key `chronicle_impact` (`scripts/build_site.py:7715`, retry `:7729`) → `site/news.html` (`:7691`) | News page build (C3 "reuse #8775 and existing Chronicle", MASTERPLAN.md:358) |
+| Build consumer | `scripts/build_site.py:7676-7680` (import + `load_events_jsonl(data/chronicle/events.jsonl)` + `glance_consequence_surface(_evs)`) | `data/chronicle/events.jsonl` | template context key `chronicle_impact` (`scripts/build_site.py:7715`, retry `:7729`) → `site/news.html` (`:7695`) | News page build (C3 "reuse #8775 and existing Chronicle", MASTERPLAN.md:358) |
 | Template region | `templates/news.html.j2:1058` (`CI` guard) … `:1061` `<section id="nxConsequence">` … `:1092-1116` family disclosures | `chronicle_impact` context | rendered overview cards + six `<details class="nx-depth nx-family">` + typed empties | Chairman design rule region; News consumer (MASTERPLAN.md:126) |
 | Tests | `tests/test_chronicle_impact.py` (67 tests), `tests/test_news_page_render.py`, `tests/test_chronicle.py:2937` | producer + template | pinned family counts, empties, closed keys | C3 acceptance (MASTERPLAN.md:358) |
 | Evidence receipt | `mockups/evidence/news-family-inspection/{EVIDENCE.yml,README.md,manifest.json}` (merged in `9ebe0fe08812`) | local candidate render | capture receipt; **not** a served-page proof | retained record for "#8775 per-family source merged" (MASTERPLAN.md:88) |
@@ -49,14 +52,14 @@ consequence region — the F05 producer and template region are byte-stable sinc
 
 `engine/chronicle/impact.py` imports only `engine.chronicle.schema`
 (impact.py:69) plus stdlib; `spine.py`/`state_log.py`/`rollups.py`/`manifest.py`
-are upstream via the events file, not Python imports. `governor.py:180-182`
+are upstream via the events file, not Python imports. `governor.py:179-181`
 records the design: consumers call `glance_consequence_surface` /
 `project_family_impact` over a bounded window at read time; no nightly impact
 dump is written.
 
 - **Family key**: the event `source` field — `project_family_impact` buckets by
-  `proj["source"] or "unknown"` (impact.py:480); the surface reads
-  `(proj.get("source") or "").strip()` (impact.py:1091, :1107). `schema.SOURCES`
+  `proj["source"] or "unknown"` (impact.py:478); the surface reads
+  `(proj.get("source") or "").strip()` (impact.py:1100, :1108). `schema.SOURCES`
   (engine/chronicle/schema.py:28-31) enumerates seven: `research_vault,
   prophet_ledger, macro_release, earnings, earnings_call, regime_flip,
   risk_band`.
@@ -67,7 +70,7 @@ dump is written.
   "earnings_call", "macro_release", "regime_flip", "risk_band",
   "research_vault"})` (impact.py:136-143). Disclosure order is
   `eligible_order = [fam for fam in _schema.SOURCES if fam in
-  GLANCE_ELIGIBLE_FAMILIES]` (impact.py:1096-1097) → `research_vault,
+  GLANCE_ELIGIBLE_FAMILIES]` (impact.py:1091) → `research_vault,
   macro_release, earnings, earnings_call, regime_flip, risk_band`.
 - **Flip families**: `GLANCE_FLIP_FAMILIES = frozenset({"regime_flip",
   "risk_band"})` (impact.py:157); ≥2 in-window flips of one series collapse to
@@ -87,9 +90,9 @@ dump is written.
   genuinely distinct from midnight of that date**, else `None` with a typed
   reason (`NO_SOURCE_CLOCK` :85 / `NO_DISTINCT_SOURCE_CLOCK` :89) — never
   fabricated.
-- **Input keys read** by `project_event_impact` (impact.py:255-299): `tickers`,
+- **Input keys read** by `project_event_impact` (impact.py:253-297): `tickers`,
   `date`, `ts`, `id`, `source`, `source_ref`, `kind`, `title`, `facts`, `links`,
-  `themes` (the `schema.EVENT_FIELDS` allowlist, schema.py:17-20); second-order
+  `themes` (the `schema.EVENT_FIELDS` allowlist, schema.py:21-24); second-order
   tickers arrive only as caller arguments, never invented (impact.py:227-247).
 - **Honest empties, producer side**:
   - Empty event list → early return (impact.py:1056-1078): `reason_en "No
@@ -97,9 +100,10 @@ dump is written.
     `family_views: []`, `rows: []`.
   - Zero qualifying rows → `empty_kind: "no_named_exposure"` with
     `EMPTY_NO_EXPOSURE_EN/ZH` (impact.py:1270-1291; strings :144-145) —
-    `family_tally`/`family_views` are still emitted so each family renders its
-    own typed state (comment impact.py:1262-1267).
-  - Per-family state (impact.py:1186-1192): `no_events` (0 in-window),
+    `family_tally`/`family_views` are still emitted in that typed-empty return
+    (`"family_tally": family_tally,` / `"family_views": family_views`,
+    impact.py:1283-1284) so each family renders its own typed state.
+  - Per-family state (impact.py:1189-1193): `no_events` (0 in-window),
     `named` (≥1 direct-ticker event), `none_named` (events present, none with
     a direct ticker); `in_window` counts the **pre-exposure-filter** window
     pool (impact.py:1098-1105, :1179-1181) so a ticker-less macro event still
@@ -114,7 +118,7 @@ full unfiltered spine (`_evs = _spine_mod.load_events_jsonl(_ev_path)` with
 `_ev_path = data_dir()/chronicle/events.jsonl`, build_site.py:7678-7679) and
 calls `glance_consequence_surface(_evs)` (:7680); the result is passed as
 `chronicle_impact=` into `news.html.j2` (:7715; artifact-free retry :7729) and
-rendered to `site/news.html` (:7691). On projection failure a degrade dict is
+rendered to `site/news.html` (:7695). On projection failure a degrade dict is
 substituted (:7683-7694) that deliberately carries **no** `family_tally` /
 `family_views` keys — the template type-guard then hides the family section
 (pinned by `tests/test_news_page_render.py:1007`). `scripts/build_news.py` and
@@ -127,7 +131,7 @@ producer family is `build_site.py`.
 len(buckets[ft["family"]])` (:1213) — collapsed **display records** after
 flip-collapse and title filtering, before the overview cap; `in_window`
 (source-event count) is carried separately from `family_tally` (:1194-1201) so
-"an empty family is explained honestly" (comment :1202-1203). Rows are capped
+"an empty family is explained honestly" (comment :1203-1205). Rows are capped
 at four: `"rows": buckets[ft["family"]][:4]` (:1214).
 
 **Six-family disclosure** — `templates/news.html.j2:1092-1116`: heading
@@ -136,11 +140,11 @@ at four: `"rows": buckets[ft["family"]][:4]` (:1214).
 summary shows the bilingual family label (`_FAMILY_LABELS`, impact.py:162-169 —
 e.g. earnings "Earnings reports"/"业绩公告") and `{{ family.available_count }}
 {{ t('records','条记录') }}` (:1097). The code names exactly six families
-(`schema.SOURCES` ∩ `GLANCE_ELIGIBLE_FAMILIES`, impact.py:1096-1097) — the same
+(`schema.SOURCES` ∩ `GLANCE_ELIGIBLE_FAMILIES`, impact.py:1091) — the same
 six, in the same order, as the receipt's `source.actual_families`
 (manifest.json). An opened body shows "Showing N of M records /
 显示M条中的N条" (:1101) and the same `consequence_card` macro as the overview
-(macro at :1031; grid :1102-1104; overview use :1076-1079 `CI.rows[:8]`).
+(macro at :1031; grid :1102-1104; overview use :1075-1077 `CI.rows[:8]`).
 
 **Empty states, template side** — CSS `#nxConsequence` block at
 templates/news.html.j2:284-296 (`.nx-empty` base :251; `.nx-depth` family
@@ -172,7 +176,7 @@ tests/test_chronicle_impact.py:
   — ticker-less-only input yields the typed empty, zero cards.
 - `:601 test_glance_7day_window_and_200_event_fallback_boundary` — window and
   newest-200 fallback boundaries.
-- `:737 test_glance_prophet_ledger_is_typed_exclusion_from_glance` (and
+- `:737 test_prophet_ledger_is_typed_exclusion_from_glance` (and
   `:1099 …never_tallied`) — prophet_ledger excluded from rows and tally.
 - `:767 test_glance_zero_qualifying_rows_typed_empty` — `no_named_exposure`
   typed empty with honest reason strings.
@@ -267,19 +271,39 @@ committed corpus, before merge. **What it does not prove**: any served page —
 it is a pre-merge local-render capture of uncommitted sources against a base
 commit.
 
-**"Covering-render proof still owed" in committed terms** (MASTERPLAN.md:88):
-the retained checkpoint record itself — D100 in
+**The committed served page at HEAD** — `site/news.html` is a tracked blob at
+HEAD (`git ls-files site/news.html` lists it; `git ls-tree HEAD` → `100644
+blob 152aedcd…`), last committed by the nightly renders `b4a4333cdd87` and
+`c600dd5631f1` ("render: site re-render 2026-10-31" / "engine-render: regime
+recompute + re-render 2026-10-31"). It is a rendered artifact, not a proof
+document: measured with bounded greps (at `7ee58f07a86e`, one census-file
+commit past `fff8ab44c690`; the page blob is byte-identical at both), the
+committed page contains the `#nxConsequence` section (`<section …
+id="nxConsequence" …>`, 1 matching line), exactly 6 `nx-depth nx-family`
+family disclosures, the window label "Events from 23 Oct to 30 Oct 2026", and
+11 lines carrying `nx-empty` typed-empty markup. The two mockup receipts above
+remain pre-merge local renders; this page is the committed nightly render of
+the merged code.
+
+**"Covering-render proof still owed" in committed terms** (MASTERPLAN.md:88),
+restated against that page — two separate facts. What EXISTS is a committed
+nightly-rendered page carrying the section: artifact evidence that the render
+path produces the six disclosures, the window label and the typed empties.
+What does NOT exist is any committed receipt or proof document that checks
+that served page's counts, six disclosures and empties against the corpus.
+The retained checkpoint record itself — D100 in
 research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md:617 — ends
 "MERGED2026-10-11T08:09:22Z as `9ebe0fe088126267c6a4fb64ff2dab54a268da56`
 after 26checks concluded… **Covering render/served pending**". The frozen grep
-(`nxConsequence|news-family-inspection` over `mockups/evidence`, `research`,
-`docs`, run as `git grep` for the sparse-omitted `mockups/`) finds only: the
-pre-#8775 receipt `mockups/evidence/a-f05-1-consequence/` (landed with
-`d2d7a6af805a` / #6896, the earlier "Also watching" era), the #8775 receipt
-itself, and the two research citations above; `git grep … HEAD -- verify_shots`
-returns nothing. **Is there a committed served-page or nightly-render receipt
-for `#nxConsequence` after `9ebe0fe`? NO.** The debt is accurately recorded and
-still open.
+(`git grep -E 'nxConsequence|news-family-inspection'` over `mockups/evidence`,
+`research`, `docs`, run as `git grep` for the sparse-omitted `mockups/`) finds
+only: the pre-#8775 receipt `mockups/evidence/a-f05-1-consequence/` (landed
+with `d2d7a6af805a` / #6896, the earlier "Also watching" era), the #8775
+receipt itself, and the two research citations above; `git grep … HEAD --
+verify_shots` returns nothing. **Is there a committed served-page or
+nightly-render receipt for `#nxConsequence` after `9ebe0fe`? NO.** The debt is
+an evidence-receipt gap — accurately recorded and still open — not an absence
+of the rendered artifact.
 
 ## Reconciliation
 
@@ -288,15 +312,17 @@ still open.
 | :88 "Chronicle event spine/state log/rollups, seven-day consequence glance, per-family projection" | spine `build_events`/`load_events_jsonl` (spine.py:85,:202) → committed `data/chronicle/events.jsonl`; 7-day pool impact.py:573-591; per-family views impact.py:1206-1214 | RECONCILED |
 | :88 "#8775 per-family source merged in retained record" | merge `9ebe0fe08812` in history with impact.py/templates/tests/receipt; impact.py has no later commit; the one later template commit (`ccc3242ef529`) touches one line outside the F05 region | RECONCILED |
 | :88 "covering-render proof still owed there" | D100 (handoff:617) "Covering render/served pending"; committed receipts are pre-merge local renders only (manifest honesty block); post-merge served receipt grep → NO | RECONCILED (the debt is real and recorded) |
-| :88 "Reconcile actual served state" | The served artifact (`site/news.html`) is a generated untracked product; no committed receipt or render proof of the served `#nxConsequence` exists to reconcile against | GAP (extends consumer → served stage) |
-| :88 "causal/ranked implications remain gated" | `CAUSAL_LABEL = "uncalibrated_association"` (impact.py:74); `calibrated_impact: None` + `CALIBRATED_IMPACT_GATE_REASON` (:82, :283-284); closed-key rows (test :1121); template "no sizing, not a forecast" (news.html.j2:1072) | RECONCILED |
-| :126 "the six-family consequence interface" | exactly six disclosures (impact.py:1096-1097 order; template loop :1093-1116; test_news_page_render.py:985 asserts count == 6) | RECONCILED |
+| :88 "Reconcile actual served state" (artifact) | `site/news.html` is a tracked blob at HEAD (`git ls-files`/`git ls-tree`; last commits `b4a4333cdd87`/`c600dd5631f1`, site re-render 2026-10-31) whose committed page carries the rendered `#nxConsequence` section: 6 `nx-depth nx-family` disclosures, window "Events from 23 Oct to 30 Oct 2026", typed `nx-empty` markup | RECONCILED-ARTIFACT |
+| :88 "Reconcile actual served state" (receipt) | No committed receipt or proof document checks that served section's counts, six disclosures and empties against the corpus (D100 handoff:617 "Covering render/served pending"; frozen grep → only pre-merge receipts) | GAP-RECEIPT (extends consumer → served stage) |
+| :88 "causal/ranked implications remain gated" | `CAUSAL_LABEL = "uncalibrated_association"` (impact.py:74); `calibrated_impact: None` + `CALIBRATED_IMPACT_GATE_REASON` (:82, :293-294); closed-key rows (test :1121); template "no sizing, not a forecast" (news.html.j2:1071) | RECONCILED |
+| :126 "the six-family consequence interface" | exactly six disclosures (impact.py:1091 order; template loop :1093-1116; test_news_page_render.py:985 asserts count == 6) | RECONCILED |
 | :126 "The per-family source is already built" | `family_views` producer + consumer + tests all present at HEAD (impact.py:1206-1214; build_site.py:7680; tests :1391/:1413/:1428/:985) | RECONCILED |
 | :126 "unresolved retained checkpoint concerns covering generation and served proof" | nightly generation of the section is in the render path (build_site.py:7671-7689, read-time projection); no covering-generation or served receipt has landed since 2026-10-11 | RECONCILED |
 | :358 "preserve available-record counts" | `available_count` = collapsed display records (impact.py:1213), distinct from `in_window` source events (:1194-1201); template prints it (:1097, :1101); manifest demonstrates 3/0 divergence; tests :1391/:985 pin it | RECONCILED |
-| :358 "six family disclosures and honest empties" | six `nx-depth nx-family` details (:1093-1116); typed empties at three levels — surface (:1081-1090), family (:1105-1115), producer states (:1186-1192); tests :1413/:1247/:350 | RECONCILED |
+| :358 "six family disclosures and honest empties" | six `nx-depth nx-family` details (:1093-1116); typed empties at three levels — surface (:1081-1090), family (:1105-1115), producer states (:1189-1193); tests :1413/:1247/:350 | RECONCILED |
 
-Counts: 9 RECONCILED, 1 GAP, 0 CONTRADICTED.
+Counts: 10 RECONCILED (one as RECONCILED-ARTIFACT), 1 GAP (GAP-RECEIPT),
+0 CONTRADICTED.
 
 ## Gaps for C3
 
@@ -305,14 +331,17 @@ proposal.
 
 1. **Served-stage receipt gap** (extends template → served page): no committed
    served-page or nightly-render receipt for `#nxConsequence` exists after
-   `9ebe0fe` (frozen grep → NO). The committed record stops at D100's
+   `9ebe0fe` (frozen grep → NO) — the nightly-rendered page itself is
+   committed (see "Evidence receipts"), so the missing artifact is the
+   receipt, not the render. The committed record stops at D100's
    "Covering render/served pending" (handoff:617). Closing it needs a receipt
-   of the rendered/served section, not new code.
+   that checks the rendered/served section, not new code.
 2. **Corpus-growth re-proof gap** (extends producer → receipt): the #8775
    receipt pinned corpus 16,771 events (window 1–8 Oct 2026); HEAD carries
-   18,761 committed events. No committed artifact records the section's
-   behavior (counts, six disclosures, empties) against the current corpus —
-   the receipt's own honesty block scopes it to the capture-time corpus.
+   18,761 committed events, and the committed served page renders a newer
+   window ("Events from 23 Oct to 30 Oct 2026"). No committed receipt checks
+   the served section against the current corpus — the #8775 receipt's own
+   honesty block scopes it to the capture-time corpus.
 3. **Served-empty coverage gap** (extends consumer → receipt): the receipt's
    17 states cover the fixture's no-events / no-named-exposure variants in a
    local render; no committed receipt shows the served page in its
@@ -345,31 +374,49 @@ Every command run for this census (worktree `/home/ubuntu3/lanes/wt/news-w3-c3-c
 6. `git log --oneline -8 -- engine/chronicle/impact.py templates/news.html.j2 | cat`
 7. `grep -n "F05" research/news_intelligence_estate_20261021/MASTERPLAN.md`
 8. `sed -n '88p;126p;136p;218p;234p;358p' research/news_intelligence_estate_20261021/MASTERPLAN.md`
-9. `grep -n -i "chronicle|consequence|family|news page|8775" research/news_intelligence_estate_20261021/D1_NEWS_INPUT_TRACE.md`; follow-up `grep -n -i "chronicle"` / `"impact.py|glance"` → no hits (243 lines)
+9. `grep -n -i -E "chronicle|consequence|family|news page|8775" research/news_intelligence_estate_20261021/D1_NEWS_INPUT_TRACE.md`; follow-up `grep -n -i "chronicle"` / `grep -n -i -E "impact.py|glance"` → no hits (243 lines)
 10. `git show HEAD:mockups/evidence/news-family-inspection/EVIDENCE.yml` (full)
 11. `git show HEAD:mockups/evidence/news-family-inspection/README.md` (full)
 12. `git show HEAD:mockups/evidence/news-family-inspection/manifest.json` (full via python structure walk; six `actual_families` + 17 states printed)
-13. `wc -l engine/chronicle/impact.py` (1309); `grep -n "^def |^GLANCE|^[A-Z_]* =|^class " engine/chronicle/impact.py`
+13. `wc -l engine/chronicle/impact.py` (1309); `grep -n -E "^def |^GLANCE|^[A-Z_]* =|^class " engine/chronicle/impact.py`
 14. `sed -n '127,158p' / '197,226p' / '227,260p' / '260,300p' / '360,400p' / '400,437p' / '438,463p' / '464,510p' / '544,592p' / '592,630p' / '1012,1075p' / '1076,1140p' / '1140,1200p' / '1200,1309p' engine/chronicle/impact.py`
-15. `grep -rn "project_family_impact|project_events_impact|glance_consequence_surface" scripts engine templates tests` (callers)
-16. `grep -rln "nxConsequence|consequence" scripts engine templates`
+15. `grep -rn -E "project_family_impact|project_events_impact|glance_consequence_surface" scripts engine templates tests` (callers)
+16. `grep -rln -E "nxConsequence|consequence" scripts engine templates`
 17. `sed -n '7655,7735p' scripts/build_site.py`
 18. `ls scripts/build_news.py scripts/build_chronicle.py`; `sed -n '1,12p'` of each
-19. `grep -n "nxConsequence|nx-empty|nx-depth" templates/news.html.j2`; `wc -l templates/news.html.j2` (2204)
+19. `grep -n -E "nxConsequence|nx-empty|nx-depth" templates/news.html.j2`; `wc -l templates/news.html.j2` (2204)
 20. `sed -n '1055,1105p' / '1105,1165p' / '1041,1057p' templates/news.html.j2`; `grep -n "macro consequence_card"` (:1031)
 21. `sed -n '14,60p' engine/chronicle/schema.py`; `grep -n "SOURCES" engine/chronicle/schema.py`
-22. `grep -n "def |^class " engine/chronicle/spine.py`; `grep -n "state_log|rollups|manifest|governor" engine/chronicle/impact.py` (no hits)
-23. `grep -n "^def test_|^class " tests/test_chronicle_impact.py` (all 67)
-24. `grep -n "def test_.*family|.*consequence|.*empty|.*available|.*glance" tests/test_chronicle.py tests/test_news_page_render.py`
+22. `grep -n -E "def |^class " engine/chronicle/spine.py`; `grep -n -E "state_log|rollups|manifest|governor" engine/chronicle/impact.py` (no hits)
+23. `grep -n -E "^def test_|^class " tests/test_chronicle_impact.py` (all 67)
+24. `grep -n -E "def test_.*family|.*consequence|.*empty|.*available|.*glance" tests/test_chronicle.py tests/test_news_page_render.py`
 25. `python3 -m pytest tests/test_chronicle_impact.py -q -p no:cacheprovider 2>&1 | tail -3` → `67 passed in 0.77s`
 26. `sed -n '286,296p' / '515,533p' / '1391,1428p' / '1428,1443p' / '955,985p' / '1017,1040p' tests/test_chronicle_impact.py`
 27. `sed -n '985,1030p' / '1247,1290p' / '694,740p' / '2937,2960p' tests/test_news_page_render.py` (+ test_chronicle.py:2937 read)
-28. `git grep -n "nxConsequence|news-family-inspection" HEAD -- mockups/evidence | cut -c1-160`; `grep -rn … research docs | cut -c1-160`
+28. `git grep -n -E "nxConsequence|news-family-inspection" HEAD -- mockups/evidence | cut -c1-160`; `grep -rn … research docs | cut -c1-160`
 29. `sed -n '615,625p' research/MARKET_ONTOLOGY_CEO_A_CONTINUATION_HANDOFF_2026-10-02.md`; `sed -n '49p' …/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv`
 30. `git log --oneline -1 -- mockups/evidence/a-f05-1-consequence` → `d2d7a6af805a`; `git grep -l "nxConsequence" HEAD -- verify_shots` → empty
 31. `git show ccc3242ef529 --stat | head -15`; `git show ccc3242ef529 -- engine/chronicle/impact.py` (empty); `git show ccc3242ef529 -- templates/news.html.j2` (one line, outside F05 region)
 32. `ls data/chronicle/events.jsonl site/news.html` → both MISSING in sparse worktree; `git ls-files data/chronicle/` → events.jsonl, earnings_call_events.jsonl, manifest.json tracked
 33. `git show HEAD:data/chronicle/events.jsonl | wc -l` → 18761; `git show HEAD:data/chronicle/state_log.jsonl | wc -l` → 60
-34. `grep -n "_FAMILY_LABELS|family_views = |available_count|in_window_pool|family_tally" engine/chronicle/impact.py`; `sed -n '162,171p'`; `sed -n '178,184p' engine/chronicle/governor.py`
-35. `grep -n "if not events:|if not rows:|no_named_exposure" engine/chronicle/impact.py`; `grep -n "Browse by event type|No recorded events|Showing ' ~" templates/news.html.j2`
-36. `grep -n "mockups|evidence" config/sparse_worktree.json` (mockups in exclude_dirs)
+34. `grep -n -E "_FAMILY_LABELS|family_views = |available_count|in_window_pool|family_tally" engine/chronicle/impact.py`; `sed -n '162,171p'`; `sed -n '178,184p' engine/chronicle/governor.py`
+35. `grep -n -E "if not events:|if not rows:|no_named_exposure" engine/chronicle/impact.py`; `grep -n -E "Browse by event type|No recorded events|Showing ' ~" templates/news.html.j2`
+36. `grep -n -E "mockups|evidence" config/sparse_worktree.json` (mockups in exclude_dirs)
+
+r2 repair commands (worktree `/home/ubuntu3/lanes/wt/news-w3-c3-census-r2`,
+branch `lane/news-w3-c3-census-r2`, at `7ee58f07a86e…`, clean tree):
+
+37. `git ls-files site/news.html` → tracked; `git ls-tree HEAD site/news.html`
+    → `100644 blob 152aedcd…`; `git log -2 --format="%h %s" -- site/news.html`
+    → `b4a4333cdd87` ("render: site re-render 2026-10-31") / `c600dd5631f1`
+    ("engine-render: regime recompute + re-render 2026-10-31").
+38. `git show HEAD:site/news.html | grep -c 'nxConsequence'` → 1; `| grep -c
+    'nx-depth nx-family'` → 6; `| grep -o -m1 'Events from [^<]*'` → "Events
+    from 23 Oct to 30 Oct 2026"; `| grep -c 'nx-empty'` → 11; `git diff --stat
+    HEAD~1 HEAD` → this census file only (page blob identical at `fff8ab44`
+    and `7ee58f07`).
+39. Every `path:line` citation re-derived by `sed -n` at HEAD and corrected
+    where drifted (NEWS-W3-C3-REVIEW R1): impact.py 478, 1100, 1108, 1091,
+    253-297, 1189-1193, 1203-1205, 1283-1284, 293-294; build_site.py 7695;
+    news.html.j2 1071, 1075-1077; schema.py 21-24; governor.py 179-181; plus
+    the exact test name at test_chronicle_impact.py:737.
