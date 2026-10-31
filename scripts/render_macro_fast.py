@@ -30,6 +30,14 @@ from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 
+def new_fast_environment() -> Environment:
+    """Match the production HTML escape contract in scripts.build_site."""
+    return Environment(
+        loader=FileSystemLoader(config.ROOT / "templates"),
+        autoescape=True,
+    )
+
+
 def main() -> int:
     site = config.ROOT / config.load()["storage"]["site_dir"]
     cache = config.data_dir() / "_dev_macro_vm.pkl"
@@ -41,7 +49,7 @@ def main() -> int:
         blob = pickle.load(fh)
     vm = blob["vm"]
 
-    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
+    env = new_fast_environment()
     env.filters["min"] = lambda seq: min(seq)
     # Mirror the production build_site.py filter: templates use
     # `|regex_replace(...)` for the one-integer-law strip.
@@ -53,9 +61,11 @@ def main() -> int:
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tmpl = env.get_template("dashboard.html.j2")
 
+    from scripts.tech_shock_macro import render_macro_with_shock
     for mode, name in (("macro", "macro.html"), ("stocks", "us_stocks.html")):
         out = site / name
-        write_page(out, tmpl.render(**vm, mode=mode))
+        html = render_macro_with_shock(env, vm) if mode == "macro" else tmpl.render(**vm, mode=mode)
+        write_page(out, html)
         print(f"wrote {out} ({out.stat().st_size/1024:.0f} KB)")
     out = site / "news.html"
     write_page(out, env.get_template("news.html.j2").render(**vm))
