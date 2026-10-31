@@ -118,10 +118,22 @@ def _leg(refused_codes: list[str], detail: dict | None = None) -> dict:
     }
 
 
-def _bind_inventory(root: Path, inventory_path: Path, persisted):
+def _well_formed_inventory(persisted) -> bool:
+    """Every inventory entry is ``rel-path -> mode:sha256``; anything else is malformed."""
+    return isinstance(persisted, dict) and all(
+        isinstance(rel, str) and isinstance(fp, str) and fp.count(":") == 1
+        and len(fp.split(":", 1)[1]) == 64
+        for rel, fp in persisted.items()
+    )
+
+
+def _bind_inventory(root: Path, inventory_path: Path, persisted, *, malformed: bool = False):
     """Full-population leg: persisted nightly inventory vs re-derived live bytes."""
     if persisted is None:
-        code = "INVENTORY_MISSING" if not inventory_path.exists() else "INVENTORY_UNREADABLE"
+        if malformed:
+            code = "INVENTORY_MALFORMED"
+        else:
+            code = "INVENTORY_MISSING" if not inventory_path.exists() else "INVENTORY_UNREADABLE"
         return _leg([code], {"sha256": None, "file_count": None})
     reasons: list[str] = []
     bad_paths = sorted(rel for rel in persisted if not isinstance(rel, str) or not _normalized_rel(rel))
@@ -159,6 +171,9 @@ def _bind_candidate_store(root: Path, persisted):
     if not store_dir.is_dir():
         return dict(_leg(["CANDIDATE_STORE_PATH_MISSING"]), sha256=None, file_count=None)
     entries = candidate_store_entries(persisted)
+    if not entries:
+        # A store with no plan is not a bound population: nothing to settle.
+        return dict(_leg(["CANDIDATE_STORE_EMPTY"]), sha256=None, file_count=0)
     return dict(
         _leg([]),
         sha256=store_sha256(entries),
@@ -166,13 +181,29 @@ def _bind_candidate_store(root: Path, persisted):
     )
 
 
-def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path):
-    """Frozen source leg: snapshot/bundle/live triple equality + durable recovery."""
-    reasons: list[str] = []
+SNAPSHOT_DIR_PREFIX = "data/prophet/origination_sources/"
+
+
+def _source_binding(source_snapshot_path: Path):
+    """(source dict, refusal code): the frozen binding or a typed reason it is unusable."""
     source_doc = _read_json(source_snapshot_path)
+    if source_doc is None:
+        return None, "SOURCE_SNAPSHOT_MISSING"
     source = source_doc.get("source") if isinstance(source_doc, dict) else None
     if not isinstance(source, dict) or not source.get("path") or not source.get("sha256"):
-        raise InfrastructureError("source snapshot lacks its frozen source binding")
+        return None, "SOURCE_SNAPSHOT_UNBOUND"
+    return source, None
+
+
+def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path,
+                persisted=None):
+    """Frozen source leg: snapshot/bundle/live triple equality + durable recovery."""
+    reasons: list[str] = []
+    source, code = _source_binding(source_snapshot_path)
+    if source is None:
+        # A settlement that cannot be proven still leaves a typed receipt
+        # (never a missing run): the leg refuses, nothing is raised.
+        return dict(_leg([code], {"path": None, "snapshot_path": None}), sha256=None)
     expected_sha = str(source["sha256"])
     board_rel = str(source["path"])
     if board_rel != BOARD_REL:
@@ -193,9 +224,21 @@ def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path):
     # ambiguous source snapshot may be treated as bound.
     if live_sha != expected_sha or blob_sha != expected_sha or live_bytes != blob_bytes:
         reasons.append("SOURCE_CHANGED_AFTER_FREEZE")
-    durable_path = root / str(source.get("snapshot_path") or "")
+    snapshot_rel = source.get("snapshot_path")
+    snapshot_ok = (
+        isinstance(snapshot_rel, str)
+        and _normalized_rel(snapshot_rel)
+        and snapshot_rel.startswith(SNAPSHOT_DIR_PREFIX)
+        and (persisted is None or snapshot_rel in persisted)
+    )
+    if not snapshot_ok:
+        # The durable copy must live inside the build-owned snapshot directory
+        # and inside the persisted inventory; nothing outside the repo or the
+        # allowlist is ever read as the durable source.
+        reasons.append("SNAPSHOT_PATH_UNQUALIFIED")
+    durable_path = root / str(snapshot_rel if snapshot_ok else "")
     durable_raw = None
-    if durable_path.is_file() and not durable_path.is_symlink():
+    if snapshot_ok and durable_path.is_file() and not durable_path.is_symlink():
         try:
             durable_raw = gzip.decompress(durable_path.read_bytes())
         except (OSError, EOFError):
@@ -234,7 +277,7 @@ def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
     detail: dict = {}
     index_path = root / INDEX_REL
     if index_path.is_symlink():
-        reasons.append("SYMLINK_REFUSED")
+        return dict(_leg(["SYMLINK_REFUSED"], detail), sha256=None, computed_at=None)
     if not index_path.is_file():
         reasons.append("INDEX_MISSING")
         return dict(_leg(reasons, detail), sha256=None, computed_at=None)
@@ -250,7 +293,11 @@ def _bind_index(root: Path, persisted, delta_rows, delta_path: Path,
         reasons.append("INDEX_CLOCK_MISSING")
     elif not COMPUTED_AT_RE.fullmatch(computed_at) or _unparseable(computed_at):
         reasons.append("INDEX_CLOCK_UNQUALIFIED")
-    if not isinstance(doc, dict) or doc.get("source_board_sha256") != frozen_board_sha:
+    if (
+        frozen_board_sha is None
+        or not isinstance(doc, dict)
+        or doc.get("source_board_sha256") != frozen_board_sha
+    ):
         reasons.append("INDEX_BOARD_BINDING_MISMATCH")
     if persisted is not None and persisted.get(INDEX_REL) != live_fingerprint:
         reasons.append("INVENTORY_POPULATION_CHANGED")
@@ -295,14 +342,17 @@ def _bind_gmi_theme_state(root: Path, gmi_receipt_path: Path | None):
     never carries a rights verifier, and never mints a generation, right,
     clock or receipt of its own.
     """
-    from engine.neuralweb import theme_state_generation as g
-    from engine.neuralweb import theme_state_generation_reader as reader
-
     reasons: list[str] = []
     detail: dict = {"source": "incumbent_generation_family", "receipt_status": None,
                     "receipt_reason_codes": None, "generation_id": None}
     bound_sha: str | None = None
     plan = None
+    try:
+        from engine.neuralweb import theme_state_generation as g
+        from engine.neuralweb import theme_state_generation_reader as reader
+    except ImportError as exc:
+        detail["detail_message"] = f"{type(exc).__name__}: {exc}"
+        return dict(_leg(["GMI_FAMILY_UNREADABLE"], detail), sha256=None)
     try:
         current_raw = g.read(root, g.CURRENT)
         if current_raw is None:
@@ -317,10 +367,14 @@ def _bind_gmi_theme_state(root: Path, gmi_receipt_path: Path | None):
             if plan["root"] != str(Path(root).resolve()):
                 reasons.append("GMI_ACCEPTED_PLAN_SCOPE_MISMATCH")
             detail["generation_id"] = ref["generation_id"]
-            detail["state_raw_sha256"] = state["state_sha256"]
+            # Two distinct identities, exactly as the owner reader stamps them:
+            # the semantic digest (state_sha256, computed without its own
+            # identity fields) and the raw canonical-bytes digest.
+            detail["state_semantic_sha256"] = state["state_sha256"]
+            detail["state_raw_sha256"] = g.sha(g.canonical(state))
     except g.GenerationUnavailable as error:
         reasons.append("GMI_" + str(getattr(error, "reason", error)))
-    except (ValueError, TypeError, KeyError, AttributeError, OSError):
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError):
         reasons.append("GMI_FAMILY_UNREADABLE")
     if plan is not None and not reasons:
         if gmi_receipt_path is None or not gmi_receipt_path.exists():
@@ -353,8 +407,15 @@ def _bind_gmi_theme_state(root: Path, gmi_receipt_path: Path | None):
                     ):
                         reasons.append("GMI_GENERATION_MISMATCH")
                     else:
-                        raw_sha = (receipt.get("state_identity") or {}).get("raw_sha256")
-                        if raw_sha is None or raw_sha != detail.get("state_raw_sha256"):
+                        identity = receipt.get("state_identity") or {}
+                        raw_sha = identity.get("raw_sha256")
+                        semantic_sha = identity.get("semantic_sha256")
+                        if (
+                            raw_sha is None
+                            or raw_sha != detail.get("state_raw_sha256")
+                            or semantic_sha is None
+                            or semantic_sha != detail.get("state_semantic_sha256")
+                        ):
                             reasons.append("GMI_STATE_IDENTITY_MISMATCH")
                         else:
                             bound_sha = raw_sha
@@ -375,15 +436,13 @@ def run_preflight(
     """Bind all issuer-side source legs and return the typed preflight receipt."""
     root = Path(root).resolve()
     persisted = _read_json(inventory_path)
-    if persisted is not None and not isinstance(persisted, dict):
-        persisted = None
-    inventory_leg = _bind_inventory(root, inventory_path, persisted)
-    source_doc = _read_json(source_snapshot_path)
-    source = source_doc.get("source") if isinstance(source_doc, dict) else None
-    if not isinstance(source, dict) or not source.get("sha256"):
-        raise InfrastructureError("source snapshot lacks its frozen source binding")
-    frozen_board_sha = str(source["sha256"])
-    board_leg = _bind_board(root, source_snapshot_path, source_blob_path)
+    malformed = False
+    if persisted is not None and not _well_formed_inventory(persisted):
+        persisted, malformed = None, True
+    inventory_leg = _bind_inventory(root, inventory_path, persisted, malformed=malformed)
+    source, _code = _source_binding(source_snapshot_path)
+    frozen_board_sha = str(source["sha256"]) if source is not None else None
+    board_leg = _bind_board(root, source_snapshot_path, source_blob_path, persisted)
     index_leg = _bind_index(root, persisted, _parse_delta(delta_path), delta_path,
                             frozen_board_sha)
     store_leg = _bind_candidate_store(root, persisted)
@@ -460,14 +519,14 @@ def _self_check(receipt: dict) -> None:
 
 
 def write_receipt(receipt: dict, receipt_path: Path, root: Path | None = None) -> None:
-    """Deterministic runner-local receipt bytes; never under site/ or data/."""
+    """Deterministic runner-local receipt bytes; never anywhere inside the repository."""
     encoded = json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"
     resolved = Path(receipt_path).resolve()
     if root is not None:
         repo = Path(root).resolve()
-        if resolved.is_relative_to(repo / "site") or resolved.is_relative_to(repo / "data"):
+        if resolved.is_relative_to(repo):
             raise InfrastructureError(
-                "preflight receipt must stay runner-local, not under site/ or data/"
+                "preflight receipt must stay runner-local, never inside the repository"
             )
     resolved.parent.mkdir(parents=True, exist_ok=True)
     resolved.write_bytes(encoded.encode("utf-8"))
@@ -522,7 +581,8 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
         return 2
-    except (OSError, ValueError, TypeError, KeyError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError,
+            RuntimeError, ImportError) as exc:
         print(
             f"::warning title=prophet accepted-source preflight::could not bind source "
             f"evidence ({type(exc).__name__}: {exc})",
@@ -530,11 +590,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
     summary = ",".join(receipt["reason_codes"]) or "none"
+    level = "notice" if receipt["status"] == STATUS_QUALIFIED else "warning"
     print(
-        f"::notice title=prophet accepted-source preflight::status={receipt['status']} "
-        f"reasons={summary} bundle_id=null",
+        f"::{level} title=prophet accepted-source preflight::status={receipt['status']} "
+        f"reasons={summary} bundle_id=null receipt={args.receipt_out}",
         flush=True,
     )
+    step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if step_summary:
+        try:
+            with open(step_summary, "a", encoding="utf-8") as fh:
+                fh.write(
+                    f"- prophet accepted-source preflight: `{receipt['status']}` "
+                    f"reasons=`{summary}` bundle_id=null receipt=`{args.receipt_out}`\n"
+                )
+        except OSError:
+            pass
     return 0
 
 

@@ -415,9 +415,19 @@ with Path(os.environ["PROPHET_DELTA"]).open("w", encoding="utf-8") as fh:
 # harness, which only exercises the delta contract.
 inventory_target = os.environ.get("PROPHET_INVENTORY")
 if inventory_target:
-    Path(inventory_target).write_text(
-        json.dumps(after, sort_keys=True), encoding="utf-8"
-    )
+    # Alarm-only evidence: a failed inventory write must never flip the
+    # checkpoint contract (manifest_rc stays 0); the preflight then refuses
+    # INVENTORY_MISSING and the run shows the warning.
+    try:
+        Path(inventory_target).write_text(
+            json.dumps(after, sort_keys=True), encoding="utf-8"
+        )
+    except OSError as exc:
+        print(
+            "::warning title=prophet full-population inventory::could not persist "
+            f"the inventory ({exc}); settlement preflight will refuse INVENTORY_MISSING",
+            flush=True,
+        )
 PY
   manifest_rc=$?
   if [ "$manifest_rc" -eq 0 ]; then

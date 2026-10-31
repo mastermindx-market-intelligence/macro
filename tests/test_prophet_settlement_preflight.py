@@ -16,6 +16,7 @@ import pytest
 from engine.neuralweb import theme_state_generation as g
 from tests.test_theme_state_production import production_world  # noqa: F401 — pytest fixture
 from scripts.prophet_output_inventory import (
+    INDEX_REL,
     candidate_store_entries,
     snapshot,
     store_sha256,
@@ -806,7 +807,9 @@ def test_cli_writes_the_typed_receipt_runner_locally(tmp_path) -> None:
     )
 
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "::notice title=prophet accepted-source preflight::status=NOT_SETTLED" in result.stdout
+    # NOT_SETTLED is an alarm (warning), never a quiet notice.
+    assert "::warning title=prophet accepted-source preflight::status=NOT_SETTLED" in result.stdout
+    assert "::notice title=prophet accepted-source preflight" not in result.stdout
     assert "bundle_id=null" in result.stdout
     doc = json.loads(receipt_path.read_text(encoding="utf-8"))
     assert doc["schema"] == "prophet.accepted_source_preflight/v1"
@@ -825,3 +828,264 @@ def test_cli_writes_the_typed_receipt_runner_locally(tmp_path) -> None:
     assert "::error title=prophet accepted-source preflight::missing required evidence paths" in (
         failed.stdout
     )
+
+
+# --- round-2 repairs (review of #10289: M1-M4, m1-m6) -------------------------------------------
+
+
+def _accepted_world(tmp_path, production_world):
+    """An immutable accepted generation + frozen evidence, as the owner publishes it."""
+    from tests.test_theme_state_generation import AcceptedFixture
+    from tests.test_theme_state_production import compose
+
+    root = production_world
+    _populate_prophet(root)
+    bundle, _ = compose(root)
+    entry = g.entry_preflight(root, legacy_api=True)
+    plan = g.prepare_generation(
+        bundle, root=root, generated_at=EMISSION, activation_at=ACTIVATION, entry=entry
+    )
+    g.publish_generation(root, plan, controlled_verifier=AcceptedFixture())
+    return root, plan, _freeze_evidence(tmp_path, root)
+
+
+def _owner_receipt(root, tmp_path) -> tuple[Path, dict]:
+    from engine.neuralweb import theme_state_generation_reader as reader
+    from tests.test_theme_state_generation_reader import ReadFixture
+    from tests.test_theme_state_production import EFFECTIVE, KNOWN
+
+    owner_receipt = reader.read_generation_at_use(
+        root, effective_at=EFFECTIVE, known_at=KNOWN,
+        purpose="research_internal", use_at=USE, controlled_verifier=ReadFixture(),
+    )
+    path = tmp_path / "owner-receipt.json"
+    path.write_text(json.dumps(owner_receipt), encoding="utf-8")
+    return path, owner_receipt
+
+
+def test_owner_receipt_identity_binds_raw_to_raw_and_semantic_to_semantic(
+    tmp_path, production_world
+) -> None:
+    """M1: the preflight's two state digests equal the owner's two, not each other."""
+    root, _plan, evidence = _accepted_world(tmp_path, production_world)
+    receipt_path, owner_receipt = _owner_receipt(root, tmp_path)
+
+    settled = _preflight(root, evidence, gmi_receipt_path=receipt_path)
+    detail = settled["leg_detail"]["gmi_theme_state"]["detail"]
+    identity = owner_receipt["state_identity"]
+    assert detail["state_raw_sha256"] == identity["raw_sha256"]
+    assert detail["state_semantic_sha256"] == identity["semantic_sha256"]
+    assert detail["state_raw_sha256"] != detail["state_semantic_sha256"]
+    # The owner's production ceiling is the ONLY thing refusing this receipt.
+    assert settled["reason_codes"] == ["GMI_THEME_STATE_NOT_QUALIFIED"]
+    assert "GMI_STATE_IDENTITY_MISMATCH" not in settled["reason_codes"]
+
+
+def test_pass_through_is_reachable_once_the_owner_ceiling_lifts_and_every_leg_flips_back(
+    tmp_path, production_world, monkeypatch
+) -> None:
+    """M2: QUALIFIED_SOURCE_PREFLIGHT is produced by run_preflight with real evidence.
+
+    The owner reader today stamps every receipt with its production ceiling
+    (``CONTROLLED_TEST_ONLY``, ``D2E_NOT_QUALIFIED``) and its validator binds
+    exactly those codes, so no genuine receipt can clear the ceiling yet. The
+    monkeypatch lifts the preflight's ceiling list and nothing else: the
+    receipt, generation, hashes and validators are the owner's own.
+    """
+    import scripts.prophet_settlement_preflight as module
+
+    root, plan, evidence = _accepted_world(tmp_path, production_world)
+    receipt_path, owner_receipt = _owner_receipt(root, tmp_path)
+    monkeypatch.setattr(module, "GMI_UNQUALIFIED_CODES", ())
+
+    qualified = _preflight(root, evidence, gmi_receipt_path=receipt_path)
+    assert qualified["status"] == STATUS_QUALIFIED
+    assert qualified["reason_codes"] == []
+    assert all(qualified["artifact_hashes"].values())
+    assert qualified["artifact_hashes"]["theme_state"] == owner_receipt["state_identity"]["raw_sha256"]
+    assert qualified["leg_detail"]["gmi_theme_state"]["detail"]["generation_id"] == plan["generation_id"]
+    # Even the pass-through never settles, accepts or mints a bundle.
+    assert qualified["accepted"] is False
+    assert qualified["bundle_id"] is None
+    assert qualified["reader_proof"] is None and qualified["publish"] is None
+    assert set(qualified["authority_caps"].values()) == {False}
+
+    # Flip one leg at a time; each flips the whole receipt back to NOT_SETTLED.
+    assert _preflight(root, evidence)["reason_codes"] == ["GMI_RECEIPT_NOT_SUPPLIED"]
+
+    inventory, source_snapshot, blob, delta = evidence
+    broken_blob = tmp_path / "board.other.json"
+    broken_blob.write_bytes(_board_bytes("2026-10-29"))
+    flipped = _preflight(root, (inventory, source_snapshot, broken_blob, delta),
+                         gmi_receipt_path=receipt_path)
+    assert flipped["status"] == STATUS_REFUSED
+    assert "SOURCE_CHANGED_AFTER_FREEZE" in flipped["reason_codes"]
+    assert flipped["artifact_hashes"]["board"] is None
+
+    (root / "site/prophet/plans/PLAN-99-BULL-20261030.json").write_text("{}\n", encoding="utf-8")
+    flipped = _preflight(root, evidence, gmi_receipt_path=receipt_path)
+    assert flipped["status"] == STATUS_REFUSED
+    assert "INVENTORY_POPULATION_CHANGED" in flipped["reason_codes"]
+    (root / "site/prophet/plans/PLAN-99-BULL-20261030.json").unlink()
+
+    missing_inventory = tmp_path / "no-inventory.json"
+    flipped = _preflight(root, (missing_inventory, source_snapshot, blob, delta),
+                         gmi_receipt_path=receipt_path)
+    assert flipped["status"] == STATUS_REFUSED
+    assert "INVENTORY_MISSING" in flipped["reason_codes"]
+
+    monkeypatch.setattr(module, "GMI_UNQUALIFIED_CODES", ("D2E_NOT_QUALIFIED", "CONTROLLED_TEST_ONLY"))
+    assert _preflight(root, evidence, gmi_receipt_path=receipt_path)["reason_codes"] == [
+        "GMI_THEME_STATE_NOT_QUALIFIED"
+    ]
+
+
+def test_missing_or_unbound_source_snapshot_leaves_a_typed_receipt(tmp_path) -> None:
+    """M3: a settlement that cannot be proven still leaves NOT_SETTLED, never a missing run."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    inventory, source_snapshot, blob, delta = _freeze_evidence(tmp_path, root)
+
+    gone = tmp_path / "source-gone.json"
+    receipt = _preflight(root, (inventory, gone, blob, delta))
+    assert receipt["status"] == STATUS_REFUSED
+    assert "SOURCE_SNAPSHOT_MISSING" in receipt["reason_codes"]
+    assert "INDEX_BOARD_BINDING_MISMATCH" in receipt["reason_codes"]
+    assert receipt["artifact_hashes"]["board"] is None
+    assert receipt["artifact_hashes"]["index"] is None
+
+    unbound = tmp_path / "source-unbound.json"
+    unbound.write_text(json.dumps({"schema": "x", "source": {"path": BOARD_REL}}), encoding="utf-8")
+    receipt = _preflight(root, (inventory, unbound, blob, delta))
+    assert "SOURCE_SNAPSHOT_UNBOUND" in receipt["reason_codes"]
+    assert receipt["bundle_id"] is None
+
+    # The CLI keeps rc 0 and writes the receipt for this case.
+    import os
+    import subprocess
+    import sys
+
+    receipt_path = tmp_path / "receipt-m3.json"
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(root), "PROPHET_INVENTORY": str(inventory),
+        "PROPHET_SOURCE_SNAPSHOT": str(gone), "PROPHET_SOURCE_BLOB": str(blob),
+        "PROPHET_DELTA": str(delta), "PROPHET_PREFLIGHT_RECEIPT": str(receipt_path),
+        "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
+    })
+    result = subprocess.run(
+        [sys.executable, "-m", "scripts.prophet_settlement_preflight"],
+        cwd=Path(__file__).resolve().parents[1], env=env, capture_output=True, text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "::warning title=prophet accepted-source preflight::status=NOT_SETTLED" in result.stdout
+    doc = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert "SOURCE_SNAPSHOT_MISSING" in doc["reason_codes"]
+
+
+def test_symlinked_index_and_malformed_inventory_are_typed_not_crashes(tmp_path) -> None:
+    """m1: no traceback paths — symlinked index, non-string / colon-less inventory values."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    inventory, source_snapshot, blob, delta = _freeze_evidence(tmp_path, root)
+
+    index = root / INDEX_REL
+    real = tmp_path / "index-real.json"
+    real.write_bytes(index.read_bytes())
+    index.unlink()
+    index.symlink_to(real)
+    receipt = _preflight(root, (inventory, source_snapshot, blob, delta))
+    assert receipt["status"] == STATUS_REFUSED
+    assert receipt["leg_detail"]["index"]["reason_codes"] == ["SYMLINK_REFUSED"]
+    assert receipt["artifact_hashes"]["index"] is None
+    index.unlink()
+    index.write_bytes(real.read_bytes())
+
+    for bad in ({"site/prophet/index.json": 7}, {"site/prophet/index.json": "no-colon"},
+                {"site/prophet/index.json": "0644:short"}):
+        malformed = tmp_path / "inventory-malformed.json"
+        malformed.write_text(json.dumps(bad), encoding="utf-8")
+        receipt = _preflight(root, (malformed, source_snapshot, blob, delta))
+        assert receipt["status"] == STATUS_REFUSED
+        assert receipt["leg_detail"]["inventory"]["reason_codes"] == ["INVENTORY_MALFORMED"]
+        assert receipt["leg_detail"]["candidate_store"]["reason_codes"] == ["INVENTORY_MISSING"]
+
+
+def test_empty_candidate_store_is_a_typed_refusal(tmp_path) -> None:
+    """m3: zero plans never qualify as a bound population."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root, plans=0)
+    evidence = _freeze_evidence(tmp_path, root)
+    receipt = _preflight(root, evidence)
+    store = receipt["leg_detail"]["candidate_store"]
+    assert store["reason_codes"] == ["CANDIDATE_STORE_EMPTY"]
+    assert store["sha256"] is None and store["file_count"] == 0
+    assert receipt["candidate_count"] == 0
+    assert receipt["artifact_hashes"]["candidate_store"] is None
+
+
+def test_snapshot_path_outside_the_allowlist_is_refused(tmp_path) -> None:
+    """m4: the durable copy must be a normalized path inside the snapshot dir and the inventory."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    board_sha, snapshot_rel = _populate_prophet(root)
+    inventory, source_snapshot, blob, delta = _freeze_evidence(tmp_path, root)
+    doc = json.loads(source_snapshot.read_text(encoding="utf-8"))
+    outside = tmp_path / "outside.json.gz"
+    outside.write_bytes((root / snapshot_rel).read_bytes())
+    for bad in ("../outside.json.gz", str(outside), "site/prophet/index.json",
+                "data/prophet/origination_sources/not-in-inventory.json.gz"):
+        doc["source"]["snapshot_path"] = bad
+        tampered = tmp_path / "source-tampered.json"
+        tampered.write_text(json.dumps(doc), encoding="utf-8")
+        receipt = _preflight(root, (inventory, tampered, blob, delta))
+        board = receipt["leg_detail"]["board"]
+        assert "SNAPSHOT_PATH_UNQUALIFIED" in board["reason_codes"], bad
+        assert "DURABLE_SOURCE_SNAPSHOT_MISSING" in board["reason_codes"], bad
+        assert receipt["artifact_hashes"]["board"] is None
+
+
+def test_nightly_allowlists_match_the_importable_inventory_module() -> None:
+    """m5: both heredoc allowlists and the module constants are the same sets."""
+    import ast
+    import re as _re
+
+    from scripts.prophet_output_inventory import DIRECTORY_GLOBS, EXACT_PATHS
+
+    source = _nightly_source()
+    exact_blocks = _re.findall(r"exact = (\{.*?\n\})", source, flags=_re.S)
+    glob_blocks = _re.findall(r"globs = (\{.*?\n\})", source, flags=_re.S)
+    assert len(exact_blocks) == 2 and len(glob_blocks) == 2
+    for block in exact_blocks:
+        assert ast.literal_eval(block) == set(EXACT_PATHS)
+    for block in glob_blocks:
+        assert ast.literal_eval(block) == dict(DIRECTORY_GLOBS)
+
+
+def test_receipt_is_refused_anywhere_inside_the_repository(tmp_path) -> None:
+    """m6: runner-local means outside the checkout, not merely outside site/ and data/."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    _populate_prophet(root)
+    receipt = _preflight(root, _freeze_evidence(tmp_path, root))
+    with pytest.raises(InfrastructureError):
+        write_receipt(receipt, root / "preflight.json", root)
+    with pytest.raises(InfrastructureError):
+        write_receipt(receipt, root / "research/preflight.json", root)
+    write_receipt(receipt, tmp_path / "outside.json", root)
+    assert (tmp_path / "outside.json").is_file()
+
+
+def test_nightly_inventory_write_failure_never_flips_the_checkpoint() -> None:
+    """M4: the alarm-only inventory write is wrapped; manifest_rc cannot come from it."""
+    source = _nightly_source()
+    heredoc = _python_heredocs(source)[2]
+    start = heredoc.index('inventory_target = os.environ.get("PROPHET_INVENTORY")')
+    tail = heredoc[start:]
+    assert "try:" in tail and "except OSError" in tail
+    assert "::warning title=prophet full-population inventory" in tail
+    assert "sys.exit" not in tail and "raise" not in tail
