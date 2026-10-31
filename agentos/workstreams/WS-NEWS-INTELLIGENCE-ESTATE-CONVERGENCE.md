@@ -49,7 +49,7 @@ waves:
     title: Wave 2 — E3 convergence, B2 numeric fact adapter, D2 consumer wiring (get_intelligence, portfolio lens, engine/intelligence.py), A5 observability build, first corrected-event vertical
     status: in_progress
     depends_on: [W1]
-    next_action: "2026-10-31: ORCH-2 CONSUMER-D2 RUNNING (Mastermind get_news/get_intelligence + lenses freshness fields, macro build_news source_asof/retained flag, adapter PROPOSAL); ORCH-3 QUANT (B4 #10063, sampler _share_ok, 40 pending cases without redraw) and ORCH-4 PRODUCT (Journey 6 corrected-event proof on the Terminal authenticated rail, E1 reconcile) spawn as native slots free (cap 2)."
+    next_action: "2026-10-31: ORCH-2 CONSUMER-D2 RETURNED PASS-WITH-GAPS — macro #10280 (head 4dd74f0b825b, draft) + Mastermind #1897 (head 5cc144ad9d71, draft), both Fabric-reviewed ACCEPT_WITH_NOTES and folded; recorded as DEC:NEWS-ESTATE-D2-CONSUMER-FRESHNESS; seat merges each --match-head-commit after CI + reviewDecision, macro first then Mastermind, sequenced against Sol #10136; open producer follow-on MMREV-03 (intelligence/by_ticker.json lacks the news leg source_asof). ORCH-3 QUANT RUNNING (B4 #10063 provenance, 40-case routing without redraw, sampler _share_ok startup test, quant claim matrix). ORCH-4 PRODUCT (Journey 6 on the Terminal authenticated rail, E1 reconcile) spawns when ORCH-1 returns (cap 2)."
   - id: W3
     title: Wave 3 — Section C (dated exposure mapping, F05 per-family proof) and Section F (claim/evidence matrices, independent READ_ONLY reviews)
     status: todo
@@ -60,7 +60,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 — consume ORCH-1 and ORCH-2 returns by artifact; ready/merge with --match-head-commit after independent review verdict + reviewDecision; then ORCH-3 QUANT and ORCH-4 PRODUCT; Section C/F orchestrators after W2 lands."
+next_action: "2026-10-31 — seat records #10254 MERGED e4f28c44; ORCH-2 returned (D2 PRs #10280/#1897 await CI then seat merge); consume ORCH-1 and ORCH-3 returns by artifact; ready/merge with --match-head-commit after independent review verdict + reviewDecision; ORCH-4 PRODUCT after ORCH-1; Section C/F orchestrators after W2 lands."
 ---
 
 # News Intelligence Estate convergence

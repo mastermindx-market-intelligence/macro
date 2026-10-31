@@ -1,0 +1,218 @@
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}{# R-01a: publication harnesses pass t() as a render kwarg / caller macro, not an env global #}
+{% import "intl_workspace/_gs_dossier_macros.html.j2" as ds with context %}
+{# IM14 market dossier (INTL-GS-W2B, spec R14 §10.5 board 11). One include
+   per dossier panel; gs_panel.payload is built by lib.intl_gs_dossier_view.
+   A number prints ONLY from a qualified Wave 1 observation (L10); everything
+   unsourced renders its §7 state with the foundation reason copy. Specimen
+   content is fixture-only: build_view can never set payload.specimen. #}
+{% set payload = gs_panel.payload %}
+{% set specimen = payload.specimen|default(false) %}
+{% set abstain = payload.abstain_copy %}
+{% call gs.gs_panel_root(view='dossier', panel=gs_panel) %}
+{{ gs.gs_page_header(
+     t('Global surveillance · dossier', '全球监控 · 市场档案'),
+     t('Market dossier', '市场档案'),
+     t('Per-jurisdiction qualified observations under the four-clock contract; every element without an admitted source renders its honest state.',
+       '基于四时钟合同的各辖区合格观测；无已准入来源的元素呈现其真实状态。'),
+     specimen=specimen) }}
+{{ gs.gs_questions() }}
+{{ gs.gs_snapshot(payload.snapshot, payload.basis, payload.horizon_label) }}
+
+<nav class="intl-gs__picker" data-gs-picker aria-label="Market">
+  <div class="intl-gs__pickerlist">
+      {% for group in payload.picker_groups %}
+      <div class="intl-gs__pickergroup" data-region-group="{{ group.key|e }}">
+        <p class="intl-gs__pickergrouplabel">{{ t(group.label_en, group.label_zh) }}</p>
+        {% for entry in group.markets %}
+        <a class="intl-gs__picklink" data-gs-market-row="{{ entry.id|e }}" data-gs-select-market="{{ entry.id|e }}" href="?view=dossier&amp;market={{ entry.id|e }}">{{ t(entry.name_en, entry.name_zh) }}{% if group.key == 'aggregates' %} <span class="intl-gs__pickagg">{{ t('aggregate', '聚合') }}</span>{% endif %}</a>
+        {% endfor %}
+      </div>
+      {% endfor %}
+  </div>
+</nav>
+
+<div class="intl-gs__marketscope" data-gs-market-scope>
+  {% for market in payload.markets %}
+  <article class="intl-gs__mkt" data-gs-market="{{ market.id|e }}" id="{{ gs_panel.context_id|e }}-{{ market.id|e }}"{% if market.id != payload.default_market %} hidden{% else %} data-gs-market-default{% endif %}>
+    <h3 class="intl-gs__mkt__title">{{ t(market.name_en, market.name_zh) }}{% if market.kind == 'aggregate' %} <span class="intl-gs__chip">{{ t('Aggregate', '聚合') }}</span>{% endif %}</h3>
+    <div class="intl-gs__dossier-grid">
+      <div class="intl-gs__dossier-main">
+
+        {{ ds.ds_hero(market, payload.basis) }}
+
+        {% set decomp = market.decomposition %}
+        <div class="intl-gs__card intl-gs__decomp" data-decomp="{{ 'available' if decomp.available else 'abstain' }}">
+          {{ gs.gs_bandhead(t('Return decomposition', '回报分解'), qnum='Q1', sub=t('Verbatim from the USD observation contract; never recomputed here.', '逐字来自美元观测合同；此处绝不重算。')) }}
+          {% if decomp.available %}
+          <table class="intl-gs__table intl-gs__dectable">
+            <tbody>
+              <tr data-decomp-row="local"><th>{{ t('Local', '本币') }}</th><td class="intl-gs__num">{{ gs.gs_signed(decomp.local_pct, 2, '%') }}</td></tr>
+              <tr data-decomp-row="fx"><th>{{ t('FX', '汇率') }}</th><td class="intl-gs__num">{{ gs.gs_signed(decomp.fx_pct, 2, '%') }}</td></tr>
+              <tr data-decomp-row="usd"><th>{{ t('USD', '美元') }}</th><td class="intl-gs__num">{{ gs.gs_signed(decomp.usd_pct, 2, '%') }}</td></tr>
+              <tr data-decomp-row="additive"><th>{{ t('FX contribution', '汇率贡献') }}</th><td class="intl-gs__num">{{ gs.gs_signed(decomp.additive_fx_contribution_pp, 2, 'pp') }}</td></tr>
+              <tr data-decomp-row="interaction"><th>{{ t('Interaction', '交互项') }}</th><td class="intl-gs__num">{{ gs.gs_signed(decomp.interaction_pp, 2, 'pp') }}</td></tr>
+              <tr data-decomp-row="residual"><th>{{ t('Identity residual', '恒等残差') }}</th><td class="intl-gs__num">{{ decomp.identity_residual_text }}</td></tr>
+            </tbody>
+          </table>
+          <div class="intl-gs__decbar">{{ gs.gs_minibar(decomp.local_pct, decomp.additive_fx_contribution_pp) }}<span class="intl-gs__decbar__legend">{{ t('Local and additive FX legs around a zero tick', '围绕零刻度的本币与汇率加法贡献') }}</span></div>
+          {{ ds.ds_abstain_note('common_factor_unadmitted', abstain['common_factor_unadmitted']) }}
+          <p class="intl-gs__identity"><span class="l-en">{{ decomp.identity_en }}</span><span class="l-zh">{{ decomp.identity_zh }}</span></p>
+          {% else %}
+          {{ ds.ds_abstain_note('series_unadmitted', abstain['series_unadmitted']) }}
+          <p class="intl-gs__footnote">{% for pair in decomp.reason_pairs %}{{ t(pair[0], pair[1]) }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+          {% endif %}
+        </div>
+
+        <div class="intl-gs__card intl-gs__path">
+          {{ gs.gs_bandhead(t('Return history', '收益历史'), sub=t('Sixty sessions', '六十个交易日')) }}
+          {{ ds.ds_abstain_note('series_unadmitted', abstain['series_unadmitted']) }}
+        </div>
+
+        <div class="intl-gs__card intl-gs__sigma">
+          {{ gs.gs_bandhead(t('Why: σ decomposition', '动因：σ 分解'), qnum='Q2 · Q3') }}
+          {% if market.sigma_rows %}
+          <ul class="intl-gs__sigmalist">
+            {% for row in market.sigma_rows %}<li class="intl-gs__sigmarow">{{ gs.gs_divergence(row.pct) }} <span>{{ t(row.label_en, row.label_zh) }}</span> <span class="intl-gs__num">{{ gs.gs_signed(row.pct, 2, 'σ') }}</span></li>{% endfor %}
+          </ul>
+          {% else %}
+          {{ ds.ds_abstain_note('divergence_unadmitted', abstain['divergence_unadmitted']) }}
+          {% endif %}
+        </div>
+
+        <div class="intl-gs__card intl-gs__cfs">
+          {{ gs.gs_bandhead(t('Credit and funding', '信用与融资'), qnum='Q2 · Q3', sub=t('Acceptance-matrix states only; no measure is admitted in v1.', '仅呈现验收矩阵状态；v1 无已准入度量。')) }}
+          <table class="intl-gs__table intl-gs__cftable">
+            <thead><tr><th scope="col">{{ t('Measure', '指标') }}</th><th scope="col">{{ t('State', '状态') }}</th><th scope="col">{{ t('Reason', '原因') }}</th></tr></thead>
+            <tbody>
+              {% for row in market.credit_funding %}
+              <tr data-cf-row="{{ row.id|e }}" data-state="{{ row.state|e }}" title="{{ row.all_reasons|join(', ')|e }}">
+                <th class="intl-gs__cftable__label" scope="row">{{ t(row.label_en, row.label_zh) }}</th>
+                <td class="intl-gs__cftable__state">{% if row.display == 'abstain' %}{{ gs.gs_state_chip('abstain') }}{% else %}{{ gs.gs_glyph(row.display) }} {{ gs.gs_state_chip(row.display) }}{% endif %}</td>
+                <td class="intl-gs__cftable__reason">{{ t(row.reason_en, row.reason_zh) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="intl-gs__extvuln" data-state="{{ market.external_vulnerability.state|e }}">
+            <span class="intl-gs__extvuln__label">{{ t('External vulnerability', '外部脆弱性') }}</span>
+            {{ gs.gs_glyph(market.external_vulnerability.display) }} {{ gs.gs_state_chip(market.external_vulnerability.display) }}
+            <span class="intl-gs__extvuln__reason">{{ t(market.external_vulnerability.reason_en, market.external_vulnerability.reason_zh) }}</span>
+          </div>
+        </div>
+
+        <div class="intl-gs__card intl-gs__edges">
+          {{ gs.gs_bandhead(t('Typed edges', '类型化传导'), qnum='Q4 · Q5') }}
+          <table class="intl-gs__table intl-gs__edgetable">
+            <thead><tr><th scope="col">{{ t('Channel', '渠道') }}</th><th scope="col">{{ t('Status', '状态') }}</th></tr></thead>
+            <tbody>
+              {% if market.typed_edges %}
+              {% for edge in market.typed_edges %}
+              <tr data-qrow="{{ edge.edge|e }}"><th class="intl-gs__edgetable__label" scope="row">{{ gs.gs_typed_edge(edge.edge) }} {{ t(edge.label_en, edge.label_zh) }}</th><td>{{ gs.gs_state_chip(edge.state) }}</td></tr>
+              {% endfor %}
+              {% else %}
+              <tr data-qrow="q4"><th class="intl-gs__edgetable__label" scope="row">{{ t('Transmission into the US', '传导至美国') }}</th><td>{{ ds.ds_abstain_note('transmission_unadmitted', abstain['transmission_unadmitted']) }}</td></tr>
+              <tr data-qrow="q5"><th class="intl-gs__edgetable__label" scope="row">{{ t('Eligible US corroboration', '合格的美国佐证') }}</th><td>{{ ds.ds_abstain_note('us_corroboration_unadmitted', abstain['us_corroboration_unadmitted']) }}</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="intl-gs__dossier-rail">
+
+        <div class="intl-gs__thesis">
+          {% call gs.gs_featured() %}
+          {{ gs.gs_bandhead(t('Q6 · What resolves the thesis', 'Q6 · 什么能验证或推翻论点')) }}
+          {% if market.thesis %}
+          <p class="intl-gs__thesis__text">{{ t(market.thesis.en, market.thesis.zh) }}</p>
+          {% else %}
+          {{ ds.ds_abstain_note('thesis_unadmitted', abstain['thesis_unadmitted']) }}
+          {% endif %}
+          {% endcall %}
+        </div>
+
+        <div class="intl-gs__card intl-gs__clockcard">
+          {{ gs.gs_bandhead(t('Clocks and rights', '时钟与权利')) }}
+          <div class="intl-gs__clocks">
+            {% for clock in market.clocks %}{{ ds.ds_clock_row(clock) }}{% endfor %}
+          </div>
+          <div class="intl-gs__rightsbox" data-rights="{{ 'present' if market.rights else 'restricted' }}">
+            <p class="intl-gs__rightsbox__label">{{ t('Source rights · equity index + FX', '来源权利 · 股指与汇率') }}</p>
+            {% if market.rights %}
+            <span class="intl-gs__chip intl-gs__chip--tier">{{ t(market.rights.label_en, market.rights.label_zh) }}</span>
+            <dl class="intl-gs__rightsdl">
+              <div><dt>{{ t('Delay token', '延迟标识') }}</dt><dd><code class="intl-gs__token">{{ market.rights.delay or '—' }}</code></dd></div>
+              <div><dt>{{ t('Decision ref', '决策引用') }}</dt><dd><code class="intl-gs__token">{{ market.rights.decision_ref or '—' }}</code></dd></div>
+            </dl>
+            {% else %}
+            {{ gs.gs_chip(t('Restricted', '受限'), 'warn-dashed') }} {{ gs.gs_rights_slot() }}
+            <p class="intl-gs__footnote">{{ t('No rights row for this capability; nothing may be displayed.', '该能力无权利记录；不可展示任何数值。') }}</p>
+            {% endif %}
+          </div>
+          <div class="intl-gs__tierrow">
+            <p class="intl-gs__tierrow__label">{{ t('Evidence tier', '证据层级') }}</p>
+            {{ ds.ds_abstain_note('evidence_tier_undefined', abstain['evidence_tier_undefined']) }}
+          </div>
+          {% if market.incumbent %}
+          <dl class="intl-gs__incumbent">
+            <div><dt>{{ t('Incumbent quality', '现有资格') }}</dt><dd><code class="intl-gs__token">{{ market.incumbent.quality or '—' }}</code></dd></div>
+            <div><dt>{{ t('Incumbent reason', '现有原因') }}</dt><dd><code class="intl-gs__token">{{ market.incumbent.reason or '—' }}</code></dd></div>
+            <div><dt>{{ t('Incumbent decision ref', '现有决策引用') }}</dt><dd><code class="intl-gs__token">{{ market.incumbent.decision_ref or '—' }}</code></dd></div>
+          </dl>
+          {% else %}
+          <p class="intl-gs__footnote">{{ t('No incumbent qualification record.', '无现有资格认定记录。') }}</p>
+          {% endif %}
+        </div>
+
+        <div class="intl-gs__card intl-gs__corrcard">
+          {{ gs.gs_bandhead(t('Corrections', '更正')) }}
+          {% if payload.corrections %}
+          {% for correction in payload.corrections %}{{ gs.gs_correction_note(correction.old, correction.new, t(correction.clock_en, correction.clock_zh)) }}{% endfor %}
+          {% else %}
+          {{ ds.ds_abstain_note('corrections_none', abstain['corrections_none']) }}
+          {% endif %}
+        </div>
+
+        <div class="intl-gs__card intl-gs__sourcescard">
+          {{ gs.gs_bandhead(t('Sources and lineage', '来源与血缘')) }}
+          <dl class="intl-gs__sources">
+            <div><dt>{{ t('Observation evidence', '观测证据') }}</dt><dd>{% if market.sources.evidence_ref %}{{ gs.gs_rights_slot() }} <span class="intl-gs__footnote">{{ t('Source reference withheld on the public page', '公开页面保留来源引用') }}</span>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</dd></div>
+            <div><dt>{{ t('Snapshot published', '快照发布') }}</dt><dd>{% if market.sources.snapshot_clock %}<time class="intl-gs__num" datetime="{{ market.sources.snapshot_clock.datetime|e }}">{{ t(market.sources.snapshot_clock.en, market.sources.snapshot_clock.zh) }}</time>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</dd></div>
+            <div><dt>{{ t('Capability evidence', '能力证据') }}</dt><dd><code class="intl-gs__token">{{ market.sources.capability_evidence_ref or '—' }}</code></dd></div>
+            <div><dt>{{ t('Rights ref', '权利引用') }}</dt><dd><code class="intl-gs__token">{{ market.sources.capability_rights_ref or '—' }}</code></dd></div>
+          </dl>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="intl-gs__covvecwrap">
+      {{ gs.gs_bandhead(t('Coverage vector', '覆盖向量'), sub=t('Capability states for this jurisdiction; counts never percentages.', '该辖区的能力状态；只计数不做百分比。')) }}
+      <ul class="intl-gs__covvec">
+        {% for row in market.coverage %}
+        <li class="intl-gs__covvec__row" data-capability="{{ row.capability|e }}">{{ gs.gs_glyph(row.display or 'empty') }} <span class="intl-gs__covvec__label">{{ t(row.label_en, row.label_zh) }}</span> <span class="intl-gs__covvec__reason">{{ t(row.reason_en, row.reason_zh) }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="intl-gs__peers">
+      <p class="intl-gs__peers__title">{{ t('Region peers', '同区同伴') }}</p>
+      {% for peer in market.peers %}
+      <a class="intl-gs__peer" data-gs-select-market="{{ peer.id|e }}" data-gs-open="dossier" href="?view=dossier&amp;market={{ peer.id|e }}">
+        <span class="intl-gs__peer__name">{{ t(peer.name_en, peer.name_zh) }}</span>
+        {% if peer.state == 'number' and peer.value_pct is not none and peer.clock %}
+        <span class="intl-gs__peer__val">{{ gs.gs_signed(peer.value_pct, 2, '%', 'up' if peer.value_pct > 0 else 'down') }}</span>
+        <time class="intl-gs__peer__clock intl-gs__num" datetime="{{ peer.clock.datetime|e }}">{{ t(peer.clock.en, peer.clock.zh) }}</time>
+        {% elif peer.state == 'qualified' %}
+        {{ gs.gs_state_chip('qualified') }}
+        {% else %}
+        {{ gs.gs_state_chip('abstain') }}{% if peer.reason_pairs %} <span class="intl-gs__peer__reason">{{ t(peer.reason_pairs[0][0], peer.reason_pairs[0][1]) }}</span>{% endif %}
+        {% endif %}
+      </a>
+      {% endfor %}
+      {% if not market.peers %}<p class="intl-gs__footnote">{{ t('An aggregate has no same-region peers.', '聚合无同区同伴。') }}</p>{% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endcall %}
