@@ -185,8 +185,8 @@ def snapshot_from_bars(
         v["z60"] is None or v["volume_multiple"] is None for v in idx_rows
     ))
     return {
-        "status": "stale" if lag > 1 else "partial" if incomplete else "ok",
-        "reason": ("Daily OHLC is behind the exchange calendar." if lag > 1 else
+        "status": "stale" if lag > 0 else "partial" if incomplete else "ok",
+        "reason": ("Daily OHLC is behind the exchange calendar." if lag > 0 else
                    "Some historical statistics or volume baselines unavailable." if incomplete else None),
         "asof": asof, "lag_sessions": lag, "indices": idx_rows,
         "relative_pp": _pct(relative), "relative_z60": relative_z,
