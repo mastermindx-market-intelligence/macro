@@ -4,8 +4,8 @@
    counts only — never a percentage, never a score. Clock numerals appear only
    in index_close / fx_fix cells backed by a qualified usd_unhedged observation
    of this horizon. The EZ aggregate row closes EMEA and is not counted. #}
-{% import "intl_workspace/_gs_macros.html.j2" as gs %}
-{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm %}
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
+{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm with context %}
 {% set p = gs_panel.payload %}
 {% set surveil = intl_workspace.surveillance if intl_workspace is defined and intl_workspace.surveillance is defined else none %}
 {% set snap = surveil.snapshot if surveil and surveil.snapshot is defined else none %}

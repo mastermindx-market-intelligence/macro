@@ -3,7 +3,7 @@
    tier slot grammar, table-leg cells, disclosures). Foundation macros are
    imported and called, never copied. All visible strings pass through
    t('EN','中文') here; attributes take plain strings only (never t()). #}
-{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
 {% macro sm_abstain_chip_only(state) -%}
 <span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="{{ state.token }}" title="{{ state.reason[0] }} · {{ state.reason[1] }}">{{ t('Abstain', '弃权') }}</span>
 {%- endmacro %}

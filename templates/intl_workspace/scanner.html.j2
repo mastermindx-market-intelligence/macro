@@ -4,8 +4,8 @@
    observation values/decompositions only; everything unsourced renders its
    §7 state with the foundation's reason copy (L10). The specimen variant
    wraps the whole body in the specimen scope (layout acceptance only). #}
-{% import "intl_workspace/_gs_macros.html.j2" as gs %}
-{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm %}
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
+{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm with context %}
 {% set p = gs_panel.payload %}
 {% set surveil = intl_workspace.surveillance if intl_workspace is defined and intl_workspace.surveillance is defined else none %}
 {% set snap = surveil.snapshot if surveil and surveil.snapshot is defined else none %}
