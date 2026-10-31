@@ -9,20 +9,28 @@
   },
   "verifier": {
     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
-    "sha256": "7ed7911317e4dbb20faa7f98081079ac3bba3cc91f975440fc6cb9599254821a"
+    "sha256": "60932a290e40696b0f27c344e760248a4f53f872bc8ae91134796f51db16b5c6"
   },
   "browser": {
     "engine": "chromium",
-    "version": "149.0.7827.55"
+    "version": "149.0.7827.55",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "playwright": "1.61.1",
+    "platform": "darwin",
+    "arch": "arm64"
   },
   "font_pin": {
     "manifest": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json",
-      "sha256": "9cb8ba86b1f4ce3049984194134ad11d19f0beca7e6c8fa7b37b3a36f2573a08"
+      "sha256": "88b6cf9376ce1282e58415c1dde5519f428658b126169202d670257180b28b3d"
     },
     "stylesheet": "/p0b-font-pin/pin.css",
     "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
-    "audited_pages": 72,
+    "audited_pages": 177,
+    "audited_nodes": 249229,
     "platform_fonts": [],
     "custom_fonts": [
       "DejaVu Sans",
