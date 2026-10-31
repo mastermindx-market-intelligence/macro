@@ -1,0 +1,957 @@
+{
+  "kind": "actual_builder_synthetic_inputs_private_outputs",
+  "source_pin": "eb9e91961ddc4f3043d0dad358602525e66eccda",
+  "original_consumers": false,
+  "routes": 45,
+  "cases": [
+    {
+      "cc": "JP",
+      "case": "complete",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "eaf1adb5cf48747113036e76521130f359e9b9e5854922c19ecef7e60ccb44c2",
+      "view_sha256": "07bb6ac20cc710150411508bd64a1e454cfe269ef824165c0a3fdf6d0128f4f2"
+    },
+    {
+      "cc": "KR",
+      "case": "complete",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "ccd94fb2812105251dea2d2189bfa85defeb59f2530f756442275fc08aaa6615",
+      "view_sha256": "b376c93b0ffcd53a2e76f7291216d16edcf14fc5352183ee8afc20be89afd79f"
+    },
+    {
+      "cc": "EZ",
+      "case": "complete",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "24fdbe9adf2e7a669cb4f63ae9236bbb0b3bfb18c0eb780c32b6622c607c7b5f",
+      "view_sha256": "b5ff743c494e0238b4f47d351e9c931303a6a68862b8ab59fc7b1dcc678879af"
+    },
+    {
+      "cc": "GB",
+      "case": "complete",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "d090ce675c303eb07e53271b85d266b975c21d3e52abf1888fecc28b975eb387",
+      "view_sha256": "8a709f772bd4c2afc76866f537153f321307c42cb2d5c800646c7fded7bfbff9"
+    },
+    {
+      "cc": "IN",
+      "case": "complete",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "d289c564c3757287e39a842382a1a939076c53f3c3f15237379e32b431713d64",
+      "view_sha256": "4bf61c957896c011d878f76233486b0a3e88bb9b38d6be89a7005f3317b2df21"
+    },
+    {
+      "cc": "JP",
+      "case": "partial",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "274b20e594745310a90e3a2b6bd06393de8e5e6ad2b10837073ae4259915aaa6",
+      "view_sha256": "088151ff9b4132f326fceaad75a5f99a85f0cb18c553e55877687f523af99184"
+    },
+    {
+      "cc": "KR",
+      "case": "partial",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "fc766f1d8e3a81f0fd197e35c629e72e8ff99ff51087b4931696358f30842da9",
+      "view_sha256": "6d32fe302d6fd765a76cbd188a4151877ce993dc89c1e27351de126c46ba0479"
+    },
+    {
+      "cc": "EZ",
+      "case": "partial",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "c8a0ad7d67aacb3ab4e7c204d57d8096f90cab6b67c25ea03dce6dbaa8b29dbe",
+      "view_sha256": "2358bd47fd8765d943f076c55e8c87b49b719dbf7507d1cd83102bfb0634244d"
+    },
+    {
+      "cc": "GB",
+      "case": "partial",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "02362bd88051fa9f377c27277df83063c159d7cecb26491dd139140fa2ea2093",
+      "view_sha256": "3b191839ccbce709e258bd11906690cb8ebc91bd91e1906696cb93370d6f3b9b"
+    },
+    {
+      "cc": "IN",
+      "case": "partial",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "903caca801e660313144f6f7b9a76332ef3b6b1c4f9f9515aeb3312d46256b0d",
+      "view_sha256": "4a711cbfe7ab9ca7caf52d51e87a3c8eaa09a0058c2187c256971ac9dc8fc77e"
+    },
+    {
+      "cc": "JP",
+      "case": "unavailable",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "66313001ed28f553f4a19054069dad28031d3bb612f467772cc6ed99177ec1b1",
+      "view_sha256": "3eb4baefe054165074f2a16e8d490d529abf20333b052417b8d087dcf98fb5df"
+    },
+    {
+      "cc": "KR",
+      "case": "unavailable",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "b8775b3f4d55efad772d3e9d2561c97dbffc6176e0124cda5acc1a52f8678808",
+      "view_sha256": "ccec1113d944ca8f782f1b21da6b3b39ba4c71c1178a5d294f0de28eb16ba750"
+    },
+    {
+      "cc": "EZ",
+      "case": "unavailable",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "9d5d635af18baf333a867dc3005a187220e16795e7394c40670f82648832d7fe",
+      "view_sha256": "f2f342de3f27d55cd692244a90ca5f9996c048593c8aa86b2c3b6b0c195901bd"
+    },
+    {
+      "cc": "GB",
+      "case": "unavailable",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "8779dc0babe98f632c03b9c96ec35ad64a8c95c0424e660c2eb55786a28cc50b",
+      "view_sha256": "6494c506e7ea0b19fcceeef879d330a282e3a844cffe68ad619fde079fa94819"
+    },
+    {
+      "cc": "IN",
+      "case": "unavailable",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "6470a5bd68bbc608b0e9399846e84a28fe3b64dc9e9e4838661ca4949da9d67a",
+      "view_sha256": "8f484e44fb6f08762f5cd3c2aab4dc3662928877b42de3ececcea22b4156a601"
+    },
+    {
+      "cc": "JP",
+      "case": "legacy",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "6bc753566b2ed03f926b4f04d97d1714ea36232889f95195edf9be625fa828e0",
+      "view_sha256": "1a457b435f2877be618910e0d8dc574ccd43cb3799468616992e62996d58fb6b"
+    },
+    {
+      "cc": "KR",
+      "case": "legacy",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "51c9cb72ef0d221adee1547cb6bab36b6621ec95cf2c83284c994a051086ca59",
+      "view_sha256": "061be23fb540ca8592a35323c0f5adad9d8239da420c9add4f97fe5b7ee8d58e"
+    },
+    {
+      "cc": "EZ",
+      "case": "legacy",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "734cf62f76fb123149e17c68e616f10cb616dd594bcf555c90c5eabd811223cb",
+      "view_sha256": "9fcd32b83b204e7fb9fea3150599171bfa2cb52fb08881527046631186130462"
+    },
+    {
+      "cc": "GB",
+      "case": "legacy",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "870799cf093b08a80b2ea7a8b2ce7f6d408691bdae1593aa0e0870230ff924b1",
+      "view_sha256": "002743cae4201c911ee59ea866164694d1dfdf2b1efe49172d47bf14849e1160"
+    },
+    {
+      "cc": "IN",
+      "case": "legacy",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "eb8e34219cbc9d0730471ebbe2ca75a853421ec7fd33a95c54de6c9e07dd6478",
+      "view_sha256": "8a561efa69879545f09f75b66bd4cc0a8c3590f22f0354a8bead60b50a6d2cc1"
+    },
+    {
+      "cc": "JP",
+      "case": "absent",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "058b91330c9d9016dfabe7e73b2afd2469f53a5f637d445df5fac27d6f405ead",
+      "view_sha256": "9d119491cdf55b8f842ddaceadcff14d4d214f359c187c82f57c7819e15b2af4"
+    },
+    {
+      "cc": "KR",
+      "case": "absent",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "f8435ae9cb9d0922f173a1dcbd269a3d7bc93dc90db9bbf991fed54438156830",
+      "view_sha256": "c5e6355fd486619a480cc8428cfaa251655ff9d2b429fa34bf1dd9eeca753cba"
+    },
+    {
+      "cc": "EZ",
+      "case": "absent",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "6694a68a77561829f2049d4946059287da0ee90731c7d0bdbc1771c5d3da92eb",
+      "view_sha256": "6117b0c8cdbe5b0ae490e1a0902f84dd8f80ac5563cc964d7d3beb7a98e97617"
+    },
+    {
+      "cc": "GB",
+      "case": "absent",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "a18fc47b71fe553baa3fb3466742906de7aa01c4df554f0f40289bf6da2cf1b9",
+      "view_sha256": "706e3532327539cfe9ede1d46b045427bada339e4000c4286b5d87957da25ba4"
+    },
+    {
+      "cc": "IN",
+      "case": "absent",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "legacy_card_count": true,
+        "legacy_odds": true,
+        "legacy_adjustment": true,
+        "no_new_legacy_field": true
+      },
+      "html_sha256": "f3a74223da594647e58b8922538b9301237d57410d460d460dd1e6bdc124baca",
+      "view_sha256": "46a457aa2d8e2e6805c4dfa85be0628597ea98d81a930b2874e6e8cfdab6c62f"
+    },
+    {
+      "cc": "JP",
+      "case": "old_odds",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "eaf1adb5cf48747113036e76521130f359e9b9e5854922c19ecef7e60ccb44c2",
+      "view_sha256": "07bb6ac20cc710150411508bd64a1e454cfe269ef824165c0a3fdf6d0128f4f2"
+    },
+    {
+      "cc": "KR",
+      "case": "old_odds",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "ccd94fb2812105251dea2d2189bfa85defeb59f2530f756442275fc08aaa6615",
+      "view_sha256": "b376c93b0ffcd53a2e76f7291216d16edcf14fc5352183ee8afc20be89afd79f"
+    },
+    {
+      "cc": "EZ",
+      "case": "old_odds",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "24fdbe9adf2e7a669cb4f63ae9236bbb0b3bfb18c0eb780c32b6622c607c7b5f",
+      "view_sha256": "b5ff743c494e0238b4f47d351e9c931303a6a68862b8ab59fc7b1dcc678879af"
+    },
+    {
+      "cc": "GB",
+      "case": "old_odds",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "d090ce675c303eb07e53271b85d266b975c21d3e52abf1888fecc28b975eb387",
+      "view_sha256": "8a709f772bd4c2afc76866f537153f321307c42cb2d5c800646c7fded7bfbff9"
+    },
+    {
+      "cc": "IN",
+      "case": "old_odds",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "d289c564c3757287e39a842382a1a939076c53f3c3f15237379e32b431713d64",
+      "view_sha256": "4bf61c957896c011d878f76233486b0a3e88bb9b38d6be89a7005f3317b2df21"
+    },
+    {
+      "cc": "JP",
+      "case": "metadata_null",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "e6e28a635bd5f60111477a0ea384c89ea2152605c942471a48fc257428a0ecfb",
+      "view_sha256": "53203f9e29c706b82737cbb3956f0f28dd13798ca244554b64a9998b1cc99ca9"
+    },
+    {
+      "cc": "KR",
+      "case": "metadata_null",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "8c3faa8234a0323f138c59b44e514677fc397d677a43ab8e959023e258cac964",
+      "view_sha256": "4ad7063f9a9b194f537cf5a797d4f9f0c2128349a5171b8f1b16cc92256655d7"
+    },
+    {
+      "cc": "EZ",
+      "case": "metadata_null",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "33de185b95820e06c01c960d636293cc335c4443df66d7480a1a565f0002874a",
+      "view_sha256": "dec74e9885c9a55c325925e02599c6dbbeb63a5c47799f09d4c11c223fe64e4a"
+    },
+    {
+      "cc": "GB",
+      "case": "metadata_null",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "47e64ae8d13b2348d14165f6433f101ae43a85cfde4388647cb1d3cae274c0bb",
+      "view_sha256": "40da75ba79d98e679a4b81884fb9684a825ce116c76309ebfea0872051b7d497"
+    },
+    {
+      "cc": "IN",
+      "case": "metadata_null",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "b17774b91b58ae42e0f29d92cb6d4db3332182157c695a62218953e78ecce4e9",
+      "view_sha256": "9bb01795621b16b6091588cf304752b2aeb52692ec756b7da15da6f4789c84e4"
+    },
+    {
+      "cc": "JP",
+      "case": "metadata_empty",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "0cd997068613fe28355e57ecc542a26b79aa8a2b7ab8cf01cb9130a6562ccf4f",
+      "view_sha256": "4808de45c206a6b6d4d04d2d4101945874ae98d0a9eb45998be0c2efb2b3e94f"
+    },
+    {
+      "cc": "KR",
+      "case": "metadata_empty",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "bb07a0c1249116a64d2ea118ba286986b03aa848c710435035b09379722f8cdf",
+      "view_sha256": "3c28298ad779826aebb39dc2089aeea3ae9663d53a0acdcfd8ab43ef5bfda29f"
+    },
+    {
+      "cc": "EZ",
+      "case": "metadata_empty",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "3065db0bbee16a3df93a1cedc530b93f60a2aebe81454ed95d3cee65c6849dc5",
+      "view_sha256": "f7358cddb62524851ffc4ed42e5b6ee541fb30df06d7a5cf249dabe0df67207e"
+    },
+    {
+      "cc": "GB",
+      "case": "metadata_empty",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "dc3b1dcdbd1ba6ea53d706aa7af0e3b2017779fb4476001368647d453e089fa5",
+      "view_sha256": "c39834e8ab4d3751c44a42bfd77b5af7eab65f648feaa89f080c24290769687d"
+    },
+    {
+      "cc": "IN",
+      "case": "metadata_empty",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "d4ca51feacb2d0217232f659295c4c0573fb408a1df0964608256682c35c026d",
+      "view_sha256": "5b7536e0e5acc0c1b556c706f7cd7bf6882984a7b38301a658afff1fccbd6048"
+    },
+    {
+      "cc": "JP",
+      "case": "claimed_reviewed",
+      "route": "japan.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "06cd11ebd37b74b56c7a4afebb05f0a620bccd53fc91f2deeefab5718ff88eec",
+      "view_sha256": "ff24b373094a4bdba7bbb58af3c860c78723e5b2897f0f6c5c545111cb7e0bf1"
+    },
+    {
+      "cc": "KR",
+      "case": "claimed_reviewed",
+      "route": "south_korea.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "7f6b3dda73feedf77477c95ab41a3411078aabba6747a8f43956fb0110b71992",
+      "view_sha256": "bb09189a0e7772b21d8e205ea87b7ba64a4cd8eefe8063921fc7d914bdd0ad55"
+    },
+    {
+      "cc": "EZ",
+      "case": "claimed_reviewed",
+      "route": "euro_area.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "93557fc45a65c9638170d2197972a3ed147d42e8f4ab19a6f3dedaf38a1625e0",
+      "view_sha256": "bca374164aa77fea57a06bc0beeaa0d7ee09974f48eed75d994710e14eb6970c"
+    },
+    {
+      "cc": "GB",
+      "case": "claimed_reviewed",
+      "route": "united_kingdom.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "363b271d925d6ce44adbfb4a0b390bae10c61153ce191fcf22217ddde11a8fb6",
+      "view_sha256": "88a88f5202572c31b48da5e583363c29e9adaec983923b52be437b3d42f9e1bd"
+    },
+    {
+      "cc": "IN",
+      "case": "claimed_reviewed",
+      "route": "india.html",
+      "checks": {
+        "five_routes": true,
+        "shim": true,
+        "input_unchanged": true,
+        "json_schema": true,
+        "card_present": true,
+        "odds_withheld": true,
+        "not_calibrated": true,
+        "composition_preserved": true,
+        "no_score_adjustment": true,
+        "no_false_calm": true,
+        "forecast_unavailable": true,
+        "no_old_probability": true
+      },
+      "html_sha256": "01c89bf4e236a9eb1b10d10604be6976593860499ce1dacb97463e691104b2ea",
+      "view_sha256": "95f846c63daee0dd1a726565548f86e16342eb5f4ef44313e91a07a4a23d70a7"
+    }
+  ],
+  "failures": [],
+  "source_unchanged": true,
+  "candidate_source_hashes": {
+    "engine/risk_radar_intl.py": "96e00c04580c8cbff5c07ddd0bdf2a3051b7344d6e27e0c08b40333b8ca91b30",
+    "engine/market_state.py": "b2b25c80b928923b4a99fb33140760e1020a49159ed73504d68ae9c80345cb50",
+    "engine/risk_radar_recovery.py": "b817d1fb4d8ba0484bfc3ef8f66c40e35f5762bf5cde02c1d45435277ef9f5a8",
+    "templates/_risk_radar_card.html.j2": "6ca2e9b783f6d8f0f7c0b4496160d6c3a020fd6cdb979fd57c459ca901c5ba48",
+    "templates/china.html.j2": "236da2e7f7d56913d0308698eab6b65c00d577f8fe7b6ea70a24fecc0606929e",
+    "templates/baskets_desk.js": "81fd19205af98c7872bfdd1b10397414b7abf7fa899a955470a5d3b0add5262a",
+    "templates/cn_reversal_sleeve.html.j2": "dc40baaf1d710b0ef18c7a55a85d1098fb6417d22c552db47003f1a7144531fc",
+    "engine/risk_radar_intl_audit.py": "b651ff21713dcfcc31ac08bf774e85b4ba29be6514c8854ae16b1b31f0d8af15",
+    "engine/risk_radar_intl_tune.py": "ed9003c72cda9de36201f802c1b5d78248db75428041dee5e58a0f5cfc568a26",
+    "engine/intl_run.py": "cc34d1ae42444f0f7d2570088cda1f0d9709b512c97fdbd78fcb901aaebc0890",
+    "scripts/build_china.py": "3a7da97c320a078803fa3cd9c5523e09e34681199f899062d2b8be1c156dae95",
+    "scripts/build_hk.py": "87e9ec5e2ad4a4525f08ada2fb7f2d89808987b81def78e092b8adb62fffe643",
+    "scripts/build_canada.py": "661bc5ff7685d34b0f8ac2abccfbd190cf4e711fc08825b5399c181d5bbccc8d",
+    "scripts/build_china_risk_state.py": "73f0224b8ceba99d76fa1e55b89913e4d6c51718c7115de74dd0df045e7ee667",
+    "templates/international_macro.html.j2": "47734489b3c395677d80fcb57d323a22f722e59018afde8753207788b980db29",
+    "scripts/build_international_macro.py": "d72412bf5f716fc1c051314ea7d7d78ef52e3ed2d96041a5228be907d803bae2",
+    "engine/international_macro_dashboard.py": "e78539ee31e160af62680f9d121ab49bafb116b42fa1547dc5663ff65bba50c9"
+  },
+  "actual_template_hashes": {
+    "international_macro.html.j2": "47734489b3c395677d80fcb57d323a22f722e59018afde8753207788b980db29",
+    "_risk_radar_card.html.j2": "6ca2e9b783f6d8f0f7c0b4496160d6c3a020fd6cdb979fd57c459ca901c5ba48",
+    "_risk_radar_card.css.j2": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2",
+    "_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+    "_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+    "_navlinks.html.j2": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8",
+    "theme.css": "f41f9a211e2a7404150a58eb015c9919879222c49cd91cdb8edc53b95a1a21d6",
+    "product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "navigation-refresh.css": "c299c32498d25c412608eca40e53686b891076dd11a0c452b7dfe048c3d25584",
+    "theme.js": "7e67de51aac47a1b3784d19a4d58a7f9c800be4bb74ae87f97bce8fed750afde",
+    "data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+  },
+  "renderer": "scripts.build_international_macro.build_all -> lib.pages.write_page",
+  "replaced_seams": [
+    "config output roots; no auth config",
+    "history=None",
+    "read-only scorecard=None"
+  ],
+  "full_builder": true,
+  "authenticated": false,
+  "synthetic_only": true,
+  "production": false
+}

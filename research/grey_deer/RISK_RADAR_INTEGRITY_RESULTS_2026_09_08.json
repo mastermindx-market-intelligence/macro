@@ -1,0 +1,62 @@
+{
+  "source_pin": "eb9e91961ddc4f3043d0dad358602525e66eccda",
+  "source_hashes": {
+    "engine/risk_radar_recovery.py": "321545a3cace15f20d23b564e1b43595ccd0804fab3de362eceb5a580695c593",
+    "engine/risk_radar_intl.py": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+    "engine/risk_radar_market_catalysts.py": "28442483c418491f71f1e6c1fb11bbecd5cac3d5237662c361d8b44199ee28c5"
+  },
+  "exact_source": true,
+  "synthetic_only": true,
+  "production_mutations": 0,
+  "probes": [
+    {
+      "key": "future_catalyst_is_recent",
+      "observed": true,
+      "expected": false,
+      "reproduced": true,
+      "kind": "contract_violation",
+      "mechanism": "The age check has an upper bound but no nonnegative lower bound."
+    },
+    {
+      "key": "missing_component_raw_blend",
+      "observed": 1.4,
+      "expected": 0.9,
+      "reproduced": true,
+      "kind": "contract_violation",
+      "mechanism": "Identity percentile isolates the blend: missing weight remains in numerator, not denominator."
+    },
+    {
+      "key": "all_null_composite_emits_calm",
+      "observed": "calm",
+      "expected": null,
+      "reproduced": true,
+      "kind": "contract_violation",
+      "mechanism": "Public compute reaches _band(None) and emits baseline probabilities without a score."
+    },
+    {
+      "key": "stale_score_relabelled_current",
+      "observed": true,
+      "expected": false,
+      "reproduced": true,
+      "kind": "contract_violation",
+      "mechanism": "_last drops the missing final observation; compute labels the old score with the benchmark's new date."
+    },
+    {
+      "key": "no_chips_is_grinding_recovery",
+      "observed": "grinding",
+      "expected": "unknown",
+      "reproduced": true,
+      "kind": "presentation_semantics",
+      "mechanism": "Absence of V/retest evidence is not positive evidence of a grinding recovery."
+    },
+    {
+      "key": "v_shape_survives_post_reclaim_relapse",
+      "observed": true,
+      "expected": false,
+      "reproduced": true,
+      "kind": "presentation_semantics",
+      "mechanism": "Historical fired remains true after renewed weakness. Keep that event, but do not infer current recovery health from it."
+    }
+  ],
+  "all_baseline_mechanisms_reproduced": true
+}

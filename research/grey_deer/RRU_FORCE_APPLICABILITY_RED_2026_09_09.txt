@@ -1,0 +1,304 @@
+test_foreign_grant_cannot_override_named_policies_or_mutate_inputs (__main__.ForceTests.test_foreign_grant_cannot_override_named_policies_or_mutate_inputs) ... FAIL
+test_legacy_ceiling_and_source_preserved (__main__.ForceTests.test_legacy_ceiling_and_source_preserved) ... ok
+test_modern_boolean_is_not_legacy_permission (__main__.ForceTests.test_modern_boolean_is_not_legacy_permission) ... ERROR
+test_modern_empty_is_not_legacy_permission (__main__.ForceTests.test_modern_empty_is_not_legacy_permission) ... FAIL
+test_modern_list_is_not_legacy_permission (__main__.ForceTests.test_modern_list_is_not_legacy_permission) ... FAIL
+test_modern_null_is_not_legacy_permission (__main__.ForceTests.test_modern_null_is_not_legacy_permission) ... FAIL
+test_modern_reviewed_claim_is_not_legacy_permission (__main__.ForceTests.test_modern_reviewed_claim_is_not_legacy_permission) ... FAIL
+test_modern_unknown_is_not_legacy_permission (__main__.ForceTests.test_modern_unknown_is_not_legacy_permission) ... FAIL
+test_producer_au (__main__.ForceTests.test_producer_au) ... FAIL
+test_producer_ca (__main__.ForceTests.test_producer_ca) ... FAIL
+test_producer_cn (__main__.ForceTests.test_producer_cn) ... FAIL
+test_producer_ez (__main__.ForceTests.test_producer_ez) ... FAIL
+test_producer_gb (__main__.ForceTests.test_producer_gb) ... FAIL
+test_producer_hk (__main__.ForceTests.test_producer_hk) ... FAIL
+test_producer_in (__main__.ForceTests.test_producer_in) ... FAIL
+test_producer_jp (__main__.ForceTests.test_producer_jp) ... FAIL
+test_producer_kr (__main__.ForceTests.test_producer_kr) ... FAIL
+test_producer_tw (__main__.ForceTests.test_producer_tw) ... FAIL
+test_reported_binding_object_cannot_bypass_effective_projection (__main__.ForceTests.test_reported_binding_object_cannot_bypass_effective_projection) ... FAIL
+test_runner_0_legacy (__main__.ForceTests.test_runner_0_legacy) ... ok
+test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) ...
+  test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) (path='engine/intl_run.py', assignment=0, grant=True) ... FAIL
+  test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) (path='engine/intl_run.py', assignment=1, grant=True) ... FAIL
+test_runner_1_legacy (__main__.ForceTests.test_runner_1_legacy) ... ok
+test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) ...
+  test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) (path='scripts/build_china.py', assignment=0, grant=True) ... FAIL
+  test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) (path='scripts/build_china.py', assignment=1, grant=True) ... FAIL
+test_runner_2_legacy (__main__.ForceTests.test_runner_2_legacy) ... ok
+test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) ...
+  test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) (path='scripts/build_hk.py', assignment=0, grant=True) ... FAIL
+  test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) (path='scripts/build_hk.py', assignment=1, grant=True) ... FAIL
+test_runner_3_legacy (__main__.ForceTests.test_runner_3_legacy) ... ok
+test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) ...
+  test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) (path='scripts/build_canada.py', assignment=0, grant=True) ... FAIL
+  test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) (path='scripts/build_canada.py', assignment=1, grant=True) ... FAIL
+test_runner_4_legacy (__main__.ForceTests.test_runner_4_legacy) ... ok
+test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) ...
+  test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) (path='scripts/build_china_risk_state.py', assignment=0, grant=True) ... FAIL
+  test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) (path='scripts/build_china_risk_state.py', assignment=1, grant=True) ... FAIL
+
+======================================================================
+ERROR: test_modern_boolean_is_not_legacy_permission (__main__.ForceTests.test_modern_boolean_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 64, in test
+    rd = override(dict(risk_radar=out))
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 22, in override
+    return a.market_state._radar_override_intl(payload, entries)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/engine/market_state.py", line 669, in _radar_override_intl
+    out = _radar_to_rd(rr)
+  File "engine/market_state.py", line 590, in _radar_to_rd
+    _track = _rr_scorecard_track(_mkt)
+
+AttributeError: 'bool' object has no attribute 'get'
+
+======================================================================
+FAIL: test_foreign_grant_cannot_override_named_policies_or_mutate_inputs (__main__.ForceTests.test_foreign_grant_cannot_override_named_policies_or_mutate_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 40, in test_foreign_grant_cannot_override_named_policies_or_mutate_inputs
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_modern_empty_is_not_legacy_permission (__main__.ForceTests.test_modern_empty_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 65, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_modern_list_is_not_legacy_permission (__main__.ForceTests.test_modern_list_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 65, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_modern_null_is_not_legacy_permission (__main__.ForceTests.test_modern_null_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 65, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_modern_reviewed_claim_is_not_legacy_permission (__main__.ForceTests.test_modern_reviewed_claim_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 65, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_modern_unknown_is_not_legacy_permission (__main__.ForceTests.test_modern_unknown_is_not_legacy_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 65, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_au (__main__.ForceTests.test_producer_au)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_ca (__main__.ForceTests.test_producer_ca)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_cn (__main__.ForceTests.test_producer_cn)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_ez (__main__.ForceTests.test_producer_ez)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_gb (__main__.ForceTests.test_producer_gb)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_hk (__main__.ForceTests.test_producer_hk)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_in (__main__.ForceTests.test_producer_in)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_jp (__main__.ForceTests.test_producer_jp)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_kr (__main__.ForceTests.test_producer_kr)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_producer_tw (__main__.ForceTests.test_producer_tw)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 84, in test
+    self.assertFalse(rd['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_reported_binding_object_cannot_bypass_effective_projection (__main__.ForceTests.test_reported_binding_object_cannot_bypass_effective_projection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 52, in test_reported_binding_object_cannot_bypass_effective_projection
+    self.assertFalse(rd['authority']['can_force'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) (path='engine/intl_run.py', assignment=0, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) (path='engine/intl_run.py', assignment=1, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) (path='scripts/build_china.py', assignment=0, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) (path='scripts/build_china.py', assignment=1, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) (path='scripts/build_hk.py', assignment=0, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) (path='scripts/build_hk.py', assignment=1, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) (path='scripts/build_canada.py', assignment=0, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) (path='scripts/build_canada.py', assignment=1, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) (path='scripts/build_china_risk_state.py', assignment=0, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) (path='scripts/build_china_risk_state.py', assignment=1, grant=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 111, in test
+    self.assertEqual(snap['can_force'], False if modern else proposed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 29 tests in 1.666s
+
+FAILED (failures=27, errors=1)
+{"tests": 29, "failures": 27, "errors": 1, "source_unchanged": true, "synthetic_only": true, "full_pipeline": false}

@@ -1,0 +1,749 @@
+SOURCE_SHA256 1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7
+CANDIDATE_SHA256 1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7
+PROFILE_KEYS au,ca,cn,ez,gb,hk,in,jp,kr,tw
+SCOPE synthetic arithmetic only; no engine file, ledger, or production mutation
+test_au_all_missing (__main__.MissingnessRegression.test_au_all_missing) ... ok
+test_au_complete (__main__.MissingnessRegression.test_au_complete) ... ok
+test_au_missing_group (__main__.MissingnessRegression.test_au_missing_group) ... FAIL
+test_au_partial (__main__.MissingnessRegression.test_au_partial) ... FAIL
+test_ca_all_missing (__main__.MissingnessRegression.test_ca_all_missing) ... ok
+test_ca_complete (__main__.MissingnessRegression.test_ca_complete) ... ok
+test_ca_missing_group (__main__.MissingnessRegression.test_ca_missing_group) ... FAIL
+test_ca_partial (__main__.MissingnessRegression.test_ca_partial) ... FAIL
+test_cn_all_missing (__main__.MissingnessRegression.test_cn_all_missing) ... ok
+test_cn_complete (__main__.MissingnessRegression.test_cn_complete) ... ok
+test_cn_missing_group (__main__.MissingnessRegression.test_cn_missing_group) ... FAIL
+test_cn_partial (__main__.MissingnessRegression.test_cn_partial) ... FAIL
+test_ez_all_missing (__main__.MissingnessRegression.test_ez_all_missing) ... ok
+test_ez_complete (__main__.MissingnessRegression.test_ez_complete) ... ok
+test_ez_missing_group (__main__.MissingnessRegression.test_ez_missing_group) ... FAIL
+test_ez_partial (__main__.MissingnessRegression.test_ez_partial) ... FAIL
+test_gb_all_missing (__main__.MissingnessRegression.test_gb_all_missing) ... ok
+test_gb_complete (__main__.MissingnessRegression.test_gb_complete) ... ok
+test_gb_missing_group (__main__.MissingnessRegression.test_gb_missing_group) ... FAIL
+test_gb_partial (__main__.MissingnessRegression.test_gb_partial) ... FAIL
+test_hk_all_missing (__main__.MissingnessRegression.test_hk_all_missing) ... ok
+test_hk_complete (__main__.MissingnessRegression.test_hk_complete) ... ok
+test_hk_missing_group (__main__.MissingnessRegression.test_hk_missing_group) ... FAIL
+test_hk_partial (__main__.MissingnessRegression.test_hk_partial) ... FAIL
+test_in_all_missing (__main__.MissingnessRegression.test_in_all_missing) ... ok
+test_in_complete (__main__.MissingnessRegression.test_in_complete) ... ok
+test_in_missing_group (__main__.MissingnessRegression.test_in_missing_group) ... FAIL
+test_in_partial (__main__.MissingnessRegression.test_in_partial) ... FAIL
+test_jp_all_missing (__main__.MissingnessRegression.test_jp_all_missing) ... ok
+test_jp_complete (__main__.MissingnessRegression.test_jp_complete) ... ok
+test_jp_missing_group (__main__.MissingnessRegression.test_jp_missing_group) ... FAIL
+test_jp_partial (__main__.MissingnessRegression.test_jp_partial) ... FAIL
+test_kr_all_missing (__main__.MissingnessRegression.test_kr_all_missing) ... ok
+test_kr_complete (__main__.MissingnessRegression.test_kr_complete) ... ok
+test_kr_missing_group (__main__.MissingnessRegression.test_kr_missing_group) ... FAIL
+test_kr_partial (__main__.MissingnessRegression.test_kr_partial) ... FAIL
+test_tw_all_missing (__main__.MissingnessRegression.test_tw_all_missing) ... ok
+test_tw_complete (__main__.MissingnessRegression.test_tw_complete) ... ok
+test_tw_missing_group (__main__.MissingnessRegression.test_tw_missing_group) ... FAIL
+test_tw_partial (__main__.MissingnessRegression.test_tw_partial) ... FAIL
+
+======================================================================
+FAIL: test_au_missing_group (__main__.MissingnessRegression.test_au_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6118745449857232 (ACTUAL), 0.2993745449857233 (DESIRED)
+ [552]: 0.7368829661484907 (ACTUAL), 0.42438296614849075 (DESIRED)
+ [553]: 0.7836148981051755 (ACTUAL), 0.47111489810517554 (DESIRED)
+ [554]: 0.8225774449454026 (ACTUAL), 0.5100774449454026 (DESIRED)
+ [555]: 0.857697501632993 (ACTUAL), 0.545197501632993 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.59150293
+ ACTUAL: array([0.535071, 0.685881, 0.513659, 0.56071 , 0.536169, 0.216387,
+       0.385551, 0.573459, 0.545336, 0.434452, 0.480541, 0.447898,
+       0.571877, 0.333597, 0.777031, 0.465544, 0.438764, 0.577628,...
+ DESIRED: array([0.535071, 0.685881, 0.513659, 0.56071 , 0.536169, 0.216387,
+       0.385551, 0.573459, 0.545336, 0.434452, 0.480541, 0.447898,
+       0.571877, 0.333597, 0.777031, 0.465544, 0.438764, 0.577628,...
+
+======================================================================
+FAIL: test_au_partial (__main__.MissingnessRegression.test_au_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 119 / 601 (19.8%)
+First 5 mismatches are at indices:
+ [101]: 0.6274554368635159 (ACTUAL), 0.4774554368635159 (DESIRED)
+ [107]: 0.66864653756154 (ACTUAL), 0.51864653756154 (DESIRED)
+ [110]: 0.9040098291503091 (ACTUAL), 0.7540098291503091 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [116]: 1.3049115269959315 (ACTUAL), 0.5049115269959316 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.44962105
+ ACTUAL: array([0.653114, 0.642451, 0.421993, 0.381934, 0.604266, 0.371487,
+       0.233672, 0.518221, 0.572826, 0.473088, 0.493646, 0.275733,
+       0.458694, 0.370224, 0.724016, 0.397935, 0.535691, 0.617862,...
+ DESIRED: array([0.653114, 0.642451, 0.421993, 0.381934, 0.604266, 0.371487,
+       0.233672, 0.518221, 0.572826, 0.473088, 0.493646, 0.275733,
+       0.458694, 0.370224, 0.724016, 0.397935, 0.535691, 0.617862,...
+
+======================================================================
+FAIL: test_ca_missing_group (__main__.MissingnessRegression.test_ca_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.5669553358844165 (ACTUAL), 0.2544553358844165 (DESIRED)
+ [552]: 0.7431759394372367 (ACTUAL), 0.4306759394372367 (DESIRED)
+ [553]: 0.6134650837912089 (ACTUAL), 0.300965083791209 (DESIRED)
+ [554]: 0.7604755656280989 (ACTUAL), 0.447975565628099 (DESIRED)
+ [555]: 0.861108072216167 (ACTUAL), 0.548608072216167 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 3.37370141
+ ACTUAL: array([0.612583, 0.690815, 0.531773, 0.536814, 0.592432, 0.214451,
+       0.248766, 0.547627, 0.58627 , 0.537803, 0.427927, 0.402516,
+       0.550706, 0.285775, 0.798804, 0.490943, 0.425868, 0.488839,...
+ DESIRED: array([0.612583, 0.690815, 0.531773, 0.536814, 0.592432, 0.214451,
+       0.248766, 0.547627, 0.58627 , 0.537803, 0.427927, 0.402516,
+       0.550706, 0.285775, 0.798804, 0.490943, 0.425868, 0.488839,...
+
+======================================================================
+FAIL: test_ca_partial (__main__.MissingnessRegression.test_ca_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 182 / 600 (30.3%)
+First 5 mismatches are at indices:
+ [101]: 0.894866270366165 (ACTUAL), 0.582366270366165 (DESIRED)
+ [107]: 0.82448428353913 (ACTUAL), 0.5119842835391301 (DESIRED)
+ [110]: 1.4940246841832343 (ACTUAL), 0.6940246841832344 (DESIRED)
+ [111]: 0.6786348977617227 (ACTUAL), 0.5286348977617227 (DESIRED)
+ [112]: 0.8950106091836988 (ACTUAL), 0.5825106091836988 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 3.65732219
+ ACTUAL: array([0.68495 , 0.644331, 0.505977, 0.337743, 0.574302, 0.397672,
+       0.275692, 0.59374 , 0.567825, 0.484857, 0.471593, 0.325128,
+       0.441942, 0.397804, 0.795926, 0.406682, 0.527051, 0.563929,...
+ DESIRED: array([0.68495 , 0.644331, 0.505977, 0.337743, 0.574302, 0.397672,
+       0.275692, 0.59374 , 0.567825, 0.484857, 0.471593, 0.325128,
+       0.441942, 0.397804, 0.795926, 0.406682, 0.527051, 0.563929,...
+
+======================================================================
+FAIL: test_cn_missing_group (__main__.MissingnessRegression.test_cn_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.40236890991510177 (ACTUAL), 0.19403557658176845 (DESIRED)
+ [552]: 0.5354014268283518 (ACTUAL), 0.3270680934950184 (DESIRED)
+ [553]: 0.5795843052078399 (ACTUAL), 0.37125097187450656 (DESIRED)
+ [554]: 0.5680597552927613 (ACTUAL), 0.35972642195942806 (DESIRED)
+ [555]: 0.8090401900048555 (ACTUAL), 0.6007068566715222 (DESIRED)
+Max absolute difference among violations: 0.20833333
+Max relative difference among violations: 1.4383201
+ ACTUAL: array([0.51537 , 0.683446, 0.554956, 0.548015, 0.443254, 0.231016,
+       0.419724, 0.567461, 0.551065, 0.425124, 0.494152, 0.530333,
+       0.551176, 0.334982, 0.773108, 0.492259, 0.393729, 0.557249,...
+ DESIRED: array([0.51537 , 0.683446, 0.554956, 0.548015, 0.443254, 0.231016,
+       0.419724, 0.567461, 0.551065, 0.425124, 0.494152, 0.530333,
+       0.551176, 0.334982, 0.773108, 0.492259, 0.393729, 0.557249,...
+
+======================================================================
+FAIL: test_cn_partial (__main__.MissingnessRegression.test_cn_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 238 / 601 (39.6%)
+First 5 mismatches are at indices:
+ [101]: 1.170837691675672 (ACTUAL), 0.6083376916756722 (DESIRED)
+ [105]: 0.7125005840620744 (ACTUAL), 0.5586544302159206 (DESIRED)
+ [107]: 0.684403269330977 (ACTUAL), 0.47606993599764375 (DESIRED)
+ [108]: 0.7145727746097232 (ACTUAL), 0.6074299174668661 (DESIRED)
+ [110]: 0.9790145988156642 (ACTUAL), 0.770681265482331 (DESIRED)
+Max absolute difference among violations: 2.33333333
+Max relative difference among violations: 4.62127167
+ ACTUAL: array([0.697551, 0.602001, 0.429511, 0.422928, 0.573628, 0.363009,
+       0.221412, 0.511959, 0.535773, 0.434629, 0.476899, 0.278468,
+       0.535904, 0.350841, 0.699329, 0.359406, 0.497496, 0.629182,...
+ DESIRED: array([0.697551, 0.602001, 0.429511, 0.422928, 0.573628, 0.363009,
+       0.221412, 0.511959, 0.535773, 0.434629, 0.476899, 0.278468,
+       0.535904, 0.350841, 0.699329, 0.359406, 0.497496, 0.629182,...
+
+======================================================================
+FAIL: test_ez_missing_group (__main__.MissingnessRegression.test_ez_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6118745449857232 (ACTUAL), 0.2993745449857233 (DESIRED)
+ [552]: 0.7368829661484907 (ACTUAL), 0.42438296614849075 (DESIRED)
+ [553]: 0.7836148981051755 (ACTUAL), 0.47111489810517554 (DESIRED)
+ [554]: 0.8225774449454026 (ACTUAL), 0.5100774449454026 (DESIRED)
+ [555]: 0.857697501632993 (ACTUAL), 0.545197501632993 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.59150293
+ ACTUAL: array([0.535071, 0.685881, 0.513659, 0.56071 , 0.536169, 0.216387,
+       0.385551, 0.573459, 0.545336, 0.434452, 0.480541, 0.447898,
+       0.571877, 0.333597, 0.777031, 0.465544, 0.438764, 0.577628,...
+ DESIRED: array([0.535071, 0.685881, 0.513659, 0.56071 , 0.536169, 0.216387,
+       0.385551, 0.573459, 0.545336, 0.434452, 0.480541, 0.447898,
+       0.571877, 0.333597, 0.777031, 0.465544, 0.438764, 0.577628,...
+
+======================================================================
+FAIL: test_ez_partial (__main__.MissingnessRegression.test_ez_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 119 / 601 (19.8%)
+First 5 mismatches are at indices:
+ [101]: 0.6274554368635159 (ACTUAL), 0.4774554368635159 (DESIRED)
+ [107]: 0.66864653756154 (ACTUAL), 0.51864653756154 (DESIRED)
+ [110]: 0.9040098291503091 (ACTUAL), 0.7540098291503091 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [116]: 1.3049115269959315 (ACTUAL), 0.5049115269959316 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.44962105
+ ACTUAL: array([0.653114, 0.642451, 0.421993, 0.381934, 0.604266, 0.371487,
+       0.233672, 0.518221, 0.572826, 0.473088, 0.493646, 0.275733,
+       0.458694, 0.370224, 0.724016, 0.397935, 0.535691, 0.617862,...
+ DESIRED: array([0.653114, 0.642451, 0.421993, 0.381934, 0.604266, 0.371487,
+       0.233672, 0.518221, 0.572826, 0.473088, 0.493646, 0.275733,
+       0.458694, 0.370224, 0.724016, 0.397935, 0.535691, 0.617862,...
+
+======================================================================
+FAIL: test_gb_missing_group (__main__.MissingnessRegression.test_gb_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6380612055121335 (ACTUAL), 0.3255612055121336 (DESIRED)
+ [552]: 0.7711649012990205 (ACTUAL), 0.45866490129902043 (DESIRED)
+ [553]: 0.8143270288738977 (ACTUAL), 0.5018270288738977 (DESIRED)
+ [554]: 0.8499693054098929 (ACTUAL), 0.5374693054098929 (DESIRED)
+ [555]: 0.83917362635985 (ACTUAL), 0.52667362635985 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.64452864
+ ACTUAL: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+ DESIRED: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+
+======================================================================
+FAIL: test_gb_partial (__main__.MissingnessRegression.test_gb_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 123 / 601 (20.5%)
+First 5 mismatches are at indices:
+ [101]: 0.8497967352518968 (ACTUAL), 0.5372967352518968 (DESIRED)
+ [108]: 0.6986773840593485 (ACTUAL), 0.5486773840593485 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [113]: 0.6332556533521787 (ACTUAL), 0.4832556533521786 (DESIRED)
+ [114]: 0.3810753926421991 (ACTUAL), 0.23107539264219906 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.29761598
+ ACTUAL: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+ DESIRED: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+
+======================================================================
+FAIL: test_hk_missing_group (__main__.MissingnessRegression.test_hk_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 1.2086115263448676 (ACTUAL), 0.3752781930115342 (DESIRED)
+ [552]: 1.4676942835222289 (ACTUAL), 0.6343609501888955 (DESIRED)
+ [553]: 1.427481684223134 (ACTUAL), 0.5941483508898006 (DESIRED)
+ [554]: 1.607262258624329 (ACTUAL), 0.7739289252909958 (DESIRED)
+ [555]: 1.726580017326631 (ACTUAL), 0.8932466839932978 (DESIRED)
+Max absolute difference among violations: 0.83333333
+Max relative difference among violations: 15.64210073
+ ACTUAL: array([0.639386, 0.592102, 0.409487, 0.745392, 0.601088, 0.192405,
+       0.397767, 0.665326, 0.376061, 0.425242, 0.406594, 0.333446,
+       0.702847, 0.243722, 0.659205, 0.562709, 0.552846, 0.566281,...
+ DESIRED: array([0.639386, 0.592102, 0.409487, 0.745392, 0.601088, 0.192405,
+       0.397767, 0.665326, 0.376061, 0.425242, 0.406594, 0.333446,
+       0.702847, 0.243722, 0.659205, 0.562709, 0.552846, 0.566281,...
+
+======================================================================
+FAIL: test_hk_partial (__main__.MissingnessRegression.test_hk_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 100 / 600 (16.7%)
+First 5 mismatches are at indices:
+ [124]: 0.821981196318827 (ACTUAL), 0.5219811963188271 (DESIRED)
+ [125]: 0.5036019394511022 (ACTUAL), 0.20360193945110228 (DESIRED)
+ [131]: 0.7300315994483115 (ACTUAL), 0.4300315994483116 (DESIRED)
+ [133]: 0.626581126340958 (ACTUAL), 0.32658112634095804 (DESIRED)
+ [136]: 0.9902135946459842 (ACTUAL), 0.6902135946459841 (DESIRED)
+Max absolute difference among violations: 0.83333333
+Max relative difference among violations: 4.72916946
+ ACTUAL: array([0.609655, 0.794926, 0.395566, 0.283444, 0.662565, 0.333103,
+       0.286252, 0.640319, 0.6222  , 0.422235, 0.436528, 0.251702,
+       0.371904, 0.447933, 0.672213, 0.521625, 0.567077, 0.561909,...
+ DESIRED: array([0.609655, 0.794926, 0.395566, 0.283444, 0.662565, 0.333103,
+       0.286252, 0.640319, 0.6222  , 0.422235, 0.436528, 0.251702,
+       0.371904, 0.447933, 0.672213, 0.521625, 0.567077, 0.561909,...
+
+======================================================================
+FAIL: test_in_missing_group (__main__.MissingnessRegression.test_in_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6380612055121335 (ACTUAL), 0.3255612055121336 (DESIRED)
+ [552]: 0.7711649012990205 (ACTUAL), 0.45866490129902043 (DESIRED)
+ [553]: 0.8143270288738977 (ACTUAL), 0.5018270288738977 (DESIRED)
+ [554]: 0.8499693054098929 (ACTUAL), 0.5374693054098929 (DESIRED)
+ [555]: 0.83917362635985 (ACTUAL), 0.52667362635985 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.64452864
+ ACTUAL: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+ DESIRED: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+
+======================================================================
+FAIL: test_in_partial (__main__.MissingnessRegression.test_in_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 123 / 601 (20.5%)
+First 5 mismatches are at indices:
+ [101]: 0.8497967352518968 (ACTUAL), 0.5372967352518968 (DESIRED)
+ [108]: 0.6986773840593485 (ACTUAL), 0.5486773840593485 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [113]: 0.6332556533521787 (ACTUAL), 0.4832556533521786 (DESIRED)
+ [114]: 0.3810753926421991 (ACTUAL), 0.23107539264219906 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.29761598
+ ACTUAL: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+ DESIRED: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+
+======================================================================
+FAIL: test_jp_missing_group (__main__.MissingnessRegression.test_jp_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6380612055121335 (ACTUAL), 0.3255612055121336 (DESIRED)
+ [552]: 0.7711649012990205 (ACTUAL), 0.45866490129902043 (DESIRED)
+ [553]: 0.8143270288738977 (ACTUAL), 0.5018270288738977 (DESIRED)
+ [554]: 0.8499693054098929 (ACTUAL), 0.5374693054098929 (DESIRED)
+ [555]: 0.83917362635985 (ACTUAL), 0.52667362635985 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.64452864
+ ACTUAL: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+ DESIRED: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+
+======================================================================
+FAIL: test_jp_partial (__main__.MissingnessRegression.test_jp_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 123 / 601 (20.5%)
+First 5 mismatches are at indices:
+ [101]: 0.8497967352518968 (ACTUAL), 0.5372967352518968 (DESIRED)
+ [108]: 0.6986773840593485 (ACTUAL), 0.5486773840593485 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [113]: 0.6332556533521787 (ACTUAL), 0.4832556533521786 (DESIRED)
+ [114]: 0.3810753926421991 (ACTUAL), 0.23107539264219906 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.29761598
+ ACTUAL: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+ DESIRED: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+
+======================================================================
+FAIL: test_kr_missing_group (__main__.MissingnessRegression.test_kr_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6380612055121335 (ACTUAL), 0.3255612055121336 (DESIRED)
+ [552]: 0.7711649012990205 (ACTUAL), 0.45866490129902043 (DESIRED)
+ [553]: 0.8143270288738977 (ACTUAL), 0.5018270288738977 (DESIRED)
+ [554]: 0.8499693054098929 (ACTUAL), 0.5374693054098929 (DESIRED)
+ [555]: 0.83917362635985 (ACTUAL), 0.52667362635985 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.64452864
+ ACTUAL: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+ DESIRED: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+
+======================================================================
+FAIL: test_kr_partial (__main__.MissingnessRegression.test_kr_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 123 / 601 (20.5%)
+First 5 mismatches are at indices:
+ [101]: 0.8497967352518968 (ACTUAL), 0.5372967352518968 (DESIRED)
+ [108]: 0.6986773840593485 (ACTUAL), 0.5486773840593485 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [113]: 0.6332556533521787 (ACTUAL), 0.4832556533521786 (DESIRED)
+ [114]: 0.3810753926421991 (ACTUAL), 0.23107539264219906 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.29761598
+ ACTUAL: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+ DESIRED: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+
+======================================================================
+FAIL: test_tw_missing_group (__main__.MissingnessRegression.test_tw_missing_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 50 / 601 (8.32%)
+First 5 mismatches are at indices:
+ [551]: 0.6380612055121335 (ACTUAL), 0.3255612055121336 (DESIRED)
+ [552]: 0.7711649012990205 (ACTUAL), 0.45866490129902043 (DESIRED)
+ [553]: 0.8143270288738977 (ACTUAL), 0.5018270288738977 (DESIRED)
+ [554]: 0.8499693054098929 (ACTUAL), 0.5374693054098929 (DESIRED)
+ [555]: 0.83917362635985 (ACTUAL), 0.52667362635985 (DESIRED)
+Max absolute difference among violations: 0.3125
+Max relative difference among violations: 1.64452864
+ ACTUAL: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+ DESIRED: array([0.526943, 0.689201, 0.501235, 0.565391, 0.55616 , 0.213637,
+       0.390439, 0.57732 , 0.540658, 0.42517 , 0.486541, 0.431574,
+       0.57675 , 0.338609, 0.781302, 0.453781, 0.451293, 0.597897,...
+
+======================================================================
+FAIL: test_tw_partial (__main__.MissingnessRegression.test_tw_partial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU1A_MISSINGNESS_TESTS_2026_09_08.py", line 98, in test
+    np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy(), rtol=1e-12, atol=1e-12)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 1780, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         verbose=verbose, header=header, equal_nan=equal_nan,
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         strict=strict)
+                         ^^^^^^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/testing/_private/utils.py", line 988, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError:
+Not equal to tolerance rtol=1e-12, atol=1e-12
+
+Mismatched elements: 123 / 601 (20.5%)
+First 5 mismatches are at indices:
+ [101]: 0.8497967352518968 (ACTUAL), 0.5372967352518968 (DESIRED)
+ [108]: 0.6986773840593485 (ACTUAL), 0.5486773840593485 (DESIRED)
+ [112]: 0.7394883586760738 (ACTUAL), 0.5894883586760737 (DESIRED)
+ [113]: 0.6332556533521787 (ACTUAL), 0.4832556533521786 (DESIRED)
+ [114]: 0.3810753926421991 (ACTUAL), 0.23107539264219906 (DESIRED)
+Max absolute difference among violations: 0.8
+Max relative difference among violations: 2.29761598
+ ACTUAL: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+ DESIRED: array([0.635346, 0.652846, 0.412058, 0.377807, 0.619971, 0.369155,
+       0.230857, 0.508732, 0.58514 , 0.485515, 0.502607, 0.269026,
+       0.440589, 0.371524, 0.72907 , 0.402914, 0.547051, 0.622584,...
+
+----------------------------------------------------------------------
+Ran 40 tests in 1.838s
+
+FAILED (failures=20)

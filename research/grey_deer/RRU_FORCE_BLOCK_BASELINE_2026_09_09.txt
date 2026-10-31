@@ -1,0 +1,94 @@
+test_block_0_nightly_legacy (__main__.BlockTests.test_block_0_nightly_legacy) ... ok
+test_block_0_nightly_modern (__main__.BlockTests.test_block_0_nightly_modern) ... FAIL
+test_block_0_readonly_legacy (__main__.BlockTests.test_block_0_readonly_legacy) ... ok
+test_block_0_readonly_modern (__main__.BlockTests.test_block_0_readonly_modern) ... FAIL
+test_block_1_nightly_legacy (__main__.BlockTests.test_block_1_nightly_legacy) ... ok
+test_block_1_nightly_modern (__main__.BlockTests.test_block_1_nightly_modern) ... FAIL
+test_block_1_readonly_legacy (__main__.BlockTests.test_block_1_readonly_legacy) ... ok
+test_block_1_readonly_modern (__main__.BlockTests.test_block_1_readonly_modern) ... FAIL
+test_block_2_nightly_legacy (__main__.BlockTests.test_block_2_nightly_legacy) ... ok
+test_block_2_nightly_modern (__main__.BlockTests.test_block_2_nightly_modern) ... FAIL
+test_block_2_readonly_legacy (__main__.BlockTests.test_block_2_readonly_legacy) ... ok
+test_block_2_readonly_modern (__main__.BlockTests.test_block_2_readonly_modern) ... FAIL
+test_block_3_nightly_legacy (__main__.BlockTests.test_block_3_nightly_legacy) ... ok
+test_block_3_nightly_modern (__main__.BlockTests.test_block_3_nightly_modern) ... FAIL
+test_block_3_readonly_legacy (__main__.BlockTests.test_block_3_readonly_legacy) ... ok
+test_block_3_readonly_modern (__main__.BlockTests.test_block_3_readonly_modern) ... FAIL
+
+======================================================================
+FAIL: test_block_0_nightly_modern (__main__.BlockTests.test_block_0_nightly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_0_readonly_modern (__main__.BlockTests.test_block_0_readonly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_1_nightly_modern (__main__.BlockTests.test_block_1_nightly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_1_readonly_modern (__main__.BlockTests.test_block_1_readonly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_2_nightly_modern (__main__.BlockTests.test_block_2_nightly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_2_readonly_modern (__main__.BlockTests.test_block_2_readonly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_3_nightly_modern (__main__.BlockTests.test_block_3_nightly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+======================================================================
+FAIL: test_block_3_readonly_modern (__main__.BlockTests.test_block_3_readonly_modern)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_BLOCK_TESTS_2026_09_09.py", line 49, in test
+    self.assertEqual(snap['can_force'], not modern)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 16 tests in 1.940s
+
+FAILED (failures=8)
+{"tests": 16, "failures": 8, "errors": 0, "original_blocks": true, "source_unchanged": true, "synthetic_only": true, "effects_mocked": true, "full_pipeline": false}
