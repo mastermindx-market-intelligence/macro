@@ -209,6 +209,33 @@ def cmd_stats(args) -> int:
     return 0
 
 
+def cmd_editorial(args) -> int:
+    """Read explicit comparison artifacts; never import labels or live corpus."""
+    try:
+        from engine.marketing.frontier_editorial import MAX_BYTES, load_json
+
+        with Path(args.packet).open("rb") as stream:
+            packet = load_json(stream.read(MAX_BYTES + 1))
+        required = {"cases", "seed"}
+        if args.cmd == "editorial-eval":
+            required.add("judgments")
+        if set(packet) != required:
+            raise ValueError("invalid_editorial_packet")
+        if args.cmd == "editorial-blind":
+            result = gs.blind_editorial_pairs(packet["cases"], seed=packet["seed"], min_pairs=args.min_pairs)
+            # Stdout is the reviewer packet. Reconstruct the private arm mapping
+            # from the original owner input during eval; never leak it to judges.
+            result.pop("assignments")
+        else:
+            result = gs.evaluate_editorial_pairs(packet["cases"], packet["judgments"],
+                                                seed=packet["seed"], min_pairs=args.min_pairs)
+        print(json.dumps(result, sort_keys=True, ensure_ascii=False), flush=True)
+        return 0 if args.cmd == "editorial-blind" or result["state"] == "measured" else 1
+    except Exception:
+        print(json.dumps({"state": "invalid-input", "promotion_authorized": False}), flush=True)
+        return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -246,6 +273,16 @@ def main(argv: list[str] | None = None) -> int:
 
     p_stats = sub.add_parser("stats", help="label store + corpus census")
     p_stats.set_defaults(func=cmd_stats)
+
+    p_blind = sub.add_parser("editorial-blind", help="blinded reviewer cards only; arm assignments stay private")
+    p_blind.add_argument("packet", help="explicit rights-cleared cases/seed JSON; no live corpus lookup")
+    p_blind.add_argument("--min-pairs", type=int, default=30, help="minimum to freeze before judgment")
+    p_blind.set_defaults(func=cmd_editorial)
+    p_compare = sub.add_parser("editorial-eval", help="holdout human preferences; never policy promotion")
+    p_compare.add_argument("packet", help="explicit cases/seed/adjudicated human judgments JSON")
+    p_compare.add_argument("--min-pairs", type=int, default=30,
+                           help="preregistered minimum judged holdout events (default 30)")
+    p_compare.set_defaults(func=cmd_editorial)
 
     args = parser.parse_args(argv)
     return int(args.func(args))
