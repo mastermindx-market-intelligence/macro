@@ -41241,6 +41241,7 @@ jobs:
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
+      - "engine/marketing/catalyst_partner_pack.py"
       - "engine/marketing/catalyst_scan.py"
       - "engine/marketing/chart_director.py"
       - "engine/marketing/chart_facts.py"
@@ -41545,6 +41546,7 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "lib/user_prefs.py"
       - "scripts/__init__.py"
+      - "scripts/build_catalyst_partner_pack.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_free_content.py"
       - "scripts/build_stock_library.py"
@@ -41571,6 +41573,7 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      - "templates/catalyst_partner.html.j2"
       - "templates/catalyst_scan.css"
       - "templates/catalyst_scan.html.j2"
       - "templates/catalyst_scan.js"
@@ -41578,12 +41581,14 @@ jobs:
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
+      - "templates/theme.css"
       - "tests/catalyst_scan_browser.js"
       - "tests/test_catalyst_admission.py"
       - "tests/test_catalyst_integration.py"
       - "tests/test_catalyst_lifecycle.py"
       - "tests/test_catalyst_optin.py"
       - "tests/test_catalyst_packet_public.py"
+      - "tests/test_catalyst_partner_pack.py"
       - "tests/test_catalyst_scan.py"
       - "tests/test_catalyst_scan_authority.py"
       - "tests/test_catalyst_scan_frontend.py"
@@ -41922,6 +41927,7 @@ jobs:
           tests/test_catalyst_optin.py
           tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py
+          tests/test_catalyst_partner_pack.py
           -q -rs
 
   no-client-supplied-identity:
