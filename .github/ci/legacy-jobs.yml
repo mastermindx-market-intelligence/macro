@@ -10056,7 +10056,6 @@ jobs:
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
       - "lib/intl_gs_dossier_view.py"
-      - "lib/__init__.py"
       - "templates/intl_workspace/dossier.html.j2"
       - "templates/intl_workspace/_gs_dossier_macros.html.j2"
       - "templates/intl_workspace/_gs_macros.html.j2"
