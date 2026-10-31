@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HR-BULL-20260717",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 21.5,
-  "raw_confidence": 22.4,
-  "delta_vs_base": -38.5,
+  "management_confidence": 22.5,
+  "raw_confidence": 23.6,
+  "delta_vs_base": -37.5,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 24.5,
+    "validity": 27.8,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 46.6,
-    "overlay": 50.0
+    "retention": 46.8,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.353,
+    "dist_to_stop_r": 0.388,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 226.7,
-    "p1": -0.4312,
-    "p2": -0.2156,
+    "horizon_pct_used": 233.3,
+    "p1": -0.4082,
+    "p2": -0.2041,
     "p3": null,
-    "move_r": -0.647,
+    "move_r": -0.612,
     "mfe_r": 0.0,
     "mae_r": -0.852
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 102,
-  "tau": 2.2667,
+  "days_elapsed": 105,
+  "tau": 2.3333,
   "closed": true,
   "outcome": "EXPIRED"
 }

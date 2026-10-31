@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LIVN-BULL-20260818",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.7,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 20.3,
+    "progress": 7.5,
     "pace": 0.0,
-    "retention": 40.9,
+    "retention": 10.8,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.299,
-    "dist_to_t1_r": 1.201,
-    "dist_to_t2_r": 2.701,
-    "horizon_pct_used": 155.6,
-    "p1": 0.1991,
-    "p2": 0.0996,
+    "dist_to_stop_r": 1.079,
+    "dist_to_t1_r": 1.421,
+    "dist_to_t2_r": 2.921,
+    "horizon_pct_used": 162.2,
+    "p1": 0.0527,
+    "p2": 0.0263,
     "p3": null,
-    "move_r": 0.299,
+    "move_r": 0.079,
     "mfe_r": 0.729,
     "mae_r": -1.416
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 70,
-  "tau": 1.5556,
+  "days_elapsed": 73,
+  "tau": 1.6222,
   "closed": true,
   "outcome": "INVALIDATED"
 }

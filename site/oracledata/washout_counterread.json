@@ -1,32 +1,32 @@
 {
  "schema": "washout_counterread.v1",
- "as_of": "2026-10-23",
- "show": true,
- "growth_score": 90.5,
- "growth_band": "risk-off",
- "growth_extreme": true,
+ "as_of": "2026-10-29",
+ "show": false,
+ "growth_score": 83.8,
+ "growth_band": "elevated",
+ "growth_extreme": false,
  "price_depths": [
   {
    "index": "SPY",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -2.45,
-   "depth_pctile": 66.5,
+   "drawdown_pct": -1.25,
+   "depth_pctile": 52.6,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "QQQ",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -7.27,
-   "depth_pctile": 81.2,
+   "drawdown_pct": -5.83,
+   "depth_pctile": 76.1,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "XLK",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -9.29,
-   "depth_pctile": 84.8,
+   "drawdown_pct": -6.56,
+   "depth_pctile": 75.8,
    "extreme": false,
    "n_hist": 2520
   }
@@ -45,8 +45,8 @@
  "ihm_hits": [
   "IWM"
  ],
- "message_en": "Capitulation-zone reading — historically two-sided. Growth scare 90 (extreme) alongside a depth extreme: IWM washout-turn (IHM). A washout can precede a bounce about as often as a further leg down.",
- "message_zh": "资本投降区读数——历史上双向。成长恐慌 90（极端），同时出现深度极值：IWM 动量拐点洗盘（IHM）。洗盘之后反弹与再下跌概率相当。",
+ "message_en": null,
+ "message_zh": null,
  "authority": {
   "tier": "display",
   "horizon_role": "context",

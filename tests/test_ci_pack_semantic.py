@@ -3933,6 +3933,71 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                 self.assertIn(fixture['canonical'], command)
                 self.assertFalse(any('refs/heads/main' in arg for arg in command))
 
+    def test_canonical_filter_is_child_only_and_probes_are_offline(self):
+        f = self.fixture(full_checkout=True)
+        _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
+        before = (f['checkout'] / '.git' / 'config').read_bytes()
+        real_run = _cm_subprocess.run
+        seen = []
+
+        def observe(argv, *args, **kwargs):
+            command = list(argv)
+            if command and command[0] == 'git':
+                env = kwargs.get('env', {})
+                if 'fetch' in command:
+                    self.assertIn('--filter=blob:none', command)
+                    self.assertEqual(env.get('GIT_CONFIG_COUNT'), '2')
+                    self.assertEqual(env.get('GIT_CONFIG_KEY_0'), 'remote.origin.promisor')
+                    self.assertEqual(env.get('GIT_CONFIG_VALUE_0'), 'true')
+                    self.assertEqual(env.get('GIT_CONFIG_KEY_1'), 'remote.origin.partialclonefilter')
+                    self.assertEqual(env.get('GIT_CONFIG_VALUE_1'), 'blob:none')
+                else:
+                    self.assertEqual(env.get('GIT_NO_LAZY_FETCH'), '1')
+                    self.assertEqual(env.get('GIT_ALLOW_PROTOCOL'), '')
+                seen.append(command)
+            return real_run(argv, *args, **kwargs)
+
+        with _cm_mock.patch.object(PACK.subprocess, 'run', side_effect=observe):
+            self.assertEqual(PACK.prepare_canonical_main(
+                f['checkout'], tested_tree_sha=f['tested']), f['canonical'])
+        self.assertTrue(seen)
+        self.assertEqual(before, (f['checkout'] / '.git' / 'config').read_bytes())
+        guards = _cm_frozen_namespace(f['checkout'])
+        for path in _CM_FROZEN_PATHS:
+            guards['test_frozen_files_unchanged_vs_origin_main'](path)
+
+    def test_missing_required_blob_refuses_after_fetch_without_lazy_fallback(self):
+        f = self.fixture(full_checkout=True)
+        _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
+        removed = []
+
+        def remove(phase, fixture, command, count):
+            if phase != 'after' or count != 1:
+                return
+            repo = fixture['checkout']
+            blob = _cm_git(repo, 'rev-parse', fixture['tested'] + ':' + _CM_FROZEN_PATHS[0])
+            packs = repo / '.git' / 'objects' / 'pack'
+            held = self.parent / 'retained-fixture-packs'
+            held.mkdir()
+            names = [p.name for p in packs.glob('*.pack')]
+            for path in list(packs.iterdir()):
+                path.rename(held / path.name)
+            for name in names:
+                with (held / name).open('rb') as data:
+                    _cm_subprocess.run(['git', '-C', str(repo), 'unpack-objects', '-r'],
+                        stdin=data, check=True, capture_output=True,
+                        env=dict(os.environ, GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL=''))
+            target = repo / '.git' / 'objects' / blob[:2] / blob[2:]
+            self.assertTrue(target.is_file())
+            target.unlink()
+            removed.append(blob)
+
+        with self.assertRaisesRegex(RuntimeError, 'required.*object'):
+            _cm_prepare(f, hook=remove)
+        self.assertEqual(len(removed), 1)
+        self.assertEqual(len(f['fetches']), 1)
+        self.assert_head(f)
+
     def test_missing_origin_main_acquires_actual_canonical_tip(self):
         f = self.fixture()
         absent = _cm_subprocess.run(

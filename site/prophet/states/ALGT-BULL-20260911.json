@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALGT-BULL-20260911",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.6,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -2.271,
+    "dist_to_stop_r": -1.244,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -2.1808,
-    "p2": -1.0904,
+    "horizon_pct_used": 108.9,
+    "p1": -1.4957,
+    "p2": -0.7479,
     "p3": null,
-    "move_r": -3.271,
+    "move_r": -2.244,
     "mfe_r": 1.04,
     "mae_r": -3.7
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222,
+  "days_elapsed": 49,
+  "tau": 1.0889,
   "closed": true,
   "outcome": "INVALIDATED"
 }

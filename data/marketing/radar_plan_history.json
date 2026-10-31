@@ -2,6 +2,43 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-30",
+      "tickers": [
+        "AAPL",
+        "AKAM",
+        "ALRM",
+        "AMCR",
+        "AMZN",
+        "AR",
+        "AVGO",
+        "BC",
+        "BFS",
+        "BNL",
+        "BRX",
+        "COST",
+        "DAIO",
+        "EXK",
+        "GMAB",
+        "HMN",
+        "LONA",
+        "LYCA",
+        "MSFT",
+        "OGS",
+        "OI",
+        "OKLO",
+        "PLG",
+        "PRG",
+        "RHI",
+        "SCQCU",
+        "SFM",
+        "SHEN",
+        "SON",
+        "TREX",
+        "WULF",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-10-25",
       "tickers": [
         "AA",
@@ -150,19 +187,6 @@
         "OMC",
         "PINS",
         "WWD"
-      ]
-    },
-    {
-      "as_of": "2026-10-18",
-      "tickers": [
-        "ATR",
-        "GFI",
-        "IFF",
-        "LLY",
-        "LOPE",
-        "OKLO",
-        "QDEL",
-        "SMR"
       ]
     }
   ]

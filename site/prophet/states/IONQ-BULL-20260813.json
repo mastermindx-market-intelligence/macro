@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IONQ-BULL-20260813",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.4,
@@ -10,23 +10,23 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 12.5,
+    "validity": 3.1,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.227,
+    "dist_to_stop_r": 0.121,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 166.7,
-    "p1": -0.5152,
-    "p2": -0.2576,
+    "horizon_pct_used": 173.3,
+    "p1": -0.5859,
+    "p2": -0.2929,
     "p3": null,
-    "move_r": -0.773,
+    "move_r": -0.879,
     "mfe_r": 0.105,
-    "mae_r": -0.802
+    "mae_r": -0.879
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.8600001525878938,
-  "_mae": -14.229999999999997,
+  "_mae": -15.59000061035156,
   "_max_p1": 0.06989854011980058,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 75,
-  "tau": 1.6667,
+  "days_elapsed": 78,
+  "tau": 1.7333,
   "closed": true,
   "outcome": "EXPIRED"
 }

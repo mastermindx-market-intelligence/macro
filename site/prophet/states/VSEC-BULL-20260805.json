@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VSEC-BULL-20260805",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.9,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.182,
+    "dist_to_stop_r": -0.044,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -0.7883,
-    "p2": -0.3941,
+    "horizon_pct_used": 186.7,
+    "p1": -0.6957,
+    "p2": -0.3479,
     "p3": null,
-    "move_r": -1.182,
+    "move_r": -1.044,
     "mfe_r": 0.393,
     "mae_r": -1.182
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
+  "days_elapsed": 84,
+  "tau": 1.8667,
   "closed": true,
   "outcome": "EXPIRED"
 }

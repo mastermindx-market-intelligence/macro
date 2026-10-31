@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CRDO-BULL-20260930",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 33.0,
-  "raw_confidence": 32.0,
-  "delta_vs_base": -27.0,
+  "management_confidence": 31.2,
+  "raw_confidence": 30.9,
+  "delta_vs_base": -28.8,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 0.1,
+    "validity": 1.3,
     "progress": 0.0,
-    "pace": 36.0,
+    "pace": 23.5,
     "retention": 50.0,
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.023,
+    "dist_to_stop_r": 0.083,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 37.5,
-    "p1": -0.6516,
-    "p2": -0.3258,
+    "horizon_pct_used": 42.9,
+    "p1": -0.6116,
+    "p2": -0.3058,
     "p3": null,
-    "move_r": -0.977,
+    "move_r": -0.917,
     "mfe_r": 0.0,
     "mae_r": -0.977
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 21,
-  "tau": 0.375
+  "days_elapsed": 24,
+  "tau": 0.4286
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TREX-BULL-20260810",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.8,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 2.6,
+    "progress": 5.2,
     "pace": 0.0,
-    "retention": 30.3,
-    "overlay": 53.0
+    "retention": 77.8,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.019,
-    "dist_to_t1_r": 1.481,
-    "dist_to_t2_r": 2.981,
-    "horizon_pct_used": 166.7,
-    "p1": 0.0127,
-    "p2": 0.0064,
+    "dist_to_stop_r": 1.049,
+    "dist_to_t1_r": 1.451,
+    "dist_to_t2_r": 2.951,
+    "horizon_pct_used": 173.3,
+    "p1": 0.0327,
+    "p2": 0.0164,
     "p3": null,
-    "move_r": 0.019,
+    "move_r": 0.049,
     "mfe_r": 0.063,
     "mae_r": -0.471
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-23",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 75,
-  "tau": 1.6667,
+  "days_elapsed": 78,
+  "tau": 1.7333,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

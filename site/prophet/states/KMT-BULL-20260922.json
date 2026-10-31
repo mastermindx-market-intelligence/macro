@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KMT-BULL-20260922",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 24.7,
-  "raw_confidence": 24.0,
-  "delta_vs_base": -35.3,
+  "management_confidence": 25.0,
+  "raw_confidence": 25.3,
+  "delta_vs_base": -35.0,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 32.3,
+    "validity": 39.0,
     "progress": 0.0,
-    "pace": 2.5,
+    "pace": 1.1,
     "retention": 50.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.433,
+    "dist_to_stop_r": 0.498,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 71.1,
-    "p1": -0.3779,
-    "p2": -0.1889,
+    "horizon_pct_used": 77.8,
+    "p1": -0.3345,
+    "p2": -0.1673,
     "p3": null,
-    "move_r": -0.567,
+    "move_r": -0.502,
     "mfe_r": 0.859,
     "mae_r": -0.718
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 32,
-  "tau": 0.7111
+  "days_elapsed": 35,
+  "tau": 0.7778
 }

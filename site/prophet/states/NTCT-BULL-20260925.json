@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NTCT-BULL-20260925",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 36.7,
-  "raw_confidence": 37.5,
-  "delta_vs_base": -23.3,
+  "management_confidence": 33.1,
+  "raw_confidence": 28.4,
+  "delta_vs_base": -26.9,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 84.4,
+    "validity": 49.8,
     "progress": 0.0,
-    "pace": 5.7,
+    "pace": 3.7,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.882,
+    "dist_to_stop_r": 0.596,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 60.0,
-    "p1": -0.0789,
-    "p2": -0.0394,
+    "horizon_pct_used": 66.7,
+    "p1": -0.2691,
+    "p2": -0.1346,
     "p3": null,
-    "move_r": -0.118,
+    "move_r": -0.404,
     "mfe_r": 0.237,
     "mae_r": -0.488
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 27,
-  "tau": 0.6
+  "days_elapsed": 30,
+  "tau": 0.6667
 }

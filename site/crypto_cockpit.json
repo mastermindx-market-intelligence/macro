@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-25",
-  "generated_at": "2026-10-26T05:12:46+00:00",
+  "as_of": "2026-10-30",
+  "generated_at": "2026-10-31T00:54:45+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 80681.66,
-    "change_24h_pct": -0.11,
-    "stance_en": "NEUTRAL",
-    "stance_zh": "中性",
-    "summary_en": "The big picture reads neutral. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向中性。支撑来自基本面与风险读数；拖累来自宏观环境与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 0,
-    "exposure_pct": 31,
+    "price": 77164.5,
+    "change_24h_pct": -0.79,
+    "stance_en": "RISK-OFF",
+    "stance_zh": "偏空",
+    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from the trend and stablecoin flows. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自趋势与稳定币资金。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -18,
+    "exposure_pct": 26,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-25",
+    "as_of": "2026-10-30",
     "integrity_ok": true,
-    "final_exposure_pct": 31,
+    "final_exposure_pct": 26,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -57,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-25"
+        "as_of": "2026-10-30"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [

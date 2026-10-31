@@ -3309,6 +3309,7 @@ jobs:
       - "engine/us_basket_turn.py"
       - "engine/us_leader_pullback.py"
       - "engine/us_turn_watch.py"
+      - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -4346,6 +4347,7 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -14529,6 +14531,7 @@ jobs:
       - "engine/us_basket_turn.py"
       - "engine/us_leader_pullback.py"
       - "engine/us_turn_watch.py"
+      - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -29373,6 +29376,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
+      - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
@@ -34086,6 +34091,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -42007,6 +42013,7 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.

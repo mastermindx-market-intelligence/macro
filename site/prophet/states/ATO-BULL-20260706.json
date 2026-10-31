@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ATO-BULL-20260706",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.9,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 36.9,
-    "pace": 19.3,
-    "retention": 72.2,
-    "overlay": 53.0
+    "progress": 35.9,
+    "pace": 15.3,
+    "retention": 69.6,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.664,
-    "dist_to_t1_r": 0.836,
-    "dist_to_t2_r": 2.336,
-    "horizon_pct_used": 117.8,
-    "p1": 0.4428,
-    "p2": 0.2214,
+    "dist_to_stop_r": 1.64,
+    "dist_to_t1_r": 0.86,
+    "dist_to_t2_r": 2.36,
+    "horizon_pct_used": 124.4,
+    "p1": 0.4267,
+    "p2": 0.2134,
     "p3": null,
-    "move_r": 0.664,
+    "move_r": 0.64,
     "mfe_r": 0.92,
     "mae_r": -1.843
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 53,
-  "tau": 1.1778,
+  "days_elapsed": 56,
+  "tau": 1.2444,
   "closed": true,
   "outcome": "INVALIDATED"
 }

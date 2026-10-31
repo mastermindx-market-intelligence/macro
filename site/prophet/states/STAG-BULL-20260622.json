@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STAG-BULL-20260622",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.1,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 85.2,
-    "progress": 0.0,
-    "pace": 0.7,
-    "retention": 0.0,
-    "overlay": 56.0
+    "validity": 100.0,
+    "progress": 19.3,
+    "pace": 0.0,
+    "retention": 52.2,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.888,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
-    "p1": -0.0748,
-    "p2": -0.0374,
+    "dist_to_stop_r": 1.28,
+    "dist_to_t1_r": 1.22,
+    "dist_to_t2_r": 2.72,
+    "horizon_pct_used": 155.6,
+    "p1": 0.1869,
+    "p2": 0.0935,
     "p3": null,
-    "move_r": -0.112,
+    "move_r": 0.28,
     "mfe_r": 0.537,
     "mae_r": -0.65
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889,
+  "days_elapsed": 70,
+  "tau": 1.5556,
   "closed": true,
   "outcome": "EXPIRED"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HAL-BULL-20260813",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.7,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 4.7,
+    "progress": 23.4,
     "pace": 0.0,
-    "retention": 6.6,
+    "retention": 56.0,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.042,
-    "dist_to_t1_r": 1.458,
-    "dist_to_t2_r": 2.958,
-    "horizon_pct_used": 157.8,
-    "p1": 0.0283,
-    "p2": 0.0141,
+    "dist_to_stop_r": 1.363,
+    "dist_to_t1_r": 1.137,
+    "dist_to_t2_r": 2.637,
+    "horizon_pct_used": 164.4,
+    "p1": 0.2418,
+    "p2": 0.1209,
     "p3": null,
-    "move_r": 0.042,
+    "move_r": 0.363,
     "mfe_r": 0.647,
     "mae_r": -0.665
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 71,
-  "tau": 1.5778,
+  "days_elapsed": 74,
+  "tau": 1.6444,
   "closed": true,
   "outcome": "EXPIRED"
 }

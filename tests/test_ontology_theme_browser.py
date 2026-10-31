@@ -20,9 +20,16 @@ CHAIN='oil_inflation_duration_derate'
 def theme_reading(tmp_path):
     return native_theme_reading(tmp_path)
 
-def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None, chain=CHAIN, hierarchy=True):
+def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None, chain=CHAIN, hierarchy=True, master_clock=None):
     root=_theme_owner_root(tmp_path)
     fx.build_root(root,slug=chain)
+    if master_clock is not None:
+        # The native security-master _iso_now() emits naive UTC; identity
+        # resolution copies that receipt clock verbatim into its published row.
+        identity_path=root/'data/theme_graph/identity_resolution.parquet'
+        identity_rows=parquet.read_table(identity_path).to_pylist()
+        identity_rows[0]['master_generated_at']=master_clock
+        parquet.write_table(arrow.Table.from_pylist(identity_rows),identity_path)
     if etf:
         from tests.test_theme_graph_hierarchy_paths import _selected_etf_view
         view=_selected_etf_view()
@@ -48,6 +55,47 @@ def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch
     result=ontology_theme.compose_theme_continuation(root,payload)
     assert result['theme_map']['availability']['state']==('AVAILABLE' if hierarchy else 'NO_QUALIFIED_HOUSE_PATH')
     return snapshot,result
+
+
+@pytest.mark.parametrize('clock,width,theme,language',[
+    ('2026-09-18T00:00:00',1440,'dark','en'),
+    ('2026-09-18T00:00:00.123456',390,'light','zh'),
+])
+def test_company_native_master_clock_survives_emitter_and_explicit_theme_read(browser,tmp_path,clock,width,theme,language):
+    reading=native_theme_reading(tmp_path,master_clock=clock)
+    assert reading[1]['theme_map']['bindings'][0]['resolution']['master_generated_at']==clock
+    ctx,page,seen,errors=start(browser,reading,width=width,theme=theme,language=language)
+    try:
+        assert seen==[]
+        page.locator('[data-theme-read]').click();settled(page,'ready')
+        text=page.locator('[data-theme-result]').inner_text()
+        assert ('Synthetic solar' if language=='en' else '合成太阳能') in text
+        page.locator('[data-theme-result] details').first.locator('summary').click()
+        assert clock in page.locator('[data-theme-result]').inner_text()
+        assert len(seen)==1 and not errors and page.evaluate('pCalls.queries')==0
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    finally:ctx.close()
+
+
+def test_company_master_clock_decoder_preserves_refusals_and_utc_interpretation(browser,theme_reading):
+    ctx,page,seen,errors=start(browser,theme_reading)
+    try:
+        outcomes=page.evaluate("""async ({v,reading})=>{
+          const m=await import('/ontology-theme.js'),out=[];
+          for(const clock of ['2026-09-18T00:00:00Z','2026-09-18T00:00:00+00:00',
+              '2026-09-18T00:00:00','2026-09-18T00:00:00.123456',
+              '2026-02-31T00:00:00','2026-02-31T00:00:00Z',
+              '2999-01-01T00:00:00','2999-01-01T00:00:00Z',
+              '2026-09-18T25:00:00','not-a-clock',null]) {
+            const x=structuredClone(v);
+            x.theme_map.bindings[0].resolution.master_generated_at=clock;
+            try {await m.decodeTheme(x,reading,{identity_kind:'security',identity_id:'SEC:US-XNAS-AAA'});out.push(true)}
+            catch {out.push(false)}
+          }return out;
+        }""",{'v':theme_reading[1],'reading':theme_reading[0]['source']})
+        assert outcomes==[True,True,True,True,False,False,False,False,False,False,False]
+        assert seen==[] and not errors
+    finally:ctx.close()
 
 
 @pytest.mark.parametrize('width,theme,language',[(1440,'dark','en'),(390,'light','zh')])

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GFI-BULL-20261014",
-  "asof": "2026-10-27",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.8,
@@ -17,16 +17,16 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.92,
+    "dist_to_stop_r": -4.05,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 28.9,
-    "p1": -1.28,
-    "p2": -0.64,
+    "horizon_pct_used": 35.6,
+    "p1": -3.3667,
+    "p2": -1.6833,
     "p3": null,
-    "move_r": -1.92,
+    "move_r": -5.05,
     "mfe_r": 2.66,
-    "mae_r": -2.16
+    "mae_r": -5.05
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.3300010681152372,
-  "_mae": -1.0799987792968722,
+  "_mae": -2.524998474121091,
   "_max_p1": 1.7733347574869829,
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": "2026-10-20",
   "_first_t2_ts": null,
-  "days_elapsed": 13,
-  "tau": 0.2889,
+  "days_elapsed": 16,
+  "tau": 0.3556,
   "closed": true,
   "outcome": "T2_HIT"
 }
