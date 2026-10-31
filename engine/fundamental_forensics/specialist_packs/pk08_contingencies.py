@@ -115,16 +115,23 @@ _RANGE_DISCLOSED_ARMS = (
         # F3-2 (third + fourth review, F4-1/F4-2): "determine" is object-
         # bound — the bare outcome form ("not possible to determine the
         # outcome", a "… whether …" clause with no object noun inside the
-        # window) is excluded, while a sentence whose window does reach
-        # amount|range|loss|losses|exposure|liability within three lowercase
-        # words still values not_estimable ("determine whether a loss will
-        # occur" bridges to "loss"). The object ends on a word boundary, so
-        # the span for "…determine the losses." ends at "losses", never cut
-        # mid-word at "loss".
+        # window) is excluded, while a sentence whose window does reach an
+        # object noun within three lowercase words still values
+        # not_estimable ("determine whether a loss will occur" bridges to
+        # "loss"). The object ends on a word boundary, so the span for
+        # "…determine the losses." ends at "losses", never cut mid-word at
+        # "loss".
+        # F3-3 (fifth review, F5-1/F5-2/F5-5; F5-3 ruled in): the object
+        # alternation admits each noun's plural form — amounts, ranges,
+        # losses, exposures, liabilities all value not_estimable, with the
+        # span ending at the plural itself. The boundary still excludes
+        # everything outside the vocabulary: a misspelling such as
+        # "lossess" matches no alternative and stays typed absent, and the
+        # bare "outcome" noun remains outside the alternation.
         r"|(?:is |was )?not possible to (?:reasonably )?estimate"
         r"|(?:is |was )?not possible to (?:reasonably )?determine "
         r"(?:the |an? )?(?:[a-z]+ ){0,3}?"
-        r"(?:amount|range|loss(?:es)?|exposure|liability)\b"
+        r"(?:amounts?|ranges?|loss(?:es)?|exposures?|liabilit(?:y|ies))\b"
         r"|impossible to (?:reasonably )?estimate"
         r"|estimates? (?:of [^.]{0,80}?)?(?:cannot|can not|could not) be made",
     ),
