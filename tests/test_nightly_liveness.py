@@ -1218,3 +1218,268 @@ def test_sector_intelligence_action_board_without_stamp_pages():
         "BOARD PUBLISHED WITHOUT A STAMP [Sector Intelligence action board]" in reason
         for reason in report["fail_reasons"]
     ), report
+
+
+# ── check E: the optional prophet_settlement block — typed reader evidence ──
+#
+# The V4-A2 availability-consumer seam: post-deploy, /live/staleness.json may
+# carry an optional ``prophet_settlement`` block written by the VPS sentinel.
+# These fixtures pin the READER contract only. The block is evidence about a
+# CLAIM — release, acceptance and source authority live with the sibling
+# WS:PROPHET-US-AVAILABILITY workstream, never with this guard — so a claimed
+# SETTLED can neither fail a check nor excuse one, and the heartbeat age alone
+# keeps grading pass/fail. A closed shape (schema id, status token, bundle
+# dates) is the only thing that crosses into facts; everything else a block
+# carries must stay invisible, because the file it rides is served to anyone.
+# Fixture dates are CONSTANTS, like every fixture above: the heartbeat reads
+# 30 min old at NOW (fresh against the 90 min budget) unless a test says
+# otherwise.
+
+SETTLEMENT_SCHEMA = "prophet.settlement_manifest/v1"
+FRESH_LAST_PASS = "2026-08-12T07:30:00+00:00"
+
+
+def _settlement_doc(block, *, last_pass_utc=FRESH_LAST_PASS):
+    """A staleness.json with a fresh heartbeat by default; block=None omits the
+    settlement key entirely (the pre-deploy document shape)."""
+    doc = {"heartbeat": {"last_pass_utc": last_pass_utc}}
+    if block is not None:
+        doc["prophet_settlement"] = block
+    return doc
+
+
+def _settlement(**overrides):
+    block = {"schema": SETTLEMENT_SCHEMA, "status": "SETTLED",
+             "owed_session": "2026-08-11", "source_asof": "2026-08-11",
+             "failures": []}
+    block.update(overrides)
+    return block
+
+
+_SETTLEMENT_FACT_KEYS = {
+    "prophet_settlement_schema",
+    "prophet_settlement_status",
+    "prophet_settlement_owed_session",
+    "prophet_settlement_source_asof",
+}
+
+
+def _settlement_fact_keys(report):
+    return {k for k in report["facts"] if k.startswith("prophet_settlement_")}
+
+
+def test_settlement_key_absent_contributes_nothing():
+    """Pre-deploy: the field does not exist yet. No evidence, no breach, no
+    false green, no noise — and an explicit null behaves identically, because
+    the producer may serialize the key before it ever fills it."""
+    bare = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=_settlement_doc(None))
+    assert bare["ok"] is True
+    assert not bare["fail_reasons"] and not bare["warnings"], bare
+    assert not _settlement_fact_keys(bare), bare
+    assert bare["facts"]["sentinel_heartbeat_age_minutes"] == 30.0
+
+    nulled = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat={
+        "heartbeat": {"last_pass_utc": FRESH_LAST_PASS},
+        "prophet_settlement": None,
+    })
+    assert nulled["ok"] is True
+    assert nulled["fail_reasons"] == bare["fail_reasons"]
+    assert nulled["warnings"] == bare["warnings"]
+    assert nulled["facts"] == bare["facts"]
+
+
+def test_settled_claim_on_a_fresh_heartbeat_is_typed_evidence_only():
+    """A QUALIFIED closed shape on a fresh heartbeat is recorded as the supplied
+    claim it is — and nothing more: no new warning, no fail_reason, and fact
+    keys stay inside the closed set. Recording a claim is not acceptance."""
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(_settlement()))
+    assert report["ok"] is True
+    assert not report["fail_reasons"] and not report["warnings"], report
+    assert _settlement_fact_keys(report) == _SETTLEMENT_FACT_KEYS, report["facts"]
+    assert report["facts"]["prophet_settlement_schema"] == SETTLEMENT_SCHEMA
+    assert report["facts"]["prophet_settlement_status"] == "SETTLED"
+    assert report["facts"]["prophet_settlement_owed_session"] == "2026-08-11"
+    assert report["facts"]["prophet_settlement_source_asof"] == "2026-08-11"
+
+
+def test_settlement_pending_is_advisory_and_never_a_breach():
+    """PENDING — with or without the full bundle — is an advisory non-settled
+    note. The issuer/GMI side can be unavailable for a long time; that must not
+    become a hard breach or a permanent page."""
+    for block in (_settlement(status="PENDING"),
+                  {"schema": SETTLEMENT_SCHEMA, "status": "PENDING"}):
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(block))
+        assert report["ok"] is True, report
+        assert not report["fail_reasons"], report
+        advisory = [w for w in report["warnings"] if "PENDING" in w]
+        assert len(advisory) == 1 and "ADVISORY" in advisory[0], report["warnings"]
+        assert _settlement_fact_keys(report) <= _SETTLEMENT_FACT_KEYS, report["facts"]
+        assert report["facts"]["prophet_settlement_status"] == "PENDING", report
+
+    # The full-bundle variant records the bundle dates it was given; the
+    # bundle-less variant records none and says the bundle is incomplete.
+    full = evaluate([_run()], ADVANCED, NOW,
+                    sentinel_heartbeat=_settlement_doc(_settlement(status="PENDING")))
+    assert full["facts"]["prophet_settlement_owed_session"] == "2026-08-11"
+    assert full["facts"]["prophet_settlement_source_asof"] == "2026-08-11"
+    bare = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=_settlement_doc(
+        {"schema": SETTLEMENT_SCHEMA, "status": "PENDING"}))
+    assert "prophet_settlement_owed_session" not in bare["facts"]
+    assert "prophet_settlement_source_asof" not in bare["facts"]
+    assert any("without a complete settlement bundle" in w for w in bare["warnings"])
+
+
+def test_settlement_unavailable_data_is_indeterminate_never_green_nor_outage():
+    """A typed UNAVAILABLE_DATA token is the issuer saying it has nothing to
+    grade: one INDETERMINATE warning, no fail, no synthetic recovery."""
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(
+                          _settlement(status="UNAVAILABLE_DATA")))
+    assert report["ok"] is True
+    assert not report["fail_reasons"], report
+    indet = [w for w in report["warnings"] if "UNAVAILABLE_DATA" in w]
+    assert len(indet) == 1 and "INDETERMINATE" in indet[0], report["warnings"]
+    assert _settlement_fact_keys(report) == {
+        "prophet_settlement_schema", "prophet_settlement_status"}, report["facts"]
+    assert report["facts"]["prophet_settlement_status"] == "UNAVAILABLE_DATA"
+
+
+def test_malformed_and_unknown_settlement_shapes_are_indeterminate():
+    """A block that is not a dict, an unknown status token, an unknown schema id
+    and a missing schema field are all unknown evidence: exactly one
+    INDETERMINATE warning, no fail, and no settlement facts at all."""
+    cases = [
+        "SETTLED",                                            # a bare string
+        ["SETTLED"],                                          # a list, not a block
+        _settlement(status="QUIET"),                          # unknown status token
+        _settlement(schema="sentinel.prophet_settlement/v2"),  # unknown schema id
+        {"status": "SETTLED", "owed_session": "2026-08-11",
+         "source_asof": "2026-08-11"},                        # no schema field
+        _settlement(owed_session="not-a-session-date"),       # bundle date unparseable
+    ]
+    for block in cases:
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(block))
+        assert report["ok"] is True, report
+        assert not report["fail_reasons"], report
+        settlement_warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+        assert len(settlement_warnings) == 1, report["warnings"]
+        assert "INDETERMINATE" in settlement_warnings[0], report["warnings"]
+        assert not _settlement_fact_keys(report), report["facts"]
+        # the unknown strings themselves must not be echoed back either
+        blob = json.dumps(report)
+        assert "QUIET" not in blob and "prophet_settlement/v2" not in blob
+        assert "not-a-session-date" not in blob
+
+
+def test_claimed_settled_cannot_rescue_a_stale_heartbeat():
+    """THE load-bearing one. The heartbeat age alone still grades pass/fail: a
+    document claiming SETTLED from a sentinel that has not passed in 6 hours is
+    a claim that is NOT honored — described in a warning, never recorded as
+    settlement facts, and the heartbeat fail stands untouched."""
+    stale_doc = _settlement_doc(_settlement(),
+                                last_pass_utc="2026-08-12T02:00:00+00:00")
+    report = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=stale_doc)
+    assert report["ok"] is False
+    assert report["facts"]["sentinel_heartbeat_age_minutes"] == 360.0, report["facts"]
+    stale = [f for f in report["fail_reasons"] if "SENTINEL HEARTBEAT STALE" in f]
+    assert len(stale) == 1, report["fail_reasons"]
+    honored = [w for w in report["warnings"] if "SETTLED" in w]
+    assert len(honored) == 1 and "NOT honored" in honored[0], report["warnings"]
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_claimed_settled_with_an_unreadable_heartbeat_is_not_honored():
+    """No usable heartbeat clock means freshness is UNKNOWN, so a SETTLED claim
+    has nothing fresh to stand on. The blindness warning still fires (an
+    unreadable clock is never a breach) and the claim stays undescribed in
+    facts — no synthetic green from a document that cannot even prove it is
+    recent."""
+    blind_doc = {"generated_at": "not-a-timestamp",
+                 "prophet_settlement": _settlement()}
+    report = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=blind_doc)
+    assert report["ok"] is True
+    assert any("no usable" in w for w in report["warnings"]), report["warnings"]
+    honored = [w for w in report["warnings"] if "SETTLED" in w]
+    assert len(honored) == 1 and "NOT honored" in honored[0], report["warnings"]
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_settlement_reader_never_echoes_private_payload_fields():
+    """Only the closed field set may cross into facts or annotations. /live/
+    staleness.json is anonymous public — a paywall field riding the settlement
+    block must stay invisible in BOTH a qualified and an unrecognized shape, in
+    every one of warnings, fail_reasons and facts."""
+    hostile = _settlement(
+        paid_ticker_plan="TIER-99-PAID-TICKER-AAPL",
+        premium_note="entitled-only rows follow",
+    )
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(hostile))
+    blob = json.dumps(report)
+    assert "TIER-99-PAID-TICKER-AAPL" not in blob, blob
+    assert "entitled-only rows follow" not in blob, blob
+    assert _settlement_fact_keys(report) == _SETTLEMENT_FACT_KEYS
+
+    stranger = _settlement(schema="sentinel.prophet_settlement/v9-ENTITLED",
+                           status="SETTLED-ENTITLED")
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(stranger))
+    blob = json.dumps(report)
+    assert "v9-ENTITLED" not in blob and "SETTLED-ENTITLED" not in blob, blob
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_settlement_cannot_change_an_existing_a_to_d_failure():
+    """The optional block is strictly ADDITIVE evidence. Over a genuine checks
+    A/C failure backdrop, adding even a qualified fresh-heartbeat SETTLED claim
+    must leave ok, every fail_reason and every warning EXACTLY as they were —
+    it can neither add a page nor quiet one."""
+    baseline = evaluate([], FROZEN, NOW, sentinel_heartbeat=_settlement_doc(None))
+    with_claim = evaluate([], FROZEN, NOW,
+                          sentinel_heartbeat=_settlement_doc(_settlement()))
+    assert baseline["ok"] is False and with_claim["ok"] is False
+    assert any("NO RUN" in f for f in baseline["fail_reasons"])
+    assert with_claim["fail_reasons"] == baseline["fail_reasons"]
+    assert with_claim["warnings"] == baseline["warnings"]
+    common = {k: v for k, v in with_claim["facts"].items()
+              if not k.startswith("prophet_settlement_")}
+    assert common == baseline["facts"]
+    assert with_claim["facts"]["prophet_settlement_status"] == "SETTLED"
+
+
+def test_settlement_schema_matches_actual_v4_a2_public_report():
+    # Producer-side scripts/freshness_sentinel.py writes this literal.
+    # An earlier worker-only fixture invented sentinel.* and passed locally.
+    assert SETTLEMENT_SCHEMA == "prophet.settlement_manifest/v1"
+
+
+def test_settled_with_stale_source_does_not_become_liveness_green():
+    claim = _settlement(source_asof="2026-08-10")
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(claim))
+    assert report["ok"] is True
+    assert not report["fail_reasons"]
+    assert any("INDETERMINATE" in w and "NOT honored" in w
+               for w in report["warnings"])
+    assert not _settlement_fact_keys(report)
+
+
+def test_settled_with_failures_or_no_failure_receipt_is_unverified():
+    cases = [_settlement(failures=["source_asof_stale"]),
+             _settlement(failures=None),
+             _settlement(failures="SECRET-TICKER")]
+    absent = _settlement()
+    absent.pop("failures")
+    cases.append(absent)
+    for claim in cases:
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(claim))
+        assert report["ok"] is True
+        assert not report["fail_reasons"]
+        assert any("INDETERMINATE" in w and "NOT honored" in w
+                   for w in report["warnings"])
+        assert not _settlement_fact_keys(report)
+        assert "SECRET-TICKER" not in json.dumps(report)
