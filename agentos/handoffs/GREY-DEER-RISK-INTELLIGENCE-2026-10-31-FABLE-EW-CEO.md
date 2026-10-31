@@ -65,21 +65,20 @@ unverified:
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
-  - EW-P1.T2 (carve parity, ORCH-P1) and EW-P2.T1 (#10104 successor, ORCH-P2) are in flight on Opus orchestrators administrating fabric lanes; their PRs are judged by artifact by this seat, independently reviewed by a fabric lane, and merged only by the seat after a fresh non-authoring review. Never self-merge.
   - >-
-    #10221's three engine-script hunks are not taken over; EW-P1 inserts at a disjoint seam. #10221 remains the orphaned carrier for the pair check until a successor is decided.
-  - QLedger publication (data/qledger + site/qledger) stays unpublished after EW-P1; its owner is the QLedger native publication program (#10079, inert/NOT_CUT_OVER).
-  - Stale durable mirror vs advancing public file (data/risk_envelope/latest.json vs site/riskdata/risk_envelope.json) is a consequence of the lost commits, not a separate defect; it resolves with EW-P1's natural proof.
-  - EW-P3 (prereg lane), EW-P4 (descriptive early-warning UI) and EW-P5 (acceptance) are not started; they wait on EW-P1 natural proof and EW-P2 merge respectively.
+    EW-P1 acceptance: two natural nightly `engine: regime update` landings on main after the incumbent carve #10255 merges (#10333 closed as superseded 2026-10-31T20:14Z); observed by the seat's hourly git-only watcher, never dispatched or polled.
+  - >-
+    #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
+  - >-
+    EW-P3 reader stays NOT_EXECUTABLE until the registered window elapses (earliest first look 2027-12-31) and a receipted issue exists; no scorer is implemented; no outcome row has been read.
+  - EW-P4 (descriptive UI, ORCH-P4) is in flight; EW-P5 acceptance packs S/Q/O/C/U/R are not started.
 next_actions:
   - >-
-    Seat: judge ORCH-P1 and ORCH-P2 returns by opening the diffs and test output in their SSD trees; request a fresh non-authoring review; merge --match-head-commit after green exact-head CI and reviewDecision.
+    Seat: judge the ORCH-P4 return by artifact (rubric rows, EN/ZH x dark/light x 1280/390/320 shots + receipt.json; no new header, stripe or color); fresh non-authoring fabric review; merge --match-head-commit after green exact-head CI and reviewDecision.
   - >-
-    Seat: comment once on #10219 (takeover + records PR link), once on #10221 (disjoint-seam notice for scripts/ci/daily_engine_commit_outputs.sh), once on #10104 (successor pointer) after the EW-P2 PR exists.
+    Seat: when the EW-P1 watcher reports two engine landings, record PRODUCTION_PROOF for EW-P1 in this workstream (never before; a merge of #10255 is not proof).
   - >-
-    Seat: after EW-P1 merges, hand the two-natural-session proof to a durable watcher (scheduled task, never a poll) reading the next two natural daily.yml runs' engine job conclusions and the landing of `engine: regime update`.
-  - >-
-    Then: EW-P3.T1 prereg lane commission (B, forecast science) and EW-P4.T1 descriptive UI (A) per the masterplan §4, each as its own orchestrator wave with fabric lanes; EW-P5 acceptance packs S/Q/O/C/U/R per ACCEPTANCE_AND_RELEASE.md.
+    Then: EW-P5 acceptance packs per ACCEPTANCE_AND_RELEASE.md; `SESSION END:` line at a genuine stop.
 do_not_redo:
   - >-
     Do not re-ACK, re-START or re-spec the adopted task tree; #10219's tree is the source of truth and this record is an amendment.

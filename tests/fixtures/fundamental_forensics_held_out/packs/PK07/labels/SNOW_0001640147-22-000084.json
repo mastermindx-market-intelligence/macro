@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001640147-22-000084",
+    "expected_period_end": "2022-07-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "502614000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "SNOW",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "snow-20220731.htm | us-gaap:Goodwill @ie16ef6ae8ad8481bbaca6e542e9bb94e_I20220731 | Goodwill 502,614 8,449 | Consolidated balance-sheet Goodwill at 2022-07-31 (current-quarter column), in thousands (scale 3 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0001640147-22-000084|extract|goodwill"
+  },
+  {
+    "accession": "0001640147-22-000084",
+    "expected_period_end": "2022-07-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "172254000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "SNOW",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "snow-20220731.htm | us-gaap:IntangibleAssetsNetExcludingGoodwill @ie16ef6ae8ad8481bbaca6e542e9bb94e_I20220731 | Intangible assets, net 172,254 37,141 | Balance-sheet caption 'Intangible assets, net' at 2022-07-31 (current-quarter column), in thousands (scale 3 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0001640147-22-000084|extract|intangible_assets_net"
+  }
+]
