@@ -2751,6 +2751,409 @@ def test_pk09_material_weakness_probe() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def _pk09_synthetic(form: str, body: str) -> dict:
+    return produce_pack(
+        "PK09",
+        _pk09_input(
+            packages=(_synthetic_package(form, body),), entity=SYNTHETIC_ENTITY
+        ),
+    )
+
+
+# Review F1/F2 (B.3 pattern revision v2): the conclusion arms are anchored to
+# their management-conclusion phrases and the material-weakness boolean only
+# fires on an affirmative identification.
+
+
+def test_pk09_remediated_acquisition_sentence_does_not_flip_the_conclusion() -> None:
+    # Reviewer's failing Item 9A: the acquired business's controls were "not
+    # effective" before management's effective conclusion and the negated
+    # "no material weakness" sentence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Our evaluation included controls at a business acquired during the period, which were initially determined to be not effective as of the acquisition date and have since been remediated.</div>"
+        "<div>Based on that evaluation, management concluded that the Company's internal control over financial reporting was effective as of June 30, 2026 and that no material weakness was identified.</div>"
+        "<div>Our disclosure controls and procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert (
+        _row(result, "icfr_management_conclusion")["text_value"] == "effective"
+    )
+    assert _row(result, "disclosure_controls_effective")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_material_weakness_is_false() -> None:
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that no material weakness was identified."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"  # valued absence, not a hit
+    # The negated sentence does not mint a material-weakness conclusion either.
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F1-a/F1-b/F2-a (B.3 pattern revision v3): a stated ICFR conclusion
+# governs over a material-weakness mention in the same sentence, a negated or
+# remediated mention never mints the material_weakness literal, and a negated
+# identification is a valued absence. The reviewer's sentences are carried
+# byte-for-byte.
+
+
+def test_pk09_remediated_then_effective_is_effective() -> None:
+    # F1-a-1: the remediated mention is refused and the second sentence's
+    # stated effective conclusion resolves the field.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the material weakness related to "
+        "revenue recognition has been remediated as of June 30, 2026. "
+        "Management concluded that our internal control over financial "
+        "reporting was effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_no_deficiency_constituted_weakness_is_not_material_weakness() -> None:
+    # F1-a-2: the v2 guard's 60-char dead zone let "no ... constituted a
+    # material weakness" through; the negation now scans the whole window.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that no significant deficiencies or "
+        "control deficiencies constituted a material weakness in our "
+        "internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_weakness_does_not_exist_is_not_material_weakness() -> None:
+    # F1-a-3: the negator follows the noun.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness does not exist."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_effective_governs_same_sentence_weakness_mention() -> None:
+    # F1-a-4: a stated effective conclusion governs over a material-weakness
+    # mention in the same sentence, on either side of it.
+    remediated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that our internal control over financial "
+        "reporting was effective; the material weakness noted above was "
+        "remediated.</div>",
+    )
+    conclusion = _row(remediated, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    # The mention passes the pattern guards; the sentence-bounded resolver
+    # still lets the stated conclusion govern (the precedence rule itself).
+    existed = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness existed during "
+        "the fourth quarter of fiscal 2025; our internal control over "
+        "financial reporting was effective as of June 30, 2026.</div>",
+    )
+    conclusion = _row(existed, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(existed, "material_weakness_present")["text_value"] == "true"
+    assert contract.validate_pack_result(existed) == []
+
+
+def test_pk09_never_identified_material_weakness_is_false() -> None:
+    # F1-b: "never" before the identifying verb is a negation.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>We never identified a material weakness in our internal "
+        "control over financial reporting as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    # The negated identification does not mint a conclusion either.
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_identified_material_weakness_is_true() -> None:
+    # F2-a: the affirmative identification still fires true, and the negated
+    # verb-first identification is a valued absence — the main producer's
+    # bare phrase resolved both mentions to true.
+    affirmative = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of June 30, 2026."
+        "</div>",
+    )
+    weakness = _row(affirmative, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(affirmative) == []
+    negated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>The Company did not identify any material weakness in its "
+        "internal control over financial reporting as of June 30, 2026.</div>",
+    )
+    weakness = _row(negated, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(negated) == []
+
+
+def test_pk09_adverse_conclusion_is_ineffective() -> None:
+    # F2-a: the stated "not effective" conclusion governs over the earlier
+    # material-weakness mention in the same sentence — the main producer's
+    # bare phrase resolved this Item 9A to material_weakness.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that, because of the material weakness "
+        "described below, the Company&#8217;s internal control over "
+        "financial reporting was not effective as of December 31, 2025.</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of December 31, 2025."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert _row(result, "material_weakness_present")["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_disclosure_controls_not_effective_anchored() -> None:
+    ineffective = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Our disclosure controls and procedures were not effective as of "
+        "June 30, 2026.</div>",
+    )
+    row = _row(ineffective, "disclosure_controls_effective")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "ineffective"
+    # A "not effective" fragment outside the disclosure-controls phrase no
+    # longer satisfies the unanchored arm.
+    unrelated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Controls at an acquired business were not effective during the "
+        "integration period.</div>",
+    )
+    row = _row(unrelated, "disclosure_controls_effective")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(unrelated) == []
+
+
+# Review F1-1/F1-2 (B.3 pattern revision v4): the material-weakness
+# negation look-back is clause-bounded and an affirmative existence is a
+# presence. The reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_negated_relative_clause_then_identified_is_true() -> None:
+    # F1-1 (1): the negator sits in a relative clause that closes before
+    # the subject restart; the sentence-wide look-back of v3 read it as
+    # negating the affirmative identification.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on our evaluation, which did not identify any "
+        "deficiencies in entity-level controls, management identified a "
+        "material weakness in revenue recognition as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_clause_before_semicolon_then_identified_is_true() -> None:
+    # F1-1 (2): the negator sits in the clause before the semicolon; the
+    # identification after it is its own clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management's evaluation did not include controls of the "
+        "acquired business; management identified a material weakness in "
+        "revenue recognition as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_existential_weakness_not_remediated_is_true() -> None:
+    # F1-2 (3): an affirmative existence is a presence; the relative
+    # clause's "not been remediated" is outside the existential's clause,
+    # and the v3 arm's noun-then-"exists" shape never matched this
+    # sentence at all.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness, which has not been remediated."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_same_clause_negation_still_false() -> None:
+    # The comma before "and" is not a subject restart, so the clause rule
+    # did not over-widen: the negation stays in the identifying clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management did not identify any material weakness, and our "
+        "controls were effective.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F1-A/F1-B/F1-C/F2-A/F2-B (B.3 pattern revision v5): the negation
+# look-back is case-insensitive and copula-anchored, the bare existence arm
+# anchors on the whole word and refuses remediation, and the clause
+# boundary set gains coordinating and subordinating conjunctions. The
+# reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_sentence_initial_no_weakness_existed_is_false() -> None:
+    # F1-A: the sentence-initial "No" negates the existence; arm 4 now
+    # carries the same "(?<!No )" lookbehind as arm 2, and the look-back
+    # matches negators case-insensitively.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>No material weakness existed as of December 31, 2025.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_do_not_believe_there_was_weakness_is_false() -> None:
+    # F1-B: "there was" anchors the clause look-back, so the "do not"
+    # before the copula negates the existence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>We do not believe there was a material weakness in our "
+        "internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_prior_year_existed_then_remediated_is_false() -> None:
+    # F1-C: the bare existence arm anchors on the whole word and refuses a
+    # following "remediated", so a prior-year remediated mention carries no
+    # affirmative match and takes the absent value.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness that existed in the prior year was "
+        "remediated.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_existential_conjunction_not_remediated_is_true() -> None:
+    # F2-A: the existence guard stops at the coordinating "and", so the
+    # new clause's "not been remediated" does not negate the existence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has not been "
+        "remediated.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_not_effective_because_weakness_existed_is_true() -> None:
+    # F2-B: "because" is a clause boundary, so the "not" of "not
+    # effective" (a different predicate) no longer reaches the existence
+    # verb; the stated conclusion stays ineffective.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that our internal control over financial "
+        "reporting was not effective as of June 30, 2026 because a material "
+        "weakness related to revenue recognition existed as of that "
+        "date.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_weakness_existed_as_of_date_is_true() -> None:
+    # Control: an affirmative existence with no negator stays true under
+    # the whole-word anchor.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness related to inventory existed as of "
+        "December 31, 2025.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
 # 32. PK09 invariance and CLI -------------------------------------------------
 
 
@@ -3698,7 +4101,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "451380196c80b7685e1103acbf1950a65c57ec460188738dec66d006421d474e",
+    "PK09": "c0a6380ae092178d5b4dd4f6c4cb5a9fe51ee4dd55f8eb82bcb5cd03c07bad46",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -4047,7 +4450,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "abbb6196b01df079ff3ef4ed68ae8b349bf762761f2b424c0bd4625fe90ede8e"
+        "67e0020e2b1ec3d253477ec18bd21aea1fdedf7ad1ca3b02d010a6be97ee8873"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -4994,7 +5397,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "44639f4371eab872ea3bb40ded519b46bab7fb4a49ef9a5508b1f38afec63447",
+    "PK09": "cd2db9496190969e321c918f4778ff49cb7b3b15a013591aa03c84b41ae0e948",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -6781,7 +7184,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "e2b2ec35ad31446eecf4a64da503661e5157f4ec73f42c888f89a4b11a9e7831",
+    "PK09": "fd0cab5f5abbf543bf89d144fa152a762fd04d01cf236dafcbf431e4adfc16be",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -7437,7 +7840,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "14214c76ec6da3de6ebdd280b5f1a4f1348f7bdffd73145dc42271b23f8c8454",
+    "PK09": "0bc29447109656809f1f6bfbd2b31524c8e12a01993b9481e16ffa8f09521bd2",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
