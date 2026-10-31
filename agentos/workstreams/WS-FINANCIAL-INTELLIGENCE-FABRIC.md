@@ -141,26 +141,22 @@ decisions:
   - DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE
   - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
+  - DEC:FIF-HELD-OUT-BYTES-ARE-STAGED-NOT-COMMITTED
+  - DEC:FIF-PACK-PATTERN-REPINS-ARE-DIGEST-ONLY
 next_action: >
-  Z0 closure wave (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-20-fif-z0-closure-wave).
-  Production serves fif_financial_dataset_mode=production (A0 flipped; schedule run
-  39389080686 is the natural-cycle witness). Landed 2026-10-19/20: train #9773, Z0
-  #9792, A1 #9759, PK-FW #9843, PK01 #9845, clock #9761, repair #9853, z0gaps #9858,
-  A52 #9859, A18 #9863, A14 #9870, A20 #9869, step 5 #9794, twelve-pack fold #9872,
-  A21 #9871 (c304c027c26b75d0f954a0699ddc56e0a3ec3e61), A43 #9879 (67638926282eb17c6c5a5ab631fce06527004914), step 6 #9799 (44c244f05debb1e468b5b635b5234d98b36fb7c3), doctrine
-  #9882 (69288ad8d58ecb17cc39d016adef62746e5d8d40), cov-wire #9884 (38e22414cdb21096536086d3f3460893a1d94df1). Z0 matrix:
-  A14/A18/A20/A43 CLOSED; A21/A36 PENDING_LIVE; A42/A45/A46 HUMAN_GATE (entitled
-  browser profile, named once). Next: second A36 remeasure after the 2026-10-21T00:00Z
-  core-catalogue clock (the manifest now runs the production pack and packet
-  producers); Z1 r1 (fabric lane fif-z1rev-20261020-r1) CONSUMED 2026-10-20 —
-  FAIL: A43/A22 lowered to PARTIAL (test gaps), A54 RATIFIED, F3/F5 rebutted
-  (legacy-pack convention), record research/financial_intelligence_fabric/
-  FIF_Z1_INDEPENDENT_REVIEW_2026-10-20.md; next a fabric build lane adds the
-  tablet REQUIRED_CELLS cell + focus-restore assertion (A43) and a caplog
-  no-leak test (A22), then re-review only that diff; Q1 held-out labels from an
-  independent labeler (A37 is a qualified abstain until then).
-  Merge by hand with --match-head-commit on concluded green; never arm; never
-  dispatch filing-forensics-sec, daily.yml or research-ingest.
+  2026-10-31 resumption ladder (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-fif-resumption-wave).
+  Lab-a held-out labels merged (#9915 → 24ae12d64a91aee63edbb2b1be49e4c73078caca).
+  PK09 fix4 (#9907), held-out tidy (#9916) and PK08 F3-1 (#10246) passed
+  independent fabric review (PASS_WITH_NOTES, accepted on the PRs); PK10 fix4
+  (#9906) and A33 fix2 (#9910) were accepted earlier. Every open branch carries
+  origin/main f2efb8ba so CI re-runs on current main. Ladder: (1) merge
+  #9916/#9906/#9910/#9907/#10246 pinned to their refreshed heads on CONCLUDED;
+  (2) consume labeler lanes lab-b (PK02/PK03/PK04/PK05) and lab-c
+  (PK07/PK08/PK12) from mmx-ubuntu2, one PR each, merge pinned; (3) commission
+  the held-out evaluator lane and re-adjudicate A37 per pack (PK10 stays
+  not_measurable); (4) launch PK09 B.3 v6 (F4-1..F4-4) after #9907 merges, then
+  the PK08 F3-2 tidy; (5) A34 ledger #9901 last. A42/A45/A46 remain
+  EXACT_HUMAN_GATE.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -230,6 +226,10 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not rebuild the A33 receipt (PASS, #9910), PK10 fix4 (PASS, #9906), PK09 B.3 v5 (#9907, review r2 PASS_WITH_NOTES) or PK08 F3-1 (#10246, review PASS_WITH_NOTES); the notes are commissioned as B.3 v6 and F3-2 follow-ups.
+  - Do not relabel or re-seal the lab-a held-out labels (#9915, 107 records); labels come only from independent labeler lanes and are merged unchanged.
+  - Do not re-review PK09 fix4, the held-out tidy or PK08 F3-1; the fabric review returns are recorded in the 2026-10-31 handoff.
+  - Do not relaunch a lane under a spent id; a refused or dead lane gets a new id on a host whose donor carries the base.
   - Do not rebuild the 2026-10-20 Z0 closure wave: A14 owner-binding collapse (#9870), A18 fault drill (#9863), A20 shared SEC pacer (#9869), A21 observation wiring with R-A21-T8B/R-A21-STORE-TRACE (#9871), A43 tablet desk header + three-viewport evidence sets (#9879), step 5/6 (#9794/#9799), the twelve-pack fold (#9872), the desk doctrine stripe removal (#9882) and the coverage-manifest producer wiring (#9884).
   - Do not author Q1 held-out labels or reports from the seat or a pack lane; the A37 qualified abstain stands until an independent labeler produces them.
   - Do not create a second semantic model, query kernel, or metric registry.

@@ -1,7 +1,7 @@
 {
   "schema": "options_entry_coverage.v1",
-  "generated_at": "2026-10-30T14:58:37.204259+00:00",
-  "as_of": "2026-10-30",
+  "generated_at": "2026-10-31T04:32:13.891370+00:00",
+  "as_of": "2026-10-31",
   "absent_stores": [],
   "feature_coverage": {
     "n_rows": 431,
@@ -434,7 +434,7 @@
       "cond_hit_share": 0.7938,
       "readiness_forecast": {
         "forecast": "date",
-        "forecast_date": "2026-10-31",
+        "forecast_date": "2026-11-01",
         "basis": "n_cond=0/30 needed; post-W-C cadence=35.459/day \u00d7 cond_hit_share=0.800 \u2192 1 days",
         "post_wc_fires": 2624,
         "post_wc_span_days": 74
@@ -545,38 +545,38 @@
         {
           "source": "options_entry/state.parquet",
           "latest_as_of": "2026-10-16",
-          "age_days_from_today": 14,
+          "age_days_from_today": 15,
           "status": "STALE"
         },
         {
           "source": "options_entry/gate.json",
           "latest_as_of": "2026-10-17 18:50 UTC",
-          "age_days_from_today": 13,
+          "age_days_from_today": 14,
           "status": "STALE"
         },
         {
           "source": "us_board_ledger/retro_grades.parquet",
           "latest_as_of": "2026-09-17",
-          "age_days_from_today": 43,
+          "age_days_from_today": 44,
           "status": "STALE"
         }
       ]
     },
     {
       "check": "audit_options_accrual_last_run",
-      "generated_at": "2026-10-30T14:58:37.103245+00:00",
+      "generated_at": "2026-10-31T04:32:13.768238+00:00",
       "ok": false,
       "fail_reasons": [
-        "CHAINS STALE: latest chain file is 2026-08-13 (54 NYSE session(s) behind last_session=2026-10-29); threshold=1 \u2014 OI snapshot may have been missed",
-        "CHAINS SESSION FAILED: session 2026-10-29 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-10-29.json)"
+        "CHAINS STALE: latest chain file is 2026-08-13 (55 NYSE session(s) behind last_session=2026-10-30); threshold=1 \u2014 OI snapshot may have been missed",
+        "CHAINS SESSION FAILED: session 2026-10-30 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-10-30.json)"
       ],
       "warnings": []
     }
   ],
   "_stamp": {
     "audit": "options_entry_coverage.v1",
-    "generated_at_utc": "2026-10-30T14:58:37.204217+00:00",
-    "as_of": "2026-10-30",
+    "generated_at_utc": "2026-10-31T04:32:13.891363+00:00",
+    "as_of": "2026-10-31",
     "absent_stores": []
   }
 }
