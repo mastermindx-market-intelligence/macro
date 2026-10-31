@@ -18,8 +18,12 @@ the existing anonymous public chrome; presentation comes from theme.css
 tokens.
 
 Usage:
-    python -m scripts.build_consumer_cyclical_plnt_page
+    python -m scripts.build_consumer_cyclical_plnt_page  # held: exits 0, no page
     python -m scripts.build_consumer_cyclical_plnt_page --root /path/to/out-repo
+
+The page is held from the public carrier (Product Trust B1): it renders only
+to an explicit non-public root — the repository root and ``lib.config.ROOT``
+raise ``PublicCarrierHold``, and the full-site build skips the card.
 """
 from __future__ import annotations
 
@@ -47,6 +51,17 @@ FIXTURE_PATH = (
 )
 
 
+class PublicCarrierHold(RuntimeError):
+    """The synthetic fixture card is held from the public carrier."""
+
+
+def _is_public_carrier(root: Path) -> bool:
+    """True when ``root`` is this checkout or the configured carrier root."""
+    import lib.config  # noqa: PLC0415 — tmp-root tests must not pay this import
+
+    return Path(root).resolve() in {_REPO_ROOT, Path(lib.config.ROOT).resolve()}
+
+
 def load_case(fixture_path: Path = FIXTURE_PATH) -> dict[str, Any]:
     """Read the committed synthetic fixture's case fields — read, never written."""
     fixture = json.loads(Path(fixture_path).read_text(encoding="utf-8"))
@@ -72,11 +87,17 @@ def render(root: Path, *, fixture_path: Path | None = None) -> Path:
     """Write the one-card PLNT display page under ``root/site`` and return it.
 
     The packet is built first: a native-admitted refusal raises here, before
-    any directory or file is created. ``root`` is the output carrier (the
-    repository root in the full-site build, a tmp dir in tests); templates
-    and the fixture are always read from the code checkout.
+    any directory or file is created. ``root`` is the output carrier (a tmp
+    dir in tests; the repository root and ``lib.config.ROOT`` raise
+    ``PublicCarrierHold``); templates and the fixture are always read from
+    the code checkout.
     """
     root = Path(root).resolve()
+    if _is_public_carrier(root):
+        raise PublicCarrierHold(
+            "consumer_cyclical_plnt is a synthetic fixture card; "
+            "public render held (Product Trust B1)"
+        )
     packet = build_packet(Path(fixture_path) if fixture_path else FIXTURE_PATH)
     env = Environment(
         loader=FileSystemLoader(str(_REPO_ROOT / "templates")),
@@ -100,7 +121,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=_REPO_ROOT)
     parser.add_argument("--fixture", type=Path, default=None)
     args = parser.parse_args(argv)
-    print(render(args.root, fixture_path=args.fixture))
+    try:
+        print(render(args.root, fixture_path=args.fixture))
+    except PublicCarrierHold as exc:
+        print(exc, file=sys.stderr)
+        return 0
     return 0
 
 

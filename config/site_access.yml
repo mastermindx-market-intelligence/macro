@@ -127,17 +127,15 @@ public:
     - /finance_intelligence.css
     - /finance_intelligence.js
     # Consumer Cyclical PLNT synthetic display card (Wave-10 Build B): one
-    # static shell over the committed synthetic fixture, mounted through
-    # display_packet — no read-model payload, no live data. The route is held
-    # COMMENTED here, not entered, because the boundary guard lands entries in
-    # pairs: test_site_access_boundary.py:80 compares the Caddy @reg_asset
+    # static shell over the committed synthetic fixture. HELD from public
+    # build (Product Trust ruling F-6): the builder refuses the public carrier
+    # while its only input is that fixture, and site/ no longer carries the
+    # page. The route stays COMMENTED because the boundary guard lands entries
+    # in pairs: test_site_access_boundary.py:80 compares the Caddy @reg_asset
     # token list byte-for-byte against this parsed exact list, and the same
     # file's test_public_policy_targets_exist requires every exact entry to
-    # exist committed under site/. Both paired files (app/deploy/Caddyfile,
-    # site/consumer_cyclical_plnt.html) sit outside the Build-B carrier, and
-    # the page already reaches anonymous readers via the Caddyfile's *.html
-    # document wildcard. Uncomment ONLY together with the Caddyfile token and
-    # the render lane's first committed bake of the page.
+    # exist committed under site/. Uncomment ONLY together with the Caddyfile
+    # token and a first committed bake over a real, non-synthetic source.
     # - /consumer_cyclical_plnt.html
     # Tier-preview shells, promoted from free_registered to ANONYMOUS-public
     # (SEO_SUPERCHARGE_MASTERPLAN §A1/W1a). The pages themselves are preview
