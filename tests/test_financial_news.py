@@ -753,6 +753,94 @@ def test_assemble_by_ticker_annotates_only_when_excluding(capsys):
     assert "IT:ETH" in lines[0]
 
 
+# --------------------------------------------------------------------------- #
+# Freshness honesty: R1 report key + provider publish clock on headline rows.
+# --------------------------------------------------------------------------- #
+def test_polygon_rows_carry_r1_report_key_and_published_utc():
+    """T3: Polygon headlines carry the canonical R1 report key
+    (massive:<publisher-domain>:<source-item-id> — the identity
+    normalize_massive_news mints for the same payload) and the provider's
+    aware-UTC publish clock. Contract refusals or a naive clock omit the key;
+    Finnhub rows get the clock but NEVER an item_id (no canonical namespace)."""
+    from engine import qbus_news_contract as qnc
+
+    payload = {
+        "id": "abc123",
+        "title": "Chipmaker lifts quarterly outlook on data-center demand",
+        "article_url": "https://www.reuters.com/technology/chipmaker-outlook/",
+        "published_utc": "2026-10-30T14:05:00Z",
+        "description": "The company raised its quarterly forecast.",
+        "publisher": {"name": "Reuters", "homepage_url": "https://www.reuters.com/"},
+        "tickers": ["NVDA"],
+    }
+    (h,) = fn._polygon_articles([payload], _NOW)
+    assert h["item_id"] == "massive:reuters.com:abc123"
+    assert h["published_utc"] == "2026-10-30T14:05:00+00:00"
+
+    # Canonical parity: the same payload through the contract normalizer must
+    # mint the identical source:source_item_id report key.
+    rev = qnc.normalize_massive_news(payload, received_at=_NOW)
+    assert h["item_id"] == f"{rev.source}:{rev.source_item_id}"
+
+    # missing id -> no item_id (the publish clock is still carried)
+    no_id = {k: v for k, v in payload.items() if k != "id"}
+    (h2,) = fn._polygon_articles([no_id], _NOW)
+    assert "item_id" not in h2
+    assert h2["published_utc"] == "2026-10-30T14:05:00+00:00"
+
+    # non-http publisher homepage -> no canonical domain -> no item_id
+    ftp_home = dict(payload, publisher={"name": "Reuters",
+                                        "homepage_url": "ftp://reuters.com"})
+    (h3,) = fn._polygon_articles([ftp_home], _NOW)
+    assert "item_id" not in h3
+
+    # naive published_utc -> a timezone is never assumed -> key omitted
+    naive = dict(payload, published_utc="2026-10-30T14:05:00")
+    (h4,) = fn._polygon_articles([naive], _NOW)
+    assert "published_utc" not in h4
+    assert h4["item_id"] == "massive:reuters.com:abc123"
+
+    # Finnhub-style row: provider clock only — no canonical R1 namespace exists
+    # for Finnhub, so minting an item_id would create a new id namespace.
+    fh = fn._normalise("Finnhub market headline", "https://www.bloomberg.com/x",
+                       "bloomberg.com", "2026-10-30T14:05:00+00:00", "Bloomberg",
+                       ["AAPL"], "", None, "finnhub", 0.95, _NOW,
+                       _crawled_at=_NOW.isoformat(),
+                       _published_utc="2026-10-30T14:05:00+00:00")
+    assert fh is not None
+    assert fh["published_utc"] == "2026-10-30T14:05:00+00:00"
+    assert "item_id" not in fh
+
+    # mastermind_by_ticker copies item_id/published_utc into top[] only when
+    # the source headline carries a non-empty value.
+    out = fn.mastermind_by_ticker(_make_feed_with_ticker("NVDA", [dict(h)]))
+    top = out["NVDA"]["top"][0]
+    assert top["item_id"] == h["item_id"]
+    assert top["published_utc"] == h["published_utc"]
+    plain = _make_norm("Plain row without the new fields", "cnbc.com", ["MSFT"], 60)
+    out2 = fn.mastermind_by_ticker(_make_feed_with_ticker("MSFT", [plain]))
+    assert "item_id" not in out2["MSFT"]["top"][0]
+    assert "published_utc" not in out2["MSFT"]["top"][0]
+
+
+def test_mastermind_by_ticker_existing_keys_unchanged():
+    """T4: a feed whose headlines carry neither new field keeps the exact
+    pre-change key sets — nothing added, nothing renamed."""
+    headlines = [
+        {"title": "NVDA beats earnings", "url": "u1", "source": "Reuters",
+         "seendate": "2026-06-19T12:00:00+00:00", "sentiment": "pos",
+         "summary": "Strong quarter."},
+    ]
+    result = fn.mastermind_by_ticker(_make_feed_with_ticker("NVDA", headlines))
+    assert set(result["NVDA"].keys()) == {
+        "n_recent", "sentiment_lean", "n_pos", "n_neg", "sentiment_score",
+        "sentiment_strength", "baskets", "sectors", "is_mag7", "top", "note",
+    }
+    assert set(result["NVDA"]["top"][0].keys()) == {
+        "title", "url", "source", "published", "sentiment", "summary",
+    }
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn_call in fns:
