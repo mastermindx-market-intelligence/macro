@@ -40,7 +40,7 @@ waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
     status: done
-    next_action: "2026-10-31 20:4xZ — W3 Section C censuses MERGED (macro #10344 -> 81f64c2c: C1 exposure joins, C3 F05 delivery; ORCH-3 #10338 -> cde8601b and records #10339 -> 754d5345 also on main); next: W3 Section F reviews, W4 E4 brief, §9 vertical proofs and production proof (real sign-in = human gate); F05 GAP-RECEIPT owed by the Chronicle owner; Fabric hosts WAITING_CAPACITY (ubuntu2/3 disk — #1632 owner; ubuntu1 temperature); Chairman disk law binds."
+    next_action: "2026-10-31 22:1xZ — W3 F1 denominator matrix MERGED (macro #10348 -> ed8cd519; review PASS_WITH_NOTES, 18 segments: SOURCE 14 / MERGE 7 / INSTALLATION 5 / AUTH 1 / ACCEPTANCE 1 historical); W4 E4 binding census repaired after an Opus audit FAIL, re-reviewed PASS_WITH_NOTES, macro #10351 OPEN at a3b84009 (merge pinned, CI pending); next: merge #10351, W3 F2 adversarial review, §9 vertical proofs, E4 design-blocked until B1-B4 qualified."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
     status: done
@@ -61,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 19:2xZ — ORCH-3 and ORCH-4 landed (macro #10338 pending CI/merge; terminal #1196 merged); next: merge #10338 at 2981b4ed, then W3 Section C/F and W4 brief + production proof; Chairman disk law 2026-10-31 binds every lane (no reclaim on any host)."
+next_action: "2026-10-31 22:1xZ — W3 Section C (#10344) and F1 (#10348 -> ed8cd519) on main; W4 E4 census #10351 open at a3b84009 pinned for merge; next: merge #10351, then W3 F2 review, §9.1 vertical proofs, production proof; E4 implementation blocked until B1-B4 bindings are qualified (all PARTIAL at HEAD)."
 ---
 
 # News Intelligence Estate convergence
