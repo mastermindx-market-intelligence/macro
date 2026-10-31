@@ -26,7 +26,6 @@ from scripts.prophet_settlement_preflight import (
     InfrastructureError,
     STATUS_QUALIFIED,
     STATUS_REFUSED,
-    write_receipt,
     run_preflight,
     write_receipt,
 )
@@ -972,6 +971,43 @@ def test_pass_through_is_reachable_once_the_owner_ceiling_lifts_and_every_leg_fl
     assert _preflight(root, evidence, gmi_receipt_path=receipt_path)["reason_codes"] == [
         "GMI_THEME_STATE_NOT_QUALIFIED"
     ]
+
+
+def test_valid_empty_owner_receipt_is_an_accepted_reference_and_stale_or_pending_is_not(
+    tmp_path, production_world, monkeypatch
+) -> None:
+    """round-3 nit 2 pins the N6 adjudication on the preflight's OWN status gate.
+
+    The owner validator is replaced by a no-op here on purpose: with it live, a
+    receipt whose status disagrees with the generation is GMI_RECEIPT_INVALID
+    before the preflight's status branch runs, and the ceiling makes the branch
+    unobservable in production today. Everything else (generation, identity
+    hashes, the other four legs) is the owner's own.
+    """
+    import scripts.prophet_settlement_preflight as module
+    from engine.neuralweb import theme_state_generation_reader as reader
+
+    root, plan, evidence = _accepted_world(tmp_path, production_world)
+    receipt_path, owner_receipt = _owner_receipt(root, tmp_path)
+    monkeypatch.setattr(module, "GMI_UNQUALIFIED_CODES", ())
+    monkeypatch.setattr(reader, "validate_read_receipt_at_use", lambda receipt, publication_plan: None)
+
+    def with_status(status):
+        doc = dict(owner_receipt)
+        doc["status"] = status
+        path = tmp_path / f"receipt-{status}.json"
+        path.write_text(json.dumps(doc), encoding="utf-8")
+        return _preflight(root, evidence, gmi_receipt_path=path)
+
+    assert with_status("DESCRIPTIVE")["status"] == STATUS_QUALIFIED
+    empty = with_status("VALID_EMPTY")
+    assert empty["status"] == STATUS_QUALIFIED and empty["reason_codes"] == []
+    assert empty["leg_detail"]["gmi_theme_state"]["detail"]["receipt_status"] == "VALID_EMPTY"
+    for refused in ("STALE", "PENDING", "UNAVAILABLE"):
+        got = with_status(refused)
+        assert got["status"] == STATUS_REFUSED, refused
+        assert got["reason_codes"] == ["GMI_RECEIPT_NOT_AVAILABLE"], refused
+        assert got["artifact_hashes"]["theme_state"] is None, refused
 
 
 def test_missing_or_unbound_source_snapshot_leaves_a_typed_receipt(tmp_path) -> None:
