@@ -40,7 +40,7 @@ waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
     status: done
-    next_action: "Done 2026-10-31: takeover handoff, DEC:NEWS-ESTATE-B1-JOINS recorded."
+    next_action: "2026-10-31 20:4xZ — W3 Section C censuses MERGED (macro #10344 -> 81f64c2c: C1 exposure joins, C3 F05 delivery; ORCH-3 #10338 -> cde8601b and records #10339 -> 754d5345 also on main); next: W3 Section F reviews, W4 E4 brief, §9 vertical proofs and production proof (real sign-in = human gate); F05 GAP-RECEIPT owed by the Chronicle owner; Fabric hosts WAITING_CAPACITY (ubuntu2/3 disk — #1632 owner; ubuntu1 temperature); Chairman disk law binds."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
     status: done
