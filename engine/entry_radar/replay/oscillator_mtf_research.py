@@ -153,7 +153,8 @@ def _indicator_segment(closes: list[float], kind: str) -> tuple[pd.Series, pd.Se
 def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                       eligibility: Mapping[tuple[str, str], Mapping[str, Any]],
                       decision_cutoff_utc: str,
-                      supplied: Mapping[tuple[str, str], Mapping[str, Any]] | None = None
+                      supplied: Mapping[tuple[str, str], Mapping[str, Any]] | None = None,
+                      prior_session_by_day: Mapping[date, date] | None = None,
                       ) -> list[dict[str, Any]]:
     """Emit null-safe descriptive crossover states, never live trading signals.
 
@@ -166,12 +167,64 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
         raise ValueError("frozen known oscillator species and eligibility map required")
     if indicator == "SUPPLIED_LINES" and not isinstance(supplied, Mapping):
         raise ValueError("exact exported indicator lines must be supplied explicitly")
+    if prior_session_by_day is not None and (not isinstance(prior_session_by_day, Mapping)
+            or any(type(k) is not date or type(v) is not date or v >= k
+                   for k, v in prior_session_by_day.items())):
+        raise ValueError("invalid owner previous-session calendar mapping")
     cutoff = _instant(decision_cutoff_utc)
     lines = []
     events = []
+    latest_source_known = None
     sorted_bars = sorted(bars, key=lambda b: (b["symbol"], b["bar_end_utc"]))
+    # Retain the existing owner's terminal stub as an explicit session
+    # completeness witness. If the last full candle or the stub disappears,
+    # carrying an oscillator over the overnight boundary would splice data
+    # across an unobserved interval and falsely classify earlier events.
+    sessions: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    unique: set[tuple[str, str]] = set()
+    inspected_grains: dict[str, int] = {}
+    for item in sorted_bars:
+        sym, grain = item.get("symbol"), item.get("grain_minutes")
+        if sym in inspected_grains and inspected_grains[sym] != grain:
+            raise ValueError("cannot mix 120m and 180m oscillator bars for one symbol")
+        inspected_grains[sym] = grain
+        ident = (sym, item["bar_end_utc"])
+        if ident in unique:
+            raise ValueError("duplicate observed bar identity")
+        unique.add(ident)
+        sessions.setdefault((sym, item["session_date"]), []).append(item)
+    last_group_for_symbol: dict[str, date] = {}
+    for (sym, session), group in sessions.items():
+        day = date.fromisoformat(session)
+        previous = last_group_for_symbol.get(sym)
+        if (previous is not None and prior_session_by_day is not None and
+                prior_session_by_day.get(day) != previous):
+            raise ValueError("missing owner predecessor session from historical bar population")
+        last_group_for_symbol[sym] = day
+        first_start = _instant(group[0].get("bar_start_utc"))
+        if (first_start.tz_convert(NY).hour,
+                first_start.tz_convert(NY).minute) != (9, 30):
+            raise ValueError("missing opening full bar from session")
+        tail = group[-1]
+        if tail.get("status") != "STUB_EXCLUDED":
+            raise ValueError("missing terminal session stub from owner window projection")
+        grain = tail.get("grain_minutes")
+        if type(grain) is not int or grain not in ALLOWED_GRAINS:
+            raise ValueError("invalid terminal session grain")
+        stub_start = _instant(tail.get("bar_start_utc"))
+        stub_end = _instant(tail.get("bar_end_utc"))
+        day = date.fromisoformat(session)
+        opening = pd.Timestamp(session + " 09:30", tz=NY).tz_convert("UTC")
+        span = (stub_start - opening).total_seconds() / 60
+        stub = (stub_end - stub_start).total_seconds() / 60
+        if (span < grain or span % grain != 0 or not 0 < stub < grain or
+                len(group) - 1 != int(span / grain) or
+                stub_end.tz_convert(NY).date() != day or
+                (stub_end.tz_convert(NY).hour, stub_end.tz_convert(NY).minute) > (16, 0)):
+            raise ValueError("missing full RTH slots or invalid terminal session stub")
     grains: dict[str, int] = {}
     observed_keys: set[tuple[str, str]] = set()
+    current_session_unknown = False
     for idx, bar in enumerate(sorted_bars):
         if bar.get("schema") != "macro.rs_oscillator_mtf_bars.v1":
             raise ValueError("unexpected bar schema")
@@ -207,9 +260,23 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
             raise ValueError("missing or overlapping RTH bar observations")
         if idx and sorted_bars[idx-1]["symbol"] != bar["symbol"]:
             lines = []
+            latest_source_known = None
+            current_session_unknown = False
+        elif (idx and sorted_bars[idx-1]["symbol"] == bar["symbol"] and
+              sorted_bars[idx-1]["session_date"] != bar["session_date"]):
+            if prior_session_by_day is None:
+                # The source owner must certify genuine exchange-calendar
+                # adjacency. Without it, an omitted holiday/session could
+                # create a false crossover. No source claim is issued.
+                lines = []
+                latest_source_known = None
+                current_session_unknown = True
+            else:
+                current_session_unknown = False
         if status != "FULL_KNOWN":
             if status != "STUB_EXCLUDED":
                 lines = []
+                latest_source_known = None
             events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
                            "indicator": indicator, "state": "SOURCE_" + status,
                            "signal": None, "issued_at_utc": None, "source_admitted": False})
@@ -221,7 +288,30 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                 ending - _instant(bar.get("bar_start_utc")) != pd.Timedelta(minutes=grain) or
                 not _sha(bar.get("source_sha256")) or bar.get("refusals")):
             raise ValueError("inconsistent full bar/availability")
+        if current_session_unknown:
+            events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
+                           "indicator": indicator,
+                           "state": "SOURCE_OWNER_PREDECESSOR_UNKNOWN",
+                           "signal": None, "issued_at_utc": None,
+                           "source_admitted": False})
+            continue
+        # A late restatement of ANY earlier source candle can change the
+        # recursive RSI/MACD history. Such a historical value was not known
+        # when this bar was first issued: refuse both CROSS and NO_CROSS
+        # rather than backdating a later-vintage result to an earlier clock.
+        # The actual owner must still supply as-issued per-event revisions;
+        # this check is an additional fail-closed local clock invariant.
+        # Keep the immutable observed prefix for subsequent *later* issues;
+        # an unavailable earlier event is a null, not an erased candle.
         lines.append(bar)
+        if latest_source_known is None or known > latest_source_known:
+            latest_source_known = known
+        if latest_source_known > known:
+            events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
+                           "indicator": indicator,
+                           "state": "SOURCE_HISTORICAL_REVISION_UNAVAILABLE",
+                           "signal": None, "issued_at_utc": None, "source_admitted": False})
+            continue
         ready = False
         oscillator_known = known
         if indicator == "SUPPLIED_LINES":
