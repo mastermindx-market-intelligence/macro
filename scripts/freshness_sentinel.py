@@ -1970,11 +1970,59 @@ def public_report(report: dict) -> dict:
     Shallow-copies down to the per-surface dicts only, which is exactly as deep
     as the key being removed — the callers publish and discard.
     """
-    out = dict(report)
+    # Anonymous Caddy output must be default-deny at the TOP level too.
+    # The normal evaluator/runtime owns exactly these public keys; a newly
+    # introduced private annotation must not be published just because it
+    # appears beside generated_at. The settlement block is handled below.
+    public_keys = (
+        "generated_at", "ok", "stale_surfaces", "indeterminate_surfaces",
+        "active_breach", "blind_surfaces", "alerting", "sla", "heartbeat",
+    )
+    out = {key: report[key] for key in public_keys if key in report}
+    raw_surfaces = report.get("surfaces")
     out["surfaces"] = {
-        sid: {k: v for k, v in c.items() if k != "facts"} if isinstance(c, dict) else c
-        for sid, c in (report.get("surfaces") or {}).items()
-    }
+        sid: {k: v for k, v in c.items() if k != "facts"}
+        for sid, c in raw_surfaces.items()
+        if isinstance(sid, str) and isinstance(c, dict)
+    } if isinstance(raw_surfaces, dict) else {}
+    # This file is public. A2 never ships private source/plan payloads or raw
+    # artifact hashes to an unauthenticated reader. New internal fields stay
+    # omitted unless explicitly listed here as safe health metadata.
+    if "prophet_settlement" in report:
+        from scripts.prophet_settlement_manifest import (
+            FAILURE_CODES, SETTLEMENT_SCHEMA, _parse_session,
+            settled_envelope_is_structural,
+        )
+        raw = report.get("prophet_settlement")
+        # A list/string (possibly containing paid plans) is not a public
+        # settlement object. Never shallow-copy an unrecognized value.
+        raw_settlement = raw if type(raw) is dict else {}
+        failures = raw_settlement.get("failures")
+        raw_status = raw_settlement.get("status")
+        known = (
+            raw_settlement.get("schema") == SETTLEMENT_SCHEMA
+            and type(raw_status) is str
+            and raw_status in {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
+        )
+        observed_status = raw_status if known else "UNAVAILABLE_DATA"
+        if observed_status == "SETTLED" and not settled_envelope_is_structural(raw_settlement):
+            # The genuine projector issues a complete, closed internal
+            # envelope. A missing/unknown schema, impossible clock, private
+            # extension, false empty-list equality, or contradictory vintage
+            # cannot be re-certified merely by dropping those fields.
+            observed_status = "UNAVAILABLE_DATA"
+        owed = raw_settlement.get("owed_session")
+        source = raw_settlement.get("source_asof")
+        out["prophet_settlement"] = {
+            "schema": SETTLEMENT_SCHEMA,
+            "status": observed_status,
+            "owed_session": owed if _parse_session(owed) is not None else None,
+            "source_asof": source if _parse_session(source) is not None else None,
+            "failures": [
+                token for token in failures[:16]
+                if type(token) is str and token in FAILURE_CODES
+            ] if type(failures) is list else [],
+        }
     return out
 
 
@@ -2271,6 +2319,68 @@ def facts_line(check: dict) -> str | None:
 
 
 
+
+def project_prophet_settlement_from_reads(
+    now: datetime,
+    served_index: FetchResult | None,
+    public_health: FetchResult | None,
+) -> dict:
+    """A2: join the incumbent checkpoint receipt to the actual served read.
+
+    Only an observed served index, exact raw-content hash, valid source clocks
+    and publication evidence can qualify SETTLED. This is a read model; it
+    neither publishes a source nor changes the sentinel's own health verdict.
+    The public caller narrows its fields before releasing staleness.json.
+    """
+    from scripts.prophet_settlement_manifest import project_settlement_manifest
+
+    try:
+        owed = _calendar_mod(None).expected_last_session(now).isoformat()
+    except Exception:  # noqa: BLE001 -- unknown calendar must never imply SETTLED
+        owed = ""
+    health: dict | None = None
+    if (
+        public_health is not None
+        and public_health.error is None
+        and public_health.status == 200
+        and public_health.body
+    ):
+        try:
+            node = json.loads(public_health.body)
+            health = node if isinstance(node, dict) else None
+        except (ValueError, TypeError):
+            health = None
+
+    raw: bytes | None = None
+    computed_at: str | None = None
+    if (
+        served_index is not None
+        and served_index.error is None
+        and served_index.status == 200
+        and served_index.body is not None
+    ):
+        # read_served() already read the walled bytes once. Re-encode a valid
+        # UTF-8 read; invalid original bytes cannot match the publisher's hash.
+        raw = served_index.body.encode("utf-8")
+        try:
+            doc = json.loads(served_index.body)
+            value = doc.get("computed_at") if isinstance(doc, dict) else None
+            if isinstance(value, str):
+                computed_at = value
+        except (TypeError, ValueError):
+            pass
+
+    observed = now.astimezone(timezone.utc).isoformat() if now.tzinfo else ""
+    return project_settlement_manifest(
+        owed_session=owed,
+        accepted_health=health,
+        served_index_bytes=raw,
+        reader_observed_at=observed,
+        computed_at=computed_at,
+    )
+
+
+
 def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Path,
         dry_run: bool = False, fetcher=fetch, served_dir: Path | None = None,
         served_reader=read_served) -> int:
@@ -2316,6 +2426,19 @@ def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Pat
     # and a dry run reads it without ever writing it back.
     prior_state = load_state(state_dir)
     report = evaluate(results, now, client_reads=client_reads, state=prior_state)
+
+    # A2 read-only projection: the public R2 health key is metadata only.
+    # Never fetch the private /prophet/index.json over HTTP. The index body
+    # below came from the one real served-file read already used by evaluate().
+    try:
+        health_receipt = fetcher(
+            r2_base.rstrip("/") + "/prophet/health.json", want_body=True
+        )
+    except Exception:  # noqa: BLE001 -- optional receipt failure cannot blind existing sentinel
+        health_receipt = FetchResult(error="public_health_receipt_unavailable")
+    report["prophet_settlement"] = project_prophet_settlement_from_reads(
+        now, results.get("prophet_us"), health_receipt
+    )
 
     # PR-1 item 1c — prophet_live served-vs-R2 agreement. Injected post-evaluate()
     # because it needs live R2 credentials that evaluate() has no business

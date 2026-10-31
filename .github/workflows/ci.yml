@@ -4256,6 +4256,10 @@ on:
       # import-derived auditor reports subjects=[] and would call it untriggerable.
       - "tests/test_prophet_rescue.py"
       - "scripts/prophet_rescue.py"
+      # V4-A2 path-literal projection: keep module and test halves triggerable.
+      - "scripts/prophet_settlement_manifest.py"
+      - "tests/test_prophet_settlement_manifest.py"
+      - "tests/test_prophet_settlement_sentinel.py"
       # PR-1 Prophet US permanence net (2026-08-27), same unrun-dark-guards family:
       # the new post-publish acceptance alarm (imported via importlib from
       # daily.yml's engine job, the same path-literal shape as the rescue lane
