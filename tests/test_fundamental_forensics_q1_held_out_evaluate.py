@@ -126,6 +126,8 @@ def _label_trials(pack_id: str, reports_dir: Path = REPORTS_DIR) -> list[str]:
     an accession outside that universe is admitted here only when the pack's
     seal ledger records a sealing act AFTER the generation was evaluated —
     otherwise it is a label the evaluator silently dropped, and the pin fails.
+    A report that records no ``evaluated_at`` cannot date the seals, so an
+    out-of-universe file is refused outright (fail closed).
     """
     labels_dir = HELD_OUT_ROOT / "packs" / pack_id / "labels"
     if not labels_dir.is_dir():
@@ -138,10 +140,16 @@ def _label_trials(pack_id: str, reports_dir: Path = REPORTS_DIR) -> list[str]:
         rows = json.loads(path.read_text(encoding="utf-8"))
         accessions = {row["accession"] for row in rows}
         if universe is not None and not accessions & universe:
+            assert evaluated_at, (
+                f"{pack_id}: {path.name} is outside the generation's accession "
+                f"universe and the generation's report records no evaluated_at; "
+                f"a later wave cannot be told apart from a dropped label, so "
+                f"the pin fails closed"
+            )
             later_seals = [
                 block
                 for block in _seal_blocks(labels_dir)
-                if block.get("sealed_at", "") > (evaluated_at or "")
+                if block.get("sealed_at", "") > evaluated_at
             ]
             assert later_seals, (
                 f"{pack_id}: {path.name} is outside the generation's accession "
@@ -291,6 +299,18 @@ def test_label_trials_scope_to_the_generation_universe_and_refuse_a_dropped_labe
     (labels_dir / "_SEALED").write_text(wave_one, encoding="utf-8")
     with pytest.raises(AssertionError, match="dropped"):
         _label_trials("PK99", reports_dir)
+
+    # A report without evaluated_at cannot date the seals: the out-of-universe
+    # file is refused rather than admitted as a later wave (fail closed).
+    (labels_dir / "_SEALED").write_text(wave_one + "\n" + wave_two, encoding="utf-8")
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({}), encoding="utf-8"
+    )
+    with pytest.raises(AssertionError, match="no evaluated_at"):
+        _label_trials("PK99", reports_dir)
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({"evaluated_at": "2026-10-31T16:37:04Z"}), encoding="utf-8"
+    )
 
     # A generation without a trials file for the pack keeps the whole root.
     (reports_dir / "PK99_trials.json").unlink()
