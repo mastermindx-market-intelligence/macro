@@ -48,7 +48,7 @@ changed:
       concurrent-writer rebase, and after main added/changed qledger files), a
       hard-kill + always()-step restore, the park-failure withhold, a carved new
       file, trap chaining (one-line, multi-line, quoted), and the wiring pins.
-prs: [10255, 10267, 10277]
+prs: [10255, 10267, 10277, 10283]
 verified:
   - claim: The nightly outage root cause is GitHub's GH001 blob limit on data/qledger/claims.jsonl, not the builders.
     command: >
@@ -153,8 +153,40 @@ verified:
       engine/us_candidate_lanes.py): 365 admissions stamped >= discovery, 6.0% zero lag,
       median lag 14 grid sessions (IQR 5-23), 722 never; lane/tier/featured populated on
       35 of 54 stamp dates (last 2026-10-19), buyable/eligible on all 54. Registration
-      r2 at 549d416f on Draft PR #10283 (DRAFT - UNFROZEN; round-2 review running).
+      r2 at 549d416f on Draft PR #10283; round-2 review REVISE (ITT primary with
+      T1 = cash was a selection contrast with a 50 bps cost asymmetry; BUY coverage
+      has gaps inside the decision window; session units, knowability, REJECT rules,
+      B4 futility quote, MDE, falsifier). Superseded by revision 3 (next claim).
+  - claim: W2 census v3 on the freeze basis identifies only the per-protocol timing contrast in R, and revision 3 registers that estimand with the policy contrast demoted to a P-only secondary.
+    command: >
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions
+      <W1 r3 receipt map> --commit-walk --k 10 --buffer-minutes 30 (dates, tickers,
+      lane/tier flags and commit times only; SPY parquet opened for its date index).
+    result: >
+      1,087 admissions (all W1 r3 discovery sessions inside R) -> 98 INCUMBENT_LED ->
+      96 identified pairs (31 exact + 65 interval-censored by producer gaps), 892
+      CENSORED (a gap and no BUY stamp in the window), 0 CASH (no R window is free of
+      gaps), 1 UNKNOWN; healthy stamps on 26 of 42 R sessions; earliest-possible lead
+      median 2 sessions (IQR 1-4), observed-stamp median 6; k* = 2 = k (T2m
+      UNIDENTIFIED); every BUY stamp becomes knowable 1-2 sessions after its date
+      (275 commits walked). Output committed as
+      research/prophet_v4/entry_timing_w2_t1_census_2026-10-31.json (c1a0724a).
+      Registration r3 at 8d86c28c (DRAFT - UNFROZEN): conditional timing primary
+      with argued bias direction and a placebo negative control; policy contrast as
+      P-only decomposition; INCUMBENT_LED class; interval-censored admission; NYSE
+      session units; as-committed knowable session + next-close fill; REJECT/RETAIN
+      rules; B4 futility quoted; MDE stated. Round-3 review running on 8d86c28c.
+  - claim: PR #10255 round 2 (fresh bounded reviewer at 6454a74a) returned APPROVE-READY and the PR is armed merge-on-green.
+    command: gh pr view 10255 --comments (the round-2 verdict comment); one GraphQL read of mergeStateStatus/labels.
+    result: >
+      APPROVE-READY with four non-blocking nits (warn on snapshot-record write
+      failure; per-step record tag; LOST return non-zero; explicit ci.yml two-halves
+      entries) deferred to a follow-up PR; label merge-on-green set; UNSTABLE while
+      ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
+      6454a74a all OPEN/UNSTABLE/armed).
 unverified:
+  - claim: W2 registration r3 (8d86c28c) is ready to freeze.
+    what_would_verify: the round-3 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
   - claim: PR #10277 (head d03acfd0) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
@@ -195,10 +227,11 @@ unresolved:
     files) is an unmade design decision — binding the seam does not wire the nightly.
 next_actions:
   - >
-    1. Consume the fresh bounded round-2 review of #10255 at 6454a74a (the stalled
-    reviewer was stopped, no verdict); on APPROVE-READY and green hosted CI arm
-    merge-on-green; release through the normal ship path (merge --match-head-commit
-    6454a74a); never self-approve or self-merge.
+    1. #10255 at 6454a74a is reviewed APPROVE-READY and armed merge-on-green:
+    consume the sweeper outcome once at a real boundary (merge --match-head-commit
+    6454a74a); never self-approve or self-merge; then open the nits follow-up PR
+    (snapshot-record write warning, per-step record tag, LOST non-zero, explicit
+    ci.yml two-halves entries).
   - >
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
@@ -218,18 +251,20 @@ next_actions:
     through its existing carrier before any overlapping issuer work; do not
     re-run it.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r2 at 549d416f, DRAFT -
-    UNFROZEN): consume the round-2 review; apply any FIX-BEFORE-FREEZE on the
-    branch; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census with the
-    W1 r2 session and the identity join, k*, T3 gate, panel commit SHA, Data OS
+    6. Entry Timing W2 (Draft PR #10283, registration r3 at 8d86c28c, DRAFT -
+    UNFROZEN; census v3 committed): consume the round-3 review; apply any REVISE on
+    the branch as r4; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census
+    v3 re-run with both commit walks, T3 gate, panel commit SHA per look, Data OS
     exclusion list) and mirror a machine freeze; R can never promote; no outcome
     read before freeze; a separate registration, never a change to #7751 A1. B-17
     34-session window census (7,918 C0 episodes, none complete) stays null — no
     favorable subset.
   - >
-    7. Reference coverage (the whole W1 loss): route to the Data OS owner of
-    scripts/build_security_master.py / the membership ingest with the W1 numbers;
-    never force ticker matches or accept a later snapshot for historical sessions.
+    7. Reference coverage (the whole W1 loss): ROUTED 10-31 by a
+    HANDOFF_SOURCE_LINK_V1 comment on program issue #6805 to the Data OS owner role
+    of scripts/build_security_master.py / the membership ingest (source PR #10277);
+    delivery is not pickup — never force ticker matches or accept a later snapshot
+    for historical sessions; consume the owner's return on #6805 once.
 do_not_redo:
   - V4 waves 0A, 0B, A1, B1, D1 and Entry Timing W0 are DONE (do not reopen).
   - "PR #9556's inline carve in the `collect` job is accepted; #10255 does not touch it."
@@ -287,6 +322,19 @@ admission; revision 2 (549d416f, PR #10283) uses the BUY-lane placement, an
 intention-to-treat primary, the existing grade producer's next-close fill on the
 pinned yahoo close panel, declared identity join and knowability rules, and W2's own
 futility rule. Everything here is DELIVERED at most; nothing is merged, frozen or
+production-proven.
+
+Third segment: #10255's fresh round-2 review returned APPROVE-READY (nits deferred)
+and it is armed beside #10267 and #10277; all three sit UNSTABLE while ci-pack runs,
+owned by the sweeper. The W2 round-2 review rejected the intention-to-treat primary
+as a selection contrast and found BUY-lane coverage gaps inside the decision window,
+so a census v3 was built on the freeze basis (W1 r3 receipt sessions, VendorAliasTable
+join, NYSE sessions, producer-health coverage, a commit walk for as-committed
+knowability) and revision 3 (8d86c28c) registers what that census shows is identified
+in R: a per-protocol timing contrast on 96 admitted pairs, declared conditional with
+its bias direction argued and a placebo negative control, while the policy contrast
+becomes a P-only secondary. The reference-coverage finding was routed to the Data OS
+owner role on #6805. Round-3 review is running; still nothing merged, frozen or
 production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
