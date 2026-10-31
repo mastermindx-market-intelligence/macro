@@ -601,3 +601,55 @@ class TestL2L4FilingDateAnchor:
         # With no filing_date, the ticker should be skipped entirely (no entry)
         assert not any(r["ticker"] == "TSLA" for r in entries), (
             "L2 must skip tickers whose holders have no filing_date")
+
+
+@pytest.mark.parametrize("cohort", ["L1", "L2", "L3", "L4", "L5"])
+def test_append_preserves_unreadable_existing_ledger(tmp_path, cohort):
+    path = ol._ledger_path(cohort, tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    original = b"synthetic-unreadable-ledger-do-not-replace"
+    path.write_bytes(original)
+    row = {"ticker": "SYNTH", "anchor_date": "2026-10-30", "slug": "synthetic",
+           "filer": "synthetic", "composite_version": "synthetic"}
+    try:
+        ol._append_rows(cohort, [row], root=tmp_path)
+    except Exception:
+        pass
+    assert path.read_bytes() == original
+
+
+def test_append_preserves_valid_ledger_on_transient_read_error(tmp_path, monkeypatch):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"ticker": "OLD", "anchor_date": "2026-10-29", "filer": "existing"}]).to_parquet(path)
+    original = path.read_bytes()
+    def unavailable(*args, **kwargs):
+        raise OSError("synthetic read unavailable")
+    monkeypatch.setattr(pd, "read_parquet", unavailable)
+    try:
+        ol._append_rows("L3", [{"ticker": "NEW", "anchor_date": "2026-10-30", "filer": "new"}], root=tmp_path)
+    except OSError:
+        pass
+    assert path.read_bytes() == original
+
+
+def test_append_preserves_ledger_when_stat_is_denied(tmp_path, monkeypatch):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"synthetic preimage")
+    original_stat = type(path).stat
+    def denied(self, *args, **kwargs):
+        if self == path:
+            raise PermissionError("synthetic stat denied")
+        return original_stat(self, *args, **kwargs)
+    monkeypatch.setattr(type(path), "stat", denied)
+    with pytest.raises(PermissionError):
+        ol._append_rows("L3", [{"ticker": "NEW", "anchor_date": "2026-10-30", "filer": "new"}], root=tmp_path)
+    assert path.read_bytes() == b"synthetic preimage"
+
+
+def test_display_reader_retains_unreadable_fallback(tmp_path):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"synthetic unreadable")
+    assert ol._load_ledger("L3", root=tmp_path).empty
