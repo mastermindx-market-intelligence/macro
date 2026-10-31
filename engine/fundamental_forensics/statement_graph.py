@@ -1962,6 +1962,30 @@ def _matched_alias_priority(taxonomy: str, concept: str, metric_id: str, registr
     return min(priorities) if priorities else None
 
 
+def _is_total_label(row: dict[str, Any]) -> bool:
+    """Same total-line predicate ``_assign_display_depth`` keys on."""
+    label = str(row.get("as_reported_label") or "").strip().lower()
+    return label.startswith("total ")
+
+
+def _recoverable_columns(demoted: dict[str, Any], governing: dict[str, Any]) -> list[str]:
+    """Column keys a demoted row fills where the governing row holds null.
+
+    Demotion is row-level, so a value only the loser carries would otherwise
+    lose its standardized binding with no receipt letting a consumer find it
+    again. Keys are the cell's period label (falling back to the period end).
+    """
+    keys: list[str] = []
+    for demoted_cell, governing_cell in zip(
+        demoted.get("cells") or (), governing.get("cells") or ()
+    ):
+        if demoted_cell.get("value") is None or governing_cell.get("value") is not None:
+            continue
+        period = demoted_cell.get("period") or {}
+        keys.append(str(period.get("label") or period.get("end") or period))
+    return keys
+
+
 def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
     """Keep one governed alias per standardized metric within a statement.
 
@@ -1972,6 +1996,12 @@ def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
     lowest priority keep the standardized mapping; every lower-priority row
     becomes ``unmapped`` with an ``alias_priority`` receipt that names the
     governing concept. Rows tied at one priority are left unchanged.
+
+    A ``total_*`` metric whose contenders disagree on wearing a ``Total ...``
+    label first restricts the contest to the rows that do — a statement total
+    must not land on a component line — and marks those receipts with
+    ``reason_detail``. A demoted row that alone fills columns the governing
+    row leaves null lists them under ``recoverable_columns``.
     """
     by_metric: dict[str, list[tuple[int, dict[str, Any]]]] = {}
     for row in rows:
@@ -1983,15 +2013,21 @@ def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
         if priority is not None:
             by_metric.setdefault(metric_id, []).append((priority, row))
     for metric_id, entries in by_metric.items():
-        best = min(priority for priority, _row in entries)
-        governing = next(row for priority, row in entries if priority == best)
+        contest = entries
+        label_preferred = False
+        if metric_id.startswith("total_"):
+            preferred = [entry for entry in entries if _is_total_label(entry[1])]
+            if preferred and len(preferred) < len(entries):
+                contest = preferred
+                label_preferred = True
+        best = min(priority for priority, _row in contest)
+        kept = [row for priority, row in contest if priority == best]
+        governing = kept[0]
         for priority, row in entries:
-            if priority == best:
+            if any(row is keeper for keeper in kept):
                 continue
             receipt = row["mapping_receipt"]
-            row["standardized_metric_id"] = None
-            row["mapping_state"] = "unmapped"
-            row["mapping_receipt"] = {
+            demotion = {
                 "taxonomy": receipt["taxonomy"],
                 "concept": receipt["concept"],
                 "reason": "alias_priority",
@@ -2000,6 +2036,14 @@ def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
                 "governing_concept": governing["mapping_receipt"]["concept"],
                 "governing_priority": best,
             }
+            if label_preferred:
+                demotion["reason_detail"] = "total_label_preferred"
+            recoverable = _recoverable_columns(row, governing)
+            if recoverable:
+                demotion["recoverable_columns"] = recoverable
+            row["standardized_metric_id"] = None
+            row["mapping_state"] = "unmapped"
+            row["mapping_receipt"] = demotion
 
 
 def _assign_display_depth(rows: list[dict[str, Any]]) -> None:

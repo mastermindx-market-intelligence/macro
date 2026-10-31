@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/qualify_tested_closure_repair.py", line 14, in <module>
+    assert subprocess.check_output(['git','diff','--','.github/ci/legacy-jobs.yml'])==patch
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

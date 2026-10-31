@@ -74,6 +74,7 @@ def _build_active(env, site, built, cards_by_group: dict) -> list:
                        extra_en=f"{ev['lev_now']}x {m['bench_en']} · vol-targeted",
                        extra_zh=f"{ev['lev_now']}x {m['bench_zh']} · 波动率目标")
         card.update(CF.card_fields(sc, ev.get("oos")))
+        card["as_of"] = ev.get("asof")
         cards_by_group.setdefault(m["group"], []).append(card)
         out.append(card)
         vm = AR.commodity_detail_vm(ev, built=built, back=_BACK,

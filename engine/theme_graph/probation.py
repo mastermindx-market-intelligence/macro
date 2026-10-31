@@ -1039,3 +1039,157 @@ def ratified_activity_memberships(rows: list[dict]) -> list[dict]:
             and isinstance(r.get("curation"), dict)
             and r["curation"].get("decision") == "ACCEPT"
             and not validate_activity_membership_proposal(r)]
+
+
+# ---------------------------------------------------------------------------
+# The activity proposal ledger (GMI PIPE-PROPOSE 2026-10-21)
+# ---------------------------------------------------------------------------
+#
+# A SEPARATE, append-only JSONL for the v1 activity species above. The legacy
+# ``proposals.jsonl`` queue keeps its mapping-row shape and its many consumers:
+# ``append_proposals`` validates only ROW_FIELDS mapping rows there, so it can
+# never carry an activity row, and this writer refuses that path outright.
+# Nothing here grants membership use or ratifies anything: the ledger records
+# PROPOSED rows and the terminal curation rows a named curator later supplied
+# as input.
+
+ACTIVITY_PROPOSALS_PATH = Path(__file__).resolve().parents[2] / "data/theme_graph/probation/activity_proposals.jsonl"
+
+
+def _activity_repropose_is_same(existing: dict, incoming: dict) -> bool:
+    """The same proposal re-proposed by a later run: identical except ``created``.
+
+    ``created`` stamps the run that first proposed the subject (the legacy queue's
+    ROW_FIELDS never carried it), so a re-run of the same subject under the same
+    ledger key is a no-op — never a conflict and never a second row. Any other
+    difference is drift and stays a key conflict.
+    """
+    def without_created(row: dict) -> dict:
+        return {key: value for key, value in row.items() if key != "created"}
+
+    return (_activity_canonical(without_created(existing))
+            == _activity_canonical(without_created(incoming)))
+
+
+def read_activity_proposals(path: str | Path | None = None) -> list[dict]:
+    """Read the activity ledger oldest first; a missing file is an empty queue."""
+    path = Path(path) if path is not None else ACTIVITY_PROPOSALS_PATH
+    if not path.exists():
+        return []
+    out: list[dict] = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+        except Exception as exc:  # noqa: BLE001 — a torn line is a ledger refusal
+            raise ActivityProposalRefusal(
+                "LEDGER_ROW_INVALID", f"line {lineno}: {exc}") from None
+        if not isinstance(row, dict) or row.get("schema") != ACTIVITY_PROPOSAL_SCHEMA:
+            raise ActivityProposalRefusal(
+                "LEDGER_ROW_INVALID",
+                f"line {lineno}: schema is not {ACTIVITY_PROPOSAL_SCHEMA}")
+        errors = validate_activity_membership_proposal(row)
+        if errors:
+            raise ActivityProposalRefusal("LEDGER_ROW_INVALID", f"line {lineno}: {errors[0]}")
+        out.append(row)
+    return out
+
+
+def append_activity_proposals(rows: list[dict], path: str | Path | None = None) -> dict:
+    """Validate then append activity rows keyed on ``(proposal_id, status)``.
+
+    Every refusal below happens before any byte is written, so a refused batch
+    leaves the ledger byte-identical. The legacy mapping ledger is never a
+    target, a different row under an existing key is a conflict (a re-proposal
+    that differs only in its ``created`` stamp is the same row, not a conflict),
+    and curation must follow its own PROPOSED row with unchanged evidence, once.
+    """
+    path = Path(path) if path is not None else ACTIVITY_PROPOSALS_PATH
+    if path.name == "proposals.jsonl":
+        raise ActivityProposalRefusal(
+            "LEGACY_LEDGER_REFUSED",
+            f"{path.name} is the legacy mapping ledger; activity rows go to "
+            f"{ACTIVITY_PROPOSALS_PATH.name}")
+    incoming = list(rows)
+    for row in incoming:
+        errors = validate_activity_membership_proposal(row)
+        if errors:
+            raise ActivityProposalRefusal("PROPOSAL_INVALID", errors[0])
+    by_key: dict[tuple[str, str], dict] = {}
+    terminal: dict[str, dict] = {}
+    for row in read_activity_proposals(path):
+        key = (str(row["proposal_id"]), str(row["status"]))
+        by_key[key] = row
+        if row["status"] in {"RATIFIED", "REJECTED"}:
+            terminal[str(row["proposal_id"])] = row
+    pending: list[dict] = []
+    appended = unchanged = 0
+    for row in incoming:
+        key = (str(row["proposal_id"]), str(row["status"]))
+        seen = by_key.get(key)
+        if seen is not None:
+            if (_activity_canonical(seen) == _activity_canonical(row)
+                    or _activity_repropose_is_same(seen, row)):
+                unchanged += 1
+                continue
+            raise ActivityProposalRefusal(
+                "LEDGER_KEY_CONFLICT",
+                f"{key[0]} already carries a different {key[1]} row")
+        if row["status"] in {"RATIFIED", "REJECTED"}:
+            pid = str(row["proposal_id"])
+            if pid in terminal:
+                raise ActivityProposalRefusal(
+                    "TERMINAL_CONFLICT",
+                    f"{pid} already has a terminal {terminal[pid]['status']} row")
+            proposed = by_key.get((pid, "PROPOSED"))
+            if proposed is None:
+                raise ActivityProposalRefusal(
+                    "CURATION_WITHOUT_PROPOSAL",
+                    f"{pid}: no PROPOSED row precedes this {row['status']} row")
+            if (_activity_canonical(proposed.get("evidence"))
+                    != _activity_canonical(row.get("evidence"))):
+                raise ActivityProposalRefusal(
+                    "CURATION_EVIDENCE_DRIFT",
+                    f"{pid}: curation evidence differs from its PROPOSED row")
+            terminal[pid] = row
+        by_key[key] = row
+        pending.append(row)
+        appended += 1
+    if pending:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as fh:
+            for row in pending:
+                fh.write(_activity_canonical(row) + "\n")
+    return {"appended": appended, "unchanged": unchanged, "path": str(path)}
+
+
+def curate_activity_proposal(proposed_row: dict, *, curator: str, decision: str,
+                             decided_at: str, receipt_bytes: bytes) -> dict:
+    """Carry one PROPOSED row to its terminal status under a named curator act.
+
+    The receipt bytes are hashed, never stored; evidence, created and authority
+    caps are carried unchanged, and the curator name is always caller-supplied.
+    A decision before the evidence's knowledge clock is refused by the row
+    validator, never silently accepted.
+    """
+    status = proposed_row.get("status") if isinstance(proposed_row, dict) else None
+    if status != "PROPOSED":
+        raise ActivityProposalRefusal(
+            "CURATION_REQUIRES_PROPOSED", f"cannot curate a {status!r} row")
+    if not receipt_bytes:
+        raise ActivityProposalRefusal(
+            "CURATION_RECEIPT_MISSING", "receipt bytes are required")
+    out = copy.deepcopy(proposed_row)
+    out["status"] = "RATIFIED" if decision == "ACCEPT" else "REJECTED"
+    out["curation"] = {
+        "curator": curator,
+        "decision": decision,
+        "decided_at": decided_at,
+        "receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+    }
+    errors = validate_activity_membership_proposal(out)
+    if errors:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", errors[0])
+    return out

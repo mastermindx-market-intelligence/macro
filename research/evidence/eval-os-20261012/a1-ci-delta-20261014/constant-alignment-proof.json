@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-14T14:38:16.053320+00:00",
+  "parent": "eee78d5c73b207dcaf9aec9b1c4a0be0bdf50f41",
+  "protected_main": "190311584167a164d9a78a390071b19fcb4b5382",
+  "main_test_blob": "33f26506b88d309fe62d02aa898de9b43e2d9a42",
+  "source_test_sha256": "a026bfd9cc12144e8ff1933e3f76d2818d0467b9e6d0dbcde6d5f2cc6a7c1d74",
+  "main_spec": {
+    "probes": [
+      [
+        "templates/index.html",
+        136,
+        5803
+      ],
+      [
+        "scripts/build_free_content.py",
+        134,
+        5600
+      ],
+      [
+        "engine/prophet/plan_book.py",
+        130,
+        5600
+      ]
+    ],
+    "max_packs": 10
+  },
+  "source_spec": {
+    "probes": [
+      [
+        "templates/index.html",
+        136,
+        5803
+      ],
+      [
+        "scripts/build_free_content.py",
+        135,
+        5600
+      ],
+      [
+        "engine/prophet/plan_book.py",
+        130,
+        5600
+      ]
+    ],
+    "max_packs": 10
+  },
+  "only_new_baseline_decision": "free-content134->135; index136 and plan130 exactly retain existing main decisions",
+  "executable_test_delta_only_two_existing_main_literals": true,
+  "prior_measurements_reused_unchanged": true,
+  "canonical_packing_breaches": [],
+  "no_main_merge_or_remote_effect": true
+}

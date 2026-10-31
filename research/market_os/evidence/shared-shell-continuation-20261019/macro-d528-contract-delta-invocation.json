@@ -1,0 +1,24 @@
+{
+  "schema": "mastermind.attended.macro_contract_delta.v1",
+  "started_at": "2026-10-20T03:02:45.622747+00:00",
+  "command": [
+    "/opt/homebrew/bin/python3.12",
+    "scripts/check_contract_delta.py",
+    "--base",
+    "d52827f26b062f67d594350a65becf406710d4d1"
+  ],
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "merge_head": "d52827f26b062f67d594350a65becf406710d4d1",
+  "index_before": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+  "environment_override": {
+    "CONTRACT_DELTA_NO_REAP": "1"
+  },
+  "override_scope": "Disable only canonical stale-base cleanup; all contract comparisons and assertions remain unchanged. Canonical own temporary base materialization and cleanup remain in use.",
+  "sources": {
+    ".github/ci/legacy-jobs.yml": "5dae3b249635ffad612bf7861529f7b0baa130c39891feb44a1a7c789d3bc659",
+    "tests/test_ci_pack.py": "7a717c84b2e3e758a016efc540d17f10b3f98f0c929a22b252bb98c0e5efc4ff",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5"
+  },
+  "source_edited_by_wrapper": false
+}

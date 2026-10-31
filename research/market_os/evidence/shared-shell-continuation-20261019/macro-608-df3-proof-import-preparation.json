@@ -1,0 +1,7 @@
+{
+  "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-proof-import.py",
+  "source_sha256": "71411f1e94d56fe34a02d3bf7984b459345c0251c7e5c1a8f6cb92d47586d7a6",
+  "derived": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-proof-import.py",
+  "derived_sha256": "700d5fdc209988e288bef181c6c338262d8c057ffa5cb6c93b50c9e993eba8a8",
+  "changes": "Same proof-pack importer: df3/current1013 manifest, exact retained browser lineage, current receipt prefix, previous608 push proof, named bounded exclusions for bulk reproducible inventories. No import executed."
+}

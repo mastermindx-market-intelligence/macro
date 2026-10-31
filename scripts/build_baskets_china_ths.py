@@ -41,6 +41,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts import _ths_build_notes as BN  # noqa: E402
+from scripts import _ths_provenance as PV  # noqa: E402
+from scripts import _ths_turn_annotate as TA  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_baskets_china_ths")
@@ -159,6 +161,10 @@ def _snapshot_membership_pit() -> None:
 
 
 HYDRATE_REL = "chinabasketdata/baskets_ths_hydrate.json"
+# Row keys the inline page never reads: member rows move to the hydrate payload, and the turn
+# evidence / drawdown stay in baskets_ths.json only (W28G SPEC 4 — the chip reads turn_state
+# and turn_days_in_state).
+_SLIM_ROW_DROP = ("members", "turn_evidence", "turn_dd_252")
 
 
 def split_for_page(data: dict, chart: dict) -> tuple[dict, dict, dict]:
@@ -173,7 +179,7 @@ def split_for_page(data: dict, chart: dict) -> tuple[dict, dict, dict]:
     """
     slim_data = {k: v for k, v in data.items() if k != "baskets"}
     slim_data["baskets"] = [
-        {k: v for k, v in b.items() if k != "members"} for b in data.get("baskets", [])
+        {k: v for k, v in b.items() if k not in _SLIM_ROW_DROP} for b in data.get("baskets", [])
     ]
     slim_data["hydrate"] = HYDRATE_REL
     slim_chart = {
@@ -229,6 +235,19 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("china THS baskets: AI-semis confirmer failed (%s)", e)
 
+    # W28G SPEC 4 — put the turn states on the rows BEFORE the JSON write, the split and the
+    # render, so the page itself carries the chips (the end-of-run block below only reached
+    # baskets_ths.json, after the page was already written). basket_turn_cn.json is written
+    # by the curated builder from the PREVIOUS THS build's levels, so these states trail this
+    # build by one build. Additive — never fatal.
+    try:
+        n_turn = TA.annotate_turn_states(
+            data.get("baskets"),
+            TA.load_turn_states(site / "chinabasketdata" / "basket_turn_cn.json"))
+        log.info("china_basket_turn: %d THS basket rows carry a turn state", n_turn)
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("china_basket_turn: in-memory THS annotation failed: %s", e)
+
     fdir = site / "chinabasketdata"
     fdir.mkdir(parents=True, exist_ok=True)
     (fdir / "baskets_ths.json").write_text(json.dumps(data, separators=(",", ":"), default=str))
@@ -244,6 +263,16 @@ def main() -> int:
     # page whose data never arrives.
     (site / HYDRATE_REL).write_text(hydrate_txt)
 
+    # Membership provenance line (W28G SPEC 1): which membership file the page computes from
+    # and how the weekly 同花顺 re-scrapes went. Display-only; never fatal.
+    try:
+        from engine.baskets_china import _ths_membership
+        mem_prov = PV.membership_provenance(
+            _ths_membership(), config.data_dir() / "baskets_china_ths" / "receipts")
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("china THS baskets: membership provenance failed (%s)", e)
+        mem_prov = None
+
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     # China SI consolidation (2026-08): baskets_china.html.j2 became a redirect stub; the
@@ -253,6 +282,8 @@ def main() -> int:
         chart_json=json.dumps(slim_chart, separators=(",", ":")),
         lite=True, basket_base="",
         build_notes=BN.build_notes(slim_data),
+        membership_provenance=mem_prov,
+        sleeve_chip=slim_data.get("sleeve_chip"),
         bench_en="CSI 300", bench_zh="沪深300",
         generated_utc=built)
     write_page(site / "baskets_china_ths.html", html)
@@ -327,12 +358,7 @@ def main() -> int:
             _ths_bj_path = _ths_fdir / "baskets_ths.json"
             if _ths_bj_path.exists():
                 _ths_bj = json.loads(_ths_bj_path.read_text())
-                for _b in (_ths_bj.get("baskets") or []):
-                    _bid = _b.get("id")
-                    if _bid and _bid in _ths_turn_states:
-                        _b["turn_state"] = _ths_turn_states[_bid].get("state", "NONE")
-                        _b["turn_dd_252"] = _ths_turn_states[_bid].get("dd_252")
-                        _b["turn_evidence"] = _ths_turn_states[_bid].get("evidence", [])
+                TA.annotate_turn_states(_ths_bj.get("baskets"), _ths_turn_states)
                 _ths_bj_path.write_text(json.dumps(_ths_bj, separators=(",", ":"), default=str))
                 log.info("china_basket_turn: annotated %d THS baskets with turn states",
                          len(_ths_bj.get("baskets") or []))

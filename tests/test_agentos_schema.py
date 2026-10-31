@@ -2986,3 +2986,132 @@ def test_d3_no_network_or_gh_in_agentos() -> None:
     for banned in ("import requests", "import urllib", "import http.client", "import socket"):
         assert banned not in source
 
+
+
+# Evaluation OS T12: typed findings are evidence, never a priority or grant.
+def _evaluation_finding(**overrides):
+    finding = {
+        "engine": "engine/example.py::EXAMPLE",
+        "metric": "hit_rate",
+        "observed_change": {"baseline": None, "current": 0, "unit": "fraction"},
+        "segment": "synthetic smoke fixture",
+        "evidence_link": "research/evidence/example.json",
+        "suggested_tier": "T1",
+    }
+    finding.update(overrides)
+    return finding
+
+
+def test_evaluation_finding_survives_existing_discovery_draft():
+    module = _load_agentos_module()
+    finding = _evaluation_finding()
+    payload = _discovery_payload(evaluation_finding=finding)
+    text = module.draft_discovery(payload)
+    rec = module.yaml.safe_load(text.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert rec["evaluation_finding"]["observed_change"]["current"] == 0
+    assert rec["evaluation_finding"]["observed_change"]["baseline"] is None
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+@pytest.mark.parametrize("finding", [
+    None, [], {},
+    _evaluation_finding(engine=""),
+    _evaluation_finding(metric=3),
+    _evaluation_finding(segment=""),
+    _evaluation_finding(evidence_link=""),
+    _evaluation_finding(suggested_tier="validated"),
+    _evaluation_finding(observed_change=True),
+    _evaluation_finding(observed_change={"current": float("nan"), "baseline": 0, "unit": "fraction"}),
+    _evaluation_finding(observed_change={"current": 1, "baseline": 0}),
+    _evaluation_finding(priority="high"),
+])
+def test_evaluation_finding_invalid_shape_refused_by_draft_and_store(finding):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    problems = module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md"))
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in problems)
+
+
+def test_evaluation_finding_unresolved_is_explicit_not_a_pass():
+    module = _load_agentos_module()
+    finding = _evaluation_finding(observed_change=None, suggested_tier=None)
+    text = module.draft_discovery(_discovery_payload(evaluation_finding=finding))
+    rec = module.yaml.safe_load(text.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+def test_evaluation_finding_does_not_supply_discovery_admission():
+    module = _load_agentos_module()
+    for field in ("falsifier", "verified_by", "confidence", "scope"):
+        payload = _discovery_payload(evaluation_finding=_evaluation_finding())
+        payload.pop(field)
+        with pytest.raises(SystemExit):
+            module.draft_discovery(payload)
+
+
+@pytest.mark.parametrize("tier", ["T1", None])
+def test_evaluation_finding_actual_cli_roundtrip(tmp_path: Path, tier):
+    finding = _evaluation_finding(suggested_tier=tier)
+    payload = _discovery_payload(evaluation_finding=finding)
+    src = _dump_json(tmp_path, "evaluation.json", payload)
+    drafted = _agentos("draft-discovery", "--from", str(src))
+    assert drafted.returncode == 0, drafted.stderr
+    module = _load_agentos_module()
+    rec = module.yaml.safe_load(drafted.stdout.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    root = _write_tree(tmp_path, {"discoveries/DSC-DRAFT-ROUNDTRIP-DISCOVERY.md": drafted.stdout})
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+    assert not (STORE / "discoveries/DSC-DRAFT-ROUNDTRIP-DISCOVERY.md").exists()
+
+
+@pytest.mark.parametrize("finding", [
+    _evaluation_finding(metric="é" * 1025),
+    _evaluation_finding(observed_change={"baseline": False, "current": 0, "unit": "fraction"}),
+    _evaluation_finding(observed_change={"baseline": 0, "current": float("inf"), "unit": "fraction"}),
+    _evaluation_finding(observed_change={"baseline": 0, "current": {"dispatch": "now"}, "unit": "fraction"}),
+])
+def test_evaluation_finding_bounds_and_control_fields(finding):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))
+
+
+@pytest.mark.parametrize("field", ["engine", "metric", "segment", "evidence_link", "unit"])
+def test_evaluation_finding_malformed_unicode_is_a_typed_refusal(field):
+    module = _load_agentos_module()
+    finding = _evaluation_finding()
+    if field == "unit":
+        finding["observed_change"]["unit"] = "\ud800"
+    else:
+        finding[field] = "\ud800"
+    payload = _discovery_payload(evaluation_finding=finding)
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))
+
+
+def test_evaluation_finding_preserves_qualitative_snapshot_without_inventing_delta():
+    module = _load_agentos_module()
+    detail = "Snapshot metric-validity finding: all claims carry direction zero; hit is undefined."
+    finding = _evaluation_finding(metric="hit_rate", observed_change=detail, suggested_tier="T0")
+    drafted = module.draft_discovery(_discovery_payload(evaluation_finding=finding))
+    rec = module.yaml.safe_load(drafted.split("---", 2)[1])
+    assert rec["evaluation_finding"] == finding
+    assert not [p for p in module.check_discovery(rec, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")) if p.hard]
+
+
+@pytest.mark.parametrize("observation", ["", "é" * 1025, "\ud800"])
+def test_evaluation_finding_invalid_qualitative_observation_is_refused(observation):
+    module = _load_agentos_module()
+    payload = _discovery_payload(evaluation_finding=_evaluation_finding(observed_change=observation))
+    with pytest.raises(SystemExit):
+        module.draft_discovery(payload)
+    assert any(p.hard and p.rule == "bad-evaluation-finding" for p in module.check_discovery(payload, Path("DSC-DRAFT-ROUNDTRIP-DISCOVERY.md")))

@@ -1,0 +1,370 @@
+{
+  "admission": {
+    "cohort_mapping_only": true,
+    "eligible_observations": 0,
+    "historical_first_publication_asserted": false,
+    "licensing_product_use": "COMPLETE_CHAIRMAN_ATTESTED",
+    "live_feed_admitted": false,
+    "vendor_finality_asserted": false
+  },
+  "hypotheses": [
+    {
+      "exact_ohlc_matches": 6,
+      "field_matches": {
+        "close": 6,
+        "high": 6,
+        "low": 6,
+        "open": 6
+      },
+      "hypothesis": "start_label_half_open",
+      "native_rows": 6,
+      "rows": [
+        {
+          "first_minute_label": "2026-10-21T00:00:00.000Z",
+          "last_minute_label": "2026-10-21T03:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T00:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T04:00:00.000Z",
+          "last_minute_label": "2026-10-21T07:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T04:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T08:00:00.000Z",
+          "last_minute_label": "2026-10-21T11:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T08:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T12:00:00.000Z",
+          "last_minute_label": "2026-10-21T15:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T12:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T16:00:00.000Z",
+          "last_minute_label": "2026-10-21T19:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T16:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T20:00:00.000Z",
+          "last_minute_label": "2026-10-21T23:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": true
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T20:00:00+00:00"
+        }
+      ],
+      "start_offset_minutes": 0,
+      "window_minutes": 240
+    },
+    {
+      "exact_ohlc_matches": 0,
+      "field_matches": {
+        "close": 0,
+        "high": 0,
+        "low": 0,
+        "open": 0
+      },
+      "hypothesis": "end_label_half_open",
+      "native_rows": 6,
+      "rows": [
+        {
+          "observed_minute_rows": 0,
+          "vendor_label": "2026-10-21T00:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T00:00:00.000Z",
+          "last_minute_label": "2026-10-21T03:59:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T04:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T04:00:00.000Z",
+          "last_minute_label": "2026-10-21T07:59:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T08:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T08:00:00.000Z",
+          "last_minute_label": "2026-10-21T11:59:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T12:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T12:00:00.000Z",
+          "last_minute_label": "2026-10-21T15:59:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T16:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T16:00:00.000Z",
+          "last_minute_label": "2026-10-21T19:59:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T20:00:00+00:00"
+        }
+      ],
+      "start_offset_minutes": -240,
+      "window_minutes": 240
+    },
+    {
+      "exact_ohlc_matches": 0,
+      "field_matches": {
+        "close": 0,
+        "high": 0,
+        "low": 0,
+        "open": 1
+      },
+      "hypothesis": "end_label_inclusive_minute_labels",
+      "native_rows": 6,
+      "rows": [
+        {
+          "first_minute_label": "2026-10-21T00:00:00.000Z",
+          "last_minute_label": "2026-10-21T00:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": true
+          },
+          "observed_minute_rows": 1,
+          "vendor_label": "2026-10-21T00:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T00:01:00.000Z",
+          "last_minute_label": "2026-10-21T04:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T04:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T04:01:00.000Z",
+          "last_minute_label": "2026-10-21T08:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T08:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T08:01:00.000Z",
+          "last_minute_label": "2026-10-21T12:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T12:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T12:01:00.000Z",
+          "last_minute_label": "2026-10-21T16:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T16:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T16:01:00.000Z",
+          "last_minute_label": "2026-10-21T20:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": false,
+            "low": false,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T20:00:00+00:00"
+        }
+      ],
+      "start_offset_minutes": -239,
+      "window_minutes": 240
+    },
+    {
+      "exact_ohlc_matches": 0,
+      "field_matches": {
+        "close": 1,
+        "high": 6,
+        "low": 6,
+        "open": 0
+      },
+      "hypothesis": "start_label_exclusive_minute_labels",
+      "native_rows": 6,
+      "rows": [
+        {
+          "first_minute_label": "2026-10-21T00:01:00.000Z",
+          "last_minute_label": "2026-10-21T04:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T00:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T04:01:00.000Z",
+          "last_minute_label": "2026-10-21T08:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T04:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T08:01:00.000Z",
+          "last_minute_label": "2026-10-21T12:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T08:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T12:01:00.000Z",
+          "last_minute_label": "2026-10-21T16:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T12:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T16:01:00.000Z",
+          "last_minute_label": "2026-10-21T20:00:00.000Z",
+          "matches": {
+            "close": false,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 240,
+          "vendor_label": "2026-10-21T16:00:00+00:00"
+        },
+        {
+          "first_minute_label": "2026-10-21T20:01:00.000Z",
+          "last_minute_label": "2026-10-21T23:59:00.000Z",
+          "matches": {
+            "close": true,
+            "high": true,
+            "low": true,
+            "open": false
+          },
+          "observed_minute_rows": 239,
+          "vendor_label": "2026-10-21T20:00:00+00:00"
+        }
+      ],
+      "start_offset_minutes": 1,
+      "window_minutes": 240
+    }
+  ],
+  "mode": "OFFLINE_EXISTING_RAW_RECEIPTS_ONLY",
+  "new_api_requests": 0,
+  "observed_at_utc": "2026-10-22T02:42:38.087175+00:00",
+  "schema": "forex_r26.paired_4hour_reconciliation.v1",
+  "source_receipts": {
+    "minute": {
+      "capture_at": "2026-10-22T02:38:03.836022+00:00",
+      "raw_sha256": "8ca10857ca31af9b72bd2218604ce8bf2cd1b876d8bcc9e0634db525499fd893",
+      "receipt_id": "4bb5ae04fe41cbfc1b7c9527c59d2569f501ec7ad4ae867bb93536ba51cc8750",
+      "rows": 1440
+    },
+    "native": {
+      "capture_at": "2026-10-22T02:38:05.740210+00:00",
+      "raw_sha256": "cc7c82b1cae6b154c7f45359d786ce91f08af7dd88260b52c15ad7a7afc78e8a",
+      "receipt_id": "536e23b417aace9c8d6380983fb21c85b7af5939ef83d9c58ade06db80729f6a",
+      "rows": 6
+    }
+  }
+}

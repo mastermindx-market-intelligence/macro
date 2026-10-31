@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-10-20T05:16:26.041966+00:00",
+  "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "incoming": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "index": "9f468349fe2bd9b27eede0003fcfd62051f0d25f",
+  "command": [
+    "/opt/homebrew/bin/python3.12",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--basetemp",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-92c51-packing-after-tmp",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "58cd230ecc26635f128e84eeb357401ec936800ef96c6974e43c3e171181ae29",
+    "tests/test_ci_pack.py": "c2d6a318a0e91681bb1cb9367575014ac5ab3f87ff550ea398db15bdfef8754d",
+    "app/deploy/Caddyfile": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+    "config/site_access.yml": "c6ae0c581eb822aa96cfbc45e412b35672703ef5a0f6c5e25cae0f4b869168ed"
+  },
+  "scope": "packing node after minimal measured literal/history change; prior three scope passes remain bound to unchanged manifest",
+  "finished_at": "2026-10-20T05:18:26.961730+00:00",
+  "elapsed_seconds": 120.92,
+  "exit": 0,
+  "log_sha256": "9a1ea364ca232b059f99b062c55e08648fc955166e5f292b5baa5cbf34f2c4e5",
+  "source_and_index_unchanged": true
+}

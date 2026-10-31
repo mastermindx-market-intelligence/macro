@@ -1,0 +1,70 @@
+{
+  "state": "QUALIFIED_LOCAL_COMMIT_READY_FOR_ROOT_ORIGINAL_CARRIER_BOUNDARY",
+  "commit": "e09d782cb595407c00f3ab69b8a69de55c2e8b02",
+  "tree": "cf1a7329b40f59db1cfe51cecc52bc0064fe0325",
+  "sole_parent": "82c1f751171f15d2efc76fba994bd7f5449e97e1",
+  "clean_worktree": true,
+  "worktree": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/eval-a28-prewarm-20261024-d061b72cbc19e1e7",
+  "git_common_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git",
+  "changed_paths": [
+    "scripts/build_intelligence_registry.py",
+    "scripts/build_output_health.py",
+    "tests/test_check_intelligence_registry.py",
+    "tests/test_intelligence_registry.py",
+    "tests/test_output_health.py",
+    "tests/test_qledger_native_binding.py"
+  ],
+  "closure_repairs": [],
+  "reviewed_tree_exact": true,
+  "checks": {
+    "composed_runtime": {
+      "tests": 178,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "T4_cases_in_composed_run": 141,
+    "CI_controls": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "canonical_affected_exclusive_jobs": [
+      "integrated-answer-v0",
+      "intelligence-registry",
+      "cn-standout-audit",
+      "uk-policy-desk",
+      "qledger-cluster-honest-ci",
+      "vintage-pin-fence",
+      "validated-claims-source",
+      "eval-os-a1"
+    ],
+    "canonical_closure_findings": {},
+    "retained_T1_unique": 26,
+    "retained_T1_selftest_controls": "84/84 PASS",
+    "counting": "t1-final25 already includes closure singleton; native-empty adds1 =26. Composed runtime178 contains all141T4 cases and overlaps retainedT1 only as listed.",
+    "retained_T1_overlap_with_composed_runtime": [
+      "tests.test_admin_intelligence_os::test_real_claims_reader_t1_provider_current_horizon_correction"
+    ],
+    "runtime_union_unique": 203,
+    "red_reused": "Exact old82c T1 eager reader failed discriminating guard; accepted T4 old-capture red retained. No current candidate test failures/errors/skips.",
+    "packing": "Not repeated: exact parent CI manifest/workflow, all355jobs/commands/paths/selectors/weights/limits unchanged; retained source selection evidence remains valid."
+  },
+  "unchanged_source_proof": "combined-source-bindings.json; exact reviewed T4+T1 source blobs. Current QLedger store/protocol/native reader, admin source-generation controls and updater remain exact82c blobs.",
+  "effects": {
+    "local_commit": "SETTLED",
+    "publication": "NOT_ATTEMPTED",
+    "published_carrier_write": false,
+    "PR_creation": false,
+    "CI_producer": false,
+    "manual_main_integration": false,
+    "production_load_benchmark_deploy_restart": false
+  },
+  "A28": "OPEN. Memory still depends on longest physical line, complete desk/horizon aggregates, other eager consumers/native source storage; no production performance/coherence acceptance from local tests.",
+  "next_action": "Root may consume this ordinary sole-parent82c commit on the original branch after existingCI reaches terminal and fresh canonical admission/custody. Reconcile actual protected source at that boundary; reuse unchanged qualification, run only checks affected by real deltas, preserve all incomingQLedger/commands/limits. This return grants no publication/merge/deploy effect.",
+  "fabric": "No new dispatch/worker/retry/replacement; retained artifact-mode prelaunch unavailability, C0provider429/usageUNKNOWN and all original refusals/unknown effects preserved.",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "native_parent": "01a15874-986e-7891-95d2-c6e45555a49b",
+  "at": "2026-10-24T04:08:00.651994+00:00"
+}

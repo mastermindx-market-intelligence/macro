@@ -1,0 +1,76 @@
+{
+  "schema": "eval_os_combined_source_qualification.v1",
+  "source_sha256": {
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "admin/static/styles.css": "f9004e5868076638113c45b6bf162773b0f800685c5428ca62b5a1a6bbac4b35",
+    "engine/qledger.py": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "tests/test_evidence_findings.py": "e1f5fbcdebb3dd694c0eeeba682e6812f544d387ad8bc6856da57a243f47e9a7",
+    "tests/test_evidence_findings_ui.py": "22362ea16ca073fc9d091499431077039013ced2301b77e7e77abadb0507df06",
+    "tests/test_admin_intelligence_os.py": "273aa17f27b3877f0e1d4c54142f9244338e6f9aff204aa165c5c0efd43d01bb",
+    "tests/test_admin_intelligence_os_ui.py": "3b46980645abc39f10c7db7f8b93676c7cc6829c3e952e87aaf8dd2048dc06a3",
+    "tests/test_admin_server.py": "1104ad54702e18a5646f3431c4006b7d6f69e50aa8091ccba0cf42aea821d861",
+    "tests/test_w6_readiness_monitor.py": "c90b17025ae56391ab766878f066086ee086638ea40842c00e7610f12533a303",
+    ".github/ci/legacy-jobs.yml": "a5a892abcfe034ea94cd8b4a87760637ec6c54d8b590922d18e52ace2458cb91"
+  },
+  "receipts": {
+    "T20_READINESS_INTEGRATION_DELTA_REVIEW.json": "463a72100701683925760d248f31cb8bc6ce4fff157f8616df348d144393b210",
+    "RECORDED_READINESS_SEMANTIC_REVIEW.json": "8d6be6002617bccae7fbb1bb4c56ba8d49ceb06dfb145a78d8ebf7590065c14b",
+    "typed-findings-integrated-tests.txt": "425f76c8d9434ce450f30f137ca8fc12b8788f375049c1dab2492cfdacbde491",
+    "typed-findings-integrated-tests.xml": "fe130b59d9928a10c2b22532666c3ef97391301e49b77b29f9e95edb11e4a1f9",
+    "combined-api-ui-regressions.txt": "096d3a90a4bc570a51bc571c78c04a54622b44000e07f53ebb8c03b7c558a404",
+    "combined-api-ui-regressions.xml": "88ca03533ad6f1057cc7608cfd47b6167cb1ac30c2c11acdf4915dbc077a787b",
+    "combined-ui-final-tests.txt": "33698b25d6fa0f840fceee138c1ba0082b2f1837d12ff23010f066713442504f",
+    "combined-ui-final-tests.xml": "5946827c925fda0f0421df7f23a3c47f973ec3caadd33d72c5442feb558f7bd2",
+    "typed-findings-partial-empty-repair.json": "d409aa68d09aeb9c7821d7d3db3d761fc4f4d458d8030f5cd139156ab06e08f6",
+    "recorded-snapshot-final-affected-tests.txt": "5f14c715b50756db0328451c0c01090f84d5972e630ae6e46e27e7326b437457",
+    "recorded-fraction-controls.txt": "d3e76f06b816b3ce4a82979a8de59c2df4e735eb164e56c1a950b79ef8778d2b",
+    "recorded-minimal-row-controls.txt": "7172b4e21a99b3f9dcb67522794b5cc7d2a03ec0791953259115c1ee6744a2c0",
+    "recorded-minimal-row-red.json": "312bba71cb6bcc4d2a040a33029a8e32bd28fc18756f15413f6592db75e84426",
+    "recorded-snapshot-http-controls.txt": "2df0766b691b6002468aecb829b29fa4dbf8f64831ed5438527e5015f97e5645"
+  },
+  "tested_scope": {
+    "new_findings_module_api_ui": {
+      "passed": 27,
+      "seconds": 11.06,
+      "latest_partial_empty_ui_delta": "covered by subsequent final UI run"
+    },
+    "combined_api_ui_before_harness_repair": {
+      "passed": 160,
+      "failed": 1,
+      "seconds": 27.2,
+      "failure": "isolated refresh harness lacked newly added findings renderer dependency; API source unchanged, repaired harness passed in final UI"
+    },
+    "final_ui": {
+      "passed": 22,
+      "failed": 0,
+      "seconds": 9.78
+    },
+    "owner_snapshot_broad_before_final_guards": {
+      "passed": 186,
+      "seconds": 50.77
+    },
+    "final_owner_guards": {
+      "passed": 10,
+      "deselected": 136,
+      "seconds": 9.68
+    },
+    "http_snapshot_cache": {
+      "passed": 2,
+      "seconds": 7.65
+    }
+  },
+  "independent_source_review": "T20_READINESS_INTEGRATION_DELTA_REVIEW.json; root consumed subsequent passing final UI receipt",
+  "limitations": [
+    "Whole-A1 memory and production latency are not proved by removal of request-time readiness computation.",
+    "Fixture band counts must follow actual partial recorded provider; no force-ok fixture semantics.",
+    "Final browser, hosted current-head CI, reserved hold release, normal installed bytes, genuine source update and operator comprehension remain separate."
+  ],
+  "SCOPED_COMMISSION_COMPLETE": false,
+  "LEGACY_PROGRAMME_COMPLETE": false,
+  "PRODUCTION_PROVEN": false
+}

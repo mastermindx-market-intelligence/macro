@@ -1,0 +1,67 @@
+{
+  "schema": "eval_os_final_candidate_qualification.v1",
+  "observed_at": "2026-10-13T08:17:59.435362+00:00",
+  "integration_parent": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+  "integrated_main": "00bf61fc699ca340f6000706f57a7c1ade78c479",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "36373775d4423b766d7214ca3ba40d0e2a181200573b2e5685c121c094d700db",
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "admin/static/index.html": "27a1a4e55dee999b435dda94c86730987624621ee3868c7fbea086e308645179",
+    "admin/static/preferences.js": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+    "admin/static/styles.css": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+    "app/deploy/update.sh": "b500602352592acf23e28da910d00c520f09aca3d22fdc33372c8d053efdf18d",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": "f86677c419e97eb3932024db56e5e147de7b5a88536bb9701af5ea367e8140db",
+    "engine/neuralweb/response_eval.py": "b4caa23259a91e78ef4ddbbbce2ec38c6339fa12090f9135018d125d1b320e1d",
+    "engine/qledger.py": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+    "scripts/build_intelligence_registry.py": "8f224e29d69517cbb5fd1e390ec05f70755d0bf5f89056ff016f2caf9d7381a9",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "tests/test_admin_intelligence_os.py": "273aa17f27b3877f0e1d4c54142f9244338e6f9aff204aa165c5c0efd43d01bb",
+    "tests/test_admin_intelligence_os_ui.py": "3b46980645abc39f10c7db7f8b93676c7cc6829c3e952e87aaf8dd2048dc06a3",
+    "tests/test_admin_server.py": "1104ad54702e18a5646f3431c4006b7d6f69e50aa8091ccba0cf42aea821d861",
+    "tests/test_eval_os_adversarial_acceptance.py": "0d1aaf8542a217511d5b5ec64828cfcd6ccccb69f0022b34fcc88a12504fa08f",
+    "tests/test_evidence_findings.py": "e1f5fbcdebb3dd694c0eeeba682e6812f544d387ad8bc6856da57a243f47e9a7",
+    "tests/test_evidence_findings_ui.py": "22362ea16ca073fc9d091499431077039013ced2301b77e7e77abadb0507df06",
+    "tests/test_w6_readiness_monitor.py": "c90b17025ae56391ab766878f066086ee086638ea40842c00e7610f12533a303"
+  },
+  "changes_since_combined_receipt": {
+    "admin/static/styles.css": {
+      "prior": "f9004e5868076638113c45b6bf162773b0f800685c5428ca62b5a1a6bbac4b35",
+      "final": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "prior": "a5a892abcfe034ea94cd8b4a87760637ec6c54d8b590922d18e52ace2458cb91",
+      "final": "36373775d4423b766d7214ca3ba40d0e2a181200573b2e5685c121c094d700db"
+    }
+  },
+  "change_dispositions": {
+    "admin/static/styles.css": "One scoped digest-wrap rule; red screenshot and independent four-mobile source-open closure plus final8-context matrix accepted.",
+    ".github/ci/legacy-jobs.yml": "Conflict-free current-main merge preserves A1 job exactly and all other jobs match current main;294-job manifest validates."
+  },
+  "canonical_receipts_sha256": {
+    "combined-source-qualification.json": "0cd9eeaf7ea14f8c05dabd13c9150f153844f8a0c05356b3f37785cd53f7f67a",
+    "final-base-integration.json": "d388c2e69320761a5ce129206ec342ec157632e574ed1febbe5eb06b89ded0ee",
+    "recorded-readiness-source-review.json": "37b388cdd43647f506fb9903a870d0ed7a027b21a8f6dc574a7057afeaf11c2e",
+    "final-browser-canonical-validation.json": "93395f8bab376f9fa7e23249027241105a676cbd78bc1e03dd6627d740cb68e6",
+    "parent-visual-readback.json": "02035e5261b6bb6f11d1cab217eea5694f56c86a78fe41edb307e123a2ecfa8a",
+    "a28/SCIENCE_CAPACITY_ADJUDICATION.json": "2a4f7f727cd1e74276d8e2884d1f12a7b4970c52cb225237b6bfd81f845f4c99",
+    "a28/composed-scale-report.json": "7cf45be47347a3ce8b2e063f0dc079a1b023f3a8e1d348bffc12d8fff9046055",
+    "a28/cardinality-extension/cardinality-report.json": "9cb0d1041023972f6f576c1700065e28c53d3a3caefc4fedbd6c90b2c6adf25e"
+  },
+  "browser_manifest_sha256": "e8600131d04be5c82e51e89f80b4b9e4a312f20c5f1bfba66605ec025d59bd88",
+  "scope": "Source-bound local tests, independent reviews, browser and synthetic scale. Full source tree is bound by the commit containing this receipt; final hosted head is recorded on original PR6651.",
+  "remaining": [
+    "Current-head concluded hosted CI and final review binding",
+    "Reserved PR6651 hold release",
+    "Normal updater installed bytes and authenticated production API/paint",
+    "Fresh subsequent normal owner run and production update",
+    "Independent authorized operator comprehension",
+    "Unresolved original Fabric run keeps its original identity; no retry/acceptance"
+  ],
+  "SCOPED_COMMISSION_COMPLETE": false,
+  "LEGACY_PROGRAMME_COMPLETE": false,
+  "PRODUCTION_PROVEN": false
+}

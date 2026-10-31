@@ -403,3 +403,66 @@ def test_null_magnitude_states_are_distinct_and_never_zero(evidence, proposal):
     assert errors_for({"value": None, "state": "KNOWN"})
     assert errors_for({"value": 3, "state": "KNOWN"}) == []
     assert errors_for({"value": None, "state": "ZERO"})
+
+
+# ---------------------------------------------------------------------------------------
+# 2026-10-21 additive amendment: the second admitted activity species
+# principal_business_activity (role operator, lifecycle current, segment-only scope,
+# activity: fact ids). The principal fixture is the C01 evidence fixture with its
+# species-owned fields rewritten; probation's proposal path must work unchanged.
+# ---------------------------------------------------------------------------------------
+
+PRINCIPAL_SPECIES = "principal_business_activity"
+
+
+def _principal_evidence(evidence):
+    principal = copy.deepcopy(evidence)
+    principal["species"] = PRINCIPAL_SPECIES
+    principal["scope"] = {"segment": principal["scope"]["segment"]}
+    principal["role"] = "operator"
+    principal["lifecycle"] = "current"
+    principal["source_evidence"]["fact_id"] = (
+        "activity:" + hashlib.sha256(b"principal_business_activity:ISS:US-XNAS-MU").hexdigest())
+    return principal
+
+
+def test_principal_business_activity_proposes_and_ratifies_without_graph_use(evidence,
+                                                                             proposal):
+    principal = _principal_evidence(evidence)
+    row = probation.make_activity_membership_proposal(principal, created=CREATED)
+    assert row["status"] == "PROPOSED" and row["curation"] is None
+    assert row["proposal_id"] == probation.activity_proposal_id(principal)
+    assert probation.validate_activity_membership_proposal(row) == []
+    assert row["evidence"]["scope"] == {"segment": evidence["scope"]["segment"]}
+    assert row["evidence"]["role"] == "operator"
+    assert row["evidence"]["lifecycle"] == "current"
+    assert row["evidence"]["source_evidence"]["fact_id"].startswith("activity:")
+
+    ratified = _curated(row)
+    assert probation.validate_activity_membership_proposal(ratified) == []
+    [kept] = probation.ratified_activity_memberships([row, proposal, ratified])
+    assert kept == ratified and kept is not ratified
+    # Ratifying a principal activity grants no graph-membership use and no authority.
+    assert kept["evidence"]["use_qualification"]["graph_membership_use"] == "NOT_GRANTED"
+    assert set(kept["authority_caps"].values()) == {False}
+
+
+def test_principal_and_c01_shapes_cannot_mix(evidence):
+    def refused(mutate, *, principal: bool) -> None:
+        candidate = _principal_evidence(evidence) if principal else copy.deepcopy(evidence)
+        mutate(candidate)
+        with pytest.raises(probation.ActivityProposalRefusal) as caught:
+            probation.make_activity_membership_proposal(candidate, created=CREATED)
+        assert caught.value.code == "PROPOSAL_INVALID"
+
+    # A principal row never wears a C01 shape.
+    refused(lambda e: e.update(role="component_supplier"), principal=True)
+    refused(lambda e: e.update(lifecycle="planned"), principal=True)
+    refused(lambda e: e["scope"].update(product=copy.deepcopy(evidence["scope"]["product"])),
+            principal=True)
+    refused(lambda e: e["source_evidence"].update(fact_id="integration:" + "0" * 64),
+            principal=True)
+    # A C01 row never wears a principal shape.
+    refused(lambda e: e.update(role="operator"), principal=False)
+    refused(lambda e: e.update(lifecycle="current"), principal=False)
+    refused(lambda e: e.update(scope={"segment": e["scope"]["segment"]}), principal=False)

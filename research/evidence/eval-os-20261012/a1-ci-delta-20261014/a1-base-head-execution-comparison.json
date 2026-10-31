@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-14T13:58:42.553197+00:00",
+  "base": "b4a515dcbab349be7636ad8cb7a8ef8367240d8b",
+  "tested_merge": "7c610b6d8a771cc66d8c2a43548a0328c817b79c",
+  "manifest_overlay": "five exact missing A1 paths only",
+  "base_job_count": 317,
+  "head_job_count": 318,
+  "new_jobs": [
+    "eval-os-a1"
+  ],
+  "removed_jobs": [],
+  "changed_incumbent_execution_definitions": [
+    "neural-web"
+  ],
+  "incumbent_order_preserved": true,
+  "changed_control_implementations": [],
+  "a1_deterministic_weight": 19,
+  "ceiling_changed": false,
+  "scope": "Local exact-source structural comparison; not authority to change a packing baseline or a hosted result."
+}

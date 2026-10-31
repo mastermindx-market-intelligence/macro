@@ -265,7 +265,7 @@ jobs:
         # ModuleNotFoundError: No module named 'numpy' (engine/etf_pulse.py:30) —
         # which is a red about this workflow's venv, not about the serving
         # boundary it claims to measure.
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: tier-preview split contract (no paid row in the free shell)
         run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
       - name: paywall fail-closed contract (incl. enforced-early payload lane)

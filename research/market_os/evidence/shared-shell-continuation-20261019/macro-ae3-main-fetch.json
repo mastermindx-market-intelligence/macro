@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-10-20T11:14:17.898316+00:00",
+  "head_before": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "args": [
+    "git",
+    "--no-optional-locks",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "fetch",
+    "--no-tags",
+    "origin",
+    "main"
+  ],
+  "exit": 0,
+  "finished_at": "2026-10-20T11:14:26.253865+00:00",
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-main-fetch.log",
+    "bytes": 120,
+    "sha256": "8549aac3972cdbd4a2da495e5575ebfaebf4017a10a93da754d33fa75dbfcf66"
+  },
+  "head_after": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "origin_main": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "fetch_head": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "status_after": []
+}

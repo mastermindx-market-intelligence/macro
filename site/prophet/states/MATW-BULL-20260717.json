@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MATW-BULL-20260717",
-  "asof": "2026-10-20",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -13,18 +13,18 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 48.5,
+    "retention": 48.9,
     "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.616,
+    "dist_to_stop_r": -1.45,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 71.1,
-    "p1": -0.4107,
-    "p2": -0.2053,
+    "horizon_pct_used": 93.3,
+    "p1": -0.3,
+    "p2": -0.15,
     "p3": null,
-    "move_r": -0.616,
+    "move_r": -0.45,
     "mfe_r": 0.0,
     "mae_r": -0.72
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 32,
-  "tau": 0.7111
+  "days_elapsed": 42,
+  "tau": 0.9333
 }

@@ -194,6 +194,9 @@ html[data-lang="zh"] .mm-meter{background:linear-gradient(90deg,var(--red),#e0a1
         <div><span class="m-k">{{ t('Income','票息') }}</span><span class="m-v">{{ c.income }}%</span><span class="m-sub">{{ c.years }}y</span></div>
         {%- endif %}
       </div>
+      {%- if c.as_of %}
+      <span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}</span>
+      {%- endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
         <span class="go">{{ t('Open →','打开 →') }}</span>

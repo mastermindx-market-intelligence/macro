@@ -3086,6 +3086,7 @@ if (document.readyState === 'loading') {
     caxResolveHash();
   }
   window.addEventListener('hashchange',caxResolveHash);
+  window.addEventListener('mmx:shell-location',caxResolveHash);
 })();
 </script>
 {%- endif %}

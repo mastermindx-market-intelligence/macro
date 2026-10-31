@@ -95,3 +95,4 @@
 {"run_date": "2026-10-17", "degraded": true, "produced_at": "2026-10-17T18:57:14.326151+00:00", "reasons_count": 7}
 {"run_date": "2026-10-18", "degraded": true, "produced_at": "2026-10-18T07:07:42.126246+00:00", "reasons_count": 9}
 {"run_date": "2026-10-20", "degraded": true, "produced_at": "2026-10-20T08:11:26.779128+00:00", "reasons_count": 26}
+{"run_date": "2026-10-21", "degraded": true, "produced_at": "2026-10-21T08:17:36.811661+00:00", "reasons_count": 15}

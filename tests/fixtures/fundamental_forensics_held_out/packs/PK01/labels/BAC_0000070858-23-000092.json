@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-23-000092",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "26932000000",
+    "fiscal_year": 2022,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK01",
+    "polarity": "positive",
+    "reason": "bac-20221231.htm | us-gaap:OtherShortTermBorrowings @ ic48247ce865e4ed193cfd2b06a77e722_I20221231 | Short-term borrowings 26,932 23,753 | Balance-sheet short-term borrowings at 2022-12-31, millions.",
+    "section_family": "debt_outstanding",
+    "split": "held_out",
+    "target_id": "short_term_debt",
+    "target_kind": "extract",
+    "trial_id": "PK01|0000070858-23-000092|extract|short_term_debt"
+  },
+  {
+    "accession": "0000070858-23-000092",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "275982000000",
+    "fiscal_year": 2022,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK01",
+    "polarity": "positive",
+    "reason": "bac-20221231.htm | us-gaap:LongTermDebt @ ic48247ce865e4ed193cfd2b06a77e722_I20221231 | Long-term debt (includes $ 33,070 and $ 29,708 measured at fair value) 275,982 | Balance-sheet long-term debt at 2022-12-31, millions.",
+    "section_family": "debt_outstanding",
+    "split": "held_out",
+    "target_id": "long_term_debt",
+    "target_kind": "extract",
+    "trial_id": "PK01|0000070858-23-000092|extract|long_term_debt"
+  }
+]

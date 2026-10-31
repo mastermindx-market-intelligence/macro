@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +34,7 @@ _PII_KEYS: frozenset[str] = frozenset({
 _UTM_KEYS: tuple[str, ...] = (
     "utm_source", "utm_medium", "utm_campaign", "utm_content",
 )
+_UTM_TOKEN = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
 
 
 # ---------------------------------------------------------------------------
@@ -52,11 +54,24 @@ def parse_utm(signup: dict[str, Any]) -> dict[str, str | None]:
     """Extract first-touch UTM fields from a signup record.
 
     Accepts fields flat on the record (``signup["utm_content"]``) **or** nested
-    under ``signup["utm"]``.  Flat wins on conflict — first-touch is what the
-    capture stored first.  Values are coerced to str and stripped; empty string
-    becomes ``None``.
+    under ``signup["utm"]``. Flat wins on conflict, including explicit nulls.
+    Legacy values are coerced to str and stripped; empty string becomes None.
+
+    When neither legacy shape is present, accept the landing's complete bounded
+    token object from a Supabase auth export (raw_user_meta_data.utm) or auth API
+    response (user_metadata.utm). Never combine metadata with a partial legacy
+    touch or combine two metadata sources. These are untrusted attribution claims;
+    only the post index supplies account/kind and no metadata supplies paid state.
     """
-    nested: dict[str, Any] = signup.get("utm") or {}
+    nested = signup.get("utm")
+    nested = nested if isinstance(nested, dict) else {}
+    if "utm" not in signup and not any(key in signup for key in _UTM_KEYS):
+        metadata = signup.get("raw_user_meta_data", signup.get("user_metadata"))
+        touch = metadata.get("utm") if isinstance(metadata, dict) else None
+        if (isinstance(touch, dict) and set(touch) == set(_UTM_KEYS)
+                and all(isinstance(touch[key], str) and _UTM_TOKEN.fullmatch(touch[key])
+                        for key in _UTM_KEYS)):
+            nested = touch
     result: dict[str, str | None] = {}
     for key in _UTM_KEYS:
         # Flat takes precedence
@@ -208,7 +223,9 @@ def join_attribution(
             kind = None
             matched = False
 
-        signup_at_raw = rec.get("signup_at")
+        # Supabase auth.users exports name the account creation clock created_at.
+        # An explicitly supplied signup_at (including null) keeps legacy precedence.
+        signup_at_raw = rec.get("signup_at", rec.get("created_at"))
         row: dict[str, Any] = {
             "schema": LEDGER_SCHEMA,
             "schema_version": LEDGER_SCHEMA_VERSION,

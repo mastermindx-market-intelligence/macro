@@ -297,6 +297,51 @@ def test_every_relocated_string_is_inside_mc_details_on_a_workspace_page(
     assert leaked == [], f"relocated string still in the reading path: {leaked}"
 
 
+def test_labor_unavailable_copy_preserves_partial_readings() -> None:
+    """Insufficient overall coverage must not imply every reading is absent."""
+    from copy import deepcopy
+    from lib import macro_suite_view
+
+    entry = {
+        "implication_id": "state_unavailable",
+        "text": {
+            "en": "US labor-market state cannot be classified: axis coverage is below "
+                  "the disclosed floor. No quadrant is asserted rather than defaulting "
+                  "to a neutral state.",
+            "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+        },
+        "evidence_class": "DESCRIPTIVE",
+        "confidence": {},
+        "horizon": "current",
+        "channels": ["hiring", "layoffs", "wages"],
+        "contradictions": [],
+        "trace_ref": "data/regime/latest.json#labor_nowcast",
+    }
+    before = deepcopy(entry)
+    rendered = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert not rendered["absent"]
+    assert len(rendered["entries"]) == 1
+    item = rendered["entries"][0]
+    assert "no overall reading is shown" in item["text"]["en"]
+    assert "Missing data is not treated as a neutral reading" in item["text"]["en"]
+    assert "不展示总体读数" in item["text"]["zh"]
+    assert "缺失数据不会被当作中性读数" in item["text"]["zh"]
+    for language in ("en", "zh"):
+        assert guard.find_violations(f"<p>{item['text'][language]}</p>") == []
+    assert item["text_original"] is None
+    assert item["implication_id"] == entry["implication_id"]
+    assert item["evidence_class"] == entry["evidence_class"]
+    assert item["trace_ref"] == entry["trace_ref"]
+    assert len(item["channels"]) == 3 and all(item["channels"])
+    assert entry == before
+
+    clean = "Hiring has slowed while layoff notices stayed broadly flat."
+    entry["text"] = {"en": clean, "zh": "招聘放缓，裁员通知大致持平。"}
+    entry["implication_id"] = "labor_reading"
+    available = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert available["entries"][0]["text"]["en"] == clean
+
+
 def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
     """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
     .mc-details / .mc-primer."""
@@ -455,6 +500,35 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
+    from html import escape
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+
+    source = {
+        "en": (
+            "US labor-market state cannot be classified: axis coverage is below "
+            "the disclosed floor. No quadrant is asserted rather than defaulting "
+            "to a neutral state."
+        ),
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    unchanged = dict(source)
+    reading, original = apply_plain_producer(source)
+
+    assert source == unchanged
+    assert original == unchanged
+    assert original is not source
+    assert reading is not None and reading != PLAIN_FALLBACK
+    assert "not treated as a neutral reading" in reading["en"]
+    assert "缺失数据不会被当作中性读数" in reading["zh"]
+    customer = (
+        '<main class="mc-shell"><p><span class="l-en">'
+        + escape(reading["en"]) + '</span><span class="l-zh">'
+        + escape(reading["zh"]) + "</span></p></main>"
+    )
+    assert guard.find_violations(customer) == []
+
+
 def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
     from lib.macro_suite_labels import apply_plain_producer
 
@@ -475,6 +549,27 @@ def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None
     assert guard.find_violations(html) == []
     ordinary = {"en": "Payrolls increased this month.", "zh": "本月就业人数增加。"}
     assert apply_plain_producer(ordinary) == (ordinary, None)
+
+
+def test_labor_unavailable_implication_is_plain_without_changing_source() -> None:
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces import labor
+    from lib import macro_suite_view as view
+
+    items = labor._implications(
+        {"state_id": None}, None, None, {"present": False}, "CURRENT", 0.0)
+    snapshot = {"implications": {"items": items}}
+    before = deepcopy(snapshot)
+    reading = view._implications(snapshot)["entries"][0]["text"]
+
+    assert reading["en"] == (
+        "Labor-market data coverage is below the required minimum, so no "
+        "overall reading is shown. Missing data is not treated as a neutral reading.")
+    assert reading["zh"] == "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。缺失数据不会被当作中性读数。"
+    visible = f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>'
+    assert guard.find_violations(visible) == []
+    assert snapshot == before
+    assert "axis coverage is below the disclosed floor" in items[0]["text"]["en"]
 
 
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:

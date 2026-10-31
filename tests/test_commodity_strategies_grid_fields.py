@@ -206,3 +206,71 @@ def test_cards_have_no_whitespace_only_line():
     plain_foot = _between(plain_seg, '<div class="scard-foot">', "</div>")
     assert plain_foot.strip() == (_stance_span(plain["stance_en"], plain["stance_zh"])
                                   + "\n        " + _GO_SPAN)
+
+
+# --------------------------------------------------------------------------- #
+# the as-of line: each card prints its own data date (parity with the US grid)
+
+# ci-trigger-closure: data — the builder is read as text only, never imported
+_BUILDER = _ROOT / "scripts/build_commodity_strategies.py"
+
+_ASOF_SPAN = ('      </div>\n      <span class="m-sub"><span class="l-en">As of</span>'
+              '<span class="l-zh">截至</span> Oct 16, 2026</span>\n      <div class="scard-foot">')
+
+
+def test_active_and_plain_cards_print_their_as_of():
+    html = _render([_card(income=None, avg_lev=0.91, as_of="Oct 16, 2026"),
+                    _plain(as_of="Oct 16, 2026")])
+    for href in ("strategy_cm_gold_active.html", "strategy_cm_gold_swap.html"):
+        assert _seg(html, href).count(_ASOF_SPAN) == 1
+
+
+def test_card_without_as_of_renders_the_seed_markup():
+    renders = []
+    for over in ({}, {"as_of": None}, {"as_of": ""}):
+        html = _render([_plain(**over), _card(**over)])
+        for href in ("strategy_cm_gold_swap.html", "strategy_cm_gold_active.html"):
+            assert '      </div>\n      <div class="scard-foot">' in _seg(html, href)
+        assert "As of" not in html and "截至" not in html
+        renders.append(html)
+    assert renders[0] == renders[1] == renders[2]
+
+
+def test_as_of_en_and_zh_views():
+    html = _render([_card(income=None, avg_lev=0.91, as_of="Oct 16, 2026")])
+    seg = _seg(html, "strategy_cm_gold_active.html")
+    en_view = re.sub(r'<span class="l-zh">.*?</span>', "", seg)
+    zh_view = re.sub(r'<span class="l-en">.*?</span>', "", seg)
+    assert "As of" in en_view and "Oct 16, 2026" in en_view and "截至" not in en_view
+    assert "截至" in zh_view and "Oct 16, 2026" in zh_view and "As of" not in zh_view
+
+
+def test_as_of_cards_have_no_whitespace_only_line():
+    html = _render([_card(income=None, avg_lev=0.91, as_of="Oct 16, 2026"),
+                    _plain(as_of="Oct 16, 2026")])
+    for href in ("strategy_cm_gold_active.html", "strategy_cm_gold_swap.html"):
+        assert re.search(r"\n[ \t]*\n", _seg(html, href)) is None
+
+
+def test_as_of_line_adds_no_style_or_colour_literal():
+    src = (_ROOT / "templates" / "commodity_strategies.html.j2").read_text(encoding="utf-8")
+    assert src.count("{%- if c.as_of %}") == 1
+    i = src.index("{%- if c.as_of %}")
+    block = src[i:src.index("{%- endif %}", i) + len("{%- endif %}")]
+    lines = block.splitlines()
+    assert len(lines) == 3
+    assert "t('As of','截至')" in block and 'class="m-sub"' in block
+    for bad in ("style=", "<style", "rgb(", "hsl("):
+        assert bad not in block
+    assert re.search(r"#[0-9a-fA-F]{3,6}", block) is None
+    for line in lines:
+        assert len(line) <= 100
+
+
+def test_builder_sets_active_card_as_of_from_the_evaluation():
+    lines = _BUILDER.read_text(encoding="utf-8").splitlines()
+    want = '        card["as_of"] = ev.get("asof")'
+    assert lines.count(want) == 1
+    i = lines.index(want)
+    assert lines[i - 1] == '        card.update(CF.card_fields(sc, ev.get("oos")))'
+    assert lines[i + 1] == '        cards_by_group.setdefault(m["group"], []).append(card)'

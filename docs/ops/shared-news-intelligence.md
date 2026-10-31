@@ -98,6 +98,41 @@ Alpaca/Benzinga receipt, no additional receipt paths, no optional Massive flag a
 no Massive token in that service's environment. These are presence-only observations,
 not a claim that the organization has no other agreement or credential.
 
+### Editorial acceptance for ticker-feed coverage
+
+Before counting a publisher activation as additional or improved ticker-feed
+coverage, record editorial acceptance in the existing activation evidence
+alongside the independent rights and delivery checks. The current
+[ticker editorial policy and view contract](ticker-news-editorial-quality.md)
+governs this assessment; a licensed, stored report is not itself served coverage.
+
+- Record the exact publisher's disposition under `engine/qkernel.py`, separately
+  from its transport and rights receipt. Excluded or unknown publishers cannot
+  count as eligible ticker-feed coverage, even when their permitted observations
+  are retained internally.
+- Review a representative, rights-permitted sample across the intended tickers
+  and an explicit observation window, including thinner-coverage tickers. Reuse
+  the shared article screening in `engine/news_common.py` and the current view
+  rules in `engine/qbus_news_editorial.py`. Record accepted and rejected formats,
+  ticker relevance and observed freshness; state the sample's limits. A provider
+  ticker tag or Company mentions match alone does not prove that the company is
+  the primary subject.
+- Verify the ordinary authenticated served feed and source controls in News &
+  announcements, Company mentions and Broader coverage. Preserve actual publisher
+  attribution and press-release labels. Excluded publishers must stay excluded
+  in every view, and sparse results must not fall back to excluded sources. Use
+  existing contract/fixture evidence for transitions absent from the observed
+  live sample, explicitly retaining that live-proof limit.
+- Report licensed/stored observations, editorially eligible served reports and
+  story groups separately, with their audience, ticker/view, observation window
+  and pagination scope. Explain why the observed content meets the intended
+  editorial standard and record remaining coverage gaps; publisher counts and
+  successful ingestion alone do not establish a quality improvement.
+
+This acceptance concerns ticker-feed coverage claims and does not broaden source
+permissions or replace the canonical policy, single writer, or release owner.
+Historical activation receipts below retain their original scope and dates.
+
 ## Duplicate groups and quality
 
 Clustering is conservative. The derived character-bigram index restricts posting

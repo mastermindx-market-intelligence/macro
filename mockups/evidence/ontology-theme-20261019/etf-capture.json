@@ -1,0 +1,203 @@
+{
+  "generated_at": "2026-10-19T09:48:55.726502+00:00",
+  "scope": "Synthetic owner TRACKS rows passed through actual composer and emitted Macro shell. All network intercepted. Display-only tracking reference; not fund identity, holdings, production, market-truth or release proof.",
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-dark-en-available.png",
+      "sha256": "74f1db3cba9cdbb18f40b01789aca3ac1aeb67646285b32e7fb470a61138d704",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-dark-en-unavailable_tracking.png",
+      "sha256": "bb016149d7f095ca07a01caf1eafff48d289e591dc55a87b60549d7eebdd0926",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-dark-zh-available.png",
+      "sha256": "9eff4f3e65c000888b12f75143c4e05946cbf1f0257f65c9b9ad9a38a100631d",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-dark-zh-unavailable_tracking.png",
+      "sha256": "3bd6a460db9204b46eb2bb82c51730580859694af68a821ed35ec93dc76514a1",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-light-en-available.png",
+      "sha256": "2c2c3fcf8bb792f9cab4102b186ee21f7a278402ba0000ffe6da5b86de73a7d1",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-light-en-unavailable_tracking.png",
+      "sha256": "48697d5aaffb4b07e30e494ca9b2dd935441692daefa7c5c7c7b06c085328945",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-light-zh-available.png",
+      "sha256": "16eacaade70761a3d15b338adb4491bf4ba5e4dcf2e11d2f508dc98c88c21b92",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-1440-light-zh-unavailable_tracking.png",
+      "sha256": "d789e30d25c3a36beb702dfac6f28fe471df6c0181d2439baade22eb0ea178e2",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-dark-en-available.png",
+      "sha256": "001fce4ec9e8fdd3ea9f94fa842da562d9a4714705b1028c56ca0ac7ff58f376",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-dark-en-unavailable_tracking.png",
+      "sha256": "c6b2a7c823c76fc34c021e365b2967859121455a429785d4a7392b5241416217",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-dark-zh-available.png",
+      "sha256": "caff2427d7146f22a2ab28853bf3813599bdd861f3ee938f5d4c4191b6d8e5e3",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-dark-zh-unavailable_tracking.png",
+      "sha256": "8eb13c73e70b3f612c899e4b3b7bf5157d73f45c6bb6ab1d506a64b4e10d80ae",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-light-en-available.png",
+      "sha256": "5279fa89fbcc30716b1bf1dfbe1d22b3e6d4d32268b4867da0d849fc3268436e",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-light-en-unavailable_tracking.png",
+      "sha256": "7a7e6397ad81cd31b54f832eece3559eec2c6e878ce563c29c796765ede90592",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "available",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-light-zh-available.png",
+      "sha256": "92547259969731f778ad60cd3fd3e8508177a68c150e00cd5668896677d8cd28",
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unavailable_tracking",
+      "file": "mockups/evidence/ontology-theme-20261019/etf-390-light-zh-unavailable_tracking.png",
+      "sha256": "4383d613e15d329812683ea106c0259a5670ebed25abcac6afecd7aa8bd6f665",
+      "console_errors": []
+    }
+  ],
+  "source_sha256": {
+    "templates/ontology-theme.js": "cd27417d2896d2eb469f4e461a5c1887c375ed002c92ecd8d271537166ff0309",
+    "engine/ontology_theme.py": "88a840f73a581a6a6247061a8ae9d31991277abc185bb1a93d951be238ec3e22",
+    "engine/theme_graph/security_navigation.py": "b66ab5ee6828cf95d3b24f241264d0c31b2329404b83886c347b8165a8cf5d4a"
+  }
+}

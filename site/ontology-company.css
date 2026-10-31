@@ -1,0 +1,36 @@
+/* Company research uses the existing inspector/card vocabulary.
+   Dark: restrained panel depth. Light: paper surface, hairline and shadow.
+   Identical hierarchy and states; no direction or confidence colour. */
+.ox-company{margin-top:var(--space-8,32px);padding:var(--space-6,24px);
+  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-card,12px)}
+html[data-theme="light"] .ox-company{background:var(--panel);box-shadow:var(--card-shadow)}
+.ox-company h2{margin:0 0 var(--space-2,8px);font-size:var(--fs-h2)}
+.ox-company-form{display:flex;flex-wrap:wrap;align-items:end;gap:var(--space-3,12px);margin:var(--space-5,20px) 0}
+.ox-company-label{display:flex;flex-direction:column;gap:var(--space-2,8px);flex:1 1 220px;min-width:0;font-size:var(--fs-sm)}
+.ox-company input,.ox-company select{box-sizing:border-box;width:100%;min-height:44px;padding:var(--space-3,12px);
+  color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-ctl,8px);
+  font:inherit}
+.ox-company input{text-transform:uppercase}
+/* Native date-picker controls follow the same two form art directions. */
+html[data-theme="dark"] .ox-company input[type="date"]{color-scheme:dark}
+html[data-theme="light"] .ox-company input[type="date"]{color-scheme:light}
+.ox-company button{min-height:44px;cursor:pointer}
+.ox-company-identity,.ox-company-choices{display:flex;flex-wrap:wrap;gap:var(--space-3,12px);align-items:center;margin:var(--space-4,16px) 0}
+.ox-company-current{color:var(--muted);font-size:var(--fs-sm)}
+.ox-company-choices [aria-pressed="true"]{border-color:var(--ink-info,var(--info));color:var(--ink-info,var(--info))}
+.ox-company-fact h3,.ox-company-research h3{font-size:var(--fs-h3);margin:0 0 var(--space-3,12px)}
+.ox-company-research{margin-top:var(--space-4,16px)}
+.ox-company-fields{display:grid;gap:var(--space-3,12px);margin:var(--space-4,16px) 0}
+.ox-company-field{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(0,1.3fr);gap:var(--space-4,16px)}
+.ox-company-field dt{color:var(--muted);font-size:var(--fs-sm)}
+.ox-company-field dd{margin:0;overflow-wrap:anywhere;font-size:var(--fs-body)}
+.ox-company-references dd{font-family:var(--font-mono);font-size:var(--fs-sm)}
+@media(max-width:600px){.ox-company{padding:var(--space-4,16px)}
+  .ox-company-field{grid-template-columns:1fr;gap:var(--space-1,4px)}
+  .ox-company-form .ox-cta{flex:1 1 auto;justify-content:center}}
+
+/* Reuse the inspector's two art directions for private membership rows. */
+.ox-portfolio-rows{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:var(--space-3,12px)}
+.ox-portfolio-row{min-width:0;overflow-wrap:anywhere}
+.ox-portfolio-row .ox-note{margin:var(--space-2,8px) 0 0}
+.ox-company button:disabled{opacity:.55;cursor:default}

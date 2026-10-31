@@ -1,0 +1,107 @@
+{
+  "run": 40088123750,
+  "attempt": 1,
+  "artifact": 12557851957,
+  "ZIPdigest_verified": true,
+  "canonical_plan_hash_verified": true,
+  "canonical_plan_hash": "0e0aa5f9ada354c3e23220313f052960b02fd23611a61bfb8d83f629de33dac6",
+  "subject": "0c41b459928d67fcee5315bdcdebe4572bb194b4",
+  "tested": "e2fd5aea3351cdc8f321ca171168163134e9d61c",
+  "base": "92d06f6ab25ed06f29f8cd3573d2f56e033b9a02",
+  "tree": "d54c9fb364dd938f4a094dbeace1d491f8899624",
+  "admitted_preview_equal": true,
+  "eligible_jobs": 136,
+  "execution_step_units": 407,
+  "direct_files": {
+    "engine/intelligence_registry.py": {
+      "source": "8e715eb811565f305589a5b978d19e81492e4d7a",
+      "tested": "8e715eb811565f305589a5b978d19e81492e4d7a"
+    },
+    "scripts/build_intelligence_registry.py": {
+      "source": "c574278273263a03e35032bad5eec3ee365a17b2",
+      "tested": "c574278273263a03e35032bad5eec3ee365a17b2"
+    },
+    "engine/postmortem.py": {
+      "source": "cb09a9fb935b449c864ec131152d9ba9348a8ada",
+      "tested": "cb09a9fb935b449c864ec131152d9ba9348a8ada"
+    },
+    "scripts/build_output_health.py": {
+      "source": "b2ff67a4ddfdf7f4e9210f08f0bffd9c7f590039",
+      "tested": "b2ff67a4ddfdf7f4e9210f08f0bffd9c7f590039"
+    },
+    "engine/qledger_validity.py": {
+      "source": "2b27c32c56b679178a3e52e3b609856a13ec2dd8",
+      "tested": "2b27c32c56b679178a3e52e3b609856a13ec2dd8"
+    },
+    "scripts/check_qledger_metric_validity.py": {
+      "source": "14695bd5532d72191a103c4d6c877ebb1246e2fc",
+      "tested": "14695bd5532d72191a103c4d6c877ebb1246e2fc"
+    },
+    "scripts/agentos.py": {
+      "source": "24ead782bde838d4c6af31a2a9f82f668db4a323",
+      "tested": "24ead782bde838d4c6af31a2a9f82f668db4a323"
+    },
+    "engine/neuralweb/response_eval.py": {
+      "source": "95a750e30f7ce2b17c48dce52e4d6a2fe115d895",
+      "tested": "95a750e30f7ce2b17c48dce52e4d6a2fe115d895"
+    },
+    "engine/neuralweb/native_facts.py": {
+      "source": "238d549fcb68ee9dadee55c6dcb92ad5703a3526",
+      "tested": "238d549fcb68ee9dadee55c6dcb92ad5703a3526"
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "source": "8524d63909acbf1bbdae0b679e25a82344b06ecb",
+      "tested": "8524d63909acbf1bbdae0b679e25a82344b06ecb"
+    },
+    "lib/mastermind_response_log.py": {
+      "source": "011e9013ae343ff0b5467cf1f00a3333dadc133b",
+      "tested": "011e9013ae343ff0b5467cf1f00a3333dadc133b"
+    },
+    "app/deploy/update.sh": {
+      "source": "4300292048e4be0e0e19e5b846b0915fa6d0742a",
+      "tested": "0291ae5666da5481a514b75fbb0793a27e4ea1b0"
+    },
+    "admin/intelligence_execution.py": {
+      "source": "b47bcece53dd04d9e20dad43e6330d425289cefe",
+      "tested": "b47bcece53dd04d9e20dad43e6330d425289cefe"
+    },
+    "admin/server.py": {
+      "source": "074419010e96f6208816da4cf113c7623837b968",
+      "tested": "074419010e96f6208816da4cf113c7623837b968"
+    },
+    "engine/qledger_store.py": {
+      "source": "b8ac49b2066504cf14126f0ed3e71fb478fe86a8",
+      "tested": "b8ac49b2066504cf14126f0ed3e71fb478fe86a8"
+    }
+  },
+  "unchanged_direct_files": 14,
+  "updater_matches_qualified_incoming_preview": true,
+  "critical_jobs": [
+    {
+      "id": "options-matrix-code",
+      "pack": 6,
+      "execution": "cf935276f6c0d72caaa3c7438e0b6d46368ef6bf879b7dacb3a0399dab598829"
+    },
+    {
+      "id": "fif-kernel-guards",
+      "pack": 0,
+      "execution": "83f6fb450c35b75901ac2f166cd4119332e181f8cfc3f4a353c1582f4f9b62dd"
+    },
+    {
+      "id": "intelligence-registry",
+      "pack": 11,
+      "execution": "12fe2a9cc6a287fb796cad921500eb5f54345d8c4b3e7651862be9c0d10b8b90"
+    },
+    {
+      "id": "ci-control-plane-contracts",
+      "pack": 1,
+      "execution": "e0f4ff62b4b06c89a449561d0a967c09fba6798285bc91492b97fed0cf3e64a9"
+    },
+    {
+      "id": "eval-os-a1",
+      "pack": 3,
+      "execution": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45"
+    }
+  ],
+  "terminal_gate": false
+}

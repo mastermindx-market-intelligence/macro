@@ -603,6 +603,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--total-max-messages", type=int,
                         help=f"Explicit night message budget, 1..{MAX_TOTAL_MESSAGES} "
                              "(required for --publish).")
+    parser.add_argument("--total-max-seconds", type=int, default=MAX_TOTAL_SECONDS,
+                        help=f"Session capture budget in seconds, 1..{MAX_TOTAL_SECONDS} "
+                             f"(default {MAX_TOTAL_SECONDS}; cleanup may finish later).")
     parser.add_argument("--max-segments", type=int, default=MAX_SEGMENTS,
                         help=f"Segment cap, 1..{MAX_SEGMENTS} (default {MAX_SEGMENTS}).")
     parser.add_argument("--segment-max-seconds", type=int, default=PER_SEGMENT_MAX_SECONDS,
@@ -628,7 +631,7 @@ def main(argv: list[str] | None = None) -> int:
         config = SessionConfig(
             publish=args.publish, symbols_file=args.symbols_file or "",
             archive_root=args.archive_root or "", total_max_messages=total,
-            max_segments=args.max_segments,
+            total_max_seconds=args.total_max_seconds, max_segments=args.max_segments,
             segment_max_seconds=args.segment_max_seconds, scheduled=args.scheduled)
     except SessionRefused as exc:
         log.error("refusing to start: %s", exc)
