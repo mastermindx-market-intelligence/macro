@@ -111,6 +111,29 @@ def is_snapshot(obj) -> bool:
 EARNINGS_WINDOW_DAYS = 10
 
 
+def earnings_days_to(value) -> int | None:
+    """Coerce an earnings `days_to` into a nonnegative whole-day count, or None.
+
+    A day count must be a whole, nonnegative number of days: booleans are not day
+    counts, fractional (10.9) and negative (-1) values are data errors, and
+    non-finite floats cannot sit in any window. None means "no usable clock",
+    which callers render as omitted rather than guessed into (or out of) the
+    window.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        if isinstance(value, str):
+            days = int(value.strip())
+        else:
+            days = int(value)
+            if days != value:  # 10.9 -> 10 would silently widen the window
+                return None
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return days if days >= 0 else None
+
+
 def _norm_tickers(tickers) -> list[str]:
     """Uppercased, de-blanked, de-duplicated, SORTED (determinism)."""
     out: set[str] = set()
@@ -178,10 +201,7 @@ def snapshot_state(ctx: dict, tickers) -> dict:
 
         earn = blk.get("earnings")
         if isinstance(earn, dict) and earn.get("next") is not None:
-            try:
-                days = int(earn.get("days_to"))
-            except (TypeError, ValueError):
-                days = None
+            days = earnings_days_to(earn.get("days_to"))
             if days is not None:
                 rec["earnings_next"] = str(earn.get("next"))[:10]
                 rec["earnings_soon"] = days <= EARNINGS_WINDOW_DAYS
@@ -305,7 +325,7 @@ def diff_snapshots(previous: dict, current: dict) -> list[dict]:
                        f"days{date_en}."),
                 "zh": f"{t} 将在 {EARNINGS_WINDOW_DAYS} 天内公布财报{date_zh}。",
             })
-        elif p.get("earnings_soon") and not c.get("earnings_soon"):
+        elif p.get("earnings_soon") and c.get("earnings_soon") is False:
             out.append({
                 "kind": "earnings_passed", "ticker": t,
                 "en": f"{t} is no longer inside the {EARNINGS_WINDOW_DAYS}-day earnings window.",

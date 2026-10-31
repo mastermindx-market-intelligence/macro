@@ -53,7 +53,8 @@ from datetime import date, datetime, timedelta
 import math
 import sys
 
-from engine.portfolio_changes import (CURSOR_DISCLOSURE, compose_since_section,
+from engine.portfolio_changes import (CURSOR_DISCLOSURE, EARNINGS_WINDOW_DAYS,
+                                      compose_since_section, earnings_days_to,
                                       snapshot_state)
 from engine.portfolio_vocab import SECTOR_ALIASES as _SECTOR_ALIASES
 from engine.portfolio_vocab import STAGE_WORD as _STAGE_WORD
@@ -599,12 +600,10 @@ def _earnings_section(ctx: dict, covered: list[str]) -> dict | None:
         if not isinstance(e, dict):
             continue
         nxt = e.get("next")
-        days = e.get("days_to")
-        try:
-            di = int(days)
-        except (TypeError, ValueError):
+        if nxt is None:
             continue
-        if nxt is None or di > 10:
+        di = earnings_days_to(e.get("days_to"))
+        if di is None or di > EARNINGS_WINDOW_DAYS:
             continue
         rows.append((t, str(nxt), di))
     if not rows:
@@ -857,11 +856,8 @@ def _events_block(ctx: dict, covered: list[str]) -> dict:
         e = (ctx_tk.get(t) or {}).get("earnings")
         if not isinstance(e, dict) or e.get("next") is None:
             continue
-        try:
-            days = int(e.get("days_to"))
-        except (TypeError, ValueError):
-            continue
-        if days > 10:
+        days = earnings_days_to(e.get("days_to"))
+        if days is None or days > EARNINGS_WINDOW_DAYS:
             continue
         rows.append({"ticker": t, "date": str(e.get("next"))[:10], "days_to": days})
     rows.sort(key=lambda r: (r["days_to"], r["ticker"]))
