@@ -1,0 +1,85 @@
+{
+  "scope": "isolated_existing_script_with_pinned_producer_snapshot",
+  "production_authenticated": false,
+  "source_revision": "eb5f608851a8d3ea8181953a28f271ec846240dd",
+  "script_sha256": "514eba60d3d429ff90e0177d2bc51a2b5ba8d7c6f161b3113c68331a0568d061",
+  "snapshot_sha256": "6421efa5a1235be3336def90640202120aedeb655aef21ec6840521351f4ec4b",
+  "cases": [
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "en",
+      "pairs": 4,
+      "conflicts": 3,
+      "page_errors": [],
+      "horizontal_overflow": false,
+      "keyboard_details": true,
+      "radius_fallback_and_token_override": true,
+      "intercepted_requests": [
+        "/",
+        "/rotation_events.js",
+        "/marketdata/rotation_events.json",
+        "/marketdata/sector_fragmentation.json"
+      ],
+      "blocked_requests": [],
+      "screenshot": "320-light-en.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "pairs": 4,
+      "conflicts": 3,
+      "page_errors": [],
+      "horizontal_overflow": false,
+      "keyboard_details": true,
+      "radius_fallback_and_token_override": true,
+      "intercepted_requests": [
+        "/",
+        "/rotation_events.js",
+        "/marketdata/rotation_events.json",
+        "/marketdata/sector_fragmentation.json"
+      ],
+      "blocked_requests": [],
+      "screenshot": "390-dark-en.png"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "language": "en",
+      "pairs": 4,
+      "conflicts": 3,
+      "page_errors": [],
+      "horizontal_overflow": false,
+      "keyboard_details": true,
+      "radius_fallback_and_token_override": true,
+      "intercepted_requests": [
+        "/",
+        "/rotation_events.js",
+        "/marketdata/rotation_events.json",
+        "/marketdata/sector_fragmentation.json"
+      ],
+      "blocked_requests": [],
+      "screenshot": "1280-light-en.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "pairs": 4,
+      "conflicts": 3,
+      "page_errors": [],
+      "horizontal_overflow": false,
+      "keyboard_details": true,
+      "radius_fallback_and_token_override": true,
+      "intercepted_requests": [
+        "/",
+        "/rotation_events.js",
+        "/marketdata/rotation_events.json",
+        "/marketdata/sector_fragmentation.json"
+      ],
+      "blocked_requests": [],
+      "screenshot": "390-dark-zh.png"
+    }
+  ]
+}

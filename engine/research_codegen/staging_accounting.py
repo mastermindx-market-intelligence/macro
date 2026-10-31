@@ -458,8 +458,15 @@ def stage_synthetic_generation(*, commission, run_id, expected_generation,
     staging_stat = os.lstat(staging)
     # Initial creation belongs to the explicit fixture owner before this API.
     # Missing files never become a new original history, including empty anchor.
-    raw_existing, existing_stat = _read_snapshot(ledger_path)
-    _require(raw_existing is not None, "ORIGINAL_HISTORY_MISSING")
+    # A full stat/open/read here races a legitimate participating writer before
+    # this caller has the incumbent ledger flock. Observe absence only; strict
+    # owner_transaction below obtains and validates the real history under lock.
+    try:
+        os.lstat(ledger_path)
+    except FileNotFoundError as exc:
+        raise StagingAccountingRefused("ORIGINAL_HISTORY_MISSING") from exc
+    except OSError as exc:
+        raise StagingAccountingRefused("SNAPSHOT_UNREADABLE") from exc
     _require(hasattr(TrialLedger, "owner_transaction") and hasattr(TrialLedger, "raw_readback"),
              "CORE_OWNER_TRANSACTION_UNAVAILABLE")
     fresh = TrialLedger(path=ledger_path, family=family)
@@ -510,15 +517,19 @@ def stage_synthetic_generation(*, commission, run_id, expected_generation,
                      and owner.effective_n(family) == max(width, ceiling, 1), "COLD_RECONCILIATION_MISMATCH")
             _require((st_after.st_dev, st_after.st_ino, st_after.st_nlink)
                      == (st_before.st_dev, st_before.st_ino, 1), "LEDGER_SWAP_DETECTED")
+            # Complete the independent on-disk readback under the SAME
+            # original sidecar flock. Once we unlock, a second legitimate
+            # owner may append; that later append must not retroactively
+            # invalidate our already-verified durable snapshot receipt.
+            final_staging = os.lstat(staging)
+            final_raw, final_stat = _read_snapshot(ledger_path)
+            _require((final_staging.st_dev, final_staging.st_ino) == (staging_stat.st_dev, staging_stat.st_ino)
+                     and final_raw == raw_after and (final_stat.st_dev, final_stat.st_ino) == (st_after.st_dev, st_after.st_ino),
+                     "STAGING_IDENTITY_CHANGED")
     except StagingAccountingRefused:
         raise
     except (OSError, ValueError, RuntimeError) as exc:
         raise StagingAccountingRefused("OWNER_TRANSACTION_UNSETTLED") from exc
-    final_staging = os.lstat(staging)
-    final_raw, final_stat = _read_snapshot(ledger_path)
-    _require((final_staging.st_dev, final_staging.st_ino) == (staging_stat.st_dev, staging_stat.st_ino)
-             and final_raw == raw_after and (final_stat.st_dev, final_stat.st_ino) == (st_after.st_dev, st_after.st_ino),
-             "STAGING_IDENTITY_CHANGED")
 
     recorded = [dict(variant_id=variant_id, source_sha256=identity[0],
                      config_sha256=identity[1],

@@ -1,0 +1,310 @@
+# #1610 companion test-contract proposal
+
+**18 October 2026 UTC · Review-only patch preparation · File custody and test execution not admitted**
+
+The parent reports hosted CI `39109519443` failed three legacy deployment-helper contract tests at #1610 head `797c760f3e18eb6993579f56986103de9d9fdcb4`. The PR was draft and unqueued at the parent's 08:28 observation. The earlier native 49-case run covered the deployment test owner, not these cross-file contracts; these are failures within the change's scope, not baseline failures.
+
+This proposal removes the three obsolete implementation-string functions in isolated copies and consolidates their legitimate requirements in the existing deployment test owner. **The deletions are coupled to validation of the proposed behavioral coverage below. They are not a standalone route to a green CI result.** No production/helper change, skip, waiver, replacement source-string match, misleading comment or reduced provider/runtime gate is proposed.
+
+## Proposed files and custody
+
+| Proposed path under `ci_contract_candidate/tests/` | Bytes | SHA256 |
+|---|---:|---|
+| [test_datadog_vps_install.py](ci_contract_candidate/tests/test_datadog_vps_install.py) | 5,991 | `a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95` |
+| [test_forward_evaluation.py](ci_contract_candidate/tests/test_forward_evaluation.py) | 31,215 | `637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d` |
+| [test_portfolio_archival.py](ci_contract_candidate/tests/test_portfolio_archival.py) | 16,993 | `0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384` |
+| [test_deploy_provenance.py](ci_contract_candidate/tests/test_deploy_provenance.py), separate owning-test proposal | 46,634 | `90b872cb6de4d7b8b2c53cc91f747c0c24b6e1fc881526081c5369d9805aa59c` |
+
+Original companion files are unchanged in `ci_contract_source/tests/`: Datadog 6,368 bytes, SHA256 `83ddabf469c078b7f5132d5dc6b75ab6c330dd385265452971f922120e7230c5`; forward 33,519 bytes, SHA256 `41a49e87ae003b87716e85fe7bc716081ee41a2fbf732dc8f534b5f96423cbb3`; archival 17,984 bytes, SHA256 `89147abe92872ff4abd2ead5671a08b0301ac40499f892bfcd73c79ca3b7ad79`.
+
+The current helper remains SHA256 `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8`; its frozen test owner remains `1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c`. Neither was edited. The separate owning-test proposal begins from those exact test bytes.
+
+**Custody is unresolved.** The parent's active #1586 Draft/HOLD owner includes `tests/test_forward_evaluation.py` with +588/-0 at reported head `52bee91`; older #642 Datadog-test ownership is unqualified. These full-file copies are review artifacts, not permission to overwrite a current owner's source. Root must resolve leases/effects/hunk overlap and apply only the accepted hunks against the actual admitted source. No native, Git, browser, provider, installer or first-party test/helper execution occurred in this preparation.
+
+## Invariant-to-evidence mapping
+
+| Removed legacy function and assertion | Intended requirement | Existing 49-case evidence and proposed completion |
+|---|---|---|
+| Datadog `test_deploy_keeps_datadog_version_aligned_with_release_and_rollback`: refresher call, inline `Environment=DD_VERSION=%s`, previous SHA and daemon-reload source text | Optional Datadog onboarding must not break deployment; an onboarded selected service receives the target version before restart; rollback restores prior configuration and reloads it before restarting old code. | Existing `test_integrity_failed_tag_refresh_restores_exact_preimage` covers exact prior bytes/absence after a failed custom refresher, and the unchanged Datadog unit test exercises the real refresher. Those do not directly prove the deploy-to-refresher target-SHA handoff. **Four proposed cases** run the real unchanged refresher inside the controlled fixture, inspect tag bytes at each restart and afterward, check daemon-reload/restart ordering, and protect an unrelated service. |
+| Forward `test_deploy_transaction_closes_race_noop_and_failure_paths`: string indexes for stop/init/restart/health/finalize/status, canonical-root strings and init/finalize failure clauses | Stop the configured writer before mutation and cohort initialization; verify target health before activation; use canonical data; propagate init/activation failure. | `test_integrity_stops_service_before_source_copy`, `test_deploy_writes_expected_marker_before_restart` and `test_activation_gate_order_and_canonical_lock_are_explicit` establish stopped-copy/order/canonical routing. Mutation, missing-authority, failed-health and unknown-cohort controls exercise refusal/retention. No replacement string-index predicate is added. |
+| Same forward function: `&& probe_forward_evaluation` presence | Code equality and healthy target code must not skip a missing/pending cohort; a valid active cohort may no-op. | Existing `test_integrity_active_cohort_is_preserved_across_upgrade_and_noop` covers the valid active no-op. **Two proposed cases** start with identical source and target code plus matching healthy booted SHA, but a missing or pending marker. They require actual activation and a restart rather than false no-op success. |
+| Same forward function: `FORWARD_START_CREATED=1`, unconditional marker removal and a separate shell snippet deleting a fixture marker | Earlier code intended to clean up only an owned failed initialization. | The actual helper never established that ownership; the standalone shell snippet does not exercise it. This expectation is deliberately retired. Existing foreign-init, lost-init/finalize/status, active-cohort disappearance and account/fills-mutation controls require retained marker/runtime bytes and explicit reconciliation. The original function remains preserved in the supplied source copy. |
+| Archival `test_deploy_includes_reasoning_subagent_policies_and_rollback_state`: `DIRS` contains `.claude`/`.codex`, no matching exclusions, named-directory removal text | Ship the reasoning policy files and restore their prior state; remove introduced policy directories on successful code restoration. | Generic shared-package controls do not establish positive policy transfer: final-state-only checks could pass if policy paths were never copied. **Four proposed cases** cover existing/new policy directories and successful/failed target health. Both `.claude` and `.codex` are checked at target restart and after rollback, including prior bytes and removal of introduced directories. |
+| Same archival function: health-policy strings, previous-SHA probe with scheduler disabled, rsync/marker/restart failure strings | Exact code identity and reasoning/scheduled-runtime health gate deployment; source/metadata/restart failures enter the bounded recovery path. | Existing target-health/scheduler refusal, restored-health failure, partial copy, marker-write failure and restart-failure controls exercise these paths. The old assertion demanding a weaker rollback scheduler check is retired; it is not a capability to preserve. No claim is added for every restored-health or transport variant. |
+
+The old forward function's isolated `bash -n` call is not replaced by an implementation-string test. The existing whole-helper successful/failure runs and root's syntax/native gates remain the owning evidence. Its now-unused `subprocess` import is the only companion-file change outside the three removed function bodies.
+
+## Separate deployment-owner proposal
+
+Three new parametrized functions add **ten proposed cases**, none executed here:
+
+1. `test_deploy_datadog_tag_matches_target_and_restores_prior_bytes`: onboarding present/absent × successful/failed target health, four cases.
+2. `test_deploy_transfers_and_restores_reasoning_policy_files`: prior policy directories present/absent × successful/failed target health, four cases; each checks both policy roots.
+3. `test_healthy_unchanged_code_does_not_skip_cohort_activation`: missing/pending marker, two cases.
+
+A small opt-in fixture observer records selected fixture-file bytes at each fake service restart, alongside its existing source SHA. This makes positive transfer observable before a subsequent rollback. It resolves and confines each observed path to the private fixture; all existing test functions and their assertions remain unchanged. No second test harness or runtime controller is introduced.
+
+The Datadog cases copy the unchanged real tag refresher into the source fixture and explicitly set `SYSTEMD_ROOT` to the temporary systemd tree and `SYSTEMCTL_BIN` to the fake service command. They exercise the helper/refresher boundary without substituting a custom version-writing script. They do not run the installer. The helper retains fake SSH, host, key, health, Python CLI and service bindings, and the already-reviewed local-rsync peer confinement. Execution of these new cases still requires root's admission; this paragraph describes the proposed test construction, not a test result.
+
+Counterexamples the new assertions are intended to reject include omitting the tag call, passing the old SHA, targeting the default instead of selected service, omitting required reload, excluding either policy root, leaving new policy bytes after recovery, or accepting healthy unchanged code without cohort activation. These are reasoned test distinctions, not executed mutation-test results.
+
+## Validation and next gate
+
+Static parsing of all proposed Python files and the embedded shim succeeded. AST comparison confirms exactly the named three companion functions are removed, every remaining companion function is unchanged, and every existing deployment test function is unchanged. Only its fixture observer and three new test functions differ. Original and frozen-source hashes were rechecked.
+
+There is **no new passing test receipt**. The previous 49-case native pass remains attributed to the frozen source; hosted CI's three failures remain failed evidence. Root should review the coupled patch, resolve custody, admit the narrowly bounded native test execution, and qualify the affected existing owners plus the proposed deployment-owner cases before refreshing source CI. No source helper change or production operation is proposed.
+
+## Exact proposed diffs
+
+The following diffs are against the supplied companion originals and the frozen deployment test owner. They are review material only.
+
+### test_datadog_vps_install.py
+
+```diff
+--- before/tests/test_datadog_vps_install.py
++++ proposed/tests/test_datadog_vps_install.py
+@@ -146,11 +146,3 @@
+     result = subprocess.run(["bash", "scripts/refresh_datadog_release_tag.sh", sha], cwd=ROOT, env=env, capture_output=True, text=True)
+     assert result.returncode == 0, result.stderr
+     assert dropin.read_text(encoding="utf-8") == f"[Service]\nEnvironment=DD_VERSION={sha}\n"
+-
+-
+-def test_deploy_keeps_datadog_version_aligned_with_release_and_rollback() -> None:
+-    deploy = (ROOT / "scripts" / "deploy_code_to_vps.sh").read_text(encoding="utf-8")
+-    assert "refresh_datadog_release_tag.sh' '$EXPECTED_SHA'" in deploy
+-    assert "Environment=DD_VERSION=%s" in deploy
+-    assert "'$PREVIOUS_SHA'" in deploy
+-    assert "systemctl daemon-reload" in deploy
+```
+
+### test_forward_evaluation.py
+
+```diff
+--- before/tests/test_forward_evaluation.py
++++ proposed/tests/test_forward_evaluation.py
+@@ -2,7 +2,6 @@
+ from __future__ import annotations
+ 
+ import json
+-import subprocess
+ from pathlib import Path
+ 
+ import pytest
+@@ -695,44 +694,3 @@
+     getattr(scheduler, job_name)()
+     assert calls == [(book, "2026-08-12")]
+     assert locked["active"] is False
+-
+-
+-def test_deploy_transaction_closes_race_noop_and_failure_paths(tmp_path: Path) -> None:
+-    root = Path(__file__).resolve().parent.parent
+-    script = (root / "scripts" / "deploy_code_to_vps.sh").read_text(encoding="utf-8")
+-    marker_write = script.index("release marker write failed")
+-    stop = script.index("systemctl stop '$SVC'", marker_write)
+-    init = script.index("python3 -m portfolio.forward_evaluation init", stop)
+-    restart = script.index("systemctl restart '$SVC'", init)
+-    health = script.index('if [[ "$CODE" == "200" ]]', restart)
+-    finalize = script.index("python3 -m portfolio.forward_evaluation finalize", health)
+-    verify = script.index("python3 -m portfolio.forward_evaluation status", finalize)
+-    success = script.index('log "deploy OK: $SVC healthy at commit $EXPECTED_SHA"')
+-    assert stop < init < restart < health < finalize < verify < success
+-    assert '&& probe_forward_evaluation; then' in script
+-    assert 'LIVE_DATA_PATH="${MASTERMIND_VPS_LIVE_DATA_PATH:-/opt/mastermind-live-data}"' in script
+-    assert script.count("MASTERMIND_FORWARD_EVALUATION_RELEASE_STATE_ROOT='$LIVE_DATA_PATH'") >= 4
+-    assert 'FORWARD_START_CREATED=1' in script
+-    assert "rm -f '$LIVE_DATA_PATH/portfolio_forward_evaluation/start.json'" in script
+-    assert 'fail_release "forward evaluation pending start initialization failed"' in script
+-    assert 'fail_release "forward evaluation activation/status verification failed"' in script
+-    assert subprocess.run(["bash", "-n", str(root / "scripts" / "deploy_code_to_vps.sh")],
+-                          check=False).returncode == 0
+-
+-    # Pin the bounded rollback semantic: only a marker explicitly attributed to this failed
+-    # release is removed; a pre-existing marker survives.
+-    marker = tmp_path / "new-start-marker.json"
+-    marker.write_text("new", encoding="utf-8")
+-    try:
+-        result = subprocess.run(
+-            ["bash", "-c", (
+-                f"start_marker='{marker}'; FORWARD_START_CREATED=1; "
+-                'if [ "$FORWARD_START_CREATED" -eq 1 ]; then rm -f "$start_marker"; fi; '
+-                "false"
+-            )],
+-            check=False,
+-        )
+-        assert result.returncode != 0
+-        assert not marker.exists()
+-    finally:
+-        marker.unlink(missing_ok=True)
+```
+
+### test_portfolio_archival.py
+
+```diff
+--- before/tests/test_portfolio_archival.py
++++ proposed/tests/test_portfolio_archival.py
+@@ -236,23 +236,6 @@
+     assert "successor: autonomous" in result.stdout
+ 
+ 
+-def test_deploy_includes_reasoning_subagent_policies_and_rollback_state():
+-    script = (Path(__file__).resolve().parent.parent / "scripts" /
+-              "deploy_code_to_vps.sh").read_text()
+-    dirs = next(line for line in script.splitlines() if line.startswith('DIRS="'))
+-    assert ".claude" in dirs and ".codex" in dirs
+-    assert "--exclude='.claude'" not in script
+-    assert "--exclude='.codex'" not in script
+-    rollback = script.split("rollback_release()", 1)[1]
+-    assert "A directory introduced by the failed release" in rollback
+-    assert 'rm -rf \\\"\\$d\\\"' in rollback
+-    assert "reasoning_policy_ok" in script
+-    assert 'CODE="$(probe_health "$EXPECTED_SHA")"' in script
+-    assert 'CODE="$(probe_health "$PREVIOUS_SHA" 0)"' in script
+-    assert "scheduled_runtime_ok" in script
+-    assert 'fail_release "rsync did not complete"' in script
+-    assert 'fail_release "release marker write failed"' in script
+-    assert 'fail_release "service restart failed"' in script
+ 
+ 
+ def test_current_firm_exposure_ignores_archived_books(tmp_path, monkeypatch):
+```
+
+### test_deploy_provenance.py
+
+```diff
+--- before/tests/test_deploy_provenance.py
++++ proposed/tests/test_deploy_provenance.py
+@@ -210,6 +210,14 @@
+     gate("restart"); event("restart")
+     sha = (remote / ".deployed_git_sha").read_text().strip() if (remote / ".deployed_git_sha").exists() else "missing"
+     with (root / "restart_events").open("a") as stream: stream.write(sha + "\n")
++    observed_paths = json.loads(os.environ.get("FAKE_RESTART_OBSERVE", "[]"))
++    if observed_paths:
++        files = {}
++        for relative_path in observed_paths:
++            path = inside((root / relative_path).resolve())
++            files[relative_path] = path.read_bytes().hex() if path.is_file() else None
++        with (root / "restart_file_observations.jsonl").open("a") as stream:
++            stream.write(json.dumps({"sha": sha, "files": files}) + "\n")
+     state_path.write_text("active"); boot_path.write_text(sha)
+     if sha == os.environ["FAKE_EXPECTED"] and flag("FAKE_CREATE_EXCLUDED_CACHE_ON_RESTART"):
+         cache = remote / "new_package/__pycache__/x.pyc"
+@@ -532,6 +540,118 @@
+     assert "Datadog release tag refresh failed" in result.stdout
+ 
+ 
++@pytest.mark.parametrize("onboarded", [False, True])
++@pytest.mark.parametrize("fail_new_release", [False, True])
++def test_deploy_datadog_tag_matches_target_and_restores_prior_bytes(tmp_path, onboarded, fail_new_release):
++    import json
++
++    env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
++    systemd = tmp_path / "systemd"
++    version_path = "systemd/fixture.service.d/81-datadog-version.conf"
++    version = tmp_path / version_path
++    prior = f"[Service]\n# preserve prior configuration\nEnvironment=DD_VERSION={old_sha}\n".encode()
++    if onboarded:
++        version.parent.mkdir(parents=True)
++        (version.parent / "80-datadog.conf").write_text("[Service]\n")
++        version.write_bytes(prior)
++    other = systemd / "mastermind.service.d/81-datadog-version.conf"
++    other.parent.mkdir(parents=True)
++    (other.parent / "80-datadog.conf").write_text("[Service]\n")
++    other.write_bytes(b"unrelated service version\n")
++    scripts = tmp_path / "source/scripts"
++    scripts.mkdir()
++    _write_executable(scripts / "refresh_datadog_release_tag.sh",
++                      (ROOT / "scripts/refresh_datadog_release_tag.sh").read_text())
++    env.update(SYSTEMD_ROOT=str(systemd), SYSTEMCTL_BIN=str(tmp_path / "bin/systemctl"),
++               FAKE_RESTART_OBSERVE=json.dumps([version_path]))
++
++    result = _run_deploy(env)
++
++    assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
++    expected_restarts = [new_sha, old_sha] if fail_new_release else [new_sha]
++    assert events.read_text().splitlines() == expected_restarts
++    reloads_and_restarts = [item["event"] for item in _transport_events(tmp_path)
++                           if item["event"] in {"daemon-reload", "restart"}]
++    per_start = ["daemon-reload", "restart"] if onboarded else ["restart"]
++    assert reloads_and_restarts == per_start * len(expected_restarts)
++    observations = [json.loads(line) for line in
++                    (tmp_path / "restart_file_observations.jsonl").read_text().splitlines()]
++    target = f"[Service]\nEnvironment=DD_VERSION={new_sha}\n".encode() if onboarded else None
++    assert observations[0] == {"sha": new_sha, "files": {version_path: target.hex() if target else None}}
++    expected_final = prior if onboarded and fail_new_release else target
++    assert (version.read_bytes() if version.exists() else None) == expected_final
++    if fail_new_release:
++        assert observations[1] == {"sha": old_sha, "files": {
++            version_path: prior.hex() if onboarded else None}}
++    assert other.read_bytes() == b"unrelated service version\n"
++
++
++@pytest.mark.parametrize("preexisting", [False, True])
++@pytest.mark.parametrize("fail_new_release", [False, True])
++def test_deploy_transfers_and_restores_reasoning_policy_files(tmp_path, preexisting, fail_new_release):
++    import json
++
++    env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
++    target_files, prior_files = {}, {}
++    for package in (".claude", ".codex"):
++        source_dir = tmp_path / "source" / package / "agents"
++        source_dir.mkdir(parents=True)
++        for name, data in (("reviewer.md", b"new reviewer policy\n"), ("introduced.md", b"new policy\n")):
++            (source_dir / name).write_bytes(data)
++            relative_path = f"remote/{package}/agents/{name}"
++            target_files[relative_path] = data.hex()
++            prior_files[relative_path] = None
++        if preexisting:
++            old = tmp_path / "remote" / package / "agents/reviewer.md"
++            old.parent.mkdir(parents=True)
++            old.write_bytes(b"prior reviewer policy\n")
++            prior_files[f"remote/{package}/agents/reviewer.md"] = old.read_bytes().hex()
++    env["FAKE_RESTART_OBSERVE"] = json.dumps(sorted(target_files))
++
++    result = _run_deploy(env)
++
++    assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
++    expected_restarts = [new_sha, old_sha] if fail_new_release else [new_sha]
++    assert events.read_text().splitlines() == expected_restarts
++    observations = [json.loads(line) for line in
++                    (tmp_path / "restart_file_observations.jsonl").read_text().splitlines()]
++    assert observations[0] == {"sha": new_sha, "files": target_files}
++    expected_final = prior_files if fail_new_release else target_files
++    actual = {path: (tmp_path / path).read_bytes().hex() if (tmp_path / path).is_file() else None
++              for path in target_files}
++    assert actual == expected_final
++    if fail_new_release:
++        assert observations[1] == {"sha": old_sha, "files": prior_files}
++        if not preexisting:
++            assert not (tmp_path / "remote/.claude").exists()
++            assert not (tmp_path / "remote/.codex").exists()
++
++
++@pytest.mark.parametrize("marker_state", ["missing", "pending_health"])
++def test_healthy_unchanged_code_does_not_skip_cohort_activation(tmp_path, marker_state):
++    import json
++    import shutil
++
++    env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
++    shutil.copytree(tmp_path / "source", tmp_path / "remote", dirs_exist_ok=True)
++    (tmp_path / "remote/.deployed_git_sha").write_text(new_sha + "\n")
++    (tmp_path / "booted_sha").write_text(new_sha)
++    marker = tmp_path / "live-data/portfolio_forward_evaluation/start.json"
++    if marker_state == "pending_health":
++        marker.parent.mkdir(parents=True)
++        marker.write_text(json.dumps({"release_state": marker_state, "deployment_sha": new_sha,
++                                      "evaluation_start": "2026-08-11"}) + "\n")
++    result = _run_deploy(env)
++    assert result.returncode == 0, result.stdout + result.stderr
++    assert "deploy no-op" not in result.stdout
++    assert events.read_text().splitlines() == [new_sha]
++    state = json.loads(marker.read_text())
++    assert state["release_state"] == "active"
++    assert state["deployment_sha"] == state["health_verified_sha"] == new_sha
++    gate_events = (tmp_path / "activation_events").read_text().splitlines()
++    assert "init" in gate_events and "finalize" in gate_events
++
++
+ def test_integrity_sigterm_after_copy_restores_once(tmp_path):
+     env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+     env["FAKE_TERM_DURING_FORWARD"] = "1"
+```

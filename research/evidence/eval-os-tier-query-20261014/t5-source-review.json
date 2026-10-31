@@ -1,0 +1,72 @@
+{
+  "schema": "eval_os.t5_source_accepted_review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "decision": "ACCEPTED_BOUNDED_SOURCE_DATA_CONSUMER",
+  "review_mode": "Read-only final code/diff and retained test receipt review; reviewer ran no tests/source/outcome/network effects",
+  "source_tree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449",
+  "sources": [
+    {
+      "path": "engine/postmortem.py",
+      "sha256": "305922800d483572ec709224edb30c2685404b1da543cdf81257701a4ccfdcc5"
+    },
+    {
+      "path": "scripts/build_output_health.py",
+      "sha256": "b97bf7e909e4d7744d29033e1f054a6b851ad26dbbed3411fc21988dc4f1e21b"
+    },
+    {
+      "path": "tests/test_output_health.py",
+      "sha256": "cb14d6ddb7aa28f4d625d3e45351356d5101a2eeec47d40d38b94fe9539851d2"
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "67cefad4a1920c699831890fac5d8023ca4e467b37373d9ceb5fd736009365d5"
+    }
+  ],
+  "closed_findings": [
+    "Observation epoch must be usable offset-bearing ISO timestamp",
+    "Content source clock must be usable timestamp; naive admitted only by exact owner disclosure",
+    "Upstream reason codes must be list of nonempty strings before exact element membership; malformed string/substrings cannot admit naive clock"
+  ],
+  "test_receipt": {
+    "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t5-final.xml",
+    "sha256": "f1cd863a4bff4a06f5024e2cdb610ab71bdc6957cbec9f425014d19b1b82e313",
+    "tests": 125,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_seconds": "7.141",
+    "stdout_path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t5-final.txt",
+    "stdout_sha256": "01a8c18fd04cdf4b9fa405a0b6fb5eb4c8cd89ae35f117c1ca6dd8f84dc1c718",
+    "stdout_result": "125 passed in 7.46s"
+  },
+  "ci_dependency_delta": [
+    "engine/postmortem.py",
+    "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md"
+  ],
+  "ci_dependency_scope": "Two exact existing-owner inputs only; no job/gate/step/packing edits in inspected diff",
+  "ci_dependency_receipt": {
+    "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t5-ci-owner-proof.json",
+    "sha256": "cc0296eaf459319112739dbf44d1f566c6eab636bf26bcf7d826f1eb952d78d5",
+    "qualification": "Retained receipt is pre-addition: it identifies the missing architecture path. Final inspected manifest contains that exact path. This review accepts the source repair, not a newly executed clean closure/hosted selection proof."
+  },
+  "prophet_preservation": {
+    "inspected_diff": "append-only new pure classifier; existing Prophet outcome definitions unchanged",
+    "root_reported_AST_proof": "23 existing postmortem definitions unchanged; accepted root proof reused, not independently rerun"
+  },
+  "accepted_semantics": [
+    "Exact producer/content parser diagnostic allowlist; generic caps/availability blindness remain unclassified",
+    "Same-view unique upstream join, exact dependency attribution, content-decided stale state and age>SLA, current observation epoch and required-link agreement",
+    "Healthy complete outputs retained as no_failure_observed; null/partial/unavailable distinct",
+    "Existing builder --source-findings is opt-in, one build, mutually exclusive with JSON/summary; resolver import fence unchanged",
+    "Output/reason pair grouping and identifiers explicitly scoped to supplied snapshot; no causal/independent trial/evaluation/admission authority"
+  ],
+  "limits": [
+    "T5 source/data subset only; full cross-engine outcome taxonomy/clustering and false_breakout remain external/unproven",
+    "Supplied source identity and freshness remain caller-owned; no immutable source attestation inferred",
+    "Count unit health_observations; multiple reason groups may refer to one output; not failed-engine/output census or trials",
+    "No longitudinal IDs, repeated-run aggregation, empirical rates, promotion/ranking/alert/execution consequences",
+    "Pure projection copies evidence per reason; no full-estate capacity guarantee",
+    "No hosted CI, merge, installation, authenticated production, or actual estate outcome acceptance established by this receipt"
+  ],
+  "supersedes_for_repaired_source_only": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/assurance/t5-source-final-review.json"
+}

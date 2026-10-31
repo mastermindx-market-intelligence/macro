@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-15T06:55:41.330063+00:00",
+  "trigger": "API journal advanced and main thread returned to ep_poll without service mutation",
+  "results": [
+    {
+      "url": "https://www.mastermind-x.com/api/health",
+      "error": "TimeoutError:The read operation timed out",
+      "elapsed_seconds": 15.512
+    },
+    {
+      "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+      "error": "TimeoutError:The read operation timed out",
+      "elapsed_seconds": 15.451
+    }
+  ]
+}

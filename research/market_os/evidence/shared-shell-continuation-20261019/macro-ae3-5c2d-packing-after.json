@@ -1,0 +1,43 @@
+{
+  "started_at": "2026-10-20T11:27:06.843935+00:00",
+  "head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "index": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+  "source_before": {
+    "tests/test_ci_pack.py": "f2518d13a01836559cfb244eba597c494883fa7f80f5c32bc8ae1351d1db5ac3",
+    ".github/ci/legacy-jobs.yml": "56cb2d04614a615da4ae76e34026655c7d0d60d5aacb9fbd4e5a3602f2e84755",
+    "scripts/run_ci_pack.py": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5",
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394"
+  },
+  "args": [
+    "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--basetemp",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-packing-after-tmp",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "prior_red_receipt": "macro-ae3-5c2d-focused-before.json",
+  "scope": "Only the actually failed existing packing node; three unchanged scope nodes already passed; no selector/command/coverage change",
+  "exit": 0,
+  "finished_at": "2026-10-20T11:29:59.959026+00:00",
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-packing-after.log",
+    "bytes": 110,
+    "sha256": "5ab001449c5c7813058f64c7cd04938d8b42299c535d97645de6a091330eb959"
+  },
+  "source_after": {
+    "tests/test_ci_pack.py": "f2518d13a01836559cfb244eba597c494883fa7f80f5c32bc8ae1351d1db5ac3",
+    ".github/ci/legacy-jobs.yml": "56cb2d04614a615da4ae76e34026655c7d0d60d5aacb9fbd4e5a3602f2e84755",
+    "scripts/run_ci_pack.py": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5",
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394"
+  },
+  "index_after": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+  "unstaged_after": [],
+  "pass": true
+}

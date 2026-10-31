@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-10-20T14:42:23.365478+00:00",
+  "head": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "index_before": "1d9a8aa520a2f72551cd49580558f23a73b36492",
+  "diagnostic_sha256": "2c5d91c302cab27630312fba42549f7c1b0cbd474b305b979640ebde09334fe1",
+  "actual_missing_paths": {
+    "china-mechanics-display": [
+      "lib/shared_shell.py"
+    ],
+    "pick-lab-cn-render": [
+      "lib/shared_shell.py",
+      "lib/site_assets.py"
+    ]
+  },
+  "exact_added_paths": {
+    "china-mechanics-display": [
+      "lib/shared_shell.py"
+    ],
+    "pick-lab-cn-render": [
+      "lib/shared_shell.py",
+      "lib/site_assets.py"
+    ]
+  },
+  "manifest_before_sha256": "4480d625db57e1192e69d088e16b63eea8d11f368a442739fbe3d29951391a2e",
+  "manifest_after_sha256": "47a1d4eed734197d066a4760eedc2c61ada5724b47f6be856352d3e11da064f4",
+  "all_other_manifest_semantics_unchanged": true,
+  "test_sha256_unchanged": "a94e09b28fa32fc34f532f7eaaa175873128397b844fb99863323c2000328831",
+  "manifest_three_way_all_fields_and_ids_pass": true,
+  "writes_started": true,
+  "index": "4e8952ea930e29d38874eee2c5ef60c5bc9fdaeb",
+  "finished_at": "2026-10-20T14:42:38.945196+00:00",
+  "owning_four_node_validation": "pending on frozen repaired index; no fresh PASS claimed"
+}

@@ -1102,6 +1102,66 @@ class TestPlannerIntake:
         assert slots[0]["triage"]["rank"] is None, (
             "an unranked report must not borrow another report's rank")
 
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        def snapshot():
+            return {str(p.relative_to(root)): p.read_bytes()
+                    for p in root.rglob("*") if p.is_file()}
+        before = snapshot()
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+        assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+        assert slots[0]["desk"] == "research_desk"
+        assert cfg["desks"]["research_desk"]["cadence_per_day"] == 1
+        assert cfg["desks"]["research_note"]["cadence_per_day"] == 0
+        assert before == snapshot()
+
+    def test_research_pool_stays_bounded_after_coverage_filter(self, tmp_path):
+        """Skipping held refs does not remove the configured inspection budget."""
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        cfg.pop("research_triage")
+        cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        for item in items[1:9]:
+            item["summary_points"] = ["The current regime is a front-end signal."]
+            assert not P._press_safe(item["summary_points"][0])
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        slots = P.plan(["research_desk"], as_of="2026-07-26", root=root, cfg=cfg,
+                       extra_blocked_refs=["research_vault:pool-00"])
+        assert slots == []  # the ninth unblocked report is outside the pool of eight
+        assert cfg["desks"]["research_desk"]["candidate_pool"] == 8
+
     def test_the_fixture_prose_clears_the_house_lexicon(self):
         """This suite's own tripwire.
 

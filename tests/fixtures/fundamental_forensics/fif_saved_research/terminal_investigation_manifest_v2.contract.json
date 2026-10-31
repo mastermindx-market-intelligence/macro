@@ -1,0 +1,364 @@
+{
+  "admits_object_type_occurrence": false,
+  "admits_owner_fif": false,
+  "cites": {
+    "admits_object_type_occurrence": "supabase/migrations/0028_investigations.sql:141",
+    "admits_owner_fif": "terminal/lib/investigations.ts:7",
+    "continuation.shape.next_observation": "api/investigation_contracts.py:165",
+    "continuation.shape.next_question": "api/investigation_contracts.py:165",
+    "evidence_refs.follow_head_forbids": "api/investigation_contracts.py:130",
+    "evidence_refs.max_items": "api/investigation_contracts.py:161",
+    "evidence_refs.modes": "api/investigation_contracts.py:124",
+    "evidence_refs.object_id.max_length": "api/investigation_contracts.py:122",
+    "evidence_refs.object_id.min_length": "api/investigation_contracts.py:41",
+    "evidence_refs.object_types": "terminal/lib/investigations.ts:12",
+    "evidence_refs.object_types_closed": "supabase/migrations/0028_investigations.sql:141",
+    "evidence_refs.owners": "terminal/lib/investigations.ts:12",
+    "evidence_refs.owners_closed": "terminal/lib/investigations.ts:7",
+    "evidence_refs.pinned_requires": "api/investigation_contracts.py:125",
+    "evidence_refs.unknown_key_policy": "api/investigation_contracts.py:119",
+    "evidence_refs.version_ref.max_length": "api/investigation_contracts.py:127",
+    "evidence_refs.version_ref.min_length": "api/investigation_contracts.py:41",
+    "extension_mechanism.exists": "terminal/lib/investigationContracts.ts:62",
+    "intent.fields.horizon.max_length": "api/investigation_contracts.py:151",
+    "intent.fields.question.max_length": "api/investigation_contracts.py:92",
+    "intent.fields.research_as_of.max_length": "api/investigation_contracts.py:154",
+    "intent.fields.subjects": "api/investigation_contracts.py:149",
+    "intent.fields.title.max_length": "api/investigation_contracts.py:147",
+    "intent.research_as_of_format": "api/investigation_contracts.py:154",
+    "intent.unknown_key_policy": "api/investigation_contracts.py:146",
+    "layout_refs.item_shape.digest": "api/investigation_contracts.py:107",
+    "layout_refs.item_shape.layout_id": "api/investigation_contracts.py:106",
+    "layout_refs.item_shape.layout_revision_id": "api/investigation_contracts.py:106",
+    "layout_refs.item_shape.role": "api/investigation_contracts.py:108",
+    "layout_refs.max_items": "api/investigation_contracts.py:159",
+    "schema.field": "api/investigation_contracts.py:89",
+    "schema.value": "api/investigation_contracts.py:90",
+    "subjects.kinds": "api/investigation_contracts.py:19",
+    "subjects.max_items": "api/investigation_contracts.py:149",
+    "subjects.object_id.max_length": "api/investigation_contracts.py:97",
+    "subjects.object_id.min_length": "api/investigation_contracts.py:41",
+    "subjects.owners": "terminal/lib/investigations.ts:8",
+    "subjects.owners_closed": "supabase/migrations/0028_investigations.sql:110",
+    "subjects.unknown_key_policy": "api/investigation_contracts.py:95",
+    "thesis_refs.item_shape.role": "api/investigation_contracts.py:115",
+    "thesis_refs.item_shape.thesis_id": "api/investigation_contracts.py:114",
+    "thesis_refs.item_shape.version_id": "api/investigation_contracts.py:114",
+    "thesis_refs.max_items": "api/investigation_contracts.py:160",
+    "top_level.fields.review_baseline_ref": "api/investigation_contracts.py:89",
+    "top_level.fields.schema": "terminal/lib/investigationContracts.ts:245",
+    "top_level.unknown_key_policy_python": "api/investigation_contracts.py:34",
+    "top_level.unknown_key_policy_typescript": "terminal/lib/investigationContracts.ts:139"
+  },
+  "continuation": {
+    "shape": {
+      "next_observation": {
+        "max_length": 4000,
+        "required": false,
+        "type": "string"
+      },
+      "next_question": {
+        "max_length": 4000,
+        "required": false,
+        "type": "string"
+      }
+    }
+  },
+  "evidence_refs": {
+    "follow_head_forbids": [
+      "version_ref",
+      "fingerprint"
+    ],
+    "max_items": 128,
+    "modes": [
+      "pinned",
+      "follow_head"
+    ],
+    "object_id": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    },
+    "object_types": [
+      "event_workspace"
+    ],
+    "object_types_closed": true,
+    "optional_keys": [
+      "version_ref",
+      "fingerprint",
+      "selection"
+    ],
+    "optional_keys_source": "api/investigation_contracts.py:119",
+    "owners": [
+      "earnings.workspace_generation"
+    ],
+    "owners_closed": true,
+    "pinned_requires": [
+      "version_ref"
+    ],
+    "unknown_key_policy": "reject",
+    "version_ref": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    }
+  },
+  "emitter_refusal_order": {
+    "follows": "api/investigation_contracts.py",
+    "note": "the emitter (templates/fif_saved_briefcase.js emitInvestigationManifestV2) runs its checks in the PYTHON checker's order: the per-field and per-list checks first (refs(), investigation_contracts.py:139-161), the combined reference total only after them (:162), and the size cap last (:169). It does NOT mirror the TypeScript checker's order — every place the two differ is recorded in known_divergences."
+  },
+  "extension_mechanism": {
+    "cite": "terminal/lib/investigationContracts.ts:62",
+    "exists": false
+  },
+  "intent": {
+    "fields": {
+      "horizon": {
+        "max_length": 64,
+        "required": false,
+        "type": "string"
+      },
+      "question": {
+        "max_length": 4000,
+        "required": true,
+        "type": "string"
+      },
+      "research_as_of": {
+        "max_length": 10,
+        "required": false,
+        "type": "string"
+      },
+      "subjects": {
+        "required": true,
+        "type": "array"
+      },
+      "title": {
+        "max_length": 160,
+        "required": true,
+        "type": "string"
+      }
+    },
+    "research_as_of_format": "YYYY-MM-DD",
+    "unknown_key_policy": "reject"
+  },
+  "known_divergences": [
+    {
+      "aspect": "size cap ordering",
+      "emitter": "python",
+      "python": {
+        "code": "too_many_items",
+        "path": "$.evidence_refs",
+        "source": "api/investigation_contracts.py:161 fires before the size cap at :169"
+      },
+      "scenario": "a manifest over 131072 bytes whose evidence_refs also exceed 128 items",
+      "source": "api/investigation_contracts.py:161; terminal/lib/investigationContracts.ts:277-283",
+      "typescript": {
+        "code": "manifest_too_large",
+        "path": "$",
+        "source": "terminal/lib/investigationContracts.ts:277-283 runs the size cap before any field check"
+      }
+    },
+    {
+      "aspect": "combined reference total ordering",
+      "emitter": "python",
+      "python": {
+        "code": "too_many_items",
+        "path": "$.evidence_refs",
+        "source": "api/investigation_contracts.py:161 fires before the combined check at :162"
+      },
+      "scenario": "129 evidence refs with no layout or thesis refs",
+      "source": "api/investigation_contracts.py:161-162; terminal/lib/investigationContracts.ts:250",
+      "typescript": {
+        "code": "too_many_references",
+        "path": "$",
+        "source": "terminal/lib/investigationContracts.ts:250 runs the combined check before the per-list checks at :258-260"
+      }
+    },
+    {
+      "aspect": "size-measure number rendering",
+      "emitter_and_python_render": "1e+300",
+      "note": "the emitter can never emit a NON-INTEGER number (Math.trunc over Number.isFinite guards, templates/fif_saved_briefcase.js:315-316 for peers and :296-297 for source spans), but it can emit an integer-valued float >= 1e21, which both the emitter's canonical JSON and py json.dumps render in exponent form (1e+300) while the sql jsonb canonical text renders the same value without the plus (1e300) — the two size measures then differ by one octet per such number",
+      "scenario": "a carrier number with magnitude >= 1e21, reachable as peers.peer_n or peers.peer_tol",
+      "source": "api/investigation_contracts.py:168; supabase/migrations/0028_investigations.sql:83-91",
+      "sql_renders": "1e300"
+    }
+  ],
+  "layout_refs": {
+    "item_shape": {
+      "digest": {
+        "pattern": "^[0-9a-f]{64}$",
+        "required": true,
+        "type": "string"
+      },
+      "layout_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "layout_revision_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "role": {
+        "enum": [
+          "primary",
+          "supporting"
+        ],
+        "pattern": null,
+        "required": true,
+        "type": "string"
+      }
+    },
+    "max_items": 4,
+    "role_enum_source": "api/investigation_contracts.py:108; supabase/migrations/0028_investigations.sql:126"
+  },
+  "manifest_size": {
+    "max_bytes": 131072,
+    "measure": "compact canonical JSON, UTF-8 octet length; key order is byte-neutral, so the py insertion-order dump (investigation_contracts.py:169), the ts JSON.stringify byte length and the sql octet_length of the canonical sorted jsonb text (0028_investigations.sql:93) measure the same total for every manifest the emitter can build EXCEPT one carrying a number with magnitude >= 1e21, whose exponent rendering differs between the sql jsonb text and py/JSON.stringify — recorded in known_divergences",
+    "source": "api/investigation_contracts.py:169; supabase/migrations/0028_investigations.sql:93"
+  },
+  "reference_totals": {
+    "max_combined": 128,
+    "source": "api/investigation_contracts.py:162; supabase/migrations/0028_investigations.sql:120"
+  },
+  "schema": {
+    "field": "schema",
+    "value": "investigation_manifest.v2"
+  },
+  "source_files": [
+    "api/investigation_contracts.py",
+    "docs/INVESTIGATION_V2_CONTRACT.md",
+    "docs/INVESTIGATION_P1_CONTRACT_CANDIDATE.md",
+    "supabase/migrations/0028_investigations.sql",
+    "terminal/app/api/investigations/route.ts",
+    "terminal/app/api/investigations/baseline/route.ts",
+    "terminal/lib/investigationContracts.ts",
+    "terminal/lib/investigations.ts",
+    "terminal/lib/rateLimit.ts",
+    "terminal/lib/__tests__/investigationContracts.test.ts",
+    "terminal/lib/__tests__/investigationManifestParity.test.ts",
+    "terminal/lib/__tests__/fixtures/investigation_manifest_vectors.json",
+    "terminal/lib/__tests__/fixtures/investigation_text_vectors.json",
+    "terminal/components/workspaces/InvestigationWorkspace.tsx",
+    "terminal/components/RetainedInvestigationLayout.tsx"
+  ],
+  "subjects": {
+    "kinds": [
+      "security",
+      "issuer",
+      "industry",
+      "subtheme",
+      "theme",
+      "regime",
+      "economy",
+      "event",
+      "portfolio",
+      "option_underlying",
+      "option_contract",
+      "policy_question"
+    ],
+    "max_items": 16,
+    "object_id": {
+      "max_length": 256,
+      "min_length": 1,
+      "pattern": null
+    },
+    "owner_kinds": [
+      {
+        "kinds": [
+          "security"
+        ],
+        "owner": "terminal.analysis_symbol"
+      },
+      {
+        "kinds": [
+          "security",
+          "issuer"
+        ],
+        "owner": "data_os.security_master"
+      }
+    ],
+    "owner_kinds_source": "terminal/lib/investigations.ts:9-10",
+    "owners": [
+      "terminal.analysis_symbol",
+      "data_os.security_master"
+    ],
+    "owners_closed": true,
+    "unknown_key_policy": "reject"
+  },
+  "terminal_commit": "c799ba7e64e2d0861228c9977cc12ed4a5d91982",
+  "text_checks": {
+    "nul_code": "unsupported_code_point",
+    "order_note": "empty_text runs on the whole string BEFORE any code point; invalid_unicode, unsupported_code_point and text_too_long run per code point in that order; invalid_control is a whole-string scan AFTER the per-code-point loop, exactly as the Python checker does it (investigation_contracts.py:39-48)",
+    "per_code_point_order": [
+      "empty_text",
+      "invalid_unicode",
+      "unsupported_code_point",
+      "text_too_long",
+      "invalid_control"
+    ],
+    "source": "api/investigation_contracts.py:39-48; terminal/lib/investigationContracts.ts:143-157"
+  },
+  "thesis_refs": {
+    "item_shape": {
+      "role": {
+        "enum": [
+          "primary",
+          "alternative",
+          "context"
+        ],
+        "pattern": null,
+        "required": true,
+        "type": "string"
+      },
+      "thesis_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      },
+      "version_id": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "required": true,
+        "type": "string"
+      }
+    },
+    "max_items": 16,
+    "must_be_empty": true,
+    "must_be_empty_source": "supabase/migrations/0028_investigations.sql:131; terminal/lib/investigations.ts:52"
+  },
+  "top_level": {
+    "fields": {
+      "continuation": {
+        "required": true,
+        "type": "object"
+      },
+      "evidence_refs": {
+        "required": true,
+        "type": "array"
+      },
+      "intent": {
+        "required": true,
+        "type": "object"
+      },
+      "layout_refs": {
+        "required": true,
+        "type": "array"
+      },
+      "review_baseline_ref": {
+        "required": false,
+        "type": "object"
+      },
+      "schema": {
+        "required": true,
+        "type": "string"
+      },
+      "thesis_refs": {
+        "required": true,
+        "type": "array"
+      }
+    },
+    "unknown_key_policy_python": "reject",
+    "unknown_key_policy_typescript": "reject"
+  }
+}

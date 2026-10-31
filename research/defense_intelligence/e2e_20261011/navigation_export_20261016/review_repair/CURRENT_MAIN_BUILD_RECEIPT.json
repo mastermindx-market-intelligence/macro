@@ -1,0 +1,9 @@
+{
+  "source_head": "b8324add577187420a1d26fccc6cd95b9c292f01",
+  "generated_at": "2026-10-16T01:52:43.571710+00:00",
+  "financial_sha256": "744ce137a1254060508b760c3fce415b4434e2de80da6c05ccedfa331519e988",
+  "theme_sha256": "d5cf73a7535177d9dc82478cbb6dd20a607b3f4edced8b14eb33de1ded558412",
+  "html_bytes": 189920,
+  "html_sha256": "884efe445460adca03a2bddbb99f4f34bdb2fced75a1c868f2da8d7c434e74cd",
+  "scope": "normal native site-only build after current main05b006 merge; no acquisition or issuance"
+}

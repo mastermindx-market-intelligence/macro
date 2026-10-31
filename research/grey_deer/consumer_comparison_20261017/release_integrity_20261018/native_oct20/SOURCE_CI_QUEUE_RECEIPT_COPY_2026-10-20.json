@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-20T04:12:13.193783+00:00",
+  "head": "ac08d5bd630d480a97fcbd0d9814946724250011",
+  "files": [
+    {
+      "source": "/tmp/rr-helper-head7b5-ci-observer-20261020.json",
+      "target": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-head7b5-ci-observer-20261020.json",
+      "bytes": 1114,
+      "sha256": "a16010b3fa0e800ef803f3054d68db27661c285518f8edaeacf9a64e34aeabae"
+    },
+    {
+      "source": "/tmp/rr-helper-queue-preflight-20261020.json",
+      "target": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-queue-preflight-20261020.json",
+      "bytes": 1689,
+      "sha256": "70a054b26ad09c9fc50538892842d8660e60e1dc14da82ada7b922e60fc374f7"
+    },
+    {
+      "source": "/tmp/rr-helper-native-queue-entry-20261020.json",
+      "target": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-queue-entry-20261020.json",
+      "bytes": 3440,
+      "sha256": "2c216191421dd9bff14502244827be1818df6f78b228009aca3423d75ea06f6c"
+    }
+  ],
+  "scope": "Copy completed immutable source-CI, preflight and queue-entry receipts. Active queue observer is not copied as a completed receipt."
+}

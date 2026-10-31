@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-14T03:03:29.244559+00:00",
+  "base": "b604fd9c1f7b1104ce42203055b19961d969254d",
+  "application_source": {
+    "engine/press/validators.py": "cac4c0c2a41a659247c44ad99ac1d21affab1ec8e5124e3e8365a29d9d10f817",
+    "scripts/stage_official_feed_press.py": "ac576025a0aa060a60eec53a2079cefe648bee9a118e4a817028b5e2bcad18d5",
+    "scripts/run_press.py": "6d8d4a566d44ad3f7bb6c42763b0d1d951f6d3d850594525e85f10e84afed1fb",
+    "tests/test_press_validators.py": "1bd9643b619c56237a07179aea8d5751e2574449475af8c1a3b8f06dede31750",
+    "tests/test_press_official_staging.py": "3f23d6686363c48233160db7933cf3608c58ab1fc8cf84f5d0f36a3e9b4c1619"
+  },
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "w1_credit": 0,
+  "test_outcome": {
+    "affected": "295 passed, 1 existing sparse-site skip in 33.86s",
+    "final_targeted": "167 passed in 7.62s"
+  },
+  "review": "Independent native reviewer NOT PASS at 317ce; parent repair 165868 independently rereviewed PASS. Original verdict and bounded rereview retained; no general currency/semantic unit claim.",
+  "limits": [
+    "Magnitude anchoring now normalizes explicit thousand/million/billion/trillion scales; it does not establish currency identity, percent-vs-coefficient semantics or semantic causality.",
+    "Receipt/own-value arithmetic retains its incumbent coefficient contract; equivalent alternative numeric notation can be accepted as a fact without earning new receipt credit.",
+    "Only exact configured boilerplate is excluded once per class; no class-only trust.",
+    "Research/BAC remain unedited and quarantined with zero acceptance credit.",
+    "PR9209 remote head and binding CI untouched; this is a separate local follow-on."
+  ]
+}

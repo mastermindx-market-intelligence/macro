@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-14T15:48:27.807402+00:00",
+  "state": "KNOWN_COMPLETE",
+  "restored": [
+    {
+      "id": "press-brief-2026-10-11-6cf53bdfd11a",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/press/staging/press-brief-2026-10-11-6cf53bdfd11a.json",
+      "restored_sha256": "340de7c873a807794cb00807753dec7da04842295fe5439ce1462a1b015afbc8",
+      "original_sha256": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+      "draft_sha256": "0515484a52a242d4a06ff8019b6c4b0b777301ccf5226a92f4e7de21e3d72a85",
+      "draft_slot_attempts_validator_unchanged": true,
+      "status": "quarantined"
+    },
+    {
+      "id": "press-research_desk-2026-10-11-81675c403cda",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/press/staging/press-research_desk-2026-10-11-81675c403cda.json",
+      "restored_sha256": "1174c20e6a630dec8cd97369ae91d946caebfa06d30bb3a7d57ed17d58becffe",
+      "original_sha256": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+      "draft_sha256": "d2b483df36f2360e7e02ca3e32a9909aefaf9ae0ef4fec5c4bcfaba36269cd95",
+      "draft_slot_attempts_validator_unchanged": true,
+      "status": "quarantined"
+    }
+  ],
+  "existing_stages_and_summary_unchanged": true,
+  "histories_unchanged": true,
+  "provider_calls": 0,
+  "publication": false,
+  "d14_credit": "0/10",
+  "unknown_oct11_1207_attempt": "preserved unreplayed"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "mastermind.direct_registrant_input.v2",
+  "sources": [
+    {
+      "symbol": "QQQ",
+      "response_body": "sec-submissions.json",
+      "capture": {
+        "url": "https://data.sec.gov/submissions/CIK0001067839.json",
+        "final_url": "https://data.sec.gov/submissions/CIK0001067839.json",
+        "status": 200,
+        "bytes": 45067,
+        "sha256": "ed616d98a371a9d9a04a7f3f7b3c0e0ad5825979e262370cd54127f3ca9f6ed9",
+        "request_started_at": "2026-10-20T10:26:04.257504Z",
+        "read_completed_at": "2026-10-20T10:26:04.404947Z"
+      },
+      "listing_body": "listing.parquet",
+      "listing_receipt_body": "listing-receipt.json",
+      "fund_reference_body": "sec-fund-reference.json",
+      "fund_reference_capture": {
+        "url": "https://www.sec.gov/files/company_tickers_mf.json",
+        "final_url": "https://www.sec.gov/files/company_tickers_mf.json",
+        "status": 200,
+        "bytes": 1235376,
+        "sha256": "25f6b6bdc587c63d3b476f4563c99ffc381c95238e2e5f73798bf05325ea436b",
+        "request_started_at": "2026-10-20T10:26:04.407105Z",
+        "read_completed_at": "2026-10-20T10:26:04.581160Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "case": "new-file-umask-parity",
+    "expected": "0o600",
+    "actual": "0o600",
+    "passed": true
+  },
+  {
+    "case": "existing-mode-preservation",
+    "expected": "0o640",
+    "actual": "0o600",
+    "passed": false
+  }
+]

@@ -17,6 +17,7 @@ from engine.government_revenue.dossiers import (
 )
 from engine.government_revenue.workspace import build_procurement_workspace
 from scripts import build_government_revenue
+from tests.test_build_government_revenue import _render_dependency_assets
 
 
 ROOT = Path(__file__).parents[1]
@@ -221,6 +222,7 @@ def test_builder_publishes_byte_identical_dossier_twins(tmp_path: Path, monkeypa
     (templates / "government_revenue.html.j2").write_text(
         "<main>{{ payload_json|safe }}</main>", encoding="utf-8"
     )
+    _render_dependency_assets(templates)
     workspace = build_procurement_workspace(
         {"freshness": {"status": "ok"}},
         [],

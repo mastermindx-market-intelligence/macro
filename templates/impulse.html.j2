@@ -15,10 +15,17 @@
   <div class="ic-name">{{ c.name }}{% if c.sector %} · <span class="ic-sec">{{ c.sector }}</span>{% endif %}</div>
   {% if c.spark_svg %}<div class="ic-spark">{{ c.spark_svg|safe }}</div>{% endif %}
   <div class="ic-chips">
+    {% if c.price is number %}<span class="chip">{{ t('close %.2f'|format(c.price),
+      '收盘 %.2f'|format(c.price)) }}</span>{% endif %}
     {% if c.accel_z is not none %}<span class="chip accel">⚡ {{ '%+.1f'|format(c.accel_z) }}</span>{% endif %}
     {% if c.vol_vel is not none %}<span class="chip vol">📊 {{ '%+.0f%%'|format((c.vol_vel-1)*100) }}</span>{% endif %}
+    {% if c.rvol is number %}<span class="chip">{{ t('rel. volume %.1f×'|format(c.rvol),
+      '相对成交量 %.1f倍'|format(c.rvol)) }}</span>{% endif %}
     {% if c.runup_20 is not none %}<span class="chip run">{{ '%+.0f%%'|format(c.runup_20*100) }}/20d</span>{% endif %}
     {% if c.dist_50 is not none %}<span class="chip ext">{{ '%+.0f%%'|format(c.dist_50*100) }} vs 50d</span>{% endif %}
+    {% if c.off_high is number %}<span class="chip">{{ t(
+      '%.0f%% vs 52-week high'|format(c.off_high*100), '距52周高点 %.0f%%'|format(c.off_high*100)
+    ) }}</span>{% endif %}
     {% if c.days_igniting and c.days_igniting > 0 %}<span class="chip fresh{% if c.days_igniting == 1 %} new{% endif %}">{% if c.days_igniting == 1 %}{{ t('NEW today','今日新') }}{% else %}{{ t('day','第') }} {{ c.days_igniting }}{% endif %}</span>{% endif %}
   </div>
   <div class="ic-note">{{ t(c.note, c.note_zh) }}</div>
@@ -30,7 +37,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Impulse Tracker — early-ignition momentum screen</title>
-{% set seo_title = "Impulse Tracker — Mastermind" %}{% set seo_desc = "An early-ignition momentum screen — stocks and groups just starting to move, surfaced before the crowd. Updated nightly." %}{% set seo_path = "impulse.html" %}
+{% set seo_title = "Impulse Tracker — Mastermind" %}{% set seo_desc = "An early-ignition momentum screen — stocks and groups that have just started to move, ranked on end-of-day bars. Each build prints its data date and build time." %}{% set seo_path = "impulse.html" %}
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -106,12 +113,29 @@
 {% set reg = d.regime %}
 <div class="strip">
   <span class="reg {{ reg.state }}">{{ t(reg.label, reg.label_zh) }}{% if reg.vix is not none %} · VIX {{ '%.1f'|format(reg.vix) }}{% endif %}</span>
+  {% set rw = {'warning': ('warning signs building', '风险信号增多'),
+               'backwardation-stress': ('stress in the volatility market', '波动率市场承压')} %}
+  {% set fw = {'backwardation': ('VIX curve inverted', 'VIX期限结构倒挂'),
+               'front_stress': ('short-dated VIX above 30-day VIX', '短期VIX高于30日VIX'),
+               'move_stress': ('bond volatility (MOVE) elevated', '债市波动率（MOVE）偏高'),
+               'vrp_collapse': ('volatility risk premium near its low', '波动率风险溢价接近低位')} %}
+  {% if reg.regime in rw %}<span class="stat">{{ t('Volatility regime:', '波动率状态：') }}
+    {{- ' ' }}{{ t(rw[reg.regime][0], rw[reg.regime][1]) }}
+    {%- if reg.asof and reg.asof != d.as_of %} · {{ t('as of', '截至') }} {{ reg.asof }}{% endif %}
+    {%- for f in (reg.flags or []) if f in fw %} · {{ t(fw[f][0], fw[f][1]) }}{% endfor %}</span>
+  {%- endif %}
   <span class="stat">{{ t('Just igniting','刚刚点火') }} <b>{{ d.counts.buy }}</b></span>
   <span class="stat">{{ t('Accelerating','加速中') }} <b>{{ d.counts.igniting }}</b></span>
   <span class="stat">{{ t('Already ran','已大涨') }} <b>{{ d.counts.extended }}</b></span>
   <span class="stat">{{ t('Coiling','蓄势') }} <b>{{ d.counts.coiling }}</b></span>
+  <span class="stat">{{ t('Fading','转弱') }} <b>{{ d.counts.fading }}</b></span>
   <span class="stat">{{ t('Universe','样本') }} <b>{{ d.universe }}</b></span>
   <span class="stat faint">{{ t('As of','截至') }} {{ d.as_of }}</span>
+  {% if d.generated_utc %}<span class="stat faint">{{ t('Built','构建于') }}
+  {{- ' ' }}{{ d.generated_utc }}</span>{% endif %}
+  {% if d.with_volume is number and d.universe %}<span class="stat faint">
+  {{ t('With volume data','含成交量数据') }}{{- ' ' }}{{ d.with_volume }} / {{ d.universe }}
+  </span>{% endif %}
 </div>
 
 <div class="sec"><h2>🟢 {{ t('Just igniting — entry still open', '刚刚点火 — 入场窗口仍开') }}</h2><span class="cnt">{{ d.buy|length }}{% if d.counts.buy > d.buy|length %} / {{ d.counts.buy }}{% endif %}</span></div>
@@ -121,7 +145,7 @@
 {% else %}<p class="empty">{{ t('Nothing freshly igniting in this regime — the screen stays patient rather than forcing a pick.', '当前行情下无新点火标的 — 宁可空仓等待，也不强行选股。') }}</p>{% endif %}
 
 {% if d.igniting %}
-<div class="sec"><h2>{{ t('Accelerating — momentum building', '加速中 — 动能积累') }}</h2><span class="cnt">{{ d.igniting|length }}</span></div>
+<div class="sec"><h2>{{ t('Accelerating — momentum building', '加速中 — 动能积累') }}</h2><span class="cnt">{{ d.igniting|length }}{% if d.counts.igniting > d.igniting|length %} / {{ d.counts.igniting }}{% endif %}</span></div>
 <p class="sub">{{ t('Still accelerating, but already up enough that the freshest entry has passed. Trail / wait for a pullback.', '仍在加速，但已上涨到错过最佳入场点。可跟踪或等回调。') }}</p>
 <div class="grid">{% for c in d.igniting %}{{ card(c, 'igniting') }}{% endfor %}</div>
 {% endif %}
@@ -139,7 +163,7 @@
 {% endif %}
 
 {% if d.fading %}
-<div class="sec"><h2>{{ t('Fading — rolling over', '转弱 — 动能消退') }}</h2><span class="cnt">{{ d.fading|length }}</span></div>
+<div class="sec"><h2>{{ t('Fading — rolling over', '转弱 — 动能消退') }}</h2><span class="cnt">{{ d.fading|length }}{% if d.counts.fading > d.fading|length %} / {{ d.counts.fading }}{% endif %}</span></div>
 <p class="sub">{{ t('Acceleration is turning down / the trend is weakening. The opposite of an entry — avoid.', '加速度转向下行／趋势走弱。与入场相反 — 回避。') }}</p>
 <div class="grid">{% for c in d.fading %}{{ card(c, 'fading') }}{% endfor %}</div>
 {% endif %}
@@ -152,8 +176,8 @@
     <div class="lg"><b>🛑 {{ t('Extension penalty','拉伸惩罚') }}</b> — {{ t('subtract-only: the more a name has already run (20-day gain, distance above the 50/200-day averages), the lower it ranks — so the buy lane keeps an entry.','只减不加：已经涨得越多（20日涨幅、高出50／200日均线），排名越低 — 让买入区始终留有入场点。') }}</div>
     <div class="lg"><b>🧭 {{ t('Absolute-trend gate','绝对趋势闸') }}</b> — {{ t('names in an active down-trend are excluded from the buy lane — no falling knives.','处于明确下行趋势的个股被排除在买入区外 — 不接飞刀。') }}</div>
   </div>
-  <p class="cav">{{ t('Method & honesty: scores are a within-universe percentile of a fixed, legible composite (no learned weights). Computed on daily end-of-day bars across the S&P-1500 breadth universe; the public site rebuilds once daily after the US close, so this is the night-before tape, not an intraday feed. Direction is never claimed — engine/velocity.py and the signal lab record that short-horizon P(up) is a measured coin-flip and momentum’s edge is regime-switched (it decays in stress). Treat this as a reactive timing/context screen to narrow where to look, confirmed on your own chart before acting. Nothing here is investment advice or a scored input to any other model.',
-    '方法与诚实声明：分数是固定、可读的合成指标在全样本中的百分位（无学习权重）。基于标普1500广度样本的日终数据计算；公开站点每日美股收盘后重建一次，因此这是“前一晚”的行情，并非盘中实时数据。从不声称方向 — engine/velocity.py 与信号实验室已记录：短周期涨跌概率接近抛硬币，且动量优势随市场状态切换（承压时衰减）。请将其视为缩小关注范围的灵敏时机／背景工具，在自己的图表上确认后再行动。本页内容均非投资建议，也不作为任何其他模型的评分输入。') }}</p>
+  <p class="cav">{{ t('Method & honesty: scores are a within-universe percentile of a fixed, legible composite (no learned weights). Computed on daily end-of-day bars across the S&P-1500 breadth universe; the strip above prints the bars’ session date and the page’s build time, so read it as of those two stamps, not as an intraday feed. Direction is never claimed — engine/velocity.py and the signal lab record that short-horizon P(up) is a measured coin-flip and momentum’s edge is regime-switched (it decays in stress). Treat this as a reactive timing/context screen to narrow where to look, confirmed on your own chart before acting. Nothing here is investment advice or a scored input to any other model.',
+    '方法与诚实声明：分数是固定、可读的合成指标在全样本中的百分位（无学习权重）。基于标普1500广度样本的日终数据计算；上方信息栏列出K线的交易日与本页构建时间，请按这两个时间点解读，而非盘中行情。从不声称方向 — engine/velocity.py 与信号实验室已记录：短周期涨跌概率接近抛硬币，且动量优势随市场状态切换（承压时衰减）。请将其视为缩小关注范围的灵敏时机／背景工具，在自己的图表上确认后再行动。本页内容均非投资建议，也不作为任何其他模型的评分输入。') }}</p>
   <details class="fold"><summary>{{ t('Show the exact thresholds used','显示所用的具体阈值') }}</summary>
     <div class="kv" style="margin-top:6px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 14px">
       {% for k, v in d.cfg.items() %}<span>{{ k }} = {{ v }}</span>{% endfor %}

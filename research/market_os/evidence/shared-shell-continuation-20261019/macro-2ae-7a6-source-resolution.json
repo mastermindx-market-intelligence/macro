@@ -1,0 +1,78 @@
+{
+  "started_at": "2026-10-20T19:37:35.355233+00:00",
+  "head": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "incoming": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+  "base": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "state": "FOUR_SOURCE_CONFLICTS_RESOLVED_STAGED",
+  "checks": {
+    "manifest": {
+      "jobs": 341,
+      "incoming_order_preserved": true,
+      "all_parent_fields_preserved": true,
+      "concurrent_path_unions": [
+        "bea-gvc-current-descriptive-consumer",
+        "c19-wp32-integrated-answer-correction-denial-pins",
+        "c19-wp22-dhi-traversal",
+        "fif-kernel-guards",
+        "pick-lab-cn-render",
+        "crypto-assistant-context",
+        "research-price-panel",
+        "ticker-news-qbus"
+      ],
+      "multiplicities_attributed_to_parent_additions": true
+    },
+    "updater": {
+      "independent_additions": [
+        "lib/shared_shell.py",
+        "engine/medtech/(events|publication).py"
+      ],
+      "all_other_incoming_changes_retained": true,
+      "execution": false
+    },
+    "labels": {
+      "canonical": "incoming exact bytes",
+      "single_equivalent_lookup_key": true,
+      "outside_mapping_ast_unchanged_from_both_parents": true
+    },
+    "tests": {
+      "both_regressions_retained": true,
+      "incoming_test_and_all_other_nodes_exact": true,
+      "local_only_changes": "Two wording-specific EN/ZH assertion constants match incoming canonical copy; all source preservation, nonfallback, separate-original identity, real guard and ordinary-noop checks retained"
+    },
+    "packing_bounds_and_test_source_unchanged": true
+  },
+  "rows": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "before_sha256": "231d03a849900b4a6a5a28d5e5859f1bd630dd8cb3c3b75041e146dffead479e",
+      "candidate_sha256": "c19ac78034276ed0711ecda14e91e1d6091f203c661e34caf364dbc0f0ccff64",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-source-before/.github_ci_legacy-jobs.yml"
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "before_sha256": "42c29b67935608825c824b5bfed6f401c247e6002289c3b2968ce008cf8b81fa",
+      "candidate_sha256": "2aceadec13f3381baa6a907a32553bc03f50f87b6288157283dfe0dd5d4ec7c6",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-source-before/app_deploy_update.sh"
+    },
+    {
+      "path": "lib/macro_suite_labels.py",
+      "before_sha256": "161650030e3961d6191fec844e26043db1606a2a421a6aae94e1b0b8b6435b01",
+      "candidate_sha256": "7f026b89624046e8f508b4f4fab463d1a4c15766ba3803fa5f6f5dc86f735a35",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-source-before/lib_macro_suite_labels.py"
+    },
+    {
+      "path": "tests/test_macro_command_copy_law.py",
+      "before_sha256": "708c87abc0097f65fabd02b21cc68150c4e40a9f1e532955d0cf36c61edde162",
+      "candidate_sha256": "7e597c015a25e542cbf25b1a5eb5a0d2cdf8c6da04b5856b0e0ed2f53ca7788c",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-source-before/tests_test_macro_command_copy_law.py"
+    }
+  ],
+  "bash_syntax": {
+    "exit": 0,
+    "stderr": ""
+  },
+  "finished_at": "2026-10-20T19:37:37.888095+00:00",
+  "remaining_unmerged": [
+    "site/macro_labor_markets.html"
+  ]
+}

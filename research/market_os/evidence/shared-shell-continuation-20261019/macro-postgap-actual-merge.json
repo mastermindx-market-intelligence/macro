@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-10-20T00:19:20.712586+00:00",
+  "source_operation": "Original shared-shell-r27 merge only; no renderer or host action",
+  "head_before": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "incoming": "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92",
+  "candidate_receipt_sha256": "cc4f82a7b9d1838230121e149d8bb8d8717b650df1e566f007ac52c20fbcbcc3",
+  "fetch_main": {
+    "args": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "+refs/heads/main:refs/remotes/origin/main"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "error: cannot lock ref 'refs/remotes/origin/main': is at 424cdcdab864e1ae89cde8b04dde956ee0bb93e6 but expected 7777a1df363809b24561c054b8c006286f5c0a56\nFrom https://github.com/mastermindx-market-intelligence/macro\n ! 7777a1df36380..424cdcdab864e  main       -> origin/main  (unable to update local ref)\n"
+  },
+  "error": "",
+  "finished_at": "2026-10-20T00:19:55.508515+00:00"
+}

@@ -1605,3 +1605,41 @@ def test_macro_sentiment_dialog_hydrates_after_registration_gate() -> None:
     visible = html.index("dlg.classList.add('open')", open_at)
     assert authorized < hydration < visible
     assert 'sentimentFold.remove()' in html[hydration:visible]
+
+
+def test_macro_overseas_risk_fold_keeps_baked_evidence_inert_until_disclosure() -> None:
+    # Inspect the authored template rather than importing another CI-owned suite.
+    # Full rendered interaction coverage is retained in the browser evidence.
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    start = source.index('id="riskdlg-overseas-more"')
+    end = source.index('</details>', start)
+    fold = source[start:end]
+    assert fold.count('<template data-overseas-fold>') == 1
+    assert fold.count('</template>') == 1
+    assert 'Tracked overseas markets' in fold
+    assert fold.index('<template data-overseas-fold>') < fold.index('mx5-dlg-eyebrow')
+    assert fold.index('US Transmission board') < fold.index('</template>')
+    handler = source[end:end + 1700]
+    assert "fold.addEventListener('toggle', hydrateOverseas)" in handler
+    assert "fold.appendChild(inert.content)" in handler
+    assert "fold.removeEventListener('toggle', hydrateOverseas)" in handler
+    assert "if (!fold.open) return" in handler
+
+
+def test_macro_mobile_chat_launcher_only_suppresses_decoration_not_interaction() -> None:
+    """Phones keep the real lazy Chat Brain entry; desktop retains animation."""
+    src = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    marker = "/* On phone-size Macro, continuously repainting"
+    assert src.count(marker) == 1
+    css = src[src.index(marker):src.index("\n  }\n", src.index(marker)) + len("\n  }\n")]
+    assert "@media (max-width: 768px)" in css
+    for part in ("#mmb-boot", "#mmb-launch", "#mmb-launch::before",
+                 "#mmb-launch *::after", "#mmb-boot *::before"):
+        assert "body.page-macro " + part in css
+    assert "animation: none !important;" in css
+    assert "display: none" not in css and "pointer-events: none" not in css
+    macro = _env().get_template("dashboard.html.j2").render(**_base_vm(), mode="macro")
+    stocks = _env().get_template("dashboard.html.j2").render(**_base_vm(), mode="stocks")
+    assert '<body class="page-macro mx4-grid">' in macro
+    assert '<body class="page-stocks">' in stocks
+    assert "body.page-macro #mmb-launch::before" in macro

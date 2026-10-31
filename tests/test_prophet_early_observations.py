@@ -560,3 +560,75 @@ def test_coherently_readdressed_corruption_cannot_seed_a_new_relation_entry(api,
     changed = view(api, source, spine, episode_root=root)
     assert changed["rows"][0]["episode_relation"]["reason"] == "B1_SNAPSHOT_UNAVAILABLE"
     assert changed["snapshot_id"] != first["snapshot_id"]
+
+
+def test_runtime_only_republication_preserves_exact_b1_relation(api, tmp_path):
+    from engine.us_turn_watch import write_artifact
+
+    source, spine, rows, artifact = seed(tmp_path, tuple(f"N{i:03}" for i in range(41)))
+    artifact["runtime_seconds"] = 66.58
+    public = write_artifact(artifact, tmp_path / "site")
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T21:00:00Z")
+    root = tmp_path / "data/us_prophet_rank/episodes"
+    before = view(api, source, spine, episode_root=root, public_artifact_path=public)
+    assert all(r["episode_relation"]["state"] == "EXACT_EPISODE" for r in before["rows"])
+    assert [before["coverage"][k] for k in ("total", "featured", "beyond_cap")] == [41, 40, 1]
+    public_bytes, input_bytes = public.read_bytes(), source.read_bytes()
+    b1_bytes = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+    artifact["runtime_seconds"] = 66.66
+    write_artifact(artifact, tmp_path / "site")
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    assert public.read_bytes() == public_bytes
+    assert source.read_bytes() == input_bytes
+    after = view(api, source, spine, episode_root=root, public_artifact_path=public)
+    assert after == before
+    assert artifact["runtime_seconds"] == 66.66
+    assert b1_bytes == {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("field", ["row", "data_session", "selection_era", "anchor_era",
+                                   "triggers", "coverage"])
+def test_substantive_publication_change_cannot_reuse_exact_b1_relation(api, tmp_path, field):
+    from engine.us_turn_watch import write_artifact
+
+    source, spine, rows, artifact = seed(tmp_path)
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T21:00:00Z")
+    root = tmp_path / "data/us_prophet_rank/episodes"
+    before = view(api, source, spine, episode_root=root)["rows"][0]
+    assert before["episode_relation"]["state"] == "EXACT_EPISODE"
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    public_bytes, input_bytes = public.read_bytes(), source.read_bytes()
+    b1_bytes = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    if field == "row":
+        rows[0]["reset"]["reset_low"] += 1.0
+    elif field == "data_session":
+        artifact[field] = "2026-10-09"
+    elif field in {"selection_era", "anchor_era"}:
+        artifact[field] += "-changed"
+    elif field == "triggers":
+        artifact[field]["pre_confluence_2d"]["en"] += " changed"
+    else:
+        artifact[field]["universe"] = 2
+    write_artifact(artifact, tmp_path / "site")
+    source = write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    assert public.read_bytes() != public_bytes
+    assert source.read_bytes() != input_bytes
+    doc = json.loads(source.read_text())
+    assert doc["source_artifact_sha256"] == "sha256:" + sha256(public.read_bytes()).hexdigest()
+    projection = api.load_observations(source, spine=spine, reference_session="2026-10-09",
+                                       episode_root=root, public_artifact_path=public)
+    assert projection["coverage"]["state"] == "VERIFIED_SOURCE_PARTITION"
+    after = projection["rows"][0]
+    assert after["source_receipt"] != before["source_receipt"]
+    if field in {"row", "data_session"}:
+        assert after["source_event_id"] != before["source_event_id"]
+    else:
+        assert after["source_event_id"] == before["source_event_id"]
+    assert after["episode_relation"]["state"] == "EPISODE_JOIN_UNAVAILABLE"
+    assert after["episode_relation"]["episode_id"] is None
+    assert all(v is False for v in after["authority"].values())
+    assert b1_bytes == {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}

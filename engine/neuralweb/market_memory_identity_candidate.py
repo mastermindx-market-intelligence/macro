@@ -116,3 +116,84 @@ supplied records are not independently bound to their Parquet bytes here.
         alias_semantic_sha256=semantic["vendor_aliases.parquet"],
         master_semantic_sha256=semantic["security_master.parquet"],
     )
+
+
+@dataclass(frozen=True, slots=True)
+class ParquetBoundInitialCandidate:
+    """Structural byte-to-record proof for an initial candidate, not publication.
+
+    The exact five supplied Parquet byte buffers have been decoded by the
+    existing Entry Radar/identity file adapter, and the same decoded
+    alias/security-master rows were used by the native identity validator.
+    Source HTTP authenticity, receipt origin, observation/read clock, writer
+    locking, canonical publication, identity admission and any trading
+    authority remain UNPROVEN.  The detached underlying candidate deliberately
+    retains its original records_bound_to_artifacts=False.
+    """
+
+    candidate: InitialReferenceCandidate
+    original_receipt_sha256: str
+    artifact_sha256: tuple[tuple[str, str], ...]
+    _decoded_record_counts: tuple[tuple[str, int], ...]
+    alias_master_semantics_bound: bool = field(default=True, init=False)
+    all_artifacts_parseable: bool = field(default=True, init=False)
+    records_bound_to_artifacts: bool = field(default=False, init=False)
+    source_authenticated: bool = field(default=False, init=False)
+    published: bool = field(default=False, init=False)
+    identity_admitted: bool = field(default=False, init=False)
+    current_read_admitted: bool = field(default=False, init=False)
+
+    @property
+    def decoded_record_counts(self) -> dict[str, int]:
+        """Return a fresh detached copy, not mutable internal provenance."""
+        return dict(self._decoded_record_counts)
+
+
+def build_parquet_bound_initial_candidate(
+    receipt_before: bytes, artifact_bytes: dict[str, bytes], *,
+    code_version: str,
+) -> ParquetBoundInitialCandidate:
+    """Bind exact caller-supplied Parquet bytes to the existing pure candidate.
+
+    This is a deterministic, in-memory preparation only. It does not read a
+    file, attribute timestamps, publish a generation, mint an identity or
+    upgrade any existing refused market observation. The caller must separately
+    prove actual file custody and the complete publisher/source clock.
+    No independent Parquet parser, identity selector or lifecycle is created:
+    the existing native file adapter supplies the only decoding semantics.
+    """
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        REFERENCE_ARTIFACTS, _parquet_records,
+    )
+
+    native._ob_require(
+        type(artifact_bytes) is dict
+        and set(artifact_bytes) == set(REFERENCE_ARTIFACTS),
+        "candidate complete artifact bytes",
+    )
+    files = dict(artifact_bytes)
+    for name, raw in files.items():
+        native._ob_require(
+            type(raw) is bytes and 0 < len(raw) <= 64 * native._MIB,
+            "candidate artifact byte bound " + name,
+        )
+    # Input bytes are immutable Python bytes. Decoding all five catches
+    # malformed physical artifacts, not merely inconsistent declared digests.
+    decoded = {
+        name: _parquet_records(files[name], name)
+        for name in REFERENCE_ARTIFACTS
+    }
+    candidate = build_initial_reference_candidate(
+        receipt_before, files,
+        alias_records=decoded["vendor_aliases.parquet"],
+        master_records=decoded["security_master.parquet"],
+        code_version=code_version,
+    )
+    return ParquetBoundInitialCandidate(
+        candidate=candidate,
+        original_receipt_sha256=hashlib.sha256(receipt_before).hexdigest(),
+        artifact_sha256=tuple((name, hashlib.sha256(files[name]).hexdigest())
+                              for name in REFERENCE_ARTIFACTS),
+        _decoded_record_counts=tuple((name, len(decoded[name]))
+                                     for name in REFERENCE_ARTIFACTS),
+    )

@@ -115,12 +115,24 @@
           <div class="pvs-plan-rec" data-plan-id="{{ (plan.get('id') or '')|e }}" data-plan-lifecycle="{{ (plan.get('lifecycle_state') or '')|e }}">
             <p><code>{{ (plan.get('id') or '')|e }}</code></p>
             <p>{{ t('Status','状态') }} {{ t(life_label_en(plan.get('lifecycle_state')),life_label_zh(plan.get('lifecycle_state'))) }}</p>
-            <p>{{ t('Formed','形成于') }} {{ value(plan.get('formation_date')) }}</p>
-            <p>{{ t('Signal date','信号日期') }} {{ value(plan.get('signal_date')) }}</p>
+            <p>{{ t('Formation anchor','形成锚点') }} {{ value(plan.get('formation_date')) }}</p>
+            {% if plan.get('signal_date_basis') == 'tier_event_date' %}
+            <p>{{ t('Signal event session','信号事件交易日') }} {{ value(plan.get('signal_date')) }}</p>
+            {% elif plan.get('signal_date_basis') == 'legacy_formation_alias' %}
+            <p>{{ t('Formation alias · signal event unverified','形成日期别名 · 信号事件未核实') }} {{ value(plan.get('signal_date')) }}</p>
+            {% elif plan.get('signal_date_basis') == 'tier_observation' %}
+            <p>{{ t('Observation only · no signal event recorded','仅有观测 · 未记录信号事件') }}</p>
+            {% else %}
+            <p>{{ t('Source signal date · basis unavailable','来源信号日期 · 日期依据不可用') }} {{ value(plan.get('signal_date')) }}</p>
+            {% endif %}
+            <p>{{ t('Price observations through','价格观测截至') }} {{ value(plan.get('observed_date')) }}</p>
+            <p>{{ t('Plan price basis','计划价格基准日') }} {{ value(plan.get('price_basis_date')) }}</p>
+            <p>{{ t('Recorded date','记录日期') }} {{ value(plan.get('recorded_at')) }}</p>
             <p>{{ t('Plan as of','计划截至') }} {{ value(plan.get('plan_asof')) }}</p>
             <button type="button" class="pvs-plan-link" data-pvs-plan-target="pv-{{ (plan.get('id') or '')|e }}"><span class="l-en">View in Plans</span><span class="l-zh">在计划中查看</span></button>
           </div>
           {% endfor %}
+          <p class="pvs-note">{{ t('Dates describe sessions or calendar days. Publication / first-visible time not supplied. A historical signal or record status does not establish current entry availability.','日期表示交易日或日历日。未提供发布／首次可见时间。历史信号或记录状态不代表当前可入场。') }}</p>
           <p class="pvs-note">{{ t("A model record for the same security. It is not this candidate's plan and not a position you hold.",'这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。') }}</p>
           <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
           {% elif _plan_state == 'unknown' %}
@@ -133,7 +145,7 @@
         <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
           {{ field('Source as-of','来源日期',as_of,'envelope.as_of') }}
           {{ field('Signal as-of','信号日期',row.get('signal_asof') if kind == 'board' else none,'signal_asof') }}
-          {{ field('Observed date','观察日期',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
+          {{ field('Price observations through','价格观测截至',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
           {{ field('Quote timestamp','报价时间',row.get('price_as_of') if kind == 'board' else none,'price_as_of') }}
         </dl><p class="pvs-note">{{ t('Source date is not a quote timestamp. Missing clocks remain missing.','来源日期不是报价时间，缺失时间保持缺失。') }}</p></section>
       </details>

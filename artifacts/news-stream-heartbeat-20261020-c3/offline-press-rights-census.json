@@ -1,0 +1,100 @@
+{
+  "operation": "offline-press-rights-census-1905",
+  "recorded_at": "2026-10-20T19:03:12.700052+00:00",
+  "script_sha256": "dd657fd1299b2b143960e760d65a40eecd4d021015da17f3e754612e518b5e41",
+  "remote_exit": 0,
+  "remote_stderr_present": false,
+  "remote_stderr_bytes": 0,
+  "scope": "read-only metadata; no provider, stage, queue, configuration, receipt or service writes",
+  "result": {
+    "schema": "news.private_draft.offline_input_and_rights_census.v1",
+    "observed_at": "2026-10-20T19:03:09.123076+00:00",
+    "finished_at": "2026-10-20T19:03:12.670454+00:00",
+    "as_of": "2026-10-20",
+    "before": {
+      "head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+      "sha256": {
+        "engine/press/desk_planner.py": "d488f6c614e1545125a5c5169e798d2a5d074721f46b510ac8528653010fad9a",
+        "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc"
+      }
+    },
+    "after": {
+      "head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+      "sha256": {
+        "engine/press/desk_planner.py": "d488f6c614e1545125a5c5169e798d2a5d074721f46b510ac8528653010fad9a",
+        "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc"
+      }
+    },
+    "source_config_stable": true,
+    "recipe": "P.plan(['brief','research_desk'], as_of=current UTC date, root=/opt/macro)",
+    "configuration": "incumbent; no cfg/cap/ranking/cadence/dedupe override",
+    "desk_slot_counts": {
+      "brief": 0,
+      "research_desk": 1
+    },
+    "slots": [
+      {
+        "id": "press-research_desk-2026-10-20-ecbcd172a7b6",
+        "desk": "research_desk",
+        "as_of": "2026-10-20",
+        "explicit_tickers": [],
+        "first_party_fact_count": 21,
+        "fact_tier_counts": {
+          "first_party": 21
+        },
+        "eligibility_reasons": [
+          "missing_explicit_ticker"
+        ]
+      }
+    ],
+    "planner_failure": null,
+    "diagnostic_counts": {},
+    "suppressed_diagnostic_chars": 173,
+    "installed_receipts": [
+      {
+        "schema": "qbus.news_rights_receipt.v1",
+        "audiences": [
+          "site_full",
+          "internal_research",
+          "blog_draft",
+          "marketing_draft"
+        ],
+        "effective_at": "2026-10-20T13:41:32.940484+00:00",
+        "expires_at": "2026-11-19T13:41:32.940484+00:00",
+        "path": "/etc/macro-ticker-news-massive-zacks-com-rights.json",
+        "sha256": "1f31c4e95b31eb2c4826f0e733747140088525eaf8d6d114a195a2b6ac436c32",
+        "operational_revalidation_deadline": "2026-11-19T13:41:32.940484+00:00"
+      },
+      {
+        "schema": "qbus.news_rights_receipt.v1",
+        "audiences": [
+          "site_full",
+          "internal_research",
+          "blog_draft",
+          "marketing_draft"
+        ],
+        "effective_at": "2026-10-20T13:41:32.940484+00:00",
+        "expires_at": "2026-11-19T13:41:32.940484+00:00",
+        "path": "/etc/macro-ticker-news-massive-fool-com-rights.json",
+        "sha256": "7066a98da3620ad2aed05e57dd9927331ed939d8a2bb1601b77ec182c24c6803",
+        "operational_revalidation_deadline": "2026-11-19T13:41:32.940484+00:00"
+      },
+      {
+        "schema": "qbus.news_rights_receipt.v1",
+        "audiences": [
+          "site_full",
+          "internal_research",
+          "blog_draft",
+          "marketing_draft"
+        ],
+        "effective_at": "2026-10-20T13:41:32.940484+00:00",
+        "expires_at": "2026-11-19T13:41:32.940484+00:00",
+        "path": "/etc/macro-ticker-news-massive-globenewswire-com-rights.json",
+        "sha256": "f14ca7c87d9650f68c3c26ae6017a5b146d914b7ca6100a8ae88c2274ac0dc82",
+        "operational_revalidation_deadline": "2026-11-19T13:41:32.940484+00:00"
+      }
+    ],
+    "scope": "read-only; no staging, providers, queue, config or receipt writes",
+    "limitation": "A one-ticker candidate still requires canonical identity, current rights and held-ingress qualification. Receipt expiry is an operational revalidation deadline, not a contractual term."
+  }
+}

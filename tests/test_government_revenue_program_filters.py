@@ -97,9 +97,26 @@ _HARNESS = textwrap.dedent(
       addEventListener:function(name, fn){(listeners['doc']=listeners['doc']||{})[name]=(listeners['doc'][name]||[]).concat([fn])},
       dispatchEvent:function(){return true}
     };
-    var location = {href:'https://example.test/government_revenue.html'+OPTS.search,
-      pathname:'/government_revenue.html', search:OPTS.search, hash:''};
-    var history = {replaceState:function(_s,_t,url){urlRecords.push(String(url))}};
+    var initialUrl = new URL('https://example.test/government_revenue.html'+OPTS.search);
+    var location = {href:initialUrl.href, pathname:initialUrl.pathname,
+      search:initialUrl.search, hash:initialUrl.hash};
+    var historyCalls = [], historyEntries = [{href:location.href,state:null}];
+    function writeHistory(method,state,url){
+      var next = new URL(url,location.href);
+      if(next.origin!==initialUrl.origin)throw new Error('cross-origin history write');
+      var path = next.pathname+next.search+next.hash;
+      // Record address changes separately from initial same-address state storage.
+      if(next.href!==location.href)urlRecords.push(path);
+      historyCalls.push({method:method,url:path});
+      history.state=structuredClone(state);
+      if(method==='push')historyEntries.push({href:next.href,state:history.state});
+      else historyEntries[historyEntries.length-1]={href:next.href,state:history.state};
+      location.href=next.href;location.pathname=next.pathname;
+      location.search=next.search;location.hash=next.hash;
+    }
+    var history = {state:null,
+      replaceState:function(state,_title,url){writeHistory('replace',state,url)},
+      pushState:function(state,_title,url){writeHistory('push',state,url)}};
     var navigator = {clipboard:null};
     var window = {MDXAuth:{enabled:function(){return false},onChange:function(){}},location:location, history:history, navigator:navigator, innerWidth:1440,
       addEventListener:function(){}, dispatchEvent:function(){return true}};
@@ -134,10 +151,7 @@ _HARNESS = textwrap.dedent(
     }
     async function wait(ms){await new Promise(function(resolve){require('timers').setTimeout(resolve,ms)});runDue();}
     function lastUrlParams(){
-      var search = urlRecords.length ? String(urlRecords[urlRecords.length-1]).split('?')[1] || '' : '';
-      var out = {};
-      search.split('&').forEach(function(pair){if(!pair)return;var kv=pair.split('=');out[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\\+/g,' '))});
-      return out;
+      return Object.fromEntries(new URL(location.href).searchParams);
     }
     function snapshot(){
       return {
@@ -146,6 +160,9 @@ _HARNESS = textwrap.dedent(
         selection: window.__governmentRevenueRuntime.currentSelection(),
         urlParams: lastUrlParams(),
         urlRecords: urlRecords.slice(),
+        historyCalls: historyCalls.slice(),
+        historyLength: historyEntries.length,
+        historyState: history.state,
         controls: {ticker: $('tickerFilter').value, agency: $('agencyFilter').value, search: $('deskSearch').value},
         tickerOptionsHtml: $('tickerFilter').innerHTML,
         countPrograms: String($('countPrograms').textContent),
@@ -241,6 +258,9 @@ def test_verified_program_hidden_by_ticker_reads_filtered_empty_not_unverifiable
     # The filtered-empty round never rewrites the deep link: state, controls and
     # URL all still agree on ticker=LMT (this agreement is what the defect broke).
     assert before["urlRecords"] == []
+    assert before["historyLength"] == 1
+    assert all(call["method"] == "replace" for call in before["historyCalls"])
+    assert before["historyState"]["governmentRevenue"]["schema"] == 1
     assert before["selection"]["ticker"] == "LMT"
     # Focused regression: the async onRows -> populateFilters rewrite restores the
     # actual selected control instead of leaving it blank while state holds LMT.

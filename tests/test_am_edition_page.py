@@ -1278,3 +1278,365 @@ def test_context_planes_current_row_keeps_partial_source_reason(tmp_path):
     assert "Rates are steady this morning." in text
     assert "Hong Kong reading unavailable." in text
     assert "香港读数不可用。" in text
+
+# ── W23-L5: AM Edition prints what the committed page record already says ────
+# SPEC 1/2/4/5 RED-first tests. Fixtures are synthetic inline dicts shaped
+# exactly like the committed site/am_edition.json blocks (seat-quoted in the
+# commission). No site/, data/ or network reads; stdlib + jinja2 only (no bs4).
+
+_CAP_BLOCK_COMMITTED = {
+    "key": "cross_asset_plane",
+    "title_en": "Cross-asset plane",
+    "title_zh": "跨资产全景",
+    "state": "STALE_WITH_LAST_KNOWN",
+    "source_ref": "data/neuralweb/market_plane.json",
+    "source_owner": "nightly",
+    "source_as_of": "2026-10-18T00:00:00+00:00",
+    "source_as_of_precision": "day",
+    "age_minutes": 2741,
+    "max_age_minutes": 1440,
+    "classification": "owner_fact",
+    "state_reason_en": (
+        "Last updated 1 day ago — showing the last known reading, "
+        "not a fresh one."
+    ),
+    "state_reason_zh": "最近更新于1天前——展示的是最新已知读数，而非最新数据。",
+    "rows": [
+        {
+            "verdict": {
+                "verdict": "RISK_OFF",
+                "label_en": "Risk-off",
+                "label_zh": "避险",
+            },
+            "contradictions_en": "3 disagreements across the plane.",
+            "contradictions_zh": "各资产读数有3处分歧。",
+            "freshness_en": "This plane reading is current.",
+            "freshness_zh": "该全景读数是最新的。",
+        }
+    ],
+}
+
+_TAPE_BLOCK_COMMITTED = {
+    "key": "tape_since_prior_close",
+    "title_en": "Since yesterday's close",
+    "title_zh": "自昨日收盘以来",
+    "state": "STALE_WITH_LAST_KNOWN",
+    "source_ref": "site/live/quotes.json",
+    "source_owner": "intraday-fastpath",
+    "source_as_of": "2026-07-27T22:32:09.883727+00:00",
+    "source_as_of_precision": "second",
+    "age_minutes": 120909,
+    "max_age_minutes": 240,
+    "classification": "deterministic_derived_comparison",
+    "state_reason_en": (
+        "Compared with the close of 24 Jul — no newer close has been "
+        "captured. Last updated 2 months ago — showing the last known "
+        "reading, not a fresh one."
+    ),
+    "state_reason_zh": (
+        "对比的是7月24日收盘——尚未捕获更新的收盘价。"
+        "最近更新于2个月前——展示的是最新已知读数，而非最新数据。"
+    ),
+    "rows": [
+        {
+            "label_en": "S&P 500 ETF",
+            "label_zh": "标普500 ETF",
+            "symbol": "SPY",
+            "prior_close": 738.93,
+            "last": 739.09,
+            "change_pct": None,
+            "quote_as_of": "2026-07-27T22:32:09.883727+00:00",
+        },
+        {
+            "label_en": "Nasdaq 100 ETF",
+            "label_zh": "纳斯达克100 ETF",
+            "symbol": "QQQ",
+            "prior_close": 684.23,
+            "last": 682.12,
+            "change_pct": None,
+            "quote_as_of": "2026-07-27T22:32:09.883727+00:00",
+        },
+        {
+            "label_en": "Russell 2000",
+            "label_zh": "罗素2000指数",
+            "symbol": "^RUT",
+            "prior_close": 2929.9988,
+            "last": 2948.035,
+            "change_pct": None,
+            "quote_as_of": "2026-07-27T22:32:09.883727+00:00",
+        },
+    ],
+}
+
+
+def _cap_panel(tmp_path, mutate=None) -> str:
+    """Render the committed-shape cross_asset_plane block; return its panel."""
+    block = json.loads(json.dumps(_CAP_BLOCK_COMMITTED))
+    if mutate:
+        mutate(block)
+    payload = _build_payload(tmp_path, [block])
+    return _panel_html(_render_am_edition(payload), "Cross-asset view")
+
+
+def _tape_panel(tmp_path, mutate=None) -> str:
+    """Render the committed-shape tape block; return its panel. The payload's
+    prior_close_date is deliberately distinct from source_as_of so the two
+    dates can never be confused by an assertion."""
+    block = json.loads(json.dumps(_TAPE_BLOCK_COMMITTED))
+    if mutate:
+        mutate(block)
+    payload = _build_payload(tmp_path, [block])
+    payload["prior_close_date"] = "2026-10-16"
+    return _panel_html(_render_am_edition(payload), "Tape since prior close")
+
+
+def _am_footer_text(html: str) -> str:
+    """The null-count footer fragment, cut from the centred-paragraph style
+    marker to the next </p> (empty string when the guard did not fire)."""
+    i = html.find("text-align:center;margin-top:8px")
+    if i == -1:
+        return ""
+    start = html.rfind("<p", 0, i)
+    end = html.find("</p>", i)
+    return _strip_html(html[start:end])
+
+
+# ── SPEC 1: the stale cross-asset plane keeps its last-known verdict ─────────
+
+
+def test_cross_asset_plane_stale_keeps_verdict_and_contradictions(tmp_path):
+    panel = _cap_panel(tmp_path)
+    text = _strip_html(panel)
+    assert "Risk-off" in text and "避险" in text
+    assert "3 disagreements across the plane." in text
+    assert "各资产读数有3处分歧。" in text
+    assert 'class="mx-block-header"' in panel and 'class="mx-chip-slot"' in panel
+    assert "dtp-chip--stale" in panel
+    assert "Stale — last known" in text and "已滞后 — 最新已知" in text
+    assert 'class="dtp-asof"' in panel
+    assert "as of 数据截至 2026-10-18" in text
+    assert 'class="mx-stale-why"' in panel
+    assert ("Last updated 1 day ago — showing the last known reading, "
+            "not a fresh one.") in text
+    assert "最近更新于1天前——展示的是最新已知读数，而非最新数据。" in text
+    assert "Cross-asset plane unavailable." not in text
+    assert "跨资产视角不可用。" not in text
+
+
+def test_cross_asset_plane_stale_never_claims_current(tmp_path):
+    text = _strip_html(_cap_panel(tmp_path))
+    assert "This plane reading is current." not in text
+    assert "该全景读数是最新的。" not in text
+
+
+def test_cross_asset_plane_current_still_claims_freshness(tmp_path):
+    panel = _cap_panel(tmp_path, lambda b: b.update(state="CURRENT"))
+    text = _strip_html(panel)
+    assert "This plane reading is current." in text
+    assert "该全景读数是最新的。" in text
+    assert "dtp-chip--live" in panel
+    assert "Current" in text and "当前" in text
+    assert "Stale — last known" not in text
+    assert 'class="mx-stale-why"' not in panel
+
+
+def test_cross_asset_plane_unavailable_still_empty(tmp_path):
+    def unavailable(b):
+        b["state"] = "UNAVAILABLE"
+        b["rows"] = []
+    text = _strip_html(_cap_panel(tmp_path, unavailable))
+    assert "Cross-asset plane unavailable." in text
+    assert "跨资产视角不可用。" in text
+
+
+def test_cross_asset_plane_stale_hides_raw_enum_and_score(tmp_path):
+    def poison(b):
+        b["rows"][0]["verdict"]["score"] = 0.87
+        b["rows"][0]["contradiction_count"] = 3
+    panel = _cap_panel(tmp_path, poison)
+    assert "RISK_OFF" not in panel
+    assert '"score"' not in panel
+    assert "0.87" not in panel
+    assert "contradiction_count" not in panel
+
+
+def test_cross_asset_plane_stale_reason_zh_falls_back_to_en(tmp_path):
+    panel = _cap_panel(tmp_path, lambda b: b.update(state_reason_zh=None))
+    reason = _CAP_BLOCK_COMMITTED["state_reason_en"]
+    assert f'<span class="l-zh">{reason}</span>' in panel
+    # Render-level equality is not observable through the template-local t()
+    # macro (its `zh if zh else en` twin fallback); pin the seat-corrected
+    # sibling expression (templates/am_edition.html.j2:168-170, :215-216)
+    # in the cross-asset section so the proto's `block.state_reason_zh or ''`
+    # cannot ship — engine/i18n.t only falls back when zh is None.
+    src = (ROOT / "templates" / "am_edition.html.j2").read_text(encoding="utf-8")
+    cap_src = src.split("'cross_asset_plane' %}", 1)[1].split("context_planes' %}", 1)[0]
+    assert "block.state_reason_zh or block.state_reason_en or ''" in cap_src
+    assert "block.state_reason_zh or ''" not in cap_src
+
+
+# ── SPEC 2: tape prints the last-known levels and dates the reading ─────────
+
+
+def test_tape_chip_shows_last_and_close_when_change_suppressed(tmp_path):
+    text = _strip_html(_tape_panel(tmp_path))
+    assert "739.09" in text and "738.93" in text
+    assert "682.12" in text and "684.23" in text
+    assert "2948.035" in text and "2929.9988" in text
+
+
+def test_tape_panel_dates_the_reading(tmp_path):
+    text = _strip_html(_tape_panel(tmp_path))
+    assert "reading of 读数日期 2026-07-27" in text
+    assert "prior close: 前一收盘： 2026-10-16" in text
+
+
+def test_tape_chip_prefers_change_pct_when_present(tmp_path):
+    def fresh(b):
+        for row, pct in zip(b["rows"], (0.02, -0.31, 0.62)):
+            row["change_pct"] = pct
+    panel = _tape_panel(tmp_path, fresh)
+    assert "0.02%" in panel
+    assert "738.93" not in panel and "739.09" not in panel
+    assert '<span class="l-en">last</span>' not in panel
+    assert "reading of 读数日期 2026-07-27" in _strip_html(panel)
+
+
+def test_tape_chip_survives_null_last(tmp_path):
+    def nulled(b):
+        for row in b["rows"]:
+            row["last"] = None
+            row["prior_close"] = None
+            row["change_pct"] = None
+    text = _strip_html(_tape_panel(tmp_path, nulled))
+    assert "SPY" in text and "QQQ" in text and "^RUT" in text
+    assert "None" not in text
+
+
+def test_tape_zh_twin_for_new_labels(tmp_path):
+    panel = _tape_panel(tmp_path)
+    assert '<span class="l-en">reading of</span><span class="l-zh">读数日期</span>' in panel
+    assert '<span class="l-en">last</span><span class="l-zh">最新</span>' in panel
+    assert '<span class="l-en">close</span><span class="l-zh">收盘</span>' in panel
+
+
+# ── SPEC 4: source clocks are labelled "as of", never "Built at" ────────────
+
+
+def test_context_planes_clock_is_labelled_as_of_not_built_at(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    panel = _panel_html(_render_am_edition(payload), "Context planes")
+    assert "Built at" not in panel
+    assert "as of 数据截至 2026-09-08T13:00" in _strip_html(panel)
+
+
+def test_research_watch_clock_is_labelled_as_of_not_built_at(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    panel = _panel_html(_render_am_edition(payload), "Research watch")
+    assert "Built at" not in panel
+    assert "as of 数据截至 2026-09-08T10:00" in _strip_html(panel)
+
+
+def test_built_at_survives_only_on_generated_at(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    text = _strip_html(_render_am_edition(payload))
+    assert text.count("Built at") == 1
+    assert "Built at 构建时间 2026-09-08T15:00:00+00:00" in text
+
+
+def test_owner_links_clock_label_follows_the_same_word(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    panel = _panel_html(_render_am_edition(payload), "Owner pages")
+    assert "Built at" not in panel
+    assert "as of 数据截至 2026-09-08T07:30" in _strip_html(panel)
+    # Direction-2 guard re-run (mirrors :637): a null source_as_of renders no
+    # clock at all, and the wrong key `source_asof` is ignored.
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[2]["source_as_of"] = None
+    blocks[2]["source_asof"] = "1999-01-01T00:00:00+00:00"
+    panel = _panel_html(_render_am_edition(_build_payload(tmp_path, blocks)),
+                        "Owner pages")
+    assert 'class="dtp-asof"' not in panel
+    assert "1999-01-01" not in panel
+
+
+# ── SPEC 5: the footer counts unresolved readings, not load failures ────────
+
+
+def test_footer_does_not_claim_a_load_failure(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    payload["null_count"] = 1
+    footer = _am_footer_text(_render_am_edition(payload))
+    assert "could not be loaded" not in footer
+    assert "无法加载" not in footer
+
+
+def test_footer_states_the_unresolved_count(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    payload["null_count"] = 1
+    footer = _am_footer_text(_render_am_edition(payload))
+    assert "1" in footer
+    assert "1 reading(s) are unresolved." in footer
+    assert "项读数尚未确定。" in footer
+    assert "Some readings are unavailable — 部分数据暂时不可用 —" in footer
+
+
+def test_footer_absent_when_null_count_zero(tmp_path):
+    payload = _build_payload(tmp_path, _make_fresh_blocks(tmp_path))
+    payload["null_count"] = 0
+    assert _am_footer_text(_render_am_edition(payload)) == ""
+
+
+def test_empty_calendar_footer_copy_matches_the_calendar_panel(tmp_path):
+    block = {
+        "key": "todays_calendar",
+        "title_en": "Today's calendar",
+        "title_zh": "今日日历",
+        "state": "STALE_WITH_LAST_KNOWN",
+        "source_as_of": "2026-10-16T18:18:59+00:00",
+        "source_as_of_precision": "second",
+        "state_reason_en": "No scheduled US releases today.",
+        "state_reason_zh": "今日无美国经济数据发布。",
+        "rows": [],
+    }
+    payload = _build_payload(tmp_path, [block])
+    payload["null_count"] = 2
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    assert "No scheduled US releases today." in text
+    assert "2 reading(s) are unresolved." in _am_footer_text(html)
+    assert "could not be loaded" not in text
+
+
+# ── W25-L20 / F3: the research-watch meta strip prints check_by ───────────
+
+
+def test_research_watch_page_prints_check_by(tmp_path):
+    """F3: a research_watch row carrying `check_by` renders the date
+    with the EN label "check by" and the ZH label 核查日 in the meta
+    strip. Date only — no overdue/expired wording."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1]["rows"][0]["check_by"] = "2026-08-28"
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(_panel_html(html, "Research watch"))
+    assert "2026-08-28" in text
+    assert "check by" in text
+    assert "核查日" in text
+
+
+def test_research_watch_check_by_absent_renders_nothing(tmp_path):
+    """F3 guard: rows with NO `check_by` key, and rows with
+    `check_by: None`, render nothing — no "check by", no 核查日, no
+    literal "None" — while the condition text still shows."""
+    for with_none in (False, True):
+        blocks = _make_fresh_blocks(tmp_path)
+        if with_none:
+            blocks[1]["rows"][0]["check_by"] = None
+        payload = _build_payload(tmp_path, blocks)
+        html = _render_am_edition(payload)
+        text = _strip_html(_panel_html(html, "Research watch"))
+        assert "check by" not in text, with_none
+        assert "核查日" not in text, with_none
+        assert "None" not in text, with_none
+        assert "Watch when the dollar breaks its 20-day range." in text

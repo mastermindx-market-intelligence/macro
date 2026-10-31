@@ -1,0 +1,87 @@
+[
+  {
+    "key": "fed_press",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "observed_at": "2026-10-14T02:44:45.594841+00:00",
+    "provider_calls": 0,
+    "stage_writes": 0,
+    "publication": false,
+    "status": 200,
+    "final_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "bytes": 14778,
+    "sha256": "8b554322d8c85c2659506fd41d0c5bfd673fb8804bf4c277a35ba3f5eeff654b",
+    "items": [
+      {
+        "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+        "published": "Tue, 13 Oct 2026 18:00:00 GMT",
+        "summary": "Minutes of the Board&#39;s discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      {
+        "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm",
+        "published": "Fri, 9 Oct 2026 14:00:00 GMT",
+        "summary": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families"
+      },
+      {
+        "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+        "published": "Thu, 8 Oct 2026 20:30:00 GMT",
+        "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      {
+        "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+        "published": "Wed, 7 Oct 2026 18:00:00 GMT",
+        "summary": "Minutes of the Federal Open Market Committee, September 15-16, 2026"
+      }
+    ]
+  },
+  {
+    "key": "bls_news",
+    "url": "https://www.bls.gov/feed/bls_latest.rss",
+    "observed_at": "2026-10-14T02:44:45.597855+00:00",
+    "provider_calls": 0,
+    "stage_writes": 0,
+    "publication": false,
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "key": "bea_news",
+    "url": "https://apps.bea.gov/rss/rss.xml",
+    "observed_at": "2026-10-14T02:44:45.598548+00:00",
+    "provider_calls": 0,
+    "stage_writes": 0,
+    "publication": false,
+    "status": 200,
+    "final_url": "https://apps.bea.gov/rss/rss.xml",
+    "bytes": 88554,
+    "sha256": "8a5160d26d699a6073a2cd0dd075c442f0baf73e25e469af744519e19f36d1a4",
+    "items": [
+      {
+        "title": "U.S. International Trade in Goods and Services, August 2026",
+        "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026",
+        "published": "Tue, 06 Oct 2026 08:30:00 EDT",
+        "summary": "<p>The U.S. goods and services trade deficit increased in August 2026 according to the U.S. Bureau of Economic Analysis and the U.S. Census Bureau. The deficit increased from $92.8 billion in July (revised) to $105.6 billion in August, as imports increased more than exports. The goods deficit increased $12.8 billion in August to $136.6 billion. The services surplus increased less than $0.1 billion in August to $31.0 billion.</p>"
+      },
+      {
+        "title": "GDP, (Third Estimate), Industries, Corporate Profits, State GDP, and State Personal Income, 2nd Quarter 2026; State PCE, 2025",
+        "url": "https://www.bea.gov/news/2026/gdp-third-estimate-industries-corporate-profits-state-gdp-and-state-personal-income-2nd",
+        "published": "Wed, 30 Sep 2026 08:30:00 EDT",
+        "summary": "<p>Real gross domestic product (GDP) increased at an annual rate of 2.2 percent in the second quarter of 2026 (April, May, and June), according to the third estimate released today by the U.S. Bureau of Economic Analysis (BEA). In the first quarter, real GDP increased 2.5 percent (revised). The contributors to the increase in real GDP in the second quarter were consumer spending, investment, and exports. Imports, which are a subtraction in the ca"
+      },
+      {
+        "title": "U.S. International Transactions and Investment Position, 2nd Quarter 2026",
+        "url": "https://bea.gov/news/2026/us-international-transactions-and-investment-position-2nd-quarter-2026",
+        "published": "Thu, 24 Sep 2026 08:30:00 EDT",
+        "summary": "<p>The U.S. current-account deficit resulting from international economic transactions widened by $33.4 billion, or 15.7 percent, to $246.0 billion in the second quarter of 2026, according to statistics released today by the U.S. Bureau of Economic Analysis. The revised first-quarter deficit was $212.6 billion. The second-quarter deficit was 3.0 percent of current-dollar gross domestic product, up from 2.7 percent in the first quarter.</p>\n      "
+      },
+      {
+        "title": "Personal Income and Outlays, July 2026",
+        "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026",
+        "published": "Wed, 26 Aug 2026 08:30:00 EDT",
+        "summary": "<p>Personal income increased $115.1 billion (0.4 percent at a monthly rate) in July, according to estimates released today by the U.S. Bureau of Economic Analysis (BEA). Disposable personal income (DPI)-personal income less personal current taxes-increased $125.9 billion (0.5 percent), and personal consumption expenditures (PCE) increased $36.3 billion (0.2 percent). Personal outlays-the sum of PCE, personal interest payments, and personal curren"
+      }
+    ]
+  }
+]

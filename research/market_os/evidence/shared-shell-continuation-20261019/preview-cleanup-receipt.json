@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-19T08:24:22.747231+00:00",
+  "reason": "selected Browser could not reach native loopback preview; no visual acceptance",
+  "launcher_pid": 99993,
+  "receipt": "/tmp/shared-shell-css-visual-20261019/terminal-launch.json",
+  "receipt_sha256": "a53b6553b7eaf00e18e75330856b2bb18d36bab487137541b85afc26ad8fbf49",
+  "completed_at": "2026-10-19T08:24:22.568Z",
+  "owned_group_gone": true,
+  "exit_code": 0,
+  "exit_signal": null,
+  "macro_fixture_manifest_exists": false,
+  "port_3100": {
+    "rc": 1,
+    "stdout": ""
+  },
+  "port_3110": {
+    "rc": 1,
+    "stdout": ""
+  }
+}

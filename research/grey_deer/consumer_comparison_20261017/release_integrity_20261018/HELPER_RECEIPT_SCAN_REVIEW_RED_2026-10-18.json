@@ -1,0 +1,20 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+  "helper_sha256": "c64b940d75a70db26eeed6af1305c2c0e7c924201026a45b69aaa8de2ebe483d",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_silent_receipt_scan_failure_never_authorizes_copy",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "2026-10-17 23:43:58 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:44:00 deploy OK: fixture.service healthy at commit 2222222222222222222222222222222222222222\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/da452a3ea08d/release_review/helper_fixture_driver_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 587, in test_integrity_silent_receipt_scan_failure_never_authorizes_copy\n    assert result.returncode == 1, result.stdout + result.stderr\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2026-10-17 23:43:58 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:44:00 deploy OK: fixture.service healthy at commit 2222222222222222222222222222222222222222\n\n",
+      "seconds": 1.875
+    }
+  ],
+  "passed": 0,
+  "failed": 1
+}

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VYX-BULL-20260826",
-  "asof": "2026-10-15",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 28.6,
-  "raw_confidence": 28.7,
-  "delta_vs_base": -31.4,
+  "management_confidence": 32.8,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -27.2,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 17.7,
+    "validity": 76.9,
     "progress": 0.0,
-    "pace": 26.0,
+    "pace": 6.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.277,
+    "dist_to_stop_r": 0.823,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 106.7,
-    "p1": -0.4821,
-    "p2": -0.241,
+    "horizon_pct_used": 140.0,
+    "p1": -0.1179,
+    "p2": -0.059,
     "p3": null,
-    "move_r": -0.723,
+    "move_r": -0.177,
     "mfe_r": 0.144,
     "mae_r": -0.8
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.37499973297119205,
@@ -45,14 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-15",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 63,
+  "tau": 1.4,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

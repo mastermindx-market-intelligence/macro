@@ -48,20 +48,36 @@ def _leg(status: str, detail: str | None, why: str) -> dict:
 
 
 def _assess_t1_fred(themes: list[dict]) -> dict:
-    """T1 FRED bottleneck bands: count themes with a real (non-AWAITING/None) band."""
+    """T1 FRED bottleneck bands: count themes carrying a NUMERIC FRED band.
+
+    Only SOLD_OUT / TIGHT / TIGHTENING / NEUTRAL / LOOSE are physical FRED reads —
+    engine/foresight_score.py:123-150 maps exactly that set. "TIGHT (text)" is the
+    EDGAR language leg (t1_text) and "TIGHT (fingerprint)" is annual XBRL
+    (t1_fingerprint); counting them here lit Supply (FRED) 18/18 on a cascade that
+    held 13 FRED rows, so the chip disagreed with its own sibling legs.
+    """
     if not themes:
         return _leg("DARK", None,
                     "no themes — cascade returned nothing")
-    real = [t for t in themes
-            if t.get("bottleneck_band") not in (None, *_AWAITING)]
+    _fred_bands = ("SOLD_OUT", "TIGHT", "TIGHTENING", "NEUTRAL", "LOOSE")
+    real = [t for t in themes if t.get("bottleneck_band") in _fred_bands]
     n, m = len(real), len(themes)
+    # Bands that exist but belong to another supply leg (text / fingerprint).
+    other = sum(1 for t in themes
+                if t.get("bottleneck_band") not in (None, *_AWAITING, *_fred_bands))
     if n == 0:
-        return _leg("DARK", f"0/{m}",
-                    f"0/{m} themes have a physical band — FRED capacity/PPI series "
-                    "not yet collected (see config.yml bottleneck+power groups)")
+        why = f"0/{m} themes have a numeric FRED band"
+        if other:
+            why += f" — {other} carry text/fingerprint bands (other supply legs)"
+        else:
+            why += (" — FRED capacity/PPI series not yet collected "
+                    "(see config.yml bottleneck+power groups)")
+        return _leg("DARK", f"0/{m}", why)
     if n < m:
-        return _leg("PARTIAL", f"{n}/{m}",
-                    f"{n}/{m} themes have a physical band; {m - n} still AWAITING_DATA")
+        why = f"{n}/{m} themes have a numeric FRED band; {m - n - other} AWAITING_DATA"
+        if other:
+            why += f", {other} text/fingerprint (counted on their own supply legs)"
+        return _leg("PARTIAL", f"{n}/{m}", why)
     return _leg("LIVE", f"{n}/{m}",
                 f"all {n} themes have a physical bottleneck band")
 

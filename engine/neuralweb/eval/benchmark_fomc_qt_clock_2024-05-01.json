@@ -1,0 +1,65 @@
+{
+  "benchmark_id": "fomc_qt_clock_2024-05-01",
+  "frozen": true,
+  "source": "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2024-05-01",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-14",
+    "historical_source_availability": "unverified",
+    "dependence_group": "fomc-runoff-announcement-20240501",
+    "source": {
+      "path": "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+      "sha256": "51ffba4a234b6c056de9661100c2cba3dde062e73b021586121352e77de88c87"
+    },
+    "input_facts": [
+      {
+        "event_date": "2024-05-01",
+        "source_lines": [
+          7,
+          9
+        ],
+        "text": "On 1 May 2024 the FOMC left its target range at 5.25–5.50 percent and announced continued securities runoff.\nThe Treasury monthly redemption cap remains $60 billion for May and becomes $25 billion on 1 June. The agency debt/MBS cap stays $35 billion.\nInterest on reserve balances remains 5.4 percent, effective 2 May.",
+        "sha256": "d5843447561c6f601aded1a932ac15a880c762e91e43c1ea3865976977018175"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        13,
+        13
+      ],
+      "text": "Announcing a future implementation date does not make that policy effective on announcement day. The Treasury runoff ceiling falls $35 billion per month, or 58.33 percent, from June; this is a cap change, not realized runoff or an asset-purchase amount. May still has the $60 billion cap. Slower runoff does not establish QE, a policy-rate cut, a $35 billion reserve injection or a market return.",
+      "sha256": "d3fd5f12bd7020b01cf126b279c5ef700aa9ebfd87b93ceebbcc1e070104ed28"
+    }
+  },
+  "question_en": "After the May 1 announcement, which Treasury cap applies during May and from June 1? Quantify the change and distinguish announcement, implementation, actual runoff, reserves and the policy rate. Use only these supplied facts.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2024-05-01 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2024-05-01] On 1 May 2024 the FOMC left its target range at 5.25–5.50 percent and announced continued securities runoff.\nThe Treasury monthly redemption cap remains $60 billion for May and becomes $25 billion on 1 June. The agency debt/MBS cap stays $35 billion.\nInterest on reserve balances remains 5.4 percent, effective 2 May.",
+  "expected_properties": [
+    {
+      "tag": "clocks",
+      "check": "May cap is $60B/month; $25B/month begins June 1. The May 2 interest-on-reserves date is separate."
+    },
+    {
+      "tag": "arithmetic",
+      "check": "Treasury cap reduction is $35B/month, or 58.33% of $60B; agency cap stays $35B."
+    },
+    {
+      "tag": "mechanism",
+      "check": "A lower runoff ceiling is not an actual $35B asset purchase, measured reserve addition or completed runoff observation."
+    },
+    {
+      "tag": "limits",
+      "check": "Policy range remains 5.25–5.50%; no supplied market response or historically captured snapshot is established."
+    }
+  ],
+  "known_failure_modes": [
+    "Apply the June Treasury cap in May because it was announced on May 1.",
+    "Confuse the $35B change with the distinct $35B agency cap or realized purchases.",
+    "Treat a retrieved publication label or Last-Modified header as immutable historical byte proof."
+  ],
+  "gold_standard_sentence": "May retains the $60B Treasury cap; June starts $25B, a $35B/month (58.33%) cap reduction. The agency cap and policy-rate range are unchanged. This is slower intended runoff, with no demonstrated purchase, reserve injection or return.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

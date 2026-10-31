@@ -300,3 +300,21 @@ def test_filesystem_open_race_is_a_closed_refusal(case, monkeypatch):
     with pytest.raises(sa.StagingAccountingRefused, match='SNAPSHOT_UNREADABLE'):
         stage(case)
     assert ledger.read_bytes() == b''
+
+def test_staging_snapshot_reads_use_existing_owner_lock(case, monkeypatch):
+    # A cooperating writer may append to the same immutable inode while this
+    # caller is outside the original TrialLedger sidecar flock. Even a nofollow
+    # stat/open pair then refuses a legitimate append as PATH_SWAPPED_DURING_READ.
+    from engine import trial_ledger
+    calls=[]
+    original=sa._read_snapshot
+    def guarded(path):
+        owner=getattr(trial_ledger._ACTIVE_OWNER, 'owner', None)
+        assert owner is not None and owner._transaction is not None, (
+            "snapshot read outside original TrialLedger owner transaction")
+        calls.append(path)
+        return original(path)
+    monkeypatch.setattr(sa, '_read_snapshot', guarded)
+    result=stage(case)
+    assert result.newly_recorded_count==2
+    assert len(calls)>=2

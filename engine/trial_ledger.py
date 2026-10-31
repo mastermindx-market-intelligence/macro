@@ -189,6 +189,33 @@ def _strict_row(row):
     return (fam, digest), _canon(config)
 
 
+_LEGACY_REGISTRY_KEYS = frozenset({"earliest_verdict", "fdr_family", "hypothesis", "n",
+                                   "status", "trial_id", "ts", "verdict_criteria"})
+_LEGACY_ANNOTATION_KINDS = frozenset({"amendment", "filing_budget"})
+
+
+def _legacy_record(row) -> bool:
+    """An identity-less row that names no trial, which the tolerant loader skipped
+    before WP06 and still skips (counted in ``legacy_rows``, never as corrupt).
+    Exactly two shapes qualify: a foreign prereg-registry record (no ledger identity
+    key, a non-empty string ``trial_id``, and only ``_LEGACY_REGISTRY_KEYS``) and an
+    annotation (a non-empty string ``family`` and a ``kind`` in
+    ``_LEGACY_ANNOTATION_KINDS``, never a ``config_hash`` or ``config``). This is not
+    a frozen historical set: ``scripts/causal_ingest_brainstorm.py`` still appends a
+    ``filing_budget`` row for every causal-scan card it files. Neither shape counts
+    toward N or signals a torn or tampered history. Every other row without a valid
+    identity, including an annotation of any other kind, stays corrupt; strict reads
+    accept neither shape."""
+    if not any(k in row for k in ("family", "config_hash", "kind", "config")):
+        trial_id = row.get("trial_id")
+        return (type(trial_id) is str and bool(trial_id)
+                and set(row) <= _LEGACY_REGISTRY_KEYS)
+    kind, fam = row.get("kind"), row.get("family")
+    return (type(kind) is str and kind in _LEGACY_ANNOTATION_KINDS
+            and type(fam) is str and bool(fam)
+            and "config_hash" not in row and "config" not in row)
+
+
 def _canon(config) -> str:
     """Stable, order-independent JSON encoding of a config for hashing.
 
@@ -234,8 +261,11 @@ class TrialLedger:
         self._declared_seen: set[str] = set()
         # durability diagnostics (C19 WP06): set BEFORE _load() so the load itself
         # can record them. An unreadable ledger still loads EMPTY — the policy is
-        # unchanged; it is now RECORDED, not silently swallowed.
+        # unchanged; it is now RECORDED, not silently swallowed. legacy_rows counts
+        # identity-less registry and annotation rows, including the live causal
+        # filing_budget channel (see _legacy_record): skipped, never corrupt.
         self.corrupt_lines: int = 0
+        self.legacy_rows: int = 0
         self.load_error: str | None = None
         self._load()
 
@@ -243,7 +273,7 @@ class TrialLedger:
     def _load(self) -> None:
         """Legacy tolerant load with explicit diagnostics; never create storage."""
         self._seen, self._declared, self._declared_seen = {}, {}, set()
-        self.corrupt_lines, self.load_error = 0, None
+        self.corrupt_lines, self.legacy_rows, self.load_error = 0, 0, None
         try:
             with _directory(self._storage_path.parent) as (directory, _):
                 raw, file_identity = _read(directory, self._storage_path.name)
@@ -258,7 +288,7 @@ class TrialLedger:
             self.load_error = f"{type(exc).__name__}: {exc}"
 
     def _decode(self, raw, *, strict):
-        seen, declared, declared_seen, corrupt, identities = {}, {}, set(), 0, {}
+        seen, declared, declared_seen, corrupt, legacy, identities = {}, {}, set(), 0, 0, {}
         if strict and raw and not raw.endswith(b"\n"):
             raise TrialLedgerError("ledger has an incomplete final line")
         for line in raw.decode("utf-8").splitlines():
@@ -269,6 +299,9 @@ class TrialLedger:
                                   parse_constant=_strict_constant) if strict else json.loads(line))
                 if type(row) is not dict:
                     raise ValueError("ledger row must be an object")
+                if not strict and _legacy_record(row):
+                    legacy += 1
+                    continue
                 if strict:
                     key, config = _strict_row(row)
                     if key in identities and identities[key] != config:
@@ -290,7 +323,7 @@ class TrialLedger:
                     raise TrialLedgerError("strict ledger history refused") from exc
                 corrupt += 1
         self._seen, self._declared, self._declared_seen = seen, declared, declared_seen
-        self.corrupt_lines, self.load_error = corrupt, None
+        self.corrupt_lines, self.legacy_rows, self.load_error = corrupt, legacy, None
 
     @contextmanager
     def owner_transaction(self, *, strict=False):
@@ -319,8 +352,8 @@ class TrialLedger:
                 if str(self.path) != self._path_spelling:
                     raise TrialLedgerError("ledger path changed after construction")
                 previous = ({k: set(v) for k, v in self._seen.items()}, dict(self._declared),
-                            set(self._declared_seen), self.corrupt_lines, self.load_error,
-                            self._known_raw)
+                            set(self._declared_seen), self.corrupt_lines, self.legacy_rows,
+                            self.load_error, self._known_raw)
                 try:
                     with _directory(self._storage_path.parent, create=not strict) as (directory, check):
                         lockname = "." + self._storage_path.name + ".lock"
@@ -402,7 +435,7 @@ class TrialLedger:
                             os.close(lockfd)  # Closing releases only this owner's flock.
                 except BaseException:
                     (self._seen, self._declared, self._declared_seen, self.corrupt_lines,
-                     self.load_error, self._known_raw) = previous
+                     self.legacy_rows, self.load_error, self._known_raw) = previous
                     raise
 
     @_serialized
@@ -452,11 +485,13 @@ class TrialLedger:
         expected = before + added
         if tx["strict"]:
             # Validate without publishing prospective state before durability.
-            saved = self._seen, self._declared, self._declared_seen, self.corrupt_lines, self.load_error
+            saved = (self._seen, self._declared, self._declared_seen, self.corrupt_lines,
+                     self.legacy_rows, self.load_error)
             try:
                 self._decode(expected, strict=True)
             finally:
-                self._seen, self._declared, self._declared_seen, self.corrupt_lines, self.load_error = saved
+                (self._seen, self._declared, self._declared_seen, self.corrupt_lines,
+                 self.legacy_rows, self.load_error) = saved
         flags = os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK
         created = False
         try:

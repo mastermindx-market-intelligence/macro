@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_strength.v1",
   "artifact_id": "confluence-strength",
-  "asof": "2026-10-08",
+  "asof": "2026-10-13",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -15177,6 +15177,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "EL",
+      "as_of": "2026-08-07",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "ERIE",
       "as_of": "2026-08-07",
       "direction": 1,
@@ -15264,6 +15277,19 @@
       "engines": [
         "radar",
         "us_board"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "MS",
+      "as_of": "2026-08-07",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "desk:stock_desk",
+        "radar"
       ],
       "regime_bucket": "Q2"
     },
@@ -24712,6 +24738,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "CHD",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "ETR",
       "as_of": "2026-09-09",
       "direction": 1,
@@ -24781,6 +24820,19 @@
       "as_of": "2026-09-09",
       "direction": -1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "HL",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -24898,6 +24950,19 @@
       "as_of": "2026-09-09",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "LYV",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -25026,6 +25091,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "PRGO",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "QCOM",
       "as_of": "2026-09-09",
       "direction": -1,
@@ -25117,6 +25195,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "TAP",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "ADM",
       "as_of": "2026-09-10",
       "direction": 1,
@@ -25195,6 +25286,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "PLTR",
+      "as_of": "2026-09-11",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "intel_hub"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "RL",
       "as_of": "2026-09-11",
       "direction": 1,
@@ -25261,6 +25365,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "CHTR",
+      "as_of": "2026-09-14",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "CLH",
       "as_of": "2026-09-14",
       "direction": 1,
@@ -25291,6 +25408,19 @@
       "as_of": "2026-09-14",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-09-14",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -25976,6 +26106,19 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "IR",
+      "as_of": "2026-10-01",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "LRCX",
       "as_of": "2026-10-01",
       "direction": 1,
@@ -26056,6 +26199,32 @@
       "regime_bucket": "Q2"
     },
     {
+      "subject": "CIBR",
+      "as_of": "2026-10-02",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "thematic_desk"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "EXLS",
+      "as_of": "2026-10-02",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
       "subject": "LUV",
       "as_of": "2026-10-02",
       "direction": -1,
@@ -26131,6 +26300,19 @@
       "engines": [
         "intel_hub",
         "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "BJ",
+      "as_of": "2026-10-05",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "stock_desk"
       ],
       "regime_bucket": "Q2"
     },
@@ -26291,15 +26473,210 @@
       "regime_bucket": "Q2"
     },
     {
-      "subject": "XLE",
+      "subject": "COIN",
       "as_of": "2026-10-06",
-      "direction": 1,
-      "horizon": "63.0",
+      "direction": -1,
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
-        "desk:policy_intent",
+        "intel_hub",
         "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "CRCL",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "DDOG",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "GOOGL",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "LUV",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "MU",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NOVT",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVMI",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVT",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "PFE",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "QCOM",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "SMH",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "thematic_desk"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "SPCX",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "TRMB",
+      "as_of": "2026-10-06",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "VST",
+      "as_of": "2026-10-06",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "stock_desk"
       ],
       "regime_bucket": "Q2"
     },
@@ -26319,6 +26696,58 @@
     {
       "subject": "MSFT",
       "as_of": "2026-10-08",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "MU",
+      "as_of": "2026-10-13",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "MU",
+      "as_of": "2026-10-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-10-13",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-10-13",
       "direction": 1,
       "horizon": "21.0",
       "n_confirming_raw": 2,
@@ -27940,6 +28369,19 @@
         "desk:radar"
       ],
       "regime_bucket": "Q2"
+    },
+    {
+      "subject": "CVX",
+      "as_of": "2026-10-08",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata_conv",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
     }
   ],
   "redundancy_discount": {
@@ -27951,6 +28393,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-10-14T19:28:54Z",
+  "produced_at": "2026-10-17T18:52:41Z",
   "authority_check": []
 }

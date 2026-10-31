@@ -1,0 +1,16 @@
+{
+  "source_head": "b8324add577187420a1d26fccc6cd95b9c292f01",
+  "local_browser_port": 58756,
+  "observed_at": "2026-10-17T23:48:47.728135+00:00",
+  "program_filters": "Actual hydrated programs2,LMTfilter0honestfiltered. Clearfilters removes ticker and selects canonical PAC3 viewID;browserBack restoresLMTfilter andfilteredempty.",
+  "acceptance_scope": "Local actualASGI source/router test-principal;notinstalledentitlement",
+  "affected_checks": "129passed50warnings25.75seconds",
+  "next": "Wait existing native proof66859,save/pushsame9498,concludedCI,normalmerge,installeddownloadverification",
+  "deferred_existing_followup": {
+    "path": "templates/government-revenue-theme-context.js",
+    "bug": "Shipbuilding sourceNavigation emits raw acq-program identity; shipped module rows use program: prefix; local browser shows PAC3 forVirginia link",
+    "reproducer": "../fms-final-composition/program-link-regression.cjs",
+    "before": "actual shipped module and nativeVirginia fixture load; assertion rejects destination row mismatch",
+    "target": "existing PR9499 beside FMS view-ID fix; no source mutation while9498proof freezes dependencies"
+  }
+}

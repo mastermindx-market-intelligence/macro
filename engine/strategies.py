@@ -206,16 +206,16 @@ CREDIT_CARRY = StrategySpec(
     benchmark=_credit_bench, alloc=_credit_alloc, cash_yield=_credit_cash,
     risk_yield=_credit_riskyield, score=_credit_score,
     experimental=True,
-    caveat_en="Phase-0 (2007→ HYG): the drawdown-control edge is robust — MaxDD −15% vs −34% "
-              "buy & hold, survives leave-one-crisis-out, dd-reduction CI excludes zero — but it "
-              "does NOT beat a naive 200-day trend on HY (Sharpe 0.75 vs 0.83). DISPLAY-ONLY / "
-              "experimental, not a scored signal. Benchmark = HYG dividend-adjusted close; a "
-              "deeper-history re-run awaits the ICE BofA HY total-return index (1986→) in CI. "
-              "See reports/credit-carry-phase0.md. Not investment advice.",
-    caveat_zh="Phase-0（2007 起，HYG）：回撤控制优势稳健——最大回撤 −15% 对比买入持有 −34%，通过留一危机检验，"
-              "回撤缩减置信区间不含零——但并未跑赢 HY 上的朴素 200 日趋势（夏普 0.75 对 0.83）。仅展示 / 实验性，"
-              "非评分信号。基准 = HYG 经分红调整收盘价；更深历史的复跑有待 CI 中的 ICE BofA 高收益总回报指数"
-              "（1986 起）。见 reports/credit-carry-phase0.md。非投资建议。")
+    caveat_en="Experimental — display-only, not a scored signal. The Phase-0 study "
+              "(reports/credit-carry-phase0.md) found the drawdown control held up across past "
+              "credit crises but did NOT beat a naive 200-day trend on high yield. The scorecard "
+              "above covers only the backtest window printed at the top of this page. Benchmark = "
+              "ICE BofA US High Yield total-return index when we hold it, otherwise HYG's "
+              "dividend-adjusted close. Not investment advice.",
+    caveat_zh="实验性 — 仅展示，非评分信号。Phase-0 研究（reports/credit-carry-phase0.md）发现其回撤控制"
+              "在以往信用危机中均成立，但在高收益债上并未跑赢朴素 200 日趋势。上方记分卡仅覆盖本页顶部所示的"
+              "回测窗口。基准 = ICE BofA 美国高收益总回报指数（如有），否则为 HYG 经分红调整收盘价。"
+              "非投资建议。")
 
 
 # =========================================================================== #
@@ -292,13 +292,13 @@ DURATION_TIMING = StrategySpec(
     experimental=True,
     caveat_en="Phase-0 (2002→ TLT): the drawdown-control edge is robust — MaxDD −18% vs −48% buy & "
               "hold, beats the naive baselines, survives leave-one-crisis-out — but the deflated "
-              "Sharpe is marginal (0.83 < 0.90), so the risk-adjusted edge may be noise at this "
+              "Sharpe is marginal, so the risk-adjusted edge may be noise at this "
               "sample depth. DISPLAY-ONLY / experimental, not a scored signal: a long-only single-ETF "
               "timer is far weaker than the leveraged multi-country bond-factor research; its real job "
               "is crisis convexity + standing aside in 2022-type regimes. See "
               "reports/duration-timing-phase0.md. Not investment advice.",
     caveat_zh="Phase-0（2002 起，TLT）：回撤控制优势稳健——最大回撤 −18% 对比买入持有 −48%，跑赢朴素基准，"
-              "通过留一危机检验——但贬值夏普处于临界（0.83 < 0.90），在此样本深度下风险调整后优势可能是噪声。"
+              "通过留一危机检验——但贬值夏普处于临界，在此样本深度下风险调整后优势可能是噪声。"
               "仅展示 / 实验性，非评分信号：仅做多的单一 ETF 择时远弱于带杠杆的多国债券因子研究；其真正作用是"
               "危机凸性 + 在 2022 式行情中退守。见 reports/duration-timing-phase0.md。非投资建议。")
 

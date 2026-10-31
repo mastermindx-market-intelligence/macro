@@ -49,7 +49,12 @@ from .projection import (
 # ---------------------------------------------------------------------------
 
 STATE_SCHEMA = "capital_structure.state.v2"
-STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.2.0"
+#: 2.1.0 = I1 economic terms, 2.2.0 = X0 transaction observations, 2.3.0 = I2
+#: variable/reset/contingent terms (SPEC_I2 §1); every minor is purely additive.
+#: 2.4.0 = S0 scenario composition (SPEC_S0 §8): the ``scenario_result`` record
+#: and the seven declarative sub-records a composer emits beside the three
+#: component records it never rewrites.
+STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.4.0"
 STATE_SCHEMA_FILE = "capital_structure_state.v2.schema.json"
 STATE_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / STATE_SCHEMA_FILE
 
@@ -65,6 +70,7 @@ RECORD_SCHEMAS = {
     "instrument_set": "capital_structure.instrument_set.v2",
     "share_basis_result": "capital_structure.share_basis_result.v2",
     "calculation_receipt": "capital_structure.calculation_receipt.v2",
+    "scenario_result": "capital_structure.scenario_result.v2",
 }
 
 #: The projection family this state family is compatible with.  The constant is
@@ -175,6 +181,28 @@ INTERFACE_OWNERSHIP: tuple[tuple[str, str, tuple[str, ...], str], ...] = (
         ("FinancialInputs", "CommitmentInputs", "FinancingScenario"),
         "FundingSchedule",
     ),
+    (
+        "engine/capital_structure/scenario_composition.py",
+        "compose_scenario",
+        (
+            "CapitalState",
+            "InstrumentSet",
+            "ShareBasisResult",
+            "FinancialInputs",
+            "CommitmentInputs",
+            "FinancingScenario",
+            "RulePack",
+            # ``pack`` is the optional rule-applicability pack S0 forwards
+            # verbatim to ``explain_capacity``; it names no contract type, so it
+            # is listed like ``as_of`` rather than as a dataclass name.
+            "pack",
+            # ``listing`` is the optional then-known ListingFact (SPEC_G0 §2.4),
+            # forwarded verbatim to ``explain_capacity``; like ``pack`` it is a
+            # keyword, not a state contract type.
+            "listing",
+        ),
+        "ScenarioResult",
+    ),
 )
 
 # ---------------------------------------------------------------------------
@@ -227,7 +255,9 @@ ROUTE_KINDS = (
     "other",
 )
 ROUTE_STATUSES = ("eligible", "conditional", "ineligible", "unknown")
-SETTLEMENTS = ("cash", "cashless", "net_share", "pre_funded", "unknown")
+#: ``physical`` (I2, SPEC_I2 §1.2) is valid only for a ``conversion`` action on an
+#: instrument carrying an admitted ``settlement_branches`` term.
+SETTLEMENTS = ("cash", "cashless", "net_share", "pre_funded", "unknown", "physical")
 INSTRUMENT_KINDS = (
     "common",
     "warrant",
@@ -272,6 +302,16 @@ ECONOMIC_TERM_NAMES = (
     "notice_days",  # days
     "expiry",  # date_value
     "resale_registered_shares",  # shares, basis potentially_resalable_existing
+    # I2 (SPEC_I2 §1.3): variable, reset and contingent terms, appended in spec order.
+    "price_reset",  # structure: ResetSchedule
+    "conversion_condition",  # structure: ConversionCondition
+    "settlement_branches",  # structure: SettlementBranches
+    "anti_dilution",  # structure: AntiDilution
+    "accrual_terms",  # structure: Accrual
+    "exchange_cap_shares",  # shares, basis scenario_incremental_issuance
+    "shares_issued_under_instrument",  # shares, basis issued_and_outstanding
+    "shareholder_approval_obtained",  # flag
+    "accrued_amount_outstanding",  # usd, dated as of the stated accrual date
 )
 ECONOMIC_TERM_STATUSES = ("admitted", "contradicted", "unknown")
 #: Only these origins may attach a term: model prose never mints one (A09, L120, L444).
@@ -289,8 +329,15 @@ ECONOMIC_TERM_UNITS: dict[str, tuple[str, str | None]] = {
     "beneficial_ownership_cap": ("percent", None),
     "notice_days": ("days", None),
     "resale_registered_shares": ("shares", "potentially_resalable_existing"),
+    "exchange_cap_shares": ("shares", "scenario_incremental_issuance"),
+    "shares_issued_under_instrument": ("shares", "issued_and_outstanding"),
+    "accrued_amount_outstanding": ("usd", None),
 }
-ECONOMIC_TERM_FLAG_NAMES = ("cash_exercise_permitted", "cashless_exercise_permitted")
+ECONOMIC_TERM_FLAG_NAMES = (
+    "cash_exercise_permitted",
+    "cashless_exercise_permitted",
+    "shareholder_approval_obtained",
+)
 ECONOMIC_TERM_DATE_NAMES = ("expiry",)
 #: Price and ratio terms must be dated when admitted (A19 split staleness needs it).
 ECONOMIC_TERM_EFFECTIVE_NAMES = (
@@ -298,6 +345,63 @@ ECONOMIC_TERM_EFFECTIVE_NAMES = (
     "conversion_price",
     "prefunded_residual_price",
     "shares_per_instrument",
+    # I2 (SPEC_I2 §1.3): an accrued figure is only a fact as of the date it is
+    # stated as of, so it is dated exactly like a price.
+    "accrued_amount_outstanding",
+)
+
+# ---------------------------------------------------------------------------
+# I2 structured-term vocabularies (SPEC_I2 §1.3, §1.5)
+# ---------------------------------------------------------------------------
+
+#: The five names that carry a structure and nothing else.  Each enters only as
+#: ``adjudicated_gold`` (SPEC_I2 §0 item 8): model prose never mints a term.
+ECONOMIC_TERM_STRUCTURE_NAMES = (
+    "price_reset",
+    "conversion_condition",
+    "settlement_branches",
+    "anti_dilution",
+    "accrual_terms",
+)
+#: Price terms that may ALSO carry a :class:`PriceFormula` (SPEC_I2 §1.3).
+ECONOMIC_TERM_PRICE_FORMULA_NAMES = ("exercise_price", "conversion_price")
+ROUNDING_MODES = ("half_up", "down", "up")
+PRICE_COMPONENT_SOURCES = ("fixed", "market")
+PRICE_MEASURES = ("closing_price", "daily_vwap")
+PRICE_AGGREGATIONS = (
+    "single_day",
+    "lowest_daily",
+    "average_daily",
+    "average_of_lowest",
+    "period_vwap",
+)
+PRICE_WINDOW_ENDS = ("including_pricing_date", "preceding_pricing_date")
+PRICE_COMBINES = ("single", "lesser", "greater")
+FLOOR_BASES = ("stated", "none_in_complete_agreement", "not_established")
+BELOW_FLOOR_RULES = ("floor_applies", "floor_applies_with_cash_make_whole")
+RESET_RULES = ("set_to_market", "set_to_lesser_of_current_and_market")
+SHARE_ADJUSTMENTS = ("none", "preserve_aggregate_exercise_price")
+PRICE_TERM_NAMES = ("exercise_price", "conversion_price")
+CONDITION_COMPARISONS = ("at_or_above", "at_or_below")
+CONDITION_THRESHOLD_KINDS = ("price", "percent_of_conversion_price")
+SETTLEMENT_BRANCH_NAMES = ("physical", "cash", "net_share")
+BRANCH_ELECTED_BY = ("issuer", "holder", "automatic")
+ANTI_DILUTION_METHODS = (
+    "full_ratchet",
+    "weighted_average_broad",
+    "weighted_average_narrow",
+    "none_in_complete_agreement",
+)
+ACCRUAL_DAY_COUNTS = ("actual_365", "actual_360", "thirty_360")
+ACCRUAL_COMPOUNDING = ("simple", "periodic")
+#: ``kind`` discriminator of every top-level structure a term may carry.
+STRUCTURE_KINDS = (
+    "price_formula",
+    "reset_schedule",
+    "conversion_condition",
+    "settlement_branches",
+    "anti_dilution",
+    "accrual",
 )
 
 #: What one retained-filing transaction observation may say (C0 2.2.0, X0).
@@ -1215,17 +1319,26 @@ class FinancingScenario:
         for action in self.actions:
             _require(isinstance(action, ActionSelection), "scenario.actions: ActionSelection required")
         _unique([action.route_id for action in self.actions], "scenario.actions")
+        # Actions, assumptions and resolutions are keyed sets: their given order
+        # carries no meaning, so they are stored canonically and a permuted
+        # scenario keeps one scenario_id and one record (SPEC_S0 section 11 item 6).
+        object.__setattr__(self, "actions", tuple(sorted(self.actions, key=lambda action: action.route_id)))
         for name in ("fee_rate", "discount_rate"):
             value = getattr(self, name)
             if value is not None:
                 _decimal(value, f"scenario.{name}")
                 _require(Decimal(value) <= 1, f"scenario.{name}: a rate is at most 1")
-        object.__setattr__(self, "other_assumptions", tuple((str(key), str(value)) for key, value in self.other_assumptions))
+        object.__setattr__(
+            self, "other_assumptions", tuple(sorted((str(key), str(value)) for key, value in self.other_assumptions))
+        )
         _unique([key for key, _ in self.other_assumptions], "scenario.other_assumptions")
         object.__setattr__(self, "unknown_resolutions", tuple(self.unknown_resolutions))
         for item in self.unknown_resolutions:
             _require(isinstance(item, UnknownResolution), "scenario.unknown_resolutions: UnknownResolution required")
         _unique([item.unknown_id for item in self.unknown_resolutions], "scenario.unknown_resolutions")
+        object.__setattr__(
+            self, "unknown_resolutions", tuple(sorted(self.unknown_resolutions, key=lambda item: item.unknown_id))
+        )
 
     @property
     def assumptions(self) -> dict[str, Any]:
@@ -1731,6 +1844,600 @@ class FundingSchedule:
 
 
 # ---------------------------------------------------------------------------
+# Scenario composition (S0)
+# ---------------------------------------------------------------------------
+
+#: SPEC_S0 §8: the status of one scenario action, read from the component that
+#: owns it.  A composer never re-solves a joint problem and never re-derives an
+#: instrument economic, so every status here is a copy of another owner's answer.
+ACTION_CHECK_STATUSES = (
+    "within_capacity",
+    "infeasible",
+    "infeasible_on_price_branch",
+    "ineligible_route",
+    "not_applied",
+    "not_a_capacity_route",
+    "not_modelled",
+)
+#: SPEC_S0 §8: the composed answer to "do the requested actions fit together?".
+JOINT_CHECK_STATUSES = ("feasible", "infeasible", "indeterminate", "no_capacity_actions")
+#: SPEC_S0 §8: what the funding schedule said about one canonically owned amount.
+RECONCILIATION_STATUSES = ("agree", "disagree", "conflict", "funding_unpriced", "not_applicable")
+#: SPEC_S0 §8: scenario-only funding-gap coverage per period (A30).
+COVERAGE_STATUSES = ("covered", "shortfall", "indeterminate", "not_evaluated")
+#: SPEC_S0 §8: the canonical owner of an action or of one cash amount.
+ACTION_OWNERS = ("capacity", "supply", "funding_only", "capacity_unmodelled")
+#: SPEC_S0 §7a: every status capacity can report for the charter-limit pool, plus
+#: S0's own ``not_evaluated`` for a capacity run that carries no ``authorized`` key.
+AUTHORIZED_HEADROOM_STATUSES = (
+    "not_evaluated",
+    "known",
+    "shortfall",
+    "ceiling_only",
+    "unknown",
+    "contradicted",
+    "invalid",
+)
+#: SPEC_S0 §6: which component a declarative price-basis row describes.
+PRICE_BASIS_COMPONENTS = ("capacity", "supply", "funding")
+#: SPEC_S0 §6: the price bases the three components publish.  Different bases
+#: across components are expected; they are stated and never reconciled.
+PRICE_BASIS_KINDS = (
+    "fixed",
+    "path_start",
+    "path_window_low_high",
+    "path_horizon_end",
+    "unpriced",
+)
+#: SPEC_S0 §5: how one issuance row's share count was derived.
+ISSUANCE_ROW_BASES = (
+    "stated_share_quantity",
+    "fixed_price",
+    "path_start_price",
+    "path_window_low_high",
+    "supply_trace",
+    "not_priced",
+    "not_evaluated_by_owner",
+)
+#: SPEC_S0 §7: the one sentence every coverage period carries (A30).  It is a
+#: structural requirement of :class:`CoveragePeriod`, not a style suggestion.
+COVERAGE_SCENARIO_ONLY_NOTE = (
+    "scenario proceeds, undated and conditional; not cash on hand; timing unmodeled"
+)
+#: Exact number text a price-basis row may carry: plain decimal text, or an
+#: exact reduced ``num/den`` for a rational that does not terminate in base 10.
+_EXACT_NUMBER_TEXT = re.compile(
+    r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:/(?:0|[1-9][0-9]*))?$"
+)
+_RESULT_ID = re.compile(r"^scenario_result:cs:[A-Fa-f0-9]{32}$")
+
+
+def _exact_number(value: Any, field_name: str) -> str:
+    _require(
+        isinstance(value, str) and bool(_EXACT_NUMBER_TEXT.match(value)),
+        f"{field_name}: exact decimal or num/den text required, got {value!r}",
+    )
+    return value
+
+
+def _usd_field(quantity: Any, field_name: str) -> "Quantity":
+    _require(isinstance(quantity, Quantity), f"{field_name}: Quantity required")
+    _require(quantity.unit == "usd", f"{field_name}: a usd Quantity is required")
+    return quantity
+
+
+def _scenario_share_field(quantity: Any, field_name: str) -> "Quantity":
+    _require(isinstance(quantity, Quantity), f"{field_name}: Quantity required")
+    _require(quantity.unit == "shares", f"{field_name}: a share Quantity is required")
+    _require(
+        quantity.share_basis == "scenario_incremental_issuance",
+        f"{field_name}: a scenario issuance share count names the scenario basis",
+    )
+    return quantity
+
+
+def _sorted_unique(values: Sequence[str], field_name: str) -> tuple[str, ...]:
+    out = tuple(values)
+    for item in out:
+        _require(isinstance(item, str) and bool(item), f"{field_name}: non-empty string required")
+    _require(out == tuple(sorted(set(out))), f"{field_name}: sorted and unique required")
+    return out
+
+
+def _optional_note(value: Any, field_name: str) -> str | None:
+    if value is None:
+        return None
+    _require(isinstance(value, str) and bool(value.strip()), f"{field_name}: a note is non-empty text")
+    return value
+
+
+@dataclass(frozen=True)
+class SignedQuantity:
+    """A unit-bearing SIGNED money amount whose absence is a first-class state.
+
+    :class:`Quantity` refuses a negative value by contract, and that refusal is
+    right for every fact and every component record.  SPEC_S0 §7 needs one
+    exception: in F1's deficit case the period's non-conditional balance is
+    negative, and S0's ``scenario_balance`` must stay exact rather than be
+    clamped to zero, rounded, or withheld as an unknown (A26).  This record is
+    that exception and nothing else -- it carries the same fields as
+    :class:`Quantity`, serialises to the same shape (``signed_usd_quantity``),
+    and only the four signed coverage fields use it.  A share count is never
+    signed, so ``share_basis`` must stay null.
+    """
+
+    unit: str
+    status: str = "unknown"
+    value: str | None = None
+    share_basis: str | None = None
+    security_class_id: str | None = None
+    applicability: str | None = None
+    provenance: Provenance | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.unit, UNIT_KINDS, "signed_quantity.unit")
+        _member(self.status, QUANTITY_STATUSES, "signed_quantity.status")
+        if self.status == "known":
+            _decimal(self.value, "signed_quantity.value", nonnegative=False)
+        else:
+            _require(
+                self.value is None,
+                f"signed_quantity.value must be null when status is {self.status!r}",
+            )
+        _require(
+            self.share_basis is None,
+            "signed_quantity.share_basis: a signed money amount carries no share basis",
+        )
+        if self.security_class_id is not None:
+            _identifier(self.security_class_id, "signed_quantity.security_class_id")
+        if self.provenance is not None:
+            _require(
+                isinstance(self.provenance, Provenance), "signed_quantity.provenance: Provenance required"
+            )
+
+    @classmethod
+    def known(cls, value: str, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="known", value=value, **kwargs)
+
+    @classmethod
+    def unknown(cls, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="unknown", value=None, **kwargs)
+
+    @property
+    def decimal(self) -> Decimal | None:
+        return Decimal(self.value) if self.status == "known" and self.value is not None else None
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+def _signed_usd_field(quantity: Any, field_name: str) -> "SignedQuantity":
+    _require(isinstance(quantity, SignedQuantity), f"{field_name}: SignedQuantity required")
+    _require(quantity.unit == "usd", f"{field_name}: a signed usd SignedQuantity is required")
+    return quantity
+
+
+@dataclass(frozen=True)
+class ActionCheck:
+    """One scenario action against the component that owns it (SPEC_S0 §3).
+
+    S0 maps capacity's ``inputs["actions_applied"]``, ``inputs["non_capacity_actions"]``
+    and its blocker ids onto one status per scenario action.  It never re-solves
+    the joint problem and never invents a status capacity did not emit.
+    """
+
+    route_id: str
+    action: str
+    settlement: str
+    status: str
+    owner: str
+    fixed: bool
+    blocker_ids: tuple[str, ...] = ()
+    unknown_ids: tuple[str, ...] = ()
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"action_check[{self.route_id}]"
+        _identifier(self.route_id, "action_check.route_id")
+        _member(self.action, ROUTE_KINDS, f"{label}.action")
+        _member(self.settlement, SETTLEMENTS, f"{label}.settlement")
+        _member(self.status, ACTION_CHECK_STATUSES, f"{label}.status")
+        _member(self.owner, ACTION_OWNERS, f"{label}.owner")
+        _require(isinstance(self.fixed, bool), f"{label}.fixed: bool required")
+        object.__setattr__(self, "blocker_ids", _sorted_unique(self.blocker_ids, f"{label}.blocker_ids"))
+        object.__setattr__(self, "unknown_ids", _sorted_unique(self.unknown_ids, f"{label}.unknown_ids"))
+        object.__setattr__(self, "note", _optional_note(self.note, f"{label}.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class JointCheck:
+    """Do the requested actions fit together?  Read from C2, never re-solved.
+
+    ``aggregate_status``, ``binding`` and ``blocker_ids`` are copies of the
+    capacity envelope's own fields; the note quotes capacity's floor/ceiling
+    sentence verbatim when capacity states one.  S0 reports no witness of its
+    own — capacity's witness stays reachable through ``capacity_envelope``.
+    """
+
+    status: str
+    aggregate_status: str
+    binding: tuple[str, ...] = ()
+    blocker_ids: tuple[str, ...] = ()
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.status, JOINT_CHECK_STATUSES, "joint_check.status")
+        _member(self.aggregate_status, QUANTITY_STATUSES, "joint_check.aggregate_status")
+        object.__setattr__(self, "binding", _sorted_unique(self.binding, "joint_check.binding"))
+        object.__setattr__(self, "blocker_ids", _sorted_unique(self.blocker_ids, "joint_check.blocker_ids"))
+        object.__setattr__(self, "note", _optional_note(self.note, "joint_check.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class CashReconciliation:
+    """One cash amount, its single canonical owner, and what F1 booked (SPEC_S0 §4).
+
+    A disagreement is evidence, never a correction: S0 substitutes nothing into
+    the funding schedule, so ``conflict_id`` names the blocker that carries both
+    values for the later F1b lane.
+    """
+
+    route_id: str
+    owner: str
+    canonical_gross: Quantity
+    canonical_net: Quantity
+    funding_amount: Quantity
+    status: str
+    conflict_id: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"cash_reconciliation[{self.route_id}]"
+        _identifier(self.route_id, "cash_reconciliation.route_id")
+        _member(self.owner, ACTION_OWNERS, f"{label}.owner")
+        _usd_field(self.canonical_gross, f"{label}.canonical_gross")
+        _usd_field(self.canonical_net, f"{label}.canonical_net")
+        _usd_field(self.funding_amount, f"{label}.funding_amount")
+        _member(self.status, RECONCILIATION_STATUSES, f"{label}.status")
+        if self.conflict_id is not None:
+            _identifier(self.conflict_id, f"{label}.conflict_id")
+        conflict = self.status in ("disagree", "conflict")
+        _require(
+            conflict == (self.conflict_id is not None),
+            f"{label}: a {self.status} reconciliation names its conflict id, and no other status does",
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class IssuanceRow:
+    """One action's scenario new-share effect (SPEC_S0 §5).
+
+    Rows are never added to an outstanding share count or to a claim, and the
+    two totals over the rows are known only when every row is known (A26).
+    """
+
+    route_id: str
+    shares_low: Quantity
+    shares_high: Quantity
+    basis: str
+    unknown_id: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"issuance_row[{self.route_id}]"
+        _identifier(self.route_id, "issuance_row.route_id")
+        _scenario_share_field(self.shares_low, f"{label}.shares_low")
+        _scenario_share_field(self.shares_high, f"{label}.shares_high")
+        _member(self.basis, ISSUANCE_ROW_BASES, f"{label}.basis")
+        if self.unknown_id is not None:
+            _identifier(self.unknown_id, f"{label}.unknown_id")
+        both_known = self.shares_low.status == "known" and self.shares_high.status == "known"
+        _require(
+            both_known == (self.unknown_id is None),
+            f"{label}: an unknown share count names its unknown id, and a known one does not",
+        )
+        if both_known:
+            assert self.shares_low.decimal is not None and self.shares_high.decimal is not None
+            _require(
+                self.shares_low.decimal <= self.shares_high.decimal,
+                f"{label}: the low bound exceeds the high bound",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceBasis:
+    """One component's declared price basis (SPEC_S0 §6), stated not reconciled."""
+
+    component: str
+    basis: str
+    low: str | None = None
+    high: str | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"price_basis[{self.component}]"
+        _member(self.component, PRICE_BASIS_COMPONENTS, "price_basis.component")
+        _member(self.basis, PRICE_BASIS_KINDS, f"{label}.basis")
+        for name in ("low", "high"):
+            value = getattr(self, name)
+            if value is not None:
+                _exact_number(value, f"{label}.{name}")
+        object.__setattr__(self, "note", _optional_note(self.note, f"{label}.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class AuthorizedHeadroomDisclosure:
+    """Whether capacity evaluated the charter share limit (SPEC_S0 §7a).
+
+    S0 neither computes nor checks the limit: it states whether capacity did,
+    carries capacity's status verbatim when it did, and discloses ``not_evaluated``
+    when capacity carried no ``authorized`` input at all.  It never emits a
+    number, a default headroom or a cap on any issuance row.
+    """
+
+    status: str
+    pool_id: str | None = None
+    capacity_status: str | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.status, AUTHORIZED_HEADROOM_STATUSES, "authorized_headroom.status")
+        if self.pool_id is not None:
+            _identifier(self.pool_id, "authorized_headroom.pool_id")
+        evaluated = self.status != "not_evaluated"
+        _require(
+            evaluated == (self.pool_id is not None),
+            "authorized_headroom: an evaluated status names the capacity pool id",
+        )
+        if evaluated:
+            _require(
+                self.capacity_status == self.status,
+                "authorized_headroom: capacity's status is carried verbatim, never re-derived",
+            )
+            _require(self.note is None, "authorized_headroom: a carried status adds no note of its own")
+        else:
+            _require(self.capacity_status is None, "authorized_headroom: not_evaluated carries no capacity status")
+            _require(bool(self.note), "authorized_headroom: not_evaluated states what was not checked")
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class CoveragePeriod:
+    """One period's scenario-only funding-gap coverage (SPEC_S0 §7, A30).
+
+    ``scenario_net`` counts the scenario's own conditional flows only; the
+    relieved maturities F1 already excluded are never added back and the
+    pre-existing conditional flows that are not scenario actions are never
+    counted.  ``scenario_balance`` is signed and exact even in F1's deficit
+    case, where F1's own closing balance is unknown.
+    """
+
+    period_start: str
+    period_end: str
+    gap: Quantity
+    scenario_net: SignedQuantity
+    scenario_balance: SignedQuantity
+    shortfall: Quantity
+    status: str
+    note: str
+    gross_basis: SignedQuantity | None = None
+    net_basis: SignedQuantity | None = None
+
+    def __post_init__(self) -> None:
+        label = f"coverage_period[{self.period_start}]"
+        _date(self.period_start, "coverage_period.period_start")
+        _date(self.period_end, "coverage_period.period_end")
+        _require(self.period_end > self.period_start, f"{label}: period_end must follow period_start")
+        _usd_field(self.gap, f"{label}.gap")
+        _signed_usd_field(self.scenario_net, f"{label}.scenario_net")
+        _signed_usd_field(self.scenario_balance, f"{label}.scenario_balance")
+        _usd_field(self.shortfall, f"{label}.shortfall")
+        _member(self.status, COVERAGE_STATUSES, f"{label}.status")
+        _require(
+            isinstance(self.note, str) and self.note.startswith(COVERAGE_SCENARIO_ONLY_NOTE),
+            f"{label}.note: every coverage period carries the scenario-only note (A30)",
+        )
+        _require(
+            (self.gross_basis is None) == (self.net_basis is None),
+            f"{label}: the gross and net bases are reported together or not at all",
+        )
+        if self.gross_basis is not None:
+            _signed_usd_field(self.gross_basis, f"{label}.gross_basis")
+        if self.net_basis is not None:
+            _signed_usd_field(self.net_basis, f"{label}.net_basis")
+        if self.status == "covered":
+            _require(
+                self.shortfall.status == "known" and self.shortfall.decimal == 0,
+                f"{label}: covered states a known zero shortfall",
+            )
+        if self.status == "shortfall":
+            _require(
+                self.shortfall.status == "known" and self.shortfall.decimal is not None
+                and self.shortfall.decimal > 0,
+                f"{label}: a shortfall states its exact known amount",
+            )
+        if self.status in ("indeterminate", "not_evaluated"):
+            _require(
+                self.shortfall.status != "known",
+                f"{label}: {self.status} carries no known shortfall",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ScenarioResult:
+    """One composed scenario: capacity, supply and funding under ONE identity.
+
+    The three component records travel inside it byte-identically; S0 adds the
+    cross-checks none of them can make alone and never rewrites one of them.
+    Invariants: every component carries this result's ``scenario_id`` and
+    ``state_id``; ``prophet_authority`` is the literal ``false`` denial; the
+    record carries no forbidden property name at any depth; and the per-action
+    tuples are sorted by their own id field so a row order never changes a byte.
+    """
+
+    result_id: str
+    scenario_id: str
+    state_id: str
+    scenario_view: str
+    state_view_mode: str
+    as_of: str
+    capacity_envelope: CapacityEnvelope
+    supply_envelope: SupplyEnvelope
+    funding_schedule: FundingSchedule
+    action_checks: tuple[ActionCheck, ...]
+    joint_check: JointCheck
+    cash_reconciliation: tuple[CashReconciliation, ...]
+    issuance_rows: tuple[IssuanceRow, ...]
+    scenario_new_shares_low: Quantity
+    scenario_new_shares_high: Quantity
+    price_bases: tuple[PriceBasis, ...]
+    coverage: tuple[CoveragePeriod, ...]
+    authorized_headroom: AuthorizedHeadroomDisclosure
+    receipt: CalculationReceipt
+    blockers: tuple[str, ...] = ()
+    unknowns: tuple[Unknown, ...] = ()
+    notes: tuple[str, ...] = ()
+    prophet_authority: bool = False
+
+    def __post_init__(self) -> None:
+        _require(
+            isinstance(self.result_id, str) and bool(_RESULT_ID.match(self.result_id)),
+            f"scenario_result.result_id: a scenario_result:cs:<32 hex> id is required, got {self.result_id!r}",
+        )
+        _identifier(self.scenario_id, "scenario_result.scenario_id")
+        _identifier(self.state_id, "scenario_result.state_id")
+        _member(self.scenario_view, SCENARIO_VIEWS, "scenario_result.scenario_view")
+        _member(self.state_view_mode, VIEW_MODES, "scenario_result.state_view_mode")
+        _timestamp(self.as_of, "scenario_result.as_of")
+        for name, kind in (
+            ("capacity_envelope", CapacityEnvelope),
+            ("supply_envelope", SupplyEnvelope),
+            ("funding_schedule", FundingSchedule),
+        ):
+            component = getattr(self, name)
+            _require(isinstance(component, kind), f"scenario_result.{name}: {kind.__name__} required")
+            _require(
+                component.scenario_id == self.scenario_id,
+                f"scenario_result.{name}: scenario {component.scenario_id!r} differs from {self.scenario_id!r}",
+            )
+            _require(
+                component.state_id == self.state_id,
+                f"scenario_result.{name}: state {component.state_id!r} differs from {self.state_id!r}",
+            )
+            _require(
+                component.receipt.scenario_id == self.scenario_id,
+                f"scenario_result.{name}: receipt scenario differs from the result scenario",
+            )
+        object.__setattr__(self, "action_checks", tuple(self.action_checks))
+        for item in self.action_checks:
+            _require(isinstance(item, ActionCheck), "scenario_result.action_checks: ActionCheck required")
+        _require(
+            [item.route_id for item in self.action_checks]
+            == sorted({item.route_id for item in self.action_checks}),
+            "scenario_result.action_checks: sorted by route_id with no duplicate",
+        )
+        _require(isinstance(self.joint_check, JointCheck), "scenario_result.joint_check: JointCheck required")
+        object.__setattr__(self, "cash_reconciliation", tuple(self.cash_reconciliation))
+        for item in self.cash_reconciliation:
+            _require(isinstance(item, CashReconciliation), "scenario_result.cash_reconciliation: CashReconciliation required")
+        _require(
+            [item.route_id for item in self.cash_reconciliation]
+            == sorted({item.route_id for item in self.cash_reconciliation}),
+            "scenario_result.cash_reconciliation: sorted by route_id with no duplicate",
+        )
+        object.__setattr__(self, "issuance_rows", tuple(self.issuance_rows))
+        for item in self.issuance_rows:
+            _require(isinstance(item, IssuanceRow), "scenario_result.issuance_rows: IssuanceRow required")
+        _require(
+            [item.route_id for item in self.issuance_rows]
+            == sorted({item.route_id for item in self.issuance_rows}),
+            "scenario_result.issuance_rows: sorted by route_id with no duplicate",
+        )
+        _scenario_share_field(self.scenario_new_shares_low, "scenario_result.scenario_new_shares_low")
+        _scenario_share_field(self.scenario_new_shares_high, "scenario_result.scenario_new_shares_high")
+        if self.scenario_new_shares_low.status == "known" and self.scenario_new_shares_high.status == "known":
+            assert self.scenario_new_shares_low.decimal is not None
+            assert self.scenario_new_shares_high.decimal is not None
+            _require(
+                self.scenario_new_shares_low.decimal <= self.scenario_new_shares_high.decimal,
+                "scenario_result: the low share total exceeds the high one",
+            )
+        else:
+            _require(
+                self.scenario_new_shares_low.status == self.scenario_new_shares_high.status,
+                "scenario_result: the two share totals carry one status",
+            )
+        object.__setattr__(self, "price_bases", tuple(self.price_bases))
+        for item in self.price_bases:
+            _require(isinstance(item, PriceBasis), "scenario_result.price_bases: PriceBasis required")
+        _require(
+            [item.component for item in self.price_bases]
+            == sorted({item.component for item in self.price_bases}),
+            "scenario_result.price_bases: sorted by component with no duplicate",
+        )
+        object.__setattr__(self, "coverage", tuple(self.coverage))
+        previous: CoveragePeriod | None = None
+        for item in self.coverage:
+            _require(isinstance(item, CoveragePeriod), "scenario_result.coverage: CoveragePeriod required")
+            if previous is not None:
+                _require(
+                    item.period_start >= previous.period_end,
+                    "scenario_result.coverage: periods ascend without overlap",
+                )
+            previous = item
+        _require(
+            isinstance(self.authorized_headroom, AuthorizedHeadroomDisclosure),
+            "scenario_result.authorized_headroom: AuthorizedHeadroomDisclosure required",
+        )
+        _require(isinstance(self.receipt, CalculationReceipt), "scenario_result.receipt: CalculationReceipt required")
+        _require(
+            self.receipt.scenario_id == self.scenario_id,
+            "scenario_result.receipt: receipt scenario differs from the result scenario",
+        )
+        object.__setattr__(self, "blockers", _sorted_unique(self.blockers, "scenario_result.blockers"))
+        object.__setattr__(self, "unknowns", tuple(self.unknowns))
+        for item in self.unknowns:
+            _require(isinstance(item, Unknown), "scenario_result.unknowns: Unknown required")
+        _require(
+            [item.unknown_id for item in self.unknowns] == sorted({item.unknown_id for item in self.unknowns}),
+            "scenario_result.unknowns: sorted by unknown_id with no duplicate",
+        )
+        for conflict_id in (item.conflict_id for item in self.cash_reconciliation):
+            if conflict_id is not None:
+                _require(
+                    conflict_id in self.blockers,
+                    f"scenario_result.blockers: {conflict_id!r} is named by a row but absent",
+                )
+        object.__setattr__(self, "notes", tuple(self.notes))
+        for item in self.notes:
+            _require(isinstance(item, str) and bool(item.strip()), "scenario_result.notes: non-empty text required")
+        _require(self.prophet_authority is False, "scenario_result.prophet_authority: only the literal false denial")
+        _assert_safe_keys(self.as_record())
+
+    def as_record(self) -> dict[str, Any]:
+        return {"schema": RECORD_SCHEMAS["scenario_result"], **_plain(self)}
+
+
+# ---------------------------------------------------------------------------
 # Instruments
 # ---------------------------------------------------------------------------
 
@@ -1782,6 +2489,10 @@ class EconomicTerm:
     interpretation_version: str
     available_at: str
     effective_at: str | None = None
+    #: I2 (SPEC_I2 §1.4): the structured reading of a variable, reset or
+    #: contingent term.  Appended last and dropped by ``as_record()`` when
+    #: ``None``, so a pre-I2 term serialises byte-identically.
+    structure: Any = None
 
     def __post_init__(self) -> None:
         _identifier(self.term_id, "economic_term.term_id")
@@ -1847,9 +2558,611 @@ class EconomicTerm:
             raise ContractViolation(f"{label}.date_value: an admitted expiry carries its date")
         if admitted and self.name in ECONOMIC_TERM_EFFECTIVE_NAMES:
             _require(self.effective_at is not None, f"{label}.effective_at: an admitted price or ratio term is dated")
+        self._validate_structure(label, admitted)
+
+    def _validate_structure(self, label: str, admitted: bool) -> None:
+        """SPEC_I2 §1.4: the structure must match the name, and only when admitted."""
+        structure = self.structure
+        if structure is None:
+            _require(
+                self.name not in ECONOMIC_TERM_STRUCTURE_NAMES or not admitted,
+                f"{label}.structure: an admitted {self.name!r} term carries its structure",
+            )
+            return
+        _require(
+            type(structure).__name__ in _STRUCTURE_CLASS_NAMES,
+            f"{label}.structure: a structured term type is required, got {type(structure).__name__!r}",
+        )
+        _require(admitted, f"{label}.structure: only an admitted term carries a structure")
+        expected = ECONOMIC_TERM_STRUCTURE_TYPES.get(self.name)
+        _require(
+            expected is not None,
+            f"{label}.structure: {self.name!r} carries no structure",
+        )
+        _require(
+            type(structure).__name__ == expected,
+            f"{label}.structure: {self.name!r} carries a {expected}, got {type(structure).__name__}",
+        )
+        if self.name in ECONOMIC_TERM_STRUCTURE_NAMES:
+            _require(self.value is None, f"{label}.value: {self.name!r} carries no quantity")
+            _require(self.flag is None, f"{label}.flag: {self.name!r} carries no flag")
+        elif isinstance(structure, PriceFormula):
+            market = any(component.source == "market" for component in structure.components)
+            _require(
+                not market or self.value is None or self.value.status != "known",
+                f"{label}.value: a market price formula is not a fact until the pricing date, "
+                "so the price term carries no known value",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        record = _plain(self)
+        if record["structure"] is None:
+            # SPEC_I2 §1.4 / §0 item 2: pre-I2 records and digests stay byte-identical.
+            del record["structure"]
+        return record
+
+
+# ---------------------------------------------------------------------------
+# I2 structured terms (SPEC_I2 §1.5)
+# ---------------------------------------------------------------------------
+
+
+def _int(value: Any, field_name: str, *, minimum: int | None = None, maximum: int | None = None) -> int:
+    """An exact integer: a float, a Decimal or a numeric string is refused (§0 item 3)."""
+    _require(
+        isinstance(value, int) and not isinstance(value, bool),
+        f"{field_name}: an exact integer is required, got {type(value).__name__} {value!r}",
+    )
+    if minimum is not None:
+        _require(value >= minimum, f"{field_name}: must be at least {minimum}, got {value!r}")
+    if maximum is not None:
+        _require(value <= maximum, f"{field_name}: must be at most {maximum}, got {value!r}")
+    return value
+
+
+def _boolean(value: Any, field_name: str) -> bool:
+    _require(isinstance(value, bool), f"{field_name}: a boolean is required, got {value!r}")
+    return value
+
+
+def _closed_mapping(value: Any, allowed: Sequence[str], field_name: str) -> dict[str, Any]:
+    _require(isinstance(value, Mapping), f"{field_name}: a mapping is required, got {type(value).__name__}")
+    body = dict(value)
+    unexpected = sorted(str(key) for key in body if key not in allowed)
+    _require(not unexpected, f"{field_name}: unexpected keys {unexpected}")
+    return body
+
+
+def _evidence_from_record(value: Any, field_name: str) -> tuple[EvidenceRef, ...]:
+    if value is None:
+        return ()
+    out = []
+    for index, item in enumerate(_tuple(value, field_name)):
+        _require(isinstance(item, EvidenceRef) or isinstance(item, Mapping), f"{field_name}[{index}]: an evidence record is required")
+        out.append(item if isinstance(item, EvidenceRef) else EvidenceRef(**_closed_mapping(item, ("manifest_id", "span_id", "text_sha256"), f"{field_name}[{index}]")))
+    return tuple(out)
+
+
+def _provenance_from_record(value: Any, field_name: str) -> Provenance | None:
+    if value is None:
+        return None
+    if isinstance(value, Provenance):
+        return value
+    body = _closed_mapping(
+        value, ("input_family", "generation_id", "evidence", "available_at"), field_name
+    )
+    return Provenance(
+        input_family=body.get("input_family"),
+        generation_id=body.get("generation_id"),
+        evidence=_evidence_from_record(body.get("evidence"), f"{field_name}.evidence"),
+        available_at=body.get("available_at"),
+    )
+
+
+_QUANTITY_FIELDS = ("unit", "status", "value", "share_basis", "security_class_id", "applicability", "provenance", "note")
+
+
+def _quantity_from_record(value: Any, unit: str, field_name: str) -> Quantity:
+    """A :class:`Quantity` of exactly ``unit``, built from an instance or its record."""
+    if isinstance(value, Quantity):
+        _require(value.unit == unit, f"{field_name}: a {unit} quantity is required, got unit {value.unit!r}")
+        return value
+    body = _closed_mapping(value, _QUANTITY_FIELDS, field_name)
+    return Quantity(
+        unit=body.get("unit", unit),
+        status=body.get("status", "unknown"),
+        value=body.get("value"),
+        share_basis=body.get("share_basis"),
+        security_class_id=body.get("security_class_id"),
+        applicability=body.get("applicability"),
+        provenance=_provenance_from_record(body.get("provenance"), f"{field_name}.provenance"),
+        note=body.get("note"),
+    )
+
+
+def _optional_quantity_from_record(value: Any, unit: str, field_name: str) -> Quantity | None:
+    return None if value is None else _quantity_from_record(value, unit, field_name)
+
+
+def _known_quantity(quantity: Quantity | None, field_name: str) -> str:
+    """The exact decimal string of a quantity that must state a known value."""
+    _require(quantity is not None, f"{field_name}: a quantity is required")
+    _require(
+        quantity.status == "known" and quantity.value is not None,
+        f"{field_name}: a known value is required, got status {quantity.status!r}",
+    )
+    return quantity.value
+
+
+def _optional(value: Any, reader: Any, field_name: str) -> Any:
+    return None if value is None else reader(value, field_name)
+
+
+@dataclass(frozen=True)
+class Rounding:
+    """Explicit decimal rounding of a computed price (SPEC_I2 §1.5)."""
+
+    places: int
+    mode: str
+
+    def __post_init__(self) -> None:
+        _int(self.places, "rounding.places", minimum=0, maximum=8)
+        _member(self.mode, ROUNDING_MODES, "rounding.mode")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "Rounding":
+        body = _closed_mapping(record, ("places", "mode"), "rounding")
+        return cls(places=body.get("places"), mode=body.get("mode"))
 
     def as_record(self) -> dict[str, Any]:
         return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceComponent:
+    """One fixed or market-derived price input (SPEC_I2 §1.5)."""
+
+    kind: str
+    source: str
+    fixed_price: Quantity | None = None
+    measure: str | None = None
+    aggregation: str | None = None
+    lookback_days: int | None = None
+    lowest_count: int | None = None
+    percent_of_measure: Quantity | None = None
+    window_end: str | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "price_component", f"price_component.kind: 'price_component' required, got {self.kind!r}")
+        _member(self.source, PRICE_COMPONENT_SOURCES, "price_component.source")
+        market = self.source == "market"
+        if market:
+            _require(self.fixed_price is None, "price_component.fixed_price: a market component carries no fixed price")
+            _member(self.measure, PRICE_MEASURES, "price_component.measure")
+            _member(self.aggregation, PRICE_AGGREGATIONS, "price_component.aggregation")
+            _int(self.lookback_days, "price_component.lookback_days", minimum=1)
+            if self.aggregation == "single_day":
+                _require(self.lookback_days == 1, "price_component.lookback_days: single_day reads exactly one point")
+            if self.aggregation == "average_of_lowest":
+                _int(self.lowest_count, "price_component.lowest_count", minimum=1, maximum=self.lookback_days)
+            else:
+                _require(self.lowest_count is None, "price_component.lowest_count: only average_of_lowest carries it")
+            _require(
+                isinstance(self.percent_of_measure, Quantity) and self.percent_of_measure.unit == "percent",
+                "price_component.percent_of_measure: a percent Quantity is required",
+            )
+            _member(self.window_end, PRICE_WINDOW_ENDS, "price_component.window_end")
+        else:
+            _require(
+                isinstance(self.fixed_price, Quantity) and self.fixed_price.unit == "usd",
+                "price_component.fixed_price: a usd Quantity is required for a fixed component",
+            )
+            for name in ("measure", "aggregation", "window_end"):
+                _require(getattr(self, name) is None, f"price_component.{name}: a fixed component carries none")
+            _require(self.lookback_days is None, "price_component.lookback_days: a fixed component carries none")
+            _require(self.lowest_count is None, "price_component.lowest_count: a fixed component carries none")
+            _require(self.percent_of_measure is None, "price_component.percent_of_measure: a fixed component carries none")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "PriceComponent":
+        body = _closed_mapping(
+            record,
+            ("kind", "source", "fixed_price", "measure", "aggregation", "lookback_days",
+             "lowest_count", "percent_of_measure", "window_end"),
+            "price_component",
+        )
+        return cls(
+            kind=body.get("kind"),
+            source=body.get("source"),
+            fixed_price=_optional_quantity_from_record(body.get("fixed_price"), "usd", "price_component.fixed_price"),
+            measure=body.get("measure"),
+            aggregation=body.get("aggregation"),
+            lookback_days=body.get("lookback_days"),
+            lowest_count=body.get("lowest_count"),
+            percent_of_measure=_optional_quantity_from_record(
+                body.get("percent_of_measure"), "percent", "price_component.percent_of_measure"
+            ),
+            window_end=body.get("window_end"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceFormula:
+    """A conversion or exercise price composed of fixed and market components.
+
+    ``floor_basis`` is the whole point of the type: a floating price with no
+    floor is ``none_in_complete_agreement`` (unbounded by contract) and an
+    unestablished one is ``not_established`` (unknown).  Neither is ever read as
+    a finite maximum (SPEC_I2 §0 item 4, masterplan L231).
+    """
+
+    kind: str
+    combine: str
+    components: tuple[PriceComponent, ...]
+    floor_basis: str
+    floor: Quantity | None = None
+    below_floor: str | None = None
+    ceiling: Quantity | None = None
+    rounding: Rounding | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "price_formula", f"price_formula.kind: 'price_formula' required, got {self.kind!r}")
+        _member(self.combine, PRICE_COMBINES, "price_formula.combine")
+        object.__setattr__(self, "components", _tuple(self.components, "price_formula.components"))
+        for item in self.components:
+            _require(isinstance(item, PriceComponent), "price_formula.components: PriceComponent required")
+        if self.combine == "single":
+            _require(len(self.components) == 1, "price_formula.components: 'single' combines exactly one component")
+        else:
+            _require(len(self.components) >= 2, f"price_formula.components: {self.combine!r} combines at least two")
+        if all(component.source == "fixed" for component in self.components):
+            # A fixed price with a cap or floor is still one fixed component.
+            _require(self.combine == "single", "price_formula.combine: an all-fixed formula is 'single'")
+        _member(self.floor_basis, FLOOR_BASES, "price_formula.floor_basis")
+        stated = self.floor_basis == "stated"
+        if stated:
+            _require(
+                isinstance(self.floor, Quantity) and self.floor.unit == "usd",
+                "price_formula.floor: a stated floor is a usd Quantity",
+            )
+            _member(self.below_floor, BELOW_FLOOR_RULES, "price_formula.below_floor")
+        else:
+            _require(self.floor is None, "price_formula.floor: only a stated floor carries an amount")
+            _require(self.below_floor is None, "price_formula.below_floor: only a stated floor names what happens below it")
+        if self.ceiling is not None:
+            _require(isinstance(self.ceiling, Quantity) and self.ceiling.unit == "usd", "price_formula.ceiling: a usd Quantity is required")
+        if self.rounding is not None:
+            _require(isinstance(self.rounding, Rounding), "price_formula.rounding: Rounding required")
+
+    @property
+    def has_market_component(self) -> bool:
+        return any(component.source == "market" for component in self.components)
+
+    @classmethod
+    def from_record(cls, record: Any) -> "PriceFormula":
+        body = _closed_mapping(
+            record,
+            ("kind", "combine", "components", "floor_basis", "floor", "below_floor", "ceiling", "rounding"),
+            "price_formula",
+        )
+        rounding = body.get("rounding")
+        return cls(
+            kind=body.get("kind"),
+            combine=body.get("combine"),
+            components=tuple(PriceComponent.from_record(item) for item in _tuple(body.get("components"), "price_formula.components")),
+            floor_basis=body.get("floor_basis"),
+            floor=_optional_quantity_from_record(body.get("floor"), "usd", "price_formula.floor"),
+            below_floor=body.get("below_floor"),
+            ceiling=_optional_quantity_from_record(body.get("ceiling"), "usd", "price_formula.ceiling"),
+            rounding=None if rounding is None else (rounding if isinstance(rounding, Rounding) else Rounding.from_record(rounding)),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ResetEvent:
+    """One dated reset of an exercise or conversion price (SPEC_I2 §1.5)."""
+
+    reset_date: str
+    rule: str
+    market: PriceComponent
+    floor: Quantity | None = None
+    share_adjustment: str = "none"
+
+    def __post_init__(self) -> None:
+        _date(self.reset_date, "reset_event.reset_date")
+        _member(self.rule, RESET_RULES, "reset_event.rule")
+        _require(isinstance(self.market, PriceComponent), "reset_event.market: PriceComponent required")
+        _require(self.market.source == "market", "reset_event.market: a reset reads a market measure")
+        if self.floor is not None:
+            _require(isinstance(self.floor, Quantity) and self.floor.unit == "usd", "reset_event.floor: a usd Quantity is required")
+        _member(self.share_adjustment, SHARE_ADJUSTMENTS, "reset_event.share_adjustment")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ResetEvent":
+        body = _closed_mapping(
+            record, ("reset_date", "rule", "market", "floor", "share_adjustment"), "reset_event"
+        )
+        market = body.get("market")
+        return cls(
+            reset_date=body.get("reset_date"),
+            rule=body.get("rule"),
+            market=market if isinstance(market, PriceComponent) else PriceComponent.from_record(market),
+            floor=_optional_quantity_from_record(body.get("floor"), "usd", "reset_event.floor"),
+            share_adjustment=body.get("share_adjustment", "none"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ResetSchedule:
+    """The dated reset events of one price term, strictly ascending."""
+
+    kind: str
+    applies_to: str
+    events: tuple[ResetEvent, ...]
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "reset_schedule", f"reset_schedule.kind: 'reset_schedule' required, got {self.kind!r}")
+        _member(self.applies_to, PRICE_TERM_NAMES, "reset_schedule.applies_to")
+        object.__setattr__(self, "events", _tuple(self.events, "reset_schedule.events"))
+        _require(len(self.events) >= 1, "reset_schedule.events: at least one reset event")
+        previous = None
+        for event in self.events:
+            _require(isinstance(event, ResetEvent), "reset_schedule.events: ResetEvent required")
+            _require(
+                previous is None or event.reset_date > previous,
+                "reset_schedule.events: reset_date must strictly ascend",
+            )
+            previous = event.reset_date
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ResetSchedule":
+        body = _closed_mapping(record, ("kind", "applies_to", "events"), "reset_schedule")
+        return cls(
+            kind=body.get("kind"),
+            applies_to=body.get("applies_to"),
+            events=tuple(ResetEvent.from_record(item) for item in _tuple(body.get("events"), "reset_schedule.events")),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ConversionCondition:
+    """A trading-day condition on conversion (SPEC_I2 §1.5)."""
+
+    kind: str
+    required_days: int
+    window_days: int
+    comparison: str
+    threshold_kind: str
+    threshold: Quantity
+    measure: str
+    window_end: str
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "conversion_condition", f"conversion_condition.kind: 'conversion_condition' required, got {self.kind!r}")
+        _int(self.required_days, "conversion_condition.required_days", minimum=1)
+        _int(self.window_days, "conversion_condition.window_days", minimum=1)
+        _require(
+            self.required_days <= self.window_days,
+            f"conversion_condition: required_days {self.required_days} exceeds window_days {self.window_days}",
+        )
+        _member(self.comparison, CONDITION_COMPARISONS, "conversion_condition.comparison")
+        _member(self.threshold_kind, CONDITION_THRESHOLD_KINDS, "conversion_condition.threshold_kind")
+        unit = "usd" if self.threshold_kind == "price" else "percent"
+        _require(
+            isinstance(self.threshold, Quantity) and self.threshold.unit == unit,
+            f"conversion_condition.threshold: a {unit} Quantity is required",
+        )
+        _member(self.measure, PRICE_MEASURES, "conversion_condition.measure")
+        _member(self.window_end, PRICE_WINDOW_ENDS, "conversion_condition.window_end")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "ConversionCondition":
+        body = _closed_mapping(
+            record,
+            ("kind", "required_days", "window_days", "comparison", "threshold_kind", "threshold",
+             "measure", "window_end"),
+            "conversion_condition",
+        )
+        threshold_kind = body.get("threshold_kind")
+        unit = "usd" if threshold_kind == "price" else "percent"
+        return cls(
+            kind=body.get("kind"),
+            required_days=body.get("required_days"),
+            window_days=body.get("window_days"),
+            comparison=body.get("comparison"),
+            threshold_kind=threshold_kind,
+            threshold=_quantity_from_record(body.get("threshold"), unit, "conversion_condition.threshold"),
+            measure=body.get("measure"),
+            window_end=body.get("window_end"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class SettlementBranches:
+    """The exclusive settlement branches a holder or issuer may elect.
+
+    The branches are alternatives and are never summed (SPEC_I2 §0 item 5).
+    """
+
+    kind: str
+    branches: tuple[str, ...]
+    elected_by: str
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "settlement_branches", f"settlement_branches.kind: 'settlement_branches' required, got {self.kind!r}")
+        object.__setattr__(self, "branches", _tuple(self.branches, "settlement_branches.branches"))
+        _require(len(self.branches) >= 1, "settlement_branches.branches: at least one branch")
+        for branch in self.branches:
+            _member(branch, SETTLEMENT_BRANCH_NAMES, "settlement_branches.branches")
+        _unique(list(self.branches), "settlement_branches.branches")
+        _member(self.elected_by, BRANCH_ELECTED_BY, "settlement_branches.elected_by")
+        if self.elected_by == "automatic":
+            _require(len(self.branches) == 1, "settlement_branches.branches: an automatic election has exactly one branch")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "SettlementBranches":
+        body = _closed_mapping(record, ("kind", "branches", "elected_by"), "settlement_branches")
+        return cls(
+            kind=body.get("kind"),
+            branches=tuple(_tuple(body.get("branches"), "settlement_branches.branches")),
+            elected_by=body.get("elected_by"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class AntiDilution:
+    """A price-protection adjustment (SPEC_I2 §1.5)."""
+
+    kind: str
+    applies_to: str
+    method: str
+    price_rounding: Rounding | None = None
+    share_adjustment: str = "none"
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "anti_dilution", f"anti_dilution.kind: 'anti_dilution' required, got {self.kind!r}")
+        _member(self.applies_to, PRICE_TERM_NAMES, "anti_dilution.applies_to")
+        _member(self.method, ANTI_DILUTION_METHODS, "anti_dilution.method")
+        if self.price_rounding is not None:
+            _require(isinstance(self.price_rounding, Rounding), "anti_dilution.price_rounding: Rounding required")
+        _member(self.share_adjustment, SHARE_ADJUSTMENTS, "anti_dilution.share_adjustment")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "AntiDilution":
+        body = _closed_mapping(
+            record, ("kind", "applies_to", "method", "price_rounding", "share_adjustment"), "anti_dilution"
+        )
+        rounding = body.get("price_rounding")
+        return cls(
+            kind=body.get("kind"),
+            applies_to=body.get("applies_to"),
+            method=body.get("method"),
+            price_rounding=None if rounding is None else (rounding if isinstance(rounding, Rounding) else Rounding.from_record(rounding)),
+            share_adjustment=body.get("share_adjustment", "none"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class Accrual:
+    """Dividend or interest accrual into the claim (SPEC_I2 §1.5).
+
+    ``thirty_360`` is the 30/360 bond basis (ISDA 2006 §4.16(f)): D1 = 31
+    becomes 30; D2 = 31 becomes 30 when D1 is 30 or 31.
+    """
+
+    kind: str
+    annual_rate: Quantity
+    day_count: str
+    compounding: str
+    accrual_start: str
+    converts_with_principal: bool
+    period_months: int | None = None
+
+    def __post_init__(self) -> None:
+        _require(self.kind == "accrual", f"accrual.kind: 'accrual' required, got {self.kind!r}")
+        _require(
+            isinstance(self.annual_rate, Quantity) and self.annual_rate.unit == "percent",
+            "accrual.annual_rate: a percent Quantity is required",
+        )
+        _member(self.day_count, ACCRUAL_DAY_COUNTS, "accrual.day_count")
+        _member(self.compounding, ACCRUAL_COMPOUNDING, "accrual.compounding")
+        _date(self.accrual_start, "accrual.accrual_start")
+        _boolean(self.converts_with_principal, "accrual.converts_with_principal")
+        if self.compounding == "periodic":
+            _int(self.period_months, "accrual.period_months", minimum=1)
+        else:
+            _require(self.period_months is None, "accrual.period_months: only periodic accrual carries a period")
+
+    @classmethod
+    def from_record(cls, record: Any) -> "Accrual":
+        body = _closed_mapping(
+            record,
+            ("kind", "annual_rate", "day_count", "compounding", "period_months", "accrual_start",
+             "converts_with_principal"),
+            "accrual",
+        )
+        return cls(
+            kind=body.get("kind"),
+            annual_rate=_quantity_from_record(body.get("annual_rate"), "percent", "accrual.annual_rate"),
+            day_count=body.get("day_count"),
+            compounding=body.get("compounding"),
+            accrual_start=body.get("accrual_start"),
+            converts_with_principal=body.get("converts_with_principal"),
+            period_months=body.get("period_months"),
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+#: Class name of every structure a term may carry, and the ``kind`` each writes.
+_STRUCTURE_CLASS_NAMES = frozenset(
+    {"PriceFormula", "ResetSchedule", "ConversionCondition", "SettlementBranches", "AntiDilution", "Accrual"}
+)
+#: SPEC_I2 §1.3: which structure each structured term name carries.
+ECONOMIC_TERM_STRUCTURE_TYPES: Mapping[str, str] = {
+    "price_reset": "ResetSchedule",
+    "conversion_condition": "ConversionCondition",
+    "settlement_branches": "SettlementBranches",
+    "anti_dilution": "AntiDilution",
+    "accrual_terms": "Accrual",
+    "exercise_price": "PriceFormula",
+    "conversion_price": "PriceFormula",
+}
+#: ``kind`` discriminator to structure type, for record parsing.
+STRUCTURE_TYPES_BY_KIND: Mapping[str, Any] = {
+    "price_formula": PriceFormula,
+    "reset_schedule": ResetSchedule,
+    "conversion_condition": ConversionCondition,
+    "settlement_branches": SettlementBranches,
+    "anti_dilution": AntiDilution,
+    "accrual": Accrual,
+}
+
+
+#: Union of the closed key sets, used only to reject a misspelled key early.
+_STRUCTURE_RECORD_KEYS = frozenset(
+    {
+        "kind", "combine", "components", "floor_basis", "floor", "below_floor", "ceiling", "rounding",
+        "source", "fixed_price", "measure", "aggregation", "lookback_days", "lowest_count",
+        "percent_of_measure", "window_end", "places", "mode", "applies_to", "events", "reset_date",
+        "rule", "market", "share_adjustment", "required_days", "window_days", "comparison",
+        "threshold_kind", "threshold", "branches", "elected_by", "method", "price_rounding",
+        "annual_rate", "day_count", "compounding", "period_months", "accrual_start",
+        "converts_with_principal",
+    }
+)
+
+
+def structure_from_record(record: Any, field_name: str = "economic_term.structure") -> Any:
+    """Parse one structured-term record into its frozen type, keyed on ``kind``."""
+    if isinstance(record, tuple(STRUCTURE_TYPES_BY_KIND.values())):
+        return record
+    body = _closed_mapping(record, tuple(_STRUCTURE_RECORD_KEYS), field_name)
+    kind = body.get("kind")
+    _require(kind in STRUCTURE_TYPES_BY_KIND, f"{field_name}.kind: {kind!r} is not a structured term kind")
+    return STRUCTURE_TYPES_BY_KIND[kind].from_record(body)
 
 
 @dataclass(frozen=True)
@@ -2099,8 +3412,18 @@ def validate_state_record(kind: str, record: Mapping[str, Any], schema_path: Pat
 
 
 __all__ = [
+    "ACTION_CHECK_STATUSES",
+    "ACTION_OWNERS",
+    "ACCRUAL_COMPOUNDING",
+    "ACCRUAL_DAY_COUNTS",
+    "AUTHORIZED_HEADROOM_STATUSES",
+    "ANTI_DILUTION_METHODS",
     "AUTHORITY",
+    "Accrual",
+    "AntiDilution",
+    "ActionCheck",
     "ActionSelection",
+    "AuthorizedHeadroomDisclosure",
     "Assumption",
     "BINDING_ORIGINS",
     "BINDING_TARGET_KINDS",
@@ -2111,16 +3434,29 @@ __all__ = [
     "CapacityEnvelope",
     "CapitalInputs",
     "CapitalState",
+    "BRANCH_ELECTED_BY",
+    "BELOW_FLOOR_RULES",
+    "COVERAGE_SCENARIO_ONLY_NOTE",
+    "COVERAGE_STATUSES",
+    "CashReconciliation",
     "CashEffect",
     "CommitmentInputs",
     "Constraint",
+    "CONDITION_COMPARISONS",
+    "CONDITION_THRESHOLD_KINDS",
     "ContractViolation",
+    "ConversionCondition",
     "CorporateActionBasis",
+    "CoveragePeriod",
     "CorporateActionInputs",
     "ECONOMIC_TERM_NAMES",
+    "ECONOMIC_TERM_PRICE_FORMULA_NAMES",
+    "ECONOMIC_TERM_STRUCTURE_NAMES",
+    "ECONOMIC_TERM_STRUCTURE_TYPES",
     "ECONOMIC_TERM_STATUSES",
     "EconomicTerm",
     "EvidenceRef",
+    "FLOOR_BASES",
     "FORBIDDEN_PROPERTY_PATTERN",
     "FamilyProvenance",
     "FamilyState",
@@ -2130,34 +3466,61 @@ __all__ = [
     "FundingPeriod",
     "FundingSchedule",
     "GenerationBinding",
+    "ISSUANCE_ROW_BASES",
     "INHERITED_UNAVAILABLE_CAPABILITIES",
     "INTERFACE_OWNER",
     "INTERFACE_OWNERSHIP",
     "INTERFACE_READER",
+    "IssuanceRow",
+    "JOINT_CHECK_STATUSES",
+    "JointCheck",
     "Instrument",
     "InstrumentSet",
     "PROJECTION_COMPATIBILITY",
+    "PRICE_AGGREGATIONS",
+    "PRICE_COMBINES",
+    "PRICE_COMPONENT_SOURCES",
+    "PRICE_MEASURES",
+    "PRICE_TERM_NAMES",
+    "PRICE_WINDOW_ENDS",
     "PriceAssumption",
+    "PRICE_BASIS_COMPONENTS",
+    "PRICE_BASIS_KINDS",
+    "PriceBasis",
+    "PriceComponent",
+    "PriceFormula",
     "Provenance",
     "Quantity",
+    "RECONCILIATION_STATUSES",
     "REALIZED_CASH_KINDS",
     "RECORD_SCHEMAS",
     "REPORTING_BASES",
     "REQUIRED_FUNDING_ASSUMPTIONS",
+    "RESET_RULES",
+    "ROUNDING_MODES",
+    "ResetEvent",
+    "ResetSchedule",
     "Resolution",
     "ResolutionInputs",
     "RouteBound",
     "RulePack",
     "RuleRef",
+    "SHARE_ADJUSTMENTS",
     "SHARE_BASES",
+    "SETTLEMENT_BRANCH_NAMES",
+    "STRUCTURE_KINDS",
+    "STRUCTURE_TYPES_BY_KIND",
+    "SettlementBranches",
     "STATE_CONTRACT_VERSION",
     "STATE_FAMILIES",
     "STATE_SCHEMA",
     "STATE_SCHEMA_FILE",
     "STATE_SCHEMA_PATH",
+    "ScenarioResult",
     "ShareBasisResult",
     "ShareInputs",
     "ShareObservationRef",
+    "SignedQuantity",
     "StateRequest",
     "SupplyEnvelope",
     "TERM_FACT_ORIGINS",
@@ -2168,6 +3531,7 @@ __all__ = [
     "UnknownResolution",
     "WitnessAllocation",
     "load_state_schema",
+    "structure_from_record",
     "projection_compatibility",
     "sha256_of",
     "stable_id",

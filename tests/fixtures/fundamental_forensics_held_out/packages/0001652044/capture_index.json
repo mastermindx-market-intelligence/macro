@@ -1,0 +1,38 @@
+[
+  {
+    "accession": "0001652044-23-000016",
+    "form": "10-K",
+    "period_of_report": "2022-12-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "f1e574549d091e748a044559840f9562120ffe7ab029ebda66d8b6a1d047f2a8",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0001652044-23-000094",
+    "form": "10-Q",
+    "period_of_report": "2023-09-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "402609b847c12a55b5e78ecaeffaa849fc2445697e9785836098da8cdac3ce66",
+    "admission": "statement_roles_ambiguous:income_statement:CONSOLIDATED STATEMENTS OF INCOME | CONSOLIDATED STATEMENTS OF INCOME",
+    "statement_roles_state": "statement_roles_ambiguous:income_statement:CONSOLIDATED STATEMENTS OF INCOME | CONSOLIDATED STATEMENTS OF INCOME"
+  },
+  {
+    "accession": "0001652044-23-000070",
+    "form": "10-Q",
+    "period_of_report": "2023-06-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "954cfc129940e7d8a2c10479af5dc43647a35aba76ddb302a250c866ce8ccb6a",
+    "admission": "statement_roles_ambiguous:income_statement:CONSOLIDATED STATEMENTS OF INCOME | CONSOLIDATED STATEMENTS OF INCOME",
+    "statement_roles_state": "statement_roles_ambiguous:income_statement:CONSOLIDATED STATEMENTS OF INCOME | CONSOLIDATED STATEMENTS OF INCOME"
+  },
+  {
+    "accession": "0001308179-24-000612",
+    "form": "DEF 14A",
+    "period_of_report": "2024-06-07",
+    "selection": "capture_only",
+    "manifest_sha256": null,
+    "admission": "member_missing:schema",
+    "statement_roles_state": null
+  }
+]

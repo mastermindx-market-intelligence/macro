@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-10-02",
+  "as_of": "2026-10-30",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
-  "n_due": 1,
+  "n_due": 2,
   "results": [
     {
       "id": "cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
@@ -31,9 +31,36 @@
         "clamped_from": 20
       },
       "note": null
+    },
+    {
+      "id": "cortex-2026-10-02-when-net-liquidity-is-expanding-but-the-7c3e49",
+      "claim_shape": "conditional_regime",
+      "verdict": "insufficient-n",
+      "n": 0,
+      "metric_value": null,
+      "detail": {
+        "metric_space": "contrast",
+        "query_axes_applied": [
+          "symbol"
+        ],
+        "declares_feature": false,
+        "total_spine_rows": 4,
+        "pre_reg_dropped": 4,
+        "post_reg_n": 0,
+        "note": "No post-registration graded rows found. All data predates registration \u2014 anti-mining law enforced.",
+        "evaluator_version": "W7b-PR3"
+      },
+      "gate": {
+        "metric": "excess_mean_difference",
+        "threshold": -0.01,
+        "min_n": 30,
+        "horizon_d": 21,
+        "direction_expected": -1
+      },
+      "note": null
     }
   ],
   "n_passed": 0,
   "n_failed": 0,
-  "n_insufficient": 1
+  "n_insufficient": 2
 }

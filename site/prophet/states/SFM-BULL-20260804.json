@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SFM-BULL-20260804",
-  "asof": "2026-10-15",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 8.0,
+  "management_confidence": 13.8,
   "raw_confidence": 8.0,
-  "delta_vs_base": -52.0,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "delta_vs_base": -46.2,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.455,
+    "dist_to_stop_r": -5.977,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 20.0,
-    "p1": -0.3034,
-    "p2": -0.1517,
+    "horizon_pct_used": 53.3,
+    "p1": -3.3179,
+    "p2": -1.6589,
     "p3": null,
-    "move_r": -0.455,
-    "mfe_r": 0.243,
-    "mae_r": -0.455
+    "move_r": -4.977,
+    "mfe_r": 1.07,
+    "mae_r": -4.977
   },
   "rr_ratio": null,
   "rr_grade": null,
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.840002136230467,
-  "_mae": -1.570001525878908,
-  "_max_p1": 0.16231925337786812,
+  "_mfe": 3.690000610351561,
+  "_mae": -17.17,
+  "_max_p1": 0.7130435962032006,
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.2
+  "days_elapsed": 24,
+  "tau": 0.5333,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

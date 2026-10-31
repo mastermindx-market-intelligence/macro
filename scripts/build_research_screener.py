@@ -102,7 +102,19 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     )
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tpl = env.get_template("research_screener.html.j2")
-    return tpl.render(payload=payload, as_of=payload.get("as_of"))
+    # This public logo token is materialized by the VPS at deploy time, so its
+    # Git placeholder hash is NOT the served asset identity.  Change the URL
+    # for this single Research Screener page *before* the normal optimizer adds
+    # content hashes.  The shared nav remains untouched: it is a construction
+    # input pinned by stock-dashboard P0B browser-evidence receipts.
+    html = tpl.render(payload=payload, as_of=payload.get("as_of"))
+    original = '<script src="logo_config.js"></script>'
+    if html.count(original) != 1:
+        raise ValueError("research_screener: expected exactly one shared logo config asset")
+    # The optimizer deliberately leaves authored non-hash queries untouched,
+    # including attributes: preserve the nonblocking mode explicitly here.
+    return html.replace(original,
+                        '<script src="logo_config.js?runtime-config" defer></script>', 1)
 
 
 def _ensure_yaml_importable() -> None:
@@ -149,13 +161,17 @@ def stamp_page_html(site: Path, html: str) -> str:
 
 
 def bake_html(root: Path, payload: dict[str, Any]) -> str:
-    """Render + stamp + data-base shim. Matches the committed site HTML."""
+    """Render + stamp + shared page shims. Matches the committed site HTML."""
     _ensure_yaml_importable()
     from lib.pages import dbase_prefix, inject_text
+    from lib.shared_shell import inject_shared_shell_text
 
     site = root / "site"
     html = stamp_page_html(site, render_html(root, payload))
-    return inject_text(html, dbase_prefix(site / HTML_NAME))
+    prefix = dbase_prefix(site / HTML_NAME)
+    # bake_html is also consumed directly by the committed-output contract.
+    # Use write_page's idempotent owner so that both paths return the same page.
+    return inject_shared_shell_text(inject_text(html, prefix), prefix, site_dir=site)
 
 
 def render(root: Path) -> dict[str, Any]:

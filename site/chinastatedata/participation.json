@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-29",
+  "date": "2026-10-28",
   "authority": {
     "tier": "context_only",
     "may_rank": false,
@@ -76,34 +76,35 @@
     },
     "actor_semantics": "who_controls is a heuristic participation regime label, not beneficial-owner, seat, fund, institution, or ultimate-actor identity"
   },
-  "turnover_z20": -2.245378950596541,
-  "turnover_z60": -1.9924369894745029,
-  "margin_balance": 26089.90447105,
-  "margin_chg_5d": -1.6516248782357246,
-  "margin_to_mcap": 2.66815,
-  "southbound_net": 14.629999999999,
-  "southbound_z": -0.27899579788706375,
-  "etf_share_chg": 0.0,
+  "turnover_z20": 0.21780944418890089,
+  "turnover_z60": -0.8792599964461573,
+  "margin_balance": 24120.41432521,
+  "margin_chg_5d": -2.7061836235293346,
+  "margin_to_mcap": 2.623423,
+  "southbound_net": -804.120000000001,
+  "southbound_z": -0.24882076244318446,
+  "etf_share_chg": null,
   "zt_breadth": null,
   "failed_seal_ratio": null,
-  "qvix": 17.2,
-  "qvix_z": -1.0345908498327456,
-  "broker_rs": 0.0700000529213023,
-  "regime": "dormant",
+  "qvix": 19.51,
+  "qvix_z": 0.7757102759659278,
+  "broker_rs": 0.12931054489193555,
+  "regime": "forced_deleveraging",
   "who_controls": "mixed",
-  "risk": "low",
+  "risk": "fire_sale",
   "evidence": [
-    "turnover_z20=-2.25",
-    "fin_pct_float=2.67%",
-    "broker_rs=0.0700 (positive, sector leading)",
-    "qvix_z=-1.03 (inverted-semantics: high=stress)"
+    "turnover_z20=0.22",
+    "fin_pct_float=2.62%",
+    "broker_rs=0.1293 (positive, sector leading)",
+    "qvix_z=0.78 (inverted-semantics: high=stress)"
   ],
   "contradictions": [],
   "data_gaps": [
-    "zt_breadth:null on 2026-09-29",
+    "zt_breadth:null on 2026-10-28",
+    "etf_share_chg:null on 2026-10-28",
     "northbound:DEAD post-2024-08-16 SLF-050",
-    "snapshot_staleness:published row 2026-09-29 is 16d behind tape tail 2026-10-15; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "snapshot_staleness:published row 2026-10-28 is 2d behind tape tail 2026-10-30; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ],
   "backfill": false,
-  "snapshot_note": "core legs null on 2026-10-15; publishing last fully-populated row (2026-09-29)"
+  "snapshot_note": "core legs null on 2026-10-30; publishing last fully-populated row (2026-10-28)"
 }

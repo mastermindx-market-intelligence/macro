@@ -1,15 +1,15 @@
 {
   "schema": "seo_audit.v1",
-  "as_of": "2026-10-11T19:22:24Z",
-  "health_score": 88,
+  "as_of": "2026-10-26T03:20:58Z",
+  "health_score": 85,
   "census": {
-    "total_pages": 3040,
+    "total_pages": 3047,
     "by_family": {
       "core": {
-        "pages": 176,
-        "with_canonical": 162,
-        "with_desc": 161,
-        "with_og": 161,
+        "pages": 179,
+        "with_canonical": 165,
+        "with_desc": 164,
+        "with_og": 164,
         "with_jsonld": 7,
         "in_sitemap": 21
       },
@@ -54,7 +54,7 @@
         "in_sitemap": 0
       },
       "stocks": {
-        "pages": 2750,
+        "pages": 2754,
         "sampled": 25,
         "with_canonical": 25,
         "with_title": 25,
@@ -66,10 +66,10 @@
     }
   },
   "sitemap": {
-    "total_urls": 5588,
-    "core": 2893,
+    "total_urls": 5728,
+    "core": 3036,
     "products": 5,
-    "stocks": 2690,
+    "stocks": 2687,
     "host_ok": true,
     "bad_host_count": 0,
     "apex_host_count": 0,
@@ -80,7 +80,7 @@
       "unsubscribe.html"
     ],
     "excluded_public_count": 1,
-    "non_public_absent_count": 258,
+    "non_public_absent_count": 261,
     "duplicates": []
   },
   "crawl_infra": {
@@ -88,7 +88,7 @@
     "robots_sitemap_host_ok": true,
     "llms_txt_present": true,
     "brand_facts_present": true,
-    "brand_facts_age_days": 76
+    "brand_facts_age_days": 91
   },
   "issues": [
     {
@@ -104,13 +104,6 @@
       "class": "canonical_not_self",
       "page": "baskets_china.html",
       "detail": "Canonical points to different page: https://www.mastermind-x.com/sector_central_china.html"
-    },
-    {
-      "id": "canonical_not_self_baskets_china_ths_html",
-      "severity": "high",
-      "class": "canonical_not_self",
-      "page": "baskets_china_ths.html",
-      "detail": "Canonical points to different page: https://www.mastermind-x.com/baskets_china.html"
     },
     {
       "id": "missing_description_btc_strategy_html",
@@ -195,6 +188,20 @@
       "class": "missing_og",
       "page": "coming-soon.html",
       "detail": "Missing OG tags: og_title, og_desc, og_image"
+    },
+    {
+      "id": "title_length_consumer_cyclical_plnt_html",
+      "severity": "medium",
+      "class": "title_length",
+      "page": "consumer_cyclical_plnt.html",
+      "detail": "Title length 72 chars (expected 15-70): PLNT economic change — Consumer Cyclical synthetic display — MastermindX"
+    },
+    {
+      "id": "desc_length_crypto_html",
+      "severity": "medium",
+      "class": "desc_length",
+      "page": "crypto.html",
+      "detail": "Description length 191 chars (expected 50-170)"
     },
     {
       "id": "missing_description_financial_lineage_html",
@@ -285,7 +292,7 @@
       "severity": "low",
       "class": "page_weight",
       "page": "intl.html",
-      "detail": "HTML size 2.5 MB exceeds 2.5 MB"
+      "detail": "HTML size 2.9 MB exceeds 2.5 MB"
     },
     {
       "id": "missing_description_intl_stock_html",
@@ -328,6 +335,13 @@
       "class": "desc_length",
       "page": "macro_monetary.html",
       "detail": "Description length 199 chars (expected 50-170)"
+    },
+    {
+      "id": "canonical_not_self_movers_html",
+      "severity": "high",
+      "class": "canonical_not_self",
+      "page": "movers.html",
+      "detail": "Canonical points to different page: https://www.mastermind-x.com/stocks/index.html"
     },
     {
       "id": "canonical_not_self_options_screener_html",
@@ -832,6 +846,13 @@
       "class": "duplicate_description",
       "page": "flow_desk.html",
       "detail": "Duplicate description across 3 pages. Others: ['flow_leaders.html', 'options_screener.html']"
+    },
+    {
+      "id": "brand_facts_stale_brand_facts_json",
+      "severity": "low",
+      "class": "brand_facts_stale",
+      "page": "brand-facts.json",
+      "detail": "brand-facts.json effective_at is 91d ago (warn >90d)"
     }
   ],
   "issue_counts_by_class": {
@@ -839,18 +860,19 @@
     "missing_description": 28,
     "missing_og": 28,
     "missing_canonical": 27,
+    "title_length": 3,
+    "desc_length": 6,
     "page_weight": 1,
-    "desc_length": 5,
-    "title_length": 2,
     "missing_lang": 1,
     "missing_title": 1,
     "duplicate_title": 1,
-    "duplicate_description": 1
+    "duplicate_description": 1,
+    "brand_facts_stale": 1
   },
   "issue_counts_by_severity": {
     "critical": 0,
     "high": 51,
-    "medium": 54,
-    "low": 1
+    "medium": 56,
+    "low": 2
   }
 }

@@ -563,10 +563,22 @@ def test_t5_golden_mode_statements_bytes_stay_pinned(router_app, monkeypatch) ->
     from tests.test_fundamental_forensics_financial_statement_api import (
         _RESPONSE_SHA as pinned,
     )
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
 
     monkeypatch.delenv("FIF_FINANCIAL_DATASET_MODE", raising=False)
     monkeypatch.delenv("FIF_PRODUCTION_DATASET_LOCAL_STORE", raising=False)
     forensics_api._reset_production_provider_cache()
+    # Golden mode reconstructs through statement_service.load_core_registry(REPO).
+    # This pin family runs on the committed byte-copy of the 1.0.0 registry
+    # (pub.PINNED_REGISTRY_ROOT), so the pinned bytes re-derive unchanged; the
+    # live-registry response bytes are pinned in
+    # test_fundamental_forensics_financial_statement_api.py.
+    monkeypatch.setattr(
+        statement_service,
+        "load_core_registry",
+        lambda _repo_root: load_core_registry(pub.PINNED_REGISTRY_ROOT),
+    )
     router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {"id": "paid-user"}
     with TestClient(router_app, raise_server_exceptions=False) as client:
         response = client.post(

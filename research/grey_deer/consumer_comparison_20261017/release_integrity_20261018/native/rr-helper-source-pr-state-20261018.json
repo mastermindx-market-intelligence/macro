@@ -1,0 +1,96 @@
+{
+  "observed_at_utc": "2026-10-18T08:03:00.038488+00:00",
+  "pr": {
+    "baseRefName": "master",
+    "headRefName": "sol/web-risk-radar-release-integrity-20261018-0310",
+    "headRefOid": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+    "isDraft": false,
+    "mergeStateStatus": "BEHIND",
+    "number": 1610,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109519443/job/117622428300",
+        "name": "pytest shard 0",
+        "startedAt": "2026-10-18T07:56:12Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-18T07:56:50Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109517777/job/117622426280",
+        "name": "Analyze (actions)",
+        "startedAt": "2026-10-18T07:56:11Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109519443/job/117622428414",
+        "name": "pytest shard 1",
+        "startedAt": "2026-10-18T07:56:12Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-18T07:57:11Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109517777/job/117622426334",
+        "name": "Analyze (javascript-typescript)",
+        "startedAt": "2026-10-18T07:56:11Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109519443/job/117622428401",
+        "name": "pytest shard 2",
+        "startedAt": "2026-10-18T07:56:12Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-18T07:58:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109517777/job/117622426343",
+        "name": "Analyze (python)",
+        "startedAt": "2026-10-18T07:56:11Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-18T08:01:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39109517777/job/117622426171",
+        "name": "Analyze (rust)",
+        "startedAt": "2026-10-18T07:56:11Z",
+        "status": "COMPLETED",
+        "workflowName": "CodeQL"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-18T07:56:45Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/Mastermind/runs/117622523317",
+        "name": "CodeQL",
+        "startedAt": "2026-10-18T07:56:41Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610"
+  }
+}

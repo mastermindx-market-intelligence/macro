@@ -10,6 +10,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if lite %}China thematic baskets · 同花顺 — vs CSI 300{% else %}China thematic baskets — performance vs CSI 300{% endif %}</title>
 {% set seo_title = "China Thematic Baskets vs CSI 300 — Mastermind" %}{% set seo_desc = "China thematic baskets tracked against the CSI 300 — theme scores, leadership health and entry radar, updated after each Asia close." %}{% set seo_path = "baskets_china.html" %}
+{%- if lite %}{% set seo_path = "baskets_china_ths.html" %}{#
+#}{% set seo_desc = "Equal-weight A-share baskets from 同花顺 concept boards, vs the CSI 300." %}{#
+#}{% endif %}
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -360,8 +363,44 @@
       'Tonghuashun concept baskets filtered to the china_search price cache. Equal-weighted and measured against CSI 300. Use them for theme monitoring, not as a buy list.',
       '同花顺概念篮子，按 china_search 价格缓存过滤。等权重，对标沪深 300。用于主题监测，不是买入清单。') }}
       <a href="baskets_china.html" style="white-space:nowrap">→ {{ t('curated baskets', '精选篮子') }}</a></p>
+    {%- if membership_provenance and membership_provenance.observed %}
+    {%- set mp = membership_provenance %}{% set ns = mp.newest_scrape %}
+    <p class="tagline" id="mem-prov">{{ t('Membership file dated', '成分文件日期') }} {{ mp.observed }}
+      {%- if ns and ns.date %} · {{ t('newest Tonghuashun re-scrape', '最近一次同花顺重抓') }} {{ ns.date }}:
+      {% if ns.complete %}{{ t('complete', '完整') }}{% else %}{{ t('incomplete', '未完成') }}{% endif %}
+      {%- if ns.concepts_attempted is not none and ns.concepts_fetched is not none %}
+      ({{ ns.concepts_fetched }}/{{ ns.concepts_attempted }} {{ t('boards', '个板块') }})
+      {%- endif %}{% endif %}
+      {%- if mp.last_complete_scrape and not (ns and ns.complete) %}
+      · {{ t('last complete re-scrape', '上次完整重抓') }} {{ mp.last_complete_scrape }}
+      {%- endif %}</p>
+    {%- endif %}
     {# cross-market AI-semis confirmer (rendered client-side; empty when unavailable) #}
     <div id="semis-chip"></div>
+    {%- set sc = sleeve_chip if sleeve_chip is mapping else none %}
+    {%- if sc and sc.radar_state in ('calm', 'caution', 'elevated', 'risk-off')
+          and sc.sleeve_factor is number and sc.sleeve_factor is not boolean %}
+    {%- set _st_en = {'risk-off': 'RISK-OFF — trade smaller',
+                      'elevated': 'ELEVATED — trade smaller',
+                      'caution': 'CAUTION — avoid chasing', 'calm': 'CALM — normal sizing'} %}
+    {%- set _st_zh = {'risk-off': '避险 — 减小仓位', 'elevated': '偏高 — 减小仓位',
+                      'caution': '谨慎 — 谨慎追高', 'calm': '平静 — 正常仓位'} %}
+    <div class="semis-chip" id="sleeve-chip-lite">
+      <b>{{ t('Risk backdrop', '风险背景') }}</b>
+      <span>{{ t(_st_en[sc.radar_state], _st_zh[sc.radar_state]) }}</span>
+      <span class="muted">{{ t('sleeve sizing', '组合仓位') }}
+        ×{{ '%.2f'|format(sc.sleeve_factor) }}</span>
+      {%- if sc.dominant_driver_en is string and sc.dominant_driver_en %}
+      {%- set _dr_en = sc.dominant_driver_en.split(' (')[0] %}
+      {%- set _dr_zh = sc.dominant_driver_zh if sc.dominant_driver_zh is string else '' %}
+      {%- set _dr_zh = (_dr_zh or _dr_en).split('（')[0] %}
+      <span class="muted">{{ t('main risk: ' ~ _dr_en, '主要风险：' ~ _dr_zh) }}</span>
+      {%- endif %}
+      {%- if sc.radar_as_of %}
+      <span class="sx-tag">{{ t('as of', '截至') }} {{ sc.radar_as_of }}</span>
+      {%- endif %}
+    </div>
+    {%- endif %}
     {% else %}
     <p class="tagline">{{ t(
       'Equal-weight A-share theme baskets measured against CSI 300. Use them to see which China themes are leading or fading.',
@@ -426,6 +465,12 @@
     </div>
     <div id="cards"></div>
     <div id="details"></div>
+    {%- if lite and build_notes %}
+    <details class="tagline" id="build-notes">
+      <summary>{{ t('How these baskets are built', '篮子构建说明') }}</summary>
+      {% for note in build_notes %}<p class="muted sm">{{ note }}</p>{% endfor %}
+    </details>
+    {%- endif %}
   </div>
 
   {# W5-B: Reversal Sleeve strategy card — linked product, CONFIRM verdict 2026-07-03 #}
@@ -521,10 +566,18 @@ const TURN_PLAIN = {
   TURNING:    {en:'turning',    zh:'转折', cls:'turning'},
   CONFIRMED:  {en:'confirmed',  zh:'确认', cls:'confirmed'},
 };
-const turnChipHtml = ts => {
+const turnChipHtml = (ts, days) => {
   const tp = TURN_PLAIN[ts]; if(!tp) return '';
   const lbl = LANG()==='zh' ? tp.zh : tp.en;
-  return `<span class="turn-chip ${tp.cls}">${esc(lbl)}</span>`;
+  // W28G SPEC 4: turn_days_in_state as a tooltip. The producer counts ledger sessions, and for
+  // TURNING/CONFIRMED it counts the whole turning-or-confirmed run, so the copy says so.
+  const run = ts==='TURNING' || ts==='CONFIRMED';
+  const tipTxt = LANG()==='zh'
+    ? `${run ? '转折或确认' : '该状态'}已记录 ${days} 个交易日`
+    : `${days} recorded session${days===1?'':'s'} `
+      + (run ? 'turning or confirmed' : 'in this state');
+  const tip = (Number.isInteger(days) && days > 0) ? ` data-tip="${tipTxt}"` : '';
+  return `<span class="turn-chip ${tp.cls}"${tip}>${esc(lbl)}</span>`;
 };
 // Signal tier chip (display-only, bilingual via LANG()).
 const SIG_LABELS = {T1:{en:'T1 signal',zh:'T1信号'}, T2:{en:'T2 signal',zh:'T2信号'}, T3:{en:'T3 forming',zh:'T3预备'}};
@@ -858,7 +911,7 @@ function renderCards(){
         const sx=b.ai_semis_confirmer;
         const sxBadge=(sx&&sx.on!=null)?`<span class="semis-badge ${sx.on?'on':''}" data-tip="cross-market confirmer — global semis momentum context, not a buy signal">${_bl('AI-semis '+(sx.state||''),'全球AI半导体 '+(sx.on?'开启':'关闭'))}</span>`:'';
         const scoreBadge = scoreBadgeHtml(b.score);
-        const turnChip = turnChipHtml(b.turn_state);
+        const turnChip = turnChipHtml(b.turn_state, b.turn_days_in_state);
         return `<div class="card" style="--c:${colorOf[b.id]}" data-id="${b.id}">
           <div class="nm"><span class="dot" style="background:${colorOf[b.id]}"></span>${nameLink(b)}${sxBadge}${scoreBadge}${turnChip}</div>
           <div class="meta">${b.n_members}${memberW}${since} ${esc(b.created)}${ref}</div>
@@ -902,7 +955,7 @@ function detailSection(b){
   const scoreRow = (b.score!=null||b.reco!=null) ? `<div style="margin:4px 0 6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     ${b.score!=null?scoreBadgeHtml(b.score):''}
     ${(b.reco!=null||b.reco_zh!=null)?`<span class="chip">${esc(zh?(b.reco_zh||b.reco||''):(b.reco||''))}</span>`:''}
-    ${turnChipHtml(b.turn_state)}
+    ${turnChipHtml(b.turn_state, b.turn_days_in_state)}
   </div>` : '';
   return `<div class="detail" id="b-${b.id}"><h4><span class="dot" style="background:${colorOf[b.id]}"></span>${nameLink(b)} <span class="chip">${esc(catLabel(b.category))}</span></h4>
     ${scoreRow}<p class="th">${esc(bth(b))}</p>
@@ -956,7 +1009,7 @@ function renderEntryRadar(){
     const ceChip=(b.clean_entry_q!=null&&b.clean_entry_q>=0.7)?`<span class="chip" data-tip="${zh?'清洁入场读数（0-1）— 回调结构质量':'clean-entry reading (0-1) — pullback structure quality'}">${zh?'清洁入场':'clean entry'} ${b.clean_entry_q.toFixed(1)}</span>`:'';
     return `<div class="er-item">
       <a class="blink" href="${esc(detailHref(b))}" data-nav="detail">${esc(bn(b))}</a>
-      ${turnChipHtml(b.turn_state)}${scoreBadgeHtml(b.score)}${ceChip}${scNote}
+      ${turnChipHtml(b.turn_state,b.turn_days_in_state)}${scoreBadgeHtml(b.score)}${ceChip}${scNote}
       ${recoWord?`<span class="er-reco">${esc(recoWord)}</span>`:''}
     </div>`;
   }).join('');

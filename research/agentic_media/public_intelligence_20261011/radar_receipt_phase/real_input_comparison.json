@@ -1,0 +1,53 @@
+{
+  "observed_installed_head": "2fafe10e05968b1f193361926224250aa71387b0",
+  "artifact": "data/risk_radar/forward_log.jsonl",
+  "artifact_sha256": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+  "source_sha256": "852a8889adb59d490f8ddd3de813ceb5de7776885cdb336ff44532be4d6ef8eb",
+  "producer_target": {
+    "depth": 0.05,
+    "horizons": [
+      5,
+      10,
+      21
+    ],
+    "price_path": "native SPY closing observations"
+  },
+  "producer_limits": [
+    "Overlapping forward windows are not independent episodes.",
+    "Reconstructed historical states are not genuinely issued forecasts.",
+    "Exact-cell evidence supports a risk gradient, not actuarial precision."
+  ],
+  "producer_precision_grade": false,
+  "before": {
+    "id": "risk_radar",
+    "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+    "ref": "artifact:data/risk_radar/forward_log.jsonl",
+    "tier": "first_party",
+    "values": [
+      "70.3",
+      "0.19",
+      "0.1",
+      "0.042"
+    ],
+    "url": null,
+    "source_name": "Mastermind risk radar",
+    "dated": "2026-10-12"
+  },
+  "after_local_only": {
+    "id": "risk_radar",
+    "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3) as of 2026-10-12. This is an advisory reading. Its modelled 21-session probability 0.19 concerns a fall of at least 5% in SPY closing prices. Calibration uses reconstructed historical evidence: overlapping windows are not independent episodes and the estimate is not precision-grade.",
+    "ref": "artifact:data/risk_radar/forward_log.jsonl",
+    "tier": "first_party",
+    "values": [
+      "70.3",
+      "0.19",
+      "5"
+    ],
+    "url": null,
+    "source_name": "Mastermind risk radar",
+    "dated": "2026-10-12"
+  },
+  "input_unchanged": true,
+  "story_relevance_approved": false,
+  "publication_approved": false
+}

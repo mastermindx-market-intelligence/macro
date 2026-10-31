@@ -1,0 +1,45 @@
+{
+  "review_kind": "parent visual inspection; not independent acceptance",
+  "source_head": "1b99b50a1354b5257c3180af18bcf15ddfb1da22",
+  "scope": "fresh merged generation; reuse unchanged material-source inspection plus focused current-generation images",
+  "unchanged_material_source": true,
+  "prior_inspection_commit": "fde8d6664950bbb96f8cf9b8ca2f2508405e7138",
+  "prior_inspection": {
+    "review_kind": "parent visual inspection; not independent acceptance",
+    "source_head": "432d851f694df09245d72a470740ed7b3db5cc98",
+    "scope": "changed Space disclosure and PAC-3 capacity surfaces, both art directions and languages, 1440/390",
+    "inspected_images": {
+      "space-capacity-desktop/1440-dark-en-program.png": "9472184ace16837ef12e29aebe5964f24b146b1e583ed10cc57be6b90dee12b3",
+      "space-capacity-desktop/1440-light-zh-program.png": "f640b1e7af264e3a98b981fc2786e9cab2c90fcf5171282832a034159cc3f266",
+      "space-capacity-mobile/390-dark-zh-themes.png": "5b489914483ddee44cc68711f87c9cebbce94fbc8086ff17d03f9a218f89917a",
+      "space-capacity-mobile/390-light-en-production-1.png": "fe11d91a847b8fd9c70d6cd25a6486770c5b07e43b2ceffa27b3be5afef5d854",
+      "space-capacity-desktop/1440-light-en-themes.png": "c49f8384e942df8abe2dd6c9d86fb0977ac00b4ff2895f774d0004f2e053031d",
+      "space-capacity-desktop/1440-dark-zh-themes.png": "7f856d9b26aaade7fc44e5db9ac367b79d3f3620199d4c4229bc25134f9060ff",
+      "space-capacity-mobile/390-dark-en-production-1.png": "ba83e40154bb0c51559b5151ec2c93ae42b4b993da55c8cac55be967f56fe040",
+      "space-capacity-mobile/390-light-zh-production-1.png": "38fd5314dfbf148bc2af13878e427816e61df9fa59cd67b0f8916bdc1764ee27"
+    },
+    "observations": [
+      "Dark uses layered charcoal cards with restrained hairlines; light uses white/cool surfaces with stronger card edges and shadow. Both retain identical ordering and interaction.",
+      "Capacity targets, installed-capacity missing state and throughput are readable as separate groups. Whole-product and component scopes plus quantities/units/periods remain literal.",
+      "Space disclosed facts are behind a native disclosure; all six theme states remain evidence insufficient. Missing rails and the source snapshot clock remain explicit.",
+      "Mobile stacks groups within the existing Inspect sheet; recorded checks verify scroll, Escape and focus return with no horizontal overflow. Source names and source period labels remain literal."
+    ],
+    "scope_limits": [
+      "Local ASGI explicit test principal, not actual installed entitlement.",
+      "Desktop targeted program screenshots show the initial inspector scroll position; separate mobile scroll captures and semantic checks cover the complete capacity panel.",
+      "Real production acceptance and per-theme evidence completion remain open."
+    ]
+  },
+  "fresh_inspected_images": {
+    "space-capacity-mobile/390-dark-en-production-1.png": "ba83e40154bb0c51559b5151ec2c93ae42b4b993da55c8cac55be967f56fe040",
+    "space-capacity-desktop/1440-light-zh-themes.png": "c2cfe0f2f6286c60710018bff0181cea63b5e2e9b9a88142bfc7b9729f783047"
+  },
+  "fresh_observations": [
+    "Dark mobile separates announced targets, unavailable installed capacity and reported throughput with explicit units and scope. No inferred installed-capacity zero.",
+    "Light Chinese theme view retains clear research-workspace hierarchy, all six insufficient-evidence verdicts, seven Space facts and source clock. Literal source periods and units remain identifiable."
+  ],
+  "limitations": [
+    "Local explicit test principal; installed entitlement and independent acceptance remain open.",
+    "Concurrent browser/proof execution is not a performance SLO acceptance run."
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-10-14T03:33:23.902470+00:00",
+  "operation": "source_review_no_provider",
+  "catalog_sha256": "718357ab48aa7e8521c2e7ae6672b6b23268c1aeb8d6641b25dca4aa3b0891ba",
+  "catalog_generated_at": "2026-10-14T02:30:05.504348+00:00",
+  "latest_report_published_at": "2026-10-11T17:12:20Z",
+  "local_catalog_sha256": "6dd8f03a76d66bb5b5dffc2520fd202bfe49f169a0b6a25cd165b0cf6d8bf379",
+  "findings": [
+    {
+      "source": "research_vault:marketdesk-8inwlunucuj-8950ab",
+      "url": "https://www.mastermind-x.com/research/china-weekly-kickstart-mxcn-gained-1-while-a-shares-lost-1-8950ab.html",
+      "browser": "Chrome 2 tab 1925920488; actual signed-in public coverage page",
+      "summary_forward_pe": {
+        "MSCI_China": 25.7,
+        "CSI300": 23.1
+      },
+      "displayed_source_excerpt_forward_pe": {
+        "MSCI_China": 9.8,
+        "CSI300": 12.4
+      },
+      "result": "HOLD_SOURCE_MISMATCH; do not feed contradictory summary numbers to writer; no canonical input repair performed"
+    },
+    {
+      "source": "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+      "result": "Hold current-framing pending original-date corroboration; September23 summary references June without a year. No assertion that it is false from date ambiguity alone."
+    },
+    {
+      "source": "https://www.mct.gov.cn/wlbphone/wlbydd/xxfb/jiaodianxinwen/202610/t20261009_967315.html",
+      "result": "October9 primary source corroborates 826 million domestic trips and RMB738.375 billion expenditure, with comparable daily growth 6.3% and4.3%. Only partial corroboration of the Research candidate; does not validate its other claims or grant Press publication rights."
+    },
+    {
+      "source": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26673",
+      "result": "October13 publication reports September27 judgment and formerly listed VORB; does not supply a new current issuer event."
+    },
+    {
+      "source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "result": "Newly published minutes cover August17/September9/September16 discount-rate meetings; not a new October13 rate decision."
+    },
+    {
+      "source": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+      "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+      "browser": "Chrome 2 tab1925920488; actual public source excerpt",
+      "summary_claim": "Investment Grade (MM) recorded 2.7% weekly inflows",
+      "displayed_source_table": {
+        "IG_week_pct": -0.1,
+        "MM_week_pct": 2.7,
+        "HY_week_pct": -0.3
+      },
+      "result": "HOLD_SOURCE_CATEGORY_MISMATCH: money-market inflows were relabelled as investment-grade credit in the generated summary. Source narrative separately distinguishes money market from credit. No corrected source or new draft fabricated."
+    }
+  ],
+  "preserved_private_history": true,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication": false,
+  "acceptance_credit": 0,
+  "next_action": "Use the current producer catalog with original private-history exclusions. Qualify literal facts and source dates through the existing Research surface before any distinct private draft; do not overwrite canonical producer data or bypass its rights/entitlement controls.",
+  "last_reviewed_at": "2026-10-14T03:39:10.647586+00:00"
+}

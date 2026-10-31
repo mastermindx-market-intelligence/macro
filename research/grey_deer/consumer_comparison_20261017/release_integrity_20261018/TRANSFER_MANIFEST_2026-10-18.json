@@ -1,0 +1,285 @@
+{
+  "schema": "risk_radar.release_review_transfer.v1",
+  "files": [
+    {
+      "relative": "FORWARD_ACTIVATION_REVIEW_2026-10-18.md",
+      "bytes": 14845,
+      "sha256": "27a6adb95000dd18a01b1a267c38c9700f05a6e49a8ef67f6130d55a32afb53b"
+    },
+    {
+      "relative": "FORWARD_DEPENDENCY_REVIEW_2026-10-18.md",
+      "bytes": 17674,
+      "sha256": "fbe2e9ad083a4aa151009ac275f81da8a33bb0d5e2bd986a4bd7994cf7d7fac1"
+    },
+    {
+      "relative": "HELPER_ACTIVE_COHORT_REVIEW_RED_2026-10-18.json",
+      "bytes": 3620,
+      "sha256": "e707a31ee264c2138c6448db9be559a8b8800e00185e6bca9c1d371dd2291594"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_EXTENDED_2026-10-18.json",
+      "bytes": 7157,
+      "sha256": "3a574dd8ff85b71bb38d4fcce353764163a2d90a698ca9d57d8cbdbe583bbeb8"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_FINAL_VERIFICATION_2026-10-18.json",
+      "bytes": 7741,
+      "sha256": "d65c21a73129edbf61f0f0bdc73064b89387ecd8a141c6744ea1f2061f9cff66"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_FIRST_2026-10-18.json",
+      "bytes": 1351,
+      "sha256": "0ddb120a375d1bdeb00010db920510eb0fc16bde63afb1d19434ba9dc729fd42"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_MANIFEST_2026-10-18.json",
+      "bytes": 5312,
+      "sha256": "df422f38e04503ead1389836b2ae83fad6eeb66bb014a69f510f056ef6ae3d54"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_MANIFEST_PRE_REVIEW_2026-10-18.json",
+      "bytes": 854,
+      "sha256": "a8d1128358c2aa020562c8beeda3ecce7f9a6d7da0f2a70d77fca27d4c2fca7e"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+      "bytes": 8506,
+      "sha256": "dbfe8dc9ec6b5f70d060883b7e34e0ca285e09c6ae7f35dcb1372546d046a003"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+      "bytes": 16664,
+      "sha256": "da500f46c8e839e09cefa447fe60f9255c22866693f5c742aa6e3672fefaa18a"
+    },
+    {
+      "relative": "HELPER_CANDIDATE_VERIFICATION_2026-10-18.json",
+      "bytes": 7320,
+      "sha256": "86f2775821a4cd0497e82849e32bf1de9ecbb259b6fe17eb0ac693d193fc0598"
+    },
+    {
+      "relative": "HELPER_EXCLUDED_CACHE_REVIEW_CONTROL_2026-10-18.json",
+      "bytes": 572,
+      "sha256": "f43a30f87f673fcca0e1aff7ab61c2e34aad96645064504dfce1dcd960259251"
+    },
+    {
+      "relative": "HELPER_EXISTING_CONTROLS_FIRST_2026-10-18.json",
+      "bytes": 8185,
+      "sha256": "b1669ed3b0156a3b0b53d85a36962ae5a60af16da4430d8783febaa651888c3a"
+    },
+    {
+      "relative": "HELPER_NATIVE_DIAGNOSTIC_ASSERTION_FIX_2026-10-18.diff",
+      "bytes": 659,
+      "sha256": "926c52c006e7fb8a02ebb2248edfb18d5e9c302a67e29e5b2eb5e403e9168fbb"
+    },
+    {
+      "relative": "HELPER_NATIVE_DIAGNOSTIC_ASSERTION_FIX_2026-10-18.md",
+      "bytes": 3139,
+      "sha256": "d19752d53b332811be4076fc19080d18ac533800c5c00b133b574ed45572d396"
+    },
+    {
+      "relative": "HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.diff",
+      "bytes": 1986,
+      "sha256": "6f18ebba77f2487be2dba7e11fa4deae12c4eecb17615ed821933816d5bc94df"
+    },
+    {
+      "relative": "HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md",
+      "bytes": 3598,
+      "sha256": "6ee07bc30e39f5ac4510b8d7c54f048b1593e6c7866c88457e6ac7a5180fdf26"
+    },
+    {
+      "relative": "HELPER_RECEIPT_SCAN_REVIEW_RED_2026-10-18.json",
+      "bytes": 1576,
+      "sha256": "2c0049ac553fd7787f9c0e7d2832145f5a2aba8d9e02f9782720e1cb1c975b01"
+    },
+    {
+      "relative": "HELPER_RED_BASELINE_2026-10-18.json",
+      "bytes": 6341,
+      "sha256": "0f8c3a9246788da8499e3868073ffc1a15e2216ce937ebc7ba12d95d6955e837"
+    },
+    {
+      "relative": "HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+      "bytes": 13987,
+      "sha256": "ad594ef818feb2091bb1146464fbb93bfb26dde96988551e09af09d70f6c0416"
+    },
+    {
+      "relative": "HELPER_REPAIR_PROPOSAL_2026-10-18.md",
+      "bytes": 29939,
+      "sha256": "b4476c77760140b45c49de4d011250772636e7897e04139d1c06797566fdc8a4"
+    },
+    {
+      "relative": "HELPER_RSYNC_PEER_FORWARD_CONTROL_2026-10-18.json",
+      "bytes": 552,
+      "sha256": "8d169856fc7cac92b95f02c26630dff4d9c8799261722a8a8b4d4df5c193e240"
+    },
+    {
+      "relative": "HELPER_RSYNC_PEER_RESTORE_CONTROL_2026-10-18.json",
+      "bytes": 557,
+      "sha256": "405cbc3ebc2b948686d22267750b72ecfdb564d675c085429db76fa08183a4c0"
+    },
+    {
+      "relative": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+      "bytes": 7528,
+      "sha256": "f89128fbfaff4854e12974a3ea89e877d8d9343fc6fbad9770505f5388fc7971"
+    },
+    {
+      "relative": "MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+      "bytes": 24283,
+      "sha256": "364b24db9b7de5f44fd96cf88eee3d62726edffef6782d000ef68d7ddae9923f"
+    },
+    {
+      "relative": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+      "bytes": 14703,
+      "sha256": "d6a4b41dacc3590542d836be70fab1f29db98918f5c01f9817def0e8d9bac02a"
+    },
+    {
+      "relative": "SETTLEMENT_FINALIZATION_CALLER_REVIEW_2026-10-18.md",
+      "bytes": 10893,
+      "sha256": "7978096bddcdeb6b3dd631bccadc72d3c8cca1f31ccb9e44807b9ae36896d027"
+    },
+    {
+      "relative": "candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "relative": "candidate/tests/test_deploy_provenance.py",
+      "bytes": 40060,
+      "sha256": "1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c"
+    },
+    {
+      "relative": "helper_fixture_driver_20261018.py",
+      "bytes": 3434,
+      "sha256": "380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44"
+    },
+    {
+      "relative": "native_run2_candidate/HELPER_CANDIDATE_MANIFEST_2026-10-18.json",
+      "bytes": 4225,
+      "sha256": "fe60904f579274d2ff628cd73e33b29551117df8deb52f99868ae1e52a333d50"
+    },
+    {
+      "relative": "native_run2_candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "relative": "native_run2_candidate/tests/test_deploy_provenance.py",
+      "bytes": 40161,
+      "sha256": "d9dd66255444a70ba2160d30a2b62e540bcbc6620736030152cbef50c7ab7f59"
+    },
+    {
+      "relative": "pre_native_candidate/HELPER_CANDIDATE_MANIFEST_2026-10-18.json",
+      "bytes": 4688,
+      "sha256": "213b6df3bf7e60732414cedf34b1eb88a932ec641b607f1966a4813bd5ce6569"
+    },
+    {
+      "relative": "pre_native_candidate/HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+      "bytes": 8506,
+      "sha256": "dbfe8dc9ec6b5f70d060883b7e34e0ca285e09c6ae7f35dcb1372546d046a003"
+    },
+    {
+      "relative": "pre_native_candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "relative": "pre_native_candidate/tests/test_deploy_provenance.py",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+    },
+    {
+      "relative": "red_baseline/scripts/deploy_code_to_vps.sh",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "relative": "red_baseline/tests/test_deploy_provenance.py",
+      "bytes": 26234,
+      "sha256": "8a5a275be5243201428c80636b531b778e43dd4503e1037d8e927306dd63a8aa"
+    },
+    {
+      "relative": "review_red_baseline/scripts/deploy_code_to_vps.sh",
+      "bytes": 19919,
+      "sha256": "c64b940d75a70db26eeed6af1305c2c0e7c924201026a45b69aaa8de2ebe483d"
+    },
+    {
+      "relative": "review_red_baseline/tests/test_deploy_provenance.py",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+    },
+    {
+      "relative": "source/app/main.py",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8"
+    },
+    {
+      "relative": "source/app/scheduler.py",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333"
+    },
+    {
+      "relative": "source/app/web.py",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d"
+    },
+    {
+      "relative": "source/bot/__init__.py",
+      "bytes": 1182,
+      "sha256": "2e5bd759495533c77f6ac0016f0f582aa256daf5ec47d45015efbd2969036f18"
+    },
+    {
+      "relative": "source/bot/settle.py",
+      "bytes": 49282,
+      "sha256": "3aef6a0d8f4501a110bb4af240e9cc12988a11754128d50d3ae105c11cab7915"
+    },
+    {
+      "relative": "source/control_plane/locks.py",
+      "bytes": 5687,
+      "sha256": "d188aa91c682481c403c5fc0cd383f3956007d5d86b36d701d5920a1e1b5fd54"
+    },
+    {
+      "relative": "source/dependency_source_manifest_20261018.json",
+      "bytes": 5011,
+      "sha256": "ad1cb5288f3c2e18ad4a419c8ab463b58d55a2d10f2003b4dac8180a801cfeea"
+    },
+    {
+      "relative": "source/portfolio/__init__.py",
+      "bytes": 78,
+      "sha256": "d6d41b937d800443f780120d33575dd9379cc74c714b841452f5ef5852096164"
+    },
+    {
+      "relative": "source/portfolio/forward_evaluation.py",
+      "bytes": 75128,
+      "sha256": "19e053bbab9372bfd7c8dd075bfc9a6d3c7ce3450641982086400184a6e07a22"
+    },
+    {
+      "relative": "source/portfolio/paper_account.py",
+      "bytes": 156107,
+      "sha256": "6c22b0609e867bf8160811487cb7bb942291cc9a336e6422dcb4d7628e6468d0"
+    },
+    {
+      "relative": "source/portfolio/registry.py",
+      "bytes": 14256,
+      "sha256": "e8beaf286fdc2c628fc79c37f4e5be30bf746bd1159fe220afc9dad02980f05e"
+    },
+    {
+      "relative": "source/scripts/deploy_code_to_vps.sh",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "relative": "source/scripts/deploy_from_git.sh",
+      "bytes": 1493,
+      "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f"
+    },
+    {
+      "relative": "source/scripts/refresh_datadog_release_tag.sh",
+      "bytes": 881,
+      "sha256": "985a3ee9757daa65604d7b53752fc7d10dc3aed2cfd4888208c4f47d0bdd8ad9"
+    },
+    {
+      "relative": "source/tests/test_deploy_provenance.py",
+      "bytes": 19097,
+      "sha256": "1bc5bf5e1980cb97fb8051d062e90e60536432b03782ff008cb31066f950bd3c"
+    }
+  ]
+}

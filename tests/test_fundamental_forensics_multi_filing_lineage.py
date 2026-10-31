@@ -674,3 +674,111 @@ def test_the_chain_state_vocabulary_is_the_frozen_tuple():
     assert CONFIRMATION_CHAIN_RULE_AVAILABLE_AT == datetime(
         2026, 10, 12, tzinfo=timezone.utc
     )
+
+
+# ---------------------------------------------------------------------------
+# t13 — A04: reprint vs amendment vs changed reported fact
+# ---------------------------------------------------------------------------
+
+_SELECTIONS = ("latest_known_as_of", "as_reported", "latest_restated")
+
+
+def _selected(facts, receipts, registry):
+    engine = _engine(facts, receipts, registry)
+    out = {}
+    for selection in _SELECTIONS:
+        group = engine._select_source_group(tuple(facts), _policy(selection=selection))
+        accession = group.occurrence.source.accession if group.occurrence else None
+        out[selection] = (group.state.value, accession, group.reason)
+    return out
+
+
+def test_a04_a_confirmed_reprint_is_not_a_restatement(registry):
+    """Confirmation links the vintages but never makes the reprint a revision."""
+    facts = _chain_facts()[:2]
+    receipts = derive_confirmation_receipts(
+        facts, system_available_at=_A4_AVAILABLE, original_taxonomy_uris=_uris(facts)
+    )
+    assert len(receipts) == 1
+    out = _selected(facts, receipts, registry)
+    assert out["latest_known_as_of"] == ("value", "0002", None)
+    assert out["as_reported"] == ("value", "0001", None)
+    assert out["latest_restated"] == (
+        "missing",
+        None,
+        "no eligible explicitly typed reported revision vintage",
+    )
+
+
+@pytest.mark.parametrize("value", ["359241000000", "400000000000"])
+def test_a04_an_untyped_later_vintage_is_never_silently_picked(registry, value):
+    """A same-value reprint or a changed value without lineage stays not evaluable."""
+    facts = [
+        _synthetic_fact(accession="0001", body="a" * 64, accepted_at=_A_ACCEPTED),
+        _synthetic_fact(accession="0002", body="b" * 64, accepted_at=_B_ACCEPTED, value=value),
+    ]
+    out = _selected(facts, (), registry)
+    assert out == {
+        selection: ("not_evaluable", None, _UNLINKED_REASON) for selection in _SELECTIONS
+    }
+
+
+@pytest.mark.parametrize("value", ["359241000000", "400000000000"])
+def test_a04_only_a_typed_amendment_satisfies_latest_restated(registry, value):
+    """An explicit AMENDMENT revision is restated evidence; as-reported keeps the original."""
+    original = _synthetic_fact(accession="0001", body="a" * 64, accepted_at=_A_ACCEPTED)
+    amendment = _synthetic_fact(
+        accession="0002",
+        body="b" * 64,
+        accepted_at=_B_ACCEPTED,
+        value=value,
+        event_type=FactEventType.AMENDMENT,
+        revision_of=original.occurrence_id,
+    )
+    out = _selected([original, amendment], (), registry)
+    assert out == {
+        "latest_known_as_of": ("value", "0002", None),
+        "as_reported": ("value", "0001", None),
+        "latest_restated": ("value", "0002", None),
+    }
+
+
+def test_a12_a_correction_recorded_after_the_cutoff_stays_out_of_the_then_known_view(registry):
+    """A12 source-layer clock: replay before the amendment was recorded sees only the original."""
+    original = _synthetic_fact(accession="0001", body="a" * 64, accepted_at=_A_ACCEPTED)
+    amendment = _synthetic_fact(
+        accession="0002",
+        body="b" * 64,
+        accepted_at=_B_ACCEPTED,
+        value="400000000000",
+        recorded_at="2026-10-15T00:00:00Z",
+        event_type=FactEventType.AMENDMENT,
+        revision_of=original.occurrence_id,
+    )
+    facts = (original, amendment)
+    engine = _engine(facts, (), registry)
+
+    def at(recorded):
+        out = {}
+        for selection in _SELECTIONS:
+            group = engine._select_source_group(
+                facts, _policy(recorded=recorded, selection=selection)
+            )
+            accession = group.occurrence.source.accession if group.occurrence else None
+            out[selection] = (group.state.value, accession, group.reason)
+        return out
+
+    assert at("2026-10-01T00:00:00Z") == {
+        "latest_known_as_of": ("value", "0001", None),
+        "as_reported": ("value", "0001", None),
+        "latest_restated": (
+            "missing",
+            None,
+            "no eligible explicitly typed reported revision vintage",
+        ),
+    }
+    assert at(_S2_RECORDED) == {
+        "latest_known_as_of": ("value", "0002", None),
+        "as_reported": ("value", "0001", None),
+        "latest_restated": ("value", "0002", None),
+    }

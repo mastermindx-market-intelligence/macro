@@ -1,0 +1,244 @@
+{
+  "observed_at": "2026-10-14T13:24:58.079515+00:00",
+  "source_pdf_sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b",
+  "sidecar_sha256": "1a215b20c74538f8532757ce2ee043b5784a3e6573e857a8d51eeca8ffd2c80e",
+  "source_hashes": {
+    "engine/research_vault/ingest.py": "c553c3365dbf1632e7bb667f0faee1db295b50b3f4386e9534d8c55be1c4f36a",
+    "engine/research_vault/sidecar.py": "ee8201bb38c86235cc2d17d0bfffafe00f559dd511a3426d5f999cb7ed55caa7",
+    "engine/research_vault/corpus.py": "6d6cb902ac8f4c8cbc26092b44e5bb472d0aa249bfb608ed25232d86e07a7f34",
+    "engine/research_vault/r2_store.py": "71f95b92971e113d56775717ee822095002cdedf9a70f46940a8a197d18ded4e",
+    "engine/press/desk_planner.py": "852a8889adb59d490f8ddd3de813ceb5de7776885cdb336ff44532be4d6ef8eb",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc"
+  },
+  "checks": [
+    {
+      "check": "dry_run_ingests_one_real_pdf",
+      "passed": true
+    },
+    {
+      "check": "dry_run_does_not_mutate_store",
+      "passed": true
+    },
+    {
+      "check": "publication_date_not_restamped",
+      "passed": true
+    },
+    {
+      "check": "isolated_local_publish_completes",
+      "passed": true
+    },
+    {
+      "check": "one_catalog_row",
+      "passed": true
+    },
+    {
+      "check": "measured_pdf_pages",
+      "passed": true
+    },
+    {
+      "check": "source_identity_and_summary_retained",
+      "passed": true
+    },
+    {
+      "check": "searchable_body_and_true_date",
+      "passed": true
+    },
+    {
+      "check": "same_source_is_not_reingested",
+      "passed": true
+    },
+    {
+      "check": "cutover_remains_false",
+      "passed": true
+    },
+    {
+      "check": "real_source_reaches_research_planner",
+      "passed": true
+    },
+    {
+      "check": "no_issuer_invented",
+      "passed": true
+    },
+    {
+      "check": "held_ref_is_excluded",
+      "passed": true
+    },
+    {
+      "check": "future_report_refused",
+      "passed": true
+    },
+    {
+      "check": "stale_research_report_refused",
+      "passed": true
+    },
+    {
+      "check": "summary_missing_refused",
+      "passed": true
+    },
+    {
+      "check": "no_network_attempts",
+      "passed": true
+    },
+    {
+      "check": "application_sources_unchanged",
+      "passed": true
+    },
+    {
+      "check": "retained_source_and_sidecar_unchanged",
+      "passed": true
+    }
+  ],
+  "slot": {
+    "id": "press-research_desk-2026-10-14-593acfb87c11",
+    "desk": "research_desk",
+    "publication": "mastermind_research",
+    "byline": "Research Desk \u2014 Mastermind Research",
+    "cluster": "research-desk",
+    "as_of": "2026-10-14",
+    "model_key": "press_research",
+    "min_words": 500,
+    "max_words": 900,
+    "min_anchored_receipts": 4,
+    "allowed_links": [
+      "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html"
+    ],
+    "story": {
+      "kind": "research_report",
+      "title_hint": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "institution": "U.S. Department of Agriculture",
+      "side": "independent",
+      "published_at": "2026-10-09T16:00:00Z",
+      "tickers": [],
+      "themes": []
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Research: World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+      "ref": "research_vault:usda-2026-10-09-wasde-676"
+    },
+    "sources": [
+      "research_vault:usda-2026-10-09-wasde-676"
+    ],
+    "seed_refs": [
+      "research_vault:usda-2026-10-09-wasde-676"
+    ],
+    "facts": [
+      {
+        "id": "vault_point_0",
+        "text": "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_point_1",
+        "text": "USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_point_2",
+        "text": "USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_point_3",
+        "text": "USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_point_4",
+        "text": "USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_point_5",
+        "text": "These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research coverage of U.S. Department of Agriculture",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "vault_meta",
+        "text": "The report is U.S. Department of Agriculture research published 2026-10-09, 40 pages.",
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "tier": "first_party",
+        "values": [
+          "40"
+        ],
+        "url": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+        "source_name": "Mastermind Research vault",
+        "dated": "2026-10-09"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "research_vault:usda-2026-10-09-wasde-676",
+        "text": "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year. USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre. USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook. USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre. USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel. These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts."
+      }
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "coverage": {
+        "start": null,
+        "end": null,
+        "note": "chronicle store is empty \u2014 no events have accrued yet"
+      },
+      "budget_used": 0
+    },
+    "slug_hint": "world-agricultural-supply-and-demand-estimates-october-2026-wasde-676",
+    "triage": {
+      "tier": "flagship",
+      "rank": 1,
+      "w_score": 0.4272,
+      "w_score_pre_veto": 0.4272,
+      "components": {
+        "institution_tier": 0.5,
+        "cluster_density": 0.0,
+        "relevance": 0.0,
+        "extraction_quality": 0.93,
+        "attention_potential": 0.8,
+        "novelty": 0.5
+      },
+      "veto": null,
+      "scoring_version": "w2r.1",
+      "score_source": "planner-recomputed",
+      "datasketch_present": false,
+      "ordered": true
+    }
+  },
+  "network_attempts": [],
+  "production_writes": 0,
+  "press_writer_calls": 0,
+  "press_staging_writes": 0,
+  "canonical_admission": false,
+  "public_article_accepted": false,
+  "publication_enabled": false
+}

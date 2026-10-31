@@ -41,6 +41,11 @@ STDLIB ONLY at import time.  ``yaml`` is imported lazily inside
 ``registry.load_registry`` and pandas appears nowhere, so every module here is
 importable in the thin CI lanes and inside a collector that must not pay a dataframe
 import to translate a ticker.
+
+LAZY READ/VIEW LAYERS (wire-5, Q03 GAP 1).  ``price_views``, ``read_contract`` and
+``basket_read`` sit OVER the six contracts and resolve on first attribute access
+(PEP 562), so ``import lib.dataos`` executes only the contract modules; every name in
+``__all__`` and ``from lib.dataos import *`` still resolve.
 """
 from __future__ import annotations
 
@@ -90,41 +95,6 @@ from lib.dataos.price import (
     is_ambiguous,
     parse_column,
 )
-from lib.dataos.price_views import (
-    ActionFamily,
-    RefusalReason,
-    ViewRefusal,
-    CONFIRMED,
-    SUPPORTED_FAMILIES,
-    UNSUPPORTED_FAMILIES,
-    CASH_BASES,
-    ActionEvent,
-    ActionRevisionSet,
-    AdjustmentReference,
-    PriceView,
-    split_factor,
-    adjust_quantity,
-    return_vector,
-    qualified_return,
-    raw_view,
-    sadj_view,
-    ReinvestPolicy,
-    TotalReturnPolicy,
-    TotalReturnView,
-    total_return_view,
-    ViewVintage,
-    RetainedView,
-    ReopenedView,
-    ComposedView,
-    admit_action_input,
-    admit_revision_set,
-    retain_view,
-    reopen_view,
-    reconstruct_price_view,
-    simple_returns,
-    view_label,
-    view_receipt_sha256,
-)
 from lib.dataos.quality import (
     CheckFamily,
     Finding,
@@ -136,27 +106,14 @@ from lib.dataos.quality import (
     check_uniqueness,
     check_validity_ohlc,
     emit_annotations,
-)
-from lib.dataos.read_contract import (
-    READ_CONTRACT_VERSION,
-    CurrentEvidence,
-    Dependency,
-    GenerationRef,
-    ReadContractError,
-    ReadMode,
-    ReadRefusal,
-    ReadRequest,
-    ReadResult,
-    RefusalCode,
-    RetainedOutput,
-    ViewContract,
-    current,
-    eligible_rows,
-    reconstruct,
-    replay,
-    resolve_revisions,
-    select_generation,
-    selected_input_sha256s,
+    AgreementState,
+    InspectionOutcome,
+    DiscrepancyCause,
+    AgreementTolerance,
+    SourceSemantics,
+    AgreementInspection,
+    inspect_agreement,
+    agreement_findings,
 )
 from lib.dataos.registry import (
     ACTION_FIELD_CONVENTIONS,
@@ -211,6 +168,9 @@ __all__ = [
     "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
     "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
     "selected_input_sha256s",
+    # fixed-population coverage account on the read contract (C02)
+    "Disposition", "SourceSegment", "MemberDisposition", "CoverageResult",
+    "account_coverage",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
@@ -264,4 +224,70 @@ __all__ = [
     "check_uniqueness", "check_validity_ohlc", "check_freshness",
     "check_completeness", "check_referential", "check_temporal_integrity",
     "emit_annotations",
+    # source-agreement inspector: two sources, one bar, a named cause (C03)
+    "AgreementState", "InspectionOutcome", "DiscrepancyCause", "AgreementTolerance",
+    "SourceSemantics", "AgreementInspection", "inspect_agreement", "agreement_findings",
+    # basket composition read over the read contract, mode-bound (U04)
+    "PopulationKind", "EvidenceMode", "BasketRefusalCode", "BasketReadRefusal",
+    "BasketRead", "read_basket", "population_delta",
 ]
+
+# ── lazy read/view layers (wire-5, Q03 GAP 1) ─────────────────────────────────
+# ``price_views``, ``read_contract`` and ``basket_read`` are the read/view layers OVER
+# the six contracts above.  Importing the package to translate a ticker or name a clock
+# must not execute them, so their names resolve on first attribute access (PEP 562) and
+# are cached in the module namespace; the six contract modules stay eager because the
+# thin CI lane's closure claim enumerates exactly those files.  ``from lib.dataos
+# import *`` and every name in ``__all__`` still resolve — pinned by
+# tests/test_dataos_read_contract.py (W5); the static all-exports-resolve guard cannot see
+# runtime bindings, so this file is listed in its EXEMPT table with that pin as the reason.
+_LAZY_MODULES = ('price_views', 'read_contract', 'basket_read')
+_LAZY_NAMES: dict[str, str] = {}
+for _module, _names in (
+    ("price_views", (
+        "ActionFamily", "RefusalReason", "ViewRefusal", "CONFIRMED", "SUPPORTED_FAMILIES",
+        "UNSUPPORTED_FAMILIES", "CASH_BASES", "ActionEvent", "ActionRevisionSet",
+        "AdjustmentReference", "PriceView", "split_factor", "adjust_quantity", "return_vector",
+        "qualified_return", "raw_view", "sadj_view", "ReinvestPolicy", "TotalReturnPolicy",
+        "TotalReturnView", "total_return_view", "ViewVintage", "RetainedView", "ReopenedView",
+        "ComposedView", "admit_action_input", "admit_revision_set", "retain_view",
+        "reopen_view", "reconstruct_price_view", "simple_returns", "view_label",
+        "view_receipt_sha256",
+    )),
+    ("read_contract", (
+        "READ_CONTRACT_VERSION", "CurrentEvidence", "Dependency", "GenerationRef",
+        "ReadContractError", "ReadMode", "ReadRefusal", "ReadRequest", "ReadResult",
+        "RefusalCode", "RetainedOutput", "ViewContract", "current", "eligible_rows",
+        "reconstruct", "replay", "resolve_revisions", "select_generation", "selected_input_sha256s",
+        "Disposition", "SourceSegment", "MemberDisposition", "CoverageResult", "account_coverage",
+    )),
+    ("basket_read", (
+        "PopulationKind", "EvidenceMode", "BasketRefusalCode", "BasketReadRefusal",
+        "BasketRead", "read_basket", "population_delta",
+    )),
+):
+    for _name in _names:
+        _LAZY_NAMES[_name] = _module
+del _module, _names, _name
+
+
+def __getattr__(name: str):
+    """Resolve a lazy export or a lazy submodule on first access (PEP 562)."""
+    module = _LAZY_NAMES.get(name)
+    if module is None:
+        if name in _LAZY_MODULES:
+            module = name
+        else:
+            raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    import importlib
+
+    loaded = importlib.import_module(f"{__name__}.{module}")
+    if name == module:
+        return loaded
+    value = getattr(loaded, name)
+    globals()[name] = value  # cache: the second access is a plain namespace hit
+    return value
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_LAZY_NAMES) | set(_LAZY_MODULES))

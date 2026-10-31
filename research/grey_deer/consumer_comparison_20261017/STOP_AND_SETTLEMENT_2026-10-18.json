@@ -1,0 +1,35 @@
+{
+  "book_settlement_presence": {
+    "autonomous": {
+      "paper_transaction_exists": false,
+      "settlement_receipts_directory_exists": true,
+      "top_level_settlement_receipt_json_count": 0
+    },
+    "china": {
+      "paper_transaction_exists": false,
+      "settlement_receipts_directory_exists": true,
+      "top_level_settlement_receipt_json_count": 0
+    },
+    "hk": {
+      "paper_transaction_exists": false,
+      "settlement_receipts_directory_exists": true,
+      "top_level_settlement_receipt_json_count": 0
+    }
+  },
+  "external_writer_absence_proved": false,
+  "observed_at": "2026-10-18T03:14:22.784950+00:00",
+  "production_mutation": false,
+  "raw_account_or_receipt_rows_exported": false,
+  "schema": "risk_radar.release_stop_and_settlement_observation.v1",
+  "service_stop_properties": {
+    "ActiveState": "active",
+    "ControlGroup": "/system.slice/mastermind.service",
+    "KillMode": "mixed",
+    "MainPID": "4025485",
+    "Restart": "always",
+    "SendSIGKILL": "yes",
+    "SubState": "running",
+    "TasksCurrent": "10",
+    "TimeoutStopUSec": "1min"
+  }
+}

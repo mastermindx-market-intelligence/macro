@@ -1,0 +1,144 @@
+{
+  "schema": "mastermind.attended.threeway_candidate.v1",
+  "observed_at": "2026-10-20T04:40:19.629433+00:00",
+  "head": "6c0f54d2a5acabaf3df7a01aa3f604c9edf22e36",
+  "incoming": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "base": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+  "preview_tree": "73c503c20659bad5e08a74311bdb590f401ca03b",
+  "prior_index": "4bac8f078fc9d922be955e1b02b4f0bfa603e77d",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-6c-0f05-candidate-.github_ci_legacy-jobs.yml",
+      "bytes": 1922530,
+      "sha256": "98fb7da1ac0bbde78028bfad48e1c078acdc8da5eaa2ce5a18c5e2e081a79f26",
+      "base_blob": "14156cca4c347342b918e9693c1d42ff11bfaf98",
+      "ours_blob": "8d58a2c542674407aa7eaffd7ba289c67985f5cc",
+      "incoming_blob": "3051fc7a41a412e1e767066bcb029a4a38b1aa18",
+      "all_329_job_fields_order_and_multiplicities_verified": true,
+      "simultaneous_path_changes": [
+        {
+          "path": "jobs.validated-claims-contract.paths",
+          "ours_added": [
+            "lib/shared_shell.py",
+            "lib/site_assets.py"
+          ],
+          "incoming_added": [
+            "engine/local_projection_research_card.py",
+            "engine/local_projections.py",
+            "engine/seasonality/contracts.py",
+            "engine/seasonality/event_study.py",
+            "engine/seasonality/multiplicity.py",
+            "research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json",
+            "research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json",
+            "research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md",
+            "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json",
+            "research/local_projections/reproduce_alfred_cpi_payroll_v2.py",
+            "scripts/local_projection_alfred_panel.py",
+            "scripts/run_local_projections.py"
+          ]
+        }
+      ],
+      "checked_nodes": 337
+    },
+    {
+      "path": "site/etfs.html",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-6c-0f05-candidate-site_etfs.html",
+      "bytes": 97334,
+      "sha256": "05fc9baba1d25eec9d86c259d0584d025404f7e80f93ded7e85fe105a3a7e989",
+      "base_blob": "8dcc165e4f4e25f6ec83ff36f4a6501703f79c46",
+      "ours_blob": "0fae6e38bb0f02e6160235ca5a23529a7928380b",
+      "incoming_blob": "4582278f05d50fa28486364ce30940ca064c9717",
+      "base_to_ours_exact": true,
+      "inverse_recovers_incoming_exact": true,
+      "injector_idempotent": true,
+      "owned_adapters": 1,
+      "incoming_sha256": "36d6a936012b814ff07f0f62129d412a95a8082e02a247cc9451528843491ad8"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-6c-0f05-candidate-site_us_stocks.html",
+      "bytes": 731236,
+      "sha256": "0d96bc2989b6fe57fb5af87f74658de1e5e615b40c103b5c50d050184d8f0cc2",
+      "base_blob": "cd0a6595626e3045a7bd7433fcf2c299cc0d6a47",
+      "ours_blob": "ff710d6660e8efc6c01a7b809f4ac2f433722be9",
+      "incoming_blob": "93053108ac5eda0f15f6437479470c01f0b93d76",
+      "base_to_ours_exact": true,
+      "inverse_recovers_incoming_exact": true,
+      "injector_idempotent": true,
+      "owned_adapters": 3,
+      "incoming_sha256": "4f798e19a16aa18491d94935fd45128dd96b418a43f0308ad9fdd7bbb2d96837"
+    }
+  ],
+  "carry_forward_source_bindings": [
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "sha256": "eae12bef34a5dbba1a986846fb3c59992ba228ca472a0316c042ced6e0e48d88",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "config/site_access.yml",
+      "sha256": "c6ae0c581eb822aa96cfbc45e412b35672703ef5a0f6c5e25cae0f4b869168ed",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "lib/shared_shell.py",
+      "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "site/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/sector_central.html.j2",
+      "sha256": "2c1728c368f99ad5dd75bd2638f1ffeb54006ef5c85671912eb599e5df09779b",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/sector_central_china.html.j2",
+      "sha256": "2f0284874e4d75e703f3a4456c9d35dd9d9249b71c42afd7c8cf5052f2222dd8",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    }
+  ],
+  "existing_ceiling": 5661,
+  "final_weight_not_yet_measured": true,
+  "source_effect": false
+}

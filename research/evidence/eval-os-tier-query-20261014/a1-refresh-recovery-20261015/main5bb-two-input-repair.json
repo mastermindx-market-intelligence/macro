@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-15T18:13:15.585165+00:00",
+  "lanes": [
+    {
+      "lane": "followon",
+      "head": "ce701527b214b07e7980db94d34b496dd3af9703",
+      "jobs": 314,
+      "added_inputs_per_job": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "execution_and_old_memberships_preserved": true
+    },
+    {
+      "lane": "preview",
+      "head": "c074d85a917f67809f3cb21fd1fefcbd7edd46e8",
+      "jobs": 320,
+      "added_inputs_per_job": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "execution_and_old_memberships_preserved": true
+    }
+  ],
+  "a1_carrier_modified": false
+}

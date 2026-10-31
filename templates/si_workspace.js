@@ -344,6 +344,7 @@ function route(){
 window.__siViewReads=reads;
 window.__siRoute=route;
 window.addEventListener('hashchange',route);
+window.addEventListener('mmx:shell-location',route);
 document.addEventListener('langchange',function(){
   try{ document.title=BASE_TITLE+' · '+TITLES[current||'overview'][isZh()?1:0]; }catch(e){}
 });

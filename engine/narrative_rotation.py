@@ -788,6 +788,29 @@ def _narrate(rot: dict, alloc: dict, ranks: dict, durab: dict, crowd: dict,
     return {"en": "; ".join(bits_en) + ".", "zh": "；".join(bits_zh) + "。"}
 
 
+def _dtc_map(si: pd.DataFrame | None) -> dict[str, float]:
+    """ticker -> days_to_cover from the FINRA short-interest snapshot (context only).
+
+    The snapshot is written ticker-INDEXED (collectors/finra.py `_snapshot`), so key by
+    the index — or by a `ticker` column if a writer ever resets it; never positionally.
+    A censored lower bound (FINRA's 999.99 when average volume is ~0: the collector's
+    `dtc_capped` flag, else days_to_cover >= DTC_SENTINEL) is not a measurement and is
+    dropped, so it can never enter the basket's avg_days_to_cover."""
+    if si is None or "days_to_cover" not in si.columns:
+        return {}
+    try:
+        from engine.short_volume import DTC_SENTINEL
+        df = si.set_index("ticker") if "ticker" in si.columns else si
+        dtc = pd.to_numeric(df["days_to_cover"], errors="coerce")
+        capped = dtc.ge(DTC_SENTINEL)
+        if "dtc_capped" in df.columns:
+            capped |= df["dtc_capped"].fillna(False).astype(bool)
+        keep = dtc[dtc.notna() & ~capped]
+        return {str(t): float(v) for t, v in keep.items()}
+    except Exception:  # noqa: BLE001 — context only, never fatal
+        return {}
+
+
 def compute_narrative_rotation(region: str = "us") -> dict | None:
     """Top-level: assemble the five subsystems into one display payload + AI handoff +
     deterministic desk read, for `region` ∈ {us, china, hk, canada}. PURE/additive —
@@ -825,13 +848,7 @@ def compute_narrative_rotation(region: str = "us") -> dict | None:
                 si = pd.read_parquet(sp)
             except Exception:  # noqa: BLE001
                 si = None
-        dtc_map = {}
-        if si is not None and "days_to_cover" in si.columns:
-            col = si.set_index(si.columns[0])["days_to_cover"] if si.index.name is None else si["days_to_cover"]
-            try:
-                dtc_map = si.set_index(si.columns[0])["days_to_cover"].to_dict()
-            except Exception:  # noqa: BLE001
-                dtc_map = {}
+        dtc_map = _dtc_map(si)
 
         for p in preps:
             durab[p["id"]] = durability(p)

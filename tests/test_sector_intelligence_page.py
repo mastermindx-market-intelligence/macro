@@ -176,6 +176,49 @@ def test_forming_narratives_mounted_at_end_of_explore() -> None:
     assert "_forming_narratives" not in movement, "forming panel still in MOVEMENT too"
 
 
+def test_shared_forming_narratives_fails_closed_when_asset_requires_sign_in() -> None:
+    """An anonymous asset 401 must not throw ReferenceError on the public page.
+
+    Observed on the real US Sector Intelligence page 2026-10-17: the optional
+    forming_narratives.js request returned HTTP 401, but the shared include
+    invoked its missing global unconditionally.  Keep the existing asset URL
+    and authorized render path unchanged; make missing-script init fail soft.
+    """
+    src = _read(TPL / "_forming_narratives.html.j2")
+    assert '<script src="forming_narratives.js"></script>' in src
+    assert 'typeof window.renderFormingNarratives === "function"' in src
+    assert 'window.renderFormingNarratives({ base:' in src
+    assert 'renderFormingNarratives({ base:' in src
+
+
+def test_forming_narratives_initializer_waits_for_deferred_asset() -> None:
+    """The site optimizer marks the shared script defer: the caller must wait.
+
+    A same-document inline typeof check runs before a deferred 200 response is
+    executed and silently drops authenticated rendering.  The 401 path must
+    remain error-free, without changing the protected asset URL.
+    """
+    src = _read(TPL / "_forming_narratives.html.j2")
+    assert '<script src="forming_narratives.js"></script>' in src
+    assert 'document.addEventListener("DOMContentLoaded"' in src
+    assert 'typeof window.renderFormingNarratives === "function"' in src
+
+
+def test_generated_forming_narratives_matches_deferred_init_contract() -> None:
+    """The checked-in generated page must carry the source fix before a new
+    sector build can pass the independent market-vintage publication gate.
+    """
+    html = _read(ROOT / "site" / "sector_central.html")
+    assert html.count('<section id="forming-narratives"></section>') == 1
+    part = html.split('<section id="forming-narratives"></section>', 1)[1]
+    part = part.split('<!-- W2a:', 1)[0]
+    assert 'forming_narratives.js?v=' in part
+    assert ' defer></script>' in part
+    assert 'document.addEventListener("DOMContentLoaded"' in part
+    assert 'typeof window.renderFormingNarratives === "function"' in part
+    assert 'window.renderFormingNarratives({ base: "basketdata/" });' in part
+
+
 def test_forming_narratives_asset_copied_by_builder() -> None:
     """The panel loads forming_narratives.js relative to the page, so the US builder
     must copy it into site/ like its sibling MOVEMENT donors."""

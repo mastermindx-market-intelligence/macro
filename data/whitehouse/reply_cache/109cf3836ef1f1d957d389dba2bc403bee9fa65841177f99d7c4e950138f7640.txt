@@ -1,0 +1,76 @@
+{
+  "activate": true,
+  "importance": 78,
+  "banner_days": 5,
+  "tone": "mixed",
+  "banner_title": "Trump signs Russia sanctions law then waives virtually all of it — commodity risk fades, enforcement threat stays",
+  "banner_title_zh": "特朗普签署对俄制裁法案后几乎全部豁免——大宗商品风险消退，执法威慑仍在",
+  "summary": "President Trump signed an executive order implementing the Graham Act's sweeping Russia/Iran sanctions, including 500% tariffs on Russian goods, but immediately waived nearly all sanctions and duties, citing national interest. The headline threat is defused; residual enforcement discretion keeps a repricing risk live for energy and shipping names.",
+  "summary_zh": "特朗普签署行政令落实格雷厄姆法案的对俄/对伊广泛制裁（包括对俄商品500%关税），但随即以国家利益为由豁免几乎全部制裁和关税。威胁性头条被化解，但剩余的执法裁量权仍使能源和航运板块面临重新定价风险。",
+  "analysis": "The executive order formally implements the Lindsey O. Graham Act, which authorizes 500% ad valorem duties on Russian goods and 100% duties on the top five importers of Russian crude/oil and the top five facilitators of Russian oil sanctions evasion. However, Section 4 immediately waives the application of all duties under sections 112 and 113, and also waives virtually all sanctions provisions—sections 102(a), 102(e), 103 through 111, and 117—while Section 4(b) explicitly preserves all pre-existing sanctions under earlier Russia-related executive orders. In practice, the order is a structural framework with an 'off' switch already flipped, but the switch can be flipped back at any time without new legislation.\n\nFor markets, the key transmission mechanism is optionality rather than immediate flows. The explicit placement of monitoring authority with the USTR, State, Treasury, and Energy creates a mechanism where a single presidential determination can activate 100% duties on countries deemed top importers or facilitators—directly implicating India, China, Turkey, and others that handle significant volumes of discounted Russian crude. That keeps a persistent tail-risk premium in energy and freight markets, but the immediate near-term effect is the opposite: no new duties or sanctions are applied today.\n\nThe major uncertainty is administrative discretion. The waiver is indefinite until the President or Secretary of State determines 'further action is appropriate,' meaning the policy can flip from dormant to active with minimal notice. This is a structural escalation of the executive's tariff-and-sanctions toolkit, not a one-off event, and it materially lowers the bar for future secondary sanctions on Russian energy buyers compared with the pre-Graham Act environment. The market impact is therefore deferred, not deleted.",
+  "sectors": [
+    {
+      "name": "Integrated oil & gas",
+      "impact": "tailwind",
+      "rationale": "No immediate disruption to Russian crude flows; waiver removes near-term supply-side shock risk from secondary sanctions on major buyers like India and China."
+    },
+    {
+      "name": "Shipping / tanker operators",
+      "impact": "tailwind",
+      "rationale": "Sanctions-evasion facilitator designations were feared to curtail vessel supply and hit rates; the blanket waiver preserves the status quo for the shadow and mainstream fleets."
+    },
+    {
+      "name": "Steel / aluminum / base metals (Russian-origin importers)",
+      "impact": "tailwind",
+      "rationale": "500% duty on Russian goods would have removed Russian-origin supply from US supply chains; waiver keeps existing trade flows and input costs intact."
+    },
+    {
+      "name": "Defense / security contractors",
+      "impact": "headwind",
+      "rationale": "Waiver of sanctions signals reduced near-term geopolitical escalation, muting the tailwind defense names would have gotten from a hardened Russia posture."
+    },
+    {
+      "name": "Compliance / sanctions-screening software",
+      "impact": "headwind",
+      "rationale": "Waiving the Graham Act's sanctions provisions reduces immediate demand for expanded compliance infrastructure tied to the new framework."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "XOM",
+      "direction": "benefit",
+      "rationale": "Global integrated major benefits from stability in global crude flows and no near-term disruption to Russian export volumes that could spike prices or input costs."
+    },
+    {
+      "symbol": "CVX",
+      "direction": "benefit",
+      "rationale": "Preservation of status-quo Russian crude flows removes tail risk of a supply shock that could have forced costly sourcing shifts."
+    },
+    {
+      "symbol": "COP",
+      "direction": "benefit",
+      "rationale": "US producer with global exposure; avoidance of secondary-sanctions escalation keeps international crude markets orderly."
+    },
+    {
+      "symbol": "STNG",
+      "direction": "benefit",
+      "rationale": "Product tanker operator with exposure to Russian-adjacent trade routes; waiver of facilitator designations avoids fleet or counterparty restrictions."
+    },
+    {
+      "symbol": "FRO",
+      "direction": "benefit",
+      "rationale": "Crude tanker owner with exposure to Russian barrels; no immediate designation as sanctions facilitator preserves current charter activity."
+    },
+    {
+      "symbol": "LMT",
+      "direction": "hurt",
+      "rationale": "Defense prime benefits from elevated US-Russia tension; the waiver signals de-escalation and delays any incremental security-spending catalyst."
+    },
+    {
+      "symbol": "NOC",
+      "direction": "hurt",
+      "rationale": "Similarly exposed to geopolitical-risk premium; sanctions waiver lowers near-term urgency for defense authorizations tied to Russia policy."
+    }
+  ],
+  "confidence": "medium"
+}

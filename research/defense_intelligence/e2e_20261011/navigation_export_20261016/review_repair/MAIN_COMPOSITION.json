@@ -1,0 +1,172 @@
+{
+  "main": "1c430d9afaeccd20248e3fc50b57c8bba9571456",
+  "navigation_source": "4fcd00874485",
+  "reason": "Incoming conflicts exactly equal already released9496; retain subsequent qualified navigation generation and repaired UI. Handoff only adds navigation progress. Other main changes merge normally.",
+  "conflicts": [
+    {
+      "path": "agentos/handoffs/DEFENSE-PROCUREMENT-V3-2026-10-13-e2e-recovery.md",
+      "incoming_and_released9496_blob": "8ec895630282edb92d76a4a38d631c50c45609c0",
+      "retained_navigation_blob": "fe26bf21197119f82ee8501e170bc56ba3e69391"
+    },
+    {
+      "path": "config/government_revenue/program_theme_assignments.v1.json",
+      "incoming_and_released9496_blob": "7c1551dfd66a6698c19028e609568ac792736fae",
+      "retained_navigation_blob": "fd59c2c188523feea4b4768422748347656db143"
+    },
+    {
+      "path": "data/government_revenue/budget_program_graph.json",
+      "incoming_and_released9496_blob": "6494c3fb30ae3a306eb7926f710ded4493f978f4",
+      "retained_navigation_blob": "1e44f56807f52608393fef30f30447bfedffacd3"
+    },
+    {
+      "path": "data/government_revenue/candidate_projection_state.json",
+      "incoming_and_released9496_blob": "2a0f21a5cae12896abe02526b69155e7d75025a3",
+      "retained_navigation_blob": "5a1c1079bf2e068f89856425246fd9ea042ff769"
+    },
+    {
+      "path": "data/government_revenue/candidate_projection_status.json",
+      "incoming_and_released9496_blob": "e796751f4cd7ae306194b372b7015329778b78c2",
+      "retained_navigation_blob": "c1ab1930555ccba077af94354db591bdc920ebd0"
+    },
+    {
+      "path": "data/government_revenue/candidate_queue.json",
+      "incoming_and_released9496_blob": "ba4009bdb39e6685ee19795403a583a3215b4a78",
+      "retained_navigation_blob": "9f662b366cdd1afd60c4a83d5bc31856e38410a2"
+    },
+    {
+      "path": "data/government_revenue/candidate_research_state.json",
+      "incoming_and_released9496_blob": "df537dcb12af744d8337c189a92fa36f0ba2300d",
+      "retained_navigation_blob": "be7603ac9a3c3007c679a61666fa6768fbe25a80"
+    },
+    {
+      "path": "data/government_revenue/defense_economics.json",
+      "incoming_and_released9496_blob": "fd47276d1e31e136715a579eddc4280c365f01f8",
+      "retained_navigation_blob": "d42021121ab7080d9c4d0dfc2e2f736cad9a4a16"
+    },
+    {
+      "path": "data/government_revenue/dossiers.json",
+      "incoming_and_released9496_blob": "b89ca436c5ac78bbf91f8359247bef297d5aa463",
+      "retained_navigation_blob": "45254f3e102b7f0c8cefc74ab34d5c636b9f58b7"
+    },
+    {
+      "path": "data/government_revenue/identity_atlas.json",
+      "incoming_and_released9496_blob": "a8bc10d66858abb0fbce8c1ab30ab9b4d54fb5e2",
+      "retained_navigation_blob": "e0ed3466b9d5b468fc933e808fe1009940ee0758"
+    },
+    {
+      "path": "data/government_revenue/idv_dossiers.json",
+      "incoming_and_released9496_blob": "31c48429397df12416ca27461be74c3e635fd3ce",
+      "retained_navigation_blob": "395f51b6daeea9f1243823292b86ef356a44e3bc"
+    },
+    {
+      "path": "data/government_revenue/latest.json",
+      "incoming_and_released9496_blob": "ff18bb834376787123b743bf6cff7a2499064124",
+      "retained_navigation_blob": "7987404f3f18ecf5cc9e77f4f51e22e688d58e67"
+    },
+    {
+      "path": "data/government_revenue/program_dossier.json",
+      "incoming_and_released9496_blob": "f20c45d7ece24ce0087bca13ed4dc7cee510833c",
+      "retained_navigation_blob": "2e67ae488a7a74f23248e1322b74e27bb2f4c2c8"
+    },
+    {
+      "path": "data/government_revenue/program_theme_context.json",
+      "incoming_and_released9496_blob": "3b2db61e8deef7243fc1db5115df204945c47f73",
+      "retained_navigation_blob": "a8385ca35472368eb93fbad09b87b1e1f1189d41"
+    },
+    {
+      "path": "data/government_revenue/program_theme_public_disclosure.json",
+      "incoming_and_released9496_blob": "4700b49a873a5939263ab2a1187a1b8fbaa132bb",
+      "retained_navigation_blob": "0180eb0a056c6c9167330b721c729a64be57a164"
+    },
+    {
+      "path": "data/government_revenue/sbir_progression.json",
+      "incoming_and_released9496_blob": "dc447397485527f07adeef8cc528264f02aefc63",
+      "retained_navigation_blob": "4ab8c8f71418b3d841c23108c2c1da972c3955a7"
+    },
+    {
+      "path": "data/government_revenue/subaward_dossiers.json",
+      "incoming_and_released9496_blob": "74bdec6a748bb8aa6fc346284164b643e4c383d9",
+      "retained_navigation_blob": "997642d4aae34ae55b39a1cb827724acddfaeb4e"
+    },
+    {
+      "path": "data/government_revenue/workspace.json",
+      "incoming_and_released9496_blob": "ae1de21cf180a2f6383b152c26dbd6eba3dc5eb9",
+      "retained_navigation_blob": "ad68f2eb166c8771786b7ed222a13ad98db634e0"
+    },
+    {
+      "path": "site/government-revenue-data/budget-program.json",
+      "incoming_and_released9496_blob": "6494c3fb30ae3a306eb7926f710ded4493f978f4",
+      "retained_navigation_blob": "1e44f56807f52608393fef30f30447bfedffacd3"
+    },
+    {
+      "path": "site/government-revenue-data/candidates.json",
+      "incoming_and_released9496_blob": "ba4009bdb39e6685ee19795403a583a3215b4a78",
+      "retained_navigation_blob": "9f662b366cdd1afd60c4a83d5bc31856e38410a2"
+    },
+    {
+      "path": "site/government-revenue-data/defense-economics.json",
+      "incoming_and_released9496_blob": "fd47276d1e31e136715a579eddc4280c365f01f8",
+      "retained_navigation_blob": "d42021121ab7080d9c4d0dfc2e2f736cad9a4a16"
+    },
+    {
+      "path": "site/government-revenue-data/dossiers.json",
+      "incoming_and_released9496_blob": "b89ca436c5ac78bbf91f8359247bef297d5aa463",
+      "retained_navigation_blob": "45254f3e102b7f0c8cefc74ab34d5c636b9f58b7"
+    },
+    {
+      "path": "site/government-revenue-data/identity-atlas.json",
+      "incoming_and_released9496_blob": "a8bc10d66858abb0fbce8c1ab30ab9b4d54fb5e2",
+      "retained_navigation_blob": "e0ed3466b9d5b468fc933e808fe1009940ee0758"
+    },
+    {
+      "path": "site/government-revenue-data/idv-dossiers.json",
+      "incoming_and_released9496_blob": "31c48429397df12416ca27461be74c3e635fd3ce",
+      "retained_navigation_blob": "395f51b6daeea9f1243823292b86ef356a44e3bc"
+    },
+    {
+      "path": "site/government-revenue-data/latest.json",
+      "incoming_and_released9496_blob": "ff18bb834376787123b743bf6cff7a2499064124",
+      "retained_navigation_blob": "7987404f3f18ecf5cc9e77f4f51e22e688d58e67"
+    },
+    {
+      "path": "site/government-revenue-data/program-dossier.json",
+      "incoming_and_released9496_blob": "f20c45d7ece24ce0087bca13ed4dc7cee510833c",
+      "retained_navigation_blob": "2e67ae488a7a74f23248e1322b74e27bb2f4c2c8"
+    },
+    {
+      "path": "site/government-revenue-data/program-theme-context.json",
+      "incoming_and_released9496_blob": "3b2db61e8deef7243fc1db5115df204945c47f73",
+      "retained_navigation_blob": "a8385ca35472368eb93fbad09b87b1e1f1189d41"
+    },
+    {
+      "path": "site/government-revenue-data/research-state.json",
+      "incoming_and_released9496_blob": "df537dcb12af744d8337c189a92fa36f0ba2300d",
+      "retained_navigation_blob": "be7603ac9a3c3007c679a61666fa6768fbe25a80"
+    },
+    {
+      "path": "site/government-revenue-data/sbir-progression.json",
+      "incoming_and_released9496_blob": "dc447397485527f07adeef8cc528264f02aefc63",
+      "retained_navigation_blob": "4ab8c8f71418b3d841c23108c2c1da972c3955a7"
+    },
+    {
+      "path": "site/government-revenue-data/subaward-dossiers.json",
+      "incoming_and_released9496_blob": "74bdec6a748bb8aa6fc346284164b643e4c383d9",
+      "retained_navigation_blob": "997642d4aae34ae55b39a1cb827724acddfaeb4e"
+    },
+    {
+      "path": "site/government-revenue-data/theme-context.json",
+      "incoming_and_released9496_blob": "4700b49a873a5939263ab2a1187a1b8fbaa132bb",
+      "retained_navigation_blob": "0180eb0a056c6c9167330b721c729a64be57a164"
+    },
+    {
+      "path": "site/government-revenue-data/workspace.json",
+      "incoming_and_released9496_blob": "ae1de21cf180a2f6383b152c26dbd6eba3dc5eb9",
+      "retained_navigation_blob": "ad68f2eb166c8771786b7ed222a13ad98db634e0"
+    },
+    {
+      "path": "site/government_revenue.html",
+      "incoming_and_released9496_blob": "1142e072b132a28d656b6c2af7c0d99b676427b1",
+      "retained_navigation_blob": "be9ce5da6b195d8246ef47980d4065573ac04560"
+    }
+  ]
+}

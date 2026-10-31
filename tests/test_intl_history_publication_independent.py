@@ -180,6 +180,10 @@ def _publication_workspace(monkeypatch, attach_history_fn=attach_history, overvi
         "attach_macros": lambda ws, **kwargs: {**ws, "macros_attached": True},
         "attach_risks": lambda ws, **kwargs: {**ws, "risks_attached": True},
         "attach_history": attach_history_fn,
+        # W2F surveillance seam (scripts/build_intl.py) — stubbed like the sibling mounts;
+        # this file tests History only.
+        "build_observation_set": lambda closes, **kwargs: None,
+        "attach_surveillance": lambda ws, **kwargs: {**ws, "surveillance_attached": True},
         "read_ecb_deposit_materialization": lambda **kwargs: {"status": "missing"},
         "_ecb_publication_measure": lambda *args, **kwargs: {},
         "log": log,

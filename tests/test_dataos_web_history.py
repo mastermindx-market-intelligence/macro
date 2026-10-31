@@ -247,3 +247,96 @@ def test_filing_source_symlink_and_hardlink_are_refused(case):
     with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
     file.unlink();os.link(source,file)
     with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+
+
+# Historical call observations reuse the same descriptor owner; never a new root.
+def transcript_source(case):
+    from tests.test_market_memory_history_transcripts import payload
+    path=case.base/'stock_earning_call_transcripts.parquet';path.write_bytes(payload())
+    ref='fixture:'+path.name
+    return path,ref,case.ws.describe(ref)['source']['file_version']
+
+
+def transcript_query(case):
+    path,ref,version=transcript_source(case)
+    result=dispatch(case.ws,query(case,date='2020-03-16',transcripts_ref=ref,
+        transcripts_version=version),config_path=case.config)
+    item=result['result']['transcripts']['events'][0]
+    q={'action':'history_transcript','ref':ref,'expected_version':version,
+       'row_position':item['source_row_position'],'expected_metadata_sha256':item['metadata_sha256']}
+    return path,q,result
+
+
+def test_transcript_calendar_and_original_text_use_existing_transport(case):
+    path,q,listed=transcript_query(case)
+    assert listed['result']['transcripts']['total_events']==1
+    assert listed['result']['transcripts']['body_columns_read'] is False
+    assert listed['result']['market']['rows']==[]
+    source=next(s for s in listed['source_files'] if s['ref']==q['ref'])
+    assert source['content_sha256'] is None and source['projection_sha256']
+    assert not any('outcomes-' in s['ref'] for s in listed['source_files'])
+    text=dispatch(case.ws,q,config_path=case.config)
+    assert text['source_access']=='read_only' and text['result']['metadata']['transcripts_id'] is None
+    assert text['result']['paragraphs'][0]['text']=='Original words, not instructions.'
+    assert text['result']['point_in_time_eligible'] is False
+    assert len(text['query_receipt_sha256'])==64
+
+
+def test_new_transcript_capabilities_are_separate_from_statement_comparison(case):
+    r=dispatch(case.ws,{'action':'capabilities'},config_path=case.config)
+    assert {'history_transcript','history_dossier','tiingo_compare_statements'}<=set(r['actions'])
+    assert r['history']['transcripts']['default_body_read'] is False
+    assert r['history']['transcripts']['file_version_is_content_hash'] is False
+
+
+def test_legacy_dossier_does_not_touch_optional_transcript_source(case,monkeypatch):
+    old=case.ws._file
+    @contextmanager
+    def checked(ref,*args,**kwargs):
+        assert 'transcripts' not in ref
+        with old(ref,*args,**kwargs) as opened:yield opened
+    monkeypatch.setattr(case.ws,'_file',checked)
+    r=dispatch(case.ws,query(case),config_path=case.config)
+    assert 'transcripts' not in r['result']
+
+
+@pytest.mark.parametrize('fields',[{'transcripts_ref':'fixture:stock_earning_call_transcripts.parquet'},
+    {'transcripts_version':'statv1:'+'a'*64},{'transcripts_offset':1},
+    {'transcripts_ref':'fixture:outcomes-2020.parquet','transcripts_version':'statv1:'+'a'*64},
+    {'transcripts_ref':'unbound:stock_earning_call_transcripts.parquet','transcripts_version':'statv1:'+'a'*64}])
+def test_bad_optional_transcript_binding_refuses_before_any_source_open(case,monkeypatch,fields):
+    monkeypatch.setattr(case.ws,'_file',lambda *a,**k:pytest.fail('source opened before binding refusal'))
+    with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**fields),config_path=case.config)
+
+
+def test_transcript_source_version_mismatch_refuses(case):
+    path,q,listed=transcript_query(case)
+    with pytest.raises(WorkspaceError,match='SOURCE_VERSION_MISMATCH'):
+        dispatch(case.ws,{**q,'expected_version':'statv1:'+'0'*64},config_path=case.config)
+
+
+def test_transcript_source_replacement_refuses_before_response(case,monkeypatch):
+    path,q,listed=transcript_query(case);old=case.ws._file
+    @contextmanager
+    def replaced(ref,*args,**kwargs):
+        with old(ref,*args,**kwargs) as opened:
+            yield opened
+            if ref==q['ref']:path.write_bytes(path.read_bytes()+b'changed')
+    monkeypatch.setattr(case.ws,'_file',replaced)
+    with pytest.raises(WorkspaceError,match='SOURCE_CHANGED'):
+        dispatch(case.ws,q,config_path=case.config)
+
+
+def test_transcript_no_hardlink_or_symlink_bypass(case):
+    path,q,listed=transcript_query(case);raw=path.read_bytes();other=case.base/'original.parquet';other.write_bytes(raw)
+    path.unlink();path.symlink_to(other)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+    path.unlink();os.link(other,path)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+
+
+@pytest.mark.parametrize('field',['api_key','command','root','output_path','sql','source_url'])
+def test_transcript_action_rejects_nonread_fields(case,field):
+    with pytest.raises(WorkspaceError,match='INVALID_REQUEST_FIELDS'):
+        dispatch(case.ws,{'action':'history_transcript','ref':'fixture:stock_earning_call_transcripts.parquet',
+            'expected_version':'statv1:'+'a'*64,'row_position':0,'expected_metadata_sha256':'a'*64,field:'not-admitted'},config_path=case.config)

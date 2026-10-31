@@ -1,0 +1,198 @@
+{
+  "schema": "grey_deer.full_archive_isolated_rehearsal.v2",
+  "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+  "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+  "started_at": "2026-10-21T10:59:54.253313+00:00",
+  "completed_at": "2026-10-21T11:00:39.266917+00:00",
+  "qualified": true,
+  "archive": {
+    "sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "bytes": 104202240,
+    "members": 5219
+  },
+  "helper_sha256": {
+    "deploy_from_git.sh": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f",
+    "deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+  },
+  "all_snapshot_authority_unchanged": true,
+  "all_canonical_authority_unchanged": true,
+  "production_identity_unchanged": true,
+  "production_before": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2",
+    "health": {
+      "exception_type": "TimeoutError",
+      "error": "timed out"
+    }
+  },
+  "production_after": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2"
+  },
+  "startup_process": {
+    "exit_code": 0,
+    "launcher_reaped": true,
+    "process_group_gone": true,
+    "communication_completed": true,
+    "stdout_bytes": 47,
+    "stderr_bytes": 0,
+    "stderr_tail": ""
+  },
+  "failure": null,
+  "read_only_live_roots": [
+    "/opt/macro",
+    "/opt/mastermind",
+    "/opt/mastermind-live-data",
+    "/opt/mastermind/vendor"
+  ],
+  "limitations": [
+    "Paused registration/startup is not natural scheduled execution or real publication proof.",
+    "Temporary receiver data effects are not production effects.",
+    "Code restoration is not rollback of future publication or decision evidence.",
+    "Unchanged release-helper fault-matrix evidence remains separately scoped."
+  ],
+  "startup": {
+    "registered_startup_called": true,
+    "startup_completed": true,
+    "dispatch_mode": "resume held before registered startup; executor dispatch forbidden",
+    "candidate_modules": {
+      "app.main": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "brain.perception_publication": "f965f02c5f4a79cc24d3943d3535087deb07b7866a30ca50eff0aae4b334228c",
+      "brain.perception_receipt": "bad6a9afd29959b183ea13e6e7b607dbbe25378b1fdb5b8057effb8ef040f643",
+      "brain.cli_bridge": "454f6c2f3685d01b5323d0e5529e50cf101d085ebab15366d5518a8533ea7cd8",
+      "brain.codex_bridge": "bd1af0b78a40506f1c1b439301cdddd5d5cbc7a3759fb3e835e5842941acdcc4",
+      "brain.provider_waterfall": "71c34d863219dbf85acb23a368096a000297b9aa2e098c6dc18b75e5d311c5bb",
+      "portfolio.performance_read": "b2d4566d94858fa1bdc794e7a35d66286f3e56256e80efa29b718e1b0dc146a8",
+      "portfolio.performance_projection": "a88f2d27cf8dae5bd0da4b27309d870d281f5f5d490490c0f7b2519383026713"
+    },
+    "scheduler_running": true,
+    "scheduler_state_before_shutdown": 2,
+    "first_run_states": {
+      "autonomous_first_run": false,
+      "china_first_run": false,
+      "hk_first_run": false,
+      "heavyweight_first_run": false,
+      "etf_first_run": false
+    },
+    "threads_created": [
+      "APScheduler",
+      "scheduler-watchdog"
+    ],
+    "qualified": true,
+    "resume_requests": [
+      {
+        "state": 2,
+        "job_count": 18
+      }
+    ],
+    "dispatch_attempts": [],
+    "first_run_attempts": [],
+    "denied_events": [],
+    "write_paths": [
+      "receiver/data",
+      "receiver/data/governance",
+      "receiver/data/governance/doctrine_hash.json",
+      "receiver/data/governance/run_events.jsonl",
+      "receiver/data/portfolios/autonomous",
+      "receiver/data/portfolios/autonomous/.paper_transaction.lock",
+      "receiver/data/portfolios/china",
+      "receiver/data/portfolios/china/.paper_transaction.lock",
+      "receiver/data/portfolios/hk",
+      "receiver/data/portfolios/hk/.paper_transaction.lock"
+    ],
+    "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "job_count": 18,
+    "job_ids": [
+      "watch_us_overnight",
+      "publish_macro_snapshot",
+      "macro_refresh",
+      "portfolio_risk_compose",
+      "prewarm_marks",
+      "derisk_us_intraday",
+      "watch_asia_overnight",
+      "settle_pending",
+      "portfolio_risk_daily",
+      "daily_mark",
+      "autonomous_daily",
+      "loop_maintenance",
+      "experiment_maturity",
+      "settle_brain_asia",
+      "china_daily",
+      "hk_daily",
+      "cio_weekly",
+      "improvement_agenda_weekly"
+    ]
+  },
+  "full_report": {
+    "file": "COMPOSED_REHEARSAL_RESULT.json",
+    "bytes": 1015767,
+    "sha256": "ada695588a81395030266c393015d2f588082fb641b4177e91fe54487ed24be2"
+  },
+  "authority_count": 10,
+  "baseline_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "stderr": ""
+  },
+  "backup_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "stderr": ""
+  },
+  "backup_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "candidate_copy": {
+    "exit_code": 0,
+    "change_count": 3351,
+    "stderr": ""
+  },
+  "candidate_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "restoration": {
+    "exit_code": 0,
+    "change_count": 3351,
+    "stderr": ""
+  },
+  "restoration_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "binding": {
+    "archive_identity": {
+      "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+      "tree": "b329a913d55030e19b038e99a14c9e5ee5bfd998",
+      "archive": "/tmp/rr-publication-composed-20261021-7pdafs7o/release.tar",
+      "stage": "/tmp/rr-publication-composed-20261021-7pdafs7o",
+      "archive_sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+      "bytes": 104202240,
+      "members": 5219,
+      "harness_sha256": {
+        "isolated_startup.py": "daa374604acc11144722ccc25b079b2e8cd780f6b4182afb53f07ab3b71eae29",
+        "isolated_rehearsal.py": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878"
+      },
+      "protected_admission": "PENDING native queue",
+      "source_branch_preserved": "65c071d9d4820135a54d6d2f7af861bb5e7cebc1",
+      "source_workspace_clean": true
+    },
+    "protected_admission": "PENDING native queue; source/runtime qualification only",
+    "strict_health_file": "COMPOSED_HEALTH_PREFLIGHT.json",
+    "production_release_ready": false
+  }
+}

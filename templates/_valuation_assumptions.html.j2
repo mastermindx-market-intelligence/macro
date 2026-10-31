@@ -184,7 +184,7 @@
   {% set _va_unit = {'sales_growth_pct': '%', 'margin_delta_pp': ' pp', 'earnings_multiple': '×'}.get(_va_prop.assumption_name, '') %}
   <div class="va-event-proposal" id="va-event-proposal" data-valuation-event-proposal="v1">
     <p class="va-event-proposal-head">
-      {{ t('A recent filing argues this differently', '最近的一份备案给出了不同的看法') }}
+      {{ t('A filing argues this differently', '一份备案给出了不同的看法') }}
     </p>
     <p class="va-event-proposal-body">
       {{ t(_va_prop.rationale_en, _va_prop.rationale_zh) }}
@@ -203,10 +203,17 @@
     </p>
     <p class="va-event-proposal-guard">
       {{ t(
-        'That figure is this page\'s own more optimistic case, not a number the company gave. Nothing has been changed for you — move the slider yourself if you agree, or ignore it.',
-        '该数值取自本页自身较乐观的情景设定，并非公司给出的数字。系统不会替您更改任何设置——您可以自行调整滑块，也可以忽略。'
+        'That figure is this page\'s own published scenario in that direction, not a number the company gave. Nothing has been changed for you — move the slider yourself if you agree, or ignore it.',
+        '该数值取自本页在该方向上已公布的情景设定，并非公司给出的数字。系统不会替您更改任何设置——您可以自行调整滑块，也可以忽略。'
       ) }}
     </p>
+    {% if _va_ref and _va_ref.quote %}
+    <p class="va-event-proposal-body" data-guidance-source-quote>{{ _va_ref.quote }}</p>
+    <p class="va-event-proposal-guard">{{ t(
+      "Source retrieved " ~ _va_ref.retrieved_at[:10] ~ ". This is the dated outlook linked below, not a new announcement.",
+      "原始文件检索日期：" ~ _va_ref.retrieved_at[:10] ~ "。以下链接对应当时的指引，并非新的公告。"
+    ) }}</p>
+    {% endif %}
     {% if _va_ref and _va_ref.url %}
     <p class="va-event-proposal-source">
       <a href="{{ _va_ref.url }}" rel="noopener noreferrer" target="_blank">{{

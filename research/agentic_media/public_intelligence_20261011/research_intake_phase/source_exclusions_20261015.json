@@ -1,0 +1,208 @@
+{
+  "observed_at": "2026-10-15T08:30:21.915618+00:00",
+  "installed_head": "321fab98b18fa1f08f8aa64e59edb9e2fa67da7c",
+  "catalog_sha256": "ec1651cbd85f7110d16657a3514590959b4add02261af0b950bf0d274fe023d7",
+  "scope": "Two consecutive existing unheld eight-report pools screened uniformly:15unqualified private reports held,1existing qualified government source retained. No target-based exclusions, score/pool/date/producer changes.",
+  "private_evidence_path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/research-rights-screen-20261015.json",
+  "private_evidence_sha256": "a029142989ef96bb263db05bf68b40bb3fae5f9af7101cc40a9d8c0cfaf3bb47",
+  "additional_blocked_refs": [
+    "research_vault:marketdesk-ayiijj63mgv-f053ed",
+    "research_vault:marketdesk-75qspjfpqxs-b7f945",
+    "research_vault:marketdesk-pxoz8rr2riq-42043b",
+    "research_vault:marketdesk-810sqguhx8x-b2e5e5",
+    "research_vault:marketdesk-rovjseanl6l-39c4b6",
+    "research_vault:marketdesk-vduxjun5diu-38254c",
+    "research_vault:marketdesk-nkdy4yrxhjc-c2fe94",
+    "research_vault:marketdesk-s8rnoottqe9-6727c8",
+    "research_vault:marketdesk-olsjyzwqkvu-24d877",
+    "research_vault:marketdesk-na3aw28nwyx-8f1249",
+    "research_vault:marketdesk-yaadjp5qoz0-bcf414",
+    "research_vault:marketdesk-vdblf6izm08-39710a",
+    "research_vault:marketdesk-i2kdffan2hz-88e4fd",
+    "research_vault:marketdesk-ftuozl3okjq-c3d98f",
+    "research_vault:marketdesk-zidfbw2dhyr-90424e"
+  ],
+  "rows": [
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "174de1ae50108d7ed809d9179ffa10d22f7eb164df88da00563d9af03d76b080",
+      "receipt_sha256": "42b23d3fb332a3b7cb9127c20804693059995aa129103a5c3e05892c2a6b7ebd",
+      "fulltext_sha256": "a8e40001d00a545294240b8dd629c607a7dafa0f33b8975df5e644787ad2101f",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "institution": "S&T",
+      "pdf_sha256": "f26a3b939e53e6467d114365cdada10db700ca5d11b497506b7e511a084160f3",
+      "receipt_sha256": "dd18372738d61f1bad7441b442ef21356dc86a483b82da56d7730bd11e70014f",
+      "fulltext_sha256": "61f30af7d0728351e4093398826a99a0b517909cdb34917f207d92eab08966ac",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    },
+    {
+      "id": "marketdesk-pxoz8rr2riq-42043b",
+      "title": "Entain MGM BetMGM 3Q26 Reiterating FY guidance after solid 3Q",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "52eccbd2581d707b1ae8c3ec77ff9cd4f5728f198f4b7242b9d3d2dd2e4479ee",
+      "receipt_sha256": "1867784e44d89a9122ebba4cfbac5e9d66e796a2037282a381ba71b1d075956d",
+      "fulltext_sha256": "d3d4ec3a05cbb0f70c925a4ecccbe20d91e1c2e41869fcd7a899d1105e9ff271",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "institution": "S&T",
+      "pdf_sha256": "2117c97494ffc410c8436a2e6ecd137aeb5fa057441f9bc7d45f4bdefa562315",
+      "receipt_sha256": "97da21e84af27f1afbbde650059dba4e6e3c246cf360c6e2e2ef7d2ec493c612",
+      "fulltext_sha256": "575dc38cbedf933f2b6e441b7faf11a67a1d6ec916858f0148a01234b75d8da9",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    },
+    {
+      "id": "marketdesk-rovjseanl6l-39c4b6",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "pdf_sha256": "7ebf099b4a2812882d84f760435ffa883617ee1412b0c8262ed49613b817a43a",
+      "receipt_sha256": "566aef81c0d709e594e65702f485b68a6b2bd3bd1b9cc25f0bb1a55feef135b2",
+      "fulltext_sha256": "ff59f51ed164ba847721e679660042fc9f65a76fa91d48cb5e64ced44d59f78d",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    },
+    {
+      "id": "marketdesk-vduxjun5diu-38254c",
+      "title": "Wm weekly market view will earnings resolve the bond equity split 09 october 2026",
+      "institution": "Standard Chartered",
+      "pdf_sha256": "b8e85a30250d95472654865c7992a115867d71b60f0c49817031ef166935b2ab",
+      "receipt_sha256": "fbc36e81bee889f4667415b8165a226d4d60099a800c20e781d5523d420be5ea",
+      "fulltext_sha256": "0fe312a1a03f51894091541c134a2702737c33559a16133a338cf9d35b873315",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-nkdy4yrxhjc-c2fe94",
+      "title": "Global Weekly Kickstart Earnings Season Arrives with a High Bar",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "32dd045d0e7421adc9054bef9c1dc915367f87b1b6d6e280fdda2e53a0253b8b",
+      "receipt_sha256": "11aed51884d229f637f7f194d564a9b024fc94b0141b7b1bf201a39cb1a49da9",
+      "fulltext_sha256": "3d08873cb2180766341a6ae4d20f3e6f6437ccd6c82d046d8bef71e4e606579a",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-s8rnoottqe9-6727c8",
+      "title": "Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "041be2190c4102661227055874d4414f0b9d0b25ef93ae6a74cc19506f7783fc",
+      "receipt_sha256": "4731f951ca5a0a7923d9c976140043979c1a1eb6b1e94eb39c1d583a448f8959",
+      "fulltext_sha256": "a138c9668cf7db8dd0cf25d5f48a6adb621b708b3eb6274790b4bb7e1e51cd60",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-olsjyzwqkvu-24d877",
+      "title": "Americas Retail Specialty Hardlines Updating estimates for Lithia Motors and Boyd Group ahead of earnings",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "ab8d4396d12d52eaf8f8f02c03e9a7096f85b5b76429d93b0649205c3fa94582",
+      "receipt_sha256": "b91791eecf7dfa4faf7a12ddfe029abb90275782eeded95d48275094cd7bfa4e",
+      "fulltext_sha256": "f032231b287d25a999db12640b41946764ed8dc5b1d3a7c8f40bafac6bd0423c",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-na3aw28nwyx-8f1249",
+      "title": "GCC Energy Mapping export strength into year end earnings delivery",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "673863e270e00fc1ae52589cc69806d1e7e42150f0064c29f03abf26dec426c8",
+      "receipt_sha256": "07050ee368b99fbef3a9fc2b3814878d87c8eaffcb37ca0339d3dc0c5f2b32b2",
+      "fulltext_sha256": "3c44c8d3cf2c5c8e90ba389c2a3fddc5048cff3b774ce398080875eac6930bb8",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-yaadjp5qoz0-bcf414",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "pdf_sha256": "3faba07ebc8c9f2b66fb9fbba6eb903937fb958bf11334f99490e548eb7fef64",
+      "receipt_sha256": "8820533c51ccf8c9fdde454c1435bd20a9d8b97c55b0c90178b2fa79c206bf3f",
+      "fulltext_sha256": "9c11ab83ae85ed175ba14667bd07fac570748c65c9a70e7d270ef8580a0766bf",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    },
+    {
+      "id": "marketdesk-vdblf6izm08-39710a",
+      "title": "Vesta (VESTA.MX) 3Q26 Earnings Preview",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "e06cb033147931e170be1c3fed97462d9fb0233118dfd1fc04f03a5108c441e7",
+      "receipt_sha256": "9c9c54e84b27ec3041b7e2ead481a49f79e4ad8c58c5f20a9fa6a1eb4c2fe700",
+      "fulltext_sha256": "d1fd31a1eb3221f83c9731294e2f6a9602c6875964005aeaec1b643208fd57df",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-i2kdffan2hz-88e4fd",
+      "title": "Americas Fintech 3Q26 Preview Weighing key investor debates and near term earnings setups",
+      "institution": "Goldman Sachs",
+      "pdf_sha256": "a14269040e20789e0f52af3f6d23082de9a4446b7fa7b7c4cdc0388ca015c5da",
+      "receipt_sha256": "5458eefcacab38df1fa9c498b9c7a20b119b77a4799a854cfb0d0a13349248af",
+      "fulltext_sha256": "aa3912a28bfbd55993320404692fab6a2807e2253d0c06c41410fd87954f713c",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": true
+    },
+    {
+      "id": "marketdesk-ftuozl3okjq-c3d98f",
+      "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
+      "institution": "S&T",
+      "pdf_sha256": "2ba3c0bd509975e7c384405129ee062afb4508da6b76a53d9098e0fb2cf11dc9",
+      "receipt_sha256": "eedcb4dc98c310ade400ba3edee025f27a33cdaa6f3334bb82042469a0bc049c",
+      "fulltext_sha256": "97f3c51efdb698984c6b91de497e00df85ffa4cc60973be05dad8b412158b089",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    },
+    {
+      "id": "marketdesk-zidfbw2dhyr-90424e",
+      "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+      "institution": "S&T",
+      "pdf_sha256": "108907ee6be0af88ed8de2d4683ed8324cfb2f67d7c11324a3b6e6d190cedca9",
+      "receipt_sha256": "b59d26b642745f2c134cd4b5fa6a4f6f9abbcb15f389959dd5309d05cf88d562",
+      "fulltext_sha256": "a6cc14fe8f7f427003159f629ec074d1a8cda4526a081fee80ba7ca7e860be50",
+      "decision": "HOLD_PENDING_PUBLIC_USE_QUALIFICATION",
+      "reason": "Canonical intake/fulltext prove source custody, not a public-article reuse grant. No such receipt is present in the reviewed catalog/evidence; private bank or sales/trading material remains unqualified.",
+      "observed_restriction_excerpt": false
+    }
+  ],
+  "does_not_establish": "Not a legal prohibition or a finding that no permission exists anywhere. Public-use qualification remains missing for this commission.",
+  "effect": "Evidence for existing extra_blocked_refs only; no producer/catalog/staging mutation. Original29refs and5drafts preserved.",
+  "qualified_in_second_pool": {
+    "id": "usitc-2026-10-13-337-ta-1473",
+    "pdf_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+    "fulltext_sha256": "464d14a78317aa7a6b4db05372b680111762d28b4c76da2b1f97e676fbccd764",
+    "qualification": "../usitc_cat_intake_phase/qualification.json",
+    "scope": "Existing official notice/intake qualification reused; Press article approval remains false."
+  },
+  "second_pool_evidence": {
+    "observed_at": "2026-10-15T08:33:18.459096+00:00",
+    "installed_head": "db5960020c8ae56a0c50d331b0a398d07eb0c1a4",
+    "catalog_sha256": "ec1651cbd85f7110d16657a3514590959b4add02261af0b950bf0d274fe023d7",
+    "path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/research-rights-screen-pool2-20261015.json",
+    "sha256": "3581dd161e6e591ceac5297d1dd7120e79caa1fbce97e850cef33967ae0a246a"
+  }
+}

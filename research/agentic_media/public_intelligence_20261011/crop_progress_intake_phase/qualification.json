@@ -1,0 +1,46 @@
+{
+  "source_url": "https://esmis.nal.usda.gov/sites/default/release-files/796104/prog4126.pdf",
+  "landing_url": "https://esmis.nal.usda.gov/publication/crop-progress",
+  "pdf_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "sidecar_sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+  "publication_date": "2026-10-13",
+  "publication_time": "not asserted; retained source proves date only",
+  "observation_week_ending": "2026-10-11",
+  "page_count": 16,
+  "source_author": "USDA NASS Agricultural Statistics Board",
+  "source_review": {
+    "visual_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "raster_image_inventory": "Two agency marks on page1 only; no photos on remaining pages. Full16-page text scanned; no separate copyright/licensing notice found.",
+    "tables": "Selected-state coverage retained; corn56%=44+12; previous54%=42+12; soybean57%=46+11. No missing prior-year value interpreted as zero.",
+    "methodology": "Non-probability survey of about3600 subjective respondents; acreage weighting, potential weekend projection and following-week revision retained.",
+    "summary_review": "Same original Fabric result consumed; six source points PASS, caveats integrated and final8-point sidecar parent-verified. See review_binding.json for scope limitations."
+  },
+  "rights_scope": {
+    "basis_url": "https://www.copyright.gov/title17/92chap1.html#105",
+    "basis": "Agency-authored official government statistical report; 17USC105(a) does not confer Title17 copyright on United States government works. Separate transferred rights remain possible and must not be assumed away. This source contains agency tables/methodology and identification marks, with no identified third-party contribution.",
+    "parent_decision": "Qualified for the original report in private canonical Research intake and an attributed factual summary; no use of agency marks as Mastermind branding or endorsement. Final sidecar factual review completed.",
+    "agency_policy_refresh": "The public policy landing initially resolved in web text but follow-up retrieval returned403. No retry, alternate carrier or successful fresh agency-policy-body claim. Statutory source checked independently; this does not obtain the denied page.",
+    "public_article_approval": false,
+    "no_general_license_for_other_material": true
+  },
+  "same_event_check": "Distinct Crop Progress observation release; not an alias or rewrite of held October9 WASDE. Canonical catalog/exact keys checked without writes.",
+  "stock_ticker": null,
+  "canonical_admission": true,
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10",
+  "canonical_admission_scope": "Two private inbox creates only; exact final PDF and sidecar readbacks at2026-10-14T16:57:13Z. Normal producer consumption, public report and Press story remain unverified.",
+  "canonical_writes": 2,
+  "canonical_effect": "KNOWN_COMPLETE_DO_NOT_REUPLOAD_OR_ALIAS",
+  "canonical_consumer_state": "CANONICAL_SOURCE_AND_FULLTEXT_VERIFIED",
+  "canonical_consumer_observed_at": "2026-10-14T16:59:14.424504+00:00",
+  "installed_catalog_and_public_report": "Catalog/excerpts exact at canonical and installed0ce6fe97; dedicatedpage PENDING_INCUMBENT_RENDER at17:02",
+  "authenticated_viewer": "Actual original16pageviewer accepted after normal saved-credential signin; no Download/signup/follow",
+  "press_selection": "NOT_SELECTED: ranked35/unheld23/pool8 at17:07; no override"
+}

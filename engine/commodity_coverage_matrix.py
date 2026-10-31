@@ -20,6 +20,8 @@ PUBLIC_SOURCES = frozenset({
     "EIA 每周石油状况报告",
     "Daily price history (Yahoo)",
     "每日价格历史（Yahoo）",
+    "USGS Mineral Commodity Summaries",
+    "美国地质调查局《矿产商品摘要》",
 })
 
 _NOT_COVERED = {"en": "Not covered yet", "zh": "尚未覆盖"}
@@ -123,7 +125,13 @@ FAMILIES: tuple[dict, ...] = (
         "family_en": "Semiconductors & critical tech materials",
         "family_zh": "半导体与关键科技材料",
         "price": None,
-        "supply": None,
+        "supply": {
+            "producer": "engine/critical_minerals_supply.py",
+            "artifacts": ("data/neuralweb/critical_minerals_supply.json",),
+            "contract": "critical_minerals_supply.v1",
+            "source_en": "USGS Mineral Commodity Summaries",
+            "source_zh": "美国地质调查局《矿产商品摘要》",
+        },
     },
 )
 
@@ -146,6 +154,19 @@ def _axis_cell(axis: dict | None, root: Path) -> dict:
         producer_exists = (root / producer).exists()
     except Exception:  # noqa: BLE001 — a stat error must never crash the build
         producer_exists = False
+
+    if producer_exists and axis.get("contract") == "critical_minerals_supply.v1":
+        from engine.critical_minerals_display import load_critical_minerals_context
+        context = load_critical_minerals_context(root / axis["artifacts"][0])
+        count = sum(row.get("available") is True for row in context.get("rows", []))
+        if not count:
+            return {"read": False, "en": _WAITING["en"], "zh": _WAITING["zh"], "source": None}
+        return {
+            "read": True,
+            "en": f"Annual USGS context for {count} of 4 critical minerals. Other semiconductor supply-chain layers remain uncovered.",
+            "zh": f"4种关键矿产中有{count}种具备USGS年度背景数据，其他半导体供应链环节尚未覆盖。",
+            "source": {"producer": producer, "source_en": axis["source_en"], "source_zh": axis["source_zh"]},
+        }
 
     # Round-2 review MAJOR-1: this must be an ALL-of check, not ANY-of. The
     # cell copy (cell_en/cell_zh) names EVERY commodity in `artifacts` — e.g.
@@ -196,9 +217,12 @@ def compute_coverage_matrix(root: Path | None = None) -> dict:
             price = _axis_cell(fam.get("price"), root)
             supply = _axis_cell(fam.get("supply"), root)
 
-            if supply["read"]:
+            if supply["read"] and price["read"]:
                 state = "covered"
                 state_en, state_zh = "Prices + supply", "价格＋供需"
+            elif supply["read"]:
+                state = "partial"
+                state_en, state_zh = "Supply context only", "仅供应背景"
             elif price["read"]:
                 state = "partial"
                 state_en, state_zh = "Prices only", "仅价格"

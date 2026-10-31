@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology.js
+  - templates/state_of_themes.html.j2
+manifest: mockups/evidence/ontology-research-continuation-20261019/manifest.json

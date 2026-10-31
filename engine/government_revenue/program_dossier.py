@@ -21,6 +21,9 @@ from . import program_ontology as po
 
 CONTRACT = "government_program_dossier.v1"
 SCHEMA_VERSION = "1.0.0"
+#: Dossier payload versions: 1.1.0 carries the public_capacity rail, 1.2.0
+#: adds the public_oversight rail (and preserves capacity).
+PUBLIC_OVERSIGHT_DOSSIER_VERSION = "1.2.0"
 CONTENT_ID_PREFIX = "gpd1-"
 
 PARTICIPATION_LIMITATION = (
@@ -30,6 +33,11 @@ PARTICIPATION_LIMITATION = (
 ALLOCATION_LIMITATION = (
     "Reviewed participation is not a share of revenue. Nothing here "
     "allocates award value to a ticker."
+)
+OVERSIGHT_LIMITATION = (
+    "Oversight rows quote a published source verbatim; a report edition and "
+    "publication date are source metadata, and nothing here asserts a legal "
+    "verdict, readiness state, issuer allocation, or investment ranking."
 )
 
 LIMITATIONS: tuple[str, ...] = (
@@ -408,6 +416,8 @@ def compose_program_dossier_bundle(
     generated_at = generated_at or datetime.now(timezone.utc).isoformat()
     if ontology_graph is None:
         return _empty_dossier_bundle(as_of=as_of, generated_at=generated_at, ontology_graph_id=None)
+    oversight_enabled = ontology_graph.get("schema_version") in (po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION)
+    capacity_enabled = oversight_enabled or ontology_graph.get("schema_version") == po.PUBLIC_CAPACITY_VERSION
 
     as_of_date = date.fromisoformat(as_of)
     analysis_cutoff = po.analysis_as_of(as_of)
@@ -435,10 +445,54 @@ def compose_program_dossier_bundle(
                 as_of_date=as_of_date,
             ),
         })
+        if capacity_enabled:
+            state, reviewed_at = po.derive_review_coverage(
+                ontology_graph, scope="public_capacity", subject_type="program",
+                subject_id=program_id, analysis_as_of=analysis_cutoff,
+            )
+            buckets = {kind: [] for kind in sorted(po.PUBLIC_CAPACITY_KINDS)}
+            if state == "reviewed" and dossiers[-1]["program_identity"]["state"] == "reviewed":
+                for row in po.current_public_capacity_rows(ontology_graph, program_id, analysis_as_of=analysis_cutoff):
+                    buckets[row["kind"]].append(dict(row))
+                for rows in buckets.values():
+                    rows.sort(key=lambda row: row["id"])
+            elif state == "reviewed":
+                state = "not_reviewed"
+            dossiers[-1]["public_capacity"] = {"state": state, "reviewed_at": reviewed_at, **buckets}
+        if oversight_enabled:
+            state, reviewed_at = po.derive_review_coverage(
+                ontology_graph, scope="public_oversight", subject_type="program",
+                subject_id=program_id, analysis_as_of=analysis_cutoff,
+            )
+            oversight_rows: list[dict[str, Any]] = []
+            if state == "reviewed" and dossiers[-1]["program_identity"]["state"] == "reviewed":
+                evidence_index = {
+                    row.get("evidence_id"): row for row in ontology_graph.get("evidence") or []
+                    if isinstance(row, Mapping)
+                }
+                for row in po.current_public_oversight_rows(ontology_graph, program_id, analysis_as_of=analysis_cutoff):
+                    entry = dict(row)
+                    sources = [evidence_index.get(ref) for ref in entry.get("evidence_refs") or []]
+                    source_urls = {s.get("source_url") for s in sources if isinstance(s, Mapping)}
+                    source_digests = {s.get("sha256") for s in sources if isinstance(s, Mapping)}
+                    # The loader certifies one excerpt == one qualified source
+                    # document, so the qualified URL/hash join is unambiguous.
+                    entry["source_url"] = next(iter(source_urls)) if len(source_urls) == 1 else None
+                    entry["sha256"] = next(iter(source_digests)) if len(source_digests) == 1 else None
+                    oversight_rows.append(entry)
+                oversight_rows.sort(key=lambda row: row.get("id") or "")
+            elif state == "reviewed":
+                state = "not_reviewed"
+            dossiers[-1]["public_oversight"] = {
+                "state": state,
+                "reviewed_at": reviewed_at,
+                "rows": oversight_rows,
+                "limitation": OVERSIGHT_LIMITATION,
+            }
 
     payload = {
         "contract": CONTRACT,
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": PUBLIC_OVERSIGHT_DOSSIER_VERSION if oversight_enabled else ("1.1.0" if capacity_enabled else SCHEMA_VERSION),
         "content_id": "",
         "generated_at": generated_at,
         "as_of": as_of,
@@ -451,12 +505,17 @@ def compose_program_dossier_bundle(
     return payload
 
 
-def _program_dossier_validator() -> Any:
+def _program_dossier_validator(version: str = SCHEMA_VERSION) -> Any:
     from jsonschema import Draft202012Validator, FormatChecker
 
+    names = {SCHEMA_VERSION: "government_program_dossier.v1.schema.json",
+             "1.1.0": "government_program_dossier.v1_1.schema.json",
+             PUBLIC_OVERSIGHT_DOSSIER_VERSION: "government_program_dossier.v1_2.schema.json"}
+    if version not in names:
+        raise ValueError("unsupported program dossier version")
     schema_path = (
         Path(__file__).resolve().parents[2]
-        / "contracts" / "government_revenue" / "government_program_dossier.v1.schema.json"
+        / "contracts" / "government_revenue" / names[version]
     )
     return Draft202012Validator(
         json.loads(schema_path.read_text(encoding="utf-8")), format_checker=FormatChecker(),
@@ -473,11 +532,60 @@ def is_valid_program_dossier_payload(value: Any) -> bool:
     if not isinstance(value, Mapping):
         return False
     try:
-        if any(_program_dossier_validator().iter_errors(value)):
+        if any(_program_dossier_validator(value.get("schema_version")).iter_errors(value)):
             return False
+        if value.get("schema_version") in ("1.1.0", "1.2.0"):
+            for dossier in value["dossiers"]:
+                rail = dossier["public_capacity"]
+                seen = set()
+                cutoff = po.analysis_as_of(value["as_of"])
+                if (rail["state"] == "reviewed" and dossier["program_identity"]["state"] != "reviewed"
+                        or (rail["reviewed_at"] is not None and (rail["state"] != "reviewed_none"
+                            or po.strict_datetime(rail["reviewed_at"]) > cutoff))):
+                    return False
+                for kind in po.PUBLIC_CAPACITY_KINDS:
+                    for row in rail[kind]:
+                        if (rail["state"] != "reviewed" or row["kind"] != kind
+                                or row["program_id"] != dossier["program_id"]
+                                or row["id"] in seen or po.public_capacity_assertion_id(row) != row["id"]
+                                or po.strict_datetime(row["known_at"]) > cutoff
+                                or po.strict_datetime(row["valid_from"]) > cutoff
+                                or (row["valid_to"] is not None and cutoff >= po.strict_datetime(row["valid_to"]))):
+                            return False
+                        seen.add(row["id"])
+                if rail["state"] == "reviewed" and not seen:
+                    return False
+        if value.get("schema_version") == PUBLIC_OVERSIGHT_DOSSIER_VERSION:
+            for dossier in value["dossiers"]:
+                rail = dossier["public_oversight"]
+                seen = set()
+                cutoff = po.analysis_as_of(value["as_of"])
+                if (rail["state"] == "reviewed" and dossier["program_identity"]["state"] != "reviewed"
+                        or (rail["reviewed_at"] is not None and (rail["state"] != "reviewed_none"
+                            or po.strict_datetime(rail["reviewed_at"]) > cutoff))):
+                    return False
+                for row in rail["rows"]:
+                    if (rail["state"] != "reviewed" or row["program_id"] != dossier["program_id"]
+                            or row["id"] in seen or po.public_oversight_assertion_id(row) != row["id"]
+                            or po.strict_datetime(row["known_at"]) > cutoff
+                            or po.strict_datetime(row["valid_from"]) > cutoff
+                            or (row["valid_to"] is not None and cutoff >= po.strict_datetime(row["valid_to"]))
+                            or po.strict_datetime(row["published_on"] + "T00:00:00+00:00") > po.strict_datetime(row["known_at"])
+                            or po.public_oversight_excerpt_sha256(row["excerpt"]) != row["excerpt_sha256"]
+                            or row["finding_kind"] not in po.PUBLIC_OVERSIGHT_FINDING_KINDS
+                            or row["reported_by"] not in po.PUBLIC_OVERSIGHT_REPORTER_ENUM
+                            or type(row["page"]) is not int or row["page"] < 1
+                            or not row["source_url"] or not row["sha256"]):
+                        return False
+                    seen.add(row["id"])
+                if rail["state"] == "reviewed" and not seen:
+                    return False
         if dossier_content_id(value) != value.get("content_id"):
             return False
-    except (TypeError, ValueError, OSError):
+    except (TypeError, ValueError, KeyError, OSError):
+        # KeyError: a payload that skips a required rail key is malformed, not
+        # a crash -- the fail-closed answer is False, mirroring every other
+        # malformed shape above.
         return False
     return True
 
@@ -485,9 +593,11 @@ def is_valid_program_dossier_payload(value: Any) -> bool:
 __all__ = [
     "CONTRACT",
     "SCHEMA_VERSION",
+    "PUBLIC_OVERSIGHT_DOSSIER_VERSION",
     "CONTENT_ID_PREFIX",
     "PARTICIPATION_LIMITATION",
     "ALLOCATION_LIMITATION",
+    "OVERSIGHT_LIMITATION",
     "dossier_content_id",
     "compose_program_dossier_bundle",
     "is_valid_program_dossier_payload",

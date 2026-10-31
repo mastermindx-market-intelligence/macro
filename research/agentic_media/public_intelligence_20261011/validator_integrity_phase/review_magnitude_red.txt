@@ -1,0 +1,16 @@
+F.F                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_explicit_magnitude_phrase_does_not_require_comma[$1,000 expressed in millions] _
+tests/test_press_validators.py:931: in test_explicit_magnitude_phrase_does_not_require_comma
+    assert V.check_fact_anchor(F.draft('$1,000 million',fold=False),slot,F.config())['ok'] is True
+E   assert False is True
+_ test_explicit_magnitude_phrase_does_not_require_comma[$1,000 EXPRESSED IN millions] _
+tests/test_press_validators.py:931: in test_explicit_magnitude_phrase_does_not_require_comma
+    assert V.check_fact_anchor(F.draft('$1,000 million',fold=False),slot,F.config())['ok'] is True
+E   assert False is True
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_validators.py::test_explicit_magnitude_phrase_does_not_require_comma[$1,000 expressed in millions]
+FAILED tests/test_press_validators.py::test_explicit_magnitude_phrase_does_not_require_comma[$1,000 EXPRESSED IN millions]
+2 failed, 1 passed, 118 deselected in 2.39s

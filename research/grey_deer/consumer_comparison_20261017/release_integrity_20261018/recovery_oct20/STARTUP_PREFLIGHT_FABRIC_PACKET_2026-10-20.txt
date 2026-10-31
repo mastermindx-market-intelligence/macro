@@ -1,0 +1,288 @@
+You are a bounded paid source reviewer for the recovered Census Risk System / WS:GREY-DEER-RISK-INTELLIGENCE. Root is continuing the existing attended Macro operation risk-radar-release-qualification-20261018-0304. Review only the missing startup pending-target callee boundary; do not change files, fetch live data, run application code, contact providers, deploy, grade, or rerun research.
+
+Immutable source: mastermindx-market-intelligence/Mastermind protected merged commit a7553e0a18339c910eef9687c730b06605dd710e, portfolio/paper_account.py blob d80b8cfc3397742e203e99ee8c15e5f44969cd50. Relevant excerpts below were read by git show at that commit. A previous accepted review establishes registered app startup imports scheduler, asserts auth, attempts governance events, and for non-serve-only initializes jobstore, starts paused, calls startup preflight for active single-name books, then resumes only if each is OK or reports quarantine.status=quarantined. First-run flags are checked later and do not govern these earlier calls. Current VPS read says serve_only=0, authoritative=1, jobstore=memory. Runtime still 732cf7be; full release has NOT been authorized. Existing general dependency/settlement reviews must be reused; no full-fleet audit.
+
+Deliver a compact independent semantic review (maximum 4500 words but prefer 1200): (1) positive ordered effects in actual supplied code; (2) exactly what clean no-pending/no-WAL established-book state would and would not qualify; (3) important failure/atomicity counterexamples; (4) smallest remaining named callee or runtime observation only where answer-changing; (5) minimal isolated matching-runtime experiment for this boundary. Distinguish observations from inference, source acceptance from runtime proof, and recoverable code rollback from data effects. Do not demand unrelated audit or repeat existing 113+1 helper tests. If omitted body prevents a conclusion, mark that finite gap explicitly. Root owns integration and acceptance.
+
+SOURCE preflight_pending_target:
+def preflight_pending_target(
+    portfolio_id: str | None = None,
+    *,
+    _locked: bool = False,
+) -> dict[str, Any]:
+    """Validate queued executable state before any consumer may inspect or rewrite its target.
+
+    This is the single cutover boundary used by settlement, deterministic de-risk, and overnight
+    refinement.  Returning ``ok=False`` means the caller must stop immediately: the incompatible
+    file has been recoverably quarantined (or its quarantine move failed closed).  Missing queues
+    and valid regional legacy queues remain ordinary ``ok=True`` outcomes.
+    """
+    # Validation and a possible quarantine are one compare-and-act boundary.  Otherwise a valid
+    # PM queue written after our read could be renamed based on the stale artifact we inspected.
+    if not _locked:
+        with _paper_transaction_lock(portfolio_id):
+            return preflight_pending_target(portfolio_id, _locked=True)
+
+    # Finish any already-prepared settlement first.  In particular, a crash/failure after account
+    # and fills committed but before queue deletion must clear that exact old queue before it can be
+    # mistaken for a fresh instruction.
+    recover_paper_transaction(portfolio_id)
+    raw_pending = _read_pending_target_payload(portfolio_id)
+    pending = load_pending_target(portfolio_id)
+    if pending is None:
+        if pending_target_file_exists(portfolio_id):
+            reason = pending_target_contract_error(raw_pending, portfolio_id) or "malformed_payload"
+            quarantined = quarantine_pending_target(portfolio_id, reason, raw_pending)
+            return {
+                "ok": False,
+                "skipped": "pending_target_quarantined",
+                "quarantined": True,
+                "quarantine": quarantined,
+                "pending": None,
+            }
+        return {"ok": True, "pending": None}
+
+    incompatibility = pending_target_contract_error(pending, portfolio_id)
+    if incompatibility:
+        quarantined = quarantine_pending_target(portfolio_id, incompatibility, pending)
+        return {
+            "ok": False,
+            "skipped": "pending_target_quarantined",
+            "quarantined": True,
+            "quarantine": quarantined,
+            "pending": None,
+        }
+    return {"ok": True, "pending": pending}
+
+SOURCE direct helper bodies:
+def _paper_transaction_lock(portfolio_id: str | None = None):
+    """Serialize one book across processes, while allowing same-thread nested boundaries."""
+    path = _paths(portfolio_id)["data"] / ".paper_transaction.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    key = str(path.resolve())
+    depths = getattr(_PAPER_LOCK_STATE, "depths", None)
+    if depths is None:
+        depths = {}
+        _PAPER_LOCK_STATE.depths = depths
+    if depths.get(key, 0):
+        depths[key] += 1
+        try:
+            yield
+        finally:
+            depths[key] -= 1
+        return
+    with path.open("a+b") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        depths[key] = 1
+        try:
+            yield
+        finally:
+            depths.pop(key, None)
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+def recover_paper_transaction(portfolio_id: str | None = None) -> dict[str, Any] | None:
+    """Serialize and idempotently finish one book's prepared paper transaction."""
+    with _paper_transaction_lock(portfolio_id):
+        return _recover_paper_transaction_unlocked(portfolio_id)
+
+def pending_target_file_exists(portfolio_id: str | None = None) -> bool:
+    """Whether executable queue state exists, including malformed JSON that cannot be loaded."""
+    return _pending_target_path(portfolio_id).exists()
+
+def pending_target_contract_error(payload: dict[str, Any] | None,
+                                  portfolio_id: str | None = None) -> str | None:
+    """Return an incompatibility reason for an executable pending target, else ``None``.
+
+    Only the successor US book has a breaking *version* contract.  Every book shares the same
+    executable-target validation contract; malformed regional legacy payloads fail closed too.
+    """
+    if not isinstance(payload, dict) or not isinstance(payload.get("target"), dict):
+        return "malformed_payload"
+    if portfolio_id == "autonomous":
+        if payload.get("schema_version") != PENDING_TARGET_SCHEMA_V2:
+            return "missing_or_incompatible_schema_version"
+        if payload.get("engine_version") != US_BRAIN_ENGINE_V2:
+            return "missing_or_incompatible_engine_version"
+        if payload.get("portfolio_id") != "autonomous":
+            return "portfolio_identity_mismatch"
+    elif portfolio_id in {"china", "hk"} and any(
+        key in payload
+        for key in ("asset_policy", "instrument_policy_version", "portfolio_id")
+    ):
+        # Pre-policy regional queues remain readable, but any queue that claims
+        # the new authority contract must match it exactly.
+        from portfolio import instrument_policy
+
+        if payload.get("portfolio_id") != portfolio_id:
+            return "portfolio_identity_mismatch"
+        if payload.get("asset_policy") != instrument_policy.POLICY_NAME:
+            return "missing_or_incompatible_asset_policy"
+        if payload.get("instrument_policy_version") != instrument_policy.POLICY_VERSION:
+            return "missing_or_incompatible_instrument_policy_version"
+    try:
+        target = validate_target_weights(
+            payload.get("target"),
+            require_canonical_tickers=True,
+            portfolio_id=portfolio_id,
+        )
+    except InvalidTargetWeights as exc:
+        return f"invalid_target:{exc.reason}"
+    decision = payload.get("decision_snapshot")
+    if decision is not None:
+        if not isinstance(decision, dict):
+            return "malformed_decision_snapshot"
+        if decision.get("schema_version") != PENDING_DECISION_SCHEMA_V1:
+            return "incompatible_decision_snapshot_schema"
+        if decision.get("portfolio_id") != (portfolio_id or "flagship"):
+            return "decision_snapshot_portfolio_mismatch"
+        if not isinstance(decision.get("submission"), dict):
+            return "malformed_decision_submission"
+        if decision.get("target_sha256") != _target_sha256(target):
+            return "decision_snapshot_target_mismatch"
+    try:
+        if "execution_constraints" in payload:
+            if payload.get("execution_constraints") is None:
+                raise InvalidExecutionConstraints("constraint_not_object")
+            _validated_execution_constraints(
+                payload.get("execution_constraints"),
+                target=target,
+                decision_snapshot=decision,
+                portfolio_id=portfolio_id,
+            )
+    except InvalidExecutionConstraints as exc:
+        return f"invalid_execution_constraints:{exc.reason}"
+    return None
+
+def quarantine_pending_target(portfolio_id: str | None, reason: str,
+                              payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Recoverably isolate an incompatible target and write bounded audit metadata.
+
+    The source is atomically renamed within its existing runtime-book directory.  It is never
+    deleted and its contents are not rewritten, so an operator can inspect or restore it.  A compact
+    JSONL side ledger lives beside the quarantined file; the shared governance event is best-effort.
+    If the move itself fails, callers still receive/raise a fail-closed result and MUST NOT rebalance.
+    """
+    source = _pending_target_path(portfolio_id)
+    data_dir = source.parent
+    data_dir.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(UTC)
+    suffix = f"{now.strftime('%Y%m%dT%H%M%S%fZ')}.{uuid4().hex[:8]}"
+    destination = data_dir / f"pending_target.quarantine.{suffix}.json"
+    raw = b""
+    try:
+        raw = source.read_bytes()
+    except OSError:
+        pass
+
+    observed = payload if isinstance(payload, dict) else {}
+    target = observed.get("target") if isinstance(observed.get("target"), dict) else {}
+    record: dict[str, Any] = {
+        "event": "pending_target_quarantined",
+        "portfolio_id": portfolio_id or "flagship",
+        "reason": str(reason),
+        "quarantined_at": now.isoformat(),
+        "source_file": source.name,
+        "quarantine_file": destination.name,
+        "recoverable": True,
+        "expected_contract": ({
+            "schema_version": PENDING_TARGET_SCHEMA_V2,
+            "engine_version": US_BRAIN_ENGINE_V2,
+            "portfolio_id": "autonomous",
+            "instrument_policy_version": "single_name_equity.v1",
+            "target_weights": (
+                "canonical_positively_verified_us_common_stock_only_"
+                "finite_long_only_gross_lte_one"
+            ),
+        } if portfolio_id == "autonomous" else {
+            "portfolio_id": portfolio_id or "flagship",
+            "instrument_policy_version": (
+                "single_name_equity.v1"
+                if portfolio_id in {"china", "hk"}
+                else None
+            ),
+            "target_weights": (
+                "canonical_positively_verified_single_name_equity_only_"
+                "finite_long_only_gross_lte_one"
+                if portfolio_id in {"china", "hk"}
+                else "canonical_finite_long_only_gross_lte_one"
+            ),
+        }),
+        "observed_contract": {
+            "schema_version": observed.get("schema_version"),
+            "engine_version": observed.get("engine_version"),
+            "portfolio_id": observed.get("portfolio_id"),
+        },
+        "queued_asof": observed.get("asof"),
+        "target_count": len(target),
+        "target_symbols": sorted(str(t).upper() for t in target)[:50],
+        "source_sha256": hashlib.sha256(raw).hexdigest() if raw else None,
+    }
+    try:
+        source.replace(destination)
+        try:
+            dir_fd = os.open(data_dir, os.O_RDONLY)
+            try:
+                os.fsync(dir_fd)
+            finally:
+                os.close(dir_fd)
+        except OSError:
+            # The atomic rename remains fail-closed where directory fsync is unavailable.
+            pass
+        record["status"] = "quarantined"
+    except Exception as exc:  # noqa: BLE001 - failure remains a hard, non-executing stop
+        record["status"] = "quarantine_failed"
+        record["recoverable"] = source.exists()
+        record["error"] = repr(exc)[:300]
+
+    try:
+        _append_jsonl(data_dir / "pending_target_quarantine.jsonl", record)
+    except Exception as exc:  # noqa: BLE001 - the shared event below is a second audit sink
+        record["audit_ledger_error"] = repr(exc)[:300]
+    try:
+        from control_plane import run_events
+        run_events.append({
+            "kind": "pending_target_quarantined",
+            "job": "pending_target_contract_guard",
+            "book": portfolio_id or "flagship",
+            "step": "pre_rebalance_validation",
+            "status": "skip",
+            "severity": "HARD_STOP",
+            "actor": "deterministic_engine",
+            "extra": {
+                "reason": record["reason"],
+                "quarantine_file": record["quarantine_file"],
+                "quarantine_status": record["status"],
+                "recoverable": record["recoverable"],
+                "expected_contract": record["expected_contract"],
+                "observed_contract": record["observed_contract"],
+                "target_count": record["target_count"],
+                "source_sha256": record["source_sha256"],
+            },
+        })
+    except Exception as exc:  # noqa: BLE001 - event logging never re-enables a quarantined target
+        record["event_log_error"] = repr(exc)[:300]
+    return record
+
+def _read_pending_target_payload(portfolio_id: str | None = None) -> dict | None:
+    """Parse the queued target without validating or mutating it (preflight owns quarantine)."""
+    try:
+        p = _pending_target_path(portfolio_id)
+        if p.exists():
+            d = json.loads(p.read_text())
+            if isinstance(d, dict) and isinstance(d.get("target"), dict):
+                return d
+    except Exception:
+        pass
+    return None
+
+def load_pending_target(portfolio_id: str | None = None) -> dict | None:
+    """Return a valid queued target, or ``None`` for missing/corrupt/incompatible state.
+
+    Settlement consumers must use ``preflight_pending_target`` so an invalid executable artifact is
+    quarantined with an audit record.  This read helper still applies the identical shared validator
+    and never hands malformed weights to a caller.
+    """
+    payload = _read_pending_target_payload(portfolio_id)
+    if pending_target_contract_error(payload, portfolio_id):
+        return None
+    return payload

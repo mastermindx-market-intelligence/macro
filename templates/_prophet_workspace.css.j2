@@ -25,11 +25,7 @@ html[data-theme="light"] #us-standouts .pvcard.po-card {
   background: var(--panel);
   box-shadow: var(--card-shadow);
 }
-#us-standouts .po-card::before {
-  height: 2px;
-  background: var(--po-accent);
-  box-shadow: none;
-}
+#us-standouts .po-card::before { content: none; }
 #us-standouts .po-card:hover { border-color: var(--gbtn-brd-hover); }
 #us-standouts .po-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: start; }
 #us-standouts .po-head-main { gap: 5px; }
@@ -231,4 +227,19 @@ html[data-theme="light"] .pv-setup-body .pvs-section-tab[aria-selected="true"] {
   .pv-setup-body .pvs-group[data-pvs-section="evidence"] { grid-template-columns: minmax(0, 1fr); }
   .pv-setup-body .pvs-section-tabs { max-width: 100%; }
   .pv-setup-body .pvs-section-tab { flex: 1 1 auto; padding: 8px 10px; }
+}
+
+/* Legacy compact cards retain their original interactive overlays. */
+{# 2026-10-17: Restore the original compact chart-first US Prophet card.
+   PR #9260's opportunity-workspace card enlargement is intentionally withdrawn.
+   Keep actual controls above the full-card link, but let passive verdict/quote
+   regions pass clicks through to that link. Shared regional geometry is unchanged. #}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:not(.po-card) .pv-ov {
+  z-index: 5;
+  pointer-events: none;
+}
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:not(.po-card) .pv-cau,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:not(.po-card) .pv-trg,
+#us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:not(.po-card) .pv-live:not([hidden]) {
+  pointer-events: auto;
 }

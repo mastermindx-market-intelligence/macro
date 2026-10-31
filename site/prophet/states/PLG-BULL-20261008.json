@@ -1,50 +1,52 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PLG-BULL-20261008",
-  "asof": "2026-10-15",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.9,
   "raw_confidence": 8.0,
   "delta_vs_base": -43.1,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 49.8,
-    "overlay": 46.9
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -7.5,
+    "dist_to_stop_r": -10.5,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 15.6,
-    "p1": -5.6667,
-    "p2": -2.8333,
+    "horizon_pct_used": 48.9,
+    "p1": -7.6667,
+    "p2": -3.8333,
     "p3": null,
-    "move_r": -8.5,
+    "move_r": -11.5,
     "mfe_r": 0.0,
-    "mae_r": -8.5
+    "mae_r": -11.75
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -0.1699999761581421,
+  "_mae": -0.2350000333786011,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 7,
-  "tau": 0.1556
+  "days_elapsed": 22,
+  "tau": 0.4889,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

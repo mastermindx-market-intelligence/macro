@@ -1,0 +1,181 @@
+# Mastermind shared application shell — design review 01
+
+Status: DESIGN CANDIDATE / NOT ACCEPTED FOR RELEASE.
+Parent mission complete: false.
+Operation: `market-os-shared-shell-design-20260924-sol-001`.
+Existing organizational owner: `WS:MARKET-OS`; coordinate shared experience with existing Market Ontology integration carrier Macro #6819. This is not a new workstream, lifecycle, router, auth or state owner.
+
+## Chairman intent and ownership
+
+On 2026-09-24 the Chairman approved Sol taking end-to-end leadership of the shared application-shell direction, with Paper.design mockups first and collaborative refinement before site-wide release. The objective is consistent navigation and page geometry across Macro and eventual deeper Terminal convergence, not a blanket rewrite of working intelligence or a second application. Sol retains product architecture, visual adjudication and integration responsibility. Existing page/program writers retain their source custody.
+
+This phase remains design and compatibility investigation. Current continuation permits advancing that work; it is not acceptance of incomplete mockups or permission for site-wide release. Implementation, deployment and acceptance remain separate later gates.
+
+## Canonical design carrier and actual visual frontier
+
+[Editable Paper review page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-D-0).
+
+File: MASTERMIND PAGES, `01M2WGNCX9475G79JRKJTCM08P`.
+Page: `p-D-0`, Mastermind · Shared Shell · Review 01 · 2026-09-24.
+
+| Target | Actual state |
+|---|---|
+| TUD-0 — US Overview, 1440x900 | Primary study exists; lower disclosure fit remains held. |
+| U19-0 — Terminal focus, 1440x900 | Existing composed/reviewed study preserved. |
+| UBT-0 — Sector shared shell, 1440x900 | Composed and visually reviewed in pass two; three-view grouping remains exploratory, not a lossless source migration. |
+| UJ4-0 — Market-switcher scaffold | NOT COMPOSED; no popup. |
+| UP4-0 — Mobile shell header, 390x844 | Status bar, header, workspace tabs and primary read only; INCOMPLETE. |
+| UQL-0 — Mobile global drawer, 390x844 | NOT COMPOSED; empty scaffold. |
+
+No Paper modification was attempted in the third pass. Existing China p-7-1, Sector p-9-0, International p-C-0 and other page designs remain outside this carrier's write scope. The last observed token hash is `5ae876bc`; it was not freshly recounted in pass three. Creation, composition, review, functional proof and acceptance are distinct.
+
+## Procedure and source identity
+
+Protected procedure: Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, Skillpack1.0.1/bootstrap1 compatible. The fresh master/INDEX read in pass three matched the already-loaded COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT revision.
+
+Initial design base: Macro `8a55040f204cd0f1c92320bae1d44e1cfd21d212`.
+Current compatibility inspection: Macro `b9d23ca4bce4308fa7466c4e0f5d318168a50f6f`.
+Terminal preference inspection retained from pass two: `145bfbe4c8ea0da04658cbbe05879c84c990721b`, markets.ts blob `6168662381b7d0a32af90eb262ae2c8862883a1b`.
+
+Direct work rationale: PRINCIPAL_JUDGMENT for the architecture; LOWER_TOTAL_OVERHEAD for a bounded native read-only registry check. No worker dispatch, background Web execution or production write is claimed.
+
+## Product structure proposed for review
+
+Four responsibilities remain separate:
+
+1. Global sidebar: stable product areas with restrained grouping and All tools, not the whole mega menu permanently expanded.
+2. Top market selector: current viewing context, not followed/enabled preferences or selected security identity.
+3. Workspace navigation: views within the selected area; no second permanent competing global sidebar.
+4. Local controls: filters, horizon, sorting and presentation modes.
+
+Provisional primary areas: Overview, Markets, Sectors & themes, Stocks & setups, Options, Research. Personal destinations: Watchlists, Portfolio, Alerts. Labels are not a completed route disposition. No tool is removed because it does not fit the first sketch.
+
+The expanded frame suits research; a collapsed rail suits chart-intensive focus. Overview/analysis/focus are proposed OUTER-SHELL modes, not new values in the existing closed page-archetype vocabulary. Preserve each page's declared composition, information hierarchy and domain semantics.
+
+Reuse existing Paper tokens and Inter: graphite surfaces, restrained separators, blue navigation accents, legible body text and consistent structural spacing. Market colors are not navigation state. Dark mockups do not remove existing Macro light/Chinese support. All example states, scores, curves and watchlists remain clearly illustrative, not market evidence or authority.
+
+## Third-pass ruling: reuse the existing page registry
+
+The existing canonical census is `data/product_experience/page_registry.json`, documented by `docs/product_experience/PAGE_REGISTRY.md` and generated by `scripts/build_product_page_registry.py`. Its sole hand-maintained input is `config/product_experience/page_registry_overrides.yml`.
+
+**Do not create a second shell page catalog, route-family database or design-compliance ledger.** Use existing page_ids, source-template/builder attribution, access/payload distinctions, archetypes and design_system evidence fields. Derived route/builder fields must not be hand-invented. Update the existing owner only after fresh source/custody reconciliation; this records branch does not edit it.
+
+### Executed check and freshness limits
+
+The committed artifact at the inspection pin contains 330 rows: Macro308, Terminal15, Mastermind7. Its own generation stamp is **2026-09-04T22:43:01Z**, not September24. Its source SHAs differ from this turn's current source pins. Some source metadata explicitly records unresolved attribution and a non-clean historical Mastermind worktree. Treat it as the established census mechanism and dated baseline, not fresh production proof.
+
+Executed on an isolated downloaded snapshot, without source or production changes:
+
+`python3 scripts/build_product_page_registry.py --check`
+
+Result: exit0, `page registry OK: 330 rows, schema mastermind.page_registry.v1`.
+
+This validates the existing schema/override references only. It does not refresh the census or prove runtime behavior.
+
+A direct comparison of current, non-truncated top-level site Git-tree metadata with the dated Macro root-page rows found **282 current root HTML files versus281 registered root pages**, with `/glossary.html` the sole current root path absent from that dated list and no registered root path missing from the current tree. This comparison does not inspect nested families or new Terminal routes. It does not establish a complete current estate census.
+
+The current templates directory contains256 `.html.j2` names, including partials; this is not256 independently designed pages. A separate successful read of `_navlinks.html.j2` found99 anchor declarations and85 distinct href strings, including a non-navigation JavaScript control and an external destination. That is one template's denominator, not all runtime navigation. A later compound adaptive-menu extraction/test-source call was safety-refused and was not retried.
+
+The dated Macro archetype distribution is: instrument_analyzer119, regime_dashboard45, intelligence_desk41, discovery_board41, editorial25, utility20, marketing9, monitor6, command_center2. These are existing classifications, not current completion counts. Plan migration by established archetype and source-template family rather than by each generated URL.
+
+## Third-pass ruling: preserve native Sector views before consolidating them
+
+The pass-two Paper reference OOM-0 exposes Rotation / Discover / Market breadth. The shared-shell candidate adopted that grouping and its illustrative sample semantics. **That visual adoption is not evidence that the current functional workspace has only three views.**
+
+Current US `templates/si_workspace.js` declares six views:
+`overview`, `map`, `moving`, `money`, `explore`, `confluence`.
+
+Current China `templates/si_workspace_china.js` declares five:
+`overview`, `map`, `moving`, `explore`, `confluence`.
+It explicitly does not expose the US-style Money & Breadth view. The same market label must not imply parity in unavailable native data or methods.
+
+### Safe first-adoption rule
+
+The first shared-shell migration preserves the existing native view sets and entry points. Moving view navigation into the common page-level region is permitted only without dropping their user jobs. A later three-view consolidation requires an explicit, reviewed mapping of every native view, filter, selection, lazy-loaded consumer, legacy anchor and back-link. Do not implement the three-tab Paper layout as a silent deletion of Confluence or the old Overview/action board.
+
+Confluence must remain explicitly discoverable by name or by a clearly named retained entry, not merely technically reachable through an invisible compatibility hash. The old provisional mapping to a Discover entry remains a hypothesis requiring acceptance, not an implementation instruction.
+
+### Deep-link contract verified from current source
+
+| Source behavior | Migration requirement |
+|---|---|
+| US `#confluence` activates the separate confluence view; `subsectors.js` lazily mounts its own consumer | Preserve the view, script/data contract and a visible entry. Do not call generic Discover equivalent. |
+| US `#sc-app` and `#sc-top` explicitly map into Confluence | Preserve those old anchor meanings, not just the headline hash. |
+| US legacy table has21 literal entries plus2 S2 entries merged at runtime | Preserve all23 effective mappings; a test of only the literal block is not the full runtime denominator. |
+| China directly recognizes `#confluence`, but its legacy table differs and does not contain the same US `sc-app`/`sc-top` aliases | Use native mapping; never copy all US hashes to China unvalidated. |
+| US `#theme-*` is left to its existing entity resolver; China `#theme-*` and `#b-*` route to Explore and retain their owners | Preserve native resolution and canonical entity identity; no cross-country slug substitution. |
+| `baskets_china.html` preserves an incoming hash or defaults to `#si-explore`; China rotation stub preserves a hash or defaults to `#si-movement` | Retain these explicit compatibility behaviors. |
+| US rotation stub redirects to `sector_central.html#si-movement` | Retain that named task; do not replace with generic Overview. |
+| Current generated `subsectors.html` and `subsectors_china.html` contain standalone page content and the established registry lists both | Do not infer removal/redirect merely from a router comment describing an older standalone migration. Reconcile served behavior and owner before changing either URL. |
+
+Sources: `templates/si_workspace.js:12-108,333-340`; `templates/si_workspace_china.js:16-89,270-281`; current generated alias pages. Shell/route compatibility does not promote source content into trading authority.
+
+## Live anonymous Confluence observation — blocker evidence, not acceptance
+
+A new anonymous headless Chrome observation on the MacBook source-audit carrier opened:
+`https://www.mastermind-x.com/sector_central.html#confluence`.
+
+The command used a separate temporary browser profile, a12-second virtual-time budget and a40-second process timeout. The process timed out rather than exiting successfully. Same-carrier reconciliation recovered emitted DOM that ended with `</html>`; there were **no remaining processes using that exact temporary profile path**.
+
+Observed emitted DOM:
+- `.si-view-btn.on` and `.si-view.on` remained `overview`;
+- the Confluence section did not carry `on`;
+- `#sc-app` still displayed Loading;
+- the document requested `si_workspace.js?v=9d4d6860`.
+
+A separate ordinary anonymous GET of that exact script returned **HTTP401**, Content-Type `application/json`, body `{"locked":true,"reason":"authentication_required","signin_url":"/?signin=1"}`.
+
+The UTF-8 DOM text is372956 characters; SHA256 of the persisted UTF-8 text is `da701171199874b8e77cda3c7ee1944bff5f61596839c0ad469fc2ded7abc303`. Do not confuse character count with the captured raw-byte length.
+
+This is concrete evidence of an anonymous navigation/access problem, not a passing full browser journey. No screenshot or authenticated comparison was obtained. Do not infer the failure's complete cause from the401 alone or treat it as permission to weaken entitlement. Reconcile the existing serving/mobile audit owner (existing Macro #7579 MM-07 is the prior related carrier) and exact script classification before repair. Do not create a duplicate global public-JavaScript exception or publish protected data. A served script's denied access and private payload access are separate questions.
+
+## Market-context routing contract
+
+The inspected nav names these distinct destinations:
+
+| Workspace family | US | China | Hong Kong | Canada | International |
+|---|---|---|---|---|---|
+| Market overview | macro.html | china.html | hk.html | canada.html | intl.html |
+| Stock dashboard | us_stocks.html | china_stocks.html | hk_stocks.html | canada_stocks.html | intl_stocks.html |
+| Sector/theme destinations | sector_central.html | sector_central_china.html | baskets_hk.html; allocation_hk.html | baskets_canada.html; allocation_canada.html | baskets_intl.html |
+
+Current committed HK/Canada basket pages have their own thematic-basket titles/body; their allocation pages have separate narrative-rotation titles/body. The inspected four pages contain neither the Sector workspace script nor a meta-refresh redirect. This is source evidence of distinct consumers, not complete live coverage proof and not proof that no other equivalent exists.
+
+Do not synthesize nonexistent sector_central_hk/canada URLs. Preserve an equivalent task only after it is qualified. When it is not, keep the current view until the user chooses a clearly named alternative; a basket, overview and stock board are not interchangeable fallbacks.
+
+`china.html` and `china_intel.html` remain distinct jobs. `intl.html` is the World Dashboard; `markets.html` and `country_cycles.html` are separate cycle tools. Preserve current International redesign ownership and do not create another global landing page.
+
+Viewing context never writes `market_focus`, enabled markets, home preference, holdings or watchlist membership. Terminal's `FollowId` uses global where its `MarketId` uses intl; the global ranking bucket is not automatically the entire universe. One selected listing is not replaced by changing country context.
+
+For a qualified ordinary switch, no extra confirmation is necessary. Preserve only compatible subviews and filters. Show target identity and loading/error state together; never put a new country label on cached old-country content. Access-required, unsupported, stale, unavailable and capability-unknown remain distinct. Explicit route context wins on Back, reload, bookmarks and independent tabs.
+
+## First useful vertical and rollout boundaries
+
+After design acceptance and source-custody reconciliation:
+Market overview -> sector/theme -> one canonical security in the existing Terminal -> save through the existing watchlist owner -> return to the exact originating workspace.
+
+The source-access issue and lost-view risk must be resolved or truthfully gated in the real pilot; they cannot be hidden by new chrome. The pilot includes direct entry, market switching, Back/reload, mobile navigation and stale/access-required states. Preserve attention versus ownership and all existing identity, origin-navigation, watchlist, portfolio and publication owners.
+
+Migration uses the existing page registry and its source-template families. Refresh its dated evidence through its incumbent generator at frozen repo refs before claiming the complete denominator. Adapt existing Macro and Terminal frames first; framework/repository consolidation is not a prerequisite. Public marketing/editorial pages may keep their existing appropriate frames.
+
+One current writer owns shared chrome during implementation. China, Sector, International, Prophet, mobile, options and Terminal programs retain their content/model scopes. No production release, worker dispatch, source-custody transfer or design_system.compliant promotion is authorized by this records-only candidate.
+
+## Acceptance cases — status is explicit
+
+Executed now: existing registry schema check; narrow current root-path comparison; current-source view/alias inspection; limited anonymous DOM and exact-script HTTP observation. None is whole-product acceptance.
+
+Still specified and owed:
+- native Sector view/legacy-anchor preservation, including Confluence's separate payload and visible entry;
+- qualified US/China task switching without copied entity filters or invented breadth parity;
+- explicit HK/Canada destination choice when no native equivalent is qualified;
+- all current and legacy country, entity and contextual entry points in the existing census;
+- existing options capability and rights boundaries across markets;
+- followed/enabled/home and personal membership invariance;
+- independent-tab context plus Back/reload/bookmark behavior;
+- exact listing and originating workspace/selection through Terminal open/save/return;
+- stale and inaccessible target data never appearing as fresh, empty success or another country's data;
+- drawer focus entry/return, Escape, keyboard operation and background focus containment;
+- narrow EN/ZH and supported theme cases, including long labels and failure states;
+- real production-path release identity, usable consumer and rollback proof.
+
+The last accepted visual artifact remains a candidate. The incomplete market popup/mobile set and held China composition are not finished. Continue from the existing PR, Paper page and cumulative Agent OS handoff rather than restarting the design or building another catalog.

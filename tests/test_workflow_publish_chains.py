@@ -65,6 +65,24 @@ def _assert_externalize_chain_precedes_staging(step: str, *, stage_marker: str) 
         )
 
 
+def test_sector_rebuild_defaults_to_installed_macstudio_runner() -> None:
+    """Schedules and input-less pushes must not queue forever on an orphaned label.
+
+    The repository runner inventory on 2026-10-16 had no render-linux label;
+    the prior scheduled rebuilds were unassigned, while an explicitly dispatched
+    macstudio job ran the full producer and correctly failed its semantic vintage
+    gate.  Retain render-linux as an *explicit* operator option if re-enrolled,
+    not as the scheduled/default lane.  Do not alter freshness or publication.
+    """
+    src = SECTOR_WORKFLOW.read_text(encoding="utf-8")
+    assert 'default: macstudio' in src
+    assert "github.event.inputs.runner || 'macstudio'" in src
+    assert 'options: [macstudio, render-linux]' in src
+    assert 'default: render-linux' not in src
+    assert "github.event.inputs.runner || 'render-linux'" not in src
+    assert 'python -m scripts.check_sector_intelligence_freshness' in src
+
+
 def test_sector_publish_step_runs_externalize_chain_before_staging_site_pages() -> None:
     """MO-A heal 2026-09-23 (#7758): sector-intelligence's ``publish scoped generation
     to main`` step MUST run the shim/externalize/stamp chain BEFORE staging ``site/``

@@ -83,7 +83,55 @@ TIER3_TOKENS: tuple[str, ...] = (
     "finance.yahoo.com", "markets.businessinsider.com", "stocktwits.com",
 )
 # Hard blocklist — pure stock-pick content mills. Tier 0 on ANY host.
-BLOCKED_TOKENS: tuple[str, ...] = ("tipranks.com",)
+BLOCKED_TOKENS: tuple[str, ...] = ("tipranks.com", "fool.com", "zacks.com")
+
+# Publisher roles for the curated company-news view. These extend the canonical
+# source table; transport vendors and display-rights receipts never assign a role.
+TICKER_WIRE_DOMAINS: tuple[str, ...] = ("benzinga.com", "thefly.com")
+PRESS_RELEASE_DOMAINS: tuple[str, ...] = (
+    "globenewswire.com", "businesswire.com", "prnewswire.com",
+    "accesswire.com", "accessnewswire.com",
+)
+
+
+def publisher_domain(value: str) -> str:
+    """Normalize a publisher HOST, refusing URLs, credentials and lookalike syntax."""
+    host = (value or "").strip().lower().rstrip(".").removeprefix("www.")
+    if not re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?", host):
+        return ""
+    labels = host.split(".")
+    if len(labels) < 2 or any(not part or part.startswith("-") or part.endswith("-") for part in labels):
+        return ""
+    return host
+
+
+def _publisher_matches(host: str, tokens: tuple[str, ...]) -> bool:
+    # Bare CN source mnemonics (notably "em") are not publisher domains.
+    return any("." in token and (host == token or host.endswith("." + token)) for token in tokens)
+
+
+def publisher_tier(domain: str) -> int:
+    """Domain-bound variant of the shared tiers; no substring prestige upgrades."""
+    host = publisher_domain(domain)
+    if not host or _publisher_matches(host, BLOCKED_TOKENS):
+        return 0
+    for tier, tokens in ((1, TIER1_TOKENS), (2, TIER2_TOKENS), (3, TIER3_TOKENS)):
+        if _publisher_matches(host, tokens):
+            return tier
+    return 0
+
+
+def publisher_category(domain: str) -> str:
+    """Editorial identity only. It does not grant ingestion or display rights."""
+    host = publisher_domain(domain)
+    if not host or _publisher_matches(host, BLOCKED_TOKENS):
+        return "excluded"
+    if _publisher_matches(host, PRESS_RELEASE_DOMAINS):
+        return "press_release"
+    if publisher_tier(host) in (1, 2) or _publisher_matches(host, TICKER_WIRE_DOMAINS):
+        return "reporting"
+    return "unreviewed"
+
 
 # Tier weights — one canonical map. news_common used {1:1.0,2:.82,3:.58}; the CN
 # module used {1:1.0,2:.6,3:.3}. Delegation-friendly: both modules keep their own

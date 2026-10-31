@@ -1,0 +1,1068 @@
+{
+ "spec_version": "dataos.q03.workload/v1",
+ "run_id": "dataos-q03-1",
+ "commits": {
+  "A": "5569baad64b8023e5cb1995c1ce7a30bc8254a7b",
+  "B": "ed1497887c99101bd1b8bc5438e281f02466371b"
+ },
+ "seed": 20261013,
+ "interleave_unit": "ABBA",
+ "fixture": {
+  "shape": {
+   "bars_small_rows": 500,
+   "bars_large_tickers": 100,
+   "events_rows": 2000,
+   "nested_files": 200,
+   "nested_rows_per_file": 10,
+   "wide_columns": 60,
+   "wide_rows": 300
+  },
+  "files": {
+   "bars_large.parquet": {
+    "rows": 50000,
+    "logical_sha256": "c0c47fec1d5cc64c45ac2771a692545a60ee2df83e4d9259744689eaeb80411a",
+    "physical_sha256": "3f7cc93e5103a865c2e20abae7f875078fb27156fe6f6b37bf9f22b223faa37d",
+    "physical_pyarrow_version": "26.0.0"
+   },
+   "bars_small.csv": {
+    "rows": 500,
+    "sha256": "dfc705bb53d5e0ca0356ac4d95f25a4376d19fa7ec5de3e1cea10a45b13a8647"
+   },
+   "events.jsonl": {
+    "rows": 2000,
+    "sha256": "5ede6e15727d7a5da20f0b452658eca419610acd31a9a66f9dddebf27a751ee1"
+   },
+   "nested/f000.csv": {
+    "rows": 10,
+    "sha256": "af9e9242674f8e3e96132e6b618e70b224281f7572eea2dd0c91d8129f64d504"
+   },
+   "nested/f001.csv": {
+    "rows": 10,
+    "sha256": "eda38005c5c9a75f2e780e95892ec6bd78d5a2b1494ff899fa26e790ee9544f0"
+   },
+   "nested/f002.csv": {
+    "rows": 10,
+    "sha256": "dd5f2c622e20b4c4e770b3e849193152397c3a16464f4c52c8e20cfa58674aa3"
+   },
+   "nested/f003.csv": {
+    "rows": 10,
+    "sha256": "fc9e8da99eff01fadae77978c5b126353939a98c7176846df8ba2c38e468ae47"
+   },
+   "nested/f004.csv": {
+    "rows": 10,
+    "sha256": "d8b71163cfcea8dcd00c4009cf0ba3dfbe359dcf7ef63cac77e2ea3c91feb2fc"
+   },
+   "nested/f005.csv": {
+    "rows": 10,
+    "sha256": "f67dfabd7c185948e62a18e2c18bb738eab476608a1d5947e4fa1e5561ee5b09"
+   },
+   "nested/f006.csv": {
+    "rows": 10,
+    "sha256": "7cd30b73e6362ad9f95a0a928149f1177692e575e501bac5405592675f914adb"
+   },
+   "nested/f007.csv": {
+    "rows": 10,
+    "sha256": "e8dd0febfadcdeee85e1a672ac787e2b8d0f1dafdce550e20aaa9183495292fe"
+   },
+   "nested/f008.csv": {
+    "rows": 10,
+    "sha256": "9f964e593ac8ad89e5b3b33dcdd47dc045be74ffe124cf8d70565307b6ce1834"
+   },
+   "nested/f009.csv": {
+    "rows": 10,
+    "sha256": "bbbd162665104a5659ea82f8d3771c7fad5b6a930d4b42fcf1dcf1b970c9c943"
+   },
+   "nested/f010.csv": {
+    "rows": 10,
+    "sha256": "0db47d95662671752aabe187ef8a086c07350dcfd14b7a60710b5610d50b0d4d"
+   },
+   "nested/f011.csv": {
+    "rows": 10,
+    "sha256": "92734d53751de7cc235a3d20d906d2f045a2070d9f0c4e0a765554f68c381848"
+   },
+   "nested/f012.csv": {
+    "rows": 10,
+    "sha256": "f6c8206ba46747944d9d5e64e678a1bd9cb9a16da58254b5e36d3f5fd6250542"
+   },
+   "nested/f013.csv": {
+    "rows": 10,
+    "sha256": "ec205b8235c7c3e0fc2c8cf55370f80d727d0b56dbd35f2d40ba5e70f74b3814"
+   },
+   "nested/f014.csv": {
+    "rows": 10,
+    "sha256": "7292820f79df3f2fb2ccb45368b4beb44046227804581cbfb975596529a72ab4"
+   },
+   "nested/f015.csv": {
+    "rows": 10,
+    "sha256": "8f8674ba7ccb55c8cb7d73e67d4d31a373f936ee2c13eedf3b8764b016385a49"
+   },
+   "nested/f016.csv": {
+    "rows": 10,
+    "sha256": "0d3e8b025dcada942c15d1bb60272ff93032def3c5ed88237cdd26a2b502b443"
+   },
+   "nested/f017.csv": {
+    "rows": 10,
+    "sha256": "32f2db7f2fe6a1830ec604ea771da6cd83b55aa839d46f27793b1eabbb41ba1e"
+   },
+   "nested/f018.csv": {
+    "rows": 10,
+    "sha256": "8a206e06787bfa3a67de9f43eefb23081a465010867f23872336d80012aafe30"
+   },
+   "nested/f019.csv": {
+    "rows": 10,
+    "sha256": "f47afc93617c66bcc4744d8b65ea3f84606960b895ebb744529f53f525749324"
+   },
+   "nested/f020.csv": {
+    "rows": 10,
+    "sha256": "4336780d3531686789dc541280bb8631fb49c2eea1b9ef9391b6713b119cbcfa"
+   },
+   "nested/f021.csv": {
+    "rows": 10,
+    "sha256": "d8c75450977d07674d45b37678e84299df7c40de31835a7618bb113a406b6fab"
+   },
+   "nested/f022.csv": {
+    "rows": 10,
+    "sha256": "922d8019706cccbb636ba6e308f198e18e9140d14cc7275a16ee51fbe662cee9"
+   },
+   "nested/f023.csv": {
+    "rows": 10,
+    "sha256": "b4def64166519c83ee6cb3007f63a7eff5221af5f129c7f5cfc6855e62cf0fac"
+   },
+   "nested/f024.csv": {
+    "rows": 10,
+    "sha256": "9ff458a5014c9812483be1fc795631f29a32a9c606a2e29dd95a063fe106f848"
+   },
+   "nested/f025.csv": {
+    "rows": 10,
+    "sha256": "28ebb074a8a2f94d9e2a3946674a3469d3a99f8562690cb16290f04ea329d17d"
+   },
+   "nested/f026.csv": {
+    "rows": 10,
+    "sha256": "69b686e45ae12635cb9c54556b6b0eccbd4c6cd2ba4e7a01e19b9ea02bd40da2"
+   },
+   "nested/f027.csv": {
+    "rows": 10,
+    "sha256": "2b0878f2824b7e1492593664077159b732f3a3eaa01e7a919370dbb99c5ccc45"
+   },
+   "nested/f028.csv": {
+    "rows": 10,
+    "sha256": "12a626d8e0e766496bd4c34203227d78dd078c2c36f7e3a196fc2cf847ee87b2"
+   },
+   "nested/f029.csv": {
+    "rows": 10,
+    "sha256": "af67a517a8fdf235af7b0df70802b18d7c8118e945eb72711c661ff39f40958d"
+   },
+   "nested/f030.csv": {
+    "rows": 10,
+    "sha256": "50d3a1e5c73906b98a368dcf6f6c79f309754efddb6591f048b6b996070e4058"
+   },
+   "nested/f031.csv": {
+    "rows": 10,
+    "sha256": "81c90d8315d7313a18c2fd7c8e611ea4153d940d23aa5cb189c5fe7a4a27d57e"
+   },
+   "nested/f032.csv": {
+    "rows": 10,
+    "sha256": "8b7fa81e756e7bc880f8c93c8df6825b418e7ca07862e1536f1517e4e0e33af5"
+   },
+   "nested/f033.csv": {
+    "rows": 10,
+    "sha256": "4731ccdbcfed93bf060c105b8afdf6a1e47c36f5622bda684d0a95fe2b1421bb"
+   },
+   "nested/f034.csv": {
+    "rows": 10,
+    "sha256": "7a7b2373de5e05c2a1388f9f7a5d1aae39a9a602a917f58a07f66db4e6ec9000"
+   },
+   "nested/f035.csv": {
+    "rows": 10,
+    "sha256": "f0ca2a4ded3493d046d4a663293851f14913d25967715bb97b6f6da4bf9e69c6"
+   },
+   "nested/f036.csv": {
+    "rows": 10,
+    "sha256": "f669692db12550a80efa7a937daf4d9e4ec0bb3d8e34181cbf93aac98193b78b"
+   },
+   "nested/f037.csv": {
+    "rows": 10,
+    "sha256": "050c96f050ab49ea09f894d85fb20a90b8f42450b0ebd2d83fdede061acee24d"
+   },
+   "nested/f038.csv": {
+    "rows": 10,
+    "sha256": "e55d526b7647978c5b4c42ea433abaa8e1e81de55aef411116a2298159b9ccbd"
+   },
+   "nested/f039.csv": {
+    "rows": 10,
+    "sha256": "8573c0880b4201ff3bbe02816993a56393a3ed62ac863393ec3d8ad4b2eb6947"
+   },
+   "nested/f040.csv": {
+    "rows": 10,
+    "sha256": "05ef22ef78e80fba48f08c972e3eebbe7606e3ea85d05df821600e2cfc549a0b"
+   },
+   "nested/f041.csv": {
+    "rows": 10,
+    "sha256": "1836a5b9a9cd2c39d7dffe0d5b34befffe164b72f381e8febe0e77435e231142"
+   },
+   "nested/f042.csv": {
+    "rows": 10,
+    "sha256": "f94f9e694398e331ca0b9920c842cff1622510320c16caad0644ece4554a2fa0"
+   },
+   "nested/f043.csv": {
+    "rows": 10,
+    "sha256": "62d2b7ded22ab2d379404880170d5334174a2e82cda6418ddbfabc0f9644bb5b"
+   },
+   "nested/f044.csv": {
+    "rows": 10,
+    "sha256": "590444373dc702baf3c46ecadff33281c8856174309cec88274aa57d1ef070ab"
+   },
+   "nested/f045.csv": {
+    "rows": 10,
+    "sha256": "bd4e925cfbb4d2954628684b45d1aac1ac0695d30d0b5dd2a40fa20935456141"
+   },
+   "nested/f046.csv": {
+    "rows": 10,
+    "sha256": "7d9017fc0e9b5a3c30cb7327facb328ec313d8f846846c8b47faca3850b8214f"
+   },
+   "nested/f047.csv": {
+    "rows": 10,
+    "sha256": "efbde2ed8add48be598b14bb2b8a7fccce784d10bbff28207540498d5c727fc6"
+   },
+   "nested/f048.csv": {
+    "rows": 10,
+    "sha256": "02c804745bf0122aab195d913d7d14b748844764c1e9d696040bae7133594ea4"
+   },
+   "nested/f049.csv": {
+    "rows": 10,
+    "sha256": "d6f3577d207b826d9be45b96dc849c8971cb73b8dbf0428e7edd8c5e7c5f91c1"
+   },
+   "nested/f050.csv": {
+    "rows": 10,
+    "sha256": "7554480f5bc42438012d7314a51de43dc0e49bee23c837b6c19fcfd8ff1dac14"
+   },
+   "nested/f051.csv": {
+    "rows": 10,
+    "sha256": "62ab52a14632766df6491ef6684aaa4a59b426a48be9c4410d124657298b175e"
+   },
+   "nested/f052.csv": {
+    "rows": 10,
+    "sha256": "77d519d5cc52748588db08ffc2548f141d66e4bc844d8cc9e68d01944eeb0596"
+   },
+   "nested/f053.csv": {
+    "rows": 10,
+    "sha256": "fb432e1caf502c9a271b2919776fbc6ff6c6cae3ddd8a209ef07b9201893ee16"
+   },
+   "nested/f054.csv": {
+    "rows": 10,
+    "sha256": "4ba275d12fcd253cca1fc5c1164f6d48ab676b6f1b68b8c0efb419ba2ae05134"
+   },
+   "nested/f055.csv": {
+    "rows": 10,
+    "sha256": "abe91921cd95b677a2328bf3ca3971064909ca784b0177e327d0b20ea8fb86aa"
+   },
+   "nested/f056.csv": {
+    "rows": 10,
+    "sha256": "6489e3f3dea8e7bca9f53765d58a2c3dde25d04529d957ca93eacc89a5419e6c"
+   },
+   "nested/f057.csv": {
+    "rows": 10,
+    "sha256": "225d49dee4814bb47b52e8342085d24719903f950d70b4a06b103f6b5544122d"
+   },
+   "nested/f058.csv": {
+    "rows": 10,
+    "sha256": "c2634b2ff79ed2cc7045c58a7c2832f4c289259198aac9c507defead55124bab"
+   },
+   "nested/f059.csv": {
+    "rows": 10,
+    "sha256": "06755ea4e12fcfd94ef69f6a667c65719baa92e81cdf5f771814cb687c9446b1"
+   },
+   "nested/f060.csv": {
+    "rows": 10,
+    "sha256": "c4ff79b21ee1fc078fa64a12019988f536bc110936773426511935be8eb54706"
+   },
+   "nested/f061.csv": {
+    "rows": 10,
+    "sha256": "77abfb6b8ccd25bddbc0e70efe2768cb7b1b99103d150ad1119403dfea063927"
+   },
+   "nested/f062.csv": {
+    "rows": 10,
+    "sha256": "9a7a5cf40823629fe528607c396c174d52407d150f8addd58f70401783bda33b"
+   },
+   "nested/f063.csv": {
+    "rows": 10,
+    "sha256": "3c3b336808b79faa8a5fb0cb610a5ef79474b0d56326c42f16416fd34522c0ea"
+   },
+   "nested/f064.csv": {
+    "rows": 10,
+    "sha256": "3b1fe43de9cb96534a561589c1f40629ea147b13e43296ec7ae66f3d153c90fb"
+   },
+   "nested/f065.csv": {
+    "rows": 10,
+    "sha256": "2d305e0d959f3a702a67d9839328cd7aeaaced19592731f5943899864df9021f"
+   },
+   "nested/f066.csv": {
+    "rows": 10,
+    "sha256": "dc4506c2803b887abe8d2ca44b1469a2bc9d6315a9aa23cfc9de02161695572d"
+   },
+   "nested/f067.csv": {
+    "rows": 10,
+    "sha256": "476ca158d4ccac782cbd091736ed12ebb807d2ddd36b8af15bccf626f3b03411"
+   },
+   "nested/f068.csv": {
+    "rows": 10,
+    "sha256": "b0343e7a67f854a4c5bb05b62d077400dbae1a4ba594cfeb884915d6978f4e85"
+   },
+   "nested/f069.csv": {
+    "rows": 10,
+    "sha256": "52675ccf8b23da6b0c431884cf906a4aea8cdafa15b418afef4fa95d0695d2f0"
+   },
+   "nested/f070.csv": {
+    "rows": 10,
+    "sha256": "6eae79ed7e8efe6bb27ca617876c120a4c7180351a576635c6faa59fbd5503de"
+   },
+   "nested/f071.csv": {
+    "rows": 10,
+    "sha256": "f84f6f398d17d037cb01762af25b93da86af8abb5ae28658663d7848d0d7d62a"
+   },
+   "nested/f072.csv": {
+    "rows": 10,
+    "sha256": "1dccea300ce5a5bd02379beb18d1bddb23235071636a059e6e474fe7af2e6efb"
+   },
+   "nested/f073.csv": {
+    "rows": 10,
+    "sha256": "636abffefe0df7261e73948a5637c6991ca32f8a4a5fc62f214530ca8929aed5"
+   },
+   "nested/f074.csv": {
+    "rows": 10,
+    "sha256": "3020e237ebcf20405eb33bbd07af43a29666509fc102f8c7915ecc248c719064"
+   },
+   "nested/f075.csv": {
+    "rows": 10,
+    "sha256": "54661515301be7007edcef189769d561566a47a0d57e589b557303bef3bd23a5"
+   },
+   "nested/f076.csv": {
+    "rows": 10,
+    "sha256": "03e17239f3cce4aaf9fefda5eb320894af017e5cda9f37da566a44256ffb7643"
+   },
+   "nested/f077.csv": {
+    "rows": 10,
+    "sha256": "aa09eaef9269b32fd6da6f61a9ee13b81e305166e9814b8316f4993bd72b33ac"
+   },
+   "nested/f078.csv": {
+    "rows": 10,
+    "sha256": "0863e0b77c2529f9646f2ca88eb05197e78611d3d983aa7217bdfacdbcd8784d"
+   },
+   "nested/f079.csv": {
+    "rows": 10,
+    "sha256": "fd05ea41e4ea56ece64ef2c443e2db034dd9bb17356f927a03186ceba3410806"
+   },
+   "nested/f080.csv": {
+    "rows": 10,
+    "sha256": "1920ff6dc746e5c87073586277aa5d265e3c1aa12df9ad7f38418fd76a34a17b"
+   },
+   "nested/f081.csv": {
+    "rows": 10,
+    "sha256": "5f78d816f8024aaa0890fcd4dc8fd81c3a319787914818b45dc80b74e3f09081"
+   },
+   "nested/f082.csv": {
+    "rows": 10,
+    "sha256": "29944ecff2e61a053cfb5e8dc2db2065982bfd88eb86d983ffd8fa6120c5a028"
+   },
+   "nested/f083.csv": {
+    "rows": 10,
+    "sha256": "f2ee56a672de5463dddf40abe265b9a973edcfd81999245e85604db8dc4243df"
+   },
+   "nested/f084.csv": {
+    "rows": 10,
+    "sha256": "b6729d1e0ab08241e7197ea5dfbe36ce81c5aa11c11cda8bf90bcb30adea13f6"
+   },
+   "nested/f085.csv": {
+    "rows": 10,
+    "sha256": "6c8bde905c6bf6a87c4ef262f0343f5d1cef8a738747dc794d24aa826a27cebc"
+   },
+   "nested/f086.csv": {
+    "rows": 10,
+    "sha256": "6a2ad70d72f6340c8d1fb069c01a32b9c19c0e1213ad019c43d6e0bf2678aaa2"
+   },
+   "nested/f087.csv": {
+    "rows": 10,
+    "sha256": "8fd89c500aaa3ab857d8dfd601475447aa4ab0b6bffec3f23e9cd79502f4c67c"
+   },
+   "nested/f088.csv": {
+    "rows": 10,
+    "sha256": "126e0f3c251d23e26b7607bb12c0ad0aa8405965f84c2fd2cb5cdf59f78a03a4"
+   },
+   "nested/f089.csv": {
+    "rows": 10,
+    "sha256": "3263449f4450269e9e3d96506e158925c8313ec50d5ce4ff2afdd40122c4e347"
+   },
+   "nested/f090.csv": {
+    "rows": 10,
+    "sha256": "0dde3624a6e73fdd69822d2a0c5a10ac3239c8a55fc42d3af8509a48d3c00727"
+   },
+   "nested/f091.csv": {
+    "rows": 10,
+    "sha256": "6d7c98645f88b9061bd4b662a8949491f461e624a68f767f2a704424920e4bbf"
+   },
+   "nested/f092.csv": {
+    "rows": 10,
+    "sha256": "9148252b42303825493f093e003b737483ccad26954c34c75b555abf032f89f6"
+   },
+   "nested/f093.csv": {
+    "rows": 10,
+    "sha256": "d9cb0108a73b6e6ddf360fdc3066d0fb3e7c48fb861791a4b12226abb94cff15"
+   },
+   "nested/f094.csv": {
+    "rows": 10,
+    "sha256": "17afd6da3267bf0d4ba7b056e85e470189604e2cfd22c8a3de6e6dc078db6f3a"
+   },
+   "nested/f095.csv": {
+    "rows": 10,
+    "sha256": "301fc9b0dc05bd7ee697c820f13eb91fc58acbb8521ae0f88e5c5ec6f41d0373"
+   },
+   "nested/f096.csv": {
+    "rows": 10,
+    "sha256": "f42db0181ec2c91de039e3800206141afc7ce071bf561e56e31b985ec14a8775"
+   },
+   "nested/f097.csv": {
+    "rows": 10,
+    "sha256": "ede4acb6de6310828852b801131327ca9e269642d7fe9b8f3af2b166cde4aa71"
+   },
+   "nested/f098.csv": {
+    "rows": 10,
+    "sha256": "233fd44f4f3bbb67d2209da53427b6ee5967f885e4f7555d7252be3ccee2b919"
+   },
+   "nested/f099.csv": {
+    "rows": 10,
+    "sha256": "3631cc7f79218003621d673312f30f276dc0252914708970b04d357102126e9a"
+   },
+   "nested/f100.csv": {
+    "rows": 10,
+    "sha256": "aca4e6b6afef476677c821d5bfac5cf60bdad13ecdbc973c77997d32af415348"
+   },
+   "nested/f101.csv": {
+    "rows": 10,
+    "sha256": "f1402f68ce285702ca74cefab3a10379cd0f2c68f2724673f533a26401ca281f"
+   },
+   "nested/f102.csv": {
+    "rows": 10,
+    "sha256": "98e889cea97c645407a7c9748439c4b8bf0696c7ca277217a1eaa329fda0849f"
+   },
+   "nested/f103.csv": {
+    "rows": 10,
+    "sha256": "d3423acc3a425ebfdd65e4c50f223b86f3585b3cedd3d44faecd96e04c8ecaf3"
+   },
+   "nested/f104.csv": {
+    "rows": 10,
+    "sha256": "98e111e01b14283cf452c549c017c2ff5a227bcede424cc331c3c2659fa22e8f"
+   },
+   "nested/f105.csv": {
+    "rows": 10,
+    "sha256": "a42e4856da6174c1cec34945779925f11ca4fc5d96453085b08eeb50d94a762e"
+   },
+   "nested/f106.csv": {
+    "rows": 10,
+    "sha256": "0c9d6ab4a2e5b3778330edfb1ae7262bb72c7ec0e8280a6a324cdeda2f290a1f"
+   },
+   "nested/f107.csv": {
+    "rows": 10,
+    "sha256": "9fe1a7ccc9c39d3f554d24a924d51bdd5b8921a1b0f563d30f363fe2441b36fb"
+   },
+   "nested/f108.csv": {
+    "rows": 10,
+    "sha256": "f459e869f31d0a27b1f42edacb93f8acc05ec13543f7edd6e08f3fb07f1be3e7"
+   },
+   "nested/f109.csv": {
+    "rows": 10,
+    "sha256": "63011a2da3a6aa759cca712b33d1ffc5763dca108ce03faef9139008d8e432bf"
+   },
+   "nested/f110.csv": {
+    "rows": 10,
+    "sha256": "891dd4a413ff0e7418ea5a1a97e85c47c521c69b2c829a3959d7578a10335765"
+   },
+   "nested/f111.csv": {
+    "rows": 10,
+    "sha256": "4da5fec9f981fd9549c5c9670b23cd25ab14c802864bf17f3dafd6a6a16a7bf6"
+   },
+   "nested/f112.csv": {
+    "rows": 10,
+    "sha256": "b166335ae2ae4de38c03bca83feb3d0b55ee474d0b822a5e112c6f6909d5a84e"
+   },
+   "nested/f113.csv": {
+    "rows": 10,
+    "sha256": "7770696c8d6932ea34e4bf682d67605629866fa7bf95798fde7b608b79e09d96"
+   },
+   "nested/f114.csv": {
+    "rows": 10,
+    "sha256": "3896368390eb96fca404d92f6f1d143f5bfe5be48fc1af096cab3052e4872b4e"
+   },
+   "nested/f115.csv": {
+    "rows": 10,
+    "sha256": "bf4ec3f72b060ac0572ba0222528c8cb2a36964ffaa73fb03b6dc2d2467a6319"
+   },
+   "nested/f116.csv": {
+    "rows": 10,
+    "sha256": "695f2596f3f26aab25d46582d1ec9ca1ae4ea85548e7da47fd2c60e35ea8ecdc"
+   },
+   "nested/f117.csv": {
+    "rows": 10,
+    "sha256": "94e685956f0458012e88e51bbe7f972ebe1d2ac67ab651e0aed3b82015a62b27"
+   },
+   "nested/f118.csv": {
+    "rows": 10,
+    "sha256": "8403cd8b4870a655efac86341bcd839561e0a9ee9ca8c9f11f9947d403661361"
+   },
+   "nested/f119.csv": {
+    "rows": 10,
+    "sha256": "e4bc6f2f0239ab1ef2d0ce1bcb49ee27c8b2112da43b1479a2c6c061c1c0f11c"
+   },
+   "nested/f120.csv": {
+    "rows": 10,
+    "sha256": "c477885bd03aed0232209fc9c6252b457a9669d566b5e070ccbca60d6c7892ce"
+   },
+   "nested/f121.csv": {
+    "rows": 10,
+    "sha256": "2dc0be3bea24bb082bf49bdb1317075ecef54d84416a17e216d740ba5ee1c5ac"
+   },
+   "nested/f122.csv": {
+    "rows": 10,
+    "sha256": "7f990b34f6102c5729ad407b9e95c5f70203a07abe55d04dde1cecf81e8bf2f5"
+   },
+   "nested/f123.csv": {
+    "rows": 10,
+    "sha256": "fc2a53c8eeb7dd99b868ab6a44ad2c29d85fdf7b48adc308dfafabd10d7fe8f8"
+   },
+   "nested/f124.csv": {
+    "rows": 10,
+    "sha256": "2c0cb94e29affdf1a9eb82ce3224b7e9eafb10bb6c4e651e9530550f5961b438"
+   },
+   "nested/f125.csv": {
+    "rows": 10,
+    "sha256": "592960a81f18fa86fd8401404eb22c9f9fe04e5f301aaa7376f2f68f7ae37681"
+   },
+   "nested/f126.csv": {
+    "rows": 10,
+    "sha256": "d14ad7cc3d847fdb140d51e0506563e36f5712dca5b7ef6031299b98dbdf8fc4"
+   },
+   "nested/f127.csv": {
+    "rows": 10,
+    "sha256": "a03baecd927f22ddb08d18479673339cfe8ac6d1d1c735e50af1f808be3bcfa0"
+   },
+   "nested/f128.csv": {
+    "rows": 10,
+    "sha256": "f0f835be9d53b330f85c01f5168aaae6c4958dd8efbba6a1e18f2fa5e675a12d"
+   },
+   "nested/f129.csv": {
+    "rows": 10,
+    "sha256": "e15b6e53317e3fb395beafd27b4f4101a671ce460f9edf26fc31eee54432275c"
+   },
+   "nested/f130.csv": {
+    "rows": 10,
+    "sha256": "8d3a5d90bbe3ee4aed256ecd6ccfa971749adf70204c97fc24c03bda425e7567"
+   },
+   "nested/f131.csv": {
+    "rows": 10,
+    "sha256": "4f531c19d1231e4f4095a98de34d793bacb30b2da6848116db98cc5dc461221b"
+   },
+   "nested/f132.csv": {
+    "rows": 10,
+    "sha256": "a2696cb8ded61262105e176286d54e2a1ca1cf51e4b9f5d719d1be132055ac4f"
+   },
+   "nested/f133.csv": {
+    "rows": 10,
+    "sha256": "34ae09e6c19f3b6a83cfe2c4c2147ba087022745746f319c70354cba14fe9d02"
+   },
+   "nested/f134.csv": {
+    "rows": 10,
+    "sha256": "011fdf7345b63459ab6b9707891fee83ed4f788f4f39c95e5db61e87550ca347"
+   },
+   "nested/f135.csv": {
+    "rows": 10,
+    "sha256": "a337069a0848db1ad10fe04635d3382ca25d12f5e7a8ddd73a457b406ff3182b"
+   },
+   "nested/f136.csv": {
+    "rows": 10,
+    "sha256": "b516429ff1d54d4795308300103f9a7d0e33ff534316bf7467411713747bdbd1"
+   },
+   "nested/f137.csv": {
+    "rows": 10,
+    "sha256": "ac8e7bdd43db59220aaf44bc6315df18d076a8a385b58338700847ec8778278c"
+   },
+   "nested/f138.csv": {
+    "rows": 10,
+    "sha256": "606d3012d95940c796cf294ef6cbf50f8aef9e971ffda7f38f433356f23c0e3d"
+   },
+   "nested/f139.csv": {
+    "rows": 10,
+    "sha256": "c44b693caf240072a00c1f26c42cc0376e20363625ca18b248205cf68564d1f1"
+   },
+   "nested/f140.csv": {
+    "rows": 10,
+    "sha256": "1f3b2b1f607af595c1aec264caad7757854f23928a13776e969a6745178decf6"
+   },
+   "nested/f141.csv": {
+    "rows": 10,
+    "sha256": "d3f6990471cc2ed24995d59b56db67d43b5ca09cff1048289699cad8cfbbc124"
+   },
+   "nested/f142.csv": {
+    "rows": 10,
+    "sha256": "a7dfe6b39536e87350ff00cbb81eb4fe968d02e10aeb8b6cac0568bec056941e"
+   },
+   "nested/f143.csv": {
+    "rows": 10,
+    "sha256": "0df98fe7ead4986c41284fcdcd2d5b8a7fb2376210d8fa8fd89b8f853c97d1b3"
+   },
+   "nested/f144.csv": {
+    "rows": 10,
+    "sha256": "e10a66928460d5bbbda27c7b5790ab999d2f7317f14027d0ff14ee9c41eb2a44"
+   },
+   "nested/f145.csv": {
+    "rows": 10,
+    "sha256": "456e1ca797828b1c391503f5c6f029e41c07bcfa241a90fab9bf21c3a46cbd99"
+   },
+   "nested/f146.csv": {
+    "rows": 10,
+    "sha256": "c47f6663ec63c1d8b93f526aa13cd1f08ee7f8c3ff3bb15cf7343524e86dd78d"
+   },
+   "nested/f147.csv": {
+    "rows": 10,
+    "sha256": "7f8e0c3058e46004f1804a0a3050bcb1776a89b7956dd1e2d27861d760714448"
+   },
+   "nested/f148.csv": {
+    "rows": 10,
+    "sha256": "ac5c4557d67fad83ba80f7bf61446feb76d85504812b49a95d14632cf3855448"
+   },
+   "nested/f149.csv": {
+    "rows": 10,
+    "sha256": "78fa30fec2ada9a34abd3ff9f878203d98a3e2434fd700a3dfa23b5ed9e2b809"
+   },
+   "nested/f150.csv": {
+    "rows": 10,
+    "sha256": "76ca1a01ebc0adff3e9a0650af9a11f065afed66383def4963ff47c4d4c9a570"
+   },
+   "nested/f151.csv": {
+    "rows": 10,
+    "sha256": "40519e0b795bc5178c73dbb131cc9407cd635ea2009f16294426effbf30fc400"
+   },
+   "nested/f152.csv": {
+    "rows": 10,
+    "sha256": "120e25a01c574681d91288f86b0b3b9d7e39aaf994e12e01827274b7bde26157"
+   },
+   "nested/f153.csv": {
+    "rows": 10,
+    "sha256": "2ddcf70eea2fb68dfdbe41e896594b42c130a6e640cf30115db6fa60517d15f0"
+   },
+   "nested/f154.csv": {
+    "rows": 10,
+    "sha256": "1cdc532e83b15b0da46cf0141acfcd2108a3dc9b04361af25fd903658aa954b7"
+   },
+   "nested/f155.csv": {
+    "rows": 10,
+    "sha256": "7d44c05c264eea1a0431e6733f78906f621b6d0dcf6990ca20946965d29a8ea1"
+   },
+   "nested/f156.csv": {
+    "rows": 10,
+    "sha256": "005820a123bcb85ffafd4923d6a2a12444f9ce3e2fcc59fd1d389e12b1e8ea29"
+   },
+   "nested/f157.csv": {
+    "rows": 10,
+    "sha256": "8b8661d8f5950612102346c984e1c89ac8aa8836826990a168d3bf23b1b8d80f"
+   },
+   "nested/f158.csv": {
+    "rows": 10,
+    "sha256": "75032afc7d7cdfe87b0dff303bf9a5f939e2a384484ca918f5553f1780c8a8cb"
+   },
+   "nested/f159.csv": {
+    "rows": 10,
+    "sha256": "95de38845af17713928b6cdd3e23410026691de742cb4c204b071eb0b1f7ee4c"
+   },
+   "nested/f160.csv": {
+    "rows": 10,
+    "sha256": "e5cd9304241cf3a76f038213696005baba19f3db08a587edd54c310163be63d1"
+   },
+   "nested/f161.csv": {
+    "rows": 10,
+    "sha256": "41350251a82876740c8cbb34c14cb86c984fc76026d3fb730c7dfdf27ff807c0"
+   },
+   "nested/f162.csv": {
+    "rows": 10,
+    "sha256": "962ab905e27676824638a0994ae388ce26d8409973efe52efec2fa7db156c562"
+   },
+   "nested/f163.csv": {
+    "rows": 10,
+    "sha256": "b34db9a3d6948ed4e65dfd768048b6aeec86944dc2e59dfb84c5f8fca7878a2d"
+   },
+   "nested/f164.csv": {
+    "rows": 10,
+    "sha256": "e15222c73c6df156ba18c5fd59bbf311ead9f770304778644ddd83552df4264f"
+   },
+   "nested/f165.csv": {
+    "rows": 10,
+    "sha256": "88187f4eba20add4a440621dc7d7c9108d88f4cf7becdd211ab595b748923be7"
+   },
+   "nested/f166.csv": {
+    "rows": 10,
+    "sha256": "d630ea69b2c28321ccca0bdd94d00d4ff1ca662daf4c6378170f08f16058c0b7"
+   },
+   "nested/f167.csv": {
+    "rows": 10,
+    "sha256": "c144adb80982fd68d6d54d1c9bf3fd6180a72fa40b2f0029f9494f91f1be9cf2"
+   },
+   "nested/f168.csv": {
+    "rows": 10,
+    "sha256": "a558d04e1213d6640fbe68d0b2bbc1cd4e90910c6d4d33d879b44eb94179c87d"
+   },
+   "nested/f169.csv": {
+    "rows": 10,
+    "sha256": "bac7533bc5c96ba47009970beb18c436087dfa44d4e0d2bfd7559524e24d30be"
+   },
+   "nested/f170.csv": {
+    "rows": 10,
+    "sha256": "c6cb72b5336fef35f4bfc1d1e569d05ca1493a206064e3d8a0932fda2111c900"
+   },
+   "nested/f171.csv": {
+    "rows": 10,
+    "sha256": "dea4449fe8e8c04def6687dc534aaeffa1b49d8b072815e9dfc03f8801eb1e80"
+   },
+   "nested/f172.csv": {
+    "rows": 10,
+    "sha256": "46281bbcabf4967225abf1eb03df8312104e25a70336f32705f7d55135a2ed31"
+   },
+   "nested/f173.csv": {
+    "rows": 10,
+    "sha256": "892678665070521ae0a61797f4a455caca95aaa567c65285095fb1b28a9929e2"
+   },
+   "nested/f174.csv": {
+    "rows": 10,
+    "sha256": "884d93fbd039dc61b0ed3cc172e406471ffaf595cd2b3f19d1d0fe7bab30a0cc"
+   },
+   "nested/f175.csv": {
+    "rows": 10,
+    "sha256": "6c2f4007763a9245cadd3a98502f1c2f39263ce5b13b6a9d719466a7445f13a9"
+   },
+   "nested/f176.csv": {
+    "rows": 10,
+    "sha256": "ad57b7339dafa1bb5c59c75e27f588c40824c824235acb21a2026c3a15dd4544"
+   },
+   "nested/f177.csv": {
+    "rows": 10,
+    "sha256": "38aa6fce7c12abd0fb7db157a295ce51331de02cfb63630aebe43894e711d604"
+   },
+   "nested/f178.csv": {
+    "rows": 10,
+    "sha256": "76b9f8e9d210dab640e92233a8cd7e882763fe5dd805a8eaefaece611cb3b7b2"
+   },
+   "nested/f179.csv": {
+    "rows": 10,
+    "sha256": "b294f011ee52045d35675cb3ec74fa006bf3789b5aecd94245213619f00520f0"
+   },
+   "nested/f180.csv": {
+    "rows": 10,
+    "sha256": "d60391cb96f6070ab9f33f710fecd7aae83295231d72050ef34d0824d4b73d1b"
+   },
+   "nested/f181.csv": {
+    "rows": 10,
+    "sha256": "f842413b88d6f4465e0aacc1f07d060b2f604234ba5d828f06afa9410ad30e8a"
+   },
+   "nested/f182.csv": {
+    "rows": 10,
+    "sha256": "3fa5865dd598101b9afba04d5ae83a341bedbb4d98fe2831c52548abd90899c6"
+   },
+   "nested/f183.csv": {
+    "rows": 10,
+    "sha256": "475c78cf71b6208653c8141855f95a361b1c9cd353cd980397e9f998e01b7ccf"
+   },
+   "nested/f184.csv": {
+    "rows": 10,
+    "sha256": "3a1a73179e36906197be206bce49e0cf5ddbe97abf26ac81ef1e834cf0e848ee"
+   },
+   "nested/f185.csv": {
+    "rows": 10,
+    "sha256": "3931f6319bfb00854e26603934650c8534786e2689f9c512d781161f3eb942b4"
+   },
+   "nested/f186.csv": {
+    "rows": 10,
+    "sha256": "8df47bc53cce2c4d1b6f9746e03c9e177161643951824750c18991ca8d4fda18"
+   },
+   "nested/f187.csv": {
+    "rows": 10,
+    "sha256": "0e1d2d7da971626869edf8a364bdf04f4f35b84f5b2f953cd697f069807af742"
+   },
+   "nested/f188.csv": {
+    "rows": 10,
+    "sha256": "147761ea8a2a8a093efa95df6ed29b0c2384979b04e05d69fdb61b95a40e5d63"
+   },
+   "nested/f189.csv": {
+    "rows": 10,
+    "sha256": "ba3f38323035a719342f0cff415ead36075bc88eec3f1042bf02c8304d3e91f9"
+   },
+   "nested/f190.csv": {
+    "rows": 10,
+    "sha256": "eb29b910856b1118d62d0be64960eccfdcc453477abbed4b95ffbd13cb65a44d"
+   },
+   "nested/f191.csv": {
+    "rows": 10,
+    "sha256": "dfd9a9d4ca9493b8b8564a2034f31c353fca7fcb41281548119ae738714e895f"
+   },
+   "nested/f192.csv": {
+    "rows": 10,
+    "sha256": "4cdec53f2d00ba938c3f8d15d303196992832f725dad50bbcbdfdf33117989d5"
+   },
+   "nested/f193.csv": {
+    "rows": 10,
+    "sha256": "cb4c3df913c4bb58823001339cceb2e141361a593bd461a0feefaf9bdc3b80d3"
+   },
+   "nested/f194.csv": {
+    "rows": 10,
+    "sha256": "04ae8a309c1d11946fee005cac3fb36ae8b6953f4a5f423bfb85d36de1b33680"
+   },
+   "nested/f195.csv": {
+    "rows": 10,
+    "sha256": "32c047973d0d3670abff15e22f4f619ee58ffbc51ce3ac12c5d7549cad6832e8"
+   },
+   "nested/f196.csv": {
+    "rows": 10,
+    "sha256": "4763235fa844f8d1b1751474a8b7190bdd7fc246151f4fd8415ddc4f791bfb03"
+   },
+   "nested/f197.csv": {
+    "rows": 10,
+    "sha256": "98b07d2853f714ddaded10c8ffeaf0b3317e88bba77be52c88f2cc6d89ba4a4b"
+   },
+   "nested/f198.csv": {
+    "rows": 10,
+    "sha256": "4fe5041eedba19711b247d11cf64c5c5c0a8f736d094812ae71b9173f609436e"
+   },
+   "nested/f199.csv": {
+    "rows": 10,
+    "sha256": "3ef1c2cb1bc78d4ba985ef6ebbb45a67127efb6f75dfa7f9e9cf99ca5bd67274"
+   },
+   "wide.csv": {
+    "rows": 300,
+    "sha256": "ac540f90fffd3deffb7f2de03a6919dded3e9fa37bdaa3667eeceae51873576c"
+   }
+  },
+  "registry_matched_sha256": "edaf177398ca38fe1a54588826d5f7cda984268ac4790ebc4949b37a076da608",
+  "registry_matched_rows": 47,
+  "registry_note": "matched arm uses the baseline config/dataset_registry.yml (copied via git show from commit A); proven to load under both commits' load_registry"
+ },
+ "requests": {
+  "R1": {
+   "action": "capabilities"
+  },
+  "R2": {
+   "action": "search",
+   "query": "price",
+   "limit": 20
+  },
+  "R3": {
+   "action": "describe",
+   "ref": "registry:equity.bars.daily.stocks"
+  },
+  "R4": {
+   "action": "browse",
+   "root": "fixture"
+  },
+  "R5": {
+   "action": "browse",
+   "root": "nested",
+   "limit": 200
+  },
+  "R6": {
+   "action": "describe",
+   "ref": "fixture:bars_large.parquet"
+  },
+  "R7": {
+   "action": "read",
+   "ref": "fixture:bars_small.csv",
+   "columns": [
+    "date",
+    "close"
+   ],
+   "limit": 200
+  },
+  "R8": {
+   "action": "read",
+   "ref": "fixture:bars_large.parquet",
+   "columns": [
+    "date",
+    "ticker",
+    "close"
+   ],
+   "equals": {
+    "ticker": "T007"
+   },
+   "limit": 200
+  },
+  "R9": {
+   "action": "read",
+   "ref": "fixture:events.jsonl",
+   "limit": 200
+  },
+  "R10": {
+   "action": "read",
+   "ref": "fixture:bars_small.csv",
+   "columns": [
+    "date",
+    "close"
+   ],
+   "limit": 200,
+   "expected_version": "statv1:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "R11": {
+   "action": "read",
+   "ref": "fixture:missing.csv",
+   "limit": 200
+  },
+  "R12": {
+   "action": "read",
+   "ref": "fixture:wide.csv",
+   "columns": [
+    "c000",
+    "c001",
+    "c002",
+    "c003",
+    "c004",
+    "c005",
+    "c006",
+    "c007",
+    "c008",
+    "c009",
+    "c010",
+    "c011",
+    "c012",
+    "c013",
+    "c014",
+    "c015",
+    "c016",
+    "c017",
+    "c018",
+    "c019",
+    "c020",
+    "c021",
+    "c022",
+    "c023",
+    "c024",
+    "c025",
+    "c026",
+    "c027",
+    "c028",
+    "c029",
+    "c030",
+    "c031",
+    "c032",
+    "c033",
+    "c034",
+    "c035",
+    "c036",
+    "c037",
+    "c038",
+    "c039",
+    "c040",
+    "c041",
+    "c042",
+    "c043",
+    "c044",
+    "c045",
+    "c046",
+    "c047",
+    "c048",
+    "c049",
+    "c050",
+    "c051",
+    "c052",
+    "c053",
+    "c054",
+    "c055",
+    "c056",
+    "c057",
+    "c058",
+    "c059"
+   ],
+   "limit": 200
+  }
+ },
+ "expected_refusals": {
+  "R10": "SOURCE_VERSION_MISMATCH",
+  "R11": "SOURCE_NOT_FOUND",
+  "R12": "RESULT_TOO_LARGE_REDUCE_COLUMNS_OR_LIMIT"
+ },
+ "roots": {
+  "fixture": "the --fixture-dir itself",
+  "nested": "its nested/ subdir"
+ },
+ "registry_arm": {
+  "matched": "registry_base.yml = config/dataset_registry.yml @ commit A, at BOTH commits",
+  "as_shipped": "each commit's own config/dataset_registry.yml (construction + R2/R3 only)",
+  "decision": "main's load_registry accepts the baseline YAML (n=47); matched arm chosen"
+ },
+ "arms": {
+  "A_inproc": {
+   "rounds_per_commit": 6,
+   "order": "ABBA repeated, truncated to 2N (N=6 -> A B B A A B B A A B B A)",
+   "passes": "1 cold (R1-R12 once) then 2 warm (R1-R12 each)",
+   "n_per_commit": "construction n=6; cold n=6/request; warm n=12/request"
+  },
+  "A_cli": {
+   "reps": 7,
+   "timeout_s": 60,
+   "order": "per rep, requests R1-R12, commits alternating AB/BA"
+  },
+  "C_basket": {
+   "drivers_per_commit": 5,
+   "interleave": "ABBA truncated to 2N",
+   "samples": "5x members_asof(2026-07-20, pit) + 5x members_asof(2026-01-01, before coverage) + 5x coverage"
+  },
+  "B_newpath": {
+   "drivers": 5,
+   "tickers": 50,
+   "replay_calls": 20,
+   "account_coverage_members": 500,
+   "coverage_samples": 5,
+   "modes": "CURRENT (serving) and REPLAY (typed refusal)",
+   "first_call": "reported separately: _default_registry is an lru_cache filled once per process"
+  },
+  "reg_as_shipped": {
+   "drivers_per_commit": 5,
+   "requests": [
+    "R2",
+    "R3"
+   ]
+  }
+ },
+ "max_limits": {
+  "lib/dataos/web_api.py": {
+   "MAX_LAB_WALL_SECONDS": 60,
+   "MAX_REQUEST_BYTES": 16384
+  },
+  "lib/dataos/web_workspace.py": {
+   "MAX_DIRECTORY_ENTRIES": 30000,
+   "MAX_RESPONSE_BYTES": 131072,
+   "MAX_SEARCH_ENTRIES": 5000
+  },
+  "lib/dataos/web_readers.py": {
+   "MAX_COLUMNS": 128,
+   "MAX_CONTAINER_ITEMS": 4096,
+   "MAX_NESTING": 32,
+   "MAX_ROWS": 200,
+   "MAX_SCAN_ROWS": 100000,
+   "MAX_SOURCE_COLUMNS": 4096
+  },
+  "scripts/data_workspace.py": {}
+ },
+ "max_limits_note": "identical at commit A and commit B (verified by ast over git show output)",
+ "volatile_response_keys": [
+  "observed_at",
+  "implementation_revision"
+ ],
+ "volatile_keys_provenance": {
+  "observed_at": "lib.dataos.web_workspace._result: dt.datetime.now(timezone.utc).isoformat()",
+  "implementation_revision": "the source_revision label the harness passes to load_workspace_config (identical string at both commits; stripped per the workload spec)",
+  "kept_note": "file_version/directory_version/filesystem_mtime are stat-derived but stable within a run: both commits read the SAME frozen fixture files through read-only handles, and web_workspace.py is byte-identical at both commits, so they stay IN the digest"
+ },
+ "detection_rule": {
+  "deterministic_counters": "per request, A vs B, cold-vs-cold and warm-vs-warm separately: any increase at B in {open, os.listdir, os.scandir, subprocess.Popen, socket.connect, socket.getaddrinfo, syscr, rchar, response_bytes} is a REGRESSION GAP; any change in the stripped result digest or the refusal code is a CHANGE GAP (must be explained from the step-0.5 diff or it stays a GAP); fewer rows or a proper subset of columns at B is a Q03.02 GAP",
+  "latency_and_memory": "per request per arm, B is a REGRESSION iff median(B) > max(A) AND median(B) > 1.10 * median(A); applies to A_inproc cold, warm, construction, A_cli wall, C_basket; tracemalloc peak is judged by the same rule; B_newpath has no baseline and is never judged",
+  "q03_04_background": "in A_inproc, B_newpath and C_basket: any subprocess.Popen or socket event is a GAP; any thread-count change across a request or at driver end is a GAP; browse/search requests may not issue more os.scandir+os.listdir than the number of directory listings they return (browse=1, search=#PRESENT roots); A_cli's git subprocesses from _revision() are pre-existing and excluded",
+  "q03_03_limits": "the ast-extracted module-level MAX_* table of the four read-path files must be identical at A and B and equal this spec; any difference is a GAP",
+  "timeouts": "an A_cli TimeoutExpired is recorded as 60 s AND as an error, never dropped",
+  "noise": "os.getloadavg() before/after each arm and os.cpu_count(); if the 1-minute load exceeds the CPU count at an arm boundary, that arm is marked 'noisy host' and re-run once; both runs reported",
+  "p90": "nearest-rank: sorted[ceil(0.9*n)-1]"
+ },
+ "requests_note": "R3 id equity.bars.daily.stocks is the first dataset id, in file order, present in BOTH commits' registry"
+}

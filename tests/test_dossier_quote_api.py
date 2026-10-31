@@ -577,3 +577,44 @@ def test_rate_limit_refuses_a_flood(client, monkeypatch) -> None:
     _patch_hub(monkeypatch, HUB_NVDA_DELAYED, now=1787871758 + 5)
     codes = {client.get("/api/dossier-quote/NVDA").status_code for _ in range(200)}
     assert 429 in codes
+
+
+def test_additive_extended_tuple_through_dossier_http(client, monkeypatch):
+    import json
+    from datetime import datetime
+    now = datetime.fromisoformat("2026-10-23T12:00:00+00:00").timestamp()
+    payload = _premarket_row(extPrice=99, extAsOfMs=now * 1000 - 1000.25,
+        extTs=int(now - 1.00025), extSource="polygon-snapshot-rt", extBasis="REALTIME",
+        extSession="pre", extMarketSession="pre", extRegularClose=100,
+        extRegularSessionDate="2026-10-22", extRegularSource="daily_file")
+    _patch_hub(monkeypatch, payload, now=now)
+    body = client.get("/api/dossier-quote/NVDA").json()
+    assert body["price"] == 227.98 and body["change_pct"] > 0
+    assert body["extended_quote"]["price"] == 99
+    assert body["extended_quote"]["change_pct"] == -1
+    assert body["extended_quote"]["as_of_ms"] == payload["NVDA"]["extAsOfMs"]
+    assert "polygon" not in json.dumps(body) and "daily_file" not in json.dumps(body)
+    payload["NVDA"]["extSource"] = "webull"
+    invalid = client.get("/api/dossier-quote/NVDA")
+    assert invalid.status_code == 200 and invalid.json()["extended_quote"] is None
+    payload["NVDA"]["extSource"] = "polygon-snapshot-rt"
+    monkeypatch.setattr(dossier_quote_api, "_now_epoch_seconds", lambda: now + 121)
+    stale = client.get("/api/dossier-quote/NVDA").json()
+    assert stale["extended_quote"] is None and stale["price"] == 227.98
+
+
+def test_dossier_requests_primary_snapshot_isolation_in_existing_full_view(monkeypatch):
+    # Inspect the existing request with an offline opener, never contact loopback.
+    seen = []
+    class Reply:
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, maximum): return b'{"NVDA":{}}'
+    class Opener:
+        def open(self, request, **kwargs):
+            seen.append(request.full_url)
+            return Reply()
+    monkeypatch.setattr(dossier_quote_api, "_NO_REDIRECT_OPENER", Opener())
+    dossier_quote_api._read_hub_quotes("NVDA")
+    assert seen[0].endswith("/quotes?syms=NVDA&extSource=primary_snapshot")
+    assert "view=regular" not in seen[0]

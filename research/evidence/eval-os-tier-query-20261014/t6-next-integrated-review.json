@@ -1,0 +1,15 @@
+{
+  "verdict": "root verified integration of independently source-reviewed fixtures",
+  "all_original_function_logic_unchanged": true,
+  "only_function_docstring_changed": [
+    "_historical_text_case_error"
+  ],
+  "new_fixture_ids_and_sources_present": true,
+  "tests": {
+    "response_and_adversarial_plus_four_admission": 167,
+    "failure": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "scope": "Source/guard integration and test evidence; original independent scientific draft review preserved. No additional independent guard review claimed."
+}

@@ -1,0 +1,64 @@
+{
+  "default_paths_wrong_for_original_history": {
+    "usage": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/data/ai_costs/usage.jsonl",
+    "health": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/data/ai_costs/provider_health.jsonl",
+    "key_pool": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/data/metabolism/key_ledger.jsonl"
+  },
+  "existing_override_paths_pass": {
+    "usage": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/ai_costs/usage.jsonl",
+    "health": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/ai_costs/provider_health.jsonl",
+    "key_pool": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/metabolism/key_ledger.jsonl"
+  },
+  "preserved_histories": {
+    "data/ai_costs/usage.jsonl": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86",
+    "data/ai_costs/provider_health.jsonl": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9",
+    "data/metabolism/key_ledger.jsonl": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53"
+  },
+  "cohort": [
+    {
+      "id": "press-brief-2026-10-11-6cf53bdfd11a",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/initial_stage.json",
+      "sha256": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+      "draft_sha256": "0515484a52a242d4a06ff8019b6c4b0b777301ccf5226a92f4e7de21e3d72a85",
+      "present_in_runtime": true
+    },
+    {
+      "id": "press-research_desk-2026-10-11-81675c403cda",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/research_stage.json",
+      "sha256": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+      "draft_sha256": "d2b483df36f2360e7e02ca3e32a9909aefaf9ae0ef4fec5c4bcfaba36269cd95",
+      "present_in_runtime": true
+    },
+    {
+      "id": "press-official-cd2747adeed2",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/press/staging/press-official-cd2747adeed2.json",
+      "sha256": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+      "draft_sha256": "5b9bb492d55c7103dd26fac3f8c35454b2c47f1ccb8ea7dcd395f4042515cce8",
+      "present_in_runtime": true
+    },
+    {
+      "id": "press-research_desk-2026-10-13-6baf3247f154",
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f/data/press/staging/press-research_desk-2026-10-13-6baf3247f154.json",
+      "sha256": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a",
+      "draft_sha256": "8f4736808e313ec641b47398a41999a946cec99f3158c9d6c940d7082bebbab4",
+      "present_in_runtime": true
+    }
+  ],
+  "runtime_missing_retained_peers": [],
+  "validator_peer_count": 4,
+  "slot_id": "press-research_desk-2026-10-14-593acfb87c11",
+  "slot_sha256": "fdf4ebc33e58d2ce9ddfeee23d5e0b54e7cb8e33a9c03c52abf57d89c95911a8",
+  "configured_token_budget": 24000,
+  "estimated_reservation": 7128,
+  "budget_is_estimate_not_billing_or_hard_cap": true,
+  "single_provider_attempt_required": true,
+  "max_regenerations_required": 0,
+  "provider_calls": 0,
+  "runtime_writes": 0,
+  "ready_for_provider": false,
+  "remaining_gates": [
+    "current public report acceptance",
+    "fresh exact source/slot/input/writer-state fence"
+  ],
+  "publication": false
+}

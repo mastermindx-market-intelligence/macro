@@ -1,0 +1,41 @@
+{
+  "schema": "mastermind.attended.documentation_validation.v1",
+  "started_at": "2026-10-20T03:32:40.600030+00:00",
+  "index_tree": "c2113799d267cc5fb339d145cfb078464e4e701b",
+  "checks": [
+    {
+      "name": "agentos",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "exit": 0,
+      "seconds": 2.049,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-runtime-ci-proof-agentos.log",
+      "bytes": 28803,
+      "sha256": "ff637615abb1ad2387af0f1738f4b9db0dbd5e7ebf28a7f1d28e589fc4c0e0e6",
+      "summary": "iew-overdue::agentos/decisions/DEC-W2C-M0C-V2-HYBRID-PRICE-ACTIVITY-SCOPE.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed\n::warning title=agentos-review-overdue::agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed\nagentos: 1902 records (99 workstreams, 513 decisions, 549 discoveries, 741 handoffs) \u2014 0 error(s), 146 warning(s)\n"
+    },
+    {
+      "name": "whitespace",
+      "args": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "d52827f26b062f67d594350a65becf406710d4d1"
+      ],
+      "exit": 2,
+      "seconds": 1.157,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-runtime-ci-proof-whitespace.log",
+      "bytes": 255,
+      "sha256": "40926b90414c980a678188fdb3a8918f83db7e36286c6cedc1be6475b2c710f5",
+      "summary": "research/market_os/evidence/shared-shell-continuation-20261019/macro-d528-minimal-ci-repair-v2.patch:29: trailing whitespace.\n+ \nresearch/market_os/evidence/shared-shell-continuation-20261019/macro-d528-minimal-ci-repair.patch:29: trailing whitespace.\n+ \n"
+    }
+  ],
+  "finished_at": "2026-10-20T03:32:43.807726+00:00",
+  "index_tree_after": "c2113799d267cc5fb339d145cfb078464e4e701b",
+  "unstaged_after": "",
+  "pass": false
+}

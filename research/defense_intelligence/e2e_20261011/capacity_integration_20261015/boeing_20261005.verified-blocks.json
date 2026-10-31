@@ -1,0 +1,92 @@
+{
+  "source": {
+    "schema": "defense.primary_public_capacity_source_acquisition.v1",
+    "url": "https://www.boeing.com/features/2026/10/boeing-receives-contract-to-accelerate-patriot-seeker-output",
+    "http_status": 200,
+    "observed_at": "2026-10-14T05:42:18.626893+00:00",
+    "retrieved_at": "2026-10-14T05:42:48.879695+00:00",
+    "response_sha256": "f03e2070ab9172b6afa6140fa5b280b8c6a39b5786c0063adccc0bad1f1ffc65",
+    "bytes": 248820,
+    "printed_publication_date": "2026-10-05",
+    "available_at": "2026-10-14T05:42:48.879695+00:00",
+    "availability_basis": "complete_response_retrieval_not_request_start_or_printed_publication_date",
+    "transport": "incumbent scripts.refresh_event_workspaces._http_get",
+    "owner_admission": "STAGED_NOT_ADMITTED",
+    "root_source_mutation": false,
+    "publication": false
+  },
+  "document_id": "disclosure_document_b561414d27a65eb15b49accf03d519e386e08527a447308eff863df2b031dffe",
+  "blocks": [
+    {
+      "document_id": "disclosure_document_b561414d27a65eb15b49accf03d519e386e08527a447308eff863df2b031dffe",
+      "block_id": "disclosure_block_94ab6c87d0f4dd5a245110bb4a414be103072265a52ff971e2be38b39ce78152",
+      "text": "The award formalizes a seven-year framework to triple PAC-3 seeker production.",
+      "normalized_text_sha256": "6515bdaa4485ec18c0c97598107946776a7878e1d16032c1969cd8f6acef327b",
+      "source_span": {
+        "char_start": 197674,
+        "char_end": 197785
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "f03e2070ab9172b6afa6140fa5b280b8c6a39b5786c0063adccc0bad1f1ffc65",
+        "char_start": 197674,
+        "char_end": 197785,
+        "byte_start": 197707,
+        "byte_end": 197818,
+        "span_sha256": "ce8c9caaed79cd8e11b22e465a8eb00ce257a86d12b9cfaa867e353d2eafab3b",
+        "span_bytes": 111,
+        "span_text": "<h5 class=\"cmp-title__text\">The award formalizes a seven-year framework to triple PAC-3 seeker production.</h5>",
+        "value_text": "The award formalizes a seven-year framework to triple PAC-3 seeker production.",
+        "value_text_sha256": "6515bdaa4485ec18c0c97598107946776a7878e1d16032c1969cd8f6acef327b"
+      }
+    },
+    {
+      "document_id": "disclosure_document_b561414d27a65eb15b49accf03d519e386e08527a447308eff863df2b031dffe",
+      "block_id": "disclosure_block_34f59aca66ae77e58cca5849068f333290d4e0491c547eced3ce8bc94e46e587",
+      "text": "Boeing was awarded an undefinitized contract action worth approximately $14.7 billion by Lockheed Martin to scale production and deliver Patriot Advanced Capability-3 (PAC-3®) Missile Segment Enhancement (MSE) seekers.",
+      "normalized_text_sha256": "92b803d06e8c844dfa48d207b23aca6bad68e67f84fe440f7044caa5fd6b07b5",
+      "source_span": {
+        "char_start": 202940,
+        "char_end": 203165
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "f03e2070ab9172b6afa6140fa5b280b8c6a39b5786c0063adccc0bad1f1ffc65",
+        "char_start": 202940,
+        "char_end": 203165,
+        "byte_start": 202984,
+        "byte_end": 203210,
+        "span_sha256": "68357cf551db91e99f4d97307d83ebc00160019e93c7aefd4755265fe7a5ccd1",
+        "span_bytes": 226,
+        "span_text": "<p>Boeing was awarded an undefinitized contract action worth approximately $14.7 billion by Lockheed Martin to scale production and deliver Patriot Advanced Capability-3 (PAC-3®) Missile Segment Enhancement (MSE) seekers.</p>",
+        "value_text": "Boeing was awarded an undefinitized contract action worth approximately $14.7 billion by Lockheed Martin to scale production and deliver Patriot Advanced Capability-3 (PAC-3®) Missile Segment Enhancement (MSE) seekers.",
+        "value_text_sha256": "92b803d06e8c844dfa48d207b23aca6bad68e67f84fe440f7044caa5fd6b07b5"
+      }
+    },
+    {
+      "document_id": "disclosure_document_b561414d27a65eb15b49accf03d519e386e08527a447308eff863df2b031dffe",
+      "block_id": "disclosure_block_7cdfc869b29bd9ec4f6662ea41cddb83b7018456a126e456dd078b239f498f6e",
+      "text": "The contract award enables Boeing to triple PAC-3 MSE seeker production under the previously announced seven-year framework agreement with the U.S. Department of War.",
+      "normalized_text_sha256": "94525d3424c4fc68d0cb0e6a5e46cfb77587e9bba4c0b78bf865bd8483847ce8",
+      "source_span": {
+        "char_start": 203171,
+        "char_end": 203346
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "f03e2070ab9172b6afa6140fa5b280b8c6a39b5786c0063adccc0bad1f1ffc65",
+        "char_start": 203171,
+        "char_end": 203346,
+        "byte_start": 203216,
+        "byte_end": 203391,
+        "span_sha256": "b90cb1758f206657b330355fec14adfe861b772a956a4822cb867900f6452e81",
+        "span_bytes": 175,
+        "span_text": "<li>The contract award enables Boeing to triple PAC-3 MSE seeker production under the previously announced seven-year framework agreement with the U.S. Department of War.</li>",
+        "value_text": "The contract award enables Boeing to triple PAC-3 MSE seeker production under the previously announced seven-year framework agreement with the U.S. Department of War.",
+        "value_text_sha256": "94525d3424c4fc68d0cb0e6a5e46cfb77587e9bba4c0b78bf865bd8483847ce8"
+      }
+    }
+  ],
+  "source_bytes_changed": false,
+  "supersedes_metadata_only": "d7e708a65f7106de2df9e858de565aebc6613d8efe3a69f674cfdd560c320f9b"
+}

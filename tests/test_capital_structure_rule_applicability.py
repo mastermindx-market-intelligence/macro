@@ -490,7 +490,7 @@ def _l1_spans(pack):
 
 
 def test_l1_pack_version_is_1_1_0_and_still_parses(pack, raw):
-    assert raw["version"] == "capital-structure-rule-applicability/1.1.0"
+    assert raw["version"] == "capital-structure-rule-applicability/1.2.0"
     assert pack.version == ra.RULE_APPLICABILITY_PACK_VERSION == raw["version"]
     assert pack.task == "L0" and pack.qualified_on == QUALIFIED_ON
     assert isinstance(ra.parse_rule_applicability_pack(raw, reference_pack=pack.reference), ra.RuleApplicabilityPack)

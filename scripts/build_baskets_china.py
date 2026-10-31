@@ -249,8 +249,33 @@ def _compute_basket_overlaps(data: dict) -> None:
         log.warning("_compute_basket_overlaps failed: %s", e)
 
 
-def main() -> int:
+def _write_redirect_stub(site: Path) -> int:
+    """Render the fixed baskets_china.html.j2 redirect stub through this builder's
+    own Environment + lib.pages.write_page — the exact HTML step of the full
+    build (the #2886 JSON contract lives in the baskets.json writes, not here).
+    The stub is a zero-context render (see the China SI consolidation note in
+    main), so this same step is also the whole job of main(page_only=True):
+    refresh ONLY the shell, with no engine/pulse/organ/JSON work behind it.
+    Returns the rendered size in KB for the build log.
+    """
+    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
+    stub_html = env.get_template("baskets_china.html.j2").render()
+    write_page(site / "baskets_china.html", stub_html)
+    return len(stub_html) // 1024
+
+
+def main(page_only: bool = False) -> int:
     site = config.ROOT / "site"
+    if page_only:
+        # --page-only: refresh ONLY the fixed baskets_china.html redirect stub —
+        # no baskets engine compute, no theme desk, no pulse/turn/freeze/member-
+        # signal work, and no baskets.json write (fail-soft or authoritative).
+        # Source-only stub updates re-emit the existing shell without any of it.
+        site.mkdir(parents=True, exist_ok=True)  # stub parent only — no payload dirs
+        _page_kb = _write_redirect_stub(site)
+        log.info("wrote %s/baskets_china.html (redirect stub only, %d KB)",
+                 site, _page_kb)
+        return 0
     try:
         from engine.baskets_china import compute_china_baskets
         data = compute_china_baskets()
@@ -382,9 +407,7 @@ def main() -> int:
     # baskets_china_factorwatch.html.j2 for the THS browser (build_baskets_china_ths).
     # The stub forwards inbound #b-<id>/#theme-<id> hashes so old deep links resolve on
     # the merged page (openBasket/openTheme transplanted there).
-    _stub_html = env.get_template("baskets_china.html.j2").render()
-    write_page(site / "baskets_china.html", _stub_html)
-    _page_kb = len(_stub_html) // 1024
+    _page_kb = _write_redirect_stub(site)
 
     # per-theme detail pages (site/basket_china/<id>.html) + the shared desk renderer
     # (basket cycle records were attached above, before the JSON write, so the detail
@@ -524,4 +547,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import argparse
+    _ap = argparse.ArgumentParser(description="Build the China thematic-baskets page (site/baskets_china.html + chinabasketdata/).")
+    _ap.add_argument("--page-only", action="store_true",
+                     help="write only the fixed baskets_china.html redirect stub; skip every engine/compute/JSON write")
+    sys.exit(main(page_only=_ap.parse_args().page_only))

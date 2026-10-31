@@ -1,0 +1,8 @@
+{
+  "started_at": "2026-10-19T23:59:33.923628+00:00",
+  "finished_at": "2026-10-19T23:59:35.329124+00:00",
+  "exit": 0,
+  "script_sha256": "2552c6ee20c22e06ba22fd629be5a11ea5367f7eaf28094d7c8f8ae774ccd541",
+  "stdout_sha256": "afe1d9e04e2ed0001bc08f443662e190dfd0e2f1a76f4632e685bdecaca070c5",
+  "stderr_bytes": 0
+}

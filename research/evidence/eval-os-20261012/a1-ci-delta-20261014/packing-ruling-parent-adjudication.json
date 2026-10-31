@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-10-14T14:07:20.766520+00:00",
+  "run_id": "eval-a1-packing-ruling-01a1333d-c2",
+  "root_and_assigning_parent": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "retained_result_sha256": "1eac7d4329d416b2da225f5282217540cdc69b8161c5f8b158beab78c481f245",
+  "process": "terminal rc0; retained result7192bytes consumed through same adapter; not quality acceptance by itself",
+  "scope": "Packet-only advisory review. No repository inspection or independent source/CI qualification claim. Worker unnecessarily listed home-directory names; no file contents/credentials were opened and that inventory is not canonical programme evidence.",
+  "accepted_core": "Genuine required builder dependency and code-plane proof must remain. Canonical guard explicitly permits a measured baseline for an intended new code job; a conditional free-content count134->135 is preferable to dropping tests, falsifying dependency edges, or weakening closure. Root must measure before deciding/applying.",
+  "rejected_or_corrected_conditions": [
+    "Exclusive jobs select by their declared lists; canonical closure auditing is what qualifies those lists. List-membership selection is not a falsifier by itself.",
+    "A job is the union of its suites; one real dependency chain suffices. A chain from each of all8suites is not required.",
+    "Shared dependency paths across exclusive jobs are normal; cross-job path overlap is not prohibited.",
+    "A conditional function-local real import is conservatively a legitimate dependency; its mere conditional placement is not evidence of a false edge.",
+    "Other probes may also select the new intended A1 job while staying within their existing measured bounds. Reject unexplained drift, not every legitimate +A1 difference.",
+    "Exact tested base has317jobs and containing head318; A1 is the sole added job. Existing neural-web already gains five A1 suites in this accepted PR and retains deterministic weight37; no tests are removed. The new repair preserves these incumbent definitions."
+  ],
+  "parent_decision": "Accepted with explicit corrections as packet-only advisory. Canonical exact tested-merge measurements completed1695.18s: A1 closure clear; free-content135 jobs/5502weight/10packs with sole count breach134. Root authorizes only canonical documented count134->135 for intended A1 job, retaining all scopes/suites/other count and weight/pack/capacity limits. Other probes135/129jobs5684/5445weight10packs, A1 absent. Inherited leadership science rates miss on old base already fixed in currentmain1221. No independent source PASS, hosted green, merge or production acceptance.",
+  "accept_recorded": true,
+  "measurement": "tested-merge-scope-measurements.json",
+  "acceptance_verified_at": "2026-10-14T14:28Z",
+  "adapter_status": {
+    "run_id": "eval-a1-packing-ruling-01a1333d-c2",
+    "state": "TERMINAL",
+    "accepted": true,
+    "accepted_by": "reviewer",
+    "acceptance_state": "ACCEPTED",
+    "result_bytes": 7192
+  }
+}

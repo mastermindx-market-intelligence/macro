@@ -104,7 +104,7 @@ waves:
     depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-10
+      review_after: 2026-10-20
       condition: >
         Historical source mutual exclusion is superseded by accepted #1283. #1286 and
         #1298 are merged; exact 326c8469a21d7f50fc9ecb1848196bf1c6e66685 is installed.
@@ -118,7 +118,39 @@ waves:
         false. Full 326c acceptance is NOT_STARTED; last full accepted host is
         7d82b9adb839d54e4ab25378ca333e498dd83fcc. Acceptance-lane PICKUP is not START.
     next_action: >
-      Only the unstarted 326c host-acceptance orchestration/recovery/execution lane was
+      2026-10-19 04:4xZ (seat 873aabd3, via WS:EXECUTIVE-ECOSYSTEM-COMPLETION R1): acceptance of
+      the installed bcf4a2f7 FAILED at 01:18:08Z (host status exit 1) after the Chairman's one
+      canary passed at 01:16:01Z (SPENT). Root cause — with workspace_acquisition configured,
+      Control hosts the Chairman Control Room on 127.0.0.1:8787 in-process and the host proof
+      forbids any TCP listener; the installed composition has never passed acceptance. The arming
+      auditor's FINAL is ARM_NOT_ADMISSIBLE and rejects a loopback allowlist. A reviewed fix
+      release (Control Room off TCP) is commissioned; P4 stays todo until a fixed release is
+      installed, accepted on one new Chairman-authorized canary and armed. bcf4a2f7 is UNARMED,
+      STOPPED and quiescent.
+      HISTORY 2026-10-19 00:3xZ (Fable Meta-CEO seat 873aabd3, via WS:EXECUTIVE-ECOSYSTEM-COMPLETION R1):
+      the installed release is now S3-prime = bcf4a2f72538682f2fbe4902f6417e59cd038678 (install.sh
+      2026-10-19 00:25Z; chain 91c1cac5 → S2 08d78873 2026-10-18 04:08Z → bcf4a2f7), DISARMED and
+      re-bound (autonomy-control.sh disarm transaction autonomy-595595aa4389, status UNARMED), NOT
+      accepted, NOT armed; both services stopped and absent from launchd since the release's own
+      cleanup stop 2026-10-18 07:10:53Z (S2 Control could not boot with both the finite stanza and
+      dialogue_wake_retry_policy — fixed in S3/S3-prime), service uids quiescent. The 91c1cac5
+      supersede_unstarted_v1 acceptance bound to JOB-003 was superseded by descriptor 6594613b… (S2)
+      and the S2 pre-Job acceptance is superseded by the bcf4a2f7 maintenance bundle, descriptor
+      7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12 (prepared ONCE 00:17:22Z; the
+      S3-prime tool admits the historical 738581ef → 0123ad5a legacy six-key receipt on the
+      historical path only). codex-01 provider readiness was requalified on the UNCHANGED credential
+      (the Chairman declined rotation) through PR 1591's renew-device-revalidation route — first
+      canary PASSED 03:59:35Z (spent), the Chairman's ONE further canary PASSED 06:57:19Z (spent; the
+      S2 acceptance failed on the boot defect). The independent arming review (read-only Opus auditor
+      a59b7a4984ee30c91) is FINAL HOLD / ARM_NOT_ADMISSIBLE until acceptance passes and the auditor
+      refreshes; gaps 1-2 fixed in S3, gap 4 handled by the bcf4a2f7 install, gaps 3 and 5 remain
+      source follow-ups. P4 now waits on exactly one Chairman decision — ONE new readiness canary
+      for bcf4a2f7 acceptance and arm — asked once by the seat; on his word the order is Gate B
+      preflight (new receipt for bcf4a2f7), canary, acceptance.sh within 28 minutes with the
+      descriptor digest, arming review refresh, arm in the gap-5-safe order, then the Phase F
+      journeys that prove P4/P5. No credential, source writer, STARTed operation or Job transferred;
+      the 326c lane text below is history.
+      HISTORY (2026-10-10 frontier) — Only the unstarted 326c host-acceptance orchestration/recovery/execution lane was
       released to and picked up by receiving chat 01a1230a-abcd-7ef3-bf23-d7bda2b564c0,
       under original root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 (#1143/6091328703).
       No active acceptance execution is observed. Receiver retains that lane pending
@@ -171,7 +203,13 @@ waves:
       supporting read-only evidence, not execution owners; their older readiness census
       is superseded by the two sealed Personal-Pro receipts.
 next_action: >
-  CURRENT FRONTIER 2026-10-10 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
+  CURRENT FRONTIER 2026-10-19 04:4xZ / installed bcf4a2f72538682f2fbe4902f6417e59cd038678 (S3-prime,
+  UNARMED, not accepted, services stopped): see P4 — acceptance failed 01:18:08Z on the in-Control
+  Control Room loopback listener; the canary is SPENT; the auditor's FINAL is ARM_NOT_ADMISSIBLE;
+  a reviewed off-TCP fix release is commissioned, then one host chain, ONE Chairman canary,
+  acceptance and arm. Never rerun acceptance under bcf4a2f7 with control.json 74366b97….
+  Everything after this paragraph is the 2026-10-10 history and must not be re-executed.
+  HISTORY — CURRENT FRONTIER 2026-10-10 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
   #1286/#1298 release/install, C1/A2 rebind, five-service restoration and MCP 1.5.0
   backend publication are DONE; canonical disarm/interlock recovery and restoration
   also completed once. Do not repeat. P1/P2 remain unchanged historical source epochs.

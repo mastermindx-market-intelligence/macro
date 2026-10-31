@@ -1,0 +1,27 @@
+{
+  "original_merge": "663dbf1ff7f5fb322213c2211fce8e9bf892ac1d",
+  "integrated_main": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+  "resolved_paths": [
+    "agentos/handoffs/PUBLIC-INTELLIGENCE-NETWORK-2026-10-11.md",
+    "agentos/workstreams/WS-PUBLIC-INTELLIGENCE-NETWORK.md",
+    "engine/press/official_feed_candidate.py",
+    "engine/press/validators.py",
+    "engine/press/writer.py",
+    "research/agentic_media/public_intelligence_20261011/CHECKPOINT.md",
+    "research/agentic_media/public_intelligence_20261011/current_event_phase/postlanding/mmx-current-expected-hashes.json",
+    "research/agentic_media/public_intelligence_20261011/current_event_phase/postlanding/mmx-current-expected-pages.json",
+    "scripts/run_press.py",
+    "scripts/stage_official_feed_press.py",
+    "tests/test_press_external_candidate.py",
+    "tests/test_press_official_feed_candidate.py",
+    "tests/test_press_official_staging.py"
+  ],
+  "main_conflict_bytes_equal_original_9209": true,
+  "resolved_application_to_accepted_followon_bytes": true,
+  "original_acceptance_manifests_from_executed_bundle": true,
+  "accepted_source_hashes_preserved": 26,
+  "main_jobs_retained": 319,
+  "changed_jobs": [
+    "press-lane"
+  ]
+}

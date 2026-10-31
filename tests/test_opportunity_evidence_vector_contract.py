@@ -105,14 +105,14 @@ def _build_golden_imxi_drl_event():
     asof = {
         "value": "2026-08-14",
         "grain": "date",
-        "t0_source": "drl_event_date",
+        "t0_source": "winner_case_t0_hypothesis",
         "t0_mode": "live",
         "t0_evidence_ref": _t0_ref(
-            "data/price_pressure/",
-            {"ticker": "IMXI", "date": "2026-08-14", "direction": "up"},
+            "research/winners/cases/",
+            {"case_id": "synthetic_imxi"},
             "2026-08-14",
-            clock_class="observed",
-            native_field="harvested_asof",
+            clock_class="belief_or_build",
+            native_field="t0_hypothesis",
         ),
     }
     slots = [
@@ -414,14 +414,14 @@ def _base_vector():
     asof = {
         "value": "2026-08-14",
         "grain": "date",
-        "t0_source": "drl_event_date",
+        "t0_source": "winner_case_t0_hypothesis",
         "t0_mode": "live",
         "t0_evidence_ref": _t0_ref(
-            "data/price_pressure/",
-            {"ticker": "IMXI", "date": "2026-08-14", "direction": "up"},
+            "research/winners/cases/",
+            {"case_id": "synthetic_imxi"},
             "2026-08-14",
-            clock_class="observed",
-            native_field="harvested_asof",
+            clock_class="belief_or_build",
+            native_field="t0_hypothesis",
         ),
     }
     slots = [
@@ -613,11 +613,11 @@ def _build_hostile_retrospective_t0():
         asof,
         t0_mode="live",
         t0_evidence_ref=_t0_ref(
-            "data/price_pressure/",
-            {"ticker": "IMXI", "date": "2026-08-14", "direction": "up"},
+            "research/winners/cases/",
+            {"case_id": "synthetic_imxi"},
             "2026-09-30",  # 47 days after t0, far past the 4-day live budget
-            clock_class="observed",
-            native_field="harvested_asof",
+            clock_class="belief_or_build",
+            native_field="t0_hypothesis",
         ),
     )
     v = compose_vector(subject, asof, slots)
@@ -793,8 +793,9 @@ def _write_fixtures():
         "engine.price_pressure.ledger.read_ledger (resid/resid_z/peer_ret/peer_basis, market basis).",
     ]
     manifest["fixtures"]["golden_imxi_drl_event"]["receipts"].append(
-        "t0 authentication: t0_source drl_event_date, owner_store data/price_pressure/ (registry "
-        "t0_sources pin), recorded_clock harvested_asof 2026-08-14 = t0 -> zero recording lag, live."
+        "Synthetic non-DRL winner-case origin exercises the live-capable pin. DRL availability "
+        "is unknown: harvested_asof is a session, so uncaptured DRL values are excluded. "
+        "This fixture proves no real IMXI capture, historical availability or source authentication."
     )
     manifest["fixtures"]["golden_fpi_absence"]["receipts"] = [
         "FPI zero-EDGAR-statements rule: contracts/opportunity_evidence/slot_registry.v1.json "
@@ -812,7 +813,7 @@ def _write_fixtures():
         "case) plus CLAUDE.md 'Instrument verdicts are NOT market verdicts'.",
         "t0 authentication: owner_pit_reference digest-pinned to research/"
         "CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md (sha256 4baa27cc...13c025ca), git committer date "
-        "2026-08-09 = t0 -> zero recording lag, lawfully live.",
+        "2026-08-09. This generic owner reference is retrospective research, never live authentication.",
     ]
     manifest["fixtures"]["golden_optional_expectation"]["receipts"] = [
         "constructs.prospective_expectation_src_a1 note: 'OPTIONAL evidence family only ... never a "
@@ -820,8 +821,7 @@ def _write_fixtures():
         "t0 authentication: the native_digest on this fixture's t0_evidence_ref is ILLUSTRATIVE. "
         "SRC-A1 observation artifacts live at a configurable, append-only path and are not committed "
         "to this repository, so the reference proves the required SHAPE (a generic owner_pit_reference "
-        "must carry a KNOWN immutability receipt) and not a specific committed object. Every other "
-        "golden's digest is the real sha256 of real committed bytes.",
+        "must carry a KNOWN immutability receipt) and not a specific committed object. The fixtures are contract examples, not operational source authentication.",
     ]
 
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -981,7 +981,7 @@ def test_mutation_stale_hash_fires_r020():
     old_hash = v["content_sha256"]
     for slot in v["slots"]:
         if slot["construct"] == "drl_resid_shock":
-            slot["value_or_null"] = dict(slot["value_or_null"], resid=0.9999)
+            slot["value_or_null"] = {"resid": 0.9999}
     assert v["content_sha256"] == old_hash  # left stale on purpose
     codes = _codes(validate_vector(v))
     assert "K3E_R020" in codes
@@ -996,7 +996,7 @@ def test_mutation_r1_value_payload_forbidden_key_fires_r004():
     v = _golden_imxi_vector()
     for slot in v["slots"]:
         if slot["construct"] == "drl_resid_shock":
-            slot["value_or_null"] = dict(slot["value_or_null"], score=0.9)
+            slot["value_or_null"] = {"score": 0.9}
     codes = _codes(validate_vector(v))
     assert "K3E_R004" in codes
 
@@ -1038,11 +1038,11 @@ def test_mutation_r2_intraday_datetime_lookahead_fires_r007_and_autoexcludes():
         "identity_bridge": {"method": "owner_native_same_key", "receipt": "test receipt"},
     }
     asof = {
-        "value": "2026-08-14T09:30:00Z", "grain": "datetime", "t0_source": "drl_event_date",
+        "value": "2026-08-14T09:30:00Z", "grain": "datetime", "t0_source": "winner_case_t0_hypothesis",
         "t0_mode": "live",
         "t0_evidence_ref": _t0_ref(
-            "data/price_pressure/", {"ticker": "IMXI", "date": "2026-08-14"}, "2026-08-14",
-            clock_class="observed", native_field="harvested_asof",
+            "research/winners/cases/", {"case_id": "synthetic_imxi"}, "2026-08-14",
+            clock_class="belief_or_build", native_field="t0_hypothesis",
         ),
     }
     slots = [
@@ -1065,11 +1065,11 @@ def test_mutation_r2_intraday_datetime_lookahead_fires_r007_and_autoexcludes():
 def test_mutation_r4_only_unsupported_and_unknown_adverse_dominant_is_unsupported():
     subject = {"subject_type": "us_listing_symbol", "value": "IMXI", "identity_state": "single_owner_native", "identity_bridge": None}
     asof = {
-        "value": "2026-08-14", "grain": "date", "t0_source": "drl_event_date",
+        "value": "2026-08-14", "grain": "date", "t0_source": "winner_case_t0_hypothesis",
         "t0_mode": "live",
         "t0_evidence_ref": _t0_ref(
-            "data/price_pressure/", {"ticker": "IMXI", "date": "2026-08-14"}, "2026-08-14",
-            clock_class="observed", native_field="harvested_asof",
+            "research/winners/cases/", {"case_id": "synthetic_imxi"}, "2026-08-14",
+            clock_class="belief_or_build", native_field="t0_hypothesis",
         ),
     }
     slots = [
@@ -1421,18 +1421,21 @@ def test_a1_the_defect_is_the_claim_not_the_lag():
     assert validate_vector(_rehash(v)) == []
 
 
-def test_a2_registry_restricts_the_generic_source_and_keeps_the_pinned_four_live_capable():
+def test_a2_registry_restricts_generic_and_captured_sources_and_keeps_supported_pins_live():
     """The rule lives in the registry, not in a hardcoded source name: the
-    generic row may claim only retrospective_research, and the four rows whose
-    owner_store and clock class validation actually checks keep 'live'."""
+    generic and captured rows are retrospective-only; the three existing
+    supported non-DRL pins retain live capability. The legacy DRL session pin is retired."""
 
     sources = load_slot_registry()["t0_sources"]["sources"]
     assert sources["owner_pit_reference"]["lawful_t0_modes"] == ["retrospective_research"]
+    assert sources["drl_event_date"]["lawful_t0_modes"] == []
+    assert sources["drl_captured_read"]["lawful_t0_modes"] == ["retrospective_research"]
+    assert sources["earnings_workspace_context"]["lawful_t0_modes"] == ["retrospective_research"]
     # ...and its lag budget is null by construction, since 'live' is the only
     # mode that ever consults it. That null is the second, independent fence.
     assert sources["owner_pit_reference"]["max_recording_lag_days"] is None
     for name, pin in sources.items():
-        if name == "owner_pit_reference":
+        if name in {"owner_pit_reference", "drl_event_date", "drl_captured_read", "earnings_workspace_context"}:
             continue
         assert "live" in pin["lawful_t0_modes"], f"{name} lost its live capability"
         # A source that may claim live must be checkable AND budgeted.
@@ -1446,7 +1449,7 @@ def test_a2_pinned_source_still_validates_live():
     for the sources that legitimately carry it."""
 
     v = _golden_imxi_vector()
-    assert v["asof"]["t0_source"] == "drl_event_date"
+    assert v["asof"]["t0_source"] == "winner_case_t0_hypothesis"
     assert v["asof"]["t0_mode"] == "live"
     assert validate_vector(v) == []
 
@@ -1458,7 +1461,7 @@ def test_a3_a_missing_lawful_modes_pin_denies_live_rather_than_granting_it():
     import lib.opportunity_evidence as oe
 
     registry = copy.deepcopy(oe.load_slot_registry())
-    del registry["t0_sources"]["sources"]["drl_event_date"]["lawful_t0_modes"]
+    del registry["t0_sources"]["sources"]["winner_case_t0_hypothesis"]["lawful_t0_modes"]
     real = oe.load_slot_registry
     try:
         oe.load_slot_registry = lambda: registry
@@ -1481,7 +1484,7 @@ def test_a3_a_malformed_lawful_modes_pin_is_a_finding_not_a_crash(bad_pin):
     import lib.opportunity_evidence as oe
 
     registry = copy.deepcopy(oe.load_slot_registry())
-    registry["t0_sources"]["sources"]["drl_event_date"]["lawful_t0_modes"] = bad_pin
+    registry["t0_sources"]["sources"]["winner_case_t0_hypothesis"]["lawful_t0_modes"] = bad_pin
     real = oe.load_slot_registry
     try:
         oe.load_slot_registry = lambda: registry
@@ -1610,9 +1613,9 @@ def test_s2_modeled_market_reflection_evidence_counts_as_included():
     i4 = next(l for l in legs if l["leg"] == "I4_options_repricing")
     assert i4["state"] == "modeled"
     observed_legs = [l for l in legs if l["state"] == "observed"]
-    assert len(observed_legs) == 1  # I2 only
-    # included counts BOTH the observed leg and the modeled one.
-    assert v["projection"]["market_reflection"]["denominator"]["included"] == 2
+    assert observed_legs == []  # Uncaptured DRL cannot supply I2 availability.
+    # The modeled options leg remains included on its own native evidence.
+    assert v["projection"]["market_reflection"]["denominator"]["included"] == 1
     assert validate_vector(v) == []
 
 
@@ -1935,7 +1938,7 @@ def test_rt2_minor11_registry_pins_fail_closed_when_a_budget_or_digest_pin_is_mi
 
     v = _golden_imxi_vector()
     registry = copy.deepcopy(oe.load_slot_registry())
-    del registry["t0_sources"]["sources"]["drl_event_date"]["max_recording_lag_days"]
+    del registry["t0_sources"]["sources"]["winner_case_t0_hypothesis"]["max_recording_lag_days"]
     real = oe.load_slot_registry
     try:
         oe.load_slot_registry = lambda: registry
@@ -1962,6 +1965,7 @@ def test_mutation_disloc_residual_slot_with_noncanonical_owner_fires_r008():
     template = next(s for s in v["slots"] if s["construct"] == "drl_resid_shock")
     rogue = json.loads(json.dumps(template))
     rogue["construct"] = "disloc.ret_resid.21d"
+    rogue["state"] = "observed"
     rogue["family_binding"] = {"kind": "research_only", "family_id": None, "routed_to": None}
     rogue["value_or_null"] = 0.1234
     rogue["asof"] = {"value": "2026-08-14", "grain": "date", "clock_class": "world_valid", "native_field": "bar_date", "state": "known"}
@@ -1970,3 +1974,174 @@ def test_mutation_disloc_residual_slot_with_noncanonical_owner_fires_r008():
     v["slots"].append(rogue)
     codes = _codes(validate_vector(v))
     assert "K3E_R008" in codes
+
+
+# Research OpportunityCase integration. All inputs in this section are synthetic
+# contract fixtures. No fixture is relabeled as a retained/live market candidate.
+def _opportunity_case_inputs(vector=None, *, include_evaluation=True):
+    from lib import evidence_foundation as ef
+    from lib import opportunity_case as oc
+    from tests.test_evidence_foundation_product_contract import _references, _golden_blocks
+    recipe = json.loads((ROOT / "tests/fixtures/evidence_foundation/aapl_security_state_recipe_valid.json").read_text())
+    blocks = _golden_blocks()
+    if not include_evaluation:
+        blocks = [b for b in blocks if b["block_key"] != "forward_context"]
+        recipe["block_specs"] = [s for s in recipe["block_specs"] if s["block_key"] != "forward_context"]
+        recipe["output_mappings"] = [m for m in recipe["output_mappings"] if m["block_key"] != "forward_context"]
+    consumer = {"workstream": "WS:ALPHA-INTELLIGENCE-INTEGRATION",
+                "job": "synthetic research composition", "output_contract": oc.SCHEMA}
+    recipe["consumer"] = consumer
+    for block in blocks:
+        block["consumer"] = consumer
+        block["permitted_consumers"] = [oc.SCHEMA]
+        block["evidence_block_id"] = ef.compute_block_id(block)
+    for spec in recipe["block_specs"]:
+        leg = {"earnings_change": "company_context", "fundamental_context": "valuation_context",
+               "theme_context": "transmission", "forward_context": "path_timing"}[spec["block_key"]]
+        spec["output_fields"] = [leg]
+    for mapping in recipe["output_mappings"]:
+        mapping["output_field"] = {"earnings_change": "company_context", "fundamental_context": "valuation_context",
+                                   "theme_context": "transmission", "forward_context": "path_timing"}[mapping["block_key"]]
+    recipe["output_mappings"] = list({m["output_field"]: m for m in recipe["output_mappings"]}.values())
+    recipe["recipe_id"] = ef.compute_recipe_id(recipe)
+    if vector is None:
+        subject, asof, slots = _base_vector()
+        asof["value"] = "2026-08-26"
+        asof["t0_evidence_ref"]["recorded_clock"]["value"] = "2026-08-26"
+        vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    refs = _references()
+    used = {rid for block in blocks for rid in block["reference_ids"]}
+    refs = {rid: refs[rid] for rid in sorted(used)}
+    evaluation = [rid for rid, ref in refs.items() if ref["owner_store"] == "qledger.claim"]
+    return dict(recipe=recipe, blocks=blocks, references=refs, vector=vector,
+                evaluation_reference_ids=evaluation)
+
+
+def test_opportunity_case_composes_native_legs_and_keeps_identity_missingness():
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    before = json.dumps(inputs, sort_keys=True)
+    case = oc.compose_case(**inputs)
+    assert oc.validate_case(case) == case
+    assert json.dumps(inputs, sort_keys=True) == before
+    assert case["inferred"]["slots"] == []
+    drl = next(s for s in case["inputs"]["vector"]["slots"] if s["construct"] == "drl_resid_shock")
+    assert drl["value_or_null"] is None and drl["included_in_composition"] is False
+    assert drl["known_at"]["state"] == "unknown"
+    assert case["market_incorporation"] == inputs["vector"]["projection"]["market_reflection"]
+    assert case["strongest_unresolved_fact"] == inputs["vector"]["projection"]["strongest_unresolved_fact"]
+    assert case["failed_gates"] == inputs["vector"]["projection"]["failed_or_unavailable_gates"]
+    assert case["evidence_binding"]["state"] == "identity_unresolved"
+    assert case["evidence_binding"]["scope"] == "native_subjects_only"
+    assert case["company_context"]["block_ids"] == []
+    assert case["company_context"]["withheld_block_ids"]
+    assert case["research_state"] == "partial"
+    assert case["denominators"]["vector"] == inputs["vector"]["denominator"]
+    assert case["denominators"]["evidence"] == case["evidence_binding"]["recipe_receipt"]["denominator"]
+    assert case["evaluation_refs"][0]["object_class"] == "forward_claim"
+    assert case["calibrated"] == {"state": "unavailable", "opportunity_score": None,
+                                  "confidence": None, "probability": None, "impact": None}
+    assert set(case["authority"].values()) == {False}
+
+
+def test_opportunity_case_no_fixture_or_block_order_becomes_a_priority():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    second = json.loads(json.dumps(first))
+    second["blocks"].reverse()
+    assert oc.compose_case(**first) == oc.compose_case(**second)
+
+
+def test_opportunity_case_identity_survives_new_evidence_version():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    second = json.loads(json.dumps(first))
+    slot = next(s for s in second["vector"]["slots"] if s["construct"] == "drl_resid_shock")
+    slot["coverage_flag"]["note"] = "Later version remains historically unqualified."
+    second["vector"]["content_sha256"] = compute_content_sha256(second["vector"])
+    a, b = oc.compose_case(**first), oc.compose_case(**second)
+    assert a["case_id"] == b["case_id"] and a["content_sha256"] != b["content_sha256"]
+
+
+def test_opportunity_case_identity_provenance_refresh_is_a_version_not_a_new_case():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    first["vector"]["subject"] = {"subject_type": "dataos_security_id", "value": "SEC:US-XNAS-AAPL",
+        "identity_state": "bridge_validated", "identity_bridge": {"method": "dataos_security_master", "receipt": "synthetic-v1"}}
+    first["vector"]["content_sha256"] = compute_content_sha256(first["vector"])
+    second = json.loads(json.dumps(first))
+    second["vector"]["subject"]["identity_bridge"]["receipt"] = "synthetic-v2"
+    second["vector"]["content_sha256"] = compute_content_sha256(second["vector"])
+    a, b = oc.compose_case(**first), oc.compose_case(**second)
+    assert a["case_id"] == b["case_id"] and a["content_sha256"] != b["content_sha256"]
+
+
+def test_opportunity_case_boolean_numeric_substitution_is_not_exact_bytes():
+    from lib import opportunity_case as oc
+    case = oc.compose_case(**_opportunity_case_inputs())
+    case["authority"]["can_rank"] = 0
+    with pytest.raises(oc.OpportunityCaseError, match="case_projection_or_identity_mismatch"):
+        oc.validate_case(case)
+
+
+@pytest.mark.parametrize("mutation", ["score", "authority", "observed", "gate", "extra"])
+def test_opportunity_case_rehashed_projection_cannot_promote_or_hide_native_leg(mutation):
+    from lib import opportunity_case as oc
+    case = oc.compose_case(**_opportunity_case_inputs())
+    if mutation == "score": case["calibrated"]["opportunity_score"] = 10
+    elif mutation == "authority": case["authority"]["can_rank"] = True
+    elif mutation == "observed": case["reality"] = case["inferred"]
+    elif mutation == "gate": case["failed_gates"]["gates"].append({"state": "passed"})
+    else: case["RP1"] = 1
+    case["content_sha256"] = oc._hash({k: v for k, v in case.items() if k != "content_sha256"})
+    with pytest.raises(oc.OpportunityCaseError, match="case_projection_or_identity_mismatch"):
+        oc.validate_case(case)
+
+
+@pytest.mark.parametrize("mutation", ["reference", "block", "vector", "consumer", "evaluation"])
+def test_opportunity_case_uses_actual_native_validators(mutation):
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    if mutation == "reference": next(iter(inputs["references"].values()))["authority"]["can_size"] = True
+    elif mutation == "block": inputs["blocks"][0]["coverage"]["included"] = 2
+    elif mutation == "vector": inputs["vector"]["slots"][0]["state"] = "missing"
+    elif mutation == "consumer": inputs["vector"]["permitted_consumers"] = ["research_session"]
+    else: inputs["evaluation_reference_ids"] = [next(r for r, ref in inputs["references"].items()
+                                                     if ref["object_class"] != "forward_claim")]
+    with pytest.raises(oc.OpportunityCaseError):
+        oc.compose_case(**inputs)
+
+
+def test_opportunity_case_bounded_unknown_inputs_do_not_open_any_owner(monkeypatch):
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    inputs["blocks"] *= 17
+    with pytest.raises(oc.OpportunityCaseError):
+        oc.compose_case(**inputs)
+
+
+def test_opportunity_case_vector_transmission_is_instrument_context_not_market_verdict():
+    from lib import opportunity_case as oc
+    subject, asof, slots = _base_vector()
+    asof["value"] = "2026-08-26"
+    asof["t0_evidence_ref"]["recorded_clock"]["value"] = "2026-08-26"
+    subject = {"subject_type": "dataos_security_id", "value": "SEC:US-XNAS-AAPL",
+               "identity_state": "bridge_validated",
+               "identity_bridge": {"method": "dataos_security_master", "receipt": "synthetic-owner-receipt"}}
+    slots.append(dict(construct="macro_chain_state", state="observed", value_or_null="failed",
+                      asof=_clock("2026-08-14"), known_at=_clock("2026-08-14")))
+    vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    case = oc.compose_case(**_opportunity_case_inputs(vector))
+    assert case["transmission"]["owner_slots"][0]["value_or_null"] == "failed"
+    assert case["transmission"]["state"] == "partial"
+    assert all("macro_chain_state" not in leg["slot_refs"]
+               for leg in case["market_incorporation"]["incorporation_legs"])
+    assert case["calibrated"]["opportunity_score"] is None
+
+
+def test_opportunity_case_future_evaluation_receipt_cannot_enter_an_earlier_case():
+    from lib import opportunity_case as oc
+    subject, asof, slots = _base_vector()
+    vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    with pytest.raises(oc.OpportunityCaseError, match="case_reference_after_cutoff"):
+        oc.compose_case(**_opportunity_case_inputs(vector))

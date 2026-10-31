@@ -1,0 +1,2900 @@
+{
+  "comparison": {
+    "snapshot_file": "/Volumes/Mastermind/ci-pack-throughput-20261019/ancestry-natural-runs-2356.json",
+    "treatment_merge": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+    "treatment_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+    "discovered": 29,
+    "pending": 13,
+    "cancelled": 4,
+    "before": [
+      {
+        "id": 39238690990,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 94,
+        "job_set": "a0a36886a37820381e7e2cd144e9c9b59c4af054b39fb47243f22cabadc3c7c6",
+        "proof_set": "d95374f4680ff09df9e3d22d789235ccb44862ed7b1f409617f4152419dd430d",
+        "run_to_gate_s": 2414.0,
+        "first_red_s": null,
+        "runner_minutes": 184.45
+      },
+      {
+        "id": 39237548874,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 83,
+        "job_set": "1646330e6caf98723031efcf930da157a33ad279a8fc81c881300045cd41c482",
+        "proof_set": "174ab12979bf14c24aff4ec6baf82748cfd04306daef8d081b8380913c28df93",
+        "run_to_gate_s": 2453.0,
+        "first_red_s": null,
+        "runner_minutes": 144.93
+      },
+      {
+        "id": 39236414524,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 108,
+        "job_set": "2ea37b8974d8c439b9f41f5c6dd7576db6a8b1aac4f7dde112be7ac94504f789",
+        "proof_set": "5e23782dd067473593f75e50537c5f1bec7a578b7917984effb606366053243e",
+        "run_to_gate_s": 4057.0,
+        "first_red_s": null,
+        "runner_minutes": 256.77
+      },
+      {
+        "id": 39236332532,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 102,
+        "job_set": "6171202c8bc75d6d509da69cfaf95996c5069bbed13abbbd8a1ec1bb7ade9f99",
+        "proof_set": "b45710167bc5ee910f37fefec1974a594c011c9e514c9f16bccfb3c08ea13453",
+        "run_to_gate_s": 3429.0,
+        "first_red_s": null,
+        "runner_minutes": 234.58
+      },
+      {
+        "id": 39236263674,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 112,
+        "job_set": "c946cf0c4d67bff89477cd8251d5600c9ba3226e6ecbfd5d4ca54fceeb9d1852",
+        "proof_set": "0698975435b7212bfbd5875f60813d0789f9551c7769df647830f3e2e3ef0a7d",
+        "run_to_gate_s": 4074.0,
+        "first_red_s": null,
+        "runner_minutes": 257.63
+      },
+      {
+        "id": 39235975546,
+        "conclusion": "success",
+        "scope": "global",
+        "count": 255,
+        "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+        "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+        "run_to_gate_s": 3196.0,
+        "first_red_s": null,
+        "runner_minutes": 321.97
+      },
+      {
+        "id": 39235580372,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 105,
+        "job_set": "0864be6c0e88229dc35580045f0d5eac7a1a2f18b3e07a9016115f561a83f2ef",
+        "proof_set": "0f7bfc73fc5ef152e86041534dd84e661b796880142a0e83d1da8cbefec306d7",
+        "run_to_gate_s": 2499.0,
+        "first_red_s": null,
+        "runner_minutes": 182.02
+      },
+      {
+        "id": 39234426974,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 124,
+        "job_set": "9390fc826ac57f49182cda0dd6658a0567604869c55272b9af718f93a0f86524",
+        "proof_set": "86c81e200845f9a735e74620c12bfb833fef3fe2f5e222442916ccb2358ebadc",
+        "run_to_gate_s": 3458.0,
+        "first_red_s": null,
+        "runner_minutes": 236.57
+      },
+      {
+        "id": 39234350662,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 18,
+        "job_set": "9234b1a15794c8294b69f66cc395fc676deef4c13fbcb2e8891938fe758c21f0",
+        "proof_set": "f18ade60ada999cb1c5b49059814d10b0029f33e91bd9ba5182c534663c5cfed",
+        "run_to_gate_s": 2785.0,
+        "first_red_s": null,
+        "runner_minutes": 102.12
+      },
+      {
+        "id": 39233825272,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 110,
+        "job_set": "a6fba2e4ef28fd1619ecf3f356dee4f2de709d2625975eb5f9bdad9e33fea839",
+        "proof_set": "8ef103394b5abf97e184d45f0759ef99083f2b157bb722df005915f203257972",
+        "run_to_gate_s": 3402.0,
+        "first_red_s": null,
+        "runner_minutes": 218.88
+      },
+      {
+        "id": 39233775390,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 116,
+        "job_set": "05fd981b8fa3966facaa24e905a92b0d2888132572d6069c2fcf675e82f20acd",
+        "proof_set": "764fa6ba948eabb76baa14c55164f4dab371f241b16556a0213ec80addf3c450",
+        "run_to_gate_s": 3013.0,
+        "first_red_s": null,
+        "runner_minutes": 218.5
+      },
+      {
+        "id": 39233721469,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 107,
+        "job_set": "ca2caf86ba02f858cf4a54ea174cfaf7111d2300852bbfd100fb7aff922fe3de",
+        "proof_set": "5ce51d86be1b6ad3ce2be04e5b942d9c453670bdd34ca78024e611dc936336f6",
+        "run_to_gate_s": 3542.0,
+        "first_red_s": null,
+        "runner_minutes": 227.15
+      },
+      {
+        "id": 39233349598,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 116,
+        "job_set": "e1b82735e46a78c30382caaf0629395c0a2d94014f09e4e66b061c0efaaf5ec6",
+        "proof_set": "8df7e9c21cdd7d6dd9310c481493a9501af1467c672543f223013d3fc365e8f9",
+        "run_to_gate_s": 3942.0,
+        "first_red_s": null,
+        "runner_minutes": 255.18
+      },
+      {
+        "id": 39233246363,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 107,
+        "job_set": "cf61d1de63c4a174a8f2ae09577f736c1febb47be7055c2aeeb934ac24c31457",
+        "proof_set": "6b91c757d3ecf50c25b466b614e86f0aea03a28a8bf74be9d75fc79f11856db9",
+        "run_to_gate_s": 2684.0,
+        "first_red_s": null,
+        "runner_minutes": 188.53
+      },
+      {
+        "id": 39233122614,
+        "conclusion": "success",
+        "scope": "scoped",
+        "count": 107,
+        "job_set": "c32c9cec82bb1a9dc76fffc433de5ab7c45b7ab359916fc7aba31dbee53392bc",
+        "proof_set": "7fe8fae8e3affff86354b15344dc76173ffdb7be84f299d47cf07a567b70296e",
+        "run_to_gate_s": 3129.0,
+        "first_red_s": null,
+        "runner_minutes": 227.72
+      },
+      {
+        "id": 39232626567,
+        "conclusion": "failure",
+        "scope": "global",
+        "count": 255,
+        "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+        "proof_set": "c2e89748c9c85d9786187a4d1ce25120a0b6ba0966bb8aae5f3f329264e59cc8",
+        "run_to_gate_s": 3516.0,
+        "first_red_s": 2957.0,
+        "runner_minutes": 342.57
+      },
+      {
+        "id": 39232473798,
+        "conclusion": "failure",
+        "scope": "global",
+        "count": 255,
+        "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+        "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+        "run_to_gate_s": 4109.0,
+        "first_red_s": 2632.0,
+        "runner_minutes": 361.0
+      },
+      {
+        "id": 39230039622,
+        "conclusion": "failure",
+        "scope": "scoped",
+        "count": 97,
+        "job_set": "28c136f52783ed82ae2776fa5cebf6a73b47b998d8647cf7a87932f601006726",
+        "proof_set": "ed9f704a7210db90b8fe03942d9f68eff50caa7913df9e868381e005ee7f82e6",
+        "run_to_gate_s": 2914.0,
+        "first_red_s": 2545.0,
+        "runner_minutes": 189.92
+      },
+      {
+        "id": 39229273374,
+        "conclusion": "failure",
+        "scope": "scoped",
+        "count": 106,
+        "job_set": "70bfd7ff67d442abca3ac059dda656d70da77ef5185f1f17346475d66084edb3",
+        "proof_set": "e44b98bc0a75686b0cd42341f975e805a9069050fc4d7f874a052bc7d8356636",
+        "run_to_gate_s": 3753.0,
+        "first_red_s": 3691.0,
+        "runner_minutes": 231.57
+      },
+      {
+        "id": 39228917299,
+        "conclusion": "failure",
+        "scope": "global",
+        "count": 256,
+        "job_set": "58fc6153a7278765969ff671c0ec7c7e00fb0791bacd6ab438cde7343002fb15",
+        "proof_set": "c3754cc91ce1911db39305b46027302a3c0a7405d5ede6ad2b88a56fd6dc6edf",
+        "run_to_gate_s": 7145.0,
+        "first_red_s": 912.0,
+        "runner_minutes": 481.25
+      },
+      {
+        "id": 39228597930,
+        "conclusion": "failure",
+        "scope": "scoped",
+        "count": 93,
+        "job_set": "0bde3e4635493d1e8215559fc97cfa698fc8c1199c199396dc05a3f23281db9f",
+        "proof_set": "d95996464d8f8a378dfb466b3fbdb564379b7fed39a940a4adc5d0ae78b0409e",
+        "run_to_gate_s": 4232.0,
+        "first_red_s": 4178.0,
+        "runner_minutes": 180.13
+      },
+      {
+        "id": 39228592753,
+        "conclusion": "failure",
+        "scope": "scoped",
+        "count": 134,
+        "job_set": "921fac88b1dea29e2319309cbc11f6ac01b559c65915ecaf0b6693fbc56ba721",
+        "proof_set": "f9c6987cb52999a845a6707e81cc125a12580f6c0695c838fac83ee674dd3faa",
+        "run_to_gate_s": 4342.0,
+        "first_red_s": 2212.0,
+        "runner_minutes": 332.83
+      }
+    ],
+    "after": [
+      {
+        "id": 39341997524,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341997524",
+        "conclusion": "success",
+        "tested_tree_sha": "36009b77d9644d6e306e412592a230f305831973",
+        "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 105,
+        "job_set": "0864be6c0e88229dc35580045f0d5eac7a1a2f18b3e07a9016115f561a83f2ef",
+        "proof_set": "38393a3f1846011f12777324a3d9b29879328596e653c257cbf66474cfb79c98",
+        "run_to_gate_s": 1215.0,
+        "first_red_s": null,
+        "runner_minutes": 171.16666666666666,
+        "last_pack_to_gate_start_s": 3.0,
+        "baseline_same_jobs": [
+          39235580372
+        ],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39341717084,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341717084",
+        "conclusion": "success",
+        "tested_tree_sha": "7aaeebfa415e9dd4541e6db969b96e3f18f634fb",
+        "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 78,
+        "job_set": "df702c883eb532bce9309d8ba99765c63e9664ee038abb7bad208e3b2b50cac1",
+        "proof_set": "fa9049ff50414ba613a8b46104d25ff96dbceba60a780db7136030d4699ff496",
+        "run_to_gate_s": 977.0,
+        "first_red_s": null,
+        "runner_minutes": 125.78333333333333,
+        "last_pack_to_gate_start_s": 7.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39338046620,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39338046620",
+        "conclusion": "success",
+        "tested_tree_sha": "259391180a2f549d3af4ad37d40bdaa3bef317c4",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 79,
+        "job_set": "d5cb9837606c8eeed20b256cf907e46a372ef7545ffeb1d82173298615e1df82",
+        "proof_set": "9ae69be0ec8c0644f906f41728b1a24ee2568c978a7c19f554010b1507632556",
+        "run_to_gate_s": 2395.0,
+        "first_red_s": null,
+        "runner_minutes": 169.93333333333334,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39338042084,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39338042084",
+        "conclusion": "success",
+        "tested_tree_sha": "1662871a6a28494973e136f95e40c111eb4061f9",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 78,
+        "job_set": "df702c883eb532bce9309d8ba99765c63e9664ee038abb7bad208e3b2b50cac1",
+        "proof_set": "fa9049ff50414ba613a8b46104d25ff96dbceba60a780db7136030d4699ff496",
+        "run_to_gate_s": 1042.0,
+        "first_red_s": null,
+        "runner_minutes": 141.65,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39337448725,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39337448725",
+        "conclusion": "success",
+        "tested_tree_sha": "2657c17a4a57fbbb384690a2b4cd42c7a0c5d777",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 130,
+        "job_set": "3afc3b4116d628946350714e7de3be0a58d883ff0a02e9ffef7a5ac4e2b5aa42",
+        "proof_set": "6db4ace432fa31e8c426c38b1a80b2e8f8072a47c339b7b465c5f80db0b760e4",
+        "run_to_gate_s": 1981.0,
+        "first_red_s": null,
+        "runner_minutes": 259.0,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39336970159,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336970159",
+        "conclusion": "success",
+        "tested_tree_sha": "1c3a4fa53d6414df0df0b862331fa54dd06fcbee",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 108,
+        "job_set": "89863cab079089044756eb909066ef1b9d4303cde572a08415155d5a458ddd3c",
+        "proof_set": "7ec32eaf927261eabf517d3fc4fcc081fa102fc84c3cac9c95f0623cd4f7eef5",
+        "run_to_gate_s": 2863.0,
+        "first_red_s": null,
+        "runner_minutes": 243.9,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39336968732,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336968732",
+        "conclusion": "success",
+        "tested_tree_sha": "b1c1099ffa8ab337844d6ba6f05349735ae2fc6c",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 113,
+        "job_set": "bb70fa24fe19ca7226bf5c4712151958cfa96046f0cdc681749f054254e9e3ea",
+        "proof_set": "926b2232cd796525a414893dba3d8dcc511dc882cd2a256b2d3519e391401bb2",
+        "run_to_gate_s": 2077.0,
+        "first_red_s": null,
+        "runner_minutes": 249.21666666666667,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39336610321,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336610321",
+        "conclusion": "success",
+        "tested_tree_sha": "061baba725696dd15a742bd80a5305ce4e239ba6",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 97,
+        "job_set": "85573b90d2c3db10b3552223cb09be6637c7cb4948ee55e6c82e755afdffd04b",
+        "proof_set": "a1386ba0a7656853b124b9550415fdb53a091b9ea4a0b128c00360d0cc1210e3",
+        "run_to_gate_s": 1234.0,
+        "first_red_s": null,
+        "runner_minutes": 164.13333333333333,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39336503626,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336503626",
+        "conclusion": "success",
+        "tested_tree_sha": "c5d07a66cc386f97e36c3507f92224adebcb64f2",
+        "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "global",
+        "count": 258,
+        "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+        "proof_set": "dbe5419c275db118bcbc5aa684b43be39ed3682bb4f9e07e1c86a4b687705fa1",
+        "run_to_gate_s": 3130.0,
+        "first_red_s": null,
+        "runner_minutes": 329.15,
+        "last_pack_to_gate_start_s": 3.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39333873303,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39333873303",
+        "conclusion": "success",
+        "tested_tree_sha": "1ab158db3a1041f7a71840142ac7e6fc89ef6308",
+        "base_sha": "d1d95cea3fefdf01c67fb9b054dbd5da222b9d0c",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 129,
+        "job_set": "27a0a873cf5783a2142a3f8d0d5e742ae82de2d033283da53bbf698d83ffc544",
+        "proof_set": "5780b2ed22e640e2f79d0f37c09d37f754f209f4099e6169fe0f0dc2bbded815",
+        "run_to_gate_s": 2502.0,
+        "first_red_s": null,
+        "runner_minutes": 268.0833333333333,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39332378137,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39332378137",
+        "conclusion": "success",
+        "tested_tree_sha": "3bd1a6a7a9b1739672f2dd726d008e244d1c4ea6",
+        "base_sha": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 129,
+        "job_set": "27a0a873cf5783a2142a3f8d0d5e742ae82de2d033283da53bbf698d83ffc544",
+        "proof_set": "765ac5f59e0277511fcc545b058e2da5a2d0ff080db229060c601d06a3255bc5",
+        "run_to_gate_s": 2701.0,
+        "first_red_s": null,
+        "runner_minutes": 278.23333333333335,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      },
+      {
+        "id": 39330880213,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39330880213",
+        "conclusion": "success",
+        "tested_tree_sha": "86c482d9ab5046529608b2532c847289130d3613",
+        "base_sha": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+        "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+        "eligible": true,
+        "scope": "scoped",
+        "count": 112,
+        "job_set": "c704b8d1cd8d632599b3f67956fca77e264a6f96a8a159ed7799a7c0c4bab005",
+        "proof_set": "7ceadcfb6065847851582aa422453eb7ff3761f5d4ed2b8947c6726675c692a4",
+        "run_to_gate_s": 1820.0,
+        "first_red_s": null,
+        "runner_minutes": 196.25,
+        "last_pack_to_gate_start_s": 2.0,
+        "baseline_same_jobs": [],
+        "baseline_same_proofs": []
+      }
+    ],
+    "summary": [
+      {
+        "cohort": "before",
+        "scope": "scoped",
+        "conclusion": "success",
+        "run_to_gate_s": {
+          "n": 14,
+          "p50": 3265.5,
+          "p95": 4074.0
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 14,
+          "p50": 223.015,
+          "p95": 257.63
+        }
+      },
+      {
+        "cohort": "after",
+        "scope": "scoped",
+        "conclusion": "success",
+        "run_to_gate_s": {
+          "n": 11,
+          "p50": 1981.0,
+          "p95": 2863.0
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 11,
+          "p50": 196.25,
+          "p95": 278.23333333333335
+        }
+      },
+      {
+        "cohort": "before",
+        "scope": "scoped",
+        "conclusion": "failure",
+        "run_to_gate_s": {
+          "n": 4,
+          "p50": 3992.5,
+          "p95": 4342.0
+        },
+        "first_red_s": {
+          "n": 4,
+          "p50": 3118.0,
+          "p95": 4178.0
+        },
+        "runner_minutes": {
+          "n": 4,
+          "p50": 210.745,
+          "p95": 332.83
+        }
+      },
+      {
+        "cohort": "after",
+        "scope": "scoped",
+        "conclusion": "failure",
+        "run_to_gate_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        }
+      },
+      {
+        "cohort": "before",
+        "scope": "global",
+        "conclusion": "success",
+        "run_to_gate_s": {
+          "n": 1,
+          "p50": 3196.0,
+          "p95": 3196.0
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 1,
+          "p50": 321.97,
+          "p95": 321.97
+        }
+      },
+      {
+        "cohort": "after",
+        "scope": "global",
+        "conclusion": "success",
+        "run_to_gate_s": {
+          "n": 1,
+          "p50": 3130.0,
+          "p95": 3130.0
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 1,
+          "p50": 329.15,
+          "p95": 329.15
+        }
+      },
+      {
+        "cohort": "before",
+        "scope": "global",
+        "conclusion": "failure",
+        "run_to_gate_s": {
+          "n": 3,
+          "p50": 4109.0,
+          "p95": 7145.0
+        },
+        "first_red_s": {
+          "n": 3,
+          "p50": 2632.0,
+          "p95": 2957.0
+        },
+        "runner_minutes": {
+          "n": 3,
+          "p50": 361.0,
+          "p95": 481.25
+        }
+      },
+      {
+        "cohort": "after",
+        "scope": "global",
+        "conclusion": "failure",
+        "run_to_gate_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "first_red_s": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        },
+        "runner_minutes": {
+          "n": 0,
+          "p50": null,
+          "p95": null
+        }
+      }
+    ],
+    "limitations": [
+      "Interim completion-conditioned cohort; long pending runs are not represented.",
+      "Same selected jobs/definition proofs do not prove identical test inputs or queue conditions.",
+      "No causal estimate; no claimed fleet p95 improvement."
+    ]
+  },
+  "exposure_and_stages": [
+    {
+      "id": 39341997524,
+      "count": 105,
+      "seconds": 1215.0,
+      "wall_minutes": 171.16666666666666,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [],
+      "critical": 6,
+      "critical_consumers": [
+        "ruling-graph"
+      ],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [
+        39235580372
+      ],
+      "critical_steps": {
+        "Set up job": 1.0,
+        "Run actions/checkout@v4": 198.0,
+        "Run actions/setup-python@v5": 10.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 0.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 784.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39341717084,
+      "count": 78,
+      "seconds": 977.0,
+      "wall_minutes": 125.78333333333333,
+      "consumers": [
+        "ruling-graph",
+        "self-mod-fence"
+      ],
+      "multiple": [],
+      "critical": 11,
+      "critical_consumers": [
+        "self-mod-fence"
+      ],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 210.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 543.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 1.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39338046620,
+      "count": 79,
+      "seconds": 2395.0,
+      "wall_minutes": 169.93333333333334,
+      "consumers": [
+        "design-governance",
+        "ruling-graph",
+        "self-mod-fence"
+      ],
+      "multiple": [
+        {
+          "pack": 11,
+          "jobs": [
+            "ruling-graph",
+            "self-mod-fence"
+          ]
+        }
+      ],
+      "critical": 2,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 3.0,
+        "Run actions/checkout@v4": 1939.0,
+        "Run actions/setup-python@v5": 10.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 3.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 238.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 1.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39338042084,
+      "count": 78,
+      "seconds": 1042.0,
+      "wall_minutes": 141.65,
+      "consumers": [
+        "ruling-graph",
+        "self-mod-fence"
+      ],
+      "multiple": [],
+      "critical": 8,
+      "critical_consumers": [
+        "ruling-graph"
+      ],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 3.0,
+        "Run actions/checkout@v4": 196.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 5.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 656.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39337448725,
+      "count": 130,
+      "seconds": 1981.0,
+      "wall_minutes": 259.0,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 9,
+          "jobs": [
+            "board-contradictions",
+            "ruling-graph"
+          ]
+        }
+      ],
+      "critical": 1,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 192.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 3.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 1489.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 1.0
+      }
+    },
+    {
+      "id": 39336970159,
+      "count": 108,
+      "seconds": 2863.0,
+      "wall_minutes": 243.9,
+      "consumers": [
+        "ruling-graph",
+        "self-mod-fence"
+      ],
+      "multiple": [],
+      "critical": 0,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 1.0,
+        "Run actions/checkout@v4": 195.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 3.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 2346.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 1.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39336968732,
+      "count": 113,
+      "seconds": 2077.0,
+      "wall_minutes": 249.21666666666667,
+      "consumers": [
+        "ruling-graph",
+        "self-mod-fence"
+      ],
+      "multiple": [
+        {
+          "pack": 9,
+          "jobs": [
+            "ruling-graph",
+            "self-mod-fence"
+          ]
+        }
+      ],
+      "critical": 1,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 304.0,
+        "Run actions/setup-python@v5": 7.0,
+        "Run actions/setup-node@v4": 5.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 1488.0,
+        "publish this pack's raw semantic fragment": 2.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39336610321,
+      "count": 97,
+      "seconds": 1234.0,
+      "wall_minutes": 164.13333333333333,
+      "consumers": [
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 5,
+          "jobs": [
+            "p0b-receipt-closure",
+            "ruling-graph"
+          ]
+        },
+        {
+          "pack": 8,
+          "jobs": [
+            "self-mod-fence",
+            "signal-gate-pair-coherence"
+          ]
+        }
+      ],
+      "critical": 5,
+      "critical_consumers": [
+        "p0b-receipt-closure",
+        "ruling-graph"
+      ],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 1.0,
+        "Run actions/checkout@v4": 197.0,
+        "Run actions/setup-python@v5": 6.0,
+        "Run actions/setup-node@v4": 5.0,
+        "install isolated pack runner": 3.0,
+        "download the authoritative semantic plan": 0.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 781.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39336503626,
+      "count": 258,
+      "seconds": 3130.0,
+      "wall_minutes": 329.15,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 4,
+          "jobs": [
+            "design-governance",
+            "p0b-receipt-closure"
+          ]
+        },
+        {
+          "pack": 9,
+          "jobs": [
+            "board-contradictions",
+            "ruling-graph"
+          ]
+        }
+      ],
+      "critical": 8,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [
+        39310593327,
+        39309256542
+      ],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 1.0,
+        "Run actions/checkout@v4": 206.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 3.0,
+        "download the authoritative semantic plan": 1.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 1.0,
+        "validate and run legacy CI pack": 2803.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 1.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39333873303,
+      "count": 129,
+      "seconds": 2502.0,
+      "wall_minutes": 268.0833333333333,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 9,
+          "jobs": [
+            "design-governance",
+            "signal-gate-pair-coherence"
+          ]
+        }
+      ],
+      "critical": 9,
+      "critical_consumers": [
+        "design-governance",
+        "signal-gate-pair-coherence"
+      ],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 205.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 0.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 2039.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39332378137,
+      "count": 129,
+      "seconds": 2701.0,
+      "wall_minutes": 278.23333333333335,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 7,
+          "jobs": [
+            "design-governance",
+            "signal-gate-pair-coherence"
+          ]
+        }
+      ],
+      "critical": 0,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 198.0,
+        "Run actions/setup-python@v5": 8.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 0.0,
+        "download the planner's changed-file list": 0.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 2250.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      }
+    },
+    {
+      "id": 39330880213,
+      "count": 112,
+      "seconds": 1820.0,
+      "wall_minutes": 196.25,
+      "consumers": [
+        "board-contradictions",
+        "design-governance",
+        "p0b-receipt-closure",
+        "ruling-graph",
+        "self-mod-fence",
+        "signal-gate-pair-coherence"
+      ],
+      "multiple": [
+        {
+          "pack": 8,
+          "jobs": [
+            "ruling-graph",
+            "self-mod-fence"
+          ]
+        }
+      ],
+      "critical": 11,
+      "critical_consumers": [],
+      "weighted_proof_matches": [],
+      "weighted_set_matches": [],
+      "baseline_set_matches": [],
+      "critical_steps": {
+        "Set up job": 1.0,
+        "Run actions/checkout@v4": 217.0,
+        "Run actions/setup-python@v5": 7.0,
+        "Run actions/setup-node@v4": 4.0,
+        "install isolated pack runner": 4.0,
+        "download the authoritative semantic plan": 0.0,
+        "download the planner's changed-file list": 1.0,
+        "publish the changed-file handle": 0.0,
+        "validate and run legacy CI pack": 1349.0,
+        "publish this pack's raw semantic fragment": 1.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run actions/setup-python@v5": 0.0,
+        "Post Run actions/checkout@v4": 1.0,
+        "Complete job": 0.0
+      }
+    }
+  ],
+  "natural_reuse_observation": {
+    "run": 39330880213,
+    "notices": [
+      "ci-pack-4\tUNKNOWN STEP\t2026-10-19T22:00:18.0730974Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+      "ci-pack-6\tUNKNOWN STEP\t2026-10-19T22:07:30.7618939Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+      "ci-pack-7\tUNKNOWN STEP\t2026-10-19T22:06:10.6663596Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+      "ci-pack-9\tUNKNOWN STEP\t2026-10-19T22:00:12.7968884Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+      "ci-pack-8\tUNKNOWN STEP\t2026-10-19T22:12:26.7310343Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+      "ci-pack-8\tUNKNOWN STEP\t2026-10-19T22:12:46.0570169Z ##[notice]exact tested-tree ancestry already complete; retaining local history"
+    ],
+    "critical_pack": "ci-pack-11",
+    "limitation": "Reuse notices demonstrate mechanism, not causal wall-time savings."
+  },
+  "limitations": [
+    "13 of29 runs pending; completion-conditioned summary.",
+    "No exact execution-proof matches to original baseline or retained19 weighted observations.",
+    "No failures completed, so actionable-red latency is unmeasured in this cohort.",
+    "Potential reuse exposure is not observed reuse; only run39330880213 has inspected natural logs.",
+    "Nearest-rank p95 of11 scoped successes is the sample maximum; not a stable fleet estimate."
+  ],
+  "later_snapshot_20261020_0055": {
+    "comparison": {
+      "snapshot_file": "/Volumes/Mastermind/ci-pack-throughput-20261019/ancestry-natural-runs-0055.json",
+      "treatment_merge": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+      "treatment_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "discovered": 45,
+      "pending": 7,
+      "cancelled": 7,
+      "before": [
+        {
+          "id": 39238690990,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 94,
+          "job_set": "a0a36886a37820381e7e2cd144e9c9b59c4af054b39fb47243f22cabadc3c7c6",
+          "proof_set": "d95374f4680ff09df9e3d22d789235ccb44862ed7b1f409617f4152419dd430d",
+          "run_to_gate_s": 2414.0,
+          "first_red_s": null,
+          "runner_minutes": 184.45
+        },
+        {
+          "id": 39237548874,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 83,
+          "job_set": "1646330e6caf98723031efcf930da157a33ad279a8fc81c881300045cd41c482",
+          "proof_set": "174ab12979bf14c24aff4ec6baf82748cfd04306daef8d081b8380913c28df93",
+          "run_to_gate_s": 2453.0,
+          "first_red_s": null,
+          "runner_minutes": 144.93
+        },
+        {
+          "id": 39236414524,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 108,
+          "job_set": "2ea37b8974d8c439b9f41f5c6dd7576db6a8b1aac4f7dde112be7ac94504f789",
+          "proof_set": "5e23782dd067473593f75e50537c5f1bec7a578b7917984effb606366053243e",
+          "run_to_gate_s": 4057.0,
+          "first_red_s": null,
+          "runner_minutes": 256.77
+        },
+        {
+          "id": 39236332532,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 102,
+          "job_set": "6171202c8bc75d6d509da69cfaf95996c5069bbed13abbbd8a1ec1bb7ade9f99",
+          "proof_set": "b45710167bc5ee910f37fefec1974a594c011c9e514c9f16bccfb3c08ea13453",
+          "run_to_gate_s": 3429.0,
+          "first_red_s": null,
+          "runner_minutes": 234.58
+        },
+        {
+          "id": 39236263674,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 112,
+          "job_set": "c946cf0c4d67bff89477cd8251d5600c9ba3226e6ecbfd5d4ca54fceeb9d1852",
+          "proof_set": "0698975435b7212bfbd5875f60813d0789f9551c7769df647830f3e2e3ef0a7d",
+          "run_to_gate_s": 4074.0,
+          "first_red_s": null,
+          "runner_minutes": 257.63
+        },
+        {
+          "id": 39235975546,
+          "conclusion": "success",
+          "scope": "global",
+          "count": 255,
+          "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+          "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+          "run_to_gate_s": 3196.0,
+          "first_red_s": null,
+          "runner_minutes": 321.97
+        },
+        {
+          "id": 39235580372,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 105,
+          "job_set": "0864be6c0e88229dc35580045f0d5eac7a1a2f18b3e07a9016115f561a83f2ef",
+          "proof_set": "0f7bfc73fc5ef152e86041534dd84e661b796880142a0e83d1da8cbefec306d7",
+          "run_to_gate_s": 2499.0,
+          "first_red_s": null,
+          "runner_minutes": 182.02
+        },
+        {
+          "id": 39234426974,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 124,
+          "job_set": "9390fc826ac57f49182cda0dd6658a0567604869c55272b9af718f93a0f86524",
+          "proof_set": "86c81e200845f9a735e74620c12bfb833fef3fe2f5e222442916ccb2358ebadc",
+          "run_to_gate_s": 3458.0,
+          "first_red_s": null,
+          "runner_minutes": 236.57
+        },
+        {
+          "id": 39234350662,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 18,
+          "job_set": "9234b1a15794c8294b69f66cc395fc676deef4c13fbcb2e8891938fe758c21f0",
+          "proof_set": "f18ade60ada999cb1c5b49059814d10b0029f33e91bd9ba5182c534663c5cfed",
+          "run_to_gate_s": 2785.0,
+          "first_red_s": null,
+          "runner_minutes": 102.12
+        },
+        {
+          "id": 39233825272,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 110,
+          "job_set": "a6fba2e4ef28fd1619ecf3f356dee4f2de709d2625975eb5f9bdad9e33fea839",
+          "proof_set": "8ef103394b5abf97e184d45f0759ef99083f2b157bb722df005915f203257972",
+          "run_to_gate_s": 3402.0,
+          "first_red_s": null,
+          "runner_minutes": 218.88
+        },
+        {
+          "id": 39233775390,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 116,
+          "job_set": "05fd981b8fa3966facaa24e905a92b0d2888132572d6069c2fcf675e82f20acd",
+          "proof_set": "764fa6ba948eabb76baa14c55164f4dab371f241b16556a0213ec80addf3c450",
+          "run_to_gate_s": 3013.0,
+          "first_red_s": null,
+          "runner_minutes": 218.5
+        },
+        {
+          "id": 39233721469,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 107,
+          "job_set": "ca2caf86ba02f858cf4a54ea174cfaf7111d2300852bbfd100fb7aff922fe3de",
+          "proof_set": "5ce51d86be1b6ad3ce2be04e5b942d9c453670bdd34ca78024e611dc936336f6",
+          "run_to_gate_s": 3542.0,
+          "first_red_s": null,
+          "runner_minutes": 227.15
+        },
+        {
+          "id": 39233349598,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 116,
+          "job_set": "e1b82735e46a78c30382caaf0629395c0a2d94014f09e4e66b061c0efaaf5ec6",
+          "proof_set": "8df7e9c21cdd7d6dd9310c481493a9501af1467c672543f223013d3fc365e8f9",
+          "run_to_gate_s": 3942.0,
+          "first_red_s": null,
+          "runner_minutes": 255.18
+        },
+        {
+          "id": 39233246363,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 107,
+          "job_set": "cf61d1de63c4a174a8f2ae09577f736c1febb47be7055c2aeeb934ac24c31457",
+          "proof_set": "6b91c757d3ecf50c25b466b614e86f0aea03a28a8bf74be9d75fc79f11856db9",
+          "run_to_gate_s": 2684.0,
+          "first_red_s": null,
+          "runner_minutes": 188.53
+        },
+        {
+          "id": 39233122614,
+          "conclusion": "success",
+          "scope": "scoped",
+          "count": 107,
+          "job_set": "c32c9cec82bb1a9dc76fffc433de5ab7c45b7ab359916fc7aba31dbee53392bc",
+          "proof_set": "7fe8fae8e3affff86354b15344dc76173ffdb7be84f299d47cf07a567b70296e",
+          "run_to_gate_s": 3129.0,
+          "first_red_s": null,
+          "runner_minutes": 227.72
+        },
+        {
+          "id": 39232626567,
+          "conclusion": "failure",
+          "scope": "global",
+          "count": 255,
+          "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+          "proof_set": "c2e89748c9c85d9786187a4d1ce25120a0b6ba0966bb8aae5f3f329264e59cc8",
+          "run_to_gate_s": 3516.0,
+          "first_red_s": 2957.0,
+          "runner_minutes": 342.57
+        },
+        {
+          "id": 39232473798,
+          "conclusion": "failure",
+          "scope": "global",
+          "count": 255,
+          "job_set": "1cd0fc238e6b8bcbbd56ca6b3ee07e49236abbb6e4746f992cc1f547b81cc444",
+          "proof_set": "b1982744b87efa281e7daf217fe8308f82aeebee26681cfaa0195a239fad0ae2",
+          "run_to_gate_s": 4109.0,
+          "first_red_s": 2632.0,
+          "runner_minutes": 361.0
+        },
+        {
+          "id": 39230039622,
+          "conclusion": "failure",
+          "scope": "scoped",
+          "count": 97,
+          "job_set": "28c136f52783ed82ae2776fa5cebf6a73b47b998d8647cf7a87932f601006726",
+          "proof_set": "ed9f704a7210db90b8fe03942d9f68eff50caa7913df9e868381e005ee7f82e6",
+          "run_to_gate_s": 2914.0,
+          "first_red_s": 2545.0,
+          "runner_minutes": 189.92
+        },
+        {
+          "id": 39229273374,
+          "conclusion": "failure",
+          "scope": "scoped",
+          "count": 106,
+          "job_set": "70bfd7ff67d442abca3ac059dda656d70da77ef5185f1f17346475d66084edb3",
+          "proof_set": "e44b98bc0a75686b0cd42341f975e805a9069050fc4d7f874a052bc7d8356636",
+          "run_to_gate_s": 3753.0,
+          "first_red_s": 3691.0,
+          "runner_minutes": 231.57
+        },
+        {
+          "id": 39228917299,
+          "conclusion": "failure",
+          "scope": "global",
+          "count": 256,
+          "job_set": "58fc6153a7278765969ff671c0ec7c7e00fb0791bacd6ab438cde7343002fb15",
+          "proof_set": "c3754cc91ce1911db39305b46027302a3c0a7405d5ede6ad2b88a56fd6dc6edf",
+          "run_to_gate_s": 7145.0,
+          "first_red_s": 912.0,
+          "runner_minutes": 481.25
+        },
+        {
+          "id": 39228597930,
+          "conclusion": "failure",
+          "scope": "scoped",
+          "count": 93,
+          "job_set": "0bde3e4635493d1e8215559fc97cfa698fc8c1199c199396dc05a3f23281db9f",
+          "proof_set": "d95996464d8f8a378dfb466b3fbdb564379b7fed39a940a4adc5d0ae78b0409e",
+          "run_to_gate_s": 4232.0,
+          "first_red_s": 4178.0,
+          "runner_minutes": 180.13
+        },
+        {
+          "id": 39228592753,
+          "conclusion": "failure",
+          "scope": "scoped",
+          "count": 134,
+          "job_set": "921fac88b1dea29e2319309cbc11f6ac01b559c65915ecaf0b6693fbc56ba721",
+          "proof_set": "f9c6987cb52999a845a6707e81cc125a12580f6c0695c838fac83ee674dd3faa",
+          "run_to_gate_s": 4342.0,
+          "first_red_s": 2212.0,
+          "runner_minutes": 332.83
+        }
+      ],
+      "after": [
+        {
+          "id": 39347268871,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39347268871",
+          "conclusion": "success",
+          "tested_tree_sha": "efeae037de4d3f4034f82f4b5d57cba9bb8e51c3",
+          "base_sha": "368c4c3a660215a0bf4809c9b8ff5e65098f413a",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 109,
+          "job_set": "2f2a6b5eb637a32b5ae89e74dcb476527e792811334eb4385ac78fab6174ac95",
+          "proof_set": "8503ed8462a689ca4a5dbc51a9abb8ad610692e1d14331ebda526b037e0d239b",
+          "run_to_gate_s": 1826.0,
+          "first_red_s": null,
+          "runner_minutes": 179.28333333333333,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39346943701,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39346943701",
+          "conclusion": "success",
+          "tested_tree_sha": "2feee54592616e0c26ecff6906bafba243da6d61",
+          "base_sha": "424cdcdab864e1ae89cde8b04dde956ee0bb93e6",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 81,
+          "job_set": "ce09229a371cb143003a785020adccf69e80b2363e3deee9841dbaa164322a73",
+          "proof_set": "5b2abfc42b210985cd2840d48b8fb125cdec90dba215ae816bed59905c3b3f92",
+          "run_to_gate_s": 1277.0,
+          "first_red_s": null,
+          "runner_minutes": 134.43333333333334,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39346775221,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39346775221",
+          "conclusion": "success",
+          "tested_tree_sha": "840404ba0d9f8d8a5fc89eb2c832b05d07094da7",
+          "base_sha": "424cdcdab864e1ae89cde8b04dde956ee0bb93e6",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 101,
+          "job_set": "a4d26f6311af5e13fd81c49441042edef726abdf7771d3a749b755408eb1c0c8",
+          "proof_set": "71cdb4ea4b8de1c87fc1099581f982df4e4a8e521e61e964b194847282d778e9",
+          "run_to_gate_s": 1973.0,
+          "first_red_s": null,
+          "runner_minutes": 186.46666666666667,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39346152272,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39346152272",
+          "conclusion": "success",
+          "tested_tree_sha": "340f03d56dc65027d25771c95c9dfffaec989589",
+          "base_sha": "7777a1df363809b24561c054b8c006286f5c0a56",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 103,
+          "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+          "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+          "run_to_gate_s": 2007.0,
+          "first_red_s": null,
+          "runner_minutes": 232.53333333333333,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39345429869,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39345429869",
+          "conclusion": "success",
+          "tested_tree_sha": "1e4ab3b5ced71db72a1a42f8069ae9c6bf171a52",
+          "base_sha": "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 120,
+          "job_set": "4250ce0dc58b8b616a3eddf4b9673749c932dbcc4b816de95c8c6370b924a564",
+          "proof_set": "bb9f8bcea1ef055c2dea96c1193a815048ad96967dd4dcad19157fafed45b494",
+          "run_to_gate_s": 2783.0,
+          "first_red_s": null,
+          "runner_minutes": 248.05,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39345000915,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39345000915",
+          "conclusion": "success",
+          "tested_tree_sha": "d89351440c6211f3c511d2cee665758d84c1553b",
+          "base_sha": "aa208d3c9ca38a57e92bd8e912eadd17d08f8d92",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 75,
+          "job_set": "75943d884f6ec6c6b53c753a5cbdad88730f736205c3a1777d71bcfe3b98f4b7",
+          "proof_set": "ae791ee8ef741d110cccf59300bf44ce5a8242ca3f2312e58af9acdb379ebf97",
+          "run_to_gate_s": 1239.0,
+          "first_red_s": null,
+          "runner_minutes": 135.65,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39344349836,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39344349836",
+          "conclusion": "success",
+          "tested_tree_sha": "2578c1eeb21ae82e734c629e47ecef1448477d1c",
+          "base_sha": "3e3922657ae6da3091c3a624f41fa063226d2728",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 82,
+          "job_set": "535e9808abb5a31d158b471734d5b12a72a38f722e3f2006b930788d3792be10",
+          "proof_set": "5a9e8071b7643f3b0cb3d3c6078baa0107f22ea3b0c449bd2b71973809ebf37f",
+          "run_to_gate_s": 1316.0,
+          "first_red_s": null,
+          "runner_minutes": 142.28333333333333,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39343519077,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39343519077",
+          "conclusion": "success",
+          "tested_tree_sha": "4cac2ea4081cdd3304bb2c1fbe5fceb33f5c539b",
+          "base_sha": "66e1ff8a4cb3be5514a7f1b4d25af09e5b79168a",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 91,
+          "job_set": "3dea4b94215b97347f753527e9f5f11724748b10bfe620ac8f776d862d96251d",
+          "proof_set": "9c8498592c5c9edebd0b7d0e8ae948967a52b7722db7bca0bc4b4c8020145c6b",
+          "run_to_gate_s": 1165.0,
+          "first_red_s": null,
+          "runner_minutes": 137.73333333333332,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39343264942,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39343264942",
+          "conclusion": "success",
+          "tested_tree_sha": "cca8a5f38cc526f9f6925364b04c073d9dd4bc52",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 83,
+          "job_set": "c517ef4dd42be39146823784a61c0f546ff549463850a829bd2123cda42449db",
+          "proof_set": "3a95cba03f14d343ddbb7304923c88d6b3191127cdde483ec47b2dd12fcedf1e",
+          "run_to_gate_s": 1398.0,
+          "first_red_s": null,
+          "runner_minutes": 164.36666666666667,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39342972042,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342972042",
+          "conclusion": "failure",
+          "tested_tree_sha": "31da02b3c58a872b197905f2c1b3c17aa6f2c942",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 141,
+          "job_set": "e141e8a3034c88d362fb4d5682cc8ccf60e8976e8a07e8b72b89138aa1635f3c",
+          "proof_set": "4d6bfebb759b9245d19aed9a39d330b6c4475713de44440752a386ffdf3eca39",
+          "run_to_gate_s": 2751.0,
+          "first_red_s": 1307.0,
+          "runner_minutes": 262.35,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39342885632,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342885632",
+          "conclusion": "success",
+          "tested_tree_sha": "0f18afcd62573b326c4c550a543584154d38e4a5",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 160,
+          "job_set": "3ac875489440b9596970f9492432cf270afa1314653725fbf6d0dd4cb7cdd31b",
+          "proof_set": "67c0dcaee7f8397756fc712819ad924aea50386398565c3bcd903583f133e3c3",
+          "run_to_gate_s": 2790.0,
+          "first_red_s": null,
+          "runner_minutes": 325.51666666666665,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39342838411,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342838411",
+          "conclusion": "success",
+          "tested_tree_sha": "edfd0e4a5e054f19cdf93de376402addb8476236",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 109,
+          "job_set": "d5270f14b02d723cba2499f0490ed3fd483fdc767f8b5cf09dd97f574e98f527",
+          "proof_set": "2e4ba8489a71e66e3fef7b81e0ac0ffc95ef6a16556dba894e719d3cf50d50ab",
+          "run_to_gate_s": 2118.0,
+          "first_red_s": null,
+          "runner_minutes": 185.5,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39342630438,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342630438",
+          "conclusion": "failure",
+          "tested_tree_sha": "505b1f87cddafc8545f110740921b50846818eb7",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 130,
+          "job_set": "3afc3b4116d628946350714e7de3be0a58d883ff0a02e9ffef7a5ac4e2b5aa42",
+          "proof_set": "9e06343aecc05de0094d94ce254d52a6fb13f2c1e3da77d26d7efb61ecb2fb26",
+          "run_to_gate_s": 2681.0,
+          "first_red_s": 1564.0,
+          "runner_minutes": 274.8833333333333,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39342612192,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342612192",
+          "conclusion": "success",
+          "tested_tree_sha": "d6a2bd6881c0eb5a919d02b2ba4c90b0066fa2ee",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 98,
+          "job_set": "35cdd4faa5f6b00a8bc71478853f216c0f02ce3473f1208d55a6d4fbde091d53",
+          "proof_set": "812f5aa1a45e03bdbfd2a017a3b8aaff6280f158733eabeff8782033a68b3b5b",
+          "run_to_gate_s": 1966.0,
+          "first_red_s": null,
+          "runner_minutes": 190.56666666666666,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341997524,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341997524",
+          "conclusion": "success",
+          "tested_tree_sha": "36009b77d9644d6e306e412592a230f305831973",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 105,
+          "job_set": "0864be6c0e88229dc35580045f0d5eac7a1a2f18b3e07a9016115f561a83f2ef",
+          "proof_set": "38393a3f1846011f12777324a3d9b29879328596e653c257cbf66474cfb79c98",
+          "run_to_gate_s": 1215.0,
+          "first_red_s": null,
+          "runner_minutes": 171.16666666666666,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [
+            39235580372
+          ],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341951816,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341951816",
+          "conclusion": "success",
+          "tested_tree_sha": "bb92d80eb8242a8908ff46335e0ee8d4028a3c3c",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "global",
+          "count": 258,
+          "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+          "proof_set": "412a65d177b7676219a22900e0545b1e14367442703daf17f52746a5550a5667",
+          "run_to_gate_s": 2616.0,
+          "first_red_s": null,
+          "runner_minutes": 307.28333333333336,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341912215,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341912215",
+          "conclusion": "success",
+          "tested_tree_sha": "83e3c2b298c86f03182ab0198667dcb93cd26c69",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 94,
+          "job_set": "5c1665e29d3cc5bd915c930268abe6aa1d1af1c4b5083b0ca91140c1d9ac316e",
+          "proof_set": "159d9049fed8281478d7ce05a85b01cd0ac418f3dd3e590c934417f2f3af21be",
+          "run_to_gate_s": 2634.0,
+          "first_red_s": null,
+          "runner_minutes": 231.23333333333332,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341875371,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341875371",
+          "conclusion": "success",
+          "tested_tree_sha": "dcae788f2eea61c91661c828bb9e29eecdd335c3",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 129,
+          "job_set": "27a0a873cf5783a2142a3f8d0d5e742ae82de2d033283da53bbf698d83ffc544",
+          "proof_set": "6a28e4b3c92421faccb2ef2fc9e106cd29f696d727a43ed77457f1c2f424eb96",
+          "run_to_gate_s": 2956.0,
+          "first_red_s": null,
+          "runner_minutes": 272.35,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341844155,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341844155",
+          "conclusion": "success",
+          "tested_tree_sha": "ae69b4f3003ff52fa6361174b14351be7f18c618",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 95,
+          "job_set": "687ca3c20e5d0e4ac7c19a966f07d587ff99df50c91e5328fe178b41dead5579",
+          "proof_set": "0f08abf953e20a5ec7bc3f896597d244ca4631b817174fd67cf16ce946852ff3",
+          "run_to_gate_s": 1785.0,
+          "first_red_s": null,
+          "runner_minutes": 177.95,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341720894,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341720894",
+          "conclusion": "success",
+          "tested_tree_sha": "7dab11a84d211bc44e082b0878d17fde44bbc01d",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 102,
+          "job_set": "f0dbfc1a50232404a0ec58254f187bb1e1641a52d7c4b04ca57dc7f4c5b95e22",
+          "proof_set": "783564b04b1bf149eeabac4c33a6966745fe1dff9d843e994ef3e90510826379",
+          "run_to_gate_s": 1938.0,
+          "first_red_s": null,
+          "runner_minutes": 223.48333333333332,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39341717084,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39341717084",
+          "conclusion": "success",
+          "tested_tree_sha": "7aaeebfa415e9dd4541e6db969b96e3f18f634fb",
+          "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 78,
+          "job_set": "df702c883eb532bce9309d8ba99765c63e9664ee038abb7bad208e3b2b50cac1",
+          "proof_set": "fa9049ff50414ba613a8b46104d25ff96dbceba60a780db7136030d4699ff496",
+          "run_to_gate_s": 977.0,
+          "first_red_s": null,
+          "runner_minutes": 125.78333333333333,
+          "last_pack_to_gate_start_s": 7.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39338046620,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39338046620",
+          "conclusion": "success",
+          "tested_tree_sha": "259391180a2f549d3af4ad37d40bdaa3bef317c4",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 79,
+          "job_set": "d5cb9837606c8eeed20b256cf907e46a372ef7545ffeb1d82173298615e1df82",
+          "proof_set": "9ae69be0ec8c0644f906f41728b1a24ee2568c978a7c19f554010b1507632556",
+          "run_to_gate_s": 2395.0,
+          "first_red_s": null,
+          "runner_minutes": 169.93333333333334,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39338042084,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39338042084",
+          "conclusion": "success",
+          "tested_tree_sha": "1662871a6a28494973e136f95e40c111eb4061f9",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 78,
+          "job_set": "df702c883eb532bce9309d8ba99765c63e9664ee038abb7bad208e3b2b50cac1",
+          "proof_set": "fa9049ff50414ba613a8b46104d25ff96dbceba60a780db7136030d4699ff496",
+          "run_to_gate_s": 1042.0,
+          "first_red_s": null,
+          "runner_minutes": 141.65,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39337448725,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39337448725",
+          "conclusion": "success",
+          "tested_tree_sha": "2657c17a4a57fbbb384690a2b4cd42c7a0c5d777",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 130,
+          "job_set": "3afc3b4116d628946350714e7de3be0a58d883ff0a02e9ffef7a5ac4e2b5aa42",
+          "proof_set": "6db4ace432fa31e8c426c38b1a80b2e8f8072a47c339b7b465c5f80db0b760e4",
+          "run_to_gate_s": 1981.0,
+          "first_red_s": null,
+          "runner_minutes": 259.0,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39336970159,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336970159",
+          "conclusion": "success",
+          "tested_tree_sha": "1c3a4fa53d6414df0df0b862331fa54dd06fcbee",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 108,
+          "job_set": "89863cab079089044756eb909066ef1b9d4303cde572a08415155d5a458ddd3c",
+          "proof_set": "7ec32eaf927261eabf517d3fc4fcc081fa102fc84c3cac9c95f0623cd4f7eef5",
+          "run_to_gate_s": 2863.0,
+          "first_red_s": null,
+          "runner_minutes": 243.9,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39336968732,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336968732",
+          "conclusion": "success",
+          "tested_tree_sha": "b1c1099ffa8ab337844d6ba6f05349735ae2fc6c",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 113,
+          "job_set": "bb70fa24fe19ca7226bf5c4712151958cfa96046f0cdc681749f054254e9e3ea",
+          "proof_set": "926b2232cd796525a414893dba3d8dcc511dc882cd2a256b2d3519e391401bb2",
+          "run_to_gate_s": 2077.0,
+          "first_red_s": null,
+          "runner_minutes": 249.21666666666667,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39336610321,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336610321",
+          "conclusion": "success",
+          "tested_tree_sha": "061baba725696dd15a742bd80a5305ce4e239ba6",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 97,
+          "job_set": "85573b90d2c3db10b3552223cb09be6637c7cb4948ee55e6c82e755afdffd04b",
+          "proof_set": "a1386ba0a7656853b124b9550415fdb53a091b9ea4a0b128c00360d0cc1210e3",
+          "run_to_gate_s": 1234.0,
+          "first_red_s": null,
+          "runner_minutes": 164.13333333333333,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39336503626,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39336503626",
+          "conclusion": "success",
+          "tested_tree_sha": "c5d07a66cc386f97e36c3507f92224adebcb64f2",
+          "base_sha": "553625459eccdd23a3759fe6322a632ca403d936",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "global",
+          "count": 258,
+          "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+          "proof_set": "dbe5419c275db118bcbc5aa684b43be39ed3682bb4f9e07e1c86a4b687705fa1",
+          "run_to_gate_s": 3130.0,
+          "first_red_s": null,
+          "runner_minutes": 329.15,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39333873303,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39333873303",
+          "conclusion": "success",
+          "tested_tree_sha": "1ab158db3a1041f7a71840142ac7e6fc89ef6308",
+          "base_sha": "d1d95cea3fefdf01c67fb9b054dbd5da222b9d0c",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 129,
+          "job_set": "27a0a873cf5783a2142a3f8d0d5e742ae82de2d033283da53bbf698d83ffc544",
+          "proof_set": "5780b2ed22e640e2f79d0f37c09d37f754f209f4099e6169fe0f0dc2bbded815",
+          "run_to_gate_s": 2502.0,
+          "first_red_s": null,
+          "runner_minutes": 268.0833333333333,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39332378137,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39332378137",
+          "conclusion": "success",
+          "tested_tree_sha": "3bd1a6a7a9b1739672f2dd726d008e244d1c4ea6",
+          "base_sha": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 129,
+          "job_set": "27a0a873cf5783a2142a3f8d0d5e742ae82de2d033283da53bbf698d83ffc544",
+          "proof_set": "765ac5f59e0277511fcc545b058e2da5a2d0ff080db229060c601d06a3255bc5",
+          "run_to_gate_s": 2701.0,
+          "first_red_s": null,
+          "runner_minutes": 278.23333333333335,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        {
+          "id": 39330880213,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39330880213",
+          "conclusion": "success",
+          "tested_tree_sha": "86c482d9ab5046529608b2532c847289130d3613",
+          "base_sha": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 112,
+          "job_set": "c704b8d1cd8d632599b3f67956fca77e264a6f96a8a159ed7799a7c0c4bab005",
+          "proof_set": "7ceadcfb6065847851582aa422453eb7ff3761f5d4ed2b8947c6726675c692a4",
+          "run_to_gate_s": 1820.0,
+          "first_red_s": null,
+          "runner_minutes": 196.25,
+          "last_pack_to_gate_start_s": 2.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        }
+      ],
+      "summary": [
+        {
+          "cohort": "before",
+          "scope": "scoped",
+          "conclusion": "success",
+          "run_to_gate_s": {
+            "n": 14,
+            "p50": 3265.5,
+            "p95": 4074.0
+          },
+          "first_red_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "runner_minutes": {
+            "n": 14,
+            "p50": 223.015,
+            "p95": 257.63
+          }
+        },
+        {
+          "cohort": "after",
+          "scope": "scoped",
+          "conclusion": "success",
+          "run_to_gate_s": {
+            "n": 27,
+            "p50": 1966.0,
+            "p95": 2863.0
+          },
+          "first_red_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "runner_minutes": {
+            "n": 27,
+            "p50": 186.46666666666667,
+            "p95": 278.23333333333335
+          }
+        },
+        {
+          "cohort": "before",
+          "scope": "scoped",
+          "conclusion": "failure",
+          "run_to_gate_s": {
+            "n": 4,
+            "p50": 3992.5,
+            "p95": 4342.0
+          },
+          "first_red_s": {
+            "n": 4,
+            "p50": 3118.0,
+            "p95": 4178.0
+          },
+          "runner_minutes": {
+            "n": 4,
+            "p50": 210.745,
+            "p95": 332.83
+          }
+        },
+        {
+          "cohort": "after",
+          "scope": "scoped",
+          "conclusion": "failure",
+          "run_to_gate_s": {
+            "n": 2,
+            "p50": 2716.0,
+            "p95": 2751.0
+          },
+          "first_red_s": {
+            "n": 2,
+            "p50": 1435.5,
+            "p95": 1564.0
+          },
+          "runner_minutes": {
+            "n": 2,
+            "p50": 268.6166666666667,
+            "p95": 274.8833333333333
+          }
+        },
+        {
+          "cohort": "before",
+          "scope": "global",
+          "conclusion": "success",
+          "run_to_gate_s": {
+            "n": 1,
+            "p50": 3196.0,
+            "p95": 3196.0
+          },
+          "first_red_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "runner_minutes": {
+            "n": 1,
+            "p50": 321.97,
+            "p95": 321.97
+          }
+        },
+        {
+          "cohort": "after",
+          "scope": "global",
+          "conclusion": "success",
+          "run_to_gate_s": {
+            "n": 2,
+            "p50": 2873.0,
+            "p95": 3130.0
+          },
+          "first_red_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "runner_minutes": {
+            "n": 2,
+            "p50": 318.2166666666667,
+            "p95": 329.15
+          }
+        },
+        {
+          "cohort": "before",
+          "scope": "global",
+          "conclusion": "failure",
+          "run_to_gate_s": {
+            "n": 3,
+            "p50": 4109.0,
+            "p95": 7145.0
+          },
+          "first_red_s": {
+            "n": 3,
+            "p50": 2632.0,
+            "p95": 2957.0
+          },
+          "runner_minutes": {
+            "n": 3,
+            "p50": 361.0,
+            "p95": 481.25
+          }
+        },
+        {
+          "cohort": "after",
+          "scope": "global",
+          "conclusion": "failure",
+          "run_to_gate_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "first_red_s": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          },
+          "runner_minutes": {
+            "n": 0,
+            "p50": null,
+            "p95": null
+          }
+        }
+      ],
+      "limitations": [
+        "Interim completion-conditioned cohort; long pending runs are not represented.",
+        "Same selected jobs/definition proofs do not prove identical test inputs or queue conditions.",
+        "No causal estimate; no claimed fleet p95 improvement."
+      ]
+    },
+    "exposure": {
+      "critical_counts": {
+        "single ci-control-plane-contracts": 8,
+        "mixed pack": 14,
+        "single fif-kernel-guards": 9
+      },
+      "rows": [
+        {
+          "id": 39347268871,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [
+            5
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39346943701,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 5,
+          "critical_jobs": [
+            "path-prune-lint",
+            "design-governance",
+            "biocatalyst-deploy-integration",
+            "chart-render-data",
+            "unrun-factor-research",
+            "unrun-scoring-engine",
+            "reference-integrity"
+          ],
+          "colocated_packs": [
+            10
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39346775221,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39346152272,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 7,
+          "critical_jobs": [
+            "rebase-css-autoresolve",
+            "breakdown-control-seed-determinism",
+            "cycle-ontology-js",
+            "nyse-calendar-freshness",
+            "wri-risk-core",
+            "agentos-knowledge-contracts",
+            "admin-live-runs",
+            "prelaunch-hardening",
+            "unrun-government-revenue-candidate-projection",
+            "unrun-brain-gateway",
+            "price-basis-census"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39345429869,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            10
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39345000915,
+          "weighted_set_matches": [
+            39306698152
+          ],
+          "weighted_proof_matches": [],
+          "critical_pack": 11,
+          "critical_jobs": [
+            "no-module-leak",
+            "synapse-read-gate",
+            "ruling-graph",
+            "self-mod-fence",
+            "unrun-marketing-desk",
+            "options-nbbo-cohort"
+          ],
+          "colocated_packs": [
+            11
+          ],
+          "colocated_critical": true,
+          "failed": false
+        },
+        {
+          "id": 39344349836,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 8,
+          "critical_jobs": [
+            "china-native-collectors",
+            "design-governance",
+            "rc-r14-china-rotation-events",
+            "biocatalyst-regulatory",
+            "unrun-grading-board",
+            "reference-integrity",
+            "ric-f0-a10-canonical-calendar"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39343519077,
+          "weighted_set_matches": [
+            39306252071
+          ],
+          "weighted_proof_matches": [],
+          "critical_pack": 9,
+          "critical_jobs": [
+            "no-module-leak",
+            "ontology-explorer",
+            "ruling-graph",
+            "biocatalyst-contracts",
+            "marketing-social-publisher",
+            "product-experience-registry",
+            "product-experience-capture",
+            "no-client-supplied-identity"
+          ],
+          "colocated_packs": [
+            11
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39343264942,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 5,
+          "critical_jobs": [
+            "dag-conformance",
+            "cycle-pattern-authority",
+            "uk-policy-desk",
+            "chart-render-data",
+            "unrun-grading-board",
+            "unrun-government-revenue-candidate-projection",
+            "unrun-brain-desks",
+            "unrun-template-chips"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39342972042,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            4
+          ],
+          "colocated_critical": false,
+          "failed": true
+        },
+        {
+          "id": 39342885632,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            5,
+            10
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39342838411,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [
+            8
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39342630438,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": true
+        },
+        {
+          "id": 39342612192,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341997524,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 6,
+          "critical_jobs": [
+            "board-shadow-substrate",
+            "admin-js-no-undef",
+            "cycle-forward-log",
+            "attested-history-guards",
+            "ruling-graph",
+            "basket-staleness-warn",
+            "unrun-grading-board",
+            "product-experience-registry",
+            "recurring-briefs",
+            "house-law-registry-code",
+            "sni-s1-residual"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341951816,
+          "weighted_set_matches": [
+            39310593327,
+            39309256542
+          ],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            4,
+            9
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341912215,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            5
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341875371,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            7
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341844155,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341720894,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39341717084,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 11,
+          "critical_jobs": [
+            "gh-annotation-line-start",
+            "synapse-read-gate",
+            "china-native-w2",
+            "data-base-shim",
+            "self-mod-fence",
+            "biocatalyst-deploy-integration",
+            "price-basis-census"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39338046620,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 2,
+          "critical_jobs": [
+            "uk-policy-desk",
+            "altdata-brain-govern",
+            "billing-offers",
+            "public-render-fastlane",
+            "unrun-brain-desks",
+            "unrun-dark-guards"
+          ],
+          "colocated_packs": [
+            11
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39338042084,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 8,
+          "critical_jobs": [
+            "cn-standout-audit",
+            "ruling-graph",
+            "flow-signals-ledger",
+            "validated-claims-source",
+            "hk-robustness-w5",
+            "biocatalyst-contracts",
+            "ric-f0-a10-canonical-calendar"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39337448725,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 1,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [
+            9
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39336970159,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39336968732,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 1,
+          "critical_jobs": [
+            "ci-control-plane-contracts"
+          ],
+          "colocated_packs": [
+            9
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39336610321,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 5,
+          "critical_jobs": [
+            "gh-annotation-line-start",
+            "path-prune-lint",
+            "ontology-explorer",
+            "ruling-graph",
+            "p0b-receipt-closure",
+            "ccw-w4-credit-desk",
+            "unrun-grading-board",
+            "unrun-brain-gateway",
+            "unrun-scoring-engine",
+            "mastermindx-selector-capture-attestation"
+          ],
+          "colocated_packs": [
+            5,
+            8
+          ],
+          "colocated_critical": true,
+          "failed": false
+        },
+        {
+          "id": 39336503626,
+          "weighted_set_matches": [
+            39310593327,
+            39309256542
+          ],
+          "weighted_proof_matches": [],
+          "critical_pack": 8,
+          "critical_jobs": [
+            "gh-annotation-line-start",
+            "am-edition-producer",
+            "admin-js-no-undef",
+            "path-prune-lint",
+            "c19-wp13-debt-maturity-as-of",
+            "international-workspace-pure-js",
+            "prophet-lab",
+            "china-search-universe",
+            "uk-policy-desk",
+            "validated-claims-contract",
+            "ratio-lens",
+            "hk-context-chips",
+            "nw-lobe-unfreeze",
+            "admin-live-runs",
+            "ccw-w4-credit-desk",
+            "quant-q13-rn-tail-density",
+            "biocatalyst-evidence",
+            "geo-enrich-credential-boundary",
+            "unrun-brain-desks",
+            "washout-turn-organ",
+            "zh-filing-term",
+            "group-read-surface",
+            "group-linked-outsiders",
+            "market-os-macro-suite-pages",
+            "dashboard-render-contract",
+            "skew-accrual-lane",
+            "house-law-registry-code",
+            "news-impact-contracts",
+            "site20-s4-chart-brief-js",
+            "sni-public-exposure-scan"
+          ],
+          "colocated_packs": [
+            4,
+            9
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39333873303,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 9,
+          "critical_jobs": [
+            "signal-gate-pair-coherence",
+            "cycle-ontology-js",
+            "cycle-grading-stats",
+            "prophet-lab",
+            "flow-signals-ledger",
+            "wri-risk-core",
+            "design-governance",
+            "pick-lab-liquidity",
+            "biocatalyst-deploy-integration",
+            "unrun-government-revenue-candidate-projection",
+            "price-basis-census",
+            "dataos-prospective-reference",
+            "ticker-news-qbus",
+            "dashboard-render-contract"
+          ],
+          "colocated_packs": [
+            9
+          ],
+          "colocated_critical": true,
+          "failed": false
+        },
+        {
+          "id": 39332378137,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 0,
+          "critical_jobs": [
+            "fif-kernel-guards"
+          ],
+          "colocated_packs": [
+            7
+          ],
+          "colocated_critical": false,
+          "failed": false
+        },
+        {
+          "id": 39330880213,
+          "weighted_set_matches": [],
+          "weighted_proof_matches": [],
+          "critical_pack": 11,
+          "critical_jobs": [
+            "cycle-ontology-js",
+            "cycle-forward-log",
+            "flow-signals-ledger",
+            "flow-signal-cohorts",
+            "altdata-brain-govern",
+            "metab-throttle-ux",
+            "global-liquidity-transmission-contracts",
+            "collect-identity",
+            "unrun-grading-board",
+            "unrun-factor-research",
+            "reference-integrity",
+            "dataos-prospective-reference",
+            "dashboard-render-contract"
+          ],
+          "colocated_packs": [
+            8
+          ],
+          "colocated_critical": false,
+          "failed": false
+        }
+      ]
+    },
+    "critical_reuse": {
+      "39336610321": {
+        "critical_pack": "ci-pack-5",
+        "notices": [
+          {
+            "pack": "ci-pack-8",
+            "at": "2026-10-19T22:48:38.3441305Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-8",
+            "at": "2026-10-19T22:51:36.7556961Z",
+            "message": "##[notice]exact tested-tree ancestry already complete; retaining local history"
+          },
+          {
+            "pack": "ci-pack-5",
+            "at": "2026-10-19T22:49:08.6323771Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-5",
+            "at": "2026-10-19T23:00:34.1414677Z",
+            "message": "##[notice]exact tested-tree ancestry already complete; retaining local history"
+          },
+          {
+            "pack": "ci-pack-6",
+            "at": "2026-10-19T22:52:15.1943135Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          }
+        ],
+        "critical_commands": {
+          "gh-annotation-line-start": 7.67025,
+          "path-prune-lint": 60.729267,
+          "p0b-receipt-closure": 1.803932,
+          "mastermindx-selector-capture-attestation": 6.942407,
+          "ontology-explorer": 58.514838,
+          "ccw-w4-credit-desk": 17.489673,
+          "unrun-grading-board": 207.268923,
+          "unrun-scoring-engine": 118.07189500000001,
+          "unrun-brain-gateway": 140.682164,
+          "ruling-graph": 16.571654
+        },
+        "critical_command_seconds": 635.745003,
+        "critical_install_seconds": 103.16694499999998
+      },
+      "39333873303": {
+        "critical_pack": "ci-pack-9",
+        "notices": [
+          {
+            "pack": "ci-pack-7",
+            "at": "2026-10-19T22:34:57.2292914Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-2",
+            "at": "2026-10-19T22:26:25.6567401Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-9",
+            "at": "2026-10-19T22:29:16.0650420Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-9",
+            "at": "2026-10-19T22:50:43.5433108Z",
+            "message": "##[notice]exact tested-tree ancestry already complete; retaining local history"
+          },
+          {
+            "pack": "ci-pack-5",
+            "at": "2026-10-19T22:36:29.1795554Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          },
+          {
+            "pack": "ci-pack-6",
+            "at": "2026-10-19T22:25:25.9061678Z",
+            "message": "##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+          }
+        ],
+        "critical_commands": {
+          "biocatalyst-deploy-integration": 25.022626,
+          "prophet-lab": 114.63797099999998,
+          "flow-signals-ledger": 7.959871,
+          "pick-lab-liquidity": 11.266144,
+          "signal-gate-pair-coherence": 204.519784,
+          "price-basis-census": 35.659658,
+          "dataos-prospective-reference": 55.540578,
+          "wri-risk-core": 65.911076,
+          "cycle-grading-stats": 3.118241,
+          "ticker-news-qbus": 55.040946,
+          "unrun-government-revenue-candidate-projection": 586.432829,
+          "design-governance": 21.729246,
+          "dashboard-render-contract": 434.575076,
+          "cycle-ontology-js": 1.014111
+        },
+        "critical_command_seconds": 1622.428157,
+        "critical_install_seconds": 175.34647999999999
+      }
+    },
+    "failure_followup": [
+      {
+        "run": 39342972042,
+        "pr": 9479,
+        "head": "d49c0fe051972574f1c74fe286b54d56138f3dbf",
+        "failed_pack": 11,
+        "classification": "pending retained full log; do not infer regression cause"
+      },
+      {
+        "run": 39342630438,
+        "pr": 9797,
+        "head": "0cdae876404ffd4b7a55a35a38a71c4c6e857904",
+        "failed_pack": 4,
+        "classification": "pending retained full log; do not infer regression cause"
+      }
+    ],
+    "failure_classification": [
+      {
+        "run": 39342972042,
+        "logical_job": "biocatalyst-deploy-integration",
+        "semantic_classification": "pr_regression",
+        "isolated_base_tests_passed": 289,
+        "signatures": [
+          "ci-pack-11\tvalidate and run legacy CI pack\t2026-10-19T23:46:59.4998937Z FAILED tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex - AssertionError: import-cached by macro-api but missing from the restart regex in app/deploy/update.sh: ['engine/neuralweb/market_memory_contextual_observation_store.py', 'engine/neuralweb/market_memory_episode_outcomes.py', 'engine/neuralweb/market_memory_outcome_inspection.py', 'engine/neuralweb/market_memory_price_metadata_use.py', 'engine/neuralweb/market_memory_technical_observation.py', 'engine/neuralweb/market_memory_technical_store.py', 'engine/research_factory/__init__.py', 'engine/research_factory/ledger.py', 'engine/research_factory/market_memory_contextual_registration.py', 'engine/research_factory/market_memory_e0_access_history.py', 'engine/research_factory/market_memory_e0_baselines.py', 'engine/research_factory/market_memory_e0_condition_evidence.py', 'engine/research_factory/market_memory_e0_installed_control.py', 'engine/research_factory/market_memory_e0_reservations.py', 'engine/research_factory/market_memory_e0_task_evidence.py', 'engine/research_factory/market_memory_outcome_use.py', 'engine/research_factory/schema.py', 'engine/research_factory/state.py', 'lib/massive_ticker.py']",
+          "ci-pack-11\tvalidate and run legacy CI pack\t2026-10-19T23:46:59.5003319Z FAILED tests/test_deploy_update_self_heal.py::test_contract_schema_pinned_by_api_closure_triggers_restart - AssertionError: pinned in macro-api by an lru_cache'd schema read in the app/ import closure but missing from the restart regex in app/deploy/update.sh: ['contracts/market_memory/e0_reviewer_plan.v1.schema.json', 'contracts/market_memory/e0_tasks.v1.schema.json']"
+        ],
+        "source": "ancestry-failure-39342972042.log",
+        "disposition": "Preserve existing PR9479/9797 repair carrier; no ancestry failure signature or duplicate repair."
+      },
+      {
+        "run": 39342630438,
+        "logical_job": "market-memory-e0-contract",
+        "semantic_classification": "pr_ci_contract_change",
+        "isolated_base_tests_passed": 505,
+        "signatures": [
+          "ci-pack-4\tvalidate and run legacy CI pack\t2026-10-19T23:49:49.8761181Z FAILED tests/test_market_memory_e0_selected_condition.py::test_installed_allocator_bytes_are_checked_even_if_commit_check_passes - engine.research_factory.market_memory_e0_installed_control.E0InstalledControlError: unsafe_metadata_ancestor"
+        ],
+        "source": "ancestry-failure-39342630438.log",
+        "disposition": "Preserve existing PR9479/9797 repair carrier; no ancestry failure signature or duplicate repair."
+      }
+    ]
+  }
+}

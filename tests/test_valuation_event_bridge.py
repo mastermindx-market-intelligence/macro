@@ -573,7 +573,42 @@ def test_controls_blob_reads_validated_capital_spine(issuer_spines):
     )
     controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"))
     assert controls["latest_event_bridge"]["event_class"] == "registration_statement"
-    assert "Latest filing on file (Registration Statement)" in " ".join(_render(controls).split())
+    proposal = controls["event_assumption_proposal"]
+    assert proposal["event"]["event_id"] == events[0]["event_id"]
+    assert proposal["status"] == "PROPOSED"
+    html = _render(controls)
+    assert 'data-valuation-event-proposal="v1"' in html
+    assert events[0]["filing"]["primary_document_url"] in html
+    assert 'data-valuation-event-bridge="v1"' not in html
+
+
+@pytest.mark.parametrize(("document_url", "as_of", "refusal"), [
+    ("https://www.sec.gov/Archives/abc.htm", "2026-08-04", None),
+    (None, "2026-08-04", "no_source_ref"),
+    ("https://www.sec.gov/Archives/abc.htm", "2026-08-02", "event_not_yet_observable"),
+])
+def test_capital_event_proposal_preserves_exact_filing_source(issuer_spines, document_url, as_of, refusal):
+    from tests.test_capital_structure_event_spine import _observation, _span
+    from engine import valuation_event_proposal as proposal
+
+    event = event_spine.build_event_version(
+        _observation(ticker="AAPL", primary_document_url=document_url,
+                     first_seen_at="2026-08-03T10:00:03Z"), [_span()]
+    )
+    _write_event_versions_parquet(issuer_spines.parent / "event_versions.parquet", [event])
+    controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"), as_of=as_of)
+    candidate = controls["event_assumption_proposal"]
+    assert candidate["event"]["observed_at"] == "2026-08-03"
+    if refusal:
+        assert refusal in candidate["abstain_reasons"]
+        assert candidate["status"] != proposal.STATUS_PROPOSED
+        return
+    assert candidate["status"] == proposal.STATUS_PROPOSED
+    assert candidate["event"]["event_id"] == event["event_id"]
+    assert candidate["event"]["source_refs"][0]["url"] == document_url
+    assert candidate["event"]["source_refs"][0]["ref"] == event["filing"]["accession"]
+    assert candidate["magnitude_source"] == proposal.MAGNITUDE_SOURCE_MODEL_PRESET
+    assert document_url in _render(controls)
 
 
 def test_controls_blob_ignores_nonfilings_and_selects_latest_classified(issuer_spines):

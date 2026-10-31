@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 from hashlib import sha256
 from datetime import datetime
 from collections.abc import Mapping
+import math
 try:
  from . import program_theme_context as t
 except ImportError:
@@ -33,9 +34,13 @@ def _resolve(ref,rail,owners,reason_code=None):
  owner=owners[ref['owner_key']];p=owner.payload();node,ancestors=t._pointer(p,ref['pointer']);sources=[]
  if owner.owner_kind=='fms':
   case=next(a for a in reversed(ancestors) if isinstance(a,dict) and a.get('case_key')==ref['row_id'])
+  # DSCA-first; State primary receipt is admitted as an alternative. Federal
+  # Register-only observations and unknown surfaces are not primary receipts.
   primary=next((x for x in case['observations'] if x['source_surface']=='dsca' and x.get('response_sha256')),None)
+  if primary is None:primary=next((x for x in case['observations'] if x['source_surface']=='state' and x.get('response_sha256')),None)
   if primary is None:raise ValueError('fms_primary_receipt_missing')
-  url=_primary(primary['source_url'],{'www.dsca.mil'})
+  hosts={'www.dsca.mil'} if primary['source_surface']=='dsca' else {'www.state.gov'}
+  url=_primary(primary['source_url'],hosts)
   sources=[_source(ref['owner_key'],ref,node,case['capability_title'],url)]
   for item in sources:item.update(source_publication_date=case['clocks']['official_web_publication_date']['value'],house_known_at=primary['known_at'],documentary_class='congressional_notification',native_reason_code='congressional_notification_only')
   if rail=='funding_stage':return f"{case['capability_title']}: congressional notification with an estimated upper bound; later implementation is not observed. It does not prove an award or contracted revenue.",f"{case['capability_title']}：国会通知及估计上限；尚未观察到后续实施，不能证明合同授予或合同收入。",sources
@@ -44,6 +49,24 @@ def _resolve(ref,rail,owners,reason_code=None):
   return 'Official notification context is available; it does not establish award revenue.','已有官方通知背景；它不能证明合同收入。',sources
  if owner.owner_kind=='program_ontology':
   evidence={x['evidence_id']:x for x in p['evidence']}
+  if ref['pointer'].startswith('/public_agreement_assertions/'):
+   e=evidence[node['evidence_refs'][0]]
+   url=_primary(node['source_url'],{'www.sda.mil','www.l3harris.com'})
+   sources=[_source(ref['owner_key'],ref,node,node['program_label']+' — prototype agreement announcement',url)]
+   sources[0].update(source_publication_date=node['published_on'],source_available_at=e['known_at'],house_known_at=node['known_at'],documentary_class='prototype_agreement',native_reason_code='prototype_agreement_only')
+   if rail=='next_event':
+    year=node['expected_launch_year']
+    return f'Reported target: launch availability by the end of {year}; this is an expected target, not observed delivery, acceptance or installed capacity.',f'报告预期目标：到{year}年底具备发射条件；这不是已观测交付、验收或已安装产能。',sources
+   def amount(v,zh=False):
+    unit=({'USD_million':'百万美元','USD_billion':'十亿美元'} if zh else {'USD_million':' million USD','USD_billion':' billion USD'})[v['unit']]
+    return ('约' if zh and v['approximate'] else 'approximately ' if v['approximate'] else '')+str(v['value'])+unit
+   en='; '.join(x['name_literal']+': '+amount(x['potential_value'])+(f"; reported quantity {x['announced_vehicles']} vehicles" if x['announced_vehicles'] is not None else '') for x in node['parties'])
+   zh='；'.join(x['name_literal']+'：'+amount(x['potential_value'],True)+(f"；报告载具数量{x['announced_vehicles']}" if x['announced_vehicles'] is not None else '') for x in node['parties'])
+   collective=node['collective_value'];collective_en='';collective_zh=''
+   if collective is not None:
+    collective_en=' Reported overlapping collective view: '+amount(collective)+'; do not add it to named-party values.'
+    collective_zh=' 报告中的重叠合计视图为'+amount(collective,True)+'，不能与具名参与方金额相加。'
+   return node['program_label']+': source reports firm-fixed-price OTA prototype agreements, with total potential agreement values '+en+'.'+collective_en+' These are not observed obligations, issuer revenue or cash; legal counterparty and issuer allocation remain unreviewed.',node['program_label']+'：来源报告固定价格OTA原型协议，协议潜在总金额为'+zh+'。'+collective_zh+'这些不是已观测义务金额、发行人收入或现金；法律交易对手与发行人分配尚未核验。',sources
   if node.get('evidence_class')=='official_alliance_policy':
    url=_primary(node['source_url'],{'www.nato.int'});sources=[_source(ref['owner_key'],ref,node,'The Hague Summit Declaration',url)]
    for item in sources:item.update(house_known_at=node['known_at'],documentary_class='alliance_policy',native_reason_code='policy_commitment_only')
@@ -119,8 +142,8 @@ _THEME_CASES={
   'Invalidation: no qualifying production award or delivery conversion appears, or disclosed costs/charges exceed the ramp benefit. Check contract scope and the next reported sales, margin and cash evidence separately.',
   '失效条件：未出现合格生产合同或交付转化，或披露的成本及费用超过扩产收益。分别核实合同范围，以及下一份报告中的销售、利润率与现金证据。'),
  'space':(
-  'Conditional: a verified space-program award could affect the issuer only after scope and business ownership are established. Development costs and schedule changes could offset revenue; production or sustainment terms could have a different margin/cash profile. The cited defense segments are issuer context, not space-program revenue. Program capture and conversion timing remain unknown.',
-  '条件情景：航天项目合同只有在范围及业务所有权核实后，才可能影响发行人。开发成本及进度变化可能抵销收入；生产或维护条款的利润与现金特征可能不同。所引国防分部仅属发行人背景，并非航天项目收入。项目获益及转化时间仍未知。',
+  'Conditional: a verified space-program award could affect the issuer only after scope and business ownership are established. Development costs and schedule changes could offset revenue; production or sustainment terms could have a different margin/cash profile. The cited reported segments are issuer context, not space-program revenue. Program capture and conversion timing remain unknown.',
+  '条件情景：航天项目合同只有在范围及业务所有权核实后，才可能影响发行人。开发成本及进度变化可能抵销收入；生产或维护条款的利润与现金特征可能不同。所引报告分部仅属发行人背景，并非航天项目收入。项目获益及转化时间仍未知。',
   'Invalidation: the program or retained business scope is not established, or disclosed cost/schedule changes undermine conversion. Confirm the exact program and current owner before interpreting the next financial report.',
   '失效条件：项目或保留业务范围未获确认，或披露的成本及进度变化削弱转化。解读下一份财报前，先核实具体项目及当前业务所有者。'),
  'nato_fms_demand':(
@@ -140,6 +163,13 @@ _THEME_CASES={
   '失效条件：已审查参与关系改变、已获资金积压未转化，或披露的成本／进度变化削弱利润或现金。核实下一期Marine积压分类及执行证据，不把全部分部金额归于Virginia。')}
 
 _FACT_LABELS={
+ 'fleet_rms_sales':('sales','销售额'),'fleet_rms_sales_prior':('sales','销售额'),
+ 'fleet_rms_operating_profit':('operating profit','营业利润'),'fleet_rms_operating_profit_prior':('operating profit','营业利润'),
+ 'fleet_rms_margin':('margin','利润率'),'fleet_rms_margin_prior':('margin','利润率'),
+ 'issuer_space_gem63xl_unfavorable_eac':('unfavorable estimated completion-cost adjustment','不利完工成本估计调整'),
+ 'issuer_space_segment_sales':('sales','销售额'),'issuer_space_segment_sales_prior':('sales','销售额'),
+ 'issuer_space_segment_operating_profit':('operating profit','营业利润'),'issuer_space_segment_operating_profit_prior':('operating profit','营业利润'),
+ 'issuer_space_segment_margin':('margin','利润率'),'issuer_space_segment_margin_prior':('margin','利润率'),
  'defense_segment_sales':('sales','销售额'),'marine_segment_sales':('sales','销售额'),
  'defense_segment_operating_profit':('operating profit','营业利润'),'marine_segment_operating_profit':('operating profit','营业利润'),
  'defense_segment_margin':('margin','利润率'),'marine_segment_margin':('margin','利润率'),
@@ -148,6 +178,50 @@ _FACT_LABELS={
  'marine_total_backlog':('total backlog','积压总额'),
  'marine_estimated_potential_contract_value':('estimated potential contracts','估计潜在合同'),
  'marine_total_estimated_contract_value':('total estimated contracts','估计合同总额')}
+
+def _space_reported_comparison(resolved):
+ """Interpret only the complete, resolved NOC same-quarter segment comparison.
+
+No ratios or new financial facts are minted. Missing or incompatible operands
+leave the ordinary conditional story intact.
+ """
+ prefix='evt_cik0001133421_2026q2_results:issuer_space_segment_'
+ selected=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and str(node.get('fact_id','')).startswith(prefix)]
+ expected={metric+suffix:('2025Q2' if suffix else '2026Q2','percent' if metric=='margin' else 'USD_million') for metric in ('sales','operating_profit','margin') for suffix in ('','_prior')}
+ facts={node['fact_id'][len(prefix):]:node for node in selected}
+ if len(selected)!=6 or set(facts)!=set(expected):return None
+ for metric,(period,unit) in expected.items():
+  node=facts[metric]
+  if node.get('period')!=period or node.get('unit')!=unit or node.get('accounting_basis')!='issuer_reported_segment:Space Systems:reported':return None
+  if isinstance(node.get('value'),bool) or not isinstance(node.get('value'),(int,float)) or not math.isfinite(node['value']):return None
+ if not (facts['sales']['value']>facts['sales_prior']['value'] and facts['operating_profit']['value']<facts['operating_profit_prior']['value'] and facts['margin']['value']<facts['margin_prior']['value']):return None
+ comparison=(
+  'In the cited NOC Space Systems quarter, sales rose while operating profit and margin fell versus the prior-year quarter. Higher sales did not translate into higher segment profit. These reported segment comparisons do not establish program workshare, capacity, cash generation or shareholder capture.',
+  '所引NOC Space Systems季度销售额上升，但营业利润与利润率下降，比较基准为上年同期。销售额增长未转化为更高的分部利润。这些报告分部比较不能证明项目份额、产能、现金生成或股东获益。')
+ adverse=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and node.get('fact_id')=='evt_cik0001133421_2026q2_results:issuer_space_gem63xl_unfavorable_eac']
+ if len(adverse)==1:
+  node=adverse[0];value=node.get('value')
+  qualified=(node.get('period')=='2026Q2' and node.get('unit')=='USD_million' and node.get('fact_class')=='reported_eac' and node.get('accounting_basis')=='issuer_reported_program_cost_estimate:GEM63XL:unfavorable_EAC' and not isinstance(value,bool) and isinstance(value,(int,float)) and math.isfinite(value) and value>0)
+  if qualified:
+   comparison=(comparison[0]+' The separately reported GEM63XL adjustment concerns estimated completion costs; its amount does not establish cash paid or HALO\'s financial effect.',comparison[1]+' 另行报告的GEM63XL调整涉及预计完工成本；该金额不能确认已支付现金或HALO的财务影响。')
+ return comparison
+
+def _fleet_reported_comparison(resolved):
+ """A complete same-document segment comparison, never fleet allocation."""
+ prefix='evt_cik0000936468_2026q2_results:fleet_rms_'
+ selected=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and str(node.get('fact_id','')).startswith(prefix)]
+ expected={metric+suffix:('2025Q2' if suffix else '2026Q2','percent' if metric=='margin' else 'USD_million') for metric in ('sales','operating_profit','margin') for suffix in ('','_prior')}
+ facts={node['fact_id'][len(prefix):]:node for node in selected}
+ if len(selected)!=6 or set(facts)!=set(expected):return None
+ if len({node.get('owner_ref') for node in selected})!=1 or not all(isinstance(node.get('owner_ref'),str) and node['owner_ref'] for node in selected):return None
+ for metric,(period,unit) in expected.items():
+  node=facts[metric]
+  if node.get('period')!=period or node.get('unit')!=unit or node.get('accounting_basis')!='issuer_reported_segment:Rotary and Mission Systems:reported':return None
+  if isinstance(node.get('value'),bool) or not isinstance(node.get('value'),(int,float)) or not math.isfinite(node['value']):return None
+ if not (facts['sales']['value']>facts['sales_prior']['value'] and facts['operating_profit']['value']>0>facts['operating_profit_prior']['value'] and facts['margin']['value']>0>facts['margin_prior']['value']):return None
+ return (
+  'In the cited LMT Rotary and Mission Systems quarter, sales were higher and the segment moved from an operating loss to an operating profit versus the prior-year quarter. The prior loss base makes percentage profit growth an unsuitable comparison. This broader segment comparison does not establish F-100 revenue, recurring margin recovery, program workshare, cash generation or shareholder capture. Agreement advancement and a reviewed contract/contractor path remain necessary before any fleet-specific attribution.',
+  '所引LMT Rotary and Mission Systems季度销售额高于上年同期，分部由营业亏损转为营业利润。上年亏损基数使利润增长百分比不适合作为比较。这一较广泛分部的比较不能确认F-100收入、持续利润率恢复、项目份额、现金生成或股东获益。在作任何舰队特定归属判断前，仍须确认协议推进以及经过审查的合同与承包商路径。')
 
 def _theme_economic_story(theme_id,resolved):
  """Only successful CURRENT resolved references ground these conditional texts."""
@@ -158,13 +232,27 @@ def _theme_economic_story(theme_id,resolved):
  fms=any(rail=='funding_stage' and kind=='fms' and isinstance(node,dict) and node.get('case_key')=='fms:transmittal:25-104' and node.get('stage')=='congressional_notification' for rail,kind,node in anchors)
  policy=any(rail=='funding_stage' and kind=='program_ontology' and isinstance(node,dict) and node.get('evidence_class')=='official_alliance_policy' and node.get('claim_scopes')==['policy_context'] for rail,kind,node in anchors)
  electric_boat=any(rail=='exposure' and kind=='program_ontology' and isinstance(node,dict) and node.get('program_id')=='acq-program:virginia-class-ssn' and node.get('entity_id')=='legal:gd:electric-boat-corp' and node.get('role')=='prime_contractor' and node.get('verification_state')=='reviewed' for rail,kind,node in anchors)
+ prototype=any(rail=='funding_stage' and kind=='program_ontology' and isinstance(node,dict) and node.get('agreement_form')=='firm_fixed_price_ota_prototype' for rail,kind,node in anchors)
+ if theme_id=='golden_dome' and prototype:
+  return ('Conditional: prototype activity can support development demand, but potential values do not establish delivery timing, production capacity, margins or shareholder capture. Execution costs, milestone acceptance and later funding can interrupt that transmission.',
+   '条件性解读：原型活动可形成研发需求，但潜在金额不能证明交付时间、生产产能、利润率或股东收益。执行成本、里程碑验收及后续资金都可能中断传导。',
+   'Invalidation: funding, acceptance or launch availability does not advance as expected, or later source evidence changes the scope. Verify native award/legal identities and reported delivery and financial evidence before attribution.',
+   '失效条件：资金、验收或发射条件未按预期推进，或后续来源改变范围。归属前需核实原生授予及法律主体身份，以及报告的交付与财务证据。')
  if theme_id=='golden_dome':permitted=budget
  elif theme_id=='space':permitted=finance
  elif theme_id=='nato_fms_demand':permitted=fms and policy
  elif theme_id=='fleet_sustainment_upgrades':permitted=fms
  elif theme_id=='munitions_replenishment':permitted=budget and finance
  else:permitted=budget and finance and electric_boat
- return _THEME_CASES[theme_id] if permitted else None
+ if not permitted:return None
+ story=_THEME_CASES[theme_id]
+ if theme_id=='space':
+  comparison=_space_reported_comparison(resolved)
+  if comparison:return comparison+story[2:]
+ if theme_id=='fleet_sustainment_upgrades':
+  comparison=_fleet_reported_comparison(resolved)
+  if comparison:return comparison+story[2:]
+ return story
 
 def _reported_baselines(resolved):
  """Exact admitted figures in original issuer/segment/period/unit scope.
@@ -242,7 +330,8 @@ historical view stays cited, labeled stale, without auto-reminting authority.
    missing_en+=' '+story[0];missing_zh+=' '+story[1]
    next_en.append(story[2]);next_zh.append(story[3])
   out.append(dict(theme_id=theme['theme_id'],rail_states=rail_states,known_en=' '.join(dict.fromkeys(known_en)) or 'No qualified current source evidence is available for this theme.',known_zh=' '.join(dict.fromkeys(known_zh)) or '此主题暂无合格的当前来源证据。',missing_en=missing_en,missing_zh=missing_zh,next_en=' '.join(dict.fromkeys(next_en)) or NEXT[theme['theme_id']][0],next_zh=' '.join(dict.fromkeys(next_zh)) or NEXT[theme['theme_id']][1],sources=dedup,research_state='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in rail_states.values()) else 'EVIDENCE_INSUFFICIENT'))
- result=dict(contract=CONTRACT,schema_version='1.0.0',content_id='',theme_content_id=payload['content_id'],as_of=payload['as_of'],authority=dict(t.AUTHORITY),themes=out)
+ version='1.1.0' if any(source['documentary_class']=='prototype_agreement' for theme in out for source in theme['sources']) else '1.0.0'
+ result=dict(contract=CONTRACT,schema_version=version,content_id='',theme_content_id=payload['content_id'],as_of=payload['as_of'],authority=dict(t.AUTHORITY),themes=out)
  result['content_id']=disclosure_content_id(result);validate_public_theme_disclosure(result);return result
 
 def read_current_theme_owner_receipts(root,*,review,retained_owners):
@@ -295,15 +384,18 @@ def validate_public_theme_disclosure(payload):
  import json
  from pathlib import Path
  from jsonschema import Draft202012Validator,FormatChecker
- schema=json.loads((t._SCHEMA_ROOT/'government_program_theme_public_disclosure.v1.schema.json').read_text())
+ schemas={'1.0.0':'government_program_theme_public_disclosure.v1.schema.json','1.1.0':'government_program_theme_public_disclosure.v1_1.schema.json'}
+ if not isinstance(payload,dict) or payload.get('schema_version') not in schemas:raise ValueError('public_theme_shape_invalid')
+ schema=json.loads((t._SCHEMA_ROOT/schemas[payload['schema_version']]).read_text())
  if next(Draft202012Validator(schema,format_checker=FormatChecker()).iter_errors(payload),None) is not None:raise ValueError('public_theme_shape_invalid')
  if [row['theme_id'] for row in payload['themes']]!=list(t.THEMES) or payload['content_id']!=disclosure_content_id(payload):raise ValueError('public_theme_identity_invalid')
  for row in payload['themes']:
   expected='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in row['rail_states'].values()) else 'EVIDENCE_INSUFFICIENT'
   if row['research_state']!=expected:raise ValueError('public_theme_state_invalid')
-  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'})}
+  classes={'congressional_notification':('congressional_notification_only',{'www.dsca.mil','www.state.gov'}),'alliance_policy':('policy_commitment_only',{'www.nato.int'}),'allocation_plan':('allocation_plan_only',{'comptroller.war.gov','comptroller.defense.gov'}),'prototype_agreement':('prototype_agreement_only',{'www.sda.mil','www.l3harris.com'})}
   for source in row['sources']:
    cls=source['documentary_class']
+   if cls=='prototype_agreement' and (payload['schema_version']!='1.1.0' or row['theme_id']!='golden_dome' or any(source[k] is not None for k in ('program_id','issuer_id','security_id'))):raise ValueError('public_prototype_attribution_promotion')
    if cls is None:
     if source['native_reason_code'] is not None:raise ValueError('public_native_class_invalid')
    else:

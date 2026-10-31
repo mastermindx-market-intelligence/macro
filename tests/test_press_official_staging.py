@@ -704,3 +704,54 @@ def test_published_slot_identity_blocks_replay_without_source_refs(candidate, mo
     (candidate['root'] / 'data/press/published.jsonl').write_text(json.dumps(row)+'\n')
     out = _stage(candidate, monkeypatch)
     assert out['staged'] is False and calls['n'] == 0
+
+
+def test_no_first_party_context_refuses_before_any_provider_or_checkpoint(candidate, monkeypatch):
+    calls = _stub_writer(monkeypatch)
+    q = json.loads(candidate['qualification'].read_text())
+    q.pop('first_party_context')
+    candidate['qualification_sha256'] = _dump(candidate['qualification'], q)
+    before = _snapshot(candidate['root'])
+    out = _stage(candidate, monkeypatch)
+    assert out['staged'] is False and 'first-party' in out['reason']
+    assert calls['n'] == 0 and _snapshot(candidate['root']) == before
+
+
+@pytest.mark.parametrize('clock', ['', None, 0, False, ' '])
+def test_explicit_empty_clock_cannot_fall_back_to_previous_date(candidate, monkeypatch, clock):
+    calls = _stub_writer(monkeypatch)
+    row = {'id': 'prior', 'desk': 'brief', 'staged_at': clock,
+           'as_of': '2026-10-13', 'sources': []}
+    (candidate['root'] / 'data/press/staging/prior.json').write_text(json.dumps(row))
+    with pytest.raises(ValueError, match='clock'):
+        _stage(candidate, monkeypatch)
+    assert calls['n'] == 0
+
+
+def test_official_facts_keep_private_guard_when_mutable_labels_are_removed(candidate, monkeypatch):
+    _stub_writer(monkeypatch)
+    monkeypatch.setattr(R, '_render_blog_subtree', lambda root: ([], []))
+    out = _stage(candidate, monkeypatch)
+    path = candidate['root'] / out['staging_path']
+    record = json.loads(path.read_text())
+    assert record['status'] == 'passed'
+    for holder in (record, record['slot']):
+        for key in ('provenance', 'sources', 'seed_refs', 'source_revisions'):
+            holder.pop(key, None)
+        holder['id'] = 'press-brief-renamed'
+    path.write_text(json.dumps(record))
+    before = _emit_snapshot(candidate['root'])
+    result = R.run_emit(candidate['root'], candidate['cfg'])
+    assert result['emitted'] == 0
+    assert _emit_snapshot(candidate['root']) == before
+
+
+def test_insufficient_distinct_receipts_refuses_before_spending_attempt(candidate, monkeypatch):
+    calls = _stub_writer(monkeypatch)
+    q = json.loads(candidate['qualification'].read_text())
+    q['first_party_context'] = q['first_party_context'][:1]
+    candidate['qualification_sha256'] = _dump(candidate['qualification'], q)
+    before = _snapshot(candidate['root'])
+    out = _stage(candidate, monkeypatch)
+    assert out['staged'] is False and 'receipt' in out['reason']
+    assert calls['n'] == 0 and _snapshot(candidate['root']) == before

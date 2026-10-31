@@ -1,16 +1,16 @@
 {
   "schema": "ai_desk_track_record.v1",
-  "as_of": "2026-10-14",
-  "scored_total": 43,
-  "open": 24,
+  "as_of": "2026-10-17",
+  "scored_total": 44,
+  "open": 27,
   "unscored_soft": 0,
   "expired": 3,
   "overall": {
-    "n": 43,
-    "hits": 39,
+    "n": 44,
+    "hits": 40,
     "misses": 4,
-    "hit_rate": 0.907,
-    "dir_accuracy": 0.698
+    "hit_rate": 0.909,
+    "dir_accuracy": 0.705
   },
   "by_conviction": {
     "high": {
@@ -37,11 +37,11 @@
   },
   "by_kind": {
     "rel_return": {
-      "n": 43,
-      "hits": 39,
+      "n": 44,
+      "hits": 40,
       "misses": 4,
-      "hit_rate": 0.907,
-      "dir_accuracy": 0.698
+      "hit_rate": 0.909,
+      "dir_accuracy": 0.705
     },
     "level": {
       "n": 0,
@@ -60,15 +60,24 @@
       "dir_accuracy": 0.707
     },
     "Stagflation": {
-      "n": 2,
-      "hits": 2,
+      "n": 3,
+      "hits": 3,
       "misses": 0,
       "hit_rate": 1.0,
-      "dir_accuracy": 0.5
+      "dir_accuracy": 0.667
     }
   },
-  "calibration_note": "43 scored, hit-rate 0.907 (directional accuracy 0.698). High-conviction calls: 17/19 holding.",
+  "calibration_note": "44 scored, hit-rate 0.909 (directional accuracy 0.705). High-conviction calls: 17/19 holding.",
   "recent": [
+    {
+      "id": "2026-09-10-nb-space_economy",
+      "subject": "space_economy",
+      "lean": "cautious",
+      "conviction": "med",
+      "outcome": "hit",
+      "realized": -0.0099,
+      "check_by": "2026-10-11"
+    },
     {
       "id": "2026-09-11-nb-semicap_equipment",
       "subject": "semicap_equipment",
@@ -149,16 +158,7 @@
       "outcome": "hit",
       "realized": 0.0872,
       "check_by": "2026-09-28"
-    },
-    {
-      "id": "2026-08-28-nb-space_economy",
-      "subject": "space_economy",
-      "lean": "constructive",
-      "conviction": "med",
-      "outcome": "hit",
-      "realized": -0.0063,
-      "check_by": "2026-09-28"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 43 \u6761\uff0c\u547d\u4e2d\u7387 0.907\uff08\u65b9\u5411\u51c6\u786e\u7387 0.698\uff09\u3002\u9ad8\u7f6e\u4fe1\u5224\u65ad\uff1a17/19 \u4ecd\u6210\u7acb\u3002"
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 44 \u6761\uff0c\u547d\u4e2d\u7387 0.909\uff08\u65b9\u5411\u51c6\u786e\u7387 0.705\uff09\u3002\u9ad8\u7f6e\u4fe1\u5224\u65ad\uff1a17/19 \u4ecd\u6210\u7acb\u3002"
 }

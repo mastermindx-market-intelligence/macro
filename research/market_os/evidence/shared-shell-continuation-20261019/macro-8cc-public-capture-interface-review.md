@@ -1,0 +1,9 @@
+# Existing public capture and header interfaces — source-only SNI consultation
+
+Original /root/sni_receipt_counsel fully read exact Macro8ccfa5ddba6770cef48f2f162c08474d023e094e source, no execution. scripts/capture_page_evidence.py blob6f184c6469f6fd653d003716ad96605055e71f56; scripts/verify_shared_shell_caddy_headers.py blob9f28462fa87910d5e992f8dac60354da33f9ccaf. Root also consumed the full header verifier.
+
+Capture supports exactly one --base-url or --site-dir. --base-url https://beta.mastermind-x.com plus relative --routes /, named --viewports desktop,tablet,mobile creates1440x900/820x1180/390x844 Playwright contexts atdeviceScale1. --locales en,zh and --themes light,dark request cells, subject to registry restrictions. --max-pages must cover selected routecount. Existing --output-dir/--manifest/--smells accept outputs in the original E proof directory. Relative routes are necessary because absolute routeURLs override the base.
+
+Each cell uses a fresh anonymous context; no storage-state/cookie/login reuse CLI exists. Authjourney requires a separately authenticated browser. full_page=True means PNGheight may exceedviewport; both are recorded. Exit0 can still mean partialcells: it fails a page only when no states captured. Every required manifest cell and state-application gap must be consumed, and deployment identity separately bound because live-originresolvedSHA isnull. No screenshot yet qualifies public beta.
+
+Caddy verifier accepts only --caddyfile and optional --caddy. It extracts sourceheaderblock, launches an isolated ephemeral loopback Caddy and exercises10 ordinary/embed/untrustedreferer/query/path/403 cases. No --base-url/--origin/remote mode exists. It cannot certify public deployedheaders. Root will observe actual public endpoints separately after owner publication and validTLS. No fixture/renderer/watchers created and no credentials extracted.

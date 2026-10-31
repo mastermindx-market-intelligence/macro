@@ -396,3 +396,95 @@ with Fable/human after the threshold is confirmed.
 | Keepalive fires but backfill immediately dies | `backfill.log` tail | Python path not in launchd PATH — verify the plist LaunchAgents entry; use full Python path in wrapper if needed |
 | `LastExitStatus` in `launchctl list` = 32512 | Script not executable | `chmod +x .../theta_backfill_keepalive.sh` |
 | `_manifest.json` missing after ETF pass | Backfill didn't finish cleanly | Check log; resume — the script writes the manifest at completion |
+
+### Default-off D-session observation — source preparation, October 24
+
+Do not activate or run this preparation from this runbook. Existing schedule,
+wrapper, canonical four S/D cells and health are unchanged. The reviewed source
+seam is `_daily_main(..., d_session_observation=None)`; no CLI/env/plist enables it.
+The incumbent collector has an explicit source adapter
+`bounded_spy_d_session_transport(day)` using native `_get_csv`/normalizers, but no
+CLI/environment/plist/wrapper binds it. Transport defaults None, which records
+zero pilot attempts; source availability does not activate it.
+See the October 24 AD1T1 amendment for the exact callback interface and admission
+boundary. The existing commercial-rights Chairman decision is settled; this seam
+must not request another license approval or invent a vendor contract.
+
+After a separately qualified source/install/access/capacity boundary, a distinct
+natural 17:30 ET SPY session could be admitted with two total physical attempts,
+including any probe/retry/redirect (those are forbidden rather than extra calls).
+It validates existing OI[D]/OI[S] and their eligible live-contract membership,
+retaining full local report copies/hashes and explicit S-expiry exclusions. Missing
+expiration is not an exclusion, and a missing nonexpired member is not zero. It
+exclusively claims its exact date/rung under the
+existing canonical lock, reserves before GET, retains private raw bytes before
+parse, and preserves refusal/unknown/no-replay. Missing local reports or wrong
+rung/forced/nonsession/lock refusal mean no pilot calls. There is no automatic
+later-rung retry and no timer or retired-backfill restoration.
+
+Success is observation-only. Never merge its EOD/Greek frames into canonical
+Parquet or run/advance Hub from them. DOI/Hot remain at their actual compatible
+source date. Source/model/role clocks and unknown earliest availability remain
+separate. Actual production promotion requires a later qualified per-root source
+composition and declared coverage, not a SPY-only max-date side effect. All current
+checks of this preparation are synthetic structural mock tests; no activation,
+provider GET, new allowance or runtime installation follows from their passing.
+
+The unbound pilot adapter's absolute deadline is available only on the native
+POSIX main thread with no pre-existing real-time alarm. An active process timer
+or unsupported thread/platform is a pre-GET refusal, not a reason to fall back
+to inactivity timeouts. The guard interrupts the synchronous header/body read,
+closes the native response and restores the previous signal handler. No capture
+worker is detached. After a physical attempt the journal preserves unknown
+provider outcome/no-replay even when local cancellation/disconnection succeeds.
+These controls have local loopback/mock tests only; no production host, session
+allocation, installation or activation is established by that evidence.
+
+For a later admitted one-session binding, supply both the transport's fixed date
+and `_DSessionObservation.session_day` with the same exact allocated date.
+Default None withholds; a mismatch refuses before local-source preflight/claim.
+The native receipt records `bound_session` and the computed exact operation_ref.
+This source interface does not activate a schedule or roll a two-attempt
+allocation into a recurring allowance.
+
+### Exact Oct26 observation entry binding (source only; default off)
+
+The existing `scripts/launchd/theta_daily_refresh.sh` remains a thin `exec`
+wrapper. Its inherited environment reaches the normal `--daily` CLI. With
+`THETADATA_D_SESSION_OBSERVATION` absent or empty, that CLI still supplies `None`;
+the existing four-cell maintenance, worker bounds and 65-minute default remain.
+No plist, timer or wrapper control flow is added.
+
+The only accepted nonempty value is
+`spy-2026-10-26-1730-observation-v1`. This binds SPY D=2026-10-26/S=2026-10-23,
+the natural 17:30 Eastern rung, original root
+`01a156f1-f450-7793-8951-bddadd4784c2`, assigning coordinator
+`01a15700-1ae2-7a73-9756-f1546da7ace8`, and the already provisioned private parent
+`/Users/chriswong/optionshub-ops-wt/.git/options-source-captures`. It is not an
+arbitrary date/root/budget setting or recurring allocation. Other values,
+legacy mode, `--force-run`, or a changed deadline refuse before source work.
+Wrong day/rung, weekend/pre-gate, missing local OI/baseline, unqualified native
+transport capacity, invalid journal parent or any existing operation claim
+cannot issue pilot requests. A retained unknown/refusal/completed claim is never
+reused. Capacity inspection is local timer/thread/origin/retry-adapter inspection,
+not a health query or proof of subscribed-account access.
+
+**Do not set this environment value as part of source installation.** Activation
+requires the accepted/protected source, exact preimage-guarded native installation,
+current subscribed-account/source admission, actual writer/host capacity and
+custody, compatible retained local OI[D]/OI[S], and a writable/fsync-qualified
+private journal. Existing explicit `THETADATA_DATED_GREEKS_V1_ROOTS=SPY` policy is
+also required; requested version1 is request provenance, never response model
+metadata. The Options owner's separately approved NEW two-attempt allocation is
+for this operation only, not old unused cap or a reset of earlier claims.
+
+The two actual pilot attempts are exact EOD[D], then full-order Greek EOD[D]
+requested version1: max16MiB/100000 raw rows per response (32MiB/200000 total),
+no probe/retry/redirect/page/fallback/extra OI. The existing absolute native
+main-thread timer and shared remaining 65-minute deadline remain mandatory;
+unknown consumes/holds an attempt. Raw response/actual clocks precede validation.
+Pilot data stays private and never enters canonical Parquet, `_ensure_one_cell`,
+`_merge_day`, Hub max-date promotion, or the historical catch-up helper. Ordinary
+four-cell maintenance remains independent; its existing requests are not financed
+by or counted as pilot attempts. No new model/expiry/PIT/market-completeness or
+publication claim follows from this observation.

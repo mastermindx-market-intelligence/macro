@@ -98,11 +98,15 @@
   var CATALOG_PREVIEW = false;
   var CATALOG_SOURCE = 'loading'; // 'loading' | 'live' | 'snapshot' | 'unavailable'
   var CATALOG_FRESH = false; // did the painted copy clear the freshness threshold?
+  var CATALOG_OBJECT = null; // selected copy only; never borrow live metadata for a snapshot
   var CATALOG_GENERATED = '';// producer clock (generated_at) of the painted copy
   var CATALOG_REQ = 0;       // newest-request-wins guard for auth/bootstrap refresh races
   var CATALOG_ABORT = null;
   var LANE = 'latest';
   var FILT = { inst: '', side: '', theme: '', q: '' };
+  var SEARCH_REQ = 0;
+  var SEARCH_STATE = 'metadata'; // metadata | loading | server | unavailable
+  var SEARCH_RESPONSE = null;
   var SEARCH_HITS = null;    // set of ids from the live search API, or null (no server search)
   // Teaser gate: reading full PDFs is Pro-only. Every non-Pro visitor sees the
   // same fixed latest-three preview, and the app starts locked while auth resolves
@@ -207,6 +211,7 @@
     }
     var stripped = s.replace(/\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*$/i, '');
     stripped = stripped.replace(/\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\s*$/i, '').trim();
+    if (stripped !== s) stripped = stripped.replace(/[ ,]+$/, '');
     if (stripped && stripped !== s && stripped.split(/\s+/).length >= 2) s = stripped;
     return s;
   }
@@ -269,6 +274,9 @@
   }
 
   function isFresh(catalog) {
+    var health = catalog && catalog.catalog_health;
+    if (!catalog || catalog.stale === true) return false;
+    if (health && (health.state !== 'fresh' || health.reason)) return false;
     var t = genMs(catalog);
     return t !== null && (Date.now() - t) <= FRESH_MAX_AGE_MS;
   }
@@ -343,6 +351,24 @@
       $('v-en-lead').textContent =
         'The research catalog could not be loaded. This is a loading problem, not an empty vault.';
       $('v-zh-lead').textContent = '无法载入研报目录。这是加载问题，并非研报库为空。';
+      return;
+    }
+
+    // Language can change while the first catalog request is still pending.
+    // Preserve the loading shell until an actual catalog source has settled.
+    if (CATALOG_SOURCE === 'loading') return;
+
+    // Saved weekly figures cannot describe current activity. Retain the
+    // archive total; the status line already carries the saved timestamp.
+    if (!CATALOG_FRESH) {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = TOTAL_COUNT;
+      buildWeb();
+      $('v-en-lead').textContent =
+        'Research updates are delayed. Showing the saved catalog.';
+      $('v-zh-lead').textContent = '研报更新延迟，正在显示已保存的目录。';
       return;
     }
     var wk = ITEMS.filter(isThisWeek);
@@ -674,14 +700,21 @@
     } else if (!ITEMS.length) {
       feed.innerHTML = emptyState(
         T('Institutional research is being onboarded', '机构研报正在接入'),
-        T('New buy-side and sell-side desk reports arrive hourly — check back shortly.', '买方与卖方研究每小时更新 —— 请稍后再来查看。'));
+        T('New reports appear after publication — check back later.', '新研报发布后陆续收录 —— 可稍后再查看。'));
     } else if (picksGate) {
       feed.innerHTML = picksUpgradePanel();          // Top Picks is Pro-only
     } else if (!rows.length) {
       var savedLane = LANE === 'saved';
       feed.innerHTML = emptyState(
-        savedLane ? T('Nothing saved yet', '还没有收藏') : T('No reports match', '没有匹配的研报'),
+        savedLane ? T('Nothing saved yet', '还没有收藏')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('No matches in searchable text', '可搜索正文中未找到匹配')
+            : T('No title or summary matches', '标题或摘要中未找到匹配'))
+          : T('No reports match', '没有匹配的研报'),
         savedLane ? T('Tap the bookmark on any report to keep it here for later.', '点击任意报告上的书签，即可收藏到此处。')
+          : FILT.q ? (SEARCH_STATE === 'server'
+            ? T('Search may cover only part of a report. Open the PDF to check the rest.', '搜索可能仅覆盖部分研报。可打开 PDF 核对其余内容。')
+            : T('Report text search is not verified. Try clearing a filter or opening the PDF.', '研报正文搜索尚未核验。可清除筛选或打开 PDF 核对。'))
           : T('Try clearing a filter or widening your search.', '试试清除筛选或放宽搜索条件。'));
     } else if (feedUnlocked()) {
       // Pro: paged — show the first shownN, then a "Show more" button
@@ -698,6 +731,18 @@
     }
     $('cnt-n').textContent = picksGate ? 0 : (feedUnlocked() ? Math.min(shownN, rows.length) : previewRows.length);
     $('cnt-t').textContent = feedUnlocked() ? rows.length : TOTAL_COUNT;
+    var note = $('rv-coverage-note');
+    if (note) note.textContent = !feedUnlocked()
+      ? T('Search is limited to the public preview.', '搜索仅限公开预览。')
+      : SEARCH_STATE === 'unavailable' && FILT.q
+        ? T('Text search unavailable; showing title and summary matches.', '正文搜索暂不可用；显示标题与摘要匹配。')
+        : T('Search coverage unverified.', '搜索覆盖尚未核验。');
+    if (note) {
+      var clocks = CATALOG_SUMMARY && CATALOG_SUMMARY.source_clock;
+      var latest = clocks && clocks.complete && clocks.latest_report_published_at;
+      note.setAttribute('data-tip-en', 'Catalog published: ' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, false) : 'Unknown') + '. Latest report: ' + (latest ? fmtStamp(latest, false) : 'Unknown') + '. Search index generation: Unknown. Searchable body coverage: Unknown. Current full report text: Unknown. Current analysis: Unknown. PDF access follows your plan.');
+      note.setAttribute('data-tip-zh', '目录发布：' + (CATALOG_GENERATED ? fmtStamp(CATALOG_GENERATED, true) : '未知') + '。最新研报：' + (latest ? fmtStamp(latest, true) : '未知') + '。搜索索引版本：未知。正文搜索覆盖：未知。当前完整正文：未知。当前版本分析：未知。PDF 访问依照订阅权限。');
+    }
     renderActiveChips();
   }
   function emptyState(h, p) {
@@ -799,8 +844,18 @@
 
   /* ═══════════ live search (debounced → /api/research/search) ═══════════ */
   var _searchTimer = null;
+  function invalidateSearchContext() {
+    ++SEARCH_REQ;
+    clearTimeout(_searchTimer);
+    SEARCH_HITS = null;
+    SEARCH_RESPONSE = null;
+    SEARCH_STATE = 'metadata';
+  }
   function onSearchInput() {
     FILT.q = $('q').value.trim();
+    var searchReq = ++SEARCH_REQ;
+    SEARCH_STATE = FILT.q ? 'loading' : 'metadata';
+    SEARCH_RESPONSE = null;
     SEARCH_HITS = null;              // fall back to instant client match while the server call is in flight
     renderFeed();
     clearTimeout(_searchTimer);
@@ -812,11 +867,18 @@
       withAuth().then(function (h) { return fetch(url, { headers: h, credentials: 'include' }); })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (!j || FILT.q !== q) return;      // stale response
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          if (!j || !Array.isArray(j.items)) throw new Error('invalid search response');      // stale response
+          SEARCH_RESPONSE = j;
+          if (j.available !== true) { SEARCH_STATE = 'unavailable'; SEARCH_HITS = null; renderFeed(); return; }
+          SEARCH_STATE = 'server';
           var hits = {}; (j.items || []).forEach(function (it) { if (it && it.id) hits[it.id] = 1; });
           SEARCH_HITS = hits; renderFeed();
         })
-        .catch(function () { /* keep the client-side fallback result */ });
+        .catch(function () {
+          if (FILT.q !== q || searchReq !== SEARCH_REQ) return;
+          SEARCH_STATE = 'unavailable'; SEARCH_RESPONSE = null; SEARCH_HITS = null; renderFeed();
+        });
     }, 280);
   }
 
@@ -872,6 +934,7 @@
   function setUserTier(t) {
     t = (t || 'free');
     if (t === USER_TIER) return;
+    invalidateSearchContext();
     USER_TIER = t;
     if (USER_TIER === 'pro') refreshFromApi();
     else renderFeed();
@@ -1332,10 +1395,11 @@
   }
 
   /* ═══════════ hydrate + refresh ═══════════ */
-  function finishCatalogPaint(source, generatedAt) {
+  function finishCatalogPaint(source, catalog) {
     CATALOG_SOURCE = source;
-    CATALOG_GENERATED = generatedAt || '';
-    CATALOG_FRESH = source === 'live' && isFresh({ generated_at: CATALOG_GENERATED, items: [] });
+    CATALOG_OBJECT = catalog || null;
+    CATALOG_GENERATED = catalog && catalog.generated_at || '';
+    CATALOG_FRESH = source === 'live' && isFresh(catalog);
     doc.documentElement.classList.remove('rv-awaiting-live');
     if (window.__rvShellTimer) { clearTimeout(window.__rvShellTimer); window.__rvShellTimer = null; }
     var shell = $('feed-shell'); if (shell) shell.setAttribute('aria-busy', 'false');
@@ -1348,8 +1412,8 @@
       if (en) en.textContent = 'Live research unavailable · try again shortly';
       if (cn) cn.textContent = '实时研报暂不可用 · 请稍后重试';
     } else if (CATALOG_FRESH) {
-      if (en) en.textContent = 'This week · Updated hourly';
-      if (cn) cn.textContent = '本周 · 每小时更新';
+      if (en) en.textContent = 'Catalog recently updated';
+      if (cn) cn.textContent = '目录近期已更新';
     } else {
       var iso = CATALOG_GENERATED;
       if (en) en.textContent = 'Saved snapshot · live update delayed'
@@ -1359,6 +1423,8 @@
     }
   }
   function ingest(catalog, source) {
+    // A selected catalog is a new search context, even when the query is unchanged.
+    invalidateSearchContext();
     var items = (catalog && Array.isArray(catalog.items)) ? catalog.items : [];
     ITEMS = items.map(normItem);
     CATALOG_SUMMARY = catalog && catalog.summary && typeof catalog.summary === 'object' ? catalog.summary : null;
@@ -1369,7 +1435,7 @@
     // Source + freshness BEFORE the feed paints: renderFeed's empty state has to
     // be able to tell an unavailable catalog from a vault that genuinely holds
     // zero reports, and those two must never render as the same screen.
-    finishCatalogPaint(source || 'live', catalog && catalog.generated_at);
+    finishCatalogPaint(source || 'live', catalog);
     buildTree(); updateHero(); updateUnread(); renderFeed();
     openDeepLink();
   }
@@ -1429,7 +1495,13 @@
     });
     return Promise.race([request, deadline])
       .catch(function () {
-        if (req === CATALOG_REQ && CATALOG_SOURCE === 'loading') hydrateFromBake();
+        if (req === CATALOG_REQ) {
+          if (CATALOG_SOURCE === 'loading') hydrateFromBake();
+          else if (CATALOG_OBJECT) {
+            finishCatalogPaint('snapshot', CATALOG_OBJECT);
+            updateHero(); renderFeed();
+          }
+        }
         return false;
       })
       .then(function (ok) {
@@ -1550,6 +1622,9 @@
     mo.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
     // re-render feed on auth resolve so the teaser + quota/gate reflect the real session
     function onAuthResolved() {
+      // Same-tier account switches must fence responses before new reads settle.
+      invalidateSearchContext();
+      renderFeed();
       resolveTier();   // sets USER_TIER → re-renders the feed (teaser for non-Pro)
       refreshFromApi(); // auth may change the catalog from the 3-item preview to full Pro
       if ($('overlay').classList.contains('open')) { refreshQuota(); if (!V.pdf) loadDocument(V.item); }

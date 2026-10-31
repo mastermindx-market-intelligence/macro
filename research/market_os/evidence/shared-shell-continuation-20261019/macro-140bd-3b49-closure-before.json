@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-10-20T14:40:00.189040+00:00",
+  "finished_at": "2026-10-20T14:42:20.872688+00:00",
+  "head": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "index": "1d9a8aa520a2f72551cd49580558f23a73b36492",
+  "manifest_sha256": "4480d625db57e1192e69d088e16b63eea8d11f368a442739fbe3d29951391a2e",
+  "test_sha256": "a94e09b28fa32fc34f532f7eaaa175873128397b844fb99863323c2000328831",
+  "owner": "tests/test_ci_pack.py curated_exclusive_closure_findings; same canonical computation used by the existing test and differential contract gate",
+  "findings": {
+    "china-mechanics-display": [
+      "lib/shared_shell.py"
+    ],
+    "pick-lab-cn-render": [
+      "lib/shared_shell.py",
+      "lib/site_assets.py"
+    ]
+  },
+  "scope": "Actual unchanged integrated-tree diagnostic, not a pytest or hosted admission result"
+}

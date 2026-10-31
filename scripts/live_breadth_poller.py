@@ -66,6 +66,7 @@ sys.path.insert(0, str(_ROOT))
 
 from lib import config  # noqa: E402
 from lib import nyse_calendar  # noqa: E402
+from lib.native_parquet import read_parquet_native  # noqa: E402
 
 log = logging.getLogger("live_breadth_poller")
 
@@ -233,8 +234,11 @@ class ThresholdStore:
         syms: list[str] = []
         if cpath.exists():
             try:
-                import pandas as pd
-                idx = pd.read_parquet(cpath).index
+                # Parquet reads go through lib/native_parquet.py: Python-backed
+                # buffers on Arrow's IO pool aborted at exit in 3/200 census runs
+                # of --once --offline (0/600 in the build-lane fixture tree) —
+                # its docstring has the hazard and the harness-dependent rates.
+                idx = read_parquet_native(cpath).index
                 syms = [canonical_symbol(s) for s in idx]
             except Exception as e:  # noqa: BLE001
                 log.warning("poller: constituents read failed for %s (%s) — "
@@ -261,7 +265,7 @@ class ThresholdStore:
             log.warning("poller: breadth cache absent for %s (%s) — tier skipped", ns, p)
             return {}, None
         try:
-            closes = pd.read_parquet(p)
+            closes = read_parquet_native(p)
         except Exception as e:  # noqa: BLE001
             log.warning("poller: breadth cache unreadable for %s (%s) — tier skipped", ns, e)
             return {}, None
@@ -326,7 +330,7 @@ class ThresholdStore:
             new_asof = None
             if p.exists():
                 try:
-                    idx = pd.read_parquet(p, columns=[]).index
+                    idx = read_parquet_native(p, columns=[]).index
                     if len(idx):
                         new_asof = pd.Timestamp(idx.max()).strftime("%Y-%m-%d")
                 except Exception:  # noqa: BLE001 — full load below handles errors

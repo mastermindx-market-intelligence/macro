@@ -1,0 +1,410 @@
+{
+  "observed_at": "2026-10-14T05:54:05.641134+00:00",
+  "installed_head": "3bf4b196eb0e1288819f84b7606340423b909a76",
+  "as_of": "2026-10-14",
+  "artifacts": [
+    {
+      "path": "data/market_state/latest.json",
+      "sha256": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "dated": {
+        "asof": "2026-10-12"
+      },
+      "top_keys": [
+        "schema",
+        "asof",
+        "score",
+        "raw_score",
+        "score_source",
+        "capped",
+        "score_ceiling",
+        "score_caps",
+        "score_gap",
+        "radar",
+        "verdict",
+        "color",
+        "label_en",
+        "label_zh",
+        "posture_en",
+        "posture_zh",
+        "headline_en",
+        "headline_zh",
+        "participation_scope",
+        "components"
+      ]
+    },
+    {
+      "path": "data/gex/latest.json",
+      "sha256": "4b8fbd2592f981ec77d2d33ea4cb8504ebff237d4f448969f3f4a0d40939dec2",
+      "dated": {
+        "asof": "2026-10-08"
+      },
+      "top_keys": [
+        "asof",
+        "source",
+        "indices",
+        "market"
+      ]
+    },
+    {
+      "path": "site/basketdata/breadth_split.json",
+      "sha256": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+      "dated": {
+        "as_of": "2026-10-08"
+      },
+      "top_keys": [
+        "as_of",
+        "cohort_sizes",
+        "latest",
+        "spark",
+        "young",
+        "young_note",
+        "tag_version",
+        "stance_en",
+        "stance_zh",
+        "disclaimer_en",
+        "disclaimer_zh"
+      ]
+    },
+    {
+      "path": "site/basketdata/fear_greed.json",
+      "sha256": "fa3fede4f4fc054099c1643f91249f32e5c49320cc07aa026cbef032197bfeda",
+      "dated": {
+        "as_of": "2026-10-12"
+      },
+      "top_keys": [
+        "dial",
+        "label_en",
+        "label_zh",
+        "legs_included",
+        "legs_excluded_young",
+        "young_tiles",
+        "n_legs_qualifying",
+        "as_of",
+        "generated_utc",
+        "disclaimer_en",
+        "disclaimer_zh"
+      ]
+    },
+    {
+      "path": "data/risk_radar/forward_log.jsonl",
+      "sha256": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+      "dated": {
+        "asof": "2026-10-12"
+      },
+      "top_keys": [
+        "asof",
+        "state",
+        "alert",
+        "state_ungated",
+        "alert_ungated",
+        "gate_clamped",
+        "context_gate",
+        "dominant_scare",
+        "top_score",
+        "can_force",
+        "authority_tier",
+        "authority_reason",
+        "confirmed_validated_legs",
+        "conjunction_n",
+        "scares",
+        "drawdown_prob",
+        "traj_phase",
+        "traj_intensity",
+        "traj_off_peak",
+        "traj_odds_now"
+      ]
+    }
+  ],
+  "engine_facts": [
+    {
+      "id": "market_state_score",
+      "text": "Mastermind's market-state composite reads 50 of 100 (MIXED) as of 2026-10-12.",
+      "ref": "artifact:data/market_state/latest.json",
+      "tier": "first_party",
+      "values": [
+        "50"
+      ],
+      "url": null,
+      "source_name": "Mastermind market-state engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "market_state_trend",
+      "text": "Market-state component Trend & technicals scores 70 (weight 0.24).",
+      "ref": "artifact:data/market_state/latest.json",
+      "tier": "first_party",
+      "values": [
+        "70",
+        "0.24"
+      ],
+      "url": null,
+      "source_name": "Mastermind market-state engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "market_state_risk",
+      "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+      "ref": "artifact:data/market_state/latest.json",
+      "tier": "first_party",
+      "values": [
+        "27",
+        "0.18"
+      ],
+      "url": null,
+      "source_name": "Mastermind market-state engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "market_state_vol",
+      "text": "Market-state component volatility backdrop scores 84 (weight 0.16).",
+      "ref": "artifact:data/market_state/latest.json",
+      "tier": "first_party",
+      "values": [
+        "84",
+        "0.16"
+      ],
+      "url": null,
+      "source_name": "Mastermind market-state engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "market_state_breadth",
+      "text": "Market-state component Breadth & participation scores 0 (weight 0.16).",
+      "ref": "artifact:data/market_state/latest.json",
+      "tier": "first_party",
+      "values": [
+        "0",
+        "0.16"
+      ],
+      "url": null,
+      "source_name": "Mastermind market-state engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "gex_dia",
+      "text": "DIA dealer gamma is 0.05bn net with the gamma flip at 511.14; spot sits 0.33% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "0.05",
+        "511.14",
+        "0.33",
+        "512.82"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_iwm",
+      "text": "IWM dealer gamma is -4.45bn net with the gamma flip at 289.63; spot sits -4.17% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "-4.45",
+        "289.63",
+        "-4.17",
+        "278.03"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_ndx",
+      "text": "NDX dealer gamma is 2.35bn net with the gamma flip at 30232.43; spot sits 2.07% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "2.35",
+        "30232.43",
+        "2.07",
+        "30871.8"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_qqq",
+      "text": "QQQ dealer gamma is 0.92bn net with the gamma flip at 748.96; spot sits 0.24% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "0.92",
+        "748.96",
+        "0.24",
+        "750.79"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_rut",
+      "text": "RUT dealer gamma is -2.51bn net with the gamma flip at 2878.14; spot sits -2.69% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "-2.51",
+        "2878.14",
+        "-2.69",
+        "2802.66"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_spx",
+      "text": "SPX dealer gamma is 76.9bn net with the gamma flip at 7715.74; spot sits 0.95% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "76.9",
+        "7715.74",
+        "0.95",
+        "7790.1"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "gex_spy",
+      "text": "SPY dealer gamma is 1.59bn net with the gamma flip at 775.05; spot sits 0.15% from it as of 2026-10-08.",
+      "ref": "artifact:data/gex/latest.json",
+      "tier": "first_party",
+      "values": [
+        "1.59",
+        "775.05",
+        "0.15",
+        "776.23"
+      ],
+      "url": null,
+      "source_name": "Mastermind dealer-positioning engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "breadth_split",
+      "text": "As of 2026-10-08, 62.3% of the AI cohort is above its 50-day average against 27.0% of the non-AI cohort \u2014 a 35.3 point spread.",
+      "ref": "artifact:site/basketdata/breadth_split.json",
+      "tier": "first_party",
+      "values": [
+        "62.3",
+        "27.0",
+        "35.3",
+        "26.1",
+        "74.1"
+      ],
+      "url": null,
+      "source_name": "Mastermind breadth engine",
+      "dated": "2026-10-08"
+    },
+    {
+      "id": "fear_greed",
+      "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-12, built from 11 qualifying legs.",
+      "ref": "artifact:site/basketdata/fear_greed.json",
+      "tier": "first_party",
+      "values": [
+        "52",
+        "11"
+      ],
+      "url": null,
+      "source_name": "Mastermind sentiment engine",
+      "dated": "2026-10-12"
+    },
+    {
+      "id": "risk_radar",
+      "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+      "ref": "artifact:data/risk_radar/forward_log.jsonl",
+      "tier": "first_party",
+      "values": [
+        "70.3",
+        "0.19",
+        "0.1",
+        "0.042"
+      ],
+      "url": null,
+      "source_name": "Mastermind risk radar",
+      "dated": "2026-10-12"
+    }
+  ],
+  "mover_facts": [
+    {
+      "id": "mover_gainers_ABSI",
+      "text": "ABSI closed 13.646532438478754% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#ABSI",
+      "tier": "first_party",
+      "values": [
+        "13.646532438478754"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    },
+    {
+      "id": "mover_gainers_AUGO",
+      "text": "AUGO closed 10.631591708085853% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#AUGO",
+      "tier": "first_party",
+      "values": [
+        "10.631591708085853"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    },
+    {
+      "id": "mover_gainers_HIMS",
+      "text": "HIMS closed 10.19244476122596% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#HIMS",
+      "tier": "first_party",
+      "values": [
+        "10.19244476122596"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    },
+    {
+      "id": "mover_losers_ASTX",
+      "text": "ASTX closed -21.49321266968325% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#ASTX",
+      "tier": "first_party",
+      "values": [
+        "-21.49321266968325"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    },
+    {
+      "id": "mover_losers_ALHC",
+      "text": "ALHC closed -13.375430539609656% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#ALHC",
+      "tier": "first_party",
+      "values": [
+        "-13.375430539609656"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    },
+    {
+      "id": "mover_losers_TIGO",
+      "text": "TIGO closed -9.630471859010804% on the session of 2026-10-09.",
+      "ref": "artifact:data/marketing/hot_tape_pack.json#TIGO",
+      "tier": "first_party",
+      "values": [
+        "-9.630471859010804"
+      ],
+      "url": null,
+      "source_name": "Mastermind hot-tape pack",
+      "dated": "2026-10-09"
+    }
+  ],
+  "stable_head_and_inputs": true,
+  "provider_calls": 0,
+  "runtime_writes": 0
+}

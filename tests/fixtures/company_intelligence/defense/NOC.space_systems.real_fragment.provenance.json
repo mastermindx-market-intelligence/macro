@@ -1,0 +1,14 @@
+{
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+  "original_body_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+  "original_byte_start": 206673,
+  "original_byte_end": 221046,
+  "fragment_sha256": "8e3ac2e410d40f41eacbc1d3b623756e5a43e08c294e98d67581078422eabab8",
+  "fragment_bytes": 14373,
+  "fragment_kind": "unchanged contiguous HTML table from retained original release",
+  "source_available_at": "2026-07-21T10:45:45Z",
+  "limitations": [
+    "Fragment fixture is not a canonical Event Workspace admission",
+    "Full original body byte receipts verified separately by verify_real_source.py"
+  ]
+}

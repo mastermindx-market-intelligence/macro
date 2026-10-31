@@ -312,6 +312,7 @@
    returns empty. DOMContentLoaded fires after the body parses. #}
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
+{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css">{% endif %}
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 {% endif %}
@@ -331,6 +332,20 @@
   /* breathing room on wide desktops — content centered, never edge-to-edge */
   @media (min-width: 1100px) { body { padding: 26px max(40px, calc((100vw - 1500px) / 2)); } }
   body.page-macro { padding-top: 26px; }
+  /* On phone-size Macro, continuously repainting the animated Chat Brain rim
+     and orb costs significant idle main-thread time. Preserve the launcher,
+     focus ring, click/touch/keyboard handling, and desktop motion; only stop
+     its decorative infinite CSS animations on this page at mobile widths. */
+  @media (max-width: 768px) {
+    body.page-macro #mmb-boot, body.page-macro #mmb-launch,
+    body.page-macro #mmb-boot *, body.page-macro #mmb-launch *,
+    body.page-macro #mmb-boot::before, body.page-macro #mmb-boot::after,
+    body.page-macro #mmb-launch::before, body.page-macro #mmb-launch::after,
+    body.page-macro #mmb-boot *::before, body.page-macro #mmb-boot *::after,
+    body.page-macro #mmb-launch *::before, body.page-macro #mmb-launch *::after {
+      animation: none !important;
+    }
+  }
   a { text-decoration: none; }
   h1 { font-size: 20px; margin: 0 0 2px; }
   h2 { font-size: 15px; margin: 0 0 10px; color: var(--muted);
@@ -2341,6 +2356,7 @@
 <div class="mx5-aurora{{ ' au-yellow' if (market_state and market_state.color == 'yellow') else (' au-red' if (market_state and market_state.color == 'red') else '') }}" aria-hidden="true"><div class="mx5-a3"></div><div class="mx5-a4"></div></div>
 <div class="mx5-popover-backdrop" id="mx5PopBackdrop" onclick="if(window.mx5CloseAllPopovers)mx5CloseAllPopovers()"></div>
 {% endif %}
+{% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
 <div class="grid">
 
@@ -12979,6 +12995,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {% if mode != 'stocks' %}{% include "_risk_radar_workspace.html.j2" %}{% endif %}
 
         {# — Risk Brief: one hero, not two — #}
         {% set _dlgr_rdr = market_state.radar if market_state.radar is defined else {} %}
@@ -13359,6 +13376,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if (_dlgr_iov_n > 0) or (_dlgr_iov_det != 'STEADY') or (_dlgr_iov_spill in ('watching','transmitting')) %}
         <details class="riskdlg-fold" id="riskdlg-overseas-more">
         <summary>{{ t('Tracked overseas markets','追踪中的海外市场') }}</summary>
+        {# Baked overseas evidence stays inert until this native disclosure opens. #}
+        <template data-overseas-fold>
         <div class="mx5-dlg-eyebrow">
           {{ t('Overseas','海外') }}
           {{ help('Context only — does not move the US score. Tiles link to the full International page. Ring = each market\'s pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today\'s trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.','仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。') }}
@@ -13562,7 +13581,25 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
         {# Task 8: footer removed — honesty now lives in the eyebrow help() tip above #}
+        </template>
         </details>
+        <script>
+        (function () {
+          var fold = document.getElementById('riskdlg-overseas-more');
+          if (!fold) return;
+          function hydrateOverseas() {
+            if (!fold.open) return;
+            var inert = fold.querySelector(':scope > template[data-overseas-fold]');
+            if (!inert) return;
+            fold.appendChild(inert.content);
+            inert.remove();
+            fold.removeEventListener('toggle', hydrateOverseas);
+          }
+          fold.addEventListener('toggle', hydrateOverseas);
+          if (fold.open) hydrateOverseas();
+        })();
+        </script>
+
         {% endif %}
 
         </section>
@@ -13610,8 +13647,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
           {% endfor %}
         </div>
-        {% endif %}
         </div>{# /riskdlg-ladder #}
+        {% endif %}
 
         {# Macro UX follow-up 2026-09-23: detailed volatility evidence belongs
            in Risk Detail, not the primary scorecard. Same vm['vol_weather'],
@@ -15363,7 +15400,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          tiers; until it does, fail toward the non-destructive sign-in sheet. */
       if(document.body && document.body.classList.contains('page-macro') &&
          (!window.MMXAccessPreview || window.MMXAccessPreview.isAnon())){
-        if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
+        if(window.MMXSharedShell) window.MMXSharedShell.openAuth('signin');
+        else if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
         else if(window.MMOnboard && window.MMOnboard.open) window.MMOnboard.open('signin', {});
         else location.href='/?signin=1&ret=/macro.html';
         return;
@@ -15499,7 +15537,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var legacy = false;
       if(_legacyAnchor[h]){
         var tgt = _legacyAnchor[h];
-        if(tgt.indexOf('.html') !== -1){ location.replace(tgt); return; }
+        if(tgt.indexOf('.html') !== -1){ var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(tgt, 'replace'); } else { location.replace(tgt); } return; }
         h = tgt; legacy = true;
       }
       var el = document.getElementById(h);
@@ -15531,6 +15569,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.addEventListener('load', function(){ setTimeout(_resolveAlertHashOnce, 500); });
     }
     window.addEventListener('hashchange', _resolveAlertHash);
+    window.addEventListener('mmx:shell-location', _resolveAlertHash);
 
   })();
   </script>
@@ -17676,7 +17715,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         if (!tk) return;
         var T = window.MDXTerminal;
         if (T && T.on && T.on() && T.open && T.open(tk, tr)) return;
-        location.href = 'stock.html#' + encodeURIComponent(tk);
+        var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }
       });
     })();
     </script>
@@ -18433,6 +18472,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;
@@ -18469,6 +18509,7 @@ window.__CHART_SWAP__ = {
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
    include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script async src="risk_envelope_live.js"></script>{% endif %}
+{% if mode != 'stocks' %}<script defer src="risk_radar_workspace.js"></script>{% endif %}
 <script async src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
@@ -21561,6 +21602,7 @@ if (document.readyState === 'loading') {
         var a = si.querySelector('[data-act="signin"]');
         if (a) a.addEventListener('click', function(ev){
           ev.preventDefault();
+          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }
           try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }
         });
       }

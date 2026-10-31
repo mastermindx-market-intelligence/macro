@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology-company.js
+  - templates/ontology-company-contract.js
+  - templates/ontology-company-controller.js
+  - templates/ontology-company.css
+manifest: mockups/evidence/ontology-supplier-research-20261019/manifest.json

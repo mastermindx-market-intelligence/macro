@@ -43,13 +43,70 @@ _REQUIRED_CANDIDATE_MARKERS = (
     'data-mode="companies"',
 )
 _CANDIDATE_SCRIPT_MARKER = 'src="government-revenue-candidate-radar.js"'
-_REQUIRED_TEMPLATE_CANDIDATE_MARKERS = (
-    *_REQUIRED_CANDIDATE_MARKERS,
-    _CANDIDATE_SCRIPT_MARKER,
+_REQUIRED_TEMPLATE_CANDIDATE_MARKERS = _REQUIRED_CANDIDATE_MARKERS
+_CANDIDATE_START_MARKER = 'government-revenue-investor-start.js'
+_CANDIDATE_START_RE = re.compile(
+    r'\bsrc="government-revenue-investor-start\.js(?:\?v=[0-9a-f]{8})?"'
 )
+_CANDIDATE_MODULE_MARKER = "'government-revenue-candidate-radar.js'"
+
 _CANDIDATE_SCRIPT_RE = re.compile(
     r'\bsrc="government-revenue-candidate-radar\.js(?:\?v=[0-9a-f]{8})?"'
 )
+
+
+def _candidate_loader_is_verified(root: Path, template: str) -> bool:
+    """Admit the current deferred Candidate Radar loader, never an absent module.
+
+    Older projections put the Candidate Radar script directly into the HTML.
+    The current authenticated bootstrap loads the same module on demand.
+    Both routes must remain source-bound; a filename mention alone is not proof.
+    """
+    if _CANDIDATE_SCRIPT_MARKER in template:
+        return False  # Legacy direct-script route retains the original site guard.
+
+    if not (
+        "asset_url('government-revenue-investor-start.js')" in template
+        or 'src="government-revenue-investor-start.js"' in template
+    ):
+        raise ProjectionDriftError(
+            "Government Revenue template is missing candidate markers: "
+            + _CANDIDATE_SCRIPT_MARKER + " or verified investor startup"
+        )
+
+    script_names = (
+        _CANDIDATE_START_MARKER,
+        "government-revenue-candidate-radar.js",
+    )
+    for name in script_names:
+        source = root / "templates" / name
+        public = root / "site" / name
+        try:
+            source_bytes, public_bytes = source.read_bytes(), public.read_bytes()
+        except OSError as exc:
+            raise ProjectionDriftError(
+                "Government Revenue deferred Candidate Radar script is missing: " + name
+            ) from exc
+        if source_bytes != public_bytes:
+            raise ProjectionDriftError(
+                "Government Revenue deferred Candidate Radar script is not a canonical public twin: "
+                + name
+            )
+
+    loader = (root / "templates" / _CANDIDATE_START_MARKER).read_text(
+        encoding="utf-8"
+    )
+    if not (
+        _CANDIDATE_MODULE_MARKER in loader
+        and "document.createElement('script')" in loader
+        and "script.src=name" in loader
+        and "appendChild(script)" in loader
+    ):
+        raise ProjectionDriftError(
+            "Government Revenue deferred Candidate Radar script is not loaded "
+            "by the canonical investor startup"
+        )
+    return True
 
 
 class ProjectionDriftError(ValueError):
@@ -354,6 +411,7 @@ def validate_projection(
             + ", ".join(missing_template)
         )
 
+    dynamic_candidate_loader = _candidate_loader_is_verified(root, template)
     required_site_markers = _REQUIRED_SITE_MARKERS
     if candidate_projection.get("status") != "absent":
         required_site_markers += _REQUIRED_CANDIDATE_MARKERS
@@ -361,6 +419,7 @@ def validate_projection(
     if (
         candidate_projection.get("status") != "absent"
         and _CANDIDATE_SCRIPT_RE.search(html) is None
+        and not (dynamic_candidate_loader and _CANDIDATE_START_RE.search(html))
     ):
         missing.append(_CANDIDATE_SCRIPT_MARKER)
     if missing:
