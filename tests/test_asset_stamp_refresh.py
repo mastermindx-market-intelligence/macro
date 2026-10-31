@@ -143,3 +143,29 @@ def test_shipped_international_page_uses_current_immutable_asset_keys():
         if stamp != actual:
             stale.append((rel, stamp, actual))
     assert not stale, f"committed international page carries stale asset keys: {stale}"
+
+
+def test_shipped_hk_canada_pages_use_current_content_hash_assets():
+    """The actual HK/Canada source pages may ship before the next render.
+
+    Caddy makes versioned JS/CSS immutable for a year: never reuse a stale
+    ?v= for the upgraded first-party Shared Shell bridge (or theme CSS).
+    """
+    site = Path(__file__).resolve().parents[1] / "site"
+    site_root = site.resolve()
+    bridge_hash = hashlib.sha256((site / "shared_shell_bridge.js").read_bytes()).hexdigest()[:8]
+    theme_hash = hashlib.sha256((site / "theme.css").read_bytes()).hexdigest()[:8]
+    for page_name in ("hk_stocks.html", "canada_stocks.html"):
+        html = (site / page_name).read_text(encoding="utf-8")
+        refs = re.findall(r'(?:src|href)="([^"?#>]+)\?v=([0-9a-f]{8})"', html)
+        assert ("shared_shell_bridge.js", bridge_hash) in refs, page_name
+        assert ("theme.css", theme_hash) in refs, page_name
+        stale = []
+        for rel, stamp in refs:
+            asset = (site / rel).resolve()
+            if not asset.is_relative_to(site_root) or not asset.is_file():
+                continue
+            actual = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+            if actual != stamp:
+                stale.append((rel, stamp, actual))
+        assert not stale, f"{page_name} carries stale immutable asset keys: {stale}"
