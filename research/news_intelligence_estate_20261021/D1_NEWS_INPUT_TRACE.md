@@ -223,3 +223,21 @@ Program-law check: every scored destination above is a macro-internal research/d
 
 - None UNRESOLVED. Two citations warrant care in D2: (1) the stale `engine/real_activity.py` pointer in engine/news_flow.py:9 (implementation is theme_activity.compute_real_activity); (2) the Mastermind docstring module `engine/news_signals` (mastermind:portfolio/lenses.py:300) and the `data/news/by_ticker.json` fallback (lenses.py:303) both reference things that do not exist at BASE.
 - app/ and templates/ JS were grepped, not executed; client-side reads are cited from templates/*.j2 and builder comments (radar_panel.js itself is generated/served, its read set documented at templates/_radar_panel.html.j2:2).
+
+## Seat adjudication 2026-10-31
+
+Adjudication by the News Intelligence Estate seat (602cd180) under the Chairman completion directive of 2026-10-31. It names the first real consumer and the first product proof the estate is measured against. The trace T1–T6 above stays as written at BASE 64ef5131; this section adds pointers only.
+
+**FIRST REAL CONSUMER — the Mastermind boundary.** The estate's first real consumer is Mastermind's read of the two Macro per-ticker artifacts through `brain/bot_mcp.py` `get_news` / `get_intelligence` and `portfolio/lenses.py`. The consumer-side freshness work is being built by ORCH-2 (the seat's consumer orchestrator, running on 2026-10-31); it is not part of this PR and is not landed by it.
+
+| side | pointer (`file:function`) | revision |
+| --- | --- | --- |
+| Macro producer, news flow | `scripts/build_news.py:build` writes `site/news/by_ticker.json` (`news_flow.v1`, `is_context_only: true`) from `engine/financial_news.py:mastermind_by_ticker` | macro main `f2efb8ba` |
+| Macro producer, intelligence bundle | `scripts/build_intelligence.py:build` writes `site/intelligence/by_ticker.json` | macro main `f2efb8ba` |
+| Mastermind MCP read | `brain/bot_mcp.py:get_news` (l.322) reads `site/news/by_ticker.json`, falling back to `data/news/by_ticker.json`; context only, never sizes alone | Mastermind master `bb85b429` |
+| Mastermind MCP read | `brain/bot_mcp.py:get_intelligence` (l.341) reads `site/intelligence/by_ticker.json`, falling back to `data/intelligence/by_ticker.json` | Mastermind master `bb85b429` |
+| Mastermind portfolio lens | `portfolio/lenses.py:_intelligence` (l.212), `_news_by_ticker` (l.299), `_news_row` (l.307), `_name_rows` (l.502) | Mastermind master `bb85b429` |
+
+**FIRST PRODUCT PROOF — the Terminal authenticated R2 rail.** The first product proof is the authenticated Terminal ticker-news rail that carries the R2 evidence ladder: `terminal/components/news/TickerNewsPanel.tsx:TickerNewsPanel` (mastermind-terminal #1111, merged 2026-10-22 at `58c44ed9d6c1`; R2 lexicon #1110 at `ca8347f8230c`; R2 e2e cells and crops #1128 at `c78b705d56e8`). That proof belongs to a later seat orchestrator (ORCH-4). A source merge of #1110/#1111/#1128 is not installed or production proof. The Terminal BFF route that serves the rail was not read for this section and is left for ORCH-4 to bind.
+
+Neither consumer gains sizing or trading authority from news, sentiment or LLM output: the news-flow artifact is published `is_context_only: true`, and `get_news` informs narrative only.
