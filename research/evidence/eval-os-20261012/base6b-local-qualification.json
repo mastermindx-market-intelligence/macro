@@ -1,0 +1,22 @@
+{
+  "schema": "eval_os.base6b_local_qualification.v1",
+  "tested_parent": "92d70f385388f3fc86bf9dc964375671edc99501",
+  "integrated_base": "6b154e09357300964c0720448cee9654bf2585d0",
+  "published_commit": "ae037b81c0aec563afe94314bf11275ea2a5b88e",
+  "counts": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "4",
+    "tests": "60",
+    "time": "848.719",
+    "timestamp": "2026-10-13T18:21:56.014696-07:00",
+    "hostname": "m2studio"
+  },
+  "skips": "Four existing real-price-store tests skip in sparse tree because committed price stores absent; original synthetic twins passed. No skip/assertion changes. Hosted complete checkout remains required.",
+  "sources_unchanged_during_execution": true,
+  "sha256": {
+    "base6b-requalification.xml": "3e0d41cffc2b9a1d40c612902d5400dc475aec2dc44f895f87eec50c41551b7f",
+    "base6b-requalification.txt": "90598796d4a19f84defc6cbfa8d49a18d119a40c0b62de3764ef0745a6662db4"
+  }
+}

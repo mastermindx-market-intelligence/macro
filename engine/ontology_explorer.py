@@ -9,6 +9,7 @@ answers it by composing artifacts that other owners already produced:
     knowledge/transmission/<chain>.yaml     the path definition (canonical)
     data/transmission/chain_state.json      the compiled owner observation
     data/transmission/chain_episodes.jsonl  recorded transitions, when present
+    data/reference/vendor_aliases.parquet  optional dated company identity
 
 It creates no graph, no causal model, no truth store, no cache and no second
 evaluation of anything. ``/transmission.html`` remains the canonical rates/TXI
@@ -51,6 +52,7 @@ this surface carries no rank, gate, size or trade authority.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import math
 import logging
@@ -68,7 +70,7 @@ SCHEMA_ID = "ontology_explorer_snapshot.v1"
 #: read byte-identical sources and still differ, because the meaning is produced
 #: by THIS code — so the method that read them is part of what the digest binds.
 #: It is still a read receipt, never a native owner generation.
-COMPOSER_METHOD = "ontology_explorer.compose.v2"
+COMPOSER_METHOD = "ontology_explorer.compose.v6"
 ERROR_SCHEMA_ID = "ontology_explorer_error.v1"
 DEFAULT_CHAIN = "oil_inflation_duration_derate"
 
@@ -84,6 +86,7 @@ MAX_PATH_LEGS = 12
 #: Bytes, not rows: a bound that counts only nodes leaves the payload unbounded.
 MAX_SOURCE_BYTES = 2_000_000
 MAX_EPISODE_ROWS = 5_000
+MAX_K1_REFERENCES = 32
 
 #: The owner's closed transition vocabulary (`transmission_chains._mk_transition`
 #: call sites). A row naming anything else is not one of the owner's events.
@@ -99,6 +102,9 @@ _MISSING = object()
 _KNOWLEDGE_REL = "knowledge/transmission"
 _STATE_REL = "data/transmission/chain_state.json"
 _EPISODES_REL = "data/transmission/chain_episodes.jsonl"
+_ALIASES_REL = "data/reference/vendor_aliases.parquet"
+_CALIBRATION_REL = "data/transmission/calibration.json"
+_WTI_OBSERVATION_REL = "data/yahoo/CL_F.observation.json"
 
 
 class SourceUnavailable(RuntimeError):
@@ -126,6 +132,16 @@ def _read_source(path: Path) -> bytes:
     actually fires.
     """
     return path.read_bytes()
+
+
+def _read_wti_observation(path: Path) -> bytes:
+    # The native export is optional and bounded BEFORE read/decode. Its payload
+    # never enters X1; only its exact byte receipt enters the normal manifest.
+    with path.open("rb") as stream:
+        raw = stream.read(MAX_SOURCE_BYTES + 1)
+    if len(raw) > MAX_SOURCE_BYTES:
+        raise SourceIncoherent("wti_observation_exceeds_bound")
+    return raw
 
 
 def _digest(raw: bytes) -> str:
@@ -270,6 +286,29 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
             raise SourceIncoherent(
                 f"source_exceeds_bound:{rel}:{len(raws[rel])}>{MAX_SOURCE_BYTES}")
     digests = {rel: _digest(raw) for rel, raw in raws.items()}
+    # Bind an optional native generation without copying scenario/private
+    # payloads into X1 or withholding WTI when rates metadata is unavailable.
+    # The explicit POST alone decodes and admits this owner's bounded bytes.
+    try:
+        calibration_raw = _read_source(root / _CALIBRATION_REL)
+    except OSError:
+        pass
+    else:
+        raws[_CALIBRATION_REL] = calibration_raw
+        rels.append(_CALIBRATION_REL)
+        digests[_CALIBRATION_REL] = _digest(calibration_raw)
+
+    # Capture/export is a prospective observation, never a retroactive clock or
+    # native calendar qualification. A changed generation changes the selected
+    # manifest; explicit POST still has to qualify every native owner input.
+    try:
+        wti_observation = _read_wti_observation(root / _WTI_OBSERVATION_REL)
+    except OSError:
+        pass
+    else:
+        raws[_WTI_OBSERVATION_REL] = wti_observation
+        rels.append(_WTI_OBSERVATION_REL)
+        digests[_WTI_OBSERVATION_REL] = _digest(wti_observation)
 
     try:
         definition = yaml.safe_load(raws[yaml_rel].decode("utf-8"))
@@ -282,8 +321,44 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
     if not isinstance(definition, dict) or not isinstance(state_doc, dict):
         raise SourceUnavailable("malformed_source")
 
+    # Identity is optional; its absence must not erase owner-backed membership.
+    # Parse the EXACT bytes that enter the read manifest, never a second file
+    # read hidden inside an identity loader. Reverification below covers this
+    # source too, including a change while parquet is being decoded.
+    aliases = None
+    identity_reason = "identity_source_unavailable"
+    try:
+        alias_raw = _read_source(root / _ALIASES_REL)
+    except OSError:
+        pass
+    else:
+        raws[_ALIASES_REL] = alias_raw
+        rels.append(_ALIASES_REL)
+        digests[_ALIASES_REL] = _digest(alias_raw)
+        if len(alias_raw) <= MAX_SOURCE_BYTES:
+            try:
+                import pyarrow.parquet as parquet
+                from lib.dataos.identity import VendorAliasTable
+
+                aliases = VendorAliasTable.from_records(
+                    parquet.read_table(io.BytesIO(alias_raw)).to_pylist())
+                identity_reason = None
+            except Exception:
+                identity_reason = "identity_source_unreadable"
+        else:
+            identity_reason = "identity_source_exceeds_bound"
+
     snapshot = _build(definition, state_doc, raws.get(_EPISODES_REL), chain=chain,
-                      now=now or datetime.now(UTC))
+                      now=now or datetime.now(UTC), aliases=aliases)
+    snapshot["company_exposure"]["identity_source"] = {
+        "status": "available" if aliases is not None else "unavailable",
+        "reason": identity_reason,
+        "path": _ALIASES_REL,
+        "sha256": digests.get(_ALIASES_REL),
+    }
+    substrate = snapshot["company_exposure"]["substrate"]
+    snapshot["source"]["substrate_asof"] = (
+        substrate.get("substrate_asof") if substrate is not None else None)
 
     # Re-verify AFTER composing, by re-reading rather than by trusting a stat
     # taken beforehand. This catches any source rewritten after this process
@@ -293,7 +368,8 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
     # by the digest, which is why both checks exist.
     for rel, expected in digests.items():
         try:
-            current = _digest(_read_source(root / rel))
+            reader = _read_wti_observation if rel == _WTI_OBSERVATION_REL else _read_source
+            current = _digest(reader(root / rel))
         except OSError as exc:
             raise SourceIncoherent(f"mid_read_mutation:{rel}:disappeared") from exc
         if current != expected:
@@ -307,7 +383,7 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
 
 
 def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
-           chain: str, now: datetime) -> dict[str, Any]:
+           chain: str, now: datetime, aliases: Any = None) -> dict[str, Any]:
     gaps: list[dict[str, Any]] = []
     state_schema = state_doc.get("schema")
     if state_schema not in COMPATIBLE_STATE_SCHEMAS:
@@ -411,6 +487,17 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
     first_blocking = _first_blocking_leg(legs)
     contradiction = _contradiction(legs, first_blocking)
 
+    company_exposure = _project_company_exposure(
+        definition, state_doc, observed, aliases, gaps=gaps)
+    by_channel = {channel["id"]: channel for channel in company_exposure["channels"]}
+    for screen in exposure_screens:
+        channel = by_channel.get(screen["id"])
+        if channel is not None:
+            screen.update({key: value for key, value in channel.items() if key != "id"})
+        else:
+            screen.update({"status": "unavailable", "reason": company_exposure["reason"],
+                           "companies": None})
+
     payload = {
         "schema": SCHEMA_ID,
         "generated_at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -457,6 +544,9 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         },
         "first_blocking_leg": first_blocking,
         "contradiction": contradiction,
+        "transmission_gap": _transmission_gap(
+            state_doc, observed, episodes_raw, legs, hops,
+            invalidators, contradiction, now=now),
         "what_changed": _what_changed(episodes_raw, chain=chain,
                                       rev=observed.get("rev"),
                                       cutoff=state_doc.get("asof"), gaps=gaps),
@@ -467,6 +557,14 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         "clocks": _clocks(observed, state_doc, hops, now=now),
         "invalidators": invalidators,
         "exposure_screens": exposure_screens,
+        # Membership is carried once, on the existing exposure screens. This
+        # metadata binds their common owner clocks and identity read receipt.
+        "company_exposure": {
+            **{key: value for key, value in company_exposure.items() if key != "channels"},
+            "refusals": [{"channel_id": channel["id"], "reason": channel["reason"]}
+                         for channel in company_exposure["channels"]
+                         if channel["status"] != "available"],
+        },
         "display_permission": {
             "status": "not_determined_here",
             "policy": "site_full entitlement, enforced at the transport layer",
@@ -478,6 +576,151 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
     # payload literal is being built.
     _label_gaps(gaps, legs)
     return payload
+
+
+def _project_company_exposure(definition: dict, state_doc: dict, observed: dict,
+                              aliases: Any, *, gaps: list | None = None) -> dict:
+    """Project TXI's existing blast; never run a screen or infer a theme edge.
+
+    Membership is an owner observation. Identity merely determines whether an
+    explicit company-research action is safe. Its failure cannot turn unknown
+    identity into a different company's link or erase the observed membership.
+    """
+    from engine.transmission_company_continuation import (
+        ContinuationLink, chain_decision_date, continuation_for,
+    )
+
+    gaps = [] if gaps is None else gaps
+    # Substrate provenance is a closed display projection, not a pass-through
+    # for future vendor reports or other internal owner metadata.
+    source_substrate = state_doc.get("substrate")
+    substrate = None
+    if isinstance(source_substrate, dict):
+        universe = source_substrate.get("universe")
+        clock = source_substrate.get("substrate_asof")
+        substrate = {
+            "universe": universe if type(universe) is int and universe >= 0 else None,
+            "substrate_asof": None,
+        }
+        if isinstance(clock, dict):
+            substrate["substrate_asof"] = {
+                key: clock.get(key) if chain_decision_date(clock.get(key)) else None
+                for key in ("min", "max")
+            }
+    result = {
+        "schema": "ontology_company_exposure.v1",
+        "authority_ceiling": "research_display_only",
+        "status": "unavailable", "reason": None,
+        "asof": state_doc.get("asof"),
+        "rev": observed.get("rev"),
+        "substrate": substrate,
+        "channels": [],
+    }
+    if observed.get("state") not in {"arming", "propagating", "expressed"}:
+        result["reason"] = "chain_inactive"
+        return result
+    decision_date = chain_decision_date(state_doc.get("asof"))
+    if decision_date is None:
+        result["reason"] = "owner_clock_unavailable"
+        return result
+    blast = observed.get("blast")
+    if not isinstance(blast, dict) or not blast:
+        result["reason"] = "owner_membership_absent"
+        return result
+
+    declared = definition.get("exposure_screens")
+    declared = declared if isinstance(declared, dict) else {}
+
+    def finite_cut(value):
+        if type(value) not in (int, float):
+            return False
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            return False
+
+    for channel_id, entry in sorted(blast.items(), key=lambda item: str(item[0])):
+        channel = {
+            "id": str(channel_id), "status": "unavailable", "reason": None,
+            "label": None, "note": None, "resolved": False,
+            "n": None, "unevaluable": None, "cuts": {}, "names": [],
+            "companies": None,
+        }
+        result["channels"].append(channel)
+        if channel_id not in declared:
+            channel["reason"] = "channel_not_declared"
+            continue
+        if not isinstance(entry, dict) or entry.get("resolved") is not True:
+            channel["reason"] = "channel_unresolved"
+            # A dropped screen's owner note explains why it is unavailable.
+            if isinstance(entry, dict):
+                channel["label"] = _reader_text(
+                    entry.get("label"), kind=IDENTITY,
+                    where=f"exposure_screens.{channel_id}.label", gaps=gaps,
+                    fallback={"en": "An exposure channel", "zh": "某敞口通道"})
+                channel["note"] = _reader_text(
+                    entry.get("note"), kind=PROSE,
+                    where=f"exposure_screens.{channel_id}.note", gaps=gaps)
+                for key in ("n", "unevaluable"):
+                    if type(entry.get(key)) is int and entry[key] >= 0:
+                        channel[key] = entry[key]
+            continue
+        names, cuts = entry.get("names"), entry.get("cuts")
+        counts = (entry.get("n"), entry.get("unevaluable"))
+        valid = (
+            isinstance(names, list)
+            and all(isinstance(name, str) and bool(name) and name == name.strip()
+                    for name in names)
+            and len(names) == len(set(names))
+            and all(type(count) is int and count >= 0 for count in counts)
+            and counts[0] == len(names)
+            and isinstance(cuts, dict)
+            and all(isinstance(key, str) and finite_cut(value) for key, value in cuts.items())
+        )
+        if not valid:
+            channel["reason"] = "channel_malformed"
+            continue
+        label = _reader_text(entry.get("label"), kind=IDENTITY,
+                             where=f"exposure_screens.{channel_id}.label", gaps=gaps,
+                             fallback={"en": "An exposure channel", "zh": "某敞口通道"})
+        note = _reader_text(entry.get("note"), kind=PROSE,
+                            where=f"exposure_screens.{channel_id}.note", gaps=gaps)
+        # Reuse the existing exact dated identity law, leaving its Terminal/J1
+        # href unchanged. This Macro consumer needs only the verified identity
+        # pair; its explicit in-memory action creates no new link vocabulary.
+        linked, unlinked = [], []
+        identity_unavailable = aliases is None
+        for symbol in sorted(names):
+            if aliases is None:
+                unlinked.append({"symbol": symbol, "reason": "identity_source_unavailable"})
+                continue
+            try:
+                identity = continuation_for(
+                    symbol, aliases, decision_date, chain_id=observed.get("chain"),
+                    channel_id=str(channel_id), chain_asof=state_doc["asof"])
+            except Exception:
+                identity_unavailable = True
+                unlinked.append({"symbol": symbol, "reason": "identity_read_refused"})
+                continue
+            if isinstance(identity, ContinuationLink):
+                linked.append({"symbol": identity.symbol, "security_id": identity.security_id})
+            else:
+                unlinked.append(identity.as_dict())
+        companies = {
+            "linked": linked, "unlinked": unlinked,
+            "n_linked": len(linked), "n_unlinked": len(unlinked),
+            "identity_unavailable": identity_unavailable,
+        }
+        channel.update({
+            "status": "available", "resolved": True, "label": label, "note": note,
+            "n": counts[0], "unevaluable": counts[1], "cuts": dict(cuts),
+            "names": list(names), "companies": companies,
+        })
+    result["status"] = (
+        "available" if any(c["status"] == "available" for c in result["channels"])
+        else "unavailable")
+    result["reason"] = None if result["status"] == "available" else "channels_unavailable"
+    return result
 
 
 #: The owner's own episode vocabulary (`engine/transmission_chains.py`).
@@ -622,6 +865,61 @@ def _read_leg_verdict(node_id: str, seen: dict,
     return verdict, "observed"
 
 
+def _declared_predicate(node_id: str, spec: dict) -> dict | None:
+    """Closed native declaration, never a re-evaluation or inferred response.
+
+    The owner's grammar validates meaning; local bounds/closed keys prevent
+    arbitrary YAML metadata from becoming a response or browser instruction.
+    """
+    from engine import transmission_chains as txi
+    count = 0
+    def text(v, limit=128):
+        if type(v) is not str or not 0 < len(v) <= limit or any(ord(c) < 32 for c in v):
+            raise ValueError('predicate text')
+        return v
+    def scalar(v):
+        if v is None or type(v) is bool:
+            return v
+        if type(v) in (int, float) and math.isfinite(v):
+            return v
+        return text(v)
+    def test(raw, depth=0):
+        nonlocal count
+        count += 1
+        if count > 64 or depth > 8 or type(raw) is not dict:
+            raise ValueError('predicate bound')
+        groups = set(raw) & {'all', 'any'}
+        if groups:
+            if len(groups) != 1 or set(raw) != groups:
+                raise ValueError('predicate keys')
+            key = next(iter(groups)); children = raw[key]
+            if type(children) is not list or not 0 < len(children) <= 64:
+                raise ValueError('predicate group')
+            return {key: [test(child, depth + 1) for child in children]}
+        allowed = {'path', 'series', 'metric', 'window', 'lookback', 'vs', 'ratio', 'op', 'value'}
+        if set(raw) - allowed:
+            raise ValueError('predicate keys')
+        txi._validate_test(raw, 'ontology native target')
+        out = {}
+        for key, value in raw.items():
+            if key in {'window', 'lookback'}:
+                if type(value) is not int or not 0 < value <= 100000:
+                    raise ValueError('predicate window')
+                out[key] = value
+            elif key == 'value':
+                if type(value) is list:
+                    if not 0 < len(value) <= 64:raise ValueError('predicate threshold')
+                    out[key] = [scalar(v) for v in value]
+                else:out[key] = scalar(value)
+            else:out[key] = text(value)
+        return out
+    try:
+        return {'node_id': text(node_id), 'src': text(spec.get('src'), 64),
+                'test': test(spec.get('test'))}
+    except (TypeError, ValueError, OverflowError, RecursionError, txi.ChainSchemaError):
+        return None
+
+
 def _legs(sequence: list[str], declared: dict, observed: dict,
           gaps: list[dict]) -> list[dict[str, Any]]:
     legs: list[dict[str, Any]] = []
@@ -645,6 +943,7 @@ def _legs(sequence: list[str], declared: dict, observed: dict,
                 gaps=gaps,
                 fallback={"en": f"Step {index}", "zh": f"\u7b2c {index} \u73af\u8282"}),
             "src": spec.get("src"),
+            "declared_predicate": _declared_predicate(node_id, spec),
             "observation": observation,
             "confirmed": confirmed,
             "receipts": receipts,
@@ -755,6 +1054,210 @@ def _contradiction(legs: list[dict], first_blocking: dict | None) -> dict[str, A
                   "既不代表路径已启动，也不能回溯归因于链条起点。",
         },
     }
+
+
+def _transmission_gap(state_doc: dict, observed: dict,
+                      episodes_raw: bytes | None, legs: list[dict], hops: list[dict],
+                      invalidators: list[dict], contradiction: dict | None, *,
+                      now: datetime) -> dict:
+    """Read native TXI state and its captured episode clocks, without advancing it.
+
+    Calendar elapsed is the owner's evaluate_chain subtraction, NOT sessions or
+    a second expiry evaluator. Native asof has no ingestion/knowledge timestamp;
+    the manifest binds the captured read, not a historical point-in-time claim.
+    """
+    from engine import transmission_chains as txi
+
+    result = {
+        "schema": "txi_gap_projection.v1", "scope": "txi_only",
+        "status": "unavailable", "state": "source_unavailable", "reason": None,
+        "method_class": "native_owner_state_projection", "instrument_only": True,
+        "market_thesis_verdict": None,
+        "identity": {"chain": observed.get("chain"), "rev": observed.get("rev"),
+                     "episode_id": observed.get("episode_id")},
+        "observation": {"asof": state_doc.get("asof"), "built": state_doc.get("built")},
+        "ledger": {"sha256": _digest(episodes_raw) if episodes_raw is not None else None,
+                   "bytes": len(episodes_raw) if episodes_raw is not None else None,
+                   "clock_basis": "native_transition_asof",
+                   "historical_knowledge": "unavailable", "excluded_after_observation": 0},
+        "initiating_observation": None, "pending_hop": None,
+        "current_contradiction": contradiction, "watched_conditions": invalidators,
+        "watch_condition_fired": isinstance(observed.get("falsifier_fired"), dict) and bool(observed["falsifier_fired"]),
+        "condition_stop": None,
+        "turn_watch": {"status": "unavailable", "stalling": None, "receipts": []},
+        "owner_state": observed.get("state"),
+    }
+
+    def unavailable(reason):
+        result["reason"] = reason
+        return result
+
+    def day(value):
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+            raise ValueError("calendar clock")
+        return datetime.strptime(value, "%Y-%m-%d").date()
+
+    try:
+        effective = day(state_doc.get("asof"))
+        built = _parse_build_stamp(state_doc.get("built"))
+        if (built is None or built > now or effective > now.date()
+                or effective > built.astimezone(UTC).date()):
+            raise ValueError("owner generation")
+    except (TypeError, ValueError):
+        return unavailable("owner_clock_unavailable")
+    if (len(hops) + 1 != len(legs) or any(
+            h["from"] != legs[i]["node_id"] or h["to"] != legs[i + 1]["node_id"]
+            for i, h in enumerate(hops))):
+        return unavailable("path_unavailable")
+    if not legs or any(leg["observation"] != "observed" for leg in legs):
+        return unavailable("current_observation_unavailable")
+    if not isinstance(observed.get("rev"), int) or isinstance(observed.get("rev"), bool):
+        return unavailable("owner_identity_unavailable")
+    state = observed.get("state")
+    if state == "dormant" and observed.get("episode_id") is None:
+        result.update(status="available", state="dormant")
+        return result
+    if state not in OWNER_TRANSITIONS or not isinstance(observed.get("episode_id"), str):
+        return unavailable("owner_identity_unavailable")
+    if not episodes_raw:
+        return unavailable("episode_ledger_unavailable")
+
+    def unique(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate ledger field")
+            out[key] = value
+        return out
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite ledger field")
+
+    rows, by_key = [], {}
+    try:
+        lines = [line for line in episodes_raw.decode("utf-8").splitlines() if line.strip()]
+        if len(lines) > MAX_EPISODE_ROWS:
+            raise ValueError("ledger bound")
+        for line in lines:
+            row = json.loads(line, object_pairs_hook=unique, parse_constant=nonfinite)
+            if not isinstance(row, dict):
+                raise ValueError("ledger shape")
+            if row.get("chain") != observed["chain"] or row.get("rev") != observed["rev"]:
+                continue
+            if day(row.get("asof")) > effective:
+                result["ledger"]["excluded_after_observation"] += 1
+                continue
+            if (type(row.get("rev")) is not int or type(row.get("hop")) is not int
+                    or not 0 <= row["hop"] <= len(hops)
+                    or row.get("transition") not in OWNER_TRANSITIONS
+                    or not isinstance(row.get("episode_id"), str) or not row["episode_id"]):
+                raise ValueError("native identity")
+            key = txi._ledger_key(row)
+            if key in by_key:
+                if by_key[key] != row:
+                    raise ValueError("conflicting native key")
+                continue
+            by_key[key] = row
+            rows.append(row)
+    except (UnicodeError, ValueError, TypeError, KeyError, RecursionError):
+        return unavailable("episode_ledger_unreadable")
+    episode = [row for row in rows if row["episode_id"] == observed["episode_id"]]
+    if not episode:
+        return unavailable("episode_not_in_captured_ledger")
+    if any(a["asof"] > b["asof"] for a, b in zip(episode, episode[1:])):
+        return unavailable("episode_clock_incoherent")
+    last = episode[-1]
+    if last["transition"] != state or last["hop"] != observed.get("hop"):
+        return unavailable("owner_episode_ledger_mismatch")
+    arms = [row for row in episode if row["transition"] == "arming" and row["hop"] == 0]
+    if len(arms) != 1 or episode[0] != arms[0]:
+        return unavailable("arming_observation_unavailable")
+    arm = arms[0]
+    confirmed = 0
+    for row in episode[1:]:
+        if row["transition"] == "propagating" and row["hop"] == confirmed + 1 and row["hop"] < len(hops):
+            confirmed += 1
+        elif row == last and ((row["transition"] in {"failed", "expired"} and row["hop"] == confirmed)
+                or (row["transition"] == "expressed" and row["hop"] == len(hops) == confirmed + 1)):
+            pass
+        else:
+            return unavailable("episode_progression_incoherent")
+    if not isinstance(arm.get("receipts"), dict):
+        return unavailable("arming_observation_unavailable")
+    initial = _receipts(arm["receipts"].get(legs[0]["node_id"]),
+                        where="gap.initiating", gaps=[])
+    if not initial:
+        return unavailable("arming_observation_unavailable")
+    result["initiating_observation"] = {
+        "node_id": legs[0]["node_id"], "asof": arm["asof"], "receipts": initial}
+    # Use the owner's open-episode reconstruction as well as the exact selected
+    # identity. Never substitute its fallback arm date for a missing hop date.
+    if state in _OWNER_RUNNING:
+        opened = txi._latest_open_episode(rows)
+        if opened is None or opened["episode_id"] != observed["episode_id"]:
+            return unavailable("owner_episode_ledger_mismatch")
+    k = observed.get("hop")
+    if type(k) is not int or not 0 <= k <= len(hops):
+        return unavailable("pending_hop_unavailable")
+    if state != "expressed":
+        if k >= len(hops):
+            return unavailable("pending_hop_unavailable")
+        anchor = arm if k == 0 else next((r for r in episode
+            if r["transition"] == "propagating" and r["hop"] == k), None)
+        lag = hops[k]["lag_d"]
+        if (anchor is None or not isinstance(lag, list) or len(lag) != 2
+                or any(type(v) not in (int, float) or not math.isfinite(v) for v in lag)
+                or not 0 <= lag[0] <= lag[1]):
+            return unavailable("pending_clock_unavailable")
+        if k > 0 and (hops[k - 1]["confirmed"] is not True
+                      or hops[k - 1]["confirmed_asof"] != anchor["asof"]):
+            return unavailable("pending_clock_incoherent")
+        elapsed = (effective - day(anchor["asof"])).days
+        target = next((leg for leg in legs if leg["node_id"] == hops[k]["to"]), None)
+        if target is None or not target["receipts"]:
+            return unavailable("target_observation_unavailable")
+        if target.get("declared_predicate") is None:
+            return unavailable("target_predicate_unavailable")
+        result["pending_hop"] = {
+            "hop_id": hops[k]["hop_id"], "from": hops[k]["from"], "to": hops[k]["to"],
+            "expected_target": target["declared_predicate"],
+            "applicability_assumption": hops[k]["condition"], "lag_d": lag,
+            "elapsed_calendar_days": elapsed, "elapsed_basis": "native_calendar_days",
+            "minimum_lag_elapsed": elapsed >= lag[0],
+            "anchor_asof": anchor["asof"],
+            "target_observation": {"asof": state_doc["asof"], **target}}
+        if state in _OWNER_RUNNING and (elapsed < 0 or elapsed > lag[1]):
+            return unavailable("owner_window_elapsed_unsettled")
+    watch = observed.get("turn_watch")
+    if isinstance(watch, dict) and type(watch.get("stalling")) is bool and "unresolved" not in watch:
+        result["turn_watch"] = {"status": "available", "stalling": watch["stalling"],
+            "receipts": _receipts(watch.get("receipts"), where="gap.turn_watch", gaps=[])}
+    if state == "failed":
+        if not isinstance(last.get("falsifier"), dict) or not last["falsifier"]:
+            return unavailable("stopped_condition_unavailable")
+        stopped = last['falsifier']
+        index = stopped.get('index')
+        if type(index) is not int or not 0 <= index < len(invalidators):
+            return unavailable("stopped_condition_unavailable")
+        result['condition_stop'] = {'condition_id': invalidators[index]['id'],
+            'asof': last['asof'], 'receipts': _receipts(stopped.get('receipts'),
+                                                     where='gap.condition_stop', gaps=[])}
+        code = "condition_stopped"
+    elif state == "expired":
+        code = "owner_expired"
+    elif state == "expressed":
+        code = "owner_completed"
+    elif contradiction is not None:
+        code = "contradicted"
+    elif (result["turn_watch"]["stalling"] is True
+          and result["pending_hop"]["target_observation"]["confirmed"] is False):
+        code = "stalled"
+    elif result["pending_hop"]["target_observation"]["confirmed"] is False:
+        code = "waiting_inside_window"
+    else:
+        return unavailable("owner_transition_unsettled")
+    result.update(status="available", state=code)
+    return result
 
 
 def _is_iso_date(value: Any) -> bool:
@@ -997,47 +1500,174 @@ def _next_action(state_code: str, first_blocking: dict | None,
     }
 
 
+def _transition_references(episodes_raw: bytes | None, eligible: list[dict]) -> tuple[list[dict], dict]:
+    """Resolve captured owner rows through native TXI and the existing K1 validator.
+
+    No Evidence Foundation owner read/store is introduced. The native collection
+    reader consumes a read-only view of already-manifested ledger bytes. Invalid
+    JSON is rejected before that reader so its diagnostic cannot log a raw line.
+    """
+    detail = {"repeated_native_rows": 0, "conflicting_native_keys": 0,
+              "invalid_native_rows": 0, "reference_validation_failures": 0}
+    if not episodes_raw or not eligible:
+        return [], detail
+    from lib import evidence_foundation as foundation
+    from engine import transmission_chains as txi
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate native field")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite native value")
+
+    try:
+        lines = episodes_raw.decode("utf-8").splitlines()
+    except UnicodeError:
+        detail["invalid_native_rows"] = 1
+        return [], detail
+    captured = []
+    seen = 0
+    for line in lines:
+        if not line.strip():
+            continue
+        seen += 1
+        if seen > MAX_EPISODE_ROWS:
+            break
+        try:
+            value = json.loads(line, object_pairs_hook=unique, parse_constant=nonfinite)
+        except (TypeError, ValueError, RecursionError):
+            detail["invalid_native_rows"] += 1
+            continue
+        if isinstance(value, dict):
+            captured.append(line)
+
+    class CapturedLedger:
+        # The native reader's two read-only Path operations, over exact captured
+        # lines. No temporary file, filesystem owner redirection or second store.
+        def exists(self):
+            return True
+
+        def read_text(self):
+            return "\n".join(captured)
+
+    native_rows = txi._read_ledger(CapturedLedger())
+    eligible_keys = {txi._ledger_key(row) for row in eligible}
+    by_key, conflicts = {}, set()
+    for row in native_rows:
+        # Eligible rows already pass the existing chain/revision/date selection.
+        # Other native objects never become references for this selected path.
+        try:
+            key = txi._ledger_key(row)
+            if key not in eligible_keys:
+                continue
+            payload = foundation.canonical_json_bytes(row)
+            if key in by_key:
+                if by_key[key][1] != payload:
+                    conflicts.add(key)
+                else:
+                    detail["repeated_native_rows"] += 1
+            else:
+                by_key[key] = (row, payload)
+        except (TypeError, ValueError):
+            detail["invalid_native_rows"] += 1
+    detail["conflicting_native_keys"] = len(conflicts)
+    vocabulary = foundation.load_vocabulary()
+    owner = vocabulary["owner_stores"]["txi.episode_transition"]
+    refs = []
+    detail["reference_limit"] = MAX_K1_REFERENCES
+    detail["reference_window"] = "last_native_ledger_keys"
+    detail["omitted_native_keys"] = max(0, len(by_key) - MAX_K1_REFERENCES)
+    for key, (row, _payload) in list(by_key.items())[-MAX_K1_REFERENCES:]:
+        if key in conflicts:
+            continue
+        identity = {field: row[field] for field in owner["native_identity_fields"]}
+        try:
+            # The owner generates the episode suffix from a real arming date;
+            # a regex-shaped impossible/future start is not a native episode.
+            started = identity["episode_id"].rsplit(":", 1)[-1]
+            if (not _is_iso_date(started) or started > row["asof"]
+                    or txi._episode_id(row["chain"], row["rev"], started) != identity["episode_id"]):
+                raise foundation.EvidenceFoundationError("native_episode_identity_invalid")
+            pointer = foundation.render_owner_pointer(owner, identity)
+        except foundation.EvidenceFoundationError:
+            detail["reference_validation_failures"] += 1
+            continue
+        reference = {
+            "schema": foundation.SCHEMA, "version": foundation.VERSION,
+            "object_class": "instrument_state", "owner_store": "txi.episode_transition",
+            "native_identity": identity, "native_schema": owner["native_schemas"][0],
+            # TXI's native row publishes no digest or freshness/rights policy.
+            # The enclosing source manifest is not a native per-object digest.
+            "native_digest": {"state": "unknown", "sha256": None},
+            "coverage_class": "prospective_only",
+            "freshness": {"state": "unknown", "clock_field": None, "policy_id": None},
+            "rights": {"state": "unknown", "policy_id": None},
+            "authority_class": "deterministic",
+            "subject": {"key_type": "chain_id", "key": row["chain"]}, "secondary_subjects": [],
+            "clocks": [{"class": "belief_or_build", "field": "asof", "value_state": "known",
+                        "value": row["asof"], "grain": "date"}],
+            "provenance": {"pointer_only": True, "body_embedded": False,
+                "owner_reader": owner["reader"], "owner_reader_kind": owner["reader_kind"],
+                "pointer": pointer},
+            "relations": [],
+            "missingness": {"state": "present", "reason": None, "zero_substituted": False},
+            "correction": {"kind": "none", "predecessor_reference_ids": [], "clock_field": None,
+                "chronology_state": "not_applicable", "append_only": True, "mutates_predecessor": False},
+            "replay": {"mode": "live", "cutoffs": {
+                field: {"state": "unknown", "value": None, "grain": "date"}
+                for field in vocabulary["clock_classes"]},
+                "code_revision": None, "input_digest": None, "vintage_state": "owner_native"},
+            "authority": dict(foundation.ALL_FALSE_AUTHORITY),
+        }
+        try:
+            reference["reference_id"] = foundation.compute_reference_id(reference)
+            refs.append(foundation.validate_reference(reference))
+        except (foundation.EvidenceFoundationError, TypeError, ValueError):
+            detail["reference_validation_failures"] += 1
+    return refs, detail
+
+
 def _evidence(episodes_raw: bytes | None, legs: list[dict], *,
               chain: str, rev: Any, cutoff: Any) -> dict[str, Any]:
-    """K1 binding, plus the owner receipts that stand in its place.
-
-    The K1 vocabulary admits ``txi.episode_transition`` as an owner store and
-    lists ``txi.chain_state`` as an EXCLUDED DERIVED HEAD. So the current head
-    this surface reads is not, by the contract's own terms, referenceable — and
-    a path with no recorded transition has no eligible transition to reference
-    either. The limitation is emitted as a machine-readable reason rather than
-    papered over with a synthesised reference; a real reference is emitted only
-    where a genuine eligible transition exists.
-    """
-    transitions = len(_episode_rows(episodes_raw, chain=chain, rev=rev, cutoff=cutoff))
-    # A recorded transition is a TRANSITION. A reference is a reference that
-    # resolved against the K1 contract. The first version conflated them and
-    # declared K1 "available" off a row count while creating and validating no
-    # EvidenceRef at all — so any JSON object carrying a matching chain name
-    # manufactured evidence, and the client then hid the binding limitation.
-    # This module resolves no references (building a second evidence library is
-    # forbidden), so the reference count is zero and the status stays
-    # unavailable; only the REASON changes once an eligible transition exists.
+    """Pointer-only native transition binding; the derived head stays excluded."""
+    report = {}
+    transitions = _episode_rows(episodes_raw, chain=chain, rev=rev, cutoff=cutoff, report=report)
+    if not _is_iso_date(cutoff):
+        refs, resolution = [], {"selection_clock": "unavailable"}
+    else:
+        try:
+            refs, resolution = _transition_references(episodes_raw, transitions)
+        except (ImportError, OSError, TypeError, ValueError, KeyError):
+            # K1 is an optional evidence pointer, never replacement owner truth.
+            # Missing/changed contracts cannot erase the native path reading.
+            refs, resolution = [], {"resolver_state": "unavailable"}
     k1 = {
-        "status": "unavailable_for_object",
-        "reason_code": ("eligible_transition_not_k1_resolved" if transitions
-                        else "excluded_derived_head_no_eligible_transition"),
-        "refs": [],
-        "refs_count": 0,
-        "recorded_transitions": transitions,
+        # Bound references can be present while native rights/freshness policies
+        # remain unavailable. This is never full evidence/permission readiness.
+        "status": "partial" if refs else "unavailable_for_object",
+        "reason_code": ("native_transition_policy_unavailable" if refs else
+                        "native_transition_reference_unavailable" if transitions else
+                        "excluded_derived_head_no_eligible_transition"),
+        "refs": refs, "refs_count": len(refs), "recorded_transitions": len(transitions),
         "detail": {
-            "current_head": "txi.chain_state",
-            "current_head_class": "excluded_derived_head",
+            "current_head": "txi.chain_state", "current_head_class": "excluded_derived_head",
             "eligible_owner_store": "txi.episode_transition",
-            "eligible_transitions_found": transitions,
-            "resolver": "none_in_this_module",
+            "eligible_transitions_found": len(transitions),
+            "resolver": "lib.evidence_foundation.validate_reference",
+            "native_reader": "engine.transmission_chains._read_ledger",
+            "native_read_report": report, **resolution,
+            "rights_policy": "unavailable", "freshness_policy": "unavailable",
+            "body_access": "unavailable", "historical_replay": "unavailable",
+            "independence": "not_established", "automatic_effects": False,
         },
     }
-    return {
-        "k1": k1,
-        "receipts": [{"node_id": leg["node_id"], "receipts": leg["receipts"]}
-                     for leg in legs],
-    }
+    return {"k1": k1,
+        "receipts": [{"node_id": leg["node_id"], "receipts": leg["receipts"]} for leg in legs]}
 
 
 def _clocks(observed: dict, state_doc: dict, hops: list[dict], *,

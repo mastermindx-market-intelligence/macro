@@ -41,12 +41,22 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
+  - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
+  - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
+  - research/grey_deer/serving_freshness_20261021/CONTINUATION.md
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
   - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
   - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
   - research/grey_deer/risk_radar_architecture_contract_20261017.md
   - research/grey_deer/risk_radar_research_protocol_20261017.md
   - research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json
   - research/grey_deer/all_date_census/v1/manifest.json
+  - research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md
+  - research/grey_deer/live_delivery_20261017/9573_source_landing.json
+  - research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md
   - research/ROTATION_RISK_CONFLUENCE_IMPLEMENTATION_2026-10-08.md
   - research/ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md
   - research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md
@@ -423,7 +433,8 @@ waves:
     status: done
     pr: 9128
     # MERGED 2026-10-14T02:07:20Z, squash af468522ab6e (head 3e4fecb7fa24); FWDREVIEW's 10 findings repaired on the head (FWDFIX, FWDAUDIT) before merge.
-    # PRODUCTION_PROOF pending: the first daily.yml run whose head descends from af468522ab6e must write SPY rows to data/grey_deer_pullback/forward_log.jsonl with no grey-deer-pullback-*-error annotation.
+    # PRODUCTION_PROOF (accepted with scope 2026-10-20): scheduled daily.yml run 39081858131, engine job 117575031870, checkout 5e3e1e9d2d97 (descends from af468522ab6e), issued the first 30 SPY rows (asof 2026-10-16, issued_at 2026-10-18T06:24:18Z, prereg_blob 49a68b5e9c65, 10 configs x h5/h10/h21, all GENUINELY_ISSUED, 30 immature / 0 graded) into data/grey_deer_pullback/forward_log.jsonl, first retained in commit e35e04468075; the complete engine log and all 50 check annotations carry no grey-deer-pullback error. Evidence: research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md with the independent PASS WITH SCOPE review beside it. The engine job was later cancelled and the nightly failed on unrelated jobs; that neither erases the issuance nor makes the nightly green. The 2026-10-15 scheduled readback had returned NOT_YET (rows landed three nights later); this line closed by seat da1ad7ad on 2026-10-30 against origin/main.
+    # Cadence, not diagnosed here: every other night 2026-10-14..10-21 was refused by the writer's own gates (BACKFILL_ASOF when the engine's asof was one session behind the writer's clock, CLOCK on late dispatches, one expected OBSERVER_NOT_ON_MAIN for P-active); the accepted batch was the Saturday run where Friday's asof was still current. No forward_log or refusal write is recorded after 2026-10-21 as of 2026-10-30. The lane accrues no rows while the asof lags; outcomes remain immature and are not independent episodes.
     depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
   - id: GD-PB-W7
     title: W7 Grok fan-out - power-floor projection, episode-rule options v1.2, T12 episode samples, T13/T14/T19 prereg drafts, prospective panel addendum, W5 review, GD-4C, GD-9A census
@@ -439,51 +450,48 @@ waves:
     depends_on: [GD-PB-W4-S1B-RUN]
   - id: GD-RR-CENSUS-20261017
     title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
-    status: awaiting_ci
+    status: done
     pr: 9515
-    # Prior 126c9 failed shared weekly-brief tests; existing #9517 repair integrated at 15bdaec7351d,90 relevant tests pass. Enclosing head needs native gates.
-    # Authenticated incumbent Radar dates/null disclosures captured; one Copilot market question failed after 175s with only a portfolio caveat.
-    # #9517 source review accepted within scope; exact probability qualification remains incomplete; existing covering render and live acceptance pending.
-    # T13 metadata read complete: H2 absent 348/1321 origins; source-purpose and actual Massive/T12 sample unadmitted; zero fits/trials.
-    # Consumer source-function comparison complete; Mastermind PR1567 implements the future-date fix, reviewed head 1e6a8a23fac1, 184 native tests pass.
-    # Mastermind #1567 merged b08223680180 after successful native queue; fetched master and both owned blobs verified. Runtime remains Oct9; full archive qualification/production decision and live parity remain open.
-    # Protocol ea26bc964314 frozen before outcomes; code 4a06cd4a6b32; 36 ETFs / 8486 reference sessions / 305496 rows.
-    # Descriptive acceptance only, zero fits/promotions. W5 production proof remains absent; existing failed studies and writer/refusal fences preserved.
+    # Normal squash eaf418862bdd,2026-10-17T14:01:10Z; reviewed head646cc093,all 12 packs and active native gates green.
+    # Separate main fetch9b464c9d:51owned blobs exact; shared CI owned job semantically identical. Source landing accepted.
+    # 36ETFs/8486sessions/305496rows, original prereg/outcome ancestry and failed studies preserved; zero new fits/promotions.
+    # Existing9517 workspace is delivered and independently accepted at bounded desktop scope; exact forecast qualifiers still missing.
+    # Copilot failed one real question; five finalization and six classifier controls reproduce the caveat-only mechanism. No source repair.
+    # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
+    # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
+    # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
+    # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
+    # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
-  and RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md. Complete the isolated
-  GD-RR-CENSUS-20261017 carrier in PR 9515 through normal source gates; read
-  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md,
-  then inspect live_delivery_20261017/README.md and the source/release preflight.
-  Existing #9517 repaired shared weekly-brief tests; its main source is integrated
-  at 15bdaec7351d and 90 relevant local tests pass. Finish enclosing-head native gates.
-  Preserve #9517 release custody; verify the newly served workspace after its
-  covering render. Trace the captured Copilot failure through the existing response
-  record and gateway before a custody-qualified repair. Mastermind PR1567
-  merged as b08223680180 with native queue and fetched-blob proof. Its source repair
-  is not installed: the healthy observed runtime remains at October 9 source.
-  Canonical strategic state prohibits autonomous production deployment. Qualify
-  the exact full archive, 1507-file repository delta and rollback/activation contract
-  before its required production decision and changed-path runtime/parity proof.
-  The completed implementation is not a new task; source merge is not live delivery.
-  The 36-ETF census covers 8486 reference sessions and 305496 exposure/date rows;
-  it is retrospective descriptive evidence, zero new fits and zero promotions.
-  At source pin 3ab3382af892, W5 forward_log is absent and BACKFILL_ASOF/CLOCK
-  refusals remain. Require genuine natural issuance and clean workflow receipts
-  before PRODUCTION_PROOF; never backfill foresight or rerun frozen stage-1/1b.
-  Existing GD-3 and GD-UI-RADAR-1 accepted proofs remain DO_NOT_REDO; stage-1 null,
-  stage-1b 0/12 and GD1C BLOCKED_NO_PROMOTION remain evidence. T13/T14/T19 are
-  unactivated drafts; independent episode information and future observation time
-  still limit promotion. #8721 is live; #9428 has explicit refused commit/CSS/findings
-  writes; #8132 remains the original held publisher; #9440 and #9457 keep their
-  scopes. QLedger/nightly publication repair remains with its existing owners.
-  No proxy carrier, second publisher or alternate episode store. Preserve Envelope
-  rank/gate/size/execute false, Prophet raw rank and Portfolio numerical policy.
-  Paper writes require actual catalog qualification. Authentication and bounded
-  incumbent Radar disclosure proof are now verified; new workspace delivery, exact
-  source-to-paint clocks, expiry, current Terminal and useful Copilot answers remain
-  open. Whole programme not finally accepted.
+  Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
+  on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.
+  Original MTF operation rotation-mtf-reasons-atomic-20261018 was reconciled and canonically reused without replacement.
+  Macro9957 publishes forward reason-pair custody at26f60b69a5c929f2a5a4316add623d01ccbc7eac; local108passed,
+  unchanged schema/validator/history and original refinement boundary. Complete exact-source independent review and
+  binding CI before Sol releases its draft hold. Published-source Fabric review returned INVALID_ARGUMENT parent_id,
+  then NOT_FOUND/UNVERIFIED with execution_absence_proven=false and retry_allowed=false; do not retry or reroute it.
+  Six-row bounded history is captured with the local August23 shallow boundary explicitly disclosed.
+  AMZN creating run31452043288/job93658213173 checked outd9075317, rejected the mismatch, then rebased and
+  pushed210d11a; the outer workflow still succeeded. This is rejected publication, not historical admission.
+  Qualify the still-nonblocking render gate under its actual workflow owner; preserve the nightly data-writer boundary.
+  The AMZN current correction is reviewable but unapplied: exact predecessor fence, explicit historical rejection,
+  separate acceptance and protection against retrospective eligibility remain. Other rows retain their own evidence gaps.
+  Original publisher owner has published Mastermind1667, observed head65c071d9d4820135a54d6d2f7af861bb5e7cebc1.
+  Owner reports472passed/1skipped and two source review acceptances at application predecessordd44a6b; current
+  hosted checks and exact release qualification remain. Root made no overlapping publisher edit or independent retest.
+  Actual-source replay refused stale mtf_signals and retained both outputs; original MTF rows remain August5.
+  No fabricated signal, historical eligibility upgrade, manual nightly/portfolio, duplicate publisher or new episode store.
+  Keep current-reader, source merge, natural publication, active consumer acceptance and exact production release separate.
+  The October20 approval was consumed by releasefe7afd0111141bae27927715e709d074fea729e2; new deployment remains reserved.
+  Preserve descriptive36ETF/8486session/305496row census; W5 outcomes remain immature and not30 independent events.
+  All532B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo model-purpose, FRED HOLD, T13h21 refusal, null independentN,
+  frozen failed studies, warning8132/8721 HOLDs,9428 refusal, Copilot8014/9447 and Radar9548 writer intersections,
+  QLedger/nightly custody and Terminal proof remain. Envelope rank/gate/size/execute authority remains false.
+  Current evidence is serving_freshness_20261021/CONTINUATION.md on original evidence carrier9932.
+  MISSION_COMPLETE=false; no autonomous wake or full programme completion is claimed.
+
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection

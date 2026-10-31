@@ -1,0 +1,66 @@
+"""Compare the exact prior counterexample's AST with the current integrated source.
+No first-party source execution, imports, provider calls or diagnostic replay.
+"""
+from pathlib import Path
+import ast, hashlib, json
+ROOT=Path('/workspace/scratch/da452a3ea08d')
+OUT=ROOT/'research_notes/live_delivery_20261017/copilot_failure_trace/current_source_20261020'
+OUT.mkdir(parents=True,exist_ok=True)
+names={
+"_EVIDENCE_FAMILY_LABELS","_EVIDENCE_FAMILY_CONTRADICTION_READS",
+"_evidence_probe_has_positive_marker","_evidence_result_conditions",
+"_evidence_result_state","_evidence_coverage_receipt",
+"_evidence_coverage_fallback_answer","_evidence_coverage_disclosure",
+"_append_evidence_coverage_disclosure","_split_suggestions"}
+def ident(b):
+    return {"bytes":len(b),"sha256":hashlib.sha256(b).hexdigest(),"git_blob":hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()}
+def index(tree):
+    result={}
+    for n in tree.body:
+        key=getattr(n,"name",None)
+        if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name):key=n.targets[0].id
+        if isinstance(n,ast.AnnAssign) and isinstance(n.target,ast.Name):key=n.target.id
+        if key: result[key]=n
+    return result
+def astsha(node):
+    return hashlib.sha256(ast.dump(node,include_attributes=False).encode()).hexdigest()
+old=(ROOT/'copilot_review/source/engine/neuralweb/brain_gateway.py').read_bytes()
+new=(ROOT/'copilot_review/current_source_oct20/brain_gateway.py.txt').read_bytes()
+oldask=(ROOT/'copilot_review/source/engine/neuralweb/ask_brain.py').read_bytes()
+newask=(ROOT/'copilot_review/current_source_oct20/ask_brain.py.txt').read_bytes()
+assert ident(old)['sha256']=='78f4d3b320d25ff1b6b86c933fbac725fb0fe1784fe3ec7c4874564a08e926bf'
+assert ident(new)['git_blob']=='60856a2d5b4a84cf495e1077752723f091b29087'
+assert ident(newask)['git_blob']=='8877b338489674cd1740146178e4f4c9863e0446'
+ot,nt=ast.parse(old),ast.parse(new)
+oi,ni=index(ot),index(nt)
+nodes=[]
+for name in sorted(names):
+    o,n=oi[name],ni[name]
+    nodes.append({"name":name,"old_lines":[o.lineno,o.end_lineno],"new_lines":[n.lineno,n.end_lineno],"old_ast_sha256":astsha(o),"new_ast_sha256":astsha(n),"identical":astsha(o)==astsha(n)})
+def blocks(tree):
+    result=[]
+    for fn in tree.body:
+        if not isinstance(fn,(ast.FunctionDef,ast.AsyncFunctionDef)):continue
+        for i,n in enumerate(fn.body[:-1]):
+            if (isinstance(n,ast.Assign) and len(n.targets)==1
+                and isinstance(n.targets[0],ast.Name) and n.targets[0].id=='receipt'
+                and isinstance(n.value,ast.Call) and isinstance(n.value.func,ast.Name)
+                and n.value.func.id=='_evidence_coverage_receipt'):
+                nxt=fn.body[i+1]
+                if isinstance(nxt,ast.If) and 'evidence_gate_issued' in ast.unparse(nxt.test):
+                    result.append({"owner":fn.name,"nodes":ast.Module(body=[n,nxt],type_ignores=[]),"lines":[n.lineno,nxt.end_lineno]})
+    return result
+ob,nb=blocks(ot),blocks(nt)
+assert len(ob)==len(nb)==2
+comparisons=[]
+for o in ob:
+    n=next(x for x in nb if x['owner']==o['owner'])
+    comparisons.append({"owner":o['owner'],"old_lines":o['lines'],"new_lines":n['lines'],"old_ast_sha256":astsha(o['nodes']),"new_ast_sha256":astsha(n['nodes']),"identical":astsha(o['nodes'])==astsha(n['nodes']),"current_statements":ast.unparse(n['nodes'])})
+def stub_if(tree):
+    return [n for n in ast.walk(tree) if isinstance(n,ast.If) and 'stub_shipped = True' in ast.unparse(n) and 'if not (filtered_answer or' in ast.unparse(n)][:1]
+os,ns=stub_if(ot),stub_if(nt)
+assert len(os)==len(ns)==1
+r={"schema":"grey_deer.copilot_counterexample_source_compatibility.v1","recorded_date":"2026-10-20","current_pr":8014,"current_pr_head":"d63e59bcd4203732fe3b9097002f9451dcf61955","old_source_commit":"15bdaec7351dbe2f1bf1a227b6e7498a8b3c0ac7","files":{"old_gateway":ident(old),"current_gateway":ident(new),"old_classifier":ident(oldask),"current_classifier":ident(newask)},"classifier_byte_identical":oldask==newask,"selected_nodes":nodes,"finalization_blocks":comparisons,"stub_predicate":{"old_lines":[os[0].lineno,os[0].end_lineno],"current_lines":[ns[0].lineno,ns[0].end_lineno],"old_ast_sha256":astsha(os[0]),"current_ast_sha256":astsha(ns[0]),"identical":astsha(os[0])==astsha(ns[0])},"source_executed":False,"prior_counterexample_replayed":False,"provider_calls":0,"candidate_runtime_executed":False,"production_delivery_proven":False}
+dest=OUT/'SOURCE_COMPATIBILITY_2026-10-20.json'
+dest.write_text(json.dumps(r,indent=2)+'\n')
+print(json.dumps({"classifier_byte_identical":r["classifier_byte_identical"],"selected_nodes":len(nodes),"all_selected_nodes_identical":all(x['identical'] for x in nodes),"finalization_blocks_identical":all(x['identical'] for x in comparisons),"stub_predicate_identical":r["stub_predicate"]["identical"],"output":str(dest),"bytes":dest.stat().st_size,"sha256":hashlib.sha256(dest.read_bytes()).hexdigest()},indent=2))

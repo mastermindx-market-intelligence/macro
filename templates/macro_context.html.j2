@@ -764,6 +764,9 @@ html[data-theme="light"] {
     </div>
 
     <!-- Drawdown ladder -->
+    {%- set _dde = vm.risk_radar.dd_evidence if vm.risk_radar.dd_evidence
+                 is mapping else {} -%}
+    {%- set _ddh = _dde.get('horizons') if _dde.get('horizons') is mapping else {} -%}
     <div class="dd-row">
       {% for h_en, h_zh, key, base_key in [
           ('Next week','未来1周','dd_h5','dd_base_h5'),
@@ -777,6 +780,24 @@ html[data-theme="light"] {
         <div class="dd-cell-h">{{ t(h_en, h_zh) }}</div>
         <div class="dd-cell-v">{% if val is not none %}{{ "%.0f"|format(val * 100) }}%{% else %}—{% endif %}</div>
         {% if base is not none %}<div class="dd-cell-base"><span class="l-en">normally {{ "%.0f"|format(base * 100) }}%</span><span class="l-zh">通常 {{ "%.0f"|format(base * 100) }}%</span></div>{% endif %}
+        {%- set _ev = _ddh.get(key[3:]) -%}
+        {%- if _ev is mapping and _ev.get('n') is not none -%}
+        {%- set _cn = _ev.get('n') -%}{%- set _ce = _ev.get('events') -%}
+        {%- set _een = 'observed' -%}{%- set _zen = '实测 n=' ~ _cn -%}
+        {%- if _ce is not none -%}
+        {%- set _een = _een ~ ' ' ~ _ce ~ ' of' -%}
+        {%- set _zen = _zen ~ ' 中 ' ~ _ce ~ ' 次' -%}
+        {%- endif -%}
+        {%- set _een = _een ~ ' n=' ~ _cn -%}
+        {%- if _ev.get('observed_rate') is not none -%}
+        {%- set _epct = ((_ev.get('observed_rate') * 100)|round|int) -%}
+        {%- set _een = _een ~ ' · ' ~ _epct ~ '%' -%}{%- set _zen = _zen ~ ' · ' ~ _epct ~ '%' -%}
+        {%- endif -%}
+        {%- if _ev.get('thin') is sameas true -%}
+        {%- set _een = _een ~ ' · thin history' -%}{%- set _zen = _zen ~ ' · 样本偏少' -%}
+        {%- endif -%}
+        <div class="dd-cell-base">{{ t(_een, _zen) }}</div>
+        {%- endif -%}
       </div>
       {% endfor %}
     </div>
@@ -786,6 +807,18 @@ html[data-theme="light"] {
       <span class="l-zh">各时间窗内标普500下跌5%或以上的概率，并与该情形通常发生的频率对比。</span>
     </div>
     {% endif %}
+    {%- if vm.risk_radar.dd_lift_note_en -%}
+    <div class="dd-cell-base">{{ t(vm.risk_radar.dd_lift_note_en,
+    vm.risk_radar.dd_lift_note_zh) }}</div>{%- endif -%}
+    {%- if _dde.get('precision_grade') is sameas false
+          and _dde.get('evidence_class') == 'reconstructed_historical' -%}
+    {%- set _q_en = 'Observed rates come from reconstructed past readings, ' -%}
+    {%- set _q_en = _q_en ~ 'not odds issued at the time — read them as a ' -%}
+    {%- set _q_en = _q_en ~ 'risk gradient, not precise odds.' -%}
+    {%- set _q_zh = '实测比例基于重构的历史读数，并非当时发布的概率——' -%}
+    {%- set _q_zh = _q_zh ~ '仅反映风险梯度，非精确概率。' -%}
+    <div class="dd-cell-base">{{ t(_q_en, _q_zh) }}</div>
+    {%- endif -%}
 
     <!-- Trajectory -->
     <div class="dd-meta">
@@ -836,6 +869,9 @@ html[data-theme="light"] {
         </div>
         {% endif %}
       </div>
+      {%- if cc.stat_en %}
+      <div class="cycle-ctx-text">{{ t(cc.stat_en, cc.stat_zh) }}</div>
+      {%- endif %}
       <div class="cycle-ctx-text">{{ t(cc.caveat_en, cc.caveat_zh) }}</div>
     </div>
     {% endif %}
@@ -856,6 +892,8 @@ html[data-theme="light"] {
     {%- set al_tp = al_y1.tp if al_y1.tp is defined else 0 -%}
     {%- set hit_rate = al_y1.hit_rate if al_y1.hit_rate is defined else none -%}
     {%- set log_fresh = mon.log_fresh if mon.log_fresh is defined else true -%}
+    {%- set trk = trk if trk is mapping else {} -%}
+    {%- set mon = mon if mon is mapping else {} -%}
     <div class="trk-line">
       {%- if not log_fresh %}
       <span class="l-en">Monitoring paused — ledger stale</span><span class="l-zh">监控暂停 — 账本数据陈旧</span>
@@ -863,10 +901,58 @@ html[data-theme="light"] {
       <span class="l-en">Track record: {{ al_tp }} of {{ al_n }} elevated calls preceded a ≥5% drop (past year)</span><span class="l-zh">历史记录：过去一年中 {{ al_n }} 次警报有 {{ al_tp }} 次早于 ≥5% 下跌</span>
       {%- elif al_n > 0 %}
       <span class="l-en">Too few elevated alerts to judge yet — {{ al_n }} graded</span><span class="l-zh">已评分警报尚少，暂无定论 — {{ al_n }} 条</span>
+      {%- elif (mon.get('graded_n') or 0) > 0 %}
+      {%- set _g_en = mon.get('graded_n') ~ ' past readings graded' -%}
+      {%- set _g_zh = '已评分 ' ~ mon.get('graded_n') ~ ' 条历史读数' -%}
+      {%- if mon.get('awaiting_maturity') is not none -%}
+      {%- set _g_en = _g_en ~ ', ' ~ mon.get('awaiting_maturity') ~ ' still maturing' -%}
+      {%- set _g_zh = _g_zh ~ '，' ~ mon.get('awaiting_maturity') ~ ' 条待到期' -%}
+      {%- endif -%}
+      {%- set _g_en = _g_en ~ ' — no elevated alert in the past year to score yet' -%}
+      {%- set _g_zh = _g_zh ~ ' — 过去一年尚无可评分的升级警报' -%}
+      {{ t(_g_en, _g_zh) }}
       {%- else %}
       <span class="l-en">Graded calls accruing — check back once alerts mature (~21 trading days)</span><span class="l-zh">评分记录积累中 — 约21个交易日后可查看</span>
       {%- endif %}
     </div>
+    {%- set _pa = trk.get('probability_audit') -%}
+    {%- if _pa is mapping -%}
+    {%- set _phz = _pa.get('horizons') if _pa.get('horizons') is mapping else {} -%}
+    {%- set _pfl = _pa.get('min_display_n') or 5 -%}
+    {%- set _pns = namespace(rows=[]) -%}
+    {%- for _hk, _pl, _plz in [('h5', 'Next week', '未来1周'),
+      ('h10', 'Next 2 weeks', '未来2周'), ('h21', 'Next month', '未来1个月')] -%}
+    {%- set _hd = _phz.get(_hk) if _phz.get(_hk) is mapping else none -%}
+    {%- if _hd is not none and _hd.get('n') is not none
+          and _hd.get('n') >= _pfl -%}
+    {%- set _wf = _hd.get('from') -%}{%- set _wt = _hd.get('through') -%}
+    {%- set _wen = _wf ~ ' to ' ~ _wt if _wf and _wt else '' -%}
+    {%- set _wzh = _wf ~ ' 至 ' ~ _wt if _wf and _wt else '' -%}
+    {%- set _ce2 = _hd.get('events') -%}
+    {%- set _pe = '' if _ce2 is none else _ce2 ~ ' of ' -%}
+    {%- set _pz = '' if _ce2 is none else ' 次中 ' ~ _ce2 ~ ' 次' -%}
+    {%- set _pen = _pl ~ ': ' ~ _pe ~ _hd.get('n') ~ ' issued calls'
+                 ~ ' preceded a ≥5% drop' -%}
+    {%- set _pzh = _plz ~ '：已发布 ' ~ _hd.get('n') ~ _pz ~ '早于 ≥5% 下跌' -%}
+    {%- set _pns.rows = _pns.rows + [{'en': _pen, 'zh': _pzh,
+                                      'we': _wen, 'wz': _wzh}] -%}
+    {%- endif -%}{%- endfor -%}
+    {%- if _pns.rows -%}
+    {%- set _psh = _pns.rows | map(attribute='we') | unique | list | length == 1 -%}
+    <div class="c-muted">
+    {%- if _psh and _pns.rows[0].we %}
+    <div>{{ t(_pns.rows[0].we, _pns.rows[0].wz) }}</div>
+    {%- endif %}
+    {%- for _row in _pns.rows %}
+    <div>{{ t(_row.en ~ (' (' ~ _row.we ~ ')' if not _psh and _row.we else ''),
+      _row.zh ~ ('（' ~ _row.wz ~ '）' if not _psh and _row.wz else '')) }}</div>
+    {%- endfor -%}
+    {%- if _pa.get('note_en') %}
+    <div>{{ t(_pa.get('note_en'), _pa.get('note_zh')) }}</div>
+    {%- endif %}
+    </div>
+    {%- endif -%}
+    {%- endif -%}
     {% endif %}
   </div>
 
@@ -1242,6 +1328,18 @@ html[data-theme="light"] {
         {% else %}
         <div class="empty-state" style="padding:14px;font-size:13px">{{ t('No rates transmission data.', '暂无利率传导数据。') }}</div>
         {% endif %}
+        {%- set _st = rt.state if rt.state is mapping else {} %}
+        {%- for _k, _en, _zh in (('rates', 'Rates', '利率'), ('inflation', 'Inflation', '通胀'),
+           ('expectations', 'Expectations', '通胀预期')) %}
+          {%- set _lb = _st.get(_k).label if _st.get(_k) is mapping else none %}
+          {%- if _lb is mapping and _lb.en %}
+          <div class="liq-row"><span class="stat-key">{{ t(_en, _zh) }}</span>
+          <span>{{ t(_lb.en, _lb.zh) }}</span></div>
+          {%- endif %}
+        {%- endfor %}
+        {%- if rt.scored_status_en %}
+        <div class="liq-row c-muted">{{ t(rt.scored_status_en, rt.scored_status_zh) }}</div>
+        {%- endif %}
         {% if rt.asof %}<div class="meta-foot">{{ t('As of', '截至') }} {{ rt.asof }}</div>{% endif %}
       </div>
 

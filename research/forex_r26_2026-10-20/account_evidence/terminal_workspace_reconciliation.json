@@ -1,0 +1,58 @@
+{
+  "operation_id": "forex-r26-account-owner-20261021-sol-002",
+  "repository": "terminal",
+  "base_sha": "8f00622096d0dc574458c134516e802ce78907ae",
+  "original_return": "aborted by user after 1410.2s",
+  "original_effect": "EFFECT_UNKNOWN",
+  "reconciled_at": "2026-10-21T11:57:00Z",
+  "observations": {
+    "owner_status": {
+      "action": "status",
+      "effect": "NOT_APPLIED",
+      "error": "workspace is not registered to the source repository"
+    },
+    "owner_census": {
+      "exit_code": 0,
+      "matching_worktrees": [],
+      "counts": {
+        "CLEAN_RECOVERABLE": 69,
+        "CLEAN_UNPUBLISHED_PRESERVE": 102,
+        "DIRTY_PRESERVE": 59,
+        "MANAGED_ACTIVE": 26,
+        "SOURCE_CHECKOUT": 1
+      }
+    },
+    "git_worktree_list": {
+      "exit_code": 0,
+      "matching_registrations": []
+    },
+    "operation_branch": {
+      "ref": "refs/heads/sol/web-forex-r26-account-owner-20261021-sol-002",
+      "exists": false
+    },
+    "destinations": {
+      "/Volumes/Mastermind/agent-workspaces/terminal/web/forex-r26-account-owner-20261021-sol-002": false,
+      "/Volumes/Mastermind 2/agent-workspaces/terminal/web/forex-r26-account-owner-20261021-sol-002": false
+    },
+    "same_operation_processes": []
+  },
+  "conclusion": "No surviving operation-bound workspace, branch, registration, destination or same-operation acquisition process was observed. Installed owner acquisition implementation was inspected: its allocated effects are this branch, destination and Git registration, with bounded cleanup on failure. Root may submit a new acquisition decision to the same owner for the same repository, exact operation and base after these absence observations. No original success or original NOT_APPLIED receipt is fabricated; no retarget, config change, alternate clone or primary edit is authorized.",
+  "source": "installed mmx-workspace owner at 4b35c9ed93efe5cc2c802d9fec0273a3ca083b0f",
+  "same_operation_second_owner_result": {
+    "status": "PARTIAL",
+    "effect_state": "EFFECT_UNKNOWN",
+    "code": "WORKSPACE_ACQUISITION_UNQUALIFIED"
+  },
+  "verified_postimage": {
+    "action": "status",
+    "effect": "NOT_APPLIED",
+    "state": "RELEASABLE",
+    "dirty": false,
+    "recoverability": "UNCHANGED_FROM_ACQUIRED_BASE",
+    "head_sha": "8f00622096d0dc574458c134516e802ce78907ae",
+    "branch": "sol/web-forex-r26-account-owner-20261021-sol-002",
+    "workspace_path": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/forex-r26-account-owner-20261021-sol-002",
+    "registration_lock": "mastermind-linked-worktree:v1 operation=forex-r26-account-owner-20261021-sol-002 lane=web base=8f00622096d0dc574458c134516e802ce78907ae"
+  },
+  "current_disposition": "ACQUIRED_POSTIMAGE_VERIFIED: owner status, Git registration, branch and destination agree; no further acquisition replay required."
+}

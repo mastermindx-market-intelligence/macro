@@ -1,0 +1,91 @@
+{
+  "state": "FAILED_STATE_RECONCILED_SAME_A_ELIGIBLE_FOR_ONE_NORMAL_START",
+  "finished_at": "2026-10-20T18:52:22.502352+00:00",
+  "health": {
+    "started_at": "2026-10-20T18:52:19.440553+00:00",
+    "source": "macro-b312-prearm-health-remote-v3.py",
+    "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+    "command": [
+      "ssh",
+      "-i",
+      "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "IdentitiesOnly=yes",
+      "-o",
+      "IdentityAgent=none",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "root@146.190.142.17",
+      "python3 -I -B -"
+    ],
+    "scope": "Read-only action-boundary observation; no reservation or service effect",
+    "exit": 0,
+    "finished_at": "2026-10-20T18:52:20.704569+00:00",
+    "stdout": {
+      "bytes": 22899,
+      "sha256": "f0643bbae12c4f5cd4a680e9da3ed5c2a3cbb004b3a6c8a1578fb6e1dc83bbdd"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "unit": {
+    "started_at": "2026-10-20T18:52:20.707212+00:00",
+    "source": "beta-loaded-unit-root-observer-v2.py",
+    "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+    "command": [
+      "ssh",
+      "-i",
+      "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "IdentitiesOnly=yes",
+      "-o",
+      "IdentityAgent=none",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "root@146.190.142.17",
+      "python3 -I -B -"
+    ],
+    "scope": "Read-only action-boundary observation; no reservation or service effect",
+    "exit": 0,
+    "finished_at": "2026-10-20T18:52:21.579727+00:00",
+    "stdout": {
+      "bytes": 5891,
+      "sha256": "f9f45ad90e2a65f6d5cb43216316fa38eea351f09f4ca92cb5bf05c3bdba8a3e"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "diagnostic": {
+    "observed_at": "2026-10-20T18:52:22.529048+00:00",
+    "command_exit": 0,
+    "stdout": "MainPID=0\nControlPID=0\nStatusErrno=0\nResult=exit-code\nNRestarts=0\nExecMainStartTimestampMonotonic=7560285026653\nExecMainExitTimestampMonotonic=7622513495147\nExecMainCode=1\nExecMainStatus=143\nControlGroup=\nActiveState=failed\nSubState=failed\nJob=\n",
+    "stderr": "",
+    "connection": {
+      "connected": false,
+      "errno": 111,
+      "type": "ConnectionRefusedError",
+      "connection_refused": true
+    }
+  },
+  "accepted_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "same_identity": true,
+  "same_loaded_unit": true,
+  "production_unchanged": true,
+  "clear_release_boundary": true,
+  "connection_refused": true,
+  "start_executed": false,
+  "reservation": false,
+  "prior_proof_pass": false
+}

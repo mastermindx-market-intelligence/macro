@@ -1303,7 +1303,7 @@ def test_rio_valid_model_output_is_validated():
     import json
     from engine.research_intelligence.extractor import analyze_document
     def call(_system, user, **kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "m"
     out = analyze_document(
         {"id": "r1", "source_type": "institutional_research"},
         RIO_BODY, model_id="m", call=call,
@@ -1311,7 +1311,7 @@ def test_rio_valid_model_output_is_validated():
     assert out["state"] == "ok"
     assert out["rio"]["authority"] == "descriptive_research_only"
     assert out["requested_model"] == "m"
-    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v1"
+    assert out["prompt_version"] == PROMPT_VERSION
     assert len(out["prompt_contract_sha256"]) == 64
     assert len(out["prompt_sha256"]) == 64
 
@@ -1320,7 +1320,7 @@ def test_rio_vault_adapter_preserves_report_identity():
     import json
     from engine.research_intelligence.vault_adapter import analyze_vault_report
     def call(_system, user, **kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "m"
     out = analyze_vault_report(
         {"id": "r1", "institution": "Goldman Sachs", "desk": "Macro", "title": "Rates"},
         RIO_BODY, model_id="m", call=call,
@@ -1374,6 +1374,16 @@ def test_rio_drops_fabricated_statement_even_with_real_quote():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = "GS recommends clients sell ALL equities immediately."
+    # A thesis still citing the rejected claim must not survive with less support.
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1391,6 +1401,15 @@ def test_rio_drops_statement_backed_by_unrelated_real_evidence():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = obj["claims"][1]["statement"]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1691,6 +1710,17 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     })
     obj["analysis"]["thesis"]["support_claim_indices"] = [0, 1, 2]
     obj["analysis"]["forecasts"][0]["support_claim_indices"] = [0, 2]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    # Now the bad claim is genuinely uncited by the mandatory thesis. Optional
+    # assertions that cite it drop whole; separately supported assertions remap.
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1, 2]
+    obj["analysis"]["forecasts"].append({
+        **obj["analysis"]["forecasts"][0], "support_claim_indices": [2],
+    })
     raw = json.dumps(obj)
     out = parse_model_output(
         raw,
@@ -1701,6 +1731,7 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     assert len(out["claims"]) == 2
     assert all("Fabricated" not in claim["statement"] for claim in out["claims"])
     assert out["analysis"]["thesis"]["support_claim_indices"] == [0, 1]
+    assert len(out["analysis"]["forecasts"]) == 1
     assert out["analysis"]["forecasts"][0]["support_claim_indices"] == [1]
 
 
@@ -1873,7 +1904,7 @@ def test_rio_analyze_uses_normalized_canonical_document_id():
     from engine.research_intelligence.extractor import analyze_document
 
     def call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "served-model"
+        return json.dumps(_selector_from_prompt(user, _rio_from_extraction_prompt(user))), "fake", "served-model"
 
     out = analyze_document(
         {"id": " r1 ", "source_type": "institutional_research"},
@@ -2063,6 +2094,7 @@ def _analysis(
         "prompt_version": PROMPT_VERSION,
         "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),
         "prompt_sha256": _sha(system + "\n" + user),
+        "source_context": json.loads(user.split("SOURCE CONTEXT:\n", 1)[1].split("\n\n", 1)[0]),
     }
 
 
@@ -2070,6 +2102,21 @@ def _rio_from_prompt(user: str) -> dict:
     identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
     identity = json.loads(identity_text)
     return _rio(identity["id"], body=BODY) | {"document": identity}
+
+
+def _selector_from_prompt(user: str, rio: dict | None = None) -> dict:
+    """Synthetic callback migration; pure RIO parser fixtures stay unchanged."""
+    value = copy.deepcopy(rio or _rio_from_prompt(user))
+    catalog = json.loads(user.split("EVIDENCE CATALOG:\n", 1)[1].split("\n\n", 1)[0])
+    selections = []
+    for claim in value["claims"]:
+        unit = next(unit for unit in catalog["units"] if unit["text"] == claim["evidence"][0]["quote_span"])
+        selections.append({"evidence_id": unit["evidence_id"], **{
+            key: claim.get(key, [] if key in ("numbers", "entities") else "" if key == "horizon" else False)
+            for key in ("numbers", "entities", "horizon", "explicit")}})
+    return {"selector": catalog["catalog_version"], "document": value["document"],
+            "catalog_sha256": catalog["catalog_sha256"], "selections": selections,
+            "analysis": value["analysis"]}
 
 
 class _GuardedStore(LocalStore):
@@ -2454,7 +2501,7 @@ def test_vault_adapter_persists_full_success_receipt_only(tmp_path):
     store = LocalStore(tmp_path / "store")
 
     def good_call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user)), "fake-provider", "served-model"
 
     result = analyze_and_persist_vault_report(
         {
@@ -2604,7 +2651,7 @@ def test_artifact_preserves_exact_prompt_identity_while_rio_stays_normalized(tmp
         identity = json.loads(identity_text)
         rio = _rio(identity["id"], body=BODY)
         rio["document"] = identity
-        return json.dumps(rio), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user, rio)), "fake-provider", "served-model"
 
     analysis = analyze_document(
         document,
@@ -2651,7 +2698,7 @@ def test_vault_adapter_preserves_exact_source_bytes_through_persistence(tmp_path
     store = LocalStore(tmp_path / "store")
 
     def good_call(_system, user, **_kwargs):
-        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+        return json.dumps(_selector_from_prompt(user)), "fake-provider", "served-model"
 
     result = analyze_and_persist_vault_report(
         {
@@ -3195,3 +3242,50 @@ def test_rio_claim_indices_valid_analysis_keeps_links_and_input_unchanged():
     assert result["claims"][1]["statement"] == original["claims"][1]["statement"]
     assert validate_rio(result) == result
 
+
+def test_runtime_real_private_store_transport_sends_one_put_on_redirect_or_error(monkeypatch):
+    """Actual boto3/store/adapter against loopback; no cloud or fixture policy."""
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    import threading
+    import pytest
+    from engine.research_vault import r2_store
+    from engine.options_hub_retention import PrivateScenarioObjects as _PrivateObjects
+    class Handler(BaseHTTPRequestHandler):
+        def do_PUT(self):
+            self.server.puts += 1
+            self.rfile.read(int(self.headers.get('Content-Length', '0')))
+            assert self.headers.get('If-None-Match') == '*'
+            raw = b'<Error><Code>SlowDown</Code></Error>' if self.server.status != 200 else b''
+            self.send_response(self.server.status)
+            if self.server.status == 301:
+                self.send_header('x-amz-bucket-region', 'us-east-1')
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers(); self.wfile.write(raw)
+        def do_HEAD(self):
+            self.server.heads += 1
+            self.send_response(500); self.send_header('Content-Length','0'); self.end_headers()
+        def log_message(self, *args): pass
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    server.puts = server.heads = 0
+    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    try:
+        monkeypatch.setenv('R2_RESEARCH_ENDPOINT', f'http://127.0.0.1:{server.server_port}')
+        monkeypatch.setenv('R2_RESEARCH_ACCESS_KEY_ID', 'controlled-local-key')
+        monkeypatch.setenv('R2_RESEARCH_SECRET_ACCESS_KEY', 'controlled-local-secret')
+        monkeypatch.setenv('R2_RESEARCH_BUCKET', 'controlled-private')
+        monkeypatch.setenv('R2_BUCKET', 'controlled-public')
+        monkeypatch.delenv('RESEARCH_LOCAL_STORE', raising=False)
+        store = r2_store.build_store(single_attempt_writes=True)
+        objects = _PrivateObjects(store, True)
+        for status in (200, 301, 503):
+            server.status = status
+            before = server.puts
+            args = dict(Bucket=store.bucket, Key='options_hub/gex_history/SPY/sha256/'+'a'*64+'.json', Body=b'{}',
+                        ContentType='application/json', IfNoneMatch='*')
+            if status == 200: objects.put_object(**args)
+            else:
+                with pytest.raises(Exception): objects.put_object(**args)
+            assert server.puts == before + 1 and server.heads == 0
+    finally:
+        server.shutdown(); server.server_close(); thread.join(timeout=5)
+        assert not thread.is_alive()

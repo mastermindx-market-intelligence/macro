@@ -1,0 +1,91 @@
+{
+  "benchmark_id": "gold_real_rate_2026-08-09",
+  "frozen": true,
+  "source": "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-08-09",
+    "session_label": "date only",
+    "adjudication_date": "2026-08-09",
+    "historical_source_availability": "unverified",
+    "source": {
+      "path": "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+      "sha256": "4baa27cc3ae84422b4a252bf6b45af9c3708099f44ce51318b7d128c13c025ca"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-31",
+        "source_lines": [
+          18,
+          18
+        ],
+        "text": "| 07-31 | **DFII10 prints its high — 2.47** (trailing-1260d pctile 0.99) | `data/fred/DFII10.parquet` |",
+        "sha256": "21c1b7d35d24df0fa39daceba00daa2038a29079c3e54e5a6addace45ee50dd1"
+      },
+      {
+        "event_date": "2026-08-04",
+        "source_lines": [
+          19,
+          19
+        ],
+        "text": "| 08-04 | Peak chains ARM on the extreme; falsifier receipt 22d Δ **+25bp** | `chain_episodes.jsonl` |",
+        "sha256": "97e8be5f4064b37ee92802ea7ba065292002b1ab4058d215156c4f8d6c15d125"
+      },
+      {
+        "event_date": "2026-08-05",
+        "source_lines": [
+          20,
+          20
+        ],
+        "text": "| 08-05 | Both chains **FAILED** (63d +49bp > +15); falsifier note: \"no peak; restriction still building\". 22d Δ **+14bp** | same |",
+        "sha256": "a34b2800ac013764ce9e551c9ae685d30498700bd16117d52543579ddd352066"
+      },
+      {
+        "event_date": "2026-08-07",
+        "source_lines": [
+          21,
+          21
+        ],
+        "text": "| 08-07 | Re-arm and re-fail the same night. 22d Δ **+13bp**. Soft NFP; front end reprices (1Y 4.004 weekly close, 2Y −1.13% on the day) | same; operator tape |",
+        "sha256": "2ad340a6c25f2d3d5101a750e0427ef0ddd7fa2596657fe10721094420fef990"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        53,
+        65
+      ],
+      "text": "## §2 The failure anatomy (three layers)\n\n1. **Instrument lag, structural.** The rev-0 falsifier (63d Δ > +15bp) stays red for up to ~9\n   weeks after a TRUE peak — a trailing window cannot distinguish \"restriction still building\"\n   from \"plateau after a push\". Measured on the five named peaks (§3): 15–36 false \"failed\"\n   sessions in the 60 after each peak.\n2. **Receipt blindness.** The deceleration was INSIDE the chain's own arm receipts — 22d Δ\n   +25 → +14 → +13bp across 08-04/05/07 — and no consumer read the second derivative.\n3. **Synthesis promotion of instrument verdict to world verdict.** The check-in relayed the\n   falsifier's prose note as a market fact and the \"Failed / 已证伪\" label as a conclusion.\n   First-failing-gate ≠ counterfactual; the label vocabulary itself (refutation register) is\n   banned front-facing by the 2026-07-27 ruling and misleads internal synthesis just as badly.\n",
+      "sha256": "504c729f999d10badcc38d6f2d42f2dfa342627278df900e9a454f0d9f388229"
+    }
+  },
+  "question_en": "The chain repeatedly says FAILED. Do these supplied driver and chain readings establish that a real-rate peak cannot be forming?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-08-09 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-31] | 07-31 | **DFII10 prints its high — 2.47** (trailing-1260d pctile 0.99) | `data/fred/DFII10.parquet` |\n[2026-08-04] | 08-04 | Peak chains ARM on the extreme; falsifier receipt 22d Δ **+25bp** | `chain_episodes.jsonl` |\n[2026-08-05] | 08-05 | Both chains **FAILED** (63d +49bp > +15); falsifier note: \"no peak; restriction still building\". 22d Δ **+14bp** | same |\n[2026-08-07] | 08-07 | Re-arm and re-fail the same night. 22d Δ **+13bp**. Soft NFP; front end reprices (1Y 4.004 weekly close, 2Y −1.13% on the day) | same; operator tape |",
+  "expected_properties": [
+    {
+      "tag": "instrument_vs_world",
+      "check": "Distinguish the chain gate result from a falsification of the market thesis."
+    },
+    {
+      "tag": "window_and_deceleration",
+      "check": "Reconcile the lagging 63-day +49bp with 22-day changes of +25, +14 and +13bp; describe deceleration without claiming the level has definitely peaked."
+    },
+    {
+      "tag": "conditional_read",
+      "check": "State what further contemporaneous evidence would confirm or contradict a forming peak; no invented data, odds or trade instruction."
+    },
+    {
+      "tag": "source_limits",
+      "check": "Treat the excerpt as supplied historical text with unverified historical availability, not a live or independently reconstructed dataset."
+    }
+  ],
+  "known_failure_modes": [
+    "Promote instrument or short-horizon state into a world verdict.",
+    "Add later information or silently assume historical source availability.",
+    "Claim a causal or trading conclusion beyond the supplied observations."
+  ],
+  "gold_standard_sentence": "The lagging gate can remain red while the shorter window decelerates; that leaves a forming peak plausible, not confirmed or falsified by the gate alone.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

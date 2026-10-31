@@ -1,0 +1,853 @@
+{
+  "benchmark_id": "eval_os_measurement_v1",
+  "frozen": true,
+  "internal_qa_only": true,
+  "protocol": {
+    "protocol_id": "EVAL-OS-MEASUREMENT-SYNTHETIC-QA-V1",
+    "version": 1,
+    "approved_by": "root01a1333d-b0c0-7f33-9259-dd718391d9e4 delegated programme owner",
+    "scope": "synthetic_internal_qa",
+    "outcome_access_allowed": false,
+    "primary_target": "reported contract legality and exact arithmetic",
+    "population": {
+      "kind": "synthetic",
+      "case_ids": [
+        "predictive-valid",
+        "predictive-adversarial",
+        "ranking-valid",
+        "ranking-adversarial",
+        "classification_state-valid",
+        "classification_state-adversarial",
+        "detection_event-valid",
+        "detection_event-adversarial",
+        "descriptive-valid",
+        "descriptive-adversarial",
+        "salience-valid",
+        "salience-adversarial",
+        "generative-valid",
+        "generative-adversarial",
+        "quantile-valid",
+        "quantile-adversarial"
+      ]
+    },
+    "information_cutoff_rule": "reference known_at <= decision; no inferred historical availability",
+    "metric_rule": "class-native reported meaning; independent literal oracle",
+    "baseline_rule": "frozen independent fixture reference, never future-selected cohort",
+    "missingness_rule": "preserve intended population; reject incomplete declarations, never null-to-zero",
+    "dependence_rule": "overlap-connected or same declared block = one block; duplicate occurrences cannot add independence",
+    "partition_rule": "synthetic only; no reserved financial holdout",
+    "rights_custodian": "root-approved literal synthetic fixtures; no external source acquisition",
+    "max_trials": 2,
+    "max_looks": 3,
+    "practical_margin": 0.0,
+    "inference_rule": "deterministic finite checks, no statistical confidence or empirical superiority claim",
+    "power_rule": "all registered positive/negative deterministic cases must match the frozen oracle; no claim of financial statistical power",
+    "joint_acceptance_rule": "all registered cases agree within absolute tolerance1e-12; all mutants fail for declared reason",
+    "numeric_tolerance": 1e-12,
+    "declared_independent_blocks": 2,
+    "observations": [
+      {
+        "id": "o1",
+        "block_id": "b1",
+        "start": 0,
+        "end": 10
+      },
+      {
+        "id": "o2",
+        "block_id": "b1",
+        "start": 5,
+        "end": 15
+      },
+      {
+        "id": "o3",
+        "block_id": "b2",
+        "start": 30,
+        "end": 40
+      }
+    ],
+    "trial_ids": [
+      "fixture-a",
+      "fixture-b"
+    ],
+    "look_ids": [
+      "look-1",
+      "look-2",
+      "look-3"
+    ],
+    "inspected_holdout_ids": [
+      "synthetic-H1"
+    ],
+    "contaminated_holdout_ids": [
+      "synthetic-H1"
+    ],
+    "holdout_disposition": "CONTAMINATED_SYNTHETIC_QA_ONLY",
+    "max_observation_rows": 16
+  },
+  "cases": [
+    {
+      "id": "predictive-valid",
+      "output_class": "predictive",
+      "contract": {
+        "kind": "probability",
+        "target_id": "K3E-UP-DOWN-FLAT-21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "target_id": "K3E-UP-DOWN-FLAT-21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "probabilities": [
+          0.7,
+          0.2,
+          0.1
+        ],
+        "label": "UP"
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "log_loss": 0.35667494393873245,
+          "brier": 0.14
+        }
+      }
+    },
+    {
+      "id": "predictive-adversarial",
+      "output_class": "predictive",
+      "contract": {
+        "kind": "probability",
+        "target_id": "K3E-UP-DOWN-FLAT-21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "target_id": "K3E-UP-DOWN-FLAT-21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "probabilities": [
+          65,
+          20,
+          15
+        ],
+        "label": "UP"
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "probability_invalid",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "ranking-valid",
+      "output_class": "ranking",
+      "contract": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "relevance": {
+          "A": 1,
+          "B": 0,
+          "C": 1
+        },
+        "top_k": 2,
+        "target": "independent_fixture_relevance",
+        "synthetic_qa": true,
+        "eligible_known_at": 9,
+        "decision_at": 10
+      },
+      "class_payload": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "ranking": [
+          "A",
+          "C",
+          "B"
+        ],
+        "missing": [],
+        "eligible_known_at": 9
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "precision_at_k": 1.0,
+          "coverage": 1.0,
+          "eligible_n": 3
+        }
+      }
+    },
+    {
+      "id": "ranking-adversarial",
+      "output_class": "ranking",
+      "contract": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "relevance": {
+          "A": 1,
+          "B": 0,
+          "C": 1
+        },
+        "top_k": 2,
+        "target": "independent_fixture_relevance",
+        "synthetic_qa": true,
+        "eligible_known_at": 9,
+        "decision_at": 10
+      },
+      "class_payload": {
+        "eligible": [
+          "A"
+        ],
+        "ranking": [
+          "A"
+        ],
+        "missing": [],
+        "eligible_known_at": 9
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "ranking_population_mismatch",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "classification_state-valid",
+      "output_class": "classification_state",
+      "contract": {
+        "labels": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth_source": "frozen_fixture_labels",
+        "label_definitions": {
+          "STABLE": "fixture state S",
+          "TRANSITION": "fixture state T"
+        },
+        "clock_unit": "session_ordinal",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "predicted": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth_source": "frozen_fixture_labels",
+        "known_at": 9,
+        "decision_at": 10,
+        "clock_unit": "session_ordinal"
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "accuracy": 1.0,
+          "n_labels": 2,
+          "confusion": [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "classification_state-adversarial",
+      "output_class": "classification_state",
+      "contract": {
+        "labels": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth_source": "frozen_fixture_labels",
+        "label_definitions": {
+          "STABLE": "fixture state S",
+          "TRANSITION": "fixture state T"
+        },
+        "clock_unit": "session_ordinal",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "predicted": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth": [
+          "STABLE",
+          "TRANSITION"
+        ],
+        "truth_source": "frozen_fixture_labels",
+        "known_at": 11,
+        "decision_at": 10,
+        "clock_unit": "session_ordinal"
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "state_label_not_available",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "detection_event-valid",
+      "output_class": "detection_event",
+      "contract": {
+        "clock_unit": "session_ordinal",
+        "exposure": 100,
+        "matching": "one_alarm_one_event",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "clock_unit": "session_ordinal",
+        "events": [
+          {
+            "id": "e1",
+            "at": 10
+          },
+          {
+            "id": "e2",
+            "at": 20
+          }
+        ],
+        "alarms": [
+          {
+            "id": "a1",
+            "at": 8,
+            "expires": 12
+          },
+          {
+            "id": "a2",
+            "at": 30,
+            "expires": 35
+          }
+        ],
+        "matches": [
+          [
+            "a1",
+            "e1"
+          ]
+        ]
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "matched": 1,
+          "missed": 1,
+          "false_alarms": 1,
+          "false_alarm_rate": 0.01,
+          "mean_lead": 2.0
+        }
+      }
+    },
+    {
+      "id": "detection_event-adversarial",
+      "output_class": "detection_event",
+      "contract": {
+        "clock_unit": "session_ordinal",
+        "exposure": 100,
+        "matching": "one_alarm_one_event",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "clock_unit": "session_ordinal",
+        "events": [
+          {
+            "id": "e1",
+            "at": 10
+          },
+          {
+            "id": "e2",
+            "at": 20
+          }
+        ],
+        "alarms": [
+          {
+            "id": "a1",
+            "at": 8,
+            "expires": 12
+          },
+          {
+            "id": "a2",
+            "at": 30,
+            "expires": 35
+          }
+        ],
+        "matches": [
+          [
+            "a1",
+            "e1"
+          ],
+          [
+            "a2",
+            "e1"
+          ]
+        ]
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "event_match_not_one_to_one",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "descriptive-valid",
+      "output_class": "descriptive",
+      "contract": {
+        "source_fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        }
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "source_supported": true
+        }
+      }
+    },
+    {
+      "id": "descriptive-adversarial",
+      "output_class": "descriptive",
+      "contract": {
+        "source_fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "ratio",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        }
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "source_fact_mismatch",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "salience-valid",
+      "output_class": "salience",
+      "contract": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "relevance": {
+          "A": true,
+          "B": false,
+          "C": true
+        },
+        "reference_owner": "independent-reference",
+        "rubric_version": "fixture-r1",
+        "target": "relevance",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "assessed": [
+          "A",
+          "B",
+          "C"
+        ],
+        "selected": [
+          "A",
+          "C"
+        ],
+        "generator": "fixture-generator",
+        "judge": "independent-reference",
+        "rubric_version": "fixture-r1",
+        "target": "relevance"
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "relevance_precision": 1.0,
+          "coverage": 1.0
+        }
+      }
+    },
+    {
+      "id": "salience-adversarial",
+      "output_class": "salience",
+      "contract": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "relevance": {
+          "A": true,
+          "B": false,
+          "C": true
+        },
+        "reference_owner": "independent-reference",
+        "rubric_version": "fixture-r1",
+        "target": "relevance",
+        "synthetic_qa": true
+      },
+      "class_payload": {
+        "eligible": [
+          "A",
+          "B",
+          "C"
+        ],
+        "assessed": [
+          "A",
+          "B",
+          "C"
+        ],
+        "selected": [
+          "A",
+          "C"
+        ],
+        "generator": "fixture-generator",
+        "judge": "fixture-generator",
+        "rubric_version": "fixture-r1",
+        "target": "price_hit_rate"
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "salience_reference_not_independent",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "generative-valid",
+      "output_class": "generative",
+      "contract": {
+        "source_fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "synthetic_qa": true,
+        "reading_target_id": "synthetic_return",
+        "reading_unit": "percent"
+      },
+      "class_payload": {
+        "fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "readings": [
+          {
+            "entity": "fixture",
+            "unit": "percent",
+            "window": 5,
+            "as_of": "2026-01-01",
+            "value": -1,
+            "target_id": "synthetic_return"
+          },
+          {
+            "entity": "fixture",
+            "unit": "percent",
+            "window": 21,
+            "as_of": "2026-01-01",
+            "value": 1,
+            "target_id": "synthetic_return"
+          }
+        ]
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "source_supported": true,
+          "legitimate_scope_differences": 1
+        }
+      }
+    },
+    {
+      "id": "generative-adversarial",
+      "output_class": "generative",
+      "contract": {
+        "source_fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "percent",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "synthetic_qa": true,
+        "reading_target_id": "synthetic_return",
+        "reading_unit": "percent"
+      },
+      "class_payload": {
+        "fact": {
+          "schema": "datapoint_value.v1",
+          "registry_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "field_id": "market.return.3m",
+          "entity": {
+            "type": "security",
+            "id": "SEC:US-XNAS-FIXTURE"
+          },
+          "value": 15.0,
+          "status": "available",
+          "reason_code": null,
+          "unit": "ratio",
+          "observed_at": "2026-01-01T00:00:00Z",
+          "effective_at": "2026-01-01T00:00:00Z",
+          "as_of": "2026-01-01T00:00:00Z",
+          "source": {
+            "source_id": "independent.synthetic.fixture"
+          },
+          "quality": {
+            "state": "ok"
+          }
+        },
+        "readings": [
+          {
+            "entity": "fixture",
+            "unit": "percent",
+            "window": 5,
+            "as_of": "2026-01-01",
+            "value": -1,
+            "target_id": "synthetic_return"
+          },
+          {
+            "entity": "fixture",
+            "unit": "percent",
+            "window": 21,
+            "as_of": "2026-01-01",
+            "value": 1,
+            "target_id": "synthetic_return"
+          }
+        ]
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "source_fact_mismatch",
+        "measurements": {}
+      }
+    },
+    {
+      "id": "quantile-valid",
+      "output_class": "predictive",
+      "contract": {
+        "synthetic_qa": true,
+        "kind": "quantile",
+        "target_id": "synthetic_end_return21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "unit": "return_fraction",
+        "levels": [
+          0.1,
+          0.5,
+          0.9
+        ]
+      },
+      "class_payload": {
+        "target_id": "synthetic_end_return21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "unit": "return_fraction",
+        "quantiles": [
+          -1.0,
+          0.0,
+          1.0
+        ],
+        "realized": 0.0
+      },
+      "expected": {
+        "accepted": true,
+        "reason": null,
+        "measurements": {
+          "mean_pinball": 0.06666666666666667,
+          "interval_coverage": 1.0
+        }
+      }
+    },
+    {
+      "id": "quantile-adversarial",
+      "output_class": "predictive",
+      "contract": {
+        "synthetic_qa": true,
+        "kind": "quantile",
+        "target_id": "synthetic_end_return21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "unit": "return_fraction",
+        "levels": [
+          0.1,
+          0.5,
+          0.9
+        ]
+      },
+      "class_payload": {
+        "target_id": "synthetic_end_return21",
+        "horizon_d": 21,
+        "horizon_unit": "NYSE_sessions",
+        "unit": "return_fraction",
+        "quantiles": [
+          1.0,
+          0.0,
+          -1.0
+        ],
+        "realized": 0.0
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "quantile_invalid",
+        "measurements": {}
+      }
+    }
+  ]
+}

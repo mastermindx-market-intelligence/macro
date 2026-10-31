@@ -37,6 +37,7 @@ from lib.dataos.identity import (
     IssuerMaster,
     KNOWN_MICS,
     ARCX,
+    TXSE,
     ListingKey,
     SecurityIssuerRow,
     VendorAliasTable,
@@ -66,7 +67,7 @@ TENCENT = ListingKey("HK", XHKG, "00700")
 
 # ── listing keys ─────────────────────────────────────────────────────────────
 def test_the_admitted_venues_are_all_known() -> None:
-    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
     assert ListingKey("US", BATS, "CBOE").render() == "US-BATS-CBOE"
 
 
@@ -749,8 +750,8 @@ import json
 from datetime import datetime, timezone
 
 from lib.dataos.identity import (
-    AliasResolution, ReferenceReadReceipt, alias_binding_sha256,
-    validate_reference_snapshot,
+    AliasResolution, ReferenceReadReceipt, ReferenceSnapshot, alias_binding_sha256,
+    validate_reference_snapshot, validate_reference_transition,
 )
 
 _OBS_NAMES = (
@@ -965,6 +966,217 @@ def _obs_snapshot(original, history, rows, master, *, read_ns=None, receipt_over
 def _obs_table(original, history, rows, *snapshots):
     return VendorAliasTable.from_records(rows, observation_history=history,
                                          original_reference=original, snapshot_contexts=snapshots)
+
+
+def _transition_candidate(previous, *, context=None, artifact_changes=None, edit=None):
+    """Seal supplied synthetic inputs; deliberately leave validation to the helper."""
+    context = previous if context is None else context
+    receipt = json.loads(context.receipt_bytes)
+    artifacts = dict(context.artifact_bytes)
+    artifacts.update(artifact_changes or {})
+    pub = receipt["publication"]
+    pub["predecessor_receipt_sha256"] = hashlib.sha256(previous.receipt_bytes).hexdigest()
+    for name, raw in artifacts.items():
+        pub["artifacts"][name].update(sha256=hashlib.sha256(raw).hexdigest(), bytes=len(raw))
+    if edit is not None:
+        edit(receipt)
+    pub["history_sha256"] = _obs_hash(receipt["identity_observations"])
+    _obs_seal(pub, "generation_id")
+    return ReferenceSnapshot(_obs_json(receipt), tuple(artifacts.items()),
+                             context.alias_json, context.master_json)
+
+
+def _transition(previous, candidate, **overrides):
+    args = {"expected_previous_generation_id": json.loads(previous.receipt_bytes)["publication"]["generation_id"],
+            "expected_previous_receipt_sha256": hashlib.sha256(previous.receipt_bytes).hexdigest(),
+            "previous_artifact_vector": json.loads(previous.receipt_bytes)["publication"]["artifacts"],
+            "candidate_artifact_vector": json.loads(candidate.receipt_bytes)["publication"]["artifacts"]}
+    args.update(overrides)
+    return validate_reference_transition(previous, candidate, **args)
+
+
+def test_reference_transition_noop_preserves_previous_binding_and_historical_predecessor():
+    initial, _ = _obs_snapshot(*_obs_base())
+    previous = _transition_candidate(initial, edit=lambda r: r["publication"].update(code_version="4" * 40))
+    result = _transition(previous, previous)
+    assert result.disposition == "NOOP"
+    assert result.previous == result.candidate
+    assert result.candidate.receipt_sha256 == hashlib.sha256(previous.receipt_bytes).hexdigest()
+    assert json.loads(previous.receipt_bytes)["publication"]["predecessor_receipt_sha256"] != result.candidate.receipt_sha256
+    from dataclasses import FrozenInstanceError
+    with pytest.raises(FrozenInstanceError):
+        result.candidate.generation_id = "f" * 64
+
+
+@pytest.mark.parametrize("field", ["expected_previous_generation_id", "expected_previous_receipt_sha256"])
+def test_reference_transition_noop_still_checks_expected_previous_binding(field):
+    snap, _ = _obs_snapshot(*_obs_base())
+    with pytest.raises(IdentityError, match="previous binding mismatch"):
+        _transition(snap, snap, **{field: "f" * 64})
+    with pytest.raises(IdentityError, match="digest"):
+        _transition(snap, snap, **{field: None})
+
+
+@pytest.mark.parametrize("side", ["previous", "candidate"])
+@pytest.mark.parametrize("defect", ["hash", "semantic", "count", "float", "missing", "extra"])
+def test_reference_transition_noop_checks_complete_typed_declared_vector(side, defect):
+    snap, _ = _obs_snapshot(*_obs_base())
+    vector = json.loads(snap.receipt_bytes)["publication"]["artifacts"]
+    name = "security_master.parquet"
+    if defect == "missing":
+        del vector[name]
+    elif defect == "extra":
+        vector["extra"] = dict(vector[name])
+    else:
+        key, value = {"hash": ("sha256", "f" * 64), "semantic": ("semantic_sha256", None),
+                      "count": ("bytes", True), "float": ("bytes", float(vector[name]["bytes"]))}[defect]
+        vector[name][key] = value
+    with pytest.raises(IdentityError, match="declared artifact vector"):
+        _transition(snap, snap, **{side + "_artifact_vector": vector})
+
+
+def test_reference_transition_physical_change_counts_even_with_identical_semantic_seals():
+    previous, _ = _obs_snapshot(*_obs_base())
+    candidate = _transition_candidate(previous, artifact_changes={"vendor_aliases.parquet": b"different synthetic encoding"})
+    result = _transition(previous, candidate)
+    assert result.disposition == "ARTIFACT_CHANGE"
+    assert result.previous.generation_id != result.candidate.generation_id
+    assert result.previous.receipt_sha256 != result.candidate.receipt_sha256
+    assert result.previous.history_sha256 == result.candidate.history_sha256
+    before, after = result.previous.artifact_vector[1], result.candidate.artifact_vector[1]
+    assert before[1] != after[1] and before[3] == after[3]
+
+
+def test_reference_transition_expressible_receipt_only_has_new_g_and_r():
+    previous, _ = _obs_snapshot(*_obs_base())
+    # A declared code change is expressible; this pure check cannot authenticate it.
+    candidate = _transition_candidate(previous, edit=lambda r: r["publication"].update(code_version="4" * 40))
+    declared = json.loads(candidate.receipt_bytes)["publication"]["artifacts"]
+    result = _transition(previous, candidate, candidate_artifact_vector=declared)
+    assert result.disposition == "RECEIPT_ONLY"
+    assert result.previous.generation_id != result.candidate.generation_id
+    assert result.previous.receipt_sha256 != result.candidate.receipt_sha256
+    assert result.previous.artifact_vector == result.candidate.artifact_vector
+    declared.clear()
+    assert len(result.candidate.artifact_vector) == 5
+
+
+def test_reference_transition_valid_observation_append_retains_native_history():
+    original, history, rows, master = _obs_base()
+    previous, _ = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows)
+    context, _ = _obs_snapshot(original, history, rows, master)
+    candidate = _transition_candidate(previous, context=context)
+    result = _transition(previous, candidate)
+    # Synthetic artifacts are not Parquet encodings; only supplied seals are checked.
+    assert result.disposition == "RECEIPT_ONLY"
+    assert result.candidate.history_sha256 == _obs_hash(history)
+    assert result.previous.history_sha256 != result.candidate.history_sha256
+
+
+@pytest.mark.parametrize("generated_at", [None, "2026-10-24T00:00:00Z"])
+def test_reference_transition_rejects_predecessor_and_generated_at_only_restamps(generated_at):
+    previous, _ = _obs_snapshot(*_obs_base())
+    candidate = _transition_candidate(previous, edit=lambda r: r.update(generated_at=generated_at))
+    with pytest.raises(IdentityError, match="only restamp"):
+        _transition(previous, candidate)
+
+
+def test_reference_transition_rejects_unexpressible_receipt_only_and_wrong_predecessor():
+    previous, _ = _obs_snapshot(*_obs_base())
+    receipt = json.loads(previous.receipt_bytes)
+    receipt["generated_at"] = "2026-10-24T00:00:00Z"
+    candidate = ReferenceSnapshot(_obs_json(receipt), previous.artifact_bytes,
+                                 previous.alias_json, previous.master_json)
+    with pytest.raises(IdentityError, match="same generation with different receipt"):
+        _transition(previous, candidate)
+    candidate = _transition_candidate(previous, edit=lambda r: r["publication"].update(
+        predecessor_receipt_sha256="f" * 64, code_version="4" * 40))
+    with pytest.raises(IdentityError, match="predecessor mismatch"):
+        _transition(previous, candidate)
+
+
+@pytest.mark.parametrize("side", ["previous", "candidate"])
+@pytest.mark.parametrize("defect", ["duplicate", "tuple_shape", "bytes", "semantic", "generation", "object"])
+def test_reference_transition_revalidates_both_supplied_contexts(side, defect):
+    previous, _ = _obs_snapshot(*_obs_base())
+    candidate = _transition_candidate(previous, artifact_changes={"issuer_master.parquet": b"new synthetic serialization"})
+    target = previous if side == "previous" else candidate
+    from dataclasses import replace
+    if defect == "duplicate":
+        bad = replace(target, artifact_bytes=(target.artifact_bytes[0],) * 5)
+    elif defect == "tuple_shape":
+        bad = replace(target, artifact_bytes=(None,) * 5)
+    elif defect == "bytes":
+        bad = replace(target, artifact_bytes=((target.artifact_bytes[0][0], b"tampered"), *target.artifact_bytes[1:]))
+    elif defect == "semantic":
+        bad = replace(target, alias_json=b"[]")
+    elif defect == "generation":
+        receipt = json.loads(target.receipt_bytes)
+        receipt["publication"]["generation_id"] = "f" * 64
+        bad = replace(target, receipt_bytes=_obs_json(receipt))
+    else:
+        bad = object()
+    # Declarations come from the valid pair, so malformed objects cannot bypass revalidation.
+    args = {"expected_previous_generation_id": json.loads(previous.receipt_bytes)["publication"]["generation_id"],
+            "expected_previous_receipt_sha256": hashlib.sha256(previous.receipt_bytes).hexdigest(),
+            "previous_artifact_vector": json.loads(previous.receipt_bytes)["publication"]["artifacts"],
+            "candidate_artifact_vector": json.loads(candidate.receipt_bytes)["publication"]["artifacts"]}
+    with pytest.raises(IdentityError):
+        validate_reference_transition(bad if side == "previous" else previous,
+                                      bad if side == "candidate" else candidate, **args)
+
+
+@pytest.mark.parametrize("defect", ["rewritten_prefix", "truncated_prefix", "original_context"])
+def test_reference_transition_refuses_individually_valid_resealed_history_changes(defect):
+    original, history, rows, master = _obs_base()
+    empty, _ = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows)
+    previous, _ = _obs_snapshot(original, history, rows, master)
+    if defect == "rewritten_prefix":
+        changed = copy.deepcopy(history)
+        changed["attempts"][0]["input_sha256"] = "f" * 64
+        _obs_seal(changed["attempts"][0], "attempt_sha256")
+        context, _ = _obs_snapshot(original, changed, rows, master)
+    elif defect == "truncated_prefix":
+        context = empty
+    else:
+        context = _transition_candidate(empty, edit=lambda r: r["prospective_reference"].update(extra="resealed"))
+        receipt = json.loads(context.receipt_bytes)
+        anchor = receipt["identity_observations"]["anchor"]
+        digest = _obs_hash(receipt["prospective_reference"])
+        anchor.update(original_reference_sha256=digest, anchor_id="anchor:" + digest)
+        _obs_seal(anchor, "anchor_sha256")
+        receipt["publication"]["history_sha256"] = _obs_hash(receipt["identity_observations"])
+        _obs_seal(receipt["publication"], "generation_id")
+        context = ReferenceSnapshot(_obs_json(receipt), context.artifact_bytes, context.alias_json, context.master_json)
+    candidate = _transition_candidate(previous, context=context)
+    # Both sets pass incumbent validation independently; the relation must still fail.
+    validate_reference_snapshot(candidate.receipt_bytes, dict(candidate.artifact_bytes), candidate.receipt_bytes,
+                                alias_records=json.loads(candidate.alias_json), master_records=json.loads(candidate.master_json))
+    with pytest.raises(IdentityError, match="prefix|original context"):
+        _transition(previous, candidate)
+
+
+def test_reference_transition_keeps_64_attempt_cap_without_reset_or_truncation():
+    original, history, rows, master = _obs_base()
+    for _ in range(63):
+        history, rows = _obs_append(original, history, rows, status="REFUSED")
+    previous, _ = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows, status="REFUSED")
+    full, _ = _obs_snapshot(original, history, rows, master)
+    full = _transition_candidate(previous, context=full)
+    assert _transition(previous, full).candidate.history_sha256 == _obs_hash(history)
+    more, more_rows = _obs_append(original, history, rows, status="REFUSED")
+    receipt = json.loads(full.receipt_bytes)
+    receipt["identity_observations"] = more
+    semantic = _obs_rows_hash(more_rows)
+    receipt["publication"]["artifacts"]["vendor_aliases.parquet"]["semantic_sha256"] = semantic
+    forged = ReferenceSnapshot(_obs_json(receipt), full.artifact_bytes, _obs_json(more_rows), full.master_json)
+    forged = _transition_candidate(full, context=forged)
+    with pytest.raises(IdentityError, match="attempt count"):
+        _transition(full, forged)
+    assert len(json.loads(full.receipt_bytes)["identity_observations"]["attempts"]) == 64
 
 
 def _obs_query(table, *reads, cutoff=None, vendor="polygon", symbol="MU", on=date(2026, 10, 7)):
@@ -1844,6 +2056,7 @@ def test_P06_venue_maps_cover_exactly_the_known_mics() -> None:
         (XNAS, "America/New_York", "USD"),
         (XASE, "America/New_York", "USD"),
         (ARCX, "America/New_York", "USD"),
+        (TXSE, "America/New_York", "USD"),
         (XTSE, "America/Toronto", "CAD"),
         (XTSX, "America/Toronto", "CAD"),
         (XHKG, "Asia/Hong_Kong", "HKD"),

@@ -1,0 +1,64 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "followon-against-ancestor-candidate.json",
+      "sha256": "9fbbbd26f6fcdc60e60f4597ba3a4030a7efc48c6cef993a0d901a8de237eb62",
+      "bytes": 763
+    },
+    {
+      "file": "followon-conflict-regions.json",
+      "sha256": "a6ef3ad5cca8dd1626804413c550c7769330695888e9a004c5ef3e10bfbc84cf",
+      "bytes": 1151
+    },
+    {
+      "file": "followon-ancestor-alignment.json",
+      "sha256": "8b302b80e593ba3eda19150bc3aa7aa86af3783c2f8c7d59a8177633753e1795",
+      "bytes": 1114
+    },
+    {
+      "file": "followon-aligned-preview.json",
+      "sha256": "f13ed04a4c746594d5be453241f96f3af82b61e896da6b199cc341e23350b551",
+      "bytes": 342
+    },
+    {
+      "file": "followon-alignment-green.xml",
+      "sha256": "d3846b1c62695caa7d768bedfaf6a9e62adf48f57195f444359bf05369231938",
+      "bytes": 472
+    },
+    {
+      "file": "followon-alignment-qualification.json",
+      "sha256": "f176de96959b960d0bcae0477851260f22ae4374a30a02398a8aaa39c69130d1",
+      "bytes": 13687
+    },
+    {
+      "file": "qualify_followon_alignment.py",
+      "sha256": "cc651209a9ac370bf43e8bd6970dfd83cb63b940cac5b2df4ff1dc528aa5bd7d",
+      "bytes": 2284
+    },
+    {
+      "file": "ancestor-review-adjudication.json",
+      "sha256": "013476ba15b66e289cbfb51435e57ef91392bc7a937d6262929e7a257c17d01f",
+      "bytes": 1410
+    },
+    {
+      "file": "ancestor-review-acceptance.json",
+      "sha256": "fe01bf18280a6245b3e9498e60e4135977fd846e25e093441433bcac8097d0a0",
+      "bytes": 392
+    },
+    {
+      "file": "containing-head-proof.json",
+      "sha256": "c8528948c0d2374911445ab5d5efa83e0bcb0705575b26bb52d0069933ffd699",
+      "bytes": 2187
+    },
+    {
+      "file": "canonical-admission-064608.json.gz",
+      "sha256": "fdc1ca3b1612c3521d16623a059f0c2eece53b3caf1a82eda3378b61b081ca5f",
+      "bytes": 8681,
+      "encoding": "gzip",
+      "decoded_sha256": "b2a29b44bf78efae41c63b94dcc6bc023a29011fa2e6ab5220d5a14f48e062d6",
+      "decoded_bytes": 96840
+    }
+  ],
+  "scope": "Follow-onad03 mirrors13 reviewedA1ancestor inputs. All314definitions/priorpaths/limits/runtime retained;2affectedcontrolsPASS,zero closuremisses,strict134/134/128jobs; read-onlypreviewwithA1ba848clean. A1newpublication deferred10/cap8 at06:46. No hosted/merge/production/adoption."
+}

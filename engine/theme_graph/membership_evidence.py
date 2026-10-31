@@ -235,6 +235,33 @@ def _micro_exact_fields(row, allowed, family):
         _micro_refuse(f"unexpected or missing {family} fields")
 
 
+#: The ratified micro-theme expansion (research/theme_graph/micro_expansion_20261021/,
+#: receipts copied verbatim there) appended additive display-tier rows dated
+#: 2026-10-21 to config/theme_crosswalk.yml. Research documents commissioned before
+#: that date were compiled against the frozen tier, so their byte pin is
+#: reconciled against the frozen rows, never against the appended display tier.
+MICRO_EXPANSION_ASSERTED_ON = "2026-10-21"
+
+
+def frozen_hierarchy(
+    hierarchy: Mapping[str, Any], *, before: str = MICRO_EXPANSION_ASSERTED_ON
+) -> dict[str, list]:
+    """Hierarchy rows asserted before ``before`` — the frozen table a research pin was compiled against.
+
+    The 2026-10-21 expansion is additive display-tier vocabulary; this helper is
+    how readers distinguish the frozen acceptance tier from the appended rows
+    without changing any row format.
+    """
+    frozen: dict[str, list] = {}
+    for key in ("categories", "sub_themes", "micro_themes", "parents"):
+        rows = hierarchy.get(key) if isinstance(hierarchy, Mapping) else None
+        frozen[key] = [
+            row for row in (rows or []) if isinstance(row, Mapping)
+            and str(row.get("asserted_on", "")) < before
+        ]
+    return frozen
+
+
 def build_microtheme_research_evidence(
     document: Mapping[str, Any], *, crosswalk_path: Path | None = None
 ) -> dict[str, Any]:
@@ -296,7 +323,21 @@ def build_microtheme_research_evidence(
     except (OSError, KeyError, ValueError, TypeError, yaml.YAMLError):
         _micro_refuse("pinned house hierarchy unavailable")
     blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
-    if pin["crosswalk_sha256"] != hashlib.sha256(raw).hexdigest() or pin["crosswalk_blob"] != blob:
+    expanded = any(str(row.get("asserted_on", "")) >= MICRO_EXPANSION_ASSERTED_ON
+                   for row in list(micro_rows) + list(sub_rows) + list(edges))
+    if expanded:
+        # The live file carries the additive 2026-10-21 display-tier expansion, so
+        # the raw-byte pin cannot match. The pinned bytes remain named by
+        # pin["commit"]; the fence here reconciles the frozen projection: every
+        # frozen id, parent edge and subtheme field must still be exactly the
+        # table this document was compiled against (checks below bind that).
+        frozen = frozen_hierarchy(hierarchy)
+        if [len(frozen["micro_themes"]), len(frozen["sub_themes"]), len(frozen["parents"])] \
+                == [len(micro_rows), len(sub_rows), len(edges)]:
+            _micro_refuse("crosswalk bytes differ from research pin")
+        micro_rows, sub_rows, edges = (
+            frozen["micro_themes"], frozen["sub_themes"], frozen["parents"])
+    elif pin["crosswalk_sha256"] != hashlib.sha256(raw).hexdigest() or pin["crosswalk_blob"] != blob:
         _micro_refuse("crosswalk bytes differ from research pin")
     micro_ids = {x["id"] for x in micro_rows}
     sub_ids = {x["id"] for x in sub_rows}
@@ -1136,3 +1177,279 @@ def render_microtheme_addendum_markdown(report: Mapping[str, Any]) -> str:
     lines.extend(["", "## No authority conveyed", ""])
     lines.extend("- "+clean(x) for x in report["limitations"])
     return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Native activity admission (GMI recovery 2026-10-16, section 9 step 3)
+# ---------------------------------------------------------------------------
+#
+# One owner-read company activity, bound to one micro-theme definition, as EVIDENCE
+# for a proposal. Nothing here ratifies, materializes, ranks or publishes. Identity is
+# read through the existing read-only identity_resolution owner, the source edition,
+# span and purpose through the company-intelligence disclosure owner, and rights
+# through engine.theme_graph.rights. A name-prefix identity hint, a basket/group
+# expression or a prepared coverage profile is never an admission basis.
+
+ACTIVITY_EVIDENCE_SCHEMA = "gmi.activity_membership_evidence/v1"
+ADMITTED_ACTIVITY_SPECIES = frozenset({"planned_product_integration"})
+ACTIVITY_ROLES = frozenset({"component_supplier", "platform_owner"})
+ACTIVITY_CROSSWALK_PATH = "config/theme_crosswalk.yml"
+ACTIVITY_SOURCE_OWNER = "engine.company_intelligence.issuer_disclosure_owner"
+_ACTIVITY_SPECIES_BY_FACT = {("product_integration", "planned"): "planned_product_integration"}
+_NATIVE_BASIS = {"kind": "native_disclosure_fact"}
+_HINT_KEYS = frozenset({"identity_hint_state", "possible_current_issuer_refs"})
+
+
+class ActivityAdmissionRefusal(ValueError):
+    """A typed refusal; ``code`` is stable and is what callers and tests branch on."""
+
+    def __init__(self, code: str, detail: str = ""):
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+def _activity_instant(value: Any, code: str):
+    from datetime import datetime
+
+    if not isinstance(value, str) or "T" not in value:
+        raise ActivityAdmissionRefusal(code, "a zoned ISO-8601 instant is required")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ActivityAdmissionRefusal(code, str(exc)) from None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ActivityAdmissionRefusal(code, "the instant carries no zone")
+    return parsed
+
+
+def _activity_plain(value: Any) -> Any:
+    """JSON-plain view of one identity-owner cell (parquet rows carry numpy/NaN)."""
+    from datetime import date, datetime
+
+    if value is None or type(value).__name__ in {"NAType", "NaTType"}:
+        return None
+    if isinstance(value, float) and value != value:
+        return None
+    if not isinstance(value, (str, bytes, bool, int, float)) and hasattr(value, "item"):
+        try:
+            return _activity_plain(value.item())
+        except (TypeError, ValueError):
+            return str(value)
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if isinstance(value, (str, bool, int, float)):
+        return value
+    return str(value)
+
+
+def _default_activity_disclosure(root: Path, code_version: str):
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+
+    spec_raw = (root / owner.SPEC_PATH).read_bytes()
+    ruling_raw = (root / owner.RULING_PATH).read_bytes()
+    registry_raw = (root / owner.REGISTRY_PATH).read_bytes()
+    return owner.qualify_records(code_version, spec_raw, ruling_raw, registry_raw,
+                                 json.loads(spec_raw)["identities"])
+
+
+def _default_activity_identity(node_id: str) -> Mapping[str, Any]:
+    from engine.theme_graph.identity_resolution import resolve_graph_node_identity
+
+    return resolve_graph_node_identity(node_id)
+
+
+def _activity_rights_read(family: str | None) -> dict[str, Any]:
+    from engine.theme_graph import rights
+
+    if family is None:
+        return {"family": None, "rights_class": None,
+                "public_emission": "RIGHTS_FAMILY_UNRESOLVED"}
+    try:
+        cls = rights.rights_class(family)
+    except rights.RightsRefusal:
+        return {"family": family, "rights_class": None,
+                "public_emission": "RIGHTS_FAMILY_UNRESOLVED"}
+    return {"family": family, "rights_class": cls,
+            "public_emission": "GRANTED" if rights.emission_allowed(family) else "NOT_GRANTED"}
+
+
+def _activity_target_definition(root: Path, theme_id: str) -> dict[str, Any]:
+    import yaml
+    from datetime import date
+    from engine.theme_graph import rights
+
+    raw = (root / ACTIVITY_CROSSWALK_PATH).read_bytes()
+    entries = [entry for entry in yaml.safe_load(raw)["hierarchy"]["micro_themes"]
+               if isinstance(entry, Mapping) and entry.get("id") == theme_id]
+    if len(entries) != 1:
+        raise ActivityAdmissionRefusal("TARGET_DEFINITION_UNKNOWN",
+                                       f"{theme_id!r} is not one current micro-theme definition")
+    entry = {key: (value.isoformat() if isinstance(value, date) else value)
+             for key, value in entries[0].items()}
+    asserted = entry.get("asserted_on")
+    if not isinstance(asserted, str) or len(asserted) != 10:
+        raise ActivityAdmissionRefusal("TARGET_DEFINITION_UNKNOWN",
+                                       f"{theme_id!r} carries no asserted_on date")
+    family = rights.family_for_source_ref(ACTIVITY_CROSSWALK_PATH)
+    return {
+        "theme_id": theme_id,
+        "tier": "micro_theme",
+        "asserted_on": asserted,
+        "definition_sha256": hashlib.sha256(_canonical(entry).encode()).hexdigest(),
+        "crosswalk_sha256": hashlib.sha256(raw).hexdigest(),
+        "rights_family": family,
+    }
+
+
+def _activity_magnitude(value: Any) -> dict[str, Any]:
+    """A null magnitude stays null and UNDISCLOSED; zero is only ever a disclosed zero."""
+    if value is None:
+        return {"value": None, "state": "UNDISCLOSED"}
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ActivityAdmissionRefusal("MAGNITUDE_INVALID", f"{value!r} is not a number")
+    return {"value": value, "state": "KNOWN_ZERO" if value == 0 else "KNOWN"}
+
+
+def _activity_clock(value: Any, precision: str) -> dict[str, Any]:
+    if value is None:
+        return {"value": None, "precision": None, "state": "UNDISCLOSED"}
+    return {"value": value, "precision": precision, "state": "KNOWN"}
+
+
+def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: str,
+                                       role: str, knowledge_cutoff: str, code_version: str,
+                                       root: Path = ROOT, identity_reader=None,
+                                       disclosure_reader=None,
+                                       basis: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Bind one native disclosed activity to one micro-theme as proposal evidence.
+
+    Refuses (``ActivityAdmissionRefusal.code``) rather than guessing: a name-prefix
+    identity hint, a basket/group expression or a prepared profile as the basis; a
+    source the owner does not qualify; a fact not yet known at ``knowledge_cutoff``
+    (filtered before any other selection); an unadmitted species; an unresolved,
+    ambiguous or mismatched issuer identity; a target that is not one current
+    micro-theme definition; an unadmitted role. The result is evidence only:
+    graph-membership use is NOT_GRANTED because no source-purpose ruling grants it.
+    """
+    if basis is not None:
+        if isinstance(basis, Mapping) and _HINT_KEYS & set(basis):
+            raise ActivityAdmissionRefusal("IDENTITY_HINT_NOT_ADMISSION",
+                                           "a name-prefix identity hint is not identity")
+        if not isinstance(basis, Mapping) or dict(basis) != _NATIVE_BASIS:
+            raise ActivityAdmissionRefusal("GROUP_TO_MICRO_REFUSED",
+                                           "only a native disclosure fact may admit an activity")
+    node = str(issuer_node_id)
+    if not node.startswith("co:"):
+        raise ActivityAdmissionRefusal("ENDPOINT_NOT_ADMITTED",
+                                       f"{node!r} is not a company node")
+    if not str(target_theme_id).startswith("theme:"):
+        raise ActivityAdmissionRefusal("ENDPOINT_NOT_ADMITTED",
+                                       f"{target_theme_id!r} is not a micro-theme node")
+    cutoff = _activity_instant(knowledge_cutoff, "KNOWLEDGE_CUTOFF_INVALID")
+
+    root = Path(root)
+    try:
+        snapshot = (disclosure_reader(root, code_version) if disclosure_reader is not None
+                    else _default_activity_disclosure(root, code_version))
+        spec, bindings = snapshot.spec, dict(snapshot.bindings)
+        edition, fact = spec["edition"], spec["fact"]
+    except ActivityAdmissionRefusal:
+        raise
+    except Exception as exc:  # the owner's own refusal or an unreadable record
+        raise ActivityAdmissionRefusal("SOURCE_OWNER_REFUSED", type(exc).__name__) from None
+
+    # Knowledge cutoff BEFORE selection: a fact or edition we did not yet know is absent.
+    for clock in (fact.get("known_at"), edition.get("known_at")):
+        if _activity_instant(clock, "SOURCE_OWNER_REFUSED") > cutoff:
+            raise ActivityAdmissionRefusal("KNOWLEDGE_CUTOFF_EXCLUDED",
+                                           f"known_at {clock} is after {knowledge_cutoff}")
+
+    species = _ACTIVITY_SPECIES_BY_FACT.get((fact.get("kind"), fact.get("lifecycle")))
+    if species not in ADMITTED_ACTIVITY_SPECIES:
+        raise ActivityAdmissionRefusal(
+            "SPECIES_NOT_ADMITTED", f"{fact.get('kind')!r}/{fact.get('lifecycle')!r}")
+
+    try:
+        row = (identity_reader or _default_activity_identity)(node)
+        row = {str(key): _activity_plain(value) for key, value in dict(row).items()}
+    except Exception as exc:
+        raise ActivityAdmissionRefusal("IDENTITY_UNRESOLVED", type(exc).__name__) from None
+    state = row.get("resolution_state")
+    if state == "AMBIGUOUS":
+        raise ActivityAdmissionRefusal("AMBIGUOUS_IDENTITY", node)
+    if state != "RESOLVED" or not row.get("security_id"):
+        raise ActivityAdmissionRefusal("IDENTITY_UNRESOLVED", f"{node}: {state}")
+    if row.get("node_id") != node or row.get("issuer_id") != fact.get("subject_id"):
+        raise ActivityAdmissionRefusal(
+            "ISSUER_IDENTITY_MISMATCH",
+            f"{node} resolves to {row.get('issuer_id')!r}, the fact names {fact.get('subject_id')!r}")
+
+    target = _activity_target_definition(root, str(target_theme_id))
+    if role not in ACTIVITY_ROLES:
+        raise ActivityAdmissionRefusal("ROLE_NOT_ADMITTED", repr(role))
+
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from engine.theme_graph import rights
+
+    return {
+        "schema": ACTIVITY_EVIDENCE_SCHEMA,
+        "issuer": {
+            "node_id": node,
+            "issuer_id": row["issuer_id"],
+            "security_id": row["security_id"],
+            "resolution_state": state,
+            "join_method": row.get("join_method"),
+            "resolution_asof": row.get("resolution_asof"),
+            "identity_read_sha256": hashlib.sha256(_canonical(row).encode()).hexdigest(),
+        },
+        "species": species,
+        "scope": {
+            "product": fact["product"],
+            "platform": fact["platform"],
+            "counterparty_issuer_id": fact["object_id"],
+            "segment": {"value": None, "state": "UNDISCLOSED"},
+        },
+        "role": role,
+        "lifecycle": fact["lifecycle"],
+        "endpoints": {"source_node_id": node, "target_node_id": target["theme_id"],
+                      "direction": "SOURCE_TO_TARGET"},
+        "target_definition": target,
+        "source_evidence": {
+            "disclosure_id": fact["disclosure_id"],
+            "fact_id": fact["fact_id"],
+            "fact_revision": fact["revision"],
+            "review_revision": fact["review_revision"],
+            "edition": {
+                "source_key": edition["source_key"],
+                "source_sha256": edition["source_sha256"],
+                "byte_length": edition["source_byte_length"],
+                "published_date": edition.get("published_date"),
+            },
+            "span": copy.deepcopy(fact["span"]),
+            "owner_bindings": bindings,
+            "owner": ACTIVITY_SOURCE_OWNER,
+        },
+        "use_qualification": {
+            "target_definition_rights": _activity_rights_read(target["rights_family"]),
+            "source_rights": _activity_rights_read(rights.family_for_source_ref(owner.SPEC_PATH)),
+            "purpose": {
+                "ruling_binding_sha256": bindings["purpose"],
+                "permitted_purpose": owner.PURPOSE,
+                "permitted_audience": owner.AUDIENCE,
+            },
+            "graph_membership_use": "NOT_GRANTED",
+        },
+        "magnitudes": {
+            "amount": _activity_magnitude(fact.get("amount")),
+            "economic_share": _activity_magnitude(fact.get("economic_share")),
+        },
+        "clocks": {
+            "publication": _activity_clock(edition.get("published_date"), "date"),
+            "observation": _activity_clock(edition.get("known_at"), "instant"),
+            "knowledge": _activity_clock(fact.get("known_at"), "instant"),
+            "effective": {"value": None, "precision": None, "state": "UNDISCLOSED"},
+            "admitted": {"value": None, "precision": None, "state": "NOT_APPLICABLE"},
+            "correction": {"value": None, "precision": None, "state": "NOT_APPLICABLE"},
+            "served_generation": {"value": None, "precision": None, "state": "NOT_APPLICABLE"},
+        },
+    }

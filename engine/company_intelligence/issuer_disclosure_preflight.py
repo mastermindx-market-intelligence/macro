@@ -38,6 +38,14 @@ MODULE_NAMES = (
     'engine.company_intelligence.current_context_runtime',
     'scripts.publish_company_disclosure',
 )
+APPEND_MODULE_NAMES = (
+    'engine.company_intelligence.sec_supplier_adoption',
+    'engine.fundamental_forensics.filing_attestation',
+    'engine.fundamental_forensics.source_sync',
+    'engine.fundamental_forensics.sec_document_spine',
+    'engine.fundamental_forensics.models',
+    'engine.research_vault.r2_store',
+)
 ROOT_KEYS = ('.', 'state', 'state/generations', 'artifacts', 'publisher',
              'publisher/source', 'publisher/operations')
 WRITE_ROOTS = ROOT_KEYS
@@ -46,7 +54,7 @@ _SHA = re.compile(r'[0-9a-f]{64}\Z')
 _NS = re.compile(r'mnt:\[\d+\]\Z')
 _UNIT = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.:@-]{0,255}\Z')
 _INVOC = re.compile(r'(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\Z')
-_MODE = frozenset({'STAGE_MEMBERS', 'PROMOTE_CURRENT'})
+_MODE = frozenset({'STAGE_MEMBERS', 'PROMOTE_CURRENT', 'APPEND_CURRENT_MEMBER'})
 _SYS_KEYS = frozenset({'MainPID', 'InvocationID', 'ControlGroup', 'Id'})
 
 
@@ -516,13 +524,15 @@ def read_repo_file(repo, rel: str, maximum: int = MAX_PROC_BYTES) -> bytes:
             os.close(fd)
 
 
-def collect_on_disk_provenance(git, modules) -> dict:
+def collect_on_disk_provenance(git, modules, *, mode=None) -> dict:
     """On-disk provenance only; not an attestation of previously loaded code."""
     head = git._head()
     native._require(type(head) is str and _OID.fullmatch(head), 'PREFLIGHT_PRODUCER_HEAD')
     repo = Path(git.repo)
     found = []
-    for name in MODULE_NAMES:
+    native._require(mode is None or (type(mode) is str and mode in _MODE), 'PREFLIGHT_MODE_DRIFT')
+    names = MODULE_NAMES + (APPEND_MODULE_NAMES if mode == 'APPEND_CURRENT_MEMBER' else ())
+    for name in names:
         mod = modules.get(name)
         if name == 'scripts.publish_company_disclosure':
             main = modules.get('__main__')
@@ -559,14 +569,19 @@ def collect_on_disk_provenance(git, modules) -> dict:
 
 def bind_prepared_intent(source, intent, expected, *, same_manifest=None) -> object:
     """Re-read source just before reservation; bind the single prepared intent."""
+    append = type(intent) is dict and intent.get('schema') == 'company_intelligence.native_publication_intent/v2'
     native._closed(intent, {'schema', 'manifest', 'manifest_reference',
-                            'expected_current_version', 'expected_current_sha256', 'mode'})
-    native._require(intent['schema'] == 'company_intelligence.native_publication_intent/v1',
+                            'expected_current_version', 'expected_current_sha256', 'mode'}
+        | ({'prior_manifest', 'preserved_members', 'collection', 'collection_reference'} if append else set()))
+    native._require(intent['schema'] == ('company_intelligence.native_publication_intent/v2' if append
+        else 'company_intelligence.native_publication_intent/v1'),
                     'PREFLIGHT_SOURCE_DRIFT')
     snapshot = source.snapshot()
     native._require(snapshot.code_version == expected['code_version']
                     == intent['manifest']['code_version'], 'PREFLIGHT_SOURCE_DRIFT')
-    mode = 'PROMOTE_CURRENT' if snapshot.dataset_status == 'PRODUCED' else 'STAGE_MEMBERS'
+    mode = 'APPEND_CURRENT_MEMBER' if append else ('PROMOTE_CURRENT' if snapshot.dataset_status == 'PRODUCED' else 'STAGE_MEMBERS')
+    native._require(not append or (snapshot.dataset_status == 'PRODUCED' and same_manifest is not None),
+                    'PREFLIGHT_APPEND_BINDING_REQUIRED')
     native._require(mode == expected['mode'] == intent['mode'], 'PREFLIGHT_MODE_DRIFT')
     native._require(intent['manifest_reference']['sha256']
                     and type(intent['manifest_reference']['sha256']) is str, 'PREFLIGHT_SOURCE_DRIFT')
@@ -634,7 +649,10 @@ def finalize_gate(expected, capture, source, intent, mounts, *, now: str | None 
                     == os.path.abspath(source.git.repo), 'PREFLIGHT_PRODUCER_REPO')
     bind_prepared_intent(source, intent, expected, same_manifest=same_manifest)
     if provenance is None:
-        provenance = collect_on_disk_provenance(source.git, modules if modules is not None else {})
+        if expected['mode'] == 'APPEND_CURRENT_MEMBER':
+            provenance = collect_on_disk_provenance(source.git, modules if modules is not None else {}, mode=expected['mode'])
+        else:
+            provenance = collect_on_disk_provenance(source.git, modules if modules is not None else {})
     native._require(source.git._head() == provenance['head'] == expected['code_version']
                     == intent['manifest']['code_version'] == capture['provenance']['head'],
                     'PREFLIGHT_SOURCE_DRIFT')

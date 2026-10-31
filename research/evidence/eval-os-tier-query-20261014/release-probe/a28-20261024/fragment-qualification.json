@@ -1,0 +1,63 @@
+{
+  "state": "QUALIFIED_LOCAL_CORRECTION_COMMIT",
+  "commit": "5c3c17e708e72e0cfd31872cd0c3bf942d091d2d",
+  "tree": "e07d6f0be468406445c1a09901df79d250d4c582",
+  "sole_parent": "e09d782cb595407c00f3ab69b8a69de55c2e8b02",
+  "source_base_chain": [
+    "82c1f751171f15d2efc76fba994bd7f5449e97e1",
+    "e09d782cb595407c00f3ab69b8a69de55c2e8b02",
+    "5c3c17e708e72e0cfd31872cd0c3bf942d091d2d"
+  ],
+  "changed_paths": [
+    ".github/ci/legacy-jobs.yml"
+  ],
+  "manifest_blob": "9b2e2a7d36d00208e03130aa76640fb9fae87254",
+  "clean_worktree": true,
+  "cause": "The neural-web20 and qledger-cluster-honest-ci1040 paths were valid indentless YAML entries at4spaces. The incumbent fragment parser accepts6spaces; it returned[] for those fragments and violated the unchanged full-manifest parity assertion. Exacte09 local reproducer fails; immutable82c and8609/tree9995 comparisons show the same two source mismatches.",
+  "fix": "Normalize only those1060 path-entry lines by adding2leading spaces. Entire parsed manifest/all355definitions, job order, ordered path memberships, commands, assertions, dependencies, selectors, weights and limits equal. Parser and parity test remain exact82c bytes.",
+  "checks": {
+    "original_assertion_red": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "full_fragment_suite_green": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CI_controls_green": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "canonical_two_job_closure": {},
+    "hosted_manifest_local_projection": "fragment-hosted-projection.json: semantic document unchanged; all355job paths match after same local representation projection. No actual integration, commit ancestry or replay from testedmerge.",
+    "runtime_reuse": "Accepted e09 T4/T1 and A1 composed178 runtime, retained26T1(unique union203) and84selftest remain valid: all executable source and runtime inputs unchanged. No broad runtime/packing repeat.",
+    "diff_check": "PASS"
+  },
+  "hosted_failure": {
+    "PR": 10130,
+    "subject_head": "82c1f751171f15d2efc76fba994bd7f5449e97e1",
+    "run": "40058907449",
+    "attempt": 1,
+    "pack": 1,
+    "job": "120768708290",
+    "artifact": "12547617051",
+    "zip_sha256": "9202109686605ee272a8072b5c11c1e5c2a53fd72967f3f6f9bcff895ba1f6eb",
+    "classification": "UNKNOWN retained",
+    "failure_atom": "pytest:failed:tests/test_ci_pack_fragments.py::test_job_paths_match_the_manifest_document:reason=c06deec8eca08cc8d710228443819137550e29ee1ea1481c3884f8400b5aae6f",
+    "exact_base_replay": "timed_out; original descendant settlementUNKNOWN; no retry/replay",
+    "local_base_comparison": "Pure helper comparison of immutable dfb1 bytes found no path mismatches. This is not hostedbasePASS, a classification upgrade or an effect reconciliation."
+  },
+  "discarded_proposal": "Only our own uncommitted synthetic parser-indentation test was removed per principal ruling; parser source was never edited. Its retained intentionalred is not part of candidate qualification.",
+  "effects": "One ordinary local commit settled. No publishedcarrierwrite/push/PR/CIproducer/manualmainintegration/rawhostedlogs/productionread/deploy/restart. No Fabric retry/replacement.",
+  "next_action": "Root may consume this descendant together with e09 on original carrier only after existingCI terminal and fresh normal admission/custody/protected-source reconciliation. Current hosted qualification is not cleared by local results.",
+  "A28": "OPEN with existing causal limits; no production performance acceptance.",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "native_parent": "01a15874-986e-7891-95d2-c6e45555a49b",
+  "at": "2026-10-24T04:23:14.500903+00:00"
+}

@@ -372,3 +372,109 @@ class TestPredicateCoversEveryGateKey:
             s = _standouts(**{bucket: [_row("AAPL", _blob(ticks=0))]})
             assert incoherent_tickers(s, _gate({"AAPL": _gate_entry(ticks=3)})) == \
                 {"AAPL": ["ticks"]}, f"{bucket} rows must be graded"
+
+
+# ---------------------------------------------------------------------------
+# 10. W19-F Spec 4: the gate's own validity receipt reaches the Discovery page
+# ---------------------------------------------------------------------------
+
+# signal_gate.json `validity` as committed (engine/signal_gate.py validity_block).
+_W19F_VALIDITY = {
+    "schema": "signal_gate.validity/v1", "source_session": "2026-10-14",
+    "emitted_at": "2026-10-15T01:12:00+00:00", "expected_last_session": "2026-10-16",
+    "lag_sessions": 2, "settled": True, "valid_for_decision_sessions": ["2026-10-15"],
+    "expiry_session": "2026-10-15", "lineage_token": "x",
+}
+
+
+def _w19f_page(**over):
+    from jinja2 import Environment, FileSystemLoader
+    from engine.i18n import td, tr
+    root = Path(__file__).resolve().parent.parent / "templates"
+    env = Environment(loader=FileSystemLoader(str(root)), autoescape=True)
+    env.globals.update(td=td, tr=tr)
+    ctx = dict(strongest=[], weakest=[], buyzone=[], sectors=[], by_sector={}, sector_order=[],
+               tilt_legs=[], alpha_w=0.6, tilt_w=0.4, banner=None, attn_threshold=2.0,
+               as_of="2026-10-16", windows={}, n=0, n_buyable=0, built="2026-10-19 10:06 UTC")
+    ctx.update(over)
+    return env.get_template("discovery.html.j2").render(**ctx)
+
+
+def _w19f_asof(html: str) -> str:
+    """The as-of paragraph: a little before it through its close."""
+    i = html.index("形成窗口")
+    return html[i - 600: html.index("</p>", i)]
+
+
+def _w19f_gate_text(tmp_path: Path, text: str) -> None:
+    fd = tmp_path / "factordata"
+    fd.mkdir(parents=True, exist_ok=True)
+    (fd / "signal_gate.json").write_text(text)
+
+
+def test_w19f_gate_validity_reads_block(tmp_path):
+    from scripts import build_discovery as bd
+
+    _write_pair(tmp_path, _standouts(),
+                _gate({"AAPL": _gate_entry()}, validity=_W19F_VALIDITY))
+    assert bd._gate_validity(tmp_path) == _W19F_VALIDITY
+    # the verdicts contract above stays byte-identical: same dict, same keys
+    assert bd._signal_verdicts(tmp_path, None) == {"AAPL": _gate_entry()}
+
+
+def test_w19f_gate_validity_none_cases(tmp_path):
+    from scripts import build_discovery as bd
+
+    assert bd._gate_validity(tmp_path) is None                     # (i) no gate artifact
+    _write_pair(tmp_path, _standouts(), _gate({"AAPL": _gate_entry()}))
+    assert bd._gate_validity(tmp_path) is None                     # (ii) no validity block
+    _write_pair(tmp_path, _standouts(), _gate({"AAPL": _gate_entry()}, validity="x"))
+    assert bd._gate_validity(tmp_path) is None                     # (iii) not a mapping
+    _w19f_gate_text(tmp_path, "{")                                 # (iv) unparseable
+    assert bd._gate_validity(tmp_path) is None
+
+
+def test_w19f_asof_line_shows_validity():
+    base = _w19f_page()
+    html = _w19f_page(gate_validity=_W19F_VALIDITY)
+    clause = _w19f_asof(html)
+    assert "2026-10-14" in clause and "2026-10-16" in clause       # both receipts side by side
+    assert "2 sessions behind" in clause and "落后 2 个交易日" in clause
+    assert "valid through 2026-10-15" in clause and "有效至 2026-10-15" in clause
+    # the producer states the receipt; the page must not add a verdict of its own
+    for word in ("expired", "stale"):
+        assert html.lower().count(word) == base.lower().count(word), word
+
+
+def test_w19f_asof_line_validity_edges():
+    for html in (_w19f_page(), _w19f_page(gate_validity=None)):     # absent / None
+        clause = _w19f_asof(html)
+        assert "sessions behind" not in clause and "session behind" not in clause
+        assert "valid through" not in clause and "有效至" not in clause
+        assert "2026-10-16" in clause                               # the as-of never vanishes
+    lag0 = _w19f_asof(_w19f_page(gate_validity={**_W19F_VALIDITY, "lag_sessions": 0}))
+    assert "valid through 2026-10-15" in lag0                       # expiry still honest
+    assert "sessions behind" not in lag0 and "session behind" not in lag0
+    neg = _w19f_asof(_w19f_page(gate_validity={**_W19F_VALIDITY, "lag_sessions": -1}))
+    assert "behind" not in neg                                      # ahead of the source
+    one = _w19f_asof(_w19f_page(gate_validity={**_W19F_VALIDITY, "lag_sessions": 1}))
+    assert "1 session behind" in one and "落后 1 个交易日" in one    # singular
+
+
+def test_w19f_main_passes_gate_validity():
+    import inspect
+
+    from scripts import build_discovery as bd
+    assert "gate_validity=_gate_validity(site)" in inspect.getsource(bd.main)
+
+
+def test_w19f_asof_line_partial_validity():
+    full = _w19f_asof(_w19f_page(gate_validity=_W19F_VALIDITY))
+    assert "entry signals from session" in full and "入场信号取自交易日" in full
+    nosrc = {k: v for k, v in _W19F_VALIDITY.items() if k != "source_session"}
+    clause = _w19f_asof(_w19f_page(gate_validity=nosrc))
+    assert "entry signals from session" not in clause and "入场信号取自交易日" not in clause
+    noexp = {k: v for k, v in _W19F_VALIDITY.items() if k != "expiry_session"}
+    clause = _w19f_asof(_w19f_page(gate_validity=noexp))
+    assert "2 sessions behind" in clause and "落后 2 个交易日" in clause
+    assert "valid through" not in clause and "有效至" not in clause
