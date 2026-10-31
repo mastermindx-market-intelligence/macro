@@ -465,8 +465,10 @@ waves:
     depends_on: [GD-PB-W7, GD-PB-W8]
   - id: EW-P0
     title: EW-P0 records - adopt the 2026-10-31 Chairman packet as an amendment to the #10219 task tree; takeover record; refreshed invalidators
-    status: awaiting_ci
-    # Seat 00dea969 (Fable CEO). Adoption record research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md; handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md.
+    status: done
+    pr: 10249
+    # MERGED 2026-10-31T16:09:14Z, squash 1d937d7e2b36 (head 5db467300b63 after review GD-EW-P0-R2 repair). Seat 00dea969 (Fable CEO).
+    # Adoption record research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md; handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md.
     depends_on: [GD-RR-CENSUS-20261017]
   - id: EW-P1
     title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
@@ -476,12 +478,15 @@ waves:
     depends_on: [EW-P0]
   - id: EW-P2
     title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
-    status: in_progress
-    # ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; #10104 (head a324b7fc, merge-base c9608be2) left open with a successor pointer. Activation (T2+) needs its own gate.
+    status: awaiting_ci
+    pr: 10325
+    # Draft #10325 head f2532edbaa2d (parent main f2efb8faf983) by ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; review lane gd-ew-p2-r1 APPROVE (R1-R11 hold); flag gate ROTATION_OBSERVATION_RECORDING_ENABLED != "1" keeps recording off.
+    # #10104 (head a324b7fc, merge-base c9608be2) left open; successor pointer comment posted once 2026-10-31. Activation (T2+) needs its own gate.
     depends_on: [EW-P0]
   - id: EW-P3
     title: EW-P3 forecast-science prereg lane (product B) per the masterplan - own blob pin, size/power before any read
-    status: todo
+    status: in_progress
+    # Census lane GD-EW-P3-C1 done 2026-10-31 (10 RISK_RADAR preregs; no named claim/evidence ledger file; LR V2 reserves the V3 name). ORCH-P3 drafts CLAIM_EVIDENCE_CONTRACT_v1_DRAFT with SEAT DECIDES points; seat freezes before any registration; zero outcome rows read.
     depends_on: [EW-P1]
   - id: EW-P4
     title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
@@ -492,10 +497,12 @@ waves:
     status: todo
     depends_on: [EW-P1, EW-P2, EW-P3, EW-P4]
 next_action: >
-  2026-10-31 (Fable CEO seat 00dea969, Chairman packet adopted as amendment to #10219): EW-P1.T2 QLedger
-  carve-out parity (ORCH-P1) and EW-P2.T1 #10104 successor (ORCH-P2) are in flight on fabric lanes; seat
-  judges by artifact, fresh non-authoring review, merge --match-head-commit, then a durable watcher for two
-  natural nightly sessions. See research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md and
+  2026-10-31 (Fable CEO seat 00dea969, Chairman packet adopted as amendment to #10219): EW-P0 merged
+  (#10249 -> 1d937d7e2b36). EW-P2.T1 successor is draft #10325 awaiting CI; EW-P1.T2 carve parity (ORCH-P1)
+  is on its branch awaiting its PR; EW-P3 contract draft (ORCH-P3) is in flight. Seat judges by artifact,
+  fresh non-authoring review, merge --match-head-commit, then a durable watcher for two natural nightly
+  sessions (run 41156792292 of 10-30: collect success, collect_tail FAILURE, engine CANCELLED 09:29Z; last
+  engine data commit on main is still ad6e5a824334). See research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md and
   handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md. Older frontier retained below.
 
   Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.

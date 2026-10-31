@@ -54,9 +54,11 @@ verified:
   - claim: The Agent OS record set validates after this change.
     command: python3 scripts/agentos.py validate
     result: see the records PR body for the exact exit code and warning count at the pushed head.
+  - claim: The 2026-10-30 natural run 41156792292 landed no engine data commit.
+    command: gh run view 41156792292 --json status,conclusion,jobs
+    result: >-
+      completed/failure; collect success 04:55:23Z, collect_tail failure 05:26:25Z, engine CANCELLED 09:29:59Z (not a GH001 push failure; the job did not reach a commit). origin/main's last engine data commit remains ad6e5a824334.
 unverified:
-  - claim: The 2026-10-30 natural run 41156792292 engine job also lost its commit to GH001.
-    what_would_verify: Read its engine job conclusion and log once the run completes; the collect_tail job was already FAILURE at 06:2xZ.
   - claim: EW-P1 repair restores the nightly engine data commit.
     what_would_verify: >-
       Two natural nightly sessions after merge in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances; observed by a durable watcher, never polled.
