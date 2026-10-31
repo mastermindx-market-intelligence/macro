@@ -102,6 +102,14 @@
 
         <div class="intl-gs__card intl-gs__edges">
           {{ gs.gs_bandhead(t('Typed edges', '类型化传导'), qnum='Q4 · Q5') }}
+          {# §14 Graph boundary (DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP): the chip
+             label vocabulary is the engine's closed LABELS carried by the
+             builder payload; the template maps only label id -> existing chip
+             kind and never re-types a label string. A refused row (None)
+             omits the chip and renders the graph_boundary_unavailable note. #}
+          {% if market.graph_boundary %}
+          <span data-graph-boundary="{{ market.graph_boundary.label|e }}">{{ gs.gs_chip(t(market.graph_boundary.label_en, market.graph_boundary.label_zh), {'qualified_candidate': 'warn-dashed', 'structural_research': 'muted-dashed'}.get(market.graph_boundary.label, '')) }}</span>
+          {% endif %}
           <table class="intl-gs__table intl-gs__edgetable">
             <thead><tr><th scope="col">{{ t('Channel', '渠道') }}</th><th scope="col">{{ t('Status', '状态') }}</th></tr></thead>
             <tbody>
@@ -115,6 +123,11 @@
               {% endif %}
             </tbody>
           </table>
+          {% if market.graph_boundary %}
+          {{ gs.gs_footnote(ds.ds_pairs_text(market.graph_boundary_footnote)) }}
+          {% else %}
+          {{ ds.ds_abstain_note('graph_boundary_unavailable', abstain['graph_boundary_unavailable']) }}
+          {% endif %}
         </div>
 
       </div>

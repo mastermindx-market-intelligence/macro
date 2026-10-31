@@ -10598,6 +10598,12 @@ jobs:
       - "engine/intl_global_acceptance_matrix.py"
       - "engine/intl_global_dollar_credit.py"
       - "engine/global_liquidity_transmission.py"
+      # gb1a (§14 graph-boundary chip): the dossier builder/tests import the
+      # two engine modules and load the frozen channels config — the checker-
+      # prescribed widening (safe direction), same closure rule as above.
+      - "engine/intl_global_graph_boundary.py"
+      - "engine/intl_transmission_evidence.py"
+      - "config/intl_transmission_channels_v1.json"
       - "config/global_liquidity_transmission_v1.yml"
       - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
       - "tests/test_intl_gs_dossier.py"
