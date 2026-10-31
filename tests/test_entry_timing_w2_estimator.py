@@ -49,6 +49,29 @@ def test_shared_index_set_makes_endpoints_commensurable():
     assert np.array_equal(idx, est.shared_index_set(230, resamples=500))   # deterministic
 
 
+def test_two_endpoints_on_different_unit_subsets_use_the_same_session_draws():
+    # round-7 N8: endpoint A lives on every session, endpoint B only on a sparse subset; both must be
+    # resampled from the SAME session blocks, so B's bootstrap mean on any draw equals the mean of B's
+    # units over exactly the sessions that draw selects (recomputed here by hand from the index set).
+    rng = np.random.default_rng(11)
+    n = 230
+    vals_a, sess_a = _units(n, 3, rng)
+    sess_b = np.arange(0, n, 7)                      # one unit on every 7th session only
+    vals_b = rng.normal(0.0, 1.0, size=len(sess_b))
+    idx = est.shared_index_set(n, resamples=50)
+    a = est.mbb_bounds(vals_a, sess_a, n, index_set=idx)
+    b = est.mbb_bounds(vals_b, sess_b, n, index_set=idx)
+    assert a["resamples_used"] == 50 and b["resamples_used"] == 50
+    sums_b = np.bincount(sess_b, weights=vals_b, minlength=n); cnt_b = np.bincount(sess_b, minlength=n)
+    sums_a = np.bincount(sess_a, weights=vals_a, minlength=n); cnt_a = np.bincount(sess_a, minlength=n)
+    by_hand_b = np.array([sums_b[d].sum() / cnt_b[d].sum() for d in idx])
+    by_hand_a = np.array([sums_a[d].sum() / cnt_a[d].sum() for d in idx])
+    assert b["lower"] == pytest.approx(np.percentile(by_hand_b, 5)) and b["upper"] == pytest.approx(np.percentile(by_hand_b, 95))
+    assert a["lower"] == pytest.approx(np.percentile(by_hand_a, 5))
+    # a different seed for B alone would break commensurability; the shared set forbids it
+    assert not np.array_equal(idx, est.shared_index_set(n, resamples=50, seed=est.SEED + 1))
+
+
 def test_deciding_bound_is_the_conservative_of_the_two():
     rng = np.random.default_rng(4)
     vals, sess = _units(264, 5, rng, block_shift=3.0)
@@ -81,7 +104,7 @@ def test_block_level_dependence_inflates_the_design_effect():
 def test_t_bound_se_is_inflated_for_block_mean_autocorrelation():
     from research.prophet_v4.entry_timing_w2_estimator import se_inflation, lag1_autocorr, full_block_t_bounds
     assert se_inflation(0.0, 5) == 1.0
-    assert abs(se_inflation(0.17, 5) - 1.165) < 0.005
+    assert se_inflation(0.17, 5) == pytest.approx(1.1682, abs=5e-4)
     assert se_inflation(0.3, 5) > se_inflation(0.17, 5) > 1.0
     assert lag1_autocorr([1.0, 1.0, 1.0]) == 0.0
     assert lag1_autocorr([1, -1, 1, -1, 1, -1]) < 0.0

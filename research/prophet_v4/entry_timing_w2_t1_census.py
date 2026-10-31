@@ -1,4 +1,4 @@
-"""Entry Timing W2 — T1 feasibility census (v7). Dates, tickers, lane/tier flags and commit
+"""Entry Timing W2 — T1 feasibility census (v8). Dates, tickers, lane/tier flags and commit
 times ONLY. Reads no price, grade, outcome, excess or paired-race column; the SPY parquet is
 opened for its DATE INDEX only (the NYSE session calendar).
 
@@ -539,7 +539,11 @@ def main() -> None:
     ap.add_argument("--buffer-minutes", type=int, default=30)
     ap.add_argument("--document-walk", action="store_true")
     ap.add_argument("--server-arrival", action="store_true")
+    ap.add_argument("--main-sha", help="pin the walk to this commit instead of resolving origin/main (round-7 N2: reproducible re-run)")
     a = ap.parse_args()
+    global MAIN_SHA
+    if a.main_sha:
+        MAIN_SHA = subprocess.run(["git", "rev-parse", "--verify", a.main_sha + "^{commit}"], capture_output=True, text=True, check=True).stdout.strip()
     global USE_SERVER_ARRIVAL
     USE_SERVER_ARRIVAL = bool(a.server_arrival)
     c, opened, sessions = _stamps(), _opened(), _sessions()

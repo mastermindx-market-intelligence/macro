@@ -97,19 +97,25 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-19": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-17": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
    "2026-08-07": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-14": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-12": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-18": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -127,7 +133,7 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-18": {
+   "2026-08-17": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -139,13 +145,7 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-12": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-14": {
+   "2026-08-19": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -1005,7 +1005,7 @@
   "executable_lead_sessions_exact_strict": null
  },
  "provenance": {
-  "census_version": "v7",
+  "census_version": "v8",
   "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --server-arrival --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
   "lane_state": "first-parent ARRIVAL on origin/main pinned at a7eef2ce9737 (resolved once at start-up and passed to every git read of both walks) (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
@@ -1022,6 +1022,11 @@
    "server witness restricted to check suites on branch main; with_server_witness_on_main + with_a_suite_on_another_branch exported (round-6 m5)",
    "t1_buy_stamp_inside_k_but_knowable_outside counts distinct units (21), late_hit_stamp_lag_sessions still counts rows (23) (round-6 m4)",
    "document walk records skipped blobs (undecodable / shape / digest) in skipped_docs (round-6 m7)"
-  ]
+  ],
+  "v8_changes": [
+   "--main-sha <sha> pins the walk for a reproducible re-run (round-7 N2); this file is the re-run at --main-sha a7eef2ce9737 and reproduces v7 on every top-level key (freeze_basis.counts, both walks, witness 31/44 + 23/54 on main, 0 off-main, skipped blobs/docs [])",
+   "no census logic change; v7 facts stand"
+  ],
+  "rerun_command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737"
  }
 }

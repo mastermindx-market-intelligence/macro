@@ -1,4 +1,4 @@
-"""Entry Timing W2 — the frozen estimator (registration r6, W2-ADJ-05 / W2-ADJ-07).
+"""Entry Timing W2 — the frozen estimator (registration r8, W2-ADJ-05 / W2-ADJ-07 / W2-ADJ-10).
 
 Deciding one-sided 95% bounds are the more conservative of
 
@@ -112,11 +112,11 @@ def lag1_autocorr(block_means) -> float:
 
 
 def se_inflation(r: float, B: int) -> float:
-    """SE inflation for B adjacent block means with lag-1 autocorrelation r (AR(1)-at-lag-1 approximation).
+    """SE inflation for B adjacent block means with lag-1 autocorrelation r (exact for adjacent-only, lag-1 correlation).
 
     Var(mean) = (sigma^2 / B) * (1 + 2 r (B-1)/B); the sample variance of the block means is itself biased
     down by a factor (1 - 2 r / B), so the ratio of the correct SE to the naive SE is
-    sqrt((1 + 2 r (B-1)/B) / (1 - 2 r / B)).  At B = 5 and r = 0.17 this is ~1.165.
+    sqrt((1 + 2 r (B-1)/B) / (1 - 2 r / B)).  At B = 5 and r = 0.17 this is 1.1682.
     """
     if B < 2 or r <= 0.0:
         return 1.0

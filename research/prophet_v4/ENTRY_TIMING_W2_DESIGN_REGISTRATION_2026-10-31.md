@@ -1,4 +1,4 @@
-# Entry Timing W2 — design registration: does entering at first persisted discovery beat following the BUY lane? (2026-10-31, revision 7)
+# Entry Timing W2 — design registration: does entering at first persisted discovery beat following the BUY lane? (2026-10-31, revision 8)
 
 **Status: DRAFT — UNFROZEN.** Nothing in this document is registered until (a) an independent
 non-author review returns APPROVE-READY-TO-FREEZE on the exact revision, (b) the frozen-field block
@@ -21,8 +21,10 @@ bot's commit clock; M2 a late-knowable BUY row ended the window scan; M3 exact u
 admission entered the strict set; M4 the anchor gates were applied to T1, which the lane never uses;
 M5 the `origin/main` walk was unpinned; m1–m5; n1). r6 → REVISE (B1 the YAML avoided window still
 said "every arm"; M1 the t(B − 1) bound ignored the lag-1 autocorrelation of adjacent block means; M2
-the walk SHA was read after the walk, not pinned for it; m1–m7; n1–n2). r7 (this revision) keeps
-ADJ-01..09 and adds one adjudication. Each is stated with its reason so a reviewer can attack the ruling and not only the
+the walk SHA was read after the walk, not pinned for it; m1–m7; n1–n2). r7 → REVISE (no blocker;
+N1 the +1-clock readouts existed for R only, so P had no bound on unwitnessed arrival clocks; N2 the
+census could not be re-run at the pinned SHA; N3–N8 text, constant, rationale and test nits). r8
+(this revision) keeps ADJ-01..10 and changes no hypothesis, endpoint, floor, tolerance or critical value. Each is stated with its reason so a reviewer can attack the ruling and not only the
 text:
 
 - **W2-ADJ-01 — the promotable primary is the implementable policy.** Round 2 rejected the
@@ -81,15 +83,17 @@ text:
   inference artifact (round-5 B1/B2).
 - **W2-ADJ-08 — the arrival clock is the commit clock corrected by a server witness.** The
   first-parent `%cI` instant on `origin/main` is the pushing bot's clock, not GitHub's receipt. Census
-  v6 corrects every first-arrival commit to max(commit instant, earliest check-suite `createdAt`
+  v7 corrects every first-arrival commit to max(commit instant, earliest check-suite `createdAt`
   on branch `main` for that commit — a server-side witness created on push; suites on other branches
   are ignored, round-6 m5): a witness exists for 31 of 44 stamp
   commits and 23 of 54 document commits, every witness lies within 2 minutes after the commit
   clock, and no knowable session changes. Commits without a witness keep the commit clock and are
-  listed. The R readout is also reported with `c_disc` shifted +1 session alone, `c_cur` +1 alone and
-  both +1 (m5). Reason: a bot clock
-  could run early; the witness bounds the error where it exists and the uniform shift bounds it
-  where it does not (round-5 M1).
+  listed. The R readout **and every deciding P look record** (futility, fixed) are also reported
+  with `c_disc` shifted +1 session alone, `c_cur` +1 alone and both +1 — descriptive on P, never a
+  substitute for the registered clock (m5; round-7 N1). Reason: a bot clock could run early (a push
+  rejected by GH001 and retried later carries the earlier commit clock, and witness coverage falls
+  from late September on); the witness bounds the error where it exists and the uniform +1 readout
+  bounds it where it does not, on both looks (round-5 M1).
 - **W2-ADJ-09 — T1 is the lane as practised and never reads the anchor.** The BUY lane's admission
   gates live in `engine/us_candidate_lanes.py` `_classify_buy_row`; the lane does not know the
   discovery anchor, so AVOIDED and REFUSED apply to T0, T2 and T3 (challenger rules that declare the
@@ -104,8 +108,9 @@ text:
   ADJ-07 therefore uses SE = (SD of block means / √B) × √((1 + 2r(B − 1)/B) / (1 − 2r/B)) with
   r = max(observed lag-1 autocorrelation of the adjacent block means, 0.17) — ≈ 1.17× at B = 5 —
   and the look record reports the observed r, the r used and the factor. The block bootstrap is
-  unchanged (its blocks already carry the within-block dependence; the edge leak is what the factor
-  covers). Implemented in `research/prophet_v4/entry_timing_w2_estimator.py` (`se_inflation`,
+  left uncorrected: independently drawn blocks omit the same edge covariance, so it carries the same
+  downward bias, and the conservative-of-two rule makes the inflated t bound the honest floor
+  (round-7 N5). Implemented in `research/prophet_v4/entry_timing_w2_estimator.py` (`se_inflation`,
   `full_block_t_bounds`) with tests. Reason: round-6 M1 — with the naive SE the t bound was
   anti-conservative by 8–17% at B = 5, and the "conservative of two" rule only helps if each bound is
   honest on its own.
@@ -292,7 +297,7 @@ sensitivity (T1b), descriptive.
 | Rule | Definition (frozen) |
 | --- | --- |
 | Knowable session `k(c)` | For an artifact whose first blob **arrived on first-parent `origin/main`** at instant `c` — the commit clock corrected by the server witness where one exists (ADJ-08; ET; a side-branch committer time is never used), the first NYSE session whose 16:00 ET close is strictly after `c + 30 min`. Applied identically to the discovery document (`c_disc`) and the BUY stamp (`c_cur`). Census v7: both are 1 session after their date for every R exact pair (26/26 and 26/26); over all 54 receipts the shift is 1 session for 37 and 2–11 for 17 (documents of the 2026-08-21 and 09-04 data sessions that reached `origin/main` days later; inside R only 11 units carry a 2-session shift), and over all 54 stamp dates it is 1 for 32, 2 for 12 and 3–16 for 10. Every unit is timed by its own receipt's and stamp's arrival, never by a modal shift. |
-| Anchor knowability | The generation's `recorded_at` is not the T0 clock (the document is the persisted discovery), but the anchor and identity come from the OPENED payload, so a challenger arm's anchor gates (AVOIDED, REFUSED — T0, T2, T3 only, ADJ-09) and every arm's false-start flag use the payload only if `recorded_at` ≤ the T0 fill instant (16:00 ET of `t_exec(T0)`); otherwise the unit is UNKNOWN (anchor) and leaves the primary, counted. Census v5: 1,087 of 1,087 R units satisfy it. |
+| Anchor knowability | The generation's `recorded_at` is not the T0 clock (the document is the persisted discovery), but the anchor and identity come from the OPENED payload, so a challenger arm's anchor gates (AVOIDED, REFUSED — T0, T2, T3 only, ADJ-09) and every arm's false-start flag use the payload only if `recorded_at` ≤ the T0 fill instant (16:00 ET of `t_exec(T0)`); otherwise the unit is UNKNOWN (anchor) and leaves the primary, counted. Census v7: 1,087 of 1,087 R units satisfy it (`recorded_at_le_t0_fill`). |
 | Fill | `t_exec = k(c) + 1`: the close of the session after the knowable session. An intraday commit can never fill at the same session's close. |
 | Invalidation anchor | OPENED `payload.structural_anchor.price` (`turn_watch_reset_low`, adjusted-close basis), the same number for every arm. |
 | AVOIDED (T0, T2, T3 — never T1, ADJ-09) | if any session close in `[t_disc, t_exec − 1]` is below the anchor, the challenger arm does not enter; cash 0; recorded AVOIDED. T1 enters whenever the lane admitted inside K; its only gates are `_classify_buy_row`'s. |
@@ -305,7 +310,7 @@ sensitivity (T1b), descriptive.
 
 | Tolerance | Value | Binding |
 | --- | --- | --- |
-| (i) false-start rate | on co-condition pairs (both arms enter) **excluding ENTERED_BELOW_ANCHOR pairs** — a pair whose T1 fill close is already below the anchor is flagged `ENTERED_BELOW_ANCHOR`, counted in the waterfall and kept in every other endpoint, but left out of this rate's denominator for both arms, because the false-start rule would flag such a T1 mechanically (round-6 m6; the exclusion removes T1's surest false starts, lowers T1's rate and so makes T0's excess larger — conservative against PROMOTE) — T0's false-start rate may exceed T1's by at most **10 percentage points** absolute | blocks PROMOTE at the fixed look; descriptive before it (at 100 pairs the resolvable difference is ≈ 15 pp) |
+| (i) false-start rate | on co-condition pairs (both arms enter) **excluding ENTERED_BELOW_ANCHOR pairs** — a pair whose T1 fill close is already below the anchor is flagged `ENTERED_BELOW_ANCHOR`, counted in the waterfall and kept in every other endpoint, but left out of this rate's denominator for both arms, because the false-start rule would flag such a T1 mechanically (round-6 m6; the excluded pairs are ones on which T1 is a false start by construction and T0 is usually one too — T1's below-anchor fill falls inside T0's hold for 1 ≤ L ≤ 10, and with L = 0 T0 is REFUSED and the pair is not in this rate at all — so each excluded pair contributes fs₀ − 1 ≤ 0 to the difference and removing them raises T0's measured excess toward the +10 pp limit: conservative against PROMOTE, round-7 N6) — T0's false-start rate may exceed T1's by at most **10 percentage points** absolute | blocks PROMOTE at the fixed look; descriptive before it (at 100 pairs the resolvable difference is ≈ 15 pp) |
 | (ii) false-start loss, differential | over primary units, `mean(loss_T0 − loss_T1)` ≥ **−50 bps**, where `loss_arm = min(outcome(arm), 0) · 1[arm false start]` (0 for a cash arm) — T0's **additional** false-start money may not exceed one cost floor per unit. Calibration: at the (i) limit of 10 pp more false starts with a mean false-start loss of 300 bps the differential is ≈ −30 bps, inside the tolerance; it binds when T0's extra false starts are both more frequent and deeper than that (≈ 500 bps at 10 pp). The r4 version was one-sided in T0's rate and would have bound on any false-start level. | blocks PROMOTE at the fixed look; never a REJECT trigger |
 | (iii) missed upside | T0's missed upside is a unit where T0 is AVOIDED or REFUSED (anchor broken before its fill) and T1 later enters and gains: it enters `D_policy` as a negative term (T0 cash 0, T1 positive). The lane's missed upside (T1 cash on a name T0 bought and that rallied) enters as a positive term. T1 is never AVOIDED or REFUSED (ADJ-09), so the lane's only missed upside is cash. Both are priced inside `D_policy`; no separate tolerance. | — |
 
@@ -314,7 +319,7 @@ sensitivity (T1b), descriptive.
 | Element | Definition (frozen) |
 | --- | --- |
 | R look | exactly one, after freeze and after maturity: the first session after `max over R units of t_exec(arm) + H` across the arms in the family (the exact session is written at freeze from the census; under the observed knowable shift of 1 it is 2026-10-23 + 22 sessions, but the rule is the maximum observed `t_exec`, not the assumed shift); descriptive only, reported also with `c_disc` shifted +1 session alone, `c_cur` +1 alone, both +1, and without the LATE_DISCOVERY_ARRIVAL units (ADJ-08, round-6 m5); changes no P constant |
-| P looks | monitoring at 50 and 100 primary units (point estimates and the waterfall only — no bound, no promotion, no futility; round-5 B1), futility at the first session with ≥ 150 primary units **and** ≥ 3 full blocks of 44 sessions, fixed verdict at the first session on which **all** §2 floors hold (300 units; 100 pairs; ≥ 5 full blocks, each holding a unit and a pair) (B4's look counts quoted: `monitoring_only_episode_counts [50, 100]`, `fixed_episode_count_per_distinct_cell 300`); if the pair floors are not met within 6 months of the first session on which the primary-unit floor and the full-block floor both hold, the fixed look is taken as UNIDENTIFIED-terminal |
+| P looks | monitoring at 50 and 100 primary units (point estimates and the waterfall only — no bound, no promotion, no futility; round-5 B1), futility at the first session with ≥ 150 primary units **and** ≥ 3 full blocks of 44 sessions, fixed verdict at the first session on which **all** §2 floors hold (300 units; 100 pairs; ≥ 5 full blocks, each holding a unit and a pair) (B4's look counts quoted: `monitoring_only_episode_counts [50, 100]`, `fixed_episode_count_per_distinct_cell 300`); if the pair floors are not met within **126 sessions** (≈ 6 calendar months; counted in §2 sessions, round-7 N7) of the first session on which the primary-unit floor and the full-block floor both hold, the fixed look is taken as UNIDENTIFIED-terminal; every deciding P look record also carries the three +1-clock readouts (ADJ-08) |
 | Futility (W2's own rule) | at the futility look (≥ 150 primary units and ≥ 3 full blocks), stop if the **deciding** upper one-sided 95% bound of mean `D_policy` (the higher of the block-bootstrap and t(B − 1) upper bounds, ADJ-07) < −25 bps; the disposition is **REJECT (futility)** — terminal for this registration, reported as `REJECT_FUTILITY`, never re-looked. B4's rule is different and is quoted, not borrowed: `"futility": {"episode_count_per_cell": 150, "rule": "stop as REJECTED if every cell's primary lower confidence bound excludes improvement"}` |
 | REJECT (P only) | deciding upper one-sided 95% bound (ADJ-07) of mean `D_policy` < −25 bps at the fixed look with the floors met |
 | RETAIN_IN_SHADOW | floor met, neither PROMOTE nor REJECT |
@@ -344,13 +349,13 @@ historical backfill into P; no new data-purpose grant; no production, board, ale
 The B-17 historical population (7,918 C0 episodes, none with a complete 34-session window) is not
 this study's R segment and is not substituted by it; B-17 stays null. Required before freeze:
 independent non-author review of this exact revision; the Data OS owner's entitlement exclusion
-list; the census v7 re-run (both walks, `--server-arrival`, `origin/main` resolved once at start-up and recorded) attached; the T3 availability gate result; and a machine freeze
+list; the census re-run (both walks, `--server-arrival`, `--main-sha a7eef2ce9737` so the walk reproduces `walk_sha_R`; a later SHA may be used only by updating `walk_sha_R` in the same revision, round-7 N2) attached; the T3 availability gate result; and a machine freeze
 mirroring §2–§7.
 
 ## Frozen-field block (to be mirrored into the machine freeze at freeze time)
 
 ```yaml
-schema: us.prophet_entry_timing_w2_design/v7
+schema: us.prophet_entry_timing_w2_design/v8
 status: DRAFT_UNFROZEN
 adjudications: [W2-ADJ-01 policy contrast is the primary (P only), W2-ADJ-02 timing co-condition on exact pairs only, W2-ADJ-03 both arms timed by first-parent arrival, W2-ADJ-04 one heal rule (healed session = GAP), W2-ADJ-05 block bootstrap + session floors, W2-ADJ-06 margin differential only + T0 lower bound >= 0 + timing point estimate >= 0, W2-ADJ-07 block 44 + full-block floors + conservative-of-two-bounds, W2-ADJ-08 commit clock corrected by server witness, W2-ADJ-09 T1 never reads the anchor, W2-ADJ-10 t-bound SE inflated for block-mean autocorrelation]
 parents: [B4 PREREG.json (quoted constants only), W3_RACE_PREREG.md (session_missing class only), ENTRY_TIMING_W1 r3 (d03acfd0)]
@@ -358,8 +363,8 @@ generation_id: peg:23be3409c3a57944dd08e09e38e3b7541926c0f244e9d0d3b4a0b4a8aaced
 session_calendar: data/yahoo/SPY.parquet date index (NYSE sessions); all units in sessions
 lane_state_basis: first blob carrying each stamp_date on first-parent origin/main fixes its BUY rows, curated coverage and signal_asof; a later blob changing that date's BUY set = HEAL -> session is a GAP; healed rows never read; HEAD never read; walked at the pinned origin/main SHA below (per look record in P)
 walk_sha_R: a7eef2ce9737
-walk_sha_rule: "origin/main resolved once at census start-up; the SHA is passed to every git read of both walks and recorded in each walk's output (never the symbolic ref)"
-arrival_clock: "first-parent commit instant corrected to max(commit, earliest check-suite createdAt on branch main for that commit; suites on other branches ignored); witness 31/44 stamp commits + 23/54 document commits, 0 on another branch, none changes a session; commits without a witness keep the commit clock and are listed; R readout also reported with c_disc +1 alone, c_cur +1 alone, both +1"
+walk_sha_rule: "origin/main resolved once at census start-up, or passed as --main-sha for a reproducible re-run (round-7 N2); the SHA is passed to every git read of both walks and recorded in each walk's output (never the symbolic ref)"
+arrival_clock: "first-parent commit instant corrected to max(commit, earliest check-suite createdAt on branch main for that commit; suites on other branches ignored); witness 31/44 stamp commits + 23/54 document commits, 0 on another branch, none changes a session; commits without a witness keep the commit clock and are listed; R readout and every deciding P look record (futility, fixed) also reported with c_disc +1 alone, c_cur +1 alone, both +1 (descriptive; round-7 N1)"
 anchor_gates: "AVOIDED and REFUSED apply to T0, T2, T3 only; T1 enters whenever the lane admitted inside K (gates = _classify_buy_row); the anchor is a false-start yardstick for every arm, never a gate for T1"
 late_discovery_arrival: "unit whose discovery document became knowable > 1 session after its data session; flagged, kept; timing readout also reported without them (R: 11 of 1,087)"
 late_knowable_buy_rows: "BUY rows inside K whose stamp became knowable after t_disc + K are skipped and the window scan continues; counted once per unit (R: 21 units, 23 rows; stamp lag 9 for 4 rows, 10 for 19)"
@@ -391,7 +396,7 @@ estimator: {method: "conservative of circular_moving_block_bootstrap percentile 
 promote: {segment: P only, bound: deciding (ADJ-07), policy_lower_bound_bps: -25, t0_outcome_lower_bound_bps: 0, timing_point_estimate_bps_min: 0, timing_lower_bound_bps: -25, min_median_executable_lead_sessions: 1, tolerances: hold, fragile: blocks, floors: all §2 floors}
 reject: {segment: P only, rule: deciding policy_upper_one_sided_95_bound < -25 bps at the fixed look with floors met}
 futility_w2: {at_primary_units: 150, at_full_blocks_min: 3, rule: deciding policy_upper_one_sided_95_bound < -25 bps, disposition: "REJECT_FUTILITY (terminal; B4 rule quoted, not borrowed)"}
-looks_P: {monitoring: "[50, 100] primary units; point estimates and waterfall only, no bound", futility: "first session with >= 150 primary units and >= 3 full blocks", fixed: "first session on which every §2 floor holds; pair-floor deadline 6 months after the primary unit floor and block floor are met -> UNIDENTIFIED-terminal"}
+looks_P: {monitoring: "[50, 100] primary units; point estimates and waterfall only, no bound", futility: "first session with >= 150 primary units and >= 3 full blocks", fixed: "first session on which every §2 floor holds; pair-floor deadline 126 sessions (~6 calendar months) after the primary unit floor and block floor are met -> UNIDENTIFIED-terminal", clock_sensitivities: "every deciding look record also reports c_disc +1, c_cur +1, both +1 (descriptive)"}
 look_R: {t_disc_from: 2026-08-26, t_disc_to: 2026-10-23, looks: 1, after_freeze: true, may_promote: false, may_reject: false, changes_P_constants: false, maturity_session: "set at freeze = first session after max over R units and arms of t_exec + H (observed, not assumed)", sensitivities: ["c_disc +1 session alone", "c_cur +1 session alone", "both +1 session", "without LATE_DISCOVERY_ARRIVAL units"]}
 secondary_family_holm: [D_policy(T2 - T1), D_policy(T3 - T1) if gate passes]
 descriptive: [decomposition terms, interval units both bounds, T1b buyable==True, incumbent_led(_unknown) negative lead, R 26 exact pairs with pre-gap flag, placebo T0 at t_disc - 5, mdv20_usd terciles, anchor era, lead terciles, t_vis, t_auth]
