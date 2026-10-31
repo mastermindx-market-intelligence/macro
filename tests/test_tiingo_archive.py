@@ -360,7 +360,7 @@ def test_news_publisher_filter_rejects_plural_before_collection(monkeypatch, par
     class NoStorage:
         store_response = staticmethod(forbidden)
 
-    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
     with pytest.raises(ValueError):
         a.collect_one(NoStorage(), "news", None, "synthetic-test-key", params)
 
@@ -504,7 +504,7 @@ def test_legacy_news_filter_plan_preserves_frozen_digest_offline(monkeypatch):
 
     monkeypatch.setattr(ing, "collect", forbidden)
     monkeypatch.setattr(ing, "read_key", forbidden)
-    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
     tasks = [ing.Task("news", None, {"limit": 250, "sources": "cnbc.com"})]
     # Frozen from plan_page at a92ee6e9, before the HTTP parameter correction.
     digest = "39ca53761298a38c9c32e71b9a1e488199cd2fe0dcc41df11c66d5e193e21c0d"
@@ -527,7 +527,7 @@ def test_legacy_news_filter_corpus_audit_matches_original_plan_without_writes(
         pytest.fail("read-only historical audit attempted collection or storage")
 
     monkeypatch.setattr(ing, "read_key", forbidden)
-    monkeypatch.setattr(a, "fetch_json_bytes", forbidden)
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
     monkeypatch.setattr(a.Archive, "store_response", forbidden)
     before = {p.relative_to(lake.root): p.read_bytes()
               for p in lake.root.rglob("*") if p.is_file()}
@@ -547,3 +547,149 @@ def test_legacy_news_filter_corpus_audit_matches_original_plan_without_writes(
     assert result["source_authenticity_proven"] is False
     assert {p.relative_to(lake.root): p.read_bytes()
             for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+@pytest.mark.parametrize("read_at,closed_at,storage_at,capture_date", [
+    ("2026-10-22T03:59:59.900000+00:00", "2026-10-22T04:00:00.100000+00:00",
+     "2026-10-22T04:00:01+00:00", "2026-10-22"),
+    ("2026-10-22T23:59:59.900000+00:00", "2026-10-23T00:00:00.100000+00:00",
+     "2026-10-23T00:00:01+00:00", "2026-10-22"),
+])
+def test_response_observation_precedes_teardown_and_storage(
+        lake, monkeypatch, read_at, closed_at, storage_at, capture_date):
+    # Model real ordering: response bytes finish first, HTTP teardown and the
+    # storage reserve check each finish later. Only the first clock belongs to
+    # the response; the midnight case also checks the actual archive partition.
+    clock = {"now": read_at}
+    samples, reads = [], []
+    raw = b'[{"date":"2026-10-22T00:00:00Z","open":1,"high":1,"low":1,"close":1}]'
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, limit):
+            reads.append(limit)
+            clock["now"] = read_at
+            return raw
+
+        def __exit__(self, *args):
+            clock["now"] = closed_at
+
+    def now():
+        samples.append(clock["now"])
+        return clock["now"]
+
+    def delayed_storage_check(root, *, floor):
+        clock["now"] = storage_at
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", now)
+    monkeypatch.setattr(a, "require_space", delayed_storage_check)
+    saved = a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key",
+                          {"resampleFreq": "1min"})
+
+    assert saved["observed_at_utc"] == read_at
+    assert samples == [read_at]
+    assert reads == [a.MAX_RESPONSE_BYTES + 1]
+    assert clock["now"] == storage_at
+    assert Path(saved["path"]).parts[2] == capture_date
+    assert gzip.decompress((lake.root / saved["path"]).read_bytes()) == raw
+    receipts = list((lake.root / "receipts").rglob("*.json"))
+    assert len(receipts) == 1 and receipts[0].parent.name == capture_date
+    receipt = json.loads(receipts[0].read_bytes())
+    assert receipt["observed_at_utc"] == read_at
+    assert a.validate_receipt(receipt) == saved["receipt_id"]
+
+
+def test_response_observation_keeps_first_receipt_bytes_and_clock(lake, monkeypatch):
+    raw = b'[{"date":"2026-10-22T00:00:00Z","close":1}]'
+    params = {"resampleFreq": "1min"}
+    path = a.request_path("forex-bars", "EURUSD", params)
+    first = lake.store_response("forex-bars", "EURUSD", path, raw,
+                                received_at="2026-10-22T03:30:00+00:00")
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, _):
+            return raw
+
+        def __exit__(self, *args):
+            return None
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T06:00:00+00:00")
+    repeated = a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key", params)
+
+    assert repeated["new_raw"] is False
+    assert repeated["observed_at_utc"] == first["observed_at_utc"]
+    assert repeated["receipt_id"] == first["receipt_id"]
+    assert repeated["path"] == first["path"]
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+@pytest.mark.parametrize("raw,oversize", [(b"[]", False), (b"[ ]", True)])
+def test_response_observation_preserves_public_pair_and_read_limit(monkeypatch, raw, oversize):
+    reads, requests = [], []
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, limit):
+            reads.append(limit)
+            return raw
+
+        def __exit__(self, *args):
+            return None
+
+    def open_response(req, timeout):
+        requests.append((req, timeout))
+        return Response()
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", open_response)
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T03:59:59.900000+00:00")
+    if oversize:
+        with pytest.raises(a.TiingoArchiveError, match="response exceeded bounded archive size"):
+            a.fetch_json_bytes("/boats", "synthetic-test-key", timeout=7, max_bytes=2)
+    else:
+        result = a.fetch_json_bytes("/boats", "synthetic-test-key", timeout=7, max_bytes=2)
+        assert type(result) is tuple
+        assert result == (b"[]", "application/json")
+    assert reads == [3]
+    assert len(requests) == 1 and requests[0][1] == 7
+    assert requests[0][0].get_header("Authorization") == "Token synthetic-test-key"
+    assert "synthetic-test-key" not in requests[0][0].full_url
+
+
+def test_response_observation_teardown_failure_does_not_store(lake, monkeypatch):
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, _):
+            return b"[]"
+
+        def __exit__(self, *args):
+            raise a.urllib.error.URLError("sensitive transport detail")
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T03:59:59.900000+00:00")
+    with pytest.raises(a.TiingoArchiveError) as exc:
+        a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key",
+                      {"resampleFreq": "1min"})
+    assert str(exc.value) == "Tiingo transport unavailable"
+    assert not [p for p in lake.root.rglob("*") if p.is_file()]

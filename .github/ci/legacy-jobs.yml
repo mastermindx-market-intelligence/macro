@@ -27,6 +27,29 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  stock-identity-method-projection:
+    if: ${{ false }}  # executed inside the ordinary PR code pack
+    gate: code
+    scope: exclusive
+    paths:
+      - engine/__init__.py
+      - engine/stock_identity/__init__.py
+      - engine/stock_identity/authority.py
+      - engine/stock_identity/replay/__init__.py
+      - engine/stock_identity/replay/method_projection.py
+      - tests/__init__.py
+      - tests/test_stock_identity_method_projection.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: outcome-free registered method projection
+        run: python -m pytest tests/test_stock_identity_method_projection.py -q
   options-r1-sector-holdings-coverage:
     # Options R1 W2B: sector holdings coverage emitter — separate denominators, unknown total stays null, Terminal contract, additive hook.
     # scope: exclusive — the suite reads scripts/build_sector_central.py as text and imports it (the additive hook
@@ -263,6 +286,15 @@ jobs:
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -1341,6 +1373,17 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "engine/options_statistics.py"
       - "engine/options_statistics_state.py"
       - "tests/test_options_statistics.py"
@@ -2229,6 +2272,15 @@ jobs:
     timeout-minutes: 10
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -3242,6 +3294,16 @@ jobs:
     timeout-minutes: 10
     paths:
       - "engine/turn_watch_capture.py"
+      - "scripts/company_intelligence_publication_evidence.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -4270,6 +4332,7 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -7008,6 +7071,17 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Plan private-reader/installer suites belong to this scoped CODE lane.
+      - "tests/test_options_plan_api.py"
+      - "tests/test_options_plan_install.py"
+      - "scripts/install_options_plan_reference.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/neuralweb/market_memory_identity_candidate.py"
       - "collectors/biocatalyst/__init__.py"
       - "engine/biocatalyst/__init__.py"
@@ -8051,7 +8125,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -9240,6 +9314,21 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "engine/intl_global_universe.py"
@@ -9991,10 +10080,17 @@ jobs:
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-workspace-browser::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+          )
+          PY
       - name: Actual International builder and template contracts
         run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py tests/test_intl_gs_foundation.py -q
       - name: Actual DOM controller and page entry in Chromium
@@ -10546,6 +10642,15 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -12339,6 +12444,55 @@ jobs:
       - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
         run: python -m pytest tests/test_china_altdata.py -q -p no:cacheprovider
 
+  research-record-claims:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # Research record claims (W33-LF, 2026-10-21): the reports hub span, the research
+    # index hub claims and the per-report record claims. Three render suites (jinja2 +
+    # templates/ + the research-pages builder; no data/ or site/ write). Own job, not a
+    # step in washout-turn-organ: that step moved the index-template (5,843 > 5,837) and
+    # build_free_content (5,816 > 5,810) packing probes. scope: exclusive pins it to the
+    # suites' static import closure (run_ci_pack.inferred_as_if_not_exclusive on main
+    # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
+    paths:
+      - "config/site_access.yml"
+      - "engine/research_vault/__init__.py"
+      - "engine/research_vault/catalog.py"
+      - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/slugs.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/seo.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "scripts/__init__.py"
+      - "scripts/build_reports.py"
+      - "scripts/build_research_pages.py"
+      - "scripts/build_research_vault.py"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/report_base.html.j2"
+      - "templates/reports.html.j2"
+      - "templates/research_index.html.j2"
+      - "templates/research_report.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_reports_hub_span.py"
+      - "tests/test_research_pages_hub_claims.py"
+      - "tests/test_research_pages_record_claims.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 pyyaml
+      - name: Research record claims — hub span, index hub claims, per-report record claims
+        run: python -m pytest tests/test_reports_hub_span.py tests/test_research_pages_hub_claims.py tests/test_research_pages_record_claims.py -q -p no:cacheprovider
   china-board-breadth:
     if: ${{ false }}
     gate: code
@@ -13520,6 +13674,16 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -14379,6 +14543,16 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "scripts/company_intelligence_publication_evidence.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -16374,6 +16548,9 @@ jobs:
       - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/__init__.py"
       - "tests/test_consumer_cyclical_plnt_page.py"
+      - "tests/test_consumer_cyclical_plnt_public_hold.py"
+      # Read-only input of the public-hold suite: no sitemap entry may name the card.
+      - "site/sitemap.xml"
       # Read-only input of the PLNT suite: the public route list.
       - "config/site_access.yml"
       - "engine/sector_intelligence/contracts.py"
@@ -16415,7 +16592,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py tests/test_consumer_cyclical_plnt_public_hold.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -18058,6 +18235,20 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - engine/__init__.py
@@ -18242,6 +18433,10 @@ jobs:
     # site/** and data/** edits otherwise do not select it, because they cannot
     # move its verdict.
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
       - "templates/**"
       - "engine/**"
       - "lib/**"
@@ -18288,6 +18483,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Native LP card import/source closure, measured after consumer adoption.
@@ -18932,6 +19128,20 @@ jobs:
     # builder-shim job added unrelated selection weight to every page builder.
     # The incumbent context-bus suite keeps its existing owner above.
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/forex*.py
       - engine/neuralweb/mastermind_context.py
       - lib/forex*.py
@@ -19571,6 +19781,17 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -24348,6 +24569,11 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -25133,6 +25359,11 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -25655,6 +25886,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - ".github/workflows/daily.yml"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -26811,6 +27056,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -27334,6 +27582,15 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -29123,6 +29380,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
+      - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
       - "engine/market_os/__init__.py"
       - "engine/research_intelligence/__init__.py"
@@ -29932,6 +30191,11 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -33827,6 +34091,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -35222,6 +35487,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -35522,6 +35788,11 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_hub_retention.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_scenario_capture.py"
@@ -36041,6 +36312,13 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
       - "engine/options_statistics.py"
       - "engine/options_statistics_state.py"
       - "app/options_auth.py"
@@ -38701,6 +38979,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/neuralweb/market_memory_history_transcripts.py
       - tests/test_market_memory_history_transcripts.py
       - collectors/__init__.py
@@ -38825,6 +39117,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - collectors/tiingo_archive.py
@@ -38949,6 +39255,17 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -39226,6 +39543,15 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenarios.py"
       - "app/options_scenario_bindings.py"
@@ -41674,6 +42000,7 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -42206,7 +42533,7 @@ jobs:
       - name: radar_panel.js honesty section (settled theses + calls tile)
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
       - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
-        run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs
+        run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs tests/js/radar_panel_open_checks.test.mjs
 
   sni-s2-event-response:
     if: ${{ false }}
@@ -43293,6 +43620,7 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - ".github/workflows/engine-render.yml"
       - ".github/workflows/render.yml"
       - "scripts/ci/daily_engine_commit_outputs.sh"
@@ -43739,6 +44067,7 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "collectors/__init__.py"
@@ -43866,6 +44195,15 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      # Options Plan consumer: exact newly reachable import/read dependencies.
+      - "app/options_plan.py"
+      - "app/options_plan_source.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "engine/intraday_greeks.py"
+      - "engine/options_nbbo_cohort.py"
+      - "engine/options_payoff.py"
+      - "engine/options_plan_expiry.py"
+      - "lib/options_source_receipts.py"
       - "app/options_auth.py"
       - "app/options_scenario_bindings.py"
       - "app/options_scenarios.py"

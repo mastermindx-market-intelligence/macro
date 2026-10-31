@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OMCL-BULL-20260925",
-  "asof": "2026-10-24",
+  "asof": "2026-10-30",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 75.1,
-  "raw_confidence": 78.6,
-  "delta_vs_base": 15.1,
+  "management_confidence": 73.1,
+  "raw_confidence": 67.5,
+  "delta_vs_base": 13.1,
   "recommended_action": "hold",
-  "human_state": "Advancing Cleanly",
+  "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 62.0,
-    "pace": 87.8,
+    "progress": 46.9,
+    "pace": 58.5,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.326,
-    "dist_to_t1_r": 0.174,
-    "dist_to_t2_r": 1.674,
-    "horizon_pct_used": 53.3,
-    "p1": 0.8841,
-    "p2": 0.4421,
+    "dist_to_stop_r": 1.913,
+    "dist_to_t1_r": 0.587,
+    "dist_to_t2_r": 2.087,
+    "horizon_pct_used": 66.7,
+    "p1": 0.6086,
+    "p2": 0.3043,
     "p3": null,
-    "move_r": 1.326,
+    "move_r": 0.913,
     "mfe_r": 1.326,
     "mae_r": -0.161
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 24,
-  "tau": 0.5333
+  "days_elapsed": 30,
+  "tau": 0.6667
 }

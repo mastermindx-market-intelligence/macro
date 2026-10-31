@@ -1,5 +1,7 @@
 # Forex R26 account conditions — current integration contract
 
+> **Current status, 22 October 2026:** inactive authenticated save/reload/edit/delete is **PROVEN_LIVE** and the disposable record was removed. Macro#9996 and the account-owner source merged; migration0038 was applied once. The fixture/Draft statements below are historical and do not reopen accepted CRUD. See [current master plan](MASTER_PLAN.md) and [canonical release checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6333973165). Active source binding/evaluation/delivery and Terminal#1106's documentation-review hold remain separate.
+
 ## Scope and release boundary
 
 The R26 browser can prepare and explicitly save, reload, edit and delete **inactive** price-close conditions through the existing authenticated Supabase client and Terminal-owned `public.alerts` owner. This source slice does not enable monitoring, admit a finalized 4H feed, enqueue an alert, or send a notification. Missing owner RPCs are an unavailable service, never a successful save or empty account.
