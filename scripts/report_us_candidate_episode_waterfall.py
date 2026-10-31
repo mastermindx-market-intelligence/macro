@@ -9,19 +9,41 @@ class (``IDENTITY_UNRESOLVED`` / ``ISSUER_UNRESOLVED`` /
 explicit denominator (``inputs = mapped + refused``) the brief asks for
 before any gated outcome is inspected.
 
+The observation session is the session on which the intake READ the row:
+
+* ``candidate`` / ``doors`` rows carry it directly (``opened_session`` for an
+  ``OPENED`` event, else the ``occurred_at`` date; ``observation_session`` for
+  a suppression);
+* ``turn_watch`` rows do not.  The intake stamps them with the trigger clock
+  (``occurred_at = known_at = min(trigger.last_date)``), which can precede the
+  session the row was first read by months, and the ledger's
+  ``observation_session`` for turn_watch suppressions is not uniformly the
+  document's session either.  Both sides are therefore binned by the
+  ``data_session`` of the turn_watch source document they were read from,
+  recovered through the row's ``source_receipt`` (the document's
+  ``content_sha256``) from ``episode_inputs/turn_watch/*.json`` — the tracked
+  files by default, plus every historical version with ``--git-history REF``.
+  A turn_watch row whose receipt is not recoverable is reported under
+  ``unrecovered_turn_watch`` and kept OUT of the per-session table; nothing is
+  guessed from the trigger clock.
+
 The identity replay re-resolves every refused (ticker, session) pair through
 the ONE Data OS alias reader (``engine.us_candidate_episode_intake.
 load_identity_spine`` -> ``VendorAliasTable.resolve("membership", …)``) against
-the CURRENT committed reference and splits the ``IDENTITY_UNRESOLVED`` rows:
+the CURRENT committed reference, on the same session clock, and splits the
+``IDENTITY_UNRESOLVED`` rows:
 
-* ``no_current_reference`` — no membership alias knows the ticker today either:
-  a reference-coverage gap (Data OS owner), not an intake defect;
-* ``reference_widened_after_session`` — the alias exists today but was ingested
-  after the session: the refusal was lawful as-known at the time (the as-known
-  snapshot is pinned in the generation receipt); only prospective rows benefit;
-* ``resolvable_at_session`` — the alias was already ingested on or before the
-  session and resolves today: the only class that can indicate an intake or
-  snapshot defect, to be examined row by row.
+* ``no_current_reference`` — no membership alias covers the ticker on that
+  session today either: a reference-coverage gap (Data OS owner), not an
+  intake defect;
+* ``reference_widened_after_session`` — the alias resolves today but was
+  ingested after the session; the refusal stood on the reference the nightly
+  had, and the ledger is append-only, so it stays (the intake itself applies
+  no as-known gate: a from-scratch rebuild would map these rows);
+* ``resolvable_at_session`` — the alias resolves today and was ingested on or
+  before the session (or carries no ingest stamp, counted here
+  conservatively): the only class that can indicate an intake or snapshot
+  defect, to be examined row by row.
 
 Nothing here reads outcomes, prices, grades or the W3 paired race; nothing is
 written.  The output is a run document (stdout), JSON with ``--json``.
@@ -30,15 +52,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from datetime import date
+from hashlib import sha256
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-SCHEMA = "us.prophet_entry_timing_w1_waterfall/v1"
+SCHEMA = "us.prophet_entry_timing_w1_waterfall/v2"
 REFUSAL_CLASSES = (
     "IDENTITY_UNRESOLVED",
     "ISSUER_UNRESOLVED",
@@ -46,6 +70,8 @@ REFUSAL_CLASSES = (
     "ACTIVE_EPISODE_DIFFERENT_ANCHOR",
 )
 IDENTITY_VENDOR = "membership"  # the vendor the intake resolves through
+TURN_WATCH = "turn_watch"
+TURN_WATCH_INPUTS = Path("us_prophet_rank") / "episode_inputs" / "turn_watch"
 
 
 def _jsonl(path: Path) -> list[dict]:
@@ -58,16 +84,6 @@ def selected_generation_dir(data_root: Path) -> Path:
     return data_root / "us_prophet_rank" / "episodes" / "generations" / str(head["generation_id"])
 
 
-def _event_session(event: dict) -> str | None:
-    payload = event.get("payload") or {}
-    for key in ("observation_session", "opened_session"):
-        value = payload.get(key)
-        if value:
-            return str(value)[:10]
-    occurred = event.get("occurred_at")
-    return str(occurred)[:10] if occurred else None
-
-
 def load_generation(generation_dir: Path) -> tuple[list[dict], list[dict]]:
     events = [row for path in sorted((generation_dir / "events").glob("*.jsonl")) for row in _jsonl(path)]
     suppressions = [row for path in sorted((generation_dir / "suppressions").glob("*.jsonl"))
@@ -75,29 +91,126 @@ def load_generation(generation_dir: Path) -> tuple[list[dict], list[dict]]:
     return events, suppressions
 
 
+# ---------------------------------------------------------------- turn_watch clock
+
+
+def _document_receipt(raw: bytes) -> tuple[str, str] | None:
+    """(receipt, data_session) of one turn_watch source document, or None if it
+    is not a well-formed document whose stored digest matches its content."""
+    from engine.us_candidate_episode_intake import canonical_json  # the ONE digest definition
+
+    try:
+        document = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if not isinstance(document, dict):
+        return None
+    digest = document.get("content_sha256")
+    session = document.get("data_session")
+    if not isinstance(digest, str) or not isinstance(session, str) or len(session) < 10:
+        return None
+    expected = sha256(canonical_json({k: v for k, v in document.items()
+                                      if k != "content_sha256"}).encode("utf-8")).hexdigest()
+    if expected != digest:
+        return None
+    return f"sha256:{digest}", session[:10]
+
+
+def turn_watch_receipt_sessions(data_root: Path, *, git_ref: str | None = None) -> dict:
+    """``{receipt: data_session}`` over the distinct turn_watch source documents.
+
+    Tracked files under ``<data_root>/us_prophet_rank/episode_inputs/turn_watch``
+    always; with ``git_ref`` also every historical blob of that directory
+    reachable from the ref (the nightly rewrites ``<session>.json`` in place,
+    so an older receipt only survives in history).  Documents whose stored
+    ``content_sha256`` does not match their content are ignored, never guessed.
+    """
+    sessions: dict[str, str] = {}
+    documents = 0
+    directory = data_root / TURN_WATCH_INPUTS
+    for path in sorted(directory.glob("*.json")) if directory.is_dir() else []:
+        found = _document_receipt(path.read_bytes())
+        if found is not None and found[0] not in sessions:
+            documents += 1
+            sessions[found[0]] = found[1]
+    history = None
+    if git_ref:
+        repo = data_root.parent
+        rel = str(Path(data_root.name) / TURN_WATCH_INPUTS)
+        commits = subprocess.run(["git", "-C", str(repo), "log", "--format=%H", git_ref, "--", rel],
+                                 capture_output=True, text=True, check=True).stdout.split()
+        blobs: set[str] = set()
+        for commit in commits:
+            tree = subprocess.run(["git", "-C", str(repo), "ls-tree", "-r", commit, "--", rel],
+                                  capture_output=True, text=True, check=True).stdout
+            for line in tree.splitlines():
+                blob = line.split("\t", 1)[0].split()[2]
+                if blob in blobs:
+                    continue
+                blobs.add(blob)
+                raw = subprocess.run(["git", "-C", str(repo), "cat-file", "-p", blob],
+                                     capture_output=True, check=True).stdout
+                found = _document_receipt(raw)
+                if found is not None and found[0] not in sessions:
+                    documents += 1
+                    sessions[found[0]] = found[1]
+        history = {"ref": git_ref, "commits": len(commits), "blobs": len(blobs)}
+    return {"sessions": sessions, "documents": documents, "git_history": history}
+
+
+def _row_session(row: dict, receipt_sessions: dict[str, str], *, event: bool) -> str | None:
+    """The observation session of one mapped event or one suppression row.
+
+    turn_watch rows: the source document's ``data_session`` via the receipt, or
+    None when unrecoverable.  Other sources: the row's own session field."""
+    if str(row.get("source_system")) == TURN_WATCH:
+        return receipt_sessions.get(str(row.get("source_receipt")))
+    if event:
+        opened = (row.get("payload") or {}).get("opened_session")
+        if opened:
+            return str(opened)[:10]
+        occurred = row.get("occurred_at")
+        return str(occurred)[:10] if occurred else None
+    session = row.get("observation_session")
+    return str(session)[:10] if session else None
+
+
+# ---------------------------------------------------------------- identity replay
+
+
 def _alias_first_ingest(data_root: Path) -> dict[str, date]:
-    """Earliest ingested_at per membership vendor_symbol (for the as-known split)."""
+    """Earliest ingested_at per membership vendor_symbol (for the as-known split).
+    A row without an ingest stamp contributes nothing (the replay then counts the
+    pair conservatively as ``resolvable_at_session``)."""
     import pandas as pd  # local: the parquet reader is only needed for the replay
 
     frame = pd.read_parquet(data_root / "reference" / "vendor_aliases.parquet")
     frame = frame[frame["vendor"] == IDENTITY_VENDOR]
     first: dict[str, date] = {}
     for symbol, stamp in zip(frame["vendor_symbol"].astype(str), frame["ingested_at"]):
+        if stamp is None or pd.isna(stamp):
+            continue
         day = stamp.date() if hasattr(stamp, "date") else date.fromisoformat(str(stamp)[:10])
         if symbol not in first or day < first[symbol]:
             first[symbol] = day
     return first
 
 
-def identity_replay(data_root: Path, suppressions: list[dict]) -> dict:
+def identity_replay(data_root: Path, suppressions: list[dict], receipt_sessions: dict[str, str]) -> dict:
     from engine.us_candidate_episode_intake import load_identity_spine
 
     spine = load_identity_spine(data_root)
     first_ingest = _alias_first_ingest(data_root)
     pairs: Counter[tuple[str, str]] = Counter()
+    unrecovered = 0
     for row in suppressions:
-        if row.get("reason") == "IDENTITY_UNRESOLVED":
-            pairs[(str(row.get("ticker_at_observation")), str(row.get("observation_session"))[:10])] += 1
+        if row.get("reason") != "IDENTITY_UNRESOLVED":
+            continue
+        session = _row_session(row, receipt_sessions, event=False)
+        if session is None:
+            unrecovered += 1
+            continue
+        pairs[(str(row.get("ticker_at_observation")), session)] += 1
     rows_by_class: Counter[str] = Counter()
     pairs_by_class: Counter[str] = Counter()
     by_session: dict[str, Counter] = defaultdict(Counter)
@@ -132,6 +245,7 @@ def identity_replay(data_root: Path, suppressions: list[dict]) -> dict:
         "vendor": IDENTITY_VENDOR,
         "reference": receipts,
         "identity_unresolved_rows": sum(pairs.values()),
+        "identity_unresolved_rows_unrecovered_session": unrecovered,
         "distinct_ticker_sessions": len(pairs),
         "distinct_tickers": len({t for t, _ in pairs}),
         "rows_by_class": dict(sorted(rows_by_class.items())),
@@ -141,19 +255,41 @@ def identity_replay(data_root: Path, suppressions: list[dict]) -> dict:
     }
 
 
-def waterfall(events: list[dict], suppressions: list[dict]) -> dict:
+# ---------------------------------------------------------------- waterfall
+
+
+def waterfall(events: list[dict], suppressions: list[dict], receipt_sessions: dict[str, str]) -> dict:
     mapped: dict[str, Counter] = defaultdict(Counter)
     refused: dict[str, Counter] = defaultdict(Counter)
     tickers: dict[str, set] = defaultdict(set)
     unsessioned_events = 0
+    unrecovered = Counter()
+    clock = Counter()
     for event in events:
-        session = _event_session(event)
+        session = _row_session(event, receipt_sessions, event=True)
         if session is None:
-            unsessioned_events += 1
+            if str(event.get("source_system")) == TURN_WATCH:
+                unrecovered["events"] += 1
+            else:
+                unsessioned_events += 1
             continue
+        if str(event.get("source_system")) == TURN_WATCH:
+            clock["turn_watch_events_recovered"] += 1
+            if str(event.get("occurred_at"))[:10] < session:
+                clock["turn_watch_events_trigger_before_session"] += 1
         mapped[session][str(event.get("source_system"))] += 1
     for row in suppressions:
-        session = str(row.get("observation_session"))[:10]
+        session = _row_session(row, receipt_sessions, event=False)
+        if session is None:
+            if str(row.get("source_system")) == TURN_WATCH:
+                unrecovered["suppressions"] += 1
+            else:
+                unsessioned_events += 1
+            continue
+        if str(row.get("source_system")) == TURN_WATCH:
+            clock["turn_watch_suppressions_recovered"] += 1
+            if str(row.get("observation_session"))[:10] != session:
+                clock["turn_watch_suppressions_ledger_session_differs"] += 1
         refused[session][str(row.get("reason"))] += 1
         refused[session]["__source__" + str(row.get("source_system"))] += 1
         tickers[session].add(str(row.get("ticker_at_observation")))
@@ -183,13 +319,23 @@ def waterfall(events: list[dict], suppressions: list[dict]) -> dict:
         "refused": sum(s["refused"] for s in sessions),
         "refused_by_class": {k: sum(s["refused_by_class"][k] for s in sessions) for k in REFUSAL_CLASSES},
         "unsessioned_events": unsessioned_events,
+        "unrecovered_turn_watch": {"events": int(unrecovered["events"]),
+                                   "suppressions": int(unrecovered["suppressions"])},
     }
-    return {"sessions": sessions, "totals": totals}
+    clock_doc = {
+        "turn_watch_session_basis": "source document data_session via source_receipt",
+        "other_sources_session_basis": "opened_session / occurred_at date (events); observation_session (suppressions)",
+        **{k: int(clock[k]) for k in ("turn_watch_events_recovered", "turn_watch_events_trigger_before_session",
+                                      "turn_watch_suppressions_recovered",
+                                      "turn_watch_suppressions_ledger_session_differs")},
+    }
+    return {"sessions": sessions, "totals": totals, "clock": clock_doc}
 
 
-def build(data_root: Path, *, replay: bool = True) -> dict:
+def build(data_root: Path, *, replay: bool = True, git_ref: str | None = None) -> dict:
     generation_dir = selected_generation_dir(data_root)
     events, suppressions = load_generation(generation_dir)
+    receipts = turn_watch_receipt_sessions(data_root, git_ref=git_ref)
     doc = {
         "schema": SCHEMA,
         "authority": "measurement only / none",
@@ -197,10 +343,12 @@ def build(data_root: Path, *, replay: bool = True) -> dict:
         "generation_id": generation_dir.name,
         "events": len(events),
         "suppressions": len(suppressions),
-        "waterfall": waterfall(events, suppressions),
+        "turn_watch_receipts": {"documents": receipts["documents"], "receipts": len(receipts["sessions"]),
+                                "git_history": receipts["git_history"]},
+        "waterfall": waterfall(events, suppressions, receipts["sessions"]),
     }
     if replay:
-        doc["identity_replay"] = identity_replay(data_root, suppressions)
+        doc["identity_replay"] = identity_replay(data_root, suppressions, receipts["sessions"])
     return doc
 
 
@@ -214,6 +362,9 @@ def render(doc: dict) -> str:
                      f"{c['ACTIVE_EPISODE_DIFFERENT_ANCHOR']:>6} {s['distinct_refused_tickers']:>7}")
     t = doc["waterfall"]["totals"]
     lines.append(f"TOTAL      {t['inputs']:>7} {t['mapped']:>7} " + " ".join(f"{t['refused_by_class'][k]:>6}" for k in REFUSAL_CLASSES))
+    u = t["unrecovered_turn_watch"]
+    lines.append(f"turn_watch rows binned by source-document session: clock={json.dumps(doc['waterfall']['clock'], sort_keys=True)}; "
+                 f"unrecovered (excluded above): events={u['events']} suppressions={u['suppressions']}")
     replay = doc.get("identity_replay")
     if replay:
         lines.append("identity replay (IDENTITY_UNRESOLVED rows vs the CURRENT membership reference): "
@@ -226,9 +377,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--root", default=None, help="data root (default: <repo>/data)")
     ap.add_argument("--json", action="store_true", help="emit the full run document as JSON")
     ap.add_argument("--no-replay", action="store_true", help="skip the identity replay (no reference read)")
+    ap.add_argument("--git-history", default=None, metavar="REF",
+                    help="also recover turn_watch receipts from every historical version of the "
+                         "episode_inputs/turn_watch documents reachable from REF (read-only git)")
     args = ap.parse_args(argv)
     data_root = Path(args.root).resolve() if args.root else ROOT / "data"
-    doc = build(data_root, replay=not args.no_replay)
+    doc = build(data_root, replay=not args.no_replay, git_ref=args.git_history)
     print(json.dumps(doc, indent=2, sort_keys=True, default=str) if args.json else render(doc))
     return 0
 
