@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
@@ -680,6 +681,22 @@ class CatalystNativePackTests(unittest.TestCase):
     SOURCE_ID = "sec:" + FILING
     ISSUERS = {"EXA": {"supported": True, "issuer_id": "cik:0000000001",
                        "name": "Example Materials Corp"}}
+    # The #8700 producer contract: a public grant names the EXACT document it
+    # covers. ``_allowed`` (engine/marketing/catalyst_packets.py ~:400-409)
+    # refuses a grant whose document_url is empty or differs from the entry
+    # URL the producer passes for that source id (call site ~:676-679:
+    # ``_safe_url(entry.get("url"), ...)`` — ``_safe_url`` returns the raw
+    # string, so these literals ARE the checked values). The fixture path
+    # passes no document_observation, so ``primary_digest`` is "" and
+    # document_sha256 is never compared — it stays unbound here. The hermetic
+    # rights owner grants exactly the URL each native fixture event names for
+    # its source id; an unknown source id gets no URL and stays refused.
+    DOCUMENT_URL_BY_SOURCE_ID = {
+        SOURCE_ID: "https://www.sec.gov/Archives/edgar/data/1/"
+                   "x1-20261030.htm",
+        "sec:0000000002:0000000002-26-000002":
+            "https://www.sec.gov/Archives/edgar/data/2/x2-20261030.htm",
+    }
 
     @staticmethod
     def _grant(sid, now):
@@ -689,6 +706,7 @@ class CatalystNativePackTests(unittest.TestCase):
             effective_at_utc=datetime(2026, 10, 30, 0, 0, tzinfo=timezone.utc),
             expires_at_utc=datetime(2026, 10, 31, 0, 0, tzinfo=timezone.utc),
             display_link=True, display_title=True, display_facts=True,
+            document_url=CatalystNativePackTests.DOCUMENT_URL_BY_SOURCE_ID.get(sid, ""),
         )
 
     @classmethod
@@ -782,6 +800,20 @@ class CatalystNativePackTests(unittest.TestCase):
         fixture["rights_receipt_ids"] = ["fixture-rights:demo"]
         fixture["sources"][0]["rights_receipt_id"] = "fixture-rights:demo"
         self.refused("NATIVE_FIXTURE_RIGHTS_NOT_AUTHORIZED", fixture, scan)
+
+    def test_native_grant_for_other_document_url_rejected(self):
+        # #8700 contract: the same grant naming a DIFFERENT https document is
+        # not a grant for this event's primary source. The producer blocks the
+        # packet and the adapter refuses it — same refusal as a missing grant.
+        def other_document(sid, now):
+            return replace(self._grant(sid, now),
+                           document_url="https://www.sec.gov/Archives/edgar/"
+                                        "data/1/x1-other-document.htm")
+        blocked, blocked_scan = self._native(resolver=other_document)
+        self.assertEqual(blocked["public_disposition"], "BLOCKED_PUBLIC")
+        self.assertIn("primary_source_public_rights_unavailable",
+                      blocked["missing_data"])
+        self.refused("NATIVE_PUBLIC_RIGHTS_BLOCKED", blocked, blocked_scan)
 
     def test_native_correction_with_predecessor_retires_prior(self):
         gen0_packet, gen0_scan = self._native()
